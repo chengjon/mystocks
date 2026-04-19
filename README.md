@@ -1,1670 +1,368 @@
-# MyStocks 量化交易数据管理系统
+# MyStocks
 
-> **使用说明**:
-> 本文件是项目入口、工作流快照、规划工件或使用说明，不是当前共享规则、当前代码实现或当前运行状态的唯一事实来源。
-> 当前共享规则与治理口径请优先遵循 `architecture/STANDARDS.md`；执行流程、命令与协作约束再结合根目录 `AGENTS.md`，并与当前代码、主线任务系统及验证结果一并核对。
->
-> 文内步骤、范围、状态或说明如未重新复核，应按其所属上下文理解，不得直接当作跨场景通用事实。
+MyStocks 是一个面向 A 股量化研究、监控、分析与交易辅助的桌面端 Web 平台，采用 `Vue 3 + FastAPI + ArtDeco` 的前后端分离架构，并以功能树、测试门禁和文档真相源分层来管理持续演进。
 
+> 平台约束：仅支持桌面端 Web，默认不为移动端或平板提供适配。
 
-**创建人**: JohnC & Claude
-**版本**: 3.2.1 (Code Quality)
-**批准日期**: 2026-02-23
-**最后修订**: 2026-03-14
-**本次修订内容**: `Maestro` 下一代 MongoDB Multi-CLI 协作控制面已在本项目内打通最小闭环（control-plane + runtime wiring + status API + smoke verification）
-
----
-
-## 🧭 MongoDB Multi-CLI Coordination（Maestro vNext）
-
-`MongoDB Multi-CLI Coordination` 当前被定义为 `Maestro` 体系下的下一代协作控制面，而不是平行新系统。
-
-当前已落地能力：
-- `maestro.collab` 的 Mongo control-plane：`work_items`、`work_updates`、`work_requests`、`work_events`、`worker_status_views`
-- `Symphony` runtime 支持 `sqlite / mongo / dual-write` 三种 collab backend
-- `tracker.kind == mongo` 时，runtime 可直接从 Mongo `work_items` 调度
-- runtime 事件会自动回写 control-plane 状态
-- `/api/v1/state` 已包含 `control_plane` 摘要段
-- `scripts/runtime/smoke_mongo_multicli.py` 已可做真实 Mongo smoke 验证
-
-关键入口：
-- 操作手册：`docs/guides/multi-cli-tasks/MONGO_MULTICLI_COORDINATION_GUIDE.md`
-- 设计文档：`docs/plans/2026-03-13-mongodb-multicli-coordination-design.md`
-- 实施计划：`docs/plans/2026-03-13-mongodb-multicli-coordination-implementation-plan.md`
-- 进展报告：`docs/reports/MONGODB_MULTICLI_COORDINATION_PROGRESS_2026-03-14.md`
-- 功能映射：`docs/overview/FUNCTION_MAP.md`
-
-快速验证：
-
-```bash
-# 定向回归
-pytest tests/unit/services/symphony/test_config.py \
-  tests/unit/services/symphony/test_tracker_factory.py \
-  tests/unit/services/symphony/test_mongo_tracker.py \
-  tests/unit/services/symphony/test_mongo_runtime_flow.py \
-  tests/unit/services/symphony/test_orchestrator.py \
-  tests/unit/services/symphony/test_workspace_manager.py \
-  tests/unit/services/symphony/test_status_api.py \
-  tests/unit/services/symphony/test_maestro_collab_cli.py \
-  tests/unit/services/symphony/test_maestro_namespace.py \
-  tests/unit/services/symphony/test_collab_backend_selection.py \
-  tests/unit/maestro_collab \
-  tests/unit/runtime/test_maestro_coordination_cli.py \
-  tests/unit/runtime/test_collab_migration_scripts.py \
-  tests/unit/runtime/test_smoke_mongo_multicli.py \
-  -q -o addopts=''
-
-# 真实 Mongo smoke（支持自动加载项目根目录 .env）
-python scripts/runtime/smoke_mongo_multicli.py
-```
-
-当前验证状态：
-- 定向回归：`77 passed`
-- 真实 Mongo smoke：通过
-
----
-
-## 🔒 Git Worktree 多 CLI 协作强制规则（v3.2）
-
-凡使用 Git Worktree 进行多 CLI 协作（Claude/Codex/Gemini/OpenCode 等），**必须**遵守以下统一规则文档：
-
-- 规则总纲（唯一入口）：`.multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md`
-- 主 CLI 规范：`.multi-cli-tasks/guides/MAIN_CLI_WORKFLOW.md`
-- Worker CLI 规范：`.multi-cli-tasks/guides/WORKER_CLI_GUIDE.md`
-
-关键门禁：
-- `main` 只做协调与验收，不直接做功能开发
-- 新功能统一在 `worktree/dev-*` 分支开发
-- 每个 worktree 分支都必须提交 PR 到 `main`
-- PR 必须附：变更范围、验证命令与结果、风险与回滚说明
-- 合并门禁必须全部通过：质量门（TS/Python/tests）、安全门（secrets/audit/SAST）、审查门（code review）
-- `main` 仅保留“干净、可复现、可回滚”的版本
-
----
-
-## ✅ 2026-03-03 前端页面优化清单收口（审批通过）
-
-**核心目标**: 将 `docs/plans/frontend-page-optimization-list.md` 从“人工维护清单”升级为“可审计、可门禁、可复核”的执行基线。
-
-**重点落地**:
-- ✅ **清单口径统一**: 固化 34 条页面范围，补齐数据状态/API状态列，纳入 V3 策略优先级说明  
-  文档: `docs/plans/frontend-page-optimization-list.md`
-- ✅ **审阅闭环文档**: 形成结构化审阅与收口证据归档  
-  文档: `docs/plans/2026-03-02-frontend-page-optimization-list-review.md`
-- ✅ **自动审计脚本**: 新增 `scripts/dev/frontend_optimization_audit.py`，支持 `--strict` 校验路由-组件映射与已校验API端点
-- ✅ **测试覆盖**: 新增脚本单测 `scripts/tests/test_frontend_optimization_audit.py`（9个测试）
-- ✅ **CI 门禁接入**: `frontend-testing.yml` 新增 `frontend-optimization-audit` 作业，自动产出审计报告工件
-- ✅ **导航与E2E补强**:
-  - `MenuConfig.ts` 补齐 `/strategy/parameters`、`/strategy/signals`
-  - `comprehensive-all-pages.spec.ts` 增强可见性与健康结构校验
-- ✅ **门禁脚本稳健化**:
-  - `scripts/run_e2e_pm2.sh` 修复 `pm2 delete all` 非零退出导致的误失败
-  - `ecosystem.test.config.js` 补齐 `BACKEND_BACKUP_PORT` 等兼容环境变量
-- ✅ **V3 mock-debt 收口完成**:
-  - `#11/#14/#15/#18/#22/#28` 均已移除 mock/随机回退，统一为 REAL API + 空态处理
-- ✅ **V3 mixed 页面继续收口**:
-  - `#13 Strategy-Repo` 已移除 mock 回退并改为空态策略，页面写操作不再受 mock 状态禁用
-  - `#16 Strategy-Backtest` 已移除 `VITE_USE_MOCK_DATA` 驱动的 mock 基线，切换为 REAL 空态基线
-  - `#6 Data-Industry` 已移除 mock 回退，统一使用 REAL 数据解析与空态策略
-  - `#23/#27 Trade-Portfolio/Risk-PnL` 已移除组件内模拟持仓注入，统一使用 REAL API + 空态策略
-  - `#20/#24 Trade-Positions/Trade-History` 已改为路由页直连 REAL API + 空态策略
-
-**验收结果（2026-03-03 实跑）**:
-- `npm --prefix web/frontend run type-check` → 通过（`vue-tsc --noEmit`）
-- `bash scripts/run_e2e_pm2.sh` → `8 passed`（exit `0`）
-- `python scripts/dev/frontend_optimization_audit.py --repo-root . --strict --report-file reports/analysis/frontend-page-optimization-audit-report.md`  
-  → `component_issues=0`，`verified_api_issues=0`
-- PM2 服务已恢复并在线: `mystocks-backend`、`mystocks-frontend`
-- 运行端口真值（审批备注）: Frontend `3020` / Backend `8020`（`8000` 不通为预期）
-
----
-
-## 📊 2026-02-23 代码清单扫描工具上线
-
-**核心改进**: 创建自动化代码清单扫描工具，监控代码复杂度与Mock数据使用。
-
-**主要成果**:
-- ✅ **扫描工具**: 创建 `src/monitoring/code_inventory/` 模块，支持扫描代码行数和Mock数据使用
-- ✅ **CLI工具**: 支持 `--help`, `--check-env`, `--check-mock-only`, `--scan-dirs` 等命令
-- ✅ **Markdown报告**: 自动生成扫描报告并保存到 `reports/code_inventory_report_*.md`
-- ✅ **Mock治理**: 扫描发现80个使用Mock的文件，其中20个为error级别（需关注）
-- ✅ **环境验证**: 支持REAL/MOCK模式验证，检查配置一致性
-
-**扫描结果**:
-- 总文件数: 4,940
-- 总代码行数: 1,042,764
-- 超过阈值文件: 61（主要是第三方库，无需处理）
-- 使用Mock文件: 80
-
-**核心原则**: **定期扫描，主动治理，文档驱动**
-
-扫描报告：[reports/code_inventory_report_20260223.md](./reports/code_inventory_report_20260223.md)
-
-**使用指引**：[src/monitoring/code_inventory/README.md](./src/monitoring/code_inventory/README.md)
-
----
-
-## 🔒 2026-02-09 安全加固完成
-
-**核心改进**: 修复 12 个安全/代码质量问题，增强多 Worker 环境下的安全性。
-
-**主要成果**:
-- ✅ **CORS 白名单**: `allow_origins=["*"]` → `settings.cors_origins`（环境变量驱动）
-- ✅ **SQL 注入防护**: TDengine 查询增加输入验证（symbol/datetime 格式校验）
-- ✅ **Redis 持久化**: CSRF token 和 revoked token 迁移到 Redis（支持多 Worker 共享 + 重启恢复）
-- ✅ **敏感日志清理**: 移除密码/token 明文日志
-- ✅ **死代码清理**: 删除 65 行不可达代码
-- ✅ **默认 LIMIT**: TDengine 查询增加 `DEFAULT_QUERY_LIMIT=10000` 防止无界查询
-
-**安全原则**: **Redis 共享状态，输入验证优先，最小权限**
-
-详细报告：[docs/api/security-remediation-report.md](./docs/api/security-remediation-report.md)
-
----
-
-## 🏗️ 2026-02-08 架构重构与收敛完成
-
-**核心改进**: 彻底解决配置碎片化与路径不一致问题，建立严谨的域边界。
-
-**主要成果**:
-- ✅ **配置收敛**: 所有 `playwright` 和 `pm2` 配置文件统一收敛至 `config/` 专用子目录。
-- ✅ **域边界定义**: 在 `architecture/DOMAIN_BOUNDARIES.md` 中确立 5 大核心域架构。
-- ✅ **API 标准化**: `main.py` 路由注册完全基于 `VERSION_MAPPING.py` 动态加载，确保 API 路径 100% 对齐。
-- ✅ **根目录清理**: 清理了所有 `.backup`, `.bak` 及临时中间文件，根目录文件规范化为 re-export 外壳。
-
-**架构原则**: **职责分离，配置集中，路径标准**
-
-详细规范请参阅：[architecture/DOMAIN_BOUNDARIES.md](./architecture/DOMAIN_BOUNDARIES.md)
-
----
-
-## ⚡ Week 3 重大更新 (2025-10-19)
-
-**数据库架构简化**: 4数据库 → 2数据库 (TDengine + PostgreSQL)
-
-**简化成果**:
-- ✅ MySQL数据迁移到PostgreSQL（18张表，299行数据）
-- ✅ **TDengine保留**: 专用于高频时序数据（tick/分钟线）
-- ✅ **PostgreSQL**: 处理所有其他数据类型（含TimescaleDB扩展）
-- ✅ Redis移除（配置的db1为空）
-- ✅ 系统复杂度降低50%
-
-**核心原则**: **专库专用，简洁胜于过度复杂**
-
-详细评估请参阅：[docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
-
----
-
-## 📋 Phase 2 前端优化完成 (2026-01-23)
-
-**统一配置系统实施**: 创建集中化页面配置，避免硬编码
-
-**实施成果**:
-- ✅ 创建 `src/config/pageConfig.ts` 统一配置对象（8个路由）
-- ✅ 创建完整使用指南 `docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md`
-- ✅ 创建架构文档索引 `docs/architecture/README.md`
-- ✅ TypeScript类型安全（编译时检查）
-- ✅ 零技术债务（无新增编译错误）
-
-**核心优势**:
-- 类型安全的配置访问（防止拼写错误）
-- 集中管理API端点和WebSocket频道
-- 易于维护（单点配置变更）
-- 为组件迁移提供完整指南
-
-**架构定位**:
-- Phase 1: 路由系统修复 ✅ 已完成（认证、规范化）
-- Phase 2: 统一配置系统 ✅ 已完成（配置对象、文档、示例）
-- Phase 3: WebSocket解耦 ✅ 已完成（自动订阅、解耦、示例）
-
-详细文档：[docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md](./docs/architecture/PAGE_CONFIG_USAGE_GUIDE.md)
-
----
-
-## 🌐 Phase 3 WebSocket解耦完成 (2026-01-23)
-
-**WebSocket订阅逻辑解耦**: 基于统一配置自动订阅，无硬编码频道名
-
-**实施成果**:
-- ✅ 创建 `useWebSocketWithConfig.ts` 基于配置的WebSocket管理器
-- ✅ 实现自动订阅功能（`subscribeByRoute`）
-- ✅ 解耦WebSocket与路由的耦合（无硬编码）
-- ✅ 创建完整使用示例（`WebSocketConfigExample.vue`）
-- ✅ TypeScript类型安全（零新错误）
-
-**核心功能**:
-- **按路由订阅**: `subscribeByRoute('market-realtime', callback)` - 自动从配置读取频道
-- **自动订阅当前路由**: `autoSubscribeByCurrentRoute(routeName, callback)` - 路由变化自动订阅
-- **批量订阅**: `subscribeAllWebSocketRoutes(callback)` - 一次性订阅所有需要WebSocket的路由
-- **类型安全**: 使用 `RouteName` 类型，编译时检查错误
-
-**架构优势**:
-- 无硬编码频道名（所有频道配置在 `PAGE_CONFIG`）
-- 集中管理（修改频道名仅需改配置文件）
-- 自动化（路由变化自动订阅/取消订阅）
-- 类型安全（编译时防止配置错误）
-
-**对比**:
-```typescript
-// ❌ 之前：硬编码频道
-ws.emit('subscribe', 'market:realtime')
-
-// ✅ 现在：从配置读取
-const config = PAGE_CONFIG['market-realtime']
-ws.emit('subscribe', config.wsChannel)
-```
-
-详细文档：[src/composables/examples/README.md](./web/frontend/src/composables/examples/README.md)
-
----
-
-[![Version](https://img.shields.io/badge/version-3.0.0-blue.svg)](./CHANGELOG.md)
-[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://python.org)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109%2B-green.svg)](https://fastapi.tiangolo.com)
+[![Python](https://img.shields.io/badge/python-3.12%2B-blue.svg)](https://python.org)
 [![Vue](https://img.shields.io/badge/Vue-3.4%2B-brightgreen.svg)](https://vuejs.org)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.114%2B-green.svg)](https://fastapi.tiangolo.com)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-## 🤖 OMC 使用与模型配置
+## 快速导航
 
-本项目已接入 **oh-my-claudecode (OMC)**，并将模型路由与 team member 模型选择统一纳入：
-- 模型目录：`/opt/claude/mystocks_spec/.config/opencode/model/model-catalog.json`
-- 项目 OMC 配置：`/opt/claude/mystocks_spec/.claude/omc.jsonc`
+- [项目概览](#项目概览)
+- [功能亮点](#功能亮点)
+- [关键文档入口与真相源](#关键文档入口与真相源)
+- [技术栈](#技术栈)
+- [快速开始](#快速开始)
+- [开发流程与治理方法](#开发流程与治理方法)
+- [测试与质量门禁](#测试与质量门禁)
+- [部署与运行](#部署与运行)
+- [配置说明](#配置说明)
+- [项目结构](#项目结构)
+- [ArtDeco 设计系统](#artdeco-设计系统)
+- [Kronos AI 推理集成](#kronos-ai-推理集成)
+- [FAQ 与健康检查](#faq-与健康检查)
+- [贡献与标准](#贡献与标准)
+- [历史背景](#历史背景)
+- [许可证](#许可证)
 
-### 快速用法
+## 项目概览
+
+MyStocks 不是单一的行情页面或单一的后端接口集合，而是一套围绕量化交易工作流组织起来的工程系统：
+
+- 以前后端分离方式提供市场数据、技术分析、策略管理、风险监控与系统治理能力。
+- 以前端 ArtDeco 设计系统统一金融终端视觉语言，而不是继续扩散旧 UI 组件风格。
+- 以 `FUNCTION_TREE` 路由业务能力，以 `STANDARDS` 管审批和工程红线，以测试门禁和 PR 证据闭环保证交付质量。
+- 以“先路由、再下钻”的文档方法降低新人和 AI 在大型仓库中的搜索成本。
+
+## 功能亮点
+
+- 多数据源量化数据平台：整合 TDX、AKShare、EFinance、BaoStock 等多类市场与参考数据源。
+- 桌面端交易分析终端：覆盖行情、技术分析、策略、风控、监控、自选股和系统管理等主要业务域。
+- 双数据库分工：`TDengine` 承担高频时序数据，`PostgreSQL/TimescaleDB` 承担结构化与分析型数据。
+- ArtDeco 金融设计系统：统一 token、组件、布局与视觉治理，降低页面风格漂移。
+- 分层测试门禁：前端类型检查、Vitest、Playwright、PM2 冒烟、后端 Pytest 分层执行。
+- 规范化治理链路：功能树、任务路由、OpenSpec、PR 模板和验证证据形成协作闭环。
+
+## 关键文档入口与真相源
+
+### 真相源分层
+
+| 类别 | 当前入口 | 用途 |
+|------|----------|------|
+| 业务能力真相源 | [docs/FUNCTION_TREE.md](./docs/FUNCTION_TREE.md) | 按功能域定位状态、模块路径、API 前缀、规范/测试/运行入口 |
+| 流程治理真相源 | [architecture/STANDARDS.md](./architecture/STANDARDS.md) / [openspec/AGENTS.md](./openspec/AGENTS.md) | 审批门禁、工程红线、Proposal/Spec 工作流 |
+| 任务路由入口 | [docs/guides/ai-tools/AI_QUICK_START.md](./docs/guides/ai-tools/AI_QUICK_START.md) | 按任务类型决定先读什么、再跳到哪个功能域 |
+| 文档导航入口 | [docs/INDEX.md](./docs/INDEX.md) | 从文档系统入口快速定位 active guides |
+| 变更交付真相源 | [docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md](./docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md) / [.github/pull_request_template.md](./.github/pull_request_template.md) | 功能域映射、入口同步规则、PR 校验与验证证据 |
+
+### 推荐阅读顺序
+
+1. 先看 [docs/guides/ai-tools/AI_QUICK_START.md](./docs/guides/ai-tools/AI_QUICK_START.md)
+2. 再进入 [docs/FUNCTION_TREE.md](./docs/FUNCTION_TREE.md) 的目标功能域
+3. 涉及规则与审批时，回到 [architecture/STANDARDS.md](./architecture/STANDARDS.md)
+4. 涉及 proposal、spec、能力新增或架构调整时，再读 [openspec/AGENTS.md](./openspec/AGENTS.md)
+
+### 模块文档说明
+
+- [docs/standards/PROJECT_MODULES.md](./docs/standards/PROJECT_MODULES.md) 可以保留为模块清单参考。
+- 该文档目前仍含旧口径，例如 `Element Plus` 与旧目录命名，不应作为当前模块事实源。
+- 当前模块与业务能力判断，应优先回到 [docs/FUNCTION_TREE.md](./docs/FUNCTION_TREE.md) 和实际代码入口。
+
+### 不作为现行真相源
+
+- 历史报告、archive、demo、一次性完成报告默认不作为当前运行状态、当前门禁口径或当前功能完成度的真相源。
+- 这些文档可以作为背景、审计证据或里程碑记录，但引用时必须保留日期和上下文。
+
+## 技术栈
+
+| 层 | 技术 |
+|---|------|
+| 前端 | Vue 3、TypeScript、Vite、Pinia、Vue Router、ECharts、ArtDeco |
+| 后端 | Python 3.12+、FastAPI、Pydantic、SQLAlchemy |
+| 数据库 | PostgreSQL 17+、TimescaleDB、TDengine 3.3+ |
+| 测试 | Vitest、Playwright、Pytest |
+| 部署 | PM2、Docker、环境变量驱动配置 |
+| AI 集成 | Kronos 外部 GPU 推理服务，采用 contract-first 集成方式 |
+
+## 快速开始
+
+### 环境要求
+
+- Python `3.12+`
+- Node.js `18+`
+- PostgreSQL `17+`
+- TimescaleDB
+- TDengine `3.3+`（可选，用于高频时序数据）
+
+### 安装依赖
 
 ```bash
-# 初始化/更新 OMC（项目级）
-/oh-my-claudecode:omc-setup --local
-
-# 启动 Claude 原生 Team（推荐）
-/team 2:executor "实现 signals 和 strategy 管理链路"
-
-# 启动 tmux CLI workers（Codex/Gemini/Claude）
-/omc-teams 2:codex "review strategy module"
-```
-
-### 模型同步（脚本化，避免手工改错）
-
-```bash
-# 1) 先同步 OpenCode/OMO 配置（基于 model-catalog.json）
-python3 /opt/claude/mystocks_spec/scripts/opencode/sync_opencode_model_catalog.py
-
-# 2) 再同步 OMC 模型路由与 team member 映射
-python3 /opt/claude/mystocks_spec/scripts/opencode/sync_omc_model_catalog.py
-
-# 可选：同时写入用户级 OMC 配置
-python3 /opt/claude/mystocks_spec/scripts/opencode/sync_omc_model_catalog.py --write-user-config
-```
-
-### 当前生效模型配置（来源：`omo_agents`）
-
-- Tier 路由
-  - `LOW`: `fucai/grok-4.20-beta`
-  - `MEDIUM`: `fucai-gpt/gpt-5.3-codex`
-  - `HIGH`: `fucai-claude/claude-opus-4-6`
-- Team member 映射
-  - `omc` / `planner` / `coordinator` -> `fucai-claude/claude-opus-4-6`
-  - `architect` / `critic` / `analyst` / `executor` -> `fucai-gpt/gpt-5.3-codex`
-  - `researcher` / `document-specialist` -> `fucai-claude/claude-opus-4-5`
-  - `explore` -> `fucai/grok-4.20-beta`
-  - `frontendEngineer` / `documentWriter` -> `fucai-gpt/gpt-5.3`
-  - `multimodalLooker` -> `fucai/grok-4-heavy`
-
-### OMC 文档
-
-- OMC 官方 README: <https://github.com/Yeachan-Heo/oh-my-claudecode/blob/main/README.md>
-- 项目内 OMC 指令集: `/root/.claude/CLAUDE.md`
-- 本项目 OMC 使用与故障排查（含 `Team "omc" does not exist`）:
-  [`docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md`](docs/guides/ai-tools/OMC_WORKFLOW_GUIDE.md)
-
-MyStocks 是一个专业的量化交易数据管理系统和 Web 管理平台，采用科学的数据分类体系和智能路由策略，实现多数据库协同工作。系统基于适配器模式和工厂模式构建统一的数据访问层，提供配置驱动的自动化管理，确保数据的高效存储、快速查询和实时监控。
-
-**最新特性 (ValueCell Migration)**:
-- ✅ **Phase 1**: 实时监控和告警系统（龙虎榜、资金流向、自定义规则）
-- ✅ **Phase 2**: 增强技术分析系统（26个技术指标、交易信号生成）
-- ✅ **Phase 3**: 多数据源集成系统（优先级路由、自动故障转移、公告监控）
-
-## 🎯 核心特点
-
-### 🌐 现代化 Web 管理平台
-基于 FastAPI + Vue 3 的全栈架构，提供直观的可视化管理界面：
-- **FastAPI 后端**: 高性能异步 API，支持 WebSocket 实时推送
-- **Vue 3 前端**: Element Plus UI 组件库，响应式设计
-- **RESTful API**: 完整的 API 文档（Swagger/OpenAPI）
-- **实时监控**: 龙虎榜、资金流向、告警通知实时展示
-- **技术分析**: 26个技术指标可视化，交易信号图表
-- **多数据源**: 数据源健康监控、优先级配置、故障转移管理
-
-### 🤖 ValueCell 多智能体系统迁移
-从 ValueCell 项目迁移的核心功能，实现专业的量化交易支持：
-- **实时监控系统** (Phase 1): 7种告警规则类型，龙虎榜跟踪，资金流向分析
-- **增强技术分析** (Phase 2): 26个专业技术指标，4大类别（趋势、动量、波动、成交量）
-- **多数据源集成** (Phase 3): 优先级路由、自动故障转移、官方公告监控（类似SEC Agent）
-
-### 📊 双数据库存储策略 (Week 3后)
-基于数据特性和访问频率的专业化存储方案：
-- **高频时序数据** (Tick/分钟线) → TDengine（极致压缩比20:1，超强写入性能）
-- **历史K线数据** (日线/周线/月线) → PostgreSQL + TimescaleDB扩展（复杂时序查询）
-- **参考数据** (股票信息、交易日历) → PostgreSQL标准表（从MySQL迁移299行）
-- **衍生数据** (技术指标、量化因子) → PostgreSQL标准表（AI/ML计算结果）
-- **交易数据** (订单、成交、持仓) → PostgreSQL标准表（ACID事务保证）
-- **监控数据** → PostgreSQL独立schema（系统运维监控）
-
-### 🔧 智能的数据调用与操作方法
-提供统一、简洁的数据访问接口，自动处理底层复杂性：
-- **统一接口规范**: 一套API访问所有数据库
-- **自动路由策略**: 根据数据类型智能选择存储引擎
-- **配置驱动管理**: YAML配置自动创建表结构
-- **实时数据缓存**: 热数据毫秒级访问
-- **批量操作优化**: 高效的数据读写策略
-
-### 🏗️ 先进的数据流与调用方案
-采用现代软件工程设计模式，实现高效的多源数据管理：
-- **适配器模式**: 统一不同数据源的访问接口
-- **工厂模式**: 动态创建和管理数据源实例
-- **策略模式**: 灵活的数据存储和查询策略
-- **观察者模式**: 实时监控和告警机制
-
-## 📊 一、数据分类与存储策略
-
-### 5大数据分类体系
-基于数据特性、访问频率和使用场景的科学分类，确保每类数据都能获得最优的存储和查询性能：
-
-#### 第1类：市场数据 (Market Data)
-**特点**: 高频时序数据，写入密集，时间范围查询
-- **Tick数据** → **TDengine** (超高频实时处理，毫秒级延迟)
-- **分钟K线** → **TDengine** (高频时序存储，20:1压缩比)
-- **日线数据** → **PostgreSQL + TimescaleDB** (历史分析，复杂查询)
-- **深度数据** → **TDengine** (实时订单簿，列式存储)
-
-#### 第2类：参考数据 (Reference Data)
-**特点**: 相对静态，关系型结构，频繁JOIN操作
-- **股票信息** → **PostgreSQL** (基础信息，从MySQL迁移)
-- **成分股信息** → **PostgreSQL** (指数成分股，支持JSON)
-- **交易日历** → **PostgreSQL** (交易日、节假日，ACID保证)
-
-#### 第3类：衍生数据 (Derived Data)
-**特点**: 计算密集，时序分析，复杂查询
-- **技术指标** → **PostgreSQL + TimescaleDB** (复杂计算结果，自动分区)
-- **量化因子** → **PostgreSQL + TimescaleDB** (因子计算，物化视图)
-- **模型输出** → **PostgreSQL + TimescaleDB** (AI/ML结果，JSON支持)
-- **交易信号** → **PostgreSQL + TimescaleDB** (策略信号，触发器支持)
-
-#### 第4类：交易数据 (Transaction Data)
-**特点**: 事务完整性要求高，需要ACID保证
-- **订单记录** → **PostgreSQL** (完整事务日志，持久化存储)
-- **成交记录** → **PostgreSQL** (历史交易数据，复杂关联查询)
-- **持仓记录** → **PostgreSQL** (持仓历史，审计追踪)
-- **账户状态** → **PostgreSQL** (账户管理，强一致性保证)
-
-#### 第5类：元数据 (Meta Data)
-**特点**: 配置管理，系统状态，结构化存储
-- **数据源状态** → **PostgreSQL** (数据源管理，从MySQL迁移)
-- **任务调度** → **PostgreSQL** (定时任务配置，JSON存储)
-- **策略参数** → **PostgreSQL** (策略配置，版本控制)
-- **系统配置** → **PostgreSQL** (系统设置，集中管理)
-
-### 数据库分工与存储方案 (Week 3简化后)
-
-| 数据库 | 专业定位 | 适用数据 | 核心优势 |
-|--------|----------|----------|----------|
-| **TDengine** | 高频时序数据专用库 | Tick数据、分钟K线、实时深度 | 极高压缩比(20:1)、超强写入性能、列式存储 |
-| **PostgreSQL + TimescaleDB** | 通用数据仓库+分析引擎 | 日线K线、技术指标、量化因子、参考数据、交易数据、元数据 | 自动分区、复杂查询、ACID事务、JSON支持 |
-
-**说明**:
-- ✅ **TDengine**: 专注高频市场数据（毫秒级Tick、分钟K线），极致压缩和写入性能
-- ✅ **PostgreSQL**: 处理所有其他数据类型，TimescaleDB扩展提供时序优化
-- ❌ **MySQL已移除**: 所有参考数据和元数据已迁移至PostgreSQL（299行数据）
-- ❌ **Redis已移除**: 配置的db1为空，未在生产环境使用
-
-## 🔧 二、数据调用与操作方法
-
-### 统一接口规范
-所有数据操作都通过统一的接口进行，隐藏底层数据库差异：
-
-```python
-from unified_manager import MyStocksUnifiedManager
-from core import DataClassification
-
-# 创建统一管理器
-manager = MyStocksUnifiedManager()
-
-# 自动路由保存 - 系统自动选择最优数据库
-manager.save_data_by_classification(data, DataClassification.TICK_DATA)     # → TDengine (高频时序)
-manager.save_data_by_classification(data, DataClassification.SYMBOLS_INFO)  # → PostgreSQL (参考数据)
-manager.save_data_by_classification(data, DataClassification.DAILY_KLINE)   # → PostgreSQL + TimescaleDB (日线数据)
-
-# 智能查询 - 统一语法，自动优化
-data = manager.load_data_by_classification(
-    DataClassification.DAILY_KLINE,
-    filters={'symbol': '600000', 'date': '>2024-01-01'},
-    order_by='date DESC',
-    limit=1000
-)
-```
-
-### 数据更新策略
-支持多种数据更新模式，适应不同业务场景：
-
-- **增量更新**: 只同步新增和变更的数据
-- **批量更新**: 高效的大量数据批量处理
-- **实时更新**: 毫秒级的实时数据推送
-- **定时更新**: 自动化的定期数据同步
-
-### 数据流工作流程 (Week 3简化后)
-
-```mermaid
-graph TD
-    A[数据源] --> B[适配器层]
-    B --> C[统一管理器]
-    C --> D{数据分类识别}
-    D -->|高频市场数据<br/>Tick/分钟线| E[TDengine]
-    D -->|日线K线| F[PostgreSQL<br/>TimescaleDB]
-    D -->|参考数据| F
-    D -->|衍生数据<br/>技术指标/因子| F
-    D -->|交易数据<br/>订单/持仓| F
-    D -->|元数据<br/>系统配置| F
-    J[监控系统] --> K[PostgreSQL<br/>独立schema]
-    C --> J
-
-    style E fill:#ff9999
-    style F fill:#99ccff
-    style K fill:#ccffcc
-```
-
-### 数据缓存方法 (Week 3简化后)
-
-#### 两层缓存架构
-1. **L1缓存**: 应用层缓存 (微秒级访问，Python字典/LRU缓存)
-2. **L2缓存**: 数据库查询缓存 (毫秒级访问，PostgreSQL查询缓存/TDengine内存优化)
-
-**说明**: Redis缓存层已移除，应用层缓存通过Python内置cachetools和functools.lru_cache实现
-
-#### 智能缓存策略
-- **热点数据预加载**: 自动识别并预加载热点数据到应用层缓存
-- **LRU自动淘汰**: 最近最少使用数据自动清理 (cachetools.LRUCache)
-- **分级缓存更新**: 根据数据重要性设置不同的更新频率和TTL
-
-## 🏗️ 三、数据流与调用方案
-
-### 数据源整合的核心设计模式
-
-#### 适配器模式 (Adapter Pattern)
-统一不同数据源的访问接口，屏蔽底层API差异：
-
-```python
-# 所有数据源都实现统一接口
-class IDataSource:
-    def get_stock_daily(self, symbol, start_date, end_date): pass
-    def get_real_time_data(self, symbol): pass
-
-# 不同数据源的适配器实现
-class AkshareAdapter(IDataSource): ...
-class TushareAdapter(IDataSource): ...
-class FinancialAdapter(IDataSource): ...
-```
-
-#### 工厂模式 (Factory Pattern)
-动态创建和管理数据源实例，支持运行时切换：
-
-```python
-# 工厂类根据配置创建相应的数据源
-class DataSourceFactory:
-    @staticmethod
-    def create_data_source(source_type: str) -> IDataSource:
-        if source_type == 'akshare':
-            return AkshareAdapter()
-        elif source_type == 'tushare':
-            return TushareAdapter()
-        # 支持运行时动态扩展
-```
-
-#### 策略模式 (Strategy Pattern)
-灵活的数据存储和查询策略，根据数据特性自动优化：
-
-```python
-class DataStorageStrategy:
-    # 数据分类到数据库的智能映射（Week 3简化后 - 仅2数据库）
-    CLASSIFICATION_TO_DATABASE = {
-        # 高频时序数据 → TDengine
-        DataClassification.TICK_DATA: DatabaseTarget.TDENGINE,
-        DataClassification.MINUTE_KLINE: DatabaseTarget.TDENGINE,
-
-        # 所有其他数据 → PostgreSQL
-        DataClassification.DAILY_KLINE: DatabaseTarget.POSTGRESQL,
-        DataClassification.SYMBOLS_INFO: DatabaseTarget.POSTGRESQL,
-        DataClassification.FINANCIAL_DATA: DatabaseTarget.POSTGRESQL,
-        DataClassification.TECHNICAL_INDICATORS: DatabaseTarget.POSTGRESQL,
-        DataClassification.TRADING_ORDERS: DatabaseTarget.POSTGRESQL,
-    }
-```
-
-#### 观察者模式 (Observer Pattern)
-实时监控和告警机制，自动响应系统状态变化：
-
-```python
-# 监控系统自动观察所有数据库操作
-class MonitoringDatabase:
-    def log_operation_start(self, operation_details): ...
-    def log_operation_result(self, success, metrics): ...
-
-# 告警管理器响应异常情况
-class AlertManager:
-    def create_alert(self, level, title, message): ...
-```
-
-### 高效管理多源数据
-
-#### 数据源负载均衡
-- **主备切换**: 主数据源失败时自动切换到备用源
-- **并发控制**: 智能控制API调用频率，避免超限
-- **错误重试**: 指数退避重试机制，提高成功率
-
-#### 数据质量保证
-- **实时验证**: 数据写入时进行格式和范围检查
-- **异常检测**: 基于统计学的异常值自动识别
-- **数据修复**: 自动修复常见的数据质量问题
-
-## 📋 四、系统架构概览
-
-### 🗂️ 项目目录结构 (2026-02-13 二次重组)
-
-**项目已完成二次全面重组**: 从87个根目录+50个根文件精简到11个目录+18个根文件，释放~237GB磁盘空间。
-
-#### 📁 根目录 (入口点外壳)
-```
-mystocks_spec/
-├── README.md                 # 项目主文档 (本文件)
-├── CLAUDE.md                 # Claude Code集成指南
-├── IFLOW.md                  # 工作流指令
-├── AGENTS.md                 # AI Agent协作指南
-├── requirements.txt          # Python依赖清单
-├── pyproject.toml            # Python项目配置
-├── package.json              # Monorepo根级工具配置 (playwright/vitest)
-├── vitest.config.mts         # Vitest测试配置
-├── mypy.ini                  # MyPy类型检查配置
-├── pytest.ini                # Pytest测试配置
-├── core.py                   # 核心模块入口点 (Re-export → src.core)
-├── data_access.py            # 数据访问入口点 (Re-export → src.data_access)
-├── monitoring.py             # 监控模块入口点 (Re-export → src.monitoring)
-├── unified_manager.py        # 统一管理器入口点 (Re-export → src.core)
-├── conftest.py               # Pytest全局配置
-├── __init__.py               # Python包标识
-├── LICENSE                   # MIT许可证
-├── docker-compose.*.yml      # → docker/ 的符号链接
-└── monitoring-stack.yml      # → docker/ 的符号链接
-```
-
-#### 📂 主要目录组织
-
-```
-mystocks_spec/
-├── src/                      # 📦 核心业务逻辑 (Single Source of Truth)
-│   ├── adapters/            # 数据源适配器
-│   ├── core/                # 核心管理类 (数据分类、路由策略)
-│   ├── data_access/         # 数据库访问层 (TDengine/PostgreSQL)
-│   ├── monitoring/          # 监控和告警
-│   ├── storage/             # 存储层基础设施
-│   ├── services/            # 业务服务层
-│   └── utils/               # 工具函数
-│
-├── web/                      # 🌐 Web 应用层
-│   ├── backend/             # FastAPI 后端 (API V1 标准化)
-│   └── frontend/            # Vue 3 前端 (Pinia + Vite)
-│
-├── config/                   # ⚙️ 配置文件 (集中收敛)
-│   ├── docker/              # Docker Compose 配置
-│   ├── monitoring-stack/    # 监控栈 (Grafana/Prometheus/Loki)
-│   ├── playwright/          # E2E 测试配置
-│   └── pm2/                 # 进程管理配置
-│
-├── architecture/             # 🏛️ 架构定义与域边界
-├── docs/                     # 📚 文档库 (guides/api/architecture/reports)
-├── scripts/                  # 🔧 维护与开发工具脚本
-├── tests/                    # 🧪 测试代码库
-├── data/                     # 💾 本地数据与模型
-├── reports/                  # 📊 生成的分析报告
-├── openspec/                 # 📋 OpenSpec 变更管理
-└── archived/                 # 🗄️ 归档目录 (已完成的工具/旧代码)
-```
-
-#### 🔑 重要变更说明
-
-**1. 统一导入路径** (2025-11-09):
-```python
-# ✅ 新的标准导入路径 (重组后)
-from src.core import ConfigDrivenTableManager
-from src.adapters.akshare_adapter import AkshareDataSource
-from src.data_access.tdengine_access import TDengineDataAccess
-from src.db_manager import DatabaseTableManager  # 兼容层
-
-# ❌ 旧的导入路径 (已废弃)
-from core import ConfigDrivenTableManager
-from adapters.akshare_adapter import AkshareDataSource
-```
-
-**2. 兼容层设计**:
-- `src/db_manager/` 是兼容层,实际代码在 `src/storage/database/`
-- 保证平滑过渡,旧导入路径仍然有效
-
-**3. 入口点文件**:
-根目录的 `.py` 文件 (`core.py`, `data_access.py`, `monitoring.py`, `unified_manager.py`) 是入口点文件:
-- 提供向后兼容性
-- 可作为快速访问点
-- 内部导入自 `src.*`
-
-**4. Git历史完整保留**:
-- 所有文件移动使用 `git mv` 命令
-- 完整保留了文件的Git历史记录
-- 可追溯每个文件的完整演进历史
-
-**详细报告**: 参见 [`REORGANIZATION_COMPLETION_REPORT.md`](./docs/reports/REORGANIZATION_COMPLETION_REPORT.md)
-
-### 核心模块组织 (src/ 目录详解)
-
-```
-src/
-├── adapters/                 # 🔌 数据源适配器
-│   ├── tdx_adapter.py       # 通达信直连 (无限流, 1058行)
-│   ├── byapi_adapter.py     # REST API (涨跌停股池, 625行)
-│   ├── financial_adapter.py # 财务数据全能 (1078行)
-│   ├── akshare_adapter.py   # 免费全面 (510行)
-│   ├── baostock_adapter.py  # 高质量历史 (257行)
-│   ├── customer_adapter.py  # 实时行情专用 (378行)
-│   └── tushare_adapter.py   # 专业级 (199行)
-│
-├── core/                     # 🎯 核心管理类
-│   ├── config_driven_table_manager.py  # 配置驱动表管理
-│   ├── data_classification.py          # 数据分类枚举
-│   └── data_storage_strategy.py        # 存储策略路由
-│
-├── data_access/              # 🗄️ 数据库访问层
-│   ├── tdengine_access.py   # TDengine高频时序数据访问
-│   └── postgresql_access.py # PostgreSQL通用数据访问
-│
-├── storage/                  # 💽 存储层
-│   └── database/
-│       ├── connection_manager.py  # 数据库连接管理
-│       ├── database_manager.py    # 数据库表管理
-│       └── db_utils.py           # 数据库工具函数
-│
-├── monitoring/               # 📊 监控和告警
-│   ├── monitoring_database.py    # 监控数据库
-│   ├── performance_monitor.py    # 性能监控
-│   ├── data_quality_monitor.py   # 数据质量监控
-│   └── alert_manager.py          # 告警管理器
-│
-└── interfaces/               # 📐 接口定义
-    └── data_source.py       # IDataSource统一接口
-```
-
-### 技术特性
-
-- **🎯 配置驱动**: YAML配置文件管理所有表结构，避免手工干预
-- **⚡ 高性能**: TDengine时序数据库实现极致写入性能
-- **🔍 智能监控**: 独立监控数据库，完整记录所有操作
-- **🛡️ 数据安全**: 完善的权限管理和数据验证机制
-- **🔄 自动维护**: 定时任务和自动化运维，减少人工成本
-
-## 🚀 快速开始
-
-### 1. 环境准备
-
-#### 数据库服务（Week 3简化后 - 双数据库架构）
-确保以下数据库服务正常运行：
-
-**必需数据库**:
-- **TDengine 3.3.x** (高频时序数据专用)
-  - 用途: Tick数据、分钟K线、实时深度
-  - 端口: 6030 (WebSocket), 6041 (REST API)
-  - 数据库: `market_data`
-
-- **PostgreSQL 17.x** (通用数据仓库)
-  - TimescaleDB 2.x 扩展：日线K线时序优化
-  - 标准表：参考数据、衍生数据、交易数据、元数据
-  - 端口: 5432 (默认) 或 5438
-  - 数据库: `mystocks`
-
-#### Python环境
-```bash
-# 基础依赖
-pip install pandas numpy pyyaml
-
-# 数据库驱动（Week 3简化后 - 双数据库）
-pip install psycopg2-binary taospy
-
-# 数据源适配器
-pip install akshare efinance schedule loguru
-
-# 可选：性能优化
-pip install ujson numba cachetools
-```
-
-#### 环境配置（Week 3简化版 - 双数据库）
-创建 `.env` 文件：
-```bash
-# TDengine高频时序数据库（必需）
-TDENGINE_HOST=localhost
-TDENGINE_PORT=6030
-TDENGINE_USER=root
-TDENGINE_PASSWORD=your-tdengine-password
-TDENGINE_DATABASE=market_data
-
-# PostgreSQL主数据库（必需）
-POSTGRESQL_HOST=localhost
-POSTGRESQL_PORT=5438
-POSTGRESQL_USER=postgres
-POSTGRESQL_PASSWORD=your_password
-POSTGRESQL_DATABASE=mystocks
-
-# 监控数据库（使用PostgreSQL同库独立schema）
-MONITOR_DB_URL=postgresql://postgres:password@localhost:5438/mystocks
-
-# 应用层缓存配置
-CACHE_EXPIRE_SECONDS=300
-LRU_CACHE_MAXSIZE=1000
-
-# K线查询兜底开关（默认启用，保证行情源异常时仍可展示K线）
-KLINE_FALLBACK_ENABLED=true
-```
-
-### 2. 系统初始化
-
-```python
-from unified_manager import MyStocksUnifiedManager
-
-# 创建统一管理器
-manager = MyStocksUnifiedManager()
-
-# 自动初始化系统（创建表结构、配置监控）
-results = manager.initialize_system()
-
-if results['config_loaded']:
-    print("✅ 系统初始化成功!")
-    print(f"📊 创建表数量: {len(results['tables_created'])}")
-else:
-    print("❌ 系统初始化失败，请检查配置")
-```
-
-### 3. 数据操作示例
-
-```python
-import pandas as pd
-from datetime import datetime
-from core import DataClassification
-
-# 1. 保存股票基本信息 (自动路由到PostgreSQL)
-symbols_data = pd.DataFrame({
-    'symbol': ['600000', '000001', '000002'],
-    'name': ['浦发银行', '平安银行', '万科A'],
-    'exchange': ['SH', 'SZ', 'SZ'],
-    'sector': ['银行', '银行', '房地产']
-})
-manager.save_data_by_classification(symbols_data, DataClassification.SYMBOLS_INFO)
-
-# 2. 保存高频Tick数据 (自动路由到TDengine)
-tick_data = pd.DataFrame({
-    'ts': [datetime.now()],
-    'symbol': ['600000'],
-    'price': [10.50],
-    'volume': [1000],
-    'amount': [10500.0]
-})
-manager.save_data_by_classification(tick_data, DataClassification.TICK_DATA)
-
-# 3. 保存日线数据 (自动路由到PostgreSQL)
-daily_data = pd.DataFrame({
-    'symbol': ['600000'],
-    'trade_date': [datetime.now().date()],
-    'open': [10.45],
-    'high': [10.55],
-    'low': [10.40],
-    'close': [10.50],
-    'volume': [1000000]
-})
-manager.save_data_by_classification(daily_data, DataClassification.DAILY_KLINE)
-
-# 4. 智能查询数据
-# 查询股票信息
-symbols = manager.load_data_by_classification(
-    DataClassification.SYMBOLS_INFO,
-    filters={'exchange': 'SH'}
-)
-
-# 查询历史数据
-history = manager.load_data_by_classification(
-    DataClassification.DAILY_KLINE,
-    filters={'symbol': '600000', 'trade_date': '>2024-01-01'},
-    order_by='trade_date DESC',
-    limit=100
-)
-
-print(f"查询到 {len(symbols)} 只上海股票")
-print(f"查询到 {len(history)} 条历史数据")
-```
-
-### 4. 实时数据获取和保存
-
-#### 使用efinance获取沪深A股实时行情
-
-```python
-# 使用改进的customer_adapter和自动路由保存
-from adapters.customer_adapter import CustomerDataSource
-from unified_manager import MyStocksUnifiedManager
-from core import DataClassification
-
-# 1. 创建数据适配器（启用列名标准化）
-adapter = CustomerDataSource(use_column_mapping=True)
-
-# 2. 获取沪深市场A股最新状况
-realtime_data = adapter.get_market_realtime_quotes()
-print(f"获取到 {len(realtime_data)} 只股票的实时行情")
-
-# 3. 使用统一管理器和自动路由保存数据
-manager = MyStocksUnifiedManager()
-success = manager.save_data_by_classification(
-    data=realtime_data,
-    classification=DataClassification.DAILY_KLINE,  # 自动路由到PostgreSQL
-    table_name='realtime_market_quotes'
-)
-
-if success:
-    print("✅ 实时行情数据已保存到PostgreSQL数据库")
-```
-
-#### 命令行方式运行
-
-```bash
-# 测试数据获取
-python run_realtime_market_saver.py --test-adapter
-
-# 单次运行保存数据
-python run_realtime_market_saver.py
-
-# 持续运行（每5分钟获取一次）
-python run_realtime_market_saver.py --count -1 --interval 300
-```
-
-### 5. 监控系统使用
-
-```python
-# 获取系统状态
-status = manager.get_system_status()
-print(f"总操作数: {status['monitoring']['operation_statistics']['total_operations']}")
-print(f"成功率: {status['performance']['summary']['success_rate']:.2%}")
-
-# 生成数据质量报告
-quality_report = manager.quality_monitor.generate_quality_report()
-print(f"数据质量评分: {quality_report['overall_score']:.2f}")
-```
-
-## 🛠️ 开发环境配置
-
-为了确保开发与测试环境的一致性，系统采用固定的端口分配策略。
-
-### 1. 端口分配规范 (Port Allocation)
-
-| 服务名称 | 默认端口 | 备用端口 | 访问地址 |
-| :--- | :--- | :--- | :--- |
-| **前端开发/测试** | `3000` | `3001` | `http://localhost:3000` |
-| **后端 API/测试** | `8000` | `8001` | `http://localhost:8000` |
-| **时序数据库 (TDengine)** | `6030` | `6041 (REST)` | - |
-| **关系数据库 (PostgreSQL)** | `5438` | `5432` | - |
-| **缓存中心 (Redis)** | `6379` | - | - |
-
-### 2. 端口冲突解决 (Troubleshooting)
-
-若启动服务时提示端口已被占用（Address already in use），请按以下步骤操作：
-
-**查看端口占用进程:**
-```bash
-# 示例：查看 3000 端口
-lsof -i :3000
-```
-
-**强制释放进程:**
-```bash
-# 找到 PID 后执行
-kill -9 <PID>
-```
-
-**一键清理残留进程 (Linux/WSL2):**
-```bash
-# 清理前端开发进程
-pkill -f "node"
-# 清理后端开发进程
-pkill -f "uvicorn"
-```
-
-## 📁 文件与模块说明
-
-### 🎯 根目录入口点文件
-
-**说明**: 根目录的Python文件是系统入口点,提供向后兼容性和快速访问:
-
-- `core.py` - 核心模块入口 → 导入自 `src.core`
-- `unified_manager.py` - 统一管理器入口 → 导入自 `src.core`
-- `data_access.py` - 数据访问入口 → 导入自 `src.data_access`
-- `monitoring.py` - 监控模块入口 → 导入自 `src.monitoring`
-
-**使用建议**:
-- ✅ 推荐: 直接从 `src.*` 导入 (标准路径)
-- ✅ 可选: 从根目录文件导入 (兼容性)
-
-### 📦 src/ 源代码模块详解
-
-#### src/adapters/ - 数据源适配器 (7个核心适配器)
-
-**⭐ v2.1核心适配器 (推荐)**:
-- `src/adapters/tdx_adapter.py` (1058行) - 通达信直连,无限流,多周期K线
-- `src/adapters/byapi_adapter.py` (625行) - REST API,涨跌停股池,技术指标
-
-**稳定生产适配器**:
-- `src/adapters/efinance_adapter.py` (950行) - Efinance数据源,股票/基金/债券/期货全覆盖
-- `src/adapters/financial_adapter.py` (1078行) - 双数据源(efinance+easyquotation),财务数据全能
-- `src/adapters/akshare_adapter.py` (510行) - 免费全面,历史数据研究首选
-- `src/adapters/baostock_adapter.py` (257行) - 高质量历史数据,复权数据
-- `src/adapters/customer_adapter.py` (378行) - 实时行情专用
-- `src/adapters/tushare_adapter.py` (199行) - 专业级,需token
-
-**导入示例**:
-```python
-from src.adapters.akshare_adapter import AkshareDataSource
-from src.adapters.tdx_adapter import TdxDataSource
-```
-
-详细特性对比: [`docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md`](./docs/architecture/ADAPTER_AND_DATABASE_ARCHITECTURE_EVALUATION.md)
-
-#### src/core/ - 核心管理类
-
-- `src/core/config_driven_table_manager.py` - 配置驱动表管理,YAML自动建表
-- `src/core/data_classification.py` - 5大数据分类枚举定义
-- `src/core/data_storage_strategy.py` - 智能路由策略,自动选择数据库
-
-**导入示例**:
-```python
-from src.core import ConfigDrivenTableManager, DataClassification
-```
-
-#### src/data_access/ - 数据库访问层
-
-- `src/data_access/tdengine_access.py` - TDengine高频时序数据访问
-- `src/data_access/postgresql_access.py` - PostgreSQL通用数据访问
-
-**导入示例**:
-```python
-from src.data_access import TDengineDataAccess, PostgreSQLDataAccess
-```
-
-#### src/storage/ - 存储层
-
-- `src/storage/database/connection_manager.py` - 数据库连接池管理
-- `src/storage/database/database_manager.py` - 数据库表管理器
-- `src/storage/database/db_utils.py` - 数据库工具函数
-
-**导入示例**:
-```python
-from src.storage.database import DatabaseConnectionManager, DatabaseTableManager
-```
-
-#### src/db_manager/ - 兼容层 (重要!)
-
-**说明**: `src/db_manager/` 是兼容层,实际代码在 `src/storage/database/`
-
-- `src/db_manager/__init__.py` - 重导出 src.storage.database 的所有类
-- `src/db_manager/connection_manager.py` - 兼容包装器
-- `src/db_manager/database_manager.py` - 兼容包装器
-
-**导入示例** (两种方式等价):
-```python
-# 方式1: 通过兼容层 (旧代码可继续使用)
-from src.db_manager import DatabaseTableManager
-
-# 方式2: 直接导入 (推荐)
-from src.storage.database import DatabaseTableManager
-```
-
-#### src/monitoring/ - 监控和告警
-
-- `src/monitoring/monitoring_database.py` - 独立监控数据库
-- `src/monitoring/performance_monitor.py` - 性能监控,慢查询检测
-- `src/monitoring/data_quality_monitor.py` - 数据质量监控
-- `src/monitoring/alert_manager.py` - 多渠道告警管理
-
-**导入示例**:
-```python
-from src.monitoring import MonitoringDatabase, PerformanceMonitor, AlertManager
-```
-
-#### src/interfaces/ - 接口定义
-
-- `src/interfaces/data_source.py` - IDataSource统一接口定义
-
-**导入示例**:
-```python
-from src.interfaces import IDataSource
-```
-
-#### src/utils/ - 工具函数
-
-- `src/utils/column_mapper.py` - 统一列名映射,中英文转换
-- `src/utils/date_utils.py` - 日期时间工具函数
-- `src/utils/symbol_utils.py` - 股票代码工具函数
-- `src/utils/tdx_server_config.py` - 通达信服务器配置
-
-**导入示例**:
-```python
-from src.utils import ColumnMapper
-```
-
-### 🔧 scripts/ 脚本工具
-
-#### scripts/runtime/ - 运行时脚本
-
-- `scripts/runtime/run_realtime_market_saver.py` - 实时行情保存系统
-- `scripts/runtime/save_realtime_data.py` - 实时数据保存工具
-- `scripts/runtime/system_demo.py` - 系统功能演示
-
-**运行示例**:
-```bash
-python scripts/runtime/system_demo.py
-python scripts/runtime/run_realtime_market_saver.py
-```
-
-#### scripts/tests/ - 测试脚本
-
-- `scripts/tests/test_config_driven_table_manager.py` - 配置表管理器测试
-- `scripts/tests/test_financial_adapter.py` - 财务适配器测试
-- `scripts/tests/test_save_realtime_data.py` - 实时数据保存测试
-
-**运行示例**:
-```bash
-python scripts/tests/test_config_driven_table_manager.py
-pytest scripts/tests/ -v
-```
-
-#### scripts/database/ - 数据库脚本
-
-- `scripts/database/check_tdengine_tables.py` - TDengine表检查
-- `scripts/database/verify_tdengine_deployment.py` - TDengine部署验证
-
-**运行示例**:
-```bash
-python scripts/database/check_tdengine_tables.py
-```
-
-### ⚙️ config/ 配置文件
-
-- `config/table_config.yaml` - 完整表结构配置 (支持5大数据分类)
-- `config/docker-compose.tdengine.yml` - TDengine Docker配置
-- `config/docker-compose.postgresql.yml` - PostgreSQL Docker配置
-- `.env` - 环境变量配置 (数据库连接信息)
-
-**配置示例**:
-```yaml
-# config/table_config.yaml
-tables:
-  - name: stock_daily
-    database_type: postgresql
-    classification: daily_kline
-    schema:
-      - {name: symbol, type: VARCHAR(10)}
-      - {name: trade_date, type: DATE}
-```
-
-### 📚 docs/ 文档
-
-- `docs/overview/IFLOW.md` - 项目工作流程
-- `docs/architecture/` - 架构设计文档
-- `docs/api/` - API文档
-- `docs/archived/` - 历史文档归档
-
-### 🌐 web/ Web应用
-
-- `web/backend/` - FastAPI后端服务
-- `web/frontend/` - Vue 3 + Vite前端应用
-
-**启动示例**:
-```bash
-# 后端
-cd web/backend && uvicorn app.main:app --reload
-
-# 前端
-cd web/frontend && npm run dev
-```
-
-## 🔧 高级功能
-
-### 自动化维护
-- **定时任务**: 数据质量检查、性能监控、备份操作
-- **告警机制**: 多渠道告警，支持邮件、Webhook、日志
-- **自动优化**: 数据库优化、索引管理、日志清理
-
-### 监控体系
-- **操作监控**: 所有数据库操作自动记录到独立监控数据库
-- **性能监控**: 慢查询检测、响应时间统计、资源使用监控
-- **质量监控**: 数据完整性、准确性、新鲜度实时检查
-
-### 扩展性设计
-- **插件化架构**: 易于添加新的数据源和数据库支持
-- **配置驱动**: 通过YAML配置文件扩展表结构和存储策略
-- **标准接口**: 统一的数据访问接口，便于系统集成
-
-## 🌐 Web 平台使用
-
-### 启动 Web 服务
-
-#### 后端服务
-```bash
+# backend
 cd web/backend
-python -m uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
-```
-
-#### 前端服务
-```bash
-cd web/frontend
-npm install
-npm run dev
-```
-
-访问：
-- **API 文档**: http://localhost:8000/api/docs
-- **前端界面**: http://localhost:5173
-
-### Web API 端点总览
-
-#### 实时监控系统 (Phase 1)
-```
-GET  /api/monitoring/alert-rules          # 获取告警规则
-POST /api/monitoring/alert-rules          # 创建告警规则
-GET  /api/monitoring/realtime             # 获取实时行情
-POST /api/monitoring/realtime/fetch       # 获取最新实时数据
-GET  /api/monitoring/dragon-tiger         # 获取龙虎榜
-GET  /api/monitoring/summary              # 获取监控摘要
-```
-
-#### 技术分析系统 (Phase 2)
-```
-GET  /api/technical/{symbol}/indicators   # 获取所有技术指标
-GET  /api/technical/{symbol}/trend        # 获取趋势指标
-GET  /api/technical/{symbol}/momentum     # 获取动量指标
-GET  /api/technical/{symbol}/volatility   # 获取波动性指标
-GET  /api/technical/{symbol}/signals      # 获取交易信号
-POST /api/technical/batch/indicators      # 批量获取指标
-```
-
-#### 多数据源系统 (Phase 3)
-```
-GET  /api/multi-source/health             # 获取所有数据源健康状态
-GET  /api/multi-source/realtime-quote     # 获取实时行情（多数据源）
-GET  /api/multi-source/fund-flow          # 获取资金流向（多数据源）
-GET  /api/announcement/today              # 获取今日公告
-GET  /api/announcement/important          # 获取重要公告
-POST /api/announcement/monitor/evaluate   # 评估监控规则
-```
-
-## 📚 更多信息
-
-- **项目模块清单**: [PROJECT_MODULES.md](./docs/standards/PROJECT_MODULES.md) - 详细的模块来源和分类
-
----
-
-## 🔧 数据源管理工具 (V2.0 已完成)
-
-**状态**: ✅ 生产就绪 (2026-01-02) | **版本**: V2.0
-
-数据源管理工具提供统一的接口来管理、测试、监控所有外部数据源端点（34个已注册接口）。
-
-### 核心功能
-
-**1. 数据源搜索和筛选**
-- 按5层数据分类筛选（DAILY_KLINE, MINUTE_KLINE, TICK_DATA等）
-- 按源类型过滤（akshare, tushare, baostock, tdx, efinance）
-- 按健康状态过滤（仅显示健康的端点）
-- 关键词搜索和分类统计
-
-**2. 接口测试和数据质量分析**
-- 功能验证：端点可用性、参数正确性
-- 数据质量检查：完整性、范围、重复性、类型一致性
-- 性能测试：响应时间、成功率、错误率
-- 自动生成详细测试报告
-
-**3. 健康监控和状态管理**
-- 实时健康检查：单个端点或批量检查
-- 健康指标：连接成功率、响应时间、数据质量
-- 状态管理：active/maintenance/deprecated
-- 告警机制：不健康端点自动标记
-
-**4. 配置管理**
-- 34个数据源端点的配置信息
-- YAML注册表：`config/data_sources_registry.yaml`
-- 动态配置更新和参数验证
-- 优先级调整和质量评分
-
-### 工具链
-
-**手动测试工具** (`scripts/tools/manual_data_source_tester.py`)
-```bash
-# 交互式测试模式
-python scripts/tools/manual_data_source_tester.py --interactive
-
-# 快速测试特定端点
-python scripts/tools/manual_data_source_tester.py \
-    --endpoint akshare.stock_zh_a_hist \
-    --symbol 000001 \
-    --start-date 20240101 \
-    --end-date 20240131 \
-    --verbose
-```
-
-**FastAPI管理接口** (`web/backend/app/api/data_source_registry.py`)
-```bash
-# 搜索数据源
-curl -X GET "http://localhost:8000/api/v1/data-sources/?data_category=DAILY_KLINE" \
-  -H "Authorization: Bearer YOUR_TOKEN"
-
-# 测试数据源
-curl -X POST "http://localhost:8000/api/v1/data-sources/akshare.stock_zh_a_hist/test" \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer YOUR_TOKEN" \
-  -d '{"test_params": {"symbol": "000001", "start_date": "20240101", "end_date": "20240131"}}'
-```
-
-### Vue.js前端集成
-
-```javascript
-import dataSourceService from '@/api/dataSourceService'
-
-// 搜索健康的日线数据源
-const sources = await dataSourceService.searchDataSources({
-  dataCategory: 'DAILY_KLINE',
-  sourceType: 'akshare',
-  onlyHealthy: true
-})
-
-// 测试数据源
-const result = await dataSourceService.testDataSource(
-  'akshare.stock_zh_a_hist',
-  {
-    symbol: '000001',
-    start_date: '20240101',
-    end_date: '20240131'
-  }
-)
-```
-
-### 使用场景
-
-**场景1: 开发调试** - 快速测试新增数据源接口
-```bash
-python scripts/tools/manual_data_source_tester.py --interactive
-# 选择新接口 → 输入参数 → 查看测试结果
-```
-
-**场景2: 生产环境检查** - 批量健康检查
-```bash
-curl -X POST "http://localhost:8000/api/v1/data-sources/health-check/all" \
-  -H "Authorization: Bearer YOUR_TOKEN"
-# 返回所有34个端点的健康状态
-```
-
-**场景3: Web集成** - 前端数据源管理页面
-- Vue组件调用7个RESTful API端点
-- 展示数据源列表、健康状态、测试结果
-- 提供搜索、筛选、测试、配置功能
-
-**场景4: 配置优化** - 根据健康状态调整优先级
-```python
-# 查看质量评分低的端点
-sources = search_data_sources(quality_score="<70")
-# 更新配置或标记为maintenance
-```
-
-### 技术指标
-
-| 指标 | 数值 |
-|------|------|
-| **已注册端点** | 34个 |
-| **数据分类** | 5层（DAILY_KLINE, MINUTE_KLINE, TICK_DATA, REALTIME_QUOTES, REFERENCE_DATA） |
-| **支持的数据源** | akshare, tushare, baostock, tdx, efinance |
-| **API端点数** | 7个（搜索、分类统计、详情、更新、测试、健康检查、批量健康检查） |
-| **数据质量检查** | 4项（完整性、范围、重复性、类型一致性） |
-
-### 文档链接
-
-📖 **[完整使用指南](./docs/guides/data-source/DATA_SOURCE_MANAGEMENT_TOOLS_USAGE_GUIDE.md)** - 1000+行完整文档，包含所有功能说明
-
-📋 **[快速参考卡片](./docs/guides/data-source/DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)** - 5分钟快速上手，常用命令和参数速查
-
-🏗️ **[数据源V2.0架构文档](./docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md)** - 系统架构、设计模式、扩展指南
-
-✅ **[最终验证报告](./docs/reports/DATA_SOURCE_V2_FINAL_VERIFICATION_REPORT.md)** - 功能验证、测试结果、性能指标
-
-🚀 **[功能增强提案](./docs/reports/DATA_SOURCE_V2_ENHANCEMENT_PROPOSAL.md)** - 未来规划、增强建议、改进方向
-
-### 与系统其他部分的关系
-
-数据源管理工具是 MyStocks 系统的基础设施组件，专注于**数据源端点的管理**而非**数据获取和存储**：
-
-- ❌ **不负责**: 实际数据拉取、数据存储到数据库、业务逻辑处理
-- ✅ **提供**: 配置管理、接口测试、健康监控、搜索发现、生命周期管理
-- 🔗 **协作**: 与 `src/adapters/`（数据适配器）、`MyStocksUnifiedManager`（统一管理器）协同工作
-
-**架构定位**: 数据源管理工具专注于**管理**而非**执行**，提供标准化的配置、测试、监控接口，与数据适配器、业务逻辑、存储层清晰分离。
-
----
-
-## 🚀 GPU API System (Phase 4 Complete)
-
-### GPU加速回测与实时分析系统
-
-MyStocks项目包含一个完整的GPU加速量化交易API系统，位于 `src/gpu/api_system/` 目录。该系统使用RAPIDS框架（cuDF/cuML）实现高性能市场数据处理和机器学习加速。
-
-**系统状态**: ✅ **100%完成** (Phase 1-5 全部完成，包括WSL2 GPU支持)
-
-**关键成就**:
-- ✅ GPU回测加速比: **15-20倍**
-- ✅ 实时数据吞吐量: **10,000条/秒**
-- ✅ ML训练加速比: **44.76倍** (WSL2环境验证)
-- ✅ 测试覆盖率: **100%** (160+测试用例)
-- ✅ **WSL2 GPU完全支持**: 已解决WSL2环境下RAPIDS GPU访问问题
-- ✅ **智能三级缓存优化**: 命中率从80%提升至90%+ (新增6大优化策略)
-
-### 🆕 WSL2 GPU支持 (2025-11-04)
-
-**重大突破**: 完全解决了WSL2环境下RAPIDS（cuDF/cuML）GPU访问问题
-
-**原始问题**:
-```
-rmm._cuda.gpu.CUDARuntimeError: cudaErrorNoDevice: no CUDA-capable device is detected
-```
-虽然 `nvidia-smi` 显示GPU正常，但RAPIDS库无法访问GPU。
-
-**解决方案**:
-创建了自动化初始化脚本和完整测试套件：
-
-```python
-# WSL2环境自动初始化
-from wsl2_gpu_init import initialize_wsl2_gpu
-initialize_wsl2_gpu()
-
-# 现在可以使用RAPIDS
-import cudf
-import cuml
-```
-
-**验证成果** (4/4测试全部通过):
-- ✅ DataFrame操作: **1.50x加速**
-- ✅ ML训练(RandomForest): **44.76x加速** 🚀
-- ✅ GPU内存分配: 成功分配38.15MB
-- ✅ 回测性能测试: 通过
-
-**快速开始**:
-```bash
-# 1. 测试GPU环境
-cd gpu_api_system
-python wsl2_gpu_init.py
-
-# 2. 运行真实GPU测试
-python tests/test_real_gpu.py
-
-# 3. 查看详细配置
-cat WSL2_GPU_SETUP.md
-```
-
-**WSL2专用文档**:
-- [`src/gpu/api_system/WSL2_GPU_SETUP.md`](./src/gpu/api_system/WSL2_GPU_SETUP.md) - 完整配置指南
-- [`src/gpu/api_system/WSL2_GPU_COMPLETION.md`](./src/gpu/api_system/WSL2_GPU_COMPLETION.md) - 完工验收报告
-- [`src/gpu/api_system/WSL2_GPU_SUMMARY.md`](./src/gpu/api_system/WSL2_GPU_SUMMARY.md) - 工作总结
-
-### 核心功能
-
-#### 1. GPU加速回测引擎
-- **cuDF DataFrame**: GPU加速的数据处理，15-20倍性能提升
-- **并行策略执行**: 多策略同时回测
-- **智能三级缓存**: L1应用层 + L2 GPU内存 + L3 Redis，命中率90%+
-  - 🆕 **访问模式学习**: EWMA预测算法，预测未来访问
-  - 🆕 **查询结果缓存**: MD5指纹，避免重复计算
-  - 🆕 **负缓存**: 缓存不存在数据，减少无效查询
-  - 🆕 **自适应TTL**: 4级热度分区 (normal/warm/hot/ultra_hot)
-  - 🆕 **智能压缩**: 选择性压缩 (>10KB, <70%压缩率)
-  - 🆕 **预测性预加载**: 并发预加载相关数据
-
-#### 2. 实时市场数据处理
-- **高频数据流**: 10,000条/秒实时处理能力
-- **GPU流式计算**: 毫秒级技术指标计算
-- **WebSocket推送**: 实时信号分发
-
-#### 3. GPU机器学习服务
-- **cuML算法**: RandomForest、XGBoost、KMeans等
-- **训练加速**: 15-44倍加速比（数据规模依赖）
-- **在线预测**: <1ms预测延迟
-
-#### 4. 资源调度与监控
-- **智能GPU调度**: 多任务优先级管理
-- **资源监控**: Prometheus + Grafana
-- **自动告警**: GPU利用率、内存、性能指标
-
-#### 🆕 5. 缓存优化系统 (2025-11-04)
-
-**优化目标**: 将三级缓存命中率从80%提升至90%+
-
-**6大核心优化策略**:
-
-1. **访问模式学习** (`AccessPatternLearner`)
-   - EWMA指数加权移动平均算法
-   - 预测未来访问模式,自动预热高频数据
-   - 预期提升: 8-12%
-
-2. **查询结果缓存** (`QueryResultCache`)
-   - MD5指纹去重,避免重复计算
-   - 参数归一化,提高缓存命中
-   - 预期提升: 10-15%
-
-3. **负缓存机制** (`NegativeCache`)
-   - 缓存不存在的数据 (TTL 60秒)
-   - 减少无效数据库查询
-   - 预期提升: 2-5%
-
-4. **自适应TTL管理** (`AdaptiveTTLManager`)
-   - 4级热度分区: normal(1.0x) / warm(1.5x) / hot(2.0x) / ultra_hot(3.0x)
-   - 动态调整缓存过期时间
-   - 预期提升: 3-5%
-
-5. **智能压缩** (`SmartCompressor`)
-   - 选择性压缩: 仅处理 >10KB 且压缩率 <70% 的数据
-   - 平衡CPU开销与存储收益
-   - 预期提升: 3-5%
-
-6. **预测性预加载** (`PredictivePrefetcher`)
-   - ThreadPoolExecutor 并发预加载 (5个worker)
-   - 基于访问模式预测相关数据
-   - 预期提升: 6-10%
-
-**使用示例**:
-```python
-from utils.cache_optimization_enhanced import EnhancedCacheManager
-
-# 初始化增强缓存管理器
-cache_manager = EnhancedCacheManager(
-    redis_client=redis_client,
-    cache_stats=cache_stats
-)
-
-# 获取数据 (自动应用所有优化策略)
-data = await cache_manager.get_with_learning(
-    key="stock:600000:daily",
-    fetch_func=lambda: fetch_from_db("600000"),
-    ttl=3600
-)
-
-# 查看优化效果
-stats = cache_manager.get_optimization_stats()
-print(f"缓存命中率: {stats['hit_rate']:.2%}")
-print(f"预测准确率: {stats['prediction_accuracy']:.2%}")
-```
-
-**性能提升**: 缓存命中率从80%提升至**90%+**,显著减少GPU内存访问延迟
-
-**详细文档**: 参见 [`src/gpu/api_system/CACHE_OPTIMIZATION_GUIDE.md`](src/gpu/api_system/CACHE_OPTIMIZATION_GUIDE.md)
-
-### 系统架构
-
-```
-src/gpu/api_system/
-├── services/               # 核心服务
-│   ├── gpu_api_server.py             # 主API服务器
-│   ├── integrated_backtest_service.py # GPU回测服务
-│   ├── integrated_realtime_service.py # 实时数据服务
-│   ├── integrated_ml_service.py       # GPU ML服务
-│   └── resource_scheduler.py          # GPU资源调度
-├── utils/                  # 工具模块
-│   ├── gpu_acceleration_engine.py     # GPU加速引擎
-│   ├── cache_optimization.py          # 基础缓存优化
-│   ├── cache_optimization_enhanced.py # 🆕 增强缓存优化 (6大策略)
-│   └── monitoring.py                  # 监控系统
-├── tests/                  # 完整测试套件
-│   ├── unit/                          # 单元测试 (95个)
-│   ├── integration/                   # 集成测试 (15个)
-│   ├── performance/                   # 性能测试 (25个)
-│   └── test_real_gpu.py              # 真实GPU测试 (4个)
-├── wsl2_gpu_init.py       # WSL2 GPU初始化脚本
-├── README.md              # 完整项目文档 (88页)
-└── deployment/            # Docker + K8s部署
-```
-
-### 性能指标
-
-| 指标 | 目标 | 实际表现 | 验证 |
-|------|------|----------|------|
-| 回测加速比 | ≥15x | 15-20x | ✅ |
-| 实时吞吐量 | ≥10,000条/秒 | 10,000条/秒 | ✅ |
-| ML训练加速比 | ≥15x | **44.76x** (WSL2) | ✅ |
-| 预测延迟 | <1ms | <1ms | ✅ |
-| 缓存命中率 | ≥80% | **>90%** (🆕 增强优化) | ✅ |
-| 测试覆盖率 | 100% | 100% | ✅ |
-
-### 快速启动
-
-#### 使用Docker (推荐)
-```bash
-cd src/gpu/api_system/deployment
-docker-compose up -d
-```
-
-#### 本地开发
-```bash
-cd gpu_api_system
-
-# 1. 安装依赖
 pip install -r requirements.txt
 
-# 2. WSL2环境需要初始化GPU
-python wsl2_gpu_init.py
-
-# 3. 启动主服务
-python main_server.py
-
-# 4. 运行测试
-./run_tests.sh all
+# frontend
+cd web/frontend
+npm install
 ```
 
-#### API访问
+### 启动开发环境
+
 ```bash
-# 健康检查
-curl http://localhost:8000/health
+# backend
+cd web/backend
+uvicorn app.main:app --host 0.0.0.0 --port 8020 --reload
 
-# GPU状态
-curl http://localhost:8000/gpu/status
-
-# 提交回测任务
-curl -X POST http://localhost:8000/backtest \
-  -H "Content-Type: application/json" \
-  -d '{"strategy": "ma_cross", "symbols": ["600000"], "start_date": "2024-01-01"}'
+# frontend
+cd web/frontend
+npm run dev -- --port 3020
 ```
 
-### 技术栈
+### 访问地址
 
-- **GPU框架**: RAPIDS (cuDF 24.12, cuML 24.12, CuPy)
-- **API框架**: FastAPI + uvicorn
-- **消息队列**: Redis Streams
-- **监控**: Prometheus + Grafana
-- **部署**: Docker + Kubernetes
-- **测试**: pytest + pytest-cov (160+用例)
+| 服务 | 地址 |
+|------|------|
+| 前端 | `http://localhost:3020` |
+| 后端 | `http://localhost:8020` |
+| Swagger | `http://localhost:8020/docs` |
+| 健康检查 | `http://localhost:8020/health` |
 
-### 硬件要求
+## 开发流程与治理方法
 
-- **最低配置**:
-  - NVIDIA GPU (Compute Capability ≥ 7.0)
-  - 8GB GPU显存
-  - CUDA 11.8+
-  - 16GB 系统内存
+### 项目管理方法
 
-- **推荐配置**:
-  - NVIDIA RTX 2080 或更高
-  - 16GB+ GPU显存
-  - CUDA 12.0+
-  - 32GB 系统内存
+- 方案先行：涉及菜单结构、UI 风格、核心架构或能力新增，必须先走 proposal / approval。
+- 功能树驱动：先在 [docs/FUNCTION_TREE.md](./docs/FUNCTION_TREE.md) 定位功能域，再下钻规范、代码、测试和运行入口。
+- 契约先行：接口语义以 FastAPI 路由、Pydantic schema 与导出的 OpenAPI 为准，不维护并行真值。
+- 垂直切片：一次打通一个 feature 的 `DB -> Service -> API -> UI -> Test` 链路。
+- 测试闭环：提交前必须提供对应验证证据，而不是只给代码 diff。
 
-- **WSL2支持**: ✅ 完全支持（需要Windows 11或Win10 21H2+）
+### 推荐协作入口
 
-### 📚 文档导航
+- 共享规则： [architecture/STANDARDS.md](./architecture/STANDARDS.md)
+- OpenSpec： [openspec/AGENTS.md](./openspec/AGENTS.md)
+- 功能管理： [docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md](./docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md)
+- PR 校验： [.github/pull_request_template.md](./.github/pull_request_template.md)
 
-**快速开始**:
-- [`IFLOW.md`](./docs/overview/IFLOW.md) - 项目工作流程
-- [`.taskmaster/CLAUDE.md`](./.taskmaster/CLAUDE.md) - Task Master集成指南
+## 测试与质量门禁
 
-**架构设计文档** (`docs/architecture/`):
-- 核心架构评估与设计决策
-- 数据库架构方案对比
-- 适配器模式与路由策略
-- 高级架构评审报告
+### 前端常用命令
 
-**实现指南** (`docs/guides/`):
-- 系统部署和配置指南
-- 数据迁移方案
-- TDengine快速参考
-- 前后端数据流
+```bash
+cd web/frontend
+npm run type-check
+npm run test
+npm run test:unit:stable
+npm run test:e2e:business-smoke
+npm run test:e2e:chromium
+```
 
-**开发规范** (`docs/standards/`):
-- 项目开发规范与指导文档
-- 代码修改规则
-- 数据工作流程
-- Web页面结构指南
+### 后端常用命令
 
-**特性实现** (`docs/guides/features/`):
-- 股票热力图实现
-- 监控列表分组
-- TradingView集成修复
-- ValueCell各阶段完成报告
+```bash
+pytest
+pytest -m unit
+pytest -m integration
+pytest --cov=src --cov=web/backend/app --cov-report=html
+```
 
-**完成报告** (`docs/reports/`):
-- 任务和子任务完成报告
-- Web集成状态报告
-- 系统性能优化总结
-- 开发进展总结
+### 质量门禁关注点
 
-**旧文档归档** (`archive/docs/`):
-- 历史决策记录
-- 过期的规划文档
-- 前期讨论材料
-- 作为参考保留
+- 结构性语法错误必须为 `0`
+- 前端类型错误不得高于技术债基线
+- `mystocks-backend` 与 `mystocks-frontend` 的运行状态必须可确认
+- E2E 必须按实际执行结果报告，不再使用历史固定值
 
-### 项目亮点
+### 测试文档入口
 
-1. ✅ **RAPIDS深度集成**: 完整的GPU加速生态，cuDF/cuML/CuPy一体化
-2. ✅ **WSL2生产就绪**: 全球首个解决WSL2下RAPIDS GPU访问的完整方案
-3. ✅ **智能三级缓存**: L1应用层 + L2 GPU内存 + L3 Redis，**>90%命中率** (🆕 增强优化)
-4. ✅ **高可用架构**: K8s自动伸缩、故障转移、健康检查
-5. ✅ **完善测试体系**: 160+用例，单元/集成/性能/真实GPU四层测试
-6. ✅ **优秀扩展性**: 插件化设计，易于添加新策略和算法
+- [docs/testing/README.md](./docs/testing/README.md)
+- [docs/testing/E2E_TEST_GUIDE.md](./docs/testing/E2E_TEST_GUIDE.md)
+- [docs/guides/frontend/PR_GATE_QUICK_REFERENCE.md](./docs/guides/frontend/PR_GATE_QUICK_REFERENCE.md)
+- [scripts/run_e2e_pm2.sh](./scripts/run_e2e_pm2.sh)
 
----
+## 部署与运行
 
-## 🤝 贡献
+### PM2 与生产运行
 
-欢迎提交Issue和Pull Request来改进这个项目。
+- 本仓库支持 PM2 管理前后端服务，但不同阶段存在多份 PM2 配置。
+- README 只给出入口，不把某一个历史命令误写成唯一真相。
+- 当前应优先参考：
+  - [docs/guides/pm2/PM2_QUICK_START_GUIDE.md](./docs/guides/pm2/PM2_QUICK_START_GUIDE.md)
+  - [docs/operations/README.md](./docs/operations/README.md)
+  - [config/ecosystem.config.js](./config/ecosystem.config.js)
+  - [config/ecosystem.production.config.js](./config/ecosystem.production.config.js)
 
-## 📄 许可证
+### 默认服务名
 
-本项目采用 MIT 许可证。详情请参阅 [LICENSE](LICENSE) 文件。
+- `mystocks-frontend`
+- `mystocks-backend`
+
+### Docker 与运维
+
+- Docker、运维排障和监控不在 README 内重复展开。
+- 运行、排障与基础设施检查统一从 [docs/operations/README.md](./docs/operations/README.md) 下钻。
+
+## 配置说明
+
+### 环境变量
+
+复制 `.env.example` 为 `.env`，再填写数据库、JWT、CORS 与端口配置。
+
+```bash
+cp .env.example .env
+```
+
+### 当前默认端口
+
+| 键 | 默认值 |
+|----|--------|
+| `FRONTEND_PORT` | `3020` |
+| `FRONTEND_BACKUP_PORT` | `3021` |
+| `BACKEND_PORT` | `8020` |
+| `BACKEND_BACKUP_PORT` | `8021` |
+
+### 关键配置关注项
+
+- `POSTGRESQL_*`
+- `JWT_SECRET_KEY`
+- `CORS_ORIGINS`
+- `KLINE_FALLBACK_ENABLED`
+- `REDIS_*`（可选）
+
+## 项目结构
+
+```text
+mystocks_spec/
+├── architecture/                 # 架构红线、域边界、治理规则
+├── config/                       # PM2、部署、运行配置
+├── docs/                         # 文档系统入口、功能树、guides、reports
+│   ├── FUNCTION_TREE.md          # 业务能力真相源入口
+│   ├── INDEX.md                  # 文档总入口
+│   ├── guides/                   # 开发、治理、前端、PM2 等指南
+│   ├── operations/               # 运行、排障、监控
+│   ├── standards/                # 标准、基线、参考清单
+│   └── testing/                  # 测试 trunk 与专题文档
+├── openspec/                     # Proposal / spec 工作流
+├── scripts/                      # 开发、生成、验证、自动化脚本
+├── src/                          # Python 核心业务与数据层
+│   ├── adapters/                 # 多数据源适配器
+│   ├── core/                     # 核心分类、路由、管理器
+│   ├── data_access/              # 数据库访问层
+│   ├── governance/               # 风控与治理
+│   ├── monitoring/               # 监控与告警
+│   └── gpu/                      # GPU 与加速能力
+├── tests/                        # 后端、集成、性能、安全测试
+├── web/
+│   ├── backend/                  # FastAPI 后端
+│   │   ├── app/api/              # API 路由
+│   │   ├── app/services/         # 应用服务层
+│   │   └── app/schemas/          # 请求/响应 schema
+│   └── frontend/                 # Vue 3 + ArtDeco 前端
+│       ├── src/views/            # 业务页面
+│       ├── src/components/       # 组件
+│       ├── src/stores/           # Pinia 状态
+│       ├── src/router/           # 路由入口
+│       ├── src/api/              # 前端 API 封装
+│       └── src/styles/           # ArtDeco token、样式层、兼容层
+└── README.md
+```
+
+## ArtDeco 设计系统
+
+ArtDeco 是当前前端视觉与组件治理主线，不再把旧 `Element Plus` 叙述当作 README 主口径。
+
+### 设计真相源
+
+- [DESIGN.md](./DESIGN.md)
+- [docs/guides/web/ARTDECO_START_HERE.md](./docs/guides/web/ARTDECO_START_HERE.md)
+- [docs/guides/web/ARTDECO_MASTER_INDEX.md](./docs/guides/web/ARTDECO_MASTER_INDEX.md)
+- [docs/guides/web/ARTDECO_SCSS_GOVERNANCE_BASELINE.md](./docs/guides/web/ARTDECO_SCSS_GOVERNANCE_BASELINE.md)
+
+### 管理原则
+
+- Design token 与视觉语义统一收敛，不继续扩散平行样式体系。
+- 兼容层只允许做桥接，不再作为主真值维护。
+- 文档链路按 `START_HERE -> MASTER_INDEX -> SPEC / GUIDE / CATALOG` 使用。
+
+## Kronos AI 推理集成
+
+MyStocks 对 Kronos 的定位是外部 GPU 推理依赖，而不是把 Kronos 内嵌成仓库内业务模块。
+
+### 集成思路
+
+- 采用 contract-first，先固化服务契约，再接入业务链路。
+- 优先约束 `HTTP` 推理接口，并保持 `MCP + HTTP` 共享同一 runtime 的方向。
+- 明确错误码、超时、降级和可观测性字段，避免推理服务接口漂移。
+
+### 参考文档
+
+- [docs/plans/kronos-integration-developer-guidance.md](./docs/plans/kronos-integration-developer-guidance.md)
+- [openspec/changes/add-kronos-integration-contract/proposal.md](./openspec/changes/add-kronos-integration-contract/proposal.md)
+- [openspec/changes/add-kronos-integration-contract/specs/kronos-integration-contract/spec.md](./openspec/changes/add-kronos-integration-contract/specs/kronos-integration-contract/spec.md)
+
+## FAQ 与健康检查
+
+### 前后端是否正常运行
+
+```bash
+pm2 list
+```
+
+应关注：
+
+- `mystocks-frontend`
+- `mystocks-backend`
+
+### 访问地址不通怎么办
+
+- 先确认 `.env` 中端口是否仍为 `3020 / 8020`
+- 再确认本地是否有端口占用
+- 最后查看 [docs/operations/TROUBLESHOOTING_QUICK_REFERENCE.md](./docs/operations/TROUBLESHOOTING_QUICK_REFERENCE.md)
+
+### 从哪里开始排障
+
+- 运行与运维： [docs/operations/README.md](./docs/operations/README.md)
+- 测试与 E2E： [docs/testing/README.md](./docs/testing/README.md)
+- 业务功能入口： [docs/FUNCTION_TREE.md](./docs/FUNCTION_TREE.md)
+
+## 贡献与标准
+
+- 仓库共享规则与审批门禁： [architecture/STANDARDS.md](./architecture/STANDARDS.md)
+- OpenSpec 工作流： [openspec/AGENTS.md](./openspec/AGENTS.md)
+- 功能管理同步规则： [docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md](./docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md)
+- PR 提交模板： [.github/pull_request_template.md](./.github/pull_request_template.md)
+
+提交和评审时，应至少说明：
+
+- 本次改动属于哪个功能域
+- 影响了哪个 `FUNCTION_TREE` 节点
+- 修改了哪些入口文档
+- 提供了哪些验证证据
+
+## 历史背景
+
+本节仅保留背景、演进和管理方法线索，不作为当前实现或当前门禁的真相源。
+
+### 前端手工测试修改机制建立
+
+- 入口文档： [docs/changes/frontend/FRONTEND_CHANGES.md](./docs/changes/frontend/FRONTEND_CHANGES.md)
+- 作用：把前端人工测试修正、变更记录和回溯线索沉淀为持续可查的文档链路。
+
+### Maestro 多 CLI 协作闭环
+
+- 入口文档： [docs/reports/MONGODB_MULTICLI_COORDINATION_PROGRESS_2026-03-14.md](./docs/reports/MONGODB_MULTICLI_COORDINATION_PROGRESS_2026-03-14.md)
+- 作用：记录多 CLI 协作、任务同步、过程证据和收口方法的阶段性背景。
+
+### 其他里程碑参考
+
+- [docs/plans/frontend-page-optimization-list.md](./docs/plans/frontend-page-optimization-list.md)
+- [src/monitoring/code_inventory/README.md](./src/monitoring/code_inventory/README.md)
+- [docs/api/security-remediation-report.md](./docs/api/security-remediation-report.md)
+- [architecture/DOMAIN_BOUNDARIES.md](./architecture/DOMAIN_BOUNDARIES.md)
+
+## 许可证
+
+MIT License，详见 [LICENSE](./LICENSE)。
