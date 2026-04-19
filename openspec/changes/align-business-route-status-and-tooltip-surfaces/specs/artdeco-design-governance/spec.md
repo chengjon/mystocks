@@ -5,7 +5,7 @@
 The system SHALL require active business-route pages to consume canonical ArtDeco status-chip semantics instead of keeping repeated page-local `status-badge` truth where shared badge ownership is sufficient.
 
 #### Scenario: A routed page renders status labels
-- **WHEN** a canonical routed page under `views/<domain>/` needs a capsule-style status label
+- **WHEN** a canonical routed business surface on the current router mainline needs a capsule-style status label
 - **THEN** it SHALL use the approved shared badge ownership surface for the semantics where practical
 - **AND** page-local status badge styling SHALL NOT remain the primary truth for those meanings
 
@@ -37,6 +37,6 @@ The system SHALL treat tooltip cleanup in active business routes as opt-in by ev
 The system SHALL keep canonical routed-page surface governance separate from completed ArtDeco workbench-page cleanup.
 
 #### Scenario: A routed-page cleanup proposal is implemented
-- **WHEN** the batch targets `views/<domain>/` pages
-- **THEN** it SHALL NOT reopen `views/artdeco-pages/**` cleanup inside the same change
-- **AND** it SHALL preserve the approved ownership split between routed pages, workbench pages, and shared primitives
+- **WHEN** the batch targets active routed business surfaces on the current router mainline
+- **THEN** it SHALL NOT reopen broad `views/artdeco-pages/**` cleanup inside the same change
+- **AND** it SHALL preserve the approved ownership split between routed pages, router-owned exceptions, workbench pages, and shared primitives

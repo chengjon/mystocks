@@ -1,7 +1,7 @@
 ## 1. Scope Lock
 
 - [x] 1.1 Re-read `DESIGN.md`, `ARTDECO_FINTECH_UNIFIED_SPEC.md`, `ARTDECO_COMPONENT_GUIDE.md`, and the completed `align-artdeco-stateful-primitives-with-design` change before implementation
-- [x] 1.2 Confirm this batch only targets active business-route pages under `views/<domain>/` and excludes `views/artdeco-pages/**`
+- [x] 1.2 Confirm this batch only targets active business-route surfaces on the current router mainline, including canonical route hosts that may live under `views/artdeco-pages/**`
 - [x] 1.3 Confirm tooltip scope is limited to proven user-facing tooltip debt, not generic `title` props or chart-local tooltip styling
 
 ## 2. Status-Badge Alignment
@@ -37,4 +37,4 @@
 
 - [x] 7.1 Confirm active business routes no longer keep repeated local `status-badge` truth for the touched pages
 - [x] 7.2 Confirm touched route-owned overlays use the active overlay token contract
-- [x] 7.3 Confirm the batch stays inside active business-route scope and does not reopen artdeco-pages cleanup
+- [x] 7.3 Confirm the batch stays inside active business-route scope and does not reopen broad artdeco-pages cleanup beyond canonical route hosts already used by the current router

@@ -5,7 +5,7 @@ The completed change `align-artdeco-stateful-primitives-with-design` established
 - `ArtDecoBadge.vue` is the canonical shared owner for filter-chip and status-chip semantics
 - shared overlay token adoption already exists on shared surfaces such as `ArtDecoLoadingOverlay.vue` and `ArtDecoTradeForm.vue`
 
-The remaining drift now sits on the active business-route mainline. These routes are not ArtDeco workbench pages; they are canonical routed pages under `views/<domain>/`. That means this batch must align them without pretending they are page fragments or new shared primitives.
+The remaining drift now sits on the active business-route mainline. Most route hosts remain canonical pages under `views/<domain>/`, but current `main` also routes `/system/data` through `views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue`. That means this batch must align active routed surfaces based on router truth, not on directory naming alone, without pretending they are new shared primitives.
 
 ## Goals
 
@@ -17,7 +17,7 @@ The remaining drift now sits on the active business-route mainline. These routes
 ## Non-Goals
 
 - converting all business routes to full ArtDeco workbench structure
-- touching `views/artdeco-pages/**` again
+- broad cleanup of `views/artdeco-pages/**` beyond canonical router-owned surfaces
 - chart tooltip redesign
 - layout or router rewrites
 - rewriting dialog/drawer behavior logic
@@ -56,7 +56,7 @@ Reason:
 
 ### Decision 4: Business-route work stays distinct from ArtDeco workbench governance
 
-This batch targets `views/<domain>/` canonical routes. It must not reopen `views/artdeco-pages/**` cleanup that is already complete.
+This batch targets canonical routed business surfaces on the current router mainline. It must not reopen broader `views/artdeco-pages/**` cleanup that is already complete, but it may touch a router-owned exception such as `/system/data` when `main` already uses that file as the active route host.
 
 Reason:
 

@@ -24,7 +24,7 @@ Without a separate reviewed change, the project will keep two frontend governanc
 
 Primary route targets identified by the current audit:
 
-- `web/frontend/src/views/system/DataSource.vue`
+- `web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue` (`/system/data` canonical route host on current `main`)
 - `web/frontend/src/views/system/DatabaseMonitor.vue`
 - `web/frontend/src/views/strategy/ResultsQuery.vue`
 - `web/frontend/src/views/strategy/StrategyList.vue`
@@ -46,7 +46,7 @@ Supporting truth sources:
 
 - responsive cleanup
 - chart-local tooltip styling normalization
-- workbench-page cleanup under `views/artdeco-pages/**`
+- broad workbench-page cleanup unrelated to active routed business surfaces
 - route/layout shell rewrites
 - replacing Element Plus behavior contracts
 - broad visual redesign of business routes
