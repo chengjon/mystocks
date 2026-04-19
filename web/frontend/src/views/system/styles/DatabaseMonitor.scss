@@ -194,34 +194,6 @@
   margin-bottom: var(--artdeco-spacing-5);
 }
 
-.status-badge {
-  padding: calc(var(--artdeco-spacing-3) / 2) calc(var(--artdeco-spacing-3) + calc(var(--artdeco-spacing-1) / 2));
-  background: color-mix(in srgb, var(--artdeco-gold-primary) 10%, var(--artdeco-bg-card));
-  border: 1px solid var(--artdeco-gold-dim);
-  color: var(--artdeco-gold-primary);
-  font-family: var(--artdeco-font-heading, var(--font-display));
-  font-size: var(--artdeco-text-compact-xs);
-  text-transform: uppercase;
-  letter-spacing: var(--artdeco-spacing-px);
-
-  &.success {
-    background: color-mix(in srgb, var(--artdeco-down) 15%, var(--artdeco-bg-card));
-    border-color: var(--artdeco-down);
-    color: var(--artdeco-down);
-  }
-
-  &.danger {
-    background: color-mix(in srgb, var(--artdeco-rise) 15%, var(--artdeco-bg-card));
-    border-color: var(--artdeco-rise);
-    color: var(--artdeco-rise);
-  }
-
-  &.small {
-    padding: var(--artdeco-spacing-1) calc(var(--artdeco-spacing-5) / 2);
-    font-size: calc(var(--artdeco-spacing-5) / 4);
-  }
-}
-
 .databases-section {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 5), 1fr));

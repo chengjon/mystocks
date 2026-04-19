@@ -325,29 +325,6 @@
   text-transform: uppercase;
 }
 
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
-  border: 1px solid transparent;
-  font-family: var(--artdeco-font-heading, var(--font-display));
-  font-size: var(--artdeco-text-compact-xs);
-  letter-spacing: var(--artdeco-spacing-px);
-  text-transform: uppercase;
-}
-
-.status-badge.active {
-  background: color-mix(in srgb, var(--artdeco-success) 12%, var(--artdeco-bg-card));
-  border-color: color-mix(in srgb, var(--artdeco-success) 30%, transparent);
-  color: var(--artdeco-success);
-}
-
-.status-badge.inactive {
-  background: color-mix(in srgb, var(--artdeco-gold-primary) 15%, var(--artdeco-bg-card));
-  border-color: var(--artdeco-gold-dim);
-  color: var(--artdeco-gold-primary);
-}
-
 .strategy-code {
   display: flex;
   flex-wrap: wrap;

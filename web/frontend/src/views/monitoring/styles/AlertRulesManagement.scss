@@ -64,28 +64,6 @@
   }
 }
 
-.status-badge {
-  display: inline-block;
-  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
-  font-size: var(--artdeco-text-compact-xs);
-  font-weight: var(--artdeco-font-semibold);
-  text-transform: uppercase;
-  letter-spacing: var(--artdeco-spacing-px);
-  border: 1px solid transparent;
-
-  &.active {
-    background: color-mix(in srgb, var(--artdeco-down) 10%, var(--artdeco-bg-card));
-    color: var(--artdeco-down);
-    border-color: var(--artdeco-down);
-  }
-
-  &.inactive {
-    background: color-mix(in srgb, var(--artdeco-fg-muted) 10%, var(--artdeco-bg-card));
-    color: var(--artdeco-fg-muted);
-    border-color: var(--artdeco-gold-dim);
-  }
-}
-
 .action-button {
   padding: calc(var(--artdeco-spacing-3) / 2) var(--artdeco-spacing-3);
   font-family: var(--artdeco-font-body, var(--font-body));
