@@ -47,6 +47,7 @@ class DataQualityMetric:
     threshold_critical: float
     unit: str
     description: str
+    higher_is_better: bool = True
     last_updated: datetime = field(default_factory=datetime.now)
     trend: List[float] = field(default_factory=list)  # 最近30个值用于趋势分析
     quality_level: DataQualityLevel = DataQualityLevel.EXCELLENT
@@ -62,27 +63,47 @@ class DataQualityMetric:
             self.trend.pop(0)
 
         # 计算质量等级
-        if new_value >= 95:
-            self.quality_level = DataQualityLevel.EXCELLENT
-        elif new_value >= 85:
-            self.quality_level = DataQualityLevel.GOOD
-        elif new_value >= 70:
-            self.quality_level = DataQualityLevel.FAIR
-        elif new_value >= 50:
-            self.quality_level = DataQualityLevel.POOR
+        if self.higher_is_better:
+            if new_value >= 95:
+                self.quality_level = DataQualityLevel.EXCELLENT
+            elif new_value >= 85:
+                self.quality_level = DataQualityLevel.GOOD
+            elif new_value >= 70:
+                self.quality_level = DataQualityLevel.FAIR
+            elif new_value >= 50:
+                self.quality_level = DataQualityLevel.POOR
+            else:
+                self.quality_level = DataQualityLevel.CRITICAL
         else:
-            self.quality_level = DataQualityLevel.CRITICAL
+            if new_value <= self.threshold_warning:
+                self.quality_level = DataQualityLevel.EXCELLENT
+            elif new_value <= self.threshold_error:
+                self.quality_level = DataQualityLevel.GOOD
+            elif new_value <= self.threshold_critical:
+                self.quality_level = DataQualityLevel.FAIR
+            elif new_value <= self.threshold_critical * 1.5:
+                self.quality_level = DataQualityLevel.POOR
+            else:
+                self.quality_level = DataQualityLevel.CRITICAL
 
     def get_severity(self) -> AlertSeverity:
         """获取告警严重程度"""
-        if self.value >= self.threshold_critical:
-            return AlertSeverity.CRITICAL
-        elif self.value >= self.threshold_error:
-            return AlertSeverity.ERROR
-        elif self.value >= self.threshold_warning:
-            return AlertSeverity.WARNING
+        if self.higher_is_better:
+            if self.value <= self.threshold_critical:
+                return AlertSeverity.CRITICAL
+            elif self.value <= self.threshold_error:
+                return AlertSeverity.ERROR
+            elif self.value <= self.threshold_warning:
+                return AlertSeverity.WARNING
         else:
-            return AlertSeverity.INFO
+            if self.value >= self.threshold_critical:
+                return AlertSeverity.CRITICAL
+            elif self.value >= self.threshold_error:
+                return AlertSeverity.ERROR
+            elif self.value >= self.threshold_warning:
+                return AlertSeverity.WARNING
+
+        return AlertSeverity.INFO
 
     def get_trend_direction(self) -> str:
         """获取趋势方向"""
@@ -134,17 +155,17 @@ class DataSourceQualityMetrics:
     def _initialize_core_metrics(self):
         """初始化核心质量指标"""
         core_metrics = [
-            ("availability", 100.0, 95.0, 90.0, 85.0, "%", "数据源可用性百分比"),
-            ("response_time", 100.0, 500.0, 1000.0, 2000.0, "ms", "平均响应时间"),
-            ("success_rate", 100.0, 95.0, 90.0, 85.0, "%", "请求成功率"),
-            ("data_freshness", 100.0, 300.0, 600.0, 1800.0, "seconds", "数据延迟时间"),
-            ("data_completeness", 100.0, 95.0, 90.0, 85.0, "%", "数据完整性百分比"),
-            ("error_rate", 0.0, 1.0, 5.0, 10.0, "%", "错误率百分比"),
-            ("data_consistency", 100.0, 95.0, 90.0, 85.0, "%", "数据一致性百分比"),
-            ("cache_hit_rate", 100.0, 80.0, 60.0, 40.0, "%", "缓存命中率"),
+            ("availability", 100.0, 95.0, 90.0, 85.0, "%", "数据源可用性百分比", True),
+            ("response_time", 100.0, 500.0, 1000.0, 2000.0, "ms", "平均响应时间", False),
+            ("success_rate", 100.0, 95.0, 90.0, 85.0, "%", "请求成功率", True),
+            ("data_freshness", 100.0, 300.0, 600.0, 1800.0, "seconds", "数据延迟时间", False),
+            ("data_completeness", 100.0, 95.0, 90.0, 85.0, "%", "数据完整性百分比", True),
+            ("error_rate", 0.0, 1.0, 5.0, 10.0, "%", "错误率百分比", False),
+            ("data_consistency", 100.0, 95.0, 90.0, 85.0, "%", "数据一致性百分比", True),
+            ("cache_hit_rate", 100.0, 80.0, 60.0, 40.0, "%", "缓存命中率", True),
         ]
 
-        for name, default_val, warning, error, critical, unit, desc in core_metrics:
+        for name, default_val, warning, error, critical, unit, desc, higher_is_better in core_metrics:
             self.metrics[name] = DataQualityMetric(
                 name=name,
                 value=default_val,
@@ -153,12 +174,13 @@ class DataSourceQualityMetrics:
                 threshold_critical=critical,
                 unit=unit,
                 description=desc,
+                higher_is_better=higher_is_better,
             )
 
     def update_metric(self, metric_name: str, value: float) -> Optional[DataQualityAlert]:
         """更新指标并生成告警"""
         if metric_name not in self.metrics:
-            logger.warning("Unknown metric: %(metric_name)s")
+            logger.warning("Unknown metric: %s", metric_name)
             return None
 
         metric = self.metrics[metric_name]
@@ -499,7 +521,7 @@ class DataQualityMonitor:
                 total_rules += 1
 
             except Exception as e:
-                logger.error("Rule {rule.get_name()} evaluation failed: %(e)s")
+                logger.error("Rule %s evaluation failed: %s", rule.get_name(), e)
                 rule_results.append(
                     {
                         "rule": rule.get_name(),
@@ -587,7 +609,7 @@ class DataQualityMonitor:
 
     async def _trigger_alert(self, alert: DataQualityAlert) -> None:
         """触发告警"""
-        logger.warning("Data quality alert triggered: {alert.message}")
+        logger.warning("Data quality alert triggered: %s", alert.message)
 
         # 通知所有注册的回调
         for callback in self.alert_callbacks:
@@ -596,8 +618,8 @@ class DataQualityMonitor:
                     await callback(alert)
                 else:
                     callback(alert)
-            except Exception:
-                logger.error("Alert callback failed: %(e)s")
+            except Exception as e:
+                logger.error("Alert callback failed: %s", e)
 
     def add_alert_callback(self, callback: Callable[[DataQualityAlert], None]) -> None:
         """添加告警回调"""
