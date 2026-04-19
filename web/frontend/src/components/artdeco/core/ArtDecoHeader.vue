@@ -2,7 +2,7 @@
     <div class="artdeco-header">
         <div class="header-content">
             <h1 class="header-title" v-if="title">{{ title }}</h1>
-            <div class="logo" v-else>MyStocks ArtDeco</div>
+            <div class="logo" v-else></div>
             <p class="header-subtitle" v-if="subtitle">{{ subtitle }}</p>
         </div>
         

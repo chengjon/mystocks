@@ -167,7 +167,7 @@ onMounted(syncExpansion)
   border-bottom: 1px solid var(--artdeco-gold-opacity-10);
 
   .brand-icon-frame {
-    border: 2px solid var(--artdeco-gold-primary);
+    border: none;
     padding: 8px 12px;
     background: var(--artdeco-gold-opacity-05);
     transition: all 0.3s ease;

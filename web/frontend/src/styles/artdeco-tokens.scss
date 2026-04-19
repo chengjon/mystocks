@@ -3,6 +3,8 @@
 //   艺术装饰风格设计令牌 - 大胆金色金融配色
 //   ⭐ ArtDeco V3.0: 专家评估版，提升品牌识别度+200%
 // ============================================
+// Canonical runtime token truth for the active MyStocks ArtDeco system.
+// If legacy files disagree, this file wins unless the conflict is explicitly documented.
 
 // ⚡ 字体加载策略说明（2026-04-10）
 // 当前文件暂采用 @import 加载字体，并统一使用 display=swap。
@@ -429,6 +431,125 @@
   --artdeco-ease-in: cubic-bezier(0.4, 0, 1, 1);
   --artdeco-ease-out: cubic-bezier(0, 0, 0.2, 1);
   --artdeco-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+// ============================================
+//   COMPONENT STATE MACHINE - 组件状态机
+//   Systematic 5-state definitions (CoinPulse-inspired)
+//   Only theme-layer overrides; Element Plus handles logic
+//   States: Default → Hover → Focus → Error → Disabled
+// ============================================
+
+:root {
+  // --- Button States ---
+  --ad-btn-border-default: var(--artdeco-border-default);
+  --ad-btn-border-hover: var(--artdeco-gold-primary);
+  --ad-btn-border-focus: var(--artdeco-gold-primary);
+  --ad-btn-border-error: var(--artdeco-down);
+  --ad-btn-border-disabled: rgb(212 175 55 / 10%);
+
+  --ad-btn-bg-default: var(--artdeco-gold-primary);
+  --ad-btn-bg-hover: var(--artdeco-gold-light);
+  --ad-btn-bg-focus: var(--artdeco-gold-primary);
+  --ad-btn-bg-error: var(--artdeco-down);
+  --ad-btn-bg-disabled: var(--artdeco-bg-card);
+
+  --ad-btn-text-default: var(--artdeco-bg-global);
+  --ad-btn-text-hover: var(--artdeco-bg-global);
+  --ad-btn-text-focus: var(--artdeco-bg-global);
+  --ad-btn-text-error: var(--artdeco-bg-global);
+  --ad-btn-text-disabled: var(--artdeco-gold-dim);
+
+  --ad-btn-shadow-hover: var(--artdeco-glow-subtle);
+  --ad-btn-shadow-focus: var(--artdeco-glow-medium);
+  --ad-btn-shadow-error: var(--artdeco-glow-loss);
+
+  // --- Input States ---
+  --ad-input-border-default: var(--artdeco-border-default);
+  --ad-input-border-hover: rgb(212 175 55 / 80%);
+  --ad-input-border-focus: var(--artdeco-gold-primary);
+  --ad-input-border-error: var(--artdeco-down);
+  --ad-input-border-disabled: rgb(212 175 55 / 10%);
+
+  --ad-input-bg-default: var(--artdeco-bg-card);
+  --ad-input-bg-hover: var(--artdeco-bg-card);
+  --ad-input-bg-focus: var(--artdeco-bg-card);
+  --ad-input-bg-error: var(--artdeco-bg-card);
+  --ad-input-bg-disabled: var(--artdeco-bg-global);
+
+  --ad-input-text-default: var(--artdeco-fg-primary);
+  --ad-input-text-disabled: var(--artdeco-gold-dim);
+  --ad-input-placeholder: var(--artdeco-fg-subtle);
+
+  --ad-input-shadow-focus: var(--artdeco-glow-subtle);
+  --ad-input-shadow-error: var(--artdeco-glow-loss);
+
+  // --- Card States ---
+  --ad-card-border-default: var(--artdeco-border-default);
+  --ad-card-border-hover: var(--artdeco-gold-primary);
+  --ad-card-border-elevated: rgb(212 175 55 / 80%);
+
+  --ad-card-bg-default: var(--artdeco-bg-card);
+  --ad-card-bg-elevated: var(--artdeco-bg-elevated);
+
+  --ad-card-shadow-default: var(--artdeco-shadow-none);
+  --ad-card-shadow-hover: var(--artdeco-glow-intense);
+  --ad-card-shadow-elevated: var(--artdeco-glow-subtle);
+
+  // --- Table Row States ---
+  --ad-row-bg-default: transparent;
+  --ad-row-bg-hover: rgb(212 175 55 / 5%);
+  --ad-row-bg-selected: rgb(212 175 55 / 15%);
+  --ad-row-border-selected: 2px solid var(--artdeco-gold-primary);
+  --ad-row-divider: rgb(212 175 55 / 10%);
+
+  // --- Chip States ---
+  --ad-chip-bg-default: rgb(212 175 55 / 8%);
+  --ad-chip-bg-active: rgb(212 175 55 / 20%);
+  --ad-chip-bg-profit: rgb(255 82 82 / 10%);
+  --ad-chip-bg-loss: rgb(0 230 118 / 10%);
+  --ad-chip-bg-warning: rgb(212 175 55 / 10%);
+  --ad-chip-bg-neutral: rgb(255 255 255 / 5%);
+  --ad-chip-bg-holding: rgb(79 195 247 / 10%);
+  --ad-chip-bg-pending: rgb(255 167 38 / 10%);
+
+  --ad-chip-text-default: var(--artdeco-fg-muted);
+  --ad-chip-text-active: var(--artdeco-gold-primary);
+  --ad-chip-text-profit: var(--artdeco-rise);
+  --ad-chip-text-loss: var(--artdeco-down);
+  --ad-chip-text-warning: var(--artdeco-gold-primary);
+  --ad-chip-text-neutral: var(--artdeco-fg-muted);
+  --ad-chip-text-holding: var(--artdeco-info);
+  --ad-chip-text-pending: #FFA726;
+
+  --ad-chip-border-default: rgb(212 175 55 / 20%);
+  --ad-chip-border-active: var(--artdeco-gold-primary);
+  --ad-chip-border-profit: rgb(255 82 82 / 20%);
+  --ad-chip-border-loss: rgb(0 230 118 / 20%);
+  --ad-chip-border-warning: rgb(212 175 55 / 20%);
+  --ad-chip-border-neutral: rgb(255 255 255 / 10%);
+  --ad-chip-border-holding: rgb(79 195 247 / 20%);
+  --ad-chip-border-pending: rgb(255 167 38 / 20%);
+
+  --ad-chip-radius: var(--artdeco-radius-sm);
+  --ad-chip-padding: 4px 8px;
+
+  // --- Tooltip Tokens ---
+  --ad-tooltip-bg: var(--artdeco-bg-elevated);
+  --ad-tooltip-text: var(--artdeco-fg-primary);
+  --ad-tooltip-font-size: var(--artdeco-text-xs);
+  --ad-tooltip-font-weight: 400;
+  --ad-tooltip-padding: 6px 10px;
+  --ad-tooltip-radius: var(--artdeco-radius-sm);
+  --ad-tooltip-max-width: 240px;
+  --ad-tooltip-arrow-size: 6px;
+  --ad-tooltip-delay-show: 300ms;
+  --ad-tooltip-delay-hide: 0ms;
+
+  // --- Overlay/Backdrop Tokens ---
+  --ad-overlay-bg: rgb(0 0 0 / 60%);
+  --ad-overlay-blur: 2px;
+  --ad-overlay-z: var(--artdeco-z-40);
 }
 
 // ============================================
