@@ -57,9 +57,9 @@
         >
           <div class="strategy-header">
             <h3>{{ strategy.strategy_name_cn }}</h3>
-            <span class="status-badge" :class="strategy.is_active ? 'active' : 'inactive'">
+            <ArtDecoBadge :variant="strategy.is_active ? 'active' : 'neutral'" size="sm">
               {{ strategy.is_active ? '启用' : '禁用' }}
-            </span>
+            </ArtDecoBadge>
           </div>
 
           <div class="strategy-code">
@@ -114,6 +114,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { strategyApi } from '@/api'
+import { ArtDecoBadge } from '@/components/artdeco'
 
 const emit = defineEmits(['run-strategy', 'view-results'])
 

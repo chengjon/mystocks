@@ -42,9 +42,9 @@
             <span class="tag">{{ getStrategyName(row.strategy_code) }}</span>
           </template>
           <template #cell-match_result="{ row }">
-            <span class="status-badge" :class="row.match_result ? 'success' : 'info'">
+            <ArtDecoBadge :variant="row.match_result ? 'profit' : 'neutral'" size="sm">
               {{ row.match_result ? '✓ 匹配' : '✗ 不匹配' }}
-            </span>
+            </ArtDecoBadge>
           </template>
           <template #cell-change_percent="{ row }">
             <span :class="getPriceClass(row.change_percent)">
@@ -104,9 +104,9 @@
           </div>
           <div class="detail-item">
             <label>匹配结果</label>
-            <span class="status-badge" :class="selectedResult.match_result ? 'success' : 'info'">
+            <ArtDecoBadge :variant="selectedResult.match_result ? 'profit' : 'neutral'" size="sm">
               {{ selectedResult.match_result ? '✓ 匹配' : '✗ 不匹配' }}
-            </span>
+            </ArtDecoBadge>
           </div>
         </div>
         <div class="detail-row">
@@ -144,6 +144,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import { strategyApi } from '@/api'
+import { ArtDecoBadge } from '@/components/artdeco'
 import {
   PageHeader,
   FilterBar,

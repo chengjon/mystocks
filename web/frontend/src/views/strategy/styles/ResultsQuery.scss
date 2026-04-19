@@ -65,29 +65,6 @@
   letter-spacing: var(--artdeco-spacing-px);
 }
 
-.status-badge {
-  display: inline-block;
-  padding: var(--artdeco-spacing-1) calc(var(--artdeco-spacing-5) / 2);
-  font-family: var(--artdeco-font-heading, var(--font-display));
-  font-size: calc(var(--artdeco-spacing-5) / 4);
-  text-transform: uppercase;
-  letter-spacing: var(--artdeco-spacing-px);
-  border-radius: var(--artdeco-radius-none);
-  border: 1px solid transparent;
-
-  &.success {
-    background: color-mix(in srgb, var(--artdeco-down) 15%, var(--artdeco-bg-card));
-    border-color: color-mix(in srgb, var(--artdeco-down) 35%, transparent);
-    color: var(--artdeco-down);
-  }
-
-  &.info {
-    background: color-mix(in srgb, var(--artdeco-gold-primary) 15%, var(--artdeco-bg-card));
-    border-color: var(--artdeco-gold-dim);
-    color: var(--artdeco-gold-primary);
-  }
-}
-
 .table-action {
   padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
   margin-right: var(--artdeco-spacing-1);
