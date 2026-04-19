@@ -41,7 +41,7 @@ class UnifiedMockDataManager(MockExtendedDataMixin):
         self._cache_timestamp = {}
         self._cache_ttl = 300  # 5分钟缓存
 
-        logger.info("初始化Mock数据管理器，使用Mock数据: {self.use_mock_data}")
+        logger.info("初始化Mock数据管理器，使用Mock数据: %s", self.use_mock_data)
 
     def get_data(self, data_type: str, **kwargs) -> Dict[str, Any]:
         """
@@ -58,7 +58,7 @@ class UnifiedMockDataManager(MockExtendedDataMixin):
 
         # 检查缓存
         if self._is_cache_valid(cache_key):
-            logger.debug("从缓存获取数据: %(data_type)s")
+            logger.debug("从缓存获取数据: %s", data_type)
             return self._data_cache[cache_key]
 
         try:
@@ -75,10 +75,10 @@ class UnifiedMockDataManager(MockExtendedDataMixin):
             return data
 
         except Exception:
-            logger.error("获取数据失败 {data_type}: {str(e)}", exc_info=True)
+            logger.error("获取数据失败 %s", data_type, exc_info=True)
             # 如果是真实数据获取失败，可以降级到Mock数据
             if not self.use_mock_data and self.fallback_enabled:
-                logger.warning("降级到Mock数据: %(data_type)s")
+                logger.warning("降级到Mock数据: %s", data_type)
                 return self._get_mock_data(data_type, **kwargs)
             else:
                 raise
@@ -139,8 +139,8 @@ class UnifiedMockDataManager(MockExtendedDataMixin):
                         get_volatility_indicators,
                         get_volume_indicators,
                     )
-                except ImportError:
-                    logger.error("导入Mock模块失败: %(e)s")
+                except ImportError as exc:
+                    logger.error("导入Mock模块失败: %s", exc)
 
                     # 降级到默认实现
                     def get_all_indicators(symbol):
