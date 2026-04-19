@@ -9,6 +9,7 @@
 > `playwright.config.ts` 仅用于历史 legacy 专项脚本。
 > 端口优先由 `.env` 注入；若缺失，当前 helper / smoke runner 会回落到标准端口：前端 `3020`（备份 `3021`），后端 `8020`（备份 `8021`）。
 > CI 阻塞主线已收敛为：`Vitest stable unit` + `selector gate` + `test:e2e:business-smoke` + `test:e2e:axe` + `test:e2e:lighthouse`。
+> 共享 PM2 集成测试的 canonical 执行顺序与 `pm2 save` / `pm2 resurrect` 约束，统一参考 [`docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md`](/opt/claude/mystocks_spec/docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md)。
 
 ## 概述
 
@@ -70,6 +71,7 @@ pm2 list | grep mystocks-backend
 注意：
 - `scripts/run_e2e_pm2.sh` 只适合隔离的 CI / 测试环境，不适合复用当前共享 PM2 会话；它会执行 `pm2 delete all` 清空进程。
 - 如果你已经有在线 PM2 服务，优先复用现有前端服务并启用 `PLAYWRIGHT_EXTERNAL_FRONTEND=1`。
+- 若要跑完整共享 PM2 回归，不要手工拼接长链，直接执行 [`scripts/run_pm2_integration_workflow.sh`](/opt/claude/mystocks_spec/scripts/run_pm2_integration_workflow.sh) 的 `regression` 模式。
 
 ### 运行测试
 

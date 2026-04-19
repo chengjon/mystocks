@@ -15,8 +15,10 @@ MyStocks 内存管理器
 日期: 2025-12-06
 """
 
+import atexit
 import gc
 import logging
+import sys
 import threading
 import time
 import weakref
@@ -27,6 +29,25 @@ from typing import Any, Callable, Dict, List, Optional
 import psutil
 
 logger = logging.getLogger("MyStocksMemoryManager")
+
+
+def _logger_can_emit_records(target_logger: logging.Logger) -> bool:
+    """检查 logger 当前是否还有可写 handler，避免进程退出时向已关闭流写日志。"""
+    current: Optional[logging.Logger] = target_logger
+    saw_handler = False
+
+    while current:
+        for handler in current.handlers:
+            saw_handler = True
+            stream = getattr(handler, "stream", None)
+            if stream is not None and getattr(stream, "closed", False):
+                return False
+
+        if not current.propagate:
+            break
+        current = current.parent
+
+    return saw_handler
 
 
 @dataclass
@@ -371,11 +392,9 @@ def initialize_memory_management():
     logger.info("初始化内存管理系统")
 
     # 启动内存监控
-    _memory_monitor.start()
+    get_memory_monitor().start()
 
     # 注册清理钩子
-    import atexit
-
     atexit.register(shutdown_memory_management)
 
     logger.info("内存管理系统初始化完成")
@@ -383,18 +402,29 @@ def initialize_memory_management():
 
 def shutdown_memory_management():
     """关闭内存管理系统"""
-    logger.info("关闭内存管理系统")
+    emit_logs = not sys.is_finalizing() and _logger_can_emit_records(logger)
+    previous_disabled = logger.disabled
 
-    # 停止监控
-    _memory_monitor.stop()
+    if not emit_logs:
+        logger.disabled = True
 
-    # 清理所有资源
-    _resource_manager.cleanup_all()
+    try:
+        if emit_logs:
+            logger.info("关闭内存管理系统")
 
-    # 最终垃圾回收
-    gc.collect()
+        # 停止监控
+        get_memory_monitor().stop()
 
-    logger.info("内存管理系统已关闭")
+        # 清理所有资源
+        get_resource_manager().cleanup_all()
+
+        # 最终垃圾回收
+        gc.collect()
+
+        if emit_logs:
+            logger.info("内存管理系统已关闭")
+    finally:
+        logger.disabled = previous_disabled
 
 
 # 自动初始化

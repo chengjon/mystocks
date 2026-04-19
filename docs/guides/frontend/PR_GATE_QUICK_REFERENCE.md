@@ -19,6 +19,7 @@ Use this sheet when a change touches any of these:
 Primary references:
 
 - [Frontend test and CI gate overview](/opt/claude/mystocks_spec/docs/testing/e2e/README.md)
+- [PM2 integration workflow](/opt/claude/mystocks_spec/docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md)
 - [PR template](/opt/claude/mystocks_spec/.github/pull_request_template.md)
 
 ## Required Commands
@@ -65,6 +66,8 @@ Always report service availability explicitly:
 
 - `mystocks-backend`: `http://localhost:8020`
 - `mystocks-frontend`: `http://localhost:3020`
+
+If the verification reuses a shared PM2 session, follow the save and restore sequence in [PM2 integration workflow](/opt/claude/mystocks_spec/docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md) instead of manually mixing `run_e2e_pm2.sh` with a long-running PM2 chain.
 
 ## Reviewer Heuristics
 

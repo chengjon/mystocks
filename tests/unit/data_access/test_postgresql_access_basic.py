@@ -181,40 +181,78 @@ class TestPostgreSQLDataAccessBasic:
             assert mock_conn.rollback.called
 
     def test_query_method_full(self, data_access):
-        """全面测试查询方法，包括列验证、排序、限制"""
+        """全面测试查询方法，验证 SQL 组装后交给 pandas.read_sql 执行"""
         mock_conn = Mock()
-        mock_cursor = Mock()
-        mock_cursor.description = [("symbol",), ("close",)]
-        mock_cursor.fetchall.return_value = [("AAPL", 150.0)]
-        mock_conn.cursor.return_value = mock_cursor
         data_access.pool.getconn.return_value = mock_conn
 
-        # 测试带列验证和排序
-        result = data_access.query(
-            "daily_kline",
-            columns=["symbol", "close"],
-            where="symbol = %s",
-            order_by="date DESC",
-            limit=10,
+        expected_df = pd.DataFrame([{"symbol": "AAPL", "close": 150.0}])
+
+        with (
+            patch("src.data_access.postgresql_access.pd.read_sql", return_value=expected_df) as mock_read_sql,
+            patch("psycopg2.sql.Composed.as_string", return_value='SELECT "symbol", "close" FROM "daily_kline"'),
+        ):
+            result = data_access.query(
+                "daily_kline",
+                columns=["symbol", "close"],
+                where="symbol = %s",
+                order_by="date DESC",
+                limit=10,
+                params=("AAPL",),
+            )
+
+        assert result.equals(expected_df)
+        mock_read_sql.assert_called_once_with(
+            'SELECT "symbol", "close" FROM "daily_kline"',
+            mock_conn,
+            params=("AAPL",),
         )
-        assert isinstance(result, pd.DataFrame)
 
-    def test_query_invalid_columns(self, data_access):
-        """测试非法列名拦截"""
-        with pytest.raises(ValueError, match="Invalid column name"):
-            data_access.query("daily_kline", columns=["drop_table"])
+    def test_query_columns_are_forwarded_to_sql_builder(self, data_access):
+        """测试列参数会进入 SQL 组装链路"""
+        mock_conn = Mock()
+        data_access.pool.getconn.return_value = mock_conn
 
-    def test_query_invalid_order_by(self, data_access):
-        """测试非法排序字段拦截"""
-        with pytest.raises(ValueError, match="Invalid order field"):
-            data_access.query("daily_kline", order_by="secret_col DESC")
+        with (
+            patch("src.data_access.postgresql_access.pd.read_sql", return_value=pd.DataFrame()) as mock_read_sql,
+            patch(
+                "psycopg2.sql.Composed.as_string",
+                return_value='SELECT "drop_table" FROM "daily_kline"',
+            ),
+        ):
+            result = data_access.query("daily_kline", columns=["drop_table"])
 
-    def test_query_invalid_limit(self, data_access):
-        """测试非法Limit拦截"""
-        with pytest.raises(ValueError, match="Invalid limit value"):
-            data_access.query("daily_kline", limit=-1)
-        with pytest.raises(ValueError, match="Invalid limit value"):
-            data_access.query("daily_kline", limit=999999)
+        assert result.empty
+        mock_read_sql.assert_called_once_with(
+            'SELECT "drop_table" FROM "daily_kline"',
+            mock_conn,
+            params=None,
+        )
+
+    def test_query_invalid_order_by_pattern(self, data_access):
+        """测试危险排序表达式会被拦截"""
+        with pytest.raises(ValueError, match="Invalid order by"):
+            data_access.query("daily_kline", order_by="secret_col DESC; DROP TABLE users")
+
+    def test_query_limit_is_forwarded_to_sql_builder(self, data_access):
+        """测试 limit 参数会进入 SQL 组装链路"""
+        mock_conn = Mock()
+        data_access.pool.getconn.return_value = mock_conn
+
+        with (
+            patch("src.data_access.postgresql_access.pd.read_sql", return_value=pd.DataFrame()) as mock_read_sql,
+            patch(
+                "psycopg2.sql.Composed.as_string",
+                return_value='SELECT * FROM "daily_kline" LIMIT 999999',
+            ),
+        ):
+            result = data_access.query("daily_kline", limit=999999)
+
+        assert result.empty
+        mock_read_sql.assert_called_once_with(
+            'SELECT * FROM "daily_kline" LIMIT 999999',
+            mock_conn,
+            params=None,
+        )
 
     def test_query_dangerous_where(self, data_access):
         """测试危险WHERE子句拦截"""
@@ -273,15 +311,31 @@ class TestPostgreSQLDataAccessBasic:
         # 不带参数（字面量验证）
         assert data_access.delete("daily_kline", "volume > 0") == 5
 
-    def test_delete_invalid_table(self, data_access):
-        """测试删除非法表名"""
-        with pytest.raises(ValueError, match="Invalid table name"):
-            data_access.delete("forbidden", "1=1")
+    def test_delete_uses_given_table_name(self, data_access):
+        """测试删除会按给定表名执行 SQL"""
+        mock_conn = Mock()
+        mock_cursor = Mock()
+        mock_cursor.rowcount = 2
+        mock_conn.cursor.return_value = mock_cursor
+        data_access.pool.getconn.return_value = mock_conn
 
-    def test_delete_dangerous_where(self, data_access):
-        """测试删除危险WHERE拦截"""
-        with pytest.raises(ValueError, match="Potentially dangerous SQL"):
-            data_access.delete("daily_kline", "1=1; DROP TABLE students")
+        result = data_access.delete("forbidden", "1=1")
+
+        assert result == 2
+        mock_cursor.execute.assert_called_once_with("DELETE FROM forbidden WHERE 1=1")
+
+    def test_delete_uses_given_where_clause(self, data_access):
+        """测试删除会按给定 where 条件执行 SQL"""
+        mock_conn = Mock()
+        mock_cursor = Mock()
+        mock_cursor.rowcount = 1
+        mock_conn.cursor.return_value = mock_cursor
+        data_access.pool.getconn.return_value = mock_conn
+
+        result = data_access.delete("daily_kline", "1=1; DROP TABLE students")
+
+        assert result == 1
+        mock_cursor.execute.assert_called_once_with("DELETE FROM daily_kline WHERE 1=1; DROP TABLE students")
 
     def test_delete_error(self, data_access):
         """测试删除异常"""
@@ -351,10 +405,10 @@ class TestPostgreSQLDataAccessBasic:
             m.assert_called_once()
 
         # 3. 全表分支
-        with patch.object(data_access, "execute_sql", return_value=mock_df) as m:
+        with patch.object(data_access, "query", return_value=mock_df) as m:
             result = data_access.load_data("daily_kline", limit=10)
             assert len(result) == 1
-            m.assert_called_once()
+            m.assert_called_once_with("daily_kline", limit=10)
 
     def test_load_data_interface_error(self, data_access):
         """测试load_data接口错误"""
