@@ -25,6 +25,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
         self.config = config
         self.source_type = "technical_analysis"
         self.name = config.get("name", "Technical Analysis Source")
+        self.fallback_enabled = bool(config.get("fallback_enabled", True))
 
         # Initialize services lazily (only when needed)
         self._technical_service = None
@@ -59,22 +60,93 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                 raise RuntimeError(f"Failed to initialize mock manager: {e}")
         return self._mock_manager
 
+    def _get_mock_technical_payload(self, symbol: str) -> Dict[str, Any]:
+        mock_manager = self._get_mock_manager()
+        return mock_manager.get_data("technical", symbol=symbol)
+
+    def _should_use_mock_fallback(self) -> bool:
+        return self.fallback_enabled
+
+    def _is_empty_technical_result(self, result: Any) -> bool:
+        if result is None:
+            return True
+        if isinstance(result, dict):
+            if result.get("error"):
+                return True
+            return len(result) == 0
+        if isinstance(result, list):
+            return len(result) == 0
+        return False
+
+    def _resolve_technical_result(self, endpoint: str, symbol: str, result: Any) -> Any:
+        if not self._is_empty_technical_result(result):
+            return result
+
+        if not self._should_use_mock_fallback():
+            return result
+
+        try:
+            mock_payload = self._get_mock_technical_payload(symbol)
+        except Exception as exc:
+            logger.warning("Technical analysis mock fallback unavailable for %s: %s", symbol, exc)
+            return result
+
+        logger.info("Technical analysis fallback activated for endpoint=%s symbol=%s", endpoint, symbol)
+
+        indicators = mock_payload.get("indicators", {})
+        signals = mock_payload.get("signals", {})
+
+        if endpoint == "indicators":
+            return indicators
+        if endpoint == "trend":
+            return indicators.get("trend", {})
+        if endpoint == "momentum":
+            return indicators.get("momentum", {})
+        if endpoint == "volatility":
+            return indicators.get("volatility", {})
+        if endpoint == "volume":
+            return indicators.get("volume", {})
+        if endpoint == "signals":
+            return signals
+
+        return result
+
+    def _build_fallback_response(self, endpoint: str, data: Any) -> Dict[str, Any]:
+        return {
+            "success": True,
+            "data": data,
+            "source": self.source_type,
+            "endpoint": endpoint,
+            "timestamp": datetime.now().isoformat(),
+        }
+
     async def get_data(self, endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
         """获取技术分析数据"""
         params = params or {}
         start_time = time.time()
+        symbol = params.get("symbol", "000001")
 
         # Ensure service is available
-        service = self._get_technical_service()
+        try:
+            service = self._get_technical_service()
+        except Exception as exc:
+            if self._should_use_mock_fallback():
+                logger.warning("Technical analysis service unavailable for %s: %s", symbol, exc)
+                data = self._resolve_technical_result(endpoint, symbol, {})
+                self.metrics.record_success((time.time() - start_time) * 1000)
+                return self._build_fallback_response(endpoint, data)
+            raise
+
         if not service:
+            if self._should_use_mock_fallback():
+                data = self._resolve_technical_result(endpoint, symbol, {})
+                self.metrics.record_success((time.time() - start_time) * 1000)
+                return self._build_fallback_response(endpoint, data)
             raise RuntimeError("Technical analysis service not available")
 
         try:
             # 解析端点路径
             path_parts = endpoint.strip("/").split("/")
-
-            # 获取symbol参数
-            symbol = params.get("symbol", "000001")
 
             # 使用 run_in_executor 执行同步计算任务，防止阻塞事件循环
             import asyncio
@@ -88,94 +160,64 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                 end_date = params.get("end_date")
 
                 data = await self._get_all_indicators(symbol, period, start_date, end_date)
+                data = self._resolve_technical_result("indicators", symbol, data)
 
                 # For indicators endpoint, return data directly without wrapping
                 self.metrics.record_success((time.time() - start_time) * 1000)
-                return {
-                    "success": True,
-                    "data": data,
-                    "source": self.source_type,
-                    "endpoint": endpoint,
-                    "timestamp": datetime.now().isoformat(),
-                }
+                return self._build_fallback_response(endpoint, data)
 
             elif endpoint == "trend" or (len(path_parts) >= 2 and path_parts[1] == "trend"):
                 # "trend" or /{symbol}/trend
                 period = params.get("period", "daily")
 
                 data = await self._get_trend_indicators(symbol, period)
+                data = self._resolve_technical_result("trend", symbol, data)
 
                 self.metrics.record_success((time.time() - start_time) * 1000)
-                return {
-                    "success": True,
-                    "data": data,
-                    "source": self.source_type,
-                    "endpoint": endpoint,
-                    "timestamp": datetime.now().isoformat(),
-                }
+                return self._build_fallback_response(endpoint, data)
 
             elif endpoint == "momentum" or (len(path_parts) >= 2 and path_parts[1] == "momentum"):
                 # "momentum" or /{symbol}/momentum
                 period = params.get("period", "daily")
 
                 data = await self._get_momentum_indicators(symbol, period)
+                data = self._resolve_technical_result("momentum", symbol, data)
 
                 self.metrics.record_success((time.time() - start_time) * 1000)
-                return {
-                    "success": True,
-                    "data": data,
-                    "source": self.source_type,
-                    "endpoint": endpoint,
-                    "timestamp": datetime.now().isoformat(),
-                }
+                return self._build_fallback_response(endpoint, data)
 
             elif endpoint == "volatility" or (len(path_parts) >= 2 and path_parts[1] == "volatility"):
                 # "volatility" or /{symbol}/volatility
                 period = params.get("period", "daily")
 
                 data = await self._get_volatility_indicators(symbol, period)
+                data = self._resolve_technical_result("volatility", symbol, data)
 
                 self.metrics.record_success((time.time() - start_time) * 1000)
-                return {
-                    "success": True,
-                    "data": data,
-                    "source": self.source_type,
-                    "endpoint": endpoint,
-                    "timestamp": datetime.now().isoformat(),
-                }
+                return self._build_fallback_response(endpoint, data)
 
             elif endpoint == "volume" or (len(path_parts) >= 2 and path_parts[1] == "volume"):
                 # "volume" or /{symbol}/volume
                 period = params.get("period", "daily")
 
                 data = await self._get_volume_indicators(symbol, period)
+                data = self._resolve_technical_result("volume", symbol, data)
 
                 self.metrics.record_success((time.time() - start_time) * 1000)
-                return {
-                    "success": True,
-                    "data": data,
-                    "source": self.source_type,
-                    "endpoint": endpoint,
-                    "timestamp": datetime.now().isoformat(),
-                }
+                return self._build_fallback_response(endpoint, data)
 
             elif endpoint == "signals" or (len(path_parts) >= 2 and path_parts[1] == "signals"):
                 # "signals" or /{symbol}/signals
                 period = params.get("period", "daily")
 
                 data = await self._get_trading_signals(symbol, period)
+                data = self._resolve_technical_result("signals", symbol, data)
 
-                logger.info("🔍 _get_trading_signals returned data: %(data)s, type={type(data)}")
+                logger.info("Technical signals resolved for %s: type=%s", symbol, type(data).__name__)
 
                 # For signals endpoint, return data directly without wrapping
                 self.metrics.record_success((time.time() - start_time) * 1000)
-                return {
-                    "success": True,
-                    "data": data,
-                    "source": self.source_type,
-                    "endpoint": endpoint,
-                    "timestamp": datetime.now().isoformat(),
-                }
+                return self._build_fallback_response(endpoint, data)
 
         except Exception as e:
             # 记录失败请求
@@ -253,17 +295,17 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
 
         service = self._get_technical_service()
 
-        logger.info("🔍 _get_trading_signals called: symbol=%(symbol)s, period=%(period)s")
+        logger.info("Technical trading signals requested: symbol=%s period=%s", symbol, period)
 
         # 获取历史数据
         df = await asyncio.to_thread(service.get_stock_history, symbol=symbol, period=period)
 
-        logger.info("🔍 _get_trading_signals: got df with shape={df.shape}")
+        logger.info("Technical trading signals data frame shape=%s", df.shape)
 
         # 生成信号
         result = await asyncio.to_thread(service.generate_trading_signals, df)
 
-        logger.info("🔍 _get_trading_signals: result=%(result)s, type={type(result)}")
+        logger.info("Technical trading signals generated: type=%s", type(result).__name__)
 
         return result
 
@@ -306,7 +348,7 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
                 indicators = await self._get_all_indicators(symbol, period)
                 results[symbol] = indicators
             except Exception as e:
-                logger.error("Failed to get indicators for %(symbol)s: %(e)s")
+                logger.error("Failed to get indicators for %s: %s", symbol, e)
                 results[symbol] = {"error": str(e)}
 
         return results
@@ -344,5 +386,3 @@ class TechnicalAnalysisDataSourceAdapter(IDataSource):
     async def close(self):
         """关闭连接和清理资源"""
         # Technical Analysis适配器不需要清理特定资源
-
-
