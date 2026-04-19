@@ -33,18 +33,18 @@
       <div class="artde-card health-card">
         <div class="card-header">
           <span class="section-title">数据库健康状态</span>
-          <span class="status-badge" :class="healthData.summary?.healthy === 2 ? 'success' : 'danger'">
+          <ArtDecoBadge :variant="healthData.summary?.healthy === 2 ? 'active' : 'loss'">
             {{ healthData.summary?.healthy === 2 ? '全部正常' : '存在异常' }}
-          </span>
+          </ArtDecoBadge>
         </div>
 
         <div class="databases-section">
           <div class="database-status" v-if="healthData.tdengine">
             <div class="db-header">
               <h3 class="db-title">TDengine</h3>
-              <span class="status-badge small" :class="healthData.tdengine?.status === 'healthy' ? 'success' : 'danger'">
+              <ArtDecoBadge :variant="healthData.tdengine?.status === 'healthy' ? 'active' : 'loss'" size="sm">
                 {{ healthData.tdengine?.status === 'healthy' ? '正常' : '异常' }}
-              </span>
+              </ArtDecoBadge>
             </div>
             <div class="db-details" v-if="healthData.tdengine">
               <div class="detail-item">
@@ -69,9 +69,9 @@
           <div class="database-status" v-if="healthData.postgresql">
             <div class="db-header">
               <h3 class="db-title">PostgreSQL</h3>
-              <span class="status-badge small" :class="healthData.postgresql?.status === 'healthy' ? 'success' : 'danger'">
+              <ArtDecoBadge :variant="healthData.postgresql?.status === 'healthy' ? 'active' : 'loss'" size="sm">
                 {{ healthData.postgresql?.status === 'healthy' ? '正常' : '异常' }}
-              </span>
+              </ArtDecoBadge>
             </div>
             <div class="db-details" v-if="healthData.postgresql">
               <div class="detail-item">
@@ -182,6 +182,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
+import { ArtDecoBadge } from '@/components/artdeco'
 
 interface DatabaseHealth {
   status: 'healthy' | 'unhealthy' | 'unknown'

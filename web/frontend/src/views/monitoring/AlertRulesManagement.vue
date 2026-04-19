@@ -53,9 +53,9 @@
             </el-tag>
           </template>
           <template #cell-is_active="{ row }">
-            <span :class="['status-badge', row.is_active ? 'active' : 'inactive']">
+            <ArtDecoBadge :variant="row.is_active ? 'active' : 'neutral'" size="sm">
               {{ row.is_active ? '启用' : '停用' }}
-            </span>
+            </ArtDecoBadge>
           </template>
           <template #cell-actions="{ row }">
             <button class="action-button" @click="editRule(row)">
@@ -186,6 +186,7 @@
 </template>
 
 <script setup lang="ts">
+import { ArtDecoBadge } from '@/components/artdeco'
 import { useAlertRulesManagement } from './composables/useAlertRulesManagement'
 
 const { alertRules, loading, showCreateDialog, editingRule, pagination, ruleTypes, ruleForm, tableColumns, paginatedRules, getRuleTypeTag, formatRuleType, getNotificationLevelType, fetchAlertRules, editRule, saveRule, deleteRule, handleCloseDialog, handleSizeChange, handleCurrentChange } = useAlertRulesManagement()
