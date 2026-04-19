@@ -9,6 +9,8 @@
 - Latest Progress: Re-exported root TASK.md and TASK-REPORT.md after the frontend mainline System-Config truth alignment so root projections match the latest Mongo state.
 - Pending Request: `False`
 
+> Governance reference: `docs/standards/technical-debt-governance-charter-v1.md`
+
 ## Updates
 - `2026-04-03T03:13:51.689000` [in_progress] main: Verified the design cutover gap: root TASK.md and TASK-REPORT.md were still hybrid/manual artifacts instead of Mongo-exported snapshots.
 - `2026-04-03T03:14:06.040000` [in_progress] main: Backfilled frontend mainline evidence into the control plane: Phase 1 closed 6/6 pages PASS, Phase 2 closed 6/6 PASS, and Phase 3 closed 12/12 PASS, with matrix artifacts under reports/analysis/frontend-mainline-phase-{1,2,3}-*.
@@ -345,3 +347,26 @@
 - Model: `glm-5.1`
 - Files: (none)
 - Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/5acb7891-e0ee-4a2b-bb38-4c0347be0fba.jsonl`
+
+## [AUTO] 2026-04-16 13:41:16 Session d6c22836-291f-43c2-ba42-77c687be1bc8
+- Completion: true
+- Summary: 所有基础设施更改都已完成。唯一剩下的步骤是 `Chromium` 浏览器下载（170 MiB，在后台运行中）。
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/d6c22836-291f-43c2-ba42-77c687be1bc8.jsonl`
+
+
+## [AUTO] 2026-04-18 13:39:02 Session 618971f5-ec98-4307-b58b-7190074ad93b
+- Completion: true
+- Summary: Ollama 和 LM Studio 的模型格式不同，不能直接复制文件。有两种方案：
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/618971f5-ec98-4307-b58b-7190074ad93b.jsonl`
+
+
+## [AUTO] 2026-04-19 02:02:47 Session 2d0d47f5-fd0d-41b9-9649-c27729b56dad
+- Completion: true
+- Summary: 已完成。MYSTOCKS 的边框已移除，当前 `border: none`。
+- Model: `glm-5.1`
+- Files: (none)
+- Transcript: `/root/.claude/projects/-opt-claude-mystocks-spec/2d0d47f5-fd0d-41b9-9649-c27729b56dad.jsonl`
