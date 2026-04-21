@@ -118,7 +118,11 @@
                   <div class="meta-cell">{{ row.strategyType }}</div>
                 </td>
                 <td>
-                  <span :class="['status-chip', row.statusLabel.toLowerCase()]">{{ row.statusLabel }}</span>
+                  <ArtDecoBadge
+                    :text="row.statusLabel"
+                    :variant="getOptimizationStatusBadgeVariant(row.statusLabel)"
+                    size="sm"
+                  />
                 </td>
                 <td>{{ row.parameterCount }}</td>
                 <td>{{ row.backtestStatus }}</td>
@@ -174,7 +178,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { strategyApi } from '@/api'
 import type { StrategyConfig } from '@/api/types/common'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoBadge, ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import type { StrategySnapshot } from '@/composables/strategy/useStrategyCrossTabContext'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
@@ -256,6 +260,13 @@ const pageStatusType = computed(() => {
   if (error.value) return 'warning'
   return dataSource.value === 'real' ? 'success' : 'info'
 })
+
+function getOptimizationStatusBadgeVariant(status: OptimizationStatusLabel): 'profit' | 'warning' | 'loss' | 'neutral' {
+  if (status === 'RUNNING') return 'profit'
+  if (status === 'PAUSED') return 'warning'
+  if (status === 'ERROR') return 'loss'
+  return 'neutral'
+}
 
 const filteredRows = computed(() => {
   const searchKeyword = keyword.value.trim().toLowerCase()

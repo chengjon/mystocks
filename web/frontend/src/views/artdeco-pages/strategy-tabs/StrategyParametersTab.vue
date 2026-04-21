@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoBadge, ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
 import { strategyApi } from '@/api'
@@ -146,6 +146,12 @@ function getOptimizationScore(strategy: StrategyConfig): number | null {
   return snapshot?.optimization?.score ?? null
 }
 
+function getStrategyStatusBadgeVariant(status?: StrategyConfig['status']): 'profit' | 'warning' | 'neutral' {
+  if (status === 'active') return 'profit'
+  if (status === 'paused') return 'warning'
+  return 'neutral'
+}
+
 const fetchStrategies = async () => {
   const payload = await exec(() => strategyApi.getStrategies({}), {
     silent: true,
@@ -246,12 +252,17 @@ watch(selectedStrategyId, (value) => {
           <div class="card-content">
             <div class="strategy-info">
               <h3 class="strategy-name">{{ strategy.strategy_name }}</h3>
-              <span :class="['status-badge', strategy.status]">
-                {{ strategy.status?.toUpperCase() }}
-              </span>
-              <span v-if="getOptimizationScore(strategy) !== null" class="optimization-badge">
-                OPT {{ getOptimizationScore(strategy) }}
-              </span>
+              <ArtDecoBadge
+                :text="strategy.status?.toUpperCase()"
+                :variant="getStrategyStatusBadgeVariant(strategy.status)"
+                size="sm"
+              />
+              <ArtDecoBadge
+                v-if="getOptimizationScore(strategy) !== null"
+                :text="`OPT ${getOptimizationScore(strategy)}`"
+                variant="gold"
+                size="sm"
+              />
             </div>
 
             <p class="description">{{ strategy.description }}</p>

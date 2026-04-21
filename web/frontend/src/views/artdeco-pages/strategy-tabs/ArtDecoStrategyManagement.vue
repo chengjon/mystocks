@@ -134,9 +134,11 @@
               </td>
               <td>{{ strategy.type || '-' }}</td>
               <td>
-                <span :class="['status-chip', strategy.status]">
-                  {{ formatStatusLabel(strategy.status) }}
-                </span>
+                <ArtDecoBadge
+                  :text="formatStatusLabel(strategy.status)"
+                  :variant="getStatusBadgeVariant(strategy.status)"
+                  size="sm"
+                />
               </td>
               <td>{{ formatUpdatedTime(strategy.lastRunTime) }}</td>
               <td class="action-cell">
@@ -288,7 +290,7 @@
 import { computed, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoBadge, ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useStrategy } from '@/composables/useStrategy'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
 import type { StrategyListItemVM } from '@/utils/strategy-adapters'
@@ -489,6 +491,13 @@ function formatStatusLabel(status: StrategyListItemVM['status']): string {
   if (status === 'paused') return 'PAUSED'
   if (status === 'error') return 'ERROR'
   return 'STOPPED'
+}
+
+function getStatusBadgeVariant(status: StrategyListItemVM['status']): 'profit' | 'warning' | 'loss' | 'neutral' {
+  if (status === 'running') return 'profit'
+  if (status === 'paused') return 'warning'
+  if (status === 'error') return 'loss'
+  return 'neutral'
 }
 
 function formatUpdatedTime(timestamp: string): string {

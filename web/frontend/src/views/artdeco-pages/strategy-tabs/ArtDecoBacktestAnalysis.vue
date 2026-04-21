@@ -105,7 +105,11 @@
                 <strong class="name">{{ task.name }}</strong>
                 <span class="detail">{{ task.detail }}</span>
               </div>
-              <span class="status-chip" :class="task.statusClass">{{ task.status }}</span>
+              <ArtDecoBadge
+                :text="task.status"
+                :variant="getBacktestStatusBadgeVariant(task.statusClass)"
+                size="sm"
+              />
             </div>
           </div>
         </ArtDecoCard>
@@ -154,7 +158,11 @@
               <div class="step-list">
                 <div v-for="step in progress.steps" :key="step.name" class="step-row">
                   <span class="name">{{ step.name }}</span>
-                  <span class="status-chip" :class="step.statusClass">{{ step.status }}</span>
+                  <ArtDecoBadge
+                    :text="step.status"
+                    :variant="getBacktestStatusBadgeVariant(step.statusClass)"
+                    size="sm"
+                  />
                 </div>
               </div>
             </div>
@@ -209,7 +217,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ArtDecoButton, ArtDecoCard, ArtDecoInput, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
+import { ArtDecoBadge, ArtDecoButton, ArtDecoCard, ArtDecoInput, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
 import BacktestHeader from './components/BacktestHeader.vue'
 import BacktestKpiGrid from './components/BacktestKpiGrid.vue'
 import BacktestWorkbenchTabs from './components/BacktestWorkbenchTabs.vue'
@@ -227,6 +235,13 @@ const props = withDefaults(defineProps<Props>(), {
   systemConfig: undefined
 })
 const isEmbedded = computed(() => Boolean(props.functionKey))
+
+function getBacktestStatusBadgeVariant(status: string): 'pending' | 'holding' | 'neutral' | 'loss' {
+  if (status === 'queued') return 'pending'
+  if (status === 'running') return 'holding'
+  if (status === 'failed') return 'loss'
+  return 'neutral'
+}
 
 const backtestTabMetaMap = {
   designer: {
