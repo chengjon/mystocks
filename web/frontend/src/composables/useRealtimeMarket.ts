@@ -10,6 +10,7 @@
 
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { wsManager } from '@/services/menuService'
+import { createLatestOnlyCoalescer } from '@/utils/streamCoalescer'
 
 // ========== 类型定义 ==========
 
@@ -46,6 +47,7 @@ export interface WebSocketStatus {
 export interface RealtimeMarketOptions {
   autoConnect?: boolean
   reconnectOnUnmount?: boolean
+  coalesceWindowMs?: number
   onError?: (error: Error) => void
   onMessage?: (data: RealtimeMarketData) => void
 }
@@ -73,6 +75,7 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
   const {
     autoConnect = true,
     reconnectOnUnmount = false,
+    coalesceWindowMs = 200,
     onError,
     onMessage,
   } = options
@@ -146,6 +149,26 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
     }
 
     // 创建消息处理器
+    const emitData = (data: RealtimeMarketData) => {
+      marketDataCache.value.set(symbol, data)
+
+      if (callback) {
+        callback(data)
+      }
+
+      if (onMessage) {
+        onMessage(data)
+      }
+
+      window.dispatchEvent(
+        new CustomEvent('market-update', {
+          detail: { symbol, data },
+        })
+      )
+    }
+
+    const coalescer = createLatestOnlyCoalescer(emitData, coalesceWindowMs)
+
     const handler = (rawData: RawMarketData) => {
       const data: RealtimeMarketData = {
         symbol: rawData.symbol || symbol,
@@ -157,25 +180,7 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
         timestamp: rawData.timestamp || Date.now(),
       }
 
-      // 更新缓存
-      marketDataCache.value.set(symbol, data)
-
-      // 触发回调
-      if (callback) {
-        callback(data)
-      }
-
-      // 触发全局回调
-      if (onMessage) {
-        onMessage(data)
-      }
-
-      // 触发自定义事件（用于跨组件通信）
-      window.dispatchEvent(
-        new CustomEvent('market-update', {
-          detail: { symbol, data },
-        })
-      )
+      coalescer.push(data)
     }
 
     // 订阅频道
@@ -183,6 +188,8 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
 
     // 返回取消订阅函数
     return () => {
+      coalescer.flush()
+      coalescer.cancel()
       wsManager.unsubscribe(channel, handler)
       activeSubscriptions.value.delete(channel)
       marketDataCache.value.delete(symbol)
@@ -230,20 +237,27 @@ export function useRealtimeMarket(options: RealtimeMarketOptions = {}) {
       connect()
     }
 
-    const handler = (data: unknown) => {
+    const emitSummary = (data: unknown) => {
       if (callback) {
         callback(data)
       }
 
-      // 触发自定义事件
       window.dispatchEvent(
         new CustomEvent('market-summary-update', { detail: data })
       )
     }
 
+    const coalescer = createLatestOnlyCoalescer(emitSummary, coalesceWindowMs)
+
+    const handler = (data: unknown) => {
+      coalescer.push(data)
+    }
+
     wsManager.subscribe(channel, handler)
 
     return () => {
+      coalescer.flush()
+      coalescer.cancel()
       wsManager.unsubscribe(channel, handler)
       activeSubscriptions.value.delete(channel)
     }

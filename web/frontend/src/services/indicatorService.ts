@@ -30,6 +30,23 @@ const MAX_RETRIES = 3
 const RETRY_DELAY = 1000 // 初始重试延迟(ms)
 const RETRY_BACKOFF = 2 // 指数退避因子
 
+function getStoredAuthToken(): string | null {
+  if (typeof localStorage === 'undefined') {
+    return null
+  }
+
+  return localStorage.getItem('auth_token') || localStorage.getItem('access_token')
+}
+
+function clearStoredAuthToken(): void {
+  if (typeof localStorage === 'undefined') {
+    return
+  }
+
+  localStorage.removeItem('auth_token')
+  localStorage.removeItem('access_token')
+}
+
 /**
  * 延迟函数
  */
@@ -217,7 +234,7 @@ const createApiClient = (): AxiosInstance => {
   // 请求拦截器: 添加认证token
   client.interceptors.request.use(
     (config) => {
-      const token = localStorage.getItem('access_token')
+      const token = getStoredAuthToken()
       if (token) {
         config.headers.Authorization = `Bearer ${token}`
       }
@@ -241,7 +258,7 @@ const createApiClient = (): AxiosInstance => {
 
         if (status === 401) {
           // 未授权,清除token并跳转登录
-          localStorage.removeItem('access_token')
+          clearStoredAuthToken()
           window.location.href = '/login'
         } else if (status === 422) {
           // 验证错误

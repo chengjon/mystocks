@@ -17,5 +17,26 @@ export interface UnifiedResponse<T = unknown> {
   errors?: unknown;
 }
 
+export interface ServiceResult<T> {
+  ok: boolean;
+  data: T;
+  error?: string;
+}
+
+export function serviceOk<T>(data: T): ServiceResult<T> {
+  return {
+    ok: true,
+    data,
+  };
+}
+
+export function serviceErr<T>(data: T, error: string): ServiceResult<T> {
+  return {
+    ok: false,
+    data,
+    error,
+  };
+}
+
 // 重定向导出所有业务类型
 export * from './common/all';

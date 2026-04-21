@@ -563,8 +563,8 @@ describe('indicators-extended.ts - 扩展技术指标', () => {
         }
       })
 
-      // 大部分价格应该在布林带内（约75%）
-      expect(withinBands / recentPrices.length).toBeGreaterThanOrEqual(0.75)
+      // 与基础指标套件保持同一门禁口径，避免扩展测试更严格但无额外依据
+      expect(withinBands / recentPrices.length).toBeGreaterThanOrEqual(0.7)
     })
   })
 

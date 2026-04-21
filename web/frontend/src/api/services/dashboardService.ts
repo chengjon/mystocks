@@ -7,7 +7,7 @@
  */
 
 import { apiClient } from '../apiClient.ts'
-import type { UnifiedResponse } from '../types/common.ts'
+import { serviceErr, serviceOk, type ServiceResult, type UnifiedResponse } from '../types/common.ts'
 import {
   normalizeDashboardActiveStrategies,
   normalizeDashboardFundFlow,
@@ -235,20 +235,48 @@ export const dashboardService = {
 
   /**
    * 获取技术指标计算
-   * API: GET /api/indicators/calculate/batch
-   * 用途: 批量计算RSI、MACD、KDJ等指标
+   * API: GET /api/v1/technical-indicators
+   * 用途: 计算RSI、MACD、SMA、EMA等指标
    */
   async getTechnicalIndicators(
     symbols: string[],
     indicators: string[]
   ): Promise<{ data: Record<string, TechnicalIndicatorData[]> }> {
-    const response = await apiClient.get<UnifiedResponse<Record<string, TechnicalIndicatorData[]>>>('/api/indicators/calculate/batch', {
-      params: {
-        symbols: symbols.join(','),
-        indicators: indicators.join(',')
+    const result = await this.getTechnicalIndicatorsSafe(symbols, indicators)
+    return { data: result.data }
+  },
+
+  async getTechnicalIndicatorsSafe(
+    symbols: string[],
+    indicators: string[]
+  ): Promise<ServiceResult<Record<string, TechnicalIndicatorData[]>>> {
+    const results: Record<string, TechnicalIndicatorData[]> = {}
+    const errors: string[] = []
+    const requests = symbols.map(async symbol => {
+      try {
+        const response = await apiClient.get<UnifiedResponse<Record<string, TechnicalIndicatorData[]>>>(
+          '/v1/technical-indicators',
+          { params: { symbol, indicators: indicators.join(','), period: 14 } }
+        )
+        if (response.data?.data) {
+          results[symbol] = [response.data.data as unknown as TechnicalIndicatorData]
+          return
+        }
+
+        errors.push(`${symbol}: empty response`)
+      } catch (error) {
+        const message = error instanceof Error ? error.message : 'request failed'
+        errors.push(`${symbol}: ${message}`)
       }
     })
-    return { data: response.data ?? {} }
+
+    await Promise.all(requests)
+
+    if (errors.length > 0) {
+      return serviceErr(results, errors.join('; '))
+    }
+
+    return serviceOk(results)
   },
 
   /**
