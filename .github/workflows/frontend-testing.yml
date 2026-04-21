@@ -527,6 +527,7 @@ jobs:
         mkdir -p reports/analysis/runtime-quality-summary-ci
         cmd=(
           python scripts/dev/quality_gate/build_runtime_quality_summary.py
+          --runtime-observability-drift-report reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json
           --output-markdown reports/analysis/runtime-quality-summary-ci/SUMMARY.md
           --output-json reports/analysis/runtime-quality-summary-ci/summary.json
         )

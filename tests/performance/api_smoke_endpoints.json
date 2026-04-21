@@ -1,0 +1,13 @@
+[
+  { "endpoint": "/health", "method": "GET" },
+  { "endpoint": "/api/health/ready", "method": "GET" },
+  { "endpoint": "/api/csrf-token", "method": "GET" },
+  { "endpoint": "/api/socketio-status", "method": "GET" },
+  { "endpoint": "/api/v1/market/quotes", "method": "GET" },
+  { "endpoint": "/api/v2/market/lhb?limit=20", "method": "GET" },
+  { "endpoint": "/api/v1/strategy/strategies", "method": "GET" },
+  { "endpoint": "/api/trading/status", "method": "GET" },
+  { "endpoint": "/api/trading/market/snapshot", "method": "GET" },
+  { "endpoint": "/api/trading/risk/metrics", "method": "GET" },
+  { "endpoint": "/metrics", "method": "GET" }
+]

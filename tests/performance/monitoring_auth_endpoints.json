@@ -1,0 +1,4 @@
+[
+  { "endpoint": "/api/v1/monitoring/alert-rules", "method": "GET" },
+  { "endpoint": "/api/v1/monitoring/alerts", "method": "GET" }
+]

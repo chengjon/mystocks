@@ -5,10 +5,12 @@ Establishes performance baselines and identifies slow endpoints
 """
 
 import asyncio
+import json
 import statistics
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import aiohttp
@@ -70,10 +72,17 @@ class BenchmarkResult:
 class PerformanceBenchmark:
     """API Performance Benchmark Tool"""
 
-    def __init__(self, base_url: str, concurrent_users: int = 10, iterations: int = 100):
+    def __init__(
+        self,
+        base_url: str,
+        concurrent_users: int = 10,
+        iterations: int = 100,
+        default_headers: Optional[Dict[str, str]] = None,
+    ):
         self.base_url = base_url.rstrip("/")
         self.concurrent_users = concurrent_users
         self.iterations = iterations
+        self.default_headers = default_headers or {}
         self.results: Dict[str, BenchmarkResult] = {}
         self.slow_threshold_ms = 300
         self.critical_threshold_ms = 500
@@ -84,18 +93,20 @@ class PerformanceBenchmark:
         endpoint: str,
         method: str = "GET",
         payload: Optional[Dict] = None,
-    ) -> float:
+        headers: Optional[Dict[str, str]] = None,
+    ) -> tuple[int, float]:
         """Benchmark a single endpoint"""
         url = f"{self.base_url}{endpoint}"
         start_time = time.perf_counter()
+        merged_headers = {**self.default_headers, **(headers or {})}
 
         try:
             if method == "GET":
-                async with session.get(url) as response:
+                async with session.get(url, headers=merged_headers) as response:
                     await response.read()
                     status = response.status
             elif method == "POST":
-                async with session.post(url, json=payload) as response:
+                async with session.post(url, json=payload, headers=merged_headers) as response:
                     await response.read()
                     status = response.status
             else:
@@ -111,7 +122,7 @@ class PerformanceBenchmark:
     async def run_benchmark(
         self,
         endpoints: List[Dict[str, Any]],
-    ) -> Dict[str, BenchmarkResult]:
+        ) -> Dict[str, BenchmarkResult]:
         """Run performance benchmark"""
         print(f"\n{'='*60}")
         print("Performance Benchmark Started")
@@ -125,30 +136,35 @@ class PerformanceBenchmark:
                 endpoint = endpoint_config["endpoint"]
                 method = endpoint_config.get("method", "GET")
                 payload = endpoint_config.get("payload")
+                headers = endpoint_config.get("headers")
 
                 print(f"Benchmarking: {method} {endpoint}")
 
                 result = BenchmarkResult(endpoint=endpoint, method=method)
 
-                tasks = []
-                for _ in range(self.iterations):
-                    tasks.append(self.benchmark_endpoint(session, endpoint, method, payload))
+                semaphore = asyncio.Semaphore(max(self.concurrent_users, 1))
 
-                for status, duration in await asyncio.gather(*tasks, return_exceptions=True):
-                    if isinstance(status, Exception):
+                async def run_once() -> tuple[int, float]:
+                    async with semaphore:
+                        return await self.benchmark_endpoint(session, endpoint, method, payload, headers)
+
+                tasks = [run_once() for _ in range(self.iterations)]
+
+                for outcome in await asyncio.gather(*tasks, return_exceptions=True):
+                    result.total_requests += 1
+
+                    if isinstance(outcome, Exception):
                         result.failed_requests += 1
-                        result.response_times.append(0)
+                        continue
+
+                    response_status, duration = outcome
+                    result.response_times.append(duration)
+                    result.status_codes[response_status] = result.status_codes.get(response_status, 0) + 1
+
+                    if 200 <= response_status < 300:
+                        result.successful_requests += 1
                     else:
-                        result.total_requests += 1
-                        response_status, duration = status
-                        result.response_times.append(duration)
-
-                        result.status_codes[response_status] = result.status_codes.get(response_status, 0) + 1
-
-                        if 200 <= response_status < 300:
-                            result.successful_requests += 1
-                        else:
-                            result.failed_requests += 1
+                        result.failed_requests += 1
 
                 self.results[endpoint] = result
 
@@ -244,12 +260,62 @@ class PerformanceBenchmark:
 
         return "\n".join(report)
 
+    def generate_json_report(self) -> Dict[str, Any]:
+        """Generate a machine-readable benchmark report."""
+        endpoint_reports = []
+        for result in sorted(self.results.values(), key=lambda item: item.p95_response_time, reverse=True):
+            endpoint_reports.append(
+                {
+                    "endpoint": result.endpoint,
+                    "method": result.method,
+                    "total_requests": result.total_requests,
+                    "successful_requests": result.successful_requests,
+                    "failed_requests": result.failed_requests,
+                    "avg_ms": round(result.avg_response_time * 1000, 2),
+                    "median_ms": round(result.median_response_time * 1000, 2),
+                    "p95_ms": round(result.p95_response_time * 1000, 2),
+                    "p99_ms": round(result.p99_response_time * 1000, 2),
+                    "min_ms": round(result.min_response_time * 1000, 2),
+                    "max_ms": round(result.max_response_time * 1000, 2),
+                    "requests_per_second": round(result.requests_per_second, 2),
+                    "error_rate_percent": round(result.error_rate, 2),
+                    "status_codes": result.status_codes,
+                }
+            )
+
+        overall_avg_ms = statistics.mean(r.avg_response_time for r in self.results.values()) * 1000 if self.results else 0
+        overall_p95_ms = (
+            statistics.mean(r.p95_response_time for r in self.results.values()) * 1000 if self.results else 0
+        )
+
+        return {
+            "generated_at": datetime.now().isoformat(),
+            "base_url": self.base_url,
+            "concurrent_users": self.concurrent_users,
+            "iterations": self.iterations,
+            "slo_status": self.get_slo_status(),
+            "summary": {
+                "endpoint_count": len(endpoint_reports),
+                "overall_avg_ms": round(overall_avg_ms, 2),
+                "overall_p95_ms": round(overall_p95_ms, 2),
+            },
+            "endpoints": endpoint_reports,
+        }
+
     def save_report(self, filepath: str = "performance-benchmark-report.txt"):
         """Save report to file"""
         report = self.generate_report()
         with open(filepath, "w") as f:
             f.write(report)
         print(f"\nReport saved to: {filepath}")
+        return report
+
+    def save_json_report(self, filepath: str) -> Dict[str, Any]:
+        """Save a JSON benchmark report."""
+        report = self.generate_json_report()
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(report, f, ensure_ascii=False, indent=2)
+        print(f"JSON report saved to: {filepath}")
         return report
 
     def get_slo_status(self) -> Dict[str, Any]:
@@ -270,11 +336,26 @@ class PerformanceBenchmark:
         if self.results:
             avg_p95 = statistics.mean(r.p95_response_time for r in self.results.values()) * 1000
             avg_error = statistics.mean(r.error_rate for r in self.results.values())
+            violating_latency = [
+                f"{r.method} {r.endpoint} P95={r.p95_response_time * 1000:.1f}ms"
+                for r in self.results.values()
+                if r.p95_response_time * 1000 > slo_targets["p95_latency_ms"]
+            ]
+            violating_errors = [
+                f"{r.method} {r.endpoint} error_rate={r.error_rate:.2f}%"
+                for r in self.results.values()
+                if r.error_rate > slo_targets["error_rate_percent"]
+            ]
 
             if avg_p95 > slo_targets["p95_latency_ms"]:
                 status["compliant"] = False
                 status["violations"].append(
                     f"P95 latency ({avg_p95:.1f}ms) exceeds target ({slo_targets['p95_latency_ms']}ms)"
+                )
+            if violating_latency:
+                status["compliant"] = False
+                status["violations"].append(
+                    "Endpoints exceeding P95 target: " + "; ".join(violating_latency)
                 )
 
             if avg_error > slo_targets["error_rate_percent"]:
@@ -282,8 +363,46 @@ class PerformanceBenchmark:
                 status["violations"].append(
                     f"Error rate ({avg_error:.2f}%) exceeds target ({slo_targets['error_rate_percent']}%)"
                 )
+            if violating_errors:
+                status["compliant"] = False
+                status["violations"].append(
+                    "Endpoints exceeding error-rate target: " + "; ".join(violating_errors)
+                )
 
         return status
+
+
+def load_endpoints(default_base_url: str, endpoints_file: Optional[str]) -> List[Dict[str, Any]]:
+    """Load endpoint configs from a JSON file or use the default benchmark set."""
+    if not endpoints_file:
+        return [
+            {"endpoint": "/health", "method": "GET"},
+            {"endpoint": "/api/health/ready", "method": "GET"},
+            {"endpoint": "/api/csrf-token", "method": "GET"},
+            {"endpoint": "/api/socketio-status", "method": "GET"},
+            {"endpoint": "/api/v1/market/quotes", "method": "GET"},
+            {"endpoint": "/api/v2/market/lhb?limit=20", "method": "GET"},
+            {"endpoint": "/api/v1/strategy/strategies", "method": "GET"},
+            {"endpoint": "/metrics", "method": "GET"},
+        ]
+
+    path = Path(endpoints_file)
+    loaded = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, list):
+        raise ValueError(f"Expected a list of endpoint configs in {path}")
+    return loaded
+
+
+def load_headers(headers_file: Optional[str]) -> Dict[str, str]:
+    """Load default request headers from a JSON file."""
+    if not headers_file:
+        return {}
+
+    path = Path(headers_file)
+    loaded = json.loads(path.read_text(encoding="utf-8"))
+    if not isinstance(loaded, dict):
+        raise ValueError(f"Expected an object of headers in {path}")
+    return {str(key): str(value) for key, value in loaded.items()}
 
 
 async def main():
@@ -295,34 +414,34 @@ async def main():
     parser.add_argument("--users", type=int, default=10, help="Concurrent users")
     parser.add_argument("--iterations", type=int, default=100, help="Iterations per endpoint")
     parser.add_argument("--output", default="performance-benchmark-report.txt", help="Output file")
+    parser.add_argument("--json-output", default="", help="Optional JSON output file")
+    parser.add_argument("--endpoints-file", default="", help="JSON file containing endpoint configs")
+    parser.add_argument("--headers-file", default="", help="JSON file containing default request headers")
+    parser.add_argument("--fail-on-slo", action="store_true", help="Exit non-zero when the SLO check fails")
 
     args = parser.parse_args()
 
-    endpoints = [
-        {"endpoint": "/health", "method": "GET"},
-        {"endpoint": "/api/v1/market/overview", "method": "GET"},
-        {"endpoint": "/api/v1/stock/000001/quote", "method": "GET"},
-        {"endpoint": "/api/v1/stock/000001/kline", "method": "GET", "payload": {"period": "day"}},
-        {"endpoint": "/api/v1/market/fund-flow", "method": "GET"},
-        {"endpoint": "/api/v1/market/dragon-tiger", "method": "GET"},
-        {"endpoint": "/api/v1/portfolio", "method": "GET"},
-        {"endpoint": "/api/v1/risk/positions", "method": "GET"},
-    ]
+    endpoints = load_endpoints(args.url, args.endpoints_file or None)
 
     benchmark = PerformanceBenchmark(
         base_url=args.url,
         concurrent_users=args.users,
         iterations=args.iterations,
+        default_headers=load_headers(args.headers_file or None),
     )
 
     await benchmark.run_benchmark(endpoints)
     benchmark.save_report(args.output)
+    if args.json_output:
+        benchmark.save_json_report(args.json_output)
 
     slo_status = benchmark.get_slo_status()
     print(f"\nSLO Status: {'COMPLIANT' if slo_status['compliant'] else 'NON-COMPLIANT'}")
     if slo_status["violations"]:
         for v in slo_status["violations"]:
             print(f"  - {v}")
+    if args.fail_on_slo and not slo_status["compliant"]:
+        raise SystemExit(1)
 
 
 if __name__ == "__main__":

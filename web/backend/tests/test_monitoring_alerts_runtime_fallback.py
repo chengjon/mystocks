@@ -31,7 +31,7 @@ async def test_get_alert_rules_returns_runtime_fallback_when_db_unavailable(monk
     monkeypatch.setenv("TESTING", "true")
     monkeypatch.setattr(
         monitoring_api.monitoring_service,
-        "get_alert_rules",
+        "get_alert_rule_payloads",
         lambda **_kwargs: (_ for _ in ()).throw(RuntimeError("db unavailable")),
     )
 
@@ -64,7 +64,7 @@ def test_monitoring_alert_read_endpoints_keep_page_contract_in_fallback(monkeypa
     monkeypatch.setenv("TESTING", "true")
     monkeypatch.setattr(
         monitoring_api.monitoring_service,
-        "get_alert_rules",
+        "get_alert_rule_payloads",
         lambda **_kwargs: (_ for _ in ()).throw(RuntimeError("db unavailable")),
     )
     monkeypatch.setattr(
