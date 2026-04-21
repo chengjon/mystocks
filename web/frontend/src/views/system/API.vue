@@ -95,6 +95,53 @@
           慢查询（&gt;300ms）由性能监控中间件自动标记并上报至后端遥测系统。
         </p>
       </ArtDecoCard>
+
+      <ArtDecoCard v-if="showDeveloperInspector" class="governance-card" title="前端数据治理检查面板" hoverable>
+        <div class="governance-meta">
+          <span>Readiness: {{ readinessState }}</span>
+          <span>Backend: {{ backendReady ? 'ready' : 'not-ready' }}</span>
+          <span>Fallback: {{ usingMockFallback ? 'enabled' : 'disabled' }}</span>
+          <span>Request ID: {{ readinessRequestId || displayRequestId }}</span>
+        </div>
+        <p class="governance-message">{{ readinessMessage }}</p>
+
+        <div class="action-bar governance-actions">
+          <ArtDecoButton variant="outline" size="sm" @click="checkBackendReadiness">刷新 Readiness</ArtDecoButton>
+          <ArtDecoButton variant="outline" size="sm" @click="refreshInspectorStores">刷新试点 Store</ArtDecoButton>
+        </div>
+
+        <div class="governance-grid">
+          <section class="governance-section">
+            <h4>Capability Registry</h4>
+            <div v-for="capability in capabilityRows" :key="capability.id" class="governance-row">
+              <span>{{ capability.id }}</span>
+              <span>{{ capability.sourceOfTruth }}</span>
+              <span>{{ capability.endpoint }}</span>
+              <span>{{ capability.cache }}</span>
+            </div>
+          </section>
+
+          <section class="governance-section">
+            <h4>Realtime Registry</h4>
+            <div v-for="channel in realtimeRows" :key="channel.name" class="governance-row">
+              <span>{{ channel.name }}</span>
+              <span>{{ channel.consumer }}</span>
+              <span>{{ channel.coalescing }}</span>
+              <span>{{ channel.refresh }}</span>
+            </div>
+          </section>
+
+          <section class="governance-section">
+            <h4>Store Runtime</h4>
+            <div v-for="store in storeSnapshots" :key="store.id" class="governance-row">
+              <span>{{ store.id }}</span>
+              <span>{{ store.loading }}</span>
+              <span>{{ store.error }}</span>
+              <span>{{ store.lastFetch }}</span>
+            </div>
+          </section>
+        </div>
+      </ArtDecoCard>
     </section>
   </div>
 </template>
@@ -102,7 +149,10 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { useBackendReadiness } from '@/composables/useBackendReadiness'
 import { monitoringApi } from '@/api/index'
+import { useRiskAlertsStore, useTechnicalIndicatorsStore, useTradingSignalsStore, useWatchlistsStore } from '@/stores/apiStores'
+import { frontendStorePolicies } from '@/stores/storePolicies'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 
 interface MonitoringHealthData {
@@ -126,19 +176,120 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const { loading, exec } = useArtDecoApi()
+const {
+  readinessState,
+  readinessMessage,
+  requestId: readinessRequestId,
+  backendReady,
+  usingMockFallback,
+  checkBackendReadiness,
+} = useBackendReadiness()
 const health = ref<MonitoringHealthData | null>(null)
 const requestId = ref('')
 const middlewareCount = 3
+const tradingSignalsStore = useTradingSignalsStore()
+const riskAlertsStore = useRiskAlertsStore()
+const watchlistsStore = useWatchlistsStore()
+const technicalIndicatorsStore = useTechnicalIndicatorsStore()
 
 const isEmbedded = computed(() => Boolean(props.functionKey))
 const displayRequestId = computed(() => requestId.value || 'N/A')
 const systemStatusLabel = computed(() => health.value?.status?.toUpperCase() || 'UNKNOWN')
+const showDeveloperInspector = computed(() => {
+  if (import.meta.env.DEV) {
+    return true
+  }
+
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  return window.localStorage.getItem('mystocks:developer-mode') === 'true'
+})
 const pageStatusText = computed(() => {
   if (loading.value) return '同步中'
   return health.value?.status === 'healthy' ? '探针在线' : '状态待确认'
 })
 const pageStatusType = computed(() => (health.value?.status === 'healthy' ? 'success' : 'warning'))
 const contentShellDescription = computed(() => '查看服务健康状态、中间件链路和导出报告能力，作为系统治理链路中的可观测性节点。')
+const capabilityRows = computed(() => [
+  {
+    id: frontendStorePolicies.technicalIndicators.capability,
+    sourceOfTruth: frontendStorePolicies.technicalIndicators.sourceOfTruth,
+    endpoint: '/v1/technical-indicators',
+    cache: `${frontendStorePolicies.technicalIndicators.cache.strategy}:${frontendStorePolicies.technicalIndicators.cache.ttl}ms`,
+  },
+  {
+    id: frontendStorePolicies.tradingSignals.capability,
+    sourceOfTruth: frontendStorePolicies.tradingSignals.sourceOfTruth,
+    endpoint: '/api/trading/signals',
+    cache: `${frontendStorePolicies.tradingSignals.cache.strategy}:${frontendStorePolicies.tradingSignals.cache.ttl}ms`,
+  },
+  {
+    id: frontendStorePolicies.riskAlerts.capability,
+    sourceOfTruth: frontendStorePolicies.riskAlerts.sourceOfTruth,
+    endpoint: '/api/risk/alerts',
+    cache: `${frontendStorePolicies.riskAlerts.cache.strategy}:${frontendStorePolicies.riskAlerts.cache.ttl}ms`,
+  },
+  {
+    id: frontendStorePolicies.userWatchlists.capability,
+    sourceOfTruth: frontendStorePolicies.userWatchlists.sourceOfTruth,
+    endpoint: '/api/user/watchlists',
+    cache: `${frontendStorePolicies.userWatchlists.cache.strategy}:${frontendStorePolicies.userWatchlists.cache.ttl}ms`,
+  },
+])
+const realtimeRows = computed(() => [
+  {
+    name: 'market:realtime:{symbol}',
+    consumer: 'useRealtimeMarket.subscribeStock',
+    coalescing: 'latest-only / 200ms',
+    refresh: 'unsubscribe -> resubscribe',
+  },
+  {
+    name: 'market:summary',
+    consumer: 'useRealtimeMarket.subscribeMarketSummary',
+    coalescing: 'latest-only / 200ms',
+    refresh: 'unsubscribe -> resubscribe',
+  },
+  {
+    name: frontendStorePolicies.tradingSignals.realtime?.channel || 'trading-signals',
+    consumer: 'useTradingSignalsStore',
+    coalescing: 'store-level update',
+    refresh: 'refresh()',
+  },
+  {
+    name: frontendStorePolicies.riskAlerts.realtime?.channel || 'risk-alerts',
+    consumer: 'useRiskAlertsStore',
+    coalescing: 'store-level update',
+    refresh: 'refresh()',
+  },
+])
+const storeSnapshots = computed(() => [
+  {
+    id: frontendStorePolicies.tradingSignals.capability,
+    loading: String(tradingSignalsStore.loading),
+    error: tradingSignalsStore.error || 'none',
+    lastFetch: tradingSignalsStore.lastFetch ? new Date(tradingSignalsStore.lastFetch).toISOString() : 'never',
+  },
+  {
+    id: frontendStorePolicies.riskAlerts.capability,
+    loading: String(riskAlertsStore.loading),
+    error: riskAlertsStore.error || 'none',
+    lastFetch: riskAlertsStore.lastFetch ? new Date(riskAlertsStore.lastFetch).toISOString() : 'never',
+  },
+  {
+    id: frontendStorePolicies.userWatchlists.capability,
+    loading: String(watchlistsStore.loading),
+    error: watchlistsStore.error || 'none',
+    lastFetch: watchlistsStore.lastFetch ? new Date(watchlistsStore.lastFetch).toISOString() : 'never',
+  },
+  {
+    id: frontendStorePolicies.technicalIndicators.capability,
+    loading: String(technicalIndicatorsStore.loading),
+    error: technicalIndicatorsStore.error || 'none',
+    lastFetch: technicalIndicatorsStore.lastFetch ? new Date(technicalIndicatorsStore.lastFetch).toISOString() : 'never',
+  },
+])
 
 const fetchHealth = async () => {
   const data = await exec(() => monitoringApi.getSystemHealth(), {
@@ -169,7 +320,17 @@ const exportReport = async () => {
   }
 }
 
-onMounted(fetchHealth)
+const refreshInspectorStores = async () => {
+  await Promise.allSettled([
+    tradingSignalsStore.refresh(),
+    riskAlertsStore.refresh(),
+    watchlistsStore.refresh(),
+  ])
+}
+
+onMounted(async () => {
+  await Promise.allSettled([fetchHealth(), checkBackendReadiness()])
+})
 </script>
 
 <style scoped lang="scss">
@@ -339,6 +500,43 @@ onMounted(fetchHealth)
   margin: 0;
 }
 
+.governance-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-4);
+}
+
+.governance-meta,
+.governance-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--artdeco-spacing-3);
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+}
+
+.governance-message {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+}
+
+.governance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  gap: var(--artdeco-spacing-4);
+}
+
+.governance-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-2);
+}
+
+.governance-section h4 {
+  margin: 0 0 var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-primary);
+}
+
 .gold-text {
   color: var(--artdeco-gold-primary);
 }
@@ -349,6 +547,11 @@ onMounted(fetchHealth)
   }
 
   .health-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .governance-meta,
+  .governance-row {
     grid-template-columns: 1fr;
   }
 }

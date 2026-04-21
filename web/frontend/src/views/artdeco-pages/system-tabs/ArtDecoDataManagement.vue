@@ -121,26 +121,6 @@ const attrs = useAttrs()
             font-weight: 500;
           }
 
-          &.status {
-            .status-badge {
-              padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
-              border-radius: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
-              font-size: var(--artdeco-text-xs);
-              font-weight: 600;
-              text-transform: uppercase;
-
-              &.active {
-                background: color-mix(in srgb, var(--artdeco-rise) 20%, transparent);
-                color: var(--artdeco-rise);
-              }
-
-              &.inactive {
-                background: color-mix(in srgb, var(--artdeco-down) 20%, transparent);
-                color: var(--artdeco-down);
-              }
-            }
-          }
-
           &.endpoint {
             font-family: var(--artdeco-font-mono);
             font-size: var(--artdeco-text-xs);
