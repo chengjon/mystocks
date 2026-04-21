@@ -53,19 +53,21 @@ type ArtDecoPageTemplateEmit = {
   (event: 'data-error', error: Error): void
 }
 
+export const ARTDECO_PAGE_ERROR_MESSAGE = '数据请求失败，请稍后重试'
+
 const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null
 
-const toMessage = (value: unknown): string =>
-  typeof value === 'string' && value.trim().length > 0 ? value : '数据请求失败，请稍后重试'
+export const toArtDecoPageMessage = (value: unknown): string =>
+  typeof value === 'string' && value.trim().length > 0 ? value : ARTDECO_PAGE_ERROR_MESSAGE
 
-const extractRequestIdFromHeaders = (headers: unknown): string => {
+export const extractArtDecoRequestIdFromHeaders = (headers: unknown): string => {
   if (!isRecord(headers)) return ''
   const traceHeader = headers['x-request-id']
   return typeof traceHeader === 'string' ? traceHeader : ''
 }
 
-const normalizeApiResult = (response: unknown): {
+export const normalizeArtDecoApiResult = (response: unknown): {
   payload: unknown
   requestId: string
   success: boolean
@@ -77,7 +79,7 @@ const normalizeApiResult = (response: unknown): {
 
   const rootRequestId = typeof response.request_id === 'string'
     ? response.request_id
-    : extractRequestIdFromHeaders(response.headers)
+    : extractArtDecoRequestIdFromHeaders(response.headers)
   const rootSuccess = typeof response.success === 'boolean' ? response.success : true
   const rootMessage = typeof response.message === 'string' ? response.message : ''
 
@@ -106,6 +108,42 @@ const normalizeApiResult = (response: unknown): {
     success: rootSuccess,
     message: rootMessage
   }
+}
+
+export const isArtDecoPageDataEmpty = (
+  pageData: unknown,
+  shouldEvaluateEmptyState: boolean
+): boolean => {
+  if (!shouldEvaluateEmptyState) return false
+  if (!pageData) return true
+  if (Array.isArray(pageData) && pageData.length === 0) return true
+  if (isRecord(pageData) && Object.keys(pageData).length === 0) return true
+  return false
+}
+
+export const hasArtDecoPagePermission = (
+  permission: string,
+  authStoreValue: string | null
+): boolean => {
+  if (!permission) return true
+  if (!authStoreValue) return true
+
+  try {
+    const auth = JSON.parse(authStoreValue)
+    if (auth.permissions?.includes('*')) return true
+    return auth.permissions?.includes(permission) || false
+  } catch {
+    return true
+  }
+}
+
+export const shouldUseArtDecoRequestCache = (
+  lastFetchTime: number,
+  cacheTime: number,
+  now = Date.now()
+): boolean => {
+  if (cacheTime === 0) return true
+  return now - lastFetchTime > cacheTime
 }
 
 export function useArtDecoPageTemplate(
@@ -151,33 +189,15 @@ export function useArtDecoPageTemplate(
 
   const shouldEvaluateEmptyState = computed(() => Boolean(props.pageConfig.apiUrl))
 
-  const isEmptyData = computed(() => {
-    if (!shouldEvaluateEmptyState.value) return false
-    if (!pageData.value) return true
-    if (Array.isArray(pageData.value) && pageData.value.length === 0) return true
-    if (isRecord(pageData.value) && Object.keys(pageData.value).length === 0) return true
-    return false
-  })
+  const isEmptyData = computed(() => isArtDecoPageDataEmpty(pageData.value, shouldEvaluateEmptyState.value))
 
   const hasPermission = (permission: string): boolean => {
-    if (!permission) return true
-
-    const authStore = localStorage.getItem('auth-store')
-    if (!authStore) return true
-
-    try {
-      const auth = JSON.parse(authStore)
-      if (auth.permissions?.includes('*')) return true
-      return auth.permissions?.includes(permission) || false
-    } catch {
-      return true
-    }
+    return hasArtDecoPagePermission(permission, localStorage.getItem('auth-store'))
   }
 
   const shouldFetchData = (): boolean => {
     const cacheTime = props.pageConfig.cacheTime || 0
-    if (cacheTime === 0) return true
-    return Date.now() - lastFetchTime.value > cacheTime
+    return shouldUseArtDecoRequestCache(lastFetchTime.value, cacheTime)
   }
 
   const tabButtonId = (tabKey: string): string => `artdeco-tab-${tabKey || 'default'}`
@@ -249,9 +269,9 @@ export function useArtDecoPageTemplate(
         ? await postData(props.pageConfig.apiUrl, params)
         : await getData(props.pageConfig.apiUrl, params)
 
-      const normalized = normalizeApiResult(response)
+      const normalized = normalizeArtDecoApiResult(response)
       if (!normalized.success) {
-        throw new Error(toMessage(normalized.message))
+        throw new Error(toArtDecoPageMessage(normalized.message))
       }
 
       pageData.value = normalized.payload
@@ -261,7 +281,7 @@ export function useArtDecoPageTemplate(
       emit('data-loaded', pageData.value)
     } catch (err: unknown) {
       hasError.value = true
-      const normalizedError = err instanceof Error ? err : new Error('数据请求失败，请稍后重试')
+      const normalizedError = err instanceof Error ? err : new Error(ARTDECO_PAGE_ERROR_MESSAGE)
       console.error(`[ArtDecoPage] ${props.pageConfig.title} 数据请求失败:`, normalizedError)
       emit('data-error', normalizedError)
     }
