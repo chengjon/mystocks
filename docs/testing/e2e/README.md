@@ -25,6 +25,121 @@ reviewer 速查表见 [PR_GATE_QUICK_REFERENCE](/opt/claude/mystocks_spec/docs/g
 在 `web/frontend` 下执行：
 
 ```bash
+# 前端运行门禁基线（推荐收口入口）
+bash ../../scripts/run_frontend_runtime_baseline.sh
+```
+
+该入口会统一串行执行：
+
+- `npm run type-check`
+- `npm run test:type-ceiling`
+- `bash scripts/run_e2e_pm2.sh`
+- `bash scripts/run_pm2_integration_workflow.sh regression`
+- `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:axe`
+- `bash ../../scripts/run_api_performance_baseline.sh`
+- `bash ../../scripts/run_monitoring_auth_performance_baseline.sh`
+- `bash ../../scripts/run_runtime_quality_summary.sh`
+
+并把实际结果落盘到 `reports/analysis/frontend-runtime-gate/<timestamp>/`，用于区分“本次回归”与“仓库既有技术债”。
+
+同一次执行还会补齐：
+
+- `reports/analysis/api-performance-gate/<timestamp>/`
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/`
+- `reports/analysis/runtime-quality-summary/<timestamp>/`
+
+```bash
+# API 性能基线（PM2 + backend P95）
+bash ../../scripts/run_api_performance_baseline.sh
+```
+
+该入口会把 PM2 下的后端性能基线落盘到 `reports/analysis/api-performance-gate/<timestamp>/`，用于追踪 `P95 <= 300ms` 目标是否成立。
+
+当前默认覆盖的 API 读链包括健康检查、CSRF、Socket.IO 状态、行情报价、龙虎榜、策略列表，以及交易域的 `market/snapshot` 与 `risk/metrics`。
+
+其中交易运行时主链已回收到匿名性能基线，当前默认包含：
+
+- `/api/trading/status`
+- `/api/trading/market/snapshot`
+- `/api/trading/risk/metrics`
+
+```bash
+# 监控域鉴权性能基线（PM2 + authenticated monitoring read chain）
+bash ../../scripts/run_monitoring_auth_performance_baseline.sh
+```
+
+该入口单独验证需要 Bearer token 的监控读链，目前覆盖：
+
+- `/api/v1/monitoring/alert-rules`
+- `/api/v1/monitoring/alerts`
+
+它与匿名 API 基线拆分的原因是：
+
+- 这两个端点未鉴权时返回 `401`
+- 需要显式登录并附带 `Authorization: Bearer <token>`
+- 仍属于生产级监控与可观测性主链，需要独立保留可重复执行的 `P95 <= 300ms` 基线
+
+```bash
+# 统一运行质量摘要（汇总最近一次 frontend/api/monitoring baseline）
+bash ../../scripts/run_runtime_quality_summary.sh
+```
+
+这个入口用于收口汇报，不会重新执行业务 smoke，而是把最近一次三份 baseline 汇总成单一 `runtime-quality-summary` artifact，方便在交付时一次性报告：
+
+- 结构性语法 / PM2 navigation gate
+- 当前前端类型错误 vs 基线
+- PM2 在线状态与访问地址
+- 实际 E2E / axe / pytest 结果
+- 匿名 API 与鉴权监控 API 的性能结论
+- “本次引入问题” vs “仓库既有技术债” 的区分
+
+如果同时提供 `DOCKER_RUNTIME_DIR`，统一摘要还会包含容器运行面的 observability 概览，
+用于把 PM2 主链与容器链路放进同一份交付报告中，而不替换 PM2 正式门禁。
+
+也可以只用容器产物生成 docker-only 收口摘要：
+
+```bash
+DOCKER_RUNTIME_DIR=reports/analysis/docker-runtime-smoke/<timestamp> \
+bash ../../scripts/run_runtime_quality_summary.sh
+```
+
+该模式适用于只改动容器构建、compose、nginx 或 backend/frontend 镜像装配的批次；
+它不会伪造 PM2 结果，也不会把容器 smoke 误报成 `8020/3020` 正式门禁。
+
+如需本地复现 CI 的 `runtime-delivery-summary` 聚合产物，可执行：
+
+```bash
+bash ../../scripts/run_runtime_delivery_summary_local.sh
+```
+
+默认会重建：
+
+- `reports/analysis/runtime-quality-summary-ci-local/`
+- `reports/analysis/runtime-ci-bundle-combined-local/`
+
+也支持显式指定 `FRONTEND_RUNTIME_DIR` / `API_PERFORMANCE_DIR` / `MONITORING_AUTH_DIR` / `DOCKER_RUNTIME_DIR`，
+用于复现 `PM2-only`、`Docker-only` 或 `PM2 + Docker` 三种摘要路径。
+
+## Container Runtime Smoke
+
+除 PM2 正式运行门禁外，当前还补充了一条独立的容器化 smoke：
+
+```bash
+bash ../../scripts/run_containerized_runtime_smoke.sh
+```
+
+执行口径：
+
+- 不复用 PM2 `8020/3020`
+- 默认改用容器宿主端口 `8021/3021`
+- 目标是验证容器构建、依赖装配、backend `/health`、backend `/api/health/ready`、frontend `/`
+- 同时抓取容器 backend 的 `/api/metrics/health` 与 `/metrics`，生成 observability 摘要
+
+输出目录：
+
+- `reports/analysis/docker-runtime-smoke/<timestamp>/`
+
+```bash
 # 套件完整性校验
 npm run test:e2e:validate
 
@@ -70,9 +185,19 @@ npm run test:visual:charts
 - 登录鉴权
 - 菜单/路由可达性
 - 行情页
+- 风险概览
+- 组合盈亏
+- 交易终端
 - 策略管理
 - 回测链路
 - K 线图表基础交互
+
+`test:e2e:axe` 当前覆盖：
+
+- 登录页
+- 策略仓库
+- 风险概览
+- 交易终端
 
 `test:e2e:auth` 单独覆盖：
 
@@ -130,7 +255,7 @@ PR 阻塞门禁，目标是快而准：
 - `./scripts/lighthouse-auth.cjs`
 - `disableStorageReset: true`
 
-这样受保护页面在采集前会预先注入 `auth_token` / `auth_user`，避免把 `/dashboard`、`/market/realtime`、`/strategy/repo` 全部测成登录页。
+这样受保护页面在采集前会预先注入 `auth_token` / `auth_user`，避免把 `/dashboard`、`/market/realtime`、`/strategy/repo`、`/risk/overview`、`/trade/terminal` 全部测成登录页。
 
 ## Selector Policy
 
@@ -152,3 +277,7 @@ Playwright canonical E2E 用例必须优先使用用户视角定位：
 ## 当前结论
 
 当前仓库已经具备可执行的前端自动化门禁主线，但仍应把 visual regression 继续从“可运行”推进到“可维护的稳定基线”后，再决定是否提升为阻塞项。
+
+对于 Layout、路由、共享壳层、导航骨架或其他高风险主链改动，默认不要手工拼接散装命令，优先使用 `scripts/run_frontend_runtime_baseline.sh` 或对应的 CI `Route/Layout Runtime Baseline` job。
+
+当改动触达监控、告警、可观测性相关 API 或其前端消费链时，应额外补跑 `scripts/run_monitoring_auth_performance_baseline.sh`，避免只验证匿名健康链而漏掉鉴权监控主链。

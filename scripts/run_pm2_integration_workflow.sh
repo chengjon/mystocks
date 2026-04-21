@@ -106,7 +106,7 @@ wait_for_url() {
     local max_retries="${3:-40}"
 
     for _ in $(seq 1 "$max_retries"); do
-        if curl --silent --fail --max-time 10 "$url" >/dev/null; then
+        if curl --noproxy '*' --silent --fail --max-time 10 "$url" >/dev/null; then
             echo "$label is READY"
             return 0
         fi

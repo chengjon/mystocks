@@ -239,7 +239,7 @@ const BACKEND_CONFIG = {
 
 ### AXE / Lighthouse 配置
 - `test:e2e:axe`: 只拦截 `serious` / `critical` 级 axe 违规，`color-contrast` 当前作为后续治理项保留在 Lighthouse/设计治理里处理
-- `test:e2e:lighthouse`: 使用 `lighthouserc.cjs`，当前采集 `login`、`dashboard`、`market/realtime`、`strategy/repo`
+- `test:e2e:lighthouse`: 使用 `lighthouserc.cjs`，当前采集 `login`、`dashboard`、`market/realtime`、`strategy/repo`、`risk/overview`、`trade/terminal`
 - `LHCI` 端口：`4273`
 - `LHCI` 浏览器：显式使用 Playwright Chromium 可执行文件，避免系统 Chrome / profile 锁冲突
 

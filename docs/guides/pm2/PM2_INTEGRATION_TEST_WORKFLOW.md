@@ -24,6 +24,177 @@
 
 ## Canonical Commands
 
+### Baseline
+
+```bash
+bash scripts/run_frontend_runtime_baseline.sh
+```
+
+该入口会按固定顺序执行并落盘：
+
+- `cd web/frontend && npm run type-check`
+- `cd web/frontend && npm run test:type-ceiling`
+- `bash scripts/run_e2e_pm2.sh`
+- `bash scripts/run_pm2_integration_workflow.sh regression`
+- `cd web/frontend && PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:axe`
+- `python scripts/dev/quality_gate/collect_tech_debt_baseline.py --output reports/analysis/frontend-runtime-gate/<timestamp>/tech-debt-baseline.current.json`
+- `bash scripts/run_api_performance_baseline.sh`
+- `bash scripts/run_monitoring_auth_performance_baseline.sh`
+- `FRONTEND_RUNTIME_DIR=... API_PERFORMANCE_DIR=... MONITORING_AUTH_DIR=... bash scripts/run_runtime_quality_summary.sh`
+
+输出目录：
+
+- `reports/analysis/frontend-runtime-gate/<timestamp>/SUMMARY.md`
+- `reports/analysis/frontend-runtime-gate/<timestamp>/*.log`
+
+执行完成后，还会同时生成：
+
+- `reports/analysis/api-performance-gate/<timestamp>/`
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/`
+- `reports/analysis/runtime-quality-summary/<timestamp>/`
+
+### API Performance Baseline
+
+```bash
+bash scripts/run_api_performance_baseline.sh
+```
+
+该入口会在 PM2 `ecosystem.test.config.js` 环境下：
+
+- 启动 `mystocks-backend` 与 `mystocks-frontend`
+- 校验：
+  - `http://localhost:8020/health`
+  - `http://localhost:8020/api/health/ready`
+  - `http://localhost:3020/`
+- 抓取 `/metrics` 头部样本
+- 使用 `tests/performance/benchmark.py` 对 `tests/performance/api_smoke_endpoints.json` 中的端点执行性能基线
+
+当前纳入基线的稳定读链包括：
+
+- `/health`
+- `/api/health/ready`
+- `/api/csrf-token`
+- `/api/socketio-status`
+- `/api/v1/market/quotes`
+- `/api/v2/market/lhb?limit=20`
+- `/api/v1/strategy/strategies`
+- `/api/trading/status`
+- `/api/trading/market/snapshot`
+- `/api/trading/risk/metrics`
+- `/metrics`
+
+当前未直接纳入基线的接口说明：
+
+- `/api/v1/monitoring/alert-rules`、`/api/v1/monitoring/alerts`：未鉴权时返回 `401`，应在独立鉴权性能批次中验证
+
+输出目录：
+
+- `reports/analysis/api-performance-gate/<timestamp>/SUMMARY.md`
+- `reports/analysis/api-performance-gate/<timestamp>/benchmark.json`
+- `reports/analysis/api-performance-gate/<timestamp>/benchmark.txt`
+- `reports/analysis/api-performance-gate/<timestamp>/pm2-status.txt`
+- `reports/analysis/api-performance-gate/<timestamp>/metrics-head.txt`
+
+### Monitoring Auth Performance Baseline
+
+```bash
+bash scripts/run_monitoring_auth_performance_baseline.sh
+```
+
+该入口会在 PM2 `ecosystem.test.config.js` 环境下：
+
+- 启动 `mystocks-backend` 与 `mystocks-frontend`
+- 使用 `admin/admin123` 通过 `/api/auth/login` 获取 Bearer token
+- 使用 `tests/performance/monitoring_auth_endpoints.json` 对需要鉴权的监控读链执行性能基线
+- 抓取 `/api/metrics/health` 与 `/metrics`，生成独立 observability 摘要
+
+当前纳入该批次的稳定鉴权读链包括：
+
+- `/api/v1/monitoring/alert-rules`
+- `/api/v1/monitoring/alerts`
+
+之所以拆为独立批次，是因为这些端点在未鉴权时返回 `401`，不适合作为匿名 API 基线的一部分；但它们仍属于 Phase 5+ 的生产级监控主链，应保持独立、可重复执行。
+
+输出目录：
+
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/SUMMARY.md`
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/benchmark.json`
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/benchmark.txt`
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/metrics-summary.json`
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/login-response.json`
+
+### Unified Runtime Quality Summary
+
+```bash
+bash scripts/run_runtime_quality_summary.sh
+```
+
+该入口不会重复执行三条 baseline，而是读取最近一次：
+
+- `frontend-runtime-gate`
+- `api-performance-gate`
+- `api-monitoring-auth-gate`
+
+并汇总为统一 artifact，固定输出：
+
+- `reports/analysis/runtime-quality-summary/<timestamp>/SUMMARY.md`
+- `reports/analysis/runtime-quality-summary/<timestamp>/summary.json`
+
+当提供 `DOCKER_RUNTIME_DIR=reports/analysis/docker-runtime-smoke/<timestamp>` 时，
+该摘要还会额外并入容器运行面：
+
+- 容器 backend `/health`
+- 容器 backend `/api/health/ready`
+- 容器 frontend `/`
+- 容器 `/api/metrics/health`
+- 容器 Prometheus request / slow-request delta
+
+摘要会强制保留以下门禁口径：
+
+- 结构性语法 / PM2 navigation gate
+- 前端类型错误当前值 vs 仓库基线
+- PM2 `mystocks-backend` / `mystocks-frontend` 在线状态
+- 实际 E2E / axe / pytest 结果
+- 匿名 API 与鉴权监控 API 的 `P95 <= 300ms` 结论
+- “本次引入问题” 与 “仓库既有技术债” 的拆分说明
+
+### Containerized Runtime Smoke
+
+```bash
+bash scripts/run_containerized_runtime_smoke.sh
+```
+
+该入口用于 Phase 5+ 容器化能力基线，不替代 PM2 正式门禁。
+
+- PM2 正式门禁仍固定使用：
+  - `http://localhost:8020`
+  - `http://localhost:3020`
+- 容器 smoke 默认使用独立宿主端口：
+  - `http://localhost:8021`
+  - `http://localhost:3021`
+
+这样做的目的，是避免容器 smoke 抢占 PM2 主链端口，污染“当前可运行状态”的正式基线。
+
+当前 smoke 固定校验：
+
+- `docker compose config`
+- `docker compose build backend frontend`
+- `docker compose up -d postgresql redis backend frontend`
+- `http://localhost:8021/health`
+- `http://localhost:8021/api/health/ready`
+- `http://localhost:3021/`
+- `http://localhost:8021/api/metrics/health`
+- `http://localhost:8021/metrics`
+
+输出目录：
+
+- `reports/analysis/docker-runtime-smoke/<timestamp>/SUMMARY.md`
+- `reports/analysis/docker-runtime-smoke/<timestamp>/build.log`
+- `reports/analysis/docker-runtime-smoke/<timestamp>/compose.rendered.yaml`
+- `reports/analysis/docker-runtime-smoke/<timestamp>/metrics-health.json`
+- `reports/analysis/docker-runtime-smoke/<timestamp>/metrics.raw.txt`
+- `reports/analysis/docker-runtime-smoke/<timestamp>/metrics-summary.json`
+
 ### Gate
 
 ```bash
@@ -125,6 +296,7 @@ bash scripts/run_pm2_integration_workflow.sh all
 
 - 前端类型生成阶段仍会打印历史冲突自动修复与 warning，这是当前仓库既有现象，不等于本轮回归失败。
 - 后端在技术分析真实数据抓取失败时可能出现 warning；当前已降级为 warning，不阻塞 PM2 回归。
+- 若本机存在 `ALL_PROXY` 但未设置 `NO_PROXY`，当前脚本已显式对本地探针使用 `curl --noproxy '*'`，避免把 `localhost:3020/8020` 错误地走代理导致假性 `502` / readiness timeout。
 
 ## Reporting Baseline
 
@@ -138,10 +310,55 @@ bash scripts/run_pm2_integration_workflow.sh all
 - Vitest 结果
 - Playwright 浏览器项目与通过/失败/跳过数量
 - 后端 pytest 结果
+- API 性能基线（如执行）：
+  - 命令：`bash scripts/run_api_performance_baseline.sh`
+  - 并发与迭代口径
+  - 每个端点的 `avg/p95/error_rate`
+  - 是否满足 `P95 <= 300ms`
+- 监控鉴权性能基线（如执行）：
+  - 命令：`bash scripts/run_monitoring_auth_performance_baseline.sh`
+  - 鉴权账号与 token 获取路径
+  - 每个端点的 `avg/p95/error_rate`
+  - 是否满足 `P95 <= 300ms`
+
+## Runtime Delivery Summary Modes
+
+`bash scripts/run_runtime_quality_summary.sh` 当前支持三种收口模式：
+
+- `PM2-only`
+  - 输入：最近一次或显式指定的 `FRONTEND_RUNTIME_DIR`、`API_PERFORMANCE_DIR`、`MONITORING_AUTH_DIR`
+  - 输出：PM2 结构性语法、类型基线、PM2 健康、实际 E2E/axe/pytest、匿名 API 与监控鉴权性能基线
+- `Docker-only`
+  - 输入：`DOCKER_RUNTIME_DIR`
+  - 输出：容器 backend/frontend 健康、`/api/metrics/health`、Prometheus 增量与 DB 连接快照
+- `PM2 + Docker`
+  - 输入：上述两类同时提供
+  - 输出：单份统一交付摘要，保留 PM2 正式门禁口径，并附带容器 observability 概览
+
+注意：
+
+- PM2 正式门禁地址仍固定为 `http://localhost:8020` 与 `http://localhost:3020`
+- 容器 smoke 默认验证备用宿主端口 `8021/3021`
+- 若只提供部分 PM2 目录而不是完整三件套，脚本会直接失败，避免生成口径不完整的摘要
+
+如需本地复现 CI downstream 聚合产物，可执行：
+
+```bash
+bash scripts/run_runtime_delivery_summary_local.sh
+```
+
+默认输出：
+
+- `reports/analysis/runtime-quality-summary-ci-local/`
+- `reports/analysis/runtime-ci-bundle-combined-local/`
 
 ## Related Files
 
 - [`scripts/run_pm2_integration_workflow.sh`](/opt/claude/mystocks_spec/scripts/run_pm2_integration_workflow.sh)
 - [`scripts/run_e2e_pm2.sh`](/opt/claude/mystocks_spec/scripts/run_e2e_pm2.sh)
+- [`scripts/run_api_performance_baseline.sh`](/opt/claude/mystocks_spec/scripts/run_api_performance_baseline.sh)
+- [`scripts/run_monitoring_auth_performance_baseline.sh`](/opt/claude/mystocks_spec/scripts/run_monitoring_auth_performance_baseline.sh)
+- [`scripts/run_runtime_quality_summary.sh`](/opt/claude/mystocks_spec/scripts/run_runtime_quality_summary.sh)
+- [`scripts/dev/quality_gate/build_runtime_quality_summary.py`](/opt/claude/mystocks_spec/scripts/dev/quality_gate/build_runtime_quality_summary.py)
 - [`ecosystem.test.config.js`](/opt/claude/mystocks_spec/ecosystem.test.config.js)
 - [`web/frontend/package.json`](/opt/claude/mystocks_spec/web/frontend/package.json)
