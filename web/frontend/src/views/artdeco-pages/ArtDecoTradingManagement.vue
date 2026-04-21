@@ -154,6 +154,7 @@
                         <ArtDecoTradingSignalsControls
                             :signal-filters="signalFilters"
                             :active-signal-filter="activeSignalFilter"
+                            @update:active-signal-filter="activeSignalFilter = $event"
                             @export-csv="handleExportCsv"
                             @batch-execute="handleBatchExecute"
                         />

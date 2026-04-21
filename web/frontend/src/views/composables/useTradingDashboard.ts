@@ -168,6 +168,8 @@ export function useTradingDashboard() {
     const strategyDialogVisible = ref(false)
     const riskDialogVisible = ref(false)
     const activeStrategyTab = ref('add')
+    let tradingDataFallbackWarningShown = false
+    let tradingStatusEndpointUnavailable = false
 
     const newStrategy = ref({
         type: ''
@@ -265,15 +267,30 @@ export function useTradingDashboard() {
     }
 
     const loadTradingData = async () => {
+        if (tradingStatusEndpointUnavailable) {
+            tradingData.value = { ...FALLBACK_TRADING_DATA }
+            isRunning.value = false
+            updateStatusMetricsFromTradingData(tradingData.value)
+            return
+        }
+
         try {
             const response = await axios.get('/api/trading/status')
             tradingData.value = normalizeTradingData(response.data?.data ?? response.data)
             isRunning.value = Boolean(tradingData.value.is_running)
             updateStatusMetricsFromTradingData(tradingData.value)
+            tradingDataFallbackWarningShown = false
+            tradingStatusEndpointUnavailable = false
         } catch (error: unknown) {
+            const apiError = error as ApiErrorResponse
             tradingData.value = { ...FALLBACK_TRADING_DATA }
             isRunning.value = false
             updateStatusMetricsFromTradingData(tradingData.value)
+            tradingStatusEndpointUnavailable = apiError.response?.status === 404
+            if (!tradingDataFallbackWarningShown) {
+                ElMessage.warning('交易状态接口不可用，已切换为离线占位数据')
+                tradingDataFallbackWarningShown = true
+            }
             console.warn('[TradingDashboard] Failed to load trading data, using empty state:', error)
         }
     }

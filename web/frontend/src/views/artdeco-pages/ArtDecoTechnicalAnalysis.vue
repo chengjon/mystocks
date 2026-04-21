@@ -48,7 +48,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted , onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { ElMessage } from 'element-plus'
 import { ArtDecoHeader, ArtDecoBadge } from '@/components/artdeco'
 import KLineAnalysis from './analysis-tabs/KLineAnalysis.vue'
 import BacktestAnalysis from './analysis-tabs/BacktestAnalysis.vue'
@@ -90,7 +91,7 @@ const backtestStats = ref({
 const handleAnalyze = async (params: { symbol: string, period: string }) => {
   console.log('Analyzing stock:', params)
   try {
-    const indRes = await dashboardService.getTechnicalIndicators([params.symbol], ['RSI', 'MACD', 'KDJ', 'BOLL'])
+    const indRes = await dashboardService.getTechnicalIndicatorsSafe([params.symbol], ['RSI', 'MACD', 'KDJ', 'BOLL'])
 
     if (indRes.data?.[params.symbol]) {
       const rawIndicators = indRes.data[params.symbol] as Array<{ name: string; value: string | number; signal?: string; signalType?: 'rise' | 'fall' | 'neutral' }>
@@ -100,6 +101,10 @@ const handleAnalyze = async (params: { symbol: string, period: string }) => {
         signal: item.signal || '',
         signalType: item.signalType || 'neutral'
       }))
+    }
+
+    if (!indRes.ok && indRes.error) {
+      ElMessage.error(`技术指标加载失败: ${indRes.error}`)
     }
 
     // Mock trend data since marketService.getTrend doesn't exist

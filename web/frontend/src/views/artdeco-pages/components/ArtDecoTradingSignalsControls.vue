@@ -4,11 +4,15 @@
             <button
                 v-for="(filter, _idx) in signalFilters"
                 :key="filter.key"
-                class="artdeco-trading-signals-controls__chip"
-                :class="{ 'artdeco-trading-signals-controls__chip--active': activeSignalFilter === filter.key }"
+                type="button"
+                class="artdeco-trading-signals-controls__filter-button"
                 @click="$emit('update:activeSignalFilter', filter.key)"
             >
-                {{ filter.label }}
+                <ArtDecoBadge
+                    :text="filter.label"
+                    :variant="activeSignalFilter === filter.key ? 'active' : 'default'"
+                    size="sm"
+                />
             </button>
         </div>
         <div class="artdeco-trading-signals-controls__actions">
@@ -19,6 +23,7 @@
 </template>
 
 <script setup lang="ts">
+    import ArtDecoBadge from '@/components/artdeco/base/ArtDecoBadge.vue'
     import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
 
     interface SignalFilter {
@@ -68,28 +73,21 @@
         flex-wrap: wrap;
     }
 
-    .artdeco-trading-signals-controls__chip {
-        padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
-        border: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-border-default);
-        border-radius: var(--artdeco-radius-none);
+    .artdeco-trading-signals-controls__filter-button {
+        padding: 0;
+        border: 0;
         background: transparent;
-        color: var(--artdeco-fg-muted);
         cursor: pointer;
-        font-family: var(--artdeco-font-body);
-        font-size: var(--artdeco-text-sm);
-        text-transform: uppercase;
-        letter-spacing: var(--artdeco-tracking-wide);
-        transition: all var(--artdeco-transition-base);
+        line-height: 1;
+        transition: transform var(--artdeco-transition-quick) var(--artdeco-ease-in-out);
 
         &:hover {
-            border-color: var(--artdeco-gold-primary);
-            color: var(--artdeco-gold-primary);
+            transform: translateY(calc(var(--artdeco-spacing-px) * -1));
         }
 
-        &.artdeco-trading-signals-controls__chip--active {
-            background: var(--artdeco-gold-primary);
-            border-color: var(--artdeco-gold-primary);
-            color: var(--artdeco-bg-global);
+        &:focus-visible {
+            outline: calc(var(--artdeco-spacing-px) * 2) solid var(--ad-btn-border-focus);
+            outline-offset: calc(var(--artdeco-spacing-px) * 2);
         }
     }
 

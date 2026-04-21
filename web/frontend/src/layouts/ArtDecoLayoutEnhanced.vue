@@ -39,8 +39,9 @@
       </ArtDecoHeader>
 
       <!-- Breadcrumb Navigation -->
-      <div class="artdeco-breadcrumb-container">
+      <div v-show="showBreadcrumb" class="artdeco-breadcrumb-container">
         <ArtDecoBreadcrumb
+          ref="breadcrumbRef"
           home-title="交易室"
           home-path="/dashboard"
           :show-icon="true"
@@ -75,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePreferenceStore } from '@/stores/preferenceStore'
@@ -102,7 +103,10 @@ const preferenceStore = usePreferenceStore()
 const unreadCount = ref(3) // Mock data
 const userName = ref('Admin User')
 const commandPaletteRef = ref<{ open: () => void } | null>(null)
+const breadcrumbRef = ref<InstanceType<typeof ArtDecoBreadcrumb> | null>(null)
 const devMode = import.meta.env.DEV
+
+const showBreadcrumb = computed(() => (breadcrumbRef.value?.breadcrumbs?.length ?? 0) > 0)
 
 // Live Data Management
 const { isConnected: isLiveDataConnected } = useLiveDataManager(ARTDECO_MENU_ITEMS)
