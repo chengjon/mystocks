@@ -1,4 +1,5 @@
 import { PiniaStoreFactory, createMarketDataStore, createReferenceDataStore } from '@/stores/storeFactory'
+import { frontendStorePolicies } from '@/stores/storePolicies'
 import { tradingWebSocket, riskWebSocket } from '@/utils/webSocketManager'
 
 // Factory-created stores using PiniaStoreFactory for standardized API data management
@@ -12,26 +13,26 @@ export const useMarketQuotesStore = createMarketDataStore(
 
 // Create real-time trading signals store
 export const useTradingSignalsStore = PiniaStoreFactory.createRealtimeStore({
-  id: 'trading-signals',
+  id: frontendStorePolicies.tradingSignals.capability,
   endpoint: '/api/trading/signals',
   method: 'GET',
-  cache: { enabled: true, key: 'trading-signals', ttl: 60000, strategy: 'memory' }, // 1 min
-  loading: { enabled: true, key: 'trading-signals-loading' },
+  cache: frontendStorePolicies.tradingSignals.cache,
+  loading: { enabled: true, key: frontendStorePolicies.tradingSignals.loadingKey },
   wsManager: tradingWebSocket,
-  wsChannel: 'trading-signals',
-  updateInterval: 10000, // 10 seconds polling fallback
+  wsChannel: frontendStorePolicies.tradingSignals.realtime?.channel,
+  updateInterval: frontendStorePolicies.tradingSignals.refresh.updateInterval,
 })
 
 // Create real-time risk alerts store
 export const useRiskAlertsStore = PiniaStoreFactory.createRealtimeStore({
-  id: 'risk-alerts',
+  id: frontendStorePolicies.riskAlerts.capability,
   endpoint: '/api/risk/alerts',
   method: 'GET',
-  cache: { enabled: true, key: 'risk-alerts', ttl: 30000, strategy: 'memory' }, // 30 sec
-  loading: { enabled: true, key: 'risk-alerts-loading' },
+  cache: frontendStorePolicies.riskAlerts.cache,
+  loading: { enabled: true, key: frontendStorePolicies.riskAlerts.loadingKey },
   wsManager: riskWebSocket,
-  wsChannel: 'risk-alerts',
-  updateInterval: 15000, // 15 seconds polling fallback
+  wsChannel: frontendStorePolicies.riskAlerts.realtime?.channel,
+  updateInterval: frontendStorePolicies.riskAlerts.refresh.updateInterval,
 })
 
 // Create reference data store for stock symbols
@@ -48,19 +49,19 @@ export const useMarketSectorsStore = createReferenceDataStore(
 
 // Create user data store for watchlists
 export const useWatchlistsStore = PiniaStoreFactory.createApiStore({
-  id: 'user-watchlists',
+  id: frontendStorePolicies.userWatchlists.capability,
   endpoint: '/api/user/watchlists',
-  cache: { enabled: true, key: 'user-watchlists', ttl: 1800000, strategy: 'sessionStorage' }, // 30 min
-  loading: { enabled: true, key: 'watchlists-loading' },
+  cache: frontendStorePolicies.userWatchlists.cache,
+  loading: { enabled: true, key: frontendStorePolicies.userWatchlists.loadingKey },
 })
 
 // Create technical indicators store
 export const useTechnicalIndicatorsStore = PiniaStoreFactory.createApiStore({
-  id: 'technical-indicators',
+  id: frontendStorePolicies.technicalIndicators.capability,
   endpoint: '/api/analysis/indicators',
   method: 'POST',
-  cache: { enabled: true, key: 'technical-indicators', ttl: 300000, strategy: 'memory' }, // 5 min
-  loading: { enabled: true, key: 'indicators-loading' },
+  cache: frontendStorePolicies.technicalIndicators.cache,
+  loading: { enabled: true, key: frontendStorePolicies.technicalIndicators.loadingKey },
 })
 
 // Create paginated store for trading history
