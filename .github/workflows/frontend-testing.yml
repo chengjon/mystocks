@@ -5,6 +5,30 @@ on:
     branches: [ main, develop ]
     paths:
       - 'web/frontend/**'
+      - 'scripts/run_frontend_runtime_baseline.sh'
+      - 'scripts/run_api_performance_baseline.sh'
+      - 'scripts/run_monitoring_auth_performance_baseline.sh'
+      - 'scripts/run_runtime_quality_summary.sh'
+      - 'scripts/run_containerized_runtime_smoke.sh'
+      - 'scripts/dev/quality_gate/build_runtime_ci_bundle.py'
+      - 'scripts/dev/quality_gate/build_runtime_quality_summary.py'
+      - 'scripts/run_pm2_integration_workflow.sh'
+      - 'scripts/run_e2e_pm2.sh'
+      - 'tests/performance/benchmark.py'
+      - 'tests/performance/api_smoke_endpoints.json'
+      - 'tests/performance/monitoring_auth_endpoints.json'
+      - 'tests/performance/test_build_runtime_ci_bundle.py'
+      - 'tests/performance/test_container_runtime_smoke_script.py'
+      - 'tests/unit/core/test_web_container_assets.py'
+      - 'tests/performance/test_build_runtime_quality_summary.py'
+      - 'web/backend/Dockerfile'
+      - 'web/backend/requirements.txt'
+      - 'web/docker-compose.yml'
+      - 'web/frontend/Dockerfile'
+      - 'web/frontend/Dockerfile.dev'
+      - 'web/frontend/config/nginx/**'
+      - 'docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md'
+      - 'docs/testing/e2e/README.md'
       - 'docs/guides/web/ARTDECO_MASTER_INDEX.md'
       - 'docs/api/ArtDeco_System_Architecture_Summary.md'
       - 'docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md'
@@ -17,6 +41,30 @@ on:
     branches: [ main, develop ]
     paths:
       - 'web/frontend/**'
+      - 'scripts/run_frontend_runtime_baseline.sh'
+      - 'scripts/run_api_performance_baseline.sh'
+      - 'scripts/run_monitoring_auth_performance_baseline.sh'
+      - 'scripts/run_runtime_quality_summary.sh'
+      - 'scripts/run_containerized_runtime_smoke.sh'
+      - 'scripts/dev/quality_gate/build_runtime_ci_bundle.py'
+      - 'scripts/dev/quality_gate/build_runtime_quality_summary.py'
+      - 'scripts/run_pm2_integration_workflow.sh'
+      - 'scripts/run_e2e_pm2.sh'
+      - 'tests/performance/benchmark.py'
+      - 'tests/performance/api_smoke_endpoints.json'
+      - 'tests/performance/monitoring_auth_endpoints.json'
+      - 'tests/performance/test_build_runtime_ci_bundle.py'
+      - 'tests/performance/test_container_runtime_smoke_script.py'
+      - 'tests/unit/core/test_web_container_assets.py'
+      - 'tests/performance/test_build_runtime_quality_summary.py'
+      - 'web/backend/Dockerfile'
+      - 'web/backend/requirements.txt'
+      - 'web/docker-compose.yml'
+      - 'web/frontend/Dockerfile'
+      - 'web/frontend/Dockerfile.dev'
+      - 'web/frontend/config/nginx/**'
+      - 'docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md'
+      - 'docs/testing/e2e/README.md'
       - 'docs/guides/web/ARTDECO_MASTER_INDEX.md'
       - 'docs/api/ArtDeco_System_Architecture_Summary.md'
       - 'docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md'
@@ -31,6 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       artdeco_scope_changed: ${{ steps.detect.outputs.artdeco_scope_changed }}
+      container_runtime_required: ${{ steps.detect.outputs.container_runtime_required }}
       dependency_audit_required: ${{ steps.detect.outputs.dependency_audit_required }}
       frontend_source_changed: ${{ steps.detect.outputs.frontend_source_changed }}
       optimization_audit_required: ${{ steps.detect.outputs.optimization_audit_required }}
@@ -62,6 +111,7 @@ jobs:
         fi
 
         artdeco_scope_changed=false
+        container_runtime_required=false
         dependency_audit_required=false
         frontend_source_changed=false
         optimization_audit_required=false
@@ -70,6 +120,12 @@ jobs:
           case "$changed_file" in
             web/frontend/src/views/artdeco-pages/*|web/frontend/src/views/artdeco-pages/**|web/frontend/src/components/artdeco/*|web/frontend/src/components/artdeco/**|web/frontend/src/layouts/*|web/frontend/src/layouts/**|web/frontend/src/components/layout/*|web/frontend/src/components/layout/**|web/frontend/src/components/menu/*|web/frontend/src/components/menu/**|web/frontend/src/components/common/*|web/frontend/src/components/common/**|web/frontend/src/components/shared/ui/*|web/frontend/src/components/shared/ui/**|web/frontend/src/views/stock-analysis/*|web/frontend/src/views/stock-analysis/**|web/frontend/src/views/styles/*|web/frontend/src/views/styles/**|web/frontend/src/views/SkeletonUsage.vue|web/frontend/src/views/Stocks.vue|web/frontend/src/components/market/styles/SmartRecommendation.css|web/frontend/src/components/Market/styles/SmartRecommendation.css|web/frontend/src/styles/*|web/frontend/src/styles/**|web/frontend/scripts/check-artdeco-tokens.js|docs/guides/web/ARTDECO_MASTER_INDEX.md|docs/api/ArtDeco_System_Architecture_Summary.md|docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md|docs/guides/web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md|docs/guides/web/ART_DECO_QUICK_REFERENCE.md)
               artdeco_scope_changed=true
+              ;;
+          esac
+
+          case "$changed_file" in
+            web/backend/Dockerfile|web/backend/requirements.txt|web/docker-compose.yml|web/frontend/Dockerfile|web/frontend/Dockerfile.dev|web/frontend/config/nginx/*|web/frontend/config/nginx/**|scripts/run_containerized_runtime_smoke.sh|tests/performance/test_container_runtime_smoke_script.py|tests/unit/core/test_web_container_assets.py|scripts/dev/quality_gate/build_runtime_ci_bundle.py|.github/workflows/frontend-testing.yml)
+              container_runtime_required=true
               ;;
           esac
 
@@ -93,6 +149,7 @@ jobs:
         done
 
         echo "artdeco_scope_changed=$artdeco_scope_changed" >> "$GITHUB_OUTPUT"
+        echo "container_runtime_required=$container_runtime_required" >> "$GITHUB_OUTPUT"
         echo "dependency_audit_required=$dependency_audit_required" >> "$GITHUB_OUTPUT"
         echo "frontend_source_changed=$frontend_source_changed" >> "$GITHUB_OUTPUT"
         echo "optimization_audit_required=$optimization_audit_required" >> "$GITHUB_OUTPUT"
@@ -188,8 +245,8 @@ jobs:
         name: route-layout-pm2-gate-report
         path: route-layout-pm2-gate-report.json
 
-  route-layout-pm2-gate:
-    name: Route/Layout PM2 Gate
+  route-layout-runtime-baseline:
+    name: Route/Layout Runtime Baseline
     runs-on: ubuntu-latest
     needs: route-layout-pm2-detect
     if: needs.route-layout-pm2-detect.outputs.gate_required == 'true'
@@ -235,8 +292,313 @@ jobs:
         npm install -g pm2
         npx playwright install --with-deps chromium
 
-    - name: Run route/layout PM2 E2E gate
-      run: bash scripts/run_e2e_pm2.sh
+    - name: Run route/layout runtime baseline
+      run: bash scripts/run_frontend_runtime_baseline.sh
+
+    - name: Resolve runtime baseline artifact directory
+      if: always()
+      run: |
+        REPORT_DIR="$(find reports/analysis/frontend-runtime-gate -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -r | head -n 1 || true)"
+        echo "REPORT_DIR=${REPORT_DIR}" >> "$GITHUB_ENV"
+        echo "Resolved runtime baseline artifact: ${REPORT_DIR}"
+
+    - name: Resolve API performance artifact directory
+      if: always()
+      run: |
+        API_REPORT_DIR="$(find reports/analysis/api-performance-gate -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -r | head -n 1 || true)"
+        echo "API_REPORT_DIR=${API_REPORT_DIR}" >> "$GITHUB_ENV"
+        echo "Resolved API performance artifact: ${API_REPORT_DIR}"
+
+    - name: Resolve monitoring auth performance artifact directory
+      if: always()
+      run: |
+        MONITORING_API_REPORT_DIR="$(find reports/analysis/api-monitoring-auth-gate -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -r | head -n 1 || true)"
+        echo "MONITORING_API_REPORT_DIR=${MONITORING_API_REPORT_DIR}" >> "$GITHUB_ENV"
+        echo "Resolved monitoring auth performance artifact: ${MONITORING_API_REPORT_DIR}"
+
+    - name: Resolve unified runtime quality summary artifact directory
+      if: always()
+      run: |
+        RUNTIME_QUALITY_REPORT_DIR="$(find reports/analysis/runtime-quality-summary -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -r | head -n 1 || true)"
+        echo "RUNTIME_QUALITY_REPORT_DIR=${RUNTIME_QUALITY_REPORT_DIR}" >> "$GITHUB_ENV"
+        echo "Resolved runtime quality summary artifact: ${RUNTIME_QUALITY_REPORT_DIR}"
+
+    - name: Build consolidated runtime artifact manifest
+      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != '' && env.MONITORING_API_REPORT_DIR != '' && env.RUNTIME_QUALITY_REPORT_DIR != ''
+      run: |
+        mkdir -p reports/analysis/runtime-ci-bundle
+        python scripts/dev/quality_gate/build_runtime_ci_bundle.py \
+          --frontend-dir "${REPORT_DIR}" \
+          --api-dir "${API_REPORT_DIR}" \
+          --monitoring-dir "${MONITORING_API_REPORT_DIR}" \
+          --runtime-quality-dir "${RUNTIME_QUALITY_REPORT_DIR}" \
+          --output-manifest reports/analysis/runtime-ci-bundle/runtime-artifact-manifest.json \
+          --output-index reports/analysis/runtime-ci-bundle/runtime-artifact-index.md
+
+    - name: Publish runtime artifact summary to GitHub Actions job summary
+      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != '' && env.MONITORING_API_REPORT_DIR != '' && env.RUNTIME_QUALITY_REPORT_DIR != ''
+      run: |
+        if [ -n "${GITHUB_STEP_SUMMARY:-}" ] && [ -f reports/analysis/runtime-ci-bundle/runtime-artifact-index.md ]; then
+          cat reports/analysis/runtime-ci-bundle/runtime-artifact-index.md >> "$GITHUB_STEP_SUMMARY"
+        fi
+
+    - name: Upload route/layout runtime baseline artifacts
+      if: always() && env.REPORT_DIR != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: route-layout-runtime-baseline
+        path: ${{ env.REPORT_DIR }}
+        if-no-files-found: error
+
+    - name: Upload API performance baseline artifacts
+      if: always() && env.API_REPORT_DIR != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: route-layout-api-performance-baseline
+        path: ${{ env.API_REPORT_DIR }}
+        if-no-files-found: error
+
+    - name: Upload monitoring auth performance baseline artifacts
+      if: always() && env.MONITORING_API_REPORT_DIR != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: route-layout-monitoring-auth-performance-baseline
+        path: ${{ env.MONITORING_API_REPORT_DIR }}
+        if-no-files-found: error
+
+    - name: Upload unified runtime quality summary artifacts
+      if: always() && env.RUNTIME_QUALITY_REPORT_DIR != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: route-layout-runtime-quality-summary
+        path: ${{ env.RUNTIME_QUALITY_REPORT_DIR }}
+        if-no-files-found: error
+
+    - name: Upload consolidated runtime artifact bundle
+      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != '' && env.MONITORING_API_REPORT_DIR != '' && env.RUNTIME_QUALITY_REPORT_DIR != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: route-layout-runtime-bundle
+        path: |
+          reports/analysis/runtime-ci-bundle/runtime-artifact-manifest.json
+          reports/analysis/runtime-ci-bundle/runtime-artifact-index.md
+          ${{ env.REPORT_DIR }}
+          ${{ env.API_REPORT_DIR }}
+          ${{ env.MONITORING_API_REPORT_DIR }}
+          ${{ env.RUNTIME_QUALITY_REPORT_DIR }}
+        if-no-files-found: error
+
+  containerized-runtime-smoke:
+    name: Containerized Runtime Smoke
+    runs-on: ubuntu-latest
+    needs: frontend-gate-scope-detect
+    if: needs.frontend-gate-scope-detect.outputs.container_runtime_required == 'true'
+    timeout-minutes: 45
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Run containerized runtime smoke
+      run: bash scripts/run_containerized_runtime_smoke.sh
+
+    - name: Resolve docker runtime smoke artifact directory
+      if: always()
+      run: |
+        DOCKER_REPORT_DIR="$(find reports/analysis/docker-runtime-smoke -mindepth 1 -maxdepth 1 -type d 2>/dev/null | sort -r | head -n 1 || true)"
+        echo "DOCKER_REPORT_DIR=${DOCKER_REPORT_DIR}" >> "$GITHUB_ENV"
+        echo "Resolved docker runtime smoke artifact: ${DOCKER_REPORT_DIR}"
+
+    - name: Build consolidated runtime artifact manifest
+      if: always() && env.DOCKER_REPORT_DIR != ''
+      run: |
+        mkdir -p reports/analysis/runtime-ci-bundle
+        python scripts/dev/quality_gate/build_runtime_ci_bundle.py \
+          --frontend-dir "${DOCKER_REPORT_DIR}" \
+          --api-dir "${DOCKER_REPORT_DIR}" \
+          --monitoring-dir "${DOCKER_REPORT_DIR}" \
+          --runtime-quality-dir "${DOCKER_REPORT_DIR}" \
+          --docker-dir "${DOCKER_REPORT_DIR}" \
+          --output-manifest reports/analysis/runtime-ci-bundle/runtime-artifact-manifest.json \
+          --output-index reports/analysis/runtime-ci-bundle/runtime-artifact-index.md
+
+    - name: Publish docker runtime artifact summary to GitHub Actions job summary
+      if: always() && env.DOCKER_REPORT_DIR != ''
+      run: |
+        if [ -n "${GITHUB_STEP_SUMMARY:-}" ] && [ -f reports/analysis/runtime-ci-bundle/runtime-artifact-index.md ]; then
+          cat reports/analysis/runtime-ci-bundle/runtime-artifact-index.md >> "$GITHUB_STEP_SUMMARY"
+        fi
+
+    - name: Upload docker runtime smoke artifacts
+      if: always() && env.DOCKER_REPORT_DIR != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: containerized-runtime-smoke
+        path: ${{ env.DOCKER_REPORT_DIR }}
+        if-no-files-found: error
+
+    - name: Upload docker runtime artifact bundle
+      if: always() && env.DOCKER_REPORT_DIR != ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: containerized-runtime-bundle
+        path: |
+          reports/analysis/runtime-ci-bundle/runtime-artifact-manifest.json
+          reports/analysis/runtime-ci-bundle/runtime-artifact-index.md
+          ${{ env.DOCKER_REPORT_DIR }}
+        if-no-files-found: error
+
+  runtime-delivery-summary:
+    name: Runtime Delivery Summary
+    runs-on: ubuntu-latest
+    needs:
+      - frontend-gate-scope-detect
+      - route-layout-pm2-detect
+      - route-layout-runtime-baseline
+      - containerized-runtime-smoke
+    if: always() && (needs.route-layout-pm2-detect.outputs.gate_required == 'true' || needs.frontend-gate-scope-detect.outputs.container_runtime_required == 'true')
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Validate runtime delivery prerequisites
+      run: |
+        if [ "${{ needs.route-layout-pm2-detect.outputs.gate_required }}" = "true" ] && [ "${{ needs.route-layout-runtime-baseline.result }}" != "success" ]; then
+          echo "Route/layout runtime baseline artifacts are required but job result was ${{ needs.route-layout-runtime-baseline.result }}"
+          exit 1
+        fi
+
+        if [ "${{ needs.frontend-gate-scope-detect.outputs.container_runtime_required }}" = "true" ] && [ "${{ needs.containerized-runtime-smoke.result }}" != "success" ]; then
+          echo "Container runtime smoke artifacts are required but job result was ${{ needs.containerized-runtime-smoke.result }}"
+          exit 1
+        fi
+
+    - name: Download route/layout frontend runtime baseline artifact
+      if: needs.route-layout-pm2-detect.outputs.gate_required == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: route-layout-runtime-baseline
+        path: reports/ci-downloads/frontend-runtime
+
+    - name: Download route/layout API performance artifact
+      if: needs.route-layout-pm2-detect.outputs.gate_required == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: route-layout-api-performance-baseline
+        path: reports/ci-downloads/api-performance
+
+    - name: Download route/layout monitoring auth artifact
+      if: needs.route-layout-pm2-detect.outputs.gate_required == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: route-layout-monitoring-auth-performance-baseline
+        path: reports/ci-downloads/monitoring-auth
+
+    - name: Download container runtime smoke artifact
+      if: needs.frontend-gate-scope-detect.outputs.container_runtime_required == 'true'
+      uses: actions/download-artifact@v4
+      with:
+        name: containerized-runtime-smoke
+        path: reports/ci-downloads/docker-runtime
+
+    - name: Resolve downloaded artifact directories
+      run: |
+        FRONTEND_RUNTIME_DIR=""
+        API_PERFORMANCE_DIR=""
+        MONITORING_AUTH_DIR=""
+        DOCKER_RUNTIME_DIR=""
+
+        if [ "${{ needs.route-layout-pm2-detect.outputs.gate_required }}" = "true" ]; then
+          FRONTEND_RUNTIME_DIR="$(find reports/ci-downloads/frontend-runtime -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+          API_PERFORMANCE_DIR="$(find reports/ci-downloads/api-performance -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+          MONITORING_AUTH_DIR="$(find reports/ci-downloads/monitoring-auth -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+        fi
+
+        if [ "${{ needs.frontend-gate-scope-detect.outputs.container_runtime_required }}" = "true" ]; then
+          DOCKER_RUNTIME_DIR="$(find reports/ci-downloads/docker-runtime -mindepth 1 -maxdepth 1 -type d | head -n 1)"
+        fi
+
+        echo "FRONTEND_RUNTIME_DIR=${FRONTEND_RUNTIME_DIR}" >> "$GITHUB_ENV"
+        echo "API_PERFORMANCE_DIR=${API_PERFORMANCE_DIR}" >> "$GITHUB_ENV"
+        echo "MONITORING_AUTH_DIR=${MONITORING_AUTH_DIR}" >> "$GITHUB_ENV"
+        echo "DOCKER_RUNTIME_DIR=${DOCKER_RUNTIME_DIR}" >> "$GITHUB_ENV"
+
+    - name: Build combined runtime quality summary
+      run: |
+        mkdir -p reports/analysis/runtime-quality-summary-ci
+        cmd=(
+          python scripts/dev/quality_gate/build_runtime_quality_summary.py
+          --output-markdown reports/analysis/runtime-quality-summary-ci/SUMMARY.md
+          --output-json reports/analysis/runtime-quality-summary-ci/summary.json
+        )
+
+        if [ -n "${FRONTEND_RUNTIME_DIR}" ]; then
+          cmd+=(--frontend-dir "${FRONTEND_RUNTIME_DIR}")
+          cmd+=(--api-dir "${API_PERFORMANCE_DIR}")
+          cmd+=(--monitoring-dir "${MONITORING_AUTH_DIR}")
+        fi
+
+        if [ -n "${DOCKER_RUNTIME_DIR}" ]; then
+          cmd+=(--docker-dir "${DOCKER_RUNTIME_DIR}")
+        fi
+
+        "${cmd[@]}"
+
+    - name: Validate runtime observability drift
+      run: |
+        python scripts/dev/quality_gate/validate_runtime_observability_drift.py \
+          --baseline reports/analysis/runtime-observability-baseline.json \
+          --current-summary-json reports/analysis/runtime-quality-summary-ci/summary.json \
+          --output reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json
+
+    - name: Build combined runtime artifact manifest
+      run: |
+        mkdir -p reports/analysis/runtime-ci-bundle-combined
+        cmd=(
+          python scripts/dev/quality_gate/build_runtime_ci_bundle.py
+          --runtime-quality-dir reports/analysis/runtime-quality-summary-ci
+          --output-manifest reports/analysis/runtime-ci-bundle-combined/runtime-artifact-manifest.json
+          --output-index reports/analysis/runtime-ci-bundle-combined/runtime-artifact-index.md
+        )
+
+        if [ -n "${FRONTEND_RUNTIME_DIR}" ]; then
+          cmd+=(--frontend-dir "${FRONTEND_RUNTIME_DIR}")
+          cmd+=(--api-dir "${API_PERFORMANCE_DIR}")
+          cmd+=(--monitoring-dir "${MONITORING_AUTH_DIR}")
+        fi
+
+        if [ -n "${DOCKER_RUNTIME_DIR}" ]; then
+          cmd+=(--docker-dir "${DOCKER_RUNTIME_DIR}")
+        fi
+
+        "${cmd[@]}"
+
+    - name: Publish combined runtime delivery summary to GitHub Actions job summary
+      if: always()
+      run: |
+        if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+          cat reports/analysis/runtime-quality-summary-ci/SUMMARY.md >> "$GITHUB_STEP_SUMMARY"
+          printf '\n\n---\n\n' >> "$GITHUB_STEP_SUMMARY"
+          cat reports/analysis/runtime-ci-bundle-combined/runtime-artifact-index.md >> "$GITHUB_STEP_SUMMARY"
+        fi
+
+    - name: Upload combined runtime quality summary artifacts
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: runtime-delivery-summary
+        path: reports/analysis/runtime-quality-summary-ci
+        if-no-files-found: error
+
+    - name: Upload combined runtime delivery bundle
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: runtime-delivery-bundle
+        path: |
+          reports/analysis/runtime-quality-summary-ci
+          reports/analysis/runtime-ci-bundle-combined/runtime-artifact-manifest.json
+          reports/analysis/runtime-ci-bundle-combined/runtime-artifact-index.md
+        if-no-files-found: error
 
   frontend-test:
     runs-on: ubuntu-latest
