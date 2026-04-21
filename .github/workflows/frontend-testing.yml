@@ -556,6 +556,7 @@ jobs:
         cmd=(
           python scripts/dev/quality_gate/build_runtime_ci_bundle.py
           --runtime-quality-dir reports/analysis/runtime-quality-summary-ci
+          --runtime-observability-drift-report reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json
           --output-manifest reports/analysis/runtime-ci-bundle-combined/runtime-artifact-manifest.json
           --output-index reports/analysis/runtime-ci-bundle-combined/runtime-artifact-index.md
         )

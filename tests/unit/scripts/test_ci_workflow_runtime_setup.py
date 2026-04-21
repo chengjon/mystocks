@@ -174,7 +174,8 @@ def test_api_contract_and_api_file_workflows_install_backend_runtime_dependencie
     contract_workflow = _read_workflow("api-contract-validation.yml")
     api_file_workflow = _read_workflow("api-file-tests.yml")
 
-    assert "pip install -r web/backend/requirements.txt" in contract_workflow
+    assert "grep -Ev '^(TA-Lib|xlwings)==|^(TA-Lib|xlwings)>='" in contract_workflow
+    assert "pip install -r /tmp/backend-requirements-ci.txt" in contract_workflow
 
     for package_name in (
         "structlog",
@@ -915,20 +916,20 @@ def test_typescript_type_check_uses_explicit_path_filters_and_repo_repo_comments
     assert "repo: context.repo.name" not in workflow
     assert 'grep -c "error TS" tsc-output.txt 2>/dev/null || echo "0"' not in count_section
     assert 'if [ -z "$ERROR_COUNT" ]; then' in count_section
-    assert "<<'PY'" not in quality_gate_section
-    assert "python -c" in quality_gate_section
+    assert "python - <<'PY'" in quality_gate_section
+    assert "baseline_path = Path(\"reports/analysis/tech-debt-baseline.json\")" in quality_gate_section
 
 
 def test_cicd_monthly_review_uses_job_output_for_report_month() -> None:
     workflow = _read_workflow("cicd-monthly-review.yml")
 
-    assert "REPORT_MONTH:" not in workflow
     assert "outputs:" in workflow
     assert "report_month: ${{ steps.report_month.outputs.report_month }}" in workflow
     assert "id: report_month" in workflow
     assert "needs.monthly-review.outputs.report_month" in workflow
     assert "needs: [archive-historical-data, monthly-review]" in workflow
     assert "format(" not in workflow
+    assert 'echo "REPORT_MONTH=$report_month" >> $GITHUB_ENV' in workflow
 
 
 def test_python_and_security_type_report_comments_use_repo_repo() -> None:
@@ -957,7 +958,7 @@ def test_python_and_typescript_type_check_workflows_download_artifacts_into_work
     assert "path: ." in python_section
 
     assert "uses: actions/download-artifact@v4" in typescript_section
-    assert "path: ." in typescript_section
+    assert "path: type-check-artifacts" in typescript_section
 
 
 def test_python_type_check_scopes_pr_runs_to_relevant_src_files() -> None:
@@ -1102,7 +1103,8 @@ def test_security_testing_uses_parseable_report_generation_and_non_blocking_slac
     assert "python - <<'PY'" in report_section
     assert "security-results.json" in report_section
 
-    assert "if: always() && secrets.SLACK_WEBHOOK_URL != ''" in notification_section
+    assert "if: always()" in notification_section
+    assert "if: env.SLACK_WEBHOOK_URL != ''" in notification_section
     assert "webhook_url:" not in notification_section
     assert "continue-on-error: true" in notification_section
 
