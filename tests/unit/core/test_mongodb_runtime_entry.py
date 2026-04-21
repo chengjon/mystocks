@@ -38,6 +38,7 @@ def _load_readiness_module(module_name: str = 'test_web_backend_readiness_module
 
 def test_collect_readiness_checks_keeps_mongodb_optional() -> None:
     module = _load_readiness_module('test_web_backend_readiness_optional')
+    module.clear_readiness_cache()
 
     with patch.object(module, 'check_postgresql_readiness', return_value={'status': 'ready', 'required': True}), patch.object(
         module, 'check_redis_readiness', return_value={'status': 'ready', 'required': True}
@@ -51,6 +52,7 @@ def test_collect_readiness_checks_keeps_mongodb_optional() -> None:
 
 def test_collect_readiness_checks_fails_on_required_checks_only() -> None:
     module = _load_readiness_module('test_web_backend_readiness_required')
+    module.clear_readiness_cache()
 
     with patch.object(module, 'check_postgresql_readiness', return_value={'status': 'error', 'required': True}), patch.object(
         module, 'check_redis_readiness', return_value={'status': 'ready', 'required': True}
@@ -59,6 +61,24 @@ def test_collect_readiness_checks_fails_on_required_checks_only() -> None:
 
     assert ready is False
     assert checks['postgresql']['status'] == 'error'
+
+
+def test_collect_readiness_checks_uses_short_ttl_cache() -> None:
+    module = _load_readiness_module('test_web_backend_readiness_cache')
+    module.clear_readiness_cache()
+
+    with patch.object(module, 'check_postgresql_readiness', return_value={'status': 'ready', 'required': True}) as pg_check, patch.object(
+        module, 'check_redis_readiness', return_value={'status': 'ready', 'required': True}
+    ) as redis_check, patch.object(
+        module, 'check_mongodb_readiness', return_value={'status': 'optional_unavailable', 'required': False}
+    ) as mongo_check:
+        first = module.collect_readiness_checks()
+        second = module.collect_readiness_checks()
+
+    assert first == second
+    assert pg_check.call_count == 1
+    assert redis_check.call_count == 1
+    assert mongo_check.call_count == 1
 
 
 def test_mongodb_runtime_health_script_uses_mongosh_and_standard_env_contract() -> None:

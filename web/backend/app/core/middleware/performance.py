@@ -59,8 +59,13 @@ def get_endpoint_name(path: str) -> str:
     if path.startswith("/api/"):
         parts = path.split("/")
         if len(parts) >= 4:
-            return f"/api/{parts[2]}/{{id}}"
-    if path.startswith("/api"):
+            last_segment = parts[-1]
+            looks_like_numeric_id = last_segment.isdigit()
+            looks_like_uuid = len(last_segment) >= 8 and all(ch.isalnum() or ch == "-" for ch in last_segment) and "-" in last_segment
+            if looks_like_numeric_id or looks_like_uuid:
+                return "/".join(parts[:-1] + ["{id}"])
+        return path
+    if path == "/api":
         return "/api/{endpoint}"
     return path
 

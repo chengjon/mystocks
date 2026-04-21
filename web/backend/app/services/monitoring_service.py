@@ -8,7 +8,7 @@ Real-time Monitoring System
 import asyncio
 import logging
 from datetime import date, datetime, timedelta
-from typing import Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple
 
 import pandas as pd
 from sqlalchemy import and_, create_engine, desc
@@ -76,6 +76,8 @@ class MonitoringService:
         # A股交易时间
         self.market_open_time = "09:30"
         self.market_close_time = "15:00"
+        self._alert_rules_payload_cache: dict[tuple[Optional[str], Optional[bool]], tuple[datetime, list[dict[str, Any]]]] = {}
+        self._alert_rules_payload_cache_ttl_seconds = 15
 
         self._initialized = True
         logger.info("MonitoringService initialized")
@@ -105,6 +107,14 @@ class MonitoringService:
     # 告警规则管理
     # ========================================================================
 
+    def _clear_alert_rules_cache(self) -> None:
+        self._alert_rules_payload_cache.clear()
+
+    def _get_alert_rules_cache_key(
+        self, rule_type: Optional[str] = None, is_active: Optional[bool] = None
+    ) -> tuple[Optional[str], Optional[bool]]:
+        return rule_type, is_active
+
     def create_alert_rule(self, rule_data: Dict) -> AlertRule:
         """创建告警规则"""
         session = self.get_session()
@@ -113,6 +123,7 @@ class MonitoringService:
             session.add(rule)
             session.commit()
             session.refresh(rule)
+            self._clear_alert_rules_cache()
             logger.info("Created alert rule: {rule.rule_name}")
             return rule
         except Exception:
@@ -138,6 +149,65 @@ class MonitoringService:
         finally:
             session.close()
 
+    def get_alert_rule_payloads(
+        self, rule_type: Optional[str] = None, is_active: Optional[bool] = None
+    ) -> List[Dict[str, Any]]:
+        """获取告警规则列表的轻量级序列化结果，用于列表接口性能优化。"""
+        cache_key = self._get_alert_rules_cache_key(rule_type=rule_type, is_active=is_active)
+        cached_entry = self._alert_rules_payload_cache.get(cache_key)
+        now = datetime.now()
+
+        if cached_entry and cached_entry[0] > now:
+            return [item.copy() for item in cached_entry[1]]
+
+        session = self.get_session()
+        try:
+            query = session.query(
+                AlertRule.id,
+                AlertRule.rule_name,
+                AlertRule.rule_type,
+                AlertRule.description,
+                AlertRule.symbol,
+                AlertRule.stock_name,
+                AlertRule.parameters,
+                AlertRule.trigger_conditions,
+                AlertRule.notification_config,
+                AlertRule.is_active,
+                AlertRule.priority,
+                AlertRule.created_at,
+                AlertRule.updated_at,
+            )
+
+            if rule_type:
+                query = query.filter(AlertRule.rule_type == rule_type)
+            if is_active is not None:
+                query = query.filter(AlertRule.is_active == is_active)
+
+            rows = query.order_by(desc(AlertRule.priority)).all()
+            payloads = [
+                {
+                    "id": row.id,
+                    "rule_name": row.rule_name,
+                    "rule_type": row.rule_type,
+                    "description": row.description,
+                    "symbol": row.symbol,
+                    "stock_name": row.stock_name,
+                    "parameters": row.parameters or {},
+                    "trigger_conditions": row.trigger_conditions or {},
+                    "notification_config": row.notification_config or {},
+                    "is_active": row.is_active,
+                    "priority": row.priority,
+                    "created_at": row.created_at,
+                    "updated_at": row.updated_at,
+                }
+                for row in rows
+            ]
+            expires_at = now + timedelta(seconds=self._alert_rules_payload_cache_ttl_seconds)
+            self._alert_rules_payload_cache[cache_key] = (expires_at, [item.copy() for item in payloads])
+            return payloads
+        finally:
+            session.close()
+
     def update_alert_rule(self, rule_id: int, updates: Dict) -> AlertRule:
         """更新告警规则"""
         session = self.get_session()
@@ -153,6 +223,7 @@ class MonitoringService:
             rule.updated_at = datetime.now()
             session.commit()
             session.refresh(rule)
+            self._clear_alert_rules_cache()
             logger.info("Updated alert rule: {rule.rule_name}")
             return rule
         except Exception:
@@ -172,6 +243,7 @@ class MonitoringService:
 
             session.delete(rule)
             session.commit()
+            self._clear_alert_rules_cache()
             logger.info("Deleted alert rule: {rule.rule_name}")
             return True
         except Exception:

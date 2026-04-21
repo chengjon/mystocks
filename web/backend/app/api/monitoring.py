@@ -653,11 +653,11 @@ async def get_alert_rules(
     - is_active: 是否启用 (可选)
     """
     try:
-        rules = monitoring_service.get_alert_rules(
+        rules = monitoring_service.get_alert_rule_payloads(
             rule_type=rule_type.value if rule_type else None, is_active=is_active
         )
         return create_unified_success_response(
-            data=[AlertRuleResponse.from_orm(rule) for rule in rules],
+            data=rules,
             message="获取告警规则成功",
         )
     except Exception as e:

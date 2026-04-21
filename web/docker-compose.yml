@@ -1,11 +1,9 @@
-version: '3.8'
-
 services:
   # TDengine - 时序数据库
   tdengine:
     image: tdengine/tdengine:3.0.4.0
     ports:
-      - "6030:6030"
+      - "${TDENGINE_PUBLISHED_PORT:-6030}:6030"
     environment:
       TZ: "Asia/Shanghai"
     volumes:
@@ -16,7 +14,7 @@ services:
   postgresql:
     image: postgres:15-alpine
     ports:
-      - "5432:5432"
+      - "${POSTGRES_PUBLISHED_PORT:-5432}:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
@@ -24,6 +22,15 @@ services:
       TZ: "Asia/Shanghai"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  # Redis - 运行时就绪探针依赖
+  redis:
+    image: ${REDIS_IMAGE:-redis:7-alpine}
+    ports:
+      - "${REDIS_PUBLISHED_PORT:-6379}:6379"
+    environment:
+      TZ: "Asia/Shanghai"
     restart: unless-stopped
 
   # FastAPI 后端
@@ -37,11 +44,16 @@ services:
       ENVIRONMENT: development
       DEBUG: False
       BACKEND_PORT: "${BACKEND_PORT:-8020}"
+      PYTHONPATH: /workspace:/app
       POSTGRESQL_HOST: postgresql
       POSTGRESQL_PORT: 5432
       POSTGRESQL_USER: postgres
-      POSTGRESQL_PASSWORD: ${POSTGRESQL_PASSWORD:?Set POSTGRESQL_PASSWORD}
+      POSTGRESQL_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
       POSTGRESQL_DATABASE: mystocks
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      REDIS_DB: ${REDIS_DB:-1}
       TDENGINE_HOST: tdengine
       TDENGINE_PORT: 6030
       TDENGINE_USER: root
@@ -51,9 +63,12 @@ services:
       uvicorn app.main:app --host 0.0.0.0 --port ${BACKEND_PORT:-8020}
     volumes:
       - ./backend:/app
+      - ..:/workspace:ro
+      - ../config:/app/config:ro
+      - ../src:/app/src:ro
     depends_on:
-      - tdengine
       - postgresql
+      - redis
     restart: unless-stopped
 
   # Vue3 前端
@@ -68,7 +83,7 @@ services:
       VITE_API_BASE_URL: http://localhost:${BACKEND_PORT:-8020}
       NODE_ENV: development
     command: >
-      npm run dev -- --host 0.0.0.0 --port ${FRONTEND_PORT:-3020}
+      npm run dev:no-types -- --host 0.0.0.0 --port ${FRONTEND_PORT:-3020}
     volumes:
       - ./frontend:/app
       - /app/node_modules

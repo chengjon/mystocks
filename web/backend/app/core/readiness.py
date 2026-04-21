@@ -9,6 +9,10 @@ from app.core.database import get_postgresql_engine
 from app.core.config import settings
 
 
+READINESS_CACHE_TTL_SECONDS = 5.0
+_readiness_cache: dict[str, Any] = {"expires_at": 0.0, "payload": None}
+
+
 def check_postgresql_readiness() -> dict[str, Any]:
     """检查 PostgreSQL 就绪状态。"""
     start_time = time.perf_counter()
@@ -113,12 +117,25 @@ def check_mongodb_readiness() -> dict[str, Any]:
         }
 
 
-def collect_readiness_checks() -> tuple[bool, dict[str, dict[str, Any]]]:
+def clear_readiness_cache() -> None:
+    _readiness_cache["expires_at"] = 0.0
+    _readiness_cache["payload"] = None
+
+
+def collect_readiness_checks(force_refresh: bool = False) -> tuple[bool, dict[str, dict[str, Any]]]:
     """收集就绪探针检查结果。"""
+    now = time.monotonic()
+    cached_payload = _readiness_cache.get("payload")
+    if not force_refresh and cached_payload is not None and _readiness_cache["expires_at"] > now:
+        return cached_payload
+
     checks = {
         "postgresql": check_postgresql_readiness(),
         "redis": check_redis_readiness(),
         "mongodb": check_mongodb_readiness(),
     }
     ready = all(item["status"] == "ready" for item in checks.values() if item.get("required", True))
-    return ready, checks
+    payload = (ready, checks)
+    _readiness_cache["payload"] = payload
+    _readiness_cache["expires_at"] = now + READINESS_CACHE_TTL_SECONDS
+    return payload
