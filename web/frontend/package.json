@@ -26,7 +26,6 @@
     "lint:artdeco:guidance": "node scripts/check-artdeco-tokens.js --target-file ../../docs/guides/web/ARTDECO_MASTER_INDEX.md --target-file ../../docs/api/ArtDeco_System_Architecture_Summary.md --target-file ../../docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md --target-file ../../docs/guides/web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md --target-file ../../docs/guides/web/ART_DECO_QUICK_REFERENCE.md --skip-literal-checks --forbid-legacy-tokens --forbid-legacy-sass --forbid-legacy-typography",
     "lint:artdeco:guidance:changed": "node scripts/check-artdeco-tokens.js --target-file ../../docs/guides/web/ARTDECO_MASTER_INDEX.md --target-file ../../docs/api/ArtDeco_System_Architecture_Summary.md --target-file ../../docs/guides/web/ARTDECO_GRID_QUICK_REFERENCE.md --target-file ../../docs/guides/web/ARTDECO_UI_UX_FUNCTIONALITY_GUIDE.md --target-file ../../docs/guides/web/ART_DECO_QUICK_REFERENCE.md --changed-from-git --skip-literal-checks --forbid-legacy-tokens --forbid-legacy-sass --forbid-legacy-typography",
     "test": "vitest run",
-    "test:artdeco-samples": "./scripts/run-artdeco-sample-tests.sh",
     "test:unit:stable": "node scripts/stable-unit-suite.js",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
