@@ -11,7 +11,7 @@ const resolvedFrontend = resolveFrontendConfig();
 const e2eFrontendPortRaw = process.env.E2E_FRONTEND_PORT || process.env.PLAYWRIGHT_FRONTEND_PORT;
 const e2eFrontendPort = e2eFrontendPortRaw ? Number.parseInt(e2eFrontendPortRaw, 10) : null;
 const frontendPort = Number.isInteger(e2eFrontendPort) ? e2eFrontendPort : resolvedFrontend.port;
-const baseURL = process.env.FRONTEND_BASE_URL || `http://127.0.0.1:${frontendPort}`;
+const baseURL = process.env.FRONTEND_BASE_URL || resolvedFrontend.baseUrl;
 const isLinux = process.platform === "linux";
 const useManagedServer = process.env.PLAYWRIGHT_EXTERNAL_FRONTEND === "1";
 

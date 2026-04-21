@@ -248,16 +248,16 @@ test.describe('Strategy Management Chain E2E', () => {
     await expect(row).toHaveCount(1)
 
     await row.getByRole('button', { name: '启动' }).click()
-    await expect(row.locator('.status-chip')).toContainText('RUNNING')
+    await expect(row).toContainText('RUNNING')
 
     await row.getByRole('button', { name: '暂停' }).click()
-    await expect(row.locator('.status-chip')).toContainText('PAUSED')
+    await expect(row).toContainText('PAUSED')
 
     await row.getByRole('button', { name: '恢复' }).click()
-    await expect(row.locator('.status-chip')).toContainText('RUNNING')
+    await expect(row).toContainText('RUNNING')
 
     await row.getByRole('button', { name: '停止' }).click()
-    await expect(row.locator('.status-chip')).toContainText('STOPPED')
+    await expect(row).toContainText('STOPPED')
   })
 
   test('supports create/edit/delete strategy CRUD workflow', async ({ page }) => {

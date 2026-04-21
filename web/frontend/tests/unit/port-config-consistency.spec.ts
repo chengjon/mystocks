@@ -46,7 +46,8 @@ describe("Port configuration consistency", () => {
     loadPortEnv(frontendRoot);
 
     expect(resolveFrontendConfig().port).toBe(3020);
-    expect(playwrightConfigText).toContain("const baseURL = process.env.FRONTEND_BASE_URL || `http://127.0.0.1:${frontendPort}`;");
+    expect(resolveFrontendConfig().baseUrl).toBe("http://localhost:3020");
+    expect(playwrightConfigText).toContain("const baseURL = process.env.FRONTEND_BASE_URL || resolvedFrontend.baseUrl;");
     expect(fs.existsSync(path.join(frontendRoot, "cypress.config.ts"))).toBe(false);
   });
 });

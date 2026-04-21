@@ -16,6 +16,8 @@ describe("Lighthouse mainline gates", () => {
       "http://127.0.0.1:4273/dashboard",
       "http://127.0.0.1:4273/market/realtime",
       "http://127.0.0.1:4273/strategy/repo",
+      "http://127.0.0.1:4273/risk/overview",
+      "http://127.0.0.1:4273/trade/terminal",
     ]);
   });
 });

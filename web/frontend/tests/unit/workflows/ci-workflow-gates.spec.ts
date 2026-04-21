@@ -97,6 +97,105 @@ describe("CI workflow gates", () => {
     expect(lighthouseStepMatch?.[1]?.trim()).toBe("npm run test:e2e:lighthouse");
   });
 
+  it("runs the PM2 API performance baseline in the route/layout runtime job", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    const runtimeBaselineStepMatch = workflowText.match(
+      /- name: Run route\/layout runtime baseline[\s\S]*?run:\s*([^\n]+)/u,
+    );
+
+    expect(runtimeBaselineStepMatch?.[1]?.trim()).toBe("bash scripts/run_frontend_runtime_baseline.sh");
+    expect(workflowText).toContain("route-layout-api-performance-baseline");
+    expect(workflowText).toContain("tests/performance/benchmark.py");
+    expect(workflowText).toContain("tests/performance/api_smoke_endpoints.json");
+    expect(workflowText).not.toContain("- name: Run PM2 API performance baseline");
+  });
+
+  it("runs the PM2 monitoring auth performance baseline in the route/layout runtime job", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    expect(workflowText).toContain("route-layout-monitoring-auth-performance-baseline");
+    expect(workflowText).toContain("tests/performance/monitoring_auth_endpoints.json");
+    expect(workflowText).toContain("scripts/run_monitoring_auth_performance_baseline.sh");
+    expect(workflowText).not.toContain("- name: Run PM2 monitoring auth performance baseline");
+  });
+
+  it("runs the unified runtime quality summary in the route/layout runtime job", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    expect(workflowText).toContain("route-layout-runtime-quality-summary");
+    expect(workflowText).toContain("scripts/dev/quality_gate/build_runtime_quality_summary.py");
+    expect(workflowText).toContain("tests/performance/test_build_runtime_quality_summary.py");
+    expect(workflowText).not.toContain("- name: Run unified runtime quality summary");
+  });
+
+  it("uploads a consolidated runtime artifact bundle with a manifest", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+
+    expect(workflowText).toContain("Build consolidated runtime artifact manifest");
+    expect(workflowText).toContain("scripts/dev/quality_gate/build_runtime_ci_bundle.py");
+    expect(workflowText).toContain("reports/analysis/runtime-ci-bundle/runtime-artifact-manifest.json");
+    expect(workflowText).toContain("reports/analysis/runtime-ci-bundle/runtime-artifact-index.md");
+    expect(workflowText).toContain("route-layout-runtime-bundle");
+    expect(workflowText).toContain("${{ env.REPORT_DIR }}");
+    expect(workflowText).toContain("${{ env.API_REPORT_DIR }}");
+    expect(workflowText).toContain("${{ env.MONITORING_API_REPORT_DIR }}");
+    expect(workflowText).toContain("${{ env.RUNTIME_QUALITY_REPORT_DIR }}");
+  });
+
+  it("runs a dedicated containerized runtime smoke job on container-scope changes", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+
+    expect(workflowText).toContain("container_runtime_required");
+    expect(workflowText).toContain("scripts/run_containerized_runtime_smoke.sh");
+    expect(workflowText).toContain("name: Containerized Runtime Smoke");
+    expect(workflowText).toContain("containerized-runtime-smoke");
+    expect(workflowText).toContain("containerized-runtime-bundle");
+    expect(workflowText).toContain("DOCKER_REPORT_DIR");
+  });
+
+  it("builds a downstream runtime delivery summary from PM2 and Docker artifacts", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+
+    expect(workflowText).toContain("name: Runtime Delivery Summary");
+    expect(workflowText).toContain("Validate runtime delivery prerequisites");
+    expect(workflowText).toContain("actions/download-artifact@v4");
+    expect(workflowText).toContain("route-layout-runtime-baseline");
+    expect(workflowText).toContain("route-layout-api-performance-baseline");
+    expect(workflowText).toContain("route-layout-monitoring-auth-performance-baseline");
+    expect(workflowText).toContain("containerized-runtime-smoke");
+    expect(workflowText).toContain("build_runtime_quality_summary.py");
+    expect(workflowText).toContain("Validate runtime observability drift");
+    expect(workflowText).toContain("validate_runtime_observability_drift.py");
+    expect(workflowText).toContain("runtime-observability-baseline.json");
+    expect(workflowText).toContain("runtime-observability-drift-report.json");
+    expect(workflowText).toContain("--docker-dir");
+    expect(workflowText).toContain("needs.route-layout-pm2-detect.outputs.gate_required == 'true' || needs.frontend-gate-scope-detect.outputs.container_runtime_required == 'true'");
+    expect(workflowText).toContain("runtime-delivery-summary");
+    expect(workflowText).toContain("runtime-delivery-bundle");
+  });
+
+  it("builds a human-readable runtime artifact index in the consolidated bundle", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+    const bundleScriptText = readWorkflow("scripts/dev/quality_gate/build_runtime_ci_bundle.py");
+
+    expect(workflowText).toContain("runtime-artifact-index.md");
+    expect(workflowText).toContain("scripts/dev/quality_gate/build_runtime_ci_bundle.py");
+    expect(workflowText).toContain("--runtime-observability-drift-report");
+    expect(bundleScriptText).toContain("# Runtime Artifact Index");
+    expect(bundleScriptText).toContain("## Key Gates");
+    expect(bundleScriptText).toContain("## Report Entry Points");
+    expect(bundleScriptText).toContain("## Performance Snapshot");
+    expect(bundleScriptText).toContain("## Drift Gate");
+    expect(bundleScriptText).toContain("docker_runtime");
+    expect(bundleScriptText).toContain("Docker runtime smoke");
+  });
+
+  it("publishes the runtime artifact index into the GitHub Actions job summary", () => {
+    const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
+
+    expect(workflowText).toContain("Publish runtime artifact summary to GitHub Actions job summary");
+    expect(workflowText).toContain("GITHUB_STEP_SUMMARY");
+    expect(workflowText).toContain('cat reports/analysis/runtime-ci-bundle/runtime-artifact-index.md >> "$GITHUB_STEP_SUMMARY"');
+  });
+
   it("runs the changed-only ArtDeco guidance gate in frontend-testing", () => {
     const workflowText = readWorkflow(".github/workflows/frontend-testing.yml");
     const guidanceStepMatch = workflowText.match(

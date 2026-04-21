@@ -22,6 +22,8 @@ module.exports = {
         `${lighthouseBaseUrl}/dashboard`,
         `${lighthouseBaseUrl}/market/realtime`,
         `${lighthouseBaseUrl}/strategy/repo`,
+        `${lighthouseBaseUrl}/risk/overview`,
+        `${lighthouseBaseUrl}/trade/terminal`,
       ],
       numberOfRuns: 1,
       settings: {
