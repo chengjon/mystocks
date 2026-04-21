@@ -1,4 +1,5 @@
 /* 全局样式 */
+/* Generic base layer only. Not a design-truth source. */
 
 // 导入布局修复
 @import './artdeco-layout-fix.scss';
@@ -13,8 +14,9 @@ html,
 body,
 #app {
   height: 100%;
-  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
-    'Microsoft YaHei', Arial, sans-serif;
+  font-family: var(--artdeco-font-body, var(--font-body, 'Barlow', 'Inter', sans-serif));
+  background: var(--artdeco-bg-global, #0A0A0A);
+  color: var(--artdeco-fg-primary, #F2F0E4);
 }
 
 /* 滚动条样式 */
@@ -24,16 +26,17 @@ body,
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: var(--artdeco-bg-card, #141414);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
+  background: var(--artdeco-gold-dim, #8B7355);
+  border-radius: 2px;
+  border: 1px solid var(--artdeco-border-default, rgb(212 175 55 / 30%));
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--artdeco-gold-primary, #D4AF37);
 }
 
 /* 工具类 */

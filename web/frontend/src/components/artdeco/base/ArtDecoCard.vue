@@ -69,15 +69,20 @@
     // ============================================
 
     .artdeco-card {
+        --artdeco-card-border-color: var(--ad-card-border-default);
+        --artdeco-card-bg-color: var(--ad-card-bg-default);
+        --artdeco-card-shadow: var(--ad-card-shadow-default);
+
         // Art Deco signature: 锐利直角 (radius-none = 0px)
         border-radius: var(--artdeco-radius-none);
-        background: var(--artdeco-bg-card);
-        border: 2px solid var(--artdeco-border-default);  // UI Pro Max优化：从1px增加到2px，增强视觉层级
+        background: var(--artdeco-card-bg-color);
+        border: 2px solid var(--artdeco-card-border-color);  // UI Pro Max优化：从1px增加到2px，增强视觉层级
         padding: var(--artdeco-spacing-4);
         position: relative;
         overflow: hidden;
         transition: all var(--artdeco-transition-base);
         box-sizing: border-box;
+        box-shadow: var(--artdeco-card-shadow);
 
         // 几何角落装饰（叠加在阶梯角上）
         @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px);
@@ -111,7 +116,7 @@
     .artdeco-card__header {
         margin-bottom: var(--artdeco-spacing-3);
         padding-bottom: var(--artdeco-spacing-3);
-        border-bottom: 1px solid var(--artdeco-border-default);
+        border-bottom: 1px solid var(--artdeco-card-border-color);
     }
 
     .artdeco-card__header h3 {
@@ -140,15 +145,15 @@
     .artdeco-card__footer {
         margin-top: var(--artdeco-spacing-3);
         padding-top: var(--artdeco-spacing-3);
-        border-top: 1px solid var(--artdeco-gold-opacity-20);
+        border-top: 1px solid var(--artdeco-card-border-color);
         color: var(--artdeco-fg-muted);
         font-size: var(--artdeco-font-size-sm);
     }
 
     /* Card modifiers - BEM: artdeco-card--modifier */
     .artdeco-card--hoverable:hover {
-        border-color: var(--artdeco-gold-primary);
-        box-shadow: var(--artdeco-glow-intense);
+        --artdeco-card-border-color: var(--ad-card-border-hover);
+        --artdeco-card-shadow: var(--ad-card-shadow-hover);
     }
 
     .artdeco-card--clickable {
@@ -212,8 +217,8 @@
     }
 
     .artdeco-card--elevated {
-        box-shadow: var(--artdeco-shadow-md);
-        border-color: var(--artdeco-gold-opacity-30);
-        background: var(--artdeco-bg-surface);
+        --artdeco-card-shadow: var(--ad-card-shadow-elevated);
+        --artdeco-card-border-color: var(--ad-card-border-elevated);
+        --artdeco-card-bg-color: var(--ad-card-bg-elevated);
     }
 </style>

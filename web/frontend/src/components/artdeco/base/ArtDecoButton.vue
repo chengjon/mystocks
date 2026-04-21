@@ -47,7 +47,7 @@
         /// - fall: Green border/text, green glow on hover (A股跌)
         /// - double-border: ArtDeco signature double frame style
         /// - pulse: Pulsing gold border animation
-        variant?: 'default' | 'solid' | 'outline' | 'secondary' | 'rise' | 'fall' | 'double-border' | 'pulse'
+        variant?: 'default' | 'solid' | 'primary' | 'gold' | 'outline' | 'secondary' | 'rise' | 'fall' | 'double-border' | 'pulse'
 
         /// Button size
         /// - sm: 40px height
@@ -99,6 +99,14 @@
 
     const isDisabled = computed(() => props.disabled || props.loading)
 
+    const normalizedVariant = computed(() => {
+        if (props.variant === 'primary' || props.variant === 'gold') {
+            return 'solid'
+        }
+
+        return props.variant
+    })
+
     /**
      * Generate button CSS classes based on props
      * 根据属性生成按钮CSS类名
@@ -106,7 +114,7 @@
     const buttonClasses = computed(() => {
         return [
             'artdeco-button',
-            `artdeco-button--${props.variant}`,
+            `artdeco-button--${normalizedVariant.value}`,
             `artdeco-button--${props.size}`,
             props.priority !== 'auto' ? `artdeco-button--priority-${props.priority}` : null,
             props.motion !== 'auto' ? `artdeco-button--motion-${props.motion}` : null,
@@ -145,6 +153,8 @@
     // ============================================
 
     .artdeco-button {
+        --artdeco-button-transition: var(--artdeco-transition-quick);
+
         // MANDATORY: Sharp corners (Art Deco rejects curves)
         border-radius: var(--artdeco-radius-none);
 
@@ -166,12 +176,12 @@
 
         // Theatrical transition - 使用更慢的过渡增加戏剧感
         transition:
-            background-color 200ms var(--artdeco-ease-in-out),
-            border-color 200ms var(--artdeco-ease-in-out),
-            color 200ms var(--artdeco-ease-in-out),
-            box-shadow 200ms var(--artdeco-ease-in-out),
-            transform 200ms var(--artdeco-ease-in-out),
-            opacity 200ms var(--artdeco-ease-in-out);
+            background-color var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+            border-color var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+            color var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+            box-shadow var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+            transform var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+            opacity var(--artdeco-button-transition) var(--artdeco-ease-in-out);
 
         // Remove default button styles
         border: none;
@@ -180,14 +190,16 @@
 
         // Focus state for keyboard navigation (WCAG AA)
         &:focus-visible {
-            outline: 2px solid var(--artdeco-gold-primary);
-            outline-offset: 2px;
+            outline: none;
+            border-color: var(--ad-btn-border-focus);
+            box-shadow: var(--ad-btn-shadow-focus);
         }
 
         &:disabled,
         &--disabled {
             cursor: not-allowed;
-            opacity: 50%;
+            opacity: 40%;
+            box-shadow: none;
         }
 
         &--loading {
@@ -255,15 +267,16 @@
     .artdeco-button--default {
         background-color: transparent;
         color: var(--artdeco-gold-primary); // Use theme variable
-        border: 2px solid var(--artdeco-gold-primary);
+        border: 2px solid var(--ad-btn-border-default);
 
-        &:hover:not(:disabled, &--disabled) {
-            background-color: var(--artdeco-gold-primary);
-            color: var(--artdeco-bg-global); // Black text on gold = excellent contrast
-            box-shadow: var(--artdeco-glow-intense); // Use theme glow
+        &:hover:not(:disabled):not(.artdeco-button--disabled) {
+            background-color: color-mix(in srgb, var(--ad-btn-bg-hover) 18%, transparent);
+            border-color: var(--ad-btn-border-hover);
+            color: var(--artdeco-gold-hover);
+            box-shadow: var(--ad-btn-shadow-hover);
         }
 
-        &:active:not(:disabled, &--disabled) {
+        &:active:not(:disabled):not(.artdeco-button--disabled) {
             transform: translateY(-1px);
         }
     }
@@ -276,19 +289,22 @@
     // ============================================
 
     .artdeco-button--solid {
-        background-color: var(--artdeco-gold-primary);
-        color: var(--artdeco-bg-global); // Black on gold = 12.6:1 contrast (AAA)
-        border: 2px solid var(--artdeco-gold-primary);
+        background-color: var(--ad-btn-bg-default);
+        color: var(--ad-btn-text-default); // Black on gold = 12.6:1 contrast (AAA)
+        border: 2px solid var(--ad-btn-border-default);
 
-        &:hover:not(:disabled, &--disabled) {
-            background-color: var(--artdeco-gold-hover);
-            border-color: var(--artdeco-gold-hover);
-            box-shadow: var(--artdeco-glow-intense);
+        &:hover:not(:disabled):not(.artdeco-button--disabled) {
+            background-color: var(--ad-btn-bg-hover);
+            border-color: var(--ad-btn-border-hover);
+            color: var(--ad-btn-text-hover);
+            box-shadow: var(--ad-btn-shadow-hover);
         }
 
-        &:active:not(:disabled, &--disabled) {
+        &:active:not(:disabled):not(.artdeco-button--disabled) {
             transform: translateY(-1px);
-            background-color: var(--artdeco-gold-primary);
+            background-color: var(--ad-btn-bg-focus);
+            border-color: var(--ad-btn-border-focus);
+            box-shadow: var(--ad-btn-shadow-focus);
         }
     }
 
@@ -303,16 +319,16 @@
     .artdeco-button--secondary {
         background-color: transparent;
         color: var(--artdeco-gold-primary);
-        border: 1px solid var(--artdeco-gold-primary);
+        border: 1px solid var(--ad-btn-border-default);
 
-        &:hover:not(:disabled, &--disabled) {
+        &:hover:not(:disabled):not(.artdeco-button--disabled) {
             background-color: var(--artdeco-gold-opacity-10); // 10% gold fill
-            border-color: var(--artdeco-gold-hover);
+            border-color: var(--ad-btn-border-hover);
             color: var(--artdeco-gold-hover);
-            box-shadow: var(--artdeco-glow-subtle);
+            box-shadow: var(--ad-btn-shadow-hover);
         }
 
-        &:active:not(:disabled, &--disabled) {
+        &:active:not(:disabled):not(.artdeco-button--disabled) {
             transform: translateY(-1px);
         }
     }
@@ -341,11 +357,11 @@
     }
 
     .artdeco-button--motion-data {
-        transition-duration: 200ms;
+        --artdeco-button-transition: var(--artdeco-transition-quick);
     }
 
     .artdeco-button--motion-decorative {
-        transition-duration: 400ms;
+        --artdeco-button-transition: var(--artdeco-transition-base);
     }
 
     // ============================================
@@ -358,12 +374,12 @@
         color: var(--artdeco-up);
         border: 2px solid var(--artdeco-up);
 
-        &:hover:not(:disabled, &--disabled) {
+        &:hover:not(:disabled):not(.artdeco-button--disabled) {
             background-color: color-mix(in srgb, var(--artdeco-up) 15%, transparent);
-            box-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-up) 40%, transparent);
+            box-shadow: var(--artdeco-glow-profit);
         }
 
-        &:active:not(:disabled, &--disabled) {
+        &:active:not(:disabled):not(.artdeco-button--disabled) {
             transform: translateY(-1px);
         }
     }
@@ -378,12 +394,12 @@
         color: var(--artdeco-down);
         border: 2px solid var(--artdeco-down);
 
-        &:hover:not(:disabled, &--disabled) {
+        &:hover:not(:disabled):not(.artdeco-button--disabled) {
             background-color: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
-            box-shadow: 0 0 15px color-mix(in srgb, var(--artdeco-down) 40%, transparent);
+            box-shadow: var(--artdeco-glow-loss);
         }
 
-        &:active:not(:disabled, &--disabled) {
+        &:active:not(:disabled):not(.artdeco-button--disabled) {
             transform: translateY(-1px);
         }
     }
@@ -397,7 +413,7 @@
     .artdeco-button--pulse {
         background-color: transparent;
         color: var(--artdeco-gold-primary);
-        border: 2px solid var(--artdeco-gold-primary);
+        border: 2px solid var(--ad-btn-border-default);
         position: relative;
 
         // 脉冲动画
@@ -405,17 +421,17 @@
             content: '';
             position: absolute;
             inset: -2px -2px -2px -2px;
-            border: 2px solid var(--artdeco-gold-primary);
+            border: 2px solid var(--ad-btn-border-default);
             border-radius: inherit;
             animation: pulse-ring 2s infinite;
             opacity: 0%;
             transition: opacity 400ms var(--artdeco-ease-in-out), transform 400ms var(--artdeco-ease-in-out);
         }
 
-        &:hover:not(:disabled, &--disabled) {
-            background-color: var(--artdeco-gold-primary);
-            color: var(--artdeco-bg-global);
-            box-shadow: var(--artdeco-glow-intense);
+        &:hover:not(:disabled):not(.artdeco-button--disabled) {
+            background-color: color-mix(in srgb, var(--ad-btn-bg-hover) 18%, transparent);
+            color: var(--ad-btn-text-hover);
+            box-shadow: var(--ad-btn-shadow-hover);
         }
     }
 
@@ -472,7 +488,7 @@
             z-index: 2;
         }
 
-        &:hover:not(:disabled, &--disabled) {
+        &:hover:not(:disabled):not(.artdeco-button--disabled) {
             color: var(--artdeco-gold-hover);
 
             &::before {
@@ -486,7 +502,7 @@
             }
         }
 
-        &:active:not(:disabled, &--disabled) {
+        &:active:not(:disabled):not(.artdeco-button--disabled) {
             transform: translateY(0);
 
             &::before,

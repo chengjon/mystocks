@@ -1,4 +1,9 @@
 /* web/frontend/src/styles/artdeco-colors.css */
+/*
+ * Compatibility-only color bridge for the legacy `artdeco-main.css` import chain.
+ * Do not treat this file as the active runtime palette truth.
+ * Canonical color decisions live in `artdeco-tokens.scss`.
+ */
 
 /* ArtDeco Color Palette - CSS Variables */
 :root {
@@ -16,7 +21,7 @@
   /* Semantic Colors */
   --artdeco-success: #28a745;
   --artdeco-error: #dc3545;
-  --artdeco-warning: #ffc107;
+  --artdeco-warning: var(--artdeco-gold-primary, #d4af37);
   --artdeco-info: #17a2b8;
   
   /* Text Colors */

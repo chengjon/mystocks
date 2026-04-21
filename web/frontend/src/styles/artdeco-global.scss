@@ -4,6 +4,8 @@
 // ============================================
 // Purpose: ArtDeco设计系统的全局基础样式
 // Features: Google Fonts导入、全局重置、排版基础、滚动条样式
+// Runtime role: active global style entry for the standard frontend path.
+// Typography and token assumptions in this file must follow artdeco-tokens.scss.
 // Created: 2026-01-20
 // Version: 1.0
 // ============================================
@@ -13,10 +15,10 @@
 //   ⚡ 性能优化: 使用font-display: swap避免阻塞渲染
 // ============================================
 
-// Google Fonts - ArtDeco字体栈
-// Marcellus: 标题字体(罗马结构,ArtDeco经典)
-// Josefin Sans: 正文字体(几何复古感,1920年代风格)
-@import 'https://fonts.googleapis.com/css2?family=Marcellus:wght@400;700&family=Josefin+Sans:wght@400;500;600;700&display=swap';
+// Google Fonts - Active ArtDeco runtime stack
+// Cinzel: display/headline serif
+// Barlow: dense, readable body sans
+@import 'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Barlow:wght@400;500;600&display=swap';
 
 // ============================================
 //   CSS CUSTOM PROPERTIES - 设计令牌导入

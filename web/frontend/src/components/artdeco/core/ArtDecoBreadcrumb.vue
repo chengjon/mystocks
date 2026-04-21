@@ -148,6 +148,8 @@
 
         return breadcrumbList
     })
+
+    defineExpose({ breadcrumbs })
 </script>
 
 <style scoped lang="scss">

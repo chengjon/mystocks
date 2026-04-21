@@ -18,7 +18,7 @@ defineProps<{
 </script>
 
 <style scoped lang="scss">
-@import '@/styles/artdeco-tokens';
+@use '@/styles/artdeco-tokens.scss' as *;
 
 .artdeco-loading-overlay {
   position: absolute;
@@ -26,12 +26,12 @@ defineProps<{
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: color-mix(in srgb, var(--artdeco-bg-global) 70%, transparent);
+  background-color: var(--ad-overlay-bg);
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(calc(var(--artdeco-spacing-1) / 2));
+  z-index: var(--ad-overlay-z);
+  backdrop-filter: blur(var(--ad-overlay-blur));
 
   .loading-content {
     display: flex;
@@ -39,10 +39,10 @@ defineProps<{
     align-items: center;
     gap: var(--artdeco-spacing-4);
     padding: var(--artdeco-spacing-6);
-    background-color: var(--artdeco-bg-card);
-    border: 1px solid var(--artdeco-gold-opacity-20);
-    border-radius: var(--artdeco-spacing-1);
-    box-shadow: var(--artdeco-shadow-lg);
+    background-color: var(--ad-card-bg-elevated);
+    border: 1px solid var(--ad-card-border-hover);
+    border-radius: var(--ad-tooltip-radius);
+    box-shadow: var(--ad-card-shadow-hover);
     min-width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
 
     .spinner {
@@ -55,8 +55,11 @@ defineProps<{
     }
 
     .message {
-      color: var(--artdeco-fg-primary);
-      font-size: var(--artdeco-text-sm);
+      color: var(--ad-tooltip-text);
+      font-size: var(--ad-tooltip-font-size);
+      font-weight: var(--ad-tooltip-font-weight);
+      max-width: var(--ad-tooltip-max-width);
+      text-align: center;
     }
 
     .progress-bar {

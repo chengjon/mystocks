@@ -1,6 +1,12 @@
 /* web/frontend/src/styles/artdeco-main.css */
 
-/* ArtDeco Design System */
+/*
+ * Compatibility ArtDeco entry used by legacy/alternate layout paths.
+ * This file is not the canonical token truth source.
+ * Active token truth lives in `artdeco-tokens.scss`.
+ * Imported dependencies in this chain (`artdeco-colors.css`, `artdeco-variables.css`)
+ * must remain compatibility bridges rather than parallel truth sources.
+ */
 
 @import './artdeco-colors.css';
 @import './artdeco-reset.css';

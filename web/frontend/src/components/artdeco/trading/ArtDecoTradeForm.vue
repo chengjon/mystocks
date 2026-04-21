@@ -214,28 +214,29 @@
 </script>
 
 <style scoped lang="scss">
-    @import '@/styles/artdeco-tokens';
+    @use '@/styles/artdeco-tokens.scss' as *;
 
     .artdeco-trade-form-overlay {
       position: fixed;
       inset: 0 0 0 0;
-      background: color-mix(in srgb, var(--artdeco-bg-global) 70%, transparent);
+      background: var(--ad-overlay-bg);
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 2000;
-      backdrop-filter: blur(var(--artdeco-spacing-1));
+      z-index: var(--ad-overlay-z);
+      backdrop-filter: blur(var(--ad-overlay-blur));
     }
 
     .artdeco-trade-form {
-      background: var(--artdeco-bg-card);
-      border: 1px solid var(--artdeco-gold-opacity-20);
+      background: var(--ad-card-bg-elevated);
+      border: 1px solid var(--ad-card-border-hover);
       padding: var(--artdeco-spacing-compact-lg);
       min-width: calc(var(--artdeco-spacing-20) * 6 + var(--artdeco-spacing-5));
       max-width: calc(var(--artdeco-spacing-20) * 7 + var(--artdeco-spacing-10));
       position: relative;
       overflow: hidden;
-      box-shadow: var(--artdeco-glow-medium);
+      border-radius: var(--ad-tooltip-radius);
+      box-shadow: var(--ad-card-shadow-hover);
     }
 
     /* Corner decorations */

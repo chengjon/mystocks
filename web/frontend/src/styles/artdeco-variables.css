@@ -1,4 +1,9 @@
 /* web/frontend/src/styles/artdeco-variables.css */
+/*
+ * Compatibility-only variable bridge.
+ * Do not add new runtime truth here.
+ * When this file disagrees with `artdeco-tokens.scss`, the token file is canonical.
+ */
 
 :root {
   /* ==========================================================================
@@ -7,19 +12,19 @@
   
   /* Primary Backgrounds */
   --artdeco-bg-global: #0A0A0A;       /* Obsidian Black */
-  --artdeco-bg-surface: #141414;      /* Rich Charcoal (Card BG) */
-  --artdeco-bg-elevated: #1E3D59;     /* Midnight Blue (Dropdowns/Modals) - from docs */
+  --artdeco-bg-surface: var(--artdeco-bg-card, #141414); /* Compatibility alias for active card surface */
+  --artdeco-bg-elevated: #1A1A1A;     /* Aligned with active warm-charcoal elevated surface */
   --artdeco-bg-header: rgb(20 20 20 / 95%); /* Matches Card BG with blur */
   
   /* Text Colors */
   --artdeco-fg-primary: #F2F0E4;      /* Champagne Cream */
-  --artdeco-fg-secondary: #888;    /* Pewter (Muted) */
-  --artdeco-fg-muted: #666;        /* Disabled/Placeholder */
+  --artdeco-fg-secondary: var(--artdeco-fg-primary, #F2F0E4);    /* Compatibility alias aligned to active contract */
+  --artdeco-fg-muted: #A0A0A0;        /* Aligned muted text */
   --artdeco-fg-on-accent: #000;    /* Text on gold buttons */
 
   /* Brand Colors */
   --artdeco-gold-primary: #D4AF37;    /* Metallic Gold (Primary Accent) */
-  --artdeco-gold-hover: #F2E8C4;      /* Light Gold (Hover) */
+  --artdeco-gold-hover: #F0E68C;      /* Aligned hover gold */
   --artdeco-gold-muted: rgb(212 175 55 / 50%);
   
   /* Semantic Colors (A-Share Standard) */
@@ -27,7 +32,7 @@
   --artdeco-down: #00E676;            /* Green (Fall) */
   --artdeco-flat: #B0B3B8;            /* Gray (Flat) */
   --artdeco-info: #2196f3;
-  --artdeco-warning: #ff9800;
+  --artdeco-warning: var(--artdeco-gold-primary, #D4AF37);
   --artdeco-error: #FF5252;           /* Same as Up in A-share context usually, but for errors red is universal */
 
   /* Borders */
@@ -44,15 +49,15 @@
   --artdeco-space-8: 32px;
   
   /* Typography */
-  --artdeco-font-display: 'Marcellus', serif;       /* Headings */
-  --artdeco-font-sans: 'Josefin Sans', sans-serif;  /* Body */
-  --artdeco-font-mono: 'JetBrains Mono', monospace;
+  --artdeco-font-display: var(--font-display, 'Cinzel', 'Playfair Display', serif); /* Compatibility alias to active display stack */
+  --artdeco-font-sans: var(--font-body, 'Barlow', 'Inter', sans-serif);  /* Compatibility alias to active body stack */
+  --artdeco-font-mono: var(--font-mono, 'JetBrains Mono', 'Consolas', monospace);
   
   /* Radii (Sharp Corners) */
   --artdeco-radius-none: 0px;
   --artdeco-radius-sm: 2px;
-  --artdeco-radius-md: 0px; /* Enforce sharp corners per v2.0 spec */
-  --artdeco-radius-lg: 0px; 
+  --artdeco-radius-md: 8px; /* Aligned with active sharp-first but selectively softened contract */
+  --artdeco-radius-lg: 12px; 
   
   /* Effects */
   --artdeco-shadow-sm: 0 1px 2px rgb(0 0 0 / 30%);

@@ -289,6 +289,11 @@
     // ============================================
 
     .artdeco-input {
+        --artdeco-input-border-color: var(--ad-input-border-default);
+        --artdeco-input-bg-color: var(--ad-input-bg-default);
+        --artdeco-input-text-color: var(--ad-input-text-default);
+        --artdeco-input-shadow: none;
+
         width: 100%;
         position: relative;
     }
@@ -306,22 +311,22 @@
         letter-spacing: var(--artdeco-tracking-wide);
 
         // Gold color for active state
-        color: var(--artdeco-accent-gold);
+        color: var(--ad-input-border-focus);
 
         // Spacing
         margin-bottom: var(--artdeco-spacing-2);
 
         // Transition
-        transition: color var(--artdeco-duration-base);
+        transition: color var(--artdeco-transition-quick);
 
         // Error state
         .artdeco-input--error & {
-            color: var(--artdeco-color-up); // Red for error
+            color: var(--ad-input-border-error);
         }
     }
 
     .artdeco-input__required {
-        color: var(--artdeco-color-up); // Red asterisk
+        color: var(--ad-input-border-error);
         margin-left: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     }
 
@@ -334,6 +339,11 @@
         position: relative;
         display: flex;
         align-items: center;
+        background-color: var(--artdeco-input-bg-color);
+        transition:
+            background-color var(--artdeco-transition-quick) var(--artdeco-ease-in-out),
+            border-color var(--artdeco-transition-quick) var(--artdeco-ease-in-out),
+            box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-in-out);
 
         // MANDATORY: Bottom border only (accent underline)
         &::after {
@@ -343,26 +353,29 @@
             left: 0;
             right: 0;
             height: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
-            background-color: var(--artdeco-border-gold-subtle);
-            transition: all var(--artdeco-duration-base);
+            background-color: var(--artdeco-input-border-color);
+            box-shadow: var(--artdeco-input-shadow);
+            transition:
+                background-color var(--artdeco-transition-quick) var(--artdeco-ease-in-out),
+                box-shadow var(--artdeco-transition-quick) var(--artdeco-ease-in-out);
         }
 
         // Focus state: Border brightens + glow
         .artdeco-input--focused &::after {
-            background-color: var(--artdeco-accent-gold);
-            box-shadow: 0 var(--artdeco-spacing-1) calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) var(--artdeco-gold-opacity-20);
+            background-color: var(--ad-input-border-focus);
+            box-shadow: var(--ad-input-shadow-focus);
         }
 
         // Error state
         .artdeco-input--error &::after {
-            background-color: var(--artdeco-color-up);
+            background-color: var(--ad-input-border-error);
+            box-shadow: var(--ad-input-shadow-error);
         }
 
         // BORDERED VARIANT OVERRIDES
         .artdeco-input--bordered & {
-            border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-gold-dim);
-            background-color: var(--artdeco-bg-card);
-            transition: all var(--artdeco-duration-base);
+            border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-input-border-color);
+            background-color: var(--artdeco-input-bg-color);
         }
 
         .artdeco-input--bordered &::after {
@@ -370,8 +383,8 @@
         }
 
         .artdeco-input--bordered.artdeco-input--focused & {
-            border-color: var(--artdeco-accent-gold);
-            box-shadow: var(--artdeco-glow-subtle);
+            border-color: var(--ad-input-border-focus);
+            box-shadow: var(--ad-input-shadow-focus);
         }
     }
 
@@ -395,7 +408,7 @@
         // Typography
         font-family: var(--artdeco-font-body);
         font-size: var(--artdeco-text-base);
-        color: var(--artdeco-fg-primary);
+        color: var(--artdeco-input-text-color);
 
         // Height and padding
         height: var(--artdeco-input-height);
@@ -410,18 +423,18 @@
 
         // Placeholder
         &::placeholder {
-            color: var(--artdeco-fg-muted);
+            color: var(--ad-input-placeholder);
         }
 
         // Disabled state
         .artdeco-input--disabled & {
-            color: var(--artdeco-fg-muted);
+            color: var(--ad-input-text-disabled);
             cursor: not-allowed;
         }
 
         // Error state
         .artdeco-input--error & {
-            color: var(--artdeco-color-up);
+            color: var(--ad-input-text-default);
         }
 
         // With prefix/suffix padding adjustment
@@ -443,7 +456,7 @@
         position: absolute;
         display: flex;
         align-items: center;
-        color: var(--artdeco-fg-muted);
+        color: var(--ad-input-placeholder);
         pointer-events: none;
     }
 
@@ -471,8 +484,26 @@
     }
 
     .artdeco-input__error {
-        color: var(--artdeco-color-up); // Red for error
+        color: var(--ad-input-border-error);
         font-family: var(--artdeco-font-body);
+    }
+
+    .artdeco-input--disabled {
+        --artdeco-input-border-color: var(--ad-input-border-disabled);
+        --artdeco-input-bg-color: var(--ad-input-bg-disabled);
+        --artdeco-input-text-color: var(--ad-input-text-disabled);
+    }
+
+    .artdeco-input--focused {
+        --artdeco-input-border-color: var(--ad-input-border-focus);
+        --artdeco-input-bg-color: var(--ad-input-bg-focus);
+        --artdeco-input-shadow: var(--ad-input-shadow-focus);
+    }
+
+    .artdeco-input--error {
+        --artdeco-input-border-color: var(--ad-input-border-error);
+        --artdeco-input-bg-color: var(--ad-input-bg-error);
+        --artdeco-input-shadow: var(--ad-input-shadow-error);
     }
 
     // ============================================
