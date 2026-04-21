@@ -264,6 +264,22 @@ describe("CI workflow gates", () => {
     expect(typeWorkflowText).not.toContain("vue-tsc-filtered.txt");
   });
 
+  it("defines a scheduled weekly governance workflow that runs the stable wrapper", () => {
+    const workflowText = readWorkflow(".github/workflows/tech-debt-weekly-governance.yml");
+
+    expect(workflowText).toContain("name: Tech Debt Weekly Governance");
+    expect(workflowText).toContain("schedule:");
+    expect(workflowText).toContain("workflow_dispatch:");
+    expect(workflowText).toContain("Generate Weekly Governance Report");
+    expect(workflowText).toContain("bash scripts/run_tech_debt_weekly_report.sh");
+    expect(workflowText).toContain("tech-debt-weekly-governance-report");
+    expect(workflowText).toContain("GITHUB_STEP_SUMMARY");
+    expect(workflowText).toContain("## Debt KPI");
+    expect(workflowText).toContain("## Runtime KPI");
+    expect(workflowText).toContain("## Current Batch");
+    expect(workflowText).not.toContain("for line in lines[:30]");
+  });
+
   it("treats tsc and eslint diagnostics as zero-error gates in the TypeScript workflow", () => {
     const typeWorkflowText = readWorkflow(".github/workflows/typescript-type-check.yml");
 
