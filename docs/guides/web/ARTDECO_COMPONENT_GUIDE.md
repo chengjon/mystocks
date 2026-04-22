@@ -13,14 +13,19 @@
 >
 > 当前前端已存在 `views/<domain>/*.vue` 的 canonical routed page 主线。
 > 因此本指南除了回答“组件放哪”，还必须回答“这是 reusable asset、ArtDeco 工作台块，还是业务路由入口”。
+>
+> 2026-04-19 再补充：
+>
+> 共享布局级状态桥接（如 `useHeaderSummary.ts`）也需要纳入放置规则；它既不是 Vue 组件，也不是页面私有 composable。
 
-## 1. 先记住 5 条铁律
+## 1. 先记住 6 条铁律
 
 1. `src/components/artdeco/**` 只放可持续沉淀的可复用资产。
 2. `views/artdeco-pages/components/` 只放 ArtDeco 页面系统内部共享片段。
 3. `views/artdeco-pages/*-tabs/` 只放域内工作台块，不默认跨域复用。
 4. 页面专属逻辑不要上提到 `base / core`，临时页面块不要伪装成全局组件。
 5. 活跃业务路由页优先放 `views/<domain>/*.vue`，不是默认放进 `artdeco-pages/**`。
+6. 跨 Layout / Page 的共享运行时状态，若已有 2+ 消费者，放 `src/composables/`，不要伪装成组件，也不要继续塞在页面私有 `composables/`。
 
 ## 2. 目录治理矩阵
 
@@ -36,6 +41,7 @@
 | `views/artdeco-pages/components/` | 页面系统内部共享片段 | 在多个 ArtDeco 页面工作台之间复用 | 当作通用 UI 组件库 |
 | `views/artdeco-pages/*-tabs/` | 域内工作台块 | 独立路由块、Tab block、内嵌块 | 随意跨域 import |
 | `views/<domain>/` | 活跃业务路由页面 | 作为 router canonical entry，承载域页面组合 | 伪装成通用组件目录 |
+| `src/composables/` | 跨 Layout / Page 的共享状态桥接 | 摘要状态、统一刷新动作、布局级运行时共享 | 当作页面私有 composable 堆放点 |
 
 ## 3. `*-tabs` 与 `components/` 的铁律
 
@@ -79,6 +85,7 @@
 2. 它是不是会在多个页面或多个域中稳定复用？
 3. 它是不是强依赖当前页面的 tab、路由、筛选或局部状态？
 4. 它是不是当前业务路由的 canonical 页面入口？
+5. 它是不是跨 Layout / Page 的共享运行时状态？
 
 ### 4.2 放置建议
 
@@ -94,6 +101,7 @@
 | 多个 ArtDeco 页面内部共享 | `views/artdeco-pages/components/` |
 | 单域工作台块 / 单页 tabs 块 | `views/artdeco-pages/*-tabs/` |
 | 当前业务路由的主页面 | `views/<domain>/` |
+| 跨 Layout / Page 的共享状态桥接 | `src/composables/` |
 
 ### 4.3 关于兼容包装层
 
@@ -108,6 +116,20 @@
 - 保持薄封装
 - 不再把它扩写成新的业务真值
 - 文档中明确标成 wrapper / compatibility / embedded shell
+
+### 4.4 关于共享摘要状态
+
+`useHeaderSummary.ts` 是当前明确的正例：
+
+- 生产者：`views/artdeco-pages/composables/useArtDecoDashboard.ts`
+- 消费者：`layouts/ArtDecoLayoutEnhanced.vue`
+- 角色：共享运行时状态桥接
+
+因此它应放在 `src/composables/`，而不是：
+
+- 继续留在某个单页 `composables/` 私有目录
+- 伪装成 `components/artdeco/core/` 组件
+- 被误写成 token 或 pageConfig 真值
 
 ## 5. 样式与实现规则
 
@@ -126,6 +148,10 @@
 - 新代码优先 `@use`，不要继续扩散 `@import`
 - 涉及金融语义时，用 `artdeco-financial.scss` 提供的语义
 - 交互节奏、密度模式、主按钮层级按根目录 `DESIGN.md` 执行
+- 组件状态切换优先绑定 `artdeco-tokens.scss` 中的 `--ad-*` 状态机 token
+- 金融 glow 反馈优先使用 `--artdeco-glow-profit` / `--artdeco-glow-loss`
+- filter chip / status chip / compact badge 语义优先落在 `base/ArtDecoBadge.vue`，不要在 `artdeco-pages/**` 或域块样式里继续定义局部 `.status-chip` / `.status-badge`
+- `business/ArtDecoStatus.vue` 只负责 dot-status 呈现；若需要胶囊态状态标签，应回到 `ArtDecoBadge.vue`
 
 ### 5.2 字体与间距
 

@@ -9,15 +9,17 @@
 
 本文档从运行时角度总结当前 ArtDeco 前端体系，重点是“现在实际上怎么跑”，而不是历史理想模型。
 
-> 2026-04-18 对齐补充
+> 2026-04-19 对齐补充
 >
 > - ArtDeco 仍然是前端主要视觉与工作台体系。
 > - 但当前活跃业务路由已经大量收敛到 `views/<domain>/*.vue`。
 > - `artdeco-pages/**` 现在同时承担模板页、工作台块、兼容包装层和少量路由例外入口。
+> - Dashboard 摘要状态已上提到 Layout header，由共享 composable 驱动。
+> - `artdeco-tokens.scss` 已吸收 `DESIGN.md` 的状态机 token、金融 glow、200/400ms 过渡预算。
 
 ## 1. 当前运行时全景
 
-ArtDeco 运行时由五层组成：
+ArtDeco 运行时由六层组成：
 
 1. **路由与布局壳层**
    `web/frontend/src/router/index.ts` + `web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue`
@@ -29,6 +31,8 @@ ArtDeco 运行时由五层组成：
    `web/frontend/src/views/artdeco-pages/**`
 5. **设计令牌层**
    `web/frontend/src/styles/artdeco-*.scss`
+6. **共享运行时状态层**
+   `web/frontend/src/composables/useHeaderSummary.ts`
 
 ## 2. 不是单一容器架构，而是三种模式并存
 
@@ -68,6 +72,20 @@ ArtDeco 运行时由五层组成：
 - 左侧功能树，右侧动态组件
 - 适合总控台、总入口、跨域编排场景
 - 页面自身承担更强的 orchestration 职责
+
+### 2.4 Layout 级共享摘要模式
+
+代表文件：
+
+- `web/frontend/src/composables/useHeaderSummary.ts`
+- `web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue`
+- `web/frontend/src/views/artdeco-pages/composables/useArtDecoDashboard.ts`
+
+特点：
+
+- 页面级摘要状态通过 composable 推送到 Layout
+- Layout header 统一展示“策略运行中 / 今日盈亏 / 当前时间 / 刷新动作”
+- 摘要承载与业务路由解耦，页面不再各自复制顶部 header actions
 
 ## 3. 路由与配置边界
 
@@ -110,6 +128,10 @@ ArtDeco 运行时由五层组成：
 - `/strategy/signals` -> `views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
 - `/strategy/pos` -> `views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
 - `/risk/pnl` -> `views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+
+当前新增的一条运行时事实：
+
+- `/dashboard` 的顶部摘要不再完全由 `ArtDecoDashboard.vue` 本页私有渲染，而是通过 `useHeaderSummary` 上提到 `ArtDecoLayoutEnhanced.vue`
 
 此外，`/trade/terminal` 是当前保留的非域目录例外，由 `views/TradingDashboard.vue` 提供。
 
@@ -166,6 +188,10 @@ ArtDeco 运行时由五层组成：
   - `1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32`
 - 语义别名：`sm / md / lg / xl`
 - 紧凑变量：`compact-*`
+- 金融 glow：`--artdeco-glow-profit` / `--artdeco-glow-loss`
+- 过渡预算：`--artdeco-transition-quick = 200ms`、`--artdeco-transition-base = 400ms`
+- 组件状态机：`--ad-*`
+- tooltip / overlay / chip token
 
 同时，当前交互与视觉优化契约还要叠加读取根目录 `DESIGN.md`，尤其是：
 
@@ -174,6 +200,7 @@ ArtDeco 运行时由五层组成：
 - 紧凑 / 微密度模式
 - 交易面板单主按钮规则
 - 200ms / 400ms 混合过渡预算
+- 组件状态机与 chip / tooltip / overlay token 约束
 
 ## 6. 当前代表性页面映射
 
@@ -182,6 +209,7 @@ ArtDeco 运行时由五层组成：
 | `ArtDecoRiskManagement.vue` | 模板化工作台 | 标准 `pageConfig + slots` 承载 |
 | `ArtDecoMarketData.vue` | 直接 Tab 容器 | 容器内直写 tabs 与数据流 |
 | `ArtDecoTradingCenter.vue` | 功能树驱动总控台 | 左树右内容，动态组件切换 |
+| `ArtDecoLayoutEnhanced.vue + useHeaderSummary.ts` | Layout 级共享摘要 | 将 dashboard 摘要上提到布局壳层 |
 | `strategy-tabs/ArtDecoStrategyManagement.vue` | 独立工作台路由 | 既可作为独立路由，也可纳入域内编排 |
 | `risk-tabs/RiskOverviewTab.vue` | 域内工作台块 | 域内风险工作台入口 |
 
@@ -201,3 +229,4 @@ ArtDeco 运行时由五层组成：
 - 哪些是 page-level shared fragments
 - 哪些是 domain tab blocks
 - 哪些应该继续模板化
+- 哪些运行时状态应提升到 layout-level composable，而不是继续沉积在单页 header 中

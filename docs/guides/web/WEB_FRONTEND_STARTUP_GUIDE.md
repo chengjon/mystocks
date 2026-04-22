@@ -88,6 +88,29 @@ pm2 start ecosystem.dev.config.js
 pm2 logs
 ```
 
+**测试/验证主线（推荐）**
+
+```bash
+cd /opt/claude/mystocks_spec
+pm2 delete mystocks-backend mystocks-frontend || true
+pm2 start ecosystem.test.config.js
+
+# 健康检查
+curl --noproxy '*' http://localhost:8020/health
+curl --noproxy '*' -I http://localhost:3020
+
+# 当前 canonical 页面访问巡检（以 web/frontend/src/router/index.ts 为准）
+node scripts/dev/verify_web_access.mjs
+```
+
+说明：
+
+- `scripts/dev/verify_web_access.mjs` 现已支持在仓库根目录直接运行，会从 `web/frontend/node_modules` 解析 Playwright 依赖。
+- 页面访问验证的 canonical 路由真相源为 `web/frontend/src/router/index.ts`，不要再以历史架构草案中的旧路径列表作为当前页面可访问性结论。
+- 若需要重复验证，请优先按上面的 `pm2 delete -> pm2 start ecosystem.test.config.js -> verify_web_access` 顺序执行，避免复用污染状态导致 `/health` 或登录链路出现假性超时。
+- `verify_web_access.mjs` 当前以 `domcontentloaded + 主内容探测` 判定页面可访问性，不再依赖 `networkidle`，避免带轮询或长连接的页面被误判为 `NAVIGATION_ERROR`。
+- 页面巡检与 `tests/e2e/comprehensive-all-pages.spec.ts` 建议串行执行，不要并发压测同一组 PM2 服务；并发运行会把慢接口拖成 `/health` 或登录链路超时，制造假阴性。
+
 **PM2 管理命令：**
 
 ```bash
@@ -237,6 +260,9 @@ npm run test:e2e
 
 # 运行特定测试文件（补充场景：单文件测试）
 npx playwright test tests/comprehensive-all-pages.spec.ts --project=chromium --reporter=list
+
+# 复用外部 PM2 前端做全页面验证（建议与 verify_web_access 串行执行）
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/comprehensive-all-pages.spec.ts --reporter=line
 
 # 以 UI 模式运行测试（补充场景：UI模式）
 npx playwright test --ui

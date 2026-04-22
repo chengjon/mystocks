@@ -25,20 +25,22 @@
 
 - **完整目录** -> 看 `docs/guides/web/ARTDECO_MASTER_INDEX.md`
 - **统一规格** -> 看 `docs/guides/web/ARTDECO_FINTECH_UNIFIED_SPEC.md`
+- **设计契约** -> 看 `DESIGN.md`
 - **详细组件目录** -> 看 `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
 - **页面治理结论** -> 看 `docs/guides/web/ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md`
 - **详细样式真值和兼容边界** -> 看 `docs/guides/web/ARTDECO_SCSS_GOVERNANCE_BASELINE.md`
 
-## 1. 先记住这 8 句话
+## 1. 先记住这 9 句话
 
 1. 当前项目的活跃风格是 `ArtDeco Fintech`，不是原始 ArtDeco 的机械复刻。
 2. 新代码只认 `artdeco-*` 主链，不认历史 `theme-*` / `fintech-*` 为真值。
 3. 字体真值是 `Cinzel + Barlow + JetBrains Mono`。
 4. 间距真值是 `13` 个编号级别：`1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32`。
 5. A 股语义强制执行“红涨绿跌”。
-6. 页面不能只做黑金配色，必须有明确的舞台层和内容节奏。
-7. 涉及 Layout、路由或菜单结构时，必须跑 `bash scripts/run_e2e_pm2.sh`。
-8. 菜单结构、UI/UX 风格、核心架构变更，先回到 `architecture/STANDARDS.md` 走审批门禁，再实施。
+6. `DESIGN.md` 是当前动效、密度、glow 和交易面板主操作层级的设计契约。
+7. 页面不能只做黑金配色，必须有明确的舞台层和内容节奏。
+8. 涉及 Layout、路由或菜单结构时，必须跑 `bash scripts/run_e2e_pm2.sh`。
+9. 菜单结构、UI/UX 风格、核心架构变更，先回到 `architecture/STANDARDS.md` 走审批门禁，再实施。
 
 ## 2. 当前设计身份
 
@@ -64,10 +66,12 @@
 1. `ARTDECO_START_HERE.md`
 2. `ARTDECO_MASTER_INDEX.md`
 3. `ARTDECO_FINTECH_UNIFIED_SPEC.md`
-4. `ARTDECO_SCSS_GOVERNANCE_BASELINE.md`
-5. `ARTDECO_COMPONENT_GUIDE.md`
-6. `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
-7. `docs/api/ArtDeco_System_Architecture_Summary.md`
+4. `DESIGN.md`
+5. `ARTDECO_SCSS_GOVERNANCE_BASELINE.md`
+6. `ARTDECO_COMPONENT_GUIDE.md`
+7. `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
+8. `docs/api/ArtDeco_System_Architecture_Summary.md`
+9. `docs/reports/ARTDECO_V3_COMPLETE_SUMMARY.md`
 
 ### 3.2 样式真值层
 
@@ -111,6 +115,7 @@
 - 可以修兼容层，但只能做最小必要修复。
 - 不能因为它们仍被加载，就把它们当新的设计系统事实源。
 - 如果兼容层里某个 token 真有价值，先提升到 `artdeco-*` 真值层。
+- `artdeco-main.css` 当前只应被理解为兼容入口，并通过 `artdeco-colors.css` / `artdeco-variables.css` 链接入兼容 token。
 
 ## 4. 架构怎么理解
 
@@ -150,6 +155,11 @@
   例如 `ArtDecoMarketData.vue`
 - **功能树驱动总控容器**
   例如 `ArtDecoTradingCenter.vue`
+
+另有一条共享运行时桥接模式：
+
+- **Layout 级共享摘要**
+  例如 `useHeaderSummary.ts` -> `ArtDecoLayoutEnhanced.vue`
 
 ### 4.4 组件边界
 
@@ -257,6 +267,7 @@ bash scripts/run_e2e_pm2.sh
 
 - [ARTDECO_MASTER_INDEX](./ARTDECO_MASTER_INDEX.md)
 - [ARTDECO_FINTECH_UNIFIED_SPEC](./ARTDECO_FINTECH_UNIFIED_SPEC.md)
+- [DESIGN.md](/opt/claude/mystocks_spec/DESIGN.md)
 - [ARTDECO_SCSS_GOVERNANCE_BASELINE](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md)
 - [ARTDECO_COMPONENT_GUIDE](./ARTDECO_COMPONENT_GUIDE.md)
 

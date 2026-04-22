@@ -9,6 +9,14 @@
 
 本文件是当前 MyStocks ArtDeco Fintech 体系的统一规格文档。
 
+> 2026-04-19 规格对齐补充
+>
+> - 保留 2026-04-01 的目录与运行时分层结论。
+> - 将根目录 `DESIGN.md` 中 CoinPulse 吸收项提升为统一规格的一部分。
+> - 将 `useHeaderSummary -> ArtDecoLayoutEnhanced -> ArtDecoDashboard` 的共享头部摘要链纳入运行时规格。
+> - 将 `artdeco-tokens.scss` 中的 `--ad-*` 状态机 token、金融 glow、200/400ms 过渡预算写入当前实施基线。
+> - 补齐历史兼容入口：`docs/guides/ARTDECO_FINTECH_UNIFIED_SPEC.md`。
+
 它回答的不是“历史上怎么做过”，而是：
 
 1. 当前活跃的 ArtDeco 设计身份是什么。
@@ -50,6 +58,13 @@
   - `1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32`
   - 另有 `sm/md/lg/xl` 语义别名
   - 另有 `compact-*` 紧凑间距变量
+- 当前还明确包含以下设计契约实现点：
+  - `--artdeco-transition-quick = 200ms`
+  - `--artdeco-transition-base = 400ms`
+  - `--artdeco-glow-profit`
+  - `--artdeco-glow-loss`
+  - `--ad-*` 组件状态机 token
+  - chip / tooltip / overlay token
 
 ### 2.2 文档真值
 
@@ -62,6 +77,7 @@
 5. `ARTDECO_COMPONENT_GUIDE.md`
 6. `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
 7. `docs/api/ArtDeco_System_Architecture_Summary.md`
+8. `docs/reports/ARTDECO_V3_COMPLETE_SUMMARY.md`
 
 其中职责边界为：
 
@@ -69,6 +85,7 @@
 - `artdeco-tokens.scss` 等样式文件：样式令牌与实现真值层
 - `router/index.ts` + `docs/guides/frontend-structure.md`：活跃业务路由与目录真值层
 - `artdeco-pages/**`：工作台、模板、域块与兼容包装层真值
+- `useHeaderSummary.ts`：跨 Layout / Dashboard 的共享头部摘要状态层，不是设计真值，但属于当前运行时桥接真值
 
 ### 2.3 路由真值与 ArtDeco 真值必须分开理解
 
@@ -99,6 +116,7 @@
 - `/strategy/signals` -> `views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`
 - `/strategy/pos` -> `views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue`
 - `/risk/pnl` -> `views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue`
+- `/dashboard` header summary metrics 由 `views/artdeco-pages/composables/useArtDecoDashboard.ts` 推送到 `src/composables/useHeaderSummary.ts`，再由 `layouts/ArtDecoLayoutEnhanced.vue` 统一渲染
 
 这意味着：ArtDeco 体系仍是前端核心视觉与工作台承载体系，但它不等于“所有业务路由都继续直接落在 `artdeco-pages/**`”。
 
@@ -154,11 +172,26 @@
 | 直接 Tab 容器 | `ArtDecoMarketData.vue` | 容器内直接声明 tab rail 和 tab content |
 | 功能树驱动容器 | `ArtDecoTradingCenter.vue` | 左侧功能树 + 右侧动态组件，适合总控类页面 |
 
+### 4.1 共享头部摘要模式
+
+除上述三类容器外，当前还应补充一条运行时模式：
+
+| 模式 | 代表文件 | 特征 |
+|------|----------|------|
+| Layout 级共享摘要 | `src/composables/useHeaderSummary.ts`、`layouts/ArtDecoLayoutEnhanced.vue`、`views/artdeco-pages/composables/useArtDecoDashboard.ts` | 页面摘要状态由页面 composable 推送到共享状态容器，再由 Layout header 统一承载 |
+
+该模式用于：
+
+- 将 Dashboard 顶部指标提升为 layout-level summary
+- 减少页面内部重复 header actions
+- 保持 `/dashboard` 仍为路由例外入口，但不再独占摘要壳层
+
 补充说明：
 
 - `router/index.ts` 以 `ArtDecoLayoutEnhanced.vue` 为主壳层。
 - `pageConfig.ts` 是自动生成的路由元数据源，但它 **不是** 当前所有 ArtDeco tabs 的唯一事实源。
 - `pageConfig.ts` 当前服务于页面元数据和部分模板化承载，不应被描述成“所有页面块统一由它生成”。
+- `pageConfig.ts` 也不承载 `header summary` 这类共享运行时状态；这类状态当前由 composable 层完成桥接。
 - 许多工作台页面已经可作为独立路由直接挂载，例如：
   - `strategy-tabs/ArtDecoStrategyManagement.vue`
   - `strategy-tabs/ArtDecoBacktestAnalysis.vue`
@@ -182,6 +215,11 @@
 - 新代码优先使用 `@use`
 - 禁止把兼容层重新当成真值层
 - A 股涨跌语义只用 `--artdeco-rise` / `--artdeco-down` 或对应语义别名
+- 数据优先反馈遵循 `DESIGN.md`：数据动作 `200ms`，装饰动作 `400ms`
+- 金融状态 glow 优先使用 `--artdeco-glow-profit` / `--artdeco-glow-loss`
+- 组件状态切换优先绑定 `--ad-*` 状态机 token，不再散落 ad-hoc hover/focus/error 样式
+- overlay / backdrop 共享表面优先绑定 `--ad-overlay-*` token；当前已在 `ArtDecoLoadingOverlay.vue` 与 `ArtDecoTradeForm.vue` 落地
+- tooltip token 当前保留为共享合同真值；若未来需要独立 tooltip primitive，应优先在共享组件层实现，而不是先在图表或页面局部样式中扩散
 
 ### 5.2 目录治理
 
@@ -197,12 +235,14 @@
 - 需要 tabs 时，优先延续当前 `tabs shell -> content shell` 结构
 - 若该页面是活跃业务路由 canonical entry，优先落在 `views/<domain>/`
 - 若该页面是 ArtDeco 工作台内部块、模板页、兼容壳或独立工作台页签，才落在 `views/artdeco-pages/**`
+- 若页面需要把摘要状态提升到 Layout 统一头部，优先通过共享 composable 桥接，而不是在多个页面重复实现 header actions
 
 ### 5.4 桌面端约束
 
 - 项目当前是桌面端工作台，不做移动端/平板适配
 - 允许桌面端内部的 Grid 断点与列数折叠
 - 不允许以“响应式治理”为名新增移动端语法分支
+- E2E 中出现的 mobile/tablet viewport 仅作为布局稳定性验证，不构成移动端产品适配承诺
 
 ## 6. 验证基线
 
@@ -211,6 +251,7 @@
 - `npx vue-tsc --noEmit`
 - ArtDeco token 合规检查
 - 涉及 Layout / 路由 / 菜单时运行 `bash scripts/run_e2e_pm2.sh`
+- 若使用 PM2 现有前端复用模式执行 Playwright，需显式说明 `PLAYWRIGHT_EXTERNAL_FRONTEND=1`
 
 报告时必须写实际结果，不允许再写固定文案：
 
@@ -218,6 +259,16 @@
 - 浏览器项目
 - 通过 / 失败 / 跳过数量
 - PM2 服务地址与状态
+
+### 6.1 当前实施基线快照（2026-04-19）
+
+- `PM2`
+  - `mystocks-backend` -> `http://localhost:8020`
+  - `mystocks-frontend` -> `http://localhost:3020`
+- 稳定 E2E 子集：
+  - `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable`
+  - `chromium`
+  - `10 passed / 0 failed / 0 skipped`
 
 ## 7. 与其他文档的关系
 

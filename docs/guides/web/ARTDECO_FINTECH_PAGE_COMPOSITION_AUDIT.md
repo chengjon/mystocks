@@ -361,9 +361,13 @@
 
 ### 5.4 兼容层气质外溢到页面体验
 
-`web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue` 原本仍通过 `@import '@/styles/artdeco-main.css';` 进入旧兼容入口。
+`web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue` 当前仍通过 `@import '@/styles/artdeco-main.css';` 进入兼容入口。
 
-当前这一点已处理：它已切换到主 token 链，不再依赖 `artdeco-main.css`。
+当前真实状态不是“依赖已移除”，而是：
+
+- `artdeco-main.css` 已被明确降级为 compatibility-only 入口
+- 其下游 `artdeco-colors.css` / `artdeco-variables.css` 已按 Phase A+B 做过真值对齐
+- 当前风险已从“旧入口未治理”收敛为“兼容入口仍活跃，但已被文档化并部分校正”
 
 ## 6. 建议的统一页面骨架
 
