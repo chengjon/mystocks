@@ -163,6 +163,12 @@ interface MonitoringHealthData {
   [key: string]: unknown
 }
 
+interface InspectorStoreState {
+  loading?: boolean
+  error?: string | null
+  lastFetch?: number | null
+}
+
 interface Props {
   functionKey?: string
   userPermissions?: string[]
@@ -264,31 +270,19 @@ const realtimeRows = computed(() => [
     refresh: 'refresh()',
   },
 ])
+
+const toInspectorSnapshot = (id: string, store: InspectorStoreState) => ({
+  id,
+  loading: String(store.loading ?? false),
+  error: store.error || 'none',
+  lastFetch: store.lastFetch ? new Date(store.lastFetch).toISOString() : 'never',
+})
+
 const storeSnapshots = computed(() => [
-  {
-    id: frontendStorePolicies.tradingSignals.capability,
-    loading: String(tradingSignalsStore.loading),
-    error: tradingSignalsStore.error || 'none',
-    lastFetch: tradingSignalsStore.lastFetch ? new Date(tradingSignalsStore.lastFetch).toISOString() : 'never',
-  },
-  {
-    id: frontendStorePolicies.riskAlerts.capability,
-    loading: String(riskAlertsStore.loading),
-    error: riskAlertsStore.error || 'none',
-    lastFetch: riskAlertsStore.lastFetch ? new Date(riskAlertsStore.lastFetch).toISOString() : 'never',
-  },
-  {
-    id: frontendStorePolicies.userWatchlists.capability,
-    loading: String(watchlistsStore.loading),
-    error: watchlistsStore.error || 'none',
-    lastFetch: watchlistsStore.lastFetch ? new Date(watchlistsStore.lastFetch).toISOString() : 'never',
-  },
-  {
-    id: frontendStorePolicies.technicalIndicators.capability,
-    loading: String(technicalIndicatorsStore.loading),
-    error: technicalIndicatorsStore.error || 'none',
-    lastFetch: technicalIndicatorsStore.lastFetch ? new Date(technicalIndicatorsStore.lastFetch).toISOString() : 'never',
-  },
+  toInspectorSnapshot(frontendStorePolicies.tradingSignals.capability, tradingSignalsStore as unknown as InspectorStoreState),
+  toInspectorSnapshot(frontendStorePolicies.riskAlerts.capability, riskAlertsStore as unknown as InspectorStoreState),
+  toInspectorSnapshot(frontendStorePolicies.userWatchlists.capability, watchlistsStore as unknown as InspectorStoreState),
+  toInspectorSnapshot(frontendStorePolicies.technicalIndicators.capability, technicalIndicatorsStore as unknown as InspectorStoreState),
 ])
 
 const fetchHealth = async () => {

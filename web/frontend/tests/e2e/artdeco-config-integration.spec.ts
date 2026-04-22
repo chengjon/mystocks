@@ -128,7 +128,7 @@ test.describe("ArtDeco Configuration Integration", () => {
       {
         path: "/market/realtime",
         verify: async () => {
-          await expect(page.getByRole("heading", { name: "实时行情流" })).toBeVisible()
+          await expect(page.getByRole("heading", { name: "实时行情工作台" })).toBeVisible()
         },
       },
       {
