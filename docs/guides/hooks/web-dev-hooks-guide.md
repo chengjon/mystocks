@@ -40,6 +40,17 @@ The Web Development Hooks system provides specialized file tracking, validation,
 - 可配置 `actor_cli`、`group_id_template`、完成短语、否定短语、验证关键字；
 - 环境变量 `GRAPHITI_CLOSEOUT_ACTOR_CLI`、`GRAPHITI_CLOSEOUT_GROUP_ID`、`GRAPHITI_CLOSEOUT_CONFIG` 可覆盖默认配置。
 
+版本控制口径：
+- 关键 closeout hook 资产应纳入 Git 管理，包括：
+  - `.claude/settings.json`
+  - `.claude/hooks/stop-graphiti-task-closeout.sh`
+  - `.claude/hooks/record_graphiti_closeout.py`
+  - `.claude/hooks/README.md`
+  - `config/hooks/graphiti-closeout.json`
+- 本地运行态文件继续保持不入库，例如：
+  - `.claude/graphiti-closeout-state.json`
+  - `.claude/edit_log.jsonl`
+
 巡检命令：
 - `python scripts/runtime/inspect_graphiti_closeout_state.py`
 - `python scripts/runtime/inspect_graphiti_closeout_state.py --output json`
@@ -69,6 +80,33 @@ The Web Development Hooks system provides specialized file tracking, validation,
   - `episode_uuid=1d4ff976-6b2e-4067-aa5b-21eac1c1e4b6`
   - `group_id=mystocks_spec_closeout_live_20260422142710`
   - `search_summary=nodes hit=3, facts hit=2`
+
+正式 live 验收：
+- `python scripts/runtime/run_graphiti_closeout_live_validation.py --output json`
+- 可追加 `--report-file docs/reports/hooks/<your-report>.md` 自动落盘验收报告。
+- 该脚本会：
+  - 构造真实 Stop 事件输入；
+  - 调用真实 `stop-graphiti-task-closeout.sh`；
+  - 走真实 `coordctl.py graphiti remember`；
+  - 再走真实 `coordctl.py graphiti search` 回查；
+  - 输出本地 state 与 Graphiti search 的双向验证结果。
+
+推荐接入时机：
+- 新增或修改 closeout hook 行为后，合并前至少运行一次正式 live 验收；
+- 调整 `group_id_template`、完成短语或 Graphiti CLI 合同时，必须重跑正式 live 验收；
+- 重要发布前，如本次迭代涉及 hooks / memory / automation 治理，建议再次执行。
+
+`group_id` 命名规范：
+- fake smoke：`smoke_{project_name}_closeouts`
+- 临时真实联调：`mystocks_spec_closeout_live_<timestamp>`
+- 正式 Stop-hook 真实验收：`mystocks_spec_closeout_hook_live_<timestamp>`
+- 验收记录归档：`mystocks_spec_closeout_validation`
+
+命名原则：
+- 前缀固定表达用途，不混用；
+- `<timestamp>` 使用 `YYYYMMDDHHMMSS`；
+- 验收归档组应稳定，便于后续集中检索；
+- 单次临时联调组应唯一，避免搜索结果互相污染。
 
 ### 1. Web-Dev File Tracker Hook
 
