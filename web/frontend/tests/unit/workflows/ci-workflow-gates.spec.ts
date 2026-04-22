@@ -277,6 +277,10 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("## Debt KPI");
     expect(workflowText).toContain("## Runtime KPI");
     expect(workflowText).toContain("## Current Batch");
+    expect(workflowText).toContain('"- new_debt_violations:"');
+    expect(workflowText).toContain('"- Runtime drift gate:"');
+    expect(workflowText).toContain('line.startswith("- Current batch issue:")');
+    expect(workflowText).toContain('line.startswith("- Current batch introduced issues:")');
     expect(workflowText).not.toContain("for line in lines[:30]");
   });
 

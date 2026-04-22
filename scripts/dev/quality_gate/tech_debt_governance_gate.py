@@ -12,8 +12,19 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
+try:
+    from scripts.dev.quality_gate.collect_runtime_observability_baseline import (
+        build_runtime_observability_baseline,
+        resolve_latest_runtime_summary_json,
+    )
+    from scripts.dev.quality_gate.validate_runtime_observability_drift import build_runtime_observability_drift_report
+except ModuleNotFoundError:
+    from collect_runtime_observability_baseline import build_runtime_observability_baseline, resolve_latest_runtime_summary_json
+    from validate_runtime_observability_drift import build_runtime_observability_drift_report
+
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_BASELINE = PROJECT_ROOT / "reports/analysis/tech-debt-baseline.json"
+DEFAULT_RUNTIME_BASELINE = PROJECT_ROOT / "reports/analysis/runtime-observability-baseline.json"
 
 TARGET_EXTENSIONS = {".py", ".ts", ".tsx", ".vue"}
 TTL_PATTERNS = [
@@ -362,7 +373,68 @@ def compute_hotspot_scores(large_files: list[dict], touch_counts: dict[str, int]
     return sorted(scored, key=lambda x: x["score"], reverse=True)[:top_n]
 
 
-def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_violations: list[MarkerViolation]) -> str:
+def _load_runtime_weekly_metrics(
+    runtime_baseline_path: Path | None,
+    runtime_summary_json: Path | None,
+    runtime_current_path: Path | None,
+) -> dict | None:
+    if runtime_baseline_path is None or not runtime_baseline_path.exists():
+        return None
+
+    runtime_baseline = load_json(runtime_baseline_path)
+    runtime_current: dict | None = None
+
+    if runtime_current_path is not None:
+        runtime_current = load_json(runtime_current_path)
+    else:
+        summary_path = runtime_summary_json
+        if summary_path is None:
+            try:
+                summary_path = resolve_latest_runtime_summary_json()
+            except FileNotFoundError:
+                summary_path = None
+        if summary_path is not None and summary_path.exists():
+            runtime_current = build_runtime_observability_baseline(load_json(summary_path), summary_path)
+
+    runtime_drift = (
+        build_runtime_observability_drift_report(baseline_payload=runtime_baseline, current_payload=runtime_current)
+        if runtime_current is not None
+        else None
+    )
+
+    docker_baseline = (runtime_baseline.get("docker_runtime") or {})
+    docker_current = (runtime_current.get("docker_runtime") or {}) if runtime_current is not None else {}
+
+    return {
+        "baseline": runtime_baseline,
+        "current": runtime_current,
+        "drift": runtime_drift,
+        "docker_smoke_baseline": "/".join(
+            [
+                str(docker_baseline.get("backend_health", "N/A")),
+                str(docker_baseline.get("backend_readiness", "N/A")),
+                str(docker_baseline.get("frontend_index", "N/A")),
+            ]
+        ),
+        "docker_smoke_current": "/".join(
+            [
+                str(docker_current.get("backend_health", "N/A")),
+                str(docker_current.get("backend_readiness", "N/A")),
+                str(docker_current.get("frontend_index", "N/A")),
+            ]
+        )
+        if runtime_current is not None
+        else "N/A",
+    }
+
+
+def render_weekly_report(
+    metrics: dict,
+    kpi: dict,
+    hotspots: list[dict],
+    ttl_violations: list[MarkerViolation],
+    runtime_metrics: dict | None = None,
+) -> str:
     now = datetime.now(timezone.utc).isoformat()
     baseline_doc = metrics.get("baseline", {}).get("backend_api_documentation", {})
     current_doc = metrics.get("current", {}).get("backend_api_documentation", {})
@@ -394,6 +466,22 @@ def render_weekly_report(metrics: dict, kpi: dict, hotspots: list[dict], ttl_vio
         f"- current_non_json_success_responses: `{current_doc.get('non_json_success_responses', 'N/A')}`",
         "",
     ]
+    if runtime_metrics is not None:
+        runtime_baseline = runtime_metrics.get("baseline", {})
+        runtime_current = runtime_metrics.get("current") or {}
+        runtime_drift = runtime_metrics.get("drift") or {}
+        lines.extend(
+            [
+                "## 4. Runtime Observability KPI",
+                f"- PM2 runtime overall gate status: measured=`{runtime_current.get('overall_gate_status', 'N/A')}` baseline=`{runtime_baseline.get('overall_gate_status', 'N/A')}` target=`PASS`",
+                f"- Anonymous API overall P95 (ms): measured=`{(runtime_current.get('api_performance') or {}).get('overall_p95_ms', 'N/A')}` baseline=`{(runtime_baseline.get('api_performance') or {}).get('overall_p95_ms', 'N/A')}` target=`<= 300`",
+                f"- Monitoring auth alert-rules P95 (ms): measured=`{(runtime_current.get('monitoring_auth_performance') or {}).get('alert_rules_p95_ms', 'N/A')}` baseline=`{(runtime_baseline.get('monitoring_auth_performance') or {}).get('alert_rules_p95_ms', 'N/A')}` target=`<= 300`",
+                f"- Docker runtime smoke status: measured=`{runtime_metrics.get('docker_smoke_current', 'N/A')}` baseline=`{runtime_metrics.get('docker_smoke_baseline', 'N/A')}` target=`PASS/PASS/PASS`",
+                f"- Docker metrics http_requests_total delta: measured=`{(runtime_current.get('docker_runtime') or {}).get('http_requests_total_delta', 'N/A')}` baseline=`{(runtime_baseline.get('docker_runtime') or {}).get('http_requests_total_delta', 'N/A')}` target=`>= 0`",
+                f"- Runtime drift gate: `{'PASS' if runtime_drift.get('pass') else 'FAIL'}` violations=`{len(runtime_drift.get('violations', []))}` not_measured=`{len(runtime_drift.get('not_measured', []))}`",
+                "",
+            ]
+        )
     lines.extend(build_weekly_report_drift_lines(drift_items))
     lines.extend(["", "## 5. Risk Hotspots (Top N)"])
 
@@ -512,6 +600,11 @@ def run_kpi_gate(args: argparse.Namespace) -> int:
 def run_weekly_report(args: argparse.Namespace) -> int:
     baseline = load_json((PROJECT_ROOT / args.baseline).resolve())
     current = load_json((PROJECT_ROOT / args.current).resolve())
+    runtime_metrics = _load_runtime_weekly_metrics(
+        runtime_baseline_path=(PROJECT_ROOT / args.runtime_baseline).resolve() if args.runtime_baseline else None,
+        runtime_summary_json=(PROJECT_ROOT / args.runtime_summary_json).resolve() if args.runtime_summary_json else None,
+        runtime_current_path=(PROJECT_ROOT / args.runtime_current).resolve() if args.runtime_current else None,
+    )
 
     large_files = collect_large_files(args.threshold)
     touch_counts = {item["path"]: count_recent_touches(item["path"], args.since_days) for item in large_files}
@@ -533,6 +626,7 @@ def run_weekly_report(args: argparse.Namespace) -> int:
         kpi=kpi,
         hotspots=hotspots,
         ttl_violations=ttl_violations,
+        runtime_metrics=runtime_metrics,
     )
 
     output = (PROJECT_ROOT / args.output).resolve()
@@ -617,6 +711,12 @@ def build_parser() -> argparse.ArgumentParser:
     weekly = sub.add_parser("weekly-report", help="Generate weekly governance report")
     weekly.add_argument("--baseline", default=str(DEFAULT_BASELINE.relative_to(PROJECT_ROOT)))
     weekly.add_argument("--current", default="reports/analysis/tech-debt-current.json")
+    weekly.add_argument(
+        "--runtime-baseline",
+        default=str(DEFAULT_RUNTIME_BASELINE.relative_to(PROJECT_ROOT)),
+    )
+    weekly.add_argument("--runtime-summary-json", default=None)
+    weekly.add_argument("--runtime-current", default=None)
     weekly.add_argument("--base-sha", default=None)
     weekly.add_argument("--threshold", type=int, default=800)
     weekly.add_argument("--since-days", type=int, default=90)

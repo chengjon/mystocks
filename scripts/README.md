@@ -125,6 +125,12 @@ python scripts/dev/quality_gate/tech_debt_governance_gate.py weekly-report \
   --current /tmp/tech-debt-current.json \
   --output /tmp/tech-debt-weekly-report.md
 
+# Generate the weekly governance report via the stable local wrapper
+bash scripts/run_tech_debt_weekly_report.sh
+
+# Audit direct view-level apiClient imports and swallowed empty catches
+python scripts/compliance/frontend_data_access_report.py --strict
+
 # Review a baseline update that needs an approved rebaseline exception
 python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-review \
   --previous /tmp/tech-debt-baseline.previous.json \

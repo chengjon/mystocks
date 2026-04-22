@@ -70,3 +70,11 @@
 - `reports/governance/2026-04-10-tech-debt-register.md`
 - `reports/governance/2026-04-10-tech-debt-governance-execution.TASK.md`
 - `reports/governance/2026-04-10-tech-debt-governance-execution.TASK-REPORT.md`
+
+当前运行门禁 / 可观测性基线补充使用以下工件：
+
+- `reports/analysis/runtime-observability-baseline.json`
+- `scripts/dev/quality_gate/collect_runtime_observability_baseline.py`
+- `scripts/dev/quality_gate/validate_runtime_observability_drift.py`
+- `scripts/run_tech_debt_weekly_report.sh`
+- `.github/workflows/tech-debt-weekly-governance.yml`

@@ -28,6 +28,13 @@
 | 新增 skip/xfail 数 | `<value>` | `<value>` | `N/A` | `<= 0` | `<command/file>` |
 | 例外合规率 | `<value>` | `<value or N/A>` | `N/A` | `100%` | `<source>` |
 | 到期清理率 | `<value>` | `<value or N/A>` | `N/A` | `>= 90%` | `<source>` |
+| PM2 runtime overall gate status | `<value>` | `<value>` | `N/A` | `PASS` | `reports/analysis/runtime-observability-baseline.json` |
+| Anonymous API overall P95 (ms) | `<value>` | `<value>` | `N/A` | `<= 300` | `reports/analysis/runtime-observability-baseline.json` |
+| Monitoring auth `alert-rules` P95 (ms) | `<value>` | `<value>` | `N/A` | `<= 300` | `reports/analysis/runtime-observability-baseline.json` |
+| Docker runtime smoke status | `<value>` | `<value>` | `N/A` | `PASS/PASS/PASS` | `reports/analysis/runtime-observability-baseline.json` |
+| Docker metrics `http_requests_total` delta | `<value>` | `<value>` | `N/A` | `>= 0` | `reports/analysis/runtime-observability-baseline.json` |
+
+可复用校验命令：`python scripts/dev/quality_gate/validate_runtime_observability_drift.py --baseline reports/analysis/runtime-observability-baseline.json --current-summary-json <runtime-quality-summary/summary.json>`
 
 ## 6.3 热点与行动
 - Top 10 热点文件（含路径）:
