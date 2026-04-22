@@ -108,6 +108,22 @@ The Web Development Hooks system provides specialized file tracking, validation,
 - 验收归档组应稳定，便于后续集中检索；
 - 单次临时联调组应唯一，避免搜索结果互相污染。
 
+发布前验收清单：
+1. 确认关键 hook 文件已纳入 Git：
+   - `.claude/hooks/stop-graphiti-task-closeout.sh`
+   - `.claude/hooks/record_graphiti_closeout.py`
+   - `.claude/hooks/README.md`
+   - `.claude/settings.json`
+   - `config/hooks/graphiti-closeout.json`
+2. 运行本地逻辑与巡检测试：
+   - `pytest tests/unit/services/maestro/test_stop_graphiti_task_closeout.py tests/unit/services/maestro/test_inspect_graphiti_closeout_state.py tests/unit/services/maestro/test_smoke_graphiti_closeout_hook.py tests/unit/services/maestro/test_run_graphiti_closeout_live_validation.py`
+3. 运行 fake smoke：
+   - `python scripts/runtime/smoke_graphiti_closeout_hook.py --output json`
+4. 运行正式 live validation：
+   - `python scripts/runtime/run_graphiti_closeout_live_validation.py --output json --report-file docs/reports/hooks/<report>.md`
+5. 如本次变更涉及真实 Graphiti 链路，补一条验收归档：
+   - `python scripts/runtime/coordctl.py graphiti remember --actor-cli <actor> --group-id mystocks_spec_closeout_validation --name "<validation name>" --body-file <report>.md --output json`
+
 ### 1. Web-Dev File Tracker Hook
 
 **File**: `.claude/hooks/post-tool-use-web-dev-file-tracker.sh`
