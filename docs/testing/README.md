@@ -8,6 +8,10 @@
 
 - 测试策略与流程：
   [`测试策略与规范.md`](/opt/claude/mystocks_spec/docs/testing/测试策略与规范.md)
+- 前端运行门禁与交付收口：
+  [`e2e/README.md`](/opt/claude/mystocks_spec/docs/testing/e2e/README.md),
+  [`PR_GATE_QUICK_REFERENCE.md`](/opt/claude/mystocks_spec/docs/guides/frontend/PR_GATE_QUICK_REFERENCE.md),
+  [`PM2_INTEGRATION_TEST_WORKFLOW.md`](/opt/claude/mystocks_spec/docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md)
 - E2E 执行与调试：
   [`E2E_TEST_GUIDE.md`](/opt/claude/mystocks_spec/docs/testing/E2E_TEST_GUIDE.md),
   [`E2E_TEST_DEBUG_METHODS.md`](/opt/claude/mystocks_spec/docs/testing/E2E_TEST_DEBUG_METHODS.md),
@@ -24,8 +28,13 @@
 
 - 若问题是测试门禁、E2E 报告口径或类型债基线：
   先看 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md)
+- 若问题是“前端运行门禁核查与回归清单”或要找统一命令入口：
+  先看 [`PR_GATE_QUICK_REFERENCE.md`](/opt/claude/mystocks_spec/docs/guides/frontend/PR_GATE_QUICK_REFERENCE.md)
+  再看 [`e2e/README.md`](/opt/claude/mystocks_spec/docs/testing/e2e/README.md)
 - 若问题是具体测试执行：
   先看 [`E2E_TEST_GUIDE.md`](/opt/claude/mystocks_spec/docs/testing/E2E_TEST_GUIDE.md) 与 [`e2e/README.md`](/opt/claude/mystocks_spec/docs/testing/e2e/README.md)
+- 若问题是 PM2 正式门禁、容器 smoke 或本地复现 CI 交付摘要：
+  先看 [`PM2_INTEGRATION_TEST_WORKFLOW.md`](/opt/claude/mystocks_spec/docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md)
 - 若问题是历史阶段性计划：
   `phase4-plan.md`、`test-system-plan.md` 与 `test-system-analysis.md` 只作为 plan/supporting material，不应被视为当前 trunk
 - 若需要历史中文测试资料：
