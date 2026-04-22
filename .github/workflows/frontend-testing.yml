@@ -527,7 +527,6 @@ jobs:
         mkdir -p reports/analysis/runtime-quality-summary-ci
         cmd=(
           python scripts/dev/quality_gate/build_runtime_quality_summary.py
-          --runtime-observability-drift-report reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json
           --output-markdown reports/analysis/runtime-quality-summary-ci/SUMMARY.md
           --output-json reports/analysis/runtime-quality-summary-ci/summary.json
         )
@@ -550,6 +549,27 @@ jobs:
           --baseline reports/analysis/runtime-observability-baseline.json \
           --current-summary-json reports/analysis/runtime-quality-summary-ci/summary.json \
           --output reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json
+
+    - name: Rebuild combined runtime quality summary with drift report
+      run: |
+        cmd=(
+          python scripts/dev/quality_gate/build_runtime_quality_summary.py
+          --runtime-observability-drift-report reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json
+          --output-markdown reports/analysis/runtime-quality-summary-ci/SUMMARY.md
+          --output-json reports/analysis/runtime-quality-summary-ci/summary.json
+        )
+
+        if [ -n "${FRONTEND_RUNTIME_DIR}" ]; then
+          cmd+=(--frontend-dir "${FRONTEND_RUNTIME_DIR}")
+          cmd+=(--api-dir "${API_PERFORMANCE_DIR}")
+          cmd+=(--monitoring-dir "${MONITORING_AUTH_DIR}")
+        fi
+
+        if [ -n "${DOCKER_RUNTIME_DIR}" ]; then
+          cmd+=(--docker-dir "${DOCKER_RUNTIME_DIR}")
+        fi
+
+        "${cmd[@]}"
 
     - name: Build combined runtime artifact manifest
       run: |

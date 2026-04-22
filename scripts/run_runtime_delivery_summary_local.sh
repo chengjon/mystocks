@@ -9,6 +9,7 @@ SUMMARY_DIR="${RUNTIME_DELIVERY_SUMMARY_DIR:-${PROJECT_ROOT}/reports/analysis/ru
 BUNDLE_DIR="${RUNTIME_DELIVERY_BUNDLE_DIR:-${PROJECT_ROOT}/reports/analysis/runtime-ci-bundle-combined-local}"
 SUMMARY_PATH="${SUMMARY_DIR}/SUMMARY.md"
 JSON_PATH="${SUMMARY_DIR}/summary.json"
+DRIFT_REPORT_PATH="${SUMMARY_DIR}/runtime-observability-drift-report.json"
 MANIFEST_PATH="${BUNDLE_DIR}/runtime-artifact-manifest.json"
 INDEX_PATH="${BUNDLE_DIR}/runtime-artifact-index.md"
 docker_dir="${DOCKER_RUNTIME_DIR:-}"
@@ -52,9 +53,17 @@ summary_cmd=(
     --output-json "${JSON_PATH}"
 )
 
+summary_with_drift_cmd=(
+    python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_quality_summary.py"
+    --runtime-observability-drift-report "${DRIFT_REPORT_PATH}"
+    --output-markdown "${SUMMARY_PATH}"
+    --output-json "${JSON_PATH}"
+)
+
 bundle_cmd=(
     python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_ci_bundle.py"
     --runtime-quality-dir "${SUMMARY_DIR}"
+    --runtime-observability-drift-report "${DRIFT_REPORT_PATH}"
     --output-manifest "${MANIFEST_PATH}"
     --output-index "${INDEX_PATH}"
 )
@@ -63,6 +72,9 @@ if [ "${has_pm2_runtime}" -eq 1 ]; then
     summary_cmd+=(--frontend-dir "${frontend_dir}")
     summary_cmd+=(--api-dir "${api_dir}")
     summary_cmd+=(--monitoring-dir "${monitoring_dir}")
+    summary_with_drift_cmd+=(--frontend-dir "${frontend_dir}")
+    summary_with_drift_cmd+=(--api-dir "${api_dir}")
+    summary_with_drift_cmd+=(--monitoring-dir "${monitoring_dir}")
 
     bundle_cmd+=(--frontend-dir "${frontend_dir}")
     bundle_cmd+=(--api-dir "${api_dir}")
@@ -71,11 +83,18 @@ fi
 
 if [ -n "${docker_dir}" ]; then
     summary_cmd+=(--docker-dir "${docker_dir}")
+    summary_with_drift_cmd+=(--docker-dir "${docker_dir}")
     bundle_cmd+=(--docker-dir "${docker_dir}")
 fi
 
 "${summary_cmd[@]}"
+python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_runtime_observability_drift.py" \
+    --baseline "${PROJECT_ROOT}/reports/analysis/runtime-observability-baseline.json" \
+    --current-summary-json "${JSON_PATH}" \
+    --output "${DRIFT_REPORT_PATH}"
+"${summary_with_drift_cmd[@]}"
 "${bundle_cmd[@]}"
 
 printf 'Runtime delivery summary written to %s\n' "${SUMMARY_PATH}"
+printf 'Runtime observability drift report written to %s\n' "${DRIFT_REPORT_PATH}"
 printf 'Runtime delivery bundle index written to %s\n' "${INDEX_PATH}"

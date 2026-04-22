@@ -128,6 +128,9 @@ python scripts/dev/quality_gate/tech_debt_governance_gate.py weekly-report \
 # Generate the weekly governance report via the stable local wrapper
 bash scripts/run_tech_debt_weekly_report.sh
 
+# Rebuild the combined runtime delivery summary, drift gate, and bundle locally
+bash scripts/run_runtime_delivery_summary_local.sh
+
 # Audit direct view-level apiClient imports and swallowed empty catches
 python scripts/compliance/frontend_data_access_report.py --strict
 

@@ -163,6 +163,7 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("containerized-runtime-smoke");
     expect(workflowText).toContain("build_runtime_quality_summary.py");
     expect(workflowText).toContain("Validate runtime observability drift");
+    expect(workflowText).toContain("Rebuild combined runtime quality summary with drift report");
     expect(workflowText).toContain("validate_runtime_observability_drift.py");
     expect(workflowText).toContain("runtime-observability-baseline.json");
     expect(workflowText).toContain("runtime-observability-drift-report.json");
@@ -170,6 +171,13 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("needs.route-layout-pm2-detect.outputs.gate_required == 'true' || needs.frontend-gate-scope-detect.outputs.container_runtime_required == 'true'");
     expect(workflowText).toContain("runtime-delivery-summary");
     expect(workflowText).toContain("runtime-delivery-bundle");
+
+    const firstBuildIndex = workflowText.indexOf("Build combined runtime quality summary");
+    const driftIndex = workflowText.indexOf("Validate runtime observability drift");
+    const rebuildIndex = workflowText.indexOf("Rebuild combined runtime quality summary with drift report");
+    expect(firstBuildIndex).toBeGreaterThan(-1);
+    expect(driftIndex).toBeGreaterThan(firstBuildIndex);
+    expect(rebuildIndex).toBeGreaterThan(driftIndex);
   });
 
   it("builds a human-readable runtime artifact index in the consolidated bundle", () => {

@@ -9,9 +9,12 @@ def test_runtime_delivery_summary_local_script_supports_pm2_and_docker_modes():
 
     assert 'SUMMARY_DIR="${RUNTIME_DELIVERY_SUMMARY_DIR:-${PROJECT_ROOT}/reports/analysis/runtime-quality-summary-ci-local}"' in script
     assert 'BUNDLE_DIR="${RUNTIME_DELIVERY_BUNDLE_DIR:-${PROJECT_ROOT}/reports/analysis/runtime-ci-bundle-combined-local}"' in script
+    assert 'DRIFT_REPORT_PATH="${SUMMARY_DIR}/runtime-observability-drift-report.json"' in script
     assert 'resolve_latest_dir()' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_quality_summary.py"' in script
+    assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_runtime_observability_drift.py"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_ci_bundle.py"' in script
+    assert '--runtime-observability-drift-report "${DRIFT_REPORT_PATH}"' in script
     assert 'if [ "${has_pm2_runtime}" -eq 1 ]; then' in script
     assert 'if [ -n "${docker_dir}" ]; then' in script
     assert 'Runtime delivery summary requires PM2 baseline dirs or DOCKER_RUNTIME_DIR' in script
@@ -165,14 +168,20 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
 
     summary_text = (summary_dir / "SUMMARY.md").read_text(encoding="utf-8")
     summary_payload = json.loads((summary_dir / "summary.json").read_text(encoding="utf-8"))
+    drift_report = json.loads((summary_dir / "runtime-observability-drift-report.json").read_text(encoding="utf-8"))
     manifest = json.loads((bundle_dir / "runtime-artifact-manifest.json").read_text(encoding="utf-8"))
     index_text = (bundle_dir / "runtime-artifact-index.md").read_text(encoding="utf-8")
 
     assert "## Frontend Runtime Gate" in summary_text
     assert "## Container Runtime Smoke" in summary_text
+    assert "## Runtime Observability Drift Gate" in summary_text
     assert "Overall gate status: `PASS`" in summary_text
     assert summary_payload["overall_gate_status"] == "PASS"
+    assert summary_payload["runtime_observability_drift"]["pass"] is True
+    assert drift_report["pass"] is True
     assert manifest["runtime_quality_dir"] == str(summary_dir.resolve())
     assert manifest["docker_runtime_dir"] == str(docker_dir.resolve())
+    assert manifest["runtime_observability_drift_report"] == str((summary_dir / "runtime-observability-drift-report.json").resolve())
     assert "Docker runtime smoke: `PASS` / `PASS` / `PASS`" in index_text
     assert "Anonymous API overall avg / P95: `18.47ms / 22.94ms`" in index_text
+    assert "Drift gate pass: `True`" in index_text
