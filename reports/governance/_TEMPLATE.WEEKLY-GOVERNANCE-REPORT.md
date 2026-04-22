@@ -35,6 +35,7 @@
 | Docker metrics `http_requests_total` delta | `<value>` | `<value>` | `N/A` | `>= 0` | `reports/analysis/runtime-observability-baseline.json` |
 
 可复用校验命令：`python scripts/dev/quality_gate/validate_runtime_observability_drift.py --baseline reports/analysis/runtime-observability-baseline.json --current-summary-json <runtime-quality-summary/summary.json>`
+完整运行门禁入口：`bash scripts/run_full_runtime_delivery_gate.sh`
 
 ## 6.3 热点与行动
 - Top 10 热点文件（含路径）:
