@@ -73,11 +73,14 @@ jobs:
       - name: Publish weekly governance summary
         run: |
           python - <<'PY'
+          import json
           import os
           from pathlib import Path
 
           report_path = Path("reports/analysis/tech-debt-weekly-report-ci/weekly-report.md")
+          runtime_manifest_path = Path("reports/analysis/runtime-delivery-gate-weekly/runtime-delivery-gate-manifest.json")
           lines = report_path.read_text(encoding="utf-8").splitlines()
+          runtime_manifest = json.loads(runtime_manifest_path.read_text(encoding="utf-8"))
           keep = [
               "# Tech Debt Weekly Governance",
               "",
@@ -115,6 +118,15 @@ jobs:
                   if line.startswith(prefix):
                       keep.append(line)
                       break
+
+          keep.extend(
+              [
+                  f"- Runtime delivery gate overall status: `{runtime_manifest.get('overall_gate_status', 'N/A')}`",
+                  f"- Runtime delivery gate drift pass: `{runtime_manifest.get('runtime_observability_drift_pass', 'N/A')}`",
+                  f"- Runtime delivery gate drift violations: `{runtime_manifest.get('runtime_observability_drift_violations', 'N/A')}`",
+                  f"- Runtime delivery gate drift not_measured: `{runtime_manifest.get('runtime_observability_drift_not_measured', 'N/A')}`",
+              ]
+          )
 
           keep.extend(["", "## Current Batch"])
           current_batch_lines = [line for line in lines if line.startswith("- Current batch issue:") or line.startswith("- Current batch introduced issues:")]

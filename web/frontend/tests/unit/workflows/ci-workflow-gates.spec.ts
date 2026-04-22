@@ -286,6 +286,11 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("tech-debt-weekly-governance-report");
     expect(workflowText).toContain("runtime-delivery-gate-weekly");
     expect(workflowText).toContain("GITHUB_STEP_SUMMARY");
+    expect(workflowText).toContain("runtime-delivery-gate-manifest.json");
+    expect(workflowText).toContain("Runtime delivery gate overall status:");
+    expect(workflowText).toContain("Runtime delivery gate drift pass:");
+    expect(workflowText).toContain("Runtime delivery gate drift violations:");
+    expect(workflowText).toContain("Runtime delivery gate drift not_measured:");
     expect(workflowText).toContain("## Debt KPI");
     expect(workflowText).toContain("## Runtime KPI");
     expect(workflowText).toContain("## Current Batch");
