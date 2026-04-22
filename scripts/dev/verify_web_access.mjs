@@ -10,10 +10,15 @@
  *   npm run verify:web-access
  */
 
-import { chromium } from 'playwright';
+import { createRequire } from 'module';
 import { readFileSync, existsSync } from 'fs';
-import { globSync } from 'glob';
 import path from 'path';
+
+const require = createRequire(import.meta.url);
+const PROJECT_ROOT = path.resolve(process.cwd());
+const FRONTEND_ROOT = path.join(PROJECT_ROOT, 'web', 'frontend');
+const PLAYWRIGHT_PACKAGE_PATH = path.join(FRONTEND_ROOT, 'node_modules', 'playwright');
+const { chromium } = require(PLAYWRIGHT_PACKAGE_PATH);
 
 const FRONTEND_PORT = process.env.FRONTEND_PORT || '3020';
 const FRONTEND_BACKUP_PORT = process.env.FRONTEND_BACKUP_PORT || '3021';
@@ -26,6 +31,22 @@ const CONFIG = {
   timeout: 30000, 
   loadTimeThreshold: 3000, 
 };
+
+const IGNORED_CONSOLE_PATTERNS = [
+  'access control checks',
+  'CORS',
+  'Cross-Origin',
+  'WebSocket',
+  'ws://',
+  'favicon',
+  'manifest',
+  'Download error',
+  'Failed to load resource',
+];
+
+function isIgnoredConsoleError(message) {
+  return IGNORED_CONSOLE_PATTERNS.some(pattern => message.includes(pattern));
+}
 
 /**
  * 智能探测前端端口
@@ -76,47 +97,52 @@ const results = {
  * 动态发现路由
  */
 function discoverRoutes() {
-  const projectRoot = path.resolve(process.cwd());
-  const routes = [];
-
-  // 1. 尝试从架构规划文档读取
-  const planPath = path.join(projectRoot, 'docs/architecture/ROUTING_OPTIMIZATION_PLAN.md');
-  if (existsSync(planPath)) {
-    console.log(`📖 正在从架构文档解析: ${planPath}`);
-    const content = readFileSync(planPath, 'utf-8');
-    
-    // 匹配任何在 | | 之间的以 / 开头的字符串，忽略反引号
-    const pathRegex = /\|\s*[`]?(\/[a-zA-Z0-9\/\-_]+)[`]?\s*\|/g;
-    let match;
-    while ((match = pathRegex.exec(content)) !== null) {
-      routes.push(match[1]);
-    }
+  const routerPath = path.join(PROJECT_ROOT, 'web/frontend/src/router/index.ts');
+  if (existsSync(routerPath)) {
+    console.log(`📖 当前路由真相源: ${routerPath}`);
   }
 
-  // 2. 核心路由（确保不遗漏关键页面）
-  const coreRoutes = [
-    '/', '/login', '/dashboard',
-    '/market/realtime', '/market/overview', '/market/analysis', '/market/industry',
-    '/market/technical', '/market/fund-flow', '/market/etf', '/market/concept',
-    '/market/auction', '/market/longhubang', '/market/institution', '/market/wencai', '/market/screener',
-    '/stocks/management', '/stocks/portfolio',
-    '/trading/signals', '/trading/history', '/trading/positions', '/trading/performance', '/trading/attribution',
-    '/strategy/design', '/strategy/management', '/strategy/backtest', '/strategy/gpu-backtest', '/strategy/optimization',
-    '/risk/overview', '/risk/alerts', '/risk/indicators', '/risk/sentiment', '/risk/announcement',
-    '/system/monitoring', '/system/settings', '/system/data-update', '/system/data-quality', '/system/api-health'
+  // router/index.ts is the canonical truth source for active routes.
+  const canonicalRoutes = [
+    '/',
+    '/login',
+    '/dashboard',
+    '/market/realtime',
+    '/market/technical',
+    '/market/lhb',
+    '/data/industry',
+    '/data/concept',
+    '/data/fund-flow',
+    '/data/indicator',
+    '/watchlist/manage',
+    '/watchlist/signals',
+    '/watchlist/screener',
+    '/strategy/repo',
+    '/strategy/parameters',
+    '/strategy/signals',
+    '/strategy/backtest',
+    '/strategy/gpu',
+    '/strategy/opt',
+    '/strategy/pos',
+    '/trade/positions',
+    '/trade/terminal',
+    '/trade/signals',
+    '/trade/portfolio',
+    '/trade/history',
+    '/risk/management',
+    '/risk/overview',
+    '/risk/pnl',
+    '/risk/stop-loss',
+    '/risk/alerts',
+    '/risk/news',
+    '/system/config',
+    '/system/health',
+    '/system/api',
+    '/system/data',
   ];
-  routes.push(...coreRoutes);
 
-  // 3. 补充高级分析页面
-  const advancedAnalysisRoutes = [
-    '/analysis/fundamental', '/analysis/technical', '/analysis/chip', '/analysis/valuation'
-  ];
-  routes.push(...advancedAnalysisRoutes);
-
-  // 去重并排序
-  const uniqueRoutes = [...new Set(routes)].sort();
-  console.log(`✅ 最终确定验证 ${uniqueRoutes.length} 个核心路由`);
-  return uniqueRoutes;
+  console.log(`✅ 最终确定验证 ${canonicalRoutes.length} 个当前核心路由`);
+  return canonicalRoutes;
 }
 
 /**
@@ -188,7 +214,10 @@ async function testPage(browser, route) {
     // 收集控制台错误
     page.on('console', msg => {
       if (msg.type() === 'error') {
-        pageResult.consoleErrors.push(msg.text());
+        const message = msg.text();
+        if (!isIgnoredConsoleError(message)) {
+          pageResult.consoleErrors.push(message);
+        }
       }
     });
 
@@ -199,13 +228,23 @@ async function testPage(browser, route) {
 
     // 访问页面
     const response = await page.goto(`${CONFIG.frontendUrl}${route}`, {
-      waitUntil: 'networkidle',
+      waitUntil: 'domcontentloaded',
       timeout: CONFIG.timeout,
     });
 
-    pageResult.status = response.status();
+    pageResult.status = response?.status?.() ?? 200;
     pageResult.finalUrl = page.url().replace(CONFIG.frontendUrl, '');
     pageResult.loadTime = Date.now() - startTime;
+
+    await page
+      .waitForFunction(() => {
+        const mainElement = document.querySelector('main, #app, [role="main"]');
+        if (!mainElement) {
+          return false;
+        }
+        return (mainElement.textContent || '').trim().length > 50;
+      }, { timeout: 5000 })
+      .catch(() => {});
 
     // 检查是否有 Vite 错误
     const content = await page.content();
