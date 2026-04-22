@@ -12,7 +12,7 @@ const E2E_USER = {
   username: "admin",
   email: "admin@example.com",
   role: "admin",
-  permissions: [],
+  permissions: ["*"],
 }
 
 type AlertRuleRecord = {
@@ -58,6 +58,7 @@ type Phase4State = {
   announcements: AnnouncementRecord[]
   dataSourceConfigs: DataSourceConfigRecord[]
   lastBatchPayload: Record<string, unknown> | null
+  lastGeneralSettingsPayload: Record<string, unknown> | null
   detailedHealthFetchCount: number
   unhandledRequests: string[]
 }
@@ -234,6 +235,7 @@ function createPhase4State(): Phase4State {
     announcements: ANNOUNCEMENTS.map((row) => ({ ...row })),
     dataSourceConfigs: DATA_SOURCE_CONFIGS.map((row) => ({ ...row })),
     lastBatchPayload: null,
+    lastGeneralSettingsPayload: null,
     detailedHealthFetchCount: 0,
     unhandledRequests: [],
   }
@@ -287,11 +289,18 @@ async function installBrowserSpies(page: Page): Promise<void> {
 async function seedAuth(page: Page): Promise<void> {
   await page.addInitScript(({ user }) => {
     const token = "e2e-phase4-token"
+    const authStore = {
+      user,
+      token,
+      isAuthenticated: true,
+      permissions: user.permissions,
+    }
     localStorage.setItem("auth_token", token)
     localStorage.setItem("auth_user", JSON.stringify(user))
     localStorage.setItem("token", token)
     localStorage.setItem("user", JSON.stringify(user))
     localStorage.setItem("access_token", token)
+    localStorage.setItem("auth-store", JSON.stringify(authStore))
   }, { user: E2E_USER })
 }
 
@@ -342,6 +351,60 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
           "x-process-time": "27ms",
         },
         body: JSON.stringify(buildUnifiedResponse(DETAILED_HEALTH_DATA, { request_id: "req-phase4-health-detailed" })),
+      })
+      return
+    }
+
+    if ((normalizedPath === "/v1/auth/me" || normalizedPath === "/auth/me") && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-auth-me",
+          "x-process-time": "12ms",
+        },
+        body: JSON.stringify(buildUnifiedResponse(E2E_USER, { request_id: "req-phase4-auth-me" })),
+      })
+      return
+    }
+
+    if (normalizedPath === "/v1/system/settings/general" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-general-settings",
+          "x-process-time": "23ms",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              backend_url: "http://localhost:8020",
+              max_backtest_jobs: 4,
+              default_slippage_percent: 0.05,
+              fee_rate_bps: 2.5,
+            },
+            { request_id: "req-phase4-general-settings" }
+          )
+        ),
+      })
+      return
+    }
+
+    if (normalizedPath === "/v1/system/settings/general" && method === "POST") {
+      const payload = JSON.parse(request.postData() || "{}") as Record<string, unknown>
+      state.lastGeneralSettingsPayload = payload
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-general-settings-save",
+          "x-process-time": "26ms",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(payload, { request_id: "req-phase4-general-settings-save" })
+        ),
       })
       return
     }
@@ -589,13 +652,18 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await gotoRoute(page, "/system/config")
 
     await expect(page.getByText("系统配置中心").first()).toBeVisible()
-    await expect(page.locator(".analysis-blocker")).toContainText("统一系统配置后端契约仍未建立")
+    await expect(page.locator(".analysis-blocker")).toContainText("System-Config 仍按分段真相运行")
+    await expect(page.locator(".analysis-blocker")).toContainText("general 与 security 已接入系统级 /api/v1/system/settings/* 契约")
     await expect(page.locator(".header-meta")).toContainText("DATA: REAL")
     await page.locator(".tabs").getByRole("button", { name: "系统设置", exact: true }).click()
     await page.locator(".form-grid input").first().fill("http://localhost:9999")
-    await page.getByRole("button", { name: "保存本地设置" }).click()
-    const saved = await page.evaluate(() => localStorage.getItem("artdeco-system-settings"))
-    expect(saved).toContain("http://localhost:9999")
+    await page.getByRole("button", { name: "保存系统设置", exact: true }).click()
+    await expect.poll(() => state.lastGeneralSettingsPayload).toEqual({
+      backend_url: "http://localhost:9999",
+      max_backtest_jobs: 4,
+      default_slippage_percent: 0.05,
+      fee_rate_bps: 2.5,
+    })
     expect(state.detailedHealthFetchCount).toBe(1)
     expect(state.unhandledRequests).toEqual([])
   })
@@ -639,7 +707,7 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.locator(".config-table")).toContainText("AKShare 行情")
     const firstConfigRow = page.locator(".config-row").filter({ hasText: "AKShare 行情" })
     await firstConfigRow.getByRole("button", { name: "禁用", exact: true }).click()
-    await expect(firstConfigRow.locator(".status-badge")).toContainText("禁用")
+    await expect(firstConfigRow.locator(".col.status")).toContainText("禁用")
     await expect(firstConfigRow.getByRole("button", { name: "启用", exact: true })).toBeVisible()
     await page.getByRole("button", { name: "保存配置" }).click()
     await expect.poll(() => state.lastBatchPayload).toEqual({

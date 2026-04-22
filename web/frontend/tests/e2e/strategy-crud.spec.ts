@@ -305,18 +305,19 @@ test.describe("Strategy Management - CRUD", () => {
 
     const row = page.locator(".strategy-table tbody tr", { hasText: strategyName })
     await expect(row).toHaveCount(1)
+    const statusCell = row.locator("td").nth(2)
 
     await row.getByRole("button", { name: "启动" }).click()
-    await expect(row.locator(".status-chip")).toContainText("RUNNING")
+    await expect(statusCell).toContainText("RUNNING")
 
     await row.getByRole("button", { name: "暂停" }).click()
-    await expect(row.locator(".status-chip")).toContainText("PAUSED")
+    await expect(statusCell).toContainText("PAUSED")
 
     await row.getByRole("button", { name: "恢复" }).click()
-    await expect(row.locator(".status-chip")).toContainText("RUNNING")
+    await expect(statusCell).toContainText("RUNNING")
 
     await row.getByRole("button", { name: "停止" }).click()
-    await expect(row.locator(".status-chip")).toContainText("STOPPED")
+    await expect(statusCell).toContainText("STOPPED")
   })
 
   test("supports create, edit and delete strategy workflow", async ({ page }) => {

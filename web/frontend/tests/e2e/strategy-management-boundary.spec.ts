@@ -227,7 +227,7 @@ test.describe("Strategy Management - Boundary and Edge Cases", () => {
     await expect(page.locator(".strategy-table tbody tr")).toHaveCount(0)
     await expect(page.locator(".empty-state")).toContainText("REAL 请求失败")
 
-    await page.getByRole("button", { name: "刷新" }).click()
+    await page.getByRole("button", { name: "刷新", exact: true }).click()
     await expect(page.locator(".source-badge.real")).toContainText("SOURCE: REAL")
     await expect(page.locator(".strategy-table tbody tr")).toHaveCount(8)
   })

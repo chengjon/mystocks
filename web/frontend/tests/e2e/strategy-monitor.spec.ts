@@ -152,7 +152,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
 
     const rows = page.locator(".strategy-table tbody tr")
     await expect(rows).toHaveCount(6)
-    await expect(rows.first().locator(".status-chip")).toContainText("PAUSED")
+    await expect(rows.first().locator("td").nth(2)).toContainText("PAUSED")
   })
 
   test("paginates table rows", async ({ page }) => {
@@ -200,7 +200,7 @@ test.describe("Strategy Management - Monitoring & UI", () => {
     await page.goto(`${FRONTEND_BASE_URL}/strategy/repo`, { waitUntil: "domcontentloaded" })
     await expect(page.locator(".strategy-table")).toBeVisible()
 
-    const refreshButton = page.getByRole("button", { name: "刷新" })
+    const refreshButton = page.getByRole("button", { name: "刷新", exact: true })
     await expect(refreshButton).toBeEnabled()
     await refreshButton.click()
 
