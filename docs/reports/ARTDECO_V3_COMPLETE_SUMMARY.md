@@ -11,7 +11,7 @@
 
 1. **历史基线**：V3 初始升级给项目带来的长期有效资产。
 2. **当前口径**：2026-04-01 时点 ArtDeco 文档与运行时的对齐结论。
-3. **优化增量**：2026-04-18 时点在原 ArtDeco 基础上叠加的设计契约增强结论。
+3. **优化增量**：2026-04-19 时点在原 ArtDeco 基础上叠加的设计契约增强与运行闭环结论。
 
 ## 1. 本文档的角色
 
@@ -23,20 +23,23 @@
 
 如果本文件与源码或活跃治理文档冲突，以 **源码 + 活跃治理文档** 为准。
 
-## 2. 截至 2026-04-18 的当前基线
+## 2. 截至 2026-04-19 的当前基线
 
 | 维度 | 当前基线 |
 |------|----------|
 | 设计身份 | `Original ArtDeco + A 股金融语义 + 高密度量化工作台` |
-| 设计契约增强 | `DESIGN.md` 引入数据优先动效、金融 glow、紧凑密度、交易面板单主按钮 |
+| 设计契约增强 | `DESIGN.md` 引入数据优先动效、金融 glow、紧凑密度、交易面板单主按钮、组件状态机 token |
 | 主字体 | `Cinzel` / `Barlow` / `JetBrains Mono` |
 | 金融颜色 | A 股强制 `红涨绿跌` |
 | 间距体系 | `13` 个编号级别：`1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32` |
 | Reusable assets | `73` 个 `src/components/artdeco/**` Vue 组件 |
 | Page-level assets | `89` 个 `views/artdeco-pages/**` Vue 页面/块/模板 |
+| Shared runtime bridge | `src/composables/useHeaderSummary.ts` |
 | 运行时模式 | 模板化工作台、直接 Tab 容器、功能树驱动总控容器并存 |
+| Layout 摘要模式 | Dashboard 摘要由 `useHeaderSummary -> ArtDecoLayoutEnhanced` 统一承载 |
 | 路由真相 | 主业务路由以 `router/index.ts` + `views/<domain>/*.vue` 为主，保留少量 ArtDeco 例外入口 |
 | 规范入口 | `ARTDECO_MASTER_INDEX` + `ARTDECO_FINTECH_UNIFIED_SPEC` + `DESIGN.md` |
+| 运行验证基线 | `PM2 backend/frontend online` + stable E2E `10/10` 通过 |
 
 ## 3. 哪些 V3 资产仍然有效
 
@@ -63,12 +66,14 @@
 - `docs/api/ArtDeco_System_Architecture_Summary.md`
 - `web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
 
-### 4.1.1 兼容入口继续保留
+### 4.1.1 兼容入口继续保留 / 补齐
 
-以下两条历史路径仍保留，用于兼容缺少 `web/` 子目录的旧引用：
+以下兼容路径仍保留，用于兼容缺少 `web/` 子目录或历史命名的旧引用：
 
 - `docs/guides/ARTDECO_MASTER_INDEX.md`
+- `docs/guides/ARTDECO_FINTECH_UNIFIED_SPEC.md`
 - `docs/guides/ARTDECO_COMPONENT_GUIDE.md`
+- `docs/api/ARTDECO_SYSTEM_ARCHITECTURE_SUMMARY.md`
 
 ### 4.2 运行时不再是单一理想模型
 
@@ -101,8 +106,22 @@
 - 紧凑密度模式：数据密集视图采用 4px 基线下的 compact / micro-density
 - 混合过渡：数据操作 200ms，装饰反馈 400ms
 - 交易面板单主按钮：降低误触和视觉竞争
+- 组件状态机：`--ad-*` token 统一 default / hover / focus / error / disabled
+- 共享头部摘要：Dashboard 指标提升到 Layout 级统一 header
+- 品牌 chrome 收敛：header 默认 logo 文本清空，sidebar 品牌框边线移除
 
 这些规则的当前真值位于根目录 `DESIGN.md`，不再散落在阶段报告里。
+
+### 4.5 当前运行闭环已经补齐
+
+截至 2026-04-19，ArtDeco 前端链路已补齐一轮实际运行验证：
+
+- `npm run type-check`
+- `npm run build:no-types`
+- `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:stable`
+- `chromium`
+- `10 passed / 0 failed / 0 skipped`
+- `mystocks-backend` 与 `mystocks-frontend` 均由 PM2 在线承载
 
 ## 5. 作为“交易中心深度优化最终验收依据”时应看什么
 
@@ -122,6 +141,7 @@
 | 2026-03 | 页面治理与样式治理文档开始成体系收敛 |
 | 2026-04-01 | 文档入口、统一规格、组件目录、运行时摘要重新对齐当前代码结构 |
 | 2026-04-18 | 将根级 `DESIGN.md` 并入活跃链路，补齐路由真相与 ArtDeco 工作台边界说明 |
+| 2026-04-19 | 将状态机 token、共享头部摘要、品牌 chrome 收敛、稳定 E2E 运行闭环写入当前基线 |
 
 ## 7. 结论
 

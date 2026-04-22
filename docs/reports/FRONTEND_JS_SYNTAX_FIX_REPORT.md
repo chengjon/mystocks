@@ -151,7 +151,81 @@ All 34 routes tested via Playwright MCP with **0 errors** on every page after fi
 
 ---
 
+## 2026-04-20 PM2 全页面访问闭环修复
+
+### Issue 16: Root-Level Page Verification Script Could Not Resolve Frontend Dependencies
+
+- **Error**: `ERR_MODULE_NOT_FOUND: Cannot find package 'playwright'` and then `Cannot find package 'glob'` when running `node scripts/dev/verify_web_access.mjs` from repo root
+- **Cause**: `verify_web_access.mjs` used root-level ESM package resolution, but `playwright` and related deps are installed under `web/frontend/node_modules`
+- **Fix**: Updated the script to resolve Playwright from `web/frontend/node_modules` via `createRequire`, and removed the unused `glob` import
+- **File**: `scripts/dev/verify_web_access.mjs`
+
+### Issue 17: Verification Script Reported Massive False White Screens from Legacy Routes
+
+- **Symptom**: 34/42 routes were reported as `WHITE_SCREEN` even though PM2 frontend/backend were healthy
+- **Cause**: The verification script mixed current routes with stale paths from historical planning docs instead of using the canonical truth source `web/frontend/src/router/index.ts`
+- **Fix**: Replaced the stale route set with the current canonical route list aligned to `router/index.ts`
+- **File**: `scripts/dev/verify_web_access.mjs`
+
+### Issue 18: Data Analysis / Indicator Access Used Legacy Token Key
+
+- **Symptom**: `/data/indicator` failed in Playwright page access verification, and indicator-related requests could fall into unauthorized/redirect handling
+- **Cause**: `useDataAnalysis` and `indicatorService` read `localStorage.access_token`, while the active auth flow persists the login token under `auth_token`
+- **Fix**:
+  - `useDataAnalysis` now prefers `auth_token` and falls back to `access_token`
+  - `indicatorService` now prefers `auth_token`, falls back to `access_token`, and clears both keys on `401`
+- **Files**:
+  - `web/frontend/src/composables/market/useDataAnalysis.ts`
+  - `web/frontend/src/services/indicatorService.ts`
+
+### Issue 19: Root-Level Page Verification Used `networkidle` and Misreported Stable SPA Pages
+
+- **Symptom**: During repeated PM2 verification loops, `verify_web_access.mjs` could regress from `35/35` to multiple `NAVIGATION_ERROR` results even though the same routes still rendered and returned `HTTP 200`
+- **Cause**: The script used `page.goto(..., { waitUntil: 'networkidle' })`, which is too strict for pages with polling, slow market endpoints, or long-lived browser activity
+- **Fix**:
+  - Switched navigation readiness to `domcontentloaded`
+  - Added post-navigation main-content probing instead of treating missing network idle as an access failure
+  - Filtered known non-blocking browser-console noise (`access control checks`, `CORS`, `WebSocket`, favicon/manifest misses) from route verdicts
+- **File**: `scripts/dev/verify_web_access.mjs`
+
+### Issue 20: Playwright Config Used a Hardcoded `127.0.0.1` Base URL Instead of the Canonical Frontend Resolver
+
+- **Symptom**: External-PM2 Playwright runs could diverge from the canonical frontend URL resolved by the E2E helper, especially when the stack consistently used `http://localhost:3020`
+- **Cause**: `web/frontend/playwright.config.js` built `baseURL` from a hardcoded ``http://127.0.0.1:${frontendPort}`` string instead of reusing `resolveFrontendConfig().baseUrl`
+- **Fix**:
+  - `playwright.config.js` now reuses `resolvedFrontend.baseUrl`
+  - `port-config-consistency.spec.ts` now asserts the canonical `http://localhost:3020` behavior instead of the old hardcoded string
+- **Files**:
+  - `web/frontend/playwright.config.js`
+  - `web/frontend/tests/unit/port-config-consistency.spec.ts`
+
+### 2026-04-20 Verification Result
+
+- **PM2 services**:
+  - `mystocks-backend`: `http://localhost:8020`
+  - `mystocks-frontend`: `http://localhost:3020`
+- **Verification command**: `node scripts/dev/verify_web_access.mjs`
+- **Route truth source**: `web/frontend/src/router/index.ts`
+- **Executed pages**: 35 current canonical routes
+- **Result**: `35/35 passed`, `0 failed`
+- **Average load time**: `1595ms` (first post-fix run), `343ms` (serial rerun after PM2 restart), `379ms` (2026-04-20 final serial closure rerun)
+- **Playwright comprehensive spec**:
+  - Command: `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/comprehensive-all-pages.spec.ts --reporter=line --output=/tmp/mystocks-pw-output`
+  - Result: `35/35 passed`
+  - Additional measured runs in the same repair cycle:
+    - `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=firefox tests/e2e/comprehensive-all-pages.spec.ts --reporter=line --output=/tmp/mystocks-pw-firefox-20260420`: `35/35 passed`
+    - `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=webkit tests/e2e/comprehensive-all-pages.spec.ts --reporter=line --output=/tmp/mystocks-pw-webkit-20260420`: `35/35 passed`
+- **PM2 revalidation loop**:
+  - `pm2 delete mystocks-backend mystocks-frontend`
+  - `pm2 start ecosystem.test.config.js`
+  - `pm2 list` confirmed both services online at `http://localhost:8020` and `http://localhost:3020`
+  - A serial rerun of `node scripts/dev/verify_web_access.mjs` returned `35/35 passed` after PM2 restart
+  - A second serial closure rerun of `node scripts/dev/verify_web_access.mjs` again returned `35/35 passed`
+- **Conclusion**: All current PM2 web pages are accessible after fixes
+
+---
+
 **文档版本**：v3.0
-**最后更新**：2026-04-18
+**最后更新**：2026-04-20
 **原始日期**：2026-02-14
 **项目路径**：`/opt/claude/mystocks_spec`
