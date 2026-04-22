@@ -39,3 +39,31 @@ describe('dashboardService.getFundFlow', () => {
     })
   })
 })
+
+describe('dashboardService.getTechnicalIndicatorsSafe', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  it('returns ok when all symbols resolve', async () => {
+    vi.mocked(apiClient.get).mockResolvedValue({
+      data: { data: { name: 'RSI', value: 55, signal: 'buy', signalType: 'rise' } }
+    } as never)
+
+    const result = await dashboardService.getTechnicalIndicatorsSafe(['000001.SZ'], ['RSI'])
+
+    expect(result.ok).toBe(true)
+    expect(result.data['000001.SZ']).toHaveLength(1)
+    expect(result.error).toBeUndefined()
+  })
+
+  it('collects errors without throwing', async () => {
+    vi.mocked(apiClient.get).mockRejectedValueOnce(new Error('network down'))
+
+    const result = await dashboardService.getTechnicalIndicatorsSafe(['000001.SZ'], ['RSI'])
+
+    expect(result.ok).toBe(false)
+    expect(result.data).toEqual({})
+    expect(result.error).toContain('network down')
+  })
+})
