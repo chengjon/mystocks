@@ -13,9 +13,10 @@
 3. [`CLAUDE.md`](./CLAUDE.md)
 4. [`GEMINI.md`](./GEMINI.md)
 5. [`GRAPHITI_MCP_WORKFLOW.md`](./GRAPHITI_MCP_WORKFLOW.md)
-6. [`OMC_WORKFLOW_GUIDE.md`](./OMC_WORKFLOW_GUIDE.md)
-7. [`OMO_SETUP_GUIDE.md`](./OMO_SETUP_GUIDE.md)
-8. [`OpenCode生产级配置与固化指南.md`](./OpenCode生产级配置与固化指南.md)
+6. [`ZREAD_GUIDE.md`](./ZREAD_GUIDE.md)
+7. [`OMC_WORKFLOW_GUIDE.md`](./OMC_WORKFLOW_GUIDE.md)
+8. [`OMO_SETUP_GUIDE.md`](./OMO_SETUP_GUIDE.md)
+9. [`OpenCode生产级配置与固化指南.md`](./OpenCode生产级配置与固化指南.md)
 
 ## Active Supporting Guides
 
@@ -29,6 +30,8 @@
   - Gemini CLI 质量保证工作流参考
 - [`GRAPHITI_MCP_WORKFLOW.md`](./GRAPHITI_MCP_WORKFLOW.md)
   - Graphiti 记忆工作流说明
+- [`ZREAD_GUIDE.md`](./ZREAD_GUIDE.md)
+  - AI 阅读仓库 wiki、定位入口与安全使用 zread 的指南
 - [`OMC_WORKFLOW_GUIDE.md`](./OMC_WORKFLOW_GUIDE.md)
   - OMC 使用与故障排查入口
 - [`OMO_SETUP_GUIDE.md`](./OMO_SETUP_GUIDE.md)
