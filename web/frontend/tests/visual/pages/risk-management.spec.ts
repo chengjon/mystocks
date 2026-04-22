@@ -1,6 +1,8 @@
 import { expect, test } from '../fixtures/visual.fixture';
 import { validateGoldTheme } from '../utils/helpers';
 
+test.describe.configure({ mode: 'serial' });
+
 const VISUAL_USER = {
   id: 1,
   username: 'visual-risk-admin',
@@ -169,6 +171,21 @@ test.describe('Risk Management Visual Regression', () => {
     });
   });
 
+  test('stock tab keeps tablet layout stable', async ({ page }) => {
+    await page.setViewportSize({ width: 900, height: 1400 });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.artdeco-page-template')).toBeVisible({ timeout: 15000 });
+    await page.getByRole('tab', { name: '个股分析' }).click();
+    await expect(page.locator('#risk-panel-stock')).toBeVisible();
+    await stabilizeVolatileText(page);
+
+    await expect(page.locator('.content-panel')).toHaveScreenshot('risk-management-stock-tablet.png', {
+      animations: 'disabled',
+      threshold: 0.2,
+      maxDiffPixels: 1200,
+    });
+  });
+
   test('overview shell keeps responsive tablet layout stable', async ({ page }) => {
     await page.setViewportSize({ width: 900, height: 1400 });
     await page.reload({ waitUntil: 'domcontentloaded' });
@@ -219,6 +236,32 @@ test.describe('Risk Management Empty State Visual Regression', () => {
       animations: 'disabled',
       threshold: 0.2,
       maxDiffPixels: 5000,
+    });
+  });
+
+  test('empty overview shell keeps collapsed-sidebar layout stable', async ({ page }) => {
+    await page.getByRole('button', { name: 'Toggle sidebar' }).click();
+    await page.waitForTimeout(300);
+    await stabilizeVolatileText(page);
+
+    await expect(page.locator('.artdeco-page-template')).toHaveScreenshot('risk-management-empty-collapsed-sidebar.png', {
+      animations: 'disabled',
+      threshold: 0.2,
+      maxDiffPixels: 5000,
+    });
+  });
+
+  test('empty overview shell keeps tablet layout stable', async ({ page }) => {
+    await page.setViewportSize({ width: 900, height: 1400 });
+    await page.reload({ waitUntil: 'domcontentloaded' });
+    await expect(page.locator('.artdeco-page-template')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#risk-panel-overview')).toBeVisible();
+    await stabilizeVolatileText(page);
+
+    await expect(page.locator('.artdeco-page-template')).toHaveScreenshot('risk-management-empty-tablet-overview.png', {
+      animations: 'disabled',
+      threshold: 0.2,
+      maxDiffPixels: 2500,
     });
   });
 });
