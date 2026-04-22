@@ -131,6 +131,9 @@ bash scripts/run_tech_debt_weekly_report.sh
 # Rebuild the combined runtime delivery summary, drift gate, and bundle locally
 bash scripts/run_runtime_delivery_summary_local.sh
 
+# Run the full runtime delivery gate: docker smoke + combined summary + drift
+bash scripts/run_full_runtime_delivery_gate.sh
+
 # Audit direct view-level apiClient imports and swallowed empty catches
 python scripts/compliance/frontend_data_access_report.py --strict
 
