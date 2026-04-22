@@ -7,11 +7,12 @@
 
 本目录是当前 MyStocks ArtDeco 生态的组件全景清单。
 
-> 2026-04-18 盘点结果
+> 2026-04-19 盘点结果
 >
 > - `src/components/artdeco/` 下共 **73** 个 Vue 组件
 > - `views/artdeco-pages/` 下共 **89** 个 ArtDeco 相关 Vue 页面/块/模板
 > - 整个 ArtDeco 前端生态共盘点到 **162** 个 Vue 文件
+> - 另有 **1** 个共享运行时 composable：`src/composables/useHeaderSummary.ts`
 >
 > 口径说明
 >
@@ -29,6 +30,8 @@
    位于 `web/frontend/src/components/artdeco/{trading,advanced,specialized}` 与 `web/frontend/src/views/artdeco-pages/**`
 3. **活跃路由 canonical entry**
    多数已经位于 `web/frontend/src/views/<domain>/*.vue`，只有少数 ArtDeco 页面仍直接作为路由入口
+4. **Shared runtime state helpers**
+   位于 `web/frontend/src/composables/`，用于 2+ 消费者之间的布局级状态桥接，不属于组件目录但属于当前生态实现链
 
 判断原则：
 
@@ -62,6 +65,25 @@ Base / UI 主链共 **48** 个 Vue 组件，负责：
 - 页面壳层
 - 通用业务交互
 - 图表基础能力
+
+### 2.6 当前与 `DESIGN.md` 强相关的基础资产
+
+以下组件已直接承接 2026-04 设计契约增强：
+
+- `base/ArtDecoButton.vue`
+  - 承接 `200ms / 400ms` 混合过渡预算
+  - 适合“单面板单主按钮”规则落地
+- `base/ArtDecoBadge.vue`
+  - 作为 header summary 与 filter/status chip 的 canonical shared surface
+  - 当前已吸收 `default / active / neutral / profit / loss / holding / pending / warning / gold` 语义
+  - `artdeco-pages` 范围内的页面级 `status-chip / status-badge` 残留已完成回收，不再鼓励局部重复定义
+- `business/ArtDecoStatus.vue`
+  - 保持 dot-status 专责，不承接 chip / badge 语义所有权
+  - 当前仅负责 `online / warning / offline / loading / success / error` 的点状状态呈现
+- `core/ArtDecoHeader.vue`
+  - 当前品牌 chrome 已去装饰化，默认不再输出静态 `MyStocks ArtDeco` 文本
+- `trading/ArtDecoCollapsibleSidebar.vue`
+  - 当前品牌框边线已移除，运行时更偏向数据优先
 
 ## 3. Reusable Assets: Domain / Business
 
@@ -142,6 +164,22 @@ Domain reusable 主链共 **25** 个 Vue 组件，处理：
 
 域内页签块与工作台页面块共 **51** 个，另有 `strategy-tabs/components/` 下 **3** 个工作台子组件。
 
+## 5.9 Shared Runtime State Helpers（非 Vue 组件）
+
+目录：`web/frontend/src/composables/`
+
+当前与 ArtDeco 生态直接相关的共享运行时桥接层：
+
+- `useHeaderSummary.ts`
+
+职责：
+
+- 为 `ArtDecoLayoutEnhanced.vue` 提供统一头部摘要状态
+- 接收 `useArtDecoDashboard.ts` 推送的 `marketStatus / activeStrategiesCount / todayPnLValue / currentTime / refreshing`
+- 让 Dashboard 的摘要指标进入 layout-level header，而不是继续绑定在单页 header 中
+
+这类文件不应统计进 Vue 组件数，但在文档链中必须被视为当前生态的一部分。
+
 ## 6. Top-Level Containers / Templates
 
 ### 6.1 顶层 ArtDeco 页面容器（10）
@@ -172,7 +210,13 @@ Domain reusable 主链共 **25** 个 Vue 组件，处理：
 | `views/artdeco-pages/components` | 23 | 页面系统内部共享片段 |
 | `views/artdeco-pages/*-tabs` 等域块 | 54 | 域内工作台块与子组件 |
 | 顶层容器与模板 | 12 | 页面承载与模板壳层 |
+| `src/composables/useHeaderSummary.ts` | 1 | 共享运行时摘要状态桥接 |
 | **合计** | **162** | 当前 ArtDeco 生态 Vue 文件总数 |
+
+> 说明：
+>
+> - 上表最后一行 `162` 仍只统计 Vue 文件。
+> - `useHeaderSummary.ts` 是额外补充的运行时桥接资产，不改变 Vue 资产总数。
 
 ## 8. 维护规则
 
