@@ -1,5 +1,3 @@
-version: '3.8'
-
 # MyStocks 生产环境配置
 # 用于生产部署和线上服务
 
@@ -163,7 +161,7 @@ services:
   mystocks-frontend-prod:
     build:
       context: ./web/frontend
-      dockerfile: Dockerfile.prod
+      dockerfile: Dockerfile
     container_name: mystocks-frontend-prod
     environment:
       NODE_ENV: production
