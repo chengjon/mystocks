@@ -110,6 +110,15 @@
           }
         ],
         "timeout": 8
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-graphiti-task-closeout.sh"
+          }
+        ],
+        "timeout": 8
       }
     ],
     "SessionStart": [

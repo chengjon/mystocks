@@ -1,0 +1,57 @@
+{
+  "actor_cli": "codex",
+  "group_id_template": "{project_name}_task_closeouts",
+  "positive_patterns": [
+    {
+      "label": "收尾已完成",
+      "pattern": "收尾已完成"
+    },
+    {
+      "label": "任务完成",
+      "pattern": "任务完成"
+    },
+    {
+      "label": "已完成",
+      "pattern": "(^|\\n)\\s*已完成"
+    },
+    {
+      "label": "完成了",
+      "pattern": "完成了"
+    },
+    {
+      "label": "已修复",
+      "pattern": "已修复|修复完成"
+    },
+    {
+      "label": "done",
+      "pattern": "\\bdone\\b"
+    },
+    {
+      "label": "finished",
+      "pattern": "\\bfinished\\b"
+    },
+    {
+      "label": "task completed",
+      "pattern": "\\btask\\s+completed\\b"
+    }
+  ],
+  "negative_patterns": [
+    "未完成",
+    "尚未完成",
+    "not\\s+completed",
+    "待继续"
+  ],
+  "verification_patterns": [
+    "pytest",
+    "vitest",
+    "playwright",
+    "\\blint\\b",
+    "\\bbuild\\b",
+    "\\btest",
+    "\\be2e\\b",
+    "\\bsmoke\\b",
+    "验证",
+    "通过",
+    "pm2"
+  ]
+}

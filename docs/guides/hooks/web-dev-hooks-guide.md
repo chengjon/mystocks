@@ -21,6 +21,25 @@ The Web Development Hooks system provides specialized file tracking, validation,
 
 ## Hook Scripts
 
+### Stop Closeout Reporting
+
+仓库当前额外启用了一个通用 Stop closeout reporter：`.claude/hooks/stop-graphiti-task-closeout.sh`。
+
+用途：
+- 监听 assistant 最终收尾语句中的完成态表达；
+- 在明确完成时，把标准化任务总结写入 Graphiti；
+- 为后续审计保留 `episode_uuid`、`group_id`、去重键和失败记录。
+
+行为约束：
+- 只在命中完成短语且未命中否定短语时触发；
+- 写入走共享 CLI 合同 `scripts/runtime/coordctl.py graphiti remember`；
+- 失败不阻塞 Stop，审计信息落在 `.claude/graphiti-closeout-state.json`。
+
+配置入口：
+- 默认读取 `config/hooks/graphiti-closeout.json`；
+- 可配置 `actor_cli`、`group_id_template`、完成短语、否定短语、验证关键字；
+- 环境变量 `GRAPHITI_CLOSEOUT_ACTOR_CLI`、`GRAPHITI_CLOSEOUT_GROUP_ID`、`GRAPHITI_CLOSEOUT_CONFIG` 可覆盖默认配置。
+
 ### 1. Web-Dev File Tracker Hook
 
 **File**: `.claude/hooks/post-tool-use-web-dev-file-tracker.sh`
