@@ -10,6 +10,7 @@ OUTPUT_PATH="${TECH_DEBT_WEEKLY_REPORT_OUTPUT:-${REPORT_DIR}/tech-debt-weekly-re
 CURRENT_METRICS_PATH="${TECH_DEBT_CURRENT_JSON:-${REPORT_DIR}/tech-debt-current-${TIMESTAMP}.json}"
 BASELINE_PATH="${TECH_DEBT_BASELINE_JSON:-${PROJECT_ROOT}/reports/analysis/tech-debt-baseline.json}"
 RUNTIME_BASELINE_PATH="${RUNTIME_OBSERVABILITY_BASELINE_JSON:-${PROJECT_ROOT}/reports/analysis/runtime-observability-baseline.json}"
+RUNTIME_GATE_DIR="${RUNTIME_DELIVERY_GATE_DIR:-}"
 RUNTIME_SUMMARY_JSON="${RUNTIME_SUMMARY_JSON:-}"
 RUNTIME_CURRENT_JSON="${RUNTIME_CURRENT_JSON:-}"
 THRESHOLD="${TECH_DEBT_WEEKLY_THRESHOLD:-800}"
@@ -18,6 +19,15 @@ TOP_N="${TECH_DEBT_WEEKLY_TOP_N:-10}"
 BASE_SHA="${TECH_DEBT_WEEKLY_BASE_SHA:-}"
 
 mkdir -p "${REPORT_DIR}"
+
+if [ -n "${RUNTIME_GATE_DIR}" ] && [ -z "${RUNTIME_SUMMARY_JSON}" ]; then
+    candidate_runtime_summary="${RUNTIME_GATE_DIR}/runtime-quality-summary/summary.json"
+    if [ ! -f "${candidate_runtime_summary}" ]; then
+        printf 'RUNTIME_DELIVERY_GATE_DIR provided but summary is missing: %s\n' "${candidate_runtime_summary}" >&2
+        exit 1
+    fi
+    RUNTIME_SUMMARY_JSON="${candidate_runtime_summary}"
+fi
 
 if [ ! -f "${CURRENT_METRICS_PATH}" ]; then
     python "${PROJECT_ROOT}/scripts/dev/quality_gate/collect_tech_debt_baseline.py" --output "${CURRENT_METRICS_PATH}"

@@ -43,12 +43,21 @@ jobs:
       - name: Install frontend dependencies
         run: npm --prefix web/frontend ci
 
+      - name: Run full runtime delivery gate
+        run: |
+          mkdir -p reports/analysis/runtime-delivery-gate-weekly
+          RUNTIME_DELIVERY_GATE_DIR="${PWD}/reports/analysis/runtime-delivery-gate-weekly" \
+          POSTGRES_PASSWORD=postgres \
+          TDENGINE_PASSWORD=taosdata \
+          bash scripts/run_full_runtime_delivery_gate.sh
+
       - name: Generate weekly governance report
         run: |
           mkdir -p reports/analysis/tech-debt-weekly-report-ci
           TECH_DEBT_WEEKLY_REPORT_DIR="${PWD}/reports/analysis/tech-debt-weekly-report-ci" \
           TECH_DEBT_WEEKLY_REPORT_OUTPUT="${PWD}/reports/analysis/tech-debt-weekly-report-ci/weekly-report.md" \
           TECH_DEBT_CURRENT_JSON="${PWD}/reports/analysis/tech-debt-weekly-report-ci/tech-debt-current.json" \
+          RUNTIME_DELIVERY_GATE_DIR="${PWD}/reports/analysis/runtime-delivery-gate-weekly" \
           MPLCONFIGDIR="${PWD}/.tmp/matplotlib" \
           bash scripts/run_tech_debt_weekly_report.sh
 
@@ -56,7 +65,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tech-debt-weekly-governance-report
-          path: reports/analysis/tech-debt-weekly-report-ci
+          path: |
+            reports/analysis/tech-debt-weekly-report-ci
+            reports/analysis/runtime-delivery-gate-weekly
           if-no-files-found: error
 
       - name: Publish weekly governance summary

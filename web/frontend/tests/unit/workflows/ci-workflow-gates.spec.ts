@@ -279,8 +279,12 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("schedule:");
     expect(workflowText).toContain("workflow_dispatch:");
     expect(workflowText).toContain("Generate Weekly Governance Report");
+    expect(workflowText).toContain("Run full runtime delivery gate");
+    expect(workflowText).toContain("bash scripts/run_full_runtime_delivery_gate.sh");
+    expect(workflowText).toContain("RUNTIME_DELIVERY_GATE_DIR");
     expect(workflowText).toContain("bash scripts/run_tech_debt_weekly_report.sh");
     expect(workflowText).toContain("tech-debt-weekly-governance-report");
+    expect(workflowText).toContain("runtime-delivery-gate-weekly");
     expect(workflowText).toContain("GITHUB_STEP_SUMMARY");
     expect(workflowText).toContain("## Debt KPI");
     expect(workflowText).toContain("## Runtime KPI");
