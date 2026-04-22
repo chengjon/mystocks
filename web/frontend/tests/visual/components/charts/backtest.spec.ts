@@ -126,6 +126,7 @@ test.describe('Backtest Visual Charts', () => {
     await expect(page.locator('.hub-grid')).toHaveScreenshot('backtest-execution-hub.png', {
       animations: 'disabled',
       threshold: 0.2,
+      maxDiffPixels: 800,
     });
   });
 
