@@ -7,7 +7,7 @@
  */
 
 import { apiClient } from '../apiClient.ts'
-import { serviceErr, serviceOk, type ServiceResult, type UnifiedResponse } from '../types/common.ts'
+import { type UnifiedResponse } from '../types/common.ts'
 import {
   normalizeDashboardActiveStrategies,
   normalizeDashboardFundFlow,
@@ -17,6 +17,14 @@ import {
   normalizeDashboardStockFlowRanking,
   normalizeDashboardSystemHealth,
 } from './dashboardServiceData.ts'
+
+type ServiceResult<T> =
+  | { ok: true; data: T; error?: undefined }
+  | { ok: false; data: T; error: string }
+
+const serviceOk = <T>(data: T): ServiceResult<T> => ({ ok: true, data })
+
+const serviceErr = <T>(data: T, error: string): ServiceResult<T> => ({ ok: false, data, error })
 
 export interface MarketOverviewData {
   symbol: string
