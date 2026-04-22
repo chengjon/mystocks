@@ -10,10 +10,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
-from collect_runtime_observability_baseline import (
-    build_runtime_observability_baseline,
-    resolve_latest_runtime_summary_json,
-)
+try:
+    from scripts.dev.quality_gate.collect_runtime_observability_baseline import (
+        build_runtime_observability_baseline,
+        resolve_latest_runtime_summary_json,
+    )
+except ModuleNotFoundError:
+    from collect_runtime_observability_baseline import (
+        build_runtime_observability_baseline,
+        resolve_latest_runtime_summary_json,
+    )
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
