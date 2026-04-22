@@ -173,7 +173,7 @@ test.describe('Risk Management Visual Regression', () => {
 
   test('stock tab keeps tablet layout stable', async ({ page }) => {
     await page.setViewportSize({ width: 900, height: 1400 });
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.goto('/risk-management', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.artdeco-page-template')).toBeVisible({ timeout: 15000 });
     await page.getByRole('tab', { name: '个股分析' }).click();
     await expect(page.locator('#risk-panel-stock')).toBeVisible();
@@ -186,9 +186,23 @@ test.describe('Risk Management Visual Regression', () => {
     });
   });
 
+  test('stock tab keeps collapsed-sidebar layout stable', async ({ page }) => {
+    await page.getByRole('tab', { name: '个股分析' }).click();
+    await expect(page.locator('#risk-panel-stock')).toBeVisible();
+    await page.getByRole('button', { name: 'Toggle sidebar' }).click();
+    await page.waitForTimeout(300);
+    await stabilizeVolatileText(page);
+
+    await expect(page.locator('.content-panel')).toHaveScreenshot('risk-management-stock-collapsed-sidebar.png', {
+      animations: 'disabled',
+      threshold: 0.2,
+      maxDiffPixels: 1200,
+    });
+  });
+
   test('overview shell keeps responsive tablet layout stable', async ({ page }) => {
     await page.setViewportSize({ width: 900, height: 1400 });
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.goto('/risk-management', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.artdeco-page-template')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('#risk-panel-overview')).toBeVisible();
     await stabilizeVolatileText(page);
@@ -253,7 +267,7 @@ test.describe('Risk Management Empty State Visual Regression', () => {
 
   test('empty overview shell keeps tablet layout stable', async ({ page }) => {
     await page.setViewportSize({ width: 900, height: 1400 });
-    await page.reload({ waitUntil: 'domcontentloaded' });
+    await page.goto('/risk-management', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.artdeco-page-template')).toBeVisible({ timeout: 15000 });
     await expect(page.locator('#risk-panel-overview')).toBeVisible();
     await stabilizeVolatileText(page);
