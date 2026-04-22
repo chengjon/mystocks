@@ -7,6 +7,36 @@ MyStocks is a dark-mode design system for personal quantitative trading and stoc
 
 ---
 
+## ArtDeco Brand DNA
+
+### Core Principles
+
+- **Geometry as decoration**: use structured lines, measured frames, repeated motifs, and architectural rhythm rather than soft organic ornament.
+- **Contrast as drama**: preserve the obsidian-black and metallic-gold contrast so hierarchy remains ceremonial and premium.
+- **Verticality and symmetry**: prefer balanced compositions, column rhythm, and upward emphasis in dashboards, hero headers, and framed analysis panels.
+- **Theatrical restraint**: interactive feedback should feel deliberate and engineered, not playful or bouncy.
+
+### Visual Signatures
+
+- **Diagonal crosshatch**: the background grid remains the primary ambient ArtDeco texture for the active runtime.
+- **Gold glow over drop shadow**: emphasis should come from gold luminescence and controlled halo layers, not generic black shadow stacks.
+- **Uppercase display typography**: display headings remain serif, uppercase, and widely tracked.
+- **Double-frame and divider language**: framed panels, measured separators, and geometric section dividers are preferred over soft card-only grouping.
+- **Roman numeral / rotated diamond motifs**: allowed as secondary brand accents in overview, onboarding, attribution, and storytelling surfaces.
+
+### Usage Boundaries
+
+- **Data-dense and execution-critical surfaces**: trading, risk, monitoring, order, and real-time watch panels default to restrained decoration and prioritize scanability.
+- **Brand-forward surfaces**: overview dashboards, empty states, feature intros, strategy summaries, and explanatory analysis cards may use stronger ArtDeco motifs when they do not compete with core data.
+- **Financial semantics override ornament**: profit/loss state, risk state, execution status, and stale-data feedback always take priority over decorative gold treatment.
+
+### Runtime Exceptions
+
+- **Decorative corner markers remain globally disabled in the current project runtime.** Historical stepped-corner and corner-bracket treatments caused overlap with existing UI elements and degraded visual clarity, so they are intentionally kept off even though they are part of the broader ArtDeco mother-style vocabulary.
+- **Stepped-corner language may still be referenced conceptually** in layout framing, divider rhythm, and sharp geometry, but not through globally rendered corner marker elements unless a future implementation proves non-overlapping.
+
+---
+
 ## Comparative Analysis: CoinPulse vs ArtDeco
 
 | Dimension | CoinPulse (Reference) | ArtDeco (Current System) | MyStocks Decision |
@@ -244,6 +274,16 @@ MyStocks is a dark-mode design system for personal quantitative trading and stoc
 - Label: 12px / 500 / #A0A0A0, 4px below
 - Helper text: 12px / 400 / #8B7355, 4px above
 
+### Filter Chips
+
+| State | Background | Text | Border |
+|-------|-----------|------|--------|
+| Default | rgba(212,175,55,8%) | #A0A0A0 | rgba(212,175,55,20%) |
+| Active | rgba(212,175,55,20%) | #D4AF37 | #D4AF37 |
+
+- Radius: 2px, Padding: 4px 8px
+- Use for: market/sector/indicator filters
+
 ### Status Chips
 
 | Type | Background | Text | Border |
@@ -252,6 +292,8 @@ MyStocks is a dark-mode design system for personal quantitative trading and stoc
 | Down/Loss | rgba(0,230,118,10%) | #00E676 | rgba(0,230,118,20%) |
 | Warning | rgba(212,175,55,10%) | #D4AF37 | rgba(212,175,55,20%) |
 | Neutral | rgba(255,255,255,5%) | #A0A0A0 | rgba(255,255,255,10%) |
+| Holding | rgba(79,195,247,10%) | #4FC3F7 | rgba(79,195,247,20%) |
+| Pending | rgba(255,167,38,10%) | #FFA726 | rgba(255,167,38,20%) |
 
 ### Data Tables
 
@@ -260,6 +302,75 @@ MyStocks is a dark-mode design system for personal quantitative trading and stoc
 - Cell: 4px 12px padding (compact), rgba(212,175,55,10%) row dividers
 - Hover: rgba(212,175,55,5%) background
 - Selected: rgba(212,175,55,15%) background, left 2px #D4AF37 border
+
+### Tooltips
+
+- Background: #1A1A1A, Text: #F2F0E4 at 12px/400
+- Padding: 6px 10px, Radius: 2px, Max-width: 240px
+- Arrow: 6px, same background color
+- Delay: show 300ms / hide 0ms (financial data demands speed)
+
+### Overlay/Backdrop
+
+- Background: rgba(0,0,0,60%), Blur: 2px
+- Z-index: 40 (compatible with Element Plus Dialog/Drawer)
+
+---
+
+## Component State Machine
+
+> Token pattern: `--ad-{component}-{property}-{state}`. Element Plus handles logic; these tokens override visuals only.
+
+### Button State Table
+
+| State | Border | Background | Text | Shadow |
+|-------|--------|-----------|------|--------|
+| Default | rgba(212,175,55,30%) | #D4AF37 | #0A0A0A | none |
+| Hover | #D4AF37 | #F0E68C | #0A0A0A | gold glow subtle |
+| Focus | #D4AF37 | #D4AF37 | #0A0A0A | gold glow medium |
+| Error | #00E676 | #00E676 | #0A0A0A | loss glow |
+| Disabled | rgba(212,175,55,10%) | #141414 | #8B7355 | none |
+
+### Input State Table
+
+| State | Border | Background | Text | Shadow |
+|-------|--------|-----------|------|--------|
+| Default | rgba(212,175,55,30%) | #141414 | #F2F0E4 | none |
+| Hover | rgba(212,175,55,80%) | #141414 | #F2F0E4 | none |
+| Focus | #D4AF37 | #141414 | #F2F0E4 | gold glow subtle |
+| Error | #00E676 | #141414 | #F2F0E4 | loss glow |
+| Disabled | rgba(212,175,55,10%) | #0A0A0A | #8B7355 | none |
+
+### Card State Table
+
+| State | Border | Background | Shadow |
+|-------|--------|-----------|--------|
+| Default | rgba(212,175,55,30%) | #141414 | none |
+| Elevated | rgba(212,175,55,80%) | #1A1A1A | gold glow subtle |
+| Hover | #D4AF37 | #141414 | gold glow intense |
+
+### Table Row State Table
+
+| State | Background | Border |
+|-------|-----------|--------|
+| Default | transparent | rgba(212,175,55,10%) divider |
+| Hover | rgba(212,175,55,5%) | — |
+| Selected | rgba(212,175,55,15%) | left 2px solid #D4AF37 |
+
+---
+
+## Financial Semantic Glow
+
+> Extension of the gold glow system with market-state awareness. Retains gold brand identity while adding directional feedback.
+
+| Token | Value | Usage |
+|-------|-------|-------|
+| `glow-subtle` | 0 0 15px rgba(212,175,55,20%) | Default hover |
+| `glow-medium` | 0 0 18px rgba(212,175,55,30%) | Active focus |
+| `glow-intense` | 0 0 20px rgba(212,175,55,40%) | Strong emphasis |
+| `glow-max` | 0 0 30px rgba(212,175,55,60%) | Hero elements |
+| **`glow-profit`** | 0 0 12px rgba(255,82,82,30%) | Profit/up indicators |
+| **`glow-loss`** | 0 0 12px rgba(0,230,118,30%) | Loss/down indicators |
 
 ---
 
@@ -419,24 +530,49 @@ MyStocks is a dark-mode design system for personal quantitative trading and stoc
 
 ## Do's and Don'ts
 
+### Typography & Data
+
 1. **Do** use `font-variant-numeric: tabular-nums` for ALL financial figures — columns must align.
-2. **Do** animate price changes with brief color flashes (red pulse for up, green pulse for down in A-Share convention).
-3. **Do** maintain red=up/profit and green=down/loss consistency across EVERY screen and chart.
-4. **Don't** truncate or round stock prices without user consent — precision matters.
-5. **Do** show timestamps with timezone-aware formatting and relative time labels.
-6. **Don't** use light mode — the entire system is designed for dark backgrounds only.
-7. **Do** use gold glow shadows on interactive elements to reinforce the ArtDeco aesthetic.
-8. **Don't** place more than one primary action per trading panel to avoid costly misclicks (from CoinPulse).
-9. **Do** provide real-time visual feedback (spinners, skeleton loaders) for every data fetch.
-10. **Don't** use decorative animations that compete with live market data for user attention.
-11. **Do** default to sharp corners (0px radius) for data components; use rounded corners only for interactive controls.
-12. **Don't** add responsive/mobile styles — this system is desktop-only (min 1280x720).
-13. **Do** use the compact spacing scale for data-dense views (dashboards, watchlists, order books).
-14. **Don't** mix market color conventions — always use A-Share (red=up, green=down), never Western.
-15. **Do** downgrade decorative gold effects when profit/loss semantics need to be read first.
-16. **Don't** let multiple flashing cells compete in the same panel; aggregate the signal when data bursts happen.
-17. **Do** expose connection freshness, last-update time, and stale-data state in every real-time widget.
-18. **Don't** use filled secondary CTAs inside a trading panel; preserve the single-primary-action rule.
+2. **Do** use JetBrains Mono for prices, volumes, percentages, and codes — never Barlow or Cinzel for data.
+3. **Don't** truncate or round stock prices without user consent — precision matters.
+4. **Do** show timestamps with timezone-aware formatting and relative time labels.
+
+### Color & Brand
+
+5. **Do** maintain red=up/profit and green=down/loss consistency across EVERY screen and chart.
+6. **Don't** mix market color conventions — always use A-Share (red=up, green=down), never Western.
+7. **Don't** use light mode — the entire system is designed for dark backgrounds only.
+8. **Do** use gold glow shadows on interactive elements to reinforce the ArtDeco aesthetic.
+
+### Animation & Feedback
+
+9. **Do** animate price changes with brief color flashes (red pulse for up, green pulse for down).
+10. **Do** provide real-time visual feedback (spinners, skeleton loaders) for every data fetch.
+11. **Don't** use decorative animations that compete with live market data for user attention.
+
+### Interaction Safety (from CoinPulse)
+
+12. **Don't** place more than one primary action per trading panel to avoid costly misclicks.
+13. **Do** use secondary actions as text buttons, icon buttons, or overflow menus — never competing primary buttons.
+14. **Do** disable (0.4 opacity, no glow) rather than hide unavailable actions.
+
+### Layout & Responsiveness
+
+15. **Do** default to sharp corners (0px radius) for data components; use rounded corners only for interactive controls.
+16. **Don't** add responsive/mobile styles — this system is desktop-only (min 1280x720).
+17. **Do** use the compact spacing scale for data-dense views (dashboards, watchlists, order books).
+18. **Don't** let decorative patterns (crosshatch, sunburst) obscure or distract from core data.
+19. **Don't** re-enable global decorative corner markers unless overlap and collision issues are explicitly solved in runtime.
+
+### Component States
+
+20. **Do** use the `--ad-{component}-{property}-{state}` token system for all component state transitions.
+21. **Don't** create ad-hoc hover/focus styles outside the state machine — bind to `--ad-*` tokens.
+22. **Do** use semantic glow variants (`glow-profit`, `glow-loss`) for financial status feedback.
+23. **Do** downgrade decorative gold effects when profit/loss semantics need to be read first.
+24. **Don't** let multiple flashing cells compete in the same panel; aggregate the signal when data bursts happen.
+25. **Do** expose connection freshness, last-update time, and stale-data state in every real-time widget.
+26. **Don't** use filled secondary CTAs inside a trading panel; preserve the single-primary-action rule.
 
 ---
 
@@ -465,6 +601,8 @@ MyStocks is a dark-mode design system for personal quantitative trading and stoc
 | 3.0 | 2026-04-10 | Expert evaluation: bold gold usage, full typography system, compact spacing |
 | 3.1 | 2026-04-18 | CoinPulse comparison: hybrid transitions, financial glow effects, data-first animation rules |
 | 3.2 | 2026-04-18 | Added motion governance, density modes, trading panel action hierarchy, chart/alert state rules |
+| 3.3 | 2026-04-19 | CoinPulse absorption: component state machine (`--ad-{component}-{property}-{state}`), filter/status chip specs including Holding/Pending tokens, tooltip/overlay tokens, financial semantic glow, single-action rule, consolidated Do's & Don'ts |
+| 3.4 | 2026-04-19 | Added ArtDeco brand DNA and visual signatures from the mother-style guide; documented current runtime exception that decorative corner markers remain globally disabled due to overlap/collision issues |
 
 ---
 
