@@ -691,6 +691,24 @@ def pytest_configure(config):
 
 def pytest_collection_modifyitems(config, items):
     """修改收集的测试项目"""
+    kept_items = []
+    deselected_items = []
+
+    for item in items:
+        normalized_nodeid = item.nodeid.replace("\\", "/")
+        file_nodeid = normalized_nodeid.split("::", 1)[0]
+        normalized_candidates = {file_nodeid, f"tests/{file_nodeid}"}
+
+        if normalized_candidates & COLLECT_IGNORE_SUFFIXES:
+            deselected_items.append(item)
+            continue
+
+        kept_items.append(item)
+
+    if deselected_items:
+        config.hook.pytest_deselected(items=deselected_items)
+        items[:] = kept_items
+
     # 根据命令行参数过滤测试
     if not config.getoption("--run-ai"):
         skip_ai = pytest.mark.skip(reason="需要 --run-ai 参数运行AI测试")
