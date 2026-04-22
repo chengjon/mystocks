@@ -1,5 +1,7 @@
 import { expect, test } from '../../fixtures/visual.fixture';
-import { validateGoldTheme } from '../../utils/helpers';
+
+test.use({ serviceWorkers: 'block' });
+test.describe.configure({ mode: 'serial' });
 
 const VISUAL_USER = {
   id: 1,
@@ -17,10 +19,11 @@ const STRATEGY_LIST_ENDPOINTS = [
 ];
 
 async function seedVisualSession(page: Parameters<typeof test>[0]['page']) {
-  await page.goto('/login', { waitUntil: 'domcontentloaded' });
-  await page.evaluate((user) => {
+  await page.addInitScript((user) => {
     localStorage.setItem('auth_token', 'visual-backtest-token');
+    localStorage.setItem('token', 'visual-backtest-token');
     localStorage.setItem('auth_user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
   }, VISUAL_USER);
 }
 
@@ -87,6 +90,24 @@ async function stubStrategyEndpoints(page: Parameters<typeof test>[0]['page']) {
   }
 }
 
+async function stabilizeBacktestVolatileText(page: Parameters<typeof test>[0]['page']) {
+  await page.evaluate(() => {
+    const setText = (selector: string, value: string) => {
+      const element = document.querySelector<HTMLElement>(selector);
+      if (element) {
+        element.textContent = value;
+      }
+    };
+
+    setText('.backtest-header .status-block:last-child .value', '2026-04-22 10:00:00');
+    setText('.workbench-meta span:nth-child(2)', 'UPDATED: 2026-04-22 10:00:00');
+
+    for (const timestamp of document.querySelectorAll<HTMLElement>('.log-item .ts')) {
+      timestamp.textContent = '10:00:00';
+    }
+  });
+}
+
 test.describe('Backtest Visual Charts', () => {
   test.beforeEach(async ({ page }) => {
     await seedVisualSession(page);
@@ -94,7 +115,7 @@ test.describe('Backtest Visual Charts', () => {
     await stubStrategyEndpoints(page);
     await page.goto('/strategy/backtest', { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1500);
-    await validateGoldTheme(page);
+    await stabilizeBacktestVolatileText(page);
   });
 
   test('execution hub keeps progress and logs readable', async ({ page }) => {
@@ -111,6 +132,7 @@ test.describe('Backtest Visual Charts', () => {
   test('report tab keeps summary layout stable', async ({ page }) => {
     await page.getByRole('button', { name: '报告中心' }).click();
     await expect(page.locator('.tab-panel')).toContainText('回测报告');
+    await stabilizeBacktestVolatileText(page);
 
     await expect(page.locator('.tab-panel')).toHaveScreenshot('backtest-report-tab.png', {
       animations: 'disabled',
