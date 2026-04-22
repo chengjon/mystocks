@@ -122,19 +122,50 @@ async function stubRiskEndpoints(
 }
 
 async function stabilizeVolatileText(page: Parameters<typeof test>[0]['page']) {
-  await page.evaluate(() => {
-    const setText = (selector: string, value: string) => {
-      const element = document.querySelector<HTMLElement>(selector);
-      if (element) {
-        element.textContent = value;
-      }
-    };
+  const applyStableText = async () => {
+    await page.evaluate(() => {
+      const setText = (selector: string, value: string) => {
+        const element = document.querySelector<HTMLElement>(selector);
+        if (element) {
+          element.textContent = value;
+        }
+      };
 
-    setText('.custom-tabs-trace span:last-child', 'REQ_ID: visual-risk-fixed');
-    setText('.tabs-trace', 'REQ_ID: visual-risk-fixed');
-    setText('.risk-content-shell-meta span:last-child', 'UPDATED: 2026-04-22 10:00:00');
-    setText('.risk-footer-item:last-child span', '风险数据每5分钟自动更新 · 最后一次更新：2026-04-22 10:00:00');
-  });
+      setText('.custom-tabs-trace span:last-child', 'REQ_ID: visual-risk-fixed');
+      setText('.tabs-trace', 'REQ_ID: visual-risk-fixed');
+      setText('.risk-content-shell-meta span:last-child', 'UPDATED: 2026-04-22 10:00:00');
+      setText('.risk-footer-item:last-child span', '风险数据每5分钟自动更新 · 最后一次更新：2026-04-22 10:00:00');
+    });
+  };
+
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    try {
+      await expect(page.locator('.artdeco-page-template')).toBeVisible({ timeout: 5000 });
+      await expect(page.locator('.custom-tabs-trace')).toBeVisible({ timeout: 5000 });
+      await applyStableText();
+      return;
+    } catch (error) {
+      if (
+        error instanceof Error
+        && !error.message.includes('Execution context was destroyed')
+      ) {
+        throw error;
+      }
+
+      await page.waitForLoadState('domcontentloaded');
+      await page.waitForTimeout(200);
+    }
+  }
+
+  await applyStableText();
+}
+
+async function openRiskStockTab(page: Parameters<typeof test>[0]['page']) {
+  const stockTab = page.locator('#risk-tab-stock');
+  await expect(stockTab).toBeVisible();
+  await page.waitForTimeout(300);
+  await stockTab.click({ force: true });
+  await expect(page.locator('#risk-panel-stock')).toBeVisible();
 }
 
 test.describe('Risk Management Visual Regression', () => {
@@ -160,8 +191,7 @@ test.describe('Risk Management Visual Regression', () => {
   });
 
   test('stock tab keeps empty analysis panel stable', async ({ page }) => {
-    await page.getByRole('tab', { name: '个股分析' }).click();
-    await expect(page.locator('#risk-panel-stock')).toBeVisible();
+    await openRiskStockTab(page);
     await expect(page.locator('#risk-panel-stock')).toContainText('个股风险分析');
 
     await expect(page.locator('.content-panel')).toHaveScreenshot('risk-management-stock-tab.png', {
@@ -175,8 +205,7 @@ test.describe('Risk Management Visual Regression', () => {
     await page.setViewportSize({ width: 900, height: 1400 });
     await page.goto('/risk-management', { waitUntil: 'domcontentloaded' });
     await expect(page.locator('.artdeco-page-template')).toBeVisible({ timeout: 15000 });
-    await page.getByRole('tab', { name: '个股分析' }).click();
-    await expect(page.locator('#risk-panel-stock')).toBeVisible();
+    await openRiskStockTab(page);
     await stabilizeVolatileText(page);
 
     await expect(page.locator('.content-panel')).toHaveScreenshot('risk-management-stock-tablet.png', {
@@ -187,8 +216,7 @@ test.describe('Risk Management Visual Regression', () => {
   });
 
   test('stock tab keeps collapsed-sidebar layout stable', async ({ page }) => {
-    await page.getByRole('tab', { name: '个股分析' }).click();
-    await expect(page.locator('#risk-panel-stock')).toBeVisible();
+    await openRiskStockTab(page);
     await page.getByRole('button', { name: 'Toggle sidebar' }).click();
     await page.waitForTimeout(300);
     await stabilizeVolatileText(page);
