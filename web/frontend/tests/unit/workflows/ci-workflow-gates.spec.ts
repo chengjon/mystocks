@@ -292,6 +292,23 @@ describe("CI workflow gates", () => {
     expect(workflowText).not.toContain("for line in lines[:30]");
   });
 
+  it("defines a scheduled runtime delivery gate workflow that runs the full wrapper", () => {
+    const workflowText = readWorkflow(".github/workflows/runtime-delivery-gate.yml");
+
+    expect(workflowText).toContain("name: Runtime Delivery Gate");
+    expect(workflowText).toContain("schedule:");
+    expect(workflowText).toContain("workflow_dispatch:");
+    expect(workflowText).toContain("Run Full Runtime Delivery Gate");
+    expect(workflowText).toContain("bash scripts/run_full_runtime_delivery_gate.sh");
+    expect(workflowText).toContain("POSTGRES_PASSWORD=postgres");
+    expect(workflowText).toContain("TDENGINE_PASSWORD=taosdata");
+    expect(workflowText).toContain("runtime-delivery-gate-ci");
+    expect(workflowText).toContain("runtime-delivery-gate");
+    expect(workflowText).toContain("GITHUB_STEP_SUMMARY");
+    expect(workflowText).toContain('cat reports/analysis/runtime-delivery-gate-ci/SUMMARY.md >> "$GITHUB_STEP_SUMMARY"');
+    expect(workflowText).toContain('cat reports/analysis/runtime-delivery-gate-ci/runtime-quality-summary/SUMMARY.md >> "$GITHUB_STEP_SUMMARY"');
+  });
+
   it("treats tsc and eslint diagnostics as zero-error gates in the TypeScript workflow", () => {
     const typeWorkflowText = readWorkflow(".github/workflows/typescript-type-check.yml");
 

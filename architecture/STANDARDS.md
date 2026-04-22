@@ -72,6 +72,8 @@
 *   **禁止硬编码样式**：视觉属性必须引用 [artdeco-tokens.scss](../web/frontend/src/styles/artdeco-tokens.scss) 变量。
 *   **TRACE_ID 显化**：所有业务 Tab 必须在 UI 预留 Request ID 展示位。
 *   **Composable 协作定位（View-Local Canonical）**：Composable 按角色分类，再按消费者数量决定去向。（1）不是 composable 的文件（无 reactive state / Vue lifecycle）不得放入 `src/composables/`，按职能路由（transport → `src/api/`，types → `types/`，utils → `utils/`）。（2）真正的 composable 若只有 1 个消费者，使用 `./composables/` 相对导入与消费者视图同目录共存（idiomatic Vue co-location），这是 canonical pattern。（3）提取到 `src/composables/` 需满足 2+ 消费者。禁止基于"可能复用"的预防性提取。
+*   **前端收口优先级**：前端任务进入“可收口”阶段后，必须优先完成运行门禁闭环，不得继续扩散为零散 cosmetic 微调。默认顺序为：先修复本次引入的结构性语法/类型问题，再确认 PM2 服务状态，再执行实际 E2E 或 smoke，最后才处理纯视觉 polish、token 微调、边角样式优化。
+*   **禁止以视觉微调推迟收口**：若主线功能已可提交，但仍存在与本次目标无直接关系的 logo、边框、间距、阴影、文案或装饰性动画微调，默认停止扩散，改为后续独立批次处理。对 Layout、路由入口、共享头部、导航骨架、运行时状态展示等主链路改动，不得以“顺手再调一点视觉”为由推迟交付“可运行、可验证”的主线结果。
 
 ### 2. 后端开发红线
 *   **单例防御**：所有 `global` 变量必须在模块顶层显式初始化为 `None`，杜绝 `NameError`。

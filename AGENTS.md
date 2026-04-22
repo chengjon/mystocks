@@ -401,6 +401,7 @@ tests/
 
 前端变更卫生 / 微提交规范继续参考：
 - `docs/guides/frontend/frontend-change-hygiene-and-micro-commit-guide.md`
+- 前端收口优先级、禁止零散 cosmetic 扩散等共享规则，统一以 `architecture/STANDARDS.md` “二、技术工程红线 / 前端开发红线”为准。
 
 ---
 
