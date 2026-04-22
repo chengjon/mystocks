@@ -1,6 +1,8 @@
 import { expect, test } from '../../fixtures/visual.fixture';
 import { validateGoldTheme } from '../../utils/helpers';
 
+test.use({ serviceWorkers: 'block' });
+
 const VISUAL_USER = {
   id: 1,
   username: 'visual-admin',
@@ -19,7 +21,9 @@ async function seedVisualSession(page: Parameters<typeof test>[0]['page']) {
   await page.goto('/login', { waitUntil: 'domcontentloaded' });
   await page.evaluate((user) => {
     localStorage.setItem('auth_token', 'visual-technical-token');
+    localStorage.setItem('token', 'visual-technical-token');
     localStorage.setItem('auth_user', JSON.stringify(user));
+    localStorage.setItem('user', JSON.stringify(user));
   }, VISUAL_USER);
 }
 
