@@ -304,6 +304,25 @@ async function seedAuth(page: Page): Promise<void> {
   }, { user: E2E_USER })
 }
 
+async function restoreAuthSession(page: Page): Promise<void> {
+  await page.evaluate(({ user }) => {
+    const token = "e2e-phase4-token"
+    const authStore = {
+      user,
+      token,
+      isAuthenticated: true,
+      permissions: user.permissions,
+    }
+
+    localStorage.setItem("auth_token", token)
+    localStorage.setItem("auth_user", JSON.stringify(user))
+    localStorage.setItem("token", token)
+    localStorage.setItem("user", JSON.stringify(user))
+    localStorage.setItem("access_token", token)
+    localStorage.setItem("auth-store", JSON.stringify(authStore))
+  }, { user: E2E_USER })
+}
+
 async function setupPhase4Mock(page: Page): Promise<Phase4State> {
   const state = createPhase4State()
   await page.setViewportSize({ width: 1440, height: 900 })
@@ -562,6 +581,12 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
 async function gotoRoute(page: Page, path: string): Promise<void> {
   await page.goto(`${FRONTEND_BASE_URL}${path}`)
   await page.waitForLoadState("networkidle").catch(() => {})
+
+  if (new URL(page.url()).pathname === "/login") {
+    await restoreAuthSession(page)
+    await page.goto(`${FRONTEND_BASE_URL}${path}`)
+    await page.waitForLoadState("networkidle").catch(() => {})
+  }
 }
 
 test.describe("Phase 4 Mainline Matrix", () => {
