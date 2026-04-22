@@ -40,6 +40,36 @@ The Web Development Hooks system provides specialized file tracking, validation,
 - 可配置 `actor_cli`、`group_id_template`、完成短语、否定短语、验证关键字；
 - 环境变量 `GRAPHITI_CLOSEOUT_ACTOR_CLI`、`GRAPHITI_CLOSEOUT_GROUP_ID`、`GRAPHITI_CLOSEOUT_CONFIG` 可覆盖默认配置。
 
+巡检命令：
+- `python scripts/runtime/inspect_graphiti_closeout_state.py`
+- `python scripts/runtime/inspect_graphiti_closeout_state.py --output json`
+- `python scripts/runtime/inspect_graphiti_closeout_state.py --limit 10`
+
+巡检输出会汇总：
+- 已处理去重键数量；
+- closeout 成功/失败数量；
+- 最近失败项的 session、完成短语、错误原因；
+- 最近成功项的 session、`episode_uuid`、`group_id`。
+
+端到端演练：
+- `python scripts/runtime/smoke_graphiti_closeout_hook.py`
+- 该脚本会构造临时 transcript、临时配置和 fake Graphiti CLI，调用真实 `stop-graphiti-task-closeout.sh`，再读取本地 state 做汇总。
+- hook wrapper 默认仍是异步；仅在测试或演练时通过 `GRAPHITI_CLOSEOUT_SYNC=1` 切到同步执行。
+
+真实 Graphiti 联调：
+- 可直接复用仓库现有 CLI：
+  `python scripts/runtime/smoke_graphiti_cli.py --actor-cli <actor> --group-id <group_id> --name "<name>" --body "<body>" --query "<query>"`
+- 建议为每次联调使用唯一 `group_id`，例如 `mystocks_spec_closeout_live_<timestamp>`。
+- 成功口径：
+  - `remember_server_status=ok`
+  - `remember_ingest_status=completed`
+  - `search_server_status=ok`
+  - `search_outcome=hit`
+- 2026-04-22 的一次实测样例已验证通过，返回：
+  - `episode_uuid=1d4ff976-6b2e-4067-aa5b-21eac1c1e4b6`
+  - `group_id=mystocks_spec_closeout_live_20260422142710`
+  - `search_summary=nodes hit=3, facts hit=2`
+
 ### 1. Web-Dev File Tracker Hook
 
 **File**: `.claude/hooks/post-tool-use-web-dev-file-tracker.sh`
