@@ -171,9 +171,12 @@ web/frontend/undefined:
 # Claude Code Directories
 .claude-trace/
 .claude/
+!.claude/
 !.claude/build-checker-python.json
 !.claude/hooks/
 !.claude/hooks/*.sh
+!.claude/hooks/*.py
+!.claude/hooks/README.md
 !.claude/settings.json
 !.claude/skill-rules.json
 
