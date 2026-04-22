@@ -49,21 +49,23 @@ RUNTIME_DELIVERY_SUMMARY_DIR="${SUMMARY_DIR}" \
 RUNTIME_DELIVERY_BUNDLE_DIR="${BUNDLE_DIR}" \
     bash "${PROJECT_ROOT}/scripts/run_runtime_delivery_summary_local.sh" 2>&1 | tee "${COMBINED_SUMMARY_LOG}"
 
-python - <<'PY' "${SUMMARY_DIR}/summary.json" "${SUMMARY_DIR}/runtime-observability-drift-report.json" "${BUNDLE_DIR}/runtime-artifact-manifest.json" "${BUNDLE_DIR}/runtime-artifact-index.md" "${docker_dir}/SUMMARY.md" "${SUMMARY_PATH}" "${MANIFEST_PATH}"
+python - <<'PY' "${SUMMARY_DIR}/summary.json" "${SUMMARY_DIR}/runtime-observability-drift-report.json" "${SUMMARY_DIR}/monitoring-rule-metric-reference-report.json" "${BUNDLE_DIR}/runtime-artifact-manifest.json" "${BUNDLE_DIR}/runtime-artifact-index.md" "${docker_dir}/SUMMARY.md" "${SUMMARY_PATH}" "${MANIFEST_PATH}"
 import json
 import sys
 from pathlib import Path
 
 runtime_summary_path = Path(sys.argv[1]).resolve()
 drift_report_path = Path(sys.argv[2]).resolve()
-bundle_manifest_path = Path(sys.argv[3]).resolve()
-bundle_index_path = Path(sys.argv[4]).resolve()
-docker_summary_path = Path(sys.argv[5]).resolve()
-gate_summary_path = Path(sys.argv[6]).resolve()
-manifest_path = Path(sys.argv[7]).resolve()
+monitoring_rule_report_path = Path(sys.argv[3]).resolve()
+bundle_manifest_path = Path(sys.argv[4]).resolve()
+bundle_index_path = Path(sys.argv[5]).resolve()
+docker_summary_path = Path(sys.argv[6]).resolve()
+gate_summary_path = Path(sys.argv[7]).resolve()
+manifest_path = Path(sys.argv[8]).resolve()
 
 runtime_summary = json.loads(runtime_summary_path.read_text(encoding="utf-8"))
 drift_report = json.loads(drift_report_path.read_text(encoding="utf-8"))
+monitoring_rule_report = json.loads(monitoring_rule_report_path.read_text(encoding="utf-8"))
 
 manifest = {
     "generated_at": runtime_summary.get("generated_at"),
@@ -71,10 +73,13 @@ manifest = {
     "runtime_observability_drift_pass": drift_report.get("pass"),
     "runtime_observability_drift_violations": len(drift_report.get("violations", [])),
     "runtime_observability_drift_not_measured": len(drift_report.get("not_measured", [])),
+    "monitoring_rule_metric_reference_pass": monitoring_rule_report.get("pass"),
+    "monitoring_rule_metric_reference_violations": len(monitoring_rule_report.get("violations", [])),
     "paths": {
         "gate_summary": str(gate_summary_path),
         "runtime_summary_json": str(runtime_summary_path),
         "runtime_drift_report": str(drift_report_path),
+        "monitoring_rule_metric_reference_report": str(monitoring_rule_report_path),
         "runtime_bundle_manifest": str(bundle_manifest_path),
         "runtime_bundle_index": str(bundle_index_path),
         "docker_smoke_summary": str(docker_summary_path),
@@ -106,6 +111,7 @@ DOCKER_RUNTIME_DIR=${docker_dir} RUNTIME_DELIVERY_SUMMARY_DIR=${SUMMARY_DIR} RUN
 
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${SUMMARY_DIR}/SUMMARY.md")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${SUMMARY_DIR}/runtime-observability-drift-report.json")\`
+- \`$(realpath --relative-to="${PROJECT_ROOT}" "${SUMMARY_DIR}/monitoring-rule-metric-reference-report.json")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${BUNDLE_DIR}/runtime-artifact-index.md")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${MANIFEST_PATH}")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${docker_dir}/SUMMARY.md")\`

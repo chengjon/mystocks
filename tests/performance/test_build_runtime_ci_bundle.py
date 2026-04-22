@@ -10,6 +10,7 @@ def test_build_runtime_ci_bundle_writes_manifest_and_index(tmp_path: Path):
     runtime_quality_dir = tmp_path / "runtime-quality"
     docker_dir = tmp_path / "docker-runtime"
     drift_report_path = tmp_path / "runtime-observability-drift-report.json"
+    monitoring_rule_report_path = tmp_path / "monitoring-rule-metric-reference-report.json"
 
     frontend_dir.mkdir()
     api_dir.mkdir()
@@ -80,6 +81,24 @@ def test_build_runtime_ci_bundle_writes_manifest_and_index(tmp_path: Path):
         + "\n",
         encoding="utf-8",
     )
+    monitoring_rule_report_path.write_text(
+        json.dumps(
+            {
+                "generated_at": "2026-04-21T08:01:00+00:00",
+                "pass": True,
+                "violations": [],
+                "metrics_files": [str((docker_dir / "metrics.raw.txt").resolve())],
+                "rule_files": ["/opt/claude/mystocks_spec/config/monitoring/rules/mystocks-alerts.yml"],
+                "dashboard_files": [
+                    "/opt/claude/mystocks_spec/config/monitoring/dashboards/api-overview.json",
+                    "/opt/claude/mystocks_spec/config/monitoring/dashboards/user-experience-dashboard.json",
+                ],
+                "checks": [],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     manifest_path = tmp_path / "bundle" / "runtime-artifact-manifest.json"
     index_path = tmp_path / "bundle" / "runtime-artifact-index.md"
@@ -100,6 +119,8 @@ def test_build_runtime_ci_bundle_writes_manifest_and_index(tmp_path: Path):
             str(docker_dir),
             "--runtime-observability-drift-report",
             str(drift_report_path),
+            "--monitoring-rule-report",
+            str(monitoring_rule_report_path),
             "--output-manifest",
             str(manifest_path),
             "--output-index",
@@ -118,9 +139,11 @@ def test_build_runtime_ci_bundle_writes_manifest_and_index(tmp_path: Path):
     assert manifest["runtime_quality_dir"] == str(runtime_quality_dir.resolve())
     assert manifest["docker_runtime_dir"] == str(docker_dir.resolve())
     assert manifest["runtime_observability_drift_report"] == str(drift_report_path.resolve())
+    assert manifest["monitoring_rule_report"] == str(monitoring_rule_report_path.resolve())
     assert manifest["summary_files"]["runtime_quality"] == str((runtime_quality_dir / "SUMMARY.md").resolve())
     assert manifest["summary_files"]["docker_runtime"] == str((docker_dir / "SUMMARY.md").resolve())
     assert manifest["summary_files"]["runtime_observability_drift"] == str(drift_report_path.resolve())
+    assert manifest["summary_files"]["monitoring_rule_report"] == str(monitoring_rule_report_path.resolve())
 
     assert "# Runtime Artifact Index" in index_text
     assert "## Key Gates" in index_text
@@ -137,6 +160,10 @@ def test_build_runtime_ci_bundle_writes_manifest_and_index(tmp_path: Path):
     assert "Drift gate pass: `True`" in index_text
     assert "Drift gate violations: `0`" in index_text
     assert "Drift gate not_measured: `0`" in index_text
+    assert "## Monitoring Rule Metrics" in index_text
+    assert "Rule metric reference pass: `True`" in index_text
+    assert "Rule metric reference violations: `0`" in index_text
+    assert "Dashboard files checked: `2`" in index_text
     assert "Docker runtime smoke: `PASS` / `PASS` / `PASS`" in index_text
     assert f"Docker runtime summary: `{docker_dir / 'SUMMARY.md'}`" in index_text
     assert "Docker metrics health: `healthy`" in index_text
@@ -147,6 +174,7 @@ def test_build_runtime_ci_bundle_supports_docker_only_runtime_summary(tmp_path: 
     runtime_quality_dir = tmp_path / "runtime-quality"
     docker_dir = tmp_path / "docker-runtime"
     drift_report_path = tmp_path / "runtime-observability-drift-report.json"
+    monitoring_rule_report_path = tmp_path / "monitoring-rule-metric-reference-report.json"
 
     runtime_quality_dir.mkdir()
     docker_dir.mkdir()
@@ -195,6 +223,24 @@ def test_build_runtime_ci_bundle_supports_docker_only_runtime_summary(tmp_path: 
         + "\n",
         encoding="utf-8",
     )
+    monitoring_rule_report_path.write_text(
+        json.dumps(
+            {
+                "generated_at": "2026-04-21T08:01:00+00:00",
+                "pass": True,
+                "violations": [],
+                "metrics_files": [str((docker_dir / "metrics.raw.txt").resolve())],
+                "rule_files": ["/opt/claude/mystocks_spec/config/monitoring/rules/mystocks-alerts.yml"],
+                "dashboard_files": [
+                    "/opt/claude/mystocks_spec/config/monitoring/dashboards/api-overview.json",
+                    "/opt/claude/mystocks_spec/config/monitoring/dashboards/user-experience-dashboard.json",
+                ],
+                "checks": [],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     manifest_path = tmp_path / "bundle" / "runtime-artifact-manifest.json"
     index_path = tmp_path / "bundle" / "runtime-artifact-index.md"
@@ -209,6 +255,8 @@ def test_build_runtime_ci_bundle_supports_docker_only_runtime_summary(tmp_path: 
             str(docker_dir),
             "--runtime-observability-drift-report",
             str(drift_report_path),
+            "--monitoring-rule-report",
+            str(monitoring_rule_report_path),
             "--output-manifest",
             str(manifest_path),
             "--output-index",
@@ -226,10 +274,12 @@ def test_build_runtime_ci_bundle_supports_docker_only_runtime_summary(tmp_path: 
     assert "monitoring_auth_dir" not in manifest
     assert manifest["docker_runtime_dir"] == str(docker_dir.resolve())
     assert manifest["runtime_observability_drift_report"] == str(drift_report_path.resolve())
+    assert manifest["monitoring_rule_report"] == str(monitoring_rule_report_path.resolve())
     assert "Frontend runtime summary" not in index_text
     assert "API performance summary" not in index_text
     assert "Monitoring auth summary" not in index_text
     assert "Runtime observability drift report" in index_text
+    assert "Monitoring rule metric reference report" in index_text
     assert "Drift gate not_measured: `1`" in index_text
     assert "Docker runtime smoke: `PASS` / `PASS` / `PASS`" in index_text
     assert "Docker metrics http / slow delta: `5.0 / 0.0`" in index_text

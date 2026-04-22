@@ -50,7 +50,7 @@ slos:
     unit: percent
     window: 360h  # 15 days
     measurement: |
-      sum by (level) (cache_hits_total) / (sum by (level) (cache_hits_total) + sum by (level) (cache_misses_total)) * 100
+      sum(mystocks_cache_hits_total) / (sum(mystocks_cache_hits_total) + sum(mystocks_cache_misses_total)) * 100
     warning_threshold: 60
     critical_threshold: 40
 
@@ -136,7 +136,7 @@ alerting_rules:
 
   cache:
     - alert: "LowCacheHitRate"
-      expr: "sum(cache_hits_total) / (sum(cache_hits_total) + sum(cache_misses_total)) < 0.6"
+      expr: "sum(mystocks_cache_hits_total) / (sum(mystocks_cache_hits_total) + sum(mystocks_cache_misses_total)) < 0.6"
       for: "10m"
       labels:
         severity: "warning"

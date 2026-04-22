@@ -22,6 +22,7 @@ def build_bundle_manifest(
     runtime_quality_dir: Path,
     docker_dir: Path | None = None,
     runtime_observability_drift_report_path: Path | None = None,
+    monitoring_rule_report_path: Path | None = None,
 ) -> dict[str, object]:
     manifest: dict[str, object] = {
         "runtime_quality_dir": str(runtime_quality_dir),
@@ -52,6 +53,11 @@ def build_bundle_manifest(
         summary_files = manifest["summary_files"]
         assert isinstance(summary_files, dict)
         summary_files["runtime_observability_drift"] = str(runtime_observability_drift_report_path)
+    if monitoring_rule_report_path is not None:
+        manifest["monitoring_rule_report"] = str(monitoring_rule_report_path)
+        summary_files = manifest["summary_files"]
+        assert isinstance(summary_files, dict)
+        summary_files["monitoring_rule_report"] = str(monitoring_rule_report_path)
     return manifest
 
 
@@ -62,6 +68,7 @@ def build_bundle_index(
     runtime_quality_dir: Path,
     docker_dir: Path | None = None,
     runtime_observability_drift_report_path: Path | None = None,
+    monitoring_rule_report_path: Path | None = None,
 ) -> str:
     api_summary = _read_text(api_dir / "SUMMARY.md") if api_dir is not None else ""
     monitoring_summary = _read_text(monitoring_dir / "SUMMARY.md") if monitoring_dir is not None else ""
@@ -69,6 +76,8 @@ def build_bundle_index(
     docker_summary = _read_text(docker_dir / "SUMMARY.md") if docker_dir is not None else ""
     drift_report_text = _read_text(runtime_observability_drift_report_path) if runtime_observability_drift_report_path is not None else ""
     drift_report = json.loads(drift_report_text) if drift_report_text else None
+    monitoring_rule_report_text = _read_text(monitoring_rule_report_path) if monitoring_rule_report_path is not None else ""
+    monitoring_rule_report = json.loads(monitoring_rule_report_text) if monitoring_rule_report_text else None
 
     lines = [
         "# Runtime Artifact Index",
@@ -97,6 +106,8 @@ def build_bundle_index(
     )
     if runtime_observability_drift_report_path is not None:
         lines.append(f"- Runtime observability drift report: `{runtime_observability_drift_report_path}`")
+    if monitoring_rule_report_path is not None:
+        lines.append(f"- Monitoring rule metric reference report: `{monitoring_rule_report_path}`")
     if frontend_dir is not None:
         lines.append(f"- Frontend runtime summary: `{frontend_dir / 'SUMMARY.md'}`")
     if api_dir is not None:
@@ -128,6 +139,18 @@ def build_bundle_index(
                 f"- Drift gate not_measured: `{len(drift_report.get('not_measured', []))}`",
             ]
         )
+    if monitoring_rule_report is not None:
+        lines.extend(
+            [
+                "",
+                "## Monitoring Rule Metrics",
+                "",
+                f"- Rule metric reference pass: `{monitoring_rule_report.get('pass', 'n/a')}`",
+                f"- Rule metric reference violations: `{len(monitoring_rule_report.get('violations', []))}`",
+                f"- Rule metric snapshots used: `{len(monitoring_rule_report.get('metrics_files', []))}`",
+                f"- Dashboard files checked: `{len(monitoring_rule_report.get('dashboard_files', []))}`",
+            ]
+        )
     if docker_dir is not None:
         lines.extend(
             [
@@ -152,6 +175,7 @@ def main() -> None:
     parser.add_argument("--runtime-quality-dir", required=True, type=Path)
     parser.add_argument("--docker-dir", type=Path)
     parser.add_argument("--runtime-observability-drift-report", type=Path)
+    parser.add_argument("--monitoring-rule-report", type=Path)
     parser.add_argument("--output-manifest", required=True, type=Path)
     parser.add_argument("--output-index", required=True, type=Path)
     args = parser.parse_args()
@@ -163,6 +187,7 @@ def main() -> None:
         runtime_quality_dir=args.runtime_quality_dir.resolve(),
         docker_dir=args.docker_dir.resolve() if args.docker_dir else None,
         runtime_observability_drift_report_path=args.runtime_observability_drift_report.resolve() if args.runtime_observability_drift_report else None,
+        monitoring_rule_report_path=args.monitoring_rule_report.resolve() if args.monitoring_rule_report else None,
     )
     index_text = build_bundle_index(
         frontend_dir=args.frontend_dir.resolve() if args.frontend_dir else None,
@@ -171,6 +196,7 @@ def main() -> None:
         runtime_quality_dir=args.runtime_quality_dir.resolve(),
         docker_dir=args.docker_dir.resolve() if args.docker_dir else None,
         runtime_observability_drift_report_path=args.runtime_observability_drift_report.resolve() if args.runtime_observability_drift_report else None,
+        monitoring_rule_report_path=args.monitoring_rule_report.resolve() if args.monitoring_rule_report else None,
     )
 
     args.output_manifest.parent.mkdir(parents=True, exist_ok=True)

@@ -10,14 +10,24 @@ def test_runtime_delivery_summary_local_script_supports_pm2_and_docker_modes():
     assert 'SUMMARY_DIR="${RUNTIME_DELIVERY_SUMMARY_DIR:-${PROJECT_ROOT}/reports/analysis/runtime-quality-summary-ci-local}"' in script
     assert 'BUNDLE_DIR="${RUNTIME_DELIVERY_BUNDLE_DIR:-${PROJECT_ROOT}/reports/analysis/runtime-ci-bundle-combined-local}"' in script
     assert 'DRIFT_REPORT_PATH="${SUMMARY_DIR}/runtime-observability-drift-report.json"' in script
+    assert 'MONITORING_RULE_REPORT_PATH="${SUMMARY_DIR}/monitoring-rule-metric-reference-report.json"' in script
     assert 'resolve_latest_dir()' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_quality_summary.py"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_runtime_observability_drift.py"' in script
+    assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_monitoring_prometheus_references.py"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_ci_bundle.py"' in script
     assert '--runtime-observability-drift-report "${DRIFT_REPORT_PATH}"' in script
+    assert '--monitoring-rule-report "${MONITORING_RULE_REPORT_PATH}"' in script
+    assert '--dashboard-file "${PROJECT_ROOT}/config/monitoring/dashboards/api-overview.json"' in script
+    assert '--dashboard-file "${PROJECT_ROOT}/config/monitoring/dashboards/user-experience-dashboard.json"' in script
+    assert '--declared-metrics-python-file "${PROJECT_ROOT}/web/backend/app/api/metrics.py"' in script
+    assert '--declared-metrics-python-file "${PROJECT_ROOT}/src/monitoring/metrics_collector.py"' in script
+    assert '--declared-metrics-python-file "${PROJECT_ROOT}/web/backend/app/core/middleware/performance.py"' in script
+    assert '--declared-metrics-python-file "${PROJECT_ROOT}/web/backend/app/core/user_experience_monitor.py"' in script
     assert 'if [ "${has_pm2_runtime}" -eq 1 ]; then' in script
     assert 'if [ -n "${docker_dir}" ]; then' in script
     assert 'Runtime delivery summary requires PM2 baseline dirs or DOCKER_RUNTIME_DIR' in script
+    assert 'Runtime delivery summary requires at least one metrics.raw.txt snapshot for monitoring rule validation' in script
 
 
 def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(tmp_path: Path):
@@ -87,6 +97,20 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
         + "\n",
         encoding="utf-8",
     )
+    (api_dir / "metrics.raw.txt").write_text(
+        "\n".join(
+            [
+                'http_requests_total{endpoint="/health",method="GET",status_code="200"} 26',
+                'http_requests_active{endpoint="/health",method="GET"} 0',
+                'http_request_duration_seconds_bucket{le="0.5"} 3',
+                'slow_http_requests_total{endpoint="/api/trading/status",method="GET"} 0',
+                "mystocks_cache_hits_total 10",
+                "mystocks_cache_misses_total 2",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     (monitoring_dir / "SUMMARY.md").write_text(
         "- SLO status (`P95 <= 300ms`, `error_rate <= 0.1%`): `COMPLIANT`\n- `GET /api/v1/monitoring/alert-rules`: avg=117.01ms p95=271.53ms error=0.0%\n",
         encoding="utf-8",
@@ -119,6 +143,20 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
         + "\n",
         encoding="utf-8",
     )
+    (monitoring_dir / "metrics.raw.txt").write_text(
+        "\n".join(
+            [
+                'http_requests_total{endpoint="/api/v1/monitoring/alert-rules",method="GET",status_code="200"} 20',
+                'http_requests_active{endpoint="/api/v1/monitoring/alert-rules",method="GET"} 0',
+                'http_request_duration_seconds_bucket{le="0.5"} 4',
+                'slow_http_requests_total{endpoint="/api/v1/monitoring/alert-rules",method="GET"} 0',
+                "mystocks_cache_hits_total 10",
+                "mystocks_cache_misses_total 2",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     (docker_dir / "SUMMARY.md").write_text(
         "\n".join(
             [
@@ -147,6 +185,20 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
         + "\n",
         encoding="utf-8",
     )
+    (docker_dir / "metrics.raw.txt").write_text(
+        "\n".join(
+            [
+                'http_requests_total{endpoint="/health",method="GET",status_code="200"} 4',
+                'http_requests_active{endpoint="/health",method="GET"} 0',
+                'http_request_duration_seconds_bucket{le="0.5"} 1',
+                'slow_http_requests_total{endpoint="/health",method="GET"} 0',
+                "mystocks_cache_hits_total 10",
+                "mystocks_cache_misses_total 2",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     subprocess.run(
         [
@@ -169,19 +221,26 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
     summary_text = (summary_dir / "SUMMARY.md").read_text(encoding="utf-8")
     summary_payload = json.loads((summary_dir / "summary.json").read_text(encoding="utf-8"))
     drift_report = json.loads((summary_dir / "runtime-observability-drift-report.json").read_text(encoding="utf-8"))
+    rule_report = json.loads((summary_dir / "monitoring-rule-metric-reference-report.json").read_text(encoding="utf-8"))
     manifest = json.loads((bundle_dir / "runtime-artifact-manifest.json").read_text(encoding="utf-8"))
     index_text = (bundle_dir / "runtime-artifact-index.md").read_text(encoding="utf-8")
 
     assert "## Frontend Runtime Gate" in summary_text
     assert "## Container Runtime Smoke" in summary_text
     assert "## Runtime Observability Drift Gate" in summary_text
+    assert "## Monitoring Rule And Dashboard Metric References" in summary_text
     assert "Overall gate status: `PASS`" in summary_text
     assert summary_payload["overall_gate_status"] == "PASS"
     assert summary_payload["runtime_observability_drift"]["pass"] is True
+    assert summary_payload["monitoring_rule_metrics"]["pass"] is True
     assert drift_report["pass"] is True
+    assert rule_report["pass"] is True
     assert manifest["runtime_quality_dir"] == str(summary_dir.resolve())
     assert manifest["docker_runtime_dir"] == str(docker_dir.resolve())
     assert manifest["runtime_observability_drift_report"] == str((summary_dir / "runtime-observability-drift-report.json").resolve())
+    assert manifest["monitoring_rule_report"] == str((summary_dir / "monitoring-rule-metric-reference-report.json").resolve())
     assert "Docker runtime smoke: `PASS` / `PASS` / `PASS`" in index_text
     assert "Anonymous API overall avg / P95: `18.47ms / 22.94ms`" in index_text
     assert "Drift gate pass: `True`" in index_text
+    assert "Rule metric reference pass: `True`" in index_text
+    assert "Dashboard files checked: `2`" in index_text

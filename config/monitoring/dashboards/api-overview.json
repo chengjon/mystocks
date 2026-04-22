@@ -467,8 +467,8 @@
       "pluginVersion": "10.0.0",
       "targets": [
         {
-          "expr": "sum by (level) (cache_hits_total) / (sum by (level) (cache_hits_total) + sum by (level) (cache_misses_total)) * 100",
-          "legendFormat": "{{level}}",
+          "expr": "sum(mystocks_cache_hits_total) / (sum(mystocks_cache_hits_total) + sum(mystocks_cache_misses_total)) * 100",
+          "legendFormat": "cache-hit-rate",
           "refId": "A"
         }
       ],
@@ -551,8 +551,8 @@
       "pluginVersion": "10.0.0",
       "targets": [
         {
-          "expr": "sum by (level) (cache_evictions_total)",
-          "legendFormat": "{{level}}",
+          "expr": "sum by (cache_type) (mystocks_cache_evictions_total)",
+          "legendFormat": "{{cache_type}}",
           "refId": "A"
         }
       ],

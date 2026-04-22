@@ -13,6 +13,7 @@ def test_build_runtime_quality_summary_aggregates_three_baselines(tmp_path: Path
     monitoring_dir.mkdir()
     docker_dir.mkdir()
     drift_report_path = tmp_path / "runtime-observability-drift-report.json"
+    monitoring_rule_report_path = tmp_path / "monitoring-rule-metric-reference-report.json"
 
     (frontend_dir / "SUMMARY.md").write_text(
         "\n".join(
@@ -147,6 +148,24 @@ def test_build_runtime_quality_summary_aggregates_three_baselines(tmp_path: Path
         + "\n",
         encoding="utf-8",
     )
+    monitoring_rule_report_path.write_text(
+        json.dumps(
+            {
+                "generated_at": "2026-04-21T09:08:00+00:00",
+                "pass": True,
+                "violations": [],
+                "metrics_files": [str((api_dir / "metrics.raw.txt").resolve())],
+                "rule_files": ["/opt/claude/mystocks_spec/config/monitoring/rules/mystocks-alerts.yml"],
+                "dashboard_files": [
+                    "/opt/claude/mystocks_spec/config/monitoring/dashboards/api-overview.json",
+                    "/opt/claude/mystocks_spec/config/monitoring/dashboards/user-experience-dashboard.json",
+                ],
+                "checks": [],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     markdown_path = tmp_path / "runtime-summary" / "SUMMARY.md"
     json_path = tmp_path / "runtime-summary" / "summary.json"
@@ -165,6 +184,8 @@ def test_build_runtime_quality_summary_aggregates_three_baselines(tmp_path: Path
             str(docker_dir),
             "--runtime-observability-drift-report",
             str(drift_report_path),
+            "--monitoring-rule-report",
+            str(monitoring_rule_report_path),
             "--output-markdown",
             str(markdown_path),
             "--output-json",
@@ -192,16 +213,22 @@ def test_build_runtime_quality_summary_aggregates_three_baselines(tmp_path: Path
     assert "## Runtime Observability Drift Gate" in summary_text
     assert "Drift gate pass: `True`" in summary_text
     assert "Drift gate violations: `0`" in summary_text
+    assert "## Monitoring Rule And Dashboard Metric References" in summary_text
+    assert "Rule metric reference pass: `True`" in summary_text
+    assert "Rule metric reference violations: `0`" in summary_text
+    assert "Dashboard files checked: `2`" in summary_text
     assert payload["overall_gate_status"] == "PASS"
     assert payload["current_batch_issues"] == []
     assert payload["docker_runtime"]["metrics_health"] == "healthy"
     assert payload["runtime_observability_drift"]["pass"] is True
+    assert payload["monitoring_rule_metrics"]["pass"] is True
 
 
 def test_build_runtime_quality_summary_supports_docker_only_input(tmp_path: Path):
     docker_dir = tmp_path / "docker"
     docker_dir.mkdir()
     drift_report_path = tmp_path / "runtime-observability-drift-report.json"
+    monitoring_rule_report_path = tmp_path / "monitoring-rule-metric-reference-report.json"
 
     (docker_dir / "SUMMARY.md").write_text(
         "\n".join(
@@ -242,6 +269,24 @@ def test_build_runtime_quality_summary_supports_docker_only_input(tmp_path: Path
         + "\n",
         encoding="utf-8",
     )
+    monitoring_rule_report_path.write_text(
+        json.dumps(
+            {
+                "generated_at": "2026-04-21T09:08:00+00:00",
+                "pass": True,
+                "violations": [],
+                "metrics_files": [str((docker_dir / "metrics.raw.txt").resolve())],
+                "rule_files": ["/opt/claude/mystocks_spec/config/monitoring/rules/mystocks-alerts.yml"],
+                "dashboard_files": [
+                    "/opt/claude/mystocks_spec/config/monitoring/dashboards/api-overview.json",
+                    "/opt/claude/mystocks_spec/config/monitoring/dashboards/user-experience-dashboard.json",
+                ],
+                "checks": [],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     markdown_path = tmp_path / "runtime-summary" / "SUMMARY.md"
     json_path = tmp_path / "runtime-summary" / "summary.json"
@@ -254,6 +299,8 @@ def test_build_runtime_quality_summary_supports_docker_only_input(tmp_path: Path
             str(docker_dir),
             "--runtime-observability-drift-report",
             str(drift_report_path),
+            "--monitoring-rule-report",
+            str(monitoring_rule_report_path),
             "--output-markdown",
             str(markdown_path),
             "--output-json",
@@ -271,6 +318,7 @@ def test_build_runtime_quality_summary_supports_docker_only_input(tmp_path: Path
     assert "## Monitoring Auth Performance Gate" not in summary_text
     assert "## Container Runtime Smoke" in summary_text
     assert "## Runtime Observability Drift Gate" in summary_text
+    assert "## Monitoring Rule And Dashboard Metric References" in summary_text
     assert "Drift gate not_measured: `1`" in summary_text
     assert "Backend health: `PASS`" in summary_text
     assert payload["overall_gate_status"] == "PASS"
@@ -279,3 +327,4 @@ def test_build_runtime_quality_summary_supports_docker_only_input(tmp_path: Path
     assert payload["monitoring_auth_performance"] is None
     assert payload["docker_runtime"]["http_requests_total_delta"] == 2.0
     assert payload["runtime_observability_drift"]["pass"] is True
+    assert payload["monitoring_rule_metrics"]["pass"] is True

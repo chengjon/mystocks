@@ -10,6 +10,7 @@ BUNDLE_DIR="${RUNTIME_DELIVERY_BUNDLE_DIR:-${PROJECT_ROOT}/reports/analysis/runt
 SUMMARY_PATH="${SUMMARY_DIR}/SUMMARY.md"
 JSON_PATH="${SUMMARY_DIR}/summary.json"
 DRIFT_REPORT_PATH="${SUMMARY_DIR}/runtime-observability-drift-report.json"
+MONITORING_RULE_REPORT_PATH="${SUMMARY_DIR}/monitoring-rule-metric-reference-report.json"
 MANIFEST_PATH="${BUNDLE_DIR}/runtime-artifact-manifest.json"
 INDEX_PATH="${BUNDLE_DIR}/runtime-artifact-index.md"
 docker_dir="${DOCKER_RUNTIME_DIR:-}"
@@ -56,6 +57,7 @@ summary_cmd=(
 summary_with_drift_cmd=(
     python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_quality_summary.py"
     --runtime-observability-drift-report "${DRIFT_REPORT_PATH}"
+    --monitoring-rule-report "${MONITORING_RULE_REPORT_PATH}"
     --output-markdown "${SUMMARY_PATH}"
     --output-json "${JSON_PATH}"
 )
@@ -64,6 +66,7 @@ bundle_cmd=(
     python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_ci_bundle.py"
     --runtime-quality-dir "${SUMMARY_DIR}"
     --runtime-observability-drift-report "${DRIFT_REPORT_PATH}"
+    --monitoring-rule-report "${MONITORING_RULE_REPORT_PATH}"
     --output-manifest "${MANIFEST_PATH}"
     --output-index "${INDEX_PATH}"
 )
@@ -87,14 +90,41 @@ if [ -n "${docker_dir}" ]; then
     bundle_cmd+=(--docker-dir "${docker_dir}")
 fi
 
+reference_cmd=(
+    python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_monitoring_prometheus_references.py"
+    --rule-file "${PROJECT_ROOT}/config/monitoring/rules/mystocks-alerts.yml"
+    --dashboard-file "${PROJECT_ROOT}/config/monitoring/dashboards/api-overview.json"
+    --dashboard-file "${PROJECT_ROOT}/config/monitoring/dashboards/user-experience-dashboard.json"
+    --declared-metrics-python-file "${PROJECT_ROOT}/web/backend/app/api/metrics.py"
+    --declared-metrics-python-file "${PROJECT_ROOT}/src/monitoring/metrics_collector.py"
+    --declared-metrics-python-file "${PROJECT_ROOT}/web/backend/app/core/middleware/performance.py"
+    --declared-metrics-python-file "${PROJECT_ROOT}/web/backend/app/core/user_experience_monitor.py"
+    --output "${MONITORING_RULE_REPORT_PATH}"
+)
+
+metrics_file_count=0
+for dir in "${api_dir}" "${monitoring_dir}" "${docker_dir}"; do
+    if [ -n "${dir}" ] && [ -f "${dir}/metrics.raw.txt" ]; then
+        reference_cmd+=(--metrics-file "${dir}/metrics.raw.txt")
+        metrics_file_count=$((metrics_file_count + 1))
+    fi
+done
+
+if [ "${metrics_file_count}" -eq 0 ]; then
+    printf 'Runtime delivery summary requires at least one metrics.raw.txt snapshot for monitoring rule validation\n' >&2
+    exit 1
+fi
+
 "${summary_cmd[@]}"
 python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_runtime_observability_drift.py" \
     --baseline "${PROJECT_ROOT}/reports/analysis/runtime-observability-baseline.json" \
     --current-summary-json "${JSON_PATH}" \
     --output "${DRIFT_REPORT_PATH}"
+"${reference_cmd[@]}"
 "${summary_with_drift_cmd[@]}"
 "${bundle_cmd[@]}"
 
 printf 'Runtime delivery summary written to %s\n' "${SUMMARY_PATH}"
 printf 'Runtime observability drift report written to %s\n' "${DRIFT_REPORT_PATH}"
+printf 'Monitoring rule metric reference report written to %s\n' "${MONITORING_RULE_REPORT_PATH}"
 printf 'Runtime delivery bundle index written to %s\n' "${INDEX_PATH}"

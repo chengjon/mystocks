@@ -13,6 +13,7 @@ def test_full_runtime_delivery_gate_script_runs_docker_smoke_then_combined_summa
     assert 'DOCKER_RUNTIME_DIR="${docker_dir}"' in script
     assert 'bash "${PROJECT_ROOT}/scripts/run_runtime_delivery_summary_local.sh"' in script
     assert 'runtime_observability_drift_pass' in script
+    assert 'monitoring_rule_metric_reference_pass' in script
 
 
 def test_full_runtime_delivery_gate_script_persists_summary_and_artifact_links():
@@ -24,6 +25,7 @@ def test_full_runtime_delivery_gate_script_persists_summary_and_artifact_links()
     assert '- \\`mystocks-backend\\`: \\`http://localhost:8021\\`' in script
     assert '- \\`mystocks-frontend\\`: \\`http://localhost:3021\\`' in script
     assert 'runtime-observability-drift-report.json' in script
+    assert 'monitoring-rule-metric-reference-report.json' in script
     assert 'runtime-artifact-index.md' in script
     assert 'runtime-delivery-gate-manifest.json' in script
     assert 'docker-runtime-smoke.log' in script

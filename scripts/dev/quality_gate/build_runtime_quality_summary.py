@@ -166,6 +166,7 @@ def build_summary_payload(
     monitoring_dir: Path | None = None,
     docker_dir: Path | None = None,
     runtime_observability_drift_report: Path | None = None,
+    monitoring_rule_report: Path | None = None,
 ) -> dict[str, Any]:
     frontend = parse_frontend_report(frontend_dir) if frontend_dir is not None else None
     api = parse_api_report(api_dir) if api_dir is not None else None
@@ -209,6 +210,10 @@ def build_summary_payload(
         )
 
     drift_report = _read_json(runtime_observability_drift_report) if runtime_observability_drift_report is not None else None
+    rule_report = _read_json(monitoring_rule_report) if monitoring_rule_report is not None else None
+
+    if rule_report is not None and not rule_report.get("pass", False):
+        current_batch_issues.append("Monitoring rule metric references do not match runtime /metrics snapshots")
 
     return {
         "generated_at": datetime.now(timezone.utc).isoformat(),
@@ -221,6 +226,7 @@ def build_summary_payload(
         "monitoring_auth_performance": monitoring,
         "docker_runtime": docker,
         "runtime_observability_drift": drift_report,
+        "monitoring_rule_metrics": rule_report,
         "current_batch_issues": current_batch_issues,
         "existing_debt": existing_debt,
         "overall_gate_status": "PASS" if not current_batch_issues else "CHECK",
@@ -233,6 +239,7 @@ def write_summary(payload: dict[str, Any], output_markdown: Path, output_json: P
     monitoring = payload["monitoring_auth_performance"]
     docker = payload.get("docker_runtime")
     drift = payload.get("runtime_observability_drift")
+    rule_report = payload.get("monitoring_rule_metrics")
     lines = [
         "# Runtime Quality Summary",
         "",
@@ -328,6 +335,18 @@ def write_summary(payload: dict[str, Any], output_markdown: Path, output_json: P
                 f"- Drift gate not_measured: `{len(drift.get('not_measured', []))}`",
             ],
         )
+    if rule_report is not None:
+        _append_section(
+            lines,
+            "## Monitoring Rule And Dashboard Metric References",
+            [
+                f"- Rule metric reference pass: `{rule_report.get('pass', 'n/a')}`",
+                f"- Rule metric reference violations: `{len(rule_report.get('violations', []))}`",
+                f"- Metrics snapshots used: `{len(rule_report.get('metrics_files', []))}`",
+                f"- Rule files checked: `{len(rule_report.get('rule_files', []))}`",
+                f"- Dashboard files checked: `{len(rule_report.get('dashboard_files', []))}`",
+            ],
+        )
     lines.extend(
         [
             "## Current Batch vs Existing Debt",
@@ -382,6 +401,8 @@ def write_summary(payload: dict[str, Any], output_markdown: Path, output_json: P
                 f"- `{_relative(Path(docker['metrics_summary_path']))}`",
             ]
         )
+    if rule_report is not None:
+        lines.append(f"- `{_relative(output_json.parent / 'monitoring-rule-metric-reference-report.json')}`")
 
     output_markdown.write_text("\n".join(lines) + "\n", encoding="utf-8")
     output_json.write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -394,6 +415,7 @@ def main() -> None:
     parser.add_argument("--monitoring-dir", type=Path)
     parser.add_argument("--docker-dir", type=Path)
     parser.add_argument("--runtime-observability-drift-report", type=Path)
+    parser.add_argument("--monitoring-rule-report", type=Path)
     parser.add_argument("--output-markdown", required=True, type=Path)
     parser.add_argument("--output-json", required=True, type=Path)
     args = parser.parse_args()
@@ -406,6 +428,7 @@ def main() -> None:
         runtime_observability_drift_report=(
             args.runtime_observability_drift_report.resolve() if args.runtime_observability_drift_report else None
         ),
+        monitoring_rule_report=args.monitoring_rule_report.resolve() if args.monitoring_rule_report else None,
     )
     args.output_markdown.parent.mkdir(parents=True, exist_ok=True)
     args.output_json.parent.mkdir(parents=True, exist_ok=True)
