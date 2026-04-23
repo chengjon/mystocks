@@ -124,6 +124,7 @@ def test_quality_gate_closeout_script_runs_with_external_graphiti_command_for_do
     env = os.environ.copy()
     env["QUALITY_GATE_GRAPHITI_COMMAND"] = str(fake_command)
     env["QUALITY_GATE_GRAPHITI_GROUP_ID"] = "mystocks_spec_quality_gates"
+    env["QUALITY_GATE_GRAPHITI_STATE_DIR"] = str(tmp_path / "state")
 
     completed = subprocess.run(
         [
@@ -151,7 +152,7 @@ def test_quality_gate_closeout_script_runs_with_external_graphiti_command_for_do
 
     assert payload["status"] == "completed"
     assert payload["episode_uuid"] == "ep-quality-gate-1"
-    assert payload["state_file"].endswith(f"/mystocks-quality-gate-closeout-state/{tmp_path.name}/docker-runtime-smoke.json")
+    assert payload["state_file"].endswith(f"/{tmp_path.name}/docker-runtime-smoke.json")
     assert args[:2] == ["graphiti", "remember"]
     assert graphiti_payload["event_type"] == "quality_gate.closeout.docker-runtime-smoke"
     assert graphiti_payload["gate"]["backup_smoke_service_urls"]["frontend"] == "http://localhost:3021"

@@ -65,6 +65,13 @@ GATE_METRIC_RULES = (
     MetricRule("backend_api_documentation.json_success_missing_examples", "max", required=False),
 )
 
+EXPECTED_RUNTIME_CLOSEOUTS = (
+    ("runtime_delivery_gate", "Runtime delivery gate", "mystocks_spec_runtime_delivery_gates"),
+    ("frontend_runtime_gate", "Frontend runtime gate", "mystocks_spec_quality_gates"),
+    ("api_performance_gate", "API performance gate", "mystocks_spec_quality_gates"),
+    ("docker_runtime_smoke", "Docker runtime smoke", "mystocks_spec_quality_gates"),
+)
+
 
 @dataclass
 class MarkerViolation:
@@ -496,6 +503,64 @@ def _render_closeout_line(label: str, payload: dict) -> str:
     return line
 
 
+def build_closeout_validation_report(runtime_gate_closeouts: dict[str, dict] | None) -> list[dict]:
+    report: list[dict] = []
+    for key, label, expected_group_id in EXPECTED_RUNTIME_CLOSEOUTS:
+        payload = (runtime_gate_closeouts or {}).get(key)
+        if payload is None:
+            report.append(
+                {
+                    "key": key,
+                    "label": label,
+                    "expected_group_id": expected_group_id,
+                    "present": False,
+                    "valid": False,
+                    "reason": "missing_closeout",
+                }
+            )
+            continue
+
+        nested_report = payload.get("report") if isinstance(payload.get("report"), dict) else {}
+        status = payload.get("status")
+        episode_uuid = payload.get("episode_uuid") or nested_report.get("episode_uuid")
+        group_id = payload.get("group_id") or nested_report.get("group_id")
+        ingest_status = payload.get("ingest_status") or nested_report.get("ingest_status")
+        error = payload.get("error")
+
+        reason = "ok"
+        valid = True
+        if status != "completed":
+            valid = False
+            reason = f"status={status or 'missing'}"
+        elif not isinstance(episode_uuid, str) or not episode_uuid.strip():
+            valid = False
+            reason = "missing_episode_uuid"
+        elif group_id != expected_group_id:
+            valid = False
+            reason = f"group_id={group_id or 'missing'}"
+        elif ingest_status not in {"warming", "completed"}:
+            valid = False
+            reason = f"ingest_status={ingest_status or 'missing'}"
+        elif isinstance(error, str) and error.strip():
+            valid = False
+            reason = "payload_error"
+
+        report.append(
+            {
+                "key": key,
+                "label": label,
+                "expected_group_id": expected_group_id,
+                "present": True,
+                "valid": valid,
+                "reason": reason,
+                "episode_uuid": episode_uuid,
+                "group_id": group_id,
+                "ingest_status": ingest_status,
+            }
+        )
+    return report
+
+
 def render_weekly_report(
     metrics: dict,
     kpi: dict,
@@ -507,6 +572,10 @@ def render_weekly_report(
     now = datetime.now(timezone.utc).isoformat()
     baseline_doc = metrics.get("baseline", {}).get("backend_api_documentation", {})
     current_doc = metrics.get("current", {}).get("backend_api_documentation", {})
+    closeout_validation = build_closeout_validation_report(runtime_gate_closeouts)
+    valid_closeouts = [item for item in closeout_validation if item["valid"]]
+    missing_closeouts = [item for item in closeout_validation if not item["present"]]
+    invalid_closeouts = [item for item in closeout_validation if item["present"] and not item["valid"]]
     drift_items = build_baseline_drift_report(
         baseline=metrics.get("baseline", {}),
         current=metrics.get("current", {}),
@@ -550,6 +619,8 @@ def render_weekly_report(
                 f"- Docker runtime smoke status: measured=`{runtime_metrics.get('docker_smoke_current', 'N/A')}` baseline=`{runtime_metrics.get('docker_smoke_baseline', 'N/A')}` target=`PASS/PASS/PASS`",
                 f"- Docker metrics http_requests_total delta: measured=`{(runtime_current.get('docker_runtime') or {}).get('http_requests_total_delta', 'N/A')}` baseline=`{(runtime_baseline.get('docker_runtime') or {}).get('http_requests_total_delta', 'N/A')}` target=`>= 0`",
                 f"- Runtime drift gate: `{'PASS' if runtime_drift.get('pass') else 'FAIL'}` violations=`{len(runtime_drift.get('violations', []))}` not_measured=`{len(runtime_drift.get('not_measured', []))}`",
+                f"- Graphiti closeout coverage: `{len(valid_closeouts)}/{len(closeout_validation)}` valid closeouts, missing=`{len(missing_closeouts)}` invalid=`{len(invalid_closeouts)}`",
+                f"- Graphiti closeout validity gate: `{'PASS' if not missing_closeouts and not invalid_closeouts else 'FAIL'}`",
                 "",
             ]
         )
@@ -594,9 +665,13 @@ def render_weekly_report(
             "## 7. Actions",
             "- owners should remediate expired markers before merge",
             "- baseline updates are allowed only if metrics are non-increasing",
-            "",
         ]
     )
+    if missing_closeouts or invalid_closeouts:
+        lines.append("- Graphiti gate closeouts must be completed and valid before weekly governance gate passes")
+        for item in missing_closeouts + invalid_closeouts:
+            lines.append(f"- closeout remediation: `{item['label']}` reason=`{item['reason']}`")
+    lines.append("")
     return "\n".join(lines)
 
 
@@ -733,6 +808,13 @@ def run_weekly_report(args: argparse.Namespace) -> int:
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(content, encoding="utf-8")
     print(f"[weekly-report] written: {output}")
+    closeout_validation = build_closeout_validation_report(runtime_gate_closeouts)
+    invalid_closeouts = [item for item in closeout_validation if not item["valid"]]
+    if args.fail_on_invalid_closeouts and invalid_closeouts:
+        print("[weekly-report] invalid Graphiti gate closeouts detected")
+        for item in invalid_closeouts:
+            print(f"- {item['label']}: {item['reason']}")
+        return 1
     return 0
 
 
@@ -825,6 +907,7 @@ def build_parser() -> argparse.ArgumentParser:
     weekly.add_argument("--frontend-gate-closeout-json", default=None)
     weekly.add_argument("--api-gate-closeout-json", default=None)
     weekly.add_argument("--docker-gate-closeout-json", default=None)
+    weekly.add_argument("--fail-on-invalid-closeouts", action="store_true")
     weekly.add_argument("--base-sha", default=None)
     weekly.add_argument("--threshold", type=int, default=800)
     weekly.add_argument("--since-days", type=int, default=90)

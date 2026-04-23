@@ -40,11 +40,14 @@
 | Monitoring auth `alert-rules` P95 (ms) | `<value>` | `<value>` | `N/A` | `<= 300` | `reports/analysis/runtime-observability-baseline.json` |
 | Docker runtime smoke status | `<value>` | `<value>` | `N/A` | `PASS/PASS/PASS` | `reports/analysis/runtime-observability-baseline.json` |
 | Docker metrics `http_requests_total` delta | `<value>` | `<value>` | `N/A` | `>= 0` | `reports/analysis/runtime-observability-baseline.json` |
+| Graphiti closeout coverage | `<valid>/<expected>` | `4/4` | `N/A` | `4/4` | `reports/analysis/*/*-graphiti-closeout.json` |
+| Graphiti closeout validity gate | `<value>` | `PASS` | `N/A` | `PASS` | `bash scripts/run_tech_debt_weekly_report.sh` |
 
 可复用校验命令：`python scripts/dev/quality_gate/validate_runtime_observability_drift.py --baseline reports/analysis/runtime-observability-baseline.json --current-summary-json <runtime-quality-summary/summary.json>`
 前端 PM2 runtime 工件采集：`python scripts/dev/quality_gate/collect_frontend_runtime_gate.py --type-ceiling-log <type-ceiling.log> --pm2-gate-log <pm2-gate.log> --regression-log <regression.log> --axe-log <axe.log> --current-tech-debt-baseline <tech-debt-baseline.current.json> --output <frontend-runtime-gate.json>`
 API 性能漂移命令：`python scripts/dev/quality_gate/validate_api_performance_drift.py --baseline reports/analysis/api-performance-baseline.json --current-benchmark-json <api-performance-gate/benchmark.json>`
 完整运行门禁入口：`bash scripts/run_full_runtime_delivery_gate.sh`
+周报 closeout 门禁默认开启；如仅需生成观察性报告可临时设置：`TECH_DEBT_WEEKLY_REQUIRE_VALID_CLOSEOUTS=0 bash scripts/run_tech_debt_weekly_report.sh`
 
 ## 6.2A Graphiti Gate Closeouts
 - runtime delivery gate closeout:

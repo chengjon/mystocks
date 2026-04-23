@@ -123,6 +123,7 @@
   - `bash scripts/run_full_runtime_delivery_gate.sh`
 - 生成带 Graphiti closeout 引用的治理周报：
   - `bash scripts/run_tech_debt_weekly_report.sh`
+  - 默认要求 closeout 全部有效；如只做观察性输出，可用 `TECH_DEBT_WEEKLY_REQUIRE_VALID_CLOSEOUTS=0`
   - 如需显式指定 closeout 工件，可设置：
     - `RUNTIME_GATE_CLOSEOUT_JSON`
     - `FRONTEND_GATE_CLOSEOUT_JSON`
