@@ -342,6 +342,60 @@ jobs:
           cat reports/analysis/runtime-ci-bundle/runtime-artifact-index.md >> "$GITHUB_STEP_SUMMARY"
         fi
 
+    - name: Validate frontend and API Graphiti closeouts
+      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != ''
+      run: |
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        checks = [
+            ("Frontend runtime gate", Path("${REPORT_DIR}") / "frontend-runtime-gate-graphiti-closeout.json"),
+            ("API performance gate", Path("${API_REPORT_DIR}") / "api-performance-gate-graphiti-closeout.json"),
+        ]
+
+        failures = []
+        for label, path in checks:
+            payload = json.loads(path.read_text(encoding="utf-8"))
+            status = payload.get("status")
+            episode_uuid = payload.get("episode_uuid")
+            group_id = payload.get("group_id")
+            ingest_status = payload.get("ingest_status")
+            if status != "completed" or not episode_uuid or group_id != "mystocks_spec_quality_gates" or ingest_status not in {"warming", "completed"}:
+                failures.append(f"{label}: status={status} episode_uuid={episode_uuid} group_id={group_id} ingest_status={ingest_status}")
+
+        if failures:
+            print("[quality-gate-closeouts] invalid route/layout closeouts detected")
+            for item in failures:
+                print(f"- {item}")
+            raise SystemExit(1)
+        PY
+
+    - name: Publish frontend/API closeout summary
+      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != ''
+      run: |
+        if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+          printf '\n\n## Route/Layout Graphiti Closeouts\n' >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          checks = [
+              ("Frontend runtime gate", Path("${REPORT_DIR}") / "frontend-runtime-gate-graphiti-closeout.json"),
+              ("API performance gate", Path("${API_REPORT_DIR}") / "api-performance-gate-graphiti-closeout.json"),
+          ]
+
+          for label, path in checks:
+              payload = json.loads(path.read_text(encoding="utf-8"))
+              print(
+                  f"- {label}: status=`{payload.get('status', 'N/A')}` "
+                  f"episode_uuid=`{payload.get('episode_uuid', 'N/A')}` "
+                  f"group_id=`{payload.get('group_id', 'N/A')}` "
+                  f"ingest_status=`{payload.get('ingest_status', 'N/A')}`"
+              )
+          PY
+        fi
+
     - name: Upload route/layout runtime baseline artifacts
       if: always() && env.REPORT_DIR != ''
       uses: actions/upload-artifact@v4
@@ -426,6 +480,45 @@ jobs:
       run: |
         if [ -n "${GITHUB_STEP_SUMMARY:-}" ] && [ -f reports/analysis/runtime-ci-bundle/runtime-artifact-index.md ]; then
           cat reports/analysis/runtime-ci-bundle/runtime-artifact-index.md >> "$GITHUB_STEP_SUMMARY"
+        fi
+
+    - name: Validate docker Graphiti closeout
+      if: always() && env.DOCKER_REPORT_DIR != ''
+      run: |
+        python - <<'PY'
+        import json
+        from pathlib import Path
+
+        path = Path("${DOCKER_REPORT_DIR}") / "docker-runtime-smoke-graphiti-closeout.json"
+        payload = json.loads(path.read_text(encoding="utf-8"))
+        status = payload.get("status")
+        episode_uuid = payload.get("episode_uuid")
+        group_id = payload.get("group_id")
+        ingest_status = payload.get("ingest_status")
+        if status != "completed" or not episode_uuid or group_id != "mystocks_spec_quality_gates" or ingest_status not in {"warming", "completed"}:
+            print("[quality-gate-closeouts] invalid docker closeout detected")
+            print(f"- status={status} episode_uuid={episode_uuid} group_id={group_id} ingest_status={ingest_status}")
+            raise SystemExit(1)
+        PY
+
+    - name: Publish docker closeout summary
+      if: always() && env.DOCKER_REPORT_DIR != ''
+      run: |
+        if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
+          printf '\n\n## Docker Graphiti Closeout\n' >> "$GITHUB_STEP_SUMMARY"
+          python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+
+          path = Path("${DOCKER_REPORT_DIR}") / "docker-runtime-smoke-graphiti-closeout.json"
+          payload = json.loads(path.read_text(encoding="utf-8"))
+          print(
+              f"- Docker runtime smoke: status=`{payload.get('status', 'N/A')}` "
+              f"episode_uuid=`{payload.get('episode_uuid', 'N/A')}` "
+              f"group_id=`{payload.get('group_id', 'N/A')}` "
+              f"ingest_status=`{payload.get('ingest_status', 'N/A')}`"
+          )
+          PY
         fi
 
     - name: Upload docker runtime smoke artifacts
