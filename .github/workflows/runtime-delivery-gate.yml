@@ -63,4 +63,22 @@ jobs:
             cat reports/analysis/runtime-delivery-gate-ci/SUMMARY.md >> "$GITHUB_STEP_SUMMARY"
             printf '\n\n---\n\n' >> "$GITHUB_STEP_SUMMARY"
             cat reports/analysis/runtime-delivery-gate-ci/runtime-quality-summary/SUMMARY.md >> "$GITHUB_STEP_SUMMARY"
+            printf '\n\n---\n\n## Child Gate Closeouts\n' >> "$GITHUB_STEP_SUMMARY"
+            python - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+            import json
+            from pathlib import Path
+
+            report_path = Path("reports/analysis/runtime-delivery-gate-ci/runtime-child-gate-closeout-validation.json")
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+
+            print(f"- pass: `{report.get('pass', 'N/A')}`")
+            print(f"- valid_count: `{report.get('valid_count', 'N/A')}`")
+            print(f"- invalid_count: `{report.get('invalid_count', 'N/A')}`")
+
+            for item in report.get("items", []):
+                print(
+                    f"- {item.get('label', item.get('key', 'unknown'))}: "
+                    f"valid=`{item.get('valid', 'N/A')}` reason=`{item.get('reason', 'N/A')}`"
+                )
+            PY
           fi
