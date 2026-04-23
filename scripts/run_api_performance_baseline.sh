@@ -15,6 +15,7 @@ METRICS_BASELINE_RAW_PATH="${REPORT_DIR}/metrics.baseline.raw.txt"
 METRICS_RAW_PATH="${REPORT_DIR}/metrics.raw.txt"
 METRICS_HEALTH_PATH="${REPORT_DIR}/metrics-health.json"
 METRICS_SUMMARY_PATH="${REPORT_DIR}/metrics-summary.json"
+GRAPHITI_CLOSEOUT_REPORT="${REPORT_DIR}/api-performance-gate-graphiti-closeout.json"
 ENDPOINTS_FILE="${PROJECT_ROOT}/tests/performance/api_smoke_endpoints.json"
 
 mkdir -p "${REPORT_DIR}"
@@ -49,6 +50,13 @@ wait_for_url "http://localhost:8020/health" "Backend"
 wait_for_url "http://localhost:8020/api/health/ready" "Backend readiness"
 wait_for_url "http://localhost:3020/" "Frontend"
 
+# Exclude PM2 cold-start jitter from the measured baseline.
+for _ in $(seq 1 3); do
+    curl --noproxy '*' --silent --fail --max-time 10 "http://localhost:8020/health" >/dev/null
+    curl --noproxy '*' --silent --fail --max-time 10 "http://localhost:8020/api/health/ready" >/dev/null
+done
+sleep 2
+
 pm2 ls --no-color > "${PM2_STATUS_PATH}"
 curl --noproxy '*' --silent "http://localhost:8020/metrics" > "${METRICS_BASELINE_RAW_PATH}"
 
@@ -56,6 +64,7 @@ python tests/performance/benchmark.py \
     --url "http://localhost:8020" \
     --users 5 \
     --iterations 20 \
+    --warmup-requests 3 \
     --endpoints-file "${ENDPOINTS_FILE}" \
     --output "${TEXT_REPORT}" \
     --json-output "${JSON_REPORT}"
@@ -106,6 +115,8 @@ summary = [
     f"- Iterations per endpoint: `{data['iterations']}`",
     f"- Overall average response time: `{data['summary']['overall_avg_ms']}ms`",
     f"- Overall average P95 response time: `{data['summary']['overall_p95_ms']}ms`",
+    f"- Business API average / P95 response time: `{data.get('workload_classes', {}).get('business', {}).get('overall_avg_ms', 'n/a')}ms / {data.get('workload_classes', {}).get('business', {}).get('overall_p95_ms', 'n/a')}ms`",
+    f"- Infrastructure API average / P95 response time: `{data.get('workload_classes', {}).get('infrastructure', {}).get('overall_avg_ms', 'n/a')}ms / {data.get('workload_classes', {}).get('infrastructure', {}).get('overall_p95_ms', 'n/a')}ms`",
     f"- SLO status (`P95 <= 300ms`, `error_rate <= 0.1%`): `{'COMPLIANT' if slo['compliant'] else 'NON-COMPLIANT'}`",
 ]
 
@@ -153,5 +164,24 @@ summary.extend([
 
 summary_path.write_text("\n".join(summary) + "\n", encoding="utf-8")
 PY
+
+if [ "${DISABLE_QUALITY_GATE_GRAPHITI_CLOSEOUT:-0}" = "1" ]; then
+    cat > "${GRAPHITI_CLOSEOUT_REPORT}" <<EOF
+{
+  "status": "skipped_disabled",
+  "reason": "DISABLE_QUALITY_GATE_GRAPHITI_CLOSEOUT=1",
+  "report_dir": "${REPORT_DIR}",
+  "gate_kind": "api-performance-gate"
+}
+EOF
+else
+    python "${PROJECT_ROOT}/scripts/runtime/record_quality_gate_closeout.py" \
+        --gate-kind api-performance-gate \
+        --project-root "${PROJECT_ROOT}" \
+        --report-dir "${REPORT_DIR}" \
+        --output json > "${GRAPHITI_CLOSEOUT_REPORT}"
+fi
+
+printf -- '- `%s`\n' "$(realpath --relative-to="${PROJECT_ROOT}" "${GRAPHITI_CLOSEOUT_REPORT}")" >> "${SUMMARY_PATH}"
 
 printf 'API performance baseline written to %s\n' "${SUMMARY_PATH}"
