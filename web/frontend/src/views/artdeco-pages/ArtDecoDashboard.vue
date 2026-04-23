@@ -9,11 +9,19 @@
             :status-type="marketStatusType"
         />
 
-        <div class="request-meta-bar">
+        <div class="request-meta-bar" aria-live="polite">
             <span class="brand-text dashboard-brand">QUANTIX</span>
             <span>DATA: REAL</span>
             <span>REQ: {{ lastRequestId || 'N/A' }}</span>
             <span>TIME: {{ displayProcessTime }}</span>
+            <span>SYNC: {{ refreshing ? 'UPDATING' : 'READY' }}</span>
+        </div>
+
+        <div v-if="dashboardAlerts.length > 0" class="dashboard-alerts" aria-live="polite">
+            <div v-for="message in dashboardAlerts" :key="message" class="dashboard-alert">
+                <ArtDecoIcon name="alert-circle" />
+                <span>{{ message }}</span>
+            </div>
         </div>
 
         <!-- 市场全景仪表盘 - 增强功能展示 -->
@@ -28,7 +36,11 @@
                         </div>
                     </template>
 
-                    <section class="summary-section">
+                    <section v-if="error.fundFlow" class="error-message">
+                        <ArtDecoIcon name="alert-circle" />
+                        <span>{{ error.fundFlow }}</span>
+                    </section>
+                    <section v-else class="summary-section">
                         <template v-if="loading.fundFlow">
                              <div class="skeleton-stat" v-for="i in 4" :key="i">
                                  <ArtDecoSkeleton variant="text" width="60%" />
@@ -159,6 +171,7 @@
                         <template v-if="loading.fundFlow">
                              <ArtDecoSkeleton variant="rect" width="100%" height="80px" />
                         </template>
+                        <p v-else-if="error.fundFlow" class="integration-note">{{ error.fundFlow }}</p>
                         <template v-else>
                             <ArtDecoStatCard
                                 label="北向资金"
@@ -252,6 +265,7 @@
                              <ArtDecoSkeleton variant="rect" width="90%" height="90%" />
                          </div>
                     </template>
+                    <div v-else-if="error.industry" class="chart-state-note">{{ error.industry }}</div>
                     <template v-else>
                         <ArtDecoChart 
                             :option="heatmapOption" 
@@ -274,7 +288,9 @@
 
             <ArtDecoCard title="行业轮动雷达" hoverable class="sector-radar-card">
                 <section class="heatmap-section" style="height: 300px;">
+                    <div v-if="error.industry && !loading.industry" class="chart-state-note">{{ error.industry }}</div>
                     <ArtDecoChart
+                        v-else
                         :option="sectorRotationRadarOption"
                         :loading="loading.industry"
                         height="100%"
@@ -284,10 +300,19 @@
 
             <ArtDecoCard title="一键压力测试" hoverable class="stress-test-card">
                 <div class="stress-test-actions">
-                    <button class="stress-test-btn" @click="runOneClickStressTest">立即执行压力测试</button>
+                    <button
+                        type="button"
+                        class="stress-test-btn"
+                        :disabled="isStressTestDisabled"
+                        @click="runOneClickStressTest"
+                    >
+                        {{ isStressTestDisabled ? '行情链路未就绪' : '立即执行压力测试' }}
+                    </button>
                     <span class="stress-test-time" v-if="stressTestResult?.timestamp">{{ stressTestResult.timestamp }}</span>
                 </div>
-                <p v-if="!stressTestResult" class="integration-note">压力测试待执行，点击后基于当前页面已加载的真实行情数据做本地估算。</p>
+                <p v-if="!stressTestResult" class="integration-note">
+                    {{ isStressTestDisabled ? '等待市场与资金流向真实数据就绪后可执行压力测试。' : '压力测试待执行，点击后基于当前页面已加载的真实行情数据做本地估算。' }}
+                </p>
                 <div class="stress-test-metrics">
                     <div class="stress-metric-item">
                         <span class="metric-label">预估最大回撤</span>
@@ -316,6 +341,7 @@
                     <button
                         v-for="(tab, _idx) in flowTabs"
                         :key="tab.key"
+                        type="button"
                         class="flow-tab"
                         :class="{ active: activeFlowTab === tab.key }"
                         @click="activeFlowTab = tab.key"
@@ -352,6 +378,7 @@
                     <button
                         v-for="(tab, _idx) in poolTabs"
                         :key="tab.key"
+                        type="button"
                         class="pool-tab"
                         :class="{ active: activePoolTab === tab.key }"
                         @click="activePoolTab = tab.key"
@@ -428,18 +455,16 @@ const {
   heatmapOption,
   capitalFlowHeatmapOption,
   sectorRotationRadarOption,
-  currentTime,
   activeFlowTab,
   activePoolTab,
   refreshing,
-  activeStrategiesCount,
-  todayPnLValue,
   lastRequestId,
   displayProcessTime,
   indicatorList,
   systemHealth,
   loading,
   error,
+  dashboardAlerts,
   marketData,
   capitalFlowData,
   flowTabs,
@@ -453,10 +478,10 @@ const {
   sentimentColor,
   marketStatus,
   marketStatusType,
+  isStressTestDisabled,
   stressTestResult,
   handleIndicatorsToggle,
   handleMonitoringToggle,
-  refreshData,
   runOneClickStressTest,
 } = useArtDecoDashboard()
 </script>
@@ -466,6 +491,7 @@ const {
 
 .request-meta-bar {
   display: flex;
+  flex-wrap: wrap;
   gap: var(--artdeco-spacing-4);
   margin-bottom: var(--artdeco-spacing-4);
   color: var(--artdeco-fg-muted);
@@ -477,5 +503,23 @@ const {
   margin: 0;
   color: var(--artdeco-fg-muted);
   line-height: 1.6;
+}
+
+.dashboard-alerts {
+  display: grid;
+  gap: var(--artdeco-spacing-2);
+  margin-bottom: var(--artdeco-spacing-4);
+}
+
+.dashboard-alert,
+.chart-state-note {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  border: 1px solid color-mix(in srgb, var(--artdeco-down) 32%, transparent);
+  background: color-mix(in srgb, var(--artdeco-down) 8%, transparent);
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
 }
 </style>

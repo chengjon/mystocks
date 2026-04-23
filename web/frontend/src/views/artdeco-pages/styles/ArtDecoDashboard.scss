@@ -455,6 +455,12 @@
         transform: translateY(calc(var(--artdeco-spacing-1) / -2));
     }
 
+    &:focus-visible {
+        outline: none;
+        border-color: var(--artdeco-gold-primary);
+        box-shadow: 0 0 0 1px var(--artdeco-gold-primary), var(--artdeco-glow-subtle);
+    }
+
     .nav-icon {
         font-size: var(--artdeco-text-3xl);
         margin-bottom: var(--artdeco-spacing-3);
@@ -676,6 +682,15 @@
     transition: border-color var(--artdeco-transition-base), transform var(--artdeco-transition-base), box-shadow var(--artdeco-transition-base);
 }
 
+.flow-tab,
+.pool-tab,
+.stress-test-btn {
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 1px var(--artdeco-gold-primary), var(--artdeco-glow-subtle);
+    }
+}
+
 .flow-item {
     padding: var(--artdeco-spacing-4);
 
@@ -732,6 +747,15 @@
         border-color: var(--artdeco-gold-primary);
         box-shadow: var(--artdeco-glow-subtle);
     }
+
+    &:disabled {
+        cursor: not-allowed;
+        color: var(--artdeco-fg-muted);
+        border-color: var(--artdeco-border-subtle);
+        background: color-mix(in srgb, var(--artdeco-bg-card) 92%, transparent);
+        box-shadow: none;
+        opacity: 80%;
+    }
 }
 
 .stress-test-time {
@@ -766,5 +790,47 @@
         font-family: var(--artdeco-font-mono);
         font-size: var(--artdeco-text-lg);
         font-weight: 700;
+    }
+}
+
+@media (width <= calc(var(--artdeco-spacing-32) * 8)) {
+    .flow-section,
+    .stress-test-metrics {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (width <= calc(var(--artdeco-spacing-32) * 6)) {
+    .artdeco-dashboard {
+        padding: var(--artdeco-spacing-4);
+    }
+
+    .market-panorama {
+        gap: var(--artdeco-spacing-4);
+    }
+
+    .stress-test-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (width <= calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-1) * 2 + var(--artdeco-spacing-px) * 2)) {
+    .artdeco-dashboard {
+        padding: var(--artdeco-spacing-3);
+    }
+
+    .card-header {
+        align-items: flex-start;
+
+        h3,
+        h4 {
+            line-height: 1.4;
+        }
+    }
+
+    .flow-tabs,
+    .pool-tabs {
+        flex-wrap: wrap;
     }
 }

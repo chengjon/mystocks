@@ -22,9 +22,21 @@ type ServiceResult<T> =
   | { ok: true; data: T; error?: undefined }
   | { ok: false; data: T; error: string }
 
+type TraceableResult<T> = {
+  data: T
+  request_id?: string
+  process_time?: string
+}
+
 const serviceOk = <T>(data: T): ServiceResult<T> => ({ ok: true, data })
 
 const serviceErr = <T>(data: T, error: string): ServiceResult<T> => ({ ok: false, data, error })
+
+const withTrace = <T>(response: { request_id?: string; process_time?: string }, data: T): TraceableResult<T> => ({
+  data,
+  request_id: response.request_id,
+  process_time: response.process_time,
+})
 
 export interface MarketOverviewData {
   symbol: string
@@ -118,14 +130,14 @@ export const dashboardService = {
    * API: GET /api/v1/market/quotes
    * 用途: 获取上证、深证、创业板等主要指数数据
    */
-  async getMarketOverview(limit = 100): Promise<{ data: MarketOverviewData[] }> {
+  async getMarketOverview(limit = 100): Promise<TraceableResult<MarketOverviewData[]>> {
     const response = await apiClient.get('/v1/market/quotes', {
       params: {
         limit,
         symbols: '000001.SH,399001.SZ,399006.SZ'
       }
     })
-    return { data: normalizeDashboardMarketOverview(response) }
+    return withTrace(response, normalizeDashboardMarketOverview(response))
   },
 
   /**
@@ -133,7 +145,7 @@ export const dashboardService = {
    * API: GET /api/akshare/market/fund-flow/hsgt-summary
    * 用途: 获取沪股通、深股通、北向资金、主力净流入数据
    */
-  async getFundFlow(date?: string): Promise<{ data: FundFlowData }> {
+  async getFundFlow(date?: string): Promise<TraceableResult<FundFlowData>> {
     const targetDate = date || this.getToday()
     const params = {
       start_date: targetDate,
@@ -143,7 +155,7 @@ export const dashboardService = {
       apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params }),
       apiClient.get('/akshare/market/fund-flow/big-deal')
     ])
-    return { data: normalizeDashboardFundFlow(summaryResponse, bigDealResponse) }
+    return withTrace(summaryResponse, normalizeDashboardFundFlow(summaryResponse, bigDealResponse))
   },
 
   /**
@@ -154,7 +166,7 @@ export const dashboardService = {
   async getIndustryFlow(
     sort = 'change_percent',
     limit = 10
-  ): Promise<{ data: IndustryFlowData[] }> {
+  ): Promise<TraceableResult<IndustryFlowData[]>> {
     const response = await apiClient.get('/v2/market/sector/fund-flow', {
       params: { sort, limit, sector_type: '行业', timeframe: '今日' }
     })
@@ -170,7 +182,7 @@ export const dashboardService = {
       rows = normalizeDashboardIndustryFlow(hotRankingResponse)
     }
 
-    return { data: rows }
+    return withTrace(response, rows)
   },
 
   // ============================================
@@ -215,11 +227,11 @@ export const dashboardService = {
   async getStockFlowRanking(
     period = '1day',
     limit = 10
-  ): Promise<{ data: StockFlowRankingData[] }> {
+  ): Promise<TraceableResult<StockFlowRankingData[]>> {
     const response = await apiClient.get('/akshare/market/fund-flow/big-deal', {
       params: { period, limit }
     })
-    return { data: normalizeDashboardStockFlowRanking(response) }
+    return withTrace(response, normalizeDashboardStockFlowRanking(response))
   },
 
   /**
@@ -249,7 +261,7 @@ export const dashboardService = {
   async getTechnicalIndicators(
     symbols: string[],
     indicators: string[]
-  ): Promise<{ data: Record<string, TechnicalIndicatorData[]> }> {
+  ): Promise<TraceableResult<Record<string, TechnicalIndicatorData[]>>> {
     const result = await this.getTechnicalIndicatorsSafe(symbols, indicators)
     return { data: result.data }
   },
@@ -292,11 +304,11 @@ export const dashboardService = {
    * API: GET /api/v1/risk/position/assessment
    * 用途: 获取用户持仓的风险指标
    */
-  async getPositionRisk(userId: number): Promise<{ data: PositionRiskData }> {
+  async getPositionRisk(userId: number): Promise<TraceableResult<PositionRiskData>> {
     const response = await apiClient.get('/v1/trade/positions', {
       params: { user_id: userId }
     })
-    return { data: normalizeDashboardPositionRisk(response) }
+    return withTrace(response, normalizeDashboardPositionRisk(response))
   },
 
   /**
@@ -304,16 +316,17 @@ export const dashboardService = {
    * API: GET /api/strategy-mgmt/strategies
    * 用途: 获取用户的活跃策略数量
    */
-  async getActiveStrategies(userId: number): Promise<{ data: unknown[] }> {
+  async getActiveStrategies(userId: number): Promise<TraceableResult<unknown[]>> {
     const response = await apiClient.get('/v1/strategy/strategies', {
       params: { user_id: userId, status: 'active' }
     })
-    return {
-      data: normalizeDashboardActiveStrategies(response).filter((item) => {
+    return withTrace(
+      response,
+      normalizeDashboardActiveStrategies(response).filter((item) => {
         const status = String(item.status ?? '').toLowerCase()
         return status === 'active' || status === 'running'
       })
-    }
+    )
   },
 
   /**
@@ -321,9 +334,9 @@ export const dashboardService = {
    * API: GET /api/system/health
    * 用途: 获取API响应时间、CPU、内存等系统指标
    */
-  async getSystemHealth(): Promise<{ data: SystemHealthData[] }> {
+  async getSystemHealth(): Promise<TraceableResult<SystemHealthData[]>> {
     const response = await apiClient.get('/health')
-    return { data: normalizeDashboardSystemHealth(response) }
+    return withTrace(response, normalizeDashboardSystemHealth(response))
   },
 
   // ============================================

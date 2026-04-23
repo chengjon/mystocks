@@ -2,6 +2,10 @@ import type { MarketData, MarketHeatItem } from './useArtDecoDashboard.types.ts'
 
 type NumericParser = (value: unknown, fallback?: number) => number
 
+const A_SHARE_UP = '#FF5252'
+const A_SHARE_DOWN = '#00E676'
+const ARTDECO_GOLD = '#D4AF37'
+
 export function createFundFlowChartOption(marketData: MarketData): Record<string, unknown> {
   const data = marketData.fundFlow
   const categories = ['沪股通', '深股通', '主力']
@@ -26,7 +30,7 @@ export function createFundFlowChartOption(marketData: MarketData): Record<string
       data: values.map(value => ({
         value,
         itemStyle: {
-          color: value >= 0 ? '#4caf50' : '#f44336',
+          color: value >= 0 ? A_SHARE_UP : A_SHARE_DOWN,
           borderRadius: [4, 4, 0, 0]
         }
       }))
@@ -60,7 +64,7 @@ export function createMarketTrendOption(trendData: number[]): Record<string, unk
       type: 'line',
       smooth: true,
       symbol: 'none',
-      lineStyle: { width: 2, color: '#d4af37' },
+      lineStyle: { width: 2, color: ARTDECO_GOLD },
       areaStyle: {
         color: {
           type: 'linear',
@@ -89,7 +93,7 @@ export function createHeatmapOption(marketHeat: MarketHeatItem[]): Record<string
     value: Math.abs(item.change),
     change: item.change,
     itemStyle: {
-      color: item.change >= 0 ? '#4caf50' : '#f44336'
+      color: item.change >= 0 ? A_SHARE_UP : A_SHARE_DOWN
     }
   }))
 
@@ -137,7 +141,7 @@ export function createCapitalFlowHeatmapOption(
       value: Math.abs(amount),
       amount,
       itemStyle: {
-        color: amount >= 0 ? '#4caf50' : '#f44336'
+        color: amount >= 0 ? A_SHARE_UP : A_SHARE_DOWN
       }
     }
   })
@@ -203,7 +207,7 @@ export function createSectorRotationRadarOption(
       splitLine: { lineStyle: { color: 'rgb(255 255 255 / 12%)' } },
       splitArea: { areaStyle: { color: ['transparent'] } },
       axisLine: { lineStyle: { color: 'rgb(255 255 255 / 20%)' } },
-      axisName: { color: '#d4af37', fontSize: 11 }
+      axisName: { color: ARTDECO_GOLD, fontSize: 11 }
     },
     series: [{
       type: 'radar',
@@ -211,8 +215,8 @@ export function createSectorRotationRadarOption(
         value: sectors.map(item => Number(Math.abs(toNumber(item.change)).toFixed(2))),
         name: '行业轮动强度',
         areaStyle: { color: 'rgb(212 175 55 / 25%)' },
-        lineStyle: { color: '#d4af37', width: 2 },
-        itemStyle: { color: '#d4af37' }
+        lineStyle: { color: ARTDECO_GOLD, width: 2 },
+        itemStyle: { color: ARTDECO_GOLD }
       }]
     }]
   }

@@ -1,4 +1,4 @@
-import { ref, computed, onMounted, onUnmounted, watch, type Ref } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, type ComputedRef, type Ref } from 'vue'
 import { marketService } from '@/api/services/marketService'
 import { useHeaderSummary } from '@/composables/useHeaderSummary'
 import { mockWebSocket } from '@/api/mockWebSocket'
@@ -35,6 +35,8 @@ export function useArtDecoDashboard() {
     const activeFlowTab: Ref<string> = ref('1day')
     const activePoolTab: Ref<string> = ref('watchlist')
     const refreshing: Ref<boolean> = ref(false)
+    const lastRequestId: Ref<string> = ref('')
+    const displayProcessTime: Ref<string> = ref('--')
     const trendData: Ref<number[]> = ref([])
     const activeStrategiesCount: Ref<number> = ref(0)
     const todayPnLValue: Ref<string> = ref('¥0.00')
@@ -95,19 +97,27 @@ export function useArtDecoDashboard() {
         { key: 'focus', label: '重点' }
     ]
 
-    const topStocks: Ref<TopStock[]> = ref([
-        { code: '600519', name: '贵州茅台', price: '1850.00', change: 2.1 },
-        { code: '300750', name: '宁德时代', price: '245.60', change: 1.8 },
-        { code: '000001', name: '平安银行', price: '12.85', change: -0.4 },
-        { code: '600036', name: '招商银行', price: '38.45', change: 0.9 }
-    ])
-
-    const stressTestResult: Ref<StressTestResult> = ref({
-        drawdown: 8.6,
-        var95: 4.2,
-        concentrationRisk: 3.1,
-        timestamp: ''
+    const stockPoolGroups: Ref<Record<string, TopStock[]>> = ref({
+        watchlist: [],
+        position: [],
+        focus: []
     })
+
+    const topStocks: ComputedRef<TopStock[]> = computed(() => {
+        return stockPoolGroups.value[activePoolTab.value] ?? []
+    })
+
+    const stockPoolNotice = computed(() => {
+        const labels: Record<string, string> = {
+            watchlist: '自选池',
+            position: '持仓池',
+            focus: '重点池'
+        }
+        const target = labels[activePoolTab.value] || '股票池'
+        return `${target}真实接口尚未接入，当前页面不再展示 mock 股票数据。`
+    })
+
+    const stressTestResult: Ref<StressTestResult | null> = ref(null)
 
     const indicatorsExpanded: Ref<boolean> = ref(true)
     const monitoringExpanded: Ref<boolean> = ref(true)
@@ -116,6 +126,45 @@ export function useArtDecoDashboard() {
         const numeric = Number(value)
         return Number.isFinite(numeric) ? numeric : fallback
     }
+
+    const formatBillions = (value: unknown): string => {
+        const normalized = toNumber(value)
+        return `${(normalized / 100000000).toFixed(2)}亿`
+    }
+
+    const formatProcessTime = (value: unknown): string => {
+        if (typeof value === 'number' && Number.isFinite(value)) {
+            return `${value.toFixed(0)}ms`
+        }
+
+        if (typeof value !== 'string') {
+            return '--'
+        }
+
+        const normalized = value.trim()
+        if (!normalized) {
+            return '--'
+        }
+
+        return /ms$/i.test(normalized) ? normalized : `${normalized}ms`
+    }
+
+    const captureTrace = (response: { request_id?: string; process_time?: string } | null | undefined): void => {
+        const requestId = response?.request_id?.trim()
+        if (requestId) {
+            lastRequestId.value = requestId
+        }
+
+        displayProcessTime.value = formatProcessTime(response?.process_time)
+    }
+
+    const dashboardAlerts = computed(() => {
+        return [error.value.market, error.value.fundFlow, error.value.industry].filter(Boolean)
+    })
+
+    const isStressTestDisabled = computed(() => {
+        return loading.value.market || loading.value.fundFlow || Boolean(error.value.market) || Boolean(error.value.fundFlow)
+    })
 
     const marketSentiment = computed(() => {
         const upCount = toNumber(marketData.value.stocks.up)
@@ -173,6 +222,7 @@ export function useArtDecoDashboard() {
 
         try {
             const response = await dashboardService.getMarketOverview(20)
+            captureTrace(response)
             const marketList = Array.isArray(response?.data)
                 ? response.data
                 : (Array.isArray(response) ? response : [])
@@ -191,6 +241,14 @@ export function useArtDecoDashboard() {
             if (marketList.length > 2) {
                 marketData.value.chuangye = formatIndex(marketList[2])
             }
+
+            if (marketList.length > 0) {
+                let totalVolume = 0
+                for (const item of marketList) {
+                    totalVolume += toNumber(item?.volume)
+                }
+                marketData.value.volume.amount = totalVolume > 0 ? formatBillions(totalVolume) : '--'
+            }
         } catch {
             error.value.market = '市场数据暂不可用'
         } finally {
@@ -204,6 +262,7 @@ export function useArtDecoDashboard() {
 
         try {
             const response = await dashboardService.getFundFlow()
+            captureTrace(response)
             const flowData = response?.data ?? response
 
             if (flowData && typeof flowData === 'object') {
@@ -233,6 +292,7 @@ export function useArtDecoDashboard() {
 
         try {
             const response = await dashboardService.getIndustryFlow('change_percent', 12)
+            captureTrace(response)
             const flowList = Array.isArray(response?.data)
                 ? response.data
                 : (Array.isArray(response) ? response : [])
@@ -242,9 +302,14 @@ export function useArtDecoDashboard() {
                 change: toNumber(item?.change),
                 amount: toNumber(item?.amount)
             }))
+
+            const rising = marketHeat.value.filter((item) => item.change > 0).length
+            const falling = marketHeat.value.filter((item) => item.change < 0).length
+            marketData.value.stocks = { up: rising, down: falling }
         } catch {
             marketHeat.value = []
             error.value.industry = '行业热度数据暂不可用'
+            marketData.value.stocks = { up: 0, down: 0 }
         } finally {
             loading.value.industry = false
         }
@@ -253,6 +318,7 @@ export function useArtDecoDashboard() {
     const fetchStockFlowRanking = async () => {
         try {
             const response = await dashboardService.getStockFlowRanking(activeFlowTab.value, 10)
+            captureTrace(response)
             const rankingList = Array.isArray(response?.data)
                 ? response.data
                 : (Array.isArray(response) ? response : [])
@@ -288,18 +354,22 @@ export function useArtDecoDashboard() {
         try {
             // 1. 获取策略数
             const stratRes = await dashboardService.getActiveStrategies(1) // mock uid
+            captureTrace(stratRes)
             activeStrategiesCount.value = stratRes.data?.length || 0
 
             // 2. 获取收益与风险
             const riskRes = await dashboardService.getPositionRisk(1)
+            captureTrace(riskRes)
             todayPnLValue.value = `¥${riskRes.data?.totalPnL?.toLocaleString() || '0.00'}`
 
             // 3. 获取系统健康度
             const healthRes = await dashboardService.getSystemHealth()
+            captureTrace(healthRes)
             systemHealth.value = (healthRes.data || []) as unknown as SystemHealthItem[]
 
             // 4. 获取技术指标建议
             const indRes = await dashboardService.getTechnicalIndicators(['000001.SH'], ['RSI', 'MACD', 'KDJ', 'BOLL'])
+            captureTrace(indRes)
             const stockInds = indRes.data?.['000001.SH'] || []
             if (stockInds.length > 0) {
                 indicatorList.value = stockInds as IndicatorItem[]
@@ -361,6 +431,10 @@ export function useArtDecoDashboard() {
     }
 
     const runOneClickStressTest = (): void => {
+        if (isStressTestDisabled.value) {
+            return
+        }
+
         const marketShock = Math.abs(toNumber(marketData.value.shanghai.change))
         const flowShock = Math.abs(toNumber(marketData.value.fundFlow.mainForce.amount)) / 10
         const breadthRisk = marketSentiment.value < 45 ? 1.2 : 0.6
@@ -382,8 +456,18 @@ export function useArtDecoDashboard() {
     headerSummary.setRefreshFn(refreshData)
 
     watch(
-      [marketStatus, activeStrategiesCount, todayPnLValue, currentTime, refreshing],
+      [marketStatus, activeStrategiesCount, todayPnLValue, currentTime, refreshing, lastRequestId, loading],
       () => {
+        const hasInitialSummaryTrace = Boolean(lastRequestId.value)
+        const isBootstrappingSummary =
+          !hasInitialSummaryTrace &&
+          (loading.value.market || loading.value.fundFlow || loading.value.strategies || loading.value.pnl)
+
+        if (isBootstrappingSummary) {
+          headerSummary.reset()
+          return
+        }
+
         headerSummary.update({
           marketStatus: marketStatus.value,
           activeStrategiesCount: activeStrategiesCount.value,
@@ -435,10 +519,13 @@ export function useArtDecoDashboard() {
     trendData,
     activeStrategiesCount,
     todayPnLValue,
+    lastRequestId,
+    displayProcessTime,
     indicatorList,
     systemHealth,
     loading,
     error,
+    dashboardAlerts,
     marketData,
     marketHeat,
     capitalFlowData,
@@ -452,6 +539,8 @@ export function useArtDecoDashboard() {
     sentimentColor,
     marketStatus,
     marketStatusType,
+    stockPoolNotice,
+    isStressTestDisabled,
     stressTestResult,
     handleIndicatorsToggle,
     handleMonitoringToggle,
