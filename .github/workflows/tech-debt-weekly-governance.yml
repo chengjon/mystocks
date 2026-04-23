@@ -58,6 +58,7 @@ jobs:
           TECH_DEBT_WEEKLY_REPORT_OUTPUT="${PWD}/reports/analysis/tech-debt-weekly-report-ci/weekly-report.md" \
           TECH_DEBT_CURRENT_JSON="${PWD}/reports/analysis/tech-debt-weekly-report-ci/tech-debt-current.json" \
           RUNTIME_DELIVERY_GATE_DIR="${PWD}/reports/analysis/runtime-delivery-gate-weekly" \
+          TECH_DEBT_WEEKLY_REQUIRE_VALID_CLOSEOUTS=1 \
           MPLCONFIGDIR="${PWD}/.tmp/matplotlib" \
           bash scripts/run_tech_debt_weekly_report.sh
 
@@ -112,6 +113,8 @@ jobs:
               "- Docker runtime smoke status:",
               "- Docker metrics http_requests_total delta:",
               "- Runtime drift gate:",
+              "- Graphiti closeout coverage:",
+              "- Graphiti closeout validity gate:",
           )
           for prefix in runtime_prefixes:
               for line in lines:
