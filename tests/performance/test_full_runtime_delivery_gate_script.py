@@ -13,6 +13,9 @@ def test_full_runtime_delivery_gate_script_runs_docker_smoke_then_combined_summa
     assert 'docker_dir="$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/docker-runtime-smoke/*")"' in script
     assert 'DOCKER_RUNTIME_DIR="${docker_dir}"' in script
     assert 'bash "${PROJECT_ROOT}/scripts/run_runtime_delivery_summary_local.sh"' in script
+    assert 'bash scripts/run_runtime_observability_drift_gate.sh' in script
+    assert 'RUNTIME_QUALITY_SUMMARY_JSON=${SUMMARY_DIR}/summary.json' in script
+    assert 'RUNTIME_OBSERVABILITY_DRIFT_REPORT_JSON=${SUMMARY_DIR}/runtime-observability-drift-report.json' in script
     assert 'runtime_observability_drift_pass' in script
     assert 'api_performance_drift_pass' in script
     assert 'monitoring_rule_metric_reference_pass' in script

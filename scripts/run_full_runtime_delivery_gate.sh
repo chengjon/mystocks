@@ -201,6 +201,7 @@ cat > "${SUMMARY_PATH}" <<EOF
 \`\`\`bash
 BUILD_TIMEOUT_SECONDS=${BUILD_TIMEOUT_SECONDS:-900} POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres} TDENGINE_PASSWORD=${TDENGINE_PASSWORD:-taosdata} bash scripts/run_containerized_runtime_smoke.sh
 DOCKER_RUNTIME_DIR=${docker_dir} RUNTIME_DELIVERY_SUMMARY_DIR=${SUMMARY_DIR} RUNTIME_DELIVERY_BUNDLE_DIR=${BUNDLE_DIR} bash scripts/run_runtime_delivery_summary_local.sh
+RUNTIME_OBSERVABILITY_BASELINE_JSON=reports/analysis/runtime-observability-baseline.json RUNTIME_QUALITY_SUMMARY_JSON=${SUMMARY_DIR}/summary.json RUNTIME_OBSERVABILITY_DRIFT_REPORT_JSON=${SUMMARY_DIR}/runtime-observability-drift-report.json bash scripts/run_runtime_observability_drift_gate.sh
 \`\`\`
 
 ## Artifacts

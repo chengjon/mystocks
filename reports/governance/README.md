@@ -97,8 +97,6 @@
 - `scripts/dev/quality_gate/collect_api_performance_baseline.py`
 - `scripts/dev/quality_gate/validate_api_performance_drift.py`
 - `scripts/dev/quality_gate/collect_runtime_observability_baseline.py`
-- `scripts/dev/quality_gate/validate_runtime_observability_drift.py`
-- `scripts/run_runtime_observability_drift_gate.sh`
 - `scripts/run_full_runtime_delivery_gate.sh`
 - `scripts/run_tech_debt_weekly_report.sh`
 - `.github/workflows/runtime-delivery-gate.yml`
