@@ -640,10 +640,10 @@ jobs:
 
     - name: Validate runtime observability drift
       run: |
-        python scripts/dev/quality_gate/validate_runtime_observability_drift.py \
-          --baseline reports/analysis/runtime-observability-baseline.json \
-          --current-summary-json reports/analysis/runtime-quality-summary-ci/summary.json \
-          --output reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json
+        RUNTIME_OBSERVABILITY_BASELINE_JSON=reports/analysis/runtime-observability-baseline.json \
+        RUNTIME_QUALITY_SUMMARY_JSON=reports/analysis/runtime-quality-summary-ci/summary.json \
+        RUNTIME_OBSERVABILITY_DRIFT_REPORT_JSON=reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json \
+          bash scripts/run_runtime_observability_drift_gate.sh
 
     - name: Rebuild combined runtime quality summary with drift report
       run: |

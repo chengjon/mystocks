@@ -88,6 +88,7 @@
 当前运行门禁 / 可观测性基线补充使用以下工件：
 
 - `reports/analysis/runtime-observability-baseline.json`
+- `scripts/run_runtime_observability_drift_gate.sh`
 - `reports/analysis/api-performance-baseline.json`
 - `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate.json`
 - `reports/analysis/api-monitoring-auth-gate/<timestamp>/monitoring-auth-performance-gate-graphiti-closeout.json`
@@ -97,6 +98,7 @@
 - `scripts/dev/quality_gate/validate_api_performance_drift.py`
 - `scripts/dev/quality_gate/collect_runtime_observability_baseline.py`
 - `scripts/dev/quality_gate/validate_runtime_observability_drift.py`
+- `scripts/run_runtime_observability_drift_gate.sh`
 - `scripts/run_full_runtime_delivery_gate.sh`
 - `scripts/run_tech_debt_weekly_report.sh`
 - `.github/workflows/runtime-delivery-gate.yml`
