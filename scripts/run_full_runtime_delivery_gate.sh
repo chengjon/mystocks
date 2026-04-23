@@ -13,6 +13,7 @@ COMBINED_SUMMARY_LOG="${REPORT_DIR}/runtime-delivery-summary.log"
 SUMMARY_PATH="${REPORT_DIR}/SUMMARY.md"
 MANIFEST_PATH="${REPORT_DIR}/runtime-delivery-gate-manifest.json"
 GRAPHITI_CLOSEOUT_REPORT="${REPORT_DIR}/runtime-delivery-gate-graphiti-closeout.json"
+CHILD_GATE_CLOSEOUT_VALIDATION_REPORT="${REPORT_DIR}/runtime-child-gate-closeout-validation.json"
 
 mkdir -p "${REPORT_DIR}"
 
@@ -51,7 +52,33 @@ RUNTIME_DELIVERY_SUMMARY_DIR="${SUMMARY_DIR}" \
 RUNTIME_DELIVERY_BUNDLE_DIR="${BUNDLE_DIR}" \
     bash "${PROJECT_ROOT}/scripts/run_runtime_delivery_summary_local.sh" 2>&1 | tee "${COMBINED_SUMMARY_LOG}"
 
-python - <<'PY' "${SUMMARY_DIR}/summary.json" "${SUMMARY_DIR}/runtime-observability-drift-report.json" "${SUMMARY_DIR}/api-performance-drift-report.json" "${SUMMARY_DIR}/monitoring-rule-metric-reference-report.json" "${SUMMARY_DIR}/backend-runtime-dependency-report.json" "${SUMMARY_DIR}/container-deployment-contract-report.json" "${SUMMARY_DIR}/deployment-env-contract-report.json" "${BUNDLE_DIR}/runtime-artifact-manifest.json" "${BUNDLE_DIR}/runtime-artifact-index.md" "${docker_dir}/SUMMARY.md" "${docker_dir}/docker-runtime-smoke.json" "${SUMMARY_PATH}" "${MANIFEST_PATH}" "${GRAPHITI_CLOSEOUT_REPORT}"
+frontend_dir="${FRONTEND_RUNTIME_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/frontend-runtime-gate/*")}"
+api_dir="${API_PERFORMANCE_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/api-performance-gate/*")}"
+
+if [ -z "${frontend_dir}" ] || [ -z "${api_dir}" ]; then
+    printf 'Full runtime delivery gate requires frontend/api gate dirs to validate child closeouts\n' >&2
+    exit 1
+fi
+
+if [ "${DISABLE_RUNTIME_CHILD_GATE_CLOSEOUT_VALIDATION:-0}" = "1" ]; then
+    cat > "${CHILD_GATE_CLOSEOUT_VALIDATION_REPORT}" <<EOF
+{
+  "pass": false,
+  "status": "skipped_disabled",
+  "reason": "DISABLE_RUNTIME_CHILD_GATE_CLOSEOUT_VALIDATION=1",
+  "items": []
+}
+EOF
+else
+    python "${PROJECT_ROOT}/scripts/runtime/validate_runtime_child_gate_closeouts.py" \
+        --frontend-closeout-json "${frontend_dir}/frontend-runtime-gate-graphiti-closeout.json" \
+        --api-closeout-json "${api_dir}/api-performance-gate-graphiti-closeout.json" \
+        --docker-closeout-json "${docker_dir}/docker-runtime-smoke-graphiti-closeout.json" \
+        --output "${CHILD_GATE_CLOSEOUT_VALIDATION_REPORT}" \
+        --fail-on-invalid
+fi
+
+python - <<'PY' "${SUMMARY_DIR}/summary.json" "${SUMMARY_DIR}/runtime-observability-drift-report.json" "${SUMMARY_DIR}/api-performance-drift-report.json" "${SUMMARY_DIR}/monitoring-rule-metric-reference-report.json" "${SUMMARY_DIR}/backend-runtime-dependency-report.json" "${SUMMARY_DIR}/container-deployment-contract-report.json" "${SUMMARY_DIR}/deployment-env-contract-report.json" "${BUNDLE_DIR}/runtime-artifact-manifest.json" "${BUNDLE_DIR}/runtime-artifact-index.md" "${docker_dir}/SUMMARY.md" "${docker_dir}/docker-runtime-smoke.json" "${SUMMARY_PATH}" "${MANIFEST_PATH}" "${GRAPHITI_CLOSEOUT_REPORT}" "${CHILD_GATE_CLOSEOUT_VALIDATION_REPORT}"
 import json
 import sys
 from pathlib import Path
@@ -70,6 +97,7 @@ docker_runtime_report_path = Path(sys.argv[11]).resolve()
 gate_summary_path = Path(sys.argv[12]).resolve()
 manifest_path = Path(sys.argv[13]).resolve()
 graphiti_closeout_report_path = Path(sys.argv[14]).resolve()
+child_gate_closeout_validation_report_path = Path(sys.argv[15]).resolve()
 
 runtime_summary = json.loads(runtime_summary_path.read_text(encoding="utf-8"))
 drift_report = json.loads(drift_report_path.read_text(encoding="utf-8"))
@@ -85,6 +113,11 @@ deployment_env_contract_report = json.loads(deployment_env_contract_report_path.
 docker_runtime_report = (
     json.loads(docker_runtime_report_path.read_text(encoding="utf-8"))
     if docker_runtime_report_path.exists()
+    else None
+)
+child_gate_closeout_validation_report = (
+    json.loads(child_gate_closeout_validation_report_path.read_text(encoding="utf-8"))
+    if child_gate_closeout_validation_report_path.exists()
     else None
 )
 
@@ -104,6 +137,9 @@ manifest = {
     "container_deployment_contract_violations": len(container_deployment_contract_report.get("violations", [])),
     "deployment_env_contract_pass": deployment_env_contract_report.get("pass"),
     "deployment_env_contract_violations": len(deployment_env_contract_report.get("violations", [])),
+    "child_gate_closeouts_pass": None if child_gate_closeout_validation_report is None else child_gate_closeout_validation_report.get("pass"),
+    "child_gate_closeouts_valid_count": 0 if child_gate_closeout_validation_report is None else child_gate_closeout_validation_report.get("valid_count"),
+    "child_gate_closeouts_invalid_count": 0 if child_gate_closeout_validation_report is None else child_gate_closeout_validation_report.get("invalid_count"),
     "docker_runtime_smoke_checks": None if docker_runtime_report is None else docker_runtime_report.get("checks"),
     "docker_runtime_service_role": None if docker_runtime_report is None else docker_runtime_report.get("service_role"),
     "docker_runtime_service_url_roles": None if docker_runtime_report is None else docker_runtime_report.get("service_url_roles"),
@@ -116,6 +152,7 @@ manifest = {
         "backend_runtime_dependency_report": str(backend_runtime_dependency_report_path),
         "container_deployment_contract_report": str(container_deployment_contract_report_path),
         "deployment_env_contract_report": str(deployment_env_contract_report_path),
+        "child_gate_closeout_validation_report": None if child_gate_closeout_validation_report is None else str(child_gate_closeout_validation_report_path),
         "runtime_bundle_manifest": str(bundle_manifest_path),
         "runtime_bundle_index": str(bundle_index_path),
         "docker_smoke_summary": str(docker_summary_path),
@@ -173,6 +210,7 @@ DOCKER_RUNTIME_DIR=${docker_dir} RUNTIME_DELIVERY_SUMMARY_DIR=${SUMMARY_DIR} RUN
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${SUMMARY_DIR}/backend-runtime-dependency-report.json")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${SUMMARY_DIR}/container-deployment-contract-report.json")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${SUMMARY_DIR}/deployment-env-contract-report.json")\`
+- \`$(realpath --relative-to="${PROJECT_ROOT}" "${CHILD_GATE_CLOSEOUT_VALIDATION_REPORT}")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${BUNDLE_DIR}/runtime-artifact-index.md")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${MANIFEST_PATH}")\`
 - \`$(realpath --relative-to="${PROJECT_ROOT}" "${GRAPHITI_CLOSEOUT_REPORT}")\`

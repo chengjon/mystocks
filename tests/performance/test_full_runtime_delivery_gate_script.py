@@ -23,10 +23,20 @@ def test_full_runtime_delivery_gate_script_runs_docker_smoke_then_combined_summa
     assert 'docker_runtime_service_role' in script
     assert 'docker_runtime_service_url_roles' in script
     assert 'GRAPHITI_CLOSEOUT_REPORT="${REPORT_DIR}/runtime-delivery-gate-graphiti-closeout.json"' in script
+    assert 'CHILD_GATE_CLOSEOUT_VALIDATION_REPORT="${REPORT_DIR}/runtime-child-gate-closeout-validation.json"' in script
     assert '"${SUMMARY_DIR}/backend-runtime-dependency-report.json"' in script
     assert '"${SUMMARY_DIR}/container-deployment-contract-report.json"' in script
     assert '"${SUMMARY_DIR}/deployment-env-contract-report.json"' in script
     assert '"${docker_dir}/docker-runtime-smoke.json"' in script
+    assert 'frontend_dir="${FRONTEND_RUNTIME_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/frontend-runtime-gate/*")}"' in script
+    assert 'api_dir="${API_PERFORMANCE_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/api-performance-gate/*")}"' in script
+    assert 'if [ "${DISABLE_RUNTIME_CHILD_GATE_CLOSEOUT_VALIDATION:-0}" = "1" ]; then' in script
+    assert 'python "${PROJECT_ROOT}/scripts/runtime/validate_runtime_child_gate_closeouts.py" \\' in script
+    assert '--frontend-closeout-json "${frontend_dir}/frontend-runtime-gate-graphiti-closeout.json" \\' in script
+    assert '--api-closeout-json "${api_dir}/api-performance-gate-graphiti-closeout.json" \\' in script
+    assert '--docker-closeout-json "${docker_dir}/docker-runtime-smoke-graphiti-closeout.json" \\' in script
+    assert '--output "${CHILD_GATE_CLOSEOUT_VALIDATION_REPORT}" \\' in script
+    assert '--fail-on-invalid' in script
     assert 'if [ "${DISABLE_RUNTIME_GATE_GRAPHITI_CLOSEOUT:-0}" = "1" ]; then' in script
     assert 'python "${PROJECT_ROOT}/scripts/runtime/record_runtime_delivery_gate_closeout.py"' in script
     assert '--manifest-path "${MANIFEST_PATH}"' in script
@@ -51,6 +61,7 @@ def test_full_runtime_delivery_gate_script_persists_summary_and_artifact_links()
     assert 'backend-runtime-dependency-report.json' in script
     assert 'container-deployment-contract-report.json' in script
     assert 'deployment-env-contract-report.json' in script
+    assert 'runtime-child-gate-closeout-validation.json' in script
     assert 'runtime-artifact-index.md' in script
     assert 'runtime-delivery-gate-manifest.json' in script
     assert 'runtime-delivery-gate-graphiti-closeout.json' in script
