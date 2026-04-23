@@ -1,4 +1,5 @@
 import { computed, ref } from 'vue'
+import { resolveRuntimeApiBase } from '@/config/runtime-endpoints'
 
 export type BackendReadinessState = 'checking' | 'ready' | 'error'
 
@@ -28,7 +29,7 @@ export function isAutomationBrowserSession(navigatorLike: Navigator | undefined 
 }
 
 export function resolveReadinessEndpoint(apiBaseUrl = String(import.meta.env.VITE_API_BASE_URL || '/api')): string {
-  const normalizedBase = apiBaseUrl.trim().replace(/\/+$/, '') || '/api'
+  const normalizedBase = resolveRuntimeApiBase(apiBaseUrl).trim().replace(/\/+$/, '') || '/api'
 
   if (normalizedBase === '/api' || normalizedBase.endsWith('/api')) {
     return `${normalizedBase}/health/ready`

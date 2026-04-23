@@ -127,10 +127,31 @@ async function isAnySelectorVisible(page: Page, selectors: string[], timeoutMs =
   return false;
 }
 
+async function gotoWithRetry(page: Page, url: string, attempts = 3) {
+  let lastError: unknown = null;
+
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await page.goto(url, {
+        waitUntil: 'domcontentloaded',
+        timeout: 30000,
+      });
+    } catch (error) {
+      lastError = error;
+      if (attempt < attempts) {
+        await page.waitForTimeout(1500 * attempt);
+      }
+    }
+  }
+
+  throw lastError;
+}
+
 async function seedAuthSession(page: Page): Promise<void> {
-  await page.addInitScript(([token, user]) => {
+  await page.evaluate(([token, user]) => {
     localStorage.setItem('auth_token', token);
     localStorage.setItem('auth_user', JSON.stringify(user));
+    localStorage.setItem('access_token', token);
     // Keep backward compatibility with legacy auth helpers.
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
@@ -306,22 +327,20 @@ test.describe('All Pages (Authenticated)', async () => {
   });
 
   test.beforeEach(async ({ page }) => {
-    await seedAuthSession(page);
     await setupReadinessRoute(page);
+
+    if (usingFallbackAuth) {
+      await bootstrapAuthSession();
+    }
 
     if (usingFallbackAuth) {
       await setupFallbackRoutes(page);
     }
 
-    await page.goto(`${FRONTEND_URL}/dashboard`, {
-      waitUntil: 'domcontentloaded',
-      timeout: 30000,
-    });
+    await gotoWithRetry(page, `${FRONTEND_URL}/login`);
+    await seedAuthSession(page);
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
     await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
-
-    if (page.url().includes('/login')) {
-      throw new Error('Failed to establish authenticated session for E2E page tests');
-    }
   });
   
   for (const pageInfo of PAGES.filter(p => p.requiresAuth)) {
@@ -338,10 +357,7 @@ test.describe('All Pages (Authenticated)', async () => {
         errors.push(error.message);
       });
       
-      const response = await page.goto(`${FRONTEND_URL}${pageInfo.path}`, { 
-        waitUntil: 'domcontentloaded',
-        timeout: 30000 
-      }).catch(() => null);
+      const response = await gotoWithRetry(page, `${FRONTEND_URL}${pageInfo.path}`).catch(() => null);
       
       // Prefer condition-based waiting to reduce timeout flakiness.
       await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});

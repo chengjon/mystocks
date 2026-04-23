@@ -12,7 +12,11 @@ describe('useBackendReadiness helpers', () => {
   })
 
   it('resolves readiness endpoint for absolute backend base path', () => {
-    expect(resolveReadinessEndpoint('http://localhost:8020')).toBe('http://localhost:8020/api/health/ready')
+    expect(resolveReadinessEndpoint('http://localhost:8020')).toBe('/api/health/ready')
+  })
+
+  it('keeps explicit non-loopback backend base paths', () => {
+    expect(resolveReadinessEndpoint('https://api.mystocks.test')).toBe('https://api.mystocks.test/api/health/ready')
   })
 
   it('detects automation browser sessions via navigator.webdriver', () => {

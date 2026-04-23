@@ -1,4 +1,7 @@
 const isDev = import.meta.env.DEV
+const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1'])
+
+type BrowserLocationLike = Pick<Location, 'protocol' | 'host' | 'hostname' | 'origin'>
 
 const trimValue = (value: unknown): string => {
   if (typeof value !== 'string') {
@@ -12,12 +15,45 @@ const toWsProtocol = (protocol: string): string => (protocol === 'https:' ? 'wss
 const apiBaseFromEnv = trimValue(import.meta.env.VITE_API_BASE_URL)
 const wsBaseFromEnv = trimValue(import.meta.env.VITE_WS_BASE_URL)
 
-const browserApiBase =
-  typeof window !== 'undefined' ? `${window.location.protocol}//${window.location.host}` : ''
+function getBrowserApiBase(locationLike?: BrowserLocationLike): string {
+  return locationLike ? `${locationLike.protocol}//${locationLike.host}` : ''
+}
 
-const defaultApiBase = isDev ? '/api' : browserApiBase
+export function resolveRuntimeApiBase(
+  apiBaseUrl = apiBaseFromEnv,
+  locationLike: BrowserLocationLike | undefined = typeof window !== 'undefined' ? window.location : undefined,
+  devMode = isDev
+): string {
+  const normalizedEnvBase = trimValue(apiBaseUrl)
+  const browserApiBase = getBrowserApiBase(locationLike)
+  const defaultApiBase = devMode ? '/api' : browserApiBase
 
-export const API_BASE_URL = apiBaseFromEnv || defaultApiBase
+  if (!normalizedEnvBase) {
+    return defaultApiBase
+  }
+
+  if (!devMode || !locationLike) {
+    return normalizedEnvBase
+  }
+
+  try {
+    const parsedBase = new URL(normalizedEnvBase)
+    if (
+      (parsedBase.protocol === 'http:' || parsedBase.protocol === 'https:') &&
+      LOOPBACK_HOSTS.has(parsedBase.hostname) &&
+      LOOPBACK_HOSTS.has(locationLike.hostname) &&
+      parsedBase.origin !== locationLike.origin
+    ) {
+      return '/api'
+    }
+  } catch {
+    return normalizedEnvBase
+  }
+
+  return normalizedEnvBase
+}
+
+export const API_BASE_URL = resolveRuntimeApiBase()
 
 const derivedWsBase = (() => {
   const source = API_BASE_URL
