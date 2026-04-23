@@ -9,6 +9,7 @@ from typing import Any
 EXPECTED_CLOSEOUTS = (
     ("frontend_runtime_gate", "Frontend runtime gate", "mystocks_spec_quality_gates"),
     ("api_performance_gate", "API performance gate", "mystocks_spec_quality_gates"),
+    ("monitoring_auth_performance_gate", "Monitoring auth performance gate", "mystocks_spec_quality_gates"),
     ("docker_runtime_smoke", "Docker runtime smoke", "mystocks_spec_quality_gates"),
 )
 
@@ -111,6 +112,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Validate child gate Graphiti closeouts for the full runtime delivery gate.")
     parser.add_argument("--frontend-closeout-json", required=True)
     parser.add_argument("--api-closeout-json", required=True)
+    parser.add_argument("--monitoring-closeout-json", required=True)
     parser.add_argument("--docker-closeout-json", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--fail-on-invalid", action="store_true")
@@ -122,6 +124,7 @@ def main(argv: list[str] | None = None) -> int:
     closeouts = {
         "frontend_runtime_gate": load_payload(Path(args.frontend_closeout_json)),
         "api_performance_gate": load_payload(Path(args.api_closeout_json)),
+        "monitoring_auth_performance_gate": load_payload(Path(args.monitoring_closeout_json)),
         "docker_runtime_smoke": load_payload(Path(args.docker_closeout_json)),
     }
     report = validate_closeouts(closeouts)

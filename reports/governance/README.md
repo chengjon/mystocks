@@ -90,6 +90,7 @@
 - `reports/analysis/runtime-observability-baseline.json`
 - `reports/analysis/api-performance-baseline.json`
 - `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate.json`
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/monitoring-auth-performance-gate-graphiti-closeout.json`
 - `reports/governance/2026-04-22-api-performance-baseline-governance.md`
 - `scripts/dev/quality_gate/collect_frontend_runtime_gate.py`
 - `scripts/dev/quality_gate/collect_api_performance_baseline.py`
@@ -106,6 +107,7 @@
 - `reports/analysis/runtime-delivery-gate/<timestamp>/runtime-delivery-gate-graphiti-closeout.json`
 - `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate-graphiti-closeout.json`
 - `reports/analysis/api-performance-gate/<timestamp>/api-performance-gate-graphiti-closeout.json`
+- `reports/analysis/api-monitoring-auth-gate/<timestamp>/monitoring-auth-performance-gate-graphiti-closeout.json`
 - `reports/analysis/docker-runtime-smoke/<timestamp>/docker-runtime-smoke-graphiti-closeout.json`
 - `scripts/runtime/record_runtime_delivery_gate_closeout.py`
 - `scripts/runtime/record_quality_gate_closeout.py`

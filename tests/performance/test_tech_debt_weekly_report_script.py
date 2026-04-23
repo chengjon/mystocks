@@ -14,10 +14,12 @@ def test_tech_debt_weekly_report_script_has_stable_entrypoint_contract():
     assert 'RUNTIME_GATE_DIR="${RUNTIME_DELIVERY_GATE_DIR:-}"' in script
     assert 'FRONTEND_GATE_DIR="${FRONTEND_RUNTIME_GATE_DIR:-}"' in script
     assert 'API_GATE_DIR="${API_PERFORMANCE_GATE_DIR:-}"' in script
+    assert 'MONITORING_GATE_DIR="${MONITORING_AUTH_GATE_DIR:-}"' in script
     assert 'DOCKER_GATE_DIR="${DOCKER_RUNTIME_GATE_DIR:-${DOCKER_RUNTIME_DIR:-}}"' in script
     assert 'RUNTIME_GATE_CLOSEOUT_JSON="${RUNTIME_GATE_CLOSEOUT_JSON:-}"' in script
     assert 'FRONTEND_GATE_CLOSEOUT_JSON="${FRONTEND_GATE_CLOSEOUT_JSON:-}"' in script
     assert 'API_GATE_CLOSEOUT_JSON="${API_GATE_CLOSEOUT_JSON:-}"' in script
+    assert 'MONITORING_GATE_CLOSEOUT_JSON="${MONITORING_GATE_CLOSEOUT_JSON:-}"' in script
     assert 'DOCKER_GATE_CLOSEOUT_JSON="${DOCKER_GATE_CLOSEOUT_JSON:-}"' in script
     assert 'REQUIRE_VALID_CLOSEOUTS="${TECH_DEBT_WEEKLY_REQUIRE_VALID_CLOSEOUTS:-1}"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/collect_tech_debt_baseline.py" --output "${CURRENT_METRICS_PATH}"' in script
@@ -28,6 +30,7 @@ def test_tech_debt_weekly_report_script_has_stable_entrypoint_contract():
     assert 'if [ -n "${RUNTIME_GATE_CLOSEOUT_JSON}" ]; then' in script
     assert 'if [ -n "${FRONTEND_GATE_CLOSEOUT_JSON}" ]; then' in script
     assert 'if [ -n "${API_GATE_CLOSEOUT_JSON}" ]; then' in script
+    assert 'if [ -n "${MONITORING_GATE_CLOSEOUT_JSON}" ]; then' in script
     assert 'if [ -n "${DOCKER_GATE_CLOSEOUT_JSON}" ]; then' in script
     assert 'if [ "${REQUIRE_VALID_CLOSEOUTS}" = "1" ] || [ "${REQUIRE_VALID_CLOSEOUTS}" = "true" ]; then' in script
     assert 'cmd+=(--fail-on-invalid-closeouts)' in script

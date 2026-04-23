@@ -16,10 +16,12 @@ RUNTIME_SUMMARY_JSON="${RUNTIME_SUMMARY_JSON:-}"
 RUNTIME_CURRENT_JSON="${RUNTIME_CURRENT_JSON:-}"
 FRONTEND_GATE_DIR="${FRONTEND_RUNTIME_GATE_DIR:-}"
 API_GATE_DIR="${API_PERFORMANCE_GATE_DIR:-}"
+MONITORING_GATE_DIR="${MONITORING_AUTH_GATE_DIR:-}"
 DOCKER_GATE_DIR="${DOCKER_RUNTIME_GATE_DIR:-${DOCKER_RUNTIME_DIR:-}}"
 RUNTIME_GATE_CLOSEOUT_JSON="${RUNTIME_GATE_CLOSEOUT_JSON:-}"
 FRONTEND_GATE_CLOSEOUT_JSON="${FRONTEND_GATE_CLOSEOUT_JSON:-}"
 API_GATE_CLOSEOUT_JSON="${API_GATE_CLOSEOUT_JSON:-}"
+MONITORING_GATE_CLOSEOUT_JSON="${MONITORING_GATE_CLOSEOUT_JSON:-}"
 DOCKER_GATE_CLOSEOUT_JSON="${DOCKER_GATE_CLOSEOUT_JSON:-}"
 REQUIRE_VALID_CLOSEOUTS="${TECH_DEBT_WEEKLY_REQUIRE_VALID_CLOSEOUTS:-1}"
 THRESHOLD="${TECH_DEBT_WEEKLY_THRESHOLD:-800}"
@@ -62,6 +64,10 @@ if [ -z "${DOCKER_GATE_DIR}" ]; then
     DOCKER_GATE_DIR="$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/docker-runtime-smoke/*")"
 fi
 
+if [ -z "${MONITORING_GATE_DIR}" ]; then
+    MONITORING_GATE_DIR="$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/api-monitoring-auth-gate/*")"
+fi
+
 if [ -n "${RUNTIME_GATE_DIR}" ] && [ -z "${RUNTIME_GATE_CLOSEOUT_JSON}" ] && [ -f "${RUNTIME_GATE_DIR}/runtime-delivery-gate-graphiti-closeout.json" ]; then
     RUNTIME_GATE_CLOSEOUT_JSON="${RUNTIME_GATE_DIR}/runtime-delivery-gate-graphiti-closeout.json"
 fi
@@ -72,6 +78,10 @@ fi
 
 if [ -n "${API_GATE_DIR}" ] && [ -z "${API_GATE_CLOSEOUT_JSON}" ] && [ -f "${API_GATE_DIR}/api-performance-gate-graphiti-closeout.json" ]; then
     API_GATE_CLOSEOUT_JSON="${API_GATE_DIR}/api-performance-gate-graphiti-closeout.json"
+fi
+
+if [ -n "${MONITORING_GATE_DIR}" ] && [ -z "${MONITORING_GATE_CLOSEOUT_JSON}" ] && [ -f "${MONITORING_GATE_DIR}/monitoring-auth-performance-gate-graphiti-closeout.json" ]; then
+    MONITORING_GATE_CLOSEOUT_JSON="${MONITORING_GATE_DIR}/monitoring-auth-performance-gate-graphiti-closeout.json"
 fi
 
 if [ -n "${DOCKER_GATE_DIR}" ] && [ -z "${DOCKER_GATE_CLOSEOUT_JSON}" ] && [ -f "${DOCKER_GATE_DIR}/docker-runtime-smoke-graphiti-closeout.json" ]; then
@@ -117,6 +127,10 @@ fi
 
 if [ -n "${API_GATE_CLOSEOUT_JSON}" ]; then
     cmd+=(--api-gate-closeout-json "${API_GATE_CLOSEOUT_JSON}")
+fi
+
+if [ -n "${MONITORING_GATE_CLOSEOUT_JSON}" ]; then
+    cmd+=(--monitoring-gate-closeout-json "${MONITORING_GATE_CLOSEOUT_JSON}")
 fi
 
 if [ -n "${DOCKER_GATE_CLOSEOUT_JSON}" ]; then

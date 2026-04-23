@@ -16,6 +16,12 @@ def test_validate_closeouts_passes_for_completed_child_gate_closeouts() -> None:
                 "group_id": "mystocks_spec_quality_gates",
                 "ingest_status": "completed",
             },
+            "monitoring_auth_performance_gate": {
+                "status": "completed",
+                "episode_uuid": "ep-monitoring",
+                "group_id": "mystocks_spec_quality_gates",
+                "ingest_status": "warming",
+            },
             "docker_runtime_smoke": {
                 "status": "completed",
                 "episode_uuid": "ep-docker",
@@ -26,9 +32,9 @@ def test_validate_closeouts_passes_for_completed_child_gate_closeouts() -> None:
     )
 
     assert report["pass"] is True
-    assert report["valid_count"] == 3
+    assert report["valid_count"] == 4
     assert report["invalid_count"] == 0
-    assert [item["reason"] for item in report["items"]] == ["ok", "ok", "ok"]
+    assert [item["reason"] for item in report["items"]] == ["ok", "ok", "ok", "ok"]
 
 
 def test_validate_closeouts_flags_missing_and_invalid_child_gate_closeouts() -> None:
@@ -51,7 +57,8 @@ def test_validate_closeouts_flags_missing_and_invalid_child_gate_closeouts() -> 
 
     assert report["pass"] is False
     assert report["valid_count"] == 0
-    assert report["invalid_count"] == 3
+    assert report["invalid_count"] == 4
     assert items["frontend_runtime_gate"]["reason"] == "status=invalid_payload"
     assert items["api_performance_gate"]["reason"] == "group_id=wrong-group"
+    assert items["monitoring_auth_performance_gate"]["reason"] == "missing_closeout"
     assert items["docker_runtime_smoke"]["reason"] == "missing_closeout"

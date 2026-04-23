@@ -30,10 +30,12 @@ def test_full_runtime_delivery_gate_script_runs_docker_smoke_then_combined_summa
     assert '"${docker_dir}/docker-runtime-smoke.json"' in script
     assert 'frontend_dir="${FRONTEND_RUNTIME_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/frontend-runtime-gate/*")}"' in script
     assert 'api_dir="${API_PERFORMANCE_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/api-performance-gate/*")}"' in script
+    assert 'monitoring_dir="${MONITORING_AUTH_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/api-monitoring-auth-gate/*")}"' in script
     assert 'if [ "${DISABLE_RUNTIME_CHILD_GATE_CLOSEOUT_VALIDATION:-0}" = "1" ]; then' in script
     assert 'python "${PROJECT_ROOT}/scripts/runtime/validate_runtime_child_gate_closeouts.py" \\' in script
     assert '--frontend-closeout-json "${frontend_dir}/frontend-runtime-gate-graphiti-closeout.json" \\' in script
     assert '--api-closeout-json "${api_dir}/api-performance-gate-graphiti-closeout.json" \\' in script
+    assert '--monitoring-closeout-json "${monitoring_dir}/monitoring-auth-performance-gate-graphiti-closeout.json" \\' in script
     assert '--docker-closeout-json "${docker_dir}/docker-runtime-smoke-graphiti-closeout.json" \\' in script
     assert '--output "${CHILD_GATE_CLOSEOUT_VALIDATION_REPORT}" \\' in script
     assert '--fail-on-invalid' in script

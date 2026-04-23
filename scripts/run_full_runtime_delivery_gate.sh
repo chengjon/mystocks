@@ -54,9 +54,10 @@ RUNTIME_DELIVERY_BUNDLE_DIR="${BUNDLE_DIR}" \
 
 frontend_dir="${FRONTEND_RUNTIME_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/frontend-runtime-gate/*")}"
 api_dir="${API_PERFORMANCE_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/api-performance-gate/*")}"
+monitoring_dir="${MONITORING_AUTH_DIR:-$(resolve_latest_dir "${PROJECT_ROOT}/reports/analysis/api-monitoring-auth-gate/*")}"
 
-if [ -z "${frontend_dir}" ] || [ -z "${api_dir}" ]; then
-    printf 'Full runtime delivery gate requires frontend/api gate dirs to validate child closeouts\n' >&2
+if [ -z "${frontend_dir}" ] || [ -z "${api_dir}" ] || [ -z "${monitoring_dir}" ]; then
+    printf 'Full runtime delivery gate requires frontend/api/monitoring gate dirs to validate child closeouts\n' >&2
     exit 1
 fi
 
@@ -73,6 +74,7 @@ else
     python "${PROJECT_ROOT}/scripts/runtime/validate_runtime_child_gate_closeouts.py" \
         --frontend-closeout-json "${frontend_dir}/frontend-runtime-gate-graphiti-closeout.json" \
         --api-closeout-json "${api_dir}/api-performance-gate-graphiti-closeout.json" \
+        --monitoring-closeout-json "${monitoring_dir}/monitoring-auth-performance-gate-graphiti-closeout.json" \
         --docker-closeout-json "${docker_dir}/docker-runtime-smoke-graphiti-closeout.json" \
         --output "${CHILD_GATE_CLOSEOUT_VALIDATION_REPORT}" \
         --fail-on-invalid

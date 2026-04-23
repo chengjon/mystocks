@@ -15,6 +15,7 @@ METRICS_BASELINE_RAW_PATH="${REPORT_DIR}/metrics.baseline.raw.txt"
 METRICS_RAW_PATH="${REPORT_DIR}/metrics.raw.txt"
 METRICS_HEALTH_PATH="${REPORT_DIR}/metrics-health.json"
 METRICS_SUMMARY_PATH="${REPORT_DIR}/metrics-summary.json"
+GRAPHITI_CLOSEOUT_REPORT="${REPORT_DIR}/monitoring-auth-performance-gate-graphiti-closeout.json"
 ENDPOINTS_FILE="${PROJECT_ROOT}/tests/performance/monitoring_auth_endpoints.json"
 
 mkdir -p "${REPORT_DIR}"
@@ -175,5 +176,24 @@ lines.extend([
 
 summary_path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 PY
+
+if [ "${DISABLE_QUALITY_GATE_GRAPHITI_CLOSEOUT:-0}" = "1" ]; then
+    cat > "${GRAPHITI_CLOSEOUT_REPORT}" <<EOF
+{
+  "status": "skipped_disabled",
+  "reason": "DISABLE_QUALITY_GATE_GRAPHITI_CLOSEOUT=1",
+  "report_dir": "${REPORT_DIR}",
+  "gate_kind": "monitoring-auth-performance-gate"
+}
+EOF
+else
+    python "${PROJECT_ROOT}/scripts/runtime/record_quality_gate_closeout.py" \
+        --gate-kind monitoring-auth-performance-gate \
+        --project-root "${PROJECT_ROOT}" \
+        --report-dir "${REPORT_DIR}" \
+        --output json > "${GRAPHITI_CLOSEOUT_REPORT}"
+fi
+
+printf -- '- `%s`\n' "$(realpath --relative-to="${PROJECT_ROOT}" "${GRAPHITI_CLOSEOUT_REPORT}")" >> "${SUMMARY_PATH}"
 
 printf 'Monitoring auth performance baseline written to %s\n' "${SUMMARY_PATH}"

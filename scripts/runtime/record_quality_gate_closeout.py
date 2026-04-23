@@ -168,6 +168,17 @@ def _load_gate_artifacts(gate_kind: str, report_dir: Path) -> dict[str, Any]:
                 "docker_runtime": load_json(docker_json_path),
             },
         }
+    if gate_kind == "monitoring-auth-performance-gate":
+        benchmark_path = report_dir / "benchmark.json"
+        return {
+            "summary_path": report_dir / "SUMMARY.md",
+            "primary_json_path": benchmark_path,
+            "artifacts": {
+                "benchmark": load_json(benchmark_path),
+                "metrics_summary": load_json(report_dir / "metrics-summary.json"),
+                "login_response": load_json(report_dir / "login-response.json"),
+            },
+        }
     raise ValueError(f"Unsupported gate kind: {gate_kind}")
 
 
@@ -207,6 +218,12 @@ def _docker_gate_pass(payload: dict[str, Any]) -> bool:
     )
 
 
+def _monitoring_auth_gate_pass(payload: dict[str, Any]) -> bool:
+    benchmark = payload["artifacts"]["benchmark"]
+    metrics_summary = payload["artifacts"]["metrics_summary"]
+    return bool(benchmark.get("slo_status", {}).get("compliant")) and metrics_summary.get("metrics_health", {}).get("status") == "healthy"
+
+
 def gate_passes(gate_kind: str, payload: dict[str, Any]) -> bool:
     if gate_kind == "frontend-runtime-gate":
         return _frontend_gate_pass(payload)
@@ -214,6 +231,8 @@ def gate_passes(gate_kind: str, payload: dict[str, Any]) -> bool:
         return _api_gate_pass(payload)
     if gate_kind == "docker-runtime-smoke":
         return _docker_gate_pass(payload)
+    if gate_kind == "monitoring-auth-performance-gate":
+        return _monitoring_auth_gate_pass(payload)
     return False
 
 
@@ -224,6 +243,8 @@ def gate_title(gate_kind: str) -> str:
         return "API Performance Gate"
     if gate_kind == "docker-runtime-smoke":
         return "Docker Runtime Smoke"
+    if gate_kind == "monitoring-auth-performance-gate":
+        return "Monitoring Auth Performance Gate"
     return gate_kind
 
 
@@ -248,6 +269,17 @@ def build_verification_checks(gate_kind: str, payload: dict[str, Any]) -> list[s
             f"business_p95_ms={benchmark.get('workload_classes', {}).get('business', {}).get('overall_p95_ms')}",
             f"infrastructure_p95_ms={benchmark.get('workload_classes', {}).get('infrastructure', {}).get('overall_p95_ms')}",
             f"metrics_health={metrics_summary.get('metrics_health', {}).get('status')}",
+        ]
+    if gate_kind == "monitoring-auth-performance-gate":
+        benchmark = payload["artifacts"]["benchmark"]
+        metrics_summary = payload["artifacts"]["metrics_summary"]
+        login_response = payload["artifacts"]["login_response"]
+        return [
+            f"slo_compliant={benchmark.get('slo_status', {}).get('compliant')}",
+            f"alert_rules_p95_ms={(benchmark.get('endpoints') or [{}])[0].get('p95_ms') if benchmark.get('endpoints') else None}",
+            f"alerts_p95_ms={(benchmark.get('endpoints') or [{}, {}])[1].get('p95_ms') if len(benchmark.get('endpoints') or []) > 1 else None}",
+            f"metrics_health={metrics_summary.get('metrics_health', {}).get('status')}",
+            f"auth_user={(login_response.get('data') or {}).get('user', {}).get('username')}",
         ]
     docker_runtime = payload["artifacts"]["docker_runtime"]
     return [
@@ -309,6 +341,11 @@ def build_payload(*, gate_kind: str, project_root: Path, report_dir: Path) -> di
     elif gate_kind == "api-performance-gate":
         payload["gate"]["canonical_service_urls"] = {
             "backend": primary_json.get("base_url", "http://localhost:8020"),
+            "frontend": "http://localhost:3020",
+        }
+    elif gate_kind == "monitoring-auth-performance-gate":
+        payload["gate"]["canonical_service_urls"] = {
+            "backend": "http://localhost:8020",
             "frontend": "http://localhost:3020",
         }
     else:
@@ -378,7 +415,11 @@ def process_closeout(
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Record a quality gate closeout into Graphiti.")
-    parser.add_argument("--gate-kind", choices=("frontend-runtime-gate", "api-performance-gate", "docker-runtime-smoke"), required=True)
+    parser.add_argument(
+        "--gate-kind",
+        choices=("frontend-runtime-gate", "api-performance-gate", "docker-runtime-smoke", "monitoring-auth-performance-gate"),
+        required=True,
+    )
     parser.add_argument("--project-root", default=".")
     parser.add_argument("--report-dir", required=True)
     parser.add_argument("--state-file", default=None)

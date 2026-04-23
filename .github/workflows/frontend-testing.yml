@@ -342,8 +342,8 @@ jobs:
           cat reports/analysis/runtime-ci-bundle/runtime-artifact-index.md >> "$GITHUB_STEP_SUMMARY"
         fi
 
-    - name: Validate frontend and API Graphiti closeouts
-      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != ''
+    - name: Validate route/layout Graphiti closeouts
+      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != '' && env.MONITORING_API_REPORT_DIR != ''
       run: |
         python - <<'PY'
         import json
@@ -352,6 +352,7 @@ jobs:
         checks = [
             ("Frontend runtime gate", Path("${REPORT_DIR}") / "frontend-runtime-gate-graphiti-closeout.json"),
             ("API performance gate", Path("${API_REPORT_DIR}") / "api-performance-gate-graphiti-closeout.json"),
+            ("Monitoring auth performance gate", Path("${MONITORING_API_REPORT_DIR}") / "monitoring-auth-performance-gate-graphiti-closeout.json"),
         ]
 
         failures = []
@@ -371,8 +372,8 @@ jobs:
             raise SystemExit(1)
         PY
 
-    - name: Publish frontend/API closeout summary
-      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != ''
+    - name: Publish route/layout closeout summary
+      if: always() && env.REPORT_DIR != '' && env.API_REPORT_DIR != '' && env.MONITORING_API_REPORT_DIR != ''
       run: |
         if [ -n "${GITHUB_STEP_SUMMARY:-}" ]; then
           printf '\n\n## Route/Layout Graphiti Closeouts\n' >> "$GITHUB_STEP_SUMMARY"
@@ -383,6 +384,7 @@ jobs:
           checks = [
               ("Frontend runtime gate", Path("${REPORT_DIR}") / "frontend-runtime-gate-graphiti-closeout.json"),
               ("API performance gate", Path("${API_REPORT_DIR}") / "api-performance-gate-graphiti-closeout.json"),
+              ("Monitoring auth performance gate", Path("${MONITORING_API_REPORT_DIR}") / "monitoring-auth-performance-gate-graphiti-closeout.json"),
           ]
 
           for label, path in checks:

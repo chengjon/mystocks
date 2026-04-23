@@ -12,6 +12,7 @@ def test_weekly_report_includes_runtime_observability_kpis(tmp_path: Path):
     runtime_gate_closeout_path = tmp_path / "runtime-delivery-gate-graphiti-closeout.json"
     frontend_gate_closeout_path = tmp_path / "frontend-runtime-gate-graphiti-closeout.json"
     api_gate_closeout_path = tmp_path / "api-performance-gate-graphiti-closeout.json"
+    monitoring_gate_closeout_path = tmp_path / "monitoring-auth-performance-gate-graphiti-closeout.json"
     docker_gate_closeout_path = tmp_path / "docker-runtime-smoke-graphiti-closeout.json"
     output_path = tmp_path / "tech-debt-weekly-report.md"
 
@@ -152,6 +153,10 @@ def test_weekly_report_includes_runtime_observability_kpis(tmp_path: Path):
         json.dumps({"status": "completed", "episode_uuid": "ep-api", "group_id": "mystocks_spec_quality_gates", "ingest_status": "warming"}) + "\n",
         encoding="utf-8",
     )
+    monitoring_gate_closeout_path.write_text(
+        json.dumps({"status": "completed", "episode_uuid": "ep-monitoring", "group_id": "mystocks_spec_quality_gates", "ingest_status": "warming"}) + "\n",
+        encoding="utf-8",
+    )
     docker_gate_closeout_path.write_text(
         json.dumps({"status": "completed", "episode_uuid": "ep-docker", "group_id": "mystocks_spec_quality_gates", "ingest_status": "warming"}) + "\n",
         encoding="utf-8",
@@ -178,6 +183,8 @@ def test_weekly_report_includes_runtime_observability_kpis(tmp_path: Path):
             str(frontend_gate_closeout_path),
             "--api-gate-closeout-json",
             str(api_gate_closeout_path),
+            "--monitoring-gate-closeout-json",
+            str(monitoring_gate_closeout_path),
             "--docker-gate-closeout-json",
             str(docker_gate_closeout_path),
             "--threshold",
@@ -197,12 +204,13 @@ def test_weekly_report_includes_runtime_observability_kpis(tmp_path: Path):
     assert "Runtime delivery gate: status=`completed` episode_uuid=`ep-runtime`" in report_text
     assert "Frontend runtime gate: status=`completed` episode_uuid=`ep-frontend`" in report_text
     assert "API performance gate: status=`completed` episode_uuid=`ep-api`" in report_text
+    assert "Monitoring auth performance gate: status=`completed` episode_uuid=`ep-monitoring`" in report_text
     assert "Docker runtime smoke: status=`completed` episode_uuid=`ep-docker`" in report_text
     assert "PM2 runtime overall gate status: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
     assert "Anonymous API overall P95 (ms): measured=`22.94` baseline=`22.94` target=`<= 300`" in report_text
     assert "API performance drift gate: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
     assert "API performance drift violations: measured=`0` baseline=`0` target=`0`" in report_text
-    assert "Graphiti closeout coverage: `4/4` valid closeouts, missing=`0` invalid=`0`" in report_text
+    assert "Graphiti closeout coverage: `5/5` valid closeouts, missing=`0` invalid=`0`" in report_text
     assert "Graphiti closeout validity gate: `PASS`" in report_text
     assert "Monitoring auth alert-rules P95 (ms): measured=`271.53` baseline=`271.53` target=`<= 300`" in report_text
     assert "Docker runtime smoke status: measured=`PASS/PASS/PASS` baseline=`PASS/PASS/PASS` target=`PASS/PASS/PASS`" in report_text

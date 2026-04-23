@@ -69,6 +69,7 @@ EXPECTED_RUNTIME_CLOSEOUTS = (
     ("runtime_delivery_gate", "Runtime delivery gate", "mystocks_spec_runtime_delivery_gates"),
     ("frontend_runtime_gate", "Frontend runtime gate", "mystocks_spec_quality_gates"),
     ("api_performance_gate", "API performance gate", "mystocks_spec_quality_gates"),
+    ("monitoring_auth_performance_gate", "Monitoring auth performance gate", "mystocks_spec_quality_gates"),
     ("docker_runtime_smoke", "Docker runtime smoke", "mystocks_spec_quality_gates"),
 )
 
@@ -474,12 +475,14 @@ def _load_runtime_gate_closeouts(
     runtime_gate_closeout_json: Path | None,
     frontend_gate_closeout_json: Path | None,
     api_gate_closeout_json: Path | None,
+    monitoring_gate_closeout_json: Path | None,
     docker_gate_closeout_json: Path | None,
 ) -> dict[str, dict] | None:
     closeouts = {
         "runtime_delivery_gate": _load_closeout_payload(runtime_gate_closeout_json),
         "frontend_runtime_gate": _load_closeout_payload(frontend_gate_closeout_json),
         "api_performance_gate": _load_closeout_payload(api_gate_closeout_json),
+        "monitoring_auth_performance_gate": _load_closeout_payload(monitoring_gate_closeout_json),
         "docker_runtime_smoke": _load_closeout_payload(docker_gate_closeout_json),
     }
     filtered = {key: value for key, value in closeouts.items() if value is not None}
@@ -637,6 +640,9 @@ def render_weekly_report(
                 _render_closeout_line("API performance gate", runtime_gate_closeouts["api_performance_gate"])
                 if runtime_gate_closeouts.get("api_performance_gate")
                 else "- API performance gate: `N/A`",
+                _render_closeout_line("Monitoring auth performance gate", runtime_gate_closeouts["monitoring_auth_performance_gate"])
+                if runtime_gate_closeouts.get("monitoring_auth_performance_gate")
+                else "- Monitoring auth performance gate: `N/A`",
                 _render_closeout_line("Docker runtime smoke", runtime_gate_closeouts["docker_runtime_smoke"])
                 if runtime_gate_closeouts.get("docker_runtime_smoke")
                 else "- Docker runtime smoke: `N/A`",
@@ -777,6 +783,7 @@ def run_weekly_report(args: argparse.Namespace) -> int:
         runtime_gate_closeout_json=(PROJECT_ROOT / args.runtime_gate_closeout_json).resolve() if args.runtime_gate_closeout_json else None,
         frontend_gate_closeout_json=(PROJECT_ROOT / args.frontend_gate_closeout_json).resolve() if args.frontend_gate_closeout_json else None,
         api_gate_closeout_json=(PROJECT_ROOT / args.api_gate_closeout_json).resolve() if args.api_gate_closeout_json else None,
+        monitoring_gate_closeout_json=(PROJECT_ROOT / args.monitoring_gate_closeout_json).resolve() if args.monitoring_gate_closeout_json else None,
         docker_gate_closeout_json=(PROJECT_ROOT / args.docker_gate_closeout_json).resolve() if args.docker_gate_closeout_json else None,
     )
 
@@ -906,6 +913,7 @@ def build_parser() -> argparse.ArgumentParser:
     weekly.add_argument("--runtime-gate-closeout-json", default=None)
     weekly.add_argument("--frontend-gate-closeout-json", default=None)
     weekly.add_argument("--api-gate-closeout-json", default=None)
+    weekly.add_argument("--monitoring-gate-closeout-json", default=None)
     weekly.add_argument("--docker-gate-closeout-json", default=None)
     weekly.add_argument("--fail-on-invalid-closeouts", action="store_true")
     weekly.add_argument("--base-sha", default=None)

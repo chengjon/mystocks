@@ -156,3 +156,39 @@ def test_quality_gate_closeout_script_runs_with_external_graphiti_command_for_do
     assert args[:2] == ["graphiti", "remember"]
     assert graphiti_payload["event_type"] == "quality_gate.closeout.docker-runtime-smoke"
     assert graphiti_payload["gate"]["backup_smoke_service_urls"]["frontend"] == "http://localhost:3021"
+
+
+def test_build_payload_for_monitoring_auth_performance_gate(tmp_path: Path) -> None:
+    report_dir = tmp_path / "reports/analysis/api-monitoring-auth-gate/20260423-113912"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    (report_dir / "benchmark.json").write_text(
+        json.dumps(
+            {
+                "generated_at": "2026-04-23T11:39:26.408414",
+                "slo_status": {"compliant": True, "violations": []},
+                "endpoints": [
+                    {"method": "GET", "endpoint": "/api/v1/monitoring/alert-rules", "p95_ms": 237.5},
+                    {"method": "GET", "endpoint": "/api/v1/monitoring/alerts", "p95_ms": 189.93},
+                ],
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (report_dir / "metrics-summary.json").write_text(
+        json.dumps({"metrics_health": {"status": "healthy"}, "prometheus_snapshot": {}}) + "\n",
+        encoding="utf-8",
+    )
+    (report_dir / "login-response.json").write_text(
+        json.dumps({"data": {"user": {"username": "admin", "role": "admin"}}}) + "\n",
+        encoding="utf-8",
+    )
+    (report_dir / "SUMMARY.md").write_text("# Monitoring Auth Performance Baseline\n", encoding="utf-8")
+
+    payload = closeout.build_payload(gate_kind="monitoring-auth-performance-gate", project_root=tmp_path, report_dir=report_dir)
+
+    assert payload["event_type"] == "quality_gate.closeout.monitoring-auth-performance-gate"
+    assert payload["gate"]["canonical_service_urls"]["backend"] == "http://localhost:8020"
+    assert "metrics_health=healthy" in payload["verification"]["machine_verified_checks"]
+    assert "auth_user=admin" in payload["verification"]["machine_verified_checks"]
+    assert closeout.gate_passes("monitoring-auth-performance-gate", payload) is True
