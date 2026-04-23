@@ -8,6 +8,16 @@ from pathlib import Path
 from scripts.runtime import record_quality_gate_closeout as closeout
 
 
+def test_default_state_file_uses_tmp_scoped_path(tmp_path: Path, monkeypatch) -> None:
+    monkeypatch.delenv("QUALITY_GATE_GRAPHITI_STATE_DIR", raising=False)
+
+    state_file = closeout.default_state_file(tmp_path, "frontend-runtime-gate")
+
+    assert state_file.name == "frontend-runtime-gate.json"
+    assert "mystocks-quality-gate-closeout-state" in str(state_file)
+    assert tmp_path.name in str(state_file)
+
+
 def test_build_payload_for_frontend_runtime_gate(tmp_path: Path) -> None:
     report_dir = tmp_path / "reports/analysis/frontend-runtime-gate/20260423-112949"
     report_dir.mkdir(parents=True, exist_ok=True)
@@ -141,7 +151,7 @@ def test_quality_gate_closeout_script_runs_with_external_graphiti_command_for_do
 
     assert payload["status"] == "completed"
     assert payload["episode_uuid"] == "ep-quality-gate-1"
-    assert payload["state_file"].endswith(".claude/quality-gate-closeout-state/docker-runtime-smoke.json")
+    assert payload["state_file"].endswith(f"/mystocks-quality-gate-closeout-state/{tmp_path.name}/docker-runtime-smoke.json")
     assert args[:2] == ["graphiti", "remember"]
     assert graphiti_payload["event_type"] == "quality_gate.closeout.docker-runtime-smoke"
     assert graphiti_payload["gate"]["backup_smoke_service_urls"]["frontend"] == "http://localhost:3021"

@@ -25,6 +25,7 @@ except ModuleNotFoundError:
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_BASELINE = PROJECT_ROOT / "reports/analysis/tech-debt-baseline.json"
 DEFAULT_RUNTIME_BASELINE = PROJECT_ROOT / "reports/analysis/runtime-observability-baseline.json"
+DEFAULT_API_PERFORMANCE_BASELINE = PROJECT_ROOT / "reports/analysis/api-performance-baseline.json"
 
 TARGET_EXTENSIONS = {".py", ".ts", ".tsx", ".vue"}
 TTL_PATTERNS = [
@@ -377,11 +378,17 @@ def _load_runtime_weekly_metrics(
     runtime_baseline_path: Path | None,
     runtime_summary_json: Path | None,
     runtime_current_path: Path | None,
+    api_performance_baseline_path: Path | None,
 ) -> dict | None:
     if runtime_baseline_path is None or not runtime_baseline_path.exists():
         return None
 
     runtime_baseline = load_json(runtime_baseline_path)
+    api_performance_baseline = (
+        load_json(api_performance_baseline_path)
+        if api_performance_baseline_path is not None and api_performance_baseline_path.exists()
+        else None
+    )
     runtime_current: dict | None = None
 
     if runtime_current_path is not None:
@@ -394,7 +401,10 @@ def _load_runtime_weekly_metrics(
             except FileNotFoundError:
                 summary_path = None
         if summary_path is not None and summary_path.exists():
-            runtime_current = build_runtime_observability_baseline(load_json(summary_path), summary_path)
+            summary_payload = load_json(summary_path)
+            runtime_current = build_runtime_observability_baseline(summary_payload, summary_path)
+            if summary_payload.get("api_performance_drift") is not None:
+                runtime_current["api_performance_drift"] = summary_payload.get("api_performance_drift")
 
     runtime_drift = (
         build_runtime_observability_drift_report(baseline_payload=runtime_baseline, current_payload=runtime_current)
@@ -407,6 +417,7 @@ def _load_runtime_weekly_metrics(
 
     return {
         "baseline": runtime_baseline,
+        "api_performance_baseline": api_performance_baseline,
         "current": runtime_current,
         "drift": runtime_drift,
         "docker_smoke_baseline": "/".join(
@@ -428,12 +439,70 @@ def _load_runtime_weekly_metrics(
     }
 
 
+def _load_closeout_payload(path: Path | None) -> dict | None:
+    if path is None or not path.exists():
+        return None
+    try:
+        payload = load_json(path)
+    except Exception as exc:
+        return {
+            "status": "invalid_payload",
+            "ingest_status": "not_loaded",
+            "error": str(exc),
+            "_path": str(path),
+        }
+    if not isinstance(payload, dict):
+        return {
+            "status": "invalid_payload",
+            "ingest_status": "not_loaded",
+            "error": "closeout payload is not a JSON object",
+            "_path": str(path),
+        }
+    payload["_path"] = str(path)
+    return payload
+
+
+def _load_runtime_gate_closeouts(
+    *,
+    runtime_gate_closeout_json: Path | None,
+    frontend_gate_closeout_json: Path | None,
+    api_gate_closeout_json: Path | None,
+    docker_gate_closeout_json: Path | None,
+) -> dict[str, dict] | None:
+    closeouts = {
+        "runtime_delivery_gate": _load_closeout_payload(runtime_gate_closeout_json),
+        "frontend_runtime_gate": _load_closeout_payload(frontend_gate_closeout_json),
+        "api_performance_gate": _load_closeout_payload(api_gate_closeout_json),
+        "docker_runtime_smoke": _load_closeout_payload(docker_gate_closeout_json),
+    }
+    filtered = {key: value for key, value in closeouts.items() if value is not None}
+    return filtered or None
+
+
+def _render_closeout_line(label: str, payload: dict) -> str:
+    report = payload.get("report") if isinstance(payload.get("report"), dict) else {}
+    status = payload.get("status", "N/A")
+    episode_uuid = payload.get("episode_uuid") or report.get("episode_uuid") or "N/A"
+    group_id = payload.get("group_id") or report.get("group_id") or "N/A"
+    ingest_status = payload.get("ingest_status") or report.get("ingest_status") or "N/A"
+    source_path = payload.get("_path", "N/A")
+    line = (
+        f"- {label}: status=`{status}` episode_uuid=`{episode_uuid}` "
+        f"group_id=`{group_id}` ingest_status=`{ingest_status}` source=`{source_path}`"
+    )
+    error = payload.get("error")
+    if isinstance(error, str) and error.strip():
+        line += f" error=`{error[:160]}`"
+    return line
+
+
 def render_weekly_report(
     metrics: dict,
     kpi: dict,
     hotspots: list[dict],
     ttl_violations: list[MarkerViolation],
     runtime_metrics: dict | None = None,
+    runtime_gate_closeouts: dict[str, dict] | None = None,
 ) -> str:
     now = datetime.now(timezone.utc).isoformat()
     baseline_doc = metrics.get("baseline", {}).get("backend_api_documentation", {})
@@ -475,10 +544,31 @@ def render_weekly_report(
                 "## 4. Runtime Observability KPI",
                 f"- PM2 runtime overall gate status: measured=`{runtime_current.get('overall_gate_status', 'N/A')}` baseline=`{runtime_baseline.get('overall_gate_status', 'N/A')}` target=`PASS`",
                 f"- Anonymous API overall P95 (ms): measured=`{(runtime_current.get('api_performance') or {}).get('overall_p95_ms', 'N/A')}` baseline=`{(runtime_baseline.get('api_performance') or {}).get('overall_p95_ms', 'N/A')}` target=`<= 300`",
+                f"- API performance drift gate: measured=`{'PASS' if (runtime_current.get('api_performance_drift') or {}).get('pass') else 'FAIL' if (runtime_current.get('api_performance_drift') is not None) else 'N/A'}` baseline=`PASS` target=`PASS`",
+                f"- API performance drift violations: measured=`{len((runtime_current.get('api_performance_drift') or {}).get('violations', [])) if runtime_current.get('api_performance_drift') is not None else 'N/A'}` baseline=`0` target=`0`",
                 f"- Monitoring auth alert-rules P95 (ms): measured=`{(runtime_current.get('monitoring_auth_performance') or {}).get('alert_rules_p95_ms', 'N/A')}` baseline=`{(runtime_baseline.get('monitoring_auth_performance') or {}).get('alert_rules_p95_ms', 'N/A')}` target=`<= 300`",
                 f"- Docker runtime smoke status: measured=`{runtime_metrics.get('docker_smoke_current', 'N/A')}` baseline=`{runtime_metrics.get('docker_smoke_baseline', 'N/A')}` target=`PASS/PASS/PASS`",
                 f"- Docker metrics http_requests_total delta: measured=`{(runtime_current.get('docker_runtime') or {}).get('http_requests_total_delta', 'N/A')}` baseline=`{(runtime_baseline.get('docker_runtime') or {}).get('http_requests_total_delta', 'N/A')}` target=`>= 0`",
                 f"- Runtime drift gate: `{'PASS' if runtime_drift.get('pass') else 'FAIL'}` violations=`{len(runtime_drift.get('violations', []))}` not_measured=`{len(runtime_drift.get('not_measured', []))}`",
+                "",
+            ]
+        )
+    if runtime_gate_closeouts is not None:
+        lines.extend(
+            [
+                "## 4.1 Graphiti Gate Closeouts",
+                _render_closeout_line("Runtime delivery gate", runtime_gate_closeouts["runtime_delivery_gate"])
+                if runtime_gate_closeouts.get("runtime_delivery_gate")
+                else "- Runtime delivery gate: `N/A`",
+                _render_closeout_line("Frontend runtime gate", runtime_gate_closeouts["frontend_runtime_gate"])
+                if runtime_gate_closeouts.get("frontend_runtime_gate")
+                else "- Frontend runtime gate: `N/A`",
+                _render_closeout_line("API performance gate", runtime_gate_closeouts["api_performance_gate"])
+                if runtime_gate_closeouts.get("api_performance_gate")
+                else "- API performance gate: `N/A`",
+                _render_closeout_line("Docker runtime smoke", runtime_gate_closeouts["docker_runtime_smoke"])
+                if runtime_gate_closeouts.get("docker_runtime_smoke")
+                else "- Docker runtime smoke: `N/A`",
                 "",
             ]
         )
@@ -604,6 +694,15 @@ def run_weekly_report(args: argparse.Namespace) -> int:
         runtime_baseline_path=(PROJECT_ROOT / args.runtime_baseline).resolve() if args.runtime_baseline else None,
         runtime_summary_json=(PROJECT_ROOT / args.runtime_summary_json).resolve() if args.runtime_summary_json else None,
         runtime_current_path=(PROJECT_ROOT / args.runtime_current).resolve() if args.runtime_current else None,
+        api_performance_baseline_path=(
+            (PROJECT_ROOT / args.api_performance_baseline).resolve() if args.api_performance_baseline else None
+        ),
+    )
+    runtime_gate_closeouts = _load_runtime_gate_closeouts(
+        runtime_gate_closeout_json=(PROJECT_ROOT / args.runtime_gate_closeout_json).resolve() if args.runtime_gate_closeout_json else None,
+        frontend_gate_closeout_json=(PROJECT_ROOT / args.frontend_gate_closeout_json).resolve() if args.frontend_gate_closeout_json else None,
+        api_gate_closeout_json=(PROJECT_ROOT / args.api_gate_closeout_json).resolve() if args.api_gate_closeout_json else None,
+        docker_gate_closeout_json=(PROJECT_ROOT / args.docker_gate_closeout_json).resolve() if args.docker_gate_closeout_json else None,
     )
 
     large_files = collect_large_files(args.threshold)
@@ -627,6 +726,7 @@ def run_weekly_report(args: argparse.Namespace) -> int:
         hotspots=hotspots,
         ttl_violations=ttl_violations,
         runtime_metrics=runtime_metrics,
+        runtime_gate_closeouts=runtime_gate_closeouts,
     )
 
     output = (PROJECT_ROOT / args.output).resolve()
@@ -715,8 +815,16 @@ def build_parser() -> argparse.ArgumentParser:
         "--runtime-baseline",
         default=str(DEFAULT_RUNTIME_BASELINE.relative_to(PROJECT_ROOT)),
     )
+    weekly.add_argument(
+        "--api-performance-baseline",
+        default=str(DEFAULT_API_PERFORMANCE_BASELINE.relative_to(PROJECT_ROOT)),
+    )
     weekly.add_argument("--runtime-summary-json", default=None)
     weekly.add_argument("--runtime-current", default=None)
+    weekly.add_argument("--runtime-gate-closeout-json", default=None)
+    weekly.add_argument("--frontend-gate-closeout-json", default=None)
+    weekly.add_argument("--api-gate-closeout-json", default=None)
+    weekly.add_argument("--docker-gate-closeout-json", default=None)
     weekly.add_argument("--base-sha", default=None)
     weekly.add_argument("--threshold", type=int, default=800)
     weekly.add_argument("--since-days", type=int, default=90)

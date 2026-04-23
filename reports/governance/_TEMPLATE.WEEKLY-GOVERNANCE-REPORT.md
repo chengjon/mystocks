@@ -29,13 +29,40 @@
 | 例外合规率 | `<value>` | `<value or N/A>` | `N/A` | `100%` | `<source>` |
 | 到期清理率 | `<value>` | `<value or N/A>` | `N/A` | `>= 90%` | `<source>` |
 | PM2 runtime overall gate status | `<value>` | `<value>` | `N/A` | `PASS` | `reports/analysis/runtime-observability-baseline.json` |
+| PM2 online services | `<value>` | `mystocks-backend,mystocks-frontend` | `N/A` | `mystocks-backend,mystocks-frontend` | `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate.json` |
+| Structural syntax / PM2 navigation gate | `<value>` | `<value>` | `N/A` | `all passed` | `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate.json` |
+| Regression E2E actual result | `<value>` | `<value>` | `N/A` | `failed=0` | `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate.json` |
+| Regression pytest actual result | `<value>` | `<value>` | `N/A` | `failed=0` | `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate.json` |
+| Accessibility smoke actual result | `<value>` | `<value>` | `N/A` | `failed=0` | `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate.json` |
 | Anonymous API overall P95 (ms) | `<value>` | `<value>` | `N/A` | `<= 300` | `reports/analysis/runtime-observability-baseline.json` |
+| API performance drift gate pass | `<value>` | `PASS` | `N/A` | `PASS` | `reports/analysis/api-performance-baseline.json` + `scripts/dev/quality_gate/validate_api_performance_drift.py` |
+| API performance drift violations | `<value>` | `0` | `N/A` | `0` | `reports/analysis/api-performance-baseline.json` + `scripts/dev/quality_gate/validate_api_performance_drift.py` |
 | Monitoring auth `alert-rules` P95 (ms) | `<value>` | `<value>` | `N/A` | `<= 300` | `reports/analysis/runtime-observability-baseline.json` |
 | Docker runtime smoke status | `<value>` | `<value>` | `N/A` | `PASS/PASS/PASS` | `reports/analysis/runtime-observability-baseline.json` |
 | Docker metrics `http_requests_total` delta | `<value>` | `<value>` | `N/A` | `>= 0` | `reports/analysis/runtime-observability-baseline.json` |
 
 可复用校验命令：`python scripts/dev/quality_gate/validate_runtime_observability_drift.py --baseline reports/analysis/runtime-observability-baseline.json --current-summary-json <runtime-quality-summary/summary.json>`
+前端 PM2 runtime 工件采集：`python scripts/dev/quality_gate/collect_frontend_runtime_gate.py --type-ceiling-log <type-ceiling.log> --pm2-gate-log <pm2-gate.log> --regression-log <regression.log> --axe-log <axe.log> --current-tech-debt-baseline <tech-debt-baseline.current.json> --output <frontend-runtime-gate.json>`
+API 性能漂移命令：`python scripts/dev/quality_gate/validate_api_performance_drift.py --baseline reports/analysis/api-performance-baseline.json --current-benchmark-json <api-performance-gate/benchmark.json>`
 完整运行门禁入口：`bash scripts/run_full_runtime_delivery_gate.sh`
+
+## 6.2A Graphiti Gate Closeouts
+- runtime delivery gate closeout:
+  - report: `reports/analysis/runtime-delivery-gate/<timestamp>/runtime-delivery-gate-graphiti-closeout.json`
+  - episode_uuid: `<uuid>`
+  - group_id: `mystocks_spec_runtime_delivery_gates`
+- frontend runtime gate closeout:
+  - report: `reports/analysis/frontend-runtime-gate/<timestamp>/frontend-runtime-gate-graphiti-closeout.json`
+  - episode_uuid: `<uuid>`
+  - group_id: `mystocks_spec_quality_gates`
+- API performance gate closeout:
+  - report: `reports/analysis/api-performance-gate/<timestamp>/api-performance-gate-graphiti-closeout.json`
+  - episode_uuid: `<uuid>`
+  - group_id: `mystocks_spec_quality_gates`
+- Docker runtime smoke closeout:
+  - report: `reports/analysis/docker-runtime-smoke/<timestamp>/docker-runtime-smoke-graphiti-closeout.json`
+  - episode_uuid: `<uuid>`
+  - group_id: `mystocks_spec_quality_gates`
 
 ## 6.3 热点与行动
 - Top 10 热点文件（含路径）:

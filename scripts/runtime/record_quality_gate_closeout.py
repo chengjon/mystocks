@@ -7,6 +7,7 @@ import os
 import shlex
 import subprocess
 import sys
+import tempfile
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -87,6 +88,12 @@ def build_graphiti_command(project_root: Path) -> list[str]:
     if legacy_override:
         return shlex.split(legacy_override)
     return [sys.executable, str(project_root / "scripts" / "runtime" / "coordctl.py")]
+
+
+def default_state_file(project_root: Path, gate_kind: str) -> Path:
+    override_dir = os.environ.get("QUALITY_GATE_GRAPHITI_STATE_DIR", "").strip()
+    base_dir = Path(override_dir) if override_dir else Path(tempfile.gettempdir()) / "mystocks-quality-gate-closeout-state"
+    return (base_dir / project_root.name / f"{gate_kind}.json").resolve()
 
 
 def write_graphiti_closeout(project_root: Path, payload: dict[str, Any], *, max_wait_seconds: int) -> dict[str, Any]:
@@ -391,7 +398,7 @@ def main(argv: list[str] | None = None) -> int:
         project_root=project_root,
         report_dir=Path(args.report_dir).resolve(),
         state_file=(
-            project_root / ".claude" / "quality-gate-closeout-state" / f"{args.gate_kind}.json"
+            default_state_file(project_root, args.gate_kind)
             if not args.state_file
             else ((project_root / args.state_file).resolve() if not Path(args.state_file).is_absolute() else Path(args.state_file))
         ),

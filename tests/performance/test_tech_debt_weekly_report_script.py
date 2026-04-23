@@ -10,10 +10,24 @@ def test_tech_debt_weekly_report_script_has_stable_entrypoint_contract():
     assert 'REPORT_DIR="${TECH_DEBT_WEEKLY_REPORT_DIR:-${PROJECT_ROOT}/reports/analysis/tech-debt-weekly-report-local}"' in script
     assert 'CURRENT_METRICS_PATH="${TECH_DEBT_CURRENT_JSON:-${REPORT_DIR}/tech-debt-current-${TIMESTAMP}.json}"' in script
     assert 'RUNTIME_BASELINE_PATH="${RUNTIME_OBSERVABILITY_BASELINE_JSON:-${PROJECT_ROOT}/reports/analysis/runtime-observability-baseline.json}"' in script
+    assert 'API_PERFORMANCE_BASELINE_PATH="${API_PERFORMANCE_BASELINE_JSON:-${PROJECT_ROOT}/reports/analysis/api-performance-baseline.json}"' in script
     assert 'RUNTIME_GATE_DIR="${RUNTIME_DELIVERY_GATE_DIR:-}"' in script
+    assert 'FRONTEND_GATE_DIR="${FRONTEND_RUNTIME_GATE_DIR:-}"' in script
+    assert 'API_GATE_DIR="${API_PERFORMANCE_GATE_DIR:-}"' in script
+    assert 'DOCKER_GATE_DIR="${DOCKER_RUNTIME_GATE_DIR:-${DOCKER_RUNTIME_DIR:-}}"' in script
+    assert 'RUNTIME_GATE_CLOSEOUT_JSON="${RUNTIME_GATE_CLOSEOUT_JSON:-}"' in script
+    assert 'FRONTEND_GATE_CLOSEOUT_JSON="${FRONTEND_GATE_CLOSEOUT_JSON:-}"' in script
+    assert 'API_GATE_CLOSEOUT_JSON="${API_GATE_CLOSEOUT_JSON:-}"' in script
+    assert 'DOCKER_GATE_CLOSEOUT_JSON="${DOCKER_GATE_CLOSEOUT_JSON:-}"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/collect_tech_debt_baseline.py" --output "${CURRENT_METRICS_PATH}"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/tech_debt_governance_gate.py"' in script
+    assert '--api-performance-baseline "${API_PERFORMANCE_BASELINE_PATH}"' in script
     assert 'if [ -n "${RUNTIME_GATE_DIR}" ] && [ -z "${RUNTIME_SUMMARY_JSON}" ]; then' in script
+    assert 'resolve_latest_dir()' in script
+    assert 'if [ -n "${RUNTIME_GATE_CLOSEOUT_JSON}" ]; then' in script
+    assert 'if [ -n "${FRONTEND_GATE_CLOSEOUT_JSON}" ]; then' in script
+    assert 'if [ -n "${API_GATE_CLOSEOUT_JSON}" ]; then' in script
+    assert 'if [ -n "${DOCKER_GATE_CLOSEOUT_JSON}" ]; then' in script
     assert 'if [ -n "${RUNTIME_SUMMARY_JSON}" ]; then' in script
     assert 'if [ -n "${RUNTIME_CURRENT_JSON}" ]; then' in script
 
@@ -23,6 +37,7 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
     current_path = tmp_path / "tech-debt-current.json"
     baseline_path = tmp_path / "tech-debt-baseline.json"
     runtime_baseline_path = tmp_path / "runtime-observability-baseline.json"
+    api_performance_baseline_path = tmp_path / "api-performance-baseline.json"
     runtime_summary_path = tmp_path / "runtime-quality-summary.json"
     output_path = report_dir / "weekly-report.md"
 
@@ -107,6 +122,12 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
                     "slow_http_requests_total_delta": 0,
                     "db_connections_active": {"postgresql": 8.0, "tdengine": 2.0, "redis": 1.0},
                 },
+                "api_performance_drift": {
+                    "pass": True,
+                    "violations": [],
+                    "absolute_budget_ms": 10.0,
+                    "relative_budget_ratio": 0.25,
+                },
                 "current_batch_issues": [],
                 "existing_debt": [],
             }
@@ -114,6 +135,7 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
         + "\n",
         encoding="utf-8",
     )
+    api_performance_baseline_path.write_text(json.dumps({"overall_p95_ms": 22.94}) + "\n", encoding="utf-8")
 
     subprocess.run(
         ["bash", "scripts/run_tech_debt_weekly_report.sh"],
@@ -125,6 +147,7 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
             "TECH_DEBT_CURRENT_JSON": str(current_path),
             "TECH_DEBT_BASELINE_JSON": str(baseline_path),
             "RUNTIME_OBSERVABILITY_BASELINE_JSON": str(runtime_baseline_path),
+            "API_PERFORMANCE_BASELINE_JSON": str(api_performance_baseline_path),
             "RUNTIME_SUMMARY_JSON": str(runtime_summary_path),
             "TECH_DEBT_WEEKLY_THRESHOLD": "999999",
             "TECH_DEBT_WEEKLY_TOP_N": "1",
@@ -134,7 +157,9 @@ def test_tech_debt_weekly_report_script_generates_runtime_kpi_report(tmp_path: P
 
     report_text = output_path.read_text(encoding="utf-8")
     assert "## 4. Runtime Observability KPI" in report_text
+    assert "## 4.1 Graphiti Gate Closeouts" in report_text
     assert "PM2 runtime overall gate status: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
+    assert "API performance drift gate: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
     assert "Runtime drift gate: `PASS` violations=`0` not_measured=`0`" in report_text
 
 
@@ -145,6 +170,7 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
     current_path = tmp_path / "tech-debt-current.json"
     baseline_path = tmp_path / "tech-debt-baseline.json"
     runtime_baseline_path = tmp_path / "runtime-observability-baseline.json"
+    api_performance_baseline_path = tmp_path / "api-performance-baseline.json"
     output_path = report_dir / "weekly-report.md"
 
     report_dir.mkdir()
@@ -230,6 +256,12 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
                     "slow_http_requests_total_delta": 0,
                     "db_connections_active": {"postgresql": 8.0, "tdengine": 2.0, "redis": 1.0},
                 },
+                "api_performance_drift": {
+                    "pass": True,
+                    "violations": [],
+                    "absolute_budget_ms": 10.0,
+                    "relative_budget_ratio": 0.25,
+                },
                 "current_batch_issues": [],
                 "existing_debt": [],
             }
@@ -237,6 +269,7 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
         + "\n",
         encoding="utf-8",
     )
+    api_performance_baseline_path.write_text(json.dumps({"overall_p95_ms": 22.94}) + "\n", encoding="utf-8")
 
     subprocess.run(
         ["bash", "scripts/run_tech_debt_weekly_report.sh"],
@@ -248,6 +281,7 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
             "TECH_DEBT_CURRENT_JSON": str(current_path),
             "TECH_DEBT_BASELINE_JSON": str(baseline_path),
             "RUNTIME_OBSERVABILITY_BASELINE_JSON": str(runtime_baseline_path),
+            "API_PERFORMANCE_BASELINE_JSON": str(api_performance_baseline_path),
             "RUNTIME_DELIVERY_GATE_DIR": str(runtime_gate_dir),
             "TECH_DEBT_WEEKLY_THRESHOLD": "999999",
             "TECH_DEBT_WEEKLY_TOP_N": "1",
@@ -257,4 +291,5 @@ def test_tech_debt_weekly_report_script_can_resolve_runtime_summary_from_gate_di
 
     report_text = output_path.read_text(encoding="utf-8")
     assert "Docker runtime smoke status: measured=`PASS/PASS/PASS` baseline=`PASS/PASS/PASS` target=`PASS/PASS/PASS`" in report_text
+    assert "API performance drift gate: measured=`PASS` baseline=`PASS` target=`PASS`" in report_text
     assert "Runtime drift gate: `PASS` violations=`0` not_measured=`0`" in report_text
