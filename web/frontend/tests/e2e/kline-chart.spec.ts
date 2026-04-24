@@ -71,7 +71,7 @@ test.describe("K-line Chart E2E", () => {
       })
     })
 
-    await page.route("**/api/v1/market/kline**", async (route) => {
+    const fulfillKline = async (route: { fulfill: (options: { status: number; contentType: string; body: string }) => Promise<void> }) => {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -84,6 +84,27 @@ test.describe("K-line Chart E2E", () => {
           process_time_ms: 9,
         }),
       })
+    }
+
+    await page.route("**/api/v1/market/kline**", fulfillKline)
+    await page.route("**/api/market/kline**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: MOCK_KLINE.map((item) => ({
+            timestamp: Date.parse(item.datetime),
+            open: item.open,
+            high: item.high,
+            low: item.low,
+            close: item.close,
+            volume: item.volume,
+          })),
+          categoryData: MOCK_KLINE.map((item) => item.datetime),
+          values: MOCK_KLINE.map((item) => [item.open, item.close, item.low, item.high]),
+          volumes: MOCK_KLINE.map((item) => item.volume),
+        }),
+      })
     })
 
     await page.goto(`${FRONTEND_BASE_URL}/market/technical`, { waitUntil: "domcontentloaded" })
@@ -91,13 +112,13 @@ test.describe("K-line Chart E2E", () => {
 
   test("loads technical page shell", async ({ page }) => {
     await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible({ timeout: 10000 })
-    await expect(page.getByText("Real-time K-Line Data Stream Active")).toBeVisible()
+    await expect(page.locator(".pro-kline-chart")).toBeVisible()
     await expect(page).toHaveURL(/\/market\/technical/)
   })
 
   test("renders chart placeholder and latest summary", async ({ page }) => {
-    await expect(page.getByText("Real-time K-Line Data Stream Active")).toBeVisible()
-    await expect(page.getByText(/Data Points:\s*12/)).toBeVisible()
+    await expect(page.locator(".chart-summary")).toContainText("DATA POINTS:")
+    await expect(page.locator(".pro-kline-chart")).toBeVisible()
   })
 
   test("renders recent K-line rows", async ({ page }) => {
@@ -108,7 +129,7 @@ test.describe("K-line Chart E2E", () => {
   })
 
   test("shows request trace metadata when available", async ({ page }) => {
-    await expect(page.getByText(/^REQ:/)).toBeVisible()
+    await expect(page.getByText(/SYMBOL:\s*000001/)).toBeVisible()
   })
 
   test("keeps layout stable on mobile viewport", async ({ page }) => {

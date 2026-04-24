@@ -55,7 +55,7 @@ const routes: RouteRecordRaw[] = [
             path: 'lhb',
             name: 'market-lhb',
             component: () => import('@/views/market/LHB.vue'),
-            meta: { title: '龙虎榜', requiresAuth: true, api: '/api/v1/market/lhb' }
+            meta: { title: '龙虎榜', requiresAuth: true, api: '/api/v2/market/lhb' }
           }
         ]
       },

@@ -12,14 +12,13 @@ describe('market realtime accessibility guards', () => {
   it('keeps the market realtime content title at h2 level', () => {
     const source = readSource('src/views/market/Realtime.vue')
 
-    expect(source).toContain('<h2 class="content-shell-title">指数快照与分布面板</h2>')
+    expect(source).toContain('<h2 class="content-shell-title">样本快照与分布面板</h2>')
   })
 
-  it('gives the market realtime filters explicit accessible labels', () => {
+  it('gives the market realtime sample selector an explicit accessible label', () => {
     const source = readSource('src/views/market/Realtime.vue')
 
-    expect(source).toMatch(/<ArtDecoSelect\s+v-model="activeWindow"[\s\S]*label="统计窗口"/)
-    expect(source).toMatch(/<ArtDecoSelect\s+v-model="activeBoard"[\s\S]*label="市场范围"/)
+    expect(source).toMatch(/<ArtDecoSelect\s+v-model="activePreset"[\s\S]*label="观察样本"/)
   })
 
   it('forwards an explicit label prop to the native select accessible name', () => {

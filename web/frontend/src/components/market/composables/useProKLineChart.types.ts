@@ -10,6 +10,11 @@ export interface Indicator {
   value: string
 }
 
+export interface LegacyChartIndicator {
+  abbreviation?: string
+  displayName?: string
+}
+
 export interface PriceLimitMarker {
   timestamp: number
   status: PriceLimitStatus
@@ -21,7 +26,7 @@ export interface ProKLineChartProps {
   symbol: string
   periods?: TimePeriod[]
   defaultPeriod?: string
-  indicators?: Indicator[]
+  indicators?: Array<Indicator | LegacyChartIndicator>
   height?: string | number
   showPriceLimits?: boolean
   forwardAdjusted?: boolean

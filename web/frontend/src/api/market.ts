@@ -62,10 +62,11 @@ class MarketApiService {
     endDate?: string
     limit?: number
   }): Promise<KLineChartData> {
-    const rawData = await request.get<KlineResponse>(`${this.baseUrl}/kline`, {
+    const response = await request.get<KlineResponse>(`${this.baseUrl}/kline`, {
       params
     })
-    return DataAdapter.toKLineChartData(rawData)
+    const rawData = (response as unknown as { data?: KlineResponse }).data ?? response
+    return DataAdapter.toKLineChartData(rawData as KlineResponse)
   }
 
   /**

@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
 import { init, dispose, type Chart } from 'klinecharts'
 import { ElMessage } from 'element-plus'
 import { marketApi } from '@/api/market'
@@ -18,9 +18,9 @@ import {
   calculatePriceLimitMarkers as buildPriceLimitMarkers
 } from './useProKLineChart.price-limits.ts'
 import {
-  defaultProKLineChartProps,
   defaultSelectedIndicators,
   type Indicator,
+  type LegacyChartIndicator,
   type PriceLimitMarker,
   type ProKLineChartProps
 } from './useProKLineChart.types.ts'
@@ -30,31 +30,45 @@ import {
  * Uses klinecharts library for chart rendering
  * @deprecated This file has complex type issues with third-party library
  */
-export function useProKLineChart() {
-  // Props with defaults
-  const props = withDefaults(defineProps<ProKLineChartProps>(), defaultProKLineChartProps)
+type ProKLineChartEmit = {
+  (e: 'period-change', period: string): void
+  (e: 'indicator-change', indicators: string[]): void
+  (e: 'data-loaded', data: unknown[]): void
+  (e: 'error', error: Error): void
+}
 
-  // Emits
-  const emit = defineEmits<{
-    (e: 'period-change', period: string): void
-    (e: 'indicator-change', indicators: string[]): void
-    (e: 'data-loaded', data: unknown[]): void
-    (e: 'error', error: Error): void
-  }>()
+export function useProKLineChart(props: ProKLineChartProps, emit: ProKLineChartEmit) {
+  let isUnmounted = false
+
+  const normalizeIndicators = (
+    indicators: Array<Indicator | LegacyChartIndicator> | undefined
+  ): Indicator[] => {
+    return (indicators ?? []).map((indicator) => {
+      if ('label' in indicator && 'value' in indicator) {
+        return indicator
+      }
+
+      const fallback = indicator.displayName ?? indicator.abbreviation ?? 'IND'
+      return {
+        label: fallback,
+        value: indicator.abbreviation ?? fallback
+      }
+    })
+  }
 
   // Refs
-  const chartContainer = ref<HTMLElement | null>(null)
+  const chartContainer: Ref<HTMLElement | null> = ref(null)
   const chartInstance = ref<Chart | null>(null)
   const loading = ref<boolean>(false)
-  const selectedPeriod = ref<string>(props.defaultPeriod)
+  const selectedPeriod = ref<string>(props.defaultPeriod ?? '1d')
   const selectedIndicators = ref<string[]>([...defaultSelectedIndicators])
-  const showPriceLimits = ref<boolean>(props.showPriceLimits)
-  const useForwardAdjusted = ref<boolean>(props.forwardAdjusted)
+  const showPriceLimits = ref<boolean>(props.showPriceLimits ?? true)
+  const useForwardAdjusted = ref<boolean>(props.forwardAdjusted ?? false)
   const currentKLineData = ref<KLineDataPoint[]>([])
   const priceLimitMarkers = ref<PriceLimitMarker[]>([])
 
   // Available indicators (for selector)
-  const availableIndicators = ref<Indicator[]>(props.indicators)
+  const availableIndicators = ref<Indicator[]>(normalizeIndicators(props.indicators))
 
   const parseCategoryTimestamp = (value: string | undefined, index: number): number => {
     if (!value) {
@@ -89,6 +103,14 @@ export function useProKLineChart() {
     })
   }
 
+  const isBenignLifecycleError = (error: unknown): boolean => {
+    if (isUnmounted) return true
+    if (!chartContainer.value) return true
+
+    const message = error instanceof Error ? error.message : String(error ?? '')
+    return /abort|cancel|destroy|disposed|unmounted/i.test(message)
+  }
+
   /**
    * 初始化图表
    */
@@ -109,7 +131,7 @@ export function useProKLineChart() {
       ;(chartInstance.value as unknown as { setStyles: (config: unknown) => void })?.setStyles(
         createProKLineChartStyleConfig()
       )
-      applyChartContainerHeight(chartContainer.value, props.height)
+      applyChartContainerHeight(chartContainer.value, props.height ?? '600px')
     } catch (error) {
       console.error('Failed to initialize chart:', error)
       emit('error', error as Error)
@@ -162,6 +184,10 @@ export function useProKLineChart() {
         chartInstance.value?.applyNewData([])
       }
     } catch (error) {
+      if (isBenignLifecycleError(error)) {
+        return
+      }
+
       console.error('Failed to load historical data:', error)
       ElMessage.error('加载K线数据失败')
       emit('error', error as Error)
@@ -389,6 +415,7 @@ export function useProKLineChart() {
 
   // Lifecycle hooks
   onMounted(() => {
+    isUnmounted = false
     initChart()
     if (props.symbol) {
       loadHistoricalData()
@@ -396,6 +423,7 @@ export function useProKLineChart() {
   })
 
   onUnmounted(() => {
+    isUnmounted = true
     if (chartInstance.value && chartContainer.value) {
       dispose(chartContainer.value)
       chartInstance.value = null

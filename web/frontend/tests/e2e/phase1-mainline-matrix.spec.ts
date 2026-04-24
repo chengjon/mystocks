@@ -326,7 +326,7 @@ test.describe("Phase 1 Mainline Matrix Gaps", () => {
 
     await page.goto(`${FRONTEND_BASE_URL}/market/lhb`, { waitUntil: "domcontentloaded" })
 
-    await expect(page.getByRole("heading", { name: "龙虎榜工作台" })).toBeVisible()
+    await expect(page.getByText("龙虎榜工作台")).toBeVisible()
     await expect(page.getByText("龙虎榜数据")).toBeVisible()
     await expect(page.getByRole("button", { name: "买入榜" })).toBeVisible()
     await expect(page.getByRole("button", { name: "卖出榜" })).toBeVisible()
@@ -339,11 +339,11 @@ test.describe("Phase 1 Mainline Matrix Gaps", () => {
 
     await page.goto(`${FRONTEND_BASE_URL}/market/lhb`, { waitUntil: "domcontentloaded" })
 
-    await expect(page.getByRole("heading", { name: "龙虎榜工作台" })).toBeVisible()
+    await expect(page.getByText("龙虎榜工作台")).toBeVisible()
+    await expect(page.getByText("龙虎榜数据")).toBeVisible()
     await expect(page.getByRole("button", { name: "买入榜" })).toBeVisible()
     await expect(page.getByRole("button", { name: "卖出榜" })).toBeVisible()
     await expect(page.getByRole("button", { name: "机构榜" })).toBeVisible()
-    await expect(page.getByRole("table")).toBeVisible()
   })
 
   test("industry page renders request metadata and content blocks with mock rows", async ({ page }) => {

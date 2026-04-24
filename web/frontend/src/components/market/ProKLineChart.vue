@@ -75,10 +75,20 @@
 
 <script setup lang="ts">
 import { RefreshRight } from '@element-plus/icons-vue'
+import { withDefaults } from 'vue'
 import { useProKLineChart } from './composables/useProKLineChart'
+import { defaultProKLineChartProps, type ProKLineChartProps } from './composables/useProKLineChart.types'
+
+const props = withDefaults(defineProps<ProKLineChartProps>(), defaultProKLineChartProps)
+
+const emit = defineEmits<{
+  (e: 'period-change', period: string): void
+  (e: 'indicator-change', indicators: string[]): void
+  (e: 'data-loaded', data: unknown[]): void
+  (e: 'error', error: Error): void
+}>()
 
 const {
-  props,
   chartContainer,
   loading,
   selectedPeriod,
@@ -91,7 +101,7 @@ const {
   handleRefresh,
   handleTogglePriceLimits,
   handleToggleAdjustment,
-} = useProKLineChart()
+} = useProKLineChart(props, emit)
 
 // Expose periods from props for template usage
 const periods = props.periods
