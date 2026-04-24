@@ -119,6 +119,8 @@
 
 - 冻结 API 性能基线：
   - `python scripts/dev/quality_gate/collect_api_performance_baseline.py --benchmark-json reports/analysis/api-performance-gate/<timestamp>/benchmark.json --output reports/analysis/api-performance-baseline.json`
+- 校验运行时可观测性漂移：
+  - `RUNTIME_QUALITY_SUMMARY_JSON=reports/analysis/runtime-quality-summary/<timestamp>/summary.json bash scripts/run_runtime_observability_drift_gate.sh`
 - 校验 API 性能漂移：
   - `python scripts/dev/quality_gate/validate_api_performance_drift.py --baseline reports/analysis/api-performance-baseline.json --current-benchmark-json reports/analysis/api-performance-gate/<timestamp>/benchmark.json`
 - 完整运行门禁：
