@@ -131,6 +131,9 @@ bash scripts/run_tech_debt_weekly_report.sh
 # Rebuild the combined runtime delivery summary, drift gate, and bundle locally
 bash scripts/run_runtime_delivery_summary_local.sh
 
+# Run the containerized runtime smoke on backup host ports only
+POSTGRES_PASSWORD=postgres TDENGINE_PASSWORD=taosdata bash scripts/run_containerized_runtime_smoke.sh
+
 # Run the full runtime delivery gate: docker smoke + combined summary + drift
 bash scripts/run_full_runtime_delivery_gate.sh
 
@@ -157,6 +160,17 @@ python scripts/dev/quality_gate/tech_debt_governance_gate.py baseline-drift-repo
 ---
 
 ## Import Path Note
+
+## Runtime Delivery Entry Points
+
+Phase 5+ containerized deployment capability uses two explicit entrypoints and keeps PM2 canonical ports separate from container smoke ports:
+
+- Containerized runtime smoke: `POSTGRES_PASSWORD=postgres TDENGINE_PASSWORD=taosdata bash scripts/run_containerized_runtime_smoke.sh`
+- Full runtime delivery gate: `bash scripts/run_full_runtime_delivery_gate.sh`
+- Canonical PM2 runtime URLs: `http://localhost:8020` and `http://localhost:3020`
+- Backup smoke URLs for container-only verification: `http://localhost:8021` and `http://localhost:3021`
+
+Use the smoke entrypoint to validate compose build, readiness, and metrics collection on isolated ports. Use the full runtime delivery gate to consume that smoke evidence together with PM2/runtime drift artifacts without creating a parallel deployment truth source.
 
 All scripts have been updated to use correct import paths from the project root:
 

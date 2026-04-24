@@ -102,6 +102,15 @@
 - `.github/workflows/runtime-delivery-gate.yml`
 - `.github/workflows/tech-debt-weekly-governance.yml`
 
+当前容器化部署能力入口说明：
+
+- 容器 runtime smoke 入口：
+  - `POSTGRES_PASSWORD=postgres TDENGINE_PASSWORD=taosdata bash scripts/run_containerized_runtime_smoke.sh`
+  - 该入口只使用 backup smoke 宿主端口 `8021/3021`，不占用 PM2 canonical `8020/3020`
+- 完整 runtime delivery gate 入口：
+  - `bash scripts/run_full_runtime_delivery_gate.sh`
+  - 该入口消费 docker smoke、deployment/env contract、runtime drift 与 Graphiti closeout 工件，作为当前 approved containerized deployment capability 的统一交付面
+
 当前 Graphiti gate closeout 补充工件：
 
 - `reports/analysis/runtime-delivery-gate/<timestamp>/runtime-delivery-gate-graphiti-closeout.json`
@@ -125,6 +134,8 @@
   - `python scripts/dev/quality_gate/validate_api_performance_drift.py --baseline reports/analysis/api-performance-baseline.json --current-benchmark-json reports/analysis/api-performance-gate/<timestamp>/benchmark.json`
 - 完整运行门禁：
   - `bash scripts/run_full_runtime_delivery_gate.sh`
+- 容器化部署 smoke：
+  - `POSTGRES_PASSWORD=postgres TDENGINE_PASSWORD=taosdata bash scripts/run_containerized_runtime_smoke.sh`
 - 生成带 Graphiti closeout 引用的治理周报：
   - `bash scripts/run_tech_debt_weekly_report.sh`
   - 默认要求 closeout 全部有效；如只做观察性输出，可用 `TECH_DEBT_WEEKLY_REQUIRE_VALID_CLOSEOUTS=0`

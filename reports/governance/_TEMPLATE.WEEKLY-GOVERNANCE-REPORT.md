@@ -41,6 +41,11 @@
 | Monitoring auth closeout validity gate | `<value>` | `PASS` | `N/A` | `PASS` | `bash scripts/run_monitoring_auth_performance_baseline.sh` |
 | Monitoring auth `alert-rules` P95 (ms) | `<value>` | `<value>` | `N/A` | `<= 300` | `reports/analysis/runtime-observability-baseline.json` |
 | Docker runtime smoke status | `<value>` | `<value>` | `N/A` | `PASS/PASS/PASS` | `reports/analysis/runtime-observability-baseline.json` |
+| Container deployment contract pass | `<value>` | `PASS` | `N/A` | `PASS` | `bash scripts/run_full_runtime_delivery_gate.sh` |
+| Deployment env contract pass | `<value>` | `PASS` | `N/A` | `PASS` | `bash scripts/run_full_runtime_delivery_gate.sh` |
+| Docker runtime service role | `<value>` | `backup_smoke` | `N/A` | `backup_smoke` | `reports/analysis/runtime-delivery-gate/<timestamp>/runtime-delivery-gate-manifest.json` |
+| Canonical PM2 ports | `<value>` | `8020/3020` | `N/A` | `8020/3020` | `reports/analysis/runtime-delivery-gate/<timestamp>/runtime-quality-summary/container-deployment-contract-report.json` |
+| Backup smoke ports | `<value>` | `8021/3021` | `N/A` | `8021/3021` | `reports/analysis/runtime-delivery-gate/<timestamp>/runtime-quality-summary/container-deployment-contract-report.json` |
 | Docker metrics `http_requests_total` delta | `<value>` | `<value>` | `N/A` | `>= 0` | `reports/analysis/runtime-observability-baseline.json` |
 | Graphiti closeout coverage | `<valid>/<expected>` | `5/5` | `N/A` | `5/5` | `reports/analysis/*/*-graphiti-closeout.json` |
 | Graphiti closeout validity gate | `<value>` | `PASS` | `N/A` | `PASS` | `bash scripts/run_tech_debt_weekly_report.sh` |
@@ -50,6 +55,8 @@
 API 性能漂移命令：`python scripts/dev/quality_gate/validate_api_performance_drift.py --baseline reports/analysis/api-performance-baseline.json --current-benchmark-json <api-performance-gate/benchmark.json>`
 Monitoring auth closeout：`bash scripts/run_monitoring_auth_performance_baseline.sh`
 完整运行门禁入口：`bash scripts/run_full_runtime_delivery_gate.sh`
+容器 smoke 入口：`POSTGRES_PASSWORD=postgres TDENGINE_PASSWORD=taosdata bash scripts/run_containerized_runtime_smoke.sh`
+容器化能力口径：PM2 canonical 仍是 `8020/3020`，container backup smoke 固定为 `8021/3021`
 周报 closeout 门禁默认开启；如仅需生成观察性报告可临时设置：`TECH_DEBT_WEEKLY_REQUIRE_VALID_CLOSEOUTS=0 bash scripts/run_tech_debt_weekly_report.sh`
 
 ## 6.2A Graphiti Gate Closeouts
