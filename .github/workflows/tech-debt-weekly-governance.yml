@@ -82,6 +82,10 @@ jobs:
           runtime_manifest_path = Path("reports/analysis/runtime-delivery-gate-weekly/runtime-delivery-gate-manifest.json")
           lines = report_path.read_text(encoding="utf-8").splitlines()
           runtime_manifest = json.loads(runtime_manifest_path.read_text(encoding="utf-8"))
+          container_contract_path = Path(runtime_manifest["paths"]["container_deployment_contract_report"])
+          deployment_env_contract_path = Path(runtime_manifest["paths"]["deployment_env_contract_report"])
+          container_contract = json.loads(container_contract_path.read_text(encoding="utf-8"))
+          deployment_env_contract = json.loads(deployment_env_contract_path.read_text(encoding="utf-8"))
           keep = [
               "# Tech Debt Weekly Governance",
               "",
@@ -128,6 +132,15 @@ jobs:
                   f"- Runtime delivery gate drift pass: `{runtime_manifest.get('runtime_observability_drift_pass', 'N/A')}`",
                   f"- Runtime delivery gate drift violations: `{runtime_manifest.get('runtime_observability_drift_violations', 'N/A')}`",
                   f"- Runtime delivery gate drift not_measured: `{runtime_manifest.get('runtime_observability_drift_not_measured', 'N/A')}`",
+                  f"- Container deployment contract pass: `{runtime_manifest.get('container_deployment_contract_pass', 'N/A')}`",
+                  f"- Container deployment contract violations: `{runtime_manifest.get('container_deployment_contract_violations', 'N/A')}`",
+                  f"- Deployment env contract pass: `{runtime_manifest.get('deployment_env_contract_pass', 'N/A')}`",
+                  f"- Deployment env contract violations: `{runtime_manifest.get('deployment_env_contract_violations', 'N/A')}`",
+                  f"- Docker runtime service role: `{runtime_manifest.get('docker_runtime_service_role', 'N/A')}`",
+                  f"- Canonical PM2 ports: `{container_contract.get('canonical_ports', {})}`",
+                  f"- Backup smoke ports: `{container_contract.get('backup_smoke_ports', {})}`",
+                  f"- Backend PM2 required env keys: `{deployment_env_contract.get('backend_required_env_keys', [])}`",
+                  f"- Frontend PM2 required env keys: `{deployment_env_contract.get('frontend_required_env_keys', [])}`",
               ]
           )
 

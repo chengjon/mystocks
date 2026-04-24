@@ -1142,3 +1142,36 @@ def test_mainline_governance_summary_uses_single_line_python_command() -> None:
     assert "Add workflow summary" in workflow
     assert "python -c 'import json, os; from pathlib import Path;" in workflow
     assert "python - <<'PY'" not in workflow
+
+
+def test_runtime_delivery_gate_workflow_surfaces_containerized_deployment_capability() -> None:
+    workflow = _read_workflow("runtime-delivery-gate.yml")
+
+    assert "## Containerized Deployment Capability" in workflow
+    assert 'manifest["paths"]["container_deployment_contract_report"]' in workflow
+    assert 'manifest["paths"]["deployment_env_contract_report"]' in workflow
+    assert "Container deployment contract pass" in workflow
+    assert "Container deployment contract violations" in workflow
+    assert "Deployment env contract pass" in workflow
+    assert "Deployment env contract violations" in workflow
+    assert "Docker runtime service role" in workflow
+    assert "Canonical PM2 ports" in workflow
+    assert "Backup smoke ports" in workflow
+    assert "Backend PM2 required env keys" in workflow
+    assert "Frontend PM2 required env keys" in workflow
+
+
+def test_weekly_governance_workflow_surfaces_containerized_deployment_capability() -> None:
+    workflow = _read_workflow("tech-debt-weekly-governance.yml")
+
+    assert 'runtime_manifest["paths"]["container_deployment_contract_report"]' in workflow
+    assert 'runtime_manifest["paths"]["deployment_env_contract_report"]' in workflow
+    assert "Container deployment contract pass" in workflow
+    assert "Container deployment contract violations" in workflow
+    assert "Deployment env contract pass" in workflow
+    assert "Deployment env contract violations" in workflow
+    assert "Docker runtime service role" in workflow
+    assert "Canonical PM2 ports" in workflow
+    assert "Backup smoke ports" in workflow
+    assert "Backend PM2 required env keys" in workflow
+    assert "Frontend PM2 required env keys" in workflow

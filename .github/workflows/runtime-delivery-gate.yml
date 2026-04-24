@@ -69,7 +69,14 @@ jobs:
             from pathlib import Path
 
             report_path = Path("reports/analysis/runtime-delivery-gate-ci/runtime-child-gate-closeout-validation.json")
+            manifest_path = Path("reports/analysis/runtime-delivery-gate-ci/runtime-delivery-gate-manifest.json")
             report = json.loads(report_path.read_text(encoding="utf-8"))
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+            container_contract_path = Path(manifest["paths"]["container_deployment_contract_report"])
+            deployment_env_path = Path(manifest["paths"]["deployment_env_contract_report"])
+            container_contract = json.loads(container_contract_path.read_text(encoding="utf-8"))
+            deployment_env_contract = json.loads(deployment_env_path.read_text(encoding="utf-8"))
 
             print(f"- pass: `{report.get('pass', 'N/A')}`")
             print(f"- valid_count: `{report.get('valid_count', 'N/A')}`")
@@ -80,5 +87,16 @@ jobs:
                     f"- {item.get('label', item.get('key', 'unknown'))}: "
                     f"valid=`{item.get('valid', 'N/A')}` reason=`{item.get('reason', 'N/A')}`"
                 )
+
+            print("\n## Containerized Deployment Capability")
+            print(f"- Container deployment contract pass: `{manifest.get('container_deployment_contract_pass', 'N/A')}`")
+            print(f"- Container deployment contract violations: `{manifest.get('container_deployment_contract_violations', 'N/A')}`")
+            print(f"- Deployment env contract pass: `{manifest.get('deployment_env_contract_pass', 'N/A')}`")
+            print(f"- Deployment env contract violations: `{manifest.get('deployment_env_contract_violations', 'N/A')}`")
+            print(f"- Docker runtime service role: `{manifest.get('docker_runtime_service_role', 'N/A')}`")
+            print(f"- Canonical PM2 ports: `{container_contract.get('canonical_ports', {})}`")
+            print(f"- Backup smoke ports: `{container_contract.get('backup_smoke_ports', {})}`")
+            print(f"- Backend PM2 required env keys: `{deployment_env_contract.get('backend_required_env_keys', [])}`")
+            print(f"- Frontend PM2 required env keys: `{deployment_env_contract.get('frontend_required_env_keys', [])}`")
             PY
           fi
