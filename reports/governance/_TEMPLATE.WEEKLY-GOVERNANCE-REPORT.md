@@ -42,7 +42,7 @@
 | Monitoring auth `alert-rules` P95 (ms) | `<value>` | `<value>` | `N/A` | `<= 300` | `reports/analysis/runtime-observability-baseline.json` |
 | Docker runtime smoke status | `<value>` | `<value>` | `N/A` | `PASS/PASS/PASS` | `reports/analysis/runtime-observability-baseline.json` |
 | Docker metrics `http_requests_total` delta | `<value>` | `<value>` | `N/A` | `>= 0` | `reports/analysis/runtime-observability-baseline.json` |
-| Graphiti closeout coverage | `<valid>/<expected>` | `4/4` | `N/A` | `4/4` | `reports/analysis/*/*-graphiti-closeout.json` |
+| Graphiti closeout coverage | `<valid>/<expected>` | `5/5` | `N/A` | `5/5` | `reports/analysis/*/*-graphiti-closeout.json` |
 | Graphiti closeout validity gate | `<value>` | `PASS` | `N/A` | `PASS` | `bash scripts/run_tech_debt_weekly_report.sh` |
 
 可复用校验命令：`RUNTIME_QUALITY_SUMMARY_JSON=<runtime-quality-summary/summary.json> bash scripts/run_runtime_observability_drift_gate.sh`
