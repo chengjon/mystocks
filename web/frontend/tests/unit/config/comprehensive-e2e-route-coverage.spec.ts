@@ -7,6 +7,13 @@ import { HOME_ROUTE_NAME, HOME_ROUTE_PATH, LEGACY_HOME_ROUTE_PATH } from '@/rout
 const routerSource = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
 const comprehensiveE2ESource = readFileSync(resolve(process.cwd(), 'tests/e2e/comprehensive-all-pages.spec.ts'), 'utf8')
 const routerSourceFile = ts.createSourceFile('index.ts', routerSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS)
+const comprehensiveE2ESourceFile = ts.createSourceFile(
+  'comprehensive-all-pages.spec.ts',
+  comprehensiveE2ESource,
+  ts.ScriptTarget.Latest,
+  true,
+  ts.ScriptKind.TS,
+)
 
 const identifierPathMap: Record<string, string> = {
   HOME_ROUTE_PATH,
@@ -20,6 +27,16 @@ const identifierNameMap: Record<string, string> = {
 type RouteEntry = {
   name: string
   fullPath: string
+  apiPath: string | null
+}
+
+type E2EPageEntry = {
+  name: string
+  path: string
+  requiresAuth: boolean
+  expectedSelectors: string[]
+  expectedApiPath: string | null
+  noApiAssertionReason: string | null
 }
 
 function readRouteString(node: ts.Expression | undefined): string | null {
@@ -76,8 +93,14 @@ function collectNamedRoutes(elements: readonly ts.Expression[], parentPath = '')
 
     const nameProperty = getObjectProperty(element, 'name')
     const routeName = readRouteString(nameProperty?.initializer)
+    const metaProperty = getObjectProperty(element, 'meta')
+    const metaObject = metaProperty?.initializer && ts.isObjectLiteralExpression(metaProperty.initializer)
+      ? metaProperty.initializer
+      : null
+    const apiProperty = metaObject ? getObjectProperty(metaObject, 'api') : undefined
+    const apiPath = readRouteString(apiProperty?.initializer)
     if (routeName && ownPath) {
-      routes.push({ name: routeName, fullPath })
+      routes.push({ name: routeName, fullPath, apiPath })
     }
 
     const childrenProperty = getObjectProperty(element, 'children')
@@ -111,17 +134,63 @@ function getNamedRoutesFromRouterSource(): RouteEntry[] {
 }
 
 function getComprehensiveE2EPagePaths(): string[] {
-  const pageEntryPattern = /\{\s*name:\s*'[^']+',\s*path:\s*'([^']+)'/g
-  const paths: string[] = []
+  return getComprehensiveE2EPageEntries().map((entry) => entry.path)
+}
 
-  for (const match of comprehensiveE2ESource.matchAll(pageEntryPattern)) {
-    const [, path] = match
-    if (path) {
-      paths.push(path)
+function readBoolean(node: ts.Expression | undefined): boolean | null {
+  if (!node) {
+    return null
+  }
+
+  if (node.kind === ts.SyntaxKind.TrueKeyword) {
+    return true
+  }
+
+  if (node.kind === ts.SyntaxKind.FalseKeyword) {
+    return false
+  }
+
+  return null
+}
+
+function readStringArray(node: ts.Expression | undefined): string[] {
+  if (!node || !ts.isArrayLiteralExpression(node)) {
+    return []
+  }
+
+  return node.elements
+    .map((element) => readRouteString(element))
+    .filter((value): value is string => Boolean(value))
+}
+
+function getComprehensiveE2EPageEntries(): E2EPageEntry[] {
+  for (const statement of comprehensiveE2ESourceFile.statements) {
+    if (!ts.isVariableStatement(statement)) {
+      continue
+    }
+
+    for (const declaration of statement.declarationList.declarations) {
+      if (
+        ts.isIdentifier(declaration.name)
+        && declaration.name.text === 'PAGES'
+        && declaration.initializer
+        && ts.isArrayLiteralExpression(declaration.initializer)
+      ) {
+        return declaration.initializer.elements
+          .filter(ts.isObjectLiteralExpression)
+          .map((element) => ({
+            name: readRouteString(getObjectProperty(element, 'name')?.initializer) ?? '',
+            path: readRouteString(getObjectProperty(element, 'path')?.initializer) ?? '',
+            requiresAuth: readBoolean(getObjectProperty(element, 'requiresAuth')?.initializer) ?? false,
+            expectedSelectors: readStringArray(getObjectProperty(element, 'expectedSelectors')?.initializer),
+            expectedApiPath: readRouteString(getObjectProperty(element, 'expectedApiPath')?.initializer),
+            noApiAssertionReason: readRouteString(getObjectProperty(element, 'noApiAssertionReason')?.initializer),
+          }))
+      }
     }
   }
 
-  return paths
+  return []
 }
 
 function getCanonicalBusinessRoutes(): RouteEntry[] {
@@ -146,5 +215,37 @@ describe('comprehensive E2E route coverage', () => {
     // The historical 35/35 figure includes the backend health probe test.
     // The routed page inventory itself is 34 entries: login + 33 authenticated routes.
     expect(e2ePaths).toHaveLength(34)
+  })
+
+  it('requires every page entry to declare core visible selectors', () => {
+    const pageEntries = getComprehensiveE2EPageEntries()
+
+    for (const entry of pageEntries) {
+      expect(entry.expectedSelectors.length, `${entry.name} should declare expectedSelectors`).toBeGreaterThan(0)
+    }
+  })
+
+  it('requires every authenticated route entry to declare an API contract or explicit shell-only reason', () => {
+    const pageEntries = getComprehensiveE2EPageEntries().filter((entry) => entry.requiresAuth)
+    const routerApiByPath = new Map(
+      getCanonicalBusinessRoutes()
+        .filter((route) => route.fullPath !== '/login')
+        .map((route) => [route.fullPath, route.apiPath]),
+    )
+
+    for (const entry of pageEntries) {
+      const routerApiPath = routerApiByPath.get(entry.path) ?? null
+
+      if (routerApiPath) {
+        expect(entry.expectedApiPath, `${entry.name} should declare expectedApiPath`).toBe(routerApiPath)
+        expect(entry.noApiAssertionReason, `${entry.name} should not declare a shell-only reason`).toBeNull()
+      } else {
+        expect(entry.expectedApiPath, `${entry.name} should omit expectedApiPath for shell-only routes`).toBeNull()
+        expect(
+          (entry.noApiAssertionReason ?? '').length,
+          `${entry.name} should declare noApiAssertionReason`,
+        ).toBeGreaterThan(0)
+      }
+    }
   })
 })

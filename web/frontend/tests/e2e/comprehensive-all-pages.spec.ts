@@ -25,58 +25,271 @@ const frontendConfig = resolveFrontendConfig();
 const backendConfig = resolveBackendConfig();
 
 // ============ Page List (All Routes from router/index.ts) ============
-const PAGES = [
+type PageContract = {
+  name: string;
+  path: string;
+  requiresAuth: boolean;
+  expectedSelectors: string[];
+  expectedApiPath?: string;
+  noApiAssertionReason?: string;
+};
+
+const PAGES: PageContract[] = [
   // Public pages
-  { name: 'Login', path: '/login', requiresAuth: false },
+  {
+    name: 'Login',
+    path: '/login',
+    requiresAuth: false,
+    expectedSelectors: ['.login-card', 'button[type="submit"]', 'input[placeholder*="USERNAME" i]'],
+    noApiAssertionReason: 'login page uses form submit flow instead of route-level read API contract',
+  },
 
   // 0. Dashboard / Trading Room (交易室 - 主仪表板)
-  { name: 'Dashboard', path: '/dashboard', requiresAuth: true },
+  {
+    name: 'Dashboard',
+    path: '/dashboard',
+    requiresAuth: true,
+    expectedSelectors: ['.artdeco-content', '.section-title', 'h1', 'h2'],
+    expectedApiPath: '/api/v1/market/overview',
+  },
 
   // 1. Market Domain (市场行情 - 3 pages)
-  { name: 'Market-Realtime', path: '/market/realtime', requiresAuth: true },
-  { name: 'Market-Technical', path: '/market/technical', requiresAuth: true },
-  { name: 'Market-LHB', path: '/market/lhb', requiresAuth: true },
+  {
+    name: 'Market-Realtime',
+    path: '/market/realtime',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v1/market/quotes',
+  },
+  {
+    name: 'Market-Technical',
+    path: '/market/technical',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v1/market/kline',
+  },
+  {
+    name: 'Market-LHB',
+    path: '/market/lhb',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v2/market/lhb',
+  },
 
   // 2. Data Analysis (数据分析 - 4 pages)
-  { name: 'Data-Industry', path: '/data/industry', requiresAuth: true },
-  { name: 'Data-Concept', path: '/data/concept', requiresAuth: true },
-  { name: 'Data-FundFlow', path: '/data/fund-flow', requiresAuth: true },
-  { name: 'Data-Indicator', path: '/data/indicator', requiresAuth: true },
+  {
+    name: 'Data-Industry',
+    path: '/data/industry',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/akshare_market/boards',
+  },
+  {
+    name: 'Data-Concept',
+    path: '/data/concept',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v2/market/sector/fund-flow?sector_type=概念',
+  },
+  {
+    name: 'Data-FundFlow',
+    path: '/data/fund-flow',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/akshare/market/fund-flow',
+  },
+  {
+    name: 'Data-Indicator',
+    path: '/data/indicator',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v1/indicators/registry',
+  },
 
   // 3. Watchlist (自选管理 - 3 pages)
-  { name: 'Watchlist-Manage', path: '/watchlist/manage', requiresAuth: true },
-  { name: 'Watchlist-Signals', path: '/watchlist/signals', requiresAuth: true },
-  { name: 'Watchlist-Screener', path: '/watchlist/screener', requiresAuth: true },
+  {
+    name: 'Watchlist-Manage',
+    path: '/watchlist/manage',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v1/monitoring/watchlists',
+  },
+  {
+    name: 'Watchlist-Signals',
+    path: '/watchlist/signals',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v1/trade/signals',
+  },
+  {
+    name: 'Watchlist-Screener',
+    path: '/watchlist/screener',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v1/data/stocks/basic',
+  },
 
   // 4. Strategy (策略管理 - 7 pages)
-  { name: 'Strategy-Repo', path: '/strategy/repo', requiresAuth: true },
-  { name: 'Strategy-Parameters', path: '/strategy/parameters', requiresAuth: true },
-  { name: 'Strategy-Signals', path: '/strategy/signals', requiresAuth: true },
-  { name: 'Strategy-Backtest', path: '/strategy/backtest', requiresAuth: true },
-  { name: 'Strategy-GPU', path: '/strategy/gpu', requiresAuth: true },
-  { name: 'Strategy-Opt', path: '/strategy/opt', requiresAuth: true },
-  { name: 'Strategy-Pos', path: '/strategy/pos', requiresAuth: true },
+  {
+    name: 'Strategy-Repo',
+    path: '/strategy/repo',
+    requiresAuth: true,
+    expectedSelectors: ['.strategy-management', '.section-title', '.el-button', 'button'],
+    expectedApiPath: '/api/v1/strategy/list',
+  },
+  {
+    name: 'Strategy-Parameters',
+    path: '/strategy/parameters',
+    requiresAuth: true,
+    expectedSelectors: ['.strategy-management', '.section-title', '.el-button', 'button'],
+    expectedApiPath: '/api/v1/strategy/strategies',
+  },
+  {
+    name: 'Strategy-Signals',
+    path: '/strategy/signals',
+    requiresAuth: true,
+    expectedSelectors: ['.strategy-management', '.section-title', '.el-button', 'button'],
+    expectedApiPath: '/api/v1/trade/signals',
+  },
+  {
+    name: 'Strategy-Backtest',
+    path: '/strategy/backtest',
+    requiresAuth: true,
+    expectedSelectors: ['.backtest-analysis-page', '.section-title', '.el-button', 'button'],
+    expectedApiPath: '/api/v1/strategy/backtest',
+  },
+  {
+    name: 'Strategy-GPU',
+    path: '/strategy/gpu',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Strategy-Opt',
+    path: '/strategy/opt',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Strategy-Pos',
+    path: '/strategy/pos',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedApiPath: '/api/v1/trade/positions',
+  },
 
   // 5. Trade (交易管理 - 5 pages)
-  { name: 'Trade-Positions', path: '/trade/positions', requiresAuth: true },
-  { name: 'Trade-Terminal', path: '/trade/terminal', requiresAuth: true },
-  { name: 'Trade-Signals', path: '/trade/signals', requiresAuth: true },
-  { name: 'Trade-Portfolio', path: '/trade/portfolio', requiresAuth: true },
-  { name: 'Trade-History', path: '/trade/history', requiresAuth: true },
+  {
+    name: 'Trade-Positions',
+    path: '/trade/positions',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Trade-Terminal',
+    path: '/trade/terminal',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Trade-Signals',
+    path: '/trade/signals',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Trade-Portfolio',
+    path: '/trade/portfolio',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Trade-History',
+    path: '/trade/history',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
 
   // 6. Risk (风险管理 - 6 pages)
-  { name: 'Risk-Management', path: '/risk/management', requiresAuth: true },
-  { name: 'Risk-Overview', path: '/risk/overview', requiresAuth: true },
-  { name: 'Risk-PnL', path: '/risk/pnl', requiresAuth: true },
-  { name: 'Risk-StopLoss', path: '/risk/stop-loss', requiresAuth: true },
-  { name: 'Risk-Alerts', path: '/risk/alerts', requiresAuth: true },
-  { name: 'Risk-News', path: '/risk/news', requiresAuth: true },
+  {
+    name: 'Risk-Management',
+    path: '/risk/management',
+    requiresAuth: true,
+    expectedSelectors: ['.risk-management-page', '.section-title', '.el-button', 'button'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Risk-Overview',
+    path: '/risk/overview',
+    requiresAuth: true,
+    expectedSelectors: ['.risk-management-page', '.section-title', '.el-button', 'button'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Risk-PnL',
+    path: '/risk/pnl',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Risk-StopLoss',
+    path: '/risk/stop-loss',
+    requiresAuth: true,
+    expectedSelectors: ['.risk-management-page', '.section-title', '.el-button', 'button'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Risk-Alerts',
+    path: '/risk/alerts',
+    requiresAuth: true,
+    expectedSelectors: ['.risk-management-page', '.section-title', '.el-button', 'button'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Risk-News',
+    path: '/risk/news',
+    requiresAuth: true,
+    expectedSelectors: ['.risk-management-page', '.section-title', '.el-button', 'button'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
 
   // 7. System (系统设置 - 4 pages)
-  { name: 'System-Config', path: '/system/config', requiresAuth: true },
-  { name: 'System-Health', path: '/system/health', requiresAuth: true },
-  { name: 'System-API', path: '/system/api', requiresAuth: true },
-  { name: 'System-Data', path: '/system/data', requiresAuth: true },
+  {
+    name: 'System-Config',
+    path: '/system/config',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'System-Health',
+    path: '/system/health',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'System-API',
+    path: '/system/api',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'System-Data',
+    path: '/system/data',
+    requiresAuth: true,
+    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
 ];
 
 // Test credentials
@@ -381,8 +594,10 @@ test.describe('All Pages (Authenticated)', async () => {
         'main.artdeco-main',
         '.artdeco-content',
       ]);
+      const hasExpectedContent = await isAnySelectorVisible(page, pageInfo.expectedSelectors);
       const hasCoreContent = await isAnySelectorVisible(page, CORE_CONTENT_SELECTORS);
       expect(hasLayoutShell || hasCoreContent).toBe(true);
+      expect(hasExpectedContent).toBe(true);
 
       // Basic interaction readiness check
       const hasInteractiveElement = await isAnySelectorVisible(page, INTERACTIVE_SELECTORS);
