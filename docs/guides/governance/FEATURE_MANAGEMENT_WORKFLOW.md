@@ -7,7 +7,7 @@
 > 若本文件与 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 或当前已批准执行口径不一致，应优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 与当前实现；若无冲突，则按本文件的专题范围执行。
 
 
-> **版本**: 1.0.0 | **创建日期**: 2026-03-12
+> **版本**: 1.0.1 | **创建日期**: 2026-03-12 | **更新日期**: 2026-04-26
 > **适用范围**: 所有功能开发、维护、废弃流程
 
 ---
@@ -19,7 +19,7 @@
 | 文档 | 位置 | 用途 |
 |------|------|------|
 | **AI Quick Start** | `docs/guides/ai-tools/AI_QUICK_START.md` | 按任务类型路由到正确的治理入口和功能域 |
-| **功能树** | `docs/FUNCTION_TREE.md` | 业务能力总线，维护功能状态和领域入口 |
+| **功能树** | `docs/FUNCTION_TREE.md` | 业务能力总线，也是开发方向与功能边界总览，维护功能状态和领域入口 |
 | **Docs 首页** | `docs/INDEX.md` | 按任务类型和阅读顺序快速路由 |
 | **更新日志** | `CHANGELOG.md` | 版本变更记录 |
 | **本指南** | `docs/guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md` | 功能管理流程、同步规则、PR 对齐要求 |

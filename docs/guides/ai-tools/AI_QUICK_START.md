@@ -7,7 +7,7 @@
 > 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
 
 
-> **最后更新**: 2026-03-12
+> **最后更新**: 2026-04-26
 > **适用对象**: AI agent、代码评审者、新加入开发者
 
 ---
@@ -33,7 +33,7 @@ MyStocks 是持续演进中的工程仓库，不是纯知识库。
 3. [Docs 首页](../../INDEX.md)
    适用：需要快速知道从哪份文档开始读
 4. [功能树](../../FUNCTION_TREE.md)
-   适用：任何落到具体业务能力的任务
+   适用：任何落到具体业务能力的任务；也是功能边界与开发方向总览，新增功能或边界变化后必须回写
 5. `governance/mainline/task-cards/pr-<PR号>.yaml`
    适用：需要 machine-readable `function_tree` 声明、scope gate 或 reviewer 镜像对齐的任务
 
@@ -61,7 +61,8 @@ MyStocks 是持续演进中的工程仓库，不是纯知识库。
 2. 如涉及规划或能力新增，再读 [OpenSpec 工作流](../../../openspec/AGENTS.md)
 3. 进入 [功能树](../../FUNCTION_TREE.md) 的目标功能域
 4. 只下钻该领域的“领域入口”表
-5. 如本次是受治理的 PR / 任务，再检查 task card 中的 `function_tree` 稳定 ID 与 `affected_entrypoints`
+5. 若本次新增了能力、改变了功能入口或调整了职责边界，提交前同步更新 `docs/FUNCTION_TREE.md`
+6. 如本次是受治理的 PR / 任务，再检查 task card 中的 `function_tree` 稳定 ID 与 `affected_entrypoints`
 
 ### Bug 修复
 
@@ -104,6 +105,7 @@ MyStocks 是持续演进中的工程仓库，不是纯知识库。
 - 先按功能域定位，不先按目录瞎找
 - 先看领域入口，不先展开全仓搜索
 - 跨领域任务由主领域维护完整入口，其他领域只看引用
+- 新增功能、入口迁移、职责边界变化或状态变化，必须在同一批次回写 `FUNCTION_TREE`
 - task card 的 `function_tree` 是机器真相源；`meta-governance` 只在 machine-readable catalog / task card 中声明，不进入业务功能树文档
 
 ---
