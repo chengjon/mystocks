@@ -64,7 +64,7 @@
 ## 01-市场数据与行情 {#domain-01}
 
 **模块路径**: `src/adapters/`, `web/frontend/src/views/market/`
-**API前缀**: `/api/market/*`, `/api/tdx/*`, `/api/akshare_market/*`
+**API前缀**: `/api/v1/market/*`, `/api/v2/market/*`, `/api/v1/tdx/*`, `/api/akshare/market/*`
 **完成度**: 95%
 
 ### 领域入口
@@ -72,7 +72,7 @@
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 市场数据任务路由和治理入口 |
-| API/契约入口 | [市场 API](../web/backend/app/api/market.py)<br>[AKShare Market API](../web/backend/app/api/akshare_market/)<br>[API 文档总览](./api/README.md) | 市场 API 与契约接口入口 |
+| API/契约入口 | [市场 API](../web/backend/app/api/market.py)<br>[市场 V2 API](../web/backend/app/api/market_v2.py)<br>[AKShare Market API](../web/backend/app/api/akshare_market/)<br>[API 文档总览](./api/README.md) | 市场 API 与契约接口入口 |
 | 前端/交互入口 | [传统行情页](../web/frontend/src/views/market/)<br>[ArtDeco 市场页](../web/frontend/src/views/artdeco-pages/market-data-tabs/) | 页面、Tab 和交互入口 |
 | 核心代码入口 | [数据适配器](../src/adapters/)<br>[市场数据应用层](../src/application/market_data/) | 行情接入和处理实现入口 |
 | 测试与验证入口 | [市场 API 测试](../tests/api/file_tests/test_market_api.py)<br>[E2E 市场数据](../tests/e2e/market-data.spec.ts)<br>[前端 E2E 行情](../web/frontend/tests/e2e/market-data.spec.ts) | API、自测和页面验证入口 |
@@ -120,7 +120,7 @@
 ## 02-技术分析与指标 {#domain-02}
 
 **模块路径**: `src/indicators/`, `web/frontend/src/views/technical/`
-**API前缀**: `/api/indicators/*`, `/api/technical/*`
+**API前缀**: `/api/v1/indicators/*`, `/api/v1/technical/*`
 **完成度**: 90%
 
 ### 领域入口
@@ -166,7 +166,7 @@
 ## 03-策略管理与回测 {#domain-03}
 
 **模块路径**: `src/backtesting/`, `src/ml_strategy/`, `web/frontend/src/views/strategy/`
-**API前缀**: `/api/strategy_management/*`, `/api/backtest/*`
+**API前缀**: `/api/v1/strategy/*`, `/api/strategy-mgmt/*`, `/ws/*`
 **完成度**: 85%
 
 ### 领域入口
@@ -174,7 +174,7 @@
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[OpenSpec 工作流](../openspec/AGENTS.md) | 策略能力和行为变更前的治理入口 |
-| API/契约入口 | [策略管理 API](../web/backend/app/api/strategy_management/)<br>[策略 CRUD API](../web/backend/app/api/strategy_mgmt.py)<br>[回测 WebSocket API](../web/backend/app/api/backtest_ws.py) | 策略与回测接口入口 |
+| API/契约入口 | [策略 V1 API](../web/backend/app/api/strategy.py)<br>[策略管理 API](../web/backend/app/api/strategy_management/)<br>[策略 CRUD API](../web/backend/app/api/strategy_mgmt.py)<br>[回测 WebSocket API](../web/backend/app/api/backtest_ws.py) | 策略与回测接口入口 |
 | 前端/交互入口 | [策略页面](../web/frontend/src/views/strategy/)<br>[ArtDeco 策略页](../web/frontend/src/views/artdeco-pages/strategy-tabs/) | 策略配置、回测和优化交互入口 |
 | 核心代码入口 | [回测引擎](../src/backtesting/)<br>[机器学习策略](../src/ml_strategy/)<br>[策略应用层](../src/application/strategy/) | 策略与回测核心实现入口 |
 | 测试与验证入口 | [策略 API 测试](../tests/api/strategy.spec.ts)<br>[策略管理 E2E](../tests/e2e/strategy-management.spec.ts)<br>[前端回测 E2E](../web/frontend/tests/e2e/strategy-backtest.spec.ts) | 策略管理和回测验证入口 |
@@ -210,7 +210,7 @@
 ## 04-风险管理与监控 {#domain-04}
 
 **模块路径**: `src/governance/risk_management/`, `web/frontend/src/views/risk/`
-**API前缀**: `/api/risk/*`, `/api/risk/v31`
+**API前缀**: `/api/v1/risk/*`
 **完成度**: 80%
 
 ### 领域入口
@@ -254,8 +254,8 @@
 
 ## 05-投资组合与交易 {#domain-05}
 
-**模块路径**: `src/portfolio/`, `src/trading/`, `web/frontend/src/views/trade-management/`
-**API前缀**: `/api/trade/*`, `/api/portfolio/*`
+**模块路径**: `src/portfolio/`, `src/trading/`, `web/frontend/src/views/trade/`, `web/frontend/src/views/trading/`, `web/frontend/src/views/trading-decision/`
+**API前缀**: `/api/v1/trade/*`, `/api/trading/*`, `/api/v1/monitoring/watchlists/*`
 **完成度**: 70%
 
 ### 领域入口
@@ -264,7 +264,7 @@
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[功能管理工作流](./guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md) | 交易链路和跨域治理入口 |
 | API/契约入口 | [交易运行时 API](../web/backend/app/api/trading_runtime.py)<br>[交易监控 API](../web/backend/app/api/trading_monitor.py)<br>[交易数据 API](../web/backend/app/api/data/trading_api.py) | 交易、持仓和组合接口入口 |
-| 前端/交互入口 | [交易页面](../web/frontend/src/views/trading/)<br>[ArtDeco 交易页](../web/frontend/src/views/artdeco-pages/trading-tabs/)<br>[交易决策页](../web/frontend/src/views/trading-decision/) | 持仓、历史、决策和交易交互入口 |
+| 前端/交互入口 | [交易路由页](../web/frontend/src/views/trade/)<br>[交易工作台](../web/frontend/src/views/trading/)<br>[ArtDeco 交易页](../web/frontend/src/views/artdeco-pages/trading-tabs/)<br>[交易决策页](../web/frontend/src/views/trading-decision/)<br>[交易终端](../web/frontend/src/views/TradingDashboard.vue) | 持仓、历史、决策和交易交互入口 |
 | 核心代码入口 | [组合应用层](../src/application/portfolio/)<br>[交易应用层](../src/application/trading/)<br>[交易领域模型](../src/domain/trading/) | 交易和持仓实现入口 |
 | 测试与验证入口 | [交易路由 API 测试](../tests/api/file_tests/test_trade_routes_api.py)<br>[交易 E2E](../tests/e2e/trade-management.spec.ts)<br>[组合 DDD 测试](../tests/ddd/test_phase_5_portfolio.py) | 交易和组合验证入口 |
 | 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 交易链路排障入口 |
@@ -391,8 +391,8 @@ Q2 closure note:
 
 ## 08-系统管理与配置 {#domain-08}
 
-**模块路径**: `web/backend/app/api/auth.py`, `web/backend/app/api/system.py`
-**API前缀**: `/api/auth/*`, `/api/system/*`, `/api/backup_recovery/*`
+**模块路径**: `web/backend/app/api/auth.py`, `web/backend/app/api/system.py`, `web/frontend/src/views/system/`
+**API前缀**: `/api/v1/auth/*`, `/api/v1/system/*`, `/api/backup-recovery/*`
 **完成度**: 85%
 
 ### 领域入口
