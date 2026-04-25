@@ -84,7 +84,7 @@
 |--------|------|----------|------|
 | TDX实时行情 | ✅ | `src/adapters/tdx/realtime_service.py` | 通达信实时行情接入 |
 | 股票报价推送 | ✅ | `web/backend/app/api/market.py` | WebSocket实时推送 |
-| 自选股行情 | ✅ | `web/frontend/src/views/Market.vue` | 自选股实时监控 |
+| 自选股行情 | ✅ | `web/frontend/src/views/market/Realtime.vue` | 自选股与实时行情主路由页 |
 | 板块行情 | ✅ | `src/adapters/akshare/market_adapter/board_sector.py` | 板块涨跌统计 |
 
 ### 1.2 资金流向分析 {#domain-01-node-02}
@@ -175,7 +175,7 @@
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[OpenSpec 工作流](../openspec/AGENTS.md) | 策略能力和行为变更前的治理入口 |
 | API/契约入口 | [策略 V1 API](../web/backend/app/api/strategy.py)<br>[策略管理 API](../web/backend/app/api/strategy_management/)<br>[策略 CRUD API](../web/backend/app/api/strategy_mgmt.py)<br>[回测 WebSocket API](../web/backend/app/api/backtest_ws.py) | 策略与回测接口入口 |
-| 前端/交互入口 | [策略页面](../web/frontend/src/views/strategy/)<br>[ArtDeco 策略页](../web/frontend/src/views/artdeco-pages/strategy-tabs/) | 策略配置、回测和优化交互入口 |
+| 前端/交互入口 | [策略仓库页](../web/frontend/src/views/strategy/List.vue)<br>[策略参数页](../web/frontend/src/views/strategy/Parameters.vue)<br>[策略回测页](../web/frontend/src/views/strategy/Backtest.vue)<br>[ArtDeco 策略页](../web/frontend/src/views/artdeco-pages/strategy-tabs/) | 策略配置、回测和优化交互入口 |
 | 核心代码入口 | [回测引擎](../src/backtesting/)<br>[机器学习策略](../src/ml_strategy/)<br>[策略应用层](../src/application/strategy/) | 策略与回测核心实现入口 |
 | 测试与验证入口 | [策略 API 测试](../tests/api/strategy.spec.ts)<br>[策略管理 E2E](../tests/e2e/strategy-management.spec.ts)<br>[前端回测 E2E](../web/frontend/tests/e2e/strategy-backtest.spec.ts) | 策略管理和回测验证入口 |
 | 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[GPU 测试快速开始](../src/gpu/api_system/TESTING_QUICK_START.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 回测、GPU 与运行排障入口 |
@@ -185,7 +185,7 @@
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | 策略CRUD | ✅ | `web/backend/app/api/strategy_mgmt.py` | 策略增删改查 |
-| 策略参数 | ✅ | `web/frontend/src/views/artdeco-pages/strategy-tabs/` | 参数配置界面 |
+| 策略参数 | ✅ | `web/frontend/src/views/strategy/Parameters.vue` | 主路由包装页，承载参数配置界面 |
 | 策略模板 | ✅ | `src/ml_strategy/strategy/templates/` | 预置策略模板 |
 
 ### 3.2 回测引擎 {#domain-03-node-02}
