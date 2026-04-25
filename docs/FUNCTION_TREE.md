@@ -73,7 +73,7 @@
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 市场数据任务路由和治理入口 |
 | API/契约入口 | [市场 API](../web/backend/app/api/market.py)<br>[市场 V2 API](../web/backend/app/api/market_v2.py)<br>[AKShare Market API](../web/backend/app/api/akshare_market/)<br>[API 文档总览](./api/README.md) | 市场 API 与契约接口入口 |
-| 前端/交互入口 | [传统行情页](../web/frontend/src/views/market/)<br>[ArtDeco 市场页](../web/frontend/src/views/artdeco-pages/market-data-tabs/) | 页面、Tab 和交互入口 |
+| 前端/交互入口 | [市场实时页](../web/frontend/src/views/market/Realtime.vue)<br>[市场 K 线页](../web/frontend/src/views/market/Technical.vue)<br>[传统行情页目录](../web/frontend/src/views/market/)<br>[ArtDeco 市场页](../web/frontend/src/views/artdeco-pages/market-data-tabs/) | 页面、Tab 和交互入口 |
 | 核心代码入口 | [数据适配器](../src/adapters/)<br>[市场数据应用层](../src/application/market_data/) | 行情接入和处理实现入口 |
 | 测试与验证入口 | [市场 API 测试](../tests/api/file_tests/test_market_api.py)<br>[E2E 市场数据](../tests/e2e/market-data.spec.ts)<br>[前端 E2E 行情](../web/frontend/tests/e2e/market-data.spec.ts) | API、自测和页面验证入口 |
 | 运行与排障入口 | [测试指南](./testing/E2E_TEST_GUIDE.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 运行链路和排障入口 |
@@ -128,8 +128,8 @@
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 技术分析任务路由和治理入口 |
-| API/契约入口 | [指标 API](../web/backend/app/api/indicators.py)<br>[技术分析 API](../web/backend/app/api/technical/)<br>[API 文档总览](./api/README.md) | 技术分析接口入口 |
-| 前端/交互入口 | [技术分析页](../web/frontend/src/views/technical/TechnicalAnalysis.vue)<br>[技术扫描 Tab](../web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue) | 技术分析页面和扫描交互入口 |
+| API/契约入口 | [指标 API](../web/backend/app/api/indicators.py)<br>[技术分析目录](../web/backend/app/api/technical/)<br>[技术分析兼容入口](../web/backend/app/api/technical_analysis.py)<br>[API 文档总览](./api/README.md) | 技术分析接口入口 |
+| 前端/交互入口 | [指标分析主路由页](../web/frontend/src/views/data/Advanced.vue)<br>[技术分析旧页](../web/frontend/src/views/technical/TechnicalAnalysis.vue)<br>[技术扫描 Tab](../web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue) | 技术分析页面和扫描交互入口 |
 | 核心代码入口 | [指标库](../src/indicators/)<br>[技术分析引擎](../src/advanced_analysis/technical_analyzer/) | 指标与分析核心实现入口 |
 | 测试与验证入口 | [技术 API 测试](../tests/api/technical.spec.ts)<br>[技术分析 E2E](../tests/e2e/technical-analysis.spec.ts)<br>[K 线图 E2E](../web/frontend/tests/e2e/kline-chart.spec.ts) | 技术指标和图表验证入口 |
 | 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 调试和运行排障入口 |
