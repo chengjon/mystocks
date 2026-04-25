@@ -1,5 +1,5 @@
-import { defineStore, storeToRefs } from 'pinia'
-import { ref, computed } from 'vue'
+import { defineStore, storeToRefs, type StoreGeneric } from 'pinia'
+import { ref, computed, type ComputedRef, type Ref } from 'vue'
 import { unifiedApiClient, createCacheConfig, createLoadingConfig, DEFAULT_RETRY_CONFIG } from '@/api/unifiedApiClient'
 import { marketDataWebSocket, tradingWebSocket, riskWebSocket, WebSocketState } from '@/utils/webSocketManager'
 import type { WebSocketMessage } from '@/utils/webSocketManager'
@@ -67,11 +67,28 @@ export interface StoreConfig<T = unknown> {
   initialData?: T
 }
 
-type BaseStoreBinding<T> = ReturnType<ReturnType<typeof PiniaStoreFactory.createApiStore<T>>>
+type BaseStoreBinding<T> = ReturnType<ReturnType<typeof PiniaStoreFactory.createApiStore<T>>> & StoreActions<T>
+type BaseStoreRefs<T> = {
+  data: Ref<T | null>
+  loading: Ref<boolean>
+  error: Ref<string | null>
+  lastFetch: Ref<number | null>
+  lastRequestId: Ref<string | null>
+  lastProcessTime: Ref<string | null>
+  requestCount: Ref<number>
+  errorCount: Ref<number>
+  lastDurationMs: Ref<number | null>
+  isStale: ComputedRef<boolean>
+  hasData: ComputedRef<boolean>
+  isLoading: ComputedRef<boolean>
+  hasError: ComputedRef<boolean>
+  averageDurationMs: ComputedRef<number | null>
+}
 
 function bindBaseStore<T>(baseStore: BaseStoreBinding<T>) {
+  const refs = storeToRefs(baseStore as unknown as StoreGeneric) as unknown as BaseStoreRefs<T>
   return {
-    ...storeToRefs(baseStore),
+    ...refs,
     fetch: baseStore.fetch,
     refresh: baseStore.refresh,
     clear: baseStore.clear,
@@ -361,13 +378,8 @@ export class PiniaStoreFactory {
     const { wsManager, wsChannel, updateInterval, ...baseConfig } = config
 
     return defineStore(`${baseConfig.id}-realtime`, () => {
-      const baseStore = PiniaStoreFactory.createApiStore<T>(baseConfig)() as unknown as {
-        fetch: (params?: unknown) => Promise<unknown>
+      const baseStore = PiniaStoreFactory.createApiStore<T>(baseConfig)() as BaseStoreBinding<T> & {
         setData: (data: unknown) => void
-        setError: (error: string | null) => void
-        setLoading: (loading: boolean) => void
-        refresh: () => Promise<unknown>
-        clear: () => void
       }
       const isConnected = ref(false)
       const lastUpdate = ref<number | null>(null)

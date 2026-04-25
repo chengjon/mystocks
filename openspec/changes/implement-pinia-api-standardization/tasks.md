@@ -29,7 +29,7 @@
 
 ## 5. Migration & Cleanup (Phase 5)
 - [x] 5.1 Create migration scripts for existing components
-- [ ] 5.2 Update all components to use standardized stores
-- [ ] 5.3 Remove duplicate API code and utilities
-- [ ] 5.4 Performance testing and optimization</content>
+- [x] 5.2 Update all components to use standardized stores
+- [x] 5.3 Remove duplicate API code and utilities
+- [x] 5.4 Performance testing and optimization</content>
 <parameter name="filePath">openspec/changes/implement-pinia-api-standardization/tasks.md

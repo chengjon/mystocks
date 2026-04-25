@@ -4,7 +4,7 @@ export interface StorePolicy {
   sourceOfTruth: 'api' | 'realtime' | 'hybrid'
   cache: {
     enabled: boolean
-    key: string
+    key?: string
     ttl: number
     strategy: 'memory' | 'sessionStorage' | 'localStorage'
   }
@@ -47,12 +47,20 @@ export const frontendStorePolicies = {
     loadingKey: 'indicators-loading',
     refresh: { forceRefreshAllowed: true, staleAfterMs: 300000 },
   },
-  userWatchlists: {
-    capability: 'user-watchlists',
+  monitoringWatchlists: {
+    capability: 'monitoring-watchlists',
     owner: 'frontend-platform',
     sourceOfTruth: 'api',
-    cache: { enabled: true, key: 'user-watchlists', ttl: 1800000, strategy: 'sessionStorage' },
+    cache: { enabled: true, key: 'monitoring-watchlists', ttl: 1800000, strategy: 'sessionStorage' },
     loadingKey: 'watchlists-loading',
     refresh: { forceRefreshAllowed: true, staleAfterMs: 1800000 },
+  },
+  monitoringWatchlistStocks: {
+    capability: 'monitoring-watchlist-stocks',
+    owner: 'frontend-platform',
+    sourceOfTruth: 'api',
+    cache: { enabled: true, ttl: 300000, strategy: 'memory' },
+    loadingKey: 'watchlist-stocks-loading',
+    refresh: { forceRefreshAllowed: true, staleAfterMs: 300000 },
   },
 } as const

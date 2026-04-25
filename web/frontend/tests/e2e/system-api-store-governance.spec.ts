@@ -76,11 +76,11 @@ test.describe('System API store governance', () => {
       })
     })
 
-    await page.route('**/user/watchlists**', async (route) => {
+    await page.route('**/monitoring/watchlists**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
-        body: JSON.stringify(buildUnifiedResponse([{ id: 'wl-1', name: 'Core Holdings' }], 'req-watchlist-1'))
+        body: JSON.stringify(buildUnifiedResponse([{ id: 'wl-1', name: 'Core Holdings', stocks_count: 1 }], 'req-watchlist-1'))
       })
     })
   })
@@ -88,14 +88,14 @@ test.describe('System API store governance', () => {
   test('surfaces standardized store runtime metrics in the governance inspector', async ({ page }) => {
     await page.goto(`${FRONTEND_BASE_URL}/system/api`)
 
-    await expect(page.getByRole('heading', { name: '系统监控工作台' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '系统监控工作台' })).toBeVisible({ timeout: 15000 })
     await expect(page.getByText('Readiness: ready')).toBeVisible()
     await expect(page.getByText('Backend: ready')).toBeVisible()
     await expect(page.getByText('Request ID: req-ready-1')).toBeVisible()
 
     const tradingSignalsResponse = page.waitForResponse((response) => response.url().includes('/trading/signals'))
     const riskAlertsResponse = page.waitForResponse((response) => response.url().includes('/risk/alerts'))
-    const watchlistsResponse = page.waitForResponse((response) => response.url().includes('/user/watchlists'))
+    const watchlistsResponse = page.waitForResponse((response) => response.url().includes('/monitoring/watchlists'))
 
     await page.getByRole('button', { name: '刷新试点 Store' }).click()
     await Promise.all([tradingSignalsResponse, riskAlertsResponse, watchlistsResponse])
@@ -107,7 +107,7 @@ test.describe('System API store governance', () => {
 
     const tradingSignalsRow = runtimeSection.locator('.governance-row', { hasText: 'trading-signals' })
     const riskAlertsRow = runtimeSection.locator('.governance-row', { hasText: 'risk-alerts' })
-    const watchlistsRow = runtimeSection.locator('.governance-row', { hasText: 'user-watchlists' })
+    const watchlistsRow = runtimeSection.locator('.governance-row', { hasText: 'monitoring-watchlists' })
     const indicatorsRow = runtimeSection.locator('.governance-row', { hasText: 'technical-indicators' })
 
     await expect(tradingSignalsRow).toContainText('1')

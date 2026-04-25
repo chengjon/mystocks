@@ -78,10 +78,6 @@
           <div :key="activeTab" class="tab-panel">
             <WatchlistManager
               v-if="activeTab === 'watchlist'"
-              :watchlists="watchlists"
-              :active-watchlist-id="activeWatchlistId"
-              :current-stocks="currentWatchlistStocks"
-              @select-list="activeWatchlistId = $event"
             />
             <PortfolioMonitor
               v-else-if="activeTab === 'portfolio'"
@@ -108,11 +104,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { ArtDecoHeader, ArtDecoButton, ArtDecoIcon, ArtDecoCard, ArtDecoStatCard } from '@/components/artdeco'
 import WatchlistManager from './stock-management-tabs/WatchlistManager.vue'
 import PortfolioMonitor from './stock-management-tabs/PortfolioMonitor.vue'
 import apiClient from '@/api/apiClient'
+import { useWatchlistsStore, useWatchlistStocksStore } from '@/stores/apiStores'
 
 const activeTab = ref('watchlist')
 const tabs = [
@@ -139,18 +136,6 @@ const tabs = [
   }
 ]
 
-interface WatchlistItem {
-  id: string
-  name: string
-  stocks: StockRow[]
-}
-
-interface StockRow {
-  symbol: string
-  name: string
-  [key: string]: unknown
-}
-
 interface PositionRow {
   symbol?: string
   name?: string
@@ -162,17 +147,21 @@ interface PositionRow {
   positionPercent?: number
 }
 
-const activeWatchlistId = ref('')
-const watchlists = ref<WatchlistItem[]>([])
+const watchlistsStore = useWatchlistsStore()
+const watchlistStocksStore = useWatchlistStocksStore()
 const positions = ref<PositionRow[]>([])
-const dataLoaded = ref(false)
+const positionsLoaded = ref(false)
 
-const currentWatchlistStocks = computed(() => {
-  return watchlists.value.find((l) => l.id === activeWatchlistId.value)?.stocks || []
-})
+const watchlists = computed(() => (watchlistsStore.data as Array<{ id: string; name: string; stocks: unknown[] }> | null) ?? [])
+const currentWatchlistStocks = computed(() => (watchlistStocksStore.data as Array<Record<string, unknown>> | null) ?? [])
 const activeTabMeta = computed(() => tabs.find((tab) => tab.key === activeTab.value) || tabs[0])
-const requestTraceId = computed(() => 'N/A')
-const syncLabel = computed(() => dataLoaded.value ? '云同步完成' : '待同步')
+const requestTraceId = computed(() => watchlistStocksStore.lastRequestId || watchlistsStore.lastRequestId || 'N/A')
+const syncLabel = computed(() => {
+  if (watchlistsStore.loading || watchlistStocksStore.loading) {
+    return '云同步中'
+  }
+  return positionsLoaded.value ? '云同步完成' : '待同步'
+})
 
 function parseOptionalNumber(value: unknown): number | undefined {
   if (typeof value === 'number') {
@@ -222,17 +211,7 @@ function normalizePositions(payload: unknown): PositionRow[] {
 
 const fetchData = async () => {
   try {
-    const [wlRes, portRes] = await Promise.all([
-      apiClient.get('/api/portfolio/v2/watchlist'),
-      apiClient.get('/api/portfolio/v2/summary')
-    ])
-
-    if (wlRes.data?.success) {
-      watchlists.value = wlRes.data.data as WatchlistItem[]
-      if (watchlists.value.length > 0 && !activeWatchlistId.value) {
-        activeWatchlistId.value = watchlists.value[0].id
-      }
-    }
+    const portRes = await apiClient.get('/api/portfolio/v2/summary')
 
     if (portRes.data?.success) {
       positions.value = normalizePositions(portRes.data?.data?.positions)
@@ -240,7 +219,7 @@ const fetchData = async () => {
   } catch (e) {
     console.error('Failed to fetch stock management data', e)
   } finally {
-    dataLoaded.value = true
+    positionsLoaded.value = true
   }
 }
 

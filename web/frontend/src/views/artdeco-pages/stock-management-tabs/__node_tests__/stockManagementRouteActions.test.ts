@@ -3,38 +3,8 @@ import assert from "node:assert/strict"
 
 import {
   buildWatchlistExportDocument,
-  createStockManagementRouteActions,
   parseWatchlistImportDocument,
 } from "../stockManagementRouteActions.ts"
-
-test("stock management route actions call monitoring watchlist endpoints", async () => {
-  const calls: Array<{ method: string; url: string; data?: unknown }> = []
-  const actions = createStockManagementRouteActions({
-    post: async (url, data) => {
-      calls.push({ method: "POST", url, data })
-      return { data: { id: 77, name: "新清单" } }
-    },
-    delete: async (url) => {
-      calls.push({ method: "DELETE", url })
-      return {}
-    },
-  })
-
-  await actions.createWatchlist("新清单")
-  await actions.removeStock("18", "600519.SH")
-
-  assert.deepEqual(calls, [
-    {
-      method: "POST",
-      url: "/v1/monitoring/watchlists",
-      data: { name: "新清单", watchlist_type: "manual" },
-    },
-    {
-      method: "DELETE",
-      url: "/v1/monitoring/watchlists/18/stocks/600519.SH",
-    },
-  ])
-})
 
 test("buildWatchlistExportDocument includes active watchlist and stocks", () => {
   const doc = buildWatchlistExportDocument(

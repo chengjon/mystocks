@@ -3,10 +3,16 @@ import { computed, onMounted, ref } from 'vue'
 import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
+import { useWatchlistsStore, useWatchlistStocksStore } from '@/stores/apiStores'
 import { buildStopLossRows, pickPrimaryStopLossWatchlist, type StopLossRow } from '@/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts'
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
+const { loading: quoteLoading, error: quoteError, exec } = useArtDecoApi()
+const watchlistsStore = useWatchlistsStore()
+const watchlistStocksStore = useWatchlistStocksStore()
 const stopLossItems = ref<StopLossRow[]>([])
+const loading = computed(() => quoteLoading.value || watchlistsStore.loading || watchlistStocksStore.loading)
+const error = computed(() => quoteError.value || watchlistsStore.error || watchlistStocksStore.error || '')
+const lastRequestId = computed(() => watchlistStocksStore.lastRequestId || watchlistsStore.lastRequestId || '')
 
 const triggeredCount = computed(() => stopLossItems.value.filter((item) => Number(item.distance) < 0).length)
 const criticalCount = computed(() => stopLossItems.value.filter((item) => Number(item.distance) >= 0 && Number(item.distance) < 2).length)
@@ -16,32 +22,37 @@ const nearestDistance = computed(() => {
   return Number.isFinite(min) ? `${min.toFixed(2)}%` : '--'
 })
 const pageStatusText = computed(() => {
+  if (error.value) return '拉取失败'
   if (loading.value) return '同步中'
+  if (stopLossItems.value.length === 0) return '暂无监控标的'
   if (triggeredCount.value > 0) return '存在已触发止损'
   if (criticalCount.value > 0) return '接近止损阈值'
   return '止损观察中'
 })
 const pageStatusType = computed(() => {
+  if (error.value) return 'warning'
+  if (stopLossItems.value.length === 0) return 'info'
   if (triggeredCount.value > 0) return 'error'
   if (criticalCount.value > 0) return 'warning'
   return 'success'
 })
+const runtimeMessage = computed(() => {
+  if (error.value) return `${error.value}，当前显示空监控状态。`
+  if (loading.value) return '止损标的同步中...'
+  if (stopLossItems.value.length === 0) return '当前没有可用于止损监控的活跃标的。'
+  return ''
+})
 
 const fetchStopLossData = async () => {
-  const watchlists = await exec(() => apiClient.get('/v1/monitoring/watchlists'), {
-    silent: true
-  })
-
-  const primaryWatchlist = pickPrimaryStopLossWatchlist(watchlists)
+  await watchlistsStore.refresh()
+  const primaryWatchlist = pickPrimaryStopLossWatchlist(watchlistsStore.data)
   if (!primaryWatchlist) {
     stopLossItems.value = []
     return
   }
 
-  const stocks = await exec(
-    () => apiClient.get(`/v1/monitoring/watchlists/${primaryWatchlist.id}/stocks`),
-    { silent: true }
-  )
+  await watchlistStocksStore.refresh({ watchlistId: String(primaryWatchlist.id) })
+  const stocks = (watchlistStocksStore.data as Array<Record<string, unknown>> | null) ?? []
 
   if (!Array.isArray(stocks) || stocks.length === 0) {
     stopLossItems.value = []
@@ -109,7 +120,7 @@ onMounted(() => {
       <div class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">distance to stop route</span>
-          <h3 class="content-shell-title">止损距离监控面板</h3>
+          <h2 class="content-shell-title">止损距离监控面板</h2>
           <p class="content-shell-subtitle">观察当前价与止损价之间的距离，识别已触发和即将触发的关键持仓。</p>
         </div>
         <div class="content-shell-meta">
@@ -118,9 +129,14 @@ onMounted(() => {
         </div>
       </div>
 
+      <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+
       <div class="monitor-grid" v-loading="loading">
         <div v-for="item in stopLossItems" :key="item.symbol" class="artdeco-card risk-card">
-          <div class="risk-level-bar" :style="{ background: Number(item.distance) < 2 ? 'var(--artdeco-rise)' : 'var(--artdeco-gold-dim)' }"></div>
+          <div
+            class="risk-level-bar"
+            :style="{ background: Number(item.distance) < 2 ? 'var(--artdeco-down)' : 'var(--artdeco-gold-dim)' }"
+          ></div>
 
           <div class="card-body">
             <div class="stock-id">
@@ -153,6 +169,7 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      <div v-if="!loading && stopLossItems.length === 0" class="empty-state">暂无止损监控卡片。</div>
     </section>
   </div>
 </template>
@@ -326,14 +343,14 @@ onMounted(() => {
 }
 
 .distance-val.critical {
-  color: var(--artdeco-rise);
-  text-shadow: 0 0 calc(var(--artdeco-spacing-5) / 2) var(--artdeco-rise);
+  color: var(--artdeco-down);
+  text-shadow: 0 0 calc(var(--artdeco-spacing-5) / 2) var(--artdeco-down);
 }
 
 .warning-overlay {
   position: absolute;
   inset: 0;
-  background: color-mix(in srgb, var(--artdeco-rise) 20%, transparent);
+  background: color-mix(in srgb, var(--artdeco-down) 20%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -341,13 +358,20 @@ onMounted(() => {
 }
 
 .warning-overlay span {
-  background: var(--artdeco-rise);
+  background: var(--artdeco-down);
   color: white;
   padding: var(--artdeco-spacing-1) var(--artdeco-spacing-3);
   font-weight: bold;
   font-family: var(--artdeco-font-display);
   transform: rotate(-15deg);
   box-shadow: 0 0 var(--artdeco-spacing-5) color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
+}
+
+.runtime-message,
+.empty-state {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
 }
 
 @media (width <= 75rem) {

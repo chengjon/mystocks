@@ -1,6 +1,11 @@
 import { PiniaStoreFactory, createMarketDataStore, createReferenceDataStore } from '@/stores/storeFactory'
 import { frontendStorePolicies } from '@/stores/storePolicies'
+import { apiClient } from '@/api/apiClient'
 import { tradingWebSocket, riskWebSocket } from '@/utils/webSocketManager'
+import {
+  extractMonitoringWatchlists,
+  extractMonitoringWatchlistStocks,
+} from '@/views/artdeco-pages/stock-management-tabs/stockManagementRouteData'
 
 // Factory-created stores using PiniaStoreFactory for standardized API data management
 // These complement the existing complex stores with simple, consistent patterns
@@ -47,13 +52,52 @@ export const useMarketSectorsStore = createReferenceDataStore(
   '/api/market/sectors'
 )
 
-// Create user data store for watchlists
+// Create monitoring watchlists store
 export const useWatchlistsStore = PiniaStoreFactory.createApiStore({
-  id: frontendStorePolicies.userWatchlists.capability,
-  endpoint: '/api/user/watchlists',
-  cache: frontendStorePolicies.userWatchlists.cache,
-  loading: { enabled: true, key: frontendStorePolicies.userWatchlists.loadingKey },
+  id: frontendStorePolicies.monitoringWatchlists.capability,
+  endpoint: '/v1/monitoring/watchlists',
+  cache: frontendStorePolicies.monitoringWatchlists.cache,
+  loading: { enabled: true, key: frontendStorePolicies.monitoringWatchlists.loadingKey },
+  request: () => apiClient.get('/v1/monitoring/watchlists'),
+  transform: extractMonitoringWatchlists,
 })
+
+// Create watchlist stock details store with watchlist-aware cache keys
+export const useWatchlistStocksStore = PiniaStoreFactory.createApiStore({
+  id: frontendStorePolicies.monitoringWatchlistStocks.capability,
+  endpoint: '/v1/monitoring/watchlists/:watchlistId/stocks',
+  cache: frontendStorePolicies.monitoringWatchlistStocks.cache,
+  loading: { enabled: true, key: frontendStorePolicies.monitoringWatchlistStocks.loadingKey },
+  request: (params) => {
+    const watchlistId = typeof (params as { watchlistId?: unknown } | undefined)?.watchlistId === 'string'
+      ? (params as { watchlistId: string }).watchlistId
+      : ''
+    if (!watchlistId) {
+      throw new Error('watchlistId is required')
+    }
+    return apiClient.get(`/v1/monitoring/watchlists/${watchlistId}/stocks`)
+  },
+  transform: extractMonitoringWatchlistStocks,
+})
+
+export function createMonitoringWatchlistActions() {
+  return {
+    createWatchlist(name: string) {
+      return apiClient.post('/v1/monitoring/watchlists', {
+        name,
+        watchlist_type: 'manual',
+      })
+    },
+    addStock(watchlistId: string, symbol: string) {
+      return apiClient.post(`/v1/monitoring/watchlists/${watchlistId}/stocks`, {
+        stock_code: symbol,
+      })
+    },
+    removeStock(watchlistId: string, symbol: string) {
+      return apiClient.delete(`/v1/monitoring/watchlists/${watchlistId}/stocks/${symbol}`)
+    },
+  }
+}
 
 // Create technical indicators store
 export const useTechnicalIndicatorsStore = PiniaStoreFactory.createApiStore({

@@ -259,10 +259,10 @@ const capabilityRows = computed(() => [
     cache: `${frontendStorePolicies.riskAlerts.cache.strategy}:${frontendStorePolicies.riskAlerts.cache.ttl}ms`,
   },
   {
-    id: frontendStorePolicies.userWatchlists.capability,
-    sourceOfTruth: frontendStorePolicies.userWatchlists.sourceOfTruth,
-    endpoint: '/api/user/watchlists',
-    cache: `${frontendStorePolicies.userWatchlists.cache.strategy}:${frontendStorePolicies.userWatchlists.cache.ttl}ms`,
+    id: frontendStorePolicies.monitoringWatchlists.capability,
+    sourceOfTruth: frontendStorePolicies.monitoringWatchlists.sourceOfTruth,
+    endpoint: '/v1/monitoring/watchlists',
+    cache: `${frontendStorePolicies.monitoringWatchlists.cache.strategy}:${frontendStorePolicies.monitoringWatchlists.cache.ttl}ms`,
   },
 ])
 const realtimeRows = computed(() => [
@@ -305,7 +305,7 @@ const toInspectorSnapshot = (id: string, store: InspectorStoreState) => ({
 const storeSnapshots = computed(() => [
   toInspectorSnapshot(frontendStorePolicies.tradingSignals.capability, tradingSignalsStore as unknown as InspectorStoreState),
   toInspectorSnapshot(frontendStorePolicies.riskAlerts.capability, riskAlertsStore as unknown as InspectorStoreState),
-  toInspectorSnapshot(frontendStorePolicies.userWatchlists.capability, watchlistsStore as unknown as InspectorStoreState),
+  toInspectorSnapshot(frontendStorePolicies.monitoringWatchlists.capability, watchlistsStore as unknown as InspectorStoreState),
   toInspectorSnapshot(frontendStorePolicies.technicalIndicators.capability, technicalIndicatorsStore as unknown as InspectorStoreState),
 ])
 

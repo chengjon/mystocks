@@ -43,18 +43,25 @@ const MIGRATION_RULES = [
     match: (source) => /apiClient\.(post|get)\s*\(\s*['"`]\/api\/analysis\/indicators/u.test(source),
   },
   {
-    id: "user-watchlists",
+    id: "monitoring-watchlists",
     replacement: "useWatchlistsStore",
     status: "store-ready",
-    reason: "user watchlists 已有 standardized store",
-    match: (source) => /apiClient\.get\s*\(\s*['"`]\/api\/user\/watchlists/u.test(source),
+    reason: "monitoring watchlists 已有 standardized store",
+    match: (source) => /apiClient\.get\s*\(\s*['"`]\/v1\/monitoring\/watchlists(?:['"`)]|\/)/u.test(source),
+  },
+  {
+    id: "monitoring-watchlist-stocks",
+    replacement: "useWatchlistStocksStore",
+    status: "store-ready",
+    reason: "watchlist stocks 已有 parameterized standardized store",
+    match: (source) => /apiClient\.get\s*\(\s*['"`]\/v1\/monitoring\/watchlists\/\$\{[^}]+\}\/stocks/u.test(source),
   },
   {
     id: "user-watchlists-legacy",
     replacement: "useWatchlistsStore",
     status: "gap",
-    reason: "发现旧 watchlist 路径，需先确认 endpoint/adapter 对齐再迁移",
-    match: (source) => /\/api\/watchlist\b|\/v1\/monitoring\/watchlists\b|\/api\/portfolio\/v2\/watchlist\b/u.test(source),
+    reason: "发现旧 watchlist 路径，需迁移到 monitoring standardized stores",
+    match: (source) => /\/api\/watchlist\b|\/api\/portfolio\/v2\/watchlist\b|\/api\/user\/watchlists\b/u.test(source),
   },
 ];
 

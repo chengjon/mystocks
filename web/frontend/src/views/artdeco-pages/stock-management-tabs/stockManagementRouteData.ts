@@ -9,6 +9,7 @@ interface MonitoringWatchlistStockItem {
   stock_name?: unknown
   entry_price?: unknown
   weight?: unknown
+  stop_loss_price?: unknown
 }
 
 interface TradePositionItem {
@@ -83,7 +84,18 @@ export function extractMonitoringWatchlists(raw: unknown): Array<{ id: string; n
 
 export function extractMonitoringWatchlistStocks(
   raw: unknown,
-): Array<{ symbol: string; name: string; price: number; change: string; volume: string; weight: string }> {
+): Array<{
+  symbol: string
+  name: string
+  price: number
+  change: string
+  volume: string
+  weight: string
+  stock_code: string
+  stock_name: string
+  entry_price: number
+  stop_loss_price?: unknown
+}> {
   return extractList(raw).map((item, index) => {
     const row = item as MonitoringWatchlistStockItem
     const symbol = parseString(row.stock_code, `UNKNOWN-${index + 1}`)
@@ -94,6 +106,10 @@ export function extractMonitoringWatchlistStocks(
       change: '--',
       volume: '--',
       weight: `${parseNumber(row.weight) * 100}`.replace(/\.00$/, '') + '%',
+      stock_code: symbol,
+      stock_name: parseString(row.stock_name, symbol),
+      entry_price: parseNumber(row.entry_price),
+      stop_loss_price: (item as Record<string, unknown>).stop_loss_price,
     }
   }).map((row) => ({
     ...row,

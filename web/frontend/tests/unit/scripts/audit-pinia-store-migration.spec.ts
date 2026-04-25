@@ -56,7 +56,7 @@ async function loadSignals() {
     ]);
   });
 
-  it("flags legacy watchlist paths as migration gaps", () => {
+  it("flags monitoring watchlist paths as store-ready candidates", () => {
     const { auditPiniaStoreMigration } = loadAudit();
     const rootDir = createTempDir();
 
@@ -71,14 +71,14 @@ async function loadWatchlist() {
 
     const report = auditPiniaStoreMigration({ rootDir });
 
-    expect(report.summary.storeReady).toBe(0);
-    expect(report.summary.gaps).toBe(1);
+    expect(report.summary.storeReady).toBe(1);
+    expect(report.summary.gaps).toBe(0);
     expect(report.candidates).toEqual([
       expect.objectContaining({
         file: "src/components/watchlist/Panel.ts",
-        capability: "user-watchlists-legacy",
+        capability: "monitoring-watchlists",
         replacement: "useWatchlistsStore",
-        status: "gap",
+        status: "store-ready",
       }),
     ]);
   });
