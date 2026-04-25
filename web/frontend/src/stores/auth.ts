@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { PiniaStoreFactory } from '@/stores/storeFactory'
-import { _unifiedApiClient, createLoadingConfig } from '@/api/unifiedApiClient'
+import { createLoadingConfig } from '@/api/unifiedApiClient'
 import { authApi } from '@/api/index.js'
 
 export interface User {
@@ -16,6 +16,7 @@ export interface User {
 // Create a login API store using the factory
 // Transform response to match expected format: backend returns {data: {token}}, we need {access_token}
 interface LoginResponse {
+  success?: boolean
   data?: {
     token?: string
     token_type?: string
@@ -25,6 +26,16 @@ interface LoginResponse {
   token?: string
   token_type?: string
   user?: User
+  message?: string
+}
+
+const AUTH_TOKEN_KEY = 'auth_token'
+const AUTH_USER_KEY = 'auth_user'
+const LEGACY_AUTH_TOKEN_KEY = 'token'
+const LEGACY_AUTH_USER_KEY = 'user'
+
+function readStoredValue(primaryKey: string, legacyKey: string): string | null {
+  return localStorage.getItem(primaryKey) || localStorage.getItem(legacyKey)
 }
 
 const useLoginStore = PiniaStoreFactory.createApiStore<{
@@ -36,6 +47,10 @@ const useLoginStore = PiniaStoreFactory.createApiStore<{
   endpoint: '/auth/login',
   method: 'POST',
   loading: createLoadingConfig(true),
+  request: (params?: unknown) => {
+    const credentials = (params || {}) as { username?: string; password?: string }
+    return authApi.login(credentials.username || '', credentials.password || '')
+  },
   transform: (data: LoginResponse) => {
     // Backend returns {success, data: {token, ...}, message, ...}
     // We need to return {access_token, token_type, user}
@@ -53,7 +68,7 @@ const useLoginStore = PiniaStoreFactory.createApiStore<{
       user: data?.user
     }
   },
-  validate: (data: LoginResponse): boolean => !!(data && (data.access_token || data.token))
+  validate: (data: LoginResponse): boolean => !!(data && (data?.data?.token || data.access_token || data.token))
 })
 
 const LHCI_AUTH_USER: User = {
@@ -69,6 +84,7 @@ export const useAuthStore = defineStore('auth', () => {
   const user = ref<User | null>(null)
   const token = ref<string | null>(null)
   const isAuthenticated = ref(false)
+  const loginPending = ref(false)
 
   // Get login store instance for internal use
   const loginStore = useLoginStore()
@@ -79,32 +95,35 @@ export const useAuthStore = defineStore('auth', () => {
     return user.value?.permissions?.includes(permission) ?? false
   })
 
-  const isLoading = computed(() => loginStore.isLoading)
+  const isLoading = computed(() => loginPending.value || loginStore.isLoading)
 
   // Actions
   const setUser = (userData: User) => {
     user.value = userData
     isAuthenticated.value = true
     // Save user data to localStorage for persistence
-    localStorage.setItem('auth_user', JSON.stringify(userData))
+    localStorage.setItem(AUTH_USER_KEY, JSON.stringify(userData))
   }
 
   const setToken = (tokenValue: string) => {
     token.value = tokenValue
-    localStorage.setItem('auth_token', tokenValue)
+    localStorage.setItem(AUTH_TOKEN_KEY, tokenValue)
   }
 
   const logout = () => {
     user.value = null
     token.value = null
     isAuthenticated.value = false
-    localStorage.removeItem('auth_token')
-    localStorage.removeItem('auth_user')
+    loginStore.clear()
+    localStorage.removeItem(AUTH_TOKEN_KEY)
+    localStorage.removeItem(AUTH_USER_KEY)
+    localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY)
+    localStorage.removeItem(LEGACY_AUTH_USER_KEY)
   }
 
   const initializeAuth = () => {
-    const savedToken = localStorage.getItem('auth_token')
-    const savedUser = localStorage.getItem('auth_user')
+    const savedToken = readStoredValue(AUTH_TOKEN_KEY, LEGACY_AUTH_TOKEN_KEY)
+    const savedUser = readStoredValue(AUTH_USER_KEY, LEGACY_AUTH_USER_KEY)
     const shouldBootstrapLhciAuth = import.meta.env.VITE_LHCI_AUTH_BYPASS === 'true'
 
     if (savedToken) {
@@ -118,8 +137,10 @@ export const useAuthStore = defineStore('auth', () => {
         } catch (error) {
           console.error('Failed to parse saved user data:', error)
           // Clear corrupted data
-          localStorage.removeItem('auth_token')
-          localStorage.removeItem('auth_user')
+          localStorage.removeItem(AUTH_TOKEN_KEY)
+          localStorage.removeItem(AUTH_USER_KEY)
+          localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY)
+          localStorage.removeItem(LEGACY_AUTH_USER_KEY)
           token.value = null
           user.value = null
           isAuthenticated.value = false
@@ -136,20 +157,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Login with standardized API pattern
   const login = async (username: string, password: string): Promise<{ success: boolean; message?: string; error?: unknown }> => {
+    loginPending.value = true
     try {
-      // Use authApi.login which correctly sets Content-Type to application/x-www-form-urlencoded
-      const response = await authApi.login(username, password) as LoginResponse
+      const loginData = await loginStore.fetch({ username, password })
+      const tokenValue = loginData?.access_token
+      const userData = loginData?.user
 
-      // Backend returns {success, data: {token, token_type, user}, message}
-      // Extract token from nested data structure
-      const tokenValue = response?.data?.token || response?.access_token || response?.token
-      const userData = response?.data?.user || response?.user
-
-      if (!tokenValue) {
+      if (!tokenValue || !userData) {
         return {
           success: false,
           message: 'Invalid response from server',
-          error: { message: 'No access token received' }
+          error: { message: 'Missing auth token or user payload' }
         }
       }
 
@@ -157,7 +175,7 @@ export const useAuthStore = defineStore('auth', () => {
       setToken(tokenValue)
       setUser({
         id: userData?.id || 1,
-        username: username,
+        username: userData?.username || username,
         email: userData?.email || `${username}@example.com`,
         role: userData?.role || 'user',
         permissions: userData?.permissions || []
@@ -196,6 +214,8 @@ export const useAuthStore = defineStore('auth', () => {
         message: '网络错误，请检查网络连接',
         error
       }
+    } finally {
+      loginPending.value = false
     }
   }
 

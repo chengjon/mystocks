@@ -11,11 +11,12 @@
 1. [`frontend-change-hygiene-and-micro-commit-guide.md`](./frontend-change-hygiene-and-micro-commit-guide.md)
 2. [`PR_GATE_QUICK_REFERENCE.md`](./PR_GATE_QUICK_REFERENCE.md)
 3. [`DASHBOARD_API_INTEGRATION_GUIDE.md`](./DASHBOARD_API_INTEGRATION_GUIDE.md)
-4. [`DASHBOARD_API_ENRICHMENT_GUIDE.md`](./DASHBOARD_API_ENRICHMENT_GUIDE.md)
-5. [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
-6. [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
-7. [`css-scss-development-guide.md`](./css-scss-development-guide.md)
-8. 再按需进入 service adapter、routing optimization、dayjs 与其他历史任务/总结材料
+4. [`pinia-api-standardization-guide.md`](./pinia-api-standardization-guide.md)
+5. [`DASHBOARD_API_ENRICHMENT_GUIDE.md`](./DASHBOARD_API_ENRICHMENT_GUIDE.md)
+6. [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
+7. [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
+8. [`css-scss-development-guide.md`](./css-scss-development-guide.md)
+9. 再按需进入 service adapter、routing optimization、dayjs 与其他历史任务/总结材料
 
 ## Active Supporting Guides
 
@@ -25,6 +26,8 @@
   - reviewer 与执行者的前端门禁速查表
 - [`DASHBOARD_API_INTEGRATION_GUIDE.md`](./DASHBOARD_API_INTEGRATION_GUIDE.md)
   - Dashboard API 集成实施指南
+- [`pinia-api-standardization-guide.md`](./pinia-api-standardization-guide.md)
+  - Pinia API 标准化模式、迁移步骤与验证要求
 - [`DASHBOARD_API_ENRICHMENT_GUIDE.md`](./DASHBOARD_API_ENRICHMENT_GUIDE.md)
   - Dashboard API 丰富化说明
 - [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)

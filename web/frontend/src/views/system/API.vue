@@ -41,7 +41,7 @@
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">health and telemetry route</span>
-          <h3 class="content-shell-title">系统健康与遥测面板</h3>
+          <h2 class="content-shell-title">系统健康与遥测面板</h2>
           <p class="content-shell-subtitle">{{ contentShellDescription }}</p>
         </div>
         <div class="content-shell-meta">
@@ -49,6 +49,8 @@
           <span>MIDDLEWARE: {{ middlewareCount }}</span>
         </div>
       </div>
+
+      <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
 
       <div class="health-grid" v-loading="loading">
         <ArtDecoCard class="status-card" title="后端服务状态" hoverable>
@@ -138,6 +140,9 @@
               <span>{{ store.loading }}</span>
               <span>{{ store.error }}</span>
               <span>{{ store.lastFetch }}</span>
+              <span>{{ store.requestCount }}</span>
+              <span>{{ store.lastDurationMs }}</span>
+              <span>{{ store.averageDurationMs }}</span>
             </div>
           </section>
         </div>
@@ -148,6 +153,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { ElMessage } from 'element-plus'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { useBackendReadiness } from '@/composables/useBackendReadiness'
 import { monitoringApi } from '@/api/index'
@@ -167,6 +173,9 @@ interface InspectorStoreState {
   loading?: boolean
   error?: string | null
   lastFetch?: number | null
+  requestCount?: number
+  lastDurationMs?: number | null
+  averageDurationMs?: number | null
 }
 
 interface Props {
@@ -181,7 +190,7 @@ const props = withDefaults(defineProps<Props>(), {
   systemConfig: undefined
 })
 
-const { loading, exec } = useArtDecoApi()
+const { loading, error, exec } = useArtDecoApi()
 const {
   readinessState,
   readinessMessage,
@@ -213,11 +222,23 @@ const showDeveloperInspector = computed(() => {
   return window.localStorage.getItem('mystocks:developer-mode') === 'true'
 })
 const pageStatusText = computed(() => {
+  if (error.value) return '探针异常'
   if (loading.value) return '同步中'
+  if (!health.value) return '等待探针'
   return health.value?.status === 'healthy' ? '探针在线' : '状态待确认'
 })
-const pageStatusType = computed(() => (health.value?.status === 'healthy' ? 'success' : 'warning'))
+const pageStatusType = computed(() => {
+  if (error.value) return 'warning'
+  if (!health.value) return 'info'
+  return health.value?.status === 'healthy' ? 'success' : 'warning'
+})
 const contentShellDescription = computed(() => '查看服务健康状态、中间件链路和导出报告能力，作为系统治理链路中的可观测性节点。')
+const runtimeMessage = computed(() => {
+  if (error.value) return `${error.value}，当前遥测面板可能仅显示静态说明。`
+  if (loading.value) return '系统遥测探针同步中...'
+  if (!health.value) return '当前没有可展示的系统健康探针数据。'
+  return ''
+})
 const capabilityRows = computed(() => [
   {
     id: frontendStorePolicies.technicalIndicators.capability,
@@ -276,6 +297,9 @@ const toInspectorSnapshot = (id: string, store: InspectorStoreState) => ({
   loading: String(store.loading ?? false),
   error: store.error || 'none',
   lastFetch: store.lastFetch ? new Date(store.lastFetch).toISOString() : 'never',
+  requestCount: String(store.requestCount ?? 0),
+  lastDurationMs: store.lastDurationMs !== null && store.lastDurationMs !== undefined ? `${store.lastDurationMs}ms` : 'n/a',
+  averageDurationMs: store.averageDurationMs !== null && store.averageDurationMs !== undefined ? `${store.averageDurationMs}ms` : 'n/a',
 })
 
 const storeSnapshots = computed(() => [
@@ -320,249 +344,11 @@ const refreshInspectorStores = async () => {
     riskAlertsStore.refresh(),
     watchlistsStore.refresh(),
   ])
+  ElMessage.success('试点 Store 已触发刷新。')
 }
 
 onMounted(async () => {
   await Promise.allSettled([fetchHealth(), checkBackendReadiness()])
 })
 </script>
-
-<style scoped lang="scss">
-@use '@/styles/artdeco-tokens.scss' as *;
-
-.monitoring-dashboard {
-  padding: var(--artdeco-spacing-6);
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-6);
-}
-
-.monitoring-dashboard.is-embedded {
-  padding: 0;
-}
-
-.hero-shell,
-.stats-strip,
-.content-shell,
-.embedded-shell {
-  width: 100%;
-}
-
-.hero-shell,
-.content-shell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-5);
-}
-
-.hero-rail,
-.content-shell-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: var(--artdeco-spacing-4);
-  flex-wrap: wrap;
-}
-
-.hero-copy,
-.content-shell-copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-2);
-}
-
-.hero-eyebrow,
-.content-shell-kicker {
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  color: var(--artdeco-gold-dim);
-  letter-spacing: var(--artdeco-tracking-wide);
-  text-transform: uppercase;
-}
-
-.hero-meta,
-.content-shell-meta {
-  display: flex;
-  gap: var(--artdeco-spacing-3);
-  flex-wrap: wrap;
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  color: var(--artdeco-fg-muted);
-}
-
-.content-shell-title {
-  margin: 0;
-  font-family: var(--artdeco-font-display);
-  font-size: var(--artdeco-text-xl);
-  color: var(--artdeco-fg-primary);
-}
-
-.content-shell-subtitle {
-  margin: 0;
-  color: var(--artdeco-fg-muted);
-  font-size: var(--artdeco-text-sm);
-  line-height: var(--artdeco-leading-relaxed);
-}
-
-.stats-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--artdeco-spacing-4);
-}
-
-.health-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-20) * 4 + var(--artdeco-spacing-20)), 1fr));
-  gap: var(--artdeco-spacing-8);
-  margin-bottom: var(--artdeco-spacing-8);
-}
-
-.status-card {
-  padding: var(--artdeco-spacing-6);
-}
-
-.status-indicator {
-  display: flex;
-  align-items: center;
-  gap: var(--artdeco-spacing-4);
-  margin-bottom: var(--artdeco-spacing-6);
-}
-
-.glow-dot {
-  width: var(--artdeco-spacing-3);
-  height: var(--artdeco-spacing-3);
-  border-radius: 50%;
-}
-
-.glow-dot.online {
-  background: var(--artdeco-rise);
-  box-shadow: 0 0 calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3) var(--artdeco-rise);
-}
-
-.glow-dot.offline {
-  background: var(--artdeco-down);
-  box-shadow: 0 0 calc(var(--artdeco-spacing-3) + var(--artdeco-spacing-px) * 3) var(--artdeco-down);
-}
-
-.status-text {
-  font-family: var(--artdeco-font-display);
-  font-size: var(--artdeco-text-xl);
-  letter-spacing: 0.1em;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: var(--artdeco-spacing-2);
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-sm);
-  color: var(--artdeco-fg-muted);
-}
-
-.middleware-list .mw-item {
-  display: flex;
-  justify-content: space-between;
-  padding: var(--artdeco-spacing-2) 0;
-  border-bottom: 1px solid var(--artdeco-gold-opacity-10);
-}
-
-.mw-name {
-  font-size: var(--artdeco-text-sm);
-}
-
-.mw-status.active {
-  color: var(--artdeco-rise);
-  font-weight: bold;
-}
-
-.action-bar {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--artdeco-spacing-3);
-  margin-bottom: var(--artdeco-spacing-6);
-}
-
-.observability-note {
-  padding: var(--artdeco-spacing-6);
-  font-style: italic;
-  font-size: var(--artdeco-text-sm);
-  line-height: var(--artdeco-leading-relaxed);
-  color: var(--artdeco-fg-muted);
-}
-
-.observability-note p {
-  margin: 0;
-}
-
-.governance-card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-4);
-}
-
-.governance-meta,
-.governance-row {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--artdeco-spacing-3);
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-}
-
-.governance-message {
-  margin: 0;
-  color: var(--artdeco-fg-muted);
-}
-
-.governance-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  gap: var(--artdeco-spacing-4);
-}
-
-.governance-section {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-2);
-}
-
-.governance-section h4 {
-  margin: 0 0 var(--artdeco-spacing-2);
-  color: var(--artdeco-fg-primary);
-}
-
-.gold-text {
-  color: var(--artdeco-gold-primary);
-}
-
-@media (width <= 75rem) {
-  .stats-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .health-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .governance-meta,
-  .governance-row {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (width <= 48rem) {
-  .stats-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .action-bar,
-  .content-shell-meta,
-  .hero-meta {
-    width: 100%;
-  }
-
-  .action-bar {
-    justify-content: stretch;
-  }
-}
-</style>
+<style scoped lang="scss" src="./styles/API.scss"></style>

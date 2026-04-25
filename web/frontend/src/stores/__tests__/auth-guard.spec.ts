@@ -113,6 +113,8 @@ describe('Authentication Guards', () => {
       expect(authStore.isAuthenticated).toBe(false)
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user')
     })
 
     it('should check auth on initialization', () => {
@@ -131,6 +133,24 @@ describe('Authentication Guards', () => {
 
       expect(freshStore.token).toBe('stored-token')
       expect(freshStore.user?.username).toBe('storeduser')
+      expect(freshStore.isAuthenticated).toBe(true)
+    })
+
+    it('should restore auth state from legacy storage keys', () => {
+      const freshStore = useAuthStore()
+
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return null
+        if (key === 'auth_user') return null
+        if (key === 'token') return 'legacy-token'
+        if (key === 'user') return JSON.stringify({ id: '9', username: 'legacyuser' })
+        return null
+      })
+
+      freshStore.initializeAuth()
+
+      expect(freshStore.token).toBe('legacy-token')
+      expect(freshStore.user?.username).toBe('legacyuser')
       expect(freshStore.isAuthenticated).toBe(true)
     })
 

@@ -36,6 +36,10 @@ describe('PiniaStoreFactory', () => {
       expect(storeInstance).toHaveProperty('loading')
       expect(storeInstance).toHaveProperty('error')
       expect(storeInstance).toHaveProperty('lastFetch')
+      expect(storeInstance).toHaveProperty('requestCount')
+      expect(storeInstance).toHaveProperty('errorCount')
+      expect(storeInstance).toHaveProperty('lastDurationMs')
+      expect(storeInstance).toHaveProperty('averageDurationMs')
       expect(storeInstance).toHaveProperty('fetch')
       expect(storeInstance).toHaveProperty('refresh')
       expect(storeInstance).toHaveProperty('clear')
@@ -61,6 +65,10 @@ describe('PiniaStoreFactory', () => {
       expect(storeInstance.data).toEqual(mockData)
       expect(storeInstance.loading).toBe(false)
       expect(storeInstance.error).toBeNull()
+      expect(storeInstance.requestCount).toBe(1)
+      expect(storeInstance.errorCount).toBe(0)
+      expect(storeInstance.lastDurationMs).not.toBeNull()
+      expect(storeInstance.averageDurationMs).not.toBeNull()
     })
 
     it('should handle API errors', async () => {
@@ -77,6 +85,9 @@ describe('PiniaStoreFactory', () => {
       await expect(storeInstance.fetch()).rejects.toThrow(errorMessage)
       expect(storeInstance.loading).toBe(false)
       expect(storeInstance.error).toBe(errorMessage)
+      expect(storeInstance.requestCount).toBe(1)
+      expect(storeInstance.errorCount).toBe(1)
+      expect(storeInstance.lastDurationMs).not.toBeNull()
     })
 
     it('should use custom transform function', async () => {
@@ -95,6 +106,25 @@ describe('PiniaStoreFactory', () => {
       await storeInstance.fetch()
 
       expect(storeInstance.data).toEqual(transformedData)
+    })
+
+    it('should support custom request executors for non-standard APIs', async () => {
+      const mockRequest = vi.fn().mockResolvedValue({ ok: true, payload: 42 })
+
+      const store = PiniaStoreFactory.createApiStore({
+        id: 'custom-request-store',
+        endpoint: '/unused',
+        request: mockRequest,
+        transform: (data) => data.payload
+      })
+
+      const storeInstance = store()
+      const result = await storeInstance.fetch({ q: 'auth' })
+
+      expect(mockRequest).toHaveBeenCalledWith({ q: 'auth' })
+      expect(unifiedApiClient.get).not.toHaveBeenCalled()
+      expect(result).toBe(42)
+      expect(storeInstance.data).toBe(42)
     })
 
     it('should validate data with custom validator', async () => {
@@ -148,6 +178,23 @@ describe('PiniaStoreFactory', () => {
       expect(storeInstance).toHaveProperty('prevPage')
       expect(storeInstance).toHaveProperty('goToPage')
     })
+
+    it('preserves reactive fetch metrics for paginated stores', async () => {
+      unifiedApiClient.get.mockResolvedValue([{ id: 1, name: 'Paged item' }])
+
+      const store = PiniaStoreFactory.createPaginatedStore({
+        id: 'paginated-metrics-store',
+        endpoint: '/api/items'
+      })
+
+      const storeInstance = store()
+      await storeInstance.fetchPage(2)
+
+      expect(storeInstance.currentPage).toBe(2)
+      expect(storeInstance.requestCount).toBe(1)
+      expect(storeInstance.lastFetch).not.toBeNull()
+      expect(storeInstance.lastDurationMs).not.toBeNull()
+    })
   })
 
   describe('createRealtimeStore', () => {
@@ -168,6 +215,23 @@ describe('PiniaStoreFactory', () => {
       expect(storeInstance).toHaveProperty('disconnectWebSocket')
       expect(storeInstance).toHaveProperty('startPolling')
       expect(storeInstance).toHaveProperty('stopPolling')
+    })
+
+    it('preserves reactive fetch metrics for realtime stores', async () => {
+      unifiedApiClient.get.mockResolvedValue([{ id: 1, symbol: '000001' }])
+
+      const store = PiniaStoreFactory.createRealtimeStore({
+        id: 'realtime-metrics-store',
+        endpoint: '/api/realtime'
+      })
+
+      const storeInstance = store()
+      await storeInstance.refresh()
+
+      expect(storeInstance.requestCount).toBe(1)
+      expect(storeInstance.lastFetch).not.toBeNull()
+      expect(storeInstance.lastDurationMs).not.toBeNull()
+      expect(storeInstance.averageDurationMs).not.toBeNull()
     })
   })
 })

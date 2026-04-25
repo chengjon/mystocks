@@ -1,8 +1,9 @@
-// Strategy Management Store - 专注于策略管理
+// Strategy Management Store - 标准化 Pinia API 模式
 // 负责策略配置、回测结果、优化任务等策略相关数据
 
 import { defineStore } from 'pinia'
-import { reactive } from 'vue'
+import { reactive, watch } from 'vue'
+import { PiniaStoreFactory } from '@/stores/storeFactory'
 import { tradingApiManager } from '@/services/TradingApiManager'
 import type { StrategyManagementData } from '@/services/TradingApiManager'
 
@@ -32,20 +33,74 @@ interface StrategyState {
     backtestResults: BacktestResult[]
     optimizationTasks: OptimizationTask[]
     lastUpdateTime: string
+    loading: boolean
+    error: string | null
+    lastFetch: number | null
 }
+
+const useStrategyManagementApiStore = PiniaStoreFactory.createApiStore<StrategyManagementData>({
+    id: 'strategy-management',
+    endpoint: '/strategy/management',
+    request: () => tradingApiManager.getStrategyManagement(),
+    validate: (data: unknown): data is StrategyManagementData => {
+        const value = data as Partial<StrategyManagementData> | null
+        return !!value && Array.isArray(value.strategies) && Array.isArray(value.templates)
+    },
+    initialData: {
+        strategies: [],
+        templates: []
+    }
+})
 
 export const useStrategyStore = defineStore('strategy', () => {
     const state = reactive<StrategyState>({
         strategyManagement: null,
         backtestResults: [],
         optimizationTasks: [],
-        lastUpdateTime: new Date().toLocaleTimeString('zh-CN')
+        lastUpdateTime: new Date().toLocaleTimeString('zh-CN'),
+        loading: false,
+        error: null,
+        lastFetch: null
     })
+    const strategyManagementStore = useStrategyManagementApiStore()
+
+    watch(
+        () => strategyManagementStore.data,
+        (value) => {
+            state.strategyManagement = value
+        },
+        { immediate: true }
+    )
+
+    watch(
+        () => strategyManagementStore.loading,
+        (value) => {
+            state.loading = value
+        },
+        { immediate: true }
+    )
+
+    watch(
+        () => strategyManagementStore.error,
+        (value) => {
+            state.error = value
+        },
+        { immediate: true }
+    )
+
+    watch(
+        () => strategyManagementStore.lastFetch,
+        (value) => {
+            state.lastFetch = value
+            if (value) {
+                state.lastUpdateTime = new Date(value).toLocaleTimeString('zh-CN')
+            }
+        },
+        { immediate: true }
+    )
 
     const loadStrategyManagement = async () => {
-        const data = await tradingApiManager.getStrategyManagement()
-        state.strategyManagement = data
-        state.lastUpdateTime = new Date().toLocaleTimeString('zh-CN')
+        await strategyManagementStore.fetch()
     }
 
     const addBacktestResult = (result: BacktestResult) => {
@@ -66,6 +121,7 @@ export const useStrategyStore = defineStore('strategy', () => {
 
     return {
         state,
+        strategyManagementStore,
         loadStrategyManagement,
         addBacktestResult,
         addOptimizationTask,

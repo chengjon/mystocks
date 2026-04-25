@@ -1,4 +1,4 @@
-import { defineStore } from 'pinia'
+import { defineStore, storeToRefs } from 'pinia'
 import { ref, computed } from 'vue'
 import { unifiedApiClient, createCacheConfig, createLoadingConfig, DEFAULT_RETRY_CONFIG } from '@/api/unifiedApiClient'
 import { marketDataWebSocket, tradingWebSocket, riskWebSocket, WebSocketState } from '@/utils/webSocketManager'
@@ -37,6 +37,10 @@ export interface StoreState<T = unknown> {
   loading: boolean
   error: string | null
   lastFetch: number | null
+  requestCount: number
+  errorCount: number
+  lastDurationMs: number | null
+  averageDurationMs: number | null
 }
 
 export interface StoreActions<T = unknown> {
@@ -55,9 +59,24 @@ export interface StoreConfig<T = unknown> {
   cache?: CacheConfig
   retry?: RetryConfig
   loading?: LoadingConfig
+  request?: (params?: unknown) => Promise<unknown>
   transform?: (data: unknown) => T
   validate?: (data: unknown) => boolean
   initialData?: T
+}
+
+type BaseStoreBinding<T> = ReturnType<ReturnType<typeof PiniaStoreFactory.createApiStore<T>>>
+
+function bindBaseStore<T>(baseStore: BaseStoreBinding<T>) {
+  return {
+    ...storeToRefs(baseStore),
+    fetch: baseStore.fetch,
+    refresh: baseStore.refresh,
+    clear: baseStore.clear,
+    setData: baseStore.setData,
+    setError: baseStore.setError,
+    setLoading: baseStore.setLoading,
+  }
 }
 
 /**
@@ -82,6 +101,7 @@ export class PiniaStoreFactory {
       cache,
       retry = DEFAULT_RETRY_CONFIG,
       loading: loadingConfig,
+      request,
       transform,
       validate,
       initialData = null
@@ -93,6 +113,10 @@ export class PiniaStoreFactory {
       const loading = ref(false)
       const error = ref<string | null>(null)
       const lastFetch = ref<number | null>(null)
+      const requestCount = ref(0)
+      const errorCount = ref(0)
+      const totalDurationMs = ref(0)
+      const lastDurationMs = ref<number | null>(null)
 
       // Getters
       const isStale = computed(() => {
@@ -103,6 +127,12 @@ export class PiniaStoreFactory {
       const hasData = computed(() => data.value !== null)
       const isLoading = computed(() => loading.value)
       const hasError = computed(() => error.value !== null)
+      const averageDurationMs = computed(() => {
+        if (requestCount.value === 0) {
+          return null
+        }
+        return Math.round(totalDurationMs.value / requestCount.value)
+      })
 
       // Actions
       const setData = (newData: T) => {
@@ -134,6 +164,7 @@ export class PiniaStoreFactory {
       }
 
       const fetch = async (params?: unknown): Promise<T> => {
+        const startTime = Date.now()
         try {
           setLoading(true)
           setError(null)
@@ -150,28 +181,42 @@ export class PiniaStoreFactory {
 
           let result: unknown
 
+          if (request) {
+            result = await request(params)
+          } else {
           switch (method) {
-            case 'GET':
-              result = await unifiedApiClient.get(endpoint, apiConfig)
-              break
-            case 'POST':
-              result = await unifiedApiClient.post(endpoint, params, apiConfig)
-              break
-            case 'PUT':
-              result = await unifiedApiClient.put(endpoint, params, apiConfig)
-              break
-            case 'DELETE':
-              result = await unifiedApiClient.delete(endpoint, apiConfig)
-              break
-            default:
-              throw new Error(`Unsupported method: ${method}`)
+              case 'GET':
+                result = await unifiedApiClient.get(endpoint, {
+                  ...apiConfig,
+                  params: params as Record<string, unknown> | undefined
+                })
+                break
+              case 'POST':
+                result = await unifiedApiClient.post(endpoint, params, apiConfig)
+                break
+              case 'PUT':
+                result = await unifiedApiClient.put(endpoint, params, apiConfig)
+                break
+              case 'DELETE':
+                result = await unifiedApiClient.delete(endpoint, apiConfig)
+                break
+              default:
+                throw new Error(`Unsupported method: ${method}`)
+            }
           }
 
           setData(result as T)
+          requestCount.value += 1
+          lastDurationMs.value = Date.now() - startTime
+          totalDurationMs.value += lastDurationMs.value
           return data.value as T
         } catch (err) {
           const errorMessage = err instanceof Error ? err.message : 'Fetch failed'
           setError(errorMessage)
+          requestCount.value += 1
+          errorCount.value += 1
+          lastDurationMs.value = Date.now() - startTime
+          totalDurationMs.value += lastDurationMs.value
           throw err
         } finally {
           setLoading(false)
@@ -193,12 +238,16 @@ export class PiniaStoreFactory {
         loading,
         error,
         lastFetch,
+        requestCount,
+        errorCount,
+        lastDurationMs,
 
         // Getters
         isStale,
         hasData,
         isLoading,
         hasError,
+        averageDurationMs,
 
         // Actions
         fetch,
@@ -225,36 +274,21 @@ export class PiniaStoreFactory {
       const baseStore = PiniaStoreFactory.createApiStore<T[]>({
         ...baseConfig,
         transform: (data: unknown) => {
-          // Assume API returns { items: T[], total: number, page: number }
           const dataObj = data as { items?: T[]; [key: string]: unknown }
           return baseConfig.transform ? baseConfig.transform(dataObj.items || data) : (dataObj.items || data) as T[]
         }
       })()
 
-      // Pagination state
       const currentPage = ref(initialPage)
       const totalItems = ref(0)
       const totalPages = ref(0)
-
-      // Getters
       const hasNextPage = computed(() => currentPage.value < totalPages.value)
       const hasPrevPage = computed(() => currentPage.value > 1)
       const isFirstPage = computed(() => currentPage.value === 1)
       const isLastPage = computed(() => currentPage.value === totalPages.value)
-
-      // Actions
       const fetchPage = async (page: number = currentPage.value) => {
-        const params = {
-          page,
-          page_size: pageSize,
-        }
-
-        const result = await baseStore.fetch(params)
-
-        // Update pagination metadata (assuming API returns this info)
-        // In practice, you'd extract this from the API response
+        const result = await baseStore.fetch({ page, page_size: pageSize })
         currentPage.value = page
-
         return result
       }
 
@@ -277,20 +311,14 @@ export class PiniaStoreFactory {
       }
 
       return {
-        ...baseStore,
-
-        // Pagination state
+        ...bindBaseStore(baseStore),
         currentPage,
         totalItems,
         totalPages,
-
-        // Pagination getters
         hasNextPage,
         hasPrevPage,
         isFirstPage,
         isLastPage,
-
-        // Pagination actions
         fetchPage,
         nextPage,
         prevPage,
@@ -310,37 +338,32 @@ export class PiniaStoreFactory {
     const { wsManager, wsChannel, updateInterval, ...baseConfig } = config
 
     return defineStore(`${baseConfig.id}-realtime`, () => {
-      // Base store
       const baseStore = PiniaStoreFactory.createApiStore<T>(baseConfig)() as unknown as {
+        fetch: (params?: unknown) => Promise<unknown>
         setData: (data: unknown) => void
+        setError: (error: string | null) => void
+        setLoading: (loading: boolean) => void
         refresh: () => Promise<unknown>
+        clear: () => void
       }
-
-      // Real-time state
       const isConnected = ref(false)
       const lastUpdate = ref<number | null>(null)
       const connectionState = ref<WebSocketState>(WebSocketState.DISCONNECTED)
       const pollingIntervalId = ref<number | null>(null)
-
-      // Getters
       const isRealtime = computed(() => isConnected.value)
       const timeSinceLastUpdate = computed(() => {
         if (!lastUpdate.value) return null
         return Date.now() - lastUpdate.value
       })
-
-      // Actions
       const connectWebSocket = async () => {
         if (!wsManager) return
 
         try {
-          // Subscribe to connection state changes
           wsManager.onStateChange((state) => {
             connectionState.value = state
             isConnected.value = state === WebSocketState.CONNECTED
           })
 
-          // Subscribe to data updates
           wsManager.on('update', (message: WebSocketMessage) => {
             if (message.channel === wsChannel && message.data) {
               baseStore.setData(message.data)
@@ -348,10 +371,8 @@ export class PiniaStoreFactory {
             }
           })
 
-          // Connect to WebSocket
           await wsManager.connect()
 
-          // Subscribe to channel if specified
           if (wsChannel) {
             wsManager.send({
               type: 'subscribe',
@@ -360,7 +381,6 @@ export class PiniaStoreFactory {
           }
         } catch (error) {
           console.error(`Failed to connect WebSocket for ${baseConfig.id}:`, error)
-          // Fall back to polling if WebSocket fails
           startPolling()
         }
       }
@@ -386,10 +406,7 @@ export class PiniaStoreFactory {
           }
         }
 
-        // Initial poll
         poll()
-
-        // Set up interval
         pollingIntervalId.value = window.setInterval(poll, updateInterval)
       }
 
@@ -401,18 +418,12 @@ export class PiniaStoreFactory {
       }
 
       return {
-        ...baseStore,
-
-        // Real-time state
+        ...bindBaseStore(baseStore as BaseStoreBinding<T>),
         isConnected,
         lastUpdate,
         connectionState,
-
-        // Real-time getters
         isRealtime,
         timeSinceLastUpdate,
-
-        // Real-time actions
         connectWebSocket,
         disconnectWebSocket,
         startPolling,
@@ -422,7 +433,6 @@ export class PiniaStoreFactory {
   }
 }
 
-// Convenience functions for common store types
 export const createMarketDataStore = (id: string, endpoint: string) =>
   PiniaStoreFactory.createRealtimeStore({
     id,
@@ -432,7 +442,7 @@ export const createMarketDataStore = (id: string, endpoint: string) =>
     loading: createLoadingConfig(true),
     wsManager: marketDataWebSocket,
     wsChannel: 'market-data',
-    updateInterval: 30000, // 30 seconds
+    updateInterval: 30000,
   })
 
 export const createReferenceDataStore = (id: string, endpoint: string) =>
