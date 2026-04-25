@@ -3,7 +3,6 @@ import { ref, computed, type ComputedRef, type Ref } from 'vue'
 import { unifiedApiClient, createCacheConfig, createLoadingConfig, DEFAULT_RETRY_CONFIG } from '@/api/unifiedApiClient'
 import { marketDataWebSocket, tradingWebSocket, riskWebSocket, WebSocketState } from '@/utils/webSocketManager'
 import type { WebSocketMessage } from '@/utils/webSocketManager'
-
 // Local type definitions for store configuration
 interface CacheConfig {
   use?: boolean
