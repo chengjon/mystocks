@@ -2,7 +2,7 @@
  * Strategy Adapter
  *
  * Handles data transformation between API responses and frontend models.
- * Implements fallback to mock data on API failures.
+ * Surfaces explicit empty/error-state inputs instead of silent mock fallback.
  */
 
 import type { UnifiedResponse } from '../types/common.ts';
@@ -14,21 +14,20 @@ import type {
   StrategyListResponseVM as StrategyListResponse,
 } from '../types/extensions/index.ts';
 import type { BacktestRequest } from '../types/strategy.ts';
-import { mockStrategyList, mockStrategyDetail } from '@/mock/strategyMock.ts';
 
 export class StrategyAdapter {
   /**
    * Adapt strategy list from API response
    *
    * @param apiResponse - Raw API response
-   * @returns Array of adapted Strategy objects (falls back to mock on error)
+   * @returns Array of adapted Strategy objects
    */
   static adaptStrategyList(
     apiResponse: UnifiedResponse<StrategyListResponse>
   ): Strategy[] {
     if (!apiResponse.success || !apiResponse.data) {
-      console.warn('[StrategyAdapter] API failed, using mock data:', apiResponse.message);
-      return mockStrategyList.strategies as unknown as Strategy[];
+      console.warn('[StrategyAdapter] API failed, returning empty strategy list:', apiResponse.message);
+      return [];
     }
 
     try {
@@ -38,7 +37,7 @@ export class StrategyAdapter {
       return strategies.map((s: unknown) => this.adaptStrategy(s));
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt strategy list:', error);
-      return mockStrategyList.strategies as unknown as Strategy[];
+      return [];
     }
   }
 
@@ -246,25 +245,24 @@ export class StrategyAdapter {
   }
 
   /**
-   * Adapt strategy detail from API response
-   * Falls back to mock detail on error
+   * Adapt strategy detail from API response.
    *
    * @param apiResponse - Raw API response
-   * @returns Adapted Strategy object
+   * @returns Adapted Strategy object or undefined when unavailable
    */
   static adaptStrategyDetail(
     apiResponse: UnifiedResponse<Strategy>
-  ): Strategy {
+  ): Strategy | undefined {
     if (!apiResponse.success || !apiResponse.data) {
-      console.warn('[StrategyAdapter] Strategy detail API failed, using mock:', apiResponse.message);
-      return mockStrategyDetail;
+      console.warn('[StrategyAdapter] Strategy detail API failed, returning empty detail:', apiResponse.message);
+      return undefined;
     }
 
     try {
       return this.adaptStrategy(apiResponse.data);
     } catch (error) {
       console.error('[StrategyAdapter] Failed to adapt strategy detail:', error);
-      return mockStrategyDetail;
+      return undefined;
     }
   }
 

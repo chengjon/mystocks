@@ -62,6 +62,20 @@ describe('MarketAdapter', () => {
       expect(result.price_distribution).toBeDefined()
       expect(result.price_distribution.total_stocks).toBe(0)
     })
+
+    it('should return an empty market overview on API failure', () => {
+      const mockResponse = {
+        success: false,
+        message: 'service unavailable',
+        timestamp: '2026-04-25T00:00:00Z',
+        data: null
+      }
+
+      const result = MarketAdapter.adaptMarketOverview(mockResponse)
+
+      expect(result.price_distribution.total_stocks).toBe(0)
+      expect(result.timestamp).toBe('2026-04-25T00:00:00Z')
+    })
   })
 
   describe('adaptFundFlow', () => {
@@ -125,6 +139,18 @@ describe('MarketAdapter', () => {
       const result = MarketAdapter.adaptFundFlow(mockResponse)
 
       expect(result).toHaveLength(0)
+    })
+
+    it('should return empty items on API failure', () => {
+      const mockResponse = {
+        success: false,
+        message: 'service unavailable',
+        data: null
+      }
+
+      const result = MarketAdapter.adaptFundFlow(mockResponse)
+
+      expect(result).toEqual([])
     })
   })
 
@@ -196,6 +222,20 @@ describe('MarketAdapter', () => {
       const result = MarketAdapter.adaptKLineData(mockResponse)
 
       expect(result).toBeDefined()
+      expect(result.categoryData).toEqual([])
+      expect(result.values).toEqual([])
+      expect(result.volumes).toEqual([])
+    })
+
+    it('should return empty K-line data on API failure', () => {
+      const mockResponse = {
+        success: false,
+        message: 'service unavailable',
+        data: null
+      }
+
+      const result = MarketAdapter.adaptKLineData(mockResponse)
+
       expect(result.categoryData).toEqual([])
       expect(result.values).toEqual([])
       expect(result.volumes).toEqual([])

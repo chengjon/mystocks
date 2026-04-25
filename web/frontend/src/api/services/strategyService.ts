@@ -2,7 +2,7 @@
  * Strategy API Service
  *
  * Service layer for strategy management with full UnifiedResponse support.
- * All methods return complete UnifiedResponse objects for fallback handling.
+ * All methods return complete UnifiedResponse objects for explicit state handling.
  */
 
 import { apiGet, apiPost, apiPut, apiDelete } from '../apiClient.ts';
@@ -24,25 +24,15 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 export class StrategyApiService {
   /**
-   * 根据 APP_MODE 环境变量决定使用哪个API端点
-   * - mock: 使用 /mock/strategy (最终请求: /api/mock/strategy)
-   * - real/production: 使用 /v1/strategy (最终请求: /api/v1/strategy)
+   * Use the real endpoint family as the service truth.
+   * Mock-vs-real routing is handled only by the shared apiClient via VITE_USE_MOCK_DATA.
    */
   private readonly baseUrl: string;
   private readonly dataSource: StrategyApiDataSource;
 
   constructor() {
-    // 从环境变量读取模式，默认为real
-    const appMode = import.meta.env.VITE_APP_MODE || 'real';
-
-    // 根据模式选择API端点
-    if (appMode === 'mock') {
-      this.baseUrl = '/mock/strategy';
-      this.dataSource = 'mock';
-    } else {
-      this.baseUrl = '/v1/strategy';
-      this.dataSource = 'real';
-    }
+    this.baseUrl = '/v1/strategy';
+    this.dataSource = import.meta.env.VITE_USE_MOCK_DATA ? 'mock' : 'real';
   }
 
   getDataSource(): StrategyApiDataSource {

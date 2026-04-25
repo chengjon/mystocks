@@ -43,7 +43,7 @@ describe('StrategyAdapter', () => {
       expect(result[0].performance?.total_return).toBe(0.256);
     });
 
-    it('should fallback to mock data on API failure', () => {
+    it('should return an empty list on API failure', () => {
       const apiResponse: UnifiedResponse<any> = {
         success: false,
         code: 500,
@@ -56,10 +56,9 @@ describe('StrategyAdapter', () => {
 
       const result = StrategyAdapter.adaptStrategyList(apiResponse);
 
-      expect(result).toHaveLength(4);
-      expect(result[0].id).toBe('1');
+      expect(result).toEqual([]);
       expect(console.warn).toHaveBeenCalledWith(
-        '[StrategyAdapter] API failed, using mock data:',
+        '[StrategyAdapter] API failed, returning empty strategy list:',
         'Internal Server Error'
       );
     });
@@ -77,7 +76,7 @@ describe('StrategyAdapter', () => {
 
       const result = StrategyAdapter.adaptStrategyList(apiResponse);
 
-      expect(result).toHaveLength(4); // Falls back to mock
+      expect(result).toEqual([]);
     });
   });
 
@@ -101,7 +100,7 @@ describe('StrategyAdapter', () => {
       expect(result.performance?.total_return).toBe(0.256);
     });
 
-    it('should fallback to mock on error', () => {
+    it('should return undefined on detail error', () => {
       const apiResponse: UnifiedResponse<any> = {
         success: false,
         code: 404,
@@ -114,9 +113,9 @@ describe('StrategyAdapter', () => {
 
       const result = StrategyAdapter.adaptStrategyDetail(apiResponse);
 
-      expect(result.id).toBe('1');
+      expect(result).toBeUndefined();
       expect(console.warn).toHaveBeenCalledWith(
-        '[StrategyAdapter] Strategy detail API failed, using mock:',
+        '[StrategyAdapter] Strategy detail API failed, returning empty detail:',
         'Not Found'
       );
     });

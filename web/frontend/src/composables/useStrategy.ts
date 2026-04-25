@@ -100,7 +100,18 @@ export function useStrategy(autoFetch = true) {
 
     try {
       const response = await strategyService.getStrategy(id);
-      return StrategyAdapter.adaptStrategyDetail(response) as unknown as Strategy | undefined;
+
+      if (!response.success) {
+        error.value = response.message || '获取策略详情失败';
+        return undefined;
+      }
+
+      const strategy = StrategyAdapter.adaptStrategyDetail(response);
+      if (!strategy) {
+        error.value = '策略详情不可用';
+      }
+
+      return strategy as unknown as Strategy | undefined;
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Unknown error';
       error.value = `获取策略详情失败: ${errorMsg}`;

@@ -4,6 +4,7 @@ import type { UnifiedResponse } from './types/common.ts';
 import mockDashboard from '../mock/mockDashboard.js';
 import { loadMockKlineData } from './mockKlineData.ts';
 import type { IntervalType } from '../types/kline.ts';
+import { mockBacktestResult, mockBacktestTask, mockStrategyDetail, mockStrategyList } from '@/mock/strategyMock.ts';
 
 type RequestParams = Record<string, unknown>;
 
@@ -282,6 +283,43 @@ export const mockApiClient = {
       }));
     }
 
+    // 15. Strategy management endpoints on the real endpoint family
+    if (matchesMockRoute(url, '/v1/strategy/strategies')) {
+      const status = typeof params.status === 'string' ? params.status : '';
+      const items = status
+        ? mockStrategyList.strategies.filter((item) => item.status === status)
+        : mockStrategyList.strategies;
+
+      return toMockResult<T>(createMockResponse({
+        items,
+        total: items.length,
+        page: Number(params.page || 1),
+        page_size: Number(params.page_size || items.length || 10),
+      }));
+    }
+
+    if (matchesMockRoute(url, '/v1/strategy/templates')) {
+      return toMockResult<T>(createMockResponse([]));
+    }
+
+    if (matchesMockRoute(url, '/v1/strategy/backtest/results')) {
+      return toMockResult<T>(createMockResponse([mockBacktestResult]));
+    }
+
+    if (matchesMockRoute(url, '/v1/strategy/backtest/results/')) {
+      return toMockResult<T>(createMockResponse(mockBacktestResult));
+    }
+
+    if (matchesMockRoute(url, '/v1/strategy/backtest/status/')) {
+      return toMockResult<T>(createMockResponse(mockBacktestTask));
+    }
+
+    if (matchesMockRoute(url, '/v1/strategy/strategies/')) {
+      const id = normalizeMockPath(url).split('/').pop() || mockStrategyDetail.id;
+      const strategy = mockStrategyList.strategies.find((item) => item.id === id) || mockStrategyDetail;
+      return toMockResult<T>(createMockResponse(strategy));
+    }
+
     // Default fallback
     console.warn(`[Mock API] No handler for GET ${url}, returning generic mock.`);
       return { ...createMockResponse({}), data: { url, method: 'GET', ...params } } as T;
@@ -290,12 +328,46 @@ export const mockApiClient = {
   async post<T = UnifiedResponse<unknown>>(url: string, data?: unknown, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] POST request to ${url} with data:`, data, 'and config:', config);
+
+    if (matchesMockRoute(url, '/v1/strategy/strategies')) {
+      return toMockResult<T>(createMockResponse({
+        ...mockStrategyDetail,
+        ...(typeof data === 'object' && data ? data : {}),
+      }));
+    }
+
+    if (
+      matchesMockRoute(url, '/v1/strategy/backtest/run')
+      || matchesMockRoute(url, '/v1/strategy/validate')
+      || matchesMockRoute(url, '/v1/strategy/import')
+      || matchesMockRoute(url, '/v1/strategy/clone/')
+      || matchesMockRoute(url, '/v1/strategy/') && (
+        normalizeMockPath(url).endsWith('/start')
+        || normalizeMockPath(url).endsWith('/stop')
+        || normalizeMockPath(url).endsWith('/pause')
+        || normalizeMockPath(url).endsWith('/resume')
+      )
+    ) {
+      const payload = matchesMockRoute(url, '/v1/strategy/backtest/run')
+        ? mockBacktestTask
+        : { ok: true };
+      return toMockResult<T>(createMockResponse(payload));
+    }
+
     return { ...createMockResponse({}), data: { url, method: 'POST', requestData: data, ...getRequestParams(config) } } as T;
   },
 
   async put<T = UnifiedResponse<unknown>>(url: string, data?: unknown, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] PUT request to ${url} with data:`, data, 'and config:', config);
+
+    if (matchesMockRoute(url, '/v1/strategy/strategies/')) {
+      return toMockResult<T>(createMockResponse({
+        ...mockStrategyDetail,
+        ...(typeof data === 'object' && data ? data : {}),
+      }));
+    }
+
     return { ...createMockResponse({}), data: { url, method: 'PUT', requestData: data, ...getRequestParams(config) } } as T;
   },
 
@@ -308,6 +380,11 @@ export const mockApiClient = {
   async delete<T = UnifiedResponse<unknown>>(url: string, config?: MockRequestConfig): Promise<T> {
     await simulateNetworkDelay();
     console.warn(`[Mock API] DELETE request to ${url} with config:`, config);
+
+    if (matchesMockRoute(url, '/v1/strategy/strategies/')) {
+      return toMockResult<T>(createMockResponse(null));
+    }
+
     return { ...createMockResponse({}), data: { url, method: 'DELETE', ...getRequestParams(config) } } as T;
   },
 };

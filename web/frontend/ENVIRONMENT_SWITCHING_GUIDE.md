@@ -5,13 +5,16 @@
 > 其中的步骤、示例、端口、目录和操作建议应先与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果核对；若涉及仓库执行流程、命令或协作约束，再补充参考根目录 `AGENTS.md`。本文件不得单独视为仓库共享规则或当前状态的唯一事实来源。
 
 
-## 📋 概述
+## 概述
 
-项目支持两种运行模式：
-- **Mock模式**: 使用Mock数据，无需后端数据库（开发/测试推荐）
-- **Real模式**: 使用真实后端API，连接实际数据库（生产环境）
+当前前端只有一个生效中的 mock/real 切换真相源：
 
-## 🔄 快速切换
+- `VITE_USE_MOCK_DATA=true`: 显式 mock 模式
+- `VITE_USE_MOCK_DATA=false`: 真实后端模式
+
+`VITE_APP_MODE` 仍可能出现在历史文档或旧报告中，但不应再作为当前运行时切换依据。
+
+## 快速切换
 
 ### 方法1: 通过环境文件（推荐）
 
@@ -27,40 +30,38 @@ cp .env.real .env
 
 ### 方法2: 手动配置
 
-编辑 `.env` 文件，设置 `VITE_APP_MODE`：
+编辑 `.env` 文件，设置 `VITE_USE_MOCK_DATA`：
 
 ```bash
 # Mock模式
-VITE_APP_MODE=mock
+VITE_USE_MOCK_DATA=true
 
 # Real模式
-VITE_APP_MODE=real
+VITE_USE_MOCK_DATA=false
 ```
 
-## 🔍 验证当前模式
+## 验证当前模式
 
 ### 查看浏览器控制台
 
-前端启动时会输出当前使用的API端点：
+优先检查前端环境变量和实际请求路径：
 
-```
-[Strategy API] Using Mock endpoint: /api/mock/strategy
-# 或
-[Strategy API] Using Real endpoint: /api/v1/strategy
-```
+- 显式 mock 模式：`VITE_USE_MOCK_DATA=true`
+- 真实联调模式：`VITE_USE_MOCK_DATA=false`
 
 ### 检查网络请求
 
-打开浏览器开发者工具 → Network标签：
-- Mock模式: 请求 `/api/mock/strategy/strategies`
-- Real模式: 请求 `/api/v1/strategy/strategies`
+打开浏览器开发者工具 → Network 标签：
+
+- 显式 mock 模式：前端经共享 `apiClient` 短路到 `mockApiClient`
+- 真实联调模式：请求真实 `/api/v1/...`、`/api/v2/...`、`/health/...` 等后端路径
 
 ## ⚙️ 配置对比
 
 | 配置项 | Mock模式 | Real模式 |
 |--------|----------|----------|
-| `VITE_APP_MODE` | `mock` | `real` |
-| API端点 | `/api/mock/strategy` | `/api/v1/strategy` |
+| `VITE_USE_MOCK_DATA` | `true` | `false` |
+| 前端路由方式 | 共享 `apiClient` → `mockApiClient` | 共享 `apiClient` → 真实 `/api` |
 | 数据来源 | Mock数据（内存） | PostgreSQL/TDengine |
 | 后端依赖 | 无需后端 | 需要后端服务 |
 
@@ -135,13 +136,13 @@ pm2 restart mystocks-backend
 **原因**: 前端仍使用Mock配置，或后端USE_MOCK_DATA=true
 
 **解决**:
-1. 检查前端 `.env` 文件的 `VITE_APP_MODE`
+1. 检查前端 `.env` 文件的 `VITE_USE_MOCK_DATA`
 2. 检查后端 `.env` 文件的 `USE_MOCK_DATA`
 3. 重启前后端服务
 
 ### 问题2: Real模式下API返回404
 
-**原因**: 后端服务未启动或USE_MOCK_DATA=false导致API未注册
+**原因**: 后端服务未启动、真实接口不可达，或你把 mock 验收误当成真实联调
 
 **解决**:
 1. 检查后端服务状态: `pm2 status`
@@ -165,5 +166,13 @@ pm2 restart mystocks-backend
 
 ---
 
-**最后更新**: 2026-01-02
+## 历史口径说明
+
+以下说法视为历史口径，不再代表当前主线：
+
+- `VITE_APP_MODE=mock|real` 是前端唯一切换方式
+- `/api/mock/strategy` 是当前策略前端的主动主链入口
+- 真实接口失败后静默使用 mock 也可以视为成功
+
+**最后更新**: 2026-04-25
 **维护者**: Main CLI (Claude Code)

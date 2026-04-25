@@ -2,7 +2,7 @@
  * Market Data Adapter
  *
  * Handles data transformation between API responses and frontend models.
- * Implements fallback to mock data on API failures.
+ * Returns explicit empty-state inputs instead of silent mock payloads on failures.
  */
 
 import type { UnifiedResponse } from '../types/common.ts';
@@ -24,11 +24,6 @@ import type {
   LongHuBangResponse,
 } from '../types/common.ts';
 
-// Import Mock data as fallback
-// import mockMarketOverview from '@/mock/marketOverview.ts';  // Unused - using inline mock
-import mockFundFlow from '@/mock/fundFlow.ts';
-import mockKLineData from '@/mock/klineData.ts';
-
 interface AdaptedKLineData {
   categoryData: string[];
   values: {
@@ -46,14 +41,14 @@ export class MarketAdapter {
    * Adapt market overview from API response
    *
    * @param apiResponse - Raw API response
-   * @returns Adapted MarketOverviewVM object (falls back to mock on error)
+   * @returns Adapted MarketOverviewVM object
    */
   static adaptMarketOverview(
     apiResponse: UnifiedResponse<MarketOverviewResponse>
   ): MarketOverviewVM {
     if (!apiResponse.success || !apiResponse.data) {
-      console.warn('[MarketAdapter] API failed, using mock data:', apiResponse.message);
-      return this.getMockMarketOverview();
+      console.warn('[MarketAdapter] API failed, returning empty market overview:', apiResponse.message);
+      return this.createEmptyMarketOverview(apiResponse.timestamp);
     }
 
     try {
@@ -76,7 +71,7 @@ export class MarketAdapter {
       // Return a minimal valid MarketOverviewVM object
       // Note: This is a simplified version - the full object would require all fields
       return {
-        ...this.getMockMarketOverview(), // Start with mock data to ensure all required fields
+        ...this.createEmptyMarketOverview(apiData.timestamp), // Start with empty state to ensure all required fields
         price_distribution: {
           up_stocks: rise,
           down_stocks: fall,
@@ -91,7 +86,7 @@ export class MarketAdapter {
       } as MarketOverviewVM;
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt market overview:', error);
-      return this.getMockMarketOverview();
+      return this.createEmptyMarketOverview(apiResponse.timestamp);
     }
   }
 
@@ -99,14 +94,14 @@ export class MarketAdapter {
    * Adapt fund flow data from API response
    *
    * @param apiResponse - Raw API response
-   * @returns Array of adapted FundFlowChartPoint objects (falls back to mock on error)
+   * @returns Array of adapted FundFlowChartPoint objects
    */
   static adaptFundFlow(
     apiResponse: UnifiedResponse<FundFlowAPIResponse>
   ): FundFlowChartPoint[] {
     if (!apiResponse.success || !apiResponse.data) {
-      console.warn('[MarketAdapter] Fund flow API failed, using mock data:', apiResponse.message);
-      return this.getMockFundFlow();
+      console.warn('[MarketAdapter] Fund flow API failed, returning empty fund flow:', apiResponse.message);
+      return [];
     }
 
     try {
@@ -165,7 +160,7 @@ export class MarketAdapter {
       }));
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt fund flow:', error);
-      return this.getMockFundFlow();
+      return [];
     }
   }
 
@@ -173,14 +168,14 @@ export class MarketAdapter {
    * Adapt K-line data from API response
    *
    * @param apiResponse - Raw API response
-   * @returns Adapted KLineChartData object (falls back to mock on error)
+   * @returns Adapted KLineChartData object
    */
   static adaptKLineData(
     apiResponse: UnifiedResponse<KLineDataResponse>
   ): AdaptedKLineData {
     if (!apiResponse.success || !apiResponse.data) {
-      console.warn('[MarketAdapter] K-line API failed, using mock data:', apiResponse.message);
-      return this.getMockKLineData();
+      console.warn('[MarketAdapter] K-line API failed, returning empty K-line dataset:', apiResponse.message);
+      return this.createEmptyKLineData();
     }
 
     try {
@@ -212,7 +207,7 @@ export class MarketAdapter {
       };
     } catch (error) {
       console.error('[MarketAdapter] Failed to adapt K-line data:', error);
-      return this.getMockKLineData();
+      return this.createEmptyKLineData();
     }
   }
 
@@ -254,14 +249,11 @@ export class MarketAdapter {
       }));
   }
 
-  // ==================== Mock Data Fallback Methods ====================
+  // ==================== Empty State Helpers ====================
 
-  /**
-   * Get mock market overview data
-   */
-  private static getMockMarketOverview(): MarketOverviewVM {
-    console.log('[MarketAdapter] 📦 Using Mock Market Overview data');
-    // Basic fallback that matches VM structure
+  private static createEmptyMarketOverview(timestamp?: string): MarketOverviewVM {
+    const resolvedTimestamp = timestamp || new Date().toISOString();
+
     return {
         market_status: 'sideways',
         market_phase: 'accumulation',
@@ -344,55 +336,18 @@ export class MarketAdapter {
           retail: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } },
           foreign: { inflow: 0, outflow: 0, net_flow: 0, net_flow_ratio: 0, large_order_ratio: 0, large_orders: { buy: 0, sell: 0, net: 0 }, big_orders: { buy: 0, sell: 0, net: 0 }, medium_orders: { buy: 0, sell: 0, net: 0 }, small_orders: { buy: 0, sell: 0, net: 0 } }
         },
-        timestamp: new Date().toISOString(),
-        last_update: new Date().toISOString(),
+        timestamp: resolvedTimestamp,
+        last_update: resolvedTimestamp,
         market_session: 'open' as const
     };
   }
 
-  /**
-   * Get mock fund flow data
-   */
-  private static getMockFundFlow(): FundFlowChartPoint[] {
-    console.log('[MarketAdapter] 📦 Using Mock Fund Flow data');
-
-    // mockFundFlow is in UnifiedResponse format - extract the data part and wrap properly
-    const mockResponse: UnifiedResponse<FundFlowAPIResponse> = {
-      success: mockFundFlow.success,
-      code: mockFundFlow.code,
-      message: mockFundFlow.message,
-      data: mockFundFlow.data,
-      timestamp: mockFundFlow.timestamp,
-      request_id: mockFundFlow.request_id,
-      errors: mockFundFlow.errors,
+  private static createEmptyKLineData(): AdaptedKLineData {
+    return {
+      categoryData: [],
+      values: [],
+      volumes: [],
     };
-
-    return this.adaptFundFlow(mockResponse);
-  }
-
-  /**
-   * Get mock K-line data
-   */
-  private static getMockKLineData(): AdaptedKLineData {
-    console.log('[MarketAdapter] 📦 Using Mock K-Line data');
-
-    // Wrap mock data in KlineResponse structure
-    const mockWrappedResponse: UnifiedResponse<KLineDataResponse> = {
-      success: true,
-      code: 200,
-      message: 'Mock data',
-      data: {
-        symbol: '000001',
-        period: '1d',
-        data: mockKLineData,
-        count: mockKLineData.length,
-      },
-      timestamp: new Date().toISOString(),
-      request_id: 'mock',
-      errors: null,
-    };
-
-    return this.adaptKLineData(mockWrappedResponse);
   }
 
   // ==================== Validation Methods ====================

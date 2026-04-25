@@ -1,447 +1,156 @@
-# Mock数据使用规则文档
+# Mock 数据使用规则
 
 > **补充规范说明**:
-> 本文件是项目补充标准、执行细则或专题规范，不是仓库共享规则的唯一事实来源。
-> 仓库级共享规则总入口仍以 `architecture/STANDARDS.md` 为准；执行流程、命令与协作约束再参考根目录 `AGENTS.md`。本文件用于补充某一专题的执行细则、约束或参考模板。
->
-> 若本文件与 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 或当前已批准执行口径不一致，应优先遵循 `architecture/STANDARDS.md`、根目录 `AGENTS.md` 与当前实现；若无冲突，则按本文件的专题范围执行。
-
-
-## 概述
-
-本文档规定了 MyStocks 项目中 Mock 数据的使用规则，确保代码质量和数据管理的一致性。
-
-**核心原则**: 所有模拟数据必须通过 Mock 数据模块提供，**严禁在业务代码中直接硬编码数据**。
-
----
-
-## Mock数据架构
-
-### 三层数据源架构
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    业务数据源 (Business)                      │
-│                       business_mock.py                       │
-├─────────────────────────────────────────────────────────────┤
-│                                                              │
-│  ┌──────────────────────┐    ┌──────────────────────┐       │
-│  │  时序数据源            │    │  关系数据源           │       │
-│  │  (TimeSeries)         │    │  (Relational)        │       │
-│  │  timeseries_mock.py   │    │  relational_mock.py  │       │
-│  └──────────────────────┘    └──────────────────────┘       │
-│                                                              │
-├─────────────────────────────────────────────────────────────┤
-│                    数据源工厂 (Factory)                       │
-│                        factory.py                            │
-└─────────────────────────────────────────────────────────────┘
-```
-
-### 数据源切换机制
-
-通过环境变量控制数据源类型：
-
-| 环境变量 | 可选值 | 说明 |
-|---------|--------|------|
-| `TIMESERIES_DATA_SOURCE` | mock / tdengine | 时序数据源 |
-| `RELATIONAL_DATA_SOURCE` | mock / postgresql | 关系数据源 |
-| `BUSINESS_DATA_SOURCE` | mock / composite | 业务数据源 |
-| `USE_MOCK_DATA` | true / false | 全局Mock开关 |
-
----
-
-## Mock数据文件清单
-
-### 1. 核心数据源模块 (`src/data_sources/`)
-
-| 文件路径 | 用途 | 关键接口 |
-|---------|------|---------|
-| `factory.py` | 数据源工厂 | `get_timeseries_source()`, `get_relational_source()`, `get_business_source()` |
-| `mock/timeseries_mock.py` | Mock时序数据 | `get_realtime_quotes()`, `get_kline_data()`, `get_fund_flow()` |
-| `mock/relational_mock.py` | Mock关系数据 | `get_watchlist()`, `get_strategy_configs()`, `search_stocks()` |
-| `mock/business_mock.py` | Mock业务数据 | `get_dashboard_summary()`, `execute_backtest()`, `calculate_risk_metrics()` |
-
-### 2. 页面Mock模块 (`src/mock/`)
-
-| 文件名 | 用途 | 主要函数 |
-|--------|------|----------|
-| `mock_Dashboard.py` | 仪表盘数据 | `get_market_hot()`, `get_plate_performance()`, `get_fund_flow()` |
-| `mock_Market.py` | 市场行情 | `get_market_heatmap()`, `get_real_time_quotes()`, `get_etf_list()` |
-| `mock_Stocks.py` | 股票详情 | `get_stock_list()`, `get_real_time_quote()`, `get_history_profit()` |
-| `mock_TechnicalAnalysis.py` | 技术分析 | `get_stock_kline()`, `get_technical_indicators()`, `get_signal_analysis()` |
-| `mock_Wencai.py` | 问财查询 | `get_wencai_queries()`, `get_query_results()` |
-| `mock_StrategyManagement.py` | 策略管理 | `get_strategy_definitions()`, `run_strategy_single()`, `get_strategy_results()` |
-| `mock_RealTimeMonitor.py` | 实时监控 | `get_realtime_alerts()`, `get_monitoring_summary()` |
-| `mock_IndicatorLibrary.py` | 指标库 | `get_indicator_list()`, `get_indicator_detail()` |
+> 本文件是 Mock 数据专题的当前执行细则，不是仓库共享规则的唯一事实来源。
+> Mock 相关共享治理口径仍以 [`architecture/STANDARDS.md`](/opt/claude/mystocks_spec/architecture/STANDARDS.md) 为准；页面级 API 行为与 `verified/pending` 规则以 [`openspec/specs/api-integration/spec.md`](/opt/claude/mystocks_spec/openspec/specs/api-integration/spec.md) 为准。
 
-### 3. 后端统一Mock管理 (`web/backend/app/mock/`)
+## 目的
 
-| 文件名 | 用途 | 主要函数 |
-|--------|------|----------|
-| `unified_mock_data.py` | 统一Mock管理 | `get_dashboard_data()`, `get_stocks_data()`, `get_technical_data()` |
+本文件回答三个问题：
 
----
+1. Mock 在本项目里什么时候允许使用
+2. Mock 在哪些场景下不能作为真实链路兜底
+3. 当前仓库中多层 Mock 资产应如何被理解和使用
 
-## 使用规则
+## 当前主线规则
 
-### 规则1: 禁止硬编码数据
+### 1. Mock 的定位
 
-**错误示例** ❌
-```python
-# 直接在代码中写入数据 - 严禁!
-def get_stock_info():
-    return {
-        "symbol": "600000",
-        "name": "浦发银行",
-        "price": 12.50,
-        "change": 0.15,
-        "volume": 12345678
-    }
-```
-
-**正确示例** ✅
-```python
-from src.data_sources.factory import get_timeseries_source
+- Mock 的首要用途是前后端解耦开发。
+- Mock 的常见用途是测试稳定性、固定数据验收、自动化隔离和开发态演示。
+- Mock 不是默认的线上成功路径，也不是 `verified` 页面真实接口失败后的静默替代品。
 
-def get_stock_info(symbol: str):
-    source = get_timeseries_source(source_type="mock")
-    return source.get_realtime_quotes([symbol])[0]
-```
+对应共享规则见：
 
-### 规则2: 通过工厂函数获取数据源
+- [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)
 
-**错误示例** ❌
-```python
-# 直接实例化Mock类 - 不推荐
-from src.data_sources.mock.timeseries_mock import MockTimeSeriesDataSource
-source = MockTimeSeriesDataSource()
-```
-
-**正确示例** ✅
-```python
-# 通过工厂函数获取 - 推荐
-from src.data_sources.factory import get_timeseries_source
+### 2. 页面级真相优先级
 
-source = get_timeseries_source(source_type="mock")
-data = source.get_kline_data(
-    symbol="600000",
-    start_time=datetime(2025, 1, 1),
-    end_time=datetime(2025, 10, 31),
-    interval="1d"
-)
-```
+- `verified` 页面：
+  - 真实 API 是主数据源。
+  - 不得对同一路径静默回退到 mock。
+  - 必须显式暴露 `loading / error / empty / request id` 状态。
+- `pending` 页面：
+  - 路由可以保持可达。
+  - 允许保留壳层、加载态、错误态、空态。
+  - 不得臆造真实接口契约字段。
+  - 阻塞项必须记录到优化清单或任务报告。
 
-### 规则3: 使用统一的数据接口
+对应专题规格见：
 
-**时序数据获取**:
-```python
-from src.data_sources.factory import get_timeseries_source
+- [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md)
 
-source = get_timeseries_source(source_type="mock")
+## 允许使用 Mock 的场景
 
-# K线数据
-kline_df = source.get_kline_data(symbol, start_time, end_time, interval)
+### 开发解耦
 
-# 实时行情
-quotes = source.get_realtime_quotes(symbols)
+- 后端接口尚未就绪，但前端需要先完成 UI/UX 视觉验收。
+- 新页面、新组件或新交互仍在壳层阶段，只需要表达布局、状态和体验。
 
-# 资金流向
-fund_flow = source.get_fund_flow(symbol, days)
-
-# 市场概览
-overview = source.get_market_overview()
-```
-
-**关系数据获取**:
-```python
-from src.data_sources.factory import get_relational_source
-
-source = get_relational_source(source_type="mock")
-
-# 自选股
-watchlist = source.get_watchlist(user_id)
-
-# 股票搜索
-results = source.search_stocks(keyword)
-
-# 行业列表
-industries = source.get_industry_list()
-```
-
-**业务数据获取**:
-```python
-from src.data_sources.factory import get_business_source
-
-source = get_business_source(source_type="mock")
-
-# 仪表盘数据
-dashboard = source.get_dashboard_summary()
-
-# 回测执行
-backtest_result = source.execute_backtest(strategy_config, start_date, end_date)
-
-# 风险指标
-risk_metrics = source.calculate_risk_metrics(portfolio_id)
-```
-
-### 规则4: 参数优化中的Mock数据使用
-
-在策略参数优化中，必须使用Mock数据源而非硬编码数据：
-
-**错误示例** ❌
-```python
-# 硬编码历史数据 - 严禁!
-def run_backtest(params):
-    historical_data = [
-        {"date": "2025-01-01", "close": 10.5},
-        {"date": "2025-01-02", "close": 10.8},
-        # ... 直接写入数据
-    ]
-    return simulate(historical_data, params)
-```
-
-**正确示例** ✅
-```python
-from src.data_sources.factory import get_timeseries_source
-
-def run_backtest(params):
-    source = get_timeseries_source(source_type="mock")
-    historical_data = source.get_kline_data(
-        symbol="600000",
-        start_time=datetime(2025, 1, 1),
-        end_time=datetime(2025, 10, 31),
-        interval="1d"
-    )
-    return simulate(historical_data, params)
-```
-
-### 规则5: 支持随机种子保证可复现
-
-Mock数据支持随机种子，确保测试结果可复现：
-
-```python
-from src.data_sources.factory import get_timeseries_source
-
-# 设置随机种子
-source = get_timeseries_source(source_type="mock")
-source.set_random_seed(42)
-
-# 现在生成的数据是可复现的
-data1 = source.get_kline_data(symbol, start, end)
-
-# 重新设置相同种子，得到相同数据
-source.set_random_seed(42)
-data2 = source.get_kline_data(symbol, start, end)
-# data1 == data2
-```
-
-### 规则6: 保持数据结构一致性
-
-Mock数据结构应与真实API返回一致，便于无缝切换：
-
-```python
-# Mock数据结构必须与真实API一致
-def get_stock_quote(symbol: str) -> Dict:
-    return {
-        "symbol": symbol,           # 股票代码
-        "name": "示例股票",          # 股票名称
-        "price": 25.50,             # 当前价格
-        "change": 0.35,             # 涨跌额
-        "change_pct": 1.39,         # 涨跌幅%
-        "volume": 12345678,         # 成交量
-        "amount": 315678900,        # 成交额
-        "high": 26.00,              # 最高价
-        "low": 24.80,               # 最低价
-        "open": 25.20,              # 开盘价
-        "pre_close": 25.15,         # 昨收价
-        "timestamp": datetime.now().isoformat()
-    }
-```
-
----
-
-## 添加新Mock数据的流程
-
-### 1. 确定数据类别
-
-| 数据类型 | 对应模块 | 说明 |
-|---------|---------|------|
-| 行情/K线 | `timeseries_mock.py` | 时序类数据 |
-| 用户/配置 | `relational_mock.py` | 关系类数据 |
-| 业务/分析 | `business_mock.py` | 复合业务数据 |
-| 页面专用 | `src/mock/mock_*.py` | 页面级数据 |
-
-### 2. 实现数据生成函数
-
-```python
-# 在对应的mock模块中添加
-def get_new_feature_data(
-    param1: str,
-    param2: int = 10
-) -> Dict[str, Any]:
-    """
-    获取新功能数据
-
-    Args:
-        param1: 参数1说明
-        param2: 参数2说明 (默认10)
-
-    Returns:
-        包含新功能数据的字典
-    """
-    # 使用随机数生成器
-    import random
-    rng = random.Random(42)  # 可复现
-
-    return {
-        "field1": rng.uniform(0, 100),
-        "field2": rng.randint(1, 1000),
-        "field3": [rng.random() for _ in range(param2)],
-        "timestamp": datetime.now().isoformat()
-    }
-```
-
-### 3. 导出函数
-
-```python
-# 在模块的 __all__ 中添加
-__all__ = [
-    'get_realtime_quotes',
-    'get_kline_data',
-    'get_new_feature_data',  # 新增
-]
-```
-
-### 4. 更新工厂函数（如需要）
-
-如果是新的数据源类型，需要在 `factory.py` 中注册。
-
----
-
-## 导入规范
-
-### 推荐的导入方式
-
-```python
-# 方式1: 通过工厂函数 (最推荐)
-from src.data_sources.factory import get_timeseries_source
-source = get_timeseries_source(source_type="mock")
-
-# 方式2: 从统一管理模块导入
-from web.backend.app.mock.unified_mock_data import get_dashboard_data
-data = get_dashboard_data()
-
-# 方式3: 从具体模块导入具体函数
-from src.mock.mock_Dashboard import get_market_hot
-data = get_market_hot()
-```
-
-### 避免的导入方式
-
-```python
-# 避免: 通配符导入
-from src.mock.mock_Dashboard import *
-
-# 避免: 直接访问内部变量
-from src.data_sources.mock import timeseries_mock
-data = timeseries_mock._internal_data  # 禁止!
-
-# 避免: 硬编码实例化
-source = MockTimeSeriesDataSource()  # 应使用工厂函数
-```
-
----
-
-## 环境变量配置
-
-### 开发环境 (.env.development)
-```bash
-USE_MOCK_DATA=true
-TIMESERIES_DATA_SOURCE=mock
-RELATIONAL_DATA_SOURCE=mock
-BUSINESS_DATA_SOURCE=mock
-```
-
-### 生产环境 (.env.production)
-```bash
-USE_MOCK_DATA=false
-TIMESERIES_DATA_SOURCE=tdengine
-RELATIONAL_DATA_SOURCE=postgresql
-BUSINESS_DATA_SOURCE=composite
-```
-
----
-
-## 代码审查检查清单
-
-在代码审查时，请检查以下项目：
-
-- [ ] 没有硬编码的模拟数据
-- [ ] 所有数据通过工厂函数或Mock模块的getter函数获取
-- [ ] 导入路径正确
-- [ ] 函数有类型注解和文档字符串
-- [ ] 数据结构与预期API一致
-- [ ] 新增的Mock函数已添加到对应模块
-- [ ] 支持随机种子实现可复现性
-- [ ] 没有使用通配符导入
-
----
-
-## 常见问题
-
-### Q: 为什么不能直接在代码中写数据？
-
-A: 直接硬编码数据会导致：
-- 代码难以维护和修改
-- 无法统一管理数据质量
-- 切换真实数据源时需要大量修改
-- 违反DRY原则（Don't Repeat Yourself）
-- 难以保证数据的一致性和真实性
-
-### Q: Mock数据和真实数据结构不一致怎么办？
-
-A: 应该以真实API的数据结构为准，修改Mock数据使其保持一致。如果真实API结构发生变化，需要同步更新Mock模块。
-
-### Q: 如何生成符合市场规律的K线数据？
-
-A: 参考 `timeseries_mock.py` 中的实现：
-- 价格使用对数正态分布
-- 涨跌幅限制在-10%到+10%
-- 成交量在合理范围内波动
-- 高开低收价格关系合理
-
-### Q: 参数优化时Mock数据不够用怎么办？
-
-A: Mock数据源支持动态生成任意时间范围的数据：
-```python
-source = get_timeseries_source(source_type="mock")
-# 可以请求任意时间范围
-data = source.get_kline_data(
-    symbol="600000",
-    start_time=datetime(2020, 1, 1),
-    end_time=datetime(2025, 12, 31),
-    interval="1d"
-)
-```
-
----
-
-## 相关文件索引
-
-| 文件 | 说明 |
-|------|------|
-| `src/data_sources/factory.py` | 数据源工厂 (入口) |
-| `src/data_sources/mock/` | Mock数据源实现目录 |
-| `src/mock/` | 页面级Mock数据目录 |
-| `web/backend/app/mock/` | 后端统一Mock管理 |
-| `scripts/tests/test_mock_*.py` | Mock测试脚本 |
-| `examples/mock_data_demo.py` | Mock使用演示 |
-| `CLAUDE.md` | 项目开发规范 |
-
----
-
-## 版本历史
-
-| 版本 | 日期 | 说明 |
-|------|------|------|
-| 1.0 | 2025-11-22 | 初始版本，建立Mock数据使用规范 |
+### 测试稳定性
+
+- Vitest / 组件测试 / 前端集成测试中，需要使用 `MSW` 或固定 mock payload 保证可复现。
+- 自动化场景需要避免实时数据、时间漂移、外部依赖波动。
+- Smoke 或 sandbox-safe 运行器中，显式启用 `VITE_USE_MOCK_DATA=true` 进行隔离验证。
+
+### 非主链运行时降级
+
+- 自动化浏览器验收或显式 mock 模式下，readiness 检查允许进入“mock 验收模式”，避免开发演示完全阻塞。
+- 这类 fallback 必须是显式模式或自动化专用，不得伪装成真实主链已通过。
+
+## 禁止或默认不允许的场景
+
+### 禁止把 Mock 当成 `verified` 页面的静默兜底
+
+- 已标记 `verified` 的页面，不得在同一路径上“真实接口失败后默默返回 mock 数据”。
+- 这类场景必须进入错误态、空态或明确的非阻塞 warning 态，而不是继续伪装成真实数据成功。
+
+### 禁止用 Mock 臆造契约
+
+- 不得为了让页面先跑起来而发明真实接口尚未承诺的字段。
+- 不得把 page-local 假字段包装成“真实接口兼容层”。
+
+### 禁止在业务代码中无说明地内联硬编码数据
+
+- 业务代码中直接堆大型静态数组、随机散落的 fallback 对象、临时写死的行情/策略/持仓数据，默认视为不合规。
+- 如果确实需要 mock payload，必须：
+  - 放在集中 mock 模块或测试 fixture 中
+  - 明确说明用途是开发、测试或显式 fallback
+  - 与真实返回结构保持可比对关系
+
+## 当前仓库中的 Mock 资产分层
+
+当前仓库里与 Mock 相关的资产主要分为四类：
+
+### 1. 后端 page-level / feature-level Mock
+
+- `src/mock/`
+- 作用：历史 page-level mock 数据、若干后端 fallback 或参考实现来源
+
+### 2. 后端数据源级 Mock
+
+- `src/data_sources/mock/`
+- 作用：数据源工厂模式下的 mock timeseries / relational / business provider
+
+### 3. 后端统一 Mock 管理与 Mock 路由
+
+- `web/backend/app/mock/`
+- `web/backend/app/api/strategy_list_mock.py`
+- 作用：后端 mock manager、显式 mock API 路由和若干 fallback 接入点
+
+### 4. 前端测试与显式 Mock 客户端
+
+- `web/frontend/src/mock/`
+- `web/frontend/src/api/mockApiClient.ts`
+- 作用：前端测试数据、显式 `VITE_USE_MOCK_DATA` 模式、部分适配器/测试用例消费
+
+这些资产同时存在并不等于“所有页面都可以自由混用 mock/real”。真正的准入边界仍由 `verified/pending` 和当前主线验证状态决定。
+
+## 环境与开关
+
+当前仓库里最常见的 Mock 相关开关包括：
+
+- 后端：`USE_MOCK_DATA`
+- 前端：`VITE_USE_MOCK_DATA`
+
+补充说明：
+
+- 某些历史文档仍提到更早的 `VITE_APP_MODE` 口径；阅读时必须以当前代码和当前运行脚本为准。
+- 是否启用 mock，不应只看环境变量名，还要看页面是否已经处于 `verified` 主链、测试是否属于显式 mock 场景，以及调用链是否允许 fallback。
+
+## 实施建议
+
+### 新增页面或功能时
+
+- 先判断该页面当前是 `pending` 还是 `verified` 目标。
+- `pending` 阶段只做壳层和状态收口，不要发明真实字段。
+- 如果需要临时数据，放入集中 mock 模块，不要把数据散落在页面里。
+
+### 改造既有页面时
+
+- 先确认该页面是否已经被主线文档记为 `verified`。
+- 若已 `verified`，优先拆掉静默 mock fallback，保留错误态、空态和 request id。
+- 若仍需 mock 验收，必须让模式显式可见，而不是默认混在真实链路里。
+
+### 写测试时
+
+- 单元测试和集成测试优先使用 `MSW`、集中 fixture 或 mock helper。
+- E2E 若只跑 mock/sandbox-safe 子集，必须明确标注测试边界，不能表述成“真实联调已验证”。
+
+## 反模式
+
+以下模式应视为重点治理对象：
+
+- 页面内 `if request failed -> return mockRows`，且对用户无显式提示
+- `verified` 页面继续保留 `mixed` 假字段拼装
+- 业务主链直接从历史 page mock 文件导入数据作为默认成功数据
+- 文档把 mock 覆盖率、mock 文件数量、接口数量写成当前事实，但没有日期和复核来源
+
+## 相关文档
+
+- [`INDEX.md`](./INDEX.md)
+- [`MOCK_REAL_DATA_SWITCHING_GUIDE.md`](./MOCK_REAL_DATA_SWITCHING_GUIDE.md)
+- [`MOCK_GOVERNANCE_AUDIT_LEDGER.md`](./MOCK_GOVERNANCE_AUDIT_LEDGER.md)
+- [`web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md`](../../../web/frontend/ENVIRONMENT_SWITCHING_GUIDE.md)
+- [`architecture/STANDARDS.md`](../../architecture/STANDARDS.md)
+- [`openspec/specs/api-integration/spec.md`](../../../openspec/specs/api-integration/spec.md)
