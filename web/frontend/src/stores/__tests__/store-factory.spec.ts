@@ -36,6 +36,8 @@ describe('PiniaStoreFactory', () => {
       expect(storeInstance).toHaveProperty('loading')
       expect(storeInstance).toHaveProperty('error')
       expect(storeInstance).toHaveProperty('lastFetch')
+      expect(storeInstance).toHaveProperty('lastRequestId')
+      expect(storeInstance).toHaveProperty('lastProcessTime')
       expect(storeInstance).toHaveProperty('requestCount')
       expect(storeInstance).toHaveProperty('errorCount')
       expect(storeInstance).toHaveProperty('lastDurationMs')
@@ -156,6 +158,26 @@ describe('PiniaStoreFactory', () => {
       const storeInstance = store()
 
       await expect(storeInstance.fetch()).rejects.toThrow('Data validation failed')
+    })
+
+    it('captures request tracing metadata when the response carries it', async () => {
+      unifiedApiClient.get.mockResolvedValue({
+        success: true,
+        data: [{ id: 1 }],
+        request_id: 'req-store-1',
+        process_time: '125.00'
+      })
+
+      const store = PiniaStoreFactory.createApiStore({
+        id: 'trace-store',
+        endpoint: '/api/test'
+      })
+
+      const storeInstance = store()
+      await storeInstance.fetch()
+
+      expect(storeInstance.lastRequestId).toBe('req-store-1')
+      expect(storeInstance.lastProcessTime).toBe('125.00')
     })
   })
 

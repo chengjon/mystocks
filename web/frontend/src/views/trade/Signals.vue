@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
-import { strategyApi } from '@/api'
 import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { useTradingSignalsStore } from '@/stores/apiStores'
 import {
   createStrategySignalsFromResponse,
   type StrategySignalItem,
@@ -63,8 +63,8 @@ const signalFilters = [
 
 const signals = ref<TradingSignalRow[]>([])
 const dataSource = ref<'REAL' | 'EMPTY'>('REAL')
-
-const { loading, lastRequestId, lastProcessTime, exec } = useArtDecoApi()
+const tradingSignalsStore = useTradingSignalsStore()
+const { loading, error, lastRequestId, lastProcessTime } = storeToRefs(tradingSignalsStore)
 const isEmbedded = computed(() => Boolean(props.functionKey))
 
 const historySignals = computed<SignalHistoryRow[]>(() => {
@@ -107,12 +107,26 @@ const buyCount = computed(() => signals.value.filter((signal) => signal.type ===
 const sellCount = computed(() => signals.value.filter((signal) => signal.type === 'sell').length)
 const highConfidenceCount = computed(() => signals.value.filter((signal) => signal.confidence >= 85).length)
 const pageStatusText = computed(() => {
+  if (error.value) return '信号异常'
   if (loading.value) return '同步中'
   return dataSource.value === 'REAL' ? '信号在线' : '暂无信号'
 })
 const pageStatusType = computed(() => {
+  if (error.value) return 'warning'
   if (loading.value) return 'info'
   return dataSource.value === 'REAL' ? 'success' : 'warning'
+})
+const runtimeMessage = computed(() => {
+  if (error.value) {
+    return `${error.value}，当前显示空状态。`
+  }
+  if (loading.value) {
+    return '交易信号同步中...'
+  }
+  if (filteredSignals.value.length === 0) {
+    return '当前筛选条件下暂无可执行信号。'
+  }
+  return ''
 })
 
 const overviewMetrics = computed(() => {
@@ -186,26 +200,22 @@ function toTradingSignalRows(items: StrategySignalItem[]): TradingSignalRow[] {
 }
 
 async function loadSignals() {
-  const data = await exec(() => strategyApi.getSignals({ limit: 20 }), {
-    silent: true,
-    errorMsg: '策略信号加载失败',
-  })
+  try {
+    const data = await tradingSignalsStore.refresh({ limit: 20 })
+    const mapped = createStrategySignalsFromResponse(data)
 
-  if (data === null) {
+    if (mapped.length === 0) {
+      dataSource.value = 'EMPTY'
+      signals.value = []
+      return
+    }
+
+    dataSource.value = 'REAL'
+    signals.value = toTradingSignalRows(mapped)
+  } catch {
     dataSource.value = 'EMPTY'
     signals.value = []
-    return
   }
-
-  const mapped = createStrategySignalsFromResponse(data)
-  if (mapped.length === 0) {
-    dataSource.value = 'EMPTY'
-    signals.value = []
-    return
-  }
-
-  dataSource.value = 'REAL'
-  signals.value = toTradingSignalRows(mapped)
 }
 
 function sanitizeCsvCell(value: unknown): string {
@@ -262,6 +272,13 @@ function batchExecute() {
   })
 }
 
+function executeSignal(row: TradingSignalRow) {
+  ElMessage({
+    message: `${row.typeText}信号已加入执行队列：${row.symbolName} ${row.symbol}`,
+    type: 'success',
+  })
+}
+
 onMounted(() => {
   void loadSignals()
 })
@@ -311,7 +328,7 @@ onMounted(() => {
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">signal review route</span>
-          <h3 class="content-shell-title">信号总览与执行面板</h3>
+          <h2 class="content-shell-title">信号总览与执行面板</h2>
           <p class="content-shell-subtitle">从信号过滤、实时列表到质量分布和执行历史，形成完整的信号工作流。</p>
         </div>
         <div class="content-shell-meta">
@@ -329,8 +346,10 @@ onMounted(() => {
         @batch-execute="batchExecute"
       />
 
+      <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+
       <div class="signals-list-section" v-loading="loading">
-        <ArtDecoTradingSignals :signals="filteredSignals" />
+        <ArtDecoTradingSignals :signals="filteredSignals" @execute="executeSignal" />
       </div>
 
       <ArtDecoSignalMonitoringMetrics :quality="qualityMetrics" :types="signalTypes" />
@@ -434,6 +453,12 @@ onMounted(() => {
 
 .signals-list-section {
   margin-bottom: var(--artdeco-spacing-6);
+}
+
+.runtime-message {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
 }
 
 .execution-history-section {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useRoute } from 'vue-router'
-import { strategyApi } from '@/api'
 import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { useTradingSignalsStore } from '@/stores/apiStores'
 import { useStrategyCrossTabContext } from '@/composables/strategy/useStrategyCrossTabContext'
 import {
   createStrategySignalsFromResponse,
@@ -11,8 +11,10 @@ import {
 } from './strategySignalsData'
 import { extractStrategyIdFromQuery } from './strategyCrossTabNavigation'
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
+const tradingSignalsStore = useTradingSignalsStore()
+const { loading, error, lastRequestId } = storeToRefs(tradingSignalsStore)
 const signals = ref<StrategySignalItem[]>([])
+const hasLoaded = ref(false)
 const route = useRoute()
 const { getSnapshot, setActiveStrategy } = useStrategyCrossTabContext()
 const selectedStrategyId = computed(() => extractStrategyIdFromQuery(route.query as Record<string, unknown>))
@@ -29,9 +31,13 @@ const sellSignalCount = computed(() => signals.value.filter((signal) => signal.t
 const holdSignalCount = computed(() => signals.value.filter((signal) => signal.type === 'HOLD').length)
 const pageStatusText = computed(() => {
   if (loading.value) return '同步中'
+  if (error.value) return '同步异常'
   return signals.value.length > 0 ? '信号在线' : '等待信号'
 })
-const pageStatusType = computed(() => (signals.value.length > 0 ? 'success' : 'info'))
+const pageStatusType = computed(() => {
+  if (error.value) return 'danger'
+  return signals.value.length > 0 ? 'success' : 'info'
+})
 const signalsShellDescription = computed(() => {
   if (selectedStrategyId.value) {
     return `聚合策略 ${selectedStrategyId.value} 的实时信号、当前状态与最近动作，形成可执行的信号时间轴。`
@@ -81,12 +87,14 @@ const fetchSignals = async () => {
     params.strategy_id = selectedStrategyId.value
   }
 
-  const data = await exec(() => strategyApi.getSignals(params), {
-    silent: true
-  })
-
-  const mappedSignals = createStrategySignalsFromResponse(data)
-  signals.value = sortSignalsByTime(mappedSignals)
+  try {
+    const data = await tradingSignalsStore.refresh(params)
+    const mappedSignals = createStrategySignalsFromResponse(data)
+    signals.value = sortSignalsByTime(mappedSignals)
+  } catch {
+    signals.value = []
+  }
+  hasLoaded.value = true
 }
 
 onMounted(() => {
@@ -122,7 +130,7 @@ watch(selectedStrategyId, () => {
         :status-type="pageStatusType"
       >
         <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="fetchSignals">
+          <ArtDecoButton variant="outline" size="sm" :loading="loading" :disabled="loading" @click="fetchSignals">
             <template #icon>
               <ArtDecoIcon name="refresh" />
             </template>
@@ -143,7 +151,7 @@ watch(selectedStrategyId, () => {
       <div class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">live signal route</span>
-          <h3 class="content-shell-title">实时信号时间轴</h3>
+          <h2 class="content-shell-title">实时信号时间轴</h2>
           <p class="content-shell-subtitle">{{ signalsShellDescription }}</p>
         </div>
         <div class="content-shell-meta">
@@ -152,7 +160,16 @@ watch(selectedStrategyId, () => {
         </div>
       </div>
 
-      <div class="signals-timeline" v-loading="loading" v-if="signals.length > 0">
+      <div v-if="loading && !hasLoaded" class="state-panel artdeco-card" role="status" aria-live="polite">
+        <p>策略信号同步中</p>
+        <span>正在刷新实时信号时间轴。</span>
+      </div>
+      <div v-else-if="error && signals.length === 0" class="state-panel artdeco-card" role="alert">
+        <p>策略信号加载失败</p>
+        <span>{{ error }}</span>
+        <ArtDecoButton variant="outline" size="sm" @click="fetchSignals">重试刷新</ArtDecoButton>
+      </div>
+      <div class="signals-timeline" v-loading="loading" v-else-if="signals.length > 0">
         <div v-for="sig in signals" :key="`${sig.symbol}-${sig.time}-${sig.strategy}`" :class="['signal-item', sig.type.toLowerCase()]">
           <div class="signal-marker"></div>
           <div class="signal-content artdeco-card">

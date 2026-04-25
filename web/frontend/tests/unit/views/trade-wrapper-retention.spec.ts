@@ -26,9 +26,9 @@ const wrapperCases = [
     legacyImportLine: "import TradeSignalsCanonicalPage from '@/views/trade/Signals.vue'",
     legacyRenderLine: '<TradeSignalsCanonicalPage v-bind="attrs" />',
     canonicalEvidence: [
-      "import { strategyApi } from '@/api'",
+      "import { useTradingSignalsStore } from '@/stores/apiStores'",
       "title=\"交易信号工作台\"",
-      "strategyApi.getSignals({ limit: 20 })"
+      'tradingSignalsStore.refresh({ limit: 20 })'
     ]
   },
   {

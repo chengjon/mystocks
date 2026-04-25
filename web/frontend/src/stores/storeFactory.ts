@@ -37,6 +37,8 @@ export interface StoreState<T = unknown> {
   loading: boolean
   error: string | null
   lastFetch: number | null
+  lastRequestId: string | null
+  lastProcessTime: string | null
   requestCount: number
   errorCount: number
   lastDurationMs: number | null
@@ -79,6 +81,18 @@ function bindBaseStore<T>(baseStore: BaseStoreBinding<T>) {
   }
 }
 
+function extractTraceMetadata(payload: unknown) {
+  if (!payload || typeof payload !== 'object') {
+    return { requestId: null, processTime: null }
+  }
+
+  const tracePayload = payload as { request_id?: unknown; process_time?: unknown }
+  return {
+    requestId: typeof tracePayload.request_id === 'string' && tracePayload.request_id.length > 0 ? tracePayload.request_id : null,
+    processTime: typeof tracePayload.process_time === 'string' && tracePayload.process_time.length > 0 ? tracePayload.process_time : null,
+  }
+}
+
 /**
  * Pinia Store Factory for API Data Management
  *
@@ -113,6 +127,8 @@ export class PiniaStoreFactory {
       const loading = ref(false)
       const error = ref<string | null>(null)
       const lastFetch = ref<number | null>(null)
+      const lastRequestId = ref<string | null>(null)
+      const lastProcessTime = ref<string | null>(null)
       const requestCount = ref(0)
       const errorCount = ref(0)
       const totalDurationMs = ref(0)
@@ -143,6 +159,9 @@ export class PiniaStoreFactory {
         data.value = transform ? transform(newData) : newData
         error.value = null
         lastFetch.value = Date.now()
+        const trace = extractTraceMetadata(newData)
+        lastRequestId.value = trace.requestId
+        lastProcessTime.value = trace.processTime
       }
 
       const setError = (newError: string | null) => {
@@ -161,6 +180,8 @@ export class PiniaStoreFactory {
         error.value = null
         loading.value = false
         lastFetch.value = null
+        lastRequestId.value = null
+        lastProcessTime.value = null
       }
 
       const fetch = async (params?: unknown): Promise<T> => {
@@ -238,6 +259,8 @@ export class PiniaStoreFactory {
         loading,
         error,
         lastFetch,
+        lastRequestId,
+        lastProcessTime,
         requestCount,
         errorCount,
         lastDurationMs,
