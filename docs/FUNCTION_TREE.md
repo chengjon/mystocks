@@ -298,7 +298,7 @@
 ## 06-监控与告警 {#domain-06}
 
 **模块路径**: `src/monitoring/`, `web/frontend/src/views/monitoring/`
-**API前缀**: `/api/monitoring/*`, `/api/signal_monitoring/*`
+**API前缀**: `/api/v1/monitoring/*`, `/api/v1/monitoring/analysis/*`, `/api/v1/monitoring/watchlists/*`, `/api/signals/*`
 **完成度**: 75%
 
 ### 领域入口
@@ -306,7 +306,7 @@
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[运维文档总览](./operations/README.md) | 监控、告警和可观测性治理入口 |
-| API/契约入口 | [监控 API](../web/backend/app/api/monitoring.py)<br>[信号监控 API](../web/backend/app/api/signal_monitoring/)<br>[API 文档总览](./api/README.md) | 监控和告警接口入口 |
+| API/契约入口 | [监控 API](../web/backend/app/api/monitoring.py)<br>[监控组合分析 API](../web/backend/app/api/monitoring_analysis.py)<br>[监控自选组合 API](../web/backend/app/api/monitoring_watchlists.py)<br>[信号监控 API](../web/backend/app/api/signal_monitoring/)<br>[API 文档总览](./api/README.md) | 监控和告警接口入口 |
 | 前端/交互入口 | [监控页面](../web/frontend/src/views/monitoring/)<br>[监控总览页](../web/frontend/src/views/monitor.vue) | 仪表板、告警和监控交互入口 |
 | 核心代码入口 | [监控模块](../src/monitoring/)<br>[监控核心](../src/core/monitoring.py) | 告警、数据质量和监控实现入口 |
 | 测试与验证入口 | [监控测试目录](../tests/monitoring/)<br>[监控仪表板 E2E](../tests/e2e/monitoring-dashboard.spec.ts)<br>[监控单元测试](../tests/unit/monitoring/test_monitoring_service.py) | 监控与告警验证入口 |
@@ -350,7 +350,7 @@ Q2 closure note:
 ## 07-高级分析与AI {#domain-07}
 
 **模块路径**: `src/advanced_analysis/`, `src/ml_strategy/`
-**API前缀**: `/api/advanced_analysis/*`, `/api/algorithms/*`
+**API前缀**: `/api/v1/advanced-analysis/*`, `/api/v1/algorithms/*`, `/api/ml/*`, `/api/gpu/*`
 **完成度**: 50%
 
 ### 领域入口
@@ -358,7 +358,7 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[OpenSpec 工作流](../openspec/AGENTS.md) | AI、实验功能和架构治理入口 |
-| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[算法 API](../web/backend/app/api/algorithms.py)<br>[机器学习 API](../web/backend/app/api/ml.py) | AI、分析和推理接口入口 |
+| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[算法 API](../web/backend/app/api/algorithms.py)<br>[机器学习 API](../web/backend/app/api/ml.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py) | AI、分析和推理接口入口 |
 | 前端/交互入口 | [GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略优化页](../web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue)<br>[策略管理页](../web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue) | AI 和高级分析交互入口 |
 | 核心代码入口 | [高级分析模块](../src/advanced_analysis/)<br>[机器学习策略模块](../src/ml_strategy/)<br>[GPU API 服务](../src/gpu/api_system/services/) | 分析、训练和 GPU 加速实现入口 |
 | 测试与验证入口 | [机器学习 API 测试](../tests/api/test_ml_file.py)<br>[高级回测测试](../tests/unit/test_advanced_backtest_engine.py)<br>[GPU 测试 README](../src/gpu/api_system/tests/README.md) | AI 和分析功能验证入口 |
@@ -435,7 +435,7 @@ Q2 closure note:
 ## 09-数据存储与管理 {#domain-09}
 
 **模块路径**: `src/storage/database/`, `src/data_access/`, `src/core/`
-**API前缀**: `/api/data/*`, `/api/database/*`, `/api/storage/*`
+**API前缀**: `/api/v1/data/*`, `/api/v1/data-sources/*`, `/api/v1/data-sources/config/*`, `/api/v1/lineage/*`
 **完成度**: 90%
 
 ### 领域入口
@@ -443,8 +443,8 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[架构文档总览](./architecture/README.md) | 数据架构、分层和存储治理入口 |
-| API/契约入口 | [API 文档总览](./api/README.md)<br>[统一管理器契约](../tests/001-readme-md-md/contracts/unified_manager_api.md)<br>[数据 API](../web/backend/app/api/data/market.py) | 数据 API 与契约接口入口 |
-| 前端/交互入口 | [数据库监控页](../web/frontend/src/views/system/DatabaseMonitor.vue)<br>[数据管理页](../web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue) | 数据管理和监控交互入口 |
+| API/契约入口 | [API 文档总览](./api/README.md)<br>[统一管理器契约](../tests/001-readme-md-md/contracts/unified_manager_api.md)<br>[数据 API](../web/backend/app/api/data/market.py)<br>[数据源注册 API](../web/backend/app/api/data_source_registry.py)<br>[数据源配置 API](../web/backend/app/api/data_source_config.py)<br>[数据血缘 API](../web/backend/app/api/data_lineage.py) | 数据 API 与契约接口入口 |
+| 前端/交互入口 | [数据源管理页](../web/frontend/src/views/system/DataSource.vue)<br>[数据库监控页](../web/frontend/src/views/system/DatabaseMonitor.vue)<br>[数据管理页](../web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue) | 数据管理和监控交互入口 |
 | 核心代码入口 | [数据库存储模块](../src/storage/database/)<br>[数据访问层](../src/data_access/)<br>[统一管理器](../src/core/unified_manager.py) | 数据路由和存储实现入口 |
 | 测试与验证入口 | [数据 API 测试](../tests/api/test_data_file.py)<br>[API 集成测试](../tests/integration/test_api_integration.py)<br>[市场数据单元测试](../tests/unit/test_market_data.py) | 数据访问和存储验证入口 |
 | 运行与排障入口 | [基础设施 Docker 说明](../docker/README.md)<br>[运维文档总览](./operations/README.md)<br>[架构文档总览](./architecture/README.md) | 数据存储运行与排障入口 |
@@ -479,7 +479,7 @@ Q2 closure note:
 ## 10-公告与信息 {#domain-10}
 
 **模块路径**: `web/backend/app/api/announcement.py`, `web/frontend/src/views/announcement/`
-**API前缀**: `/api/announcement/*`
+**API前缀**: `/api/v1/announcement/*`, `/api/announcement/*`
 **完成度**: 80%
 
 ### 领域入口
@@ -488,7 +488,7 @@ Q2 closure note:
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 公告功能和信息路由治理入口 |
 | API/契约入口 | [公告 API](../web/backend/app/api/announcement.py)<br>[公告路由](../web/backend/app/api/announcement/routes.py)<br>[API 文档总览](./api/README.md) | 公告和后端路由接口入口 |
-| 前端/交互入口 | [公告监控页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue)<br>[ArtDeco 公告组件](../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue) | 公告监控与交互入口 |
+| 前端/交互入口 | [公告监控页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue)<br>[风险公告页](../web/frontend/src/views/risk/News.vue)<br>[ArtDeco 公告组件](../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue) | 公告监控与交互入口 |
 | 核心代码入口 | [公告服务](../web/backend/app/services/announcement_service.py)<br>[公告模型](../web/backend/app/models/announcement.py) | 公告处理实现入口 |
 | 测试与验证入口 | [公告 API 测试](../tests/api/file_tests/test_announcement_api.py)<br>[后端公告 API 自测](../web/backend/app/api/test_announcement_api.py) | 公告功能验证入口 |
 | 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 公告链路验证和排障入口 |
