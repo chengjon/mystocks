@@ -104,6 +104,21 @@ The frontend SHALL support scoped safe service-return paths that expose explicit
 - **THEN** it SHALL branch on explicit success/error semantics rather than inferring failure from empty data
 - **AND** it SHALL surface an actionable user or developer-visible error state
 
+### Requirement: Canonical Realtime Transport Selection
+The backend SHALL define a canonical transport selection policy for realtime delivery capabilities.
+
+#### Scenario: Realtime capability is exposed
+- **WHEN** a market-data, alerting, or strategy-triggered realtime capability is delivered to clients
+- **THEN** the backend SHALL identify the canonical transport used for that capability
+- **AND** it SHALL record any approved fallback or coexistence transport
+- **AND** the selection SHALL align with the realtime delivery truth registry
+
+#### Scenario: Competing realtime paths exist
+- **WHEN** multiple realtime transports or overlapping delivery paths can serve the same capability
+- **THEN** the system SHALL declare which path is canonical
+- **AND** non-canonical paths SHALL remain compatibility-scoped or cleanup-scoped until retired
+- **AND** the canonical designation SHALL match the registered realtime delivery truth
+
 ### Requirement: Realtime Latest-Only Coalescing
 The frontend SHALL provide a reusable latest-only coalescing mechanism for selected high-frequency realtime channels.
 
@@ -135,4 +150,3 @@ The frontend SHALL provide a developer-visible runtime inspection surface for ac
 - **WHEN** developer mode is enabled and the inspection surface is viewed
 - **THEN** the frontend SHALL expose fetch recency, cache staleness, realtime connection status, and readiness/request metadata for registered capabilities
 - **AND** it SHALL reuse actual store/service/realtime state rather than duplicating business logic
-
