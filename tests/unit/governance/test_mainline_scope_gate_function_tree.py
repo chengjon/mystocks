@@ -125,6 +125,39 @@ def test_scope_gate_rejects_not_needed_for_mirrored_business_entrypoint_change()
     assert any("cannot use update_status=not-needed" in item for item in violations)
 
 
+def test_scope_gate_requires_function_tree_sync_for_mirrored_business_entrypoint_change() -> None:
+    module = load_scope_gate_module()
+    card = make_card(
+        domain_id="domain-01",
+        node_id="domain-01-node-01",
+        affected_entrypoints=["api"],
+        update_status="required",
+    )
+
+    violations, metrics = module.validate_function_tree_mapping(card, ["web/backend/app/api/market.py"])
+
+    assert any("require docs/FUNCTION_TREE.md synchronization" in item for item in violations)
+    assert metrics["function_tree_shared_sync_hits"] == []
+
+
+def test_scope_gate_accepts_function_tree_sync_for_mirrored_business_entrypoint_change() -> None:
+    module = load_scope_gate_module()
+    card = make_card(
+        domain_id="domain-01",
+        node_id="domain-01-node-01",
+        affected_entrypoints=["api"],
+        update_status="required",
+    )
+
+    violations, metrics = module.validate_function_tree_mapping(
+        card,
+        ["web/backend/app/api/market.py", "docs/FUNCTION_TREE.md"],
+    )
+
+    assert violations == []
+    assert metrics["function_tree_shared_sync_hits"] == ["docs/FUNCTION_TREE.md"]
+
+
 def test_run_git_diff_normalizes_git_quoted_utf8_paths(monkeypatch) -> None:
     module = load_scope_gate_module()
     encoded_name = "".join(f"\\{byte:03o}" for byte in "超长文档拆分办法".encode("utf-8"))

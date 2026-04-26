@@ -205,6 +205,7 @@ def validate_function_tree_mapping(
         "matched_business_domain_ids": [],
         "function_tree_declared_matches": [],
         "function_tree_declared_entrypoint_paths": [],
+        "function_tree_shared_sync_hits": [],
     }
 
     violations: list[str] = []
@@ -259,6 +260,8 @@ def validate_function_tree_mapping(
     ]
     metrics["matched_domain_ids"] = matched_domain_ids
     metrics["matched_business_domain_ids"] = matched_business_domain_ids
+    shared_sync_hits = [path for path in changed_files if is_shared_function_tree_sync_file(path)]
+    metrics["function_tree_shared_sync_hits"] = shared_sync_hits
 
     if len(matched_business_domain_ids) > 1:
         undeclared_domains = [
@@ -278,6 +281,17 @@ def validate_function_tree_mapping(
         if mirrored_entrypoint_hits:
             violations.append(
                 "mirrored business entrypoint changes cannot use update_status=not-needed"
+            )
+
+    if bool(declared_domain.get("mirror_to_function_tree")):
+        mirrored_entrypoint_hits = [
+            path
+            for path in changed_files
+            if not is_shared_function_tree_sync_file(path) and matches_any(path, declared_entrypoint_paths)
+        ]
+        if mirrored_entrypoint_hits and not shared_sync_hits:
+            violations.append(
+                "mirrored business entrypoint changes require docs/FUNCTION_TREE.md synchronization"
             )
 
     return violations, metrics
