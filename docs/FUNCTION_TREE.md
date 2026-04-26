@@ -119,7 +119,7 @@
 
 ## 02-技术分析与指标 {#domain-02}
 
-**模块路径**: `src/indicators/`, `web/frontend/src/views/technical/`
+**模块路径**: `src/indicators/`, `web/frontend/src/views/data/`, `web/frontend/src/views/technical/`
 **API前缀**: `/api/v1/indicators/*`, `/api/v1/technical/*`
 **完成度**: 90%
 
