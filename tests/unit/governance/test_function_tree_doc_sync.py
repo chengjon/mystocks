@@ -13,6 +13,9 @@ FUNCTION_TREE_DOC = PROJECT_ROOT / "docs" / "FUNCTION_TREE.md"
 WORKFLOW_DOC = PROJECT_ROOT / "docs" / "guides" / "governance" / "FEATURE_MANAGEMENT_WORKFLOW.md"
 PR_TEMPLATE = PROJECT_ROOT / ".github" / "pull_request_template.md"
 MAINLINE_README = PROJECT_ROOT / "governance" / "mainline" / "README.md"
+MAINLINE_SUMMARY_DOC = (
+    PROJECT_ROOT / "governance" / "mainline" / "reports" / "mainline-governance-v0.2-task-summary.md"
+)
 TASK_CARD_TEMPLATE = PROJECT_ROOT / "governance" / "mainline" / "templates" / "ai-task-card.yaml"
 
 
@@ -84,6 +87,23 @@ def test_mainline_docs_and_template_preserve_compatibility_note_contract() -> No
     assert "继任入口或兼容保留原因" in readme_text
     assert "compatibility-retained reason" in template_text
     assert "canonical entry changes or compatibility retirement MUST use required" in template_text
+
+
+def test_mainline_docs_describe_function_tree_report_fields_for_reviewers() -> None:
+    readme_text = MAINLINE_README.read_text(encoding="utf-8")
+    summary_text = MAINLINE_SUMMARY_DOC.read_text(encoding="utf-8")
+
+    for field_name in (
+        "function_tree_shared_sync_hits",
+        "function_tree_compatibility_entrypoint_hits",
+        "function_tree_exemption_reason",
+        "function_tree_exemption_reason_required",
+    ):
+        assert field_name in readme_text
+        assert field_name in summary_text
+
+    assert "function_tree compatibility-note" in readme_text
+    assert "function_tree compatibility-note" in summary_text
 
 
 def test_function_tree_doc_relative_links_resolve() -> None:

@@ -68,6 +68,15 @@ python governance/mainline/scripts/mainline_scope_gate.py \
   --report governance/mainline/reports/mainline-governance-report.json
 ```
 
+读取报告时，`function_tree` 相关字段至少要看：
+
+- `function_tree_shared_sync_hits`
+- `function_tree_compatibility_entrypoint_hits`
+- `function_tree_exemption_reason`
+- `function_tree_exemption_reason_required`
+
+若命中 compatibility-style 入口，CLI 会额外打印 `function_tree compatibility-note`，用于 reviewer 快速确认 successor / `compatibility-retained` 说明。
+
 ### 3) PR 自动门禁（Phase A）
 
 PR 创建/更新后，工作流自动执行：
@@ -105,3 +114,4 @@ PR 创建/更新后，工作流自动执行：
 - 改动命中白名单外路径导致 drift 超阈值
 - `secondary_type` 设置为非 `none` 但预算/审批字段不完整
 - `delivery.six_line_summary` 任一字段为空
+- compatibility-style 入口退役未填写 `function_tree.exemption_reason`

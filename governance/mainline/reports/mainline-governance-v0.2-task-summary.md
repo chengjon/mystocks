@@ -50,6 +50,7 @@
     - scope/drift 校验
     - secondary budget 校验
     - phase 阈值校验
+    - `function_tree` compatibility-note 输出与报告字段落盘
 
 ### 2.4 CI 门禁层
 
@@ -81,6 +82,21 @@
 4. 等待 `Mainline Governance Gate` 执行。
 5. 查看报告并处理 violation，直至通过。
 
+### 3.3 reviewer 如何读 function_tree 报告字段
+
+当 PR 触及 `mirror_to_function_tree: true` 的业务入口时，除 `violations` 外，还应关注：
+
+- `function_tree_shared_sync_hits`
+  - 是否真的同步改到了 `docs/FUNCTION_TREE.md`
+- `function_tree_compatibility_entrypoint_hits`
+  - 是否命中了 root-level compatibility / parallel entrypoint
+- `function_tree_exemption_reason_required`
+  - 当前 diff 是否必须写 successor / `compatibility-retained` 说明
+- `function_tree_exemption_reason`
+  - 任务卡里实际写了什么继任入口或兼容保留原因
+
+若命中 compatibility-style 入口，CLI stdout 还会打印 `function_tree compatibility-note`，方便 reviewer 不打开 JSON 也能先看到说明摘要。
+
 ### 3.2 本地手动验证（建议）
 
 ```bash
@@ -103,6 +119,7 @@ python governance/mainline/scripts/mainline_scope_gate.py \
 4. 主线偏移率超阈值：收缩改动到 `scope.allowed_paths` 或调整任务切片。
 5. 副类型超预算 / 审批缺失：压缩 secondary 变更并补齐结构化审批字段。
 6. 空 diff 失败：确认 base/head 选择正确。
+7. compatibility-style 入口退役缺少 successor / `compatibility-retained` 说明：补齐 `function_tree.exemption_reason` 并重跑 gate。
 
 ---
 
