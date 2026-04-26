@@ -39,12 +39,19 @@
 - Baseline note: tasks 3.2-3.4 still describe the approved target architecture, but execution must be remapped from actual current source locations recorded in `web/frontend/MIGRATION_PROGRESS.md` before any `git mv` starts.
   - 2026-04-04 remap result: candidate classification is now recorded in `web/frontend/MIGRATION_PROGRESS.md`.
   - Immediate scope conclusion: no files under `src/views/components/` qualify for direct Phase 2 shared extraction, and most `src/views/composables/` files are legacy root-page bundles that stay view-local.
-  - Remaining live follow-up: only the `TradingDashboard` helper pair (`useTradingDashboard.ts` and `tradingDashboardActions.ts`) remains a conditional extraction candidate, pending task `8.5` trade-domain disposition.
-- [ ] 3.2 Move all files from `src/views/shared/components/*` → `src/shared/components/` (use `git mv`)
-- [ ] 3.3 Move all files from `src/views/shared/composables/*` → `src/shared/composables/` (use `git mv`)
-- [ ] 3.4 Search for all imports of `@/views/shared/...` and update to `@/shared/...`
-- [ ] 3.5 Run `npm run lint && npm run type-check` and fix any errors
-- [ ] 3.6 Commit: "refactor: extract shared assets to src/shared/"
+  - Follow-up result after task `8.5`: the retained `trade-terminal` page keeps the `TradingDashboard` helper pair in place under current approved scope, so no Phase 2 bulk extraction wave remains open.
+- [x] 3.2 Move all files from `src/views/shared/components/*` → `src/shared/components/` (use `git mv`)
+  - Repo-truth closeout: not applicable as written. `src/views/shared/components/` never existed in the repository baseline, and the Phase 2 candidate classification found no `src/views/components/*` files that qualified for direct extraction into `src/shared/components/`.
+- [x] 3.3 Move all files from `src/views/shared/composables/*` → `src/shared/composables/` (use `git mv`)
+  - Repo-truth closeout: not applicable as written. `src/views/shared/composables/` never existed in the repository baseline; most `src/views/composables/*` files remain view-local legacy bundles, and the previously conditional `TradingDashboard` helper pair now stays in place after task `8.5` Option C.
+- [x] 3.4 Search for all imports of `@/views/shared/...` and update to `@/shared/...`
+  - Verified: the Phase 2 baseline inventory found no active `@/views/shared/...` imports in the frontend tree, so no `@/shared/...` rewrite was required in this change.
+- [x] 3.5 Run `npm run lint && npm run type-check` and fix any errors
+  - Repo-truth closeout: later consolidated frontend verification gates cover this no-op shared-inventory batch; see tasks `12.*`, `13.*`, and `19.1`, plus commits `e7201f5b9`, `de2227910`, and `e7fd6436f`.
+- [x] 3.6 Commit: "refactor: extract shared assets to src/shared/"
+  - Repo-truth closeout: the original single-commit extraction expectation was superseded by the baseline inventory and repo-truth refresh chain:
+    - `bf507b390` `docs[frontend-structure]: record shared extraction baseline`
+    - `0f1cec184` `docs[openspec]: refresh progress snapshot to repo truth`
 
 ## 4. Page-by-Page Migration – Market Domain (Phase 3a)
 - 2026-04-04 repo-truth note: tasks `4.1` through `4.6` are already structurally landed in the current repository.
