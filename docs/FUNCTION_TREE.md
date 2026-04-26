@@ -313,7 +313,7 @@ Q2 closure note:
 ## 06-监控与告警 {#domain-06}
 
 **模块路径**: `src/monitoring/`, `web/frontend/src/views/monitoring/`
-**API前缀**: `/api/v1/monitoring/*`, `/api/v1/monitoring/analysis/*`, `/api/v1/monitoring/watchlists/*`, `/api/signals/*`
+**API前缀**: `/api/v1/monitoring/*`, `/api/v1/monitoring/analysis/*`, `/api/v1/monitoring/watchlists/*`, `/api/data-quality/*`, `/api/signals/*`
 **完成度**: 75%
 
 ### 领域入口
@@ -321,19 +321,19 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[运维文档总览](./operations/README.md) | 监控、告警和可观测性治理入口 |
-| API/契约入口 | [监控 API](../web/backend/app/api/monitoring.py)<br>[监控组合分析 API](../web/backend/app/api/monitoring_analysis.py)<br>[监控自选组合 API](../web/backend/app/api/monitoring_watchlists.py)<br>[信号监控 API](../web/backend/app/api/signal_monitoring/)<br>[API 文档总览](./api/README.md) | 监控和告警接口入口 |
-| 前端/交互入口 | [监控页面](../web/frontend/src/views/monitoring/)<br>[监控总览页](../web/frontend/src/views/monitor.vue) | 仪表板、告警和监控交互入口 |
-| 核心代码入口 | [监控模块](../src/monitoring/)<br>[监控核心](../src/core/monitoring.py) | 告警、数据质量和监控实现入口 |
+| API/契约入口 | [监控 API](../web/backend/app/api/monitoring.py)<br>[监控组合分析 API](../web/backend/app/api/monitoring_analysis.py)<br>[监控自选组合 API](../web/backend/app/api/monitoring_watchlists.py)<br>[数据质量 API](../web/backend/app/api/data_quality.py)<br>[信号监控 API](../web/backend/app/api/signal_monitoring/)<br>[API 文档总览](./api/README.md) | 监控和告警接口入口 |
+| 前端/交互入口 | [系统遥测页](../web/frontend/src/views/system/API.vue)<br>[告警中心页](../web/frontend/src/views/risk/Alerts.vue)<br>[监控页面](../web/frontend/src/views/monitoring/)<br>[独立监控页](../web/frontend/src/views/monitor.vue) | 仪表板、告警和监控交互入口 |
+| 核心代码入口 | [监控模块](../src/monitoring/)<br>[数据质量监控器](../src/monitoring/data_quality_monitor.py)<br>[监控核心](../src/core/monitoring.py) | 告警、数据质量和监控实现入口 |
 | 测试与验证入口 | [监控测试目录](../tests/monitoring/)<br>[监控仪表板 E2E](../tests/e2e/monitoring-dashboard.spec.ts)<br>[监控单元测试](../tests/unit/monitoring/test_monitoring_service.py) | 监控与告警验证入口 |
 | 运行与排障入口 | [监控栈 README](../config/monitoring-stack/README.md)<br>[Grafana 设置](./operations/deployment/SETUP_GRAFANA.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 监控部署和排障入口 |
 
 ### 6.1 系统监控 {#domain-06-node-01}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 性能监控 | ✅ | 系统性能指标 |
-| 服务状态 | ✅ | 服务健康检查 |
-| 资源使用 | ✅ | CPU/内存/磁盘 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 性能监控 | ✅ | `web/frontend/src/views/system/Settings.vue`, `web/frontend/src/views/system/API.vue` | 当前主事实是 API 性能表、健康探针与遥测面板 |
+| 服务状态 | ✅ | `web/frontend/src/views/system/API.vue`, `web/frontend/src/views/monitor.vue` | 已有后端健康、中间件状态与前后端/数据库连通性检查 |
+| 资源使用 | 🚧 | `web/frontend/src/views/system/API.vue` | 当前主路由事实仍以服务健康和中间件遥测为主，未见独立 CPU/内存/磁盘资源面板闭环 |
 
 ### 6.2 数据质量 {#domain-06-node-02}
 
@@ -346,19 +346,19 @@ Q2 closure note:
   - repair/backfill remains an explicit gap
 - this node should not be read as proof that repair or backfill workflows are already first-class
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 数据完整性 | ✅ | 数据缺失检测 |
-| 数据一致性 | ✅ | 多源数据校验 |
-| 异常检测 | ✅ | 异常数据告警 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 数据完整性 | ✅ | `src/monitoring/data_quality_monitor.py`, `web/backend/app/api/data_quality.py` | 完整性、新鲜度、准确性检查与运维接口均已存在 |
+| 数据一致性 | ✅ | `src/core/data_quality_validator.py`, `web/frontend/src/views/artdeco-pages/market-data-tabs/DataQualityPanel.vue` | 多源校验由验证器主导；前端仅见市场数据工作台中的嵌入式质量面板 |
+| 异常检测 | ✅ | `src/monitoring/data_quality_monitor.py`, `web/backend/app/api/data_quality.py` | 质量异常可落到告警与确认/解决接口；repair/backfill 仍是显式 gap |
 
 ### 6.3 告警管理 {#domain-06-node-03}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 告警规则 | ✅ | 可配置告警规则 |
-| 告警通知 | ✅ | 多渠道通知 |
-| 告警历史 | ✅ | 告警记录查询 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 告警规则 | ✅ | `web/frontend/src/views/risk/Alerts.vue`, `web/backend/app/api/monitoring.py` | 当前活跃入口是 `/risk/alerts`，可查看规则状态并读取告警规则接口 |
+| 告警通知 | ✅ | `src/monitoring/alert_manager.py`, `config/monitoring/alerting.yaml` | 应用层告警与 Prometheus/Grafana 路由配置均存在 |
+| 告警历史 | ✅ | `web/frontend/src/views/risk/Alerts.vue`, `web/backend/app/api/monitoring.py` | 告警记录、未读状态和历史查询已形成工作台入口 |
 
 ---
 
