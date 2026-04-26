@@ -21,6 +21,8 @@
 ## Function Tree Mapping (Required when functionality, scope, or entrypoints change)
 
 > 若本次改动涉及功能变化、入口变化、跨域影响或行为变更，请完整填写；纯治理/纯格式调整可写 `N/A`。
+> 若本次新增主路由目录 / 主页面、主 API 包路由或 canonical 后端入口，必须将 `function_tree_update_status` 设为 `required`，并同步更新 `docs/FUNCTION_TREE.md`。
+> 若本次退役兼容层、旧页面、旧 API 根入口、shim、re-export 或平行实现，必须在 `function_tree_exemption_reason` 或 PR 说明中写清继任入口 / 兼容保留状态。
 
 - change_type: `<feature|bugfix|docs|refactor>`
 - function_tree_domain_id: `<domain-01|...|domain-10|meta-governance|N/A>`

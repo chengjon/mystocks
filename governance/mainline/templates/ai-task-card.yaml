@@ -31,9 +31,9 @@ function_tree:
   affected_entrypoints:
     - "api"
     - "frontend"
-  update_status: "required" # required | not-needed
+  update_status: "required" # required | not-needed ; canonical entry changes or compatibility retirement MUST use required
   secondary_domains: []
-  exemption_reason: ""
+  exemption_reason: "" # if retiring shim/legacy entry, record successor entrypoint or compatibility-retained reason
 
 scope:
   allowed_paths:
