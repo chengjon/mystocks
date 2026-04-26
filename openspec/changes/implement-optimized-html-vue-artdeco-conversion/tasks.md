@@ -118,21 +118,36 @@
 
 ## Week 5: Quality Assurance & Production Deployment
 
+> **仓库事实校对（2026-04-27）**:
+> 当前仓库已经具备一部分 Week 5 自动化基础，但并未完成全部收口。
+> 已核对的本地证据包括：
+> - 视觉回归基础：`web/frontend/tests/artdeco/artdeco-visual-regression.spec.ts`、`web/frontend/tests/visual/config/visual.config.ts`
+> - 已提交的视觉基线：`web/frontend/tests/visual/baselines/` 与 `web/frontend/tests/visual/pages/*.spec.ts-snapshots/`
+> - API / 页面主线矩阵：`web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts`、`phase2-mainline-matrix.spec.ts`、`phase3-mainline-matrix.spec.ts`
+> - 历史 closeout 证据：`reports/analysis/frontend-mainline-overall-closeout.md`（生成于 `2026-04-06`）
+> - 最新运行态 gate 快照：`reports/analysis/frontend-runtime-gate/20260423-112949/SUMMARY.md`（`Accessibility smoke: 4 passed`，`Regression E2E: passed=44 failed=0 skipped=0`）
+> - WebSocket mock 测试基础：`web/frontend/tests/artdeco/websocket-realtime-mock.spec.ts`
+> - 当前 visual JSON 结果文件 `web/frontend/tests/visual/config/test-results/visual/test-results.json` 记录了一次 `2026-04-23` 的权限失败，因此不能把那次 visual run 当作成功 closeout 证据。
+
 ### 5.1 Visual Regression Testing
-- [ ] 5.1.1 Set up automated visual regression testing suite
+- [x] 5.1.1 Set up automated visual regression testing suite
 - [ ] 5.1.2 Capture baseline screenshots of all converted pages
 - [ ] 5.1.3 Validate Art Deco design compliance across all pages
-- [ ] 5.1.4 Test responsive design at multiple breakpoints
+- [x] 5.1.4 Test responsive design at multiple breakpoints
 - [ ] 5.1.5 Verify animation performance (60fps requirement)
 
 ### 5.2 Functional Integration Testing
 - [ ] 5.2.1 Test Vue reactivity preservation in all converted pages
-- [ ] 5.2.2 Validate API integration and data flow
+- [x] 5.2.2 Validate API integration and data flow
 - [ ] 5.2.3 Perform cross-browser compatibility testing
-- [ ] 5.2.4 Execute accessibility compliance validation
+- [x] 5.2.4 Execute accessibility compliance validation
 - [ ] 5.2.5 Test WebSocket real-time data updates
 
 ### 5.3 Performance Optimization & Validation
+> **局部事实说明**:
+> 路由级异步加载与性能工具链已经存在，例如 `web/frontend/src/router/index.ts` 的动态导入、`web/frontend/src/utils/lazy-loading.ts`、`web/frontend/vite.config.mts` 中的 `visualizer` / `manualChunks` 配置。
+> 但这些基础设施尚未在本 change 范围内形成“所有目标页面都完成了最终性能收口”的当前证据，因此本节默认继续保留未完成。
+
 - [ ] 5.3.1 Optimize Art Deco CSS for production builds
 - [ ] 5.3.2 Implement lazy loading for heavy components
 - [ ] 5.3.3 Validate bundle size and loading performance
@@ -140,6 +155,9 @@
 - [ ] 5.3.5 Final performance benchmarking (target: <3s load time)
 
 ### 5.4 User Acceptance Testing & Deployment
+> **外部门禁说明**:
+> 本节主要依赖 staging/UAT/部署流程与利益相关方反馈，不应在本地仓库里机械勾选。
+
 - [ ] 5.4.1 Prepare staging environment for UAT
 - [ ] 5.4.2 Conduct user interface walkthrough sessions
 - [ ] 5.4.3 Gather stakeholder feedback on visual improvements
@@ -148,6 +166,15 @@
 - [ ] 5.4.6 Set up post-deployment visual regression monitoring
 
 ## Art Deco Compliance Quality Gates
+
+> **当前 repo-truth 边界（2026-04-27）**:
+> 这些质量门大多仍是“目标态门槛”，不是当前仓库事实的自动摘要。
+> 当前前端已经演进为 canonical page + compatibility wrapper 并存的结构，见 `docs/guides/frontend-structure.md`。
+> 因此以下 gate 不能仅凭存在 ArtDeco 包装页就视为完成；例如：
+> - `web/frontend/src/views/system/Settings.vue` 仍直接使用 `ElMessage`
+> - `web/frontend/src/views/TradingDashboard.vue` 仍保留大量 `el-*` 组件
+> - `web/frontend/src/views/artdeco-pages/ArtDecoTechnicalAnalysis.vue` 仍导入 `ElMessage`
+> 这说明“100% 替换 Element Plus”为 proposal 目标，但不是当前 repo-truth。
 
 ### Design System Compliance
 - [ ] All pages use ArtDecoHeader with appropriate variants
