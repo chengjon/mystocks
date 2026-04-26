@@ -187,3 +187,15 @@ The project SHALL require closeout evidence before removing legacy frontend data
 - **THEN** closeout evidence SHALL identify the verified replacement path and its verification artifacts
 - **AND** it SHALL distinguish active canonical paths from compatibility-retained or cleanup-ready paths
 
+### Requirement: Closure Wave Evidence Contract
+The project SHALL require explicit evidence artifacts before a Q2 closure wave is marked complete.
+
+#### Scenario: Closure wave claims completion
+- **WHEN** a cross-cutting architecture, safety, or governance wave is marked complete
+- **THEN** the completion record SHALL identify the verified truth source, affected scope, executed validations, and unresolved follow-up items
+- **AND** it SHALL distinguish delivered closure from deferred backlog items
+
+#### Scenario: Closure evidence is reviewed
+- **WHEN** reviewers inspect a closure wave
+- **THEN** they SHALL be able to identify what was verified in code, what was verified in docs, and what remains assumption or follow-up
+- **AND** the evidence SHALL be sufficient to reject narrative-only completion claims
