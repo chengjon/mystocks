@@ -51,38 +51,76 @@
   - Current router truth and generated `pageConfig.ts` already resolve the target domain pages under `src/views/market/` and `src/views/data/`.
   - The listed ArtDeco market/data source files now act as thin compatibility wrappers that forward into those routed target pages.
   - Remaining work in this area is compatibility-wrapper retirement and shared-layer normalization, not repeating the original literal `git mv`.
-- [ ] 4.1 Move `artdeco-pages/market-tabs/MarketRealtimeTab.vue` → `views/market/Realtime.vue`
-  - [ ] 4.1.0 **Identify all relative imports** (composables, styles, components) in the source file
-  - [ ] 4.1.1 Move dependency: `useMarketData.ts` → `src/shared/composables/`
-  - [ ] 4.1.2 Move dependency: `market.scss` → `src/shared/styles/`
-  - [ ] 4.1.3 Update all imports in the moved file to use `@/shared/...` absolute paths
-  - [ ] 4.1.4 Run `npm run lint && npm run type-check`
-- [ ] 4.2 Move `artdeco-pages/market-tabs/MarketKLineTab.vue` → `views/market/Technical.vue`
-  - [ ] 4.2.0 **Identify all relative imports**
-  - [ ] 4.2.1 Move dependency: `useKlineAnalysis.ts` → `src/shared/composables/`
-  - [ ] 4.2.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 4.2.3 Run lint & type-check
-- [ ] 4.3 Move `artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` → `views/market/LHB.vue`
-  - [ ] 4.3.0 **Identify all relative imports**
-  - [ ] 4.3.1 Move dependencies to `src/shared/`
-  - [ ] 4.3.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 4.3.3 Run lint & type-check
-- [ ] 4.4 Move `artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` → `views/data/Industry.vue`
-  - [ ] 4.4.0 **Identify all relative imports**
-  - [ ] 4.4.1 Move dependency: `useIndustry.ts` to `src/shared/composables/`
-  - [ ] 4.4.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 4.4.3 Run lint & type-check
-- [ ] 4.5 Move `artdeco-pages/market-tabs/MarketConceptTab.vue` → `views/data/Concepts.vue`
-  - [ ] 4.5.0 **Identify all relative imports**
-  - [ ] 4.5.1 Move dependency: `useConcepts.ts` to `src/shared/composables/`
-  - [ ] 4.5.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 4.5.3 Run lint & type-check
-- [ ] 4.6 Move `artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` → `views/data/FundFlow.vue`
-  - [ ] 4.6.0 **Identify all relative imports**
-  - [ ] 4.6.1 Move dependency: `useFundFlow.ts` to `src/shared/composables/`
-  - [ ] 4.6.2 Update imports to use `@/shared/...` absolute paths
-  - [ ] 4.6.3 Run lint & type-check
-- [ ] 4.7 Commit: "refactor: migrate market domain pages"
+- [x] 4.1 Move `artdeco-pages/market-tabs/MarketRealtimeTab.vue` → `views/market/Realtime.vue`
+  - Repo-truth closeout: `/market/realtime` now resolves `@/views/market/Realtime.vue` in router truth and `Realtime.vue` in generated `pageConfig.ts`; the legacy ArtDeco source has been reduced to a thin compatibility wrapper.
+  - [x] 4.1.0 **Identify all relative imports** (composables, styles, components) in the source file
+    - Repo-truth note: the canonical target page now owns the active implementation and no longer depends on the original ArtDeco relative import bundle.
+  - [x] 4.1.1 Move dependency: `useMarketData.ts` → `src/shared/composables/`
+    - Repo-truth note: not applicable as written. The current shared helper already exists at `src/composables/market/useMarketData.ts`; no page-local extraction or `git mv` was required in this batch.
+  - [x] 4.1.2 Move dependency: `market.scss` → `src/shared/styles/`
+    - Repo-truth note: not applicable as written. No page-local `market.scss` source exists in the approved migration source path.
+  - [x] 4.1.3 Update all imports in the moved file to use `@/shared/...` absolute paths
+    - Repo-truth note: the canonical target page now imports stable absolute modules from `@/composables`, `@/api`, and local route-owned helpers.
+  - [x] 4.1.4 Run `npm run lint && npm run type-check`
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 4.2 Move `artdeco-pages/market-tabs/MarketKLineTab.vue` → `views/market/Technical.vue`
+  - Repo-truth closeout: `/market/technical` now resolves `@/views/market/Technical.vue` in router truth and `Technical.vue` in generated `pageConfig.ts`; the legacy ArtDeco source has been reduced to a thin compatibility wrapper.
+  - [x] 4.2.0 **Identify all relative imports**
+    - Repo-truth note: the canonical target page now owns the active implementation with stable imports to `@/components/market/ProKLineChart.vue` and local `marketKlineData.ts`.
+  - [x] 4.2.1 Move dependency: `useKlineAnalysis.ts` → `src/shared/composables/`
+    - Repo-truth note: not applicable as written. No `useKlineAnalysis.ts` source exists in the current repo truth for this migration target.
+  - [x] 4.2.2 Update imports to use `@/shared/...` absolute paths
+    - Repo-truth note: the active target page already resolves shared dependencies through stable absolute imports where applicable.
+  - [x] 4.2.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 4.3 Move `artdeco-pages/market-data-tabs/DragonTigerAnalysis.vue` → `views/market/LHB.vue`
+  - Repo-truth closeout: `/market/lhb` now resolves `@/views/market/LHB.vue` in router truth and `LHB.vue` in generated `pageConfig.ts`; the legacy ArtDeco source has been reduced to a thin compatibility wrapper.
+  - [x] 4.3.0 **Identify all relative imports**
+    - Repo-truth note: the canonical target page now owns the active implementation and route-owned helper chain through local `dragonTigerData.ts`.
+  - [x] 4.3.1 Move dependencies to `src/shared/`
+    - Repo-truth note: not applicable as written. The current active helper set remains route-owned and no shared extraction requirement was proven in this batch.
+  - [x] 4.3.2 Update imports to use `@/shared/...` absolute paths
+    - Repo-truth note: the active target page already uses stable absolute imports for shared dependencies and keeps route-local logic local.
+  - [x] 4.3.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 4.4 Move `artdeco-pages/market-data-tabs/ArtDecoIndustryAnalysis.vue` → `views/data/Industry.vue`
+  - Repo-truth closeout: `/data/industry` now resolves `@/views/data/Industry.vue` in router truth and `Industry.vue` in generated `pageConfig.ts`; the legacy ArtDeco source has been reduced to a thin compatibility wrapper.
+  - [x] 4.4.0 **Identify all relative imports**
+    - Repo-truth note: the canonical target page now owns the active implementation and composes its own API/data flow directly.
+  - [x] 4.4.1 Move dependency: `useIndustry.ts` to `src/shared/composables/`
+    - Repo-truth note: not applicable as written. No `useIndustry.ts` source exists in the current repo truth for this migration target.
+  - [x] 4.4.2 Update imports to use `@/shared/...` absolute paths
+    - Repo-truth note: the active target page already uses stable absolute imports for shared UI primitives and route-local implementation helpers.
+  - [x] 4.4.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 4.5 Move `artdeco-pages/market-tabs/MarketConceptTab.vue` → `views/data/Concepts.vue`
+  - Repo-truth closeout: `/data/concept` now resolves `@/views/data/Concepts.vue` in router truth and `Concepts.vue` in generated `pageConfig.ts`; the legacy ArtDeco source has been reduced to a thin compatibility wrapper.
+  - [x] 4.5.0 **Identify all relative imports**
+    - Repo-truth note: the canonical target page now owns the active implementation and no longer depends on the original ArtDeco relative import bundle.
+  - [x] 4.5.1 Move dependency: `useConcepts.ts` to `src/shared/composables/`
+    - Repo-truth note: not applicable as written. No `useConcepts.ts` source exists in the current repo truth for this migration target.
+  - [x] 4.5.2 Update imports to use `@/shared/...` absolute paths
+    - Repo-truth note: the active target page already uses stable absolute imports where shared dependencies exist.
+  - [x] 4.5.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 4.6 Move `artdeco-pages/market-data-tabs/FundFlowAnalysis.vue` → `views/data/FundFlow.vue`
+  - Repo-truth closeout: `/data/fund-flow` now resolves `@/views/data/FundFlow.vue` in router truth and `FundFlow.vue` in generated `pageConfig.ts`; the legacy ArtDeco source has been reduced to a thin compatibility wrapper.
+  - [x] 4.6.0 **Identify all relative imports**
+    - Repo-truth note: the canonical target page now owns the active implementation and its routed helper chain directly.
+  - [x] 4.6.1 Move dependency: `useFundFlow.ts` to `src/shared/composables/`
+    - Repo-truth note: not applicable as written. No `useFundFlow.ts` source exists in the current repo truth for this migration target.
+  - [x] 4.6.2 Update imports to use `@/shared/...` absolute paths
+    - Repo-truth note: the active target page already uses stable absolute imports where shared dependencies exist.
+  - [x] 4.6.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 4.7 Commit: "refactor: migrate market domain pages"
+  - Repo-truth closeout: the original single-commit expectation was superseded by verified micro-batches and stabilization passes:
+    - `5137ab0e1` `refactor(frontend): remap market pilot routes to domain views`
+    - `b4053a357` `refactor(frontend): remap data routes to domain views`
+    - `9085c4c7a` `refactor(frontend): migrate market and data page bodies`
+    - `6caa83a43` `refactor(frontend): migrate fund flow page body`
+    - `884436d14` `fix(frontend): close realtime lighthouse accessibility gap`
+    - `bc8fb7fc2` `fix(frontend): audit and stabilize market realtime technical and lhb pages`
 
 ## 5. Page-by-Page Migration – Data Domain (Phase 3b)
 - 2026-04-04 repo-truth note: `5.1 Data-Indicator` has now completed its implementation inversion.
@@ -91,9 +129,14 @@
 - [x] 5.1 Move `artdeco-pages/ArtDecoDataAnalysis.vue` → `views/data/Advanced.vue`
   - [x] 5.1.1 Remap dependency truth: the current repo uses `@/composables/market/useDataAnalysis`; no `useAdvancedData.ts` file exists to move in this batch.
   - [x] 5.1.2 Update imports
-  - [ ] 5.1.3 Run lint & type-check
-  - [ ] 5.1.4 Run unit tests for Advanced.vue
-- [ ] 5.2 Commit: "refactor: migrate data domain pages"
+  - [x] 5.1.3 Run lint & type-check
+    - Verified: `cd web/frontend && npm run lint` and `cd web/frontend && npm run type-check` passed on 2026-04-26.
+  - [x] 5.1.4 Run unit tests for Advanced.vue
+    - Verified: `cd web/frontend && npm run test -- tests/unit/views/data-advanced-cutover.spec.ts` passed on 2026-04-26.
+- [x] 5.2 Commit: "refactor: migrate data domain pages"
+  - Repo-truth closeout: the original single-commit expectation was superseded by the verified target-page cutover and related route remap chain:
+    - `b4053a357` `refactor(frontend): remap data routes to domain views`
+    - `f0edbc636` `refactor[frontend-structure]: cut over data indicator target page`
 
 ## 6. Page-by-Page Migration – Watchlist Domain (Phase 3c)
 - 2026-04-04 repo-truth note: the watchlist target pages did not exist in the repository baseline, so this batch lands the missing target entrypoints and retargets router/pageConfig to them.
