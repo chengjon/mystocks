@@ -373,34 +373,34 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[OpenSpec 工作流](../openspec/AGENTS.md) | AI、实验功能和架构治理入口 |
-| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[算法 API](../web/backend/app/api/algorithms.py)<br>[机器学习 API](../web/backend/app/api/ml.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py) | AI、分析和推理接口入口 |
-| 前端/交互入口 | [GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略优化页](../web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue)<br>[策略管理页](../web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue) | AI 和高级分析交互入口 |
-| 核心代码入口 | [高级分析模块](../src/advanced_analysis/)<br>[机器学习策略模块](../src/ml_strategy/)<br>[GPU API 服务](../src/gpu/api_system/services/) | 分析、训练和 GPU 加速实现入口 |
+| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[机器学习 API](../web/backend/app/api/ml.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py)<br>[情感分析 API](../web/backend/app/api/v1/analysis/sentiment.py)<br>[算法兼容入口](../web/backend/app/api/algorithms.py) | AI、分析和推理接口入口 |
+| 前端/交互入口 | [策略仓库页](../web/frontend/src/views/strategy/List.vue)<br>[策略参数页](../web/frontend/src/views/strategy/Parameters.vue)<br>[策略回测页](../web/frontend/src/views/strategy/Backtest.vue)<br>[策略优化页](../web/frontend/src/views/strategy/Optimization.vue)<br>[GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略信号页](../web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue) | 当前主路由中的策略、回测、优化和 GPU 交互入口 |
+| 核心代码入口 | [高级分析模块](../src/advanced_analysis/)<br>[机器学习策略模块](../src/ml_strategy/)<br>[情感分析模块](../src/advanced_analysis/sentiment_analyzer/)<br>[GPU API 服务](../src/gpu/api_system/services/) | 分析、训练和 GPU 加速实现入口 |
 | 测试与验证入口 | [机器学习 API 测试](../tests/api/test_ml_file.py)<br>[高级回测测试](../tests/unit/test_advanced_backtest_engine.py)<br>[GPU 测试 README](../src/gpu/api_system/tests/README.md) | AI 和分析功能验证入口 |
 | 运行与排障入口 | [自动化说明](../src/ml_strategy/automation/README.md)<br>[GPU API README](../src/gpu/api_system/README.md)<br>[WSL2 GPU 设置](../src/gpu/api_system/WSL2_GPU_SETUP.md) | 训练、调度和 GPU 排障入口 |
 
 ### 7.1 机器学习策略 {#domain-07-node-01}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 特征工程 | ✅ | 技术特征提取 |
-| 模型训练 | 🚧 | 模型训练框架 |
-| 预测推理 | 🚧 | 实时预测 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 特征工程 | ✅ | `src/ml_strategy/feature_engineering.py`, `web/backend/app/api/ml.py` | 特征生成与样本构造接口已存在 |
+| 模型训练 | 🚧 | `web/backend/app/api/ml.py`, `src/ml_strategy/strategy/ml_strategy_base.py` | 训练接口与 ML 策略框架存在，但运行时依赖可选 `MLPredictionService` |
+| 预测推理 | 🚧 | `web/backend/app/api/ml.py`, `src/ml_strategy/price_predictor.py` | 预测入口存在；当前仍应按可选依赖和运行环境保守解读 |
 
 ### 7.2 批量分析 {#domain-07-node-02}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 批量回测 | ✅ | 多策略批量回测 |
-| 批量选股 | ✅ | 条件选股 |
-| 批量监控 | ✅ | 多股票监控 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 批量回测 | ✅ | `web/frontend/src/views/strategy/Backtest.vue`, `src/ml_strategy/backtest/backtest_engine.py` | 当前活跃回测工作台与统一回测引擎均存在 |
+| 批量选股 | ✅ | `src/ml_strategy/strategy/stock_screener.py` | 批量筛选引擎存在；当前主路由入口更多落在自选/筛选域，不宜误读为 AI 域独立工作台 |
+| 批量监控 | ✅ | `src/ml_strategy/automation/scheduler.py`, `src/ml_strategy/strategy/strategy_executor.py` | 调度与批执行框架存在；当前以前后台任务与执行器为主 |
 
 ### 7.3 情感分析 {#domain-07-node-03}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 新闻情感 | 🚧 | 新闻情感分析 |
-| 舆情监控 | 📝 | 计划中 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 新闻情感 | 🚧 | `web/backend/app/api/v1/analysis/sentiment.py`, `src/advanced_analysis/sentiment_analyzer/` | 后端 API 与分析模块存在，但当前主路由树未见 AI 域独立情感分析入口 |
+| 舆情监控 | 📝 | `web/frontend/src/views/risk/News.vue`, `web/backend/app/api/v1/analysis/sentiment.py` | 当前活跃舆情工作台主要归属 `06-风险管理`，不应直接算作 `07` 域的独立前台闭环 |
 
 ---
 
