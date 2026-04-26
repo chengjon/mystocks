@@ -493,8 +493,8 @@ Q2 closure note:
 
 ## 10-公告与信息 {#domain-10}
 
-**模块路径**: `web/backend/app/api/announcement.py`, `web/frontend/src/views/announcement/`
-**API前缀**: `/api/v1/announcement/*`, `/api/announcement/*`
+**模块路径**: `web/backend/app/api/announcement/`, `web/frontend/src/views/risk/`, `web/frontend/src/views/announcement/`
+**API前缀**: `/api/announcement/*`, `/api/v1/announcement/*`
 **完成度**: 80%
 
 ### 领域入口
@@ -502,27 +502,27 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 公告功能和信息路由治理入口 |
-| API/契约入口 | [公告 API](../web/backend/app/api/announcement.py)<br>[公告路由](../web/backend/app/api/announcement/routes.py)<br>[API 文档总览](./api/README.md) | 公告和后端路由接口入口 |
-| 前端/交互入口 | [公告监控页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue)<br>[风险公告页](../web/frontend/src/views/risk/News.vue)<br>[ArtDeco 公告组件](../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue) | 公告监控与交互入口 |
+| API/契约入口 | [公告包路由](../web/backend/app/api/announcement/routes.py)<br>[公告包导出](../web/backend/app/api/announcement/__init__.py)<br>[旧版平行实现](../web/backend/app/api/announcement.py)<br>[API 文档总览](./api/README.md) | 当前真实导出的公告 router 在包路由中；根级 `announcement.py` 更接近历史平行实现 |
+| 前端/交互入口 | [风险公告页](../web/frontend/src/views/risk/News.vue)<br>[公告详情页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue)<br>[ArtDeco 公告组件](../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue) | `risk/News.vue` 是当前主业务路由入口，`AnnouncementMonitor.vue` 主要承载详情页与规则型工作台 |
 | 核心代码入口 | [公告服务](../web/backend/app/services/announcement_service.py)<br>[公告模型](../web/backend/app/models/announcement.py) | 公告处理实现入口 |
 | 测试与验证入口 | [公告 API 测试](../tests/api/file_tests/test_announcement_api.py)<br>[后端公告 API 自测](../web/backend/app/api/test_announcement_api.py) | 公告功能验证入口 |
 | 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 公告链路验证和排障入口 |
 
 ### 10.1 公告管理 {#domain-10-node-01}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 公告抓取 | ✅ | 自动抓取公告 |
-| 公告分类 | ✅ | 按类型分类 |
-| 公告搜索 | ✅ | 关键词搜索 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 公告抓取 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/services/announcement_service.py` | 包路由已暴露 `fetch/list/today/important` 等能力，服务层负责抓取并写入公告表 |
+| 公告分类 | ✅ | `web/backend/app/models/announcement.py`, `web/backend/app/services/announcement_service.py`, `web/frontend/src/views/risk/News.vue` | 模型层已包含公告类型、重要性、情绪字段，前端风险页可直接按类型和重要性展示 |
+| 公告搜索 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/frontend/src/views/announcement/AnnouncementMonitor.vue`, `web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts` | 详情页工作台已支持股票、类型、重要性和日期范围筛选 |
 
 ### 10.2 公告监控 {#domain-10-node-02}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 实时监控 | ✅ | 新公告提醒 |
-| 重大事件 | ✅ | 重大事件标记 |
-| 订阅管理 | ✅ | 股票订阅 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 实时监控 | ✅ | `web/frontend/src/views/risk/News.vue`, `web/frontend/src/api/index.ts`, `web/backend/app/api/announcement/routes.py` | 当前主监控入口是风险域公告工作台，通过 `/api/announcement/list` 获取并刷新公告列表 |
+| 重大事件 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/services/announcement_service.py`, `web/frontend/src/views/risk/News.vue` | 重要性等级与情绪判断已进入后端服务和前端风险视图，形成“重要公告”审阅链路 |
+| 订阅管理 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/models/announcement.py`, `web/frontend/src/views/announcement/AnnouncementMonitor.vue` | 监控规则、触发记录和规则评估已存在；当前更偏规则工作台而非独立导航菜单 |
 
 ---
 
