@@ -12,6 +12,8 @@ CATALOG_PATH = PROJECT_ROOT / "governance" / "function-tree" / "catalog.yaml"
 FUNCTION_TREE_DOC = PROJECT_ROOT / "docs" / "FUNCTION_TREE.md"
 WORKFLOW_DOC = PROJECT_ROOT / "docs" / "guides" / "governance" / "FEATURE_MANAGEMENT_WORKFLOW.md"
 PR_TEMPLATE = PROJECT_ROOT / ".github" / "pull_request_template.md"
+MAINLINE_README = PROJECT_ROOT / "governance" / "mainline" / "README.md"
+TASK_CARD_TEMPLATE = PROJECT_ROOT / "governance" / "mainline" / "templates" / "ai-task-card.yaml"
 
 
 def load_catalog() -> dict:
@@ -72,6 +74,16 @@ def test_pr_template_mirrors_task_card_function_tree_fields() -> None:
     assert "function_tree_domain_id" in template
     assert "function_tree_node_id" in template
     assert "task card 是唯一机器事实源" in template
+    assert "继任入口 / 兼容保留状态" in template
+
+
+def test_mainline_docs_and_template_preserve_compatibility_note_contract() -> None:
+    readme_text = MAINLINE_README.read_text(encoding="utf-8")
+    template_text = TASK_CARD_TEMPLATE.read_text(encoding="utf-8")
+
+    assert "继任入口或兼容保留原因" in readme_text
+    assert "compatibility-retained reason" in template_text
+    assert "canonical entry changes or compatibility retirement MUST use required" in template_text
 
 
 def test_function_tree_doc_relative_links_resolve() -> None:
@@ -109,20 +121,26 @@ def test_function_tree_domains_expose_metadata_before_entry_table() -> None:
     doc_text = FUNCTION_TREE_DOC.read_text(encoding="utf-8")
     domain_sections = re.split(r"^##\s+(\d{2}-[^\n]+\{#domain-\d{2}\})\s*$", doc_text, flags=re.M)
 
-    expected_prefix_lines = [
+    expected_metadata_prefixes = [
         "**模块路径**:",
         "**API前缀**:",
         "**完成度**:",
-        "### 领域入口",
     ]
 
     for index in range(1, len(domain_sections), 2):
         heading = domain_sections[index]
         body = domain_sections[index + 1]
         meaningful_lines = [line.strip() for line in body.splitlines() if line.strip()]
-        assert len(meaningful_lines) >= 4, heading
-        for line, expected_prefix in zip(meaningful_lines[:4], expected_prefix_lines):
-            assert line.startswith(expected_prefix), heading
+        start = next((idx for idx, line in enumerate(meaningful_lines) if line == "### 领域入口"), None)
+        assert start is not None, heading
+        metadata_block = meaningful_lines[:start]
+
+        found_prefixes = {
+            prefix
+            for prefix in expected_metadata_prefixes
+            if any(line.startswith(prefix) for line in metadata_block)
+        }
+        assert found_prefixes == set(expected_metadata_prefixes), heading
 
 
 def test_function_tree_entrypoint_purpose_column_uses_canonical_suffixes() -> None:

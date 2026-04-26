@@ -571,6 +571,7 @@ domains:
             - "docs/FUNCTION_TREE.md"
           api:
             - "web/backend/app/api/data/market.py"
+            - "web/backend/app/api/v1/system/routing.py"
           frontend:
             - "web/frontend/src/views/system/DatabaseMonitor.vue"
             - "web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue"
@@ -595,6 +596,12 @@ domains:
             - "docs/FUNCTION_TREE.md"
           api:
             - "web/backend/app/api/data/market.py"
+            - "web/backend/app/api/data_source_registry.py"
+            - "web/backend/app/api/data_source_config.py"
+            - "web/backend/app/api/data_lineage.py"
+          frontend:
+            - "web/frontend/src/views/system/DataSource.vue"
+            - "web/frontend/src/views/system/**"
           core:
             - "src/data_access/**"
             - "src/core/unified_manager.py"
@@ -613,6 +620,8 @@ domains:
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
+          api:
+            - "web/backend/app/api/cache.py"
           core:
             - "src/core/**"
           tests:
