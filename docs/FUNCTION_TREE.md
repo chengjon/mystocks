@@ -27,6 +27,14 @@
 - 开发后：若实现改变了能力边界、入口路径、状态或新增了用户可感知能力，必须回写本文件。
 - 文档核对时：把本文件视为“开发方向与边界总览”，再用代码、路由、契约和验证结果确认细节真相。
 
+## 通用入口
+
+- 共享治理入口默认参考 [架构红线与审批门禁](../architecture/STANDARDS.md)。
+- 全局文档导航默认参考 [Docs 首页](./INDEX.md)。
+- API 总览默认参考 [API 文档总览](./api/README.md)。
+- 测试总览默认参考 [测试文档总览](./testing/README.md)。
+- 运行与排障默认参考 [运维手册](./operations/OPS_MANUAL.md)。
+
 ## 快速导航
 
 | 领域 | 状态 | 完成度 |
@@ -41,10 +49,6 @@
 | [08-系统管理与配置](#domain-08) | ✅ 完成 | 85% |
 | [09-数据存储与管理](#domain-09) | ✅ 完成 | 90% |
 | [10-公告与信息](#domain-10) | ✅ 完成 | 80% |
-
-> 使用方式：先读 [AI Quick Start](./guides/ai-tools/AI_QUICK_START.md) 或 [Docs 首页](./INDEX.md) 按任务类型定位入口，再进入本页对应功能域，最后下钻该领域的“领域入口”表；若本次任务涉及新增功能、入口迁移或能力边界调整，提交前必须同步更新本页。
-
----
 
 ## 功能状态图例
 
@@ -73,7 +77,7 @@
 
 ## 01-市场数据与行情 {#domain-01}
 
-**模块路径**: `src/adapters/`, `web/frontend/src/views/market/`
+**模块路径**: `src/adapters/`, `web/backend/app/api/market/`, `web/backend/app/api/akshare_market/`, `web/frontend/src/views/market/`, `web/frontend/src/views/data/`
 **API前缀**: `/api/v1/market/*`, `/api/v2/market/*`, `/api/v1/tdx/*`, `/api/akshare/market/*`
 **完成度**: 95%
 
@@ -81,19 +85,19 @@
 
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
-| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 市场数据任务路由和治理入口 |
-| API/契约入口 | [市场 API](../web/backend/app/api/market.py)<br>[市场 V2 API](../web/backend/app/api/market_v2.py)<br>[AKShare Market API](../web/backend/app/api/akshare_market/)<br>[API 文档总览](./api/README.md) | 市场 API 与契约接口入口 |
-| 前端/交互入口 | [市场实时页](../web/frontend/src/views/market/Realtime.vue)<br>[市场 K 线页](../web/frontend/src/views/market/Technical.vue)<br>[传统行情页目录](../web/frontend/src/views/market/)<br>[ArtDeco 市场页](../web/frontend/src/views/artdeco-pages/market-data-tabs/) | 页面、Tab 和交互入口 |
+| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md) | 市场数据任务路由和治理入口 |
+| API/契约入口 | [市场包路由](../web/backend/app/api/market/__init__.py)<br>[市场请求路由](../web/backend/app/api/market/market_data_request.py)<br>[市场 V2 API](../web/backend/app/api/market_v2.py)<br>[AKShare Market API](../web/backend/app/api/akshare_market/)<br>[市场兼容入口](../web/backend/app/api/market.py) | 当前主市场路由以拆分包和 V2 接口为主；根级 `market.py` 更接近兼容入口 |
+| 前端/交互入口 | [市场实时页](../web/frontend/src/views/market/Realtime.vue)<br>[市场 K 线页](../web/frontend/src/views/market/Technical.vue)<br>[资金流向页](../web/frontend/src/views/data/FundFlow.vue)<br>[ArtDeco 市场页](../web/frontend/src/views/artdeco-pages/market-data-tabs/) | 当前主路由中的市场实时、K 线和资金流入口；ArtDeco tabs 更偏嵌入式展示层 |
 | 核心代码入口 | [数据适配器](../src/adapters/)<br>[市场数据应用层](../src/application/market_data/) | 行情接入和处理实现入口 |
 | 测试与验证入口 | [市场 API 测试](../tests/api/file_tests/test_market_api.py)<br>[E2E 市场数据](../tests/e2e/market-data.spec.ts)<br>[前端 E2E 行情](../web/frontend/tests/e2e/market-data.spec.ts) | API、自测和页面验证入口 |
-| 运行与排障入口 | [测试指南](./testing/E2E_TEST_GUIDE.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 运行链路和排障入口 |
+| 运行与排障入口 | [测试指南](./testing/E2E_TEST_GUIDE.md) | 运行链路和排障入口 |
 
 ### 1.1 实时行情监控 {#domain-01-node-01}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | TDX实时行情 | ✅ | `src/adapters/tdx/realtime_service.py` | 通达信实时行情接入 |
-| 股票报价推送 | ✅ | `web/backend/app/api/market.py` | WebSocket实时推送 |
+| 股票报价推送 | ✅ | `web/backend/app/api/market/market_data_request.py` | 行情查询与报价接口当前以市场包路由为主 |
 | 自选股行情 | ✅ | `web/frontend/src/views/market/Realtime.vue` | 自选股与实时行情主路由页 |
 | 板块行情 | ✅ | `src/adapters/akshare/market_adapter/board_sector.py` | 板块涨跌统计 |
 
@@ -102,7 +106,7 @@
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | 主力资金 | ✅ | `src/adapters/akshare/market_adapter/` | 主力资金监控 |
-| 板块资金 | ✅ | `web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlow.vue` | 板块资金流向 |
+| 板块资金 | ✅ | `web/frontend/src/views/data/FundFlow.vue`, `web/frontend/src/views/artdeco-pages/market-data-tabs/FundFlow.vue` | 当前主路由入口已落在 `data/FundFlow.vue`，ArtDeco 版本更多用于嵌入式展示 |
 | 个股资金 | ✅ | `src/adapters/efinance_adapter/` | 个股资金明细 |
 
 ### 1.3 多数据源集成 {#domain-01-node-03}
@@ -129,7 +133,7 @@
 
 ## 02-技术分析与指标 {#domain-02}
 
-**模块路径**: `src/indicators/`, `web/frontend/src/views/data/`, `web/frontend/src/views/technical/`
+**模块路径**: `src/indicators/`, `web/backend/app/api/indicators/`, `web/backend/app/api/technical/`, `web/frontend/src/views/data/`, `web/frontend/src/views/technical/`
 **API前缀**: `/api/v1/indicators/*`, `/api/v1/technical/*`
 **完成度**: 90%
 
@@ -137,12 +141,12 @@
 
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
-| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 技术分析任务路由和治理入口 |
-| API/契约入口 | [指标 API](../web/backend/app/api/indicators.py)<br>[技术分析目录](../web/backend/app/api/technical/)<br>[技术分析兼容入口](../web/backend/app/api/technical_analysis.py)<br>[API 文档总览](./api/README.md) | 技术分析接口入口 |
-| 前端/交互入口 | [指标分析主路由页](../web/frontend/src/views/data/Advanced.vue)<br>[技术分析旧页](../web/frontend/src/views/technical/TechnicalAnalysis.vue)<br>[技术扫描 Tab](../web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue) | 技术分析页面和扫描交互入口 |
+| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md) | 技术分析任务路由和治理入口 |
+| API/契约入口 | [指标包路由](../web/backend/app/api/indicators/__init__.py)<br>[技术分析包路由](../web/backend/app/api/technical/routes.py)<br>[技术分析兼容入口](../web/backend/app/api/technical_analysis.py)<br>[指标兼容入口](../web/backend/app/api/indicators.py) | 当前指标与技术分析以拆分包路由为主，根级兼容入口不再作为主真相源 |
+| 前端/交互入口 | [指标分析主路由页](../web/frontend/src/views/data/Advanced.vue)<br>[技术分析旧页](../web/frontend/src/views/technical/TechnicalAnalysis.vue)<br>[技术扫描 Tab](../web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue) | `data/Advanced.vue` 是当前主路由入口，旧技术分析页更接近保留中的专项工作台 |
 | 核心代码入口 | [指标库](../src/indicators/)<br>[技术分析引擎](../src/advanced_analysis/technical_analyzer/) | 指标与分析核心实现入口 |
 | 测试与验证入口 | [技术 API 测试](../tests/api/technical.spec.ts)<br>[技术分析 E2E](../tests/e2e/technical-analysis.spec.ts)<br>[K 线图 E2E](../web/frontend/tests/e2e/kline-chart.spec.ts) | 技术指标和图表验证入口 |
-| 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 调试和运行排障入口 |
+| 运行与排障入口 | [技术分析旧页](../web/frontend/src/views/technical/TechnicalAnalysis.vue) | 保留工作台和兼容链路排障入口 |
 
 ### 2.1 技术指标库 {#domain-02-node-01}
 
@@ -188,7 +192,7 @@
 | 前端/交互入口 | [策略仓库页](../web/frontend/src/views/strategy/List.vue)<br>[策略参数页](../web/frontend/src/views/strategy/Parameters.vue)<br>[策略回测页](../web/frontend/src/views/strategy/Backtest.vue)<br>[ArtDeco 策略页](../web/frontend/src/views/artdeco-pages/strategy-tabs/) | 策略配置、回测和优化交互入口 |
 | 核心代码入口 | [回测引擎](../src/backtesting/)<br>[机器学习策略](../src/ml_strategy/)<br>[策略应用层](../src/application/strategy/) | 策略与回测核心实现入口 |
 | 测试与验证入口 | [策略 API 测试](../tests/api/strategy.spec.ts)<br>[策略管理 E2E](../tests/e2e/strategy-management.spec.ts)<br>[前端回测 E2E](../web/frontend/tests/e2e/strategy-backtest.spec.ts) | 策略管理和回测验证入口 |
-| 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[GPU 测试快速开始](../src/gpu/api_system/TESTING_QUICK_START.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 回测、GPU 与运行排障入口 |
+| 运行与排障入口 | [GPU 测试快速开始](../src/gpu/api_system/TESTING_QUICK_START.md) | 回测、GPU 与运行排障入口 |
 
 ### 3.1 策略配置管理 {#domain-03-node-01}
 
@@ -227,12 +231,12 @@
 
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
-| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 风控规则、任务路由和治理入口 |
-| API/契约入口 | [风险 API](../web/backend/app/api/risk/)<br>[风险管理 API](../web/backend/app/api/risk_management.py)<br>[API 文档总览](./api/README.md) | 风险指标、止损和预警接口入口 |
+| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md) | 风控规则、任务路由和治理入口 |
+| API/契约入口 | [风险 API](../web/backend/app/api/risk/)<br>[风险管理 API](../web/backend/app/api/risk_management.py) | 风险指标、止损和预警接口入口 |
 | 前端/交互入口 | [风险页面](../web/frontend/src/views/risk/)<br>[ArtDeco 风险页](../web/frontend/src/views/artdeco-pages/risk-tabs/) | 风险总览、持仓风险和告警交互入口 |
 | 核心代码入口 | [风险管理核心模块](../src/governance/risk_management/) | 风险计算、止损与告警实现入口 |
 | 测试与验证入口 | [风险管理核心测试](../tests/backend/test_risk_management_core.py)<br>[风险回归测试](../tests/backend/test_risk_management_regression.py)<br>[风险 E2E](../tests/e2e/risk-monitor.spec.ts) | 风控功能验证入口 |
-| 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 风险链路验证和排障入口 |
+| 运行与排障入口 | [风险页面](../web/frontend/src/views/risk/) | 风险链路验证和排障入口 |
 
 ### 4.1 风险指标计算 {#domain-04-node-01}
 
@@ -264,7 +268,7 @@
 
 ## 05-投资组合与交易 {#domain-05}
 
-**模块路径**: `src/portfolio/`, `src/trading/`, `web/frontend/src/views/trade/`, `web/frontend/src/views/trading/`, `web/frontend/src/views/trading-decision/`
+**模块路径**: `src/portfolio/`, `src/trading/`, `src/application/portfolio/`, `src/application/trading/`, `web/backend/app/api/trade/`, `web/frontend/src/views/trade/`, `web/frontend/src/views/TradingDashboard.vue`
 **API前缀**: `/api/v1/trade/*`, `/api/trading/*`, `/api/v1/monitoring/watchlists/*`
 **完成度**: 70%
 
@@ -278,11 +282,11 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[功能管理工作流](./guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md) | 交易链路和跨域治理入口 |
-| API/契约入口 | [交易运行时 API](../web/backend/app/api/trading_runtime.py)<br>[交易监控 API](../web/backend/app/api/trading_monitor.py)<br>[交易数据 API](../web/backend/app/api/data/trading_api.py) | 交易、持仓和组合接口入口 |
-| 前端/交互入口 | [交易路由页](../web/frontend/src/views/trade/)<br>[交易工作台](../web/frontend/src/views/trading/)<br>[ArtDeco 交易页](../web/frontend/src/views/artdeco-pages/trading-tabs/)<br>[交易决策页](../web/frontend/src/views/trading-decision/)<br>[交易终端](../web/frontend/src/views/TradingDashboard.vue) | 持仓、历史、决策和交易交互入口 |
+| API/契约入口 | [交易包路由](../web/backend/app/api/trade/__init__.py)<br>[交易主路由](../web/backend/app/api/trade/routes.py)<br>[交易运行时 API](../web/backend/app/api/trading_runtime.py)<br>[交易监控 API](../web/backend/app/api/trading_monitor.py)<br>[旧交易数据实现](../web/backend/app/api/data/trading_api.py) | 当前主交易接口以 `trade/` 包路由和运行时 API 为主；`data/trading_api.py` 更像旧服务实现而非主注册入口 |
+| 前端/交互入口 | [交易路由页](../web/frontend/src/views/trade/)<br>[交易终端](../web/frontend/src/views/TradingDashboard.vue)<br>[ArtDeco 交易页](../web/frontend/src/views/artdeco-pages/trading-tabs/)<br>[旧交易工作台](../web/frontend/src/views/trading/)<br>[旧交易决策组件](../web/frontend/src/views/trading-decision/) | 当前主路由入口在 `views/trade/` 与 `TradingDashboard.vue`；旧目录更多承担历史工作台/组件角色 |
 | 核心代码入口 | [组合应用层](../src/application/portfolio/)<br>[交易应用层](../src/application/trading/)<br>[交易领域模型](../src/domain/trading/) | 交易和持仓实现入口 |
 | 测试与验证入口 | [交易路由 API 测试](../tests/api/file_tests/test_trade_routes_api.py)<br>[交易 E2E](../tests/e2e/trade-management.spec.ts)<br>[组合 DDD 测试](../tests/ddd/test_phase_5_portfolio.py) | 交易和组合验证入口 |
-| 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 交易链路排障入口 |
+| 运行与排障入口 | [交易终端](../web/frontend/src/views/TradingDashboard.vue) | 交易链路排障入口 |
 
 ### 5.1 持仓管理 {#domain-05-node-01}
 
@@ -321,7 +325,7 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[运维文档总览](./operations/README.md) | 监控、告警和可观测性治理入口 |
-| API/契约入口 | [监控 API](../web/backend/app/api/monitoring.py)<br>[监控组合分析 API](../web/backend/app/api/monitoring_analysis.py)<br>[监控自选组合 API](../web/backend/app/api/monitoring_watchlists.py)<br>[数据质量 API](../web/backend/app/api/data_quality.py)<br>[信号监控 API](../web/backend/app/api/signal_monitoring/)<br>[API 文档总览](./api/README.md) | 监控和告警接口入口 |
+| API/契约入口 | [监控 API](../web/backend/app/api/monitoring.py)<br>[监控组合分析 API](../web/backend/app/api/monitoring_analysis.py)<br>[监控自选组合 API](../web/backend/app/api/monitoring_watchlists.py)<br>[数据质量 API](../web/backend/app/api/data_quality.py)<br>[信号监控 API](../web/backend/app/api/signal_monitoring/) | 监控和告警接口入口 |
 | 前端/交互入口 | [系统遥测页](../web/frontend/src/views/system/API.vue)<br>[告警中心页](../web/frontend/src/views/risk/Alerts.vue)<br>[监控页面](../web/frontend/src/views/monitoring/)<br>[独立监控页](../web/frontend/src/views/monitor.vue) | 仪表板、告警和监控交互入口 |
 | 核心代码入口 | [监控模块](../src/monitoring/)<br>[数据质量监控器](../src/monitoring/data_quality_monitor.py)<br>[监控核心](../src/core/monitoring.py) | 告警、数据质量和监控实现入口 |
 | 测试与验证入口 | [监控测试目录](../tests/monitoring/)<br>[监控仪表板 E2E](../tests/e2e/monitoring-dashboard.spec.ts)<br>[监控单元测试](../tests/unit/monitoring/test_monitoring_service.py) | 监控与告警验证入口 |
@@ -458,7 +462,7 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[架构文档总览](./architecture/README.md) | 数据架构、分层和存储治理入口 |
-| API/契约入口 | [API 文档总览](./api/README.md)<br>[统一管理器契约](../tests/001-readme-md-md/contracts/unified_manager_api.md)<br>[数据路由 API](../web/backend/app/api/v1/system/routing.py)<br>[数据源注册 API](../web/backend/app/api/data_source_registry.py)<br>[数据源配置 API](../web/backend/app/api/data_source_config.py)<br>[数据血缘 API](../web/backend/app/api/data_lineage.py)<br>[缓存治理 API](../web/backend/app/api/cache.py) | 数据路由、数据源治理、血缘与缓存治理接口入口 |
+| API/契约入口 | [统一管理器契约](../tests/001-readme-md-md/contracts/unified_manager_api.md)<br>[数据路由 API](../web/backend/app/api/v1/system/routing.py)<br>[数据源注册 API](../web/backend/app/api/data_source_registry.py)<br>[数据源配置 API](../web/backend/app/api/data_source_config.py)<br>[数据血缘 API](../web/backend/app/api/data_lineage.py)<br>[缓存治理 API](../web/backend/app/api/cache.py) | 数据路由、数据源治理、血缘与缓存治理接口入口 |
 | 前端/交互入口 | [数据源管理页](../web/frontend/src/views/system/DataSource.vue)<br>[数据库监控页](../web/frontend/src/views/system/DatabaseMonitor.vue)<br>[系统架构页](../web/frontend/src/views/system/Architecture.vue) | `DataSource.vue` 是当前主路由入口；其余页面更偏系统说明/辅助监控视图 |
 | 核心代码入口 | [统一管理器](../src/core/unified_manager.py)<br>[核心协调器](../src/core/data_manager.py)<br>[数据路由器](../src/core/infrastructure/data_router.py)<br>[数据分类枚举](../src/core/data_classification.py)<br>[数据库存储模块](../src/storage/database/)<br>[数据访问层](../src/data_access/) | 数据分类、路由与双库存储实现入口 |
 | 测试与验证入口 | [数据 API 测试](../tests/api/test_data_file.py)<br>[API 集成测试](../tests/integration/test_api_integration.py)<br>[市场数据单元测试](../tests/unit/test_market_data.py) | 数据访问和存储验证入口 |
@@ -501,8 +505,8 @@ Q2 closure note:
 
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
-| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[Docs 首页](./INDEX.md) | 公告功能和信息路由治理入口 |
-| API/契约入口 | [公告包路由](../web/backend/app/api/announcement/routes.py)<br>[公告包导出](../web/backend/app/api/announcement/__init__.py)<br>[旧版平行实现](../web/backend/app/api/announcement.py)<br>[API 文档总览](./api/README.md) | 当前真实导出的公告 router 在包路由中；根级 `announcement.py` 更接近历史平行实现 |
+| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md) | 公告功能和信息路由治理入口 |
+| API/契约入口 | [公告包路由](../web/backend/app/api/announcement/routes.py)<br>[公告包导出](../web/backend/app/api/announcement/__init__.py)<br>[旧版平行实现](../web/backend/app/api/announcement.py) | 当前真实导出的公告 router 在包路由中；根级 `announcement.py` 更接近历史平行实现 |
 | 前端/交互入口 | [风险公告页](../web/frontend/src/views/risk/News.vue)<br>[公告详情页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue)<br>[ArtDeco 公告组件](../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue) | `risk/News.vue` 是当前主业务路由入口，`AnnouncementMonitor.vue` 主要承载详情页与规则型工作台 |
 | 核心代码入口 | [公告服务](../web/backend/app/services/announcement_service.py)<br>[公告模型](../web/backend/app/models/announcement.py) | 公告处理实现入口 |
 | 测试与验证入口 | [公告 API 测试](../tests/api/file_tests/test_announcement_api.py)<br>[后端公告 API 自测](../web/backend/app/api/test_announcement_api.py) | 公告功能验证入口 |
@@ -538,25 +542,11 @@ Q2 closure note:
 
 ---
 
-## 维护说明
-
-### 更新规则
-
-1. **新增功能**: 在对应领域下添加功能条目，标注状态为 `📝`
-2. **开始开发**: 将状态从 `📝` 改为 `🚧`
-3. **完成开发**: 将状态从 `🚧` 改为 `✅`，更新完成度
-4. **发现问题**: 将状态改为 `⚠️`，在 CHANGELOG.md 中记录
-5. **废弃功能**: 将状态改为 `🔒`，说明废弃原因
-6. **入口变化**: 只要规范、API、前端、核心代码、测试或运行入口变化，就必须同步更新对应领域的“领域入口”表
-7. **跨领域功能**: 主领域维护完整入口，其他领域只保留引用说明，避免双份维护
-
-### 关联文档
+## 文档补充
 
 - 更新日志: [CHANGELOG.md](../CHANGELOG.md)
-- AI Quick Start: [guides/ai-tools/AI_QUICK_START.md](./guides/ai-tools/AI_QUICK_START.md)
-- Docs 首页: [INDEX.md](./INDEX.md)
 - 架构设计: [architecture/](./architecture/)
-- API文档: [api/](./api/)
+- API 文档: [api/](./api/)
 - 开发指南: [guides/](./guides/)
 
 ---
