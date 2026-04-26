@@ -11,6 +11,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = PROJECT_ROOT / "governance" / "mainline" / "schemas" / "ai-task-card.schema.json"
 TEMPLATE_PATH = PROJECT_ROOT / "governance" / "mainline" / "templates" / "ai-task-card.yaml"
 SPEC_PATH = PROJECT_ROOT / "governance" / "mainline" / "spec" / "ai-development-mainline-governance-spec.md"
+OPENSPEC_FUNCTION_TREE_SPEC_PATH = PROJECT_ROOT / "openspec" / "specs" / "function-tree-governance" / "spec.md"
 TASK_CARD_DIR = PROJECT_ROOT / "governance" / "mainline" / "task-cards"
 FIXTURE_PATH = PROJECT_ROOT / "tests" / "fixtures" / "governance" / "function-tree-governance-sample-card.yaml"
 
@@ -158,6 +159,19 @@ def test_mainline_governance_spec_mentions_function_tree_compatibility_contract(
     assert "不得写 `not-needed`" in spec_text
     assert "compatibility-retained" in spec_text
     assert "继任入口" in spec_text
+
+
+def test_openspec_function_tree_spec_mentions_reviewer_visible_gate_contract() -> None:
+    spec_text = OPENSPEC_FUNCTION_TREE_SPEC_PATH.read_text(encoding="utf-8")
+
+    assert "docs/FUNCTION_TREE.md" in spec_text
+    assert "function_tree_mirrored_entrypoint_hits" in spec_text
+    assert "function_tree_shared_sync_hits" in spec_text
+    assert "function_tree_compatibility_entrypoint_hits" in spec_text
+    assert "function_tree_exemption_reason_required=true" in spec_text
+    assert "function_tree_exemption_reason" in spec_text
+    assert "function_tree compatibility-note" in spec_text
+    assert "compatibility-retained" in spec_text
 
 
 def test_function_tree_sample_cards_pass_schema() -> None:

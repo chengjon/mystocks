@@ -1,5 +1,9 @@
 # function-tree-governance Specification
 
+> **专题方案说明**:
+> 本文件用于描述某一专题能力的规格边界、变更提案或专题约束，服务于 OpenSpec 的方案管理与差异追踪。
+> 它不自动等同于“当前已上线实现”或仓库共享治理规则的唯一真相源；执行时需同时核对 `architecture/STANDARDS.md`、审批状态、当前代码实现以及相关 `openspec/specs/` 正式规格。
+
 ## Purpose
 Define governance requirements for a machine-readable function-tree catalog, task-card mapping, scope-gate enforcement, mirrored-domain sync duties, and meta-governance self-bootstrap rules.
 ## Requirements
@@ -51,6 +55,33 @@ The system SHALL require explicit sync acknowledgement when mirrored business en
 - **THEN** the scope gate SHALL fail
 - **AND** the violation SHALL explain that mirrored business entrypoint changes require sync.
 
+#### Scenario: Mirrored business entrypoint change omits shared function-tree sync
+- **GIVEN** the git diff hits entrypoint paths of a mirrored business domain
+- **AND** the git diff does not include `docs/FUNCTION_TREE.md`
+- **WHEN** the scope gate runs
+- **THEN** the scope gate SHALL fail
+- **AND** the report SHALL record `function_tree_mirrored_entrypoint_hits`
+- **AND** the report SHALL record `function_tree_shared_sync_hits`.
+
+### Requirement: Compatibility-style entrypoint retirement SHALL surface reviewer-visible successor evidence
+
+The mainline scope gate SHALL require and expose reviewer-visible successor evidence when compatibility-style root API entrypoints or parallel business entrypoints change.
+
+#### Scenario: Compatibility-style entrypoint change omits successor note
+- **GIVEN** the git diff hits compatibility-style root API or parallel entrypoint paths of a mirrored business domain
+- **WHEN** the task card omits `function_tree.exemption_reason`
+- **THEN** the scope gate SHALL fail
+- **AND** the report SHALL set `function_tree_exemption_reason_required=true`
+- **AND** the violation SHALL explain that compatibility-style entrypoint changes require a successor or `compatibility-retained` note.
+
+#### Scenario: Compatibility-style entrypoint change provides successor note
+- **GIVEN** the git diff hits compatibility-style root API or parallel entrypoint paths of a mirrored business domain
+- **AND** the task card provides a non-empty `function_tree.exemption_reason`
+- **WHEN** the scope gate runs
+- **THEN** the report SHALL record `function_tree_compatibility_entrypoint_hits`
+- **AND** the report SHALL record `function_tree_exemption_reason`
+- **AND** CLI stdout SHALL print a `function_tree compatibility-note` summary for reviewers.
+
 ### Requirement: Governance infrastructure SHALL self-bootstrap through meta-governance
 
 The system SHALL allow governance infrastructure changes to use reserved meta-governance nodes without forcing business function-tree document sync.
@@ -60,4 +91,3 @@ The system SHALL allow governance infrastructure changes to use reserved meta-go
 - **WHEN** the task card declares the corresponding `meta-governance` node
 - **THEN** the scope gate SHALL accept `function_tree.update_status=not-needed`
 - **AND** it SHALL NOT require `docs/FUNCTION_TREE.md` synchronization.
-
