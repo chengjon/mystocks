@@ -329,7 +329,7 @@ Q2 closure note:
 | 前端/交互入口 | [系统遥测页](../web/frontend/src/views/system/API.vue)<br>[告警中心页](../web/frontend/src/views/risk/Alerts.vue)<br>[监控页面](../web/frontend/src/views/monitoring/)<br>[独立监控页](../web/frontend/src/views/monitor.vue) | 仪表板、告警和监控交互入口 |
 | 核心代码入口 | [监控模块](../src/monitoring/)<br>[数据质量监控器](../src/monitoring/data_quality_monitor.py)<br>[监控核心](../src/core/monitoring.py) | 告警、数据质量和监控实现入口 |
 | 测试与验证入口 | [监控测试目录](../tests/monitoring/)<br>[监控仪表板 E2E](../tests/e2e/monitoring-dashboard.spec.ts)<br>[监控单元测试](../tests/unit/monitoring/test_monitoring_service.py) | 监控与告警验证入口 |
-| 运行与排障入口 | [监控栈 README](../config/monitoring-stack/README.md)<br>[Grafana 设置](./operations/deployment/SETUP_GRAFANA.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 监控部署和排障入口 |
+| 运行与排障入口 | [监控栈 README](../config/monitoring-stack/README.md)<br>[Grafana 设置](./operations/deployment/SETUP_GRAFANA.md) | 监控部署和排障入口 |
 
 ### 6.1 系统监控 {#domain-06-node-01}
 
@@ -510,7 +510,7 @@ Q2 closure note:
 | 前端/交互入口 | [风险公告页](../web/frontend/src/views/risk/News.vue)<br>[公告详情页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue)<br>[ArtDeco 公告组件](../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue) | `risk/News.vue` 是当前主业务路由入口，`AnnouncementMonitor.vue` 主要承载详情页与规则型工作台 |
 | 核心代码入口 | [公告服务](../web/backend/app/services/announcement_service.py)<br>[公告模型](../web/backend/app/models/announcement.py) | 公告处理实现入口 |
 | 测试与验证入口 | [公告 API 测试](../tests/api/file_tests/test_announcement_api.py)<br>[后端公告 API 自测](../web/backend/app/api/test_announcement_api.py) | 公告功能验证入口 |
-| 运行与排障入口 | [测试文档总览](./testing/README.md)<br>[运维手册](./operations/OPS_MANUAL.md) | 公告链路验证和排障入口 |
+| 运行与排障入口 | [公告详情页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue) | 公告链路验证和规则工作台排障入口 |
 
 ### 10.1 公告管理 {#domain-10-node-01}
 
