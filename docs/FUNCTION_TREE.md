@@ -50,12 +50,22 @@
 
 | 图标 | 状态 | 说明 |
 |------|------|------|
-| ✅ | 完成 | 功能已实现，测试通过，生产可用 |
-| 🚧 | 开发中 | 正在开发，尚未完成 |
+| ✅ | 完成 | 已具备实现证据，且在需要时已具备验证/运行时证据；安全敏感节点还必须具备对应治理或安全证据，不能默认等同“生产可用” |
+| 🚧 | 开发中 | 已有部分实现或入口，但验证、运行时真相源或治理证据未闭合 |
 | 📝 | 计划中 | 已规划，尚未开始开发 |
 | ⚠️ | 需修复 | 存在已知问题，需要修复 |
 | 🔒 | 已废弃 | 功能已废弃，计划移除 |
-| 🧪 | 实验性 | 实验功能，API 可能变化 |
+| 🧪 | 实验性 | 已有实现或链路雏形，但运行时、稳定性或治理证据故意保持未闭合 |
+
+### Q2 Evidence Interpretation
+
+- 功能状态应优先结合四类证据理解：
+  - implementation evidence
+  - verification evidence
+  - runtime evidence
+  - safety/governance evidence
+- 对交易、持仓变更、预执行风控、生产级实时主链路等安全敏感节点，`✅` 不能仅由 UI、接口或模型存在来支撑。
+- 完成度百分比如未声明计算口径，应视为阶段性管理快照，不是硬门禁指标或生产 readiness 证明。
 
 ---
 
@@ -244,11 +254,11 @@
 
 ### 4.3 风险仪表板 {#domain-04-node-03}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 风险概览 | ✅ | 整体风险视图 |
-| 持仓风险 | ✅ | 单只股票风险 |
-| 历史风险 | ✅ | 风险趋势图 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 风险概览 | ✅ | `web/frontend/src/views/risk/Overview.vue` | 整体风险视图 |
+| 持仓风险 | ✅ | `web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` | 风险域 `/risk/pnl` 入口，包装持仓风险视图 |
+| 历史风险 | ✅ | `web/frontend/src/views/risk/Overview.vue` | 风险趋势图 |
 
 ---
 
@@ -257,6 +267,11 @@
 **模块路径**: `src/portfolio/`, `src/trading/`, `web/frontend/src/views/trade/`, `web/frontend/src/views/trading/`, `web/frontend/src/views/trading-decision/`
 **API前缀**: `/api/v1/trade/*`, `/api/trading/*`, `/api/v1/monitoring/watchlists/*`
 **完成度**: 70%
+
+Q2 closure note:
+- 本域应按安全敏感域解释，不能把建模完成、页面存在或仓储持久化直接等同为生产级交易闭环
+- 当前 inspected execution-capable path 应保守视为 `🧪 experimental` / `🚧 in-progress` 语义，而不是 `production-eligible`
+- 涉及下单、执行跟踪、风控前置、交易确认、幂等与审计绑定的节点，必须结合 Phase D / Wave 3 证据理解
 
 ### 领域入口
 
@@ -271,27 +286,27 @@
 
 ### 5.1 持仓管理 {#domain-05-node-01}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 持仓查询 | ✅ | 实时持仓展示 |
-| 盈亏计算 | ✅ | 浮动盈亏统计 |
-| 持仓分析 | ✅ | 行业分布、集中度 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 持仓查询 | ✅ | `web/frontend/src/views/trade/Center.vue` | 实时持仓展示 |
+| 盈亏计算 | ✅ | `web/frontend/src/views/trade/Center.vue` | 浮动盈亏统计 |
+| 持仓分析 | ✅ | `web/frontend/src/views/trade/Portfolio.vue` | 行业分布、集中度与持仓透视 |
 
 ### 5.2 交易记录 {#domain-05-node-02}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 交易流水 | ✅ | 历史交易记录 |
-| 成交查询 | ✅ | 成交明细 |
-| 对账单 | 🚧 | 计划中 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 交易流水 | ✅ | `web/frontend/src/views/trade/History.vue` | 历史交易记录 |
+| 成交查询 | ✅ | `web/frontend/src/views/trade/History.vue` | 成交明细 |
+| 对账单 | 🚧 | `web/frontend/src/views/trade/History.vue` | 计划中 |
 
 ### 5.3 交易决策 {#domain-05-node-03}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 决策中心 | ✅ | 交易决策面板 |
-| 信号生成 | ✅ | 买卖信号 |
-| 执行跟踪 | 🚧 | 订单执行状态 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 决策中心 | ✅ | `web/frontend/src/views/TradingDashboard.vue` | 交易决策面板；该状态不等同于真实交易执行闭环已达生产可用 |
+| 信号生成 | ✅ | `web/frontend/src/views/trade/Signals.vue` | 买卖信号；表示信号能力存在，不代表预执行安全控制已闭合 |
+| 执行跟踪 | 🚧 | `web/frontend/src/views/trade/History.vue` | 订单执行状态；当前仍应结合 Phase D / Wave 3 保守解读 |
 
 ---
 
