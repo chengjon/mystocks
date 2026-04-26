@@ -174,6 +174,16 @@ def test_openspec_function_tree_spec_mentions_reviewer_visible_gate_contract() -
     assert "compatibility-retained" in spec_text
 
 
+def test_openspec_function_tree_spec_mentions_criteria_backed_completion_semantics() -> None:
+    spec_text = OPENSPEC_FUNCTION_TREE_SPEC_PATH.read_text(encoding="utf-8")
+
+    assert "Criteria-Backed Completion Semantics" in spec_text
+    assert "implementation, verification, documentation, and runtime-readiness evidence" in spec_text
+    assert "production-grade readiness" in spec_text
+    assert "funds movement, position change, or pre-execution risk decisions" in spec_text
+    assert "production-eligible trading execution path" in spec_text
+
+
 def test_function_tree_sample_cards_pass_schema() -> None:
     import yaml
 
