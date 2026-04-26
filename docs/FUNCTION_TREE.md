@@ -406,8 +406,8 @@ Q2 closure note:
 
 ## 08-系统管理与配置 {#domain-08}
 
-**模块路径**: `web/backend/app/api/auth.py`, `web/backend/app/api/system.py`, `web/frontend/src/views/system/`
-**API前缀**: `/api/v1/auth/*`, `/api/v1/system/*`, `/api/backup-recovery/*`
+**模块路径**: `web/backend/app/api/auth.py`, `web/backend/app/api/v1/system/`, `web/frontend/src/views/system/`
+**API前缀**: `/api/v1/auth/*`, `/api/v1/system/settings/*`, `/api/v1/system/health/*`, `/api/backup-recovery/*`
 **完成度**: 85%
 
 ### 领域入口
@@ -415,42 +415,42 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[运维文档总览](./operations/README.md) | 认证、系统配置和恢复治理入口 |
-| API/契约入口 | [认证 API](../web/backend/app/api/auth.py)<br>[系统 API](../web/backend/app/api/system.py)<br>[备份恢复 API](../web/backend/app/api/backup_recovery.py) | 系统与认证接口入口 |
-| 前端/交互入口 | [系统页面](../web/frontend/src/views/system/)<br>[ArtDeco 系统页](../web/frontend/src/views/artdeco-pages/system-tabs/) | 系统设置和系统监控交互入口 |
-| 核心代码入口 | [备份恢复模块](../src/infrastructure/backup_recovery/)<br>[Docker 部署说明](../docker/README.md) | 备份恢复和环境配置实现入口 |
+| API/契约入口 | [认证 API](../web/backend/app/api/auth.py)<br>[系统设置 API](../web/backend/app/api/v1/system/settings.py)<br>[系统健康 API](../web/backend/app/api/v1/system/health.py)<br>[备份恢复 API](../web/backend/app/api/backup_recovery.py) | 系统与认证接口入口 |
+| 前端/交互入口 | [登录页](../web/frontend/src/views/Login.vue)<br>[系统配置页](../web/frontend/src/views/system/Settings.vue)<br>[健康矩阵页](../web/frontend/src/views/system/Health.vue)<br>[API 终端页](../web/frontend/src/views/system/API.vue)<br>[数据源管理页](../web/frontend/src/views/system/DataSource.vue) | 当前主路由中的认证、系统设置与系统治理入口 |
+| 核心代码入口 | [认证 Store](../web/frontend/src/stores/auth.ts)<br>[备份恢复模块](../src/infrastructure/backup_recovery/)<br>[Docker 部署说明](../docker/README.md) | 认证状态持久化、备份恢复和环境配置实现入口 |
 | 测试与验证入口 | [认证 API 测试](../tests/api/auth.spec.ts)<br>[系统 API 测试](../tests/api/system.spec.ts)<br>[JWT 安全测试](../tests/security/test_jwt_authentication.py) | 系统管理验证入口 |
 | 运行与排障入口 | [部署文档总览](./operations/deployment/README.md)<br>[部署指南](./operations/deployment-guide.md)<br>[Docker README](../docker/README.md) | 系统运行、部署和排障入口 |
 
 ### 8.1 认证授权 {#domain-08-node-01}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 用户登录 | ✅ | JWT认证 |
-| 权限管理 | ✅ | 角色权限 |
-| 会话管理 | ✅ | Token刷新 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 用户登录 | ✅ | `web/frontend/src/views/Login.vue`, `web/frontend/src/stores/auth.ts`, `web/backend/app/api/auth.py` | 当前登录链路以 JWT 登录、Pinia 持久化和登录页为主 |
+| 权限管理 | ✅ | `web/frontend/src/stores/auth.ts`, `web/backend/app/api/auth.py` | 角色与权限字段已进入登录态和鉴权链路 |
+| 会话管理 | ✅ | `web/frontend/src/stores/auth.ts`, `web/backend/app/api/auth.py` | 已有登出、本地持久化初始化与 token 刷新接口契约 |
 
 ### 8.2 系统配置 {#domain-08-node-02}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 数据源配置 | ✅ | 数据源管理 |
-| 缓存配置 | ✅ | Redis配置 |
-| 日志配置 | ✅ | 日志级别调整 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 通用配置 | ✅ | `web/frontend/src/views/system/Settings.vue`, `web/backend/app/api/v1/system/settings.py` | general section 已有系统级真实读写契约，持久化到 `system_config` |
+| 安全配置 | ✅ | `web/backend/app/api/v1/system/settings.py` | security section 已有 canonical API；当前前端以系统配置中心分段承载 |
+| 数据源配置 | ✅ | `web/frontend/src/views/system/DataSource.vue`, `web/backend/app/api/data_source_config.py` | 数据源启停、端点配置与写回面板已存在 |
 
 ### 8.3 备份恢复 {#domain-08-node-03}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 数据备份 | ✅ | 自动备份 |
-| 数据恢复 | ✅ | 数据恢复 |
-| 备份调度 | ✅ | 定时备份 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 数据备份 | ✅ | `web/backend/app/api/backup_recovery.py`, `src/infrastructure/backup_recovery/backup_manager.py` | 备份 API 与 TDengine/PostgreSQL 备份管理器均存在 |
+| 数据恢复 | ✅ | `web/backend/app/api/backup_recovery.py`, `src/infrastructure/backup_recovery/recovery_manager.py` | 恢复任务、恢复日志与状态查询能力存在 |
+| 备份调度 | ✅ | `src/infrastructure/backup_recovery/backup_scheduler.py` | 已有定时全量/增量备份调度；当前未见主路由中的独立前台入口 |
 
 ---
 
 ## 09-数据存储与管理 {#domain-09}
 
-**模块路径**: `src/storage/database/`, `src/data_access/`, `src/core/`
-**API前缀**: `/api/v1/data/*`, `/api/v1/data-sources/*`, `/api/v1/data-sources/config/*`, `/api/v1/lineage/*`
+**模块路径**: `src/core/`, `src/core/infrastructure/`, `src/data_access/`, `src/storage/database/`, `web/backend/app/api/`
+**API前缀**: `/api/v1/data/*`, `/api/v1/data-sources/*`, `/api/v1/data-sources/config/*`, `/api/v1/lineage/*`, `/api/cache/*`
 **完成度**: 90%
 
 ### 领域入口
@@ -458,36 +458,36 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[架构文档总览](./architecture/README.md) | 数据架构、分层和存储治理入口 |
-| API/契约入口 | [API 文档总览](./api/README.md)<br>[统一管理器契约](../tests/001-readme-md-md/contracts/unified_manager_api.md)<br>[数据 API](../web/backend/app/api/data/market.py)<br>[数据源注册 API](../web/backend/app/api/data_source_registry.py)<br>[数据源配置 API](../web/backend/app/api/data_source_config.py)<br>[数据血缘 API](../web/backend/app/api/data_lineage.py) | 数据 API 与契约接口入口 |
-| 前端/交互入口 | [数据源管理页](../web/frontend/src/views/system/DataSource.vue)<br>[数据库监控页](../web/frontend/src/views/system/DatabaseMonitor.vue)<br>[数据管理页](../web/frontend/src/views/artdeco-pages/system-tabs/ArtDecoDataManagement.vue) | 数据管理和监控交互入口 |
-| 核心代码入口 | [数据库存储模块](../src/storage/database/)<br>[数据访问层](../src/data_access/)<br>[统一管理器](../src/core/unified_manager.py) | 数据路由和存储实现入口 |
+| API/契约入口 | [API 文档总览](./api/README.md)<br>[统一管理器契约](../tests/001-readme-md-md/contracts/unified_manager_api.md)<br>[数据路由 API](../web/backend/app/api/v1/system/routing.py)<br>[数据源注册 API](../web/backend/app/api/data_source_registry.py)<br>[数据源配置 API](../web/backend/app/api/data_source_config.py)<br>[数据血缘 API](../web/backend/app/api/data_lineage.py)<br>[缓存治理 API](../web/backend/app/api/cache.py) | 数据路由、数据源治理、血缘与缓存治理接口入口 |
+| 前端/交互入口 | [数据源管理页](../web/frontend/src/views/system/DataSource.vue)<br>[数据库监控页](../web/frontend/src/views/system/DatabaseMonitor.vue)<br>[系统架构页](../web/frontend/src/views/system/Architecture.vue) | `DataSource.vue` 是当前主路由入口；其余页面更偏系统说明/辅助监控视图 |
+| 核心代码入口 | [统一管理器](../src/core/unified_manager.py)<br>[核心协调器](../src/core/data_manager.py)<br>[数据路由器](../src/core/infrastructure/data_router.py)<br>[数据分类枚举](../src/core/data_classification.py)<br>[数据库存储模块](../src/storage/database/)<br>[数据访问层](../src/data_access/) | 数据分类、路由与双库存储实现入口 |
 | 测试与验证入口 | [数据 API 测试](../tests/api/test_data_file.py)<br>[API 集成测试](../tests/integration/test_api_integration.py)<br>[市场数据单元测试](../tests/unit/test_market_data.py) | 数据访问和存储验证入口 |
 | 运行与排障入口 | [基础设施 Docker 说明](../docker/README.md)<br>[运维文档总览](./operations/README.md)<br>[架构文档总览](./architecture/README.md) | 数据存储运行与排障入口 |
 
 ### 9.1 数据库架构 {#domain-09-node-01}
 
-| 组件 | 状态 | 说明 |
-|------|------|------|
-| PostgreSQL | ✅ | 关系型数据存储 |
-| TDengine | ✅ | 时序数据存储 |
-| Redis | ⚠️ | 缓存层(需启动服务) |
-| MongoDB | ⚠️ | 监控存储(需启动服务) |
+| 组件 | 状态 | 代码位置 | 说明 |
+|------|------|----------|------|
+| PostgreSQL | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `src/core/data_manager.py` | 当前 canonical 主数据仓库，承载日线、参考数据、衍生数据、交易数据与系统配置 |
+| TDengine | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `src/core/data_manager.py` | 当前 canonical 高频时序库，主要承载 Tick、分钟 K 线和深度行情 |
+| Redis | ⚠️ | `web/frontend/src/views/system/Architecture.vue`, `web/frontend/src/views/system/DatabaseMonitor.vue`, `web/backend/app/api/system/get_system_architecture.py` | 当前仓库真相更接近“历史架构/兼容说明项”；系统说明页明确写明生产主架构已移除 Redis，现行缓存能力以应用层实现为主 |
+| MongoDB | ⚠️ | `src/services/maestro/collab/backends/mongo/store.py`, `src/services/symphony/service.py`, `config/mongodb/mongod.conf` | MongoDB 仍存在于协作运行时/任务编排子系统，但不属于当前市场数据双库主存储拓扑；功能树此处仅保留边界说明，不作为主数据库架构条目宣称 |
 
 ### 9.2 数据访问层 {#domain-09-node-02}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | 统一管理器 | ✅ | `src/core/unified_manager.py` | 统一数据访问 |
-| 分类路由 | ✅ | `src/core/data_classification.py` | 智能路由 |
+| 分类路由 | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `web/backend/app/api/v1/system/routing.py` | 数据分类枚举、运行时路由器和查询路由 API 已形成一条闭环 |
 | 表管理器 | ✅ | `src/storage/database/database_manager/` | 表结构管理 |
 
 ### 9.3 缓存管理 {#domain-09-node-03}
 
-| 功能点 | 状态 | 说明 |
-|--------|------|------|
-| 查询缓存 | ✅ | 热点数据缓存 |
-| 缓存失效 | ✅ | 自动失效策略 |
-| 缓存统计 | ✅ | 命中率统计 |
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 查询缓存 | ✅ | `web/backend/app/api/cache.py`, `web/backend/app/api/_cache_basic_routes.py` | 已有缓存读写、状态查询与按标的读取接口；当前以后端治理能力为主，未见主路由中的独立缓存工作台 |
+| 缓存失效 | ✅ | `web/backend/app/api/cache.py`, `web/backend/app/api/_cache_eviction_routes.py` | 已有单标的失效、全量清理、手动淘汰和淘汰统计能力 |
+| 缓存统计 | ✅ | `web/backend/app/api/_cache_basic_routes.py`, `web/backend/app/api/_cache_prewarming_routes.py`, `web/backend/app/core/cache_prewarming.py` | 已有命中率、延迟、健康状态、预热状态与预热触发接口，当前定位是运维/治理型后台能力 |
 
 ---
 
