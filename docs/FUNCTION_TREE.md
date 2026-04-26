@@ -377,34 +377,34 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[OpenSpec 工作流](../openspec/AGENTS.md) | AI、实验功能和架构治理入口 |
-| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[机器学习 API](../web/backend/app/api/ml.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py)<br>[情感分析 API](../web/backend/app/api/v1/analysis/sentiment.py)<br>[算法兼容入口](../web/backend/app/api/algorithms.py) | AI、分析和推理接口入口 |
-| 前端/交互入口 | [策略仓库页](../web/frontend/src/views/strategy/List.vue)<br>[策略参数页](../web/frontend/src/views/strategy/Parameters.vue)<br>[策略回测页](../web/frontend/src/views/strategy/Backtest.vue)<br>[策略优化页](../web/frontend/src/views/strategy/Optimization.vue)<br>[GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略信号页](../web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue) | 当前主路由中的策略、回测、优化和 GPU 交互入口 |
-| 核心代码入口 | [高级分析模块](../src/advanced_analysis/)<br>[机器学习策略模块](../src/ml_strategy/)<br>[情感分析模块](../src/advanced_analysis/sentiment_analyzer/)<br>[GPU API 服务](../src/gpu/api_system/services/) | 分析、训练和 GPU 加速实现入口 |
-| 测试与验证入口 | [机器学习 API 测试](../tests/api/test_ml_file.py)<br>[高级回测测试](../tests/unit/test_advanced_backtest_engine.py)<br>[GPU 测试 README](../src/gpu/api_system/tests/README.md) | AI 和分析功能验证入口 |
-| 运行与排障入口 | [自动化说明](../src/ml_strategy/automation/README.md)<br>[GPU API README](../src/gpu/api_system/README.md)<br>[WSL2 GPU 设置](../src/gpu/api_system/WSL2_GPU_SETUP.md) | 训练、调度和 GPU 排障入口 |
+| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[机器学习 API](../web/backend/app/api/ml.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py)<br>[情感分析 API](../web/backend/app/api/v1/analysis/sentiment.py)<br>[算法兼容入口](../web/backend/app/api/algorithms.py) | 分析、训练和推理接口入口 |
+| 前端/交互入口 | [策略仓库页](../web/frontend/src/views/strategy/List.vue)<br>[策略参数页](../web/frontend/src/views/strategy/Parameters.vue)<br>[策略回测页](../web/frontend/src/views/strategy/Backtest.vue)<br>[策略优化页](../web/frontend/src/views/strategy/Optimization.vue)<br>[GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略信号页](../web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue) | 主路由中的策略、回测、优化与 GPU 入口 |
+| 核心代码入口 | [高级分析模块](../src/advanced_analysis/)<br>[机器学习策略模块](../src/ml_strategy/)<br>[情感分析模块](../src/advanced_analysis/sentiment_analyzer/)<br>[GPU API 服务](../src/gpu/api_system/services/) | 分析、训练与 GPU 实现入口 |
+| 测试与验证入口 | [机器学习 API 测试](../tests/api/test_ml_file.py)<br>[高级回测测试](../tests/unit/test_advanced_backtest_engine.py)<br>[GPU 测试 README](../src/gpu/api_system/tests/README.md) | 分析与 GPU 验证入口 |
+| 运行与排障入口 | [自动化说明](../src/ml_strategy/automation/README.md)<br>[GPU API README](../src/gpu/api_system/README.md)<br>[WSL2 GPU 设置](../src/gpu/api_system/WSL2_GPU_SETUP.md) | 训练调度与 GPU 排障入口 |
 
 ### 7.1 机器学习策略 {#domain-07-node-01}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | 特征工程 | ✅ | `src/ml_strategy/feature_engineering.py`, `web/backend/app/api/ml.py` | 特征生成与样本构造接口已存在 |
-| 模型训练 | 🚧 | `web/backend/app/api/ml.py`, `src/ml_strategy/strategy/ml_strategy_base.py` | 训练接口与 ML 策略框架存在，但运行时依赖可选 `MLPredictionService` |
-| 预测推理 | 🚧 | `web/backend/app/api/ml.py`, `src/ml_strategy/price_predictor.py` | 预测入口存在；当前仍应按可选依赖和运行环境保守解读 |
+| 模型训练 | 🚧 | `web/backend/app/api/ml.py`, `src/ml_strategy/strategy/ml_strategy_base.py` | 训练接口与策略框架已在，但运行时仍依赖可选 `MLPredictionService` |
+| 预测推理 | 🚧 | `web/backend/app/api/ml.py`, `src/ml_strategy/price_predictor.py` | 预测入口已在，但仍需按可选依赖和运行环境保守解读 |
 
 ### 7.2 批量分析 {#domain-07-node-02}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | 批量回测 | ✅ | `web/frontend/src/views/strategy/Backtest.vue`, `src/ml_strategy/backtest/backtest_engine.py` | 当前活跃回测工作台与统一回测引擎均存在 |
-| 批量选股 | ✅ | `src/ml_strategy/strategy/stock_screener.py` | 批量筛选引擎存在；当前主路由入口更多落在自选/筛选域，不宜误读为 AI 域独立工作台 |
-| 批量监控 | ✅ | `src/ml_strategy/automation/scheduler.py`, `src/ml_strategy/strategy/strategy_executor.py` | 调度与批执行框架存在；当前以前后台任务与执行器为主 |
+| 批量选股 | ✅ | `src/ml_strategy/strategy/stock_screener.py` | 筛选引擎已在，但主路由入口更偏自选/筛选域，而非 AI 独立工作台 |
+| 批量监控 | ✅ | `src/ml_strategy/automation/scheduler.py`, `src/ml_strategy/strategy/strategy_executor.py` | 调度与批执行框架已在，当前以前后台任务为主 |
 
 ### 7.3 情感分析 {#domain-07-node-03}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
-| 新闻情感 | 🚧 | `web/backend/app/api/v1/analysis/sentiment.py`, `src/advanced_analysis/sentiment_analyzer/` | 后端 API 与分析模块存在，但当前主路由树未见 AI 域独立情感分析入口 |
-| 舆情监控 | 📝 | `web/frontend/src/views/risk/News.vue`, `web/backend/app/api/v1/analysis/sentiment.py` | 当前活跃舆情工作台主要归属 `06-风险管理`，不应直接算作 `07` 域的独立前台闭环 |
+| 新闻情感 | 🚧 | `web/backend/app/api/v1/analysis/sentiment.py`, `src/advanced_analysis/sentiment_analyzer/` | 后端 API 与分析模块已在，但主路由树未见 AI 域独立入口 |
+| 舆情监控 | 📝 | `web/frontend/src/views/risk/News.vue`, `web/backend/app/api/v1/analysis/sentiment.py` | 当前活跃工作台仍归属 `06-风险管理`，不宜视为 `07` 域独立闭环 |
 
 ---
 
@@ -419,9 +419,9 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[运维文档总览](./operations/README.md) | 认证、系统配置和恢复治理入口 |
-| API/契约入口 | [认证 API](../web/backend/app/api/auth.py)<br>[系统设置 API](../web/backend/app/api/v1/system/settings.py)<br>[系统健康 API](../web/backend/app/api/v1/system/health.py)<br>[备份恢复 API](../web/backend/app/api/backup_recovery.py) | 系统与认证接口入口 |
-| 前端/交互入口 | [登录页](../web/frontend/src/views/Login.vue)<br>[系统配置页](../web/frontend/src/views/system/Settings.vue)<br>[健康矩阵页](../web/frontend/src/views/system/Health.vue)<br>[API 终端页](../web/frontend/src/views/system/API.vue)<br>[数据源管理页](../web/frontend/src/views/system/DataSource.vue) | 当前主路由中的认证、系统设置与系统治理入口 |
-| 核心代码入口 | [认证 Store](../web/frontend/src/stores/auth.ts)<br>[备份恢复模块](../src/infrastructure/backup_recovery/)<br>[Docker 部署说明](../docker/README.md) | 认证状态持久化、备份恢复和环境配置实现入口 |
+| API/契约入口 | [认证 API](../web/backend/app/api/auth.py)<br>[系统设置 API](../web/backend/app/api/v1/system/settings.py)<br>[系统健康 API](../web/backend/app/api/v1/system/health.py)<br>[备份恢复 API](../web/backend/app/api/backup_recovery.py) | 认证、系统与恢复接口入口 |
+| 前端/交互入口 | [登录页](../web/frontend/src/views/Login.vue)<br>[系统配置页](../web/frontend/src/views/system/Settings.vue)<br>[健康矩阵页](../web/frontend/src/views/system/Health.vue)<br>[API 终端页](../web/frontend/src/views/system/API.vue)<br>[数据源管理页](../web/frontend/src/views/system/DataSource.vue) | 主路由中的认证、配置与系统治理入口 |
+| 核心代码入口 | [认证 Store](../web/frontend/src/stores/auth.ts)<br>[备份恢复模块](../src/infrastructure/backup_recovery/)<br>[Docker 部署说明](../docker/README.md) | 认证持久化、备份恢复与环境入口 |
 | 测试与验证入口 | [认证 API 测试](../tests/api/auth.spec.ts)<br>[系统 API 测试](../tests/api/system.spec.ts)<br>[JWT 安全测试](../tests/security/test_jwt_authentication.py) | 系统管理验证入口 |
 | 运行与排障入口 | [部署文档总览](./operations/deployment/README.md)<br>[部署指南](./operations/deployment-guide.md)<br>[Docker README](../docker/README.md) | 系统运行、部署和排障入口 |
 
@@ -437,17 +437,17 @@ Q2 closure note:
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
-| 通用配置 | ✅ | `web/frontend/src/views/system/Settings.vue`, `web/backend/app/api/v1/system/settings.py` | general section 已有系统级真实读写契约，持久化到 `system_config` |
-| 安全配置 | ✅ | `web/backend/app/api/v1/system/settings.py` | security section 已有 canonical API；当前前端以系统配置中心分段承载 |
-| 数据源配置 | ✅ | `web/frontend/src/views/system/DataSource.vue`, `web/backend/app/api/data_source_config.py` | 数据源启停、端点配置与写回面板已存在 |
+| 通用配置 | ✅ | `web/frontend/src/views/system/Settings.vue`, `web/backend/app/api/v1/system/settings.py` | `general` 分段已有真实读写契约，并持久化到 `system_config` |
+| 安全配置 | ✅ | `web/backend/app/api/v1/system/settings.py` | `security` 分段已有 canonical API，前端由系统配置中心承载 |
+| 数据源配置 | ✅ | `web/frontend/src/views/system/DataSource.vue`, `web/backend/app/api/data_source_config.py` | 数据源启停、端点配置与写回面板已在 |
 
 ### 8.3 备份恢复 {#domain-08-node-03}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
-| 数据备份 | ✅ | `web/backend/app/api/backup_recovery.py`, `src/infrastructure/backup_recovery/backup_manager.py` | 备份 API 与 TDengine/PostgreSQL 备份管理器均存在 |
+| 数据备份 | ✅ | `web/backend/app/api/backup_recovery.py`, `src/infrastructure/backup_recovery/backup_manager.py` | 备份 API 与 TDengine/PostgreSQL 备份管理器已在 |
 | 数据恢复 | ✅ | `web/backend/app/api/backup_recovery.py`, `src/infrastructure/backup_recovery/recovery_manager.py` | 恢复任务、恢复日志与状态查询能力存在 |
-| 备份调度 | ✅ | `src/infrastructure/backup_recovery/backup_scheduler.py` | 已有定时全量/增量备份调度；当前未见主路由中的独立前台入口 |
+| 备份调度 | ✅ | `src/infrastructure/backup_recovery/backup_scheduler.py` | 已有全量/增量备份调度，当前未见独立前台入口 |
 
 ---
 
@@ -462,9 +462,9 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[架构文档总览](./architecture/README.md) | 数据架构、分层和存储治理入口 |
-| API/契约入口 | [统一管理器契约](../tests/001-readme-md-md/contracts/unified_manager_api.md)<br>[数据路由 API](../web/backend/app/api/v1/system/routing.py)<br>[数据源注册 API](../web/backend/app/api/data_source_registry.py)<br>[数据源配置 API](../web/backend/app/api/data_source_config.py)<br>[数据血缘 API](../web/backend/app/api/data_lineage.py)<br>[缓存治理 API](../web/backend/app/api/cache.py) | 数据路由、数据源治理、血缘与缓存治理接口入口 |
-| 前端/交互入口 | [数据源管理页](../web/frontend/src/views/system/DataSource.vue)<br>[数据库监控页](../web/frontend/src/views/system/DatabaseMonitor.vue)<br>[系统架构页](../web/frontend/src/views/system/Architecture.vue) | `DataSource.vue` 是当前主路由入口；其余页面更偏系统说明/辅助监控视图 |
-| 核心代码入口 | [统一管理器](../src/core/unified_manager.py)<br>[核心协调器](../src/core/data_manager.py)<br>[数据路由器](../src/core/infrastructure/data_router.py)<br>[数据分类枚举](../src/core/data_classification.py)<br>[数据库存储模块](../src/storage/database/)<br>[数据访问层](../src/data_access/) | 数据分类、路由与双库存储实现入口 |
+| API/契约入口 | [统一管理器契约](../tests/001-readme-md-md/contracts/unified_manager_api.md)<br>[数据路由 API](../web/backend/app/api/v1/system/routing.py)<br>[数据源注册 API](../web/backend/app/api/data_source_registry.py)<br>[数据源配置 API](../web/backend/app/api/data_source_config.py)<br>[数据血缘 API](../web/backend/app/api/data_lineage.py)<br>[缓存治理 API](../web/backend/app/api/cache.py) | 路由、数据源、血缘与缓存治理接口入口 |
+| 前端/交互入口 | [数据源管理页](../web/frontend/src/views/system/DataSource.vue)<br>[数据库监控页](../web/frontend/src/views/system/DatabaseMonitor.vue)<br>[系统架构页](../web/frontend/src/views/system/Architecture.vue) | `DataSource.vue` 是主路由入口，其余更偏说明/辅助监控 |
+| 核心代码入口 | [统一管理器](../src/core/unified_manager.py)<br>[核心协调器](../src/core/data_manager.py)<br>[数据路由器](../src/core/infrastructure/data_router.py)<br>[数据分类枚举](../src/core/data_classification.py)<br>[数据库存储模块](../src/storage/database/)<br>[数据访问层](../src/data_access/) | 数据分类、路由与双库存储入口 |
 | 测试与验证入口 | [数据 API 测试](../tests/api/test_data_file.py)<br>[API 集成测试](../tests/integration/test_api_integration.py)<br>[市场数据单元测试](../tests/unit/test_market_data.py) | 数据访问和存储验证入口 |
 | 运行与排障入口 | [基础设施 Docker 说明](../docker/README.md)<br>[运维文档总览](./operations/README.md)<br>[架构文档总览](./architecture/README.md) | 数据存储运行与排障入口 |
 
@@ -472,26 +472,26 @@ Q2 closure note:
 
 | 组件 | 状态 | 代码位置 | 说明 |
 |------|------|----------|------|
-| PostgreSQL | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `src/core/data_manager.py` | 当前 canonical 主数据仓库，承载日线、参考数据、衍生数据、交易数据与系统配置 |
-| TDengine | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `src/core/data_manager.py` | 当前 canonical 高频时序库，主要承载 Tick、分钟 K 线和深度行情 |
-| Redis | ⚠️ | `web/frontend/src/views/system/Architecture.vue`, `web/frontend/src/views/system/DatabaseMonitor.vue`, `web/backend/app/api/system/get_system_architecture.py` | 当前仓库真相更接近“历史架构/兼容说明项”；系统说明页明确写明生产主架构已移除 Redis，现行缓存能力以应用层实现为主 |
-| MongoDB | ⚠️ | `src/services/maestro/collab/backends/mongo/store.py`, `src/services/symphony/service.py`, `config/mongodb/mongod.conf` | MongoDB 仍存在于协作运行时/任务编排子系统，但不属于当前市场数据双库主存储拓扑；功能树此处仅保留边界说明，不作为主数据库架构条目宣称 |
+| PostgreSQL | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `src/core/data_manager.py` | 当前 canonical 主数据仓库，承载日线、参考、衍生、交易与系统配置 |
+| TDengine | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `src/core/data_manager.py` | 当前 canonical 高频时序库，主要承载 Tick、分钟 K 线与深度行情 |
+| Redis | ⚠️ | `web/frontend/src/views/system/Architecture.vue`, `web/frontend/src/views/system/DatabaseMonitor.vue`, `web/backend/app/api/system/get_system_architecture.py` | 更接近历史架构/兼容说明项；当前缓存能力以应用层实现为主 |
+| MongoDB | ⚠️ | `src/services/maestro/collab/backends/mongo/store.py`, `src/services/symphony/service.py`, `config/mongodb/mongod.conf` | 仍服务于协作运行时子系统，但不属于市场数据双库主拓扑 |
 
 ### 9.2 数据访问层 {#domain-09-node-02}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | 统一管理器 | ✅ | `src/core/unified_manager.py` | 统一数据访问 |
-| 分类路由 | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `web/backend/app/api/v1/system/routing.py` | 数据分类枚举、运行时路由器和查询路由 API 已形成一条闭环 |
+| 分类路由 | ✅ | `src/core/data_classification.py`, `src/core/infrastructure/data_router.py`, `web/backend/app/api/v1/system/routing.py` | 分类枚举、运行时路由器与查询路由 API 已闭环 |
 | 表管理器 | ✅ | `src/storage/database/database_manager/` | 表结构管理 |
 
 ### 9.3 缓存管理 {#domain-09-node-03}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
-| 查询缓存 | ✅ | `web/backend/app/api/cache.py`, `web/backend/app/api/_cache_basic_routes.py` | 已有缓存读写、状态查询与按标的读取接口；当前以后端治理能力为主，未见主路由中的独立缓存工作台 |
+| 查询缓存 | ✅ | `web/backend/app/api/cache.py`, `web/backend/app/api/_cache_basic_routes.py` | 已有读写、状态查询与按标的读取接口；当前以后端治理为主 |
 | 缓存失效 | ✅ | `web/backend/app/api/cache.py`, `web/backend/app/api/_cache_eviction_routes.py` | 已有单标的失效、全量清理、手动淘汰和淘汰统计能力 |
-| 缓存统计 | ✅ | `web/backend/app/api/_cache_basic_routes.py`, `web/backend/app/api/_cache_prewarming_routes.py`, `web/backend/app/core/cache_prewarming.py` | 已有命中率、延迟、健康状态、预热状态与预热触发接口，当前定位是运维/治理型后台能力 |
+| 缓存统计 | ✅ | `web/backend/app/api/_cache_basic_routes.py`, `web/backend/app/api/_cache_prewarming_routes.py`, `web/backend/app/core/cache_prewarming.py` | 已有命中率、延迟、健康与预热接口，当前定位偏运维后台 |
 
 ---
 
@@ -506,8 +506,8 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md) | 公告功能和信息路由治理入口 |
-| API/契约入口 | [公告包路由](../web/backend/app/api/announcement/routes.py)<br>[公告包导出](../web/backend/app/api/announcement/__init__.py)<br>[旧版平行实现](../web/backend/app/api/announcement.py) | 当前真实导出的公告 router 在包路由中；根级 `announcement.py` 更接近历史平行实现 |
-| 前端/交互入口 | [风险公告页](../web/frontend/src/views/risk/News.vue)<br>[公告详情页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue)<br>[ArtDeco 公告组件](../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue) | `risk/News.vue` 是当前主业务路由入口，`AnnouncementMonitor.vue` 主要承载详情页与规则型工作台 |
+| API/契约入口 | [公告包路由](../web/backend/app/api/announcement/routes.py)<br>[公告包导出](../web/backend/app/api/announcement/__init__.py)<br>[旧版平行实现](../web/backend/app/api/announcement.py) | 公告真实导出位于包路由；根级 `announcement.py` 更接近历史平行实现 |
+| 前端/交互入口 | [风险公告页](../web/frontend/src/views/risk/News.vue)<br>[公告详情页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue)<br>[ArtDeco 公告组件](../web/frontend/src/views/artdeco-pages/risk-tabs/ArtDecoAnnouncementMonitor.vue) | `risk/News.vue` 是主业务路由入口，`AnnouncementMonitor.vue` 偏详情/规则工作台 |
 | 核心代码入口 | [公告服务](../web/backend/app/services/announcement_service.py)<br>[公告模型](../web/backend/app/models/announcement.py) | 公告处理实现入口 |
 | 测试与验证入口 | [公告 API 测试](../tests/api/file_tests/test_announcement_api.py)<br>[后端公告 API 自测](../web/backend/app/api/test_announcement_api.py) | 公告功能验证入口 |
 | 运行与排障入口 | [公告详情页](../web/frontend/src/views/announcement/AnnouncementMonitor.vue) | 公告链路验证和规则工作台排障入口 |
@@ -516,17 +516,17 @@ Q2 closure note:
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
-| 公告抓取 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/services/announcement_service.py` | 包路由已暴露 `fetch/list/today/important` 等能力，服务层负责抓取并写入公告表 |
-| 公告分类 | ✅ | `web/backend/app/models/announcement.py`, `web/backend/app/services/announcement_service.py`, `web/frontend/src/views/risk/News.vue` | 模型层已包含公告类型、重要性、情绪字段，前端风险页可直接按类型和重要性展示 |
-| 公告搜索 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/frontend/src/views/announcement/AnnouncementMonitor.vue`, `web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts` | 详情页工作台已支持股票、类型、重要性和日期范围筛选 |
+| 公告抓取 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/services/announcement_service.py` | 包路由已暴露 `fetch/list/today/important` 等能力，服务层负责抓取入库 |
+| 公告分类 | ✅ | `web/backend/app/models/announcement.py`, `web/backend/app/services/announcement_service.py`, `web/frontend/src/views/risk/News.vue` | 模型已含类型、重要性、情绪字段，风险页可按类型与重要性展示 |
+| 公告搜索 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/frontend/src/views/announcement/AnnouncementMonitor.vue`, `web/frontend/src/views/announcement/composables/useAnnouncementMonitor.ts` | 详情页工作台已支持股票、类型、重要性与日期筛选 |
 
 ### 10.2 公告监控 {#domain-10-node-02}
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
-| 实时监控 | ✅ | `web/frontend/src/views/risk/News.vue`, `web/frontend/src/api/index.ts`, `web/backend/app/api/announcement/routes.py` | 当前主监控入口是风险域公告工作台，通过 `/api/announcement/list` 获取并刷新公告列表 |
-| 重大事件 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/services/announcement_service.py`, `web/frontend/src/views/risk/News.vue` | 重要性等级与情绪判断已进入后端服务和前端风险视图，形成“重要公告”审阅链路 |
-| 订阅管理 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/models/announcement.py`, `web/frontend/src/views/announcement/AnnouncementMonitor.vue` | 监控规则、触发记录和规则评估已存在；当前更偏规则工作台而非独立导航菜单 |
+| 实时监控 | ✅ | `web/frontend/src/views/risk/News.vue`, `web/frontend/src/api/index.ts`, `web/backend/app/api/announcement/routes.py` | 主监控入口位于风险域公告工作台，通过 `/api/announcement/list` 刷新列表 |
+| 重大事件 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/services/announcement_service.py`, `web/frontend/src/views/risk/News.vue` | 重要性与情绪判断已进入后端服务和前端风险视图 |
+| 订阅管理 | ✅ | `web/backend/app/api/announcement/routes.py`, `web/backend/app/models/announcement.py`, `web/frontend/src/views/announcement/AnnouncementMonitor.vue` | 规则、触发记录与规则评估已在，当前更偏规则工作台 |
 
 ---
 
