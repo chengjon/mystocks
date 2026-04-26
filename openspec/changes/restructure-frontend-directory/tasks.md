@@ -273,7 +273,7 @@
   - [x] 8.4.2 Update imports to use `@/shared/...` absolute paths
     - Evidence: the canonical page now resolves `tradingDataTransform.ts` through a stable absolute `@/views/...` import until the shared helper migration is executed in a later batch.
   - [x] 8.4.3 Run lint & type-check
-- [ ] 8.5 **CLARIFICATION: Terminal.vue and DealingRoom.vue**
+- [x] 8.5 **CLARIFICATION: Terminal.vue and DealingRoom.vue**
   - [x] 8.5.0 Determine final disposition:
     - Completed: 2026-04-04
     - Decision: Option C (`keep in current location`) for the current approved change scope.
@@ -281,13 +281,18 @@
     - Option A: Move `trading/TradingDashboard.vue` → `views/trade/DealingRoom.vue` (add to trade domain)
     - Option B: Move to `deprecated/` (remove from active pages)
     - Option C: Keep in current location (no migration)
-  - [ ] 8.5.1 If Option A: Move `trading/TradingDashboard.vue` → `views/trade/DealingRoom.vue`
+  - [x] 8.5.1 If Option A: Move `trading/TradingDashboard.vue` → `views/trade/DealingRoom.vue`
     - Not applicable in the current repo state because Option C was selected.
-    - [ ] 8.5.1.0 **Identify all relative imports**
-    - [ ] 8.5.1.1 Move dependencies: `useTrade.ts`, `trading.scss` → `src/shared/`
-    - [ ] 8.5.1.2 Update imports to use `@/shared/...` absolute paths
-    - [ ] 8.5.1.3 Run lint & type-check
-    - [ ] 8.5.1.4 Run unit tests for DealingRoom.vue
+    - [x] 8.5.1.0 **Identify all relative imports**
+      - Repo-truth note: not applicable as written. The approved Option A move did not occur; current route truth keeps `TradingDashboard.vue` at the `/trade/terminal` entrypoint.
+    - [x] 8.5.1.1 Move dependencies: `useTrade.ts`, `trading.scss` → `src/shared/`
+      - Repo-truth note: not applicable as written. The current routed page keeps `useTradingDashboard.ts`, `tradingDashboardActions.ts`, and paired style/test assets in place pending any future approved rename or extraction change.
+    - [x] 8.5.1.2 Update imports to use `@/shared/...` absolute paths
+      - Repo-truth note: not applicable as written. No Option A move or shared-path rewrite was executed for `TradingDashboard.vue` in the current approved scope.
+    - [x] 8.5.1.3 Run lint & type-check
+      - Repo-truth closeout: later consolidated frontend verification gates cover the retained `trade-terminal` path; see tasks `12.*`, `13.*`, and `19.1`.
+    - [x] 8.5.1.4 Run unit tests for DealingRoom.vue
+      - Repo-truth note: not applicable as written. No `DealingRoom.vue` implementation exists for the trade terminal route in current repo truth.
   - [x] 8.5.2 If Option B or C: Document decision and rationale
     - Documented in `web/frontend/MIGRATION_PROGRESS.md`.
 - [x] 8.6 Reconcile dashboard truth and retain `ArtDecoDashboard.vue` as the canonical dashboard shell
@@ -295,7 +300,14 @@
   - Repo truth: `/dashboard` is canonical and remains backed by `ArtDecoDashboard.vue`; `/dealing-room` is legacy compatibility only.
   - `ArtDecoDashboard.vue` MUST NOT move to `deprecated/` under the current approved restructure scope.
   - `TradingDashboard.vue` remains exclusive to `/trade/terminal`.
-- [ ] 8.7 Commit: "refactor: migrate trade domain pages"
+- [x] 8.7 Commit: "refactor: migrate trade domain pages"
+  - Repo-truth closeout: the original single-commit expectation was superseded by the trade-domain landing chain plus the terminal/dashboard truth-reconciliation batches:
+    - `6752042fb` `docs[frontend-structure]: clarify trade terminal disposition`
+    - `f23aca4f1` `refactor[frontend-structure]: land trade target entry pages`
+    - `e945a0da0` `refactor[frontend]: migrate trade signals canonical entrypoint`
+    - `a9df12ee2` `refactor[frontend]: migrate trade portfolio canonical entrypoint`
+    - `fb49684f6` `refactor[frontend]: migrate trade history canonical entrypoint`
+    - `da297cff3` `docs[frontend-mainline]: reconcile dashboard route truth`
 
 ## 9. Page-by-Page Migration – Risk Domain (Phase 3f)
 - 2026-04-04 repo-truth note: tasks `9.2` through `9.6` required a mixed landing batch because the repo already contained placeholder target files under `src/views/risk/`.
