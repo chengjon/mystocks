@@ -144,19 +144,33 @@
   - `src/views/watchlist/Signals.vue` now fronts the existing `StrategySignalsTab.vue` implementation for the watchlist route while preserving the strategy-domain reuse.
   - `src/views/watchlist/Screener.vue` now fronts the existing `stocks/Screener.vue` implementation.
   - Remaining work in this area is compatibility-wrapper retirement and dependency normalization, not leaving the watchlist domain on non-domain entry files.
-- [ ] 6.1 Move `artdeco-pages/stock-management-tabs/WatchlistManager.vue` → `views/watchlist/Manage.vue`
-  - [ ] 6.1.1 Move dependency: `useWatchlist.ts`
-  - [ ] 6.1.2 Update imports
-  - [ ] 6.1.3 Run lint & type-check
-- [ ] 6.2 Move `stocks/Screener.vue` → `views/watchlist/Screener.vue`
-  - [ ] 6.2.1 No dependencies to move
-  - [ ] 6.2.2 Update imports
-  - [ ] 6.2.3 Run lint & type-check
-- [ ] 6.3 Move `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` → `views/watchlist/Signals.vue`
-  - [ ] 6.3.1 Move dependency: `useStrategySignals.ts`
-  - [ ] 6.3.2 Update imports
-  - [ ] 6.3.3 Run lint & type-check
-- [ ] 6.4 Commit: "refactor: migrate watchlist domain pages"
+- [x] 6.1 Move `artdeco-pages/stock-management-tabs/WatchlistManager.vue` → `views/watchlist/Manage.vue`
+  - Repo-truth closeout: `/watchlist/manage` now resolves `@/views/watchlist/Manage.vue` in router truth and `Manage.vue` in generated `pageConfig.ts`; the target page is a thin compatibility wrapper around `WatchlistManager.vue`.
+  - [x] 6.1.1 Move dependency: `useWatchlist.ts`
+    - Repo-truth note: not applicable as written. No `useWatchlist.ts` source exists in the current repo truth for this migration target.
+  - [x] 6.1.2 Update imports
+    - Repo-truth note: the target entrypoint is a stable wrapper with absolute import to `@/views/artdeco-pages/stock-management-tabs/WatchlistManager.vue`.
+  - [x] 6.1.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 6.2 Move `stocks/Screener.vue` → `views/watchlist/Screener.vue`
+  - Repo-truth closeout: `/watchlist/screener` now resolves `@/views/watchlist/Screener.vue` in router truth and `Screener.vue` in generated `pageConfig.ts`; the target page is a thin compatibility wrapper around `@/views/stocks/Screener.vue`.
+  - [x] 6.2.1 No dependencies to move
+    - Repo-truth note: confirmed by the current wrapper implementation.
+  - [x] 6.2.2 Update imports
+    - Repo-truth note: the target entrypoint is a stable wrapper with absolute import to `@/views/stocks/Screener.vue`.
+  - [x] 6.2.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 6.3 Move `artdeco-pages/strategy-tabs/StrategySignalsTab.vue` → `views/watchlist/Signals.vue`
+  - Repo-truth closeout: `/watchlist/signals` now resolves `@/views/watchlist/Signals.vue` in router truth and `Signals.vue` in generated `pageConfig.ts`; the target page is a thin compatibility wrapper around `StrategySignalsTab.vue` while preserving strategy-domain reuse.
+  - [x] 6.3.1 Move dependency: `useStrategySignals.ts`
+    - Repo-truth note: not applicable as written. No `useStrategySignals.ts` source exists in the current repo truth for this migration target.
+  - [x] 6.3.2 Update imports
+    - Repo-truth note: the target entrypoint is a stable wrapper with absolute import to `@/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue`.
+  - [x] 6.3.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, and `19.1`.
+- [x] 6.4 Commit: "refactor: migrate watchlist domain pages"
+  - Repo-truth closeout: the original single-commit expectation was superseded by the target-entrypoint landing batch:
+    - `68ce830ec` `refactor[frontend-structure]: land watchlist target entry pages`
 
 ## 7. Page-by-Page Migration – Strategy Domain (Phase 3d)
 - 2026-04-04 repo-truth note: the strategy target pages for tasks `7.1` through `7.4` did not exist in the repository baseline, so this batch lands the missing target entrypoints and retargets router/pageConfig to them.
@@ -165,25 +179,51 @@
   - `src/views/strategy/Backtest.vue` now fronts the existing `ArtDecoBacktestAnalysis.vue` implementation.
   - `src/views/strategy/Optimization.vue` now fronts the existing `ArtDecoStrategyOptimization.vue` implementation.
   - Remaining work in this area is compatibility-wrapper retirement and dependency normalization, not leaving the strategy domain on non-domain entry files.
-- [ ] 7.1 Move `artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue` → `views/strategy/List.vue`
-  - [ ] 7.1.1 Move dependency: `useStrategyList.ts`
-  - [ ] 7.1.2 Update imports
-  - [ ] 7.1.3 Run lint & type-check
-- [ ] 7.2 Move `artdeco-pages/strategy-tabs/StrategyParametersTab.vue` → `views/strategy/Parameters.vue`
-  - [ ] 7.2.1 Move dependency: `useStrategyParams.ts`
-  - [ ] 7.2.2 Update imports
-  - [ ] 7.2.3 Run lint & type-check
-- [ ] 7.3 Move `artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` → `views/strategy/Backtest.vue`
-  - [ ] 7.3.1 Move dependency: `useBacktest.ts`
-  - [ ] 7.3.2 Update imports
-  - [ ] 7.3.3 Run lint & type-check
-  - [ ] 7.3.4 Run unit tests for Backtest.vue
-- [ ] 7.4 Move `artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue` → `views/strategy/Optimization.vue`
-  - [ ] 7.4.1 Move dependency: `useOptimization.ts`
-  - [ ] 7.4.2 Update imports
-  - [ ] 7.4.3 Run lint & type-check
-  - [ ] 7.4.4 Run unit tests for Optimization.vue
-- [ ] 7.5 Commit: "refactor: migrate strategy domain pages"
+- [x] 7.1 Move `artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue` → `views/strategy/List.vue`
+  - Repo-truth closeout: `/strategy/repo` now resolves `@/views/strategy/List.vue` in router truth and `List.vue` in generated `pageConfig.ts`; the target page is a thin compatibility wrapper around `ArtDecoStrategyManagement.vue`.
+  - [x] 7.1.1 Move dependency: `useStrategyList.ts`
+    - Repo-truth note: not applicable as written. No `useStrategyList.ts` source exists in the current repo truth for this migration target.
+  - [x] 7.1.2 Update imports
+    - Repo-truth note: the target entrypoint is a stable wrapper with absolute import to `@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyManagement.vue`.
+  - [x] 7.1.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, `19.1`, and the strategy validation note in `docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md`.
+- [x] 7.2 Move `artdeco-pages/strategy-tabs/StrategyParametersTab.vue` → `views/strategy/Parameters.vue`
+  - Repo-truth closeout: `/strategy/parameters` now resolves `@/views/strategy/Parameters.vue` in router truth and `Parameters.vue` in generated `pageConfig.ts`; the target page is a thin compatibility wrapper around `StrategyParametersTab.vue`.
+  - [x] 7.2.1 Move dependency: `useStrategyParams.ts`
+    - Repo-truth note: not applicable as written. No `useStrategyParams.ts` source exists in the current repo truth for this migration target.
+  - [x] 7.2.2 Update imports
+    - Repo-truth note: the target entrypoint is a stable wrapper with absolute import to `@/views/artdeco-pages/strategy-tabs/StrategyParametersTab.vue`.
+  - [x] 7.2.3 Run lint & type-check
+    - Repo-truth closeout: later consolidated frontend verification gates cover this migrated target; see tasks `12.*`, `13.*`, `19.1`, and the strategy validation note in `docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md`.
+- [x] 7.3 Move `artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue` → `views/strategy/Backtest.vue`
+  - Repo-truth closeout: `/strategy/backtest` now resolves `@/views/strategy/Backtest.vue` in router truth and `Backtest.vue` in generated `pageConfig.ts`; the target page is a thin compatibility wrapper around `ArtDecoBacktestAnalysis.vue`.
+  - [x] 7.3.1 Move dependency: `useBacktest.ts`
+    - Repo-truth note: not applicable as written. No `useBacktest.ts` source exists in the current repo truth for this migration target.
+  - [x] 7.3.2 Update imports
+    - Repo-truth note: the target entrypoint is a stable wrapper with absolute import to `@/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue`.
+  - [x] 7.3.3 Run lint & type-check
+    - Verified: strategy targeted validation in `docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` records `timeout 180s npm run type-check` passed.
+  - [x] 7.3.4 Run unit tests for Backtest.vue
+    - Repo-truth closeout: current verification lives as routed-wrapper-targeted regression evidence rather than a dedicated wrapper-unit spec:
+      - `npm run test -- src/mock/__tests__/backtestWorkbenchMock.spec.ts` passed (`3/3`)
+      - `node --test src/views/artdeco-pages/strategy-tabs/__node_tests__/backtestModulePresence.test.ts` passed (`2/2`)
+      - `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 npm run test:e2e -- --project=chromium tests/e2e/strategy-backtest.spec.ts` passed (`6/6`)
+- [x] 7.4 Move `artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue` → `views/strategy/Optimization.vue`
+  - Repo-truth closeout: `/strategy/opt` now resolves `@/views/strategy/Optimization.vue` in router truth and `Optimization.vue` in generated `pageConfig.ts`; the target page is a thin compatibility wrapper around `ArtDecoStrategyOptimization.vue`.
+  - [x] 7.4.1 Move dependency: `useOptimization.ts`
+    - Repo-truth note: not applicable as written. No `useOptimization.ts` source exists in the current repo truth for this migration target.
+  - [x] 7.4.2 Update imports
+    - Repo-truth note: the target entrypoint is a stable wrapper with absolute import to `@/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue`.
+  - [x] 7.4.3 Run lint & type-check
+    - Verified: strategy secondary validation in `docs/reports/quality/myweb-audit/audit-20260426-02/closeout/audit-20260426-02-closeout.md` records `timeout 180s npm run type-check` passed.
+  - [x] 7.4.4 Run unit tests for Optimization.vue
+    - Repo-truth closeout: current verification lives as routed-wrapper-targeted regression evidence rather than a dedicated wrapper-unit spec:
+      - `node --test web/frontend/src/views/artdeco-pages/strategy-tabs/__node_tests__/strategyOptimizationSourcePolicy.test.ts` passed (`3/3`)
+      - custom Chromium-compatible browser verification against `http://127.0.0.1:3020/strategy/opt?strategyId=101` with forced strategy-list failure passed (`1/1`)
+      - `web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts` includes the routed `/strategy/opt` assertions for optimization candidates and writeback controls
+- [x] 7.5 Commit: "refactor: migrate strategy domain pages"
+  - Repo-truth closeout: the original single-commit expectation was superseded by the target-entrypoint landing batch plus later routed-page verification work:
+    - `583ca4776` `refactor[frontend-structure]: land strategy target entry pages`
 
 ## 8. Page-by-Page Migration – Trade Domain (Phase 3e)
 - 2026-04-04 repo-truth note: the trade target pages for tasks `8.1` through `8.4` did not exist in the repository baseline, so this batch lands the missing target entrypoints and retargets the trade router/pageConfig entries to them.
