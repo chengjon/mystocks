@@ -1,5 +1,9 @@
 # PR Summary
 
+> **历史文档说明**:
+> 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
+> 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
+
 Commit:
 
 - `6fc910be4` `frontend: align mock governance with verified pages`
