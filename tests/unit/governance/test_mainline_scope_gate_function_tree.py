@@ -134,7 +134,10 @@ def test_scope_gate_requires_function_tree_sync_for_mirrored_business_entrypoint
         update_status="required",
     )
 
-    violations, metrics = module.validate_function_tree_mapping(card, ["web/backend/app/api/market.py"])
+    violations, metrics = module.validate_function_tree_mapping(
+        card,
+        ["web/backend/app/api/market/market_data_request.py"],
+    )
 
     assert any("require docs/FUNCTION_TREE.md synchronization" in item for item in violations)
     assert metrics["function_tree_shared_sync_hits"] == []
@@ -151,11 +154,46 @@ def test_scope_gate_accepts_function_tree_sync_for_mirrored_business_entrypoint_
 
     violations, metrics = module.validate_function_tree_mapping(
         card,
-        ["web/backend/app/api/market.py", "docs/FUNCTION_TREE.md"],
+        ["web/backend/app/api/market/market_data_request.py", "docs/FUNCTION_TREE.md"],
     )
 
     assert violations == []
     assert metrics["function_tree_shared_sync_hits"] == ["docs/FUNCTION_TREE.md"]
+
+
+def test_scope_gate_requires_exemption_reason_for_parallel_root_api_entrypoint_change() -> None:
+    module = load_scope_gate_module()
+    card = make_card(
+        domain_id="domain-01",
+        node_id="domain-01-node-01",
+        affected_entrypoints=["api"],
+        update_status="required",
+    )
+
+    violations, _ = module.validate_function_tree_mapping(
+        card,
+        ["web/backend/app/api/market.py", "docs/FUNCTION_TREE.md"],
+    )
+
+    assert any("compatibility-style root API entrypoint changes require function_tree.exemption_reason" in item for item in violations)
+
+
+def test_scope_gate_accepts_exemption_reason_for_parallel_root_api_entrypoint_change() -> None:
+    module = load_scope_gate_module()
+    card = make_card(
+        domain_id="domain-01",
+        node_id="domain-01-node-01",
+        affected_entrypoints=["api"],
+        update_status="required",
+        exemption_reason="successor:web/backend/app/api/market/**; compatibility-retained:legacy root route",
+    )
+
+    violations, _ = module.validate_function_tree_mapping(
+        card,
+        ["web/backend/app/api/market.py", "docs/FUNCTION_TREE.md"],
+    )
+
+    assert violations == []
 
 
 def test_run_git_diff_normalizes_git_quoted_utf8_paths(monkeypatch) -> None:

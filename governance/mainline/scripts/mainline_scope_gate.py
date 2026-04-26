@@ -163,6 +163,21 @@ def is_shared_function_tree_sync_file(path: str) -> bool:
     return matches_any(path, list(FUNCTION_TREE_SHARED_SYNC_FILES))
 
 
+def is_parallel_root_api_entrypoint(path: str) -> bool:
+    normalized = PurePosixPath(path).as_posix().lstrip("/")
+    prefix = "web/backend/app/api/"
+    if not normalized.startswith(prefix) or normalized.endswith("/__init__.py"):
+        return False
+
+    relative = normalized[len(prefix) :]
+    if "/" in relative or not relative.endswith(".py"):
+        return False
+
+    candidate = PROJECT_ROOT / normalized
+    sibling_package = candidate.with_suffix("")
+    return sibling_package.is_dir()
+
+
 def find_domain_by_id(catalog: dict[str, Any], domain_id: str) -> dict[str, Any] | None:
     for domain in catalog.get("domains", []):
         if domain.get("id") == domain_id:
@@ -292,6 +307,14 @@ def validate_function_tree_mapping(
         if mirrored_entrypoint_hits and not shared_sync_hits:
             violations.append(
                 "mirrored business entrypoint changes require docs/FUNCTION_TREE.md synchronization"
+            )
+        compatibility_entrypoint_hits = [
+            path for path in mirrored_entrypoint_hits if is_parallel_root_api_entrypoint(path)
+        ]
+        if compatibility_entrypoint_hits and not exemption_reason:
+            violations.append(
+                "compatibility-style root API entrypoint changes require function_tree.exemption_reason "
+                "with successor or compatibility-retained note"
             )
 
     return violations, metrics
