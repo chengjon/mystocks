@@ -220,7 +220,12 @@ def validate_function_tree_mapping(
         "matched_business_domain_ids": [],
         "function_tree_declared_matches": [],
         "function_tree_declared_entrypoint_paths": [],
+        "function_tree_mirrored_entrypoint_hits": [],
         "function_tree_shared_sync_hits": [],
+        "function_tree_compatibility_entrypoint_hits": [],
+        "function_tree_exemption_reason": "",
+        "function_tree_exemption_reason_present": False,
+        "function_tree_exemption_reason_required": False,
     }
 
     violations: list[str] = []
@@ -238,6 +243,8 @@ def validate_function_tree_mapping(
     update_status = str(function_tree.get("update_status", "")).strip()
     secondary_domains = [str(item).strip() for item in list(function_tree.get("secondary_domains") or []) if str(item).strip()]
     exemption_reason = str(function_tree.get("exemption_reason", "")).strip()
+    metrics["function_tree_exemption_reason"] = exemption_reason
+    metrics["function_tree_exemption_reason_present"] = bool(exemption_reason)
 
     invalid_entrypoints = [item for item in affected_entrypoints if item not in FUNCTION_TREE_ENTRYPOINTS]
     if invalid_entrypoints:
@@ -287,30 +294,30 @@ def validate_function_tree_mapping(
                 "cross-domain business diff requires function_tree.secondary_domains or exemption_reason"
             )
 
+    mirrored_entrypoint_hits = [
+        path
+        for path in changed_files
+        if not is_shared_function_tree_sync_file(path) and matches_any(path, declared_entrypoint_paths)
+    ]
+    metrics["function_tree_mirrored_entrypoint_hits"] = mirrored_entrypoint_hits
+
+    compatibility_entrypoint_hits = [
+        path for path in mirrored_entrypoint_hits if is_parallel_root_api_entrypoint(path)
+    ]
+    metrics["function_tree_compatibility_entrypoint_hits"] = compatibility_entrypoint_hits
+    metrics["function_tree_exemption_reason_required"] = bool(compatibility_entrypoint_hits)
+
     if bool(declared_domain.get("mirror_to_function_tree")) and update_status == "not-needed":
-        mirrored_entrypoint_hits = [
-            path
-            for path in changed_files
-            if not is_shared_function_tree_sync_file(path) and matches_any(path, declared_entrypoint_paths)
-        ]
         if mirrored_entrypoint_hits:
             violations.append(
                 "mirrored business entrypoint changes cannot use update_status=not-needed"
             )
 
     if bool(declared_domain.get("mirror_to_function_tree")):
-        mirrored_entrypoint_hits = [
-            path
-            for path in changed_files
-            if not is_shared_function_tree_sync_file(path) and matches_any(path, declared_entrypoint_paths)
-        ]
         if mirrored_entrypoint_hits and not shared_sync_hits:
             violations.append(
                 "mirrored business entrypoint changes require docs/FUNCTION_TREE.md synchronization"
             )
-        compatibility_entrypoint_hits = [
-            path for path in mirrored_entrypoint_hits if is_parallel_root_api_entrypoint(path)
-        ]
         if compatibility_entrypoint_hits and not exemption_reason:
             violations.append(
                 "compatibility-style root API entrypoint changes require function_tree.exemption_reason "
@@ -692,6 +699,12 @@ def main() -> int:
 
     print(f"[mainline-governance] report written: {report_path}")
     print(f"[mainline-governance] pass={report['pass']}")
+    if report.get("function_tree_exemption_reason_required"):
+        hits = report.get("function_tree_compatibility_entrypoint_hits", [])
+        reason = str(report.get("function_tree_exemption_reason", "")).strip() or "<missing>"
+        print("[mainline-governance] function_tree compatibility-note:")
+        print(f"- entrypoints: {', '.join(hits)}")
+        print(f"- exemption_reason: {reason}")
 
     violations = report.get("violations", [])
     if violations:
