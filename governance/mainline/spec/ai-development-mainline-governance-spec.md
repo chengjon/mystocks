@@ -94,6 +94,7 @@
 - `function_tree.node_id`
 - `function_tree.affected_entrypoints`
 - `function_tree.update_status`
+- `function_tree.exemption_reason`
 - `scope.allowed_paths`
 - `non_goals`
 - `acceptance.checks`
@@ -101,6 +102,11 @@
 - `delivery.six_line_summary`
 - `openspec.change_id`（Feature 必填）
 - `openspec.approval_status`（Feature 必须为 `approved`）
+
+`function_tree` 额外约束：
+
+- 若新增主路由目录 / 主页面、主 API 包路由或 canonical 后端入口，`function_tree.update_status` 不得写 `not-needed`，且必须在同一批次同步更新 `docs/FUNCTION_TREE.md`
+- 若退役兼容层、旧页面、旧 API 根入口、shim、re-export 或平行实现，必须在 `function_tree.exemption_reason` 中写明继任入口或 `compatibility-retained` 原因
 
 ---
 
@@ -140,6 +146,8 @@
 - 任务卡符合 JSON Schema
 - Feature 与 OpenSpec 审批状态匹配
 - `function_tree` 声明与 catalog、git diff 一致
+- canonical entry 变更不得以 `function_tree.update_status = not-needed` 规避同步
+- compatibility-style 入口退役必须填写 successor / `compatibility-retained` 说明
 - 白名单路径合法
 
 ### 5.2 门二：输出门（开发后）

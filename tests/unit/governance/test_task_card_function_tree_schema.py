@@ -10,6 +10,8 @@ from jsonschema import Draft202012Validator
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SCHEMA_PATH = PROJECT_ROOT / "governance" / "mainline" / "schemas" / "ai-task-card.schema.json"
 TEMPLATE_PATH = PROJECT_ROOT / "governance" / "mainline" / "templates" / "ai-task-card.yaml"
+SPEC_PATH = PROJECT_ROOT / "governance" / "mainline" / "spec" / "ai-development-mainline-governance-spec.md"
+TASK_CARD_DIR = PROJECT_ROOT / "governance" / "mainline" / "task-cards"
 FIXTURE_PATH = PROJECT_ROOT / "tests" / "fixtures" / "governance" / "function-tree-governance-sample-card.yaml"
 
 
@@ -149,6 +151,15 @@ def test_task_card_template_includes_function_tree_example() -> None:
     assert "update_status:" in template
 
 
+def test_mainline_governance_spec_mentions_function_tree_compatibility_contract() -> None:
+    spec_text = SPEC_PATH.read_text(encoding="utf-8")
+
+    assert "function_tree.exemption_reason" in spec_text
+    assert "不得写 `not-needed`" in spec_text
+    assert "compatibility-retained" in spec_text
+    assert "继任入口" in spec_text
+
+
 def test_function_tree_sample_cards_pass_schema() -> None:
     import yaml
 
@@ -156,3 +167,18 @@ def test_function_tree_sample_cards_pass_schema() -> None:
 
     assert validate(fixture["business_feature_card"]) == []
     assert validate(fixture["meta_governance_cleanup_card"]) == []
+
+
+def test_sample_and_committed_task_cards_fill_function_tree_exemption_reason() -> None:
+    import yaml
+
+    fixture = yaml.safe_load(FIXTURE_PATH.read_text(encoding="utf-8"))
+    fixture_cards = list(fixture.values())
+    committed_cards = [
+        yaml.safe_load(path.read_text(encoding="utf-8"))
+        for path in sorted(TASK_CARD_DIR.glob("*.yaml"))
+    ]
+
+    for card in fixture_cards + committed_cards:
+        function_tree = card.get("function_tree", {})
+        assert str(function_tree.get("exemption_reason", "")).strip() != ""

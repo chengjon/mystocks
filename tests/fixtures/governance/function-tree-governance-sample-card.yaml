@@ -26,7 +26,7 @@ business_feature_card:
       - "tests"
     update_status: "required"
     secondary_domains: []
-    exemption_reason: ""
+    exemption_reason: "not-applicable: canonical entry synchronization required"
   scope:
     allowed_paths:
       - "web/backend/app/api/market.py"
