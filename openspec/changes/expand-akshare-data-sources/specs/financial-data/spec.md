@@ -42,5 +42,4 @@ The financial data sources SHALL be expanded to include profit forecasts, techni
 #### Scenario: Enhanced Financial Analysis
 - **WHEN** new financial data interfaces are added
 - **THEN** system provides richer financial analysis capabilities
-- **AND** supports advanced quantitative analysis features</content>
-<parameter name="filePath">openspec/changes/expand-akshare-data-sources/specs/financial-data/spec.md
+- **AND** supports advanced quantitative analysis features

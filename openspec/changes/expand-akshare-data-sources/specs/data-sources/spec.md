@@ -52,5 +52,4 @@ The akshare data source adapter SHALL be enhanced to support 20+ additional data
 #### Scenario: Module Expansion
 - **WHEN** new akshare data interfaces are added
 - **THEN** system dynamically loads new modules without breaking existing functionality
-- **AND** maintains the existing API contracts and response formats</content>
-<parameter name="filePath">openspec/changes/expand-akshare-data-sources/specs/data-sources/spec.md
+- **AND** maintains the existing API contracts and response formats

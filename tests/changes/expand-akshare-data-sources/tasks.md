@@ -50,6 +50,10 @@
 - [x] 4.7 编写预测和分析数据的单元测试
 
 ## 5. 板块和行业数据扩充 ✅ 完成
+> **仓库事实校对（2026-04-27）**:
+> `src/adapters/akshare/market_adapter/board_sector.py`、`web/backend/app/api/akshare_market/boards.py`、`config/data_sources_registry.yaml` 与 `tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part2.py` 已覆盖本节当前实现。
+> 当前仓库落地的是 `akshare.stock_sector_spot_em` 与 `akshare.stock_sector_fund_flow_rank_em`，与 proposal 初稿中的 `stock_hot_follow_xq`、`stock_board_change_em` 存在 scope 漂移；原始情绪/异动接口转入第 6 节继续跟踪。
+
 - [x] 5.1 实现概念板块成分股 (akshare.stock_board_concept_cons_em)
 - [x] 5.2 实现概念板块行情 (akshare.stock_board_concept_hist_em)
 - [x] 5.3 实现概念板块历史行情 (akshare.stock_board_concept_hist_min_em)
@@ -62,64 +66,38 @@
 - [x] 5.10 创建板块和行业数据的API端点
 - [x] 5.11 编写板块和行业数据的单元测试
 
-## 3. 资金流向数据扩充
-- [ ] 3.1 实现沪深港通资金流向 (akshare.stock_hsgt_fund_flow_summary_em)
-- [ ] 3.2 实现沪深港通资金流向明细 (akshare.stock_hsgt_fund_flow_detail_em)
-- [ ] 3.3 实现北向资金每日统计 (akshare.stock_hsgt_north_net_flow_in_em)
-- [ ] 3.4 实现南向资金每日统计 (akshare.stock_hsgt_south_net_flow_in_em)
-- [ ] 3.5 实现北向资金个股统计 (akshare.stock_hsgt_north_acc_flow_in_em)
-- [ ] 3.6 实现南向资金个股统计 (akshare.stock_hsgt_south_acc_flow_in_em)
-- [ ] 3.7 实现沪深港通持股明细 (akshare.stock_hsgt_hold_stock_em)
-- [ ] 3.8 实现资金流向大单统计 (akshare.stock_fund_flow_big_deal)
-- [ ] 3.9 实现筹码分布数据 (akshare.stock_cyq_em)
-- [ ] 3.10 添加资金流向数据到数据源配置注册表
-- [ ] 3.11 创建资金流向数据的API端点
-- [ ] 3.12 编写资金流向数据的单元测试
-
-## 4. 预测和分析数据扩充
-- [ ] 4.1 实现盈利预测-东方财富 (akshare.stock_profit_forecast_em)
-- [ ] 4.2 实现盈利预测-同花顺 (akshare.stock_profit_forecast_ths)
-- [ ] 4.3 实现技术指标数据 (akshare.stock_technical_indicator_em)
-- [ ] 4.4 实现股票账户统计月度 (akshare.stock_account_statistics_em)
-- [ ] 4.5 添加预测和分析数据到数据源配置注册表
-- [ ] 4.6 创建预测和分析数据的API端点
-- [ ] 4.7 编写预测和分析数据的单元测试
-
-## 5. 板块和行业数据扩充
-- [ ] 5.1 实现概念板块成分股 (akshare.stock_board_concept_cons_em)
-- [ ] 5.2 实现概念板块行情 (akshare.stock_board_concept_hist_em)
-- [ ] 5.3 实现概念板块历史行情 (akshare.stock_board_concept_hist_min_em)
-- [ ] 5.4 实现行业板块成分股 (akshare.stock_board_industry_cons_em)
-- [ ] 5.5 实现行业板块行情 (akshare.stock_board_industry_hist_em)
-- [ ] 5.6 实现行业板块历史行情 (akshare.stock_board_industry_hist_min_em)
-- [ ] 5.7 实现股票热度数据 (akshare.stock_hot_follow_xq)
-- [ ] 5.8 实现板块异动详情 (akshare.stock_board_change_em)
-- [ ] 5.9 添加板块和行业数据到数据源配置注册表
-- [ ] 5.10 创建板块和行业数据的API端点
-- [ ] 5.11 编写板块和行业数据的单元测试
-
-## 6. 行情和新闻数据扩充
-- [ ] 6.1 实现财经内容精选 (akshare.stock_news_main_em)
-- [ ] 6.2 实现涨停板行情 (akshare.stock_zt_pool_em)
-- [ ] 6.3 实现跌停板行情 (akshare.stock_dt_pool_em)
-- [ ] 6.4 实现强势股池 (akshare.stock_strong_pool_em)
-- [ ] 6.5 实现弱势股池 (akshare.stock_weak_pool_em)
-- [ ] 6.6 实现盘口异动 (akshare.stock_changes_em)
-- [ ] 6.7 实现次新股池 (akshare.stock_new_em)
-- [ ] 6.8 添加行情和新闻数据到数据源配置注册表
-- [ ] 6.9 创建行情和新闻数据的API端点
-- [ ] 6.10 编写行情和新闻数据的单元测试
+## 6. 行情和情绪数据待补齐
+- [ ] 6.1 实现股票热度数据 (akshare.stock_hot_follow_xq)
+- [ ] 6.2 实现板块异动详情 (akshare.stock_board_change_em)
+- [ ] 6.3 实现财经内容精选 (akshare.stock_news_main_em)
+- [ ] 6.4 实现涨停板行情 (akshare.stock_zt_pool_em)
+- [ ] 6.5 实现跌停板行情 (akshare.stock_dt_pool_em)
+- [ ] 6.6 实现强势股池 (akshare.stock_strong_pool_em)
+- [ ] 6.7 实现弱势股池 (akshare.stock_weak_pool_em)
+- [ ] 6.8 实现盘口异动 (akshare.stock_changes_em)
+- [ ] 6.9 实现次新股池 (akshare.stock_new_em)
+- [ ] 6.10 添加行情和情绪数据到数据源配置注册表
+- [ ] 6.11 创建行情和情绪数据的API端点
+- [ ] 6.12 编写行情和情绪数据的单元测试
 
 ## 7. 系统集成和优化
-- [ ] 7.1 更新akshare适配器的__init__.py文件，添加新模块引用
-- [ ] 7.2 更新数据源配置注册表，添加所有新接口的质量规则
-- [ ] 7.3 更新API路由文件，添加所有新端点的注册
+> **仓库事实校对（2026-04-27）**:
+> 适配器聚合入口已在 `src/adapters/akshare/market_adapter/adapter.py` 完成 mixin 组合，API 路由已在 `web/backend/app/api/akshare_market/__init__.py` 与 `web/backend/app/router_registry.py` 注册。
+> 本节保持未完成，直到第 6 节剩余接口补齐并重新验证所有集成收口项。
+
+- [x] 7.1 更新适配器聚合入口，纳入新增市场 mixin
+- [ ] 7.2 更新数据源配置注册表，补齐剩余接口的质量规则
+- [x] 7.3 更新API路由文件，注册已实现端点
 - [ ] 7.4 实现数据缓存策略优化，避免重复API调用
 - [ ] 7.5 实现批量数据请求优化，支持多股票同时查询
 - [ ] 7.6 更新项目文档，添加新数据源的使用说明
 
 ## 8. 测试和验证
-- [ ] 8.1 编写完整的单元测试套件，覆盖所有新接口
+> **仓库事实校对（2026-04-27）**:
+> 适配器层已有 `tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part1.py`、`part2.py`、`part3.py`，API侧已有 `tests/api/test_akshare_market_file.py` 覆盖已实现子集。
+> 由于第 6 节原始 scope 仍未落地，本节继续保留为未完成状态。
+
+- [ ] 8.1 补齐完整的单元测试套件，覆盖剩余接口与收口场景
 - [ ] 8.2 执行集成测试，确保API端点正常工作
 - [ ] 8.3 进行性能测试，评估新增接口对系统性能的影响
 - [ ] 8.4 进行数据质量测试，确保返回数据的准确性和完整性
@@ -130,5 +108,4 @@
 - [ ] 9.2 创建数据源使用指南，帮助开发者理解各个接口的用途
 - [ ] 9.3 编写数据更新频率和缓存策略说明
 - [ ] 9.4 创建故障排除指南，帮助处理常见问题
-- [ ] 9.5 编写维护手册，包括数据源更新和版本兼容性说明</content>
-<parameter name="filePath">openspec/changes/expand-akshare-data-sources/tasks.md
+- [ ] 9.5 编写维护手册，包括数据源更新和版本兼容性说明

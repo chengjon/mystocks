@@ -39,5 +39,4 @@ The market data integration SHALL support additional akshare data sources for co
 #### Scenario: New Data Source Integration
 - **WHEN** new market data interfaces are added from akshare
 - **THEN** system seamlessly integrates them into existing market data pipeline
-- **AND** maintains data consistency and quality standards</content>
-<parameter name="filePath">openspec/changes/expand-akshare-data-sources/specs/market-data/spec.md
+- **AND** maintains data consistency and quality standards

@@ -52,5 +52,4 @@ The news data integration SHALL be enhanced to support comprehensive market news
 #### Scenario: Enhanced News Processing
 - **WHEN** new news and content data sources are added
 - **THEN** system provides richer market intelligence
-- **AND** supports advanced sentiment and trend analysis</content>
-<parameter name="filePath">openspec/changes/expand-akshare-data-sources/specs/news-data/spec.md
+- **AND** supports advanced sentiment and trend analysis
