@@ -50,10 +50,17 @@
 - [ ] 1.4.5 验证Bundle大小达到2.5MB目标
 
 ### 1.5 首屏加载优化
+> **局部事实说明（2026-04-27）**:
+> 当前前端已具备缓存策略实现基础：
+> - 活跃入口 `web/frontend/src/main-standard.ts` 会在 `load` 后注册 `/sw.js`
+> - `web/frontend/public/sw.js` 已对静态资源、导航请求、API 请求分别实现 cache-first / network-first / offline fallback 策略
+> - `web/frontend/src/utils/indexedDB.ts` 还补充了本地 `api_cache` TTL 缓存层
+> 因此 1.5.4 可按“缓存策略已实施”勾选；但性能目标值验证仍需保留在 1.5.5。
+
 - [x] 1.5.1 实施路由懒加载优化 (基于迁移报告的性能经验)
 - [ ] 1.5.2 关键资源预加载策略
 - [ ] 1.5.3 图片和字体优化 (WebP + 响应式)
-- [ ] 1.5.4 缓存策略实施 (学习迁移报告的缓存配置)
+- [x] 1.5.4 缓存策略实施 (学习迁移报告的缓存配置)
 - [ ] 1.5.5 验证首屏时间达到2.5s目标
 
 ### 1.6 运行时性能优化
@@ -101,8 +108,14 @@
 - [ ] 2.5.5 Add notification preferences in settings
 
 ### 2.6 Advanced Caching Strategy
+> **局部事实说明（2026-04-27）**:
+> 当前仓库已存在直接可核对的缓存失效逻辑：
+> - `web/frontend/public/sw.js` 实现了按 cache type 区分的 `expirationTimes` / `maxEntries`、周期性 `cleanup()` 与激活时清理
+> - `web/frontend/src/utils/indexedDB.ts` 为 `api_cache` 建立了 `expiresAt` 索引，并在 `getCache()` / `clearExpiredCache()` 中执行 TTL 失效与过期清理
+> 因此 2.6.2 可按“已实现智能失效/清理逻辑”勾选；但 cache warming、监控分析等后续项仍未形成闭环。
+
 - [x] 2.6.1 Implement Cache API for static assets (基于Service Worker)
-- [ ] 2.6.2 Add intelligent cache invalidation logic (市场数据实时性考虑)
+- [x] 2.6.2 Add intelligent cache invalidation logic (市场数据实时性考虑)
 - [x] 2.6.3 Create cache-first/network-fallback strategy
 - [ ] 2.6.4 Implement cache warming for hot data (热门股票数据)
 - [ ] 2.6.5 Add cache analytics and monitoring
