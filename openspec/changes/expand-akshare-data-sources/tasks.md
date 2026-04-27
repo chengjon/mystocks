@@ -104,6 +104,13 @@
 - [ ] 8.5 执行端到端测试，验证从数据获取到前端展示的完整流程
 
 ## 9. 文档和维护
+> **仓库事实校对（2026-04-27）**:
+> 当前与本 change 直接相关的文档层可分为三类：
+> - 当前契约真相源：`docs/api/openapi.json` 已为 1-5 节已实现端点提供路径与描述
+> - 当前接入/开发指引入口：`docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md` 与 `docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
+> - 历史/设计/总结材料：`docs/api/AKSHARE_INTERFACE_MAPPING.md`、`docs/reports/AKSHARE_DATA_SOURCE_API_SUMMARY.md`
+> 由于第 6 节原始 scope 仍未落地，且当前未找到专门覆盖“更新频率与缓存策略 / 故障排除 / 维护手册”的现行 AkShare 专题文档闭环，本节继续保留未完成状态。
+
 - [ ] 9.1 更新API文档，添加所有新端点的详细说明
 - [ ] 9.2 创建数据源使用指南，帮助开发者理解各个接口的用途
 - [ ] 9.3 编写数据更新频率和缓存策略说明
