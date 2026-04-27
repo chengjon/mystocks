@@ -137,11 +137,15 @@
 - [ ] 5.1.5 Verify animation performance (60fps requirement)
 
 ### 5.2 Functional Integration Testing
+> **局部事实说明**:
+> `web/frontend/tests/artdeco/websocket-realtime-mock.spec.ts` 已提供 WebSocket mock 场景测试，覆盖市场数据推送、风险预警、策略信号、连接错误/关闭、批量高频消息与 UI 刷新。
+> 因此 5.2.5 可按“已具备专项测试实现”勾选；但它仍属于 mock 级验证，不能外推为真实后端链路、跨浏览器或最终 UAT 已完成。
+
 - [ ] 5.2.1 Test Vue reactivity preservation in all converted pages
 - [x] 5.2.2 Validate API integration and data flow
 - [ ] 5.2.3 Perform cross-browser compatibility testing
 - [x] 5.2.4 Execute accessibility compliance validation
-- [ ] 5.2.5 Test WebSocket real-time data updates
+- [x] 5.2.5 Test WebSocket real-time data updates
 
 ### 5.3 Performance Optimization & Validation
 > **局部事实说明**:
