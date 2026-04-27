@@ -108,6 +108,9 @@
 
 ## 5. SmartRouter 实现（5-7天）
 
+> **局部事实说明（2026-04-27）**:
+> `SmartRouter` 本体已经具备权重参数（`performance_weight=0.4`、`cost_weight=0.3`、`load_weight=0.2`、`location_weight=0.1`）和对应测试，但 `src/core/data_source/router.py` 当前仍未把该组件接入主路由选择链路，因此 5.8 继续保留未完成。
+
 - [x] 5.1 创建 `src/core/data_source/smart_router.py` 文件
 - [x] 5.2 实现 `SmartRouter` 类
 - [x] 5.3 实现 `_score_by_performance()` 方法（P50/P95/P99 + 成功率）
@@ -116,7 +119,7 @@
 - [x] 5.6 实现 `_adjust_by_location()` 方法（地域感知）
 - [x] 5.7 实现 `route()` 主方法（多维度决策）
 - [ ] 5.8 集成到 `src/core/data_source/router.py.get_best_endpoint()`
-- [ ] 5.9 添加配置项：权重（performance=0.4, cost=0.3, load=0.2, location=0.1）
+- [x] 5.9 添加配置项：权重（performance=0.4, cost=0.3, load=0.2, location=0.1）
 - [x] 5.10 编写单元测试 `tests/unit/test_smart_router.py`
   - [x] 5.10.1 测试性能评分计算
   - [x] 5.10.2 测试成本优化（免费源优先）
@@ -128,6 +131,10 @@
 - [ ] 5.13 更新文档：添加 SmartRouter 使用说明
 
 ## 6. Prometheus 监控集成（5-7天）
+
+> **局部事实说明（2026-04-27）**:
+> `web/backend/app/main.py` 当前已通过 `metrics_endpoint()` 暴露 `/metrics`，其底层使用的是后端 performance middleware 的全局 Prometheus registry。
+> 但 `src/core/data_source/metrics.py` 默认仍创建独立 `CollectorRegistry`，因此“路由级全局 REGISTRY”与“数据源指标全量统一到全局 REGISTRY”应分开理解。
 
 - [x] 6.1 创建 `src/core/data_source/metrics.py` 文件
 - [x] 6.2 定义 Prometheus 指标（Histogram, Counter, Gauge）
@@ -141,10 +148,10 @@
 - [x] 6.3 实现 `track_api_call()` 装饰器
 - [x] 6.4 实现 `DataSourceMetrics` 类（指标收集器）
 - [ ] 6.5 在 `DataSourceManagerV2._call_endpoint()` 添加指标埋点
-- [ ] 6.6 在 `web/backend/app/main.py` 集成 `/metrics` 端点
+- [x] 6.6 在 `web/backend/app/main.py` 集成 `/metrics` 端点
   - [x] 6.6.1 添加 `/metrics` 路由
   - [x] 6.6.2 返回 Prometheus exposition 格式
-  - [ ] 6.6.3 使用全局 REGISTRY
+  - [x] 6.6.3 使用全局 REGISTRY
 - [ ] 6.7 创建 Grafana 仪表板配置
   - [ ] 6.7.1 创建 `grafana/dashboards/data-source-metrics.json`
   - [ ] 6.7.2 添加 API 延迟面板（P50/P95/P99）
@@ -169,6 +176,10 @@
 - [ ] 6.13 更新文档：添加监控使用说明
 
 ## 7. BatchProcessor 实现（5-7天）
+
+> **局部事实说明（2026-04-27）**:
+> `src/core/data_source/batch_processor.py` 已实现线程池、分组、`submit()` / `as_completed()`、超时控制和 `shutdown()`，但当前 spec 与任务语义聚焦的是治理层批量抓取主路径。
+> `src/governance/core/fetcher_bridge.py` 仍保留串行 `fetch_batch_kline()`，对应测试 `src/governance/tests/test_fetcher_bridge.py` 也仍围绕串行行为编写，因此本段暂不因“已有组件文件”而机械勾选。
 
 - [ ] 7.1 更新 `src/governance/core/fetcher_bridge.py`
 - [ ] 7.2 在 `__init__()` 创建 `ThreadPoolExecutor(max_workers=10)`
