@@ -11,6 +11,8 @@
 > - `src/core/data_source/base.py` 当前默认启用 `SmartCache`，同时仍保留 `use_smart_cache=False` 的 `LRUCache` 回退路径；每个 endpoint 的 `CircuitBreaker` 实例已创建，但 `_call_endpoint()` 实际调用链仍未完成熔断包装。
 > - `src/core/data_source/router.py` 仍按“首个健康端点”返回，尚未接入 `SmartRouter`；`src/governance/core/fetcher_bridge.py` 仍是串行批量抓取，尚未切到 `BatchProcessor` 主路径。
 > - `/metrics` 端点已存在，但当前暴露的是后端 performance middleware 指标面；`src/core/data_source/metrics.py` 默认仍使用独立 `CollectorRegistry`，不能机械视为“整条数据源指标链已完全并到全局 REGISTRY”。
+> - `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 当前主要覆盖 SmartCache / CircuitBreaker / DataQualityValidator，并未形成可直接复用的 `SmartRouter` 使用说明。
+> - `docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md` 虽存在，但当前仍混用 `src/monitoring/data_source_metrics.py` + `scripts/runtime/start_metrics_server.py` 的独立指标链与后端 `/metrics` 暴露方式，并引用缺失的 Grafana / provisioning 路径，不能直接视为“监控使用说明已按当前实现更新完成”。
 > - `grafana/dashboards/data-source-metrics.json` 与 `monitoring-stack/config/rules/data-source-alerts.yml` 当前本地缺失。
 
 ## 1. SmartCache 实现（3-4天）
@@ -129,6 +131,7 @@
 - [ ] 5.11 A/B 测试：对比新旧路由策略的性能差异
 - [ ] 5.12 代码审查：确保路由逻辑正确
 - [ ] 5.13 更新文档：添加 SmartRouter 使用说明
+  - [ ] Repo-truth：当前 `docs/guides/data-source/` 下未发现面向现状的 `SmartRouter` 使用章节；`DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 仅覆盖 Phase 1 三个组件，`DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md` 只有回滚片段和导入检查，历史 completion/final summary 报告不作为当前使用文档闭环证据。
 
 ## 6. Prometheus 监控集成（5-7天）
 
@@ -174,6 +177,7 @@
 - [ ] 6.11 验证 Grafana 仪表板正常显示
 - [ ] 6.12 代码审查：确保指标命名符合 Prometheus 规范
 - [ ] 6.13 更新文档：添加监控使用说明
+  - [ ] Repo-truth：`docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md` 存在，但当前口径仍包含缺失路径 `monitoring-stack/grafana-dashboards/data_source_monitoring.json`、`monitoring-stack/provisioning/dashboards/`，且未清晰对齐 `web/backend/app/main.py` 现有 `/metrics`（performance middleware）与 `src/core/data_source/metrics.py` / `src/monitoring/data_source_metrics.py` 的双轨现状，因此暂不视为已完成更新。
 
 ## 7. BatchProcessor 实现（5-7天）
 
