@@ -224,6 +224,14 @@
 # Phase 3: 高级特性（2-3个月，可选）
 
 ## 9. DataLineageTracker 实现（可选）
+> **局部事实说明（2026-04-28）**:
+> 当前仓库已存在“通用数据血缘能力”的相邻实现：
+> - 核心模型与追踪器：`src/data_governance/lineage.py` 中的 `LineageTracker` / `LineageStorage`
+> - 数据源集成：`src/core/data_source/lineage_integration.py` 中的 `LineageIntegrationMixin`
+> - API 暴露：`web/backend/app/api/data_lineage.py`
+> - 单元/API测试：`tests/unit/test_governance/test_lineage.py`、`tests/api/file_tests/test_data_lineage_api.py`
+> 但它并不等于本提案原文目标：当前未落地 `src/governance/lineage/tracker.py`、未出现名为 `DataLineageTracker` 的类、未见 `networkx` 构建此专题血缘图主链路、也未见 Neo4j 存储闭环。
+> 因此 9.1-9.8 继续保留未完成，避免把“相邻能力已存在”误写成“本 change 的 Phase 3 目标已按原路径与语义完成”。
 
 - [ ] 9.1 创建 `src/governance/lineage/tracker.py` 文件
 - [ ] 9.2 实现 `DataLineageTracker` 类
@@ -235,6 +243,11 @@
 - [ ] 9.8 更新文档：添加数据血缘使用说明
 
 ## 10. AdaptiveRateLimiter 实现（可选）
+> **局部事实说明（2026-04-28）**:
+> 当前仓库未找到 `src/core/data_source/adaptive_rate_limiter.py` 或 `AdaptiveRateLimiter` 类的现行实现。
+> 现有 `_record_success()` / 监控计数逻辑主要分布于 `src/core/data_source/base.py`、`handler.py`、`monitoring.py`，属于既有监控/状态记录能力，不等于“基于错误率动态调节许可速率”的自适应限流器。
+> 文档与历史 proposal 中虽有 `AdaptiveRateLimiter` 草图，但不能作为当前代码完成证据。
+> 因此 10.1-10.8 继续保持未完成。
 
 - [ ] 10.1 创建 `src/core/data_source/adaptive_rate_limiter.py` 文件
 - [ ] 10.2 实现 `AdaptiveRateLimiter` 类
