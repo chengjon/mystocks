@@ -80,6 +80,11 @@
 - [ ] 2.1.5 Configure Vite PWA plugin for build process
 
 ### 2.2 Service Worker Implementation
+> **局部事实说明（2026-04-27）**:
+> `web/frontend/public/sw.js` 已实现 `sync` 事件监听、`BackgroundSyncQueue`、失败重试与指数退避逻辑。
+> 但当前尚未找到前端侧的 `registration.sync.register(...)` 调用，也未找到把失败请求显式写入该队列的现行链路。
+> 因此 2.2.4 继续保留未完成，避免把“SW 端处理器存在”误写成“端到端 background sync 已闭环”。
+
 - [x] 2.2.1 Create Service Worker for caching static assets (学习迁移报告的缓存策略)
 - [x] 2.2.2 Implement runtime caching for API responses
 - [x] 2.2.3 Add offline fallback pages and strategies (参考11个路由的离线支持)
@@ -94,6 +99,14 @@
 - [ ] 2.3.5 Add storage quota monitoring and management
 
 ### 2.4 Web Workers Implementation
+> **局部事实说明（2026-04-27）**:
+> 当前仓库可以确认：
+> - `web/frontend/src/workers/indicatorDataWorker.worker.ts` 已实现技术指标计算 Worker
+> - `web/frontend/src/workers/protocol.ts` 已定义通信协议
+> - `web/frontend/src/stores/marketData.ts` 已通过 `workersManager.calculateIndicator(...)` 消费该能力
+> 但 `web/frontend/src/utils/workersManager/workers-manager.ts` 的协调层仍以占位实现为主，`calculateIndicator()` 尚未形成真实 Worker 生命周期编排；`chartPerformanceUtils.ts` 虽有通用 `new Worker(...)` / `terminate()` / `onerror` 处理，也未成为当前 K 线处理的 canonical pipeline。
+> 因此 2.4.5 继续保留未完成。
+
 - [x] 2.4.1 Create Web Worker for technical indicator calculations (253个指标计算)
 - [ ] 2.4.2 Implement Web Worker for data processing tasks (K线数据处理)
 - [x] 2.4.3 Add Web Worker communication protocol (基于Vue组件集成)
