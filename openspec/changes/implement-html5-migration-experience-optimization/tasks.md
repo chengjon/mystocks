@@ -86,6 +86,11 @@
 ## Phase 2: Advanced HTML5 Features Implementation
 
 ### 2.1 PWA Foundation Setup
+> **局部事实说明（2026-04-28）**:
+> `web/frontend/public/manifest.json` 已引用多尺寸图标，且 `web/frontend/public/icons/` 现有 `icon-72/96/128/144/192/512.png`。
+> 但 manifest 仍引用缺失的 `/screenshots/dashboard.png`、`/screenshots/analysis.png` 与 `shortcut-*.png`，`web/frontend/public/icons/README.md` 也明确写着当前仍是 placeholder 口径。
+> 因此 2.1.2 继续保留未完成，避免把“基础图标文件存在”误写成“PWA icons + splash/shortcut 资源已闭环”。
+
 - [x] 2.1.1 Create Web App Manifest (`public/manifest.json`) (基于迁移报告的标准配置)
 - [ ] 2.1.2 Add PWA icons and splash screens (192x192, 512x512, etc.)
 - [x] 2.1.3 Implement basic Service Worker registration
@@ -119,7 +124,7 @@
 > - `web/frontend/src/workers/protocol.ts` 已定义通信协议
 > - `web/frontend/src/stores/marketData.ts` 已通过 `workersManager.calculateIndicator(...)` 消费该能力
 > 但 `web/frontend/src/utils/workersManager/workers-manager.ts` 的协调层仍以占位实现为主，`calculateIndicator()` 尚未形成真实 Worker 生命周期编排；`chartPerformanceUtils.ts` 虽有通用 `new Worker(...)` / `terminate()` / `onerror` 处理，也未成为当前 K 线处理的 canonical pipeline。
-> 因此 2.4.5 继续保留未完成。
+> 因此 2.4.2 与 2.4.5 继续保留未完成：前者缺少当前活跃 K 线数据处理 Worker 主链路，后者缺少真实 Worker 生命周期/错误恢复收口。
 
 - [x] 2.4.1 Create Web Worker for technical indicator calculations (253个指标计算)
 - [ ] 2.4.2 Implement Web Worker for data processing tasks (K线数据处理)
@@ -162,6 +167,13 @@
 - [ ] 2.8.5 Test with accessibility tools (WAVE, axe) (量化可访问性提升)
 
 ### 2.9 Performance Monitoring & Analytics
+> **局部事实说明（2026-04-28）**:
+> 当前仓库可以确认两层性能监控能力：
+> - 活跃布局链路：`web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue` 挂接 `components/common/PerformanceMonitor.vue`，通过 `usePerformanceMonitor.ts` 提供 FPS / JS Heap 监控
+> - 独立页面实现：`web/frontend/src/views/system/PerformanceMonitor.vue` 已编写 `PerformanceObserver` 监听 `largest-contentful-paint`、`first-input`、`layout-shift`，并提供趋势/预算面板
+> 但当前 `router/index.ts` 与 `layouts/MenuConfig.ts` 都未把 `views/system/PerformanceMonitor.vue` 暴露为活跃路由，活跃链路中的全局监控面板也尚未承接 cache hit、PWA usage、RUM 等指标。
+> 因此 2.9.1、2.9.2、2.9.3、2.9.4、2.9.5 暂不勾选，避免把“孤立页面实现”误写成“现行性能分析体系已接入完成”。
+
 - [ ] 2.9.1 Implement Web Vitals tracking (LCP/FID/CLS) (基于迁移报告的性能基准)
 - [ ] 2.9.2 Add cache hit rate analytics (PWA缓存效果监控)
 - [ ] 2.9.3 Implement PWA usage metrics (安装率/使用时长)
