@@ -85,7 +85,8 @@
 > - `docs/api/CONTRACT_TESTING_API.md`
 > 但这些文件大多是历史分析、实施过程记录或 API 参考，不足以直接证明“当前 canonical developer guide / impact analysis usage guide / 培训闭环”已完成。
 
-- [ ] 7.1 Update API_CONTRACT_INTEGRATION_ASSESSMENT.md with implementation details
+- [x] 7.1 Update API_CONTRACT_INTEGRATION_ASSESSMENT.md with implementation details
+  - Repo-truth note: 该 assessment 文档已包含实现现状、CI/CD 集成、runtime validation、version negotiation 与 impact analysis 方案细节，但它仍是历史分析/评估材料，不应替代当前 canonical developer guide。
 - [ ] 7.2 Create runtime contract validation developer guide
 - [ ] 7.3 Add contract testing best practices documentation
 - [ ] 7.4 Create contract impact analysis usage guide
