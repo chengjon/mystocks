@@ -14,8 +14,16 @@
 > - Worker 协调层存在占位实现，不能把“有文件/有接口”机械等同为“完整生产能力已闭环”。
 
 ### 1.1 菜单系统完整实现
+> **局部事实说明（2026-04-27）**:
+> 当前菜单系统的本地证据已经比较明确：
+> - `web/frontend/src/layouts/MenuConfig.ts` 已将 Market / Data / Watchlist / Strategy / Trade / Risk / System 作为 7 个业务域固化为 SSOT
+> - `web/frontend/src/router/index.ts` 存在与上述 7 域对齐的路由组
+> - `web/frontend/src/stores/menuStore.ts` 与 `web/frontend/src/stores/preferenceStore.ts` 已提供展开状态与侧边栏折叠状态的本地持久化
+> - `web/frontend/tests/e2e/critical/menu-navigation-fixed.spec.ts`、`web/frontend/tests/e2e/artdeco-config-integration.spec.ts`、`web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts` ~ `phase3-mainline-matrix.spec.ts` 已覆盖部分菜单/关键路由运行链路
+> 但当前仍未找到“严格按 11 个菜单跳转用例完成验证”与“专门验证菜单状态保持”的直接 closeout 证据，因此 1.1.4 / 1.1.5 暂不勾选。
+
 - [x] 1.1.1 更新路由配置使用ArtDecoLayoutEnhanced (基于迁移路由经验)
-- [ ] 1.1.2 完善当前 canonical 菜单配置的业务域 (提案原文为6域；当前 repo truth 为7域)
+- [x] 1.1.2 完善当前 canonical 菜单配置的业务域 (提案原文为6域；当前 repo truth 为7域)
 - [x] 1.1.3 实现树形菜单的展开/折叠功能
 - [ ] 1.1.4 基于11个路由测试用例验证菜单跳转 (学习迁移报告的测试方法)
 - [ ] 1.1.5 测试菜单状态保持和响应式布局
