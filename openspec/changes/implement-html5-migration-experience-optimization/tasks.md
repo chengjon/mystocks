@@ -12,6 +12,7 @@
 > - `manifest.json` 引用了 `screenshots/*` 与 `shortcut-*.png`，但对应静态资源当前未在 `public/` 下齐备。
 > - `@ant-design/icons-vue` 依赖与业务导入仍存在，依赖统一未完成。
 > - Worker 协调层存在占位实现，不能把“有文件/有接口”机械等同为“完整生产能力已闭环”。
+> - 关键资源预加载与性能监控面板已有局部实现，但 WebSocket 优化、配额管理、Web Vitals 跟踪仍需区分“活跃主链路”与“示例/并行实现”。
 
 ### 1.1 菜单系统完整实现
 > **局部事实说明（2026-04-27）**:
@@ -58,17 +59,29 @@
 > 因此 1.5.4 可按“缓存策略已实施”勾选；但性能目标值验证仍需保留在 1.5.5。
 
 - [x] 1.5.1 实施路由懒加载优化 (基于迁移报告的性能经验)
-- [ ] 1.5.2 关键资源预加载策略
+- [x] 1.5.2 关键资源预加载策略
+  - Repo-truth：`web/frontend/index.html` 已对 Google Fonts 配置 `preconnect` + `preload as="style"`，形成当前活跃入口的关键资源预加载策略；`src/utils/performance/part-1.ts` 也提供了 `preloadResources()` 辅助能力。
 - [ ] 1.5.3 图片和字体优化 (WebP + 响应式)
 - [x] 1.5.4 缓存策略实施 (学习迁移报告的缓存配置)
 - [ ] 1.5.5 验证首屏时间达到2.5s目标
 
 ### 1.6 运行时性能优化
+> **局部事实说明（2026-04-28）**:
+> 当前可直接确认：
+> - `web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue` 已集成全局 `@/components/common/PerformanceMonitor.vue`
+> - `web/frontend/src/components/technical/KLineChart.vue` 已提供性能监控按钮，并挂接局部 `PerformanceMonitor`
+> - `web/frontend/src/composables/usePerformanceMonitor.ts` 已通过 `requestAnimationFrame` 采集 FPS / JS heap 指标
+> 但 WebSocket 优化仍存在主链路与增强链路分离：
+> - `web/frontend/src/composables/useWebSocketEnhanced.ts` 与 `useWebSocketWithConfig.ts` 具备自动重连、心跳、路由订阅能力
+> - 当前活跃 `web/frontend/src/layouts/BaseLayout.vue` 仍直接使用简化版 `useWebSocket.ts`
+> 因此 1.6.5 可按“监控面板已集成”勾选，1.6.2 继续保留未完成。
+
 - [ ] 1.6.1 虚拟滚动大数据表格 (基于实际使用场景)
 - [ ] 1.6.2 WebSocket连接优化
 - [ ] 1.6.3 内存泄漏检查和修复
 - [ ] 1.6.4 基于RequestIdleCallback的非阻塞操作
-- [ ] 1.6.5 性能监控面板集成
+- [x] 1.6.5 性能监控面板集成
+  - Repo-truth：`web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue` 已挂接全局 `PerformanceMonitor`，`web/frontend/src/components/technical/KLineChart.vue` 也已接入局部性能监控面板与切换按钮。
 
 ## Phase 2: Advanced HTML5 Features Implementation
 
@@ -97,6 +110,7 @@
 - [x] 2.3.3 Add IndexedDB operations (CRUD) with promises
 - [x] 2.3.4 Integrate with existing data management system
 - [ ] 2.3.5 Add storage quota monitoring and management
+  - [ ] Repo-truth：当前未发现 `navigator.storage.estimate()` / quota usage 之类的现行实现；`web/frontend/src/views/system/Settings.vue` 中的“配额使用率”仍是静态展示数据，不构成浏览器存储配额管理闭环。
 
 ### 2.4 Web Workers Implementation
 > **局部事实说明（2026-04-27）**:
