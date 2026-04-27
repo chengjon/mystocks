@@ -4,80 +4,88 @@
 > 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
 > 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
 
+> **Repo-Truth 对齐注记（2026-04-27）**:
+> 本清单已按当前仓库实现复核，仅对有直接本地证据的项勾选。
+> 当前关键事实漂移：
+> - `src/core/data_source/smart_cache.py`、`circuit_breaker.py`、`data_quality_validator.py`、`smart_router.py`、`metrics.py`、`batch_processor.py` 已存在，但不同模块的接入完成度并不一致。
+> - `src/core/data_source/base.py` 当前默认启用 `SmartCache`，同时仍保留 `use_smart_cache=False` 的 `LRUCache` 回退路径；每个 endpoint 的 `CircuitBreaker` 实例已创建，但 `_call_endpoint()` 实际调用链仍未完成熔断包装。
+> - `src/core/data_source/router.py` 仍按“首个健康端点”返回，尚未接入 `SmartRouter`；`src/governance/core/fetcher_bridge.py` 仍是串行批量抓取，尚未切到 `BatchProcessor` 主路径。
+> - `/metrics` 端点已存在，但当前暴露的是后端 performance middleware 指标面；`src/core/data_source/metrics.py` 默认仍使用独立 `CollectorRegistry`，不能机械视为“整条数据源指标链已完全并到全局 REGISTRY”。
+> - `grafana/dashboards/data-source-metrics.json` 与 `monitoring-stack/config/rules/data-source-alerts.yml` 当前本地缺失。
 
 ## 1. SmartCache 实现（3-4天）
 
-- [ ] 1.1 创建 `src/core/data_source/smart_cache.py` 文件
-- [ ] 1.2 实现 `SmartCache` 类（LRU + TTL + 后台刷新）
-- [ ] 1.3 添加 `threading.RLock` 保护并发访问
-- [ ] 1.4 实现 `_trigger_refresh()` 方法（启动后台线程）
-- [ ] 1.5 实现 `_run_refresh()` 方法（执行刷新逻辑）
-- [ ] 1.6 添加 `refreshing` set 防止重复刷新
-- [ ] 1.7 集成 `ThreadPoolExecutor(max_workers=5)` 限制并发刷新
-- [ ] 1.8 更新 `src/core/data_source/base.py` 替换 `LRUCache` 为 `SmartCache`
-- [ ] 1.9 编写单元测试 `tests/unit/test_smart_cache.py`
-  - [ ] 1.9.1 测试缓存命中（fresh data）
-  - [ ] 1.9.2 测试缓存过期触发预刷新
-  - [ ] 1.9.3 测试软过期（返回旧数据）
-  - [ ] 1.9.4 测试硬过期（返回 None）
-  - [ ] 1.9.5 测试 LRU 淘汰
-  - [ ] 1.9.6 测试并发访问（100线程并发）
-  - [ ] 1.9.7 测试后台刷新失败处理
-  - [ ] 1.9.8 测试线程池限制（max_workers=5）
+- [x] 1.1 创建 `src/core/data_source/smart_cache.py` 文件
+- [x] 1.2 实现 `SmartCache` 类（LRU + TTL + 后台刷新）
+- [x] 1.3 添加 `threading.RLock` 保护并发访问
+- [x] 1.4 实现 `_trigger_refresh()` 方法（启动后台线程）
+- [x] 1.5 实现 `_run_refresh()` 方法（执行刷新逻辑）
+- [x] 1.6 添加 `refreshing` set 防止重复刷新
+- [x] 1.7 集成 `ThreadPoolExecutor(max_workers=5)` 限制并发刷新
+- [x] 1.8 更新 `src/core/data_source/base.py` 替换 `LRUCache` 为 `SmartCache`
+- [x] 1.9 编写单元测试 `tests/unit/test_smart_cache.py`
+  - [x] 1.9.1 测试缓存命中（fresh data）
+  - [x] 1.9.2 测试缓存过期触发预刷新
+  - [x] 1.9.3 测试软过期（返回旧数据）
+  - [x] 1.9.4 测试硬过期（返回 None）
+  - [x] 1.9.5 测试 LRU 淘汰
+  - [x] 1.9.6 测试并发访问（100线程并发）
+  - [x] 1.9.7 测试后台刷新失败处理
+  - [x] 1.9.8 测试线程池限制（max_workers=5）
 - [ ] 1.10 性能测试：对比优化前后的缓存命中率和响应时间
 - [ ] 1.11 代码审查：确保线程安全性和错误处理
-- [ ] 1.12 更新文档：添加 SmartCache 使用说明
+- [x] 1.12 更新文档：添加 SmartCache 使用说明
 
 ## 2. CircuitBreaker 实现（3-4天）
 
-- [ ] 2.1 创建 `src/core/data_source/circuit_breaker.py` 文件
-- [ ] 2.2 定义 `CircuitState` 枚举（CLOSED, OPEN, HALF_OPEN）
-- [ ] 2.3 实现 `CircuitBreaker` 类
-- [ ] 2.4 添加 `threading.Lock` 保护状态转换
-- [ ] 2.5 实现 `call()` 方法（执行调用并自动熔断）
-- [ ] 2.6 实现 `_should_attempt_reset()` 方法（检查是否超时）
-- [ ] 2.7 实现 `_on_success()` 方法（成功回调）
-- [ ] 2.8 实现 `_on_failure()` 方法（失败回调）
-- [ ] 2.9 添加 `CircuitBreakerOpenError` 异常类
+- [x] 2.1 创建 `src/core/data_source/circuit_breaker.py` 文件
+- [x] 2.2 定义 `CircuitState` 枚举（CLOSED, OPEN, HALF_OPEN）
+- [x] 2.3 实现 `CircuitBreaker` 类
+- [x] 2.4 添加 `threading.Lock` 保护状态转换
+- [x] 2.5 实现 `call()` 方法（执行调用并自动熔断）
+- [x] 2.6 实现 `_should_attempt_reset()` 方法（检查是否超时）
+- [x] 2.7 实现 `_on_success()` 方法（成功回调）
+- [x] 2.8 实现 `_on_failure()` 方法（失败回调）
+- [x] 2.9 添加 `CircuitBreakerOpenError` 异常类
 - [ ] 2.10 集成到 `src/core/data_source/base.py._call_endpoint()`
-- [ ] 2.11 为每个 endpoint 创建独立的 CircuitBreaker 实例
-- [ ] 2.12 编写单元测试 `tests/unit/test_circuit_breaker.py`
-  - [ ] 2.12.1 测试 CLOSED 状态正常调用
-  - [ ] 2.12.2 测试达到阈值后进入 OPEN 状态
-  - [ ] 2.12.3 测试超时后进入 HALF_OPEN 状态
-  - [ ] 2.12.4 测试试探成功后回到 CLOSED 状态
-  - [ ] 2.12.5 测试试探失败后回到 OPEN 状态
-  - [ ] 2.12.6 测试并发状态转换（10线程并发）
-  - [ ] 2.12.7 测试剩余时间反馈
-  - [ ] 2.12.8 测试可配置阈值
+- [x] 2.11 为每个 endpoint 创建独立的 CircuitBreaker 实例
+- [x] 2.12 编写单元测试 `tests/unit/test_circuit_breaker.py`
+  - [x] 2.12.1 测试 CLOSED 状态正常调用
+  - [x] 2.12.2 测试达到阈值后进入 OPEN 状态
+  - [x] 2.12.3 测试超时后进入 HALF_OPEN 状态
+  - [x] 2.12.4 测试试探成功后回到 CLOSED 状态
+  - [x] 2.12.5 测试试探失败后回到 OPEN 状态
+  - [x] 2.12.6 测试并发状态转换（10线程并发）
+  - [x] 2.12.7 测试剩余时间反馈
+  - [x] 2.12.8 测试可配置阈值
 - [ ] 2.13 集成测试：模拟故障场景验证熔断器行为
 - [ ] 2.14 代码审查：确保状态转换逻辑正确
-- [ ] 2.15 更新文档：添加 CircuitBreaker 使用说明
+- [x] 2.15 更新文档：添加 CircuitBreaker 使用说明
 
 ## 3. DataQualityValidator 实现（3-4天）
 
-- [ ] 3.1 创建 `src/core/data_source/data_quality_validator.py` 文件
-- [ ] 3.2 实现 `DataQualityValidator` 类
-- [ ] 3.3 实现 `_logic_check()` 方法（OHLC 基础逻辑）
-- [ ] 3.4 实现 `_business_check()` 方法（业务规则）
-  - [ ] 3.4.1 检测极端价格波动（>20%）
-  - [ ] 3.4.2 检测异常成交量（>10倍均值）
-  - [ ] 3.4.3 检测停牌数据
-  - [ ] 3.4.4 检测零或负价格
-- [ ] 3.5 实现 `_statistical_check()` 方法（3-sigma 异常检测）
-- [ ] 3.6 实现 `_cross_source_check()` 方法（跨源验证）
-- [ ] 3.7 实现 `validate()` 主方法（协调所有检查）
+- [x] 3.1 创建 `src/core/data_source/data_quality_validator.py` 文件
+- [x] 3.2 实现 `DataQualityValidator` 类
+- [x] 3.3 实现 `_logic_check()` 方法（OHLC 基础逻辑）
+- [x] 3.4 实现 `_business_check()` 方法（业务规则）
+  - [x] 3.4.1 检测极端价格波动（>20%）
+  - [x] 3.4.2 检测异常成交量（>10倍均值）
+  - [x] 3.4.3 检测停牌数据
+  - [x] 3.4.4 检测零或负价格
+- [x] 3.5 实现 `_statistical_check()` 方法（3-sigma 异常检测）
+- [x] 3.6 实现 `_cross_source_check()` 方法（跨源验证）
+- [x] 3.7 实现 `validate()` 主方法（协调所有检查）
 - [ ] 3.8 集成到 `src/governance/engine/gpu_validator.py`
-- [ ] 3.9 编写单元测试 `tests/unit/test_data_quality_validator.py`
-  - [ ] 3.9.1 测试 OHLC 逻辑验证（通过/失败场景）
-  - [ ] 3.9.2 测试业务规则验证（极端价格、异常成交量、停牌）
-  - [ ] 3.9.3 测试统计异常检测（3-sigma）
-  - [ ] 3.9.4 测试跨源验证（一致性检查）
-  - [ ] 3.9.5 测试验证汇总（summary）
+- [x] 3.9 编写单元测试 `tests/unit/test_data_quality_validator.py`
+  - [x] 3.9.1 测试 OHLC 逻辑验证（通过/失败场景）
+  - [x] 3.9.2 测试业务规则验证（极端价格、异常成交量、停牌）
+  - [x] 3.9.3 测试统计异常检测（3-sigma）
+  - [x] 3.9.4 测试跨源验证（一致性检查）
+  - [x] 3.9.5 测试验证汇总（summary）
   - [ ] 3.9.6 测试 GPU 加速验证（100,000行数据）
 - [ ] 3.10 准备 100+ 测试用例数据（覆盖各种异常场景）
 - [ ] 3.11 代码审查：确保验证逻辑完整
-- [ ] 3.12 更新文档：添加 DataQualityValidator 使用说明
+- [x] 3.12 更新文档：添加 DataQualityValidator 使用说明
 
 ## 4. Phase 1 验收和部署（1-2天）
 
@@ -100,42 +108,42 @@
 
 ## 5. SmartRouter 实现（5-7天）
 
-- [ ] 5.1 创建 `src/core/data_source/smart_router.py` 文件
-- [ ] 5.2 实现 `SmartRouter` 类
-- [ ] 5.3 实现 `_score_by_performance()` 方法（P50/P95/P99 + 成功率）
-- [ ] 5.4 实现 `_adjust_by_cost()` 方法（成本优化）
-- [ ] 5.5 实现 `_adjust_by_load()` 方法（负载均衡）
-- [ ] 5.6 实现 `_adjust_by_location()` 方法（地域感知）
-- [ ] 5.7 实现 `route()` 主方法（多维度决策）
+- [x] 5.1 创建 `src/core/data_source/smart_router.py` 文件
+- [x] 5.2 实现 `SmartRouter` 类
+- [x] 5.3 实现 `_score_by_performance()` 方法（P50/P95/P99 + 成功率）
+- [x] 5.4 实现 `_adjust_by_cost()` 方法（成本优化）
+- [x] 5.5 实现 `_adjust_by_load()` 方法（负载均衡）
+- [x] 5.6 实现 `_adjust_by_location()` 方法（地域感知）
+- [x] 5.7 实现 `route()` 主方法（多维度决策）
 - [ ] 5.8 集成到 `src/core/data_source/router.py.get_best_endpoint()`
 - [ ] 5.9 添加配置项：权重（performance=0.4, cost=0.3, load=0.2, location=0.1）
-- [ ] 5.10 编写单元测试 `tests/unit/test_smart_router.py`
-  - [ ] 5.10.1 测试性能评分计算
-  - [ ] 5.10.2 测试成本优化（免费源优先）
-  - [ ] 5.10.3 测试负载均衡（避免过载）
-  - [ ] 5.10.4 测试地域感知（最近节点）
-  - [ ] 5.10.5 测试多维度综合评分
+- [x] 5.10 编写单元测试 `tests/unit/test_smart_router.py`
+  - [x] 5.10.1 测试性能评分计算
+  - [x] 5.10.2 测试成本优化（免费源优先）
+  - [x] 5.10.3 测试负载均衡（避免过载）
+  - [x] 5.10.4 测试地域感知（最近节点）
+  - [x] 5.10.5 测试多维度综合评分
 - [ ] 5.11 A/B 测试：对比新旧路由策略的性能差异
 - [ ] 5.12 代码审查：确保路由逻辑正确
 - [ ] 5.13 更新文档：添加 SmartRouter 使用说明
 
 ## 6. Prometheus 监控集成（5-7天）
 
-- [ ] 6.1 创建 `src/core/data_source/metrics.py` 文件
-- [ ] 6.2 定义 Prometheus 指标（Histogram, Counter, Gauge）
-  - [ ] 6.2.1 `datasource_api_latency_seconds` (Histogram)
-  - [ ] 6.2.2 `datasource_api_calls_total` (Counter)
-  - [ ] 6.2.3 `datasource_data_quality` (Gauge)
-  - [ ] 6.2.4 `datasource_cache_hits_total` (Counter)
-  - [ ] 6.2.5 `datasource_cache_misses_total` (Counter)
-  - [ ] 6.2.6 `datasource_circuit_breaker_state` (Gauge)
-  - [ ] 6.2.7 `datasource_api_cost_estimated` (Gauge)
-- [ ] 6.3 实现 `track_api_call()` 装饰器
-- [ ] 6.4 实现 `DataSourceMetrics` 类（指标收集器）
+- [x] 6.1 创建 `src/core/data_source/metrics.py` 文件
+- [x] 6.2 定义 Prometheus 指标（Histogram, Counter, Gauge）
+  - [x] 6.2.1 `datasource_api_latency_seconds` (Histogram)
+  - [x] 6.2.2 `datasource_api_calls_total` (Counter)
+  - [x] 6.2.3 `datasource_data_quality` (Gauge)
+  - [x] 6.2.4 `datasource_cache_hits_total` (Counter)
+  - [x] 6.2.5 `datasource_cache_misses_total` (Counter)
+  - [x] 6.2.6 `datasource_circuit_breaker_state` (Gauge)
+  - [x] 6.2.7 `datasource_api_cost_estimated` (Gauge)
+- [x] 6.3 实现 `track_api_call()` 装饰器
+- [x] 6.4 实现 `DataSourceMetrics` 类（指标收集器）
 - [ ] 6.5 在 `DataSourceManagerV2._call_endpoint()` 添加指标埋点
 - [ ] 6.6 在 `web/backend/app/main.py` 集成 `/metrics` 端点
-  - [ ] 6.6.1 添加 `/metrics` 路由
-  - [ ] 6.6.2 返回 Prometheus exposition 格式
+  - [x] 6.6.1 添加 `/metrics` 路由
+  - [x] 6.6.2 返回 Prometheus exposition 格式
   - [ ] 6.6.3 使用全局 REGISTRY
 - [ ] 6.7 创建 Grafana 仪表板配置
   - [ ] 6.7.1 创建 `grafana/dashboards/data-source-metrics.json`
