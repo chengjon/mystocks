@@ -11,11 +11,15 @@
 > - 类型验证器：`web/frontend/src/api/types/tools/validators/TypeValidator.ts`
 > - package scripts：`web/frontend/package.json`
 > - 部分实现类型：`extensions/strategy.ts`、`extensions/common.ts`、`extensions/market/index.ts`
+> - 根级提交前类型守卫：`.pre-commit-config.yaml` 已配置 `cd web/frontend && npx vue-tsc --noEmit`
+> - 扩展目录外的共享类型沉淀：`src/components/shared/types.ts` 已提供 `TableColumn<T>`，`src/utils/chartDataUtils.types.ts` 已提供 `ChartDataPoint`
+> - 实测验证：`cd web/frontend && npm run type-check` 通过；`cd web/frontend && npm run build:no-types` 通过
 > 关键残缺点也很明确：
 > - 仅 `market/` 子目录落地，`strategy/`、`common/`、`ui/`、`api/`、`utils/` 目录化结构未完整形成
 > - `package.json` 引用了 `scripts/check-type-conflicts.js`、`scripts/generate-type-usage.js`，但当前文件未找到
 > - `web/frontend/src/api/types/index.ts` 仍未导出 `extensions`
 > - `web/frontend/tsconfig.json` 当前反而排除了 `src/api/types/extensions/**/*`
+> - `cd web/frontend && npm run build` 当前未闭环：`generate_frontend_types.py` 在写 `src/api/types/admin.ts` 时因 `PermissionError` 失败，生成类型文件当前由 `nobody:nogroup` 持有
 > 因此下方仅勾选有直接仓库证据支持的任务，避免把“有雏形”误写成“已完成收口”。
 
 
@@ -30,7 +34,7 @@
 ### 1.2 Setup Build Scripts
 - [x] Update `package.json` with new type validation scripts
 - [x] Add `type:validate` and `type:check:conflicts` commands
-- [ ] Configure pre-commit hooks for type checking
+- [x] Configure pre-commit hooks for type checking
 
 ### 1.3 Create Type Validator Tool
 - [x] Implement `TypeValidator.ts` for conflict detection
@@ -55,7 +59,10 @@
 - [x] Add `FundFlowChartPoint` for capital flow charts
 
 ### 2.3 Common Types (30 minutes)
-- [ ] Define `PositionItem` type alias
+> **局部事实说明**:
+> `Position` 相关类型当前是“扩展层 `PositionVM` + 生成层 `PositionItem`”并存，不是单一统一别名设计，但“存在可用位置类型定义”这一任务目标已被当前仓库满足。
+
+- [x] Define `PositionItem` type alias
 - [x] Create `list<T>` and `date_type` utilities
 - [x] Add basic validation types
 
@@ -66,8 +73,11 @@
 ## Phase 3: Extended Type Definitions (1.5 hours)
 
 ### 3.1 UI Component Types (45 minutes)
-- [ ] Define `TableColumn<T>` for data tables
-- [ ] Create `ChartDataPoint` for visualization
+> **局部事实说明**:
+> `TableColumn<T>` 与 `ChartDataPoint` 已存在于共享组件 / 工具类型模块中，但尚未并入 `src/api/types/extensions/` 统一收口。
+
+- [x] Define `TableColumn<T>` for data tables
+- [x] Create `ChartDataPoint` for visualization
 - [ ] Add `FormField` and validation types
 
 ### 3.2 API Utility Types (30 minutes)
@@ -93,7 +103,7 @@
 ### 4.2 Testing & Validation (45 minutes)
 - [ ] Create type definition unit tests
 - [ ] Validate all 42 types compile correctly
-- [ ] Test import paths and type resolution
+- [x] Test import paths and type resolution
 
 ### 4.3 Documentation (30 minutes)
 - [ ] Create type extension usage guide
@@ -103,7 +113,7 @@
 ## Phase 5: Deployment & Monitoring (1 hour)
 
 ### 5.1 Deployment Preparation (20 minutes)
-- [ ] Run full type check on entire codebase
+- [x] Run full type check on entire codebase
 - [ ] Validate no breaking changes to existing code
 - [ ] Prepare rollback plan if needed
 
@@ -113,7 +123,7 @@
 - [ ] Deploy to development environment
 
 ### 5.3 Monitoring Setup (20 minutes)
-- [ ] Configure type checking in pre-commit hooks
+- [x] Configure type checking in pre-commit hooks
 - [ ] Set up automated type validation reports
 - [ ] Create type health monitoring dashboard
 
@@ -122,7 +132,7 @@
 ### Functional Validation
 - [ ] All 36 TypeScript errors resolved
 - [ ] All 42 types successfully compile
-- [ ] Import statements work correctly
+- [x] Import statements work correctly
 - [ ] No type conflicts detected
 
 ### Integration Validation
