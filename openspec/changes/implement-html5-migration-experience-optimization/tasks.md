@@ -4,11 +4,19 @@
 > 本文件用于记录当前 OpenSpec 变更的执行清单、操作步骤或协作约束，帮助跟踪实施过程。
 > 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
 
+> **Repo-Truth 对齐注记（2026-04-27）**:
+> 本清单已按当前仓库实现复核，仅对有直接本地证据的项勾选。历史报告、备份文件、目标值、外部环境/UAT/上线结果不视为“已完成”。
+> 当前关键事实漂移：
+> - 菜单当前 canonical 配置是 `MenuConfig.ts` 的 **7 个业务域**，不是提案中的 6 个功能域。
+> - PWA 基础文件、Service Worker、IndexedDB、部分 Worker 能力已存在，但 `vite.config.mts` 中 `vite-plugin-pwa` 当前仍被禁用。
+> - `manifest.json` 引用了 `screenshots/*` 与 `shortcut-*.png`，但对应静态资源当前未在 `public/` 下齐备。
+> - `@ant-design/icons-vue` 依赖与业务导入仍存在，依赖统一未完成。
+> - Worker 协调层存在占位实现，不能把“有文件/有接口”机械等同为“完整生产能力已闭环”。
 
 ### 1.1 菜单系统完整实现
-- [ ] 1.1.1 更新路由配置使用ArtDecoLayoutEnhanced (基于迁移路由经验)
-- [ ] 1.1.2 完善MenuConfig.enhanced.ts的6个功能域 (市场观察/选股分析/策略中心/交易管理/风险监控/系统设置)
-- [ ] 1.1.3 实现树形菜单的展开/折叠功能
+- [x] 1.1.1 更新路由配置使用ArtDecoLayoutEnhanced (基于迁移路由经验)
+- [ ] 1.1.2 完善当前 canonical 菜单配置的业务域 (提案原文为6域；当前 repo truth 为7域)
+- [x] 1.1.3 实现树形菜单的展开/折叠功能
 - [ ] 1.1.4 基于11个路由测试用例验证菜单跳转 (学习迁移报告的测试方法)
 - [ ] 1.1.5 测试菜单状态保持和响应式布局
 
@@ -20,21 +28,21 @@
 - [ ] 1.2.5 验证样式一致性 (ArtDeco设计系统完整覆盖)
 
 ### 1.3 测试基础设施完善
-- [ ] 1.3.1 配置Vitest覆盖率报告 (基于228个测试文件的实际经验)
-- [ ] 1.3.2 编写核心组件单元测试 (ArtDeco组件优先)
-- [ ] 1.3.3 实现E2E自动化测试 (参考迁移报告的部署验证)
-- [ ] 1.3.4 配置CI/CD测试流水线
+- [x] 1.3.1 配置Vitest覆盖率报告 (基于228个测试文件的实际经验)
+- [x] 1.3.2 编写核心组件单元测试 (ArtDeco组件优先)
+- [x] 1.3.3 实现E2E自动化测试 (参考迁移报告的部署验证)
+- [x] 1.3.4 配置CI/CD测试流水线
 - [ ] 1.3.5 建立测试覆盖率基线 (目标60%)
 
 ### 1.4 Bundle大小优化
 - [ ] 1.4.1 分析当前3.8MB Bundle构成 (vue-framework + echarts + vendor)
-- [ ] 1.4.2 实施精确的分包策略 (基于实际构建数据的优化)
+- [x] 1.4.2 实施精确的分包策略 (基于实际构建数据的优化)
 - [ ] 1.4.3 移除未使用的依赖和死代码
-- [ ] 1.4.4 优化ECharts按需引入
+- [x] 1.4.4 优化ECharts按需引入
 - [ ] 1.4.5 验证Bundle大小达到2.5MB目标
 
 ### 1.5 首屏加载优化
-- [ ] 1.5.1 实施路由懒加载优化 (基于迁移报告的性能经验)
+- [x] 1.5.1 实施路由懒加载优化 (基于迁移报告的性能经验)
 - [ ] 1.5.2 关键资源预加载策略
 - [ ] 1.5.3 图片和字体优化 (WebP + 响应式)
 - [ ] 1.5.4 缓存策略实施 (学习迁移报告的缓存配置)
@@ -50,31 +58,31 @@
 ## Phase 2: Advanced HTML5 Features Implementation
 
 ### 2.1 PWA Foundation Setup
-- [ ] 2.1.1 Create Web App Manifest (`public/manifest.json`) (基于迁移报告的标准配置)
+- [x] 2.1.1 Create Web App Manifest (`public/manifest.json`) (基于迁移报告的标准配置)
 - [ ] 2.1.2 Add PWA icons and splash screens (192x192, 512x512, etc.)
-- [ ] 2.1.3 Implement basic Service Worker registration
-- [ ] 2.1.4 Add PWA meta tags to index.html (参考HTML5语义化经验)
+- [x] 2.1.3 Implement basic Service Worker registration
+- [x] 2.1.4 Add PWA meta tags to index.html (参考HTML5语义化经验)
 - [ ] 2.1.5 Configure Vite PWA plugin for build process
 
 ### 2.2 Service Worker Implementation
-- [ ] 2.2.1 Create Service Worker for caching static assets (学习迁移报告的缓存策略)
-- [ ] 2.2.2 Implement runtime caching for API responses
-- [ ] 2.2.3 Add offline fallback pages and strategies (参考11个路由的离线支持)
+- [x] 2.2.1 Create Service Worker for caching static assets (学习迁移报告的缓存策略)
+- [x] 2.2.2 Implement runtime caching for API responses
+- [x] 2.2.3 Add offline fallback pages and strategies (参考11个路由的离线支持)
 - [ ] 2.2.4 Implement background sync for failed requests
-- [ ] 2.2.5 Add cache versioning and cleanup logic (基于迁移经验的版本管理)
+- [x] 2.2.5 Add cache versioning and cleanup logic (基于迁移经验的版本管理)
 
 ### 2.3 IndexedDB Integration
-- [ ] 2.3.1 Create IndexedDB wrapper utility (基于localStorage现有经验扩展)
-- [ ] 2.3.2 Implement schema for market data storage (股票数据/技术指标)
-- [ ] 2.3.3 Add IndexedDB operations (CRUD) with promises
-- [ ] 2.3.4 Integrate with existing data management system
+- [x] 2.3.1 Create IndexedDB wrapper utility (基于localStorage现有经验扩展)
+- [x] 2.3.2 Implement schema for market data storage (股票数据/技术指标)
+- [x] 2.3.3 Add IndexedDB operations (CRUD) with promises
+- [x] 2.3.4 Integrate with existing data management system
 - [ ] 2.3.5 Add storage quota monitoring and management
 
 ### 2.4 Web Workers Implementation
-- [ ] 2.4.1 Create Web Worker for technical indicator calculations (253个指标计算)
+- [x] 2.4.1 Create Web Worker for technical indicator calculations (253个指标计算)
 - [ ] 2.4.2 Implement Web Worker for data processing tasks (K线数据处理)
-- [ ] 2.4.3 Add Web Worker communication protocol (基于Vue组件集成)
-- [ ] 2.4.4 Integrate Web Workers with Vue components
+- [x] 2.4.3 Add Web Worker communication protocol (基于Vue组件集成)
+- [x] 2.4.4 Integrate Web Workers with Vue components
 - [ ] 2.4.5 Add error handling and worker lifecycle management
 
 ### 2.5 Push Notifications
@@ -85,9 +93,9 @@
 - [ ] 2.5.5 Add notification preferences in settings
 
 ### 2.6 Advanced Caching Strategy
-- [ ] 2.6.1 Implement Cache API for static assets (基于Service Worker)
+- [x] 2.6.1 Implement Cache API for static assets (基于Service Worker)
 - [ ] 2.6.2 Add intelligent cache invalidation logic (市场数据实时性考虑)
-- [ ] 2.6.3 Create cache-first/network-fallback strategy
+- [x] 2.6.3 Create cache-first/network-fallback strategy
 - [ ] 2.6.4 Implement cache warming for hot data (热门股票数据)
 - [ ] 2.6.5 Add cache analytics and monitoring
 
@@ -141,7 +149,7 @@
 ## Success Metrics & Validation
 
 ### Functional Validation
-- [ ] ✅ 6个功能域菜单完整实现并正常工作
+- [ ] ✅ 7个业务域菜单完整实现并正常工作 (提案原文为6域)
 - [ ] ✅ PWA可安装和离线功能正常
 - [ ] ✅ IndexedDB数据存储和检索正常
 - [ ] ✅ Web Workers性能提升量化验证
