@@ -91,6 +91,7 @@
 - [ ] 7.4 实现数据缓存策略优化，避免重复API调用
 - [ ] 7.5 实现批量数据请求优化，支持多股票同时查询
 - [ ] 7.6 更新项目文档，添加新数据源的使用说明
+  - [ ] Repo-truth：当前可确认的现行文档主要是 `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md` 与 `docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md` 这类通用接入指南；`docs/api/AKSHARE_INTERFACE_MAPPING.md` 已明确标注为历史快照/设计映射，不足以作为本 change“新增数据源使用说明已更新完成”的闭环证据。
 
 ## 8. 测试和验证
 > **仓库事实校对（2026-04-27）**:
@@ -113,6 +114,7 @@
 
 - [ ] 9.1 更新API文档，添加所有新端点的详细说明
 - [ ] 9.2 创建数据源使用指南，帮助开发者理解各个接口的用途
+  - [ ] Repo-truth：仓库当前存在的是通用 API / 数据源接入指南，而不是面向本次 AkShare 扩充接口集合的现行专题使用手册；历史 `AKSHARE_INTERFACE_MAPPING.md` 不能直接当作当前完成证据。
 - [ ] 9.3 编写数据更新频率和缓存策略说明
 - [ ] 9.4 创建故障排除指南，帮助处理常见问题
 - [ ] 9.5 编写维护手册，包括数据源更新和版本兼容性说明
