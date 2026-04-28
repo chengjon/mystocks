@@ -553,6 +553,7 @@ class TestOrderManagementService:
         store.upsert_submission(
             order_id="order-0001",
             local_submission_id="submission-0001",
+            broker_channel=module.LOCAL_ANCHOR_BROKER_CHANNEL,
             adapter_path="src.application.trading.order_mgmt_service.OrderManagementService.place_order",
             account_scope="unscoped",
             session_scope="unit-session-0001",
@@ -563,6 +564,7 @@ class TestOrderManagementService:
         assert pending_record is not None
         assert pending_record["order_id"] == "order-0001"
         assert pending_record["local_submission_id"] == "submission-0001"
+        assert pending_record["broker_channel"] == module.LOCAL_ANCHOR_BROKER_CHANNEL
         assert pending_record["adapter_path"] == "src.application.trading.order_mgmt_service.OrderManagementService.place_order"
         assert pending_record["account_scope"] == "unscoped"
         assert pending_record["session_scope"] == "unit-session-0001"
@@ -584,6 +586,61 @@ class TestOrderManagementService:
         assert reverse_lookup_record is not None
         assert reverse_lookup_record["order_id"] == "order-0001"
         assert reverse_lookup_record["local_submission_id"] == "submission-0001"
+        assert reverse_lookup_record["broker_channel"] == module.LOCAL_ANCHOR_BROKER_CHANNEL
+
+    def test_sqlite_broker_order_correlation_store_blocks_ambiguous_cross_channel_identity_reuse(self, tmp_path):
+        module = importlib.import_module("src.application.trading.broker_order_correlation")
+        correlation_db = tmp_path / "channel-scoped-broker-correlation.sqlite3"
+        store = module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+
+        store.upsert_submission(
+            order_id="order-miniqmt-0001",
+            local_submission_id="submission-shared-0001",
+            broker_channel=module.MINIQMT_BROKER_CHANNEL,
+            adapter_path="web.backend.app.services.windows_bridge_adapter.qmt.submit",
+            account_scope="sim-account-01",
+            session_scope="miniqmt-session-0001",
+            acknowledgement_status="awaiting_broker_acknowledgement",
+        )
+        store.upsert_submission(
+            order_id="order-tdx-0001",
+            local_submission_id="submission-shared-0001",
+            broker_channel=module.TDX_MANUAL_BROKER_CHANNEL,
+            adapter_path="operator.tdx.manual.submit",
+            account_scope="sim-account-01",
+            session_scope="tdx-session-0001",
+            acknowledgement_status="awaiting_broker_acknowledgement",
+        )
+
+        store.bind_external_order_id(
+            order_id="order-miniqmt-0001",
+            external_order_id="external-shared-0001",
+            acknowledgement_status="acknowledged",
+        )
+        store.bind_external_order_id(
+            order_id="order-tdx-0001",
+            external_order_id="external-shared-0001",
+            acknowledgement_status="acknowledged",
+        )
+
+        assert store.get_by_local_submission_id("submission-shared-0001") is None
+        assert store.get_by_external_order_id("external-shared-0001") is None
+
+        miniqmt_submission_record = store.get_by_local_submission_id(
+            "submission-shared-0001",
+            broker_channel=module.MINIQMT_BROKER_CHANNEL,
+        )
+        assert miniqmt_submission_record is not None
+        assert miniqmt_submission_record["order_id"] == "order-miniqmt-0001"
+        assert miniqmt_submission_record["broker_channel"] == module.MINIQMT_BROKER_CHANNEL
+
+        tdx_external_record = store.get_by_external_order_id(
+            "external-shared-0001",
+            broker_channel=module.TDX_MANUAL_BROKER_CHANNEL,
+        )
+        assert tdx_external_record is not None
+        assert tdx_external_record["order_id"] == "order-tdx-0001"
+        assert tdx_external_record["broker_channel"] == module.TDX_MANUAL_BROKER_CHANNEL
 
     def test_default_broker_order_correlation_store_uses_local_sqlite_ledger(self, tmp_path):
         module = importlib.import_module("src.application.trading.broker_order_correlation")
@@ -638,6 +695,7 @@ class TestOrderManagementService:
         assert record is not None
         assert record["order_id"] == response.order_id
         assert record["local_submission_id"] == "broker-correlation-key-0001"
+        assert record["broker_channel"] == module.LOCAL_ANCHOR_BROKER_CHANNEL
         assert record["adapter_path"] == "src.application.trading.order_mgmt_service.OrderManagementService.place_order"
         assert record["account_scope"] == "unscoped"
         assert record["acknowledgement_status"] == "awaiting_broker_acknowledgement"

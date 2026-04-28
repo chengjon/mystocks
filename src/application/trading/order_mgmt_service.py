@@ -12,7 +12,10 @@ from src.application.trading.broker_lifecycle_event import (
     BrokerLifecycleEvent,
     InMemoryTradingBrokerLifecycleEventStore,
 )
-from src.application.trading.broker_order_correlation import InMemoryTradingBrokerOrderCorrelationStore
+from src.application.trading.broker_order_correlation import (
+    InMemoryTradingBrokerOrderCorrelationStore,
+    LOCAL_ANCHOR_BROKER_CHANNEL,
+)
 from src.application.trading.broker_reconciliation import (
     AUTO_RESOLUTION_APPLIED,
     AWAITING_BROKER_ACKNOWLEDGEMENT,
@@ -463,6 +466,7 @@ class OrderManagementService:
         self.broker_correlation_store.upsert_submission(
             order_id=order.id.value,
             local_submission_id=request.idempotency_key or request.request_id or order.id.value,
+            broker_channel=LOCAL_ANCHOR_BROKER_CHANNEL,
             adapter_path=LOCAL_ORDER_SUBMISSION_ADAPTER_PATH,
             account_scope="unscoped",
             session_scope=request.request_id,
