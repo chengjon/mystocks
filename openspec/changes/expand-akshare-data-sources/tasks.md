@@ -67,6 +67,11 @@
 - [x] 5.11 编写板块和行业数据的单元测试
 
 ## 6. 行情和情绪数据待补齐
+> **仓库事实校对（2026-04-28）**:
+> 在当前 AkShare 市场适配器 / API / 配置注册表 / 测试链路中，未检出 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_news_main_em`、`stock_zt_pool_em`、`stock_dt_pool_em`、`stock_strong_pool_em`、`stock_weak_pool_em`、`stock_changes_em`、`stock_new_em` 的现行实现痕迹。
+> `src/adapters/akshare/market_adapter/stock_sentiment.py` 当前仅覆盖第 2 节已完成的 `stock_comment_em`、`stock_comment_detail_zlkp_jgcyd_em`、`stock_news_em`、`stock_bid_ask_em`。
+> 仓库虽在其他模块存在相邻能力（如 `byapi` 的涨跌停股池、`wencai` 的强势股查询），但它们不属于本 change 要求的 AkShare 市场适配器 / API / registry / test 闭环，不能外推为 6.1-6.12 已完成。
+
 - [ ] 6.1 实现股票热度数据 (akshare.stock_hot_follow_xq)
 - [ ] 6.2 实现板块异动详情 (akshare.stock_board_change_em)
 - [ ] 6.3 实现财经内容精选 (akshare.stock_news_main_em)
@@ -84,6 +89,7 @@
 > **仓库事实校对（2026-04-27）**:
 > 适配器聚合入口已在 `src/adapters/akshare/market_adapter/adapter.py` 完成 mixin 组合，API 路由已在 `web/backend/app/api/akshare_market/__init__.py` 与 `web/backend/app/router_registry.py` 注册。
 > 本节保持未完成，直到第 6 节剩余接口补齐并重新验证所有集成收口项。
+> 另据 `tests/api/file_tests/test_akshare_market_api.py`，现有 `test_smart_cache_integration()` 仍是注释型占位断言，不足以证明第 6 节新增接口的缓存策略优化已经落地；当前也未见面向这些剩余接口的多股票批量请求实现/测试闭环，因此 7.4 / 7.5 继续保留未完成。
 
 - [x] 7.1 更新适配器聚合入口，纳入新增市场 mixin
 - [ ] 7.2 更新数据源配置注册表，补齐剩余接口的质量规则
