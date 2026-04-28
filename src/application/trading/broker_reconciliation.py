@@ -49,6 +49,7 @@ def resolve_broker_correlation_for_event(
     event: BrokerLifecycleEvent,
     broker_correlation_store: Any,
 ) -> tuple[Optional[Dict[str, Any]], str]:
+    broker_channel = event.broker_channel
     if event.local_order_id is not None:
         correlation_record = broker_correlation_store.get_order_correlation(event.local_order_id)
         if correlation_record is not None:
@@ -56,13 +57,19 @@ def resolve_broker_correlation_for_event(
         return None, "unmatched_local_order_id"
 
     if event.local_submission_id is not None and hasattr(broker_correlation_store, "get_by_local_submission_id"):
-        correlation_record = broker_correlation_store.get_by_local_submission_id(event.local_submission_id)
+        correlation_record = broker_correlation_store.get_by_local_submission_id(
+            event.local_submission_id,
+            broker_channel=broker_channel,
+        )
         if correlation_record is not None:
             return correlation_record, "matched_local_submission_id"
         return None, "unmatched_local_submission_id"
 
     if event.external_order_id is not None:
-        correlation_record = broker_correlation_store.get_by_external_order_id(event.external_order_id)
+        correlation_record = broker_correlation_store.get_by_external_order_id(
+            event.external_order_id,
+            broker_channel=broker_channel,
+        )
         if correlation_record is not None:
             return correlation_record, "matched_external_order_id"
         return None, "unmatched_external_order_id"
@@ -87,6 +94,7 @@ def build_broker_lifecycle_payload(
     return {
         "event_type": event.event_type,
         "order_id": order_id,
+        "broker_channel": event.broker_channel or (correlation_record.get("broker_channel") if correlation_record else None),
         "external_order_id": event.external_order_id,
         "local_submission_id": event.local_submission_id,
         "local_order_id": event.local_order_id,
@@ -161,6 +169,7 @@ def build_broker_divergence_record(
         "next_action": "manual_reconciliation_required",
         "required_evidence": required_evidence_for_divergence(divergence_category),
         "order_id": order_id,
+        "broker_channel": event.broker_channel or (correlation_record.get("broker_channel") if correlation_record else None),
         "event_type": event.event_type,
         "external_order_id": event.external_order_id,
         "local_submission_id": event.local_submission_id,

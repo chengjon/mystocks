@@ -23,6 +23,7 @@ class BrokerLifecycleEvent(BaseModel):
 
     event_type: str = Field(..., pattern="^(acknowledgement|reject|cancel|execution)$")
     source_timestamp: datetime
+    broker_channel: Optional[str] = Field(None, min_length=1, max_length=64)
     source_name: Optional[str] = Field(None, min_length=1, max_length=128)
     external_order_id: Optional[str] = Field(None, min_length=1, max_length=128)
     local_submission_id: Optional[str] = Field(None, min_length=1, max_length=128)

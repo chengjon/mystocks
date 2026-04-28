@@ -16,6 +16,7 @@ from src.application.trading.broker_order_correlation import (
     InMemoryTradingBrokerOrderCorrelationStore,
     LOCAL_ANCHOR_BROKER_CHANNEL,
 )
+from src.application.trading.miniqmt_lifecycle_ingestion import normalize_miniqmt_lifecycle_payload
 from src.application.trading.broker_reconciliation import (
     AUTO_RESOLUTION_APPLIED,
     AWAITING_BROKER_ACKNOWLEDGEMENT,
@@ -383,6 +384,10 @@ class OrderManagementService:
                 )
             self.broker_divergence_store.append(divergence_record)
         return payload
+
+    def ingest_miniqmt_lifecycle_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        lifecycle_event = normalize_miniqmt_lifecycle_payload(payload)
+        return self.record_broker_lifecycle_event(lifecycle_event)
 
     def get_pending_buy_notional_for_portfolio(self, portfolio_id: str) -> float:
         return float(self.cash_reservation_store.get_portfolio_reserved_notional(portfolio_id))

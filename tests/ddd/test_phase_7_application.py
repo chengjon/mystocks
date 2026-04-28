@@ -859,6 +859,81 @@ class TestOrderManagementService:
         assert order_state_record is not None
         assert order_state_record["status"] == "SUBMITTED"
 
+    def test_ingest_miniqmt_lifecycle_payload_normalizes_windows_bridge_acknowledgement(self, tmp_path):
+        try:
+            correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+            event_module = importlib.import_module("src.application.trading.broker_lifecycle_event")
+            miniqmt_module = importlib.import_module("src.application.trading.miniqmt_lifecycle_ingestion")
+        except ModuleNotFoundError as exc:
+            pytest.fail(f"miniqmt lifecycle dependency missing: {exc}")
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "miniqmt-ack-correlation.sqlite3"
+        event_db = tmp_path / "miniqmt-ack-event-ledger.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        event_store = event_module.SqliteTradingBrokerLifecycleEventStore(event_db)
+        service = OrderManagementService(
+            order_repo=order_repo,
+            broker_correlation_store=correlation_store,
+            broker_lifecycle_event_store=event_store,
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="miniqmt-submission-0001",
+                request_id="miniqmt-session-0001",
+            )
+        )
+        correlation_store.upsert_submission(
+            order_id=response.order_id,
+            local_submission_id="miniqmt-submission-0001",
+            broker_channel=correlation_module.MINIQMT_BROKER_CHANNEL,
+            adapter_path="web.backend.app.services.windows_bridge_adapter.qmt.submit",
+            account_scope="sim-account-01",
+            session_scope="miniqmt-session-0001",
+            acknowledgement_status="awaiting_broker_acknowledgement",
+        )
+
+        if not hasattr(service, "ingest_miniqmt_lifecycle_payload"):
+            pytest.fail("ingest_miniqmt_lifecycle_payload is missing")
+
+        persisted_record = service.ingest_miniqmt_lifecycle_payload(
+            {
+                "status": "accepted",
+                "updated_at": "2026-04-28T05:00:00+00:00",
+                "entrust_no": "miniqmt-broker-order-0001",
+                "client_order_id": "miniqmt-submission-0001",
+                "sequence_no": "miniqmt-seq-0001",
+            }
+        )
+
+        assert persisted_record["event_type"] == "acknowledgement"
+        assert persisted_record["order_id"] == response.order_id
+        assert persisted_record["broker_channel"] == correlation_module.MINIQMT_BROKER_CHANNEL
+        assert persisted_record["source_name"] == miniqmt_module.MINIQMT_WINDOWS_BRIDGE_SOURCE_NAME
+        assert persisted_record["external_order_id"] == "miniqmt-broker-order-0001"
+        assert persisted_record["identity_status"] == "matched_local_submission_id"
+        assert persisted_record["sequencing_status"] == "sequencing_metadata_present"
+        assert persisted_record["sequence_id"] == "miniqmt-seq-0001"
+        assert persisted_record["adapter_path"] == "web.backend.app.services.windows_bridge_adapter.qmt.submit"
+        assert persisted_record["account_scope"] == "sim-account-01"
+        assert persisted_record["session_scope"] == "miniqmt-session-0001"
+
+        persisted_event = event_store.fetch_recent(limit=1)[0]
+        assert persisted_event["broker_channel"] == correlation_module.MINIQMT_BROKER_CHANNEL
+        assert persisted_event["source_name"] == miniqmt_module.MINIQMT_WINDOWS_BRIDGE_SOURCE_NAME
+
+        correlation_record = correlation_store.get_order_correlation(response.order_id)
+        assert correlation_record is not None
+        assert correlation_record["broker_channel"] == correlation_module.MINIQMT_BROKER_CHANNEL
+        assert correlation_record["external_order_id"] == "miniqmt-broker-order-0001"
+        assert correlation_record["acknowledgement_status"] == "acknowledged"
+
     def test_record_broker_lifecycle_event_execution_matches_external_identity_and_preserves_sequence_metadata(self, tmp_path):
         try:
             correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
