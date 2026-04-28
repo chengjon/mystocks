@@ -87,7 +87,8 @@
 
 ### 3.3 Business Logic Types (30 minutes)
 - [x] Add search, filter, and sort parameter types
-- [ ] Create notification and modal component types
+- [x] Create notification and modal component types
+  - Repo-truth note: current implementations are distributed rather than unified under `src/api/types/extensions/`: notification-related shapes exist as `NotificationVM` / `NotificationPreferencesVM` in `src/utils/user-adapters/types-1.ts`, reusable toast notification contracts exist as `ToastConfig` / `ToastManager` in `src/composables/useToastManager.ts` with unit tests in `src/composables/__tests__/useToastManager.spec.ts`, and modal component contracts exist as `Props` / `Emits` in `src/components/shared/ui/DetailDialog.vue`.
 
 ## Phase 4: Integration & Validation (1.5 hours)
 
@@ -101,6 +102,12 @@
 - [x] Add type checking to CI/CD pipeline
 
 ### 4.2 Testing & Validation (45 minutes)
+> **局部事实说明（2026-04-28）**:
+> 当前仓库可以确认存在“类型相关回归/卫生测试”，例如：
+> - `web/frontend/src/api/__tests__/strategy.test.ts` 直接导入 `@/api/types/extensions/strategy`
+> - `web/frontend/tests/unit/config/*types-cleanup.spec.ts` 覆盖多个类型文件的 `ts-nocheck` 清理约束
+> 但这仍不足以视为本专题要求的“扩展类型定义单元测试 + 42 types compile 闭环”；当前未找到专门面向 `extensions/` 目录全集的独立测试套件或编译核验报告。
+
 - [ ] Create type definition unit tests
 - [ ] Validate all 42 types compile correctly
 - [x] Test import paths and type resolution
@@ -136,6 +143,12 @@
 - [ ] No type conflicts detected
 
 ### Integration Validation
+> **局部事实说明（2026-04-28）**:
+> `cd web/frontend && npm run type-check` 与 `npm run build:no-types` 可通过，但这不能替代本节闭环：
+> - `npm run build` 仍依赖 `generate_frontend_types.py`，当前会在写 `src/api/types/admin.ts` 时触发 `PermissionError`
+> - `npm run dev` 默认同样先执行 `generate-types`
+> 因此在生成链路权限问题消除前，`Build process completes successfully` 与 `Development server starts without errors` 继续保留未完成。
+
 - [ ] Existing code continues to work
 - [ ] Build process completes successfully
 - [ ] Development server starts without errors
