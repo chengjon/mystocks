@@ -1062,6 +1062,267 @@ class TestOrderManagementService:
         assert divergence_record["local_submission_id"] == "miniqmt-runtime-late-0006"
         assert divergence_record["reason_code"] == "unmatched_deferred_bridge_result"
 
+    def test_poll_miniqmt_live_bridge_result_routes_canonical_payload_into_shared_lifecycle(self, tmp_path):
+        correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+        attempt_module = importlib.import_module("src.application.trading.broker_submission_attempt")
+        event_module = importlib.import_module("src.application.trading.broker_lifecycle_event")
+        runtime_module = importlib.import_module("src.application.trading.miniqmt_primary_runtime")
+
+        class StubTransport:
+            def submit_order(self, payload):
+                return {"status": "success", "task_id": "bridge-task-0007", "source": "qmt"}
+
+        class StubLiveBridge:
+            def poll_task_result(self, task_id, *, timeout_seconds=None, poll_interval_seconds=None):
+                assert task_id == "bridge-task-0007"
+                return {
+                    "contract_state": "bridge_result_payload",
+                    "task_id": task_id,
+                    "provider": "qmt",
+                    "method": "task_result",
+                    "result_status": "completed",
+                    "occurred_at": "2026-04-29T06:00:00+00:00",
+                    "broker_event_type": "acknowledgement",
+                    "local_submission_id": "miniqmt-live-bridge-0007",
+                    "client_order_id": "miniqmt-live-bridge-0007",
+                    "account_scope": "sim-account-07",
+                    "source_name": "qmt/windows_bridge",
+                    "external_order_id": "miniqmt-broker-order-0007",
+                    "sequence_id": "miniqmt-seq-0007",
+                }
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "miniqmt-live-bridge-correlation.sqlite3"
+        attempt_db = tmp_path / "miniqmt-live-bridge-attempt.sqlite3"
+        event_db = tmp_path / "miniqmt-live-bridge-event.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        attempt_store = attempt_module.SqliteTradingBrokerSubmissionAttemptStore(attempt_db)
+        event_store = event_module.SqliteTradingBrokerLifecycleEventStore(event_db)
+        runtime = runtime_module.MiniQMTPrimaryBrokerRuntime(transport=StubTransport(), account_scope="sim-account-07")
+        service = OrderManagementService(
+            order_repo=order_repo,
+            broker_correlation_store=correlation_store,
+            broker_submission_attempt_store=attempt_store,
+            broker_lifecycle_event_store=event_store,
+            primary_broker_runtime=runtime,
+            primary_broker_live_bridge=StubLiveBridge(),
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="miniqmt-live-bridge-0007",
+                request_id="miniqmt-live-bridge-session-0007",
+            )
+        )
+
+        persisted_record = service.poll_miniqmt_live_bridge_result("bridge-task-0007")
+
+        assert persisted_record["event_type"] == "acknowledgement"
+        assert persisted_record["order_id"] == response.order_id
+        assert persisted_record["external_order_id"] == "miniqmt-broker-order-0007"
+        assert persisted_record["identity_status"] == "matched_local_submission_id"
+        assert persisted_record["sequence_id"] == "miniqmt-seq-0007"
+
+        correlation_record = correlation_store.get_order_correlation(response.order_id)
+        assert correlation_record is not None
+        assert correlation_record["external_order_id"] == "miniqmt-broker-order-0007"
+        assert correlation_record["acknowledgement_status"] == "acknowledged"
+
+    def test_poll_miniqmt_live_bridge_result_timeout_persists_review_required_divergence(self, tmp_path):
+        correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+        attempt_module = importlib.import_module("src.application.trading.broker_submission_attempt")
+        divergence_module = importlib.import_module("src.application.trading.broker_divergence")
+        runtime_module = importlib.import_module("src.application.trading.miniqmt_primary_runtime")
+
+        class StubTransport:
+            def submit_order(self, payload):
+                return {"status": "success", "task_id": "bridge-task-0008", "source": "qmt"}
+
+        class StubLiveBridge:
+            def poll_task_result(self, task_id, *, timeout_seconds=None, poll_interval_seconds=None):
+                return {
+                    "contract_state": "bridge_result_timeout",
+                    "task_id": task_id,
+                    "reason_code": "bridge_result_timeout",
+                    "reason_detail": "miniQMT live bridge result did not reach a terminal state within 5.00s",
+                }
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "miniqmt-live-bridge-timeout-correlation.sqlite3"
+        attempt_db = tmp_path / "miniqmt-live-bridge-timeout-attempt.sqlite3"
+        divergence_db = tmp_path / "miniqmt-live-bridge-timeout-divergence.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        attempt_store = attempt_module.SqliteTradingBrokerSubmissionAttemptStore(attempt_db)
+        divergence_store = divergence_module.SqliteTradingBrokerDivergenceStore(divergence_db)
+        runtime = runtime_module.MiniQMTPrimaryBrokerRuntime(transport=StubTransport(), account_scope="sim-account-08")
+        service = OrderManagementService(
+            order_repo=order_repo,
+            broker_correlation_store=correlation_store,
+            broker_submission_attempt_store=attempt_store,
+            broker_divergence_store=divergence_store,
+            primary_broker_runtime=runtime,
+            primary_broker_live_bridge=StubLiveBridge(),
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="miniqmt-live-bridge-0008",
+                request_id="miniqmt-live-bridge-session-0008",
+            )
+        )
+
+        incident = service.poll_miniqmt_live_bridge_result("bridge-task-0008", timeout_seconds=5.0)
+
+        assert incident["divergence_category"] == "live_bridge_timeout"
+        assert incident["review_status"] == "review_required"
+        assert incident["next_action"] == "operator_review_or_tdx_supplemental_handoff"
+        assert incident["order_id"] == response.order_id
+
+        divergence_record = divergence_store.fetch_recent(limit=1)[0]
+        assert divergence_record["divergence_category"] == "live_bridge_timeout"
+        assert divergence_record["bridge_task_id"] == "bridge-task-0008"
+
+        correlation_record = correlation_store.get_order_correlation(response.order_id)
+        assert correlation_record is not None
+        assert correlation_record["external_order_id"] is None
+        assert correlation_record["acknowledgement_status"] == "awaiting_broker_acknowledgement"
+
+    def test_poll_miniqmt_live_bridge_result_identity_mismatch_persists_review_required_divergence(self, tmp_path):
+        correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+        attempt_module = importlib.import_module("src.application.trading.broker_submission_attempt")
+        divergence_module = importlib.import_module("src.application.trading.broker_divergence")
+        runtime_module = importlib.import_module("src.application.trading.miniqmt_primary_runtime")
+
+        class StubTransport:
+            def submit_order(self, payload):
+                return {"status": "success", "task_id": "bridge-task-0009", "source": "qmt"}
+
+        class StubLiveBridge:
+            def poll_task_result(self, task_id, *, timeout_seconds=None, poll_interval_seconds=None):
+                return {
+                    "contract_state": "bridge_result_payload",
+                    "task_id": task_id,
+                    "provider": "qmt",
+                    "method": "task_result",
+                    "result_status": "completed",
+                    "occurred_at": "2026-04-29T06:05:00+00:00",
+                    "broker_event_type": "acknowledgement",
+                    "local_submission_id": "unexpected-submission-id",
+                    "client_order_id": "unexpected-submission-id",
+                    "account_scope": "sim-account-09",
+                    "source_name": "qmt/windows_bridge",
+                    "external_order_id": "miniqmt-broker-order-0009",
+                }
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "miniqmt-live-bridge-mismatch-correlation.sqlite3"
+        attempt_db = tmp_path / "miniqmt-live-bridge-mismatch-attempt.sqlite3"
+        divergence_db = tmp_path / "miniqmt-live-bridge-mismatch-divergence.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        attempt_store = attempt_module.SqliteTradingBrokerSubmissionAttemptStore(attempt_db)
+        divergence_store = divergence_module.SqliteTradingBrokerDivergenceStore(divergence_db)
+        runtime = runtime_module.MiniQMTPrimaryBrokerRuntime(transport=StubTransport(), account_scope="sim-account-09")
+        service = OrderManagementService(
+            order_repo=order_repo,
+            broker_correlation_store=correlation_store,
+            broker_submission_attempt_store=attempt_store,
+            broker_divergence_store=divergence_store,
+            primary_broker_runtime=runtime,
+            primary_broker_live_bridge=StubLiveBridge(),
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="miniqmt-live-bridge-0009",
+                request_id="miniqmt-live-bridge-session-0009",
+            )
+        )
+
+        incident = service.poll_miniqmt_live_bridge_result("bridge-task-0009")
+
+        assert incident["divergence_category"] == "live_bridge_identity_mismatch"
+        assert incident["reason_code"] == "local_submission_id_mismatch"
+        assert incident["order_id"] == response.order_id
+
+        correlation_record = correlation_store.get_order_correlation(response.order_id)
+        assert correlation_record is not None
+        assert correlation_record["external_order_id"] is None
+
+    def test_record_tdx_supplemental_handoff_preserves_prior_live_bridge_review_evidence(self, tmp_path):
+        correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+        attempt_module = importlib.import_module("src.application.trading.broker_submission_attempt")
+        divergence_module = importlib.import_module("src.application.trading.broker_divergence")
+        runtime_module = importlib.import_module("src.application.trading.miniqmt_primary_runtime")
+
+        class StubTransport:
+            def submit_order(self, payload):
+                return {"status": "success", "task_id": "bridge-task-0010", "source": "qmt"}
+
+        class StubLiveBridge:
+            def poll_task_result(self, task_id, *, timeout_seconds=None, poll_interval_seconds=None):
+                return {
+                    "contract_state": "bridge_result_timeout",
+                    "task_id": task_id,
+                    "reason_code": "bridge_result_timeout",
+                    "reason_detail": "miniQMT live bridge result did not reach a terminal state within 5.00s",
+                }
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "miniqmt-live-bridge-handoff-correlation.sqlite3"
+        attempt_db = tmp_path / "miniqmt-live-bridge-handoff-attempt.sqlite3"
+        divergence_db = tmp_path / "miniqmt-live-bridge-handoff-divergence.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        attempt_store = attempt_module.SqliteTradingBrokerSubmissionAttemptStore(attempt_db)
+        divergence_store = divergence_module.SqliteTradingBrokerDivergenceStore(divergence_db)
+        runtime = runtime_module.MiniQMTPrimaryBrokerRuntime(transport=StubTransport(), account_scope="sim-account-10")
+        service = OrderManagementService(
+            order_repo=order_repo,
+            broker_correlation_store=correlation_store,
+            broker_submission_attempt_store=attempt_store,
+            broker_divergence_store=divergence_store,
+            primary_broker_runtime=runtime,
+            primary_broker_live_bridge=StubLiveBridge(),
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="miniqmt-live-bridge-0010",
+                request_id="miniqmt-live-bridge-session-0010",
+            )
+        )
+        service.poll_miniqmt_live_bridge_result("bridge-task-0010", timeout_seconds=5.0)
+
+        handoff_record = service.record_tdx_supplemental_handoff(
+            response.order_id,
+            reason="operator escalated after live bridge timeout",
+            actor_id="ops-bridge-01",
+            source_id="manual-desk",
+        )
+
+        assert handoff_record["bridge_task_id"] == "bridge-task-0010"
+        assert handoff_record["raw_response"]["prior_live_bridge_evidence"]["divergence_category"] == "live_bridge_timeout"
+        assert handoff_record["raw_response"]["prior_live_bridge_evidence"]["bridge_task_id"] == "bridge-task-0010"
+
     def test_place_order_persists_awaiting_broker_acknowledgement_correlation_evidence(self, tmp_path):
         try:
             module = importlib.import_module("src.application.trading.broker_order_correlation")

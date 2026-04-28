@@ -32,7 +32,7 @@ class MultiSourceBridgeAdapter(IDataSource):
         except ValueError:
             raise ValueError(f"Invalid endpoint format: {endpoint}. Use 'provider/method'.")
 
-        base_url = self.providers.get(provider_name)
+        base_url = self._resolve_provider_url(provider_name)
         if not base_url:
             raise RuntimeError(f"Provider '{provider_name}' not configured in registry")
 
@@ -60,6 +60,18 @@ class MultiSourceBridgeAdapter(IDataSource):
                 "timestamp": datetime.now().isoformat()
             }
 
+    async def get_task_result(self, provider_name: str, task_id: str) -> Dict[str, Any]:
+        """按 task_id 轮询远程 Windows 代理结果。"""
+        base_url = self._resolve_provider_url(provider_name)
+        if not base_url:
+            raise RuntimeError(f"Provider '{provider_name}' not configured in registry")
+
+        async with httpx.AsyncClient(timeout=self.timeout) as client:
+            logger.info("🔄 Polling remote task result: %s %s", provider_name, task_id)
+            response = await client.get(f"{base_url}/api/v1/task/result/{task_id}")
+            response.raise_for_status()
+            return response.json()
+
     async def health_check(self) -> HealthStatus:
         """检查所有 Provider 的在线状态"""
         results = []
@@ -78,3 +90,6 @@ class MultiSourceBridgeAdapter(IDataSource):
             message=" | ".join(results),
             timestamp=datetime.now()
         )
+
+    def _resolve_provider_url(self, provider_name: str) -> str | None:
+        return self.providers.get(provider_name)

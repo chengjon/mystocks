@@ -9,7 +9,7 @@ from src.application.trading.broker_lifecycle_event import BrokerLifecycleEvent,
 from src.application.trading.broker_order_correlation import InMemoryTradingBrokerOrderCorrelationStore
 from src.application.trading.broker_submission_attempt import InMemoryTradingBrokerSubmissionAttemptStore
 from src.application.trading.miniqmt_lifecycle_ingestion import normalize_miniqmt_lifecycle_payload
-from src.application.trading import primary_broker_followup as broker_followup
+from src.application.trading import miniqmt_live_bridge_followup as live_bridge_followup, primary_broker_followup as broker_followup
 from src.application.trading.primary_broker_submission import (
     persist_primary_broker_correlation, process_primary_broker_submission, resolve_local_submission_id,
 )
@@ -37,12 +37,12 @@ from src.domain.trading.value_objects import OrderId, OrderSide, OrderStatus, Or
 
 logger = logging.getLogger(__name__)
 
-AUTO_RESOLVED = "auto_resolved"
-REPLAY_SUPPRESSION_SUPPRESSED_DUPLICATE = "suppressed_duplicate"
+AUTO_RESOLVED, REPLAY_SUPPRESSION_SUPPRESSED_DUPLICATE = "auto_resolved", "suppressed_duplicate"
 
 class OrderManagementService:
     ingest_miniqmt_bridge_result_payload = broker_followup.service_ingest_miniqmt_bridge_result_payload
-    record_tdx_supplemental_handoff = broker_followup.service_record_tdx_supplemental_handoff
+    poll_miniqmt_live_bridge_result = live_bridge_followup.service_poll_miniqmt_live_bridge_result
+    record_tdx_supplemental_handoff = live_bridge_followup.service_record_tdx_supplemental_handoff
 
     def __init__(
         self,
@@ -57,6 +57,7 @@ class OrderManagementService:
         broker_divergence_store: Optional[object] = None,
         order_state_store: Optional[object] = None,
         primary_broker_runtime: Optional[object] = None,
+        primary_broker_live_bridge: Optional[object] = None,
         dedup_ttl_seconds: int = 300,
     ):
         self.order_repo = order_repo
@@ -70,6 +71,7 @@ class OrderManagementService:
         self.broker_divergence_store = broker_divergence_store or InMemoryTradingBrokerDivergenceStore()
         self.order_state_store = order_state_store or InMemoryTradingOrderStateStore()
         self.primary_broker_runtime = primary_broker_runtime
+        self.primary_broker_live_bridge = primary_broker_live_bridge
         self.dedup_ttl_seconds = dedup_ttl_seconds
         self._idempotency_cache: Dict[str, tuple[float, OrderResponse]] = {}
     def place_order(self, request: CreateOrderRequest) -> OrderResponse:
