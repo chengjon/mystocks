@@ -279,16 +279,17 @@ Q2 closure note:
 - 本域应按安全敏感域解释，不能把建模完成、页面存在或仓储持久化直接等同为生产级交易闭环
 - 当前 inspected execution-capable path 应保守视为 `🧪 experimental` / `🚧 in-progress` 语义，而不是 `production-eligible`
 - 涉及下单、执行跟踪、风控前置、交易确认、幂等与审计绑定的节点，必须结合 Phase D / Wave 3 证据理解
+- 当前 broker-truth channel topology 已明确为：`miniQMT` 是第一条 `primary-candidate` 通道，Tongdaxin 半手工路径是 `supplemental / operator-assisted` 通道；二者都还不能被解读为 production-ready broker adapter
 
 ### 领域入口
 
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
-| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[功能管理工作流](./guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md) | 交易链路与跨域治理入口 |
+| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[功能管理工作流](./guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md)<br>[Broker Execution Truth Registry](./guides/quant-trading/broker-execution-truth-registry.md) | 交易链路、broker truth 通道拓扑与跨域治理入口 |
 | API/契约入口 | [交易包路由](../web/backend/app/api/trade/__init__.py)<br>[交易主路由](../web/backend/app/api/trade/routes.py)<br>[交易运行时 API](../web/backend/app/api/trading_runtime.py)<br>[交易监控 API](../web/backend/app/api/trading_monitor.py)<br>[旧交易数据实现](../web/backend/app/api/data/trading_api.py) | 主接口以 `trade/` 包路由和运行时 API 为主；`data/trading_api.py` 更偏旧服务实现；交易接口入口 |
 | 前端/交互入口 | [交易主路由目录](../web/frontend/src/views/trade/)<br>[交易终端](../web/frontend/src/views/TradingDashboard.vue)<br>[ArtDeco 交易页](../web/frontend/src/views/artdeco-pages/trading-tabs/)<br>[旧交易工作台](../web/frontend/src/views/trading/)<br>[旧交易决策组件](../web/frontend/src/views/trading-decision/) | 交易主路由入口；旧目录更多承担历史工作台/组件角色；交易交互入口 |
 | 核心代码入口 | [组合应用层](../src/application/portfolio/)<br>[交易应用层](../src/application/trading/)<br>[交易领域模型](../src/domain/trading/) | 交易与持仓实现入口 |
-| 测试与验证入口 | [交易路由 API 测试](../tests/api/file_tests/test_trade_routes_api.py)<br>[交易 E2E](../tests/e2e/trade-management.spec.ts)<br>[组合 DDD 测试](../tests/ddd/test_phase_5_portfolio.py) | 交易与持仓验证入口 |
+| 测试与验证入口 | [交易路由 API 测试](../tests/api/file_tests/test_trade_routes_api.py)<br>[交易 E2E](../tests/e2e/trade-management.spec.ts)<br>[组合 DDD 测试](../tests/ddd/test_phase_5_portfolio.py)<br>[交易应用层 DDD 测试](../tests/ddd/test_phase_7_application.py) | 交易与持仓验证入口；broker truth foundation 与 channel-topology 的当前验证主要落在 `test_phase_7_application.py` |
 | 运行与排障入口 | [运维手册](./operations/OPS_MANUAL.md)<br>[交易终端](../web/frontend/src/views/TradingDashboard.vue) | 交易排障入口 |
 
 ### 5.1 持仓管理 {#domain-05-node-01}
@@ -313,7 +314,7 @@ Q2 closure note:
 |--------|------|----------|------|
 | 决策中心 | ✅ | `web/frontend/src/views/TradingDashboard.vue` | 交易决策面板；该状态不等同于真实交易执行闭环已达生产可用 |
 | 信号生成 | ✅ | `web/frontend/src/views/trade/Signals.vue` | 买卖信号；表示信号能力存在，不代表预执行安全控制已闭合 |
-| 执行跟踪 | 🚧 | `web/frontend/src/views/trade/History.vue` | 订单执行状态；当前仍应结合 Phase D / Wave 3 保守解读 |
+| 执行跟踪 | 🚧 | `web/frontend/src/views/trade/History.vue`, `src/application/trading/order_mgmt_service.py`, `src/application/trading/broker_reconciliation.py` | 当前已具备 channel-scoped correlation、`miniQMT` lifecycle ingestion、Tongdaxin review-first supplemental capture 与 channel-specific replay/auto-resolution gate；但 live broker adapter、production reconciliation workflow 与 production proof 仍未闭环 |
 
 ---
 
