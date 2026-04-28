@@ -26,6 +26,9 @@
 ## Phase 1: Infrastructure Setup (1.5 hours)
 
 ### 1.1 Create Directory Structure
+> **局部事实说明（2026-04-28）**:
+> `web/frontend/src/api/types/extensions/` 当前仅能确认根目录与 `market/` 子目录存在；`strategy/`、`common/`、`ui/`、`api/`、`utils/` 子目录未在当前仓库落地。
+
 - [x] Create `src/api/types/extensions/` directory
 - [ ] Create subdirectories: `strategy/`, `market/`, `common/`, `ui/`, `api/`, `utils/`
 - [x] Create `extensions/index.ts` export file
@@ -40,6 +43,7 @@
 - [x] Implement `TypeValidator.ts` for conflict detection
 - [x] Add type completeness validation
 - [ ] Create usage statistics generator
+  - [ ] Repo-truth：`web/frontend/package.json` 虽声明 `type:usage` -> `node scripts/generate-type-usage.js`，但当前未找到该脚本文件，因此不能视为 usage statistics generator 已落地。
 
 ## Phase 2: Core Type Definitions (2 hours)
 
@@ -75,6 +79,7 @@
 ### 3.1 UI Component Types (45 minutes)
 > **局部事实说明**:
 > `TableColumn<T>` 与 `ChartDataPoint` 已存在于共享组件 / 工具类型模块中，但尚未并入 `src/api/types/extensions/` 统一收口。
+> 当前未检出 `FormField` / validation types 的现行类型定义；仓库里仅能看到 `web/frontend/scripts/migrate-to-element-plus.sh` 中遗留的 `FormField -> el-input` 迁移脚本片段，不能作为类型实现证据。
 
 - [x] Define `TableColumn<T>` for data tables
 - [x] Create `ChartDataPoint` for visualization
@@ -97,6 +102,10 @@
 > 但本专题自身的集成并未完全闭环，因为 `extensions` 仍未被 `src/api/types/index.ts` 合并导出，且 `tsconfig.json` 当前把 `extensions/**/*` 排除在外。
 
 ### 4.1 Build Integration (30 minutes)
+> **局部事实说明（2026-04-28）**:
+> `web/frontend/tsconfig.json` 当前虽然设置了 `allowImportingTsExtensions: true`，但同时把 `src/api/types/extensions/**/*` 排除在 typecheck 之外；`web/frontend/vite.config.mts` 也未见面向该扩展系统的专门 type-only import / extensions 集成配置。
+> 因此 4.1.1 / 4.1.2 对应的集成收口仍未完成。
+
 - [ ] Update `tsconfig.json` with type checking paths
 - [ ] Configure Vite for type-only imports
 - [x] Add type checking to CI/CD pipeline
@@ -133,6 +142,7 @@
 - [x] Configure type checking in pre-commit hooks
 - [ ] Set up automated type validation reports
 - [ ] Create type health monitoring dashboard
+  - [ ] Repo-truth：当前未找到自动生成类型校验报告或“type health dashboard”的现行实现；`type:check:conflicts` 与 `type:usage` 依赖的 `scripts/check-type-conflicts.js`、`scripts/generate-type-usage.js` 文件都不存在。
 
 ## Validation Criteria
 
