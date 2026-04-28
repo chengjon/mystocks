@@ -18,6 +18,8 @@
   - 量化交易算法系统 Phase 1-3 的整体实现说明
 - [`risk_management_system_plan.md`](./risk_management_system_plan.md)
   - 轻量化风险管理系统架构方案与历史规划背景
+- [`broker-execution-truth-registry.md`](./broker-execution-truth-registry.md)
+  - broker-facing 执行与生命周期摄取路径的当前治理真相源
 
 ## Retained Historical References
 
@@ -32,4 +34,5 @@
 
 - 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
 - 根导航只暴露少量总览入口，阶段完成报告和历史实现计划统一通过本 index 进入
+- broker execution truth、reconciliation boundary、以及相关 canonical-path 盘点可通过 `broker-execution-truth-registry.md` 进入
 - 若后续历史 phase 文档入链继续下降，再按 bounded batch 单独评估 archive/delete

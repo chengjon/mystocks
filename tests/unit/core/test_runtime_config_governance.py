@@ -269,6 +269,77 @@ def test_get_runtime_mongo_db_default_prefers_env_db(monkeypatch: pytest.MonkeyP
     assert get_runtime_mongo_db_default('mystocks_coord') == 'coord_runtime'
 
 
+def test_trading_runtime_paths_default_to_trading_log_dir(monkeypatch: pytest.MonkeyPatch) -> None:
+    for key in [
+        'TRADING_RUNTIME_DIR',
+        'TRADING_DECISION_AUDIT_JSONL_PATH',
+        'TRADING_DECISION_AUDIT_SQLITE_PATH',
+        'TRADING_CASH_RESERVATION_SQLITE_PATH',
+        'TRADING_BROKER_ORDER_CORRELATION_SQLITE_PATH',
+        'TRADING_BROKER_LIFECYCLE_EVENT_SQLITE_PATH',
+        'TRADING_BROKER_DIVERGENCE_SQLITE_PATH',
+        'TRADING_ORDER_STATE_SQLITE_PATH',
+        'TRADING_STALE_CASH_RESERVATION_MAX_AGE_SECONDS',
+    ]:
+        monkeypatch.delenv(key, raising=False)
+
+    from src.utils.trading_runtime_config import (
+        get_trading_broker_divergence_sqlite_path,
+        get_trading_broker_order_correlation_sqlite_path,
+        get_trading_broker_lifecycle_event_sqlite_path,
+        get_trading_cash_reservation_sqlite_path,
+        get_trading_decision_audit_jsonl_path,
+        get_trading_decision_audit_sqlite_path,
+        get_trading_order_state_sqlite_path,
+        get_trading_runtime_dir,
+        get_trading_stale_cash_reservation_max_age_seconds,
+    )
+
+    assert get_trading_runtime_dir() == Path('var/log/trading')
+    assert get_trading_decision_audit_jsonl_path() == Path('var/log/trading/trading-decision-audit.jsonl')
+    assert get_trading_decision_audit_sqlite_path() == Path('var/log/trading/trading-decision-audit.sqlite3')
+    assert get_trading_broker_order_correlation_sqlite_path() == Path('var/log/trading/trading-broker-order-correlation.sqlite3')
+    assert get_trading_broker_lifecycle_event_sqlite_path() == Path('var/log/trading/trading-broker-lifecycle-event.sqlite3')
+    assert get_trading_broker_divergence_sqlite_path() == Path('var/log/trading/trading-broker-divergence.sqlite3')
+    assert get_trading_cash_reservation_sqlite_path() == Path('var/log/trading/trading-cash-reservations.sqlite3')
+    assert get_trading_order_state_sqlite_path() == Path('var/log/trading/trading-order-state.sqlite3')
+    assert get_trading_stale_cash_reservation_max_age_seconds() == 86400
+
+
+def test_trading_runtime_paths_prefer_explicit_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('TRADING_RUNTIME_DIR', '/tmp/mystocks-trading')
+    monkeypatch.setenv('TRADING_DECISION_AUDIT_JSONL_PATH', '/data/audit/trading.jsonl')
+    monkeypatch.setenv('TRADING_DECISION_AUDIT_SQLITE_PATH', '/data/audit/trading.sqlite3')
+    monkeypatch.setenv('TRADING_CASH_RESERVATION_SQLITE_PATH', '/data/trading/reservations.sqlite3')
+    monkeypatch.setenv('TRADING_BROKER_ORDER_CORRELATION_SQLITE_PATH', '/data/trading/broker-correlation.sqlite3')
+    monkeypatch.setenv('TRADING_BROKER_LIFECYCLE_EVENT_SQLITE_PATH', '/data/trading/broker-events.sqlite3')
+    monkeypatch.setenv('TRADING_BROKER_DIVERGENCE_SQLITE_PATH', '/data/trading/broker-divergence.sqlite3')
+    monkeypatch.setenv('TRADING_ORDER_STATE_SQLITE_PATH', '/data/trading/order-state.sqlite3')
+    monkeypatch.setenv('TRADING_STALE_CASH_RESERVATION_MAX_AGE_SECONDS', '7200')
+
+    from src.utils.trading_runtime_config import (
+        get_trading_broker_divergence_sqlite_path,
+        get_trading_broker_order_correlation_sqlite_path,
+        get_trading_broker_lifecycle_event_sqlite_path,
+        get_trading_cash_reservation_sqlite_path,
+        get_trading_decision_audit_jsonl_path,
+        get_trading_decision_audit_sqlite_path,
+        get_trading_order_state_sqlite_path,
+        get_trading_runtime_dir,
+        get_trading_stale_cash_reservation_max_age_seconds,
+    )
+
+    assert get_trading_runtime_dir() == Path('/tmp/mystocks-trading')
+    assert get_trading_decision_audit_jsonl_path() == Path('/data/audit/trading.jsonl')
+    assert get_trading_decision_audit_sqlite_path() == Path('/data/audit/trading.sqlite3')
+    assert get_trading_broker_order_correlation_sqlite_path() == Path('/data/trading/broker-correlation.sqlite3')
+    assert get_trading_broker_lifecycle_event_sqlite_path() == Path('/data/trading/broker-events.sqlite3')
+    assert get_trading_broker_divergence_sqlite_path() == Path('/data/trading/broker-divergence.sqlite3')
+    assert get_trading_cash_reservation_sqlite_path() == Path('/data/trading/reservations.sqlite3')
+    assert get_trading_order_state_sqlite_path() == Path('/data/trading/order-state.sqlite3')
+    assert get_trading_stale_cash_reservation_max_age_seconds() == 7200
+
+
 def test_get_effective_runtime_mongo_uri_injects_local_docker_auth_when_uri_missing(monkeypatch: pytest.MonkeyPatch) -> None:
     from src.utils import mongo_runtime_config
 
