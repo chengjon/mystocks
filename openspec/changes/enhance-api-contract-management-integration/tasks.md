@@ -45,8 +45,8 @@
 > - backend contract integration tests：`tests/integration/contract/test_contract_*.py`
 > 但以下目标仍未形成当前 repo-truth：
 > - 未发现显式的 breaking-change migration path 计算与转换步骤执行
-> - 未发现自动 client adaptation 层
-> - `tests/integration/contract/test_contract_*.py` 主要覆盖 backend contract service/generator/validator，不等于前端 version negotiation 的 integration tests
+> - `web/frontend/src/api/unifiedApiClient.ts` 当前只是指向 `apiClient.ts` 的 legacy wrapper，未承载按版本差异自动变换请求/响应的 client adaptation 层
+> - `tests/integration/contract/test_contract_*.py` 主要覆盖 backend contract service / generator / validator；`web/frontend/src/services/__tests__/versionNegotiator.spec.ts` 也仅验证 `/health`、`/contracts/versions/*/active` 探测与 fallback 逻辑，不等于前端 version negotiation 的 integration tests
 > - 因此当前仅能证实 unit tests
 
 - [x] 4.1 Extend versionNegotiator.ts with compatibility checking
@@ -89,7 +89,16 @@
 > - `docs/reports/API_CONTRACT_INTEGRATION_ASSESSMENT.md`
 > - `docs/reports/API_CONTRACT_INTEGRATION_OPENSPEC_IMPLEMENTATION.md`
 > - `docs/api/CONTRACT_TESTING_API.md`
+> - `docs/api/CONTRACT_MANAGEMENT_API.md`
+> - `docs/standards/OPENAPI_CONTRACT_GOVERNANCE.md`
+> - `docs/reports/README_API_CONTRACT.md`
 > 但这些文件大多是历史分析、实施过程记录或 API 参考，不足以直接证明“当前 canonical developer guide / impact analysis usage guide / 培训闭环”已完成。
+> 进一步核对后可明确区分：
+> - `docs/api/CONTRACT_TESTING_API.md` 明确声明其类签名与示例主要保留早期框架历史快照，不再作为当前实现真值
+> - `docs/api/CONTRACT_MANAGEMENT_API.md` 主要是 API 端点使用文档，且声明端点/示例如未复核应视为参考或历史材料
+> - `docs/standards/OPENAPI_CONTRACT_GOVERNANCE.md` 是仓库级 OpenAPI 治理细则，不等于本 change 所要求的 runtime validation developer guide / impact analysis usage guide
+> - `docs/reports/README_API_CONTRACT.md` 是 2025-12-29 的 Phase 6 报告索引，不是当前培训闭环或现行操作手册
+> 因此 7.2-7.5 继续保持未完成更符合当前 repo-truth。
 
 - [x] 7.1 Update API_CONTRACT_INTEGRATION_ASSESSMENT.md with implementation details
   - Repo-truth note: 该 assessment 文档已包含实现现状、CI/CD 集成、runtime validation、version negotiation 与 impact analysis 方案细节，但它仍是历史分析/评估材料，不应替代当前 canonical developer guide。
@@ -108,6 +117,8 @@
 > 但仍需避免把“存在 CI 工作流和 backend contract tests”误写成更高层闭环：
 > - workflow 中生成 `contract_validation_report.md` 只是 CI 报告模板与 artifact 逻辑，当前仓库并未保存一次可直接复核的最新实跑结果
 > - backend contract integration tests 不等于“前端 runtime validator + backend contract + CI gate”的端到端链路验证
+> - 当前未找到 runtime contract validator 的独立性能测试报告或基准脚本归档，不能支撑 8.4
+> - `docs/standards/security/SECURITY_BEST_PRACTICES.md` 属于通用安全规范，不等于本专题实现已完成针对 contract validation 的专项 security review / sign-off
 > 但当前仓库中尚未形成可直接指向本 change 的
 > end-to-end contract validation、CI 实跑结果、impact analysis accuracy、runtime validation performance、security review 的最新 closeout 证据。
 
