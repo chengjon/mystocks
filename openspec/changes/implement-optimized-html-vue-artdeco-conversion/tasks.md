@@ -130,6 +130,12 @@
 > - 当前 visual JSON 结果文件 `web/frontend/tests/visual/config/test-results/visual/test-results.json` 记录了一次 `2026-04-23` 的权限失败，因此不能把那次 visual run 当作成功 closeout 证据。
 
 ### 5.1 Visual Regression Testing
+> **局部事实说明（2026-04-28）**:
+> 当前仓库确实已提交部分视觉基线，但覆盖面不足以支撑 5.1.2 / 5.1.3 全量闭环：
+> - `web/frontend/tests/visual/baselines/` 与 `tests/visual/pages/risk-management.spec.ts-snapshots/` 目前可直接确认的基线主要集中在 `risk-management`
+> - `tests/visual/pages/dashboard.spec.ts` 存在，但未见与之对应的 committed snapshot 目录
+> 因此现状更接近“已建立视觉回归框架并提交部分页面基线”，而不是“all converted pages baseline + design compliance 全量完成”。
+
 - [x] 5.1.1 Set up automated visual regression testing suite
 - [ ] 5.1.2 Capture baseline screenshots of all converted pages
 - [ ] 5.1.3 Validate Art Deco design compliance across all pages
@@ -139,6 +145,7 @@
 ### 5.2 Functional Integration Testing
 > **局部事实说明**:
 > `web/frontend/tests/artdeco/websocket-realtime-mock.spec.ts` 已提供 WebSocket mock 场景测试，覆盖市场数据推送、风险预警、策略信号、连接错误/关闭、批量高频消息与 UI 刷新。
+> 另据 `docs/reports/quality/myweb-audit/audit-20260426-02/manifests/*.yaml` 与对应页面 audit，可直接确认的 live routed-page 验证主要是 `chromium` 路线；当前未见可直接复核的 Firefox / WebKit closeout 证据。
 > 因此 5.2.5 可按“已具备专项测试实现”勾选；但它仍属于 mock 级验证，不能外推为真实后端链路、跨浏览器或最终 UAT 已完成。
 
 - [ ] 5.2.1 Test Vue reactivity preservation in all converted pages
