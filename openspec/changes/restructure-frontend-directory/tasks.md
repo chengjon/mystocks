@@ -486,6 +486,15 @@
   - Repo-truth result: Mongo work items, matrix spec files, and their acceptance-command history are the authoritative E2E report record for this control-plane workflow.
 
 ## 14. Code Review & Sign-off (Phase 6)
+> **仓库事实校对（2026-04-28）**:
+> 本阶段剩余开放项已经主要转为外部流程门禁，而不是本地代码/文档是否存在的问题。
+> 当前本地仓库只能直接确认：
+> - 已有本地 review / security review 替代产物
+> - 当前 change 仍处于 `openspec list` 的 active changes 中
+> 但无法仅靠本地仓库证明以下外部状态已经发生：
+> - GitHub PR 上的 `"Ready for Review"` 评论
+> - Architecture Board 的最终审批
+
 - [ ] 14.1 Front-end Lead posts "Ready for Review" comment on PR
 - [x] 14.2 Run `oh-my-claudecode:code-reviewer` agent for comprehensive review
   - Repo-truth closeout: the named agent is not available in the current Codex runtime, so an equivalent local comprehensive review was executed and recorded in `openspec/changes/restructure-frontend-directory/REVIEW.md`.
@@ -497,12 +506,22 @@
   - Resolved: the only local review finding was documentation drift in `openspec/changes/restructure-frontend-directory/MIGRATION_PROGRESS.md` phase-state wording; it was corrected in the same batch.
 - [ ] 14.5 Obtain final approval from Architecture Board
 
+  - Repo-truth note: until a final Architecture Board approval artifact is preserved in the active change package or the corresponding PR history is available, this item should remain open.
+
 ## 15. Merge & Deploy (Phase 7)
+> **仓库事实校对（2026-04-28）**:
+> 当前分支仍为 `wip/root-dirty-20260403`，且 `restructure-frontend-directory` 仍显示在 `openspec list` 的 active changes 中。
+> 本地仓库没有直接证据表明该 change 已经合并到 `main`、已触发 staging 部署，或已完成 staging 成功验证。
+
 - [ ] 15.1 Merge PR to `main` (all checks must pass)
 - [ ] 15.2 Trigger CI pipeline (should deploy to staging automatically)
 - [ ] 15.3 Verify staging deployment succeeds
 
 ## 16. Post-Deployment Validation (Phase 7)
+> **仓库事实校对（2026-04-28）**:
+> 由于当前仓库内未见 staging 部署成功的现行证据，因此 16.1-16.5 不能在本地 truth 范围内关闭。
+> 这些事项需要 staging URL、外部运行结果和回填到 PR 的部署验证记录共同支撑。
+
 - [ ] 16.1 Run smoke suite against staging environment
 - [ ] 16.2 Verify all URLs resolve (no 404s)
 - [ ] 16.3 Perform quick UI sanity check on main navigation
@@ -510,6 +529,10 @@
 - [ ] 16.5 Post deployment verification report to PR
 
 ## 17. Archiving the Change (Phase 8)
+> **仓库事实校对（2026-04-28）**:
+> 当前 change 仍位于 `openspec/changes/restructure-frontend-directory/` 活跃目录下，尚未进入 `openspec/changes/archive/`。
+> 因此 17.1-17.4 保持未完成是正确的当前状态，而不是遗漏记录。
+
 - [ ] 17.1 Run `openspec archive restructure-frontend-directory --yes`
 - [ ] 17.2 Verify change moved to `openspec/changes/archive/YYYY-MM-DD-restructure-frontend-directory/`
 - [ ] 17.3 Run `openspec validate --strict` on archived change
@@ -536,6 +559,8 @@
   - Repo-truth result: `openspec/changes/restructure-frontend-directory/MIGRATION_PROGRESS.md` was refreshed on `2026-04-27` to the current execution frontier, explicitly separating locally closed work from still-pending external workflow gates in phases `6-9`.
 - [ ] 19.4 Close any related GitHub issues
 - [ ] 19.5 Post final summary to project channel
+
+  - Repo-truth note: both items depend on external collaboration systems (GitHub issue tracker / project communication channel); no current local artifact proves they already happened.
 
 ---
 
