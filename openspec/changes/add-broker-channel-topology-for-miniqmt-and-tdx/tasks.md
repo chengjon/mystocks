@@ -17,7 +17,8 @@
 - [x] 2.3 Define the acceptance evidence that must exist before this line may claim stronger channel-specific replay suppression or bounded auto-resolution behavior.
 
 ## 3. Channel Topology Implementation
-- [ ] 3.1 Update the broker execution truth registry to classify `miniQMT` as primary, Tongdaxin as supplemental, and orchestration-only surfaces as non-truth.
+- [x] 3.1 Update the broker execution truth registry to classify `miniQMT` as primary, Tongdaxin as supplemental, and orchestration-only surfaces as non-truth.
+  - Repo-truth note: `docs/guides/quant-trading/broker-execution-truth-registry.md` now records `miniQMT` as the first `primary-candidate` through the existing `qmt` provider slot in `web/backend/app/services/windows_bridge_adapter.py`, records Tongdaxin semi-manual trading as `supplemental-operator-assisted`, and explicitly distinguishes both from existing orchestration surfaces and the repo's many market-data-only `tdx` paths. This closes topology publication only; channel-scoped correlation and live ingestion remain open.
 - [ ] 3.2 Extend the channel-scoped correlation model with `broker_channel`, concrete `adapter_path`, `account_scope`, and `session_scope`, plus tests preventing cross-channel identity collision.
 - [ ] 3.3 Introduce the first verified `miniQMT` broker-facing lifecycle ingestion path and normalize its payloads into `BrokerLifecycleEvent`.
 - [ ] 3.4 Add the Tongdaxin supplemental lifecycle capture path with default `review_required` reconciliation semantics unless stronger identity evidence exists.
