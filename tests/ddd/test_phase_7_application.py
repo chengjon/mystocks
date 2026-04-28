@@ -661,6 +661,214 @@ class TestOrderManagementService:
         assert record["local_submission_id"] == "submission-0002"
         assert record["acknowledgement_status"] == "awaiting_broker_acknowledgement"
 
+    def test_default_broker_submission_attempt_store_uses_local_sqlite_ledger(self, tmp_path):
+        module = importlib.import_module("src.application.trading.broker_submission_attempt")
+        attempt_db = tmp_path / "default-trading-broker-submission-attempt.sqlite3"
+        store = module.build_default_trading_broker_submission_attempt_store(path=attempt_db)
+
+        store.append(
+            {
+                "order_id": "order-0005",
+                "local_submission_id": "submission-0005",
+                "broker_channel": "miniqmt",
+                "adapter_path": "web.backend.app.services.windows_bridge_adapter.qmt.submit",
+                "account_scope": "sim-account-01",
+                "session_scope": "session-0005",
+                "submission_status": "bridge_task_accepted",
+                "transport_status": "success",
+                "bridge_task_id": "bridge-task-0005",
+                "external_order_id": None,
+                "source_name": "miniqmt/windows_bridge",
+                "failure_reason": None,
+                "handoff_status": None,
+                "handoff_reason": None,
+                "raw_response": {"status": "success", "task_id": "bridge-task-0005"},
+            }
+        )
+
+        record = store.get_latest_for_order("order-0005", broker_channel="miniqmt")
+        assert record is not None
+        assert record["submission_status"] == "bridge_task_accepted"
+        assert record["bridge_task_id"] == "bridge-task-0005"
+
+    def test_place_order_with_miniqmt_primary_runtime_persists_bridge_task_submission_attempt(self, tmp_path):
+        correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+        attempt_module = importlib.import_module("src.application.trading.broker_submission_attempt")
+        runtime_module = importlib.import_module("src.application.trading.miniqmt_primary_runtime")
+
+        class StubTransport:
+            def __init__(self, response):
+                self.response = response
+                self.last_payload = None
+
+            def submit_order(self, payload):
+                self.last_payload = dict(payload)
+                return dict(self.response)
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "miniqmt-primary-correlation.sqlite3"
+        attempt_db = tmp_path / "miniqmt-primary-attempt.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        attempt_store = attempt_module.SqliteTradingBrokerSubmissionAttemptStore(attempt_db)
+        audit_sink = MagicMock()
+        transport = StubTransport({"status": "success", "task_id": "bridge-task-0001", "source": "qmt"})
+        runtime = runtime_module.MiniQMTPrimaryBrokerRuntime(transport=transport, account_scope="sim-account-01")
+        service = OrderManagementService(
+            order_repo=order_repo,
+            decision_audit_sink=audit_sink,
+            broker_correlation_store=correlation_store,
+            broker_submission_attempt_store=attempt_store,
+            primary_broker_runtime=runtime,
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="miniqmt-runtime-0001",
+                request_id="miniqmt-runtime-session-0001",
+            )
+        )
+
+        correlation_record = correlation_store.get_order_correlation(response.order_id)
+        assert correlation_record is not None
+        assert correlation_record["broker_channel"] == correlation_module.MINIQMT_BROKER_CHANNEL
+        assert correlation_record["adapter_path"] == runtime_module.MINIQMT_PRIMARY_RUNTIME_ADAPTER_PATH
+        assert correlation_record["account_scope"] == "sim-account-01"
+        assert correlation_record["acknowledgement_status"] == "awaiting_broker_acknowledgement"
+        assert correlation_record["external_order_id"] is None
+
+        attempt_record = attempt_store.get_latest_for_order(
+            response.order_id,
+            broker_channel=correlation_module.MINIQMT_BROKER_CHANNEL,
+        )
+        assert attempt_record is not None
+        assert attempt_record["submission_status"] == runtime_module.BRIDGE_TASK_ACCEPTED
+        assert attempt_record["bridge_task_id"] == "bridge-task-0001"
+        assert attempt_record["transport_status"] == "success"
+        assert attempt_record["session_scope"] == "miniqmt-runtime-session-0001"
+
+        assert transport.last_payload is not None
+        assert transport.last_payload["client_order_id"] == "miniqmt-runtime-0001"
+        assert transport.last_payload["order_id"] == response.order_id
+
+        assert audit_sink.call_args_list[0].args[0]["decision_outcome"] == "broker_primary_submission_queued"
+        assert audit_sink.call_args_list[-1].args[0]["decision_outcome"] == "submitted"
+
+    def test_place_order_with_miniqmt_primary_runtime_immediate_ack_binds_external_identity(self, tmp_path):
+        correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+        attempt_module = importlib.import_module("src.application.trading.broker_submission_attempt")
+        runtime_module = importlib.import_module("src.application.trading.miniqmt_primary_runtime")
+
+        class StubTransport:
+            def submit_order(self, payload):
+                return {
+                    "status": "success",
+                    "external_order_id": "miniqmt-broker-order-0002",
+                    "task_id": "bridge-task-0002",
+                }
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "miniqmt-ack-correlation.sqlite3"
+        attempt_db = tmp_path / "miniqmt-ack-attempt.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        attempt_store = attempt_module.SqliteTradingBrokerSubmissionAttemptStore(attempt_db)
+        audit_sink = MagicMock()
+        runtime = runtime_module.MiniQMTPrimaryBrokerRuntime(transport=StubTransport(), account_scope="sim-account-02")
+        service = OrderManagementService(
+            order_repo=order_repo,
+            decision_audit_sink=audit_sink,
+            broker_correlation_store=correlation_store,
+            broker_submission_attempt_store=attempt_store,
+            primary_broker_runtime=runtime,
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="miniqmt-runtime-ack-0002",
+                request_id="miniqmt-runtime-session-0002",
+            )
+        )
+
+        correlation_record = correlation_store.get_order_correlation(response.order_id)
+        assert correlation_record is not None
+        assert correlation_record["broker_channel"] == correlation_module.MINIQMT_BROKER_CHANNEL
+        assert correlation_record["external_order_id"] == "miniqmt-broker-order-0002"
+        assert correlation_record["acknowledgement_status"] == "acknowledged"
+
+        attempt_record = attempt_store.get_latest_for_order(
+            response.order_id,
+            broker_channel=correlation_module.MINIQMT_BROKER_CHANNEL,
+        )
+        assert attempt_record is not None
+        assert attempt_record["submission_status"] == runtime_module.BROKER_ACKNOWLEDGED_SUBMISSION
+        assert attempt_record["external_order_id"] == "miniqmt-broker-order-0002"
+
+        assert audit_sink.call_args_list[0].args[0]["decision_outcome"] == "broker_primary_acknowledged_immediately"
+        assert audit_sink.call_args_list[-1].args[0]["decision_outcome"] == "submitted"
+
+    def test_place_order_with_miniqmt_primary_runtime_persists_submission_failure_without_synthesizing_ack(self, tmp_path):
+        correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+        attempt_module = importlib.import_module("src.application.trading.broker_submission_attempt")
+        runtime_module = importlib.import_module("src.application.trading.miniqmt_primary_runtime")
+
+        class FailingTransport:
+            def submit_order(self, payload):
+                raise RuntimeError("bridge offline")
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "miniqmt-failure-correlation.sqlite3"
+        attempt_db = tmp_path / "miniqmt-failure-attempt.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        attempt_store = attempt_module.SqliteTradingBrokerSubmissionAttemptStore(attempt_db)
+        audit_sink = MagicMock()
+        runtime = runtime_module.MiniQMTPrimaryBrokerRuntime(transport=FailingTransport(), account_scope="sim-account-03")
+        service = OrderManagementService(
+            order_repo=order_repo,
+            decision_audit_sink=audit_sink,
+            broker_correlation_store=correlation_store,
+            broker_submission_attempt_store=attempt_store,
+            primary_broker_runtime=runtime,
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="miniqmt-runtime-failure-0003",
+                request_id="miniqmt-runtime-session-0003",
+            )
+        )
+
+        correlation_record = correlation_store.get_order_correlation(response.order_id)
+        assert correlation_record is not None
+        assert correlation_record["broker_channel"] == correlation_module.MINIQMT_BROKER_CHANNEL
+        assert correlation_record["external_order_id"] is None
+        assert correlation_record["acknowledgement_status"] == "awaiting_broker_acknowledgement"
+
+        attempt_record = attempt_store.get_latest_for_order(
+            response.order_id,
+            broker_channel=correlation_module.MINIQMT_BROKER_CHANNEL,
+        )
+        assert attempt_record is not None
+        assert attempt_record["submission_status"] == runtime_module.SUBMISSION_FAILED
+        assert attempt_record["failure_reason"] == "bridge offline"
+        assert attempt_record["external_order_id"] is None
+
+        assert audit_sink.call_args_list[0].args[0]["decision_outcome"] == "broker_primary_submission_failed"
+        assert audit_sink.call_args_list[-1].args[0]["decision_outcome"] == "submitted"
+
     def test_place_order_persists_awaiting_broker_acknowledgement_correlation_evidence(self, tmp_path):
         try:
             module = importlib.import_module("src.application.trading.broker_order_correlation")

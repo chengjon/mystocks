@@ -9,6 +9,9 @@ DEFAULT_TRADING_DECISION_AUDIT_JSONL_PATH = DEFAULT_TRADING_RUNTIME_DIR / "tradi
 DEFAULT_TRADING_DECISION_AUDIT_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR / "trading-decision-audit.sqlite3"
 DEFAULT_TRADING_CASH_RESERVATION_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR / "trading-cash-reservations.sqlite3"
 DEFAULT_TRADING_BROKER_ORDER_CORRELATION_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR / "trading-broker-order-correlation.sqlite3"
+DEFAULT_TRADING_BROKER_SUBMISSION_ATTEMPT_SQLITE_PATH = (
+    DEFAULT_TRADING_RUNTIME_DIR / "trading-broker-submission-attempt.sqlite3"
+)
 DEFAULT_TRADING_BROKER_LIFECYCLE_EVENT_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR / "trading-broker-lifecycle-event.sqlite3"
 DEFAULT_TRADING_BROKER_DIVERGENCE_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR / "trading-broker-divergence.sqlite3"
 DEFAULT_TRADING_ORDER_STATE_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR / "trading-order-state.sqlite3"
@@ -47,6 +50,15 @@ def get_trading_broker_order_correlation_sqlite_path(
     default: str | Path = DEFAULT_TRADING_BROKER_ORDER_CORRELATION_SQLITE_PATH,
 ) -> Path:
     configured = os.getenv("TRADING_BROKER_ORDER_CORRELATION_SQLITE_PATH")
+    if configured:
+        return Path(configured)
+    return get_trading_runtime_dir() / Path(default).name
+
+
+def get_trading_broker_submission_attempt_sqlite_path(
+    default: str | Path = DEFAULT_TRADING_BROKER_SUBMISSION_ATTEMPT_SQLITE_PATH,
+) -> Path:
+    configured = os.getenv("TRADING_BROKER_SUBMISSION_ATTEMPT_SQLITE_PATH")
     if configured:
         return Path(configured)
     return get_trading_runtime_dir() / Path(default).name

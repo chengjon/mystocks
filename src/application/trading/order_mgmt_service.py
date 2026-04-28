@@ -1,22 +1,19 @@
-"""
-Order Management Application Service
-订单管理应用服务
-"""
+"""Order Management Application Service."""
 
 import logging
 import time
 from typing import Any, Callable, Dict, Optional
 
 from src.application.trading.broker_divergence import InMemoryTradingBrokerDivergenceStore
-from src.application.trading.broker_lifecycle_event import (
-    BrokerLifecycleEvent,
-    InMemoryTradingBrokerLifecycleEventStore,
-)
-from src.application.trading.broker_order_correlation import (
-    InMemoryTradingBrokerOrderCorrelationStore,
-    LOCAL_ANCHOR_BROKER_CHANNEL,
-)
+from src.application.trading.broker_lifecycle_event import BrokerLifecycleEvent, InMemoryTradingBrokerLifecycleEventStore
+from src.application.trading.broker_order_correlation import InMemoryTradingBrokerOrderCorrelationStore
+from src.application.trading.broker_submission_attempt import InMemoryTradingBrokerSubmissionAttemptStore
 from src.application.trading.miniqmt_lifecycle_ingestion import normalize_miniqmt_lifecycle_payload
+from src.application.trading.primary_broker_submission import (
+    persist_primary_broker_correlation,
+    process_primary_broker_submission,
+    resolve_local_submission_id,
+)
 from src.application.trading.tdx_manual_lifecycle_ingestion import normalize_tdx_manual_lifecycle_payload
 from src.application.trading.broker_reconciliation import (
     AUTO_RESOLUTION_APPLIED,
@@ -41,7 +38,6 @@ from src.domain.trading.value_objects import OrderId, OrderSide, OrderStatus, Or
 
 logger = logging.getLogger(__name__)
 
-LOCAL_ORDER_SUBMISSION_ADAPTER_PATH = "src.application.trading.order_mgmt_service.OrderManagementService.place_order"
 AUTO_RESOLVED = "auto_resolved"
 REPLAY_SUPPRESSION_SUPPRESSED_DUPLICATE = "suppressed_duplicate"
 
@@ -55,9 +51,11 @@ class OrderManagementService:
         pre_submit_gate: Optional[Callable[[CreateOrderRequest], Dict[str, Any]]] = None,
         cash_reservation_store: Optional[object] = None,
         broker_correlation_store: Optional[object] = None,
+        broker_submission_attempt_store: Optional[object] = None,
         broker_lifecycle_event_store: Optional[object] = None,
         broker_divergence_store: Optional[object] = None,
         order_state_store: Optional[object] = None,
+        primary_broker_runtime: Optional[object] = None,
         dedup_ttl_seconds: int = 300,
     ):
         self.order_repo = order_repo
@@ -66,20 +64,16 @@ class OrderManagementService:
         self.pre_submit_gate = pre_submit_gate
         self.cash_reservation_store = cash_reservation_store or InMemoryPortfolioCashReservationStore()
         self.broker_correlation_store = broker_correlation_store or InMemoryTradingBrokerOrderCorrelationStore()
+        self.broker_submission_attempt_store = broker_submission_attempt_store or InMemoryTradingBrokerSubmissionAttemptStore()
         self.broker_lifecycle_event_store = broker_lifecycle_event_store or InMemoryTradingBrokerLifecycleEventStore()
         self.broker_divergence_store = broker_divergence_store or InMemoryTradingBrokerDivergenceStore()
         self.order_state_store = order_state_store or InMemoryTradingOrderStateStore()
+        self.primary_broker_runtime = primary_broker_runtime
         self.dedup_ttl_seconds = dedup_ttl_seconds
         self._idempotency_cache: Dict[str, tuple[float, OrderResponse]] = {}
 
     def place_order(self, request: CreateOrderRequest) -> OrderResponse:
-        """
-        用例：下单流程
-        1. 验证业务规则
-        2. 创建领域对象
-        3. 持久化
-        4. 触发后续动作 (如提交柜台)
-        """
+        """下单：验证规则、持久化本地订单，并触发后续 broker-facing handoff。"""
         self._prune_expired_idempotency_entries()
 
         cached_response = self._find_deduplicated_response(request)
@@ -110,9 +104,25 @@ class OrderManagementService:
             order.submit()
 
             self.order_repo.save(order)
-            self._remember_broker_order_correlation(order, request)
+            local_submission_id = resolve_local_submission_id(order, request)
+            persist_primary_broker_correlation(
+                broker_correlation_store=self.broker_correlation_store,
+                primary_broker_runtime=self.primary_broker_runtime,
+                order=order,
+                request=request,
+                local_submission_id=local_submission_id,
+            )
             self._remember_cash_reservation(order, request)
             self._remember_order_state_evidence(order, request)
+            process_primary_broker_submission(
+                primary_broker_runtime=self.primary_broker_runtime,
+                broker_submission_attempt_store=self.broker_submission_attempt_store,
+                broker_correlation_store=self.broker_correlation_store,
+                order=order,
+                request=request,
+                local_submission_id=local_submission_id,
+                emit_existing_order_audit=self._emit_existing_order_audit,
+            )
             self._publish_events(order)
 
             response = self._map_to_response(order)
@@ -467,17 +477,6 @@ class OrderManagementService:
             request.portfolio_id,
             order.id.value,
             float(order.quantity) * float(order.price),
-        )
-
-    def _remember_broker_order_correlation(self, order: Order, request: CreateOrderRequest) -> None:
-        self.broker_correlation_store.upsert_submission(
-            order_id=order.id.value,
-            local_submission_id=request.idempotency_key or request.request_id or order.id.value,
-            broker_channel=LOCAL_ANCHOR_BROKER_CHANNEL,
-            adapter_path=LOCAL_ORDER_SUBMISSION_ADAPTER_PATH,
-            account_scope="unscoped",
-            session_scope=request.request_id,
-            acknowledgement_status=AWAITING_BROKER_ACKNOWLEDGEMENT,
         )
 
     def _apply_broker_auto_resolution(
