@@ -24,10 +24,19 @@
     `src/application/trading/broker_submission_attempt.py` plus
     `TRADING_BROKER_SUBMISSION_ATTEMPT_SQLITE_PATH`, rather than extending the existing
     correlation or lifecycle ledgers.
-- [ ] 2.3 Define the first canonical deferred-result ingress path for `miniQMT` bridge evidence
+- [x] 2.3 Define the first canonical deferred-result ingress path for `miniQMT` bridge evidence
   without bypassing the shared broker lifecycle envelope.
-- [ ] 2.4 Define the explicit Tongdaxin supplemental handoff record and the conditions that
+- [x] 2.4 Define the explicit Tongdaxin supplemental handoff record and the conditions that
   trigger operator review instead of silent primary-path retry.
+  - Repo-truth note: `src/application/trading/primary_broker_followup.py` now defines the first
+    canonical deferred miniQMT bridge-result ingress path by resolving `bridge_task_id` through
+    `broker_submission_attempt.py`, backfilling `local_submission_id`, and routing the normalized
+    payload through `OrderManagementService.record_broker_lifecycle_event()` instead of bypassing
+    the shared lifecycle envelope.
+  - Repo-truth note: the same helper module now defines explicit Tongdaxin supplemental handoff
+    persistence. `OrderManagementService.record_tdx_supplemental_handoff()` only allows handoff
+    from an active `miniQMT` primary correlation that is still awaiting acknowledgement; it does
+    not silently retry or auto-promote the supplemental path.
 
 ## 3. Implementation Micro-Batches
 
@@ -50,23 +59,45 @@
     `tests/ddd/test_phase_7_application.py` verifies `bridge_task_accepted`,
     `broker_acknowledged`, and `submission_failed` through the new durable submission-attempt
     ledger.
-- [ ] 3.4 Route deferred `miniQMT` bridge result, callback, or polled lifecycle evidence through
+- [x] 3.4 Route deferred `miniQMT` bridge result, callback, or polled lifecycle evidence through
   `BrokerLifecycleEvent` and channel-scoped correlation binding.
-- [ ] 3.5 Add explicit Tongdaxin supplemental handoff persistence and preserve review-first
+- [x] 3.5 Add explicit Tongdaxin supplemental handoff persistence and preserve review-first
   topology semantics.
-- [ ] 3.6 Update `docs/guides/quant-trading/broker-execution-truth-registry.md` and
+- [x] 3.6 Update `docs/guides/quant-trading/broker-execution-truth-registry.md` and
   `docs/FUNCTION_TREE.md` once implementation evidence exists.
+  - Repo-truth note: `OrderManagementService.ingest_miniqmt_bridge_result_payload()` now routes
+    deferred bridge results through `BrokerLifecycleEvent`; unmatched late miniQMT bridge results
+    after channel rotation are persisted as `unmatched_deferred_bridge_result` review incidents
+    instead of being auto-matched by timing or quantity coincidence.
+  - Repo-truth note: `OrderManagementService.record_tdx_supplemental_handoff()` now records
+    explicit operator handoff into the submission-attempt ledger, rotates the active correlation
+    surface to the `tdx_manual` channel, and preserves the prior miniQMT attempt evidence in the
+    handoff payload.
+  - Repo-truth note: `docs/guides/quant-trading/broker-execution-truth-registry.md` and
+    `docs/FUNCTION_TREE.md` now reflect the current repo-facing runtime evidence: primary-path
+    submission classification, deferred bridge-result re-entry, and explicit Tongdaxin handoff.
 
 ## 4. Validation
 
-- [ ] 4.1 Add targeted tests for:
+- [x] 4.1 Add targeted tests for:
   - local order submission into the `miniQMT` primary runtime path
   - transport receipt without broker acknowledgement
   - deferred broker acknowledgement or rejection
   - explicit Tongdaxin supplemental handoff
-- [ ] 4.2 Run targeted trading tests, including `tests/ddd/test_phase_7_application.py`, before
+- [x] 4.2 Run targeted trading tests, including `tests/ddd/test_phase_7_application.py`, before
   closing each implementation batch.
-- [ ] 4.3 Re-run `openspec validate add-miniqmt-primary-broker-adapter-runtime --strict` before
+- [x] 4.3 Re-run `openspec validate add-miniqmt-primary-broker-adapter-runtime --strict` before
   completion.
-- [ ] 4.4 Confirm the closeout language stays at repo-truth level and does not claim live
+- [x] 4.4 Confirm the closeout language stays at repo-truth level and does not claim live
   broker production readiness without new runtime evidence.
+  - Repo-truth note: `tests/ddd/test_phase_7_application.py` now covers queued primary-path
+    submission, immediate acknowledgement, transport-stage failure, deferred bridge-result
+    acknowledgement, explicit Tongdaxin supplemental handoff, and late miniQMT bridge-result
+    review escalation. The focused batch was re-verified with
+    `pytest tests/ddd/test_phase_7_application.py -q --cov-fail-under=0 -o log_cli=false`
+    (`59 passed`).
+  - Repo-truth note: `openspec validate add-miniqmt-primary-broker-adapter-runtime --strict`
+    now passes after the runtime, docs, and task ledger updates.
+  - Repo-truth note: closeout language in the spec, registry, and `FUNCTION_TREE.md` still
+    stays at repo-facing runtime evidence level. It explicitly avoids claiming a verified live
+    miniQMT adapter, production-ready broker execution, or production-ready Tongdaxin bridge.

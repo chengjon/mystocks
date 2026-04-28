@@ -9,10 +9,9 @@ from src.application.trading.broker_lifecycle_event import BrokerLifecycleEvent,
 from src.application.trading.broker_order_correlation import InMemoryTradingBrokerOrderCorrelationStore
 from src.application.trading.broker_submission_attempt import InMemoryTradingBrokerSubmissionAttemptStore
 from src.application.trading.miniqmt_lifecycle_ingestion import normalize_miniqmt_lifecycle_payload
+from src.application.trading import primary_broker_followup as broker_followup
 from src.application.trading.primary_broker_submission import (
-    persist_primary_broker_correlation,
-    process_primary_broker_submission,
-    resolve_local_submission_id,
+    persist_primary_broker_correlation, process_primary_broker_submission, resolve_local_submission_id,
 )
 from src.application.trading.tdx_manual_lifecycle_ingestion import normalize_tdx_manual_lifecycle_payload
 from src.application.trading.broker_reconciliation import (
@@ -41,8 +40,10 @@ logger = logging.getLogger(__name__)
 AUTO_RESOLVED = "auto_resolved"
 REPLAY_SUPPRESSION_SUPPRESSED_DUPLICATE = "suppressed_duplicate"
 
-
 class OrderManagementService:
+    ingest_miniqmt_bridge_result_payload = broker_followup.service_ingest_miniqmt_bridge_result_payload
+    record_tdx_supplemental_handoff = broker_followup.service_record_tdx_supplemental_handoff
+
     def __init__(
         self,
         order_repo: IOrderRepository,
@@ -71,7 +72,6 @@ class OrderManagementService:
         self.primary_broker_runtime = primary_broker_runtime
         self.dedup_ttl_seconds = dedup_ttl_seconds
         self._idempotency_cache: Dict[str, tuple[float, OrderResponse]] = {}
-
     def place_order(self, request: CreateOrderRequest) -> OrderResponse:
         """下单：验证规则、持久化本地订单，并触发后续 broker-facing handoff。"""
         self._prune_expired_idempotency_entries()
@@ -404,7 +404,6 @@ class OrderManagementService:
 
     def get_pending_buy_notional_for_portfolio(self, portfolio_id: str) -> float:
         return float(self.cash_reservation_store.get_portfolio_reserved_notional(portfolio_id))
-
     def has_stale_cash_reservations_for_portfolio(self, portfolio_id: str, max_age_seconds: int) -> bool:
         stale_reservations = self.cash_reservation_store.fetch_stale(max_age_seconds)
         return any(record["portfolio_id"] == portfolio_id for record in stale_reservations)

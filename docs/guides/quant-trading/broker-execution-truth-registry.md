@@ -15,8 +15,8 @@
 | Surface | Role | Canonical Scope | External Truth Source | Current State | Classification | Reconciliation Owner | Next Action | Notes |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | `src/application/trading/order_mgmt_service.py` | 本地订单生命周期控制锚点 | 当前 broker-truth 实施的 canonical anchor | 未验证；仅有本地状态与本地审计证据 | active local runtime path | `experimental` | `q2-wave3-trading-safety` | 从此处向外增加 local-to-external correlation ledger | 当前最强 repo-truth；不等于 broker truth |
-| `web/backend/app/services/windows_bridge_adapter.py` (`qmt` provider) | `miniQMT` 候选桥接入口 | project-approved first primary broker-truth candidate | `qmt` provider over Windows bridge | repo-facing lifecycle ingestion verified; live broker adapter still pending | `primary-candidate` | `broker-truth-channel-topology` | 把 `qmt/*` 提交与生命周期事件继续收束到 channel-scoped submission / lifecycle ingestion 契约 | `src/application/trading/miniqmt_lifecycle_ingestion.py` 与 `OrderManagementService.ingest_miniqmt_lifecycle_payload()` 已把 Windows-bridge 风格 payload 规范化进 broker lifecycle ledger；这仍不等于已存在 verified miniQMT trading adapter |
-| Tongdaxin semi-manual trading path | 补充型 operator-assisted 交易通道 | supplemental execution and reconciliation path | operator action + Tongdaxin terminal evidence | repo-facing supplemental lifecycle ingestion verified; review-first automation boundary active | `supplemental-operator-assisted` | `broker-truth-channel-topology` | 继续保持 review-first；只有未来拿到等价外部身份与序列证据后才可升级自动权限 | `src/application/trading/tdx_manual_lifecycle_ingestion.py` 已把 Tongdaxin 半手工 payload 接入 lifecycle ledger，但默认落入 `supplemental_channel_review_required`，且不会继承 primary-path 自动权限；必须与现有 `tdx` 行情/数据适配器区分 |
+| `web/backend/app/services/windows_bridge_adapter.py` (`qmt` provider) | `miniQMT` 候选桥接入口 | project-approved first primary broker-truth candidate | `qmt` provider over Windows bridge | repo-facing primary submission + deferred lifecycle re-entry verified; live broker adapter still pending | `primary-candidate` | `add-miniqmt-primary-broker-adapter-runtime` | 继续把 `qmt/*` 提交、bridge receipt 与 deferred lifecycle result 收束到 channel-scoped submission / lifecycle ingestion 契约 | `src/application/trading/miniqmt_primary_runtime.py`、`broker_submission_attempt.py`、`OrderManagementService.ingest_miniqmt_bridge_result_payload()` 现在已区分 `bridge_task_accepted` 与 `broker_acknowledged`，并能基于 `bridge_task_id` 把延迟 `miniQMT` 结果重新接回 shared broker lifecycle ledger；这仍不等于已存在 verified miniQMT trading adapter |
+| Tongdaxin semi-manual trading path | 补充型 operator-assisted 交易通道 | supplemental execution and reconciliation path | operator action + Tongdaxin terminal evidence | repo-facing supplemental lifecycle ingestion + explicit handoff boundary verified; review-first automation boundary active | `supplemental-operator-assisted` | `add-miniqmt-primary-broker-adapter-runtime` | 继续保持 review-first；只有未来拿到等价外部身份与序列证据后才可升级自动权限 | `src/application/trading/tdx_manual_lifecycle_ingestion.py` 已把 Tongdaxin 半手工 payload 接入 lifecycle ledger，而 `OrderManagementService.record_tdx_supplemental_handoff()` 现在会把 `miniQMT` primary path 的 operator handoff 显式落账；Tongdaxin 不会继承 primary-path 自动权限，且必须与现有 `tdx` 行情/数据适配器区分 |
 | `src/trading/realtime_strategy_executor.py` | 上游信号到下单编排 | upstream caller only | 无 | active orchestration caller | `experimental` | `q2-wave3-trading-safety` | 保持为上游调用面，不作为第一条 broker truth 落点 | 可表达 live-trading intent，但不是外部确认源 |
 | `src/trading/live_trading_engine.py` | 实时会话与策略执行编排 | upstream orchestration only | 无 | active orchestration bridge | `experimental` | `q2-wave3-trading-safety` | 不作为第一批 broker-binding 实现面 | 当前未验证为 canonical broker-facing chain |
 | `src/interfaces/api/trading_router.py` | DDD 交易 API stub | none | 无 | `501` stub | `stub` | `q2-wave3-trading-safety` | 保持非 canonical，待真正 service wire-up 后再重评 | 不能作为 broker execution truth |
@@ -42,8 +42,11 @@
 
 - 项目已批准 `miniQMT primary / Tongdaxin supplemental` 的通道拓扑
 - `web/backend/app/services/windows_bridge_adapter.py` 已为 `qmt` provider 保留 bridge registry 入口
+- `src/application/trading/miniqmt_primary_runtime.py` 已把 primary-path immediate outcome 固化为 `bridge_task_accepted` / `broker_acknowledged` / `submission_failed`
+- `src/application/trading/broker_submission_attempt.py` 已把 primary-path submission attempt 与 `bridge_task_id` receipt 单独持久化
 - `src/application/trading/miniqmt_lifecycle_ingestion.py` 已把 Windows-bridge 风格 `miniQMT` payload 规范化进 `BrokerLifecycleEvent`
 - `OrderManagementService.ingest_miniqmt_lifecycle_payload()` 已把 channel-scoped `miniQMT` acknowledgement / reject / cancel / execution 事件接入本地 lifecycle ledger
+- `OrderManagementService.ingest_miniqmt_bridge_result_payload()` 已能基于 `bridge_task_id` 回填 submission context，并把 deferred `miniQMT` bridge result 重新接回 shared lifecycle / divergence surfaces
 
 但当前 registry 明确不把这两点夸大成：
 
@@ -67,6 +70,7 @@
 - operator-assisted
 - review-first by default
 - repo-facing supplemental lifecycle capture already present, but not automation-equivalent to `miniQMT`
+- any `miniQMT -> Tongdaxin` continuation must be recorded explicitly through `OrderManagementService.record_tdx_supplemental_handoff()`, not as silent fallback
 
 ### 4. 上游 orchestration 不等于 broker truth
 
@@ -119,8 +123,8 @@
    - runtime demo API
    - orchestration caller surfaces
 3. 再明确“哪些 repo-facing 通道已经具备了最小 implementation evidence，但仍不能拔高为 production broker truth”：
-   - `miniQMT` primary-candidate lifecycle ingestion
-   - Tongdaxin supplemental review-first lifecycle capture
+   - `miniQMT` primary-candidate submission classification + deferred lifecycle re-entry
+   - Tongdaxin supplemental review-first lifecycle capture + explicit handoff boundary
 4. 再锁“哪些通道已经具备自动权限门禁，哪些没有”：
    - `miniQMT` 是当前唯一显式保留 replay-suppression / bounded auto-resolution 自动权限候选面的通道
    - Tongdaxin supplemental path 已明确不继承 primary-path 自动权限

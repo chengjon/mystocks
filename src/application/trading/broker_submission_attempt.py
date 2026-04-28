@@ -53,6 +53,21 @@ class InMemoryTradingBrokerSubmissionAttemptStore:
                 return dict(record)
         return None
 
+    def get_by_bridge_task_id(
+        self,
+        bridge_task_id: str,
+        *,
+        broker_channel: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
+        with self._lock:
+            for record in reversed(self._records):
+                if record.get("bridge_task_id") != bridge_task_id:
+                    continue
+                if broker_channel is not None and record["broker_channel"] != broker_channel:
+                    continue
+                return dict(record)
+        return None
+
 
 class SqliteTradingBrokerSubmissionAttemptStore:
     """
@@ -146,6 +161,32 @@ class SqliteTradingBrokerSubmissionAttemptStore:
             WHERE order_id = ?
         """
         params: list[Any] = [order_id]
+        if broker_channel is not None:
+            query += " AND broker_channel = ?"
+            params.append(broker_channel)
+        query += " ORDER BY id DESC LIMIT 1"
+
+        with self._lock:
+            with sqlite3.connect(self.path) as conn:
+                row = conn.execute(query, params).fetchone()
+
+        if row is None:
+            return None
+
+        return json.loads(row[0])
+
+    def get_by_bridge_task_id(
+        self,
+        bridge_task_id: str,
+        *,
+        broker_channel: Optional[str] = None,
+    ) -> Optional[Dict[str, Any]]:
+        query = """
+            SELECT payload_json
+            FROM trading_broker_submission_attempt
+            WHERE bridge_task_id = ?
+        """
+        params: list[Any] = [bridge_task_id]
         if broker_channel is not None:
             query += " AND broker_channel = ?"
             params.append(broker_channel)
