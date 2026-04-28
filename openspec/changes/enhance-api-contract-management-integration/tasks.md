@@ -42,10 +42,12 @@
 > - 兼容性检查 / 回退逻辑：`checkCompatibility()`、`negotiateVersion()`、`findFallbackVersion()`
 > - 组件消费：`web/frontend/src/components/common/ApiVersionManager.vue`
 > - 单元测试：`web/frontend/src/services/__tests__/versionNegotiator.spec.ts`
+> - backend contract integration tests：`tests/integration/contract/test_contract_*.py`
 > 但以下目标仍未形成当前 repo-truth：
 > - 未发现显式的 breaking-change migration path 计算与转换步骤执行
 > - 未发现自动 client adaptation 层
-> - 未发现独立的 integration tests；当前仅能证实 unit tests
+> - `tests/integration/contract/test_contract_*.py` 主要覆盖 backend contract service/generator/validator，不等于前端 version negotiation 的 integration tests
+> - 因此当前仅能证实 unit tests
 
 - [x] 4.1 Extend versionNegotiator.ts with compatibility checking
 - [ ] 4.2 Implement migration path calculation for breaking changes
@@ -69,6 +71,10 @@
 > **仓库事实校对（2026-04-27）**:
 > 当前可以确认已有 API contract validation workflow，
 > 但未找到专门面向 contract validation success rate / drift incidents / Grafana coverage dashboard / health-check contract status / alerting 的现行实现闭环。
+> 需要特别区分以下“相邻但不足以勾选”的证据：
+> - `.github/workflows/deploy.yml`、`e2e-testing.yml`、`ci-cd-with-type-checking.yml` 中的 health checks 属于通用部署/运行健康检查，不是 contract health monitoring
+> - `docs/reports/api_split/api_health.json`、`api_refresh-health.json` 等是 API 文档拆分产物，不是 contract validation 监控面板或 incident tracking
+> - repo 中存在 `/metrics` 与 Prometheus 基础设施，但未见 contract-specific metrics/alert names 的现行接线
 > 因此本节暂不勾选，避免把工作流存在误写成监控体系完成。
 
 - [ ] 6.1 Add contract validation success rate metrics to Prometheus
@@ -98,6 +104,10 @@
 > - 前端 runtime validator / version negotiator 的单元测试
 > - `.github/workflows/api-contract-validation.yml` 的 CI 入口
 > - 后端 contract service 的 import / OpenAPI generation / regression gate 校验步骤
+> - `tests/integration/contract/test_contract_executor.py`、`test_contract_generator.py`、`test_contract_validator.py` 这类 backend 集成测试
+> 但仍需避免把“存在 CI 工作流和 backend contract tests”误写成更高层闭环：
+> - workflow 中生成 `contract_validation_report.md` 只是 CI 报告模板与 artifact 逻辑，当前仓库并未保存一次可直接复核的最新实跑结果
+> - backend contract integration tests 不等于“前端 runtime validator + backend contract + CI gate”的端到端链路验证
 > 但当前仓库中尚未形成可直接指向本 change 的
 > end-to-end contract validation、CI 实跑结果、impact analysis accuracy、runtime validation performance、security review 的最新 closeout 证据。
 
