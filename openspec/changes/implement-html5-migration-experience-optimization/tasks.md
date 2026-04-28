@@ -21,7 +21,8 @@
 > - `web/frontend/src/router/index.ts` 存在与上述 7 域对齐的路由组
 > - `web/frontend/src/stores/menuStore.ts` 与 `web/frontend/src/stores/preferenceStore.ts` 已提供展开状态与侧边栏折叠状态的本地持久化
 > - `web/frontend/tests/e2e/critical/menu-navigation-fixed.spec.ts`、`web/frontend/tests/e2e/artdeco-config-integration.spec.ts`、`web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts` ~ `phase3-mainline-matrix.spec.ts` 已覆盖部分菜单/关键路由运行链路
-> 但当前仍未找到“严格按 11 个菜单跳转用例完成验证”与“专门验证菜单状态保持”的直接 closeout 证据，因此 1.1.4 / 1.1.5 暂不勾选。
+> - `web/frontend/tests/base-layout-integration.spec.ts`、`web/frontend/tests/menu-e2e.spec.js` 已验证折叠切换与响应式宽度变化
+> 但当前仍未找到“严格按 11 个菜单跳转用例完成验证”与“刷新后状态保持”的直接 closeout 证据，且 `web/frontend/src/layouts/BaseLayout.vue` 仍保留 `sidebarCollapsed` 本地状态与 `TODO ... add persistence` 注记，因此 1.1.4 / 1.1.5 暂不勾选。
 
 - [x] 1.1.1 更新路由配置使用ArtDecoLayoutEnhanced (基于迁移路由经验)
 - [x] 1.1.2 完善当前 canonical 菜单配置的业务域 (提案原文为6域；当前 repo truth 为7域)
@@ -30,6 +31,15 @@
 - [ ] 1.1.5 测试菜单状态保持和响应式布局
 
 ### 1.2 依赖管理统一
+> **局部事实说明（2026-04-28）**:
+> 当前依赖统一尚未完成：
+> - `web/frontend/package.json` 仍保留 `@ant-design/icons-vue`
+> - `web/frontend/src/views/monitoring/composables/useRiskDashboard.ts`
+> - `web/frontend/src/components/monitoring/MonitoringAlertPanel.vue`
+> - `web/frontend/src/components/monitoring/MonitoringDataTable.vue`
+>   仍直接从 `@ant-design/icons-vue` 导入图标
+> 因此 1.2.1-1.2.5 继续保持未完成，避免把“主界面已大体迁移到 Element Plus + ArtDeco”误写成“依赖冲突已清理完毕”。
+
 - [ ] 1.2.1 审计当前依赖使用情况 (Element Plus + Ant Design Vue冲突分析)
 - [ ] 1.2.2 移除ant-design-vue相关组件 (基于迁移报告的清理策略)
 - [ ] 1.2.3 统一使用Element Plus + ArtDeco组件
@@ -133,6 +143,14 @@
 - [ ] 2.4.5 Add error handling and worker lifecycle management
 
 ### 2.5 Push Notifications
+> **局部事实说明（2026-04-28）**:
+> 当前通知能力停留在“偏好契约与客户端封装已存在”的阶段：
+> - 后端已有 `web/backend/app/api/notification.py` 的 `GET/POST /preferences`
+> - 前端已有 `web/frontend/src/api/user.ts` 中的 `getNotificationSettings()` / `updateNotificationSettings()`
+> - `web/frontend/src/api/__tests__/user.notification-settings.spec.ts` 已校验调用到 `/api/notification/preferences`
+> 但当前活跃 `web/frontend/src/views/system/Settings.vue` 只在说明文案中提到该契约，并未提供通知偏好表单；同时未找到 `Notification.requestPermission`、`PushManager` / `serviceWorkerRegistration.pushManager` 的现行实现，也未找到后端 `/subscribe` / `/unsubscribe` push 订阅管理路由。
+> 因此 2.5.1-2.5.5 暂不勾选。
+
 - [ ] 2.5.1 Implement push notification permission handling
 - [ ] 2.5.2 Create notification service for market alerts (股价异动/技术信号)
 - [ ] 2.5.3 Add backend API for push subscription management
@@ -160,6 +178,14 @@
 - [ ] 2.7.5 Add Device Orientation API support (移动端图表交互)
 
 ### 2.8 Accessibility Enhancements
+> **局部事实说明（2026-04-28）**:
+> 当前仓库已存在可访问性基础能力与局部验证：
+> - `web/frontend/src/composables/useAria/*` 与多个活跃页面/组件已接入 `aria-*`、`role`、`tabindex`
+> - `web/frontend/tests/e2e/accessibility-smoke.spec.ts` 使用 `@axe-core/playwright`
+> - `web/frontend/package.json` 暴露 `test:e2e:axe`
+> - `.github/workflows/frontend-testing.yml` 已运行 `npm run test:e2e:axe`
+> 但当前未发现 WAVE 相关现行实现，`axe` 也主要覆盖有限 smoke 页面而不是完整业务域闭环，因此 2.8.1-2.8.5 继续保持未完成。
+
 - [ ] 2.8.1 Audit and optimize HTML5 semantic elements (基于ArtDeco组件优化)
 - [ ] 2.8.2 Add comprehensive ARIA attributes (菜单/图表/表单)
 - [ ] 2.8.3 Implement keyboard navigation improvements (Tab顺序/快捷键)
