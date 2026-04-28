@@ -138,6 +138,10 @@
 > **局部事实说明（2026-04-27）**:
 > `web/backend/app/main.py` 当前已通过 `metrics_endpoint()` 暴露 `/metrics`，其底层使用的是后端 performance middleware 的全局 Prometheus registry。
 > 但 `src/core/data_source/metrics.py` 默认仍创建独立 `CollectorRegistry`，因此“路由级全局 REGISTRY”与“数据源指标全量统一到全局 REGISTRY”应分开理解。
+>
+> **Repo-truth 补充（2026-04-28）**:
+> - `src/core/data_source/base.py` 中 `DataSourceManagerV2._call_endpoint()` 仅委托 `src/core/data_source/handler.py:_call_endpoint()`；后者当前只调用 `_record_success()` / `_record_failure()`，而这两个方法在 `base.py` 里仍是 `pass` 存根，因此 6.5 不能按“已完成数据源指标埋点接入”勾选。
+> - 当前未找到 `grafana/dashboards/data-source-metrics.json`、`monitoring-stack/config/rules/data-source-alerts.yml`、`tests/unit/test_metrics.py` 这些任务原文直接点名的产物，因此 6.7 / 6.8 / 6.9 继续保持未完成。
 
 - [x] 6.1 创建 `src/core/data_source/metrics.py` 文件
 - [x] 6.2 定义 Prometheus 指标（Histogram, Counter, Gauge）
