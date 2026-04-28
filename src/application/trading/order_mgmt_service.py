@@ -17,6 +17,7 @@ from src.application.trading.broker_order_correlation import (
     LOCAL_ANCHOR_BROKER_CHANNEL,
 )
 from src.application.trading.miniqmt_lifecycle_ingestion import normalize_miniqmt_lifecycle_payload
+from src.application.trading.tdx_manual_lifecycle_ingestion import normalize_tdx_manual_lifecycle_payload
 from src.application.trading.broker_reconciliation import (
     AUTO_RESOLUTION_APPLIED,
     AWAITING_BROKER_ACKNOWLEDGEMENT,
@@ -386,8 +387,10 @@ class OrderManagementService:
         return payload
 
     def ingest_miniqmt_lifecycle_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
-        lifecycle_event = normalize_miniqmt_lifecycle_payload(payload)
-        return self.record_broker_lifecycle_event(lifecycle_event)
+        return self.record_broker_lifecycle_event(normalize_miniqmt_lifecycle_payload(payload))
+
+    def ingest_tdx_manual_lifecycle_payload(self, payload: Dict[str, Any]) -> Dict[str, Any]:
+        return self.record_broker_lifecycle_event(normalize_tdx_manual_lifecycle_payload(payload))
 
     def get_pending_buy_notional_for_portfolio(self, portfolio_id: str) -> float:
         return float(self.cash_reservation_store.get_portfolio_reserved_notional(portfolio_id))
@@ -400,7 +403,6 @@ class OrderManagementService:
         """发布订单的领域事件"""
         if not self.event_bus:
             return
-
         if not hasattr(order, "_domain_events"):
             return
 

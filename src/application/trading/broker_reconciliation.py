@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 from src.application.trading.broker_lifecycle_event import BrokerLifecycleEvent
+from src.application.trading.broker_order_correlation import TDX_MANUAL_BROKER_CHANNEL
 from src.domain.trading.model.order import Order
 from src.domain.trading.value_objects import OrderStatus
 
@@ -21,6 +22,7 @@ UNMATCHED_EXTERNAL_ORDER_DIVERGENCE = "unmatched_external_order"
 LOCALLY_TERMINAL_EXTERNALLY_OPEN_DIVERGENCE = "locally_terminal_externally_open"
 EXTERNALLY_TERMINAL_LOCALLY_OPEN_DIVERGENCE = "externally_terminal_locally_open"
 QUANTITY_OR_FILL_DIVERGENCE = "quantity_or_fill_divergence"
+SUPPLEMENTAL_CHANNEL_REVIEW_REQUIRED_DIVERGENCE = "supplemental_channel_review_required"
 AUTO_RESOLVED = "auto_resolved"
 REPLAY_SUPPRESSION_ELIGIBLE = "eligible"
 REPLAY_SUPPRESSION_BLOCKED = "blocked"
@@ -158,6 +160,10 @@ def build_broker_divergence_record(
         divergence_category = AWAITING_BROKER_ACKNOWLEDGEMENT_DIVERGENCE
         reason_code = reason_code or "awaiting_broker_acknowledgement"
         reason_detail = reason_detail or "broker lifecycle event arrived before external identity binding"
+    elif event.broker_channel == TDX_MANUAL_BROKER_CHANNEL:
+        divergence_category = SUPPLEMENTAL_CHANNEL_REVIEW_REQUIRED_DIVERGENCE
+        reason_code = reason_code or "supplemental_channel_review_required"
+        reason_detail = reason_detail or "supplemental Tongdaxin lifecycle evidence requires operator review"
 
     if divergence_category is None:
         return None
@@ -332,6 +338,8 @@ def required_evidence_for_divergence(divergence_category: str) -> str:
         return "broker_execution_fact_and_local_terminal_audit"
     if divergence_category == EXTERNALLY_TERMINAL_LOCALLY_OPEN_DIVERGENCE:
         return "broker_terminal_fact_and_local_order_review"
+    if divergence_category == SUPPLEMENTAL_CHANNEL_REVIEW_REQUIRED_DIVERGENCE:
+        return "operator_confirmation_and_broker_artifact"
     return "broker_fill_fact_and_local_fill_reconciliation"
 
 

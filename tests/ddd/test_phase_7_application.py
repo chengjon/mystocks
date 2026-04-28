@@ -934,6 +934,88 @@ class TestOrderManagementService:
         assert correlation_record["external_order_id"] == "miniqmt-broker-order-0001"
         assert correlation_record["acknowledgement_status"] == "acknowledged"
 
+    def test_ingest_tdx_manual_lifecycle_payload_persists_review_required_supplemental_divergence(self, tmp_path):
+        try:
+            correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+            event_module = importlib.import_module("src.application.trading.broker_lifecycle_event")
+            divergence_module = importlib.import_module("src.application.trading.broker_divergence")
+            tdx_module = importlib.import_module("src.application.trading.tdx_manual_lifecycle_ingestion")
+        except ModuleNotFoundError as exc:
+            pytest.fail(f"tdx manual lifecycle dependency missing: {exc}")
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "tdx-manual-correlation.sqlite3"
+        event_db = tmp_path / "tdx-manual-event-ledger.sqlite3"
+        divergence_db = tmp_path / "tdx-manual-divergence.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        event_store = event_module.SqliteTradingBrokerLifecycleEventStore(event_db)
+        divergence_store = divergence_module.SqliteTradingBrokerDivergenceStore(divergence_db)
+        service = OrderManagementService(
+            order_repo=order_repo,
+            broker_correlation_store=correlation_store,
+            broker_lifecycle_event_store=event_store,
+            broker_divergence_store=divergence_store,
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="tdx-manual-submission-0001",
+                request_id="tdx-manual-session-0001",
+            )
+        )
+        correlation_store.upsert_submission(
+            order_id=response.order_id,
+            local_submission_id="tdx-manual-submission-0001",
+            broker_channel=correlation_module.TDX_MANUAL_BROKER_CHANNEL,
+            adapter_path="operator.tdx.manual.submit",
+            account_scope="sim-account-02",
+            session_scope="tdx-manual-session-0001",
+            acknowledgement_status="awaiting_broker_acknowledgement",
+        )
+
+        if not hasattr(service, "ingest_tdx_manual_lifecycle_payload"):
+            pytest.fail("ingest_tdx_manual_lifecycle_payload is missing")
+
+        persisted_record = service.ingest_tdx_manual_lifecycle_payload(
+            {
+                "status": "accepted",
+                "captured_at": "2026-04-28T05:10:00+00:00",
+                "external_order_id": "tdx-manual-order-0001",
+                "client_order_id": "tdx-manual-submission-0001",
+                "operator_note": "manual trading desk screenshot import",
+            }
+        )
+
+        assert persisted_record["event_type"] == "acknowledgement"
+        assert persisted_record["order_id"] == response.order_id
+        assert persisted_record["broker_channel"] == correlation_module.TDX_MANUAL_BROKER_CHANNEL
+        assert persisted_record["source_name"] == tdx_module.TDX_MANUAL_SOURCE_NAME
+        assert persisted_record["external_order_id"] == "tdx-manual-order-0001"
+        assert persisted_record["identity_status"] == "matched_local_submission_id"
+        assert persisted_record["replay_suppression_status"] == "blocked"
+        assert persisted_record["replay_suppression_reason"] == "missing_broker_sequence_identity"
+
+        persisted_event = event_store.fetch_recent(limit=1)[0]
+        assert persisted_event["broker_channel"] == correlation_module.TDX_MANUAL_BROKER_CHANNEL
+        assert persisted_event["reason_detail"] == "manual trading desk screenshot import"
+
+        divergence_record = divergence_store.fetch_recent(limit=1)[0]
+        assert divergence_record["divergence_category"] == "supplemental_channel_review_required"
+        assert divergence_record["review_status"] == "review_required"
+        assert divergence_record["required_evidence"] == "operator_confirmation_and_broker_artifact"
+        assert divergence_record["broker_channel"] == correlation_module.TDX_MANUAL_BROKER_CHANNEL
+
+        correlation_record = correlation_store.get_order_correlation(response.order_id)
+        assert correlation_record is not None
+        assert correlation_record["broker_channel"] == correlation_module.TDX_MANUAL_BROKER_CHANNEL
+        assert correlation_record["external_order_id"] == "tdx-manual-order-0001"
+        assert correlation_record["acknowledgement_status"] == "acknowledged"
+
     def test_record_broker_lifecycle_event_execution_matches_external_identity_and_preserves_sequence_metadata(self, tmp_path):
         try:
             correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
