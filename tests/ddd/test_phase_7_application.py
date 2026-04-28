@@ -998,7 +998,7 @@ class TestOrderManagementService:
         assert persisted_record["external_order_id"] == "tdx-manual-order-0001"
         assert persisted_record["identity_status"] == "matched_local_submission_id"
         assert persisted_record["replay_suppression_status"] == "blocked"
-        assert persisted_record["replay_suppression_reason"] == "missing_broker_sequence_identity"
+        assert persisted_record["replay_suppression_reason"] == "broker_channel_not_replay_authorized"
 
         persisted_event = event_store.fetch_recent(limit=1)[0]
         assert persisted_event["broker_channel"] == correlation_module.TDX_MANUAL_BROKER_CHANNEL
@@ -1015,6 +1015,155 @@ class TestOrderManagementService:
         assert correlation_record["broker_channel"] == correlation_module.TDX_MANUAL_BROKER_CHANNEL
         assert correlation_record["external_order_id"] == "tdx-manual-order-0001"
         assert correlation_record["acknowledgement_status"] == "acknowledged"
+
+    def test_tdx_manual_channel_does_not_inherit_replay_suppression_authority(self, tmp_path):
+        try:
+            correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+            event_module = importlib.import_module("src.application.trading.broker_lifecycle_event")
+            divergence_module = importlib.import_module("src.application.trading.broker_divergence")
+        except ModuleNotFoundError as exc:
+            pytest.fail(f"tdx manual replay suppression dependency missing: {exc}")
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "tdx-manual-duplicate-correlation.sqlite3"
+        event_db = tmp_path / "tdx-manual-duplicate-event-ledger.sqlite3"
+        divergence_db = tmp_path / "tdx-manual-duplicate-divergence.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        event_store = event_module.SqliteTradingBrokerLifecycleEventStore(event_db)
+        divergence_store = divergence_module.SqliteTradingBrokerDivergenceStore(divergence_db)
+        service = OrderManagementService(
+            order_repo=order_repo,
+            broker_correlation_store=correlation_store,
+            broker_lifecycle_event_store=event_store,
+            broker_divergence_store=divergence_store,
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="tdx-manual-duplicate-0001",
+                request_id="tdx-manual-duplicate-session-0001",
+            )
+        )
+        correlation_store.upsert_submission(
+            order_id=response.order_id,
+            local_submission_id="tdx-manual-duplicate-0001",
+            broker_channel=correlation_module.TDX_MANUAL_BROKER_CHANNEL,
+            adapter_path="operator.tdx.manual.submit",
+            account_scope="sim-account-03",
+            session_scope="tdx-manual-duplicate-session-0001",
+            acknowledgement_status="awaiting_broker_acknowledgement",
+        )
+
+        first_record = service.ingest_tdx_manual_lifecycle_payload(
+            {
+                "status": "accepted",
+                "captured_at": "2026-04-28T05:20:00+00:00",
+                "external_order_id": "tdx-manual-duplicate-order-0001",
+                "client_order_id": "tdx-manual-duplicate-0001",
+                "capture_sequence": "tdx-manual-dup-seq-0001",
+            }
+        )
+        duplicate_record = service.ingest_tdx_manual_lifecycle_payload(
+            {
+                "status": "accepted",
+                "captured_at": "2026-04-28T05:21:00+00:00",
+                "external_order_id": "tdx-manual-duplicate-order-0001",
+                "client_order_id": "tdx-manual-duplicate-0001",
+                "capture_sequence": "tdx-manual-dup-seq-0001",
+            }
+        )
+
+        assert first_record["replay_suppression_status"] == "blocked"
+        assert first_record["replay_suppression_reason"] == "broker_channel_not_replay_authorized"
+        assert duplicate_record["replay_suppression_status"] == "blocked"
+        assert duplicate_record["replay_suppression_reason"] == "broker_channel_not_replay_authorized"
+
+        recent_records = event_store.fetch_recent(limit=10)
+        assert len(recent_records) == 2
+        assert recent_records[0]["broker_channel"] == correlation_module.TDX_MANUAL_BROKER_CHANNEL
+        assert recent_records[1]["broker_channel"] == correlation_module.TDX_MANUAL_BROKER_CHANNEL
+
+    def test_tdx_manual_channel_does_not_inherit_auto_resolution_authority(self, tmp_path):
+        try:
+            correlation_module = importlib.import_module("src.application.trading.broker_order_correlation")
+            event_module = importlib.import_module("src.application.trading.broker_lifecycle_event")
+            divergence_module = importlib.import_module("src.application.trading.broker_divergence")
+        except ModuleNotFoundError as exc:
+            pytest.fail(f"tdx manual auto-resolution dependency missing: {exc}")
+
+        order_repo = self.InMemoryOrderRepository()
+        correlation_db = tmp_path / "tdx-manual-auto-resolution-correlation.sqlite3"
+        event_db = tmp_path / "tdx-manual-auto-resolution-event-ledger.sqlite3"
+        divergence_db = tmp_path / "tdx-manual-auto-resolution-divergence.sqlite3"
+        order_state_db = tmp_path / "tdx-manual-auto-resolution-order-state.sqlite3"
+        correlation_store = correlation_module.SqliteTradingBrokerOrderCorrelationStore(correlation_db)
+        event_store = event_module.SqliteTradingBrokerLifecycleEventStore(event_db)
+        divergence_store = divergence_module.SqliteTradingBrokerDivergenceStore(divergence_db)
+        order_state_store = SqliteTradingOrderStateStore(order_state_db)
+        service = OrderManagementService(
+            order_repo=order_repo,
+            broker_correlation_store=correlation_store,
+            broker_lifecycle_event_store=event_store,
+            broker_divergence_store=divergence_store,
+            order_state_store=order_state_store,
+        )
+
+        response = service.place_order(
+            CreateOrderRequest(
+                symbol="000001",
+                quantity=100,
+                side="BUY",
+                order_type="LIMIT",
+                price=10.5,
+                idempotency_key="tdx-manual-auto-resolution-0001",
+                request_id="tdx-manual-auto-resolution-session-0001",
+            )
+        )
+        correlation_store.upsert_submission(
+            order_id=response.order_id,
+            local_submission_id="tdx-manual-auto-resolution-0001",
+            broker_channel=correlation_module.TDX_MANUAL_BROKER_CHANNEL,
+            adapter_path="operator.tdx.manual.submit",
+            account_scope="sim-account-04",
+            session_scope="tdx-manual-auto-resolution-session-0001",
+            acknowledgement_status="awaiting_broker_acknowledgement",
+        )
+        correlation_store.bind_external_order_id(
+            order_id=response.order_id,
+            external_order_id="tdx-manual-terminal-order-0001",
+            acknowledgement_status="acknowledged",
+        )
+
+        persisted_record = service.ingest_tdx_manual_lifecycle_payload(
+            {
+                "status": "rejected",
+                "captured_at": "2026-04-28T05:25:00+00:00",
+                "external_order_id": "tdx-manual-terminal-order-0001",
+                "client_order_id": "tdx-manual-auto-resolution-0001",
+                "capture_sequence": "tdx-manual-auto-resolve-seq-0001",
+                "operator_reason_code": "operator_reject_capture",
+                "operator_note": "manual reject evidence from trading desk",
+            }
+        )
+
+        assert persisted_record["replay_suppression_status"] == "blocked"
+        assert persisted_record["replay_suppression_reason"] == "broker_channel_not_replay_authorized"
+
+        divergence_record = divergence_store.fetch_recent(limit=1)[0]
+        assert divergence_record["divergence_category"] == "externally_terminal_locally_open"
+        assert divergence_record["review_status"] == "review_required"
+        assert divergence_record["auto_resolution_status"] == "blocked"
+        assert divergence_record["auto_resolution_reason"] == "broker_channel_not_auto_resolution_authorized"
+
+        order_state_record = order_state_store.get_order_state(response.order_id)
+        assert order_state_record is not None
+        assert order_state_record["status"] == "SUBMITTED"
+        assert order_repo.get_by_id(OrderId(response.order_id)).status == OrderStatus.SUBMITTED
 
     def test_record_broker_lifecycle_event_execution_matches_external_identity_and_preserves_sequence_metadata(self, tmp_path):
         try:

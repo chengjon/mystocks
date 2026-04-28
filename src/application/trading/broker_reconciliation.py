@@ -7,7 +7,7 @@ from __future__ import annotations
 from typing import Any, Dict, Optional
 
 from src.application.trading.broker_lifecycle_event import BrokerLifecycleEvent
-from src.application.trading.broker_order_correlation import TDX_MANUAL_BROKER_CHANNEL
+from src.application.trading.broker_order_correlation import MINIQMT_BROKER_CHANNEL, TDX_MANUAL_BROKER_CHANNEL
 from src.domain.trading.model.order import Order
 from src.domain.trading.value_objects import OrderStatus
 
@@ -45,6 +45,10 @@ LOCAL_OPEN_ORDER_STATUSES = {
     OrderStatus.SUBMITTED.value,
     OrderStatus.PARTIALLY_FILLED.value,
 }
+
+
+def _channel_allows_automated_authority(broker_channel: str | None) -> bool:
+    return broker_channel is None or broker_channel == MINIQMT_BROKER_CHANNEL
 
 
 def resolve_broker_correlation_for_event(
@@ -199,6 +203,13 @@ def evaluate_replay_suppression_policy(
     identity_status: str,
     sequencing_status: str,
 ) -> Dict[str, Optional[str]]:
+    if not _channel_allows_automated_authority(event.broker_channel):
+        return {
+            "replay_suppression_status": REPLAY_SUPPRESSION_BLOCKED,
+            "replay_suppression_basis": None,
+            "replay_suppression_reason": "broker_channel_not_replay_authorized",
+        }
+
     if identity_status not in {
         "matched_local_order_id",
         "matched_local_submission_id",
@@ -252,6 +263,8 @@ def find_duplicate_broker_lifecycle_event(
     for record in recent_records:
         if record.get("event_type") != event.event_type:
             continue
+        if event.broker_channel is not None and record.get("broker_channel") != event.broker_channel:
+            continue
         if order_id is not None and record.get("order_id") != order_id:
             continue
         if external_order_id is not None and record.get("external_order_id") != external_order_id:
@@ -272,6 +285,13 @@ def evaluate_auto_resolution_policy(
     identity_status: str,
     sequencing_status: str,
 ) -> Dict[str, Optional[str]]:
+    if not _channel_allows_automated_authority(event.broker_channel):
+        return {
+            "auto_resolution_status": AUTO_RESOLUTION_BLOCKED,
+            "auto_resolution_basis": None,
+            "auto_resolution_reason": "broker_channel_not_auto_resolution_authorized",
+        }
+
     divergence_category = str(divergence_record["divergence_category"])
     if divergence_category != EXTERNALLY_TERMINAL_LOCALLY_OPEN_DIVERGENCE:
         return {
@@ -349,6 +369,13 @@ def evaluate_replay_suppression_policy(
     identity_status: str,
     sequencing_status: str,
 ) -> Dict[str, Optional[str]]:
+    if not _channel_allows_automated_authority(event.broker_channel):
+        return {
+            "replay_suppression_status": REPLAY_SUPPRESSION_BLOCKED,
+            "replay_suppression_basis": None,
+            "replay_suppression_reason": "broker_channel_not_replay_authorized",
+        }
+
     if identity_status not in {
         "matched_local_order_id",
         "matched_local_submission_id",
@@ -402,6 +429,8 @@ def find_duplicate_broker_lifecycle_event(
     for record in recent_records:
         if record.get("event_type") != event.event_type:
             continue
+        if event.broker_channel is not None and record.get("broker_channel") != event.broker_channel:
+            continue
         if order_id is not None and record.get("order_id") != order_id:
             continue
         if external_order_id is not None and record.get("external_order_id") != external_order_id:
@@ -422,6 +451,13 @@ def evaluate_auto_resolution_policy(
     identity_status: str,
     sequencing_status: str,
 ) -> Dict[str, Optional[str]]:
+    if not _channel_allows_automated_authority(event.broker_channel):
+        return {
+            "auto_resolution_status": AUTO_RESOLUTION_BLOCKED,
+            "auto_resolution_basis": None,
+            "auto_resolution_reason": "broker_channel_not_auto_resolution_authorized",
+        }
+
     divergence_category = str(divergence_record["divergence_category"])
     if divergence_category != EXTERNALLY_TERMINAL_LOCALLY_OPEN_DIVERGENCE:
         return {
