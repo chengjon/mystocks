@@ -270,3 +270,27 @@ def test_main_writes_summary_output_artifact(tmp_path: Path, monkeypatch: pytest
     assert exit_code == 0
     assert output_path.exists()
     assert json.loads(output_path.read_text(encoding="utf-8")) == expected_summary
+
+
+def test_persist_summary_artifacts_writes_timestamped_and_latest_reports(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    summary = {"ok": True, "stage": "completed"}
+    report_dir = tmp_path / "reports"
+    fixed_report_path = report_dir / "20260430T120000Z-windows-qmt-contract-acceptance.json"
+
+    monkeypatch.setattr(
+        MODULE,
+        "build_timestamped_summary_output_path",
+        lambda path: fixed_report_path,
+    )
+
+    artifacts = MODULE.persist_summary_artifacts(summary, report_dir=report_dir)
+
+    assert artifacts == {
+        "report_artifact": str(fixed_report_path),
+        "latest": str(report_dir / "latest.json"),
+    }
+    assert json.loads(fixed_report_path.read_text(encoding="utf-8")) == summary
+    assert json.loads((report_dir / "latest.json").read_text(encoding="utf-8")) == summary

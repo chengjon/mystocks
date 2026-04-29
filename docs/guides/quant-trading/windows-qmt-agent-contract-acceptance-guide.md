@@ -59,7 +59,7 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   --expected-source-name qmt/windows_reference_service \
   --expected-account-scope wsl-ubuntu-phase-a-acceptance \
   --mock-outcome acknowledgement \
-  --summary-output docs/reports/quality/windows-qmt-contract-acceptance/latest.json
+  --summary-output docs/reports/quality/windows-qmt-contract-acceptance/manual.json
 ```
 
 也可以通过环境变量提供 base URL：
@@ -69,6 +69,19 @@ export TRADING_QMT_BRIDGE_BASE_URL="http://<windows-host>:8001"
 export TRADING_QMT_BRIDGE_TOKEN="your-bridge-token"
 python scripts/dev/verify_windows_qmt_agent_contract.py
 ```
+
+若希望采用仓库内标准报告目录结构，更推荐：
+
+```bash
+python scripts/dev/verify_windows_qmt_agent_contract.py \
+  --base-url http://<windows-host>:8001 \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance
+```
+
+这会同时生成：
+
+- 一个时间戳报告：`YYYYMMDDTHHMMSSZ-windows-qmt-contract-acceptance.json`
+- 一个覆盖式指针：`latest.json`
 
 ## 4. 成功判定
 
@@ -92,7 +105,14 @@ python scripts/dev/verify_windows_qmt_agent_contract.py
   - `bridge_contract_version`
   - `broker_event_type`
 
-若传入 `--summary-output <path>`，同一份 summary 也会落盘为 JSON artifact，便于后续联调审核、回传与归档。
+若传入 `--summary-output <path>`，同一份 summary 会落盘为指定 JSON artifact。
+
+若传入 `--report-dir <dir>`，脚手架还会在标准报告目录下同时生成：
+
+- 一份时间戳历史报告
+- 一份 `latest.json`
+
+这样后续联调审核、回传与归档就可以稳定使用同一目录。
 
 ## 5. 失败分层
 

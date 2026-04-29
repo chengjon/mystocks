@@ -6,6 +6,7 @@ import json
 import os
 import sys
 from dataclasses import dataclass
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Awaitable, Callable, Mapping, Protocol
 from uuid import uuid4
@@ -37,6 +38,7 @@ DEFAULT_EXPECTED_PROVIDER_MODE = "mock"
 DEFAULT_EXPECTED_ACCOUNT_SCOPE = "wsl-ubuntu-phase-a-acceptance"
 DEFAULT_EXPECTED_SOURCE_NAME = "qmt/windows_reference_service"
 DEFAULT_MOCK_OUTCOME = "acknowledgement"
+DEFAULT_REPORT_DIR = PROJECT_ROOT / "docs" / "reports" / "quality" / "windows-qmt-contract-acceptance"
 
 
 @dataclass(slots=True)
@@ -466,6 +468,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help="Optional path to persist the acceptance summary JSON artifact.",
     )
+    parser.add_argument(
+        "--report-dir",
+        default=None,
+        help="Optional directory that receives a timestamped summary JSON plus latest.json.",
+    )
     return parser.parse_args(argv)
 
 
@@ -509,21 +516,53 @@ def write_summary_output(summary: Mapping[str, Any], output_path: str | Path) ->
     return target_path
 
 
+def build_timestamped_summary_output_path(
+    report_dir: str | Path,
+    *,
+    now: datetime | None = None,
+) -> Path:
+    timestamp = (now or datetime.now(timezone.utc)).strftime("%Y%m%dT%H%M%SZ")
+    return Path(report_dir) / f"{timestamp}-windows-qmt-contract-acceptance.json"
+
+
+def persist_summary_artifacts(
+    summary: Mapping[str, Any],
+    *,
+    summary_output: str | Path | None = None,
+    report_dir: str | Path | None = None,
+) -> dict[str, str]:
+    written_paths: dict[str, str] = {}
+    if summary_output:
+        written_paths["summary_output"] = str(write_summary_output(summary, summary_output))
+
+    if report_dir:
+        report_root = Path(report_dir)
+        timestamped_path = build_timestamped_summary_output_path(report_root)
+        latest_path = report_root / "latest.json"
+        written_paths["report_artifact"] = str(write_summary_output(summary, timestamped_path))
+        written_paths["latest"] = str(write_summary_output(summary, latest_path))
+
+    return written_paths
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     summary_output = getattr(args, "summary_output", None)
+    report_dir = getattr(args, "report_dir", None)
     try:
         config = build_config_from_args(args)
     except ValueError as exc:
         summary = {"ok": False, "stage": "configuration_invalid", "issues": [str(exc)]}
-        if summary_output:
-            write_summary_output(summary, summary_output)
+        artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
+        if artifacts:
+            summary["artifacts"] = artifacts
         print(json.dumps(summary, indent=2))
         return 2
 
     summary = asyncio.run(run_acceptance_harness(config))
-    if summary_output:
-        write_summary_output(summary, summary_output)
+    artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
+    if artifacts:
+        summary["artifacts"] = artifacts
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0 if summary.get("ok") else 1
 
