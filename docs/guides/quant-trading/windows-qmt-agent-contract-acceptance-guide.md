@@ -89,6 +89,9 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 
 - `ok=true`
 - `stage=completed`
+- `summary_schema_version=1`
+- `runtime_environment=wsl-ubuntu-24.04.4-lts`
+- `generated_at` 为 UTC 时间戳
 - `/health` 中的 `bridge_auth_configured=true`
 - `/health` 中的 `bridge_contract_version` 与本地期望一致
 - `/health` 中的 `provider_mode=mock`，或经过显式 override

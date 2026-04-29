@@ -39,6 +39,8 @@ DEFAULT_EXPECTED_ACCOUNT_SCOPE = "wsl-ubuntu-phase-a-acceptance"
 DEFAULT_EXPECTED_SOURCE_NAME = "qmt/windows_reference_service"
 DEFAULT_MOCK_OUTCOME = "acknowledgement"
 DEFAULT_REPORT_DIR = PROJECT_ROOT / "docs" / "reports" / "quality" / "windows-qmt-contract-acceptance"
+DEFAULT_RUNTIME_ENVIRONMENT = "wsl-ubuntu-24.04.4-lts"
+SUMMARY_SCHEMA_VERSION = 1
 
 
 @dataclass(slots=True)
@@ -516,6 +518,24 @@ def write_summary_output(summary: Mapping[str, Any], output_path: str | Path) ->
     return target_path
 
 
+def build_output_metadata(*, now: datetime | None = None) -> dict[str, Any]:
+    return {
+        "summary_schema_version": SUMMARY_SCHEMA_VERSION,
+        "runtime_environment": DEFAULT_RUNTIME_ENVIRONMENT,
+        "generated_at": (now or datetime.now(timezone.utc)).isoformat(),
+    }
+
+
+def attach_output_metadata(
+    summary: Mapping[str, Any],
+    metadata: Mapping[str, Any] | None = None,
+) -> dict[str, Any]:
+    enriched_summary = dict(summary)
+    for key, value in (metadata or build_output_metadata()).items():
+        enriched_summary.setdefault(key, value)
+    return enriched_summary
+
+
 def attach_artifacts(summary: Mapping[str, Any], artifacts: Mapping[str, str]) -> dict[str, Any]:
     summary_with_artifacts = dict(summary)
     if artifacts:
@@ -566,12 +586,14 @@ def main(argv: list[str] | None = None) -> int:
         config = build_config_from_args(args)
     except ValueError as exc:
         summary = {"ok": False, "stage": "configuration_invalid", "issues": [str(exc)]}
+        summary = attach_output_metadata(summary)
         artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
         summary = attach_artifacts(summary, artifacts)
         print(json.dumps(summary, indent=2))
         return 2
 
     summary = asyncio.run(run_acceptance_harness(config))
+    summary = attach_output_metadata(summary)
     artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
     summary = attach_artifacts(summary, artifacts)
     print(json.dumps(summary, indent=2, sort_keys=True))

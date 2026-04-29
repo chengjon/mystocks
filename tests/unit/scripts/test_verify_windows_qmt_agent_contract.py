@@ -232,11 +232,17 @@ async def test_acceptance_harness_reports_missing_canonical_result_fields() -> N
 
 def test_main_writes_summary_output_artifact(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     output_path = tmp_path / "acceptance-summary.json"
+    output_metadata = {
+        "summary_schema_version": 1,
+        "runtime_environment": "wsl-ubuntu-24.04.4-lts",
+        "generated_at": "2026-04-30T12:00:00+00:00",
+    }
     expected_summary = {
         "ok": True,
         "stage": "completed",
         "issues": [],
         "verified_fields": ["health.status"],
+        **output_metadata,
         "artifacts": {
             "summary_output": str(output_path),
         },
@@ -267,6 +273,7 @@ def test_main_writes_summary_output_artifact(tmp_path: Path, monkeypatch: pytest
         return dict(expected_summary)
 
     monkeypatch.setattr(MODULE, "run_acceptance_harness", _run_acceptance_harness)
+    monkeypatch.setattr(MODULE, "build_output_metadata", lambda now=None: dict(output_metadata))
 
     exit_code = MODULE.main([])
 
@@ -279,7 +286,13 @@ def test_persist_summary_artifacts_writes_timestamped_and_latest_reports(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    summary = {"ok": True, "stage": "completed"}
+    summary = {
+        "ok": True,
+        "stage": "completed",
+        "summary_schema_version": 1,
+        "runtime_environment": "wsl-ubuntu-24.04.4-lts",
+        "generated_at": "2026-04-30T12:00:00+00:00",
+    }
     report_dir = tmp_path / "reports"
     fixed_report_path = report_dir / "20260430T120000Z-windows-qmt-contract-acceptance.json"
 
@@ -296,8 +309,7 @@ def test_persist_summary_artifacts_writes_timestamped_and_latest_reports(
         "latest": str(report_dir / "latest.json"),
     }
     expected_summary = {
-        "ok": True,
-        "stage": "completed",
+        **summary,
         "artifacts": artifacts,
     }
     assert json.loads(fixed_report_path.read_text(encoding="utf-8")) == expected_summary
