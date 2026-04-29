@@ -41,6 +41,28 @@ DEFAULT_MOCK_OUTCOME = "acknowledgement"
 DEFAULT_REPORT_DIR = PROJECT_ROOT / "docs" / "reports" / "quality" / "windows-qmt-contract-acceptance"
 DEFAULT_RUNTIME_ENVIRONMENT = "wsl-ubuntu-24.04.4-lts"
 SUMMARY_SCHEMA_VERSION = 1
+COMPARISON_EXIT_CODE = 3
+CONTRACT_COMPARISON_PATHS = (
+    "stage",
+    "expected.provider_mode",
+    "expected.bridge_contract_version",
+    "expected.source_name",
+    "expected.account_scope",
+    "expected.mock_outcome",
+    "health.status",
+    "health.provider_mode",
+    "health.bridge_contract_version",
+    "health.bridge_auth_configured",
+    "health.source_name",
+    "receipt.contract_state",
+    "receipt.source_name",
+    "receipt.bridge_contract_version",
+    "result.contract_state",
+    "result.source_name",
+    "result.account_scope",
+    "result.bridge_contract_version",
+    "result.broker_event_type",
+)
 
 
 @dataclass(slots=True)
@@ -475,6 +497,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help="Optional directory that receives a timestamped summary JSON plus latest.json.",
     )
+    parser.add_argument(
+        "--compare-with",
+        default=None,
+        help="Optional path to an earlier summary JSON artifact used for contract drift comparison.",
+    )
     return parser.parse_args(argv)
 
 
@@ -543,6 +570,91 @@ def attach_artifacts(summary: Mapping[str, Any], artifacts: Mapping[str, str]) -
     return summary_with_artifacts
 
 
+def attach_comparison(summary: Mapping[str, Any], comparison: Mapping[str, Any] | None = None) -> dict[str, Any]:
+    summary_with_comparison = dict(summary)
+    if comparison:
+        summary_with_comparison["comparison"] = dict(comparison)
+    return summary_with_comparison
+
+
+def _lookup_path(payload: Mapping[str, Any], path: str) -> Any:
+    current: Any = payload
+    for segment in path.split("."):
+        if not isinstance(current, Mapping) or segment not in current:
+            return None
+        current = current[segment]
+    return current
+
+
+def compare_with_baseline_summary(
+    summary: Mapping[str, Any],
+    baseline_path: str | Path,
+) -> dict[str, Any]:
+    resolved_baseline_path = Path(baseline_path)
+    try:
+        baseline_payload = json.loads(resolved_baseline_path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        return {
+            "ok": False,
+            "baseline_path": str(resolved_baseline_path),
+            "checked_paths": list(CONTRACT_COMPARISON_PATHS),
+            "mismatches": [
+                {
+                    "path": "__baseline__",
+                    "expected": "existing summary JSON artifact",
+                    "actual": "missing file",
+                }
+            ],
+        }
+    except json.JSONDecodeError as exc:
+        return {
+            "ok": False,
+            "baseline_path": str(resolved_baseline_path),
+            "checked_paths": list(CONTRACT_COMPARISON_PATHS),
+            "mismatches": [
+                {
+                    "path": "__baseline__",
+                    "expected": "valid JSON object",
+                    "actual": f"invalid JSON: {exc}",
+                }
+            ],
+        }
+
+    if not isinstance(baseline_payload, Mapping):
+        return {
+            "ok": False,
+            "baseline_path": str(resolved_baseline_path),
+            "checked_paths": list(CONTRACT_COMPARISON_PATHS),
+            "mismatches": [
+                {
+                    "path": "__baseline__",
+                    "expected": "JSON object",
+                    "actual": type(baseline_payload).__name__,
+                }
+            ],
+        }
+
+    mismatches: list[dict[str, Any]] = []
+    for path in CONTRACT_COMPARISON_PATHS:
+        expected_value = _lookup_path(baseline_payload, path)
+        actual_value = _lookup_path(summary, path)
+        if expected_value != actual_value:
+            mismatches.append(
+                {
+                    "path": path,
+                    "expected": expected_value,
+                    "actual": actual_value,
+                }
+            )
+
+    return {
+        "ok": not mismatches,
+        "baseline_path": str(resolved_baseline_path),
+        "checked_paths": list(CONTRACT_COMPARISON_PATHS),
+        "mismatches": mismatches,
+    }
+
+
 def build_timestamped_summary_output_path(
     report_dir: str | Path,
     *,
@@ -582,6 +694,7 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     summary_output = getattr(args, "summary_output", None)
     report_dir = getattr(args, "report_dir", None)
+    compare_with = getattr(args, "compare_with", None)
     try:
         config = build_config_from_args(args)
     except ValueError as exc:
@@ -594,10 +707,18 @@ def main(argv: list[str] | None = None) -> int:
 
     summary = asyncio.run(run_acceptance_harness(config))
     summary = attach_output_metadata(summary)
+    comparison: dict[str, Any] | None = None
+    if compare_with and summary.get("ok") is True:
+        comparison = compare_with_baseline_summary(summary, compare_with)
+        summary = attach_comparison(summary, comparison)
     artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
     summary = attach_artifacts(summary, artifacts)
     print(json.dumps(summary, indent=2, sort_keys=True))
-    return 0 if summary.get("ok") else 1
+    if summary.get("ok") is not True:
+        return 1
+    if comparison and comparison.get("ok") is not True:
+        return COMPARISON_EXIT_CODE
+    return 0
 
 
 if __name__ == "__main__":

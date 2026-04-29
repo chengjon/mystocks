@@ -59,7 +59,8 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   --expected-source-name qmt/windows_reference_service \
   --expected-account-scope wsl-ubuntu-phase-a-acceptance \
   --mock-outcome acknowledgement \
-  --summary-output docs/reports/quality/windows-qmt-contract-acceptance/manual.json
+  --summary-output docs/reports/quality/windows-qmt-contract-acceptance/manual.json \
+  --compare-with docs/reports/quality/windows-qmt-contract-acceptance/latest.json
 ```
 
 也可以通过环境变量提供 base URL：
@@ -117,6 +118,20 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 
 这样后续联调审核、回传与归档就可以稳定使用同一目录。
 
+若传入 `--compare-with <path>`，脚手架会把本次结果与一份既有 summary JSON 的稳定 contract 投影做比对，忽略 `task_id`、`event_id`、`generated_at` 这类天然会漂移的字段。
+
+当前比对关注的仍是 contract 级稳定字段，例如：
+
+- `health.provider_mode`
+- `health.bridge_contract_version`
+- `receipt.contract_state`
+- `result.source_name`
+- `result.account_scope`
+- `result.bridge_contract_version`
+- `result.broker_event_type`
+
+若比对发现 contract drift，脚手架会保持当前 run 的 `ok=true/false` 原语义不变，但会额外写入 `comparison` 段，并以退出码 `3` 返回。
+
 ## 5. 失败分层
 
 当前失败会分成这些阶段：
@@ -131,6 +146,13 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 
 - `blocked_before_execute` 代表本地 safety gate 主动阻止了 execute smoke
 - 这通常是好事，说明 harness 没把不安全的对端直接当成可跑路径
+
+退出码约定：
+
+- `0`：acceptance 通过，且未发生 comparison drift
+- `1`：acceptance 本身失败
+- `2`：本地参数 / 配置无效
+- `3`：acceptance 通过，但 `--compare-with` 检测到 contract drift
 
 ## 6. 当前推荐用法
 
