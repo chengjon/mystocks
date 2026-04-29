@@ -285,7 +285,7 @@ Q2 closure note:
 
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
-| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[功能管理工作流](./guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md)<br>[Broker Execution Truth Registry](./guides/quant-trading/broker-execution-truth-registry.md) | 交易链路、broker truth 通道拓扑与跨域治理入口 |
+| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[功能管理工作流](./guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md)<br>[Broker Execution Truth Registry](./guides/quant-trading/broker-execution-truth-registry.md)<br>[Windows qmt Agent / Live Contract 审核稿](./guides/quant-trading/windows-qmt-agent-live-contract-requirements-review.md) | 交易链路、broker truth 通道拓扑、Windows `qmt` agent 对接要求与跨域治理入口 |
 | API/契约入口 | [交易包路由](../web/backend/app/api/trade/__init__.py)<br>[交易主路由](../web/backend/app/api/trade/routes.py)<br>[交易运行时 API](../web/backend/app/api/trading_runtime.py)<br>[交易监控 API](../web/backend/app/api/trading_monitor.py)<br>[旧交易数据实现](../web/backend/app/api/data/trading_api.py) | 主接口以 `trade/` 包路由和运行时 API 为主；`data/trading_api.py` 更偏旧服务实现；交易接口入口 |
 | 前端/交互入口 | [交易主路由目录](../web/frontend/src/views/trade/)<br>[交易终端](../web/frontend/src/views/TradingDashboard.vue)<br>[ArtDeco 交易页](../web/frontend/src/views/artdeco-pages/trading-tabs/)<br>[旧交易工作台](../web/frontend/src/views/trading/)<br>[旧交易决策组件](../web/frontend/src/views/trading-decision/) | 交易主路由入口；旧目录更多承担历史工作台/组件角色；交易交互入口 |
 | 核心代码入口 | [组合应用层](../src/application/portfolio/)<br>[交易应用层](../src/application/trading/)<br>[交易领域模型](../src/domain/trading/) | 交易与持仓实现入口 |

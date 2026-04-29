@@ -20,6 +20,8 @@
   - 轻量化风险管理系统架构方案与历史规划背景
 - [`broker-execution-truth-registry.md`](./broker-execution-truth-registry.md)
   - broker-facing 执行与生命周期摄取路径的当前治理真相源
+- [`windows-qmt-agent-live-contract-requirements-review.md`](./windows-qmt-agent-live-contract-requirements-review.md)
+  - 面向本项目的 Windows `qmt` agent / live contract 对接审核稿，聚焦字段、状态、失败语义与升级边界
 
 ## Retained Historical References
 
@@ -35,4 +37,5 @@
 - 该 family 当前保留为 `supporting`，不升级为新的 canonical docs trunk
 - 根导航只暴露少量总览入口，阶段完成报告和历史实现计划统一通过本 index 进入
 - broker execution truth、reconciliation boundary、以及相关 canonical-path 盘点可通过 `broker-execution-truth-registry.md` 进入
+- Windows `qmt` agent 与 live contract 的审核要求统一通过 `windows-qmt-agent-live-contract-requirements-review.md` 进入
 - 若后续历史 phase 文档入链继续下降，再按 bounded batch 单独评估 archive/delete

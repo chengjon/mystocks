@@ -3,6 +3,7 @@
 > **权威来源声明**:
 > 本文件是量化交易 broker-facing 执行与生命周期摄取路径的最小治理真相源，用于说明“哪条链路可被视为当前 broker truth 候选面”。
 > 它不是仓库共享规则的唯一事实来源；涉及审批门禁、当前实现口径与提案状态时，请同时核对 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、`openspec/changes/add-broker-acknowledgement-reconciliation-contract/` 与当前代码。
+> 若需审核 Windows `qmt` agent 与 live contract 的项目级具体要求，请同时阅读 [`windows-qmt-agent-live-contract-requirements-review.md`](./windows-qmt-agent-live-contract-requirements-review.md)。
 
 ## Purpose
 
