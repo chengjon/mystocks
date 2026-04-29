@@ -435,6 +435,7 @@ def normalize_live_result_payload(
         "account_scope": account_scope,
         "source_name": _extract_str(payload, "source_name", "source") or f"{provider}/windows_bridge",
         "external_order_id": _extract_str(payload, "external_order_id", "broker_order_id", "entrust_no", "order_sys_id"),
+        "event_id": _extract_str(payload, "event_id", "event_uid", "message_id"),
         "sequence_id": _extract_str(payload, "sequence_id", "sequence_no", "seq"),
         "reason_code": _extract_str(payload, "reason_code", "error_code", "status_code"),
         "reason_detail": _extract_str(payload, "reason_detail", "error_message", "message", "status_message"),

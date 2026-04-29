@@ -985,6 +985,7 @@ class TestOrderManagementService:
                 "task_id": "bridge-task-0004",
                 "status": "accepted",
                 "updated_at": "2026-04-28T05:20:00+00:00",
+                "event_id": "bridge-event-0004",
                 "entrust_no": "miniqmt-broker-order-0004",
                 "sequence_no": "miniqmt-seq-0004",
             }
@@ -993,6 +994,7 @@ class TestOrderManagementService:
         assert persisted_record["event_type"] == "acknowledgement"
         assert persisted_record["order_id"] == response.order_id
         assert persisted_record["external_order_id"] == "miniqmt-broker-order-0004"
+        assert persisted_record["event_id"] == "bridge-event-0004"
         assert persisted_record["identity_status"] == "matched_local_submission_id"
         assert persisted_record["sequence_id"] == "miniqmt-seq-0004"
         assert persisted_record["account_scope"] == "sim-account-04"
@@ -1001,6 +1003,7 @@ class TestOrderManagementService:
         persisted_event = event_store.fetch_recent(limit=1)[0]
         assert persisted_event["local_submission_id"] == "miniqmt-runtime-bridge-0004"
         assert persisted_event["external_order_id"] == "miniqmt-broker-order-0004"
+        assert persisted_event["event_id"] == "bridge-event-0004"
 
         correlation_record = correlation_store.get_order_correlation(response.order_id)
         assert correlation_record is not None
@@ -1176,6 +1179,7 @@ class TestOrderManagementService:
                     "account_scope": "sim-account-07",
                     "source_name": "qmt/windows_bridge",
                     "external_order_id": "miniqmt-broker-order-0007",
+                    "event_id": "bridge-event-0007",
                     "sequence_id": "miniqmt-seq-0007",
                     "bridge_contract_version": "1",
                 }
@@ -1214,8 +1218,13 @@ class TestOrderManagementService:
         assert persisted_record["event_type"] == "acknowledgement"
         assert persisted_record["order_id"] == response.order_id
         assert persisted_record["external_order_id"] == "miniqmt-broker-order-0007"
+        assert persisted_record["event_id"] == "bridge-event-0007"
         assert persisted_record["identity_status"] == "matched_local_submission_id"
         assert persisted_record["sequence_id"] == "miniqmt-seq-0007"
+
+        persisted_event = event_store.fetch_recent(limit=1)[0]
+        assert persisted_event["event_id"] == "bridge-event-0007"
+        assert persisted_event["account_scope"] == "sim-account-07"
 
         correlation_record = correlation_store.get_order_correlation(response.order_id)
         assert correlation_record is not None

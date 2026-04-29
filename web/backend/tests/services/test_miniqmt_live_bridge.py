@@ -61,6 +61,7 @@ def test_poll_task_result_returns_canonical_bridge_payload():
                     "updated_at": "2026-04-29T10:01:00+00:00",
                     "client_order_id": "submission-0102",
                     "account_scope": "sim-account-0102",
+                    "event_id": "evt-0102",
                     "entrust_no": "broker-order-0102",
                     "sequence_no": "seq-0102",
                 },
@@ -83,8 +84,10 @@ def test_poll_task_result_returns_canonical_bridge_payload():
     assert result["broker_event_type"] == "acknowledgement"
     assert result["local_submission_id"] == "submission-0102"
     assert result["account_scope"] == "sim-account-0102"
+    assert result["event_id"] == "evt-0102"
     assert result["external_order_id"] == "broker-order-0102"
     assert result["sequence_id"] == "seq-0102"
+    assert result["bridge_contract_version"] == "1"
     assert sleeps == [0.01]
 
 

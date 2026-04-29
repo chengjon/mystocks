@@ -104,8 +104,13 @@ def test_reference_service_mock_mode_creates_receipt_and_terminal_result() -> No
     result_payload = result_response.json()
     assert result_payload["result_status"] == "completed"
     assert result_payload["provider_mode"] == "mock"
+    assert result_payload["bridge_contract_version"] == "1"
+    assert result_payload["source_name"] == "qmt/windows_reference_service"
     assert result_payload["result"]["status"] == "accepted"
     assert result_payload["result"]["account_scope"] == "sim-account-0301"
+    assert result_payload["result"]["event_id"].startswith("mock-event-")
+    assert result_payload["result"]["occurred_at"]
+    assert result_payload["result"]["source_name"] == "qmt/windows_reference_service"
 
 
 def test_reference_service_mock_mode_supports_pending_polling() -> None:

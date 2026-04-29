@@ -252,12 +252,14 @@ def _resolve_incident_category(contract_state: str) -> str:
 def _build_bridge_result_ingestion_payload(result_payload: Mapping[str, Any]) -> Dict[str, Any]:
     return {
         "task_id": result_payload.get("task_id"),
+        "account_scope": result_payload.get("account_scope"),
         "source_name": result_payload.get("source_name"),
         "event_type": result_payload.get("broker_event_type"),
         "occurred_at": result_payload.get("occurred_at"),
         "local_submission_id": result_payload.get("local_submission_id"),
         "client_order_id": result_payload.get("client_order_id"),
         "external_order_id": result_payload.get("external_order_id"),
+        "event_id": result_payload.get("event_id"),
         "sequence_id": result_payload.get("sequence_id"),
         "filled_quantity": result_payload.get("filled_quantity"),
         "fill_price": result_payload.get("fill_price"),

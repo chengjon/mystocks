@@ -122,6 +122,7 @@ class MockReferenceProvider:
             "symbol": _string_param(params, "symbol", default="000001"),
             "side": _string_param(params, "side", default="BUY"),
             "order_type": _string_param(params, "order_type", default="LIMIT"),
+            "event_id": _string_param(params, "event_id", default=f"mock-event-{task_id}"),
             "source_name": settings.source_name,
             "provider_mode": self.mode,
         }
