@@ -510,3 +510,104 @@ def test_main_compare_with_baseline_fails_for_contract_drift(
             "actual": "qmt/windows_reference_service",
         }
     ]
+
+
+def test_main_writes_comparison_markdown_summary(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    output_path = tmp_path / "acceptance-summary.json"
+    baseline_path = tmp_path / "baseline.json"
+    markdown_path = tmp_path / "comparison-summary.md"
+    output_metadata = {
+        "summary_schema_version": 1,
+        "runtime_environment": "wsl-ubuntu-24.04.4-lts",
+        "generated_at": "2026-04-30T12:00:00+00:00",
+    }
+    raw_summary = {
+        "ok": True,
+        "stage": "completed",
+        "expected": {
+            "provider_mode": "mock",
+            "bridge_contract_version": "1",
+            "source_name": "qmt/windows_reference_service",
+            "account_scope": "paper-account-01",
+            "mock_outcome": "acknowledgement",
+        },
+        "health": {
+            "status": "online",
+            "provider_mode": "mock",
+            "bridge_contract_version": "1",
+            "bridge_auth_configured": True,
+            "source_name": "qmt/windows_reference_service",
+        },
+        "receipt": {
+            "contract_state": MODULE.BRIDGE_SUBMISSION_RECEIPT,
+            "task_id": "current-task-id-ignored",
+            "receipt_timestamp": "2026-04-29T15:00:00+00:00",
+            "source_name": "qmt/windows_reference_service",
+            "bridge_contract_version": "1",
+        },
+        "result": {
+            "contract_state": MODULE.BRIDGE_RESULT_PAYLOAD,
+            "task_id": "current-task-id-ignored",
+            "occurred_at": "2026-04-29T15:00:01+00:00",
+            "source_name": "qmt/windows_reference_service",
+            "account_scope": "paper-account-01",
+            "event_id": "current-event-id-ignored",
+            "bridge_contract_version": "1",
+            "local_submission_id": "current-submission-id-ignored",
+            "broker_event_type": "acknowledgement",
+        },
+        "issues": [],
+        "verified_fields": ["health.status"],
+    }
+    baseline_payload = {
+        **raw_summary,
+        "result": {
+            **raw_summary["result"],
+            "source_name": "qmt/other-source",
+        },
+    }
+    baseline_path.write_text(json.dumps(baseline_payload, indent=2), encoding="utf-8")
+
+    monkeypatch.setattr(
+        MODULE,
+        "parse_args",
+        lambda argv=None: type(
+            "Args",
+            (),
+            {
+                "summary_output": str(output_path),
+                "report_dir": None,
+                "compare_with": str(baseline_path),
+                "comparison_markdown_output": str(markdown_path),
+            },
+        )(),
+    )
+    monkeypatch.setattr(
+        MODULE,
+        "build_config_from_args",
+        lambda args: MODULE.AcceptanceHarnessConfig(
+            base_url="http://bridge.local",
+            bridge_token="secret-token",
+            bridge_contract_version="1",
+        ),
+    )
+
+    async def _run_acceptance_harness(config: object) -> dict[str, object]:
+        return dict(raw_summary)
+
+    monkeypatch.setattr(MODULE, "run_acceptance_harness", _run_acceptance_harness)
+    monkeypatch.setattr(MODULE, "build_output_metadata", lambda now=None: dict(output_metadata))
+
+    exit_code = MODULE.main([])
+
+    persisted_summary = json.loads(output_path.read_text(encoding="utf-8"))
+    assert exit_code == 3
+    assert markdown_path.exists()
+    assert persisted_summary["comparison"]["markdown_output"] == str(markdown_path)
+    markdown = markdown_path.read_text(encoding="utf-8")
+    assert "# Windows qmt Contract Comparison Summary" in markdown
+    assert f"- Baseline: `{baseline_path}`" in markdown
+    assert "| `result.source_name` | `qmt/other-source` | `qmt/windows_reference_service` |" in markdown

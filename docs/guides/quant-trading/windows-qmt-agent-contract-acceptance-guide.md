@@ -60,7 +60,8 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   --expected-account-scope wsl-ubuntu-phase-a-acceptance \
   --mock-outcome acknowledgement \
   --summary-output docs/reports/quality/windows-qmt-contract-acceptance/manual.json \
-  --compare-with docs/reports/quality/windows-qmt-contract-acceptance/latest.json
+  --compare-with docs/reports/quality/windows-qmt-contract-acceptance/latest.json \
+  --comparison-markdown-output docs/reports/quality/windows-qmt-contract-acceptance/comparison-summary.md
 ```
 
 也可以通过环境变量提供 base URL：
@@ -119,6 +120,8 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 这样后续联调审核、回传与归档就可以稳定使用同一目录。
 
 若传入 `--compare-with <path>`，脚手架会把本次结果与一份既有 summary JSON 的稳定 contract 投影做比对，忽略 `task_id`、`event_id`、`generated_at` 这类天然会漂移的字段。
+
+若还传入 `--comparison-markdown-output <path>`，脚手架会额外生成一份人类可读的 markdown 摘要，便于直接回传给 Windows `miniQMT` 项目或附到联调记录里。
 
 当前比对关注的仍是 contract 级稳定字段，例如：
 

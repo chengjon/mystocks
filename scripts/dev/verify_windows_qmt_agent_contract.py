@@ -502,6 +502,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         default=None,
         help="Optional path to an earlier summary JSON artifact used for contract drift comparison.",
     )
+    parser.add_argument(
+        "--comparison-markdown-output",
+        default=None,
+        help="Optional path to persist a human-readable markdown comparison summary.",
+    )
     return parser.parse_args(argv)
 
 
@@ -655,6 +660,56 @@ def compare_with_baseline_summary(
     }
 
 
+def render_comparison_markdown(
+    summary: Mapping[str, Any],
+    comparison: Mapping[str, Any],
+) -> str:
+    lines = [
+        "# Windows qmt Contract Comparison Summary",
+        "",
+        f"- Generated At: `{summary.get('generated_at', 'unknown')}`",
+        f"- Runtime Environment: `{summary.get('runtime_environment', 'unknown')}`",
+        f"- Baseline: `{comparison.get('baseline_path', 'unknown')}`",
+        f"- Comparison OK: `{comparison.get('ok')}`",
+        "",
+    ]
+
+    mismatches = comparison.get("mismatches")
+    if isinstance(mismatches, list) and mismatches:
+        lines.extend(
+            [
+                "## Contract Drift",
+                "",
+                "| Path | Expected | Actual |",
+                "| --- | --- | --- |",
+            ]
+        )
+        for mismatch in mismatches:
+            if not isinstance(mismatch, Mapping):
+                continue
+            path = mismatch.get("path", "unknown")
+            expected = mismatch.get("expected", "null")
+            actual = mismatch.get("actual", "null")
+            lines.append(f"| `{path}` | `{expected}` | `{actual}` |")
+    else:
+        lines.extend(
+            [
+                "## Contract Drift",
+                "",
+                "No contract drift detected for the stable comparison projection.",
+            ]
+        )
+
+    return "\n".join(lines) + "\n"
+
+
+def write_text_output(content: str, output_path: str | Path) -> Path:
+    target_path = Path(output_path)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    target_path.write_text(content, encoding="utf-8")
+    return target_path
+
+
 def build_timestamped_summary_output_path(
     report_dir: str | Path,
     *,
@@ -695,6 +750,7 @@ def main(argv: list[str] | None = None) -> int:
     summary_output = getattr(args, "summary_output", None)
     report_dir = getattr(args, "report_dir", None)
     compare_with = getattr(args, "compare_with", None)
+    comparison_markdown_output = getattr(args, "comparison_markdown_output", None)
     try:
         config = build_config_from_args(args)
     except ValueError as exc:
@@ -710,7 +766,15 @@ def main(argv: list[str] | None = None) -> int:
     comparison: dict[str, Any] | None = None
     if compare_with and summary.get("ok") is True:
         comparison = compare_with_baseline_summary(summary, compare_with)
+        if comparison_markdown_output:
+            comparison = dict(comparison)
+            comparison["markdown_output"] = str(Path(comparison_markdown_output))
         summary = attach_comparison(summary, comparison)
+        if comparison_markdown_output:
+            write_text_output(
+                render_comparison_markdown(summary, comparison),
+                comparison_markdown_output,
+            )
     artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
     summary = attach_artifacts(summary, artifacts)
     print(json.dumps(summary, indent=2, sort_keys=True))
