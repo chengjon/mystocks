@@ -461,6 +461,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         action="store_true",
         help="Override the default fail-closed provider_mode gate.",
     )
+    parser.add_argument(
+        "--summary-output",
+        default=None,
+        help="Optional path to persist the acceptance summary JSON artifact.",
+    )
     return parser.parse_args(argv)
 
 
@@ -497,14 +502,28 @@ def _read_env(name: str) -> str:
     return value.strip()
 
 
+def write_summary_output(summary: Mapping[str, Any], output_path: str | Path) -> Path:
+    target_path = Path(output_path)
+    target_path.parent.mkdir(parents=True, exist_ok=True)
+    target_path.write_text(json.dumps(dict(summary), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return target_path
+
+
 def main(argv: list[str] | None = None) -> int:
+    args = parse_args(argv)
+    summary_output = getattr(args, "summary_output", None)
     try:
-        config = build_config_from_args(parse_args(argv))
+        config = build_config_from_args(args)
     except ValueError as exc:
-        print(json.dumps({"ok": False, "stage": "configuration_invalid", "issues": [str(exc)]}, indent=2))
+        summary = {"ok": False, "stage": "configuration_invalid", "issues": [str(exc)]}
+        if summary_output:
+            write_summary_output(summary, summary_output)
+        print(json.dumps(summary, indent=2))
         return 2
 
     summary = asyncio.run(run_acceptance_harness(config))
+    if summary_output:
+        write_summary_output(summary, summary_output)
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0 if summary.get("ok") else 1
 

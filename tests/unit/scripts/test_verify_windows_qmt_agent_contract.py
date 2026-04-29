@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 from pathlib import Path
 import sys
 
@@ -227,3 +228,45 @@ async def test_acceptance_harness_reports_missing_canonical_result_fields() -> N
     assert summary["ok"] is False
     assert summary["stage"] == "result_validation_failed"
     assert "result missing event_id" in summary["issues"]
+
+
+def test_main_writes_summary_output_artifact(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    output_path = tmp_path / "acceptance-summary.json"
+    expected_summary = {
+        "ok": True,
+        "stage": "completed",
+        "issues": [],
+        "verified_fields": ["health.status"],
+    }
+
+    monkeypatch.setattr(
+        MODULE,
+        "parse_args",
+        lambda argv=None: type(
+            "Args",
+            (),
+            {
+                "summary_output": str(output_path),
+            },
+        )(),
+    )
+    monkeypatch.setattr(
+        MODULE,
+        "build_config_from_args",
+        lambda args: MODULE.AcceptanceHarnessConfig(
+            base_url="http://bridge.local",
+            bridge_token="secret-token",
+            bridge_contract_version="1",
+        ),
+    )
+
+    async def _run_acceptance_harness(config: object) -> dict[str, object]:
+        return dict(expected_summary)
+
+    monkeypatch.setattr(MODULE, "run_acceptance_harness", _run_acceptance_harness)
+
+    exit_code = MODULE.main([])
+
+    assert exit_code == 0
+    assert output_path.exists()
+    assert json.loads(output_path.read_text(encoding="utf-8")) == expected_summary

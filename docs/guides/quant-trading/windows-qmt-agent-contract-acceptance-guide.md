@@ -58,7 +58,8 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   --expected-provider-mode mock \
   --expected-source-name qmt/windows_reference_service \
   --expected-account-scope wsl-ubuntu-phase-a-acceptance \
-  --mock-outcome acknowledgement
+  --mock-outcome acknowledgement \
+  --summary-output docs/reports/quality/windows-qmt-contract-acceptance/latest.json
 ```
 
 也可以通过环境变量提供 base URL：
@@ -90,6 +91,8 @@ python scripts/dev/verify_windows_qmt_agent_contract.py
   - `event_id`
   - `bridge_contract_version`
   - `broker_event_type`
+
+若传入 `--summary-output <path>`，同一份 summary 也会落盘为 JSON artifact，便于后续联调审核、回传与归档。
 
 ## 5. 失败分层
 
