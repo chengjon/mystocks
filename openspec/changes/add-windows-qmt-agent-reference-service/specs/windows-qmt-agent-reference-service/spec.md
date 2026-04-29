@@ -17,8 +17,8 @@ the generic task-node template as the canonical broker-truth agent surface.
 The Windows `qmt` reference service SHALL expose the approved authenticated and versioned
 execute/result surface for the `miniQMT` primary path.
 
-#### Scenario: Linux runtime submits a qmt order to the reference service
-- **WHEN** the Linux trading runtime submits a primary-path order to the Windows reference service
+#### Scenario: Ubuntu / WSL runtime submits a qmt order to the reference service
+- **WHEN** the Ubuntu / WSL trading runtime submits a primary-path order to the Windows reference service
 - **THEN** the service SHALL accept only provider `qmt` and method `submit_order`
 - **AND** it SHALL require the approved authentication and contract-version headers
 - **AND** it SHALL return a transport-stage receipt rather than broker acknowledgement
@@ -34,7 +34,7 @@ The Windows `qmt` reference service SHALL preserve task results by `task_id` and
 and terminal result retrieval through the approved polling contract.
 
 #### Scenario: Reference service returns a pending result
-- **WHEN** the Linux runtime polls a `task_id` whose provider execution is not terminal yet
+- **WHEN** the Ubuntu / WSL runtime polls a `task_id` whose provider execution is not terminal yet
 - **THEN** the service SHALL return a pending-compatible result envelope
 - **AND** it SHALL preserve the original `task_id` and contract version
 
@@ -60,7 +60,7 @@ the result came from a mock path or a live `miniQMT` SDK path.
 
 ### Requirement: Terminal Result Identity Echo
 Terminal Windows `qmt` reference-service results SHALL preserve the identity echo and failure
-detail required by the Linux broker-truth runtime.
+detail required by the Ubuntu / WSL broker-truth runtime.
 
 #### Scenario: Terminal result carries broker-facing evidence
 - **WHEN** the reference service returns acknowledgement, rejection, cancellation, or execution

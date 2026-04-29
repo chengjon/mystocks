@@ -12,7 +12,7 @@ The broker-truth line has already completed these repository-owned layers:
 - `add-miniqmt-live-bridge-runtime-contract`
 - `add-windows-qmt-agent-runtime-contract`
 
-That means the Linux-side runtime can now:
+That means the Ubuntu / WSL-side runtime can now:
 
 - classify `miniQMT` primary-path submissions
 - preserve `bridge_task_id`
@@ -38,7 +38,7 @@ contract. The current repo only has `scripts/templates/windows_task_node.py`, wh
   - Provide a local mock/reference provider so contract tests can run without real Windows broker
     access.
   - Provide a pluggable `miniQMT` provider interface so future Windows deployment can swap in the
-    real SDK without changing the Linux contract.
+    real SDK without changing the Ubuntu / WSL contract.
   - Keep the service fail-closed when the live provider is unavailable or unconfigured.
 - Non-Goals:
   - Claim a production-ready live broker adapter.
@@ -54,7 +54,7 @@ contract. The current repo only has `scripts/templates/windows_task_node.py`, wh
   - Rationale: the broker-truth line now has a narrow, approved contract. A generic remote
     execution template is the wrong truth source for a safety-sensitive trading boundary.
 
-- Decision: keep the Windows-side surface aligned with the already approved Linux contract.
+- Decision: keep the Windows-side surface aligned with the already approved Ubuntu / WSL contract.
   - Required v1 routes:
     - `POST /api/v1/task/execute`
     - `GET /api/v1/task/result/{task_id}`
@@ -83,7 +83,7 @@ contract. The current repo only has `scripts/templates/windows_task_node.py`, wh
     - `account_scope`
     - `bridge_contract_version`
     - broker-facing identity or explicit failure detail
-  - Rationale: the Linux runtime already assumes these envelopes exist before broker truth may
+  - Rationale: the Ubuntu / WSL runtime already assumes these envelopes exist before broker truth may
     advance.
 
 - Decision: split provider execution into explicit modes.
@@ -115,7 +115,7 @@ contract. The current repo only has `scripts/templates/windows_task_node.py`, wh
   - Mitigation: require explicit mode disclosure in responses and update `trading-execution-safety`
     to keep mock-mode evidence non-production by definition.
 
-- The service may introduce a second runtime surface alongside the Linux backend.
+- The service may introduce a second runtime surface alongside the Ubuntu / WSL backend.
   - Mitigation: keep the Windows agent package narrowly scoped to the approved qmt bridge
     boundary rather than a generic remote data node.
 

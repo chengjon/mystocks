@@ -13,8 +13,8 @@
 
 本文回答的是：
 
-1. Linux 侧仓库希望 Windows `qmt` agent 提供什么能力。
-2. Linux 与 Windows 之间的 live contract 应该长什么样。
+1. Ubuntu / WSL 侧仓库希望 Windows `qmt` agent 提供什么能力。
+2. Ubuntu / WSL 与 Windows 之间的 live contract 应该长什么样。
 3. 哪些字段、状态和失败语义是本项目必须显式定义的。
 4. 哪些行为在本项目中明确禁止。
 
@@ -35,8 +35,13 @@
   - deferred broker lifecycle re-entry
   - timeout / unavailable / identity mismatch 的 review-required evidence
   - Tongdaxin supplemental handoff 的显式边界
+  - repo-owned Windows `qmt` reference service：`scripts/windows_qmt_agent/`
+    - authenticated/versioned execute/result endpoints
+    - in-memory `task_id` registry
+    - `mock` / `miniqmt_sdk` provider mode disclosure
+    - `miniqmt_sdk` unavailable 时 fail-closed
 - 当前仓库**尚未证明**：
-  - Windows `qmt` agent 已稳定实现
+  - live `miniQMT` SDK provider 已稳定实现
   - live broker adapter 已被生产验证
   - broker callback / push ingress 已有可信认证闭环
   - `miniQMT` 路径可升级为 production-eligible
@@ -45,6 +50,9 @@
 
 - `web/backend/app/services/windows_bridge_adapter.py`
 - `web/backend/app/services/miniqmt_live_bridge.py`
+- `scripts/windows_qmt_agent/app.py`
+- `scripts/windows_qmt_agent/service.py`
+- `scripts/templates/windows_task_node.py`
 - `src/application/trading/miniqmt_primary_runtime.py`
 - `src/application/trading/miniqmt_live_bridge_followup.py`
 - `src/application/trading/order_mgmt_service.py`
@@ -54,7 +62,7 @@
 
 ## 2.1 当前仓库已冻结的 v1 contract 决策
 
-截至当前仓库实现，Linux 侧已经把以下 contract 决策收敛成 repo-owned 事实：
+截至当前仓库实现，Ubuntu / WSL 侧已经把以下 contract 决策收敛成 repo-owned 事实：
 
 - 提交入口只允许：`provider=qmt` + `method=submit_order`
 - 结果查询入口只允许：`GET /api/v1/task/result/{task_id}`
@@ -77,9 +85,9 @@
 
 ## 3. 角色边界要求
 
-### 3.1 Linux 仓库侧职责
+### 3.1 Ubuntu / WSL 仓库侧职责
 
-Linux 仓库侧负责：
+Ubuntu / WSL 仓库侧负责：
 
 - 生成本地订单与本地 submission identity
 - 持久化 `bridge_task_id`
@@ -88,7 +96,7 @@ Linux 仓库侧负责：
 - 在证据不足时落 divergence / review-required evidence
 - 维持 `miniQMT primary / Tongdaxin supplemental` 的权限边界
 
-Linux 仓库侧**不应**负责：
+Ubuntu / WSL 仓库侧**不应**负责：
 
 - 猜测 broker acknowledgement
 - 通过 symbol / quantity / timing 模糊匹配真实外部订单
@@ -99,7 +107,7 @@ Linux 仓库侧**不应**负责：
 
 Windows `qmt` agent 必须负责：
 
-- 接受来自 Linux 的 `qmt/submit_order` 请求
+- 接受来自 Ubuntu / WSL 的 `qmt/submit_order` 请求
 - 返回 transport-stage receipt
 - 提供 `task_id -> result` 的稳定查询能力
 - 在最终结果中回传足够的 identity echo
@@ -108,7 +116,7 @@ Windows `qmt` agent 必须负责：
 Windows `qmt` agent **不应**：
 
 - 把 transport acceptance 伪装成 broker acknowledgement
-- 返回缺失关键 identity 的“半结果”并期待 Linux 自动猜测
+- 返回缺失关键 identity 的“半结果”并期待 Ubuntu / WSL 自动猜测
 - 将 Tongdaxin 视为隐式 fallback
 
 ### 3.3 Tongdaxin 补充通道职责
@@ -131,13 +139,13 @@ Tongdaxin 在本项目中仍然是：
 
 ### 4.1 提交接口
 
-Windows `qmt` agent 必须提供一个可由 Linux 侧调用的提交入口，当前项目假定语义为：
+Windows `qmt` agent 必须提供一个可由 Ubuntu / WSL 侧调用的提交入口，当前项目假定语义为：
 
 - 请求路径：`/api/v1/task/execute`
 - provider：`qmt`
 - method：`submit_order`
 
-Linux 当前期望最小提交 payload 至少包括：
+Ubuntu / WSL 当前期望最小提交 payload 至少包括：
 
 - `order_id`
 - `client_order_id`
@@ -152,7 +160,7 @@ Linux 当前期望最小提交 payload 至少包括：
 - `actor_id`
 - `source_id`
 
-除此之外，Linux 当前已经把 remote call surface 明确限制为：
+除此之外，Ubuntu / WSL 当前已经把 remote call surface 明确限制为：
 
 - execute 只能走 `qmt/submit_order`
 - result retrieval 只能走 `provider_name=qmt`
@@ -168,7 +176,7 @@ Windows `qmt` agent 返回的 submission receipt，必须至少包含：
 - `source` 或 `source_name`
 - `bridge_contract_version`
 
-Linux 仓库会把这类回执解释为：
+Ubuntu / WSL 仓库会把这类回执解释为：
 
 - `bridge_submission_receipt`
 
@@ -234,7 +242,7 @@ Windows `qmt` agent 返回的结果查询状态必须可区分：
 
 ### 6.1 最低绑定条件
 
-Linux 仓库允许 broker truth 前进的前提是：
+Ubuntu / WSL 仓库允许 broker truth 前进的前提是：
 
 - live result 回传了 `client_order_id` 或 `local_submission_id`
 - 该 identity 与本地 recorded submission trail 明确匹配
@@ -253,7 +261,7 @@ Linux 仓库允许 broker truth 前进的前提是：
 
 ### 6.3 mismatch 的处理要求
 
-若 Windows `qmt` agent 返回的 identity 与 recorded submission trail 不匹配，Linux 仓库必须：
+若 Windows `qmt` agent 返回的 identity 与 recorded submission trail 不匹配，Ubuntu / WSL 仓库必须：
 
 - 记录 review-required divergence
 - 保留 `bridge_task_id`
@@ -286,7 +294,7 @@ Windows `qmt` agent 的 broker-facing 结果，至少应能映射到以下四类
 
 ### 8.1 timeout
 
-若 Linux 在配置时限内没有拿到安全结果，必须视为：
+若 Ubuntu / WSL 在配置时限内没有拿到安全结果，必须视为：
 
 - `live_bridge_timeout`
 
@@ -318,7 +326,7 @@ Windows `qmt` agent 的 broker-facing 结果，至少应能映射到以下四类
 - contract version 不匹配
 - provider / method 不在白名单
 
-Linux 仓库必须分别落为：
+Ubuntu / WSL 仓库必须分别落为：
 
 - `live_bridge_auth_failed`
 - `live_bridge_unsupported_contract_version`
@@ -342,7 +350,7 @@ Linux 仓库必须分别落为：
 
 ## 9. 审计与证据保留要求
 
-Windows `qmt` agent 对接后，Linux 侧至少要能保留三类证据：
+Windows `qmt` agent 对接后，Ubuntu / WSL 侧至少要能保留三类证据：
 
 1. 本地 submission evidence
 2. transport receipt evidence
@@ -370,13 +378,13 @@ Windows `qmt` agent 对接后，Linux 侧至少要能保留三类证据：
 
 从本项目角度，Windows `qmt` agent 至少需要满足以下安全要求：
 
-- Linux 到 Windows 的调用必须有认证机制，不能裸开放内网接口
+- Ubuntu / WSL 到 Windows 的调用必须有认证机制，不能裸开放内网接口
 - 结果查询接口必须与提交接口共享一致的认证语义
 - agent 必须限制 provider 与 method 白名单，不能接受任意远程命令
 - 日志中不得泄露敏感账户凭证
 - 若回传账户标识，应使用项目可接受的 `account_scope` 表达，而不是裸凭证
 
-当前仓库已经把 Linux 侧最小认证契约固定为：
+当前仓库已经把 Ubuntu / WSL 侧最小认证契约固定为：
 
 - `TRADING_QMT_BRIDGE_TOKEN`
 - `Authorization: Bearer <token>`
@@ -395,7 +403,7 @@ Windows `qmt` agent 对接后，至少需要满足以下运维要求：
 - polling 超时预算可配置
 - polling 间隔可配置
 - agent 端错误需要返回可审计的 `reason_code` / `reason_detail`
-- 不能让 Linux 侧只能看到“任务没回来”，却完全没有失败原因
+- 不能让 Ubuntu / WSL 侧只能看到“任务没回来”，却完全没有失败原因
 
 建议最小运维指标：
 
@@ -410,7 +418,7 @@ Windows `qmt` agent 对接后，至少需要满足以下运维要求：
 
 ## 12. 测试与验收要求
 
-### 12.1 Linux 仓库侧最低验收
+### 12.1 Ubuntu / WSL 仓库侧最低验收
 
 在本项目内，至少要覆盖以下场景：
 

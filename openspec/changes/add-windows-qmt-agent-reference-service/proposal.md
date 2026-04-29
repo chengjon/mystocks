@@ -6,7 +6,7 @@
 
 ## Why
 
-The repository now owns the Linux-side `miniQMT` primary submission path, authenticated/versioned
+The repository now owns the Ubuntu / WSL-side `miniQMT` primary submission path, authenticated/versioned
 Windows bridge contract, and polling-first deferred result normalization. What it still lacks is a
 repo-owned Windows-side reference agent/service that actually satisfies that contract.
 

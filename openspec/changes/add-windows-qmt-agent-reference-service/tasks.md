@@ -4,45 +4,45 @@
 
 ## 1. Spec And Validation
 
-- [ ] 1.1 Add the `windows-qmt-agent-reference-service` capability spec covering the dedicated
+- [x] 1.1 Add the `windows-qmt-agent-reference-service` capability spec covering the dedicated
       Windows reference agent/service, approved execute/result routes, whitelist rules, task
       registry semantics, provider modes, and mock/live disclosure requirements.
-- [ ] 1.2 Modify `trading-execution-safety` so mock-mode or provider-unavailable Windows agent
+- [x] 1.2 Modify `trading-execution-safety` so mock-mode or provider-unavailable Windows agent
       results cannot be described as production broker truth or silent Tongdaxin fallback.
-- [ ] 1.3 Run `openspec validate add-windows-qmt-agent-reference-service --strict`.
+- [x] 1.3 Run `openspec validate add-windows-qmt-agent-reference-service --strict`.
 
 ## 2. Reference Service Scaffold
 
-- [ ] 2.1 Introduce a dedicated Windows `qmt` reference-service package and entrypoint instead of
+- [x] 2.1 Introduce a dedicated Windows `qmt` reference-service package and entrypoint instead of
       relying on the generic `scripts/templates/windows_task_node.py` template as the canonical
       broker-truth agent surface.
-- [ ] 2.2 Add settings and contract models for auth token, contract version, provider mode,
+- [x] 2.2 Add settings and contract models for auth token, contract version, provider mode,
       receipt/result envelopes, and task-state serialization.
-- [ ] 2.3 Enforce the approved surface:
+- [x] 2.3 Enforce the approved surface:
       `POST /api/v1/task/execute`, `GET /api/v1/task/result/{task_id}`, provider `qmt`, method
       `submit_order`.
 
 ## 3. Task Lifecycle And Provider Modes
 
-- [ ] 3.1 Implement a task registry/store that can preserve pending and terminal task results by
+- [x] 3.1 Implement a task registry/store that can preserve pending and terminal task results by
       `task_id`.
-- [ ] 3.2 Add an explicit provider abstraction with at least `mock` and `miniqmt_sdk` modes.
-- [ ] 3.3 Ensure `mock` mode produces explicit mode disclosure in receipts/results and does not
+- [x] 3.2 Add an explicit provider abstraction with at least `mock` and `miniqmt_sdk` modes.
+- [x] 3.3 Ensure `mock` mode produces explicit mode disclosure in receipts/results and does not
       masquerade as production broker truth.
-- [ ] 3.4 Ensure `miniqmt_sdk` mode fails closed with explicit reason codes/details when the live
+- [x] 3.4 Ensure `miniqmt_sdk` mode fails closed with explicit reason codes/details when the live
       provider is unavailable or unconfigured.
-- [ ] 3.5 Preserve canonical identity echo and failure fields in terminal result envelopes so the
-      Linux runtime can safely re-enter lifecycle or divergence surfaces.
+- [x] 3.5 Preserve canonical identity echo and failure fields in terminal result envelopes so the
+      Ubuntu / WSL runtime can safely re-enter lifecycle or divergence surfaces.
 
 ## 4. Tests, Docs, And Closeout
 
-- [ ] 4.1 Add targeted service tests for auth/version failures, whitelist rejection, execute
+- [x] 4.1 Add targeted service tests for auth/version failures, whitelist rejection, execute
       receipt creation, pending polling, terminal success/failure envelopes, and mock/provider
       mode disclosure.
-- [ ] 4.2 Replace or thin-wrap `scripts/templates/windows_task_node.py` so readers are routed to
+- [x] 4.2 Replace or thin-wrap `scripts/templates/windows_task_node.py` so readers are routed to
       the canonical reference implementation rather than a stale generic template.
-- [ ] 4.3 Update `docs/guides/quant-trading/windows-qmt-agent-live-contract-requirements-review.md`,
+- [x] 4.3 Update `docs/guides/quant-trading/windows-qmt-agent-live-contract-requirements-review.md`,
       `docs/guides/quant-trading/broker-execution-truth-registry.md`, and `docs/FUNCTION_TREE.md`
       only after implementation evidence exists.
-- [ ] 4.4 Re-run `openspec validate add-windows-qmt-agent-reference-service --strict` and the
+- [x] 4.4 Re-run `openspec validate add-windows-qmt-agent-reference-service --strict` and the
       targeted service tests before closeout.

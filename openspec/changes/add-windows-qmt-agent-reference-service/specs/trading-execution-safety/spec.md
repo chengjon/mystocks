@@ -9,7 +9,7 @@ The project SHALL keep the Windows `qmt` reference-service boundary fail-closed 
 evidence is explicitly available.
 
 #### Scenario: Reference service runs in mock mode
-- **WHEN** the Linux trading runtime receives a receipt or result produced by the Windows
+- **WHEN** the Ubuntu / WSL trading runtime receives a receipt or result produced by the Windows
   reference service in `mock` mode
 - **THEN** that evidence SHALL remain non-production by classification
 - **AND** it SHALL NOT by itself justify broker acknowledgement, broker execution truth, or
