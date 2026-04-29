@@ -516,6 +516,13 @@ def write_summary_output(summary: Mapping[str, Any], output_path: str | Path) ->
     return target_path
 
 
+def attach_artifacts(summary: Mapping[str, Any], artifacts: Mapping[str, str]) -> dict[str, Any]:
+    summary_with_artifacts = dict(summary)
+    if artifacts:
+        summary_with_artifacts["artifacts"] = dict(artifacts)
+    return summary_with_artifacts
+
+
 def build_timestamped_summary_output_path(
     report_dir: str | Path,
     *,
@@ -531,18 +538,24 @@ def persist_summary_artifacts(
     summary_output: str | Path | None = None,
     report_dir: str | Path | None = None,
 ) -> dict[str, str]:
-    written_paths: dict[str, str] = {}
+    artifact_paths: dict[str, str] = {}
     if summary_output:
-        written_paths["summary_output"] = str(write_summary_output(summary, summary_output))
+        artifact_paths["summary_output"] = str(Path(summary_output))
 
     if report_dir:
         report_root = Path(report_dir)
         timestamped_path = build_timestamped_summary_output_path(report_root)
         latest_path = report_root / "latest.json"
-        written_paths["report_artifact"] = str(write_summary_output(summary, timestamped_path))
-        written_paths["latest"] = str(write_summary_output(summary, latest_path))
+        artifact_paths["report_artifact"] = str(timestamped_path)
+        artifact_paths["latest"] = str(latest_path)
 
-    return written_paths
+    if not artifact_paths:
+        return {}
+
+    summary_with_artifacts = attach_artifacts(summary, artifact_paths)
+    for output_path in artifact_paths.values():
+        write_summary_output(summary_with_artifacts, output_path)
+    return artifact_paths
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -554,15 +567,13 @@ def main(argv: list[str] | None = None) -> int:
     except ValueError as exc:
         summary = {"ok": False, "stage": "configuration_invalid", "issues": [str(exc)]}
         artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
-        if artifacts:
-            summary["artifacts"] = artifacts
+        summary = attach_artifacts(summary, artifacts)
         print(json.dumps(summary, indent=2))
         return 2
 
     summary = asyncio.run(run_acceptance_harness(config))
     artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
-    if artifacts:
-        summary["artifacts"] = artifacts
+    summary = attach_artifacts(summary, artifacts)
     print(json.dumps(summary, indent=2, sort_keys=True))
     return 0 if summary.get("ok") else 1
 

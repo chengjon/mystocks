@@ -105,7 +105,7 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   - `bridge_contract_version`
   - `broker_event_type`
 
-若传入 `--summary-output <path>`，同一份 summary 会落盘为指定 JSON artifact。
+若传入 `--summary-output <path>`，同一份 summary 会落盘为指定 JSON artifact，且 artifact 本身也会带 `artifacts` 索引字段。
 
 若传入 `--report-dir <dir>`，脚手架还会在标准报告目录下同时生成：
 

@@ -237,6 +237,9 @@ def test_main_writes_summary_output_artifact(tmp_path: Path, monkeypatch: pytest
         "stage": "completed",
         "issues": [],
         "verified_fields": ["health.status"],
+        "artifacts": {
+            "summary_output": str(output_path),
+        },
     }
 
     monkeypatch.setattr(
@@ -292,5 +295,10 @@ def test_persist_summary_artifacts_writes_timestamped_and_latest_reports(
         "report_artifact": str(fixed_report_path),
         "latest": str(report_dir / "latest.json"),
     }
-    assert json.loads(fixed_report_path.read_text(encoding="utf-8")) == summary
-    assert json.loads((report_dir / "latest.json").read_text(encoding="utf-8")) == summary
+    expected_summary = {
+        "ok": True,
+        "stage": "completed",
+        "artifacts": artifacts,
+    }
+    assert json.loads(fixed_report_path.read_text(encoding="utf-8")) == expected_summary
+    assert json.loads((report_dir / "latest.json").read_text(encoding="utf-8")) == expected_summary
