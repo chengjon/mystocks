@@ -340,6 +340,49 @@ def test_trading_runtime_paths_prefer_explicit_env(monkeypatch: pytest.MonkeyPat
     assert get_trading_stale_cash_reservation_max_age_seconds() == 7200
 
 
+def test_trading_qmt_bridge_runtime_contract_defaults(monkeypatch: pytest.MonkeyPatch) -> None:
+    for key in [
+        'TRADING_QMT_BRIDGE_TOKEN',
+        'QMT_BRIDGE_TOKEN',
+        'TRADING_QMT_BRIDGE_CONTRACT_VERSION',
+        'TRADING_MINIQMT_LIVE_BRIDGE_TIMEOUT_SECONDS',
+        'TRADING_MINIQMT_LIVE_BRIDGE_POLL_INTERVAL_SECONDS',
+    ]:
+        monkeypatch.delenv(key, raising=False)
+
+    from src.utils.trading_runtime_config import (
+        get_trading_miniqmt_live_bridge_poll_interval_seconds,
+        get_trading_miniqmt_live_bridge_timeout_seconds,
+        get_trading_qmt_bridge_contract_version,
+        get_trading_qmt_bridge_token,
+    )
+
+    assert get_trading_qmt_bridge_token() is None
+    assert get_trading_qmt_bridge_contract_version() == '1'
+    assert get_trading_miniqmt_live_bridge_timeout_seconds() == 15.0
+    assert get_trading_miniqmt_live_bridge_poll_interval_seconds() == 1.0
+
+
+def test_trading_qmt_bridge_runtime_contract_prefers_explicit_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv('TRADING_QMT_BRIDGE_TOKEN', ' primary-token ')
+    monkeypatch.setenv('QMT_BRIDGE_TOKEN', 'legacy-token')
+    monkeypatch.setenv('TRADING_QMT_BRIDGE_CONTRACT_VERSION', '2')
+    monkeypatch.setenv('TRADING_MINIQMT_LIVE_BRIDGE_TIMEOUT_SECONDS', '9.5')
+    monkeypatch.setenv('TRADING_MINIQMT_LIVE_BRIDGE_POLL_INTERVAL_SECONDS', '0.25')
+
+    from src.utils.trading_runtime_config import (
+        get_trading_miniqmt_live_bridge_poll_interval_seconds,
+        get_trading_miniqmt_live_bridge_timeout_seconds,
+        get_trading_qmt_bridge_contract_version,
+        get_trading_qmt_bridge_token,
+    )
+
+    assert get_trading_qmt_bridge_token() == 'primary-token'
+    assert get_trading_qmt_bridge_contract_version() == '2'
+    assert get_trading_miniqmt_live_bridge_timeout_seconds() == 9.5
+    assert get_trading_miniqmt_live_bridge_poll_interval_seconds() == 0.25
+
+
 def test_get_effective_runtime_mongo_uri_injects_local_docker_auth_when_uri_missing(monkeypatch: pytest.MonkeyPatch) -> None:
     from src.utils import mongo_runtime_config
 

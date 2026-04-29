@@ -16,6 +16,9 @@ DEFAULT_TRADING_BROKER_LIFECYCLE_EVENT_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR
 DEFAULT_TRADING_BROKER_DIVERGENCE_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR / "trading-broker-divergence.sqlite3"
 DEFAULT_TRADING_ORDER_STATE_SQLITE_PATH = DEFAULT_TRADING_RUNTIME_DIR / "trading-order-state.sqlite3"
 DEFAULT_TRADING_STALE_CASH_RESERVATION_MAX_AGE_SECONDS = 86400
+DEFAULT_TRADING_QMT_BRIDGE_CONTRACT_VERSION = "1"
+DEFAULT_TRADING_MINIQMT_LIVE_BRIDGE_TIMEOUT_SECONDS = 15.0
+DEFAULT_TRADING_MINIQMT_LIVE_BRIDGE_POLL_INTERVAL_SECONDS = 1.0
 
 
 def get_trading_runtime_dir(default: str | Path = DEFAULT_TRADING_RUNTIME_DIR) -> Path:
@@ -95,3 +98,34 @@ def get_trading_stale_cash_reservation_max_age_seconds(
     default: int = DEFAULT_TRADING_STALE_CASH_RESERVATION_MAX_AGE_SECONDS,
 ) -> int:
     return int(os.getenv("TRADING_STALE_CASH_RESERVATION_MAX_AGE_SECONDS", str(default)))
+
+
+def get_trading_qmt_bridge_token() -> str | None:
+    configured = os.getenv("TRADING_QMT_BRIDGE_TOKEN") or os.getenv("QMT_BRIDGE_TOKEN")
+    if configured is None:
+        return None
+    normalized = configured.strip()
+    return normalized or None
+
+
+def get_trading_qmt_bridge_contract_version(
+    default: str = DEFAULT_TRADING_QMT_BRIDGE_CONTRACT_VERSION,
+) -> str:
+    configured = os.getenv("TRADING_QMT_BRIDGE_CONTRACT_VERSION")
+    if configured:
+        normalized = configured.strip()
+        if normalized:
+            return normalized
+    return str(default)
+
+
+def get_trading_miniqmt_live_bridge_timeout_seconds(
+    default: float = DEFAULT_TRADING_MINIQMT_LIVE_BRIDGE_TIMEOUT_SECONDS,
+) -> float:
+    return float(os.getenv("TRADING_MINIQMT_LIVE_BRIDGE_TIMEOUT_SECONDS", str(default)))
+
+
+def get_trading_miniqmt_live_bridge_poll_interval_seconds(
+    default: float = DEFAULT_TRADING_MINIQMT_LIVE_BRIDGE_POLL_INTERVAL_SECONDS,
+) -> float:
+    return float(os.getenv("TRADING_MINIQMT_LIVE_BRIDGE_POLL_INTERVAL_SECONDS", str(default)))

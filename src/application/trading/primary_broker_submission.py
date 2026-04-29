@@ -94,6 +94,8 @@ def process_primary_broker_submission(
                 "broker_channel": submission_result["broker_channel"],
                 "broker_submission_status": submission_status,
                 "broker_external_order_id": submission_result["external_order_id"],
+                "bridge_task_id": submission_result.get("bridge_task_id"),
+                "bridge_contract_version": submission_result.get("bridge_contract_version"),
             },
         )
         return
@@ -109,6 +111,7 @@ def process_primary_broker_submission(
                 "broker_channel": submission_result["broker_channel"],
                 "broker_submission_status": submission_status,
                 "bridge_task_id": submission_result.get("bridge_task_id"),
+                "bridge_contract_version": submission_result.get("bridge_contract_version"),
             },
         )
         return
@@ -124,5 +127,9 @@ def process_primary_broker_submission(
                 "broker_channel": submission_result["broker_channel"],
                 "broker_submission_status": submission_status,
                 "bridge_task_id": submission_result.get("bridge_task_id"),
+                "reason_code": submission_result.get("reason_code"),
+                "reason_detail": submission_result.get("reason_detail"),
+                "failure_class": submission_result.get("failure_class"),
+                "bridge_contract_version": submission_result.get("bridge_contract_version"),
             },
         )

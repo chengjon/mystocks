@@ -131,10 +131,21 @@ def build_miniqmt_submission_result(
     external_order_id = _extract_str(raw_result, "external_order_id", "broker_order_id", "entrust_no", "order_sys_id")
     bridge_task_id = _extract_str(raw_result, "bridge_task_id", "task_id", "receipt_id")
     transport_status = _extract_str(raw_result, "status", "transport_status")
-    failure_reason = _extract_str(raw_result, "failure_reason", "error_message", "message", "reason")
+    reason_code = _extract_str(raw_result, "reason_code", "error_code", "status_code")
+    reason_detail = _extract_str(raw_result, "reason_detail", "error_message", "message", "reason")
+    failure_class = _extract_str(raw_result, "failure_class", "failure_reason")
+    bridge_contract_version = _extract_str(raw_result, "bridge_contract_version", "contract_version")
+    failure_reason = reason_detail or reason_code
 
     if external_order_id is not None:
         submission_status = BROKER_ACKNOWLEDGED_SUBMISSION
+    elif _is_explicit_failure(
+        transport_status=transport_status,
+        reason_code=reason_code,
+        reason_detail=reason_detail,
+        failure_class=failure_class,
+    ):
+        submission_status = SUBMISSION_FAILED
     elif _is_success_like_status(transport_status) or bridge_task_id is not None:
         submission_status = BRIDGE_TASK_ACCEPTED
     else:
@@ -156,6 +167,10 @@ def build_miniqmt_submission_result(
         "external_order_id": external_order_id,
         "source_name": context.get("source_name") or MINIQMT_PRIMARY_RUNTIME_SOURCE_NAME,
         "failure_reason": failure_reason,
+        "reason_code": reason_code,
+        "reason_detail": reason_detail,
+        "failure_class": failure_class,
+        "bridge_contract_version": bridge_contract_version,
         "handoff_status": None,
         "handoff_reason": None,
         "raw_response": dict(raw_result),
@@ -178,6 +193,21 @@ def _is_success_like_status(status: str | None) -> bool:
         return False
     normalized = status.strip().lower().replace("-", "_").replace(" ", "_")
     return normalized in {"success", "accepted", "queued", "submitted", "ok"}
+
+
+def _is_explicit_failure(
+    *,
+    transport_status: str | None,
+    reason_code: str | None,
+    reason_detail: str | None,
+    failure_class: str | None,
+) -> bool:
+    normalized_status = transport_status.strip().lower().replace("-", "_").replace(" ", "_") if transport_status else None
+    if normalized_status in {"error", "failed", "invalid", "forbidden", "unauthorized", "rejected"}:
+        return True
+    if reason_code or reason_detail or failure_class:
+        return True
+    return False
 
 
 def _run_async_submission(coroutine: Any) -> Mapping[str, Any]:

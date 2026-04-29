@@ -21,11 +21,17 @@ BRIDGE_RESULT_PAYLOAD = "bridge_result_payload"
 BRIDGE_RESULT_TIMEOUT = "bridge_result_timeout"
 BRIDGE_RESULT_UNAVAILABLE = "bridge_result_unavailable"
 BRIDGE_RESULT_INVALID = "bridge_result_invalid"
+BRIDGE_RESULT_AUTH_FAILED = "bridge_result_auth_failed"
+BRIDGE_RESULT_UNSUPPORTED_CONTRACT_VERSION = "bridge_result_unsupported_contract_version"
+BRIDGE_RESULT_UNSUPPORTED_METHOD = "bridge_result_unsupported_method"
 
 LIVE_BRIDGE_TIMEOUT_INCIDENT = "live_bridge_timeout"
 LIVE_BRIDGE_UNAVAILABLE_INCIDENT = "live_bridge_unavailable"
 LIVE_BRIDGE_INVALID_RESULT_INCIDENT = "live_bridge_invalid_result"
 LIVE_BRIDGE_IDENTITY_MISMATCH_INCIDENT = "live_bridge_identity_mismatch"
+LIVE_BRIDGE_AUTH_FAILED_INCIDENT = "live_bridge_auth_failed"
+LIVE_BRIDGE_UNSUPPORTED_CONTRACT_VERSION_INCIDENT = "live_bridge_unsupported_contract_version"
+LIVE_BRIDGE_UNSUPPORTED_METHOD_INCIDENT = "live_bridge_unsupported_method"
 
 LIVE_BRIDGE_REVIEW_NEXT_ACTION = "operator_review_or_tdx_supplemental_handoff"
 LIVE_BRIDGE_REQUIRED_EVIDENCE = "bridge_task_receipt_and_live_result_contract"
@@ -232,6 +238,12 @@ def _resolve_attempt_record(*, broker_submission_attempt_store: Any, task_id: st
 def _resolve_incident_category(contract_state: str) -> str:
     if contract_state == BRIDGE_RESULT_TIMEOUT:
         return LIVE_BRIDGE_TIMEOUT_INCIDENT
+    if contract_state == BRIDGE_RESULT_AUTH_FAILED:
+        return LIVE_BRIDGE_AUTH_FAILED_INCIDENT
+    if contract_state == BRIDGE_RESULT_UNSUPPORTED_CONTRACT_VERSION:
+        return LIVE_BRIDGE_UNSUPPORTED_CONTRACT_VERSION_INCIDENT
+    if contract_state == BRIDGE_RESULT_UNSUPPORTED_METHOD:
+        return LIVE_BRIDGE_UNSUPPORTED_METHOD_INCIDENT
     if contract_state == BRIDGE_RESULT_UNAVAILABLE:
         return LIVE_BRIDGE_UNAVAILABLE_INCIDENT
     return LIVE_BRIDGE_INVALID_RESULT_INCIDENT
@@ -251,6 +263,7 @@ def _build_bridge_result_ingestion_payload(result_payload: Mapping[str, Any]) ->
         "fill_price": result_payload.get("fill_price"),
         "reason_code": result_payload.get("reason_code"),
         "reason_detail": result_payload.get("reason_detail"),
+        "bridge_contract_version": result_payload.get("bridge_contract_version"),
     }
 
 
@@ -342,10 +355,12 @@ def _build_live_bridge_review_incident(
         "reported_fill_price": result_payload.get("fill_price"),
         "reason_code": str(result_payload.get("reason_code") or category),
         "reason_detail": str(result_payload.get("reason_detail") or category),
+        "failure_class": str(result_payload.get("failure_class") or result_payload.get("reason_code") or category),
         "adapter_path": (attempt_record.get("adapter_path") if attempt_record else None) or LIVE_BRIDGE_RESULT_ADAPTER_PATH,
         "account_scope": attempt_record.get("account_scope") if attempt_record else result_payload.get("account_scope"),
         "session_scope": attempt_record.get("session_scope") if attempt_record else None,
         "bridge_task_id": task_id,
+        "bridge_contract_version": result_payload.get("bridge_contract_version"),
         "live_contract_state": contract_state,
         "raw_response": dict(result_payload),
     }
@@ -356,6 +371,12 @@ def _resolve_identity_status(*, category: str, contract_state: str) -> str:
         return "bridge_result_timeout"
     if category == LIVE_BRIDGE_UNAVAILABLE_INCIDENT:
         return "bridge_result_unavailable"
+    if category == LIVE_BRIDGE_AUTH_FAILED_INCIDENT:
+        return "bridge_auth_failed"
+    if category == LIVE_BRIDGE_UNSUPPORTED_CONTRACT_VERSION_INCIDENT:
+        return "bridge_contract_version_mismatch"
+    if category == LIVE_BRIDGE_UNSUPPORTED_METHOD_INCIDENT:
+        return "bridge_method_not_allowed"
     if category == LIVE_BRIDGE_IDENTITY_MISMATCH_INCIDENT:
         return "mismatched_bridge_identity"
     if contract_state == BRIDGE_RESULT_INVALID:

@@ -52,6 +52,29 @@
 
 ---
 
+## 2.1 当前仓库已冻结的 v1 contract 决策
+
+截至当前仓库实现，Linux 侧已经把以下 contract 决策收敛成 repo-owned 事实：
+
+- 提交入口只允许：`provider=qmt` + `method=submit_order`
+- 结果查询入口只允许：`GET /api/v1/task/result/{task_id}`
+- 认证头固定为：`Authorization: Bearer <TRADING_QMT_BRIDGE_TOKEN>`
+- 版本头固定为：`X-Bridge-Contract-Version: <TRADING_QMT_BRIDGE_CONTRACT_VERSION>`
+- 当前默认 contract version：`1`
+- 轮询超时默认值：`TRADING_MINIQMT_LIVE_BRIDGE_TIMEOUT_SECONDS=15`
+- 轮询间隔默认值：`TRADING_MINIQMT_LIVE_BRIDGE_POLL_INTERVAL_SECONDS=1`
+- execute/result 两条链路都必须回显：`bridge_contract_version`
+- auth/version/whitelist failure 当前都只能落为 review-required runtime evidence，不能推进 broker truth
+
+实现位置：
+
+- `src/utils/trading_runtime_config.py`
+- `web/backend/app/services/windows_bridge_adapter.py`
+- `web/backend/app/services/miniqmt_live_bridge.py`
+- `src/application/trading/miniqmt_live_bridge_followup.py`
+
+---
+
 ## 3. 角色边界要求
 
 ### 3.1 Linux 仓库侧职责
@@ -129,6 +152,12 @@ Linux 当前期望最小提交 payload 至少包括：
 - `actor_id`
 - `source_id`
 
+除此之外，Linux 当前已经把 remote call surface 明确限制为：
+
+- execute 只能走 `qmt/submit_order`
+- result retrieval 只能走 `provider_name=qmt`
+- 任何 provider / method 越界都必须显式返回 `live_bridge_unsupported_method`
+
 ### 4.2 提交回执要求
 
 Windows `qmt` agent 返回的 submission receipt，必须至少包含：
@@ -137,6 +166,7 @@ Windows `qmt` agent 返回的 submission receipt，必须至少包含：
 - `status` 或等价 transport 状态
 - `timestamp` 或 `receipt_timestamp`
 - `source` 或 `source_name`
+- `bridge_contract_version`
 
 Linux 仓库会把这类回执解释为：
 
@@ -280,7 +310,27 @@ Windows `qmt` agent 的 broker-facing 结果，至少应能映射到以下四类
 
 - `live_bridge_invalid_result`
 
-### 8.4 operator escalation
+### 8.4 auth / version / whitelist failure
+
+若 Windows `qmt` agent 在 execute 或 result retrieval 边界返回以下失败：
+
+- 认证失败
+- contract version 不匹配
+- provider / method 不在白名单
+
+Linux 仓库必须分别落为：
+
+- `live_bridge_auth_failed`
+- `live_bridge_unsupported_contract_version`
+- `live_bridge_unsupported_method`
+
+这些都属于 transport / contract failure，不得被解释为：
+
+- broker reject
+- broker cancel
+- broker execution
+
+### 8.5 operator escalation
 
 当出现 timeout / unavailable / mismatch / invalid result 时，系统下一步必须是：
 
@@ -326,7 +376,13 @@ Windows `qmt` agent 对接后，Linux 侧至少要能保留三类证据：
 - 日志中不得泄露敏感账户凭证
 - 若回传账户标识，应使用项目可接受的 `account_scope` 表达，而不是裸凭证
 
-当前仓库尚未完成这部分认证闭环，因此这是审核重点之一。
+当前仓库已经把 Linux 侧最小认证契约固定为：
+
+- `TRADING_QMT_BRIDGE_TOKEN`
+- `Authorization: Bearer <token>`
+- `X-Bridge-Contract-Version: 1`
+
+但这仍然只是 repo-owned contract，不等于 Windows agent 生产认证方案已验证。
 
 ---
 
@@ -359,7 +415,9 @@ Windows `qmt` agent 对接后，至少需要满足以下运维要求：
 在本项目内，至少要覆盖以下场景：
 
 - submission receipt normalization
+- authenticated execute header / whitelist enforcement
 - `task_id` polling result retrieval
+- auth failure / contract-version mismatch / unsupported method normalization
 - canonical acknowledgement re-entry
 - timeout divergence persistence
 - identity mismatch divergence persistence
