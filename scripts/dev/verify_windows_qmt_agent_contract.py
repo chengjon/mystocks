@@ -719,6 +719,15 @@ def build_timestamped_summary_output_path(
     return Path(report_dir) / f"{timestamp}-windows-qmt-contract-acceptance.json"
 
 
+def build_timestamped_comparison_markdown_output_path(
+    report_dir: str | Path,
+    *,
+    now: datetime | None = None,
+) -> Path:
+    timestamp = (now or datetime.now(timezone.utc)).strftime("%Y%m%dT%H%M%SZ")
+    return Path(report_dir) / f"{timestamp}-windows-qmt-contract-comparison.md"
+
+
 def persist_summary_artifacts(
     summary: Mapping[str, Any],
     *,
@@ -745,6 +754,30 @@ def persist_summary_artifacts(
     return artifact_paths
 
 
+def persist_comparison_markdown_artifacts(
+    summary: Mapping[str, Any],
+    comparison: Mapping[str, Any],
+    *,
+    comparison_markdown_output: str | Path | None = None,
+    report_dir: str | Path | None = None,
+) -> dict[str, str]:
+    artifact_paths: dict[str, str] = {}
+    if comparison_markdown_output:
+        artifact_paths["markdown_output"] = str(Path(comparison_markdown_output))
+    elif report_dir:
+        report_root = Path(report_dir)
+        artifact_paths["markdown_output"] = str(build_timestamped_comparison_markdown_output_path(report_root))
+        artifact_paths["latest_markdown_output"] = str(report_root / "latest-comparison.md")
+
+    if not artifact_paths:
+        return {}
+
+    markdown = render_comparison_markdown(summary, comparison)
+    for output_path in artifact_paths.values():
+        write_text_output(markdown, output_path)
+    return artifact_paths
+
+
 def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     summary_output = getattr(args, "summary_output", None)
@@ -766,15 +799,16 @@ def main(argv: list[str] | None = None) -> int:
     comparison: dict[str, Any] | None = None
     if compare_with and summary.get("ok") is True:
         comparison = compare_with_baseline_summary(summary, compare_with)
-        if comparison_markdown_output:
+        markdown_artifacts = persist_comparison_markdown_artifacts(
+            summary,
+            comparison,
+            comparison_markdown_output=comparison_markdown_output,
+            report_dir=report_dir,
+        )
+        if markdown_artifacts:
             comparison = dict(comparison)
-            comparison["markdown_output"] = str(Path(comparison_markdown_output))
+            comparison.update(markdown_artifacts)
         summary = attach_comparison(summary, comparison)
-        if comparison_markdown_output:
-            write_text_output(
-                render_comparison_markdown(summary, comparison),
-                comparison_markdown_output,
-            )
     artifacts = persist_summary_artifacts(summary, summary_output=summary_output, report_dir=report_dir)
     summary = attach_artifacts(summary, artifacts)
     print(json.dumps(summary, indent=2, sort_keys=True))

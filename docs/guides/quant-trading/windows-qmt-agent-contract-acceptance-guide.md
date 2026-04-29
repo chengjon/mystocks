@@ -119,6 +119,12 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 
 这样后续联调审核、回传与归档就可以稳定使用同一目录。
 
+若同时传入 `--report-dir <dir>` 与 `--compare-with <path>`，即使不额外指定
+`--comparison-markdown-output`，脚手架也会自动生成标准命名的 comparison markdown：
+
+- 一份时间戳报告：`YYYYMMDDTHHMMSSZ-windows-qmt-contract-comparison.md`
+- 一份覆盖式指针：`latest-comparison.md`
+
 若传入 `--compare-with <path>`，脚手架会把本次结果与一份既有 summary JSON 的稳定 contract 投影做比对，忽略 `task_id`、`event_id`、`generated_at` 这类天然会漂移的字段。
 
 若还传入 `--comparison-markdown-output <path>`，脚手架会额外生成一份人类可读的 markdown 摘要，便于直接回传给 Windows `miniQMT` 项目或附到联调记录里。
