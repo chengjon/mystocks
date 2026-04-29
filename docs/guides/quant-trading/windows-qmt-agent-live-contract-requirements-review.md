@@ -20,6 +20,8 @@
 
 本文**不**宣称当前仓库已经拥有 production-ready 的 `miniQMT` live trading adapter。
 
+若真实 Windows `miniQMT` SDK adapter 由独立项目开发，请同时把 [`miniqmt-project-alignment-questionnaire.md`](./miniqmt-project-alignment-questionnaire.md) 发给对方项目回填，以便本项目据此冻结跨项目接口边界。
+
 ---
 
 ## 2. 当前项目事实边界
