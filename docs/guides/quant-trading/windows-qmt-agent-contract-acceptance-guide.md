@@ -141,7 +141,43 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 
 若比对发现 contract drift，脚手架会保持当前 run 的 `ok=true/false` 原语义不变，但会额外写入 `comparison` 段，并以退出码 `3` 返回。
 
-## 5. 失败分层
+## 5. 只读状态摘要
+
+若你已经跑过 acceptance harness，不想重复触发 `/health -> execute -> result` smoke，
+可以直接读取标准报告目录中的 `latest.json` 和可选 `latest-comparison.md`：
+
+```bash
+python scripts/dev/summarize_windows_qmt_acceptance_reports.py \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance
+```
+
+若希望拿到机器可读摘要：
+
+```bash
+python scripts/dev/summarize_windows_qmt_acceptance_reports.py \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance \
+  --json
+```
+
+这条只读脚本不会重新访问 Windows `qmt` service；它只基于现有 artifact 给出当前推荐状态。
+
+当前状态标签与推荐退出码是：
+
+- `acceptance_passed_no_baseline` -> `0`
+- `acceptance_passed_with_baseline_match` -> `0`
+- `acceptance_failed` -> `1`
+- `report_missing` -> `2`
+- `contract_drift_detected` -> `3`
+
+若 `latest.json` 中存在 comparison 信息，文本摘要还会附带：
+
+- `mismatch_count`
+- `baseline_path`
+- `comparison_markdown_path`
+
+这样你可以先用只读摘要判断“是否需要回看详细 JSON / markdown”，而不必每次都重新跑联调。
+
+## 6. 失败分层
 
 当前失败会分成这些阶段：
 
@@ -163,7 +199,7 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 - `2`：本地参数 / 配置无效
 - `3`：acceptance 通过，但 `--compare-with` 检测到 contract drift
 
-## 6. 当前推荐用法
+## 7. 当前推荐用法
 
 当前更推荐把它用于两类场景：
 
@@ -176,7 +212,7 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 - production readiness verdict
 - Tongdaxin 自动补路验收
 
-## 7. 相关入口
+## 8. 相关入口
 
 - [Broker Execution Truth Registry](./broker-execution-truth-registry.md)
 - [Windows qmt Agent / Live Contract 审核稿](./windows-qmt-agent-live-contract-requirements-review.md)
