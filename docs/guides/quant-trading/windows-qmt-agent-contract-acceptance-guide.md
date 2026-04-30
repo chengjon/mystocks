@@ -141,7 +141,36 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 
 若比对发现 contract drift，脚手架会保持当前 run 的 `ok=true/false` 原语义不变，但会额外写入 `comparison` 段，并以退出码 `3` 返回。
 
-## 5. 只读状态摘要
+## 5. 冻结 Baseline
+
+当你已经审核过一份 `latest.json`，并希望把它作为后续 contract drift compare 的基准，可以直接冻结成标准 baseline：
+
+```bash
+python scripts/dev/freeze_windows_qmt_acceptance_baseline.py \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance
+```
+
+默认情况下，这条脚本会读取：
+
+- `docs/reports/quality/windows-qmt-contract-acceptance/latest.json`
+
+并生成：
+
+- `docs/reports/quality/windows-qmt-contract-acceptance/baselines/YYYYMMDDTHHMMSSZ-windows-qmt-contract-baseline.json`
+- `docs/reports/quality/windows-qmt-contract-acceptance/baselines/latest-baseline.json`
+
+只有当 source summary 满足 `ok=true` 且 `stage=completed` 时，baseline freeze 才会通过；否则脚本会拒绝生成 baseline。
+
+后续对比时，更推荐直接使用这个固定路径：
+
+```bash
+python scripts/dev/verify_windows_qmt_agent_contract.py \
+  --base-url http://<windows-host>:8001 \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance \
+  --compare-with docs/reports/quality/windows-qmt-contract-acceptance/baselines/latest-baseline.json
+```
+
+## 6. 只读状态摘要
 
 若你已经跑过 acceptance harness，不想重复触发 `/health -> execute -> result` smoke，
 可以直接读取标准报告目录中的 `latest.json` 和可选 `latest-comparison.md`：
@@ -177,7 +206,7 @@ python scripts/dev/summarize_windows_qmt_acceptance_reports.py \
 
 这样你可以先用只读摘要判断“是否需要回看详细 JSON / markdown”，而不必每次都重新跑联调。
 
-## 6. 失败分层
+## 7. 失败分层
 
 当前失败会分成这些阶段：
 
@@ -199,7 +228,7 @@ python scripts/dev/summarize_windows_qmt_acceptance_reports.py \
 - `2`：本地参数 / 配置无效
 - `3`：acceptance 通过，但 `--compare-with` 检测到 contract drift
 
-## 7. 当前推荐用法
+## 8. 当前推荐用法
 
 当前更推荐把它用于两类场景：
 
@@ -212,7 +241,7 @@ python scripts/dev/summarize_windows_qmt_acceptance_reports.py \
 - production readiness verdict
 - Tongdaxin 自动补路验收
 
-## 8. 相关入口
+## 9. 相关入口
 
 - [Broker Execution Truth Registry](./broker-execution-truth-registry.md)
 - [Windows qmt Agent / Live Contract 审核稿](./windows-qmt-agent-live-contract-requirements-review.md)
