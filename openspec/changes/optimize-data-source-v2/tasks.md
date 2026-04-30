@@ -120,7 +120,8 @@
 - [x] 5.5 实现 `_adjust_by_load()` 方法（负载均衡）
 - [x] 5.6 实现 `_adjust_by_location()` 方法（地域感知）
 - [x] 5.7 实现 `route()` 主方法（多维度决策）
-- [ ] 5.8 集成到 `src/core/data_source/router.py.get_best_endpoint()`
+- [x] 5.8 集成到 `src/core/data_source/router.py.get_best_endpoint()`
+  - [x] Repo-truth（2026-05-01）：`src/core/data_source/router.py:get_best_endpoint()` 现已懒加载 `SmartRouter`，将 endpoint `config` 平铺为顶层运行字段后调用 `smart_router.route(...)`，同时保留原有 `config` 嵌套结构；验证见 `tests/unit/test_smart_router_integration.py`、`tests/unit/test_smart_router.py`、`src/governance/tests/test_fetcher_bridge.py`、`tests/unit/adapters/test_runtime_data_source_regressions.py`。
 - [x] 5.9 添加配置项：权重（performance=0.4, cost=0.3, load=0.2, location=0.1）
 - [x] 5.10 编写单元测试 `tests/unit/test_smart_router.py`
   - [x] 5.10.1 测试性能评分计算

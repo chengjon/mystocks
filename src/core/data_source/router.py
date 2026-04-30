@@ -66,7 +66,33 @@ def get_best_endpoint(self, data_category: str) -> Optional[Dict]:
         最佳端点配置，如果没有可用端点则返回None
     """
     endpoints = self.find_endpoints(data_category=data_category, only_healthy=True)
-    return endpoints[0] if endpoints else None
+    if not endpoints:
+        return None
+
+    smart_router = getattr(self, "smart_router", None)
+    if smart_router is None:
+        from .smart_router import SmartRouter
+
+        smart_router = SmartRouter()
+        self.smart_router = smart_router
+
+    caller_location = "default"
+    identify_caller = getattr(self, "_identify_caller", None)
+    if callable(identify_caller):
+        caller = identify_caller() or {}
+        if isinstance(caller, dict):
+            caller_location = caller.get("location") or caller.get("caller_location") or "default"
+
+    # Preserve the nested config shape for existing callers while exposing
+    # runtime fields at the top level for downstream handler compatibility.
+    routable_endpoints = [{**endpoint.get("config", {}), **endpoint} for endpoint in endpoints]
+
+    selected = smart_router.route(
+        routable_endpoints,
+        data_category=data_category,
+        caller_location=caller_location,
+    )
+    return selected or routable_endpoints[0]
 
 
 def list_all_endpoints(self) -> pd.DataFrame:
