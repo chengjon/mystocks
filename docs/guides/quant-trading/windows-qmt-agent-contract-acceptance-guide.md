@@ -10,9 +10,9 @@
 ## 1. 目的
 
 本文档说明如何从 `WSL 上的 Ubuntu 24.04.4 LTS` 侧运行本仓库自带的 Windows `qmt`
-contract acceptance harness。
+contract acceptance harness，以及基于它的 formal sequence。
 
-这条脚手架的目标很窄：
+底层 harness 的目标很窄：
 
 - 验证远端 `/health` disclosure
 - 验证 `Authorization: Bearer <TRADING_QMT_BRIDGE_TOKEN>` 和
@@ -21,6 +21,25 @@ contract acceptance harness。
   跑一次 `qmt/submit_order -> task_id -> result` 合同 smoke
 
 它**不**等于 production-ready 的真实交易验收。
+
+若你是在做第一次正式 Phase A readiness 联调，当前 canonical 入口不再是直接手敲
+`verify_windows_qmt_agent_contract.py`，而是使用 formal sequence：
+
+```bash
+python scripts/dev/run_windows_qmt_contract_formal_sequence.py \
+  --base-url http://<windows-host>:8001 \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance
+```
+
+这条 sequence 会固定执行：
+
+- `preflight`
+- `verify`
+- `compare`
+- `summarize`
+- `optional freeze`
+
+并生成独立的 formal sequence manifest。
 
 若对接对象是 `/mnt/d/MyCode3/miniQMT` 的 v1 `task/execute + task/result` kernel，
 当前应优先使用 `--contract-profile kernel-phase-a`。这是因为该对端的 Phase A
@@ -65,6 +84,32 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   --expected-provider-mode mock
 ```
 
+若要按当前项目推荐路径执行第一次正式 Phase A 联调，更推荐直接使用：
+
+```bash
+python scripts/dev/run_windows_qmt_contract_formal_sequence.py \
+  --base-url http://<windows-host>:8001 \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance
+```
+
+若已有审核过的 baseline，并希望把本次 run 自动纳入 drift compare：
+
+```bash
+python scripts/dev/run_windows_qmt_contract_formal_sequence.py \
+  --base-url http://<windows-host>:8001 \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance \
+  --compare-with-latest-baseline
+```
+
+若本次 run 审核通过，且你希望在同一条命令里显式执行 baseline freeze：
+
+```bash
+python scripts/dev/run_windows_qmt_contract_formal_sequence.py \
+  --base-url http://<windows-host>:8001 \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance \
+  --freeze-baseline
+```
+
 可选参数：
 
 ```bash
@@ -100,6 +145,11 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 
 - 一个时间戳报告：`YYYYMMDDTHHMMSSZ-windows-qmt-contract-acceptance.json`
 - 一个覆盖式指针：`latest.json`
+
+若使用 formal sequence，还会额外生成：
+
+- 一个时间戳 manifest：`YYYYMMDDTHHMMSSZ-windows-qmt-contract-formal-sequence.json`
+- 一个覆盖式指针：`latest-formal-sequence.json`
 
 ## 4. 成功判定
 
@@ -243,7 +293,30 @@ python scripts/dev/summarize_windows_qmt_acceptance_reports.py \
 
 这样你可以先用只读摘要判断“是否需要回看详细 JSON / markdown”，而不必每次都重新跑联调。
 
-## 7. 失败分层
+## 7. Formal Sequence Manifest
+
+`run_windows_qmt_contract_formal_sequence.py` 会额外输出一份 machine-readable manifest。
+
+这份 manifest 的作用是固定“这次正式联调究竟执行了哪些本地步骤、产出了哪些证据”，避免把单次
+acceptance summary 误读成完整的 Phase A readiness 记录。
+
+manifest 至少会记录：
+
+- `preflight`、`verify`、`compare`、`summarize`、`freeze` 的执行顺序
+- 每一步的 `exit_code`
+- 每一步的 `status_label`
+- formal sequence 自己的 `recommended_exit_code`
+- 当前 `contract_profile`
+- 相关 artifact 路径
+
+当前 recommended exit code 口径是：
+
+- `0`：formal sequence completed
+- `1`：acceptance failed or requested freeze was refused
+- `2`：preflight / report-level configuration issue
+- `3`：contract drift detected
+
+## 8. 失败分层
 
 当前失败会分成这些阶段：
 
