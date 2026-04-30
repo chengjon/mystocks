@@ -401,10 +401,8 @@ def normalize_live_result_payload(
             "raw_payload": dict(raw_payload),
         }
 
-    if broker_event_type is None or occurred_at is None or account_scope is None:
+    if occurred_at is None or account_scope is None:
         missing_fields: list[str] = []
-        if broker_event_type is None:
-            missing_fields.append("broker_event_type")
         if occurred_at is None:
             missing_fields.append("occurred_at")
         if account_scope is None:

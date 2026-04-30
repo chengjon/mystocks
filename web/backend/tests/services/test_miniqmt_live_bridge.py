@@ -91,6 +91,37 @@ def test_poll_task_result_returns_canonical_bridge_payload():
     assert sleeps == [0.01]
 
 
+def test_poll_task_result_allows_bridge_only_terminal_payload_without_broker_event_type():
+    bridge_adapter = _BridgeAdapterStub(
+        results=[
+            {
+                "status": "completed",
+                "task_id": "bridge-task-0102-kernel",
+                "bridge_contract_version": "1",
+                "result": {
+                    "updated_at": "2026-04-29T10:01:00+00:00",
+                    "client_order_id": "submission-0102-kernel",
+                    "account_scope": "sim-account-0102-kernel",
+                    "event_id": "evt-0102-kernel",
+                    "source_name": "mock",
+                },
+            },
+        ]
+    )
+    client = MiniQMTLiveBridgeClient(bridge_adapter)
+
+    result = client.poll_task_result("bridge-task-0102-kernel")
+
+    assert result["contract_state"] == BRIDGE_RESULT_PAYLOAD
+    assert result["task_id"] == "bridge-task-0102-kernel"
+    assert result["broker_event_type"] is None
+    assert result["local_submission_id"] == "submission-0102-kernel"
+    assert result["account_scope"] == "sim-account-0102-kernel"
+    assert result["event_id"] == "evt-0102-kernel"
+    assert result["source_name"] == "mock"
+    assert result["bridge_contract_version"] == "1"
+
+
 def test_poll_task_result_times_out_when_bridge_never_reaches_terminal_state():
     bridge_adapter = _BridgeAdapterStub(
         results=[

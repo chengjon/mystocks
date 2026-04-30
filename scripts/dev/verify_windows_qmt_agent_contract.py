@@ -34,6 +34,8 @@ from web.backend.app.services.miniqmt_live_bridge import (  # noqa: E402
 from web.backend.app.services.windows_bridge_adapter import MultiSourceBridgeAdapter  # noqa: E402
 
 DEFAULT_BASE_URL_ENV = "TRADING_QMT_BRIDGE_BASE_URL"
+DEFAULT_CONTRACT_PROFILE = "reference-service"
+KERNEL_PHASE_A_CONTRACT_PROFILE = "kernel-phase-a"
 DEFAULT_EXPECTED_PROVIDER_MODE = "mock"
 DEFAULT_EXPECTED_ACCOUNT_SCOPE = "wsl-ubuntu-phase-a-acceptance"
 DEFAULT_EXPECTED_SOURCE_NAME = "qmt/windows_reference_service"
@@ -72,6 +74,7 @@ class AcceptanceHarnessConfig:
     base_url: str
     bridge_token: str
     bridge_contract_version: str
+    contract_profile: str = DEFAULT_CONTRACT_PROFILE
     expected_provider_mode: str = DEFAULT_EXPECTED_PROVIDER_MODE
     expected_source_name: str | None = DEFAULT_EXPECTED_SOURCE_NAME
     expected_account_scope: str = DEFAULT_EXPECTED_ACCOUNT_SCOPE
@@ -136,9 +139,10 @@ async def run_acceptance_harness(
         "stage": "initializing",
         "base_url": config.base_url,
         "expected": {
+            "contract_profile": config.contract_profile,
             "provider_mode": config.expected_provider_mode,
             "bridge_contract_version": config.bridge_contract_version,
-            "source_name": config.expected_source_name,
+            "source_name": resolve_expected_source_name(config),
             "account_scope": config.expected_account_scope,
             "mock_outcome": config.mock_outcome,
         },
@@ -247,13 +251,14 @@ def _validate_health_payload(
     else:
         verified_fields.append("health.bridge_auth_configured")
 
+    expected_source_name = resolve_expected_source_name(config)
     if source_name is None:
         issues.append("health payload missing source_name")
     else:
         verified_fields.append("health.source_name")
-        if config.expected_source_name and source_name != config.expected_source_name:
+        if expected_source_name and source_name != expected_source_name:
             issues.append(
-                f"health source_name mismatch: expected {config.expected_source_name!r}, got {source_name!r}"
+                f"health source_name mismatch: expected {expected_source_name!r}, got {source_name!r}"
             )
 
     return verified_fields, issues
@@ -288,13 +293,14 @@ def _validate_receipt_payload(
         verified_fields.append("receipt.receipt_timestamp")
 
     source_name = _extract_str(payload, "source_name")
+    expected_source_name = resolve_expected_source_name(config)
     if source_name is None:
         issues.append("receipt missing source_name")
     else:
         verified_fields.append("receipt.source_name")
-        if config.expected_source_name and source_name != config.expected_source_name:
+        if expected_source_name and source_name != expected_source_name:
             issues.append(
-                f"receipt source_name mismatch: expected {config.expected_source_name!r}, got {source_name!r}"
+                f"receipt source_name mismatch: expected {expected_source_name!r}, got {source_name!r}"
             )
 
     bridge_contract_version = _extract_str(payload, "bridge_contract_version")
@@ -335,10 +341,11 @@ def _validate_result_payload(
         else:
             verified_fields.append(f"result.{key}")
 
+    expected_source_name = resolve_expected_source_name(config)
     result_source_name = _extract_str(payload, "source_name")
-    if config.expected_source_name and result_source_name and result_source_name != config.expected_source_name:
+    if expected_source_name and result_source_name and result_source_name != expected_source_name:
         issues.append(
-            f"result source_name mismatch: expected {config.expected_source_name!r}, got {result_source_name!r}"
+            f"result source_name mismatch: expected {expected_source_name!r}, got {result_source_name!r}"
         )
 
     result_account_scope = _extract_str(payload, "account_scope")
@@ -369,6 +376,8 @@ def _validate_result_payload(
 
     broker_event_type = _extract_str(payload, "broker_event_type")
     expected_event_type = _expected_broker_event_type(config.mock_outcome)
+    if broker_event_type is None and config.contract_profile == KERNEL_PHASE_A_CONTRACT_PROFILE:
+        return verified_fields, issues
     if broker_event_type is None:
         issues.append("result missing broker_event_type")
     else:
@@ -419,6 +428,18 @@ def _expected_broker_event_type(mock_outcome: str) -> str | None:
     return None
 
 
+def resolve_expected_source_name(config: AcceptanceHarnessConfig) -> str | None:
+    if config.expected_source_name:
+        normalized = str(config.expected_source_name).strip()
+        if normalized:
+            return normalized
+    if config.contract_profile == KERNEL_PHASE_A_CONTRACT_PROFILE:
+        if str(config.expected_provider_mode).strip().lower() == "mock":
+            return "mock"
+        return "live"
+    return DEFAULT_EXPECTED_SOURCE_NAME
+
+
 def _extract_str(payload: Mapping[str, Any], key: str) -> str | None:
     value = payload.get(key)
     if value is None:
@@ -447,14 +468,20 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Expected bridge contract version.",
     )
     parser.add_argument(
+        "--contract-profile",
+        default=DEFAULT_CONTRACT_PROFILE,
+        choices=(DEFAULT_CONTRACT_PROFILE, KERNEL_PHASE_A_CONTRACT_PROFILE),
+        help="Acceptance contract profile. Use kernel-phase-a for miniQMT v1 task/result kernel alignment.",
+    )
+    parser.add_argument(
         "--expected-provider-mode",
         default=DEFAULT_EXPECTED_PROVIDER_MODE,
         help="Expected safe provider mode for full smoke execution.",
     )
     parser.add_argument(
         "--expected-source-name",
-        default=DEFAULT_EXPECTED_SOURCE_NAME,
-        help="Expected source_name value echoed by the Windows qmt service.",
+        default=None,
+        help="Expected source_name value echoed by the Windows qmt service. Defaults vary by contract profile.",
     )
     parser.add_argument(
         "--expected-account-scope",
@@ -532,6 +559,7 @@ def build_config_from_args(args: argparse.Namespace) -> AcceptanceHarnessConfig:
         base_url=base_url.rstrip("/"),
         bridge_token=bridge_token,
         bridge_contract_version=str(args.contract_version).strip(),
+        contract_profile=str(args.contract_profile).strip(),
         expected_provider_mode=str(args.expected_provider_mode).strip(),
         expected_source_name=str(args.expected_source_name).strip() if args.expected_source_name else None,
         expected_account_scope=str(args.expected_account_scope).strip(),

@@ -45,6 +45,30 @@ class _StubLiveBridgeClient:
         return dict(self.result)
 
 
+def test_resolve_expected_source_name_defaults_to_reference_service_profile() -> None:
+    config = MODULE.AcceptanceHarnessConfig(
+        base_url="http://bridge.local",
+        bridge_token="secret-token",
+        bridge_contract_version="1",
+        expected_source_name=None,
+    )
+
+    assert MODULE.resolve_expected_source_name(config) == "qmt/windows_reference_service"
+
+
+def test_resolve_expected_source_name_defaults_to_mock_for_kernel_phase_a_profile() -> None:
+    config = MODULE.AcceptanceHarnessConfig(
+        base_url="http://bridge.local",
+        bridge_token="secret-token",
+        bridge_contract_version="1",
+        expected_provider_mode="mock",
+        expected_source_name=None,
+        contract_profile="kernel-phase-a",
+    )
+
+    assert MODULE.resolve_expected_source_name(config) == "mock"
+
+
 @pytest.mark.asyncio
 async def test_acceptance_harness_succeeds_for_mock_contract() -> None:
     config = MODULE.AcceptanceHarnessConfig(
@@ -124,6 +148,74 @@ async def test_acceptance_harness_succeeds_for_mock_contract() -> None:
         }
     ]
     assert stub_client.poll_calls[0]["task_id"] == "bridge-task-0501"
+
+
+@pytest.mark.asyncio
+async def test_acceptance_harness_kernel_phase_a_allows_bridge_level_result_without_broker_event_type() -> None:
+    config = MODULE.AcceptanceHarnessConfig(
+        base_url="http://bridge.local",
+        bridge_token="secret-token",
+        bridge_contract_version="1",
+        expected_provider_mode="mock",
+        expected_source_name=None,
+        expected_account_scope="paper-account-02",
+        contract_profile="kernel-phase-a",
+    )
+    receipt = {
+        "contract_state": MODULE.BRIDGE_SUBMISSION_RECEIPT,
+        "task_id": "bridge-task-0502",
+        "receipt_timestamp": "2026-04-29T15:00:00+00:00",
+        "source_name": "mock",
+        "bridge_contract_version": "1",
+    }
+    result = {
+        "contract_state": MODULE.BRIDGE_RESULT_PAYLOAD,
+        "task_id": "bridge-task-0502",
+        "occurred_at": "2026-04-29T15:00:01+00:00",
+        "source_name": "mock",
+        "account_scope": "paper-account-02",
+        "event_id": "smoke-event-fixed-kernel",
+        "bridge_contract_version": "1",
+        "local_submission_id": "smoke-submission-fixed-kernel",
+        "broker_event_type": None,
+    }
+    stub_client = _StubLiveBridgeClient(receipt=receipt, result=result)
+
+    async def _health_fetcher(base_url: str, timeout_seconds: float) -> dict[str, object]:
+        return {
+            "status": "online",
+            "provider_mode": "mock",
+            "bridge_contract_version": "1",
+            "bridge_auth_configured": True,
+            "source_name": "mock",
+        }
+
+    def _client_factory(_: object) -> _StubLiveBridgeClient:
+        return stub_client
+
+    def _fixed_submission_payload(_: object) -> dict[str, object]:
+        return {
+            "local_submission_id": "smoke-submission-fixed-kernel",
+            "event_id": "smoke-event-fixed-kernel",
+            "account_scope": "paper-account-02",
+            "mock_outcome": "acknowledgement",
+        }
+
+    original_builder = MODULE._build_submission_payload
+    MODULE._build_submission_payload = _fixed_submission_payload
+    try:
+        summary = await MODULE.run_acceptance_harness(
+            config,
+            health_fetcher=_health_fetcher,
+            bridge_client_factory=_client_factory,
+        )
+    finally:
+        MODULE._build_submission_payload = original_builder
+
+    assert summary["ok"] is True
+    assert summary["stage"] == "completed"
+    assert summary["issues"] == []
+    assert "result.broker_event_type" not in summary["verified_fields"]
 
 
 @pytest.mark.asyncio

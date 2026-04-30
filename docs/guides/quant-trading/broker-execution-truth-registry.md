@@ -47,10 +47,11 @@
 - `src/application/trading/broker_submission_attempt.py` 已把 primary-path submission attempt 与 `bridge_task_id` receipt 单独持久化
 - `web/backend/app/services/miniqmt_live_bridge.py` 已定义 repository-owned `bridge_submission_receipt` / `bridge_result_payload` contract，并以 polling-first 方式回收 `task_id` 对应的 deferred result
 - `scripts/windows_qmt_agent/app.py` 与 `scripts/windows_qmt_agent/service.py` 已提供 repo-owned Windows `qmt` reference service，并把 authenticated/versioned `execute/result` surface、`task_id` registry、`mock`/`miniqmt_sdk` provider mode 与 fail-closed 语义固定成当前仓库事实
+- acceptance harness 现已显式吸收 `/mnt/d/MyCode3/miniQMT` v1 kernel 的 Phase A 口径：对接 `kernel-phase-a` profile 时，`source_name` 默认按 `mock/live` 校验，bridge-layer terminal result 允许 `broker_event_type = null`
 - `src/application/trading/miniqmt_lifecycle_ingestion.py` 已把 Windows-bridge 风格 `miniQMT` payload 规范化进 `BrokerLifecycleEvent`
 - `OrderManagementService.ingest_miniqmt_lifecycle_payload()` 已把 channel-scoped `miniQMT` acknowledgement / reject / cancel / execution 事件接入本地 lifecycle ledger
 - `OrderManagementService.ingest_miniqmt_bridge_result_payload()` 已能基于 `bridge_task_id` 回填 submission context，并把 deferred `miniQMT` bridge result 重新接回 shared lifecycle / divergence surfaces
-- `OrderManagementService.poll_miniqmt_live_bridge_result()` 已能把 polled live result 接回 shared lifecycle ledger，或把 timeout / unavailable / identity mismatch 落为 review-required runtime evidence
+- `OrderManagementService.poll_miniqmt_live_bridge_result()` 已能把 polled live result 接回 shared lifecycle ledger，或把 timeout / unavailable / identity mismatch 落为 review-required runtime evidence；若结果只是 contract-valid bridge-layer terminal result 且未携带 `broker_event_type`，当前会保守落成 `review_required` divergence，而不是伪造 broker acknowledgement
 
 但当前 registry 明确不把这两点夸大成：
 

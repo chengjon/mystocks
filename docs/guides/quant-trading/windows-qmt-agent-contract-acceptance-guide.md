@@ -22,6 +22,12 @@ contract acceptance harness。
 
 它**不**等于 production-ready 的真实交易验收。
 
+若对接对象是 `/mnt/d/MyCode3/miniQMT` 的 v1 `task/execute + task/result` kernel，
+当前应优先使用 `--contract-profile kernel-phase-a`。这是因为该对端的 Phase A
+合同只承诺 transport receipt、queryable `task_id -> result`、`source_name=mock/live`、
+显式失败语义与 identity echo；它**不**承诺 bridge-layer result 一定带出
+`broker_event_type`。
+
 ## 2. 安全边界
 
 默认情况下，这条 harness 只允许对 **显式宣告 `provider_mode=mock`** 的 Windows `qmt`
@@ -49,14 +55,24 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   --base-url http://<windows-host>:8001
 ```
 
+若对接的是 `miniQMT` v1 kernel，更推荐直接使用：
+
+```bash
+export TRADING_QMT_BRIDGE_TOKEN="your-bridge-token"
+python scripts/dev/verify_windows_qmt_agent_contract.py \
+  --base-url http://<windows-host>:8001 \
+  --contract-profile kernel-phase-a \
+  --expected-provider-mode mock
+```
+
 可选参数：
 
 ```bash
 python scripts/dev/verify_windows_qmt_agent_contract.py \
   --base-url http://<windows-host>:8001 \
+  --contract-profile kernel-phase-a \
   --contract-version 1 \
   --expected-provider-mode mock \
-  --expected-source-name qmt/windows_reference_service \
   --expected-account-scope wsl-ubuntu-phase-a-acceptance \
   --mock-outcome acknowledgement \
   --summary-output docs/reports/quality/windows-qmt-contract-acceptance/manual.json \
@@ -108,7 +124,16 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   - `account_scope`
   - `event_id`
   - `bridge_contract_version`
-  - `broker_event_type`
+
+结果字段的验证还受 contract profile 影响：
+
+- `reference-service`
+  - 默认期望 `source_name=qmt/windows_reference_service`
+  - `broker_event_type` 仍是必需字段
+- `kernel-phase-a`
+  - 默认期望 `source_name=mock` 或 `source_name=live`
+  - `broker_event_type` 允许缺失或为 `null`
+  - 这类结果只代表 bridge-layer terminal result，不等于 broker lifecycle evidence
 
 若传入 `--summary-output <path>`，同一份 summary 会落盘为指定 JSON artifact，且 artifact 本身也会带 `artifacts` 索引字段。
 
@@ -138,6 +163,9 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 - `result.account_scope`
 - `result.bridge_contract_version`
 - `result.broker_event_type`
+
+其中 `kernel-phase-a` profile 下的 `result.broker_event_type=null` 属于合法稳定值，
+不应被误判为 contract failure。
 
 若比对发现 contract drift，脚手架会保持当前 run 的 `ok=true/false` 原语义不变，但会额外写入 `comparison` 段，并以退出码 `3` 返回。
 
@@ -242,7 +270,9 @@ python scripts/dev/summarize_windows_qmt_acceptance_reports.py \
 当前更推荐把它用于两类场景：
 
 1. 对独立 Windows `miniQMT` 项目交付的 mock-mode service 做 Phase A 合同联调
+   - 推荐 `--contract-profile kernel-phase-a`
 2. 在本仓库内对 repo-owned Windows `qmt` reference service 做本地回归确认
+   - 默认 `reference-service` profile 即可
 
 当前**不推荐**把它当作：
 

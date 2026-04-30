@@ -29,6 +29,7 @@ LIVE_BRIDGE_TIMEOUT_INCIDENT = "live_bridge_timeout"
 LIVE_BRIDGE_UNAVAILABLE_INCIDENT = "live_bridge_unavailable"
 LIVE_BRIDGE_INVALID_RESULT_INCIDENT = "live_bridge_invalid_result"
 LIVE_BRIDGE_IDENTITY_MISMATCH_INCIDENT = "live_bridge_identity_mismatch"
+LIVE_BRIDGE_BRIDGE_RESULT_ONLY_INCIDENT = "live_bridge_bridge_result_only"
 LIVE_BRIDGE_AUTH_FAILED_INCIDENT = "live_bridge_auth_failed"
 LIVE_BRIDGE_UNSUPPORTED_CONTRACT_VERSION_INCIDENT = "live_bridge_unsupported_contract_version"
 LIVE_BRIDGE_UNSUPPORTED_METHOD_INCIDENT = "live_bridge_unsupported_method"
@@ -92,6 +93,22 @@ def poll_miniqmt_live_bridge_result(
     if mismatch is not None:
         broker_divergence_store.append(mismatch)
         return mismatch
+
+    if result_payload.get("broker_event_type") is None:
+        incident = _build_live_bridge_review_incident(
+            category=LIVE_BRIDGE_BRIDGE_RESULT_ONLY_INCIDENT,
+            attempt_record=attempt_record,
+            task_id=task_id,
+            result_payload={
+                **dict(result_payload),
+                "reason_code": "bridge_result_requires_broker_lifecycle_followup",
+                "reason_detail": (
+                    "live bridge result is contract-valid but does not yet carry broker lifecycle evidence"
+                ),
+            },
+        )
+        broker_divergence_store.append(incident)
+        return incident
 
     bridge_payload = _build_bridge_result_ingestion_payload(result_payload)
     return broker_followup.ingest_miniqmt_bridge_result_payload(
