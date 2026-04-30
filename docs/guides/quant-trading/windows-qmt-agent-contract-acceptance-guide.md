@@ -170,6 +170,15 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   --compare-with docs/reports/quality/windows-qmt-contract-acceptance/baselines/latest-baseline.json
 ```
 
+若你已经采用标准报告目录结构，也可以直接使用快捷开关：
+
+```bash
+python scripts/dev/verify_windows_qmt_agent_contract.py \
+  --base-url http://<windows-host>:8001 \
+  --report-dir docs/reports/quality/windows-qmt-contract-acceptance \
+  --compare-with-latest-baseline
+```
+
 ## 6. 只读状态摘要
 
 若你已经跑过 acceptance harness，不想重复触发 `/health -> execute -> result` smoke，

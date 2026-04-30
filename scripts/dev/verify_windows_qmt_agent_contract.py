@@ -39,6 +39,8 @@ DEFAULT_EXPECTED_ACCOUNT_SCOPE = "wsl-ubuntu-phase-a-acceptance"
 DEFAULT_EXPECTED_SOURCE_NAME = "qmt/windows_reference_service"
 DEFAULT_MOCK_OUTCOME = "acknowledgement"
 DEFAULT_REPORT_DIR = PROJECT_ROOT / "docs" / "reports" / "quality" / "windows-qmt-contract-acceptance"
+DEFAULT_BASELINE_DIRNAME = "baselines"
+DEFAULT_LATEST_BASELINE_FILENAME = "latest-baseline.json"
 DEFAULT_RUNTIME_ENVIRONMENT = "wsl-ubuntu-24.04.4-lts"
 SUMMARY_SCHEMA_VERSION = 1
 COMPARISON_EXIT_CODE = 3
@@ -503,6 +505,11 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="Optional path to an earlier summary JSON artifact used for contract drift comparison.",
     )
     parser.add_argument(
+        "--compare-with-latest-baseline",
+        action="store_true",
+        help="Resolve the standard <report-dir>/baselines/latest-baseline.json path automatically.",
+    )
+    parser.add_argument(
         "--comparison-markdown-output",
         default=None,
         help="Optional path to persist a human-readable markdown comparison summary.",
@@ -580,6 +587,20 @@ def attach_comparison(summary: Mapping[str, Any], comparison: Mapping[str, Any] 
     if comparison:
         summary_with_comparison["comparison"] = dict(comparison)
     return summary_with_comparison
+
+
+def resolve_compare_with_path(
+    *,
+    compare_with: str | Path | None,
+    compare_with_latest_baseline: bool,
+    report_dir: str | Path | None,
+) -> str | None:
+    if compare_with:
+        return str(Path(compare_with))
+    if not compare_with_latest_baseline:
+        return None
+    report_root = Path(report_dir) if report_dir else DEFAULT_REPORT_DIR
+    return str(report_root / DEFAULT_BASELINE_DIRNAME / DEFAULT_LATEST_BASELINE_FILENAME)
 
 
 def _lookup_path(payload: Mapping[str, Any], path: str) -> Any:
@@ -782,7 +803,11 @@ def main(argv: list[str] | None = None) -> int:
     args = parse_args(argv)
     summary_output = getattr(args, "summary_output", None)
     report_dir = getattr(args, "report_dir", None)
-    compare_with = getattr(args, "compare_with", None)
+    compare_with = resolve_compare_with_path(
+        compare_with=getattr(args, "compare_with", None),
+        compare_with_latest_baseline=bool(getattr(args, "compare_with_latest_baseline", False)),
+        report_dir=report_dir,
+    )
     comparison_markdown_output = getattr(args, "comparison_markdown_output", None)
     try:
         config = build_config_from_args(args)

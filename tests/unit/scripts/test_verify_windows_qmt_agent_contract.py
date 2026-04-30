@@ -410,6 +410,31 @@ def test_main_compare_with_baseline_passes_for_matching_contract_projection(
     assert persisted_summary["comparison"]["mismatches"] == []
 
 
+def test_resolve_compare_with_path_uses_standard_latest_baseline_when_requested(tmp_path: Path) -> None:
+    report_dir = tmp_path / "reports"
+
+    resolved = MODULE.resolve_compare_with_path(
+        compare_with=None,
+        compare_with_latest_baseline=True,
+        report_dir=report_dir,
+    )
+
+    assert resolved == str(report_dir / "baselines" / "latest-baseline.json")
+
+
+def test_resolve_compare_with_path_prefers_explicit_path_over_standard_latest_baseline(tmp_path: Path) -> None:
+    report_dir = tmp_path / "reports"
+    explicit_baseline_path = tmp_path / "manual-baseline.json"
+
+    resolved = MODULE.resolve_compare_with_path(
+        compare_with=str(explicit_baseline_path),
+        compare_with_latest_baseline=True,
+        report_dir=report_dir,
+    )
+
+    assert resolved == str(explicit_baseline_path)
+
+
 def test_main_compare_with_baseline_fails_for_contract_drift(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
@@ -510,6 +535,98 @@ def test_main_compare_with_baseline_fails_for_contract_drift(
             "actual": "qmt/windows_reference_service",
         }
     ]
+
+
+def test_main_compare_with_latest_baseline_uses_standard_baseline_path(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    report_dir = tmp_path / "reports"
+    output_path = tmp_path / "acceptance-summary.json"
+    baseline_path = report_dir / "baselines" / "latest-baseline.json"
+    output_metadata = {
+        "summary_schema_version": 1,
+        "runtime_environment": "wsl-ubuntu-24.04.4-lts",
+        "generated_at": "2026-04-30T12:00:00+00:00",
+    }
+    raw_summary = {
+        "ok": True,
+        "stage": "completed",
+        "expected": {
+            "provider_mode": "mock",
+            "bridge_contract_version": "1",
+            "source_name": "qmt/windows_reference_service",
+            "account_scope": "paper-account-01",
+            "mock_outcome": "acknowledgement",
+        },
+        "health": {
+            "status": "online",
+            "provider_mode": "mock",
+            "bridge_contract_version": "1",
+            "bridge_auth_configured": True,
+            "source_name": "qmt/windows_reference_service",
+        },
+        "receipt": {
+            "contract_state": MODULE.BRIDGE_SUBMISSION_RECEIPT,
+            "task_id": "old-task-id-ignored",
+            "receipt_timestamp": "2026-04-29T15:00:00+00:00",
+            "source_name": "qmt/windows_reference_service",
+            "bridge_contract_version": "1",
+        },
+        "result": {
+            "contract_state": MODULE.BRIDGE_RESULT_PAYLOAD,
+            "task_id": "old-task-id-ignored",
+            "occurred_at": "2026-04-29T15:00:01+00:00",
+            "source_name": "qmt/windows_reference_service",
+            "account_scope": "paper-account-01",
+            "event_id": "old-event-id-ignored",
+            "bridge_contract_version": "1",
+            "local_submission_id": "old-submission-id-ignored",
+            "broker_event_type": "acknowledgement",
+        },
+        "issues": [],
+        "verified_fields": ["health.status"],
+    }
+    baseline_path.parent.mkdir(parents=True, exist_ok=True)
+    baseline_path.write_text(json.dumps(raw_summary, indent=2), encoding="utf-8")
+
+    monkeypatch.setattr(
+        MODULE,
+        "parse_args",
+        lambda argv=None: type(
+            "Args",
+            (),
+            {
+                "summary_output": str(output_path),
+                "report_dir": str(report_dir),
+                "compare_with": None,
+                "compare_with_latest_baseline": True,
+                "comparison_markdown_output": None,
+            },
+        )(),
+    )
+    monkeypatch.setattr(
+        MODULE,
+        "build_config_from_args",
+        lambda args: MODULE.AcceptanceHarnessConfig(
+            base_url="http://bridge.local",
+            bridge_token="secret-token",
+            bridge_contract_version="1",
+        ),
+    )
+
+    async def _run_acceptance_harness(config: object) -> dict[str, object]:
+        return dict(raw_summary)
+
+    monkeypatch.setattr(MODULE, "run_acceptance_harness", _run_acceptance_harness)
+    monkeypatch.setattr(MODULE, "build_output_metadata", lambda now=None: dict(output_metadata))
+
+    exit_code = MODULE.main([])
+
+    persisted_summary = json.loads(output_path.read_text(encoding="utf-8"))
+    assert exit_code == 0
+    assert persisted_summary["comparison"]["ok"] is True
+    assert persisted_summary["comparison"]["baseline_path"] == str(baseline_path)
 
 
 def test_main_writes_comparison_markdown_summary(
