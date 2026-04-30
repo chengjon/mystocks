@@ -12,6 +12,11 @@
 本文档说明如何从 `WSL 上的 Ubuntu 24.04.4 LTS` 侧运行本仓库自带的 Windows `qmt`
 contract acceptance harness，以及基于它的 formal sequence。
 
+若你当前首先要判断 Windows 侧是否真的已经达到“可联调”门槛，而不是立即跑本项目命令，
+请先看：
+
+- [`windows-qmt-service-ready-checklist.md`](./windows-qmt-service-ready-checklist.md)
+
 底层 harness 的目标很窄：
 
 - 验证远端 `/health` disclosure
