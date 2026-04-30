@@ -110,6 +110,13 @@
 达到 L3 后，才适合在本项目里运行：
 
 ```bash
+python scripts/dev/probe_windows_qmt_service_readiness.py \
+  --base-url http://<windows-host>:8001
+```
+
+只有当 readiness probe 返回 `l3_acceptance_ready` 时，才推荐继续运行：
+
+```bash
 python scripts/dev/run_windows_qmt_contract_formal_sequence.py \
   --base-url http://<windows-host>:8001 \
   --report-dir docs/reports/quality/windows-qmt-contract-acceptance
@@ -250,7 +257,8 @@ L3 最小证据建议：
 - [ ] `XtItClient.exe` 运行不作为强依赖
 - [ ] Windows bridge 先把 mock contract 跑通
 - [ ] `/health` 返回 `provider_mode=mock`
-- [ ] 本项目 formal sequence 先在 mock 模式下通过
+- [ ] 本项目 readiness probe 先返回 `l3_acceptance_ready`
+- [ ] 本项目 formal sequence 再在 mock 模式下通过
 
 ### 阶段 B: 再做到 live-connect ready
 
@@ -282,11 +290,19 @@ L3 最小证据建议：
   HTTP contract
 - 它能明确区分 transport receipt 与 broker-facing result
 - 它能稳定回传 identity echo
-- 它能被 `WSL 上的 Ubuntu 24.04.4 LTS` 侧的 formal sequence 成功验证
+- 它能先被 `WSL 上的 Ubuntu 24.04.4 LTS` 侧的 readiness probe 判定为 `l3_acceptance_ready`
+- 它随后还能被 formal sequence 成功验证
 
 ---
 
 ## 9. 联调命令参考
+
+默认 mock / Phase A readiness probe：
+
+```bash
+python scripts/dev/probe_windows_qmt_service_readiness.py \
+  --base-url http://<windows-host>:8001
+```
 
 默认 mock / Phase A 合同联调：
 
@@ -297,6 +313,12 @@ python scripts/dev/run_windows_qmt_contract_formal_sequence.py \
 ```
 
 如果 Windows 侧已经进入 live provider mode，且你要做探索性合同联调：
+
+```bash
+python scripts/dev/probe_windows_qmt_service_readiness.py \
+  --base-url http://<windows-host>:8001 \
+  --expected-provider-mode live
+```
 
 ```bash
 python scripts/dev/run_windows_qmt_contract_formal_sequence.py \

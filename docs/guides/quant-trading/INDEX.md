@@ -23,9 +23,9 @@
 - [`windows-qmt-agent-live-contract-requirements-review.md`](./windows-qmt-agent-live-contract-requirements-review.md)
   - 面向本项目的 Windows `qmt` agent / live contract 对接审核稿，聚焦字段、状态、失败语义与升级边界
 - [`windows-qmt-agent-contract-acceptance-guide.md`](./windows-qmt-agent-contract-acceptance-guide.md)
-  - 从 `WSL 上的 Ubuntu 24.04.4 LTS` 侧运行的本地 acceptance harness 与 formal sequence，用于 mock-mode Windows `qmt` service 的合同联调、baseline compare、summary 和 fail-closed 验收
+  - 从 `WSL 上的 Ubuntu 24.04.4 LTS` 侧运行的 readiness probe、acceptance harness 与 formal sequence，用于 Windows `qmt` / `miniQMT` service 的 readiness 判定、mock-mode 合同联调、baseline compare、summary 和 fail-closed 验收
 - [`windows-qmt-service-ready-checklist.md`](./windows-qmt-service-ready-checklist.md)
-  - 面向 Windows 侧 `miniQMT` bridge/service 的 readiness 分级与打勾清单，明确区分 `XtItClient.exe` 已运行 与 Windows HTTP service 已 ready
+  - 面向 Windows 侧 `miniQMT` bridge/service 的 readiness 分级与打勾清单，明确区分 `XtItClient.exe` 已运行 与 Windows HTTP service 已 ready，并约束何时应先跑只读 readiness probe
 - [`miniqmt-project-alignment-questionnaire.md`](./miniqmt-project-alignment-questionnaire.md)
   - 发给独立 Windows `miniQMT` 项目的跨项目对齐问卷，明确接口边界、必答字段与 reply template
 - [`miniqmt-project-feedback-response.md`](./miniqmt-project-feedback-response.md)
@@ -46,8 +46,8 @@
 - 根导航只暴露少量总览入口，阶段完成报告和历史实现计划统一通过本 index 进入
 - broker execution truth、reconciliation boundary、以及相关 canonical-path 盘点可通过 `broker-execution-truth-registry.md` 进入
 - Windows `qmt` agent 与 live contract 的审核要求统一通过 `windows-qmt-agent-live-contract-requirements-review.md` 进入
-- Windows `qmt` service 的本地合同联调与 mock-mode acceptance，统一通过 `windows-qmt-agent-contract-acceptance-guide.md` 进入
-- Windows 侧 `miniQMT` bridge/service 是否已达到可联调门槛，可先用 `windows-qmt-service-ready-checklist.md` 自检
+- Windows `qmt` service 的本地 readiness probe、合同联调与 mock-mode acceptance，统一通过 `windows-qmt-agent-contract-acceptance-guide.md` 进入
+- Windows 侧 `miniQMT` bridge/service 是否已达到可联调门槛，可先用 `windows-qmt-service-ready-checklist.md` 自检，再用只读 readiness probe 固化本地 verdict
 - `miniQMT` v1 kernel 的第一次正式 Phase A readiness 联调，默认也通过同一 guide 中的 formal sequence 入口进入
 - 与独立 Windows `miniQMT` 项目的跨仓接口问题，统一通过 `miniqmt-project-alignment-questionnaire.md` 发起与回收
 - 对 miniQMT 项目开发文档和问题清单的正式审核反馈，统一通过 `miniqmt-project-feedback-response.md` 回传

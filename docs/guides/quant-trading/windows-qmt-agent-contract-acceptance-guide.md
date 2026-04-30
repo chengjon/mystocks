@@ -27,7 +27,22 @@ contract acceptance harness，以及基于它的 formal sequence。
 
 它**不**等于 production-ready 的真实交易验收。
 
-若你是在做第一次正式 Phase A readiness 联调，当前 canonical 入口不再是直接手敲
+若你是在做第一次正式 Phase A readiness 联调，当前推荐顺序是：
+
+1. 先跑只读 readiness probe
+2. 确认 `status_label=l3_acceptance_ready`
+3. 再进入 formal sequence
+
+只读 readiness probe 入口：
+
+```bash
+python scripts/dev/probe_windows_qmt_service_readiness.py \
+  --base-url http://<windows-host>:8001
+```
+
+它只会读取本地配置和远端 `/health` disclosure，不会触发 `qmt/submit_order`。
+
+当 readiness probe 通过后，canonical 入口才是不再直接手敲
 `verify_windows_qmt_agent_contract.py`，而是使用 formal sequence：
 
 ```bash
@@ -45,6 +60,11 @@ python scripts/dev/run_windows_qmt_contract_formal_sequence.py \
 - `optional freeze`
 
 并生成独立的 formal sequence manifest。
+
+readiness probe 默认会在标准目录下额外写出：
+
+- `docs/reports/quality/windows-qmt-contract-acceptance/readiness/YYYYMMDDTHHMMSSZ-windows-qmt-service-readiness.json`
+- `docs/reports/quality/windows-qmt-contract-acceptance/readiness/latest.json`
 
 若对接对象是 `/mnt/d/MyCode3/miniQMT` 的 v1 `task/execute + task/result` kernel，
 当前应优先使用 `--contract-profile kernel-phase-a`。这是因为该对端的 Phase A
@@ -224,7 +244,73 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
 
 若比对发现 contract drift，脚手架会保持当前 run 的 `ok=true/false` 原语义不变，但会额外写入 `comparison` 段，并以退出码 `3` 返回。
 
-## 5. 冻结 Baseline
+## 5. Readiness Probe
+
+若你当前还不确定 Windows 侧服务是否真的已达到“可联调”门槛，应该先运行只读 readiness probe，而不是直接执行 acceptance harness：
+
+```bash
+python scripts/dev/probe_windows_qmt_service_readiness.py \
+  --base-url http://<windows-host>:8001
+```
+
+当前 probe 的职责很窄：
+
+- 验证本地 `base_url` / token 配置是否足以进入下一步
+- 验证远端 `/health` 是否可达且返回 JSON object
+- 验证 `status`、`provider_mode`、`bridge_contract_version`、`bridge_auth_configured`、`source_name`
+- 给出 `L1 / L2 / L3` 三层 readiness verdict
+
+它不会：
+
+- 触发 `qmt/submit_order`
+- 触发 `task/result` smoke
+- 证明 broker lifecycle truth
+- 证明 production readiness
+
+当前 readiness probe 的状态标签是：
+
+- `l3_acceptance_ready` -> `0`
+- `l2_contract_ready_only` -> `1`
+- `l1_process_ready_only` -> `1`
+- `not_ready` -> `1`
+- `configuration_invalid` -> `2`
+
+只有当 probe 返回 `l3_acceptance_ready` 时，才推荐继续跑 formal sequence。
+
+## 5. Readiness Probe
+
+若你当前还不确定 Windows 侧服务是否真的已达到“可联调”门槛，应该先运行只读 readiness probe，而不是直接执行 acceptance harness：
+
+```bash
+python scripts/dev/probe_windows_qmt_service_readiness.py \
+  --base-url http://<windows-host>:8001
+```
+
+当前 probe 的职责很窄：
+
+- 验证本地 `base_url` / token 配置是否足以进入下一步
+- 验证远端 `/health` 是否可达且返回 JSON object
+- 验证 `status`、`provider_mode`、`bridge_contract_version`、`bridge_auth_configured`、`source_name`
+- 给出 `L1 / L2 / L3` 三层 readiness verdict
+
+它不会：
+
+- 触发 `qmt/submit_order`
+- 触发 `task/result` smoke
+- 证明 broker lifecycle truth
+- 证明 production readiness
+
+当前 readiness probe 的状态标签是：
+
+- `l3_acceptance_ready` -> `0`
+- `l2_contract_ready_only` -> `1`
+- `l1_process_ready_only` -> `1`
+- `not_ready` -> `1`
+- `configuration_invalid` -> `2`
+
+只有当 probe 返回 `l3_acceptance_ready` 时，才推荐继续跑 formal sequence。
+
+## 6. 冻结 Baseline
 
 当你已经审核过一份 `latest.json`，并希望把它作为后续 contract drift compare 的基准，可以直接冻结成标准 baseline：
 
@@ -262,7 +348,7 @@ python scripts/dev/verify_windows_qmt_agent_contract.py \
   --compare-with-latest-baseline
 ```
 
-## 6. 只读状态摘要
+## 7. 只读状态摘要
 
 若你已经跑过 acceptance harness，不想重复触发 `/health -> execute -> result` smoke，
 可以直接读取标准报告目录中的 `latest.json` 和可选 `latest-comparison.md`：
@@ -298,7 +384,7 @@ python scripts/dev/summarize_windows_qmt_acceptance_reports.py \
 
 这样你可以先用只读摘要判断“是否需要回看详细 JSON / markdown”，而不必每次都重新跑联调。
 
-## 7. Formal Sequence Manifest
+## 8. Formal Sequence Manifest
 
 `run_windows_qmt_contract_formal_sequence.py` 会额外输出一份 machine-readable manifest。
 
@@ -321,7 +407,7 @@ manifest 至少会记录：
 - `2`：preflight / report-level configuration issue
 - `3`：contract drift detected
 
-## 8. 失败分层
+## 9. 失败分层
 
 当前失败会分成这些阶段：
 
@@ -343,24 +429,27 @@ manifest 至少会记录：
 - `2`：本地参数 / 配置无效
 - `3`：acceptance 通过，但 `--compare-with` 检测到 contract drift
 
-## 8. 当前推荐用法
+## 10. 当前推荐用法
 
 当前更推荐把它用于两类场景：
 
-1. 对独立 Windows `miniQMT` 项目交付的 mock-mode service 做 Phase A 合同联调
-   - 推荐 `--contract-profile kernel-phase-a`
-2. 在本仓库内对 repo-owned Windows `qmt` reference service 做本地回归确认
-   - 默认 `reference-service` profile 即可
+1. 先对独立 Windows `miniQMT` 项目交付的 service 跑 readiness probe
+   - 推荐默认 `kernel-phase-a`
+2. probe 返回 `l3_acceptance_ready` 后，再做 Phase A 合同联调
+   - 推荐 `run_windows_qmt_contract_formal_sequence.py`
+3. 在本仓库内对 repo-owned Windows `qmt` reference service 做本地回归确认
+   - readiness probe 可显式改成 `--contract-profile reference-service`
 
 当前**不推荐**把它当作：
 
 - 真实 live trading proof
-- production readiness verdict
+- standalone production readiness verdict
 - Tongdaxin 自动补路验收
 
-## 9. 相关入口
+## 11. 相关入口
 
 - [Broker Execution Truth Registry](./broker-execution-truth-registry.md)
+- [Windows qmt Service Ready Checklist](./windows-qmt-service-ready-checklist.md)
 - [Windows qmt Agent / Live Contract 审核稿](./windows-qmt-agent-live-contract-requirements-review.md)
 - [miniQMT 项目对齐问卷](./miniqmt-project-alignment-questionnaire.md)
 - [miniQMT 项目审核反馈](./miniqmt-project-feedback-response.md)
