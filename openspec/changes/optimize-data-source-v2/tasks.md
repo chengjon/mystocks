@@ -61,7 +61,8 @@
   - [x] 2.12.6 测试并发状态转换（10线程并发）
   - [x] 2.12.7 测试剩余时间反馈
   - [x] 2.12.8 测试可配置阈值
-- [ ] 2.13 集成测试：模拟故障场景验证熔断器行为
+- [x] 2.13 集成测试：模拟故障场景验证熔断器行为
+  - [x] Repo-truth（2026-05-01）：`tests/unit/test_circuit_breaker_integration.py` 当前已覆盖两类主调用链故障场景：首次失败后被 `CircuitBreakerOpenError` 短路，以及超时后经 `src/core/data_source/handler.py:_call_endpoint()` 主链路恢复成功；配套状态机验证见 `tests/unit/test_circuit_breaker.py` 的 OPEN / HALF_OPEN / recover / reopen 用例。
 - [ ] 2.14 代码审查：确保状态转换逻辑正确
 - [x] 2.15 更新文档：添加 CircuitBreaker 使用说明
 
