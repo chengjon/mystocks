@@ -133,8 +133,8 @@
   - [x] 5.10.5 测试多维度综合评分
 - [ ] 5.11 A/B 测试：对比新旧路由策略的性能差异
 - [ ] 5.12 代码审查：确保路由逻辑正确
-- [ ] 5.13 更新文档：添加 SmartRouter 使用说明
-  - [ ] Repo-truth：当前 `docs/guides/data-source/` 下未发现面向现状的 `SmartRouter` 使用章节；`DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 仅覆盖 Phase 1 三个组件，`DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md` 只有回滚片段和导入检查，历史 completion/final summary 报告不作为当前使用文档闭环证据。
+- [x] 5.13 更新文档：添加 SmartRouter 使用说明
+  - [x] Repo-truth（2026-05-01）：`docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 现已补充 `SmartRouter` 当前接入方式、默认权重、endpoint 兼容 shape、懒加载路由链路与现阶段边界说明；该文档对齐了 `src/core/data_source/router.py:get_best_endpoint()` 与 `src/core/data_source/smart_router.py` 的当前实现，不再只停留在 Phase 1 三组件说明。
 
 ## 6. Prometheus 监控集成（5-7天）
 

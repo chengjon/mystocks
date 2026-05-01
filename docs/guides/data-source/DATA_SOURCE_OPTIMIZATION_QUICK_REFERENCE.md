@@ -7,18 +7,24 @@
 > 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
 
 
-**版本**: V2.0 Phase 1
-**最后更新**: 2026-01-09
+**版本**: V2.0 Phase 1-2（当前仓库实现对齐）
+**最后更新**: 2026-05-01
 
 ---
 
 ## 概述
 
-数据源优化 V2 提供了三大核心组件来提升系统性能、可靠性和数据质量：
+数据源优化 V2 当前在仓库里已落地四个核心组件，用于提升系统性能、可靠性和数据质量：
 
 1. **SmartCache** - 智能缓存 (TTL + 预刷新 + 软过期)
 2. **CircuitBreaker** - 熔断器 (保护系统免受级联故障)
 3. **DataQualityValidator** - 数据质量验证 (多层验证)
+4. **SmartRouter** - 智能路由 (性能/成本/负载/地域多维度评分)
+
+> **Repo-truth（2026-05-01）**:
+> - `src/core/data_source/router.py:get_best_endpoint()` 当前已经会懒加载 `SmartRouter` 并通过 `smart_router.route(...)` 做选择。
+> - 当前接入保留了原有 `config` 嵌套结构，同时把 `config` 字段平铺到顶层，兼容 downstream handler 对 `source_type` 等顶层字段的读取。
+> - 本指南仅覆盖当前代码里已经落地的路由接线；A/B 测试、灰度部署与正式性能验收不在本页声称完成。
 
 ---
 
@@ -248,6 +254,81 @@ else:
     print("❌ Cross-source validation failed")
     print(f"Price diff: {summary.results[3].details['price_diff']:.2%}")
 ```
+
+---
+
+## SmartRouter 使用
+
+### 当前接入方式
+
+```python
+from src.core.data_source import DataSourceManagerV2
+
+manager = DataSourceManagerV2()
+best_endpoint = manager.get_best_endpoint("DAILY_KLINE")
+
+if best_endpoint is None:
+    print("No healthy endpoint available")
+else:
+    print(best_endpoint["endpoint_name"])
+    print(best_endpoint["config"]["source_name"])
+```
+
+### 当前路由链路
+
+1. `find_endpoints()` 先按 `data_category`、`source_name`、`target_db`、`health_status` 过滤候选端点。
+2. `get_best_endpoint()` 在第一次调用时懒加载 `SmartRouter()`。
+3. 候选端点会从 `{endpoint_name, config}` 扩展为“保留 `config` 嵌套 + 平铺运行字段”的兼容形态。
+4. `SmartRouter.route(...)` 按综合评分返回最佳端点；如果 route 返回空值，则回退到候选列表第一个端点。
+
+### 默认评分权重
+
+| 维度 | 默认权重 | 说明 |
+|------|----------|------|
+| `performance_weight` | `0.4` | 历史延迟与成功率 |
+| `cost_weight` | `0.3` | 免费源 / 免费额度优先 |
+| `load_weight` | `0.2` | 当前并发负载 |
+| `location_weight` | `0.1` | 调用方地域亲和度 |
+
+### 手动注入自定义 SmartRouter
+
+```python
+from src.core.data_source import DataSourceManagerV2
+from src.core.data_source.smart_router import SmartRouter
+
+manager = DataSourceManagerV2()
+manager.smart_router = SmartRouter(
+    performance_weight=0.5,
+    cost_weight=0.2,
+    load_weight=0.2,
+    location_weight=0.1,
+)
+```
+
+### Endpoint 形态注意事项
+
+当前 `SmartRouter` 接到的是兼容 shape：
+
+```python
+{
+    "endpoint_name": "akshare.daily",
+    "config": {...},
+    "source_name": "...",        # 从 config 平铺
+    "source_type": "...",        # 从 config 平铺
+    "data_category": "...",      # 从 config 平铺
+    "cost": {...},               # 若 config 中存在
+}
+```
+
+这样做的原因是：
+- `SmartRouter` 评分逻辑需要直接读取 `source_type`、`cost`、`location` 等运行字段
+- 下游 `handler.py` 仍依赖顶层字段，而不是只读嵌套 `config`
+
+### 当前边界
+
+- 当前已实现的是“候选端点选择接线”，不是完整的线上性能闭环。
+- `caller_location` 当前来自 `_identify_caller()` 的 best-effort 推断；拿不到时回退为 `default`。
+- `SmartRouter` 已接入主选择链路，但 `5.11 A/B 测试`、正式性能验收和灰度部署仍需独立完成。
 
 ---
 
