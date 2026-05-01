@@ -169,9 +169,14 @@ def _call_endpoint(self, endpoint_info: Dict, **kwargs) -> pd.DataFrame:
     start_time = time.time()
     caller = self._identify_caller()
 
+    circuit_breaker = getattr(self, "circuit_breakers", {}).get(endpoint_name)
+
     try:
-        # 调用handler
-        data = handler.fetch(**kwargs)
+        # 优先通过 endpoint 级熔断器执行调用，避免持续打到失败源。
+        if circuit_breaker is not None:
+            data = circuit_breaker.call(handler.fetch, **kwargs)
+        else:
+            data = handler.fetch(**kwargs)
 
         # 记录成功
         response_time = time.time() - start_time

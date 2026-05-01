@@ -49,7 +49,8 @@
 - [x] 2.7 实现 `_on_success()` 方法（成功回调）
 - [x] 2.8 实现 `_on_failure()` 方法（失败回调）
 - [x] 2.9 添加 `CircuitBreakerOpenError` 异常类
-- [ ] 2.10 集成到 `src/core/data_source/base.py._call_endpoint()`
+- [x] 2.10 集成到 `src/core/data_source/base.py._call_endpoint()`
+  - [x] Repo-truth（2026-05-01）：当前仓库的 `DataSourceManagerV2._call_endpoint()` 是 `src/core/data_source/base.py` 中的薄转发层，真实调用逻辑位于 `src/core/data_source/handler.py:_call_endpoint()`；该 delegate 现已在执行 `handler.fetch(...)` 前接入 `self.circuit_breakers[endpoint_name].call(...)`。验证见 `tests/unit/test_circuit_breaker_integration.py`、`src/governance/tests/test_fetcher_bridge.py`、`tests/unit/adapters/test_runtime_data_source_regressions.py`。
 - [x] 2.11 为每个 endpoint 创建独立的 CircuitBreaker 实例
 - [x] 2.12 编写单元测试 `tests/unit/test_circuit_breaker.py`
   - [x] 2.12.1 测试 CLOSED 状态正常调用
