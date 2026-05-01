@@ -85,7 +85,7 @@ class BatchProcessor:
         logger.info("Batch fetching K-line data for %s symbols", len(symbols))
 
         # 按数据源分组
-        grouped_requests = self._group_by_data_source(
+        grouped_requests, resolved_endpoints = self._group_by_data_source(
             data_fetcher,
             symbols,
             data_category=data_category,
@@ -111,6 +111,7 @@ class BatchProcessor:
                     data_category,
                     policy,
                     source_id,
+                    resolved_endpoints.get(symbol),
                 )
                 futures[future] = (data_source, symbol)
                 started_at[future] = time.monotonic()
@@ -221,7 +222,7 @@ class BatchProcessor:
         data_category: str = "DAILY_KLINE",
         policy: Any = None,
         source_id: Optional[str] = None,
-    ) -> Dict[str, List[str]]:
+    ) -> tuple[Dict[str, List[str]], Dict[str, Optional[Dict[str, Any]]]]:
         """
         按数据源分组股票代码
 
@@ -233,6 +234,7 @@ class BatchProcessor:
             {data_source: [symbols]}
         """
         grouped = {}
+        resolved = {}
 
         for symbol in symbols:
             if hasattr(data_fetcher, "resolve_endpoint"):
@@ -244,6 +246,8 @@ class BatchProcessor:
                 )
             else:
                 best_endpoint = data_fetcher.manager.get_best_endpoint(data_category)
+
+            resolved[symbol] = best_endpoint
 
             if best_endpoint:
                 data_source = best_endpoint.get("endpoint_name", "unknown")
@@ -257,7 +261,7 @@ class BatchProcessor:
 
         logger.debug("Grouped %s symbols into %s data sources", len(symbols), len(grouped))
 
-        return grouped
+        return grouped, resolved
 
     def _collect_kline_futures(
         self,
@@ -321,6 +325,7 @@ class BatchProcessor:
         data_category: str = "DAILY_KLINE",
         policy: Any = None,
         source_id: Optional[str] = None,
+        endpoint_info: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """
         获取单个股票的 K线数据
@@ -350,6 +355,7 @@ class BatchProcessor:
                 data_category=data_category,
                 policy=policy,
                 source_id=source_id,
+                endpoint_info=endpoint_info,
             )
 
             if data is not None:

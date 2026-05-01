@@ -93,3 +93,29 @@ class TestGovernanceDataFetcher:
             fetcher.shutdown()
 
         mock_shutdown.assert_called_once_with(wait=True)
+
+    def test_batch_path_reuses_manager_instance_without_cross_wiring(self, mock_manager):
+        mock_manager.get_best_endpoint.return_value = {"endpoint_name": "mock_endpoint", "source_type": "mock"}
+
+        def _build_dataframe(endpoint, symbol, start_date, end_date, adjust):
+            return pd.DataFrame({"symbol": [symbol], "close": [10.0]})
+
+        mock_manager._call_endpoint.side_effect = _build_dataframe
+
+        fetcher = GovernanceDataFetcher()
+        results = fetcher.fetch_batch_kline(
+            symbols=["000001", "000002", "000003"],
+            start_date="20240101",
+            end_date="20240105",
+            policy=RoutePolicy.SMART_ROUTING,
+        )
+
+        assert fetcher.manager is mock_manager
+        assert set(results) == {"000001", "000002", "000003"}
+        assert {frame.iloc[0]["symbol"] for frame in results.values()} == {"000001", "000002", "000003"}
+        assert mock_manager.get_best_endpoint.call_count == 3
+        assert {call.kwargs["symbol"] for call in mock_manager._call_endpoint.call_args_list} == {
+            "000001",
+            "000002",
+            "000003",
+        }

@@ -207,13 +207,13 @@
 - [x] 7.7 添加超时控制（`future.result(timeout=30)`）
 - [x] 7.8 实现异常隔离（单个失败不影响其他）
 - [x] 7.9 实现 `shutdown()` 方法（优雅关闭）
-- [ ] 7.10 编写单元测试 `tests/integration/test_batch_processing.py`
+- [x] 7.10 编写单元测试 `tests/integration/test_batch_processing.py`
   - [x] 7.10.1 测试并发获取（100个symbol）
   - [x] 7.10.2 测试超时控制（单个请求超时）
   - [x] 7.10.3 测试异常隔离（部分失败）
   - [x] 7.10.4 测试优雅关闭
-  - [ ] 7.10.5 测试 DataSourceManager 保持同步
-  - [ ] Repo-truth（2026-05-02）：`tests/integration/test_batch_processing.py` 当前已覆盖 100 symbol 并发获取、单请求 timeout fail-fast、部分失败隔离与 `shutdown(wait=False)`；`src/governance/tests/test_fetcher_bridge.py` 额外覆盖 `GovernanceDataFetcher` 对 `BatchProcessor` 的公共形状保持与 shutdown delegation。`7.10.5` 继续保留，因为当前尚未加入针对真实 `DataSourceManagerV2` 同步一致性的专门测试。
+  - [x] 7.10.5 测试 DataSourceManager 保持同步
+  - [x] Repo-truth（2026-05-02）：`tests/integration/test_batch_processing.py` 当前已覆盖 100 symbol 并发获取、单请求 timeout fail-fast、部分失败隔离与 `shutdown(wait=False)`；`src/governance/tests/test_fetcher_bridge.py` 额外覆盖 `GovernanceDataFetcher` 对 `BatchProcessor` 的公共形状保持、shutdown delegation，以及共享 `DataSourceManagerV2` 实例下每个 symbol 的 endpoint 解析与 `_call_endpoint()` 返回不串线。为支撑这项验证，批处理分组阶段已解析过的 endpoint 现在会在抓取阶段复用，避免同一 symbol 在一次 batch 内重复调用 `get_best_endpoint()`。
 - [ ] 7.11 性能测试：对比优化前后的吞吐量
 - [ ] 7.12 代码审查：确保线程安全和资源清理
 - [x] 7.13 更新文档：添加批处理使用说明

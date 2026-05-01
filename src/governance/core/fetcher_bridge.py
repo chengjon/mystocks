@@ -143,9 +143,18 @@ class GovernanceDataFetcher:
         data_category: str = "DAILY_KLINE",
         policy: RoutePolicy = RoutePolicy.SMART_ROUTING,
         source_id: Optional[str] = None,
+        endpoint_info: Optional[Dict] = None,
     ) -> Optional[pd.DataFrame]:
         """供 BatchProcessor 调用的单标的 K 线抓取包装。"""
-        return self._fetch_single_symbol(symbol, start_date, end_date, data_category, policy, source_id)
+        return self._fetch_single_symbol(
+            symbol,
+            start_date,
+            end_date,
+            data_category,
+            policy,
+            source_id,
+            endpoint_info=endpoint_info,
+        )
 
     def shutdown(self, wait: bool = True):
         """释放批处理线程池资源。"""
@@ -193,9 +202,10 @@ class GovernanceDataFetcher:
         data_category: str,
         policy: RoutePolicy,
         source_id: Optional[str],
+        endpoint_info: Optional[Dict] = None,
     ) -> Optional[pd.DataFrame]:
         """获取单个股票数据"""
-        endpoint = self.resolve_endpoint(
+        endpoint = endpoint_info or self.resolve_endpoint(
             data_category=data_category,
             policy=policy,
             source_id=source_id,

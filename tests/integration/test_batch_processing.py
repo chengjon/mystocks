@@ -35,6 +35,7 @@ class StubBatchFetcher:
         data_category="DAILY_KLINE",
         policy=RoutePolicy.SMART_ROUTING,
         source_id=None,
+        endpoint_info=None,
     ):
         self.fetch_calls.append(
             {
@@ -89,6 +90,7 @@ def test_batch_processor_marks_timeout_without_blocking_fast_symbols():
             data_category="DAILY_KLINE",
             policy=RoutePolicy.SMART_ROUTING,
             source_id=None,
+            endpoint_info=None,
         ):
             if symbol == "000002":
                 time.sleep(0.15)
@@ -141,6 +143,7 @@ def test_batch_processor_handles_100_symbols_concurrently():
             data_category="DAILY_KLINE",
             policy=RoutePolicy.SMART_ROUTING,
             source_id=None,
+            endpoint_info=None,
         ):
             self.fetch_calls.append(
                 {
