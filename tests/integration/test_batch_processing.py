@@ -128,3 +128,49 @@ def test_batch_processor_shutdown_is_graceful():
     processor.shutdown(wait=False)
 
     assert processor.executor._shutdown is True
+
+
+def test_batch_processor_handles_100_symbols_concurrently():
+    class ConcurrentFetcher(StubBatchFetcher):
+        def fetch_kline(
+            self,
+            symbol,
+            start_date,
+            end_date,
+            adjust="qfq",
+            data_category="DAILY_KLINE",
+            policy=RoutePolicy.SMART_ROUTING,
+            source_id=None,
+        ):
+            self.fetch_calls.append(
+                {
+                    "symbol": symbol,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                    "adjust": adjust,
+                    "data_category": data_category,
+                    "policy": policy,
+                    "source_id": source_id,
+                }
+            )
+            time.sleep(0.02)
+            return pd.DataFrame({"close": [10, 11, 12]})
+
+    processor = BatchProcessor(max_workers=10, timeout=1.0)
+    fetcher = ConcurrentFetcher()
+    symbols = [f"{index:06d}" for index in range(100)]
+
+    start = time.perf_counter()
+    result = processor.fetch_batch_kline(
+        fetcher,
+        symbols=symbols,
+        start_date="20240101",
+        end_date="20240105",
+    )
+    elapsed = time.perf_counter() - start
+
+    processor.shutdown(wait=False)
+
+    assert result["errors"] == {}
+    assert len(result["data"]) == 100
+    assert elapsed < 1.5
