@@ -214,7 +214,8 @@
   - [x] 7.10.4 测试优雅关闭
   - [x] 7.10.5 测试 DataSourceManager 保持同步
   - [x] Repo-truth（2026-05-02）：`tests/integration/test_batch_processing.py` 当前已覆盖 100 symbol 并发获取、单请求 timeout fail-fast、部分失败隔离与 `shutdown(wait=False)`；`src/governance/tests/test_fetcher_bridge.py` 额外覆盖 `GovernanceDataFetcher` 对 `BatchProcessor` 的公共形状保持、shutdown delegation，以及共享 `DataSourceManagerV2` 实例下每个 symbol 的 endpoint 解析与 `_call_endpoint()` 返回不串线。为支撑这项验证，批处理分组阶段已解析过的 endpoint 现在会在抓取阶段复用，避免同一 symbol 在一次 batch 内重复调用 `get_best_endpoint()`。
-- [ ] 7.11 性能测试：对比优化前后的吞吐量
+- [x] 7.11 性能测试：对比优化前后的吞吐量
+  - [x] Repo-truth（2026-05-02）：已新增 `tests/performance/test_batch_processor_throughput.py`，并通过 `pytest tests/performance/test_batch_processor_throughput.py -q --no-cov --run-performance` 验证在本地 stub workload 下，`BatchProcessor(max_workers=10)` 的批量路径相对串行 `fetch_kline()` 基线至少快 `2x`。此项证据仅覆盖本地 synthetic throughput 对比，不等同于 `8.2` 所需的真实部署吞吐量验收。
 - [ ] 7.12 代码审查：确保线程安全和资源清理
 - [x] 7.13 更新文档：添加批处理使用说明
   - [x] Repo-truth（2026-05-02）：`docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 现已把 `BatchProcessor` 补入当前已落地的第 5 个核心组件，并新增 `BatchProcessor 使用` 专节，说明 `GovernanceDataFetcher` 的多 symbol 并发入口、`resolve_endpoint(...)` 分组链路、`wait(..., FIRST_COMPLETED)` timeout fail-fast 机制、公开返回形状保持，以及现阶段未完成的 `7.6 / 7.10.5 / 7.11 / 8.x` 边界。
