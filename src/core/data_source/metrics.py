@@ -276,14 +276,15 @@ class DataSourceMetrics:
         if not self.enabled:
             return 0.0
 
-        # 从 Histogram 获取样本数和总和
         histogram = self.api_latency.labels(endpoint=endpoint, data_category=data_category)
-        samples = histogram._value.get()
+        samples = histogram.collect()[0].samples
+        sample_sum = next((sample.value for sample in samples if sample.name.endswith("_sum")), 0.0)
+        sample_count = next((sample.value for sample in samples if sample.name.endswith("_count")), 0.0)
 
-        if not samples or samples.sum == 0:
+        if not sample_count:
             return 0.0
 
-        return samples.sum / samples.count
+        return sample_sum / sample_count
 
     def generate_metrics(self) -> bytes:
         """

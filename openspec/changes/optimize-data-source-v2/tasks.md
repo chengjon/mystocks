@@ -170,11 +170,12 @@
   - [ ] 6.7.4 添加缓存命中率面板
   - [ ] 6.7.5 添加熔断器状态面板
   - [ ] 6.7.6 添加 API 成本面板
-- [ ] 6.8 编写单元测试 `tests/unit/test_metrics.py`
-  - [ ] 6.8.1 测试指标记录（成功/失败）
-  - [ ] 6.8.2 测试延迟 histogram
-  - [ ] 6.8.3 测试缓存 hit/miss 计数
-  - [ ] 6.8.4 测试熔断器状态 gauge
+- [x] 6.8 编写单元测试 `tests/unit/test_metrics.py`
+  - [x] 6.8.1 测试指标记录（成功/失败）
+  - [x] 6.8.2 测试延迟 histogram
+  - [x] 6.8.3 测试缓存 hit/miss 计数
+  - [x] 6.8.4 测试熔断器状态 gauge
+  - [x] Repo-truth（2026-05-01）：已新增 `tests/unit/test_metrics.py`，覆盖 `record_api_call()` 成功/失败计数、`get_avg_latency()`、缓存命中率与 `record_circuit_breaker_state()`。补测过程中确认 `src/core/data_source/metrics.py:get_avg_latency()` 原先错误依赖 Histogram 私有字段；现已改为基于 `collect().samples` 的 `_sum/_count` 样本计算平均值。验证见 `tests/unit/test_metrics.py`、`tests/unit/test_data_source_metrics_integration.py`。
 - [ ] 6.9 配置 Prometheus 告警规则
   - [ ] 6.9.1 创建 `monitoring-stack/config/rules/data-source-alerts.yml`
   - [ ] 6.9.2 添加成功率 < 95% 告警
