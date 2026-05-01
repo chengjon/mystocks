@@ -187,8 +187,8 @@
   - [x] Repo-truth（2026-05-01）：`tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 当前已验证 `src/core/data_source/metrics.py:DataSourceMetrics.generate_metrics()` 导出的 Prometheus exposition 文本可查询到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等已记录指标及其标签。此项证据覆盖本地 registry/exposition 可查询性，不等同于生产 Prometheus 抓取链路已验收。
 - [ ] 6.11 验证 Grafana 仪表板正常显示
 - [ ] 6.12 代码审查：确保指标命名符合 Prometheus 规范
-- [ ] 6.13 更新文档：添加监控使用说明
-  - [ ] Repo-truth：`docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md` 存在，但当前口径仍包含缺失路径 `monitoring-stack/grafana-dashboards/data_source_monitoring.json`、`monitoring-stack/provisioning/dashboards/`，且未清晰对齐 `web/backend/app/main.py` 现有 `/metrics`（performance middleware）与 `src/core/data_source/metrics.py` / `src/monitoring/data_source_metrics.py` 的双轨现状，因此暂不视为已完成更新。
+- [x] 6.13 更新文档：添加监控使用说明
+  - [x] Repo-truth（2026-05-01）：`docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md` 现已按当前仓库实现重写为双轨说明：优先描述 `web/backend/app/main.py` 的运行时 `GET /metrics` 主路径，其次说明 `src/core/data_source/metrics.py` 的 `datasource_*` 局部指标链与 `DataSourceManagerV2` hook 关系，并把 `src/monitoring/data_source_metrics.py` + `scripts/runtime/start_metrics_server.py` 明确收窄为 optional / legacy exporter。旧文档里对缺失 Grafana/provisioning 路径的默认前提已去除，当前指南同时补入了本地验证命令、双指标族边界和部署侧扩展说明。
 
 ## 7. BatchProcessor 实现（5-7天）
 

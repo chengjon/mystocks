@@ -7,513 +7,307 @@
 > 文内步骤、示例、命令和说明应视为补充参考；若与当前代码、`architecture/STANDARDS.md` 或主线治理文档不一致，应以 `architecture/STANDARDS.md`、当前代码实现及主线治理文档为准。
 
 
-> **版本**: v2.0
-> **创建日期**: 2026-01-02
-> **相关组件**: DataSourceManagerV2, Prometheus, Grafana
+> **版本**: v2.0（当前仓库实现对齐）
+> **最后更新**: 2026-05-01
+> **相关组件**: DataSourceManagerV2, FastAPI `/metrics`, `src/core/data_source/metrics.py`, `src/monitoring/data_source_metrics.py`
 
 ---
 
 ## 📊 概述
 
-数据源监控系统为MyStocks的数据源管理V2提供了完整的可观测性，包括：
+当前仓库里的“数据源监控”是**双轨实现**，使用前必须区分：
 
-- **实时指标**: 数据源可用性、响应时间、成功率
-- **健康监控**: 连续失败次数、质量评分、健康状态
-- **调用统计**: 总调用次数、记录数分布、错误率
-- **可视化仪表板**: Grafana仪表板展示所有关键指标
+1. **运行时主路径**：`web/backend/app/main.py` 暴露的 `GET /metrics`
+   - 底层是 `src/core/middleware/performance.py`
+   - 使用全局 Prometheus `REGISTRY`
+   - 当前最稳定、最容易直接验证
+
+2. **数据源局部指标链**：`src/core/data_source/metrics.py`
+   - 由 `DataSourceManagerV2` 的 `_record_success()` / `_record_failure()` hook 记录
+   - 默认使用独立 `CollectorRegistry`
+   - 目前已能在本地导出 `datasource_*` exposition 文本
+
+3. **独立 exporter / legacy 路径**：`src/monitoring/data_source_metrics.py` + `scripts/runtime/start_metrics_server.py`
+   - 仍可单独启动 `8001` 端口 exporter
+   - 适合做独立数据源观测实验或与旧 Prometheus 配置兼容
+   - 不是当前仓库里唯一的监控真相源
+
+> **Repo-truth（2026-05-01）**:
+> - `GET /metrics` 已在 [main.py](/opt/claude/mystocks_spec/web/backend/app/main.py:735) 存在，但当前主要暴露的是 performance middleware 的全局 registry 指标。
+> - `src/core/data_source/metrics.py` 已有 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等指标，并已接到 `DataSourceManagerV2` hook。
+> - `src/monitoring/data_source_metrics.py` 与 `scripts/runtime/start_metrics_server.py` 仍存在，但文档中过去引用的 `monitoring-stack/grafana-dashboards/data_source_monitoring.json`、`monitoring-stack/provisioning/dashboards/` 等路径并非当前仓库已验证事实。
+> - 因此，本指南优先描述当前可直接验证的运行时 `/metrics` 与本地 exposition 用法，再把独立 exporter 标记为可选路径。
 
 ---
 
 ## 🎯 核心组件
 
-### 1. Prometheus Metrics Exporter
+### 1. 运行时 `/metrics` 主路径
 
-**文件**: `src/monitoring/data_source_metrics.py`
+**文件**:
+- `web/backend/app/main.py`
+- `src/core/middleware/performance.py`
 
 **功能**:
-- 定义10种Prometheus指标类型（Gauge, Counter, Histogram, Info）
-- 提供便捷的更新接口
-- 自动暴露`/metrics`端点给Prometheus抓取
+- 暴露 FastAPI `GET /metrics`
+- 返回全局 `REGISTRY` 的 Prometheus exposition 文本
+- 当前主要覆盖 HTTP 请求延迟、请求计数、活跃请求、慢请求等运行时指标
 
-**指标列表**:
+### 2. 数据源局部指标模块
+
+**文件**: `src/core/data_source/metrics.py`
+
+**功能**:
+- 定义 `datasource_*` 指标
+- 提供 `record_api_call()`、`record_cache_hit()`、`record_circuit_breaker_state()` 等记录接口
+- 通过 `generate_metrics()` 直接导出 exposition 文本
+
+**当前已验证的指标**:
 
 | 指标名称 | 类型 | 标签 | 说明 |
 |---------|------|------|------|
-| `data_source_up` | Gauge | endpoint_name, source_name, data_category | 数据源可用性（1=可用，0=不可用） |
-| `data_source_response_time_seconds` | Histogram | endpoint_name, source_name | 响应时间分布（p50/p95/p99） |
-| `data_source_calls_total` | Counter | endpoint_name, source_name, status | 调用总次数（按成功/失败分类） |
-| `data_source_record_count` | Histogram | endpoint_name, source_name | 返回记录数分布 |
-| `data_source_success_rate` | Gauge | endpoint_name, source_name | 成功率（百分比） |
-| `data_source_health_status` | Gauge | endpoint_name, source_name | 健康状态（3=健康，2=降级，1=失败，0=未知） |
-| `data_source_quality_score` | Gauge | endpoint_name, source_name | 质量评分（0-10） |
-| `data_source_consecutive_failures` | Gauge | endpoint_name, source_name | 连续失败次数 |
-| `data_source_total_calls` | Gauge | endpoint_name, source_name | 总调用次数 |
-| `data_source_info` | Info | endpoint_name, source_name | 数据源元数据 |
+| `datasource_api_latency_seconds` | Histogram | endpoint, data_category | 数据源 API 延迟 |
+| `datasource_api_calls_total` | Counter | endpoint, data_category, status | 数据源 API 调用总数 |
+| `datasource_data_quality` | Gauge | endpoint, check_type | 数据质量评分 |
+| `datasource_cache_hits_total` | Counter | endpoint | 缓存命中次数 |
+| `datasource_cache_misses_total` | Counter | endpoint | 缓存未命中次数 |
+| `datasource_circuit_breaker_state` | Gauge | endpoint | 熔断器状态 |
+| `datasource_api_cost_estimated` | Gauge | endpoint | 估算 API 成本 |
 
-### 2. Grafana Dashboard
+### 3. 独立 exporter（可选 / legacy）
 
-**文件**: `monitoring-stack/grafana-dashboards/data_source_monitoring.json`
-
-**包含12个面板**:
-1. 数据源可用性状态（Stat）
-2. 数据源调用速率QPS（Time Series）
-3. 数据源健康状态（Stat）
-4. 数据源响应时间分布（Time Series - P50/P95/P99）
-5. 数据源成功率趋势（Time Series）
-6. 数据源质量评分（Stat）
-7. 连续失败次数（Stat）
-8. 总调用次数（Stat）
-9. 数据源分布按来源（Pie Chart）
-10. 数据源分布按分类（Donut Chart）
-11. 数据源调用统计表（Table）
-12. 数据源返回记录数热力图（Heatmap）
-
-### 3. Metrics Server Startup Script
-
-**文件**: `scripts/runtime/start_metrics_server.py`
+**文件**:
+- `src/monitoring/data_source_metrics.py`
+- `scripts/runtime/start_metrics_server.py`
 
 **功能**:
-- 启动Prometheus metrics HTTP服务器（端口8001）
-- 从PostgreSQL注册表加载所有数据源
-- 初始化所有数据源的metrics
-- 持续暴露`/metrics`端点
+- 在独立端口 `8001` 启动 exporter
+- 维护另一组 `data_source_*` 指标
+- 适合需要单独抓取数据源指标的场景
+
+> **当前边界**:
+> - 当前没有直接本地证据证明 Grafana dashboard JSON、Prometheus 告警规则和 auto-provisioning 文件已经按现状同步完成。
+> - 所以本节不再把缺失路径当作默认前提，只保留“如果你的部署侧另行提供这些文件，可按部署环境接入”。
 
 ---
 
 ## 🚀 快速开始
 
-### Step 1: 启动Metrics服务器
+### 路径 A：验证运行时 `/metrics`（当前推荐）
 
-**方法1: 直接运行**
+```bash
+curl http://localhost:8020/metrics | rg "http_request|slow_http_requests|datasource_"
+```
+
+如果当前运行时已经把 `src/core/data_source/metrics.py` 里的 registry 显式并入全局 `REGISTRY`，这里会看到 `datasource_*` 指标；如果没有并入，你至少仍应看到 `http_request_*`、`http_requests_*`、`slow_http_requests_total` 等运行时指标。
+
+### 路径 B：直接验证数据源局部 exposition（本地验证）
+
+```python
+from prometheus_client import CollectorRegistry
+
+from src.core.data_source.metrics import DataSourceMetrics
+
+metrics = DataSourceMetrics(registry=CollectorRegistry())
+metrics.record_api_call("demo.endpoint", "DAILY_KLINE", latency=0.25, success=True)
+
+print(metrics.generate_metrics().decode("utf-8"))
+```
+
+当前仓库已经有对应验证：
+- `tests/unit/test_metrics.py`
+- `tests/unit/test_data_source_metrics_integration.py`
+
+### 路径 C：启动独立 exporter（可选）
+
 ```bash
 cd /opt/claude/mystocks_spec
 python scripts/runtime/start_metrics_server.py
-```
-
-**方法2: 后台运行**
-```bash
-nohup python scripts/runtime/start_metrics_server.py > var/log/metrics_server.log 2>&1 &
-```
-
-**方法3: 使用PM2管理（推荐）**
-```bash
-pm2 start scripts/runtime/start_metrics_server.py --name mystocks-metrics
-pm2 save
-```
-
-**验证启动**:
-```bash
-# 检查端口
-lsof -i :8001
-
-# 查看metrics
 curl http://localhost:8001/metrics
-
-# 预期输出
-# HELP data_source_up 数据源是否可用（1=可用，0=不可用）
-# TYPE data_source_up gauge
-data_source_up{data_category="DAILY_KLINE",endpoint_name="akshare.stock_zh_a_hist",source_name="akshare"} 1.0
-...
 ```
 
-### Step 2: 确认Prometheus已配置抓取
+这条路径适合：
+- 你希望单独抓取 `src/monitoring/data_source_metrics.py` 的 `data_source_*` 指标
+- 你有独立 Prometheus job 指向 `8001`
 
-**检查配置文件**: `monitoring-stack/config/prometheus.yml`
+不适合把它误认为“当前唯一监控主路径”。
 
-**已包含的抓取任务**:
-```yaml
-- job_name: 'mystocks-data-sources'
-  static_configs:
-    - targets:
-        - 'host.docker.internal:8001'  # 数据源指标服务器端口
-      labels:
-        service: 'mystocks-data-sources'
-        component: 'data-source-manager'
+### 在代码中使用 metrics
 
-  metrics_path: '/metrics'
-  scrape_interval: 30s
-```
+#### 示例1：直接验证 `src/core/data_source/metrics.py`
 
-**重启Prometheus（如需要）**:
-```bash
-cd /opt/claude/mystocks_spec/monitoring-stack
-docker-compose restart prometheus
-```
-
-**验证抓取**:
-1. 访问 Prometheus: http://localhost:9090
-2. 进入 "Status" → "Targets"
-3. 查找 `mystocks-data-sources` 任务
-4. 确认状态为 "UP"
-
-### Step 3: 导入Grafana仪表板
-
-**方法1: 通过UI导入**
-1. 访问 Grafana: http://localhost:3000
-2. 登录（admin / mystocks2025）
-3. 点击 "+" → "Import"
-4. 上传JSON文件: `monitoring-stack/grafana-dashboards/data_source_monitoring.json`
-5. 点击 "Import"
-
-**方法2: 自动 provisioning（推荐）**
-
-配置文件已存在于 `monitoring-stack/provisioning/dashboards/`，Grafana会自动加载。
-
-**验证导入**:
-1. 访问 Grafana: http://localhost:3000
-2. 点击 "Dashboards" → "Manage"
-3. 查找 "MyStocks 数据源监控仪表板"
-4. 打开仪表板查看指标
-
-### Step 4: 在代码中使用metrics
-
-**示例1: 记录数据源调用**
 ```python
-from src.monitoring.data_source_metrics import update_call_metrics
-import time
+from prometheus_client import CollectorRegistry
 
-# 调用数据源
-start_time = time.time()
-try:
-    data = fetch_data_from_api("akshare", "stock_zh_a_hist", symbol="000001")
-    response_time = time.time() - start_time
+from src.core.data_source.metrics import DataSourceMetrics
 
-    # 记录成功调用
-    update_call_metrics(
-        endpoint_name="akshare.stock_zh_a_hist",
-        source_name="akshare",
-        data_category="DAILY_KLINE",
-        success=True,
-        response_time=response_time,
-        record_count=len(data)
-    )
-except Exception as e:
-    response_time = time.time() - start_time
+metrics = DataSourceMetrics(registry=CollectorRegistry())
+metrics.record_api_call("akshare.stock_zh_a_hist", "DAILY_KLINE", latency=0.42, success=True)
+metrics.record_cache_hit("akshare.stock_zh_a_hist")
+metrics.record_circuit_breaker_state("akshare.stock_zh_a_hist", 0)
 
-    # 记录失败调用
-    update_call_metrics(
-        endpoint_name="akshare.stock_zh_a_hist",
-        source_name="akshare",
-        data_category="DAILY_KLINE",
-        success=False,
-        response_time=response_time,
-        error_msg=str(e)
-    )
+print(metrics.generate_metrics().decode("utf-8"))
 ```
 
-**示例2: 更新健康状态**
+#### 示例2：依赖 `DataSourceManagerV2` 自动 hook
+
 ```python
-from src.monitoring.data_source_metrics import update_health_metrics
-
-# 健康检查后更新状态
-def perform_health_check(endpoint_name):
-    result = check_api_health(endpoint_name)
-
-    update_health_metrics(
-        endpoint_name=endpoint_name,
-        source_name="akshare",
-        data_category="DAILY_KLINE",
-        health_status=result['health_status'],  # healthy/degraded/failed/unknown
-        quality_score=result['quality_score'],  # 0-10
-        success_rate=result['success_rate'],    # 0-100
-        consecutive_failures=result['consecutive_failures'],
-        total_calls=result['total_calls']
-    )
-```
-
-**示例3: 批量更新（从注册表）**
-```python
-from src.monitoring.data_source_metrics import update_all_from_registry
-from src.core.data_source_manager_v2 import DataSourceManagerV2
+from src.core.data_source.base import DataSourceManagerV2
 
 manager = DataSourceManagerV2()
+result = manager.get_stock_daily(symbol="000001")
 
-# 获取所有数据源
-registry_dict = manager.registry
-
-# 批量更新所有metrics
-update_all_from_registry(registry_dict)
+# 当前 repo-truth：
+# - 调用链会进入 handler.py:_call_endpoint()
+# - 成功/失败后会触发 _record_success() / _record_failure()
+# - 这些 hook 会继续写入 src/core/data_source/metrics.py
 ```
+
+#### 示例3：使用独立 exporter（可选 / legacy）
+
+```python
+from src.monitoring.data_source_metrics import update_call_metrics
+
+update_call_metrics(
+    endpoint_name="akshare.stock_zh_a_hist",
+    source_name="akshare",
+    data_category="DAILY_KLINE",
+    success=True,
+    response_time=0.42,
+    record_count=1000,
+)
+```
+
+---
+
+## 📋 当前推荐口径
+
+- **想确认服务是否有监控输出**：先看 `http://localhost:8020/metrics`
+- **想确认 `DataSourceManagerV2` 是否真的打点**：看 `src/core/data_source/base.py` 的 `_record_success()` / `_record_failure()` hook，以及 `tests/unit/test_data_source_metrics_integration.py`
+- **想确认 `datasource_*` exposition 是否可查询**：看 `tests/unit/test_metrics.py`
+- **想单独实验旧 exporter**：再用 `python scripts/runtime/start_metrics_server.py`
+- **想接 Prometheus / Grafana**：请先确认你的部署侧真的提供了抓取 job、dashboard 和 alert rules；当前仓库不应默认假设这些文件已经存在
 
 ---
 
 ## 📋 监控指标说明
 
-### 关键指标解读
+### 当前两组指标族
 
-#### 1. 数据源可用性 (`data_source_up`)
+| 指标族 | 主要来源 | 典型前缀 | 当前状态 |
+|-------|---------|---------|---------|
+| 运行时 / 数据源局部指标 | `src/core/middleware/performance.py` + `src/core/data_source/metrics.py` | `http_*`, `slow_http_requests_*`, `datasource_*` | 当前仓库最直接可验证 |
+| 独立 exporter 指标 | `src/monitoring/data_source_metrics.py` | `data_source_*` | 可用，但属于 optional / legacy 路径 |
 
-**值**:
-- `1` - 数据源可用
-- `0` - 数据源不可用
+### `datasource_*` 指标（当前主说明对象）
 
-**监控**: 应该始终为1，如果为0说明数据源出现问题
+- `datasource_api_latency_seconds`
+- `datasource_api_calls_total`
+- `datasource_cache_hits_total`
+- `datasource_cache_misses_total`
+- `datasource_circuit_breaker_state`
+- `datasource_api_cost_estimated`
 
-**告警建议**: 连续3次抓取为0时触发告警
+这些指标当前由 `src/core/data_source/metrics.py` 定义，并由 `DataSourceManagerV2` hook 链记录。
 
-#### 2. 响应时间分布 (`data_source_response_time_seconds`)
+### `data_source_*` 指标（独立 exporter 指标族）
 
-**关键分位数**:
-- P50 (中位数): 50%的调用在这个时间内完成
-- P95: 95%的调用在这个时间内完成
-- P99: 99%的调用在这个时间内完成
+- `data_source_up`
+- `data_source_response_time_seconds`
+- `data_source_calls_total`
+- `data_source_success_rate`
+- `data_source_health_status`
+- `data_source_quality_score`
 
-**正常范围**:
-- Mock数据: < 0.1秒
-- 本地数据库: < 0.5秒
-- 外部API: 1-5秒（取决于网络和数据量）
-
-**告警建议**: P95 > 10秒时触发告警
-
-#### 3. 成功率 (`data_source_success_rate`)
-
-**值**: 0-100%
-
-**正常范围**: > 95%
-
-**告警建议**:
-- 警告: < 95%
-- 严重: < 80%
-
-#### 4. 连续失败次数 (`data_source_consecutive_failures`)
-
-**值**: 非负整数
-
-**告警建议**:
-- 警告: >= 3
-- 严重: >= 5
-
-#### 5. 健康状态 (`data_source_health_status`)
-
-**值映射**:
-- `3` = healthy（健康）
-- `2` = degraded（降级）
-- `1` = failed（失败）
-- `0` = unknown（未知）
-
-**告警建议**: 状态为1（failed）时立即告警
-
-#### 6. 质量评分 (`data_source_quality_score`)
-
-**值**: 0-10
-
-**评分标准**:
-- `9-10`: 优秀（快速、稳定、数据完整）
-- `7-8`: 良好
-- `5-6`: 一般
-- `0-4`: 差（需要优化或替换）
+这组指标来自 `src/monitoring/data_source_metrics.py`，适合旧 exporter 路径或单独实验，不应机械视为当前运行时 `/metrics` 的默认输出。
 
 ---
 
 ## 🔍 故障排查
 
-### 问题1: Metrics服务器无法启动
+### 问题1：`/metrics` 无法访问
 
-**症状**: `Address already in use`
+**症状**: `curl http://localhost:8020/metrics` 失败或返回非 Prometheus 文本
 
-**解决**:
+**排查步骤**:
+
+1. 确认后端服务已启动
+   ```bash
+   curl -I http://localhost:8020/health
+   curl http://localhost:8020/metrics | head
+   ```
+
+2. 核对 `web/backend/app/main.py` 中 `/metrics` 路由仍存在
+
+3. 核对 `src/core/middleware/performance.py:metrics_endpoint()` 是否仍使用 `generate_latest()`
+
+### 问题2：看不到 `datasource_*` 指标
+
+**症状**: `/metrics` 只有 `http_*` 等运行时指标，没有 `datasource_*`
+
+**排查步骤**:
+
+1. 先确认数据源调用链确实执行过
+2. 直接运行 `tests/unit/test_data_source_metrics_integration.py`
+3. 直接实例化 `DataSourceMetrics(...).generate_metrics()`，确认局部 registry 能导出指标
+
+> **当前边界**:
+> - 当前仓库并没有本地证据证明所有部署都会把 `src/core/data_source/metrics.py` 的 registry 自动并入运行时全局 `REGISTRY`。
+> - 所以“局部指标可记录”与“运行时 `/metrics` 必然直接暴露这些指标”要分开判断。
+
+### 问题3：独立 exporter 无法启动
+
+**症状**: `python scripts/runtime/start_metrics_server.py` 启动失败，或 `8001` 端口冲突
+
+**排查步骤**:
+
 ```bash
-# 查找占用端口的进程
 lsof -i :8001
-
-# 杀死进程
-kill -9 <PID>
-
-# 或使用其他端口
 METRICS_PORT=8002 python scripts/runtime/start_metrics_server.py
+curl http://localhost:8002/metrics | head
 ```
 
-### 问题2: Prometheus无法抓取metrics
-
-**症状**: Prometheus Targets页面显示 `mystocks-data-sources` 为 `DOWN`
-
-**排查步骤**:
-
-1. **确认metrics服务器正在运行**
-   ```bash
-   curl http://localhost:8001/metrics
-   ```
-
-2. **从Prometheus容器内部测试**
-   ```bash
-   docker exec -it mystocks-prometheus sh
-   wget -O- http://host.docker.internal:8001/metrics
-   ```
-
-3. **检查Docker网络配置**
-   - Linux Docker: 需要使用 `localhost:8001` 而不是 `host.docker.internal:8001`
-   - 修改 `monitoring-stack/config/prometheus.yml`
-
-4. **查看Prometheus日志**
-   ```bash
-   docker logs mystocks-prometheus -f
-   ```
-
-### 问题3: Grafana仪表板没有数据
-
-**症状**: 仪表板导入成功但所有面板显示 "No data"
-
-**排查步骤**:
-
-1. **确认Prometheus有数据**
-   - 访问 http://localhost:9090
-   - 执行查询: `up{job="mystocks-data-sources"}`
-   - 应该看到数据
-
-2. **检查Grafana数据源配置**
-   - Configuration → Data Sources → Prometheus
-   - 确认URL正确: `http://prometheus:9090`
-   - 点击 "Test" 应该显示 "Data source is working"
-
-3. **检查仪表板时间范围**
-   - 确保选择了正确的时间范围（如 "Last 1 hour"）
-   - 点击仪表板右上角的刷新按钮
+这只说明 optional / legacy exporter 路径是否可用，不影响 `http://localhost:8020/metrics` 主路径本身。
 
 ---
 
-## 📈 最佳实践
+## 📈 当前部署建议
 
-### 1. 生产环境部署
+### 1. 默认观测顺序
 
-**使用PM2管理metrics服务器**
+1. 先看运行时 `/metrics`
+2. 再看 `DataSourceMetrics.generate_metrics()` 的局部 exposition
+3. 最后才考虑独立 exporter
+
+### 2. 关于 PM2 / Prometheus / Grafana
+
+- 当前仓库里没有直接本地证据证明 Prometheus job、Grafana dashboard、告警规则文件已经作为现行部署资产随仓库闭环提供
+- 因此这份指南不再把 `pm2 start scripts/runtime/start_metrics_server.py`、`monitoring-stack/config/prometheus.yml`、Grafana dashboard JSON 视为默认生产部署前提
+- 如果你的部署环境另行提供这些资产，应把它们视为部署侧扩展，而不是当前 repo-truth
+
+### 3. 建议保留的验证命令
+
 ```bash
-pm2 start scripts/runtime/start_metrics_server.py \
-  --name mystocks-metrics \
-  --max-memory-restart 200M \
-  --restart-delay 5000
-
-pm2 save
-pm2 startup
-```
-
-**配置自动重启**
-```bash
-# 监控metrics服务器
-pm2 monit
-
-# 查看日志
-pm2 logs mystocks-metrics
-```
-
-### 2. 与DataSourceManagerV2集成
-
-**DataSourceManagerV2已内置监控集成**:
-
-```python
-from src.core.data_source_manager_v2 import DataSourceManagerV2
-
-manager = DataSourceManagerV2()
-
-# 每次调用会自动记录metrics
-data = manager.get_stock_daily(symbol="000001")
-
-# 自动更新:
-# - data_source_calls_total
-# - data_source_response_time_seconds
-# - data_source_record_count
-# - data_source_up
-```
-
-**手动健康检查**:
-```python
-# 检查所有数据源
-health = manager.health_check()
-
-# 查看结果
-print(f"总计: {health['total']}")
-print(f"健康: {health['healthy']}")
-print(f"异常: {health['unhealthy']}")
-```
-
-### 3. 定期更新健康状态
-
-**创建定时任务**:
-```bash
-# 添加到crontab
-crontab -e
-
-# 每5分钟检查一次
-*/5 * * * * cd /opt/claude/mystocks_spec && python -c "
-from src.core.data_source_manager_v2 import DataSourceManagerV2
-from src.monitoring.data_source_metrics import update_all_from_registry
-
-manager = DataSourceManagerV2()
-health = manager.health_check()
-print(f'健康检查完成: {health[\"healthy\"]}/{health[\"total\"]} 健康')
-"
+curl http://localhost:8020/metrics | rg "http_request|slow_http_requests|datasource_"
+pytest tests/unit/test_metrics.py tests/unit/test_data_source_metrics_integration.py -q --no-cov
+python scripts/runtime/start_metrics_server.py
 ```
 
 ---
 
-## 🎓 进阶使用
+## 🎓 扩展接入建议
 
-### 自定义Grafana仪表板
+### 如果你需要接 Prometheus
 
-**创建新面板**:
-1. 打开仪表板编辑模式
-2. 添加新查询
-3. 使用PromQL查询指标
+- 为运行时 `/metrics` 和独立 exporter 分别定义 scrape job
+- 不要默认它们输出同一组指标族
+- 在抓取配置里显式区分 `datasource_*` 与 `data_source_*`
 
-**常用PromQL查询**:
+### 如果你需要接 Grafana / Alerting
 
-```promql
-# 查看所有数据源的可用性
-data_source_up
-
-# 查看响应时间的P95
-histogram_quantile(0.95, rate(data_source_response_time_seconds_bucket[5m]))
-
-# 查看成功率
-data_source_success_rate > 95
-
-# 查看调用速率
-rate(data_source_calls_total[5m])
-
-# 查看错误率
-rate(data_source_calls_total{status="failure"}[5m]) / rate(data_source_calls_total[5m])
-```
-
-### 配置告警
-
-**在Prometheus中配置告警规则**:
-
-文件: `monitoring-stack/config/rules/data_source_alerts.yml`
-
-```yaml
-groups:
-  - name: data_source_alerts
-    interval: 30s
-    rules:
-      # 数据源不可用告警
-      - alert: DataSourceDown
-        expr: data_source_up == 0
-        for: 1m
-        labels:
-          severity: critical
-        annotations:
-          summary: "数据源 {{ $labels.endpoint_name }} 不可用"
-          description: "数据源 {{ $labels.endpoint_name }} 已经连续1分钟不可用"
-
-      # 成功率低告警
-      - alert: LowSuccessRate
-        expr: data_source_success_rate < 80
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "数据源 {{ $labels.endpoint_name }} 成功率低"
-          description: "成功率 {{ $value }}% 低于80%"
-
-      # 响应时间长告警
-      - alert: HighResponseTime
-        expr: histogram_quantile(0.95, rate(data_source_response_time_seconds_bucket[5m])) > 10
-        for: 5m
-        labels:
-          severity: warning
-        annotations:
-          summary: "数据源 {{ $labels.endpoint_name }} 响应慢"
-          description: "P95响应时间 {{ $value }}秒 超过10秒"
-```
+- 先根据当前指标族重建 dashboard / alert rules
+- 不要直接照搬旧文档里提到但仓库中缺失的 dashboard / provisioning 路径
+- 优先以实际 `generate_latest()` 输出为仪表板与告警表达式的事实来源
 
 ---
 
@@ -521,19 +315,17 @@ groups:
 
 - **数据源管理V2设计文档**: `docs/architecture/DATA_SOURCE_MANAGEMENT_V2.md`
 - **实施报告**: `docs/reports/DATA_SOURCE_V2_IMPLEMENTATION_REPORT.md`
-- **Prometheus配置**: `monitoring-stack/config/prometheus.yml`
-- **Grafana仪表板**: `monitoring-stack/grafana-dashboards/data_source_monitoring.json`
+- **SmartRouter 快速参考**: `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`
 
 ---
 
 ## 🔗 快速链接
 
-- **Prometheus**: http://localhost:9090
-- **Grafana**: http://localhost:3000
-- **Metrics端点**: http://localhost:8001/metrics（服务器启动后）
+- **运行时 Metrics**: http://localhost:8020/metrics
+- **独立 exporter Metrics（可选）**: http://localhost:8001/metrics
 
 ---
 
-**文档版本**: v1.0
-**最后更新**: 2026-01-02
+**文档版本**: v2.0（当前仓库实现对齐）
+**最后更新**: 2026-05-01
 **维护者**: Main CLI
