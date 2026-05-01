@@ -8,23 +8,26 @@
 
 
 **版本**: V2.0 Phase 1-2（当前仓库实现对齐）
-**最后更新**: 2026-05-01
+**最后更新**: 2026-05-02
 
 ---
 
 ## 概述
 
-数据源优化 V2 当前在仓库里已落地四个核心组件，用于提升系统性能、可靠性和数据质量：
+数据源优化 V2 当前在仓库里已落地五个核心组件，用于提升系统性能、可靠性和数据质量：
 
 1. **SmartCache** - 智能缓存 (TTL + 预刷新 + 软过期)
 2. **CircuitBreaker** - 熔断器 (保护系统免受级联故障)
 3. **DataQualityValidator** - 数据质量验证 (多层验证)
 4. **SmartRouter** - 智能路由 (性能/成本/负载/地域多维度评分)
+5. **BatchProcessor** - 治理层批量抓取并发执行 (分组 + timeout fail-fast + 异常隔离)
 
-> **Repo-truth（2026-05-01）**:
+> **Repo-truth（2026-05-02）**:
 > - `src/core/data_source/router.py:get_best_endpoint()` 当前已经会懒加载 `SmartRouter` 并通过 `smart_router.route(...)` 做选择。
 > - 当前接入保留了原有 `config` 嵌套结构，同时把 `config` 字段平铺到顶层，兼容 downstream handler 对 `source_type` 等顶层字段的读取。
-> - 本指南仅覆盖当前代码里已经落地的路由接线；A/B 测试、灰度部署与正式性能验收不在本页声称完成。
+> - `src/governance/core/fetcher_bridge.py:GovernanceDataFetcher` 当前多 symbol 批量路径已经接入 `src/core/data_source/batch_processor.py:BatchProcessor`，但单 symbol 仍保留串行抓取。
+> - `BatchProcessor` 当前用 `concurrent.futures.wait(..., return_when=FIRST_COMPLETED)` 做 timeout fail-fast，而不是任务原文里的 `as_completed()`；这属于当前实现边界的一部分。
+> - 本指南仅覆盖当前代码里已经落地的路由接线与批量抓取主链路；A/B 测试、灰度部署与正式性能验收不在本页声称完成。
 
 ---
 
@@ -329,6 +332,56 @@ manager.smart_router = SmartRouter(
 - 当前已实现的是“候选端点选择接线”，不是完整的线上性能闭环。
 - `caller_location` 当前来自 `_identify_caller()` 的 best-effort 推断；拿不到时回退为 `default`。
 - `SmartRouter` 已接入主选择链路，但 `5.11 A/B 测试`、正式性能验收和灰度部署仍需独立完成。
+
+---
+
+## BatchProcessor 使用
+
+### 当前接入方式
+
+```python
+from src.governance.core.fetcher_bridge import GovernanceDataFetcher, RoutePolicy
+
+fetcher = GovernanceDataFetcher()
+results = fetcher.fetch_batch_kline(
+    symbols=["000001", "000002", "600000"],
+    start_date="20240101",
+    end_date="20240131",
+    policy=RoutePolicy.SMART_ROUTING,
+)
+
+for symbol, df in results.items():
+    print(symbol, len(df))
+
+fetcher.shutdown()
+```
+
+### 当前批量链路
+
+1. `GovernanceDataFetcher.__init__()` 持有 `BatchProcessor()`。
+2. `fetch_batch_kline()` 在多 symbol 场景下委托给 `batch_processor.fetch_batch_kline(...)`。
+3. `BatchProcessor` 通过 `GovernanceDataFetcher.resolve_endpoint(...)` 按 `data_category / policy / source_id` 解析当前端点。
+4. 请求按 `endpoint_name` 分组后，用 `executor.submit(...)` 并发执行。
+5. 已完成任务通过 `wait(..., return_when=FIRST_COMPLETED)` 轮询收集；超时任务会被标成失败，不阻塞已完成结果返回。
+6. `GovernanceDataFetcher.fetch_batch_kline()` 最终仍返回 `Dict[symbol, DataFrame]`，不把内部批处理 envelope 暴露给上游。
+
+### 当前已验证的行为
+
+- `tests/integration/test_batch_processing.py`
+  - `100` symbol 并发抓取
+  - 单请求 timeout fail-fast
+  - 部分失败异常隔离
+  - `shutdown(wait=False)` 优雅关闭
+- `src/governance/tests/test_fetcher_bridge.py`
+  - `GovernanceDataFetcher` 走 `BatchProcessor` 主路径时仍保持原有公共返回形状
+  - `shutdown()` 正确委托到底层批处理器
+
+### 当前边界
+
+- 当前多 symbol 路径已并发化，但单 symbol 仍走原有串行 `_fetch_single_symbol(...)`。
+- 当前实现优先保证 per-request timeout 可生效，因此没有按任务原文直接使用 `as_completed()`。
+- `7.10.5` 仍未完成：还没有针对真实 `DataSourceManagerV2` 同步一致性的专门测试。
+- `7.11` 吞吐量对比、`8.x` 灰度/生产验收仍需独立完成。
 
 ---
 

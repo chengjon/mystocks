@@ -216,7 +216,8 @@
   - [ ] Repo-truth（2026-05-02）：`tests/integration/test_batch_processing.py` 当前已覆盖 100 symbol 并发获取、单请求 timeout fail-fast、部分失败隔离与 `shutdown(wait=False)`；`src/governance/tests/test_fetcher_bridge.py` 额外覆盖 `GovernanceDataFetcher` 对 `BatchProcessor` 的公共形状保持与 shutdown delegation。`7.10.5` 继续保留，因为当前尚未加入针对真实 `DataSourceManagerV2` 同步一致性的专门测试。
 - [ ] 7.11 性能测试：对比优化前后的吞吐量
 - [ ] 7.12 代码审查：确保线程安全和资源清理
-- [ ] 7.13 更新文档：添加批处理使用说明
+- [x] 7.13 更新文档：添加批处理使用说明
+  - [x] Repo-truth（2026-05-02）：`docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 现已把 `BatchProcessor` 补入当前已落地的第 5 个核心组件，并新增 `BatchProcessor 使用` 专节，说明 `GovernanceDataFetcher` 的多 symbol 并发入口、`resolve_endpoint(...)` 分组链路、`wait(..., FIRST_COMPLETED)` timeout fail-fast 机制、公开返回形状保持，以及现阶段未完成的 `7.6 / 7.10.5 / 7.11 / 8.x` 边界。
 
 ## 8. Phase 2 验收和部署（1-2天）
 > **局部事实说明（2026-04-28）**:
