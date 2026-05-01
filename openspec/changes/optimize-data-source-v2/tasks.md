@@ -183,7 +183,8 @@
   - [ ] 6.9.3 添加 P95 延迟 > 500ms 告警
   - [ ] 6.9.4 添加熔断器开启告警
   - [ ] 6.9.5 添加缓存命中率 < 50% 告警
-- [ ] 6.10 验证 Prometheus 指标可查询
+- [x] 6.10 验证 Prometheus 指标可查询
+  - [x] Repo-truth（2026-05-01）：`tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 当前已验证 `src/core/data_source/metrics.py:DataSourceMetrics.generate_metrics()` 导出的 Prometheus exposition 文本可查询到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等已记录指标及其标签。此项证据覆盖本地 registry/exposition 可查询性，不等同于生产 Prometheus 抓取链路已验收。
 - [ ] 6.11 验证 Grafana 仪表板正常显示
 - [ ] 6.12 代码审查：确保指标命名符合 Prometheus 规范
 - [ ] 6.13 更新文档：添加监控使用说明

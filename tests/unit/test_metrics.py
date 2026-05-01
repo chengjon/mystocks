@@ -56,3 +56,21 @@ def test_record_circuit_breaker_state_updates_gauge():
     metrics.record_circuit_breaker_state("demo.endpoint", 2)
 
     assert metrics.circuit_breaker_state.labels(endpoint="demo.endpoint")._value.get() == 2
+
+
+def test_generate_metrics_exposes_recorded_datasource_metrics():
+    metrics = DataSourceMetrics(registry=CollectorRegistry())
+
+    metrics.record_api_call("demo.endpoint", "DAILY_KLINE", latency=0.25, success=True)
+    metrics.record_cache_hit("demo.endpoint")
+    metrics.record_circuit_breaker_state("demo.endpoint", 1)
+
+    payload = metrics.generate_metrics().decode("utf-8")
+
+    assert "datasource_api_latency_seconds_bucket" in payload
+    assert 'endpoint="demo.endpoint"' in payload
+    assert 'data_category="DAILY_KLINE"' in payload
+    assert "datasource_api_calls_total" in payload
+    assert "datasource_cache_hits_total" in payload
+    assert "datasource_circuit_breaker_state" in payload
+    assert metrics.get_content_type()
