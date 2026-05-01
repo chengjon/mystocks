@@ -1,4 +1,6 @@
 import time
+from concurrent.futures import Future
+from unittest.mock import patch
 
 import pandas as pd
 
@@ -177,3 +179,26 @@ def test_batch_processor_handles_100_symbols_concurrently():
     assert result["errors"] == {}
     assert len(result["data"]) == 100
     assert elapsed < 1.5
+
+
+def test_collect_kline_futures_uses_as_completed_iteration():
+    processor = BatchProcessor(max_workers=1, timeout=0.1)
+    future = Future()
+    future.set_result({"success": True, "data": "ok"})
+    results = {}
+    errors = {}
+    tracker = {"called": False}
+
+    def fake_as_completed(pending, timeout=None):
+        tracker["called"] = True
+        yield future
+
+    with patch("src.core.data_source.batch_processor.as_completed", fake_as_completed, create=True):
+        completed = processor._collect_kline_futures({future: ("primary", "000001")}, {future: 0.0}, results, errors)
+
+    processor.shutdown(wait=False)
+
+    assert tracker["called"] is True
+    assert completed == 1
+    assert results == {"000001": "ok"}
+    assert errors == {}

@@ -202,8 +202,8 @@
   - [x] Repo-truth（2026-05-02）：`src/governance/core/fetcher_bridge.py:GovernanceDataFetcher` 当前已在 `__init__()` 持有 `BatchProcessor()`，多 symbol 场景会进入 `batch_processor.fetch_batch_kline(...)`，同时保持公开返回值仍为 `Dict[symbol, DataFrame]`；并补入 `fetch_kline()` / `resolve_endpoint()` / `shutdown()` 辅助入口。验证见 `src/governance/tests/test_fetcher_bridge.py`、`tests/integration/test_batch_processing.py`、`tests/unit/adapters/test_runtime_data_source_regressions.py`。
 - [x] 7.4 按数据源分组请求
 - [x] 7.5 使用 `executor.submit()` 并发执行
-- [ ] 7.6 使用 `as_completed()` 收集结果
-  - [ ] Repo-truth（2026-05-02）：当前实现为 `concurrent.futures.wait(..., return_when=FIRST_COMPLETED)` 轮询收集，而非任务原文指定的 `as_completed()`；之所以保留未完成，是因为现行代码优先保证 per-request timeout 可生效，不宜机械等同为该实现步骤已按原文落地。
+- [x] 7.6 使用 `as_completed()` 收集结果
+  - [x] Repo-truth（2026-05-02）：`src/core/data_source/batch_processor.py:_collect_kline_futures()` 当前已切到 `concurrent.futures.as_completed(..., timeout=0.05)` 轮询收集已完成任务，并继续结合 `started_at` 的经过时间做 per-request timeout fail-fast；验证见 `tests/integration/test_batch_processing.py::test_collect_kline_futures_uses_as_completed_iteration` 以及整组 batch integration / performance 回归。
 - [x] 7.7 添加超时控制（`future.result(timeout=30)`）
 - [x] 7.8 实现异常隔离（单个失败不影响其他）
 - [x] 7.9 实现 `shutdown()` 方法（优雅关闭）
@@ -218,7 +218,7 @@
   - [x] Repo-truth（2026-05-02）：已新增 `tests/performance/test_batch_processor_throughput.py`，并通过 `pytest tests/performance/test_batch_processor_throughput.py -q --no-cov --run-performance` 验证在本地 stub workload 下，`BatchProcessor(max_workers=10)` 的批量路径相对串行 `fetch_kline()` 基线至少快 `2x`。此项证据仅覆盖本地 synthetic throughput 对比，不等同于 `8.2` 所需的真实部署吞吐量验收。
 - [ ] 7.12 代码审查：确保线程安全和资源清理
 - [x] 7.13 更新文档：添加批处理使用说明
-  - [x] Repo-truth（2026-05-02）：`docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 现已把 `BatchProcessor` 补入当前已落地的第 5 个核心组件，并新增 `BatchProcessor 使用` 专节，说明 `GovernanceDataFetcher` 的多 symbol 并发入口、`resolve_endpoint(...)` 分组链路、`wait(..., FIRST_COMPLETED)` timeout fail-fast 机制、公开返回形状保持，以及现阶段未完成的 `7.6 / 7.10.5 / 7.11 / 8.x` 边界。
+  - [x] Repo-truth（2026-05-02）：`docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 现已把 `BatchProcessor` 补入当前已落地的第 5 个核心组件，并新增 `BatchProcessor 使用` 专节，说明 `GovernanceDataFetcher` 的多 symbol 并发入口、`resolve_endpoint(...)` 分组链路、`as_completed(..., timeout=...)` 收集与 timeout fail-fast 机制、公开返回形状保持，以及当前仅剩 `8.x` 灰度/生产验收这类非本地代码项未闭合。
 
 ## 8. Phase 2 验收和部署（1-2天）
 > **局部事实说明（2026-04-28）**:

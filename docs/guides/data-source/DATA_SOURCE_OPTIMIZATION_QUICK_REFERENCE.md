@@ -26,7 +26,7 @@
 > - `src/core/data_source/router.py:get_best_endpoint()` 当前已经会懒加载 `SmartRouter` 并通过 `smart_router.route(...)` 做选择。
 > - 当前接入保留了原有 `config` 嵌套结构，同时把 `config` 字段平铺到顶层，兼容 downstream handler 对 `source_type` 等顶层字段的读取。
 > - `src/governance/core/fetcher_bridge.py:GovernanceDataFetcher` 当前多 symbol 批量路径已经接入 `src/core/data_source/batch_processor.py:BatchProcessor`，但单 symbol 仍保留串行抓取。
-> - `BatchProcessor` 当前用 `concurrent.futures.wait(..., return_when=FIRST_COMPLETED)` 做 timeout fail-fast，而不是任务原文里的 `as_completed()`；这属于当前实现边界的一部分。
+> - `BatchProcessor` 当前已在 K 线批量链路里使用 `concurrent.futures.as_completed(..., timeout=...)` 轮询已完成任务，并结合 per-request 经过时间做 timeout fail-fast。
 > - 本指南仅覆盖当前代码里已经落地的路由接线与批量抓取主链路；A/B 测试、灰度部署与正式性能验收不在本页声称完成。
 
 ---
@@ -362,7 +362,7 @@ fetcher.shutdown()
 2. `fetch_batch_kline()` 在多 symbol 场景下委托给 `batch_processor.fetch_batch_kline(...)`。
 3. `BatchProcessor` 通过 `GovernanceDataFetcher.resolve_endpoint(...)` 按 `data_category / policy / source_id` 解析当前端点。
 4. 请求按 `endpoint_name` 分组后，用 `executor.submit(...)` 并发执行。
-5. 已完成任务通过 `wait(..., return_when=FIRST_COMPLETED)` 轮询收集；超时任务会被标成失败，不阻塞已完成结果返回。
+5. 已完成任务通过 `as_completed(..., timeout=...)` 轮询收集；超时任务会被标成失败，不阻塞已完成结果返回。
 6. `GovernanceDataFetcher.fetch_batch_kline()` 最终仍返回 `Dict[symbol, DataFrame]`，不把内部批处理 envelope 暴露给上游。
 
 ### 当前已验证的行为
@@ -372,16 +372,18 @@ fetcher.shutdown()
   - 单请求 timeout fail-fast
   - 部分失败异常隔离
   - `shutdown(wait=False)` 优雅关闭
+  - 本地 stub workload 吞吐量对比（batch 相对串行基线至少 `2x`）
 - `src/governance/tests/test_fetcher_bridge.py`
   - `GovernanceDataFetcher` 走 `BatchProcessor` 主路径时仍保持原有公共返回形状
   - `shutdown()` 正确委托到底层批处理器
+  - 共享 `DataSourceManagerV2` 实例下，每个 symbol 的 endpoint 解析与 `_call_endpoint()` 返回不串线
 
 ### 当前边界
 
 - 当前多 symbol 路径已并发化，但单 symbol 仍走原有串行 `_fetch_single_symbol(...)`。
-- 当前实现优先保证 per-request timeout 可生效，因此没有按任务原文直接使用 `as_completed()`。
-- `7.10.5` 仍未完成：还没有针对真实 `DataSourceManagerV2` 同步一致性的专门测试。
-- `7.11` 吞吐量对比、`8.x` 灰度/生产验收仍需独立完成。
+- 当前实现既保留 per-request timeout fail-fast，又把已完成任务的收集统一到 `as_completed(..., timeout=...)`。
+- 当前吞吐量对比证据来自本地 synthetic / stub workload，不等同于生产验收吞吐量。
+- `8.x` 灰度/生产验收仍需独立完成。
 
 ---
 

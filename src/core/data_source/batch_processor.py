@@ -6,7 +6,7 @@
 
 import logging
 import time
-from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError, as_completed
 from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
@@ -276,28 +276,34 @@ class BatchProcessor:
         pending = set(futures)
 
         while pending:
-            done, pending = wait(pending, timeout=0.05, return_when=FIRST_COMPLETED)
+            iterator = as_completed(pending, timeout=0.05)
 
-            for future in done:
-                _, symbol = futures[future]
-                completed += 1
+            try:
+                while pending:
+                    future = next(iterator)
+                    pending.remove(future)
+                    _, symbol = futures[future]
+                    completed += 1
 
-                try:
-                    result = future.result()
+                    try:
+                        result = future.result()
 
-                    if result.get("success"):
-                        results[symbol] = result.get("data")
-                        self.successful_requests += 1
-                    else:
-                        error = result.get("error", "Unknown error")
-                        errors[symbol] = error
+                        if result.get("success"):
+                            results[symbol] = result.get("data")
+                            self.successful_requests += 1
+                        else:
+                            error = result.get("error", "Unknown error")
+                            errors[symbol] = error
+                            self.failed_requests += 1
+                            logger.warning("Failed to fetch %s: %s", symbol, error)
+
+                    except Exception as exc:
+                        errors[symbol] = str(exc)
                         self.failed_requests += 1
-                        logger.warning("Failed to fetch %s: %s", symbol, error)
+                        logger.error("Exception fetching %s: %s", symbol, exc)
 
-                except Exception as exc:
-                    errors[symbol] = str(exc)
-                    self.failed_requests += 1
-                    logger.error("Exception fetching %s: %s", symbol, exc)
+            except (StopIteration, FuturesTimeoutError):
+                pass
 
             now = time.monotonic()
             timed_out = [future for future in list(pending) if now - started_at[future] >= self.timeout]
