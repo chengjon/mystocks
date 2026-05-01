@@ -150,10 +150,56 @@ class DataSourceManagerV2:
         return list_all_endpoints(self)
 
     def _record_success(self, *args, **kwargs):
-        pass
+        from .metrics import get_metrics
+        from .monitoring import _record_success as monitoring_record_success
+
+        endpoint_name = args[0] if args else kwargs.get("endpoint_name")
+        response_time = args[1] if len(args) > 1 else kwargs.get("response_time", 0.0)
+
+        monitoring_record_success(self, *args, **kwargs)
+
+        if not endpoint_name:
+            return
+
+        source = self.registry.get(endpoint_name, {})
+        config = source.get("config", {})
+        metrics = get_metrics()
+        metrics.record_api_call(
+            endpoint=endpoint_name,
+            data_category=config.get("data_category", "unknown"),
+            latency=response_time,
+            success=True,
+        )
+
+        circuit_breaker = self.circuit_breakers.get(endpoint_name)
+        if circuit_breaker is not None:
+            metrics.record_circuit_breaker_state(endpoint_name, _map_circuit_breaker_state(circuit_breaker.get_state()))
 
     def _record_failure(self, *args, **kwargs):
-        pass
+        from .metrics import get_metrics
+        from .monitoring import _record_failure as monitoring_record_failure
+
+        endpoint_name = args[0] if args else kwargs.get("endpoint_name")
+        response_time = args[1] if len(args) > 1 else kwargs.get("response_time", 0.0)
+
+        monitoring_record_failure(self, *args, **kwargs)
+
+        if not endpoint_name:
+            return
+
+        source = self.registry.get(endpoint_name, {})
+        config = source.get("config", {})
+        metrics = get_metrics()
+        metrics.record_api_call(
+            endpoint=endpoint_name,
+            data_category=config.get("data_category", "unknown"),
+            latency=response_time,
+            success=False,
+        )
+
+        circuit_breaker = self.circuit_breakers.get(endpoint_name)
+        if circuit_breaker is not None:
+            metrics.record_circuit_breaker_state(endpoint_name, _map_circuit_breaker_state(circuit_breaker.get_state()))
 
     def _save_call_history_async(self, *args, **kwargs):
         pass
@@ -230,3 +276,12 @@ class DataSourceManagerV2:
             "unhealthy": unhealthy,
             "details": details,
         }
+
+
+def _map_circuit_breaker_state(state: Any) -> int:
+    state_name = getattr(state, "name", str(state)).upper()
+    return {
+        "CLOSED": 0,
+        "OPEN": 1,
+        "HALF_OPEN": 2,
+    }.get(state_name, 0)

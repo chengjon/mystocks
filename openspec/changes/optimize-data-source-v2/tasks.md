@@ -156,7 +156,8 @@
   - [x] 6.2.7 `datasource_api_cost_estimated` (Gauge)
 - [x] 6.3 实现 `track_api_call()` 装饰器
 - [x] 6.4 实现 `DataSourceMetrics` 类（指标收集器）
-- [ ] 6.5 在 `DataSourceManagerV2._call_endpoint()` 添加指标埋点
+- [x] 6.5 在 `DataSourceManagerV2._call_endpoint()` 添加指标埋点
+  - [x] Repo-truth（2026-05-01）：当前 `src/core/data_source/handler.py:_call_endpoint()` 继续通过 `self._record_success()` / `self._record_failure()` 进入 `src/core/data_source/base.py` hook；这些 hook 现已委托到 `src/core/data_source/monitoring.py` 的运行时统计逻辑，并同步调用 `src/core/data_source/metrics.py:get_metrics()` 记录 `datasource_api_calls_total` / `datasource_api_latency_seconds` / `datasource_circuit_breaker_state`。验证见 `tests/unit/test_data_source_metrics_integration.py`、`tests/unit/test_circuit_breaker_integration.py`、`src/governance/tests/test_fetcher_bridge.py`、`tests/unit/adapters/test_runtime_data_source_regressions.py`。
 - [x] 6.6 在 `web/backend/app/main.py` 集成 `/metrics` 端点
   - [x] 6.6.1 添加 `/metrics` 路由
   - [x] 6.6.2 返回 Prometheus exposition 格式
