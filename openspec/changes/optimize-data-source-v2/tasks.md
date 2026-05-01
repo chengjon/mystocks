@@ -78,7 +78,8 @@
 - [x] 3.5 实现 `_statistical_check()` 方法（3-sigma 异常检测）
 - [x] 3.6 实现 `_cross_source_check()` 方法（跨源验证）
 - [x] 3.7 实现 `validate()` 主方法（协调所有检查）
-- [ ] 3.8 集成到 `src/governance/engine/gpu_validator.py`
+- [x] 3.8 集成到 `src/governance/engine/gpu_validator.py`
+  - [x] Repo-truth（2026-05-01）：`src/governance/engine/gpu_validator.py:GPUValidator.validate()` 当前保持原有 `ohlc/missing/suspension` 规则返回不变，并额外追加序列化后的 `quality_summary`；其摘要来自 `src/core/data_source/data_quality_validator.py:DataQualityValidator`，验证见 `tests/unit/test_gpu_validator_integration.py`。当前集成是治理层补充质量摘要，不等于把 GPUValidator 提升为全仓库唯一数据质量真相源。
 - [x] 3.9 编写单元测试 `tests/unit/test_data_quality_validator.py`
   - [x] 3.9.1 测试 OHLC 逻辑验证（通过/失败场景）
   - [x] 3.9.2 测试业务规则验证（极端价格、异常成交量、停牌）

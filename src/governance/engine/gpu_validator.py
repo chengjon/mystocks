@@ -1,6 +1,7 @@
 import logging
 from typing import Any, Dict, List
 
+from src.core.data_source.data_quality_validator import DataQualityValidator, ValidationSummary
 
 from .base import BaseValidator
 
@@ -47,9 +48,12 @@ class GPUValidator(BaseValidator):
             Dict: { 'rule_name': invalid_rows_dataframe }
         """
         if self.use_gpu:
-            return self._validate_gpu(data, rules)
+            results = self._validate_gpu(data, rules)
         else:
-            return self._validate_cpu(data, rules)
+            results = self._validate_cpu(data, rules)
+
+        results["quality_summary"] = self._build_quality_summary(data)
+        return results
 
     def _validate_gpu(self, data: Any, rules: List[str] = None) -> Dict[str, Any]:
         # 自动转换 pandas 到 cudf
@@ -153,3 +157,38 @@ class GPUValidator(BaseValidator):
         if "volume" not in df.columns:
             return df.iloc[:0]
         return df[df["volume"] == 0]
+
+    def _build_quality_summary(self, data: Any) -> Dict[str, Any]:
+        try:
+            df = data.to_pandas() if hasattr(data, "to_pandas") else data
+            summary = DataQualityValidator().validate(df, data_source="gpu_validator")
+            return self._serialize_quality_summary(summary)
+        except Exception as e:
+            logger.error("构建数据质量汇总失败: %s", e)
+            return {
+                "passed": False,
+                "total_checks": 0,
+                "passed_checks": 0,
+                "failed_checks": 0,
+                "quality_score": 0.0,
+                "results": [],
+                "error": str(e),
+            }
+
+    def _serialize_quality_summary(self, summary: ValidationSummary) -> Dict[str, Any]:
+        return {
+            "passed": summary.passed,
+            "total_checks": summary.total_checks,
+            "passed_checks": summary.passed_checks,
+            "failed_checks": summary.failed_checks,
+            "quality_score": summary.quality_score,
+            "results": [
+                {
+                    "passed": result.passed,
+                    "message": result.message,
+                    "check_type": result.check_type,
+                    "details": result.details,
+                }
+                for result in summary.results
+            ],
+        }
