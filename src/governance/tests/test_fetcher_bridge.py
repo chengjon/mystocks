@@ -60,3 +60,36 @@ class TestGovernanceDataFetcher:
         results = fetcher.fetch_batch_kline(symbols=["000001"], start_date="20240101", end_date="20240105")
 
         assert results == {}
+
+    def test_fetch_batch_kline_uses_batch_processor_and_preserves_public_shape(self, mock_manager):
+        mock_df = pd.DataFrame({"close": [10, 11, 12]})
+
+        fetcher = GovernanceDataFetcher()
+
+        with patch.object(
+            fetcher.batch_processor,
+            "fetch_batch_kline",
+            return_value={
+                "success": False,
+                "data": {"000001": mock_df},
+                "errors": {"000002": "boom"},
+                "stats": {"failed": 1},
+            },
+        ) as mock_batch:
+            results = fetcher.fetch_batch_kline(
+                symbols=["000001", "000002"],
+                start_date="20240101",
+                end_date="20240105",
+                policy=RoutePolicy.SMART_ROUTING,
+            )
+
+        assert results == {"000001": mock_df}
+        mock_batch.assert_called_once()
+
+    def test_shutdown_delegates_to_batch_processor(self, mock_manager):
+        fetcher = GovernanceDataFetcher()
+
+        with patch.object(fetcher.batch_processor, "shutdown") as mock_shutdown:
+            fetcher.shutdown()
+
+        mock_shutdown.assert_called_once_with(wait=True)

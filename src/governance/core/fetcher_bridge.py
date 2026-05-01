@@ -15,6 +15,7 @@ import pandas as pd
 
 # 尝试导入 DataSourceManagerV2
 try:
+    from src.core.data_source.batch_processor import BatchProcessor
     from src.core.data_source_manager_v2 import DataSourceManagerV2
 except ImportError:
     # Fallback or error handling if the module is not found
@@ -23,6 +24,7 @@ except ImportError:
     from pathlib import Path
 
     sys.path.append(str(Path(__file__).parent.parent.parent.parent))
+    from src.core.data_source.batch_processor import BatchProcessor
     from src.core.data_source_manager_v2 import DataSourceManagerV2
 
 logger = logging.getLogger(__name__)
@@ -59,6 +61,7 @@ class GovernanceDataFetcher:
 
     def __init__(self):
         self.manager = self._get_manager_instance()
+        self.batch_processor = BatchProcessor()
 
     def _get_manager_instance(self) -> DataSourceManagerV2:
         """获取 DataSourceManagerV2 单例"""
@@ -99,20 +102,88 @@ class GovernanceDataFetcher:
         }
         data_category = category_map.get(period, "DAILY_KLINE")
 
+        if len(symbols) > 1:
+            batch_result = self.batch_processor.fetch_batch_kline(
+                self,
+                symbols=symbols,
+                start_date=start_date,
+                end_date=end_date,
+                adjust="qfq",
+                data_category=data_category,
+                policy=policy,
+                source_id=source_id,
+            )
+
+            for symbol, error in batch_result.get("errors", {}).items():
+                logger.error("批量获取数据失败: %s, 错误: %s", symbol, error)
+
+            return batch_result.get("data", {})
+
         for symbol in symbols:
             try:
                 df = self._fetch_single_symbol(symbol, start_date, end_date, data_category, policy, source_id)
                 if df is not None and not df.empty:
                     results[symbol] = df
                 else:
-                    logger.warning("获取数据为空: %(symbol)s")
+                    logger.warning("获取数据为空: %s", symbol)
 
-            except Exception:
-                logger.error("获取数据失败: %(symbol)s, 错误: %s")
+            except Exception as exc:
+                logger.error("获取数据失败: %s, 错误: %s", symbol, exc)
                 # 记录失败，但不中断批量过程
                 continue
 
         return results
+
+    def fetch_kline(
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str,
+        adjust: str = "qfq",
+        data_category: str = "DAILY_KLINE",
+        policy: RoutePolicy = RoutePolicy.SMART_ROUTING,
+        source_id: Optional[str] = None,
+    ) -> Optional[pd.DataFrame]:
+        """供 BatchProcessor 调用的单标的 K 线抓取包装。"""
+        return self._fetch_single_symbol(symbol, start_date, end_date, data_category, policy, source_id)
+
+    def shutdown(self, wait: bool = True):
+        """释放批处理线程池资源。"""
+        self.batch_processor.shutdown(wait=wait)
+
+    def resolve_endpoint(
+        self,
+        data_category: str,
+        policy: RoutePolicy = RoutePolicy.SMART_ROUTING,
+        source_id: Optional[str] = None,
+        symbol: Optional[str] = None,
+    ) -> Optional[Dict]:
+        """解析当前批量请求应使用的数据端点。"""
+        if policy == RoutePolicy.SMART_ROUTING:
+            return self.manager.get_best_endpoint(data_category)
+
+        if policy == RoutePolicy.SPECIFIC_SOURCE:
+            if not source_id:
+                raise ValueError("指定源策略必须提供 source_id")
+
+            endpoints = self.manager.find_endpoints(data_category=data_category, source_type=source_id)
+            return endpoints[0] if endpoints else None
+
+        if policy == RoutePolicy.FASTEST:
+            endpoints = self.manager.find_endpoints(data_category=data_category, only_healthy=True)
+            if endpoints:
+                endpoints.sort(key=lambda item: item.get("avg_response_time", 999))
+                return endpoints[0]
+            return None
+
+        if policy == RoutePolicy.STABLE:
+            endpoints = self.manager.find_endpoints(data_category=data_category, only_healthy=True)
+            if endpoints:
+                endpoints.sort(key=lambda item: -item.get("success_rate", 0))
+                return endpoints[0]
+            return None
+
+        return None
 
     def _fetch_single_symbol(
         self,
@@ -124,44 +195,21 @@ class GovernanceDataFetcher:
         source_id: Optional[str],
     ) -> Optional[pd.DataFrame]:
         """获取单个股票数据"""
-
-        endpoint = None
-
-        if policy == RoutePolicy.SMART_ROUTING:
-            # 使用 V2 的智能路由（默认逻辑）
-            endpoint = self.manager.get_best_endpoint(data_category)
-
-        elif policy == RoutePolicy.SPECIFIC_SOURCE:
-            if not source_id:
-                raise ValueError("指定源策略必须提供 source_id")
-            # 查找特定源
-            endpoints = self.manager.find_endpoints(data_category=data_category, source_type=source_id)
-            if endpoints:
-                endpoint = endpoints[0]
-
-        elif policy == RoutePolicy.FASTEST:
-            # 自定义路由：找响应时间最短的
-            endpoints = self.manager.find_endpoints(data_category=data_category, only_healthy=True)
-            if endpoints:
-                # 假设 endpoint 字典里有 avg_response_time
-                endpoints.sort(key=lambda x: x.get("avg_response_time", 999))
-                endpoint = endpoints[0]
-
-        elif policy == RoutePolicy.STABLE:
-            # 自定义路由：找成功率最高的
-            endpoints = self.manager.find_endpoints(data_category=data_category, only_healthy=True)
-            if endpoints:
-                endpoints.sort(key=lambda x: -x.get("success_rate", 0))
-                endpoint = endpoints[0]
+        endpoint = self.resolve_endpoint(
+            data_category=data_category,
+            policy=policy,
+            source_id=source_id,
+            symbol=symbol,
+        )
 
         if not endpoint:
-            logger.warning("未找到可用的数据端点: category=%(data_category)s, policy=%(policy)s")
+            logger.warning("未找到可用的数据端点: category=%s, policy=%s", data_category, policy)
             return None
 
         # 调用 V2 的内部方法 _call_endpoint
         # 注意：这里我们访问了 protected method，这是为了实现高级路由
         # 在未来的重构中，应该在 DataSourceManagerV2 中暴露更灵活的接口
-        logger.info("使用端点: {endpoint['endpoint_name']} 获取 %(symbol)s")
+        logger.info("使用端点: %s 获取 %s", endpoint.get("endpoint_name"), symbol)
 
         try:
             return self.manager._call_endpoint(

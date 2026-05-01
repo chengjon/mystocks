@@ -5,8 +5,9 @@
 """
 
 import logging
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Any, Dict, List
+import time
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, wait
+from typing import Any, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class BatchProcessor:
         self.successful_requests = 0
         self.failed_requests = 0
 
-        logger.info("BatchProcessor initialized: max_workers=%(max_workers)s, timeout=%(timeout)ss")
+        logger.info("BatchProcessor initialized: max_workers=%s, timeout=%ss", max_workers, timeout)
 
     def fetch_batch_kline(
         self,
@@ -59,6 +60,9 @@ class BatchProcessor:
         start_date: str,
         end_date: str,
         adjust: str = "qfq",
+        data_category: str = "DAILY_KLINE",
+        policy: Any = None,
+        source_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         批量获取 K线数据 (并发版本)
@@ -78,16 +82,23 @@ class BatchProcessor:
                 "stats": {...},
             }
         """
-        logger.info("Batch fetching K-line data for {len(symbols)} symbols")
+        logger.info("Batch fetching K-line data for %s symbols", len(symbols))
 
         # 按数据源分组
-        grouped_requests = self._group_by_data_source(data_fetcher, symbols)
+        grouped_requests = self._group_by_data_source(
+            data_fetcher,
+            symbols,
+            data_category=data_category,
+            policy=policy,
+            source_id=source_id,
+        )
 
         results: Dict[str, Any] = {}
         errors: Dict[str, str] = {}
 
         # 提交并发任务
         futures = {}
+        started_at = {}
         for data_source, source_symbols in grouped_requests.items():
             for symbol in source_symbols:
                 future = self.executor.submit(
@@ -97,37 +108,15 @@ class BatchProcessor:
                     start_date,
                     end_date,
                     adjust,
+                    data_category,
+                    policy,
+                    source_id,
                 )
                 futures[future] = (data_source, symbol)
+                started_at[future] = time.monotonic()
 
-        # 等待所有任务完成
-        completed = 0
+        completed = self._collect_kline_futures(futures, started_at, results, errors)
         total = len(futures)
-
-        for future in as_completed(futures):
-            data_source, symbol = futures[future]
-            completed += 1
-
-            try:
-                # 获取结果 (带超时)
-                result = future.result(timeout=self.timeout)
-
-                if result.get("success"):
-                    results[symbol] = result.get("data")
-                    self.successful_requests += 1
-                else:
-                    error = result.get("error", "Unknown error")
-                    errors[symbol] = error
-                    self.failed_requests += 1
-                    logger.warning("Failed to fetch %(symbol)s: %(error)s")
-
-            except Exception as e:
-                errors[symbol] = str(e)
-                self.failed_requests += 1
-                logger.error("Exception fetching %(symbol)s: %(e)s")
-
-            if completed % 10 == 0:
-                logger.debug("Progress: %(completed)s/%(total)s completed")
 
         self.total_batches += 1
         self.total_requests += total
@@ -225,7 +214,14 @@ class BatchProcessor:
             },
         }
 
-    def _group_by_data_source(self, data_fetcher: Any, symbols: List[str]) -> Dict[str, List[str]]:
+    def _group_by_data_source(
+        self,
+        data_fetcher: Any,
+        symbols: List[str],
+        data_category: str = "DAILY_KLINE",
+        policy: Any = None,
+        source_id: Optional[str] = None,
+    ) -> Dict[str, List[str]]:
         """
         按数据源分组股票代码
 
@@ -239,8 +235,15 @@ class BatchProcessor:
         grouped = {}
 
         for symbol in symbols:
-            # 获取最优数据源
-            best_endpoint = data_fetcher.manager.get_best_endpoint("DAILY_KLINE")
+            if hasattr(data_fetcher, "resolve_endpoint"):
+                best_endpoint = data_fetcher.resolve_endpoint(
+                    data_category=data_category,
+                    policy=policy,
+                    source_id=source_id,
+                    symbol=symbol,
+                )
+            else:
+                best_endpoint = data_fetcher.manager.get_best_endpoint(data_category)
 
             if best_endpoint:
                 data_source = best_endpoint.get("endpoint_name", "unknown")
@@ -252,9 +255,61 @@ class BatchProcessor:
 
             grouped[data_source].append(symbol)
 
-        logger.debug("Grouped {len(symbols)} symbols into {len(grouped)} data sources")
+        logger.debug("Grouped %s symbols into %s data sources", len(symbols), len(grouped))
 
         return grouped
+
+    def _collect_kline_futures(
+        self,
+        futures: Dict[Any, Any],
+        started_at: Dict[Any, float],
+        results: Dict[str, Any],
+        errors: Dict[str, str],
+    ) -> int:
+        """收集并发 K 线任务结果，同时对超时请求做 fail-fast 标记。"""
+        completed = 0
+        total = len(futures)
+        pending = set(futures)
+
+        while pending:
+            done, pending = wait(pending, timeout=0.05, return_when=FIRST_COMPLETED)
+
+            for future in done:
+                _, symbol = futures[future]
+                completed += 1
+
+                try:
+                    result = future.result()
+
+                    if result.get("success"):
+                        results[symbol] = result.get("data")
+                        self.successful_requests += 1
+                    else:
+                        error = result.get("error", "Unknown error")
+                        errors[symbol] = error
+                        self.failed_requests += 1
+                        logger.warning("Failed to fetch %s: %s", symbol, error)
+
+                except Exception as exc:
+                    errors[symbol] = str(exc)
+                    self.failed_requests += 1
+                    logger.error("Exception fetching %s: %s", symbol, exc)
+
+            now = time.monotonic()
+            timed_out = [future for future in list(pending) if now - started_at[future] >= self.timeout]
+            for future in timed_out:
+                _, symbol = futures[future]
+                pending.remove(future)
+                completed += 1
+                errors[symbol] = f"Timed out after {self.timeout}s"
+                self.failed_requests += 1
+                future.cancel()
+                logger.warning("Timed out fetching %s after %ss", symbol, self.timeout)
+
+            if completed and completed % 10 == 0:
+                logger.debug("Progress: %s/%s completed", completed, total)
+
+        return completed
 
     def _fetch_single_kline(
         self,
@@ -263,6 +318,9 @@ class BatchProcessor:
         start_date: str,
         end_date: str,
         adjust: str,
+        data_category: str = "DAILY_KLINE",
+        policy: Any = None,
+        source_id: Optional[str] = None,
     ) -> Dict[str, Any]:
         """
         获取单个股票的 K线数据
@@ -289,6 +347,9 @@ class BatchProcessor:
                 start_date=start_date,
                 end_date=end_date,
                 adjust=adjust,
+                data_category=data_category,
+                policy=policy,
+                source_id=source_id,
             )
 
             if data is not None:

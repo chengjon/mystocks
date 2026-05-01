@@ -196,20 +196,22 @@
 > `src/core/data_source/batch_processor.py` 已实现线程池、分组、`submit()` / `as_completed()`、超时控制和 `shutdown()`，但当前 spec 与任务语义聚焦的是治理层批量抓取主路径。
 > `src/governance/core/fetcher_bridge.py` 仍保留串行 `fetch_batch_kline()`，对应测试 `src/governance/tests/test_fetcher_bridge.py` 也仍围绕串行行为编写，因此本段暂不因“已有组件文件”而机械勾选。
 
-- [ ] 7.1 更新 `src/governance/core/fetcher_bridge.py`
-- [ ] 7.2 在 `__init__()` 创建 `ThreadPoolExecutor(max_workers=10)`
-- [ ] 7.3 实现 `fetch_batch_kline()` 并发版本
-- [ ] 7.4 按数据源分组请求
-- [ ] 7.5 使用 `executor.submit()` 并发执行
+- [x] 7.1 更新 `src/governance/core/fetcher_bridge.py`
+- [x] 7.2 在 `__init__()` 创建 `ThreadPoolExecutor(max_workers=10)`
+- [x] 7.3 实现 `fetch_batch_kline()` 并发版本
+  - [x] Repo-truth（2026-05-02）：`src/governance/core/fetcher_bridge.py:GovernanceDataFetcher` 当前已在 `__init__()` 持有 `BatchProcessor()`，多 symbol 场景会进入 `batch_processor.fetch_batch_kline(...)`，同时保持公开返回值仍为 `Dict[symbol, DataFrame]`；并补入 `fetch_kline()` / `resolve_endpoint()` / `shutdown()` 辅助入口。验证见 `src/governance/tests/test_fetcher_bridge.py`、`tests/integration/test_batch_processing.py`、`tests/unit/adapters/test_runtime_data_source_regressions.py`。
+- [x] 7.4 按数据源分组请求
+- [x] 7.5 使用 `executor.submit()` 并发执行
 - [ ] 7.6 使用 `as_completed()` 收集结果
-- [ ] 7.7 添加超时控制（`future.result(timeout=30)`）
-- [ ] 7.8 实现异常隔离（单个失败不影响其他）
-- [ ] 7.9 实现 `shutdown()` 方法（优雅关闭）
+  - [ ] Repo-truth（2026-05-02）：当前实现为 `concurrent.futures.wait(..., return_when=FIRST_COMPLETED)` 轮询收集，而非任务原文指定的 `as_completed()`；之所以保留未完成，是因为现行代码优先保证 per-request timeout 可生效，不宜机械等同为该实现步骤已按原文落地。
+- [x] 7.7 添加超时控制（`future.result(timeout=30)`）
+- [x] 7.8 实现异常隔离（单个失败不影响其他）
+- [x] 7.9 实现 `shutdown()` 方法（优雅关闭）
 - [ ] 7.10 编写单元测试 `tests/integration/test_batch_processing.py`
   - [ ] 7.10.1 测试并发获取（100个symbol）
-  - [ ] 7.10.2 测试超时控制（单个请求超时）
-  - [ ] 7.10.3 测试异常隔离（部分失败）
-  - [ ] 7.10.4 测试优雅关闭
+  - [x] 7.10.2 测试超时控制（单个请求超时）
+  - [x] 7.10.3 测试异常隔离（部分失败）
+  - [x] 7.10.4 测试优雅关闭
   - [ ] 7.10.5 测试 DataSourceManager 保持同步
 - [ ] 7.11 性能测试：对比优化前后的吞吐量
 - [ ] 7.12 代码审查：确保线程安全和资源清理
