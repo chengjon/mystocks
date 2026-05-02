@@ -102,7 +102,8 @@
 
 - [x] 4.1 运行所有单元测试和并发测试
   - [x] Repo-truth（2026-05-02）：已通过 `pytest tests/unit/test_smart_cache.py tests/unit/test_circuit_breaker.py tests/unit/test_circuit_breaker_integration.py tests/unit/test_data_quality_validator.py tests/unit/test_gpu_validator_integration.py -q --no-cov -o log_cli=false -p no:tdd-guard -p no:timing` 验证当前 Phase 1 本地测试集，结果 `169 passed`。为使该套件可稳定完成，本次同时修复了 `src/core/data_source/circuit_breaker.py` 中 `get_stats() -> get_state()` 的非重入锁死锁、把 `tests/unit/test_data_quality_validator.py` 的异常成交量样本修正为真实满足“>10 倍均值”的数据形状，并补齐了 120 个参数化异常样本与 `GPUValidator` 的 100000 行大样本入口验证。
-- [ ] 4.2 性能测试：对比优化前后的基准指标
+- [x] 4.2 性能测试：对比优化前后的基准指标
+  - repo-truth: 当前已新增 `tests/performance/test_phase1_datasource_benchmark.py`，复用 `test_smart_cache_benchmark` 的 synthetic expiring workload，对比 `BlockingTtlBaselineCache` 与 `SmartCache` 的优化前/后指标，至少覆盖 `hit_rate` 与 `avg_latency_ms` 两个本地基准指标；这证明了 repo-local Phase 1 cache 优化前后对比基线，但不等于灰度环境或生产流量收益验证。
 - [ ] 4.3 灰度部署到测试环境
 - [ ] 4.4 监控关键指标（缓存命中率、API 调用成本、响应时间）
 - [ ] 4.5 验收确认：
