@@ -80,11 +80,12 @@
 ### 3.1 UI Component Types (45 minutes)
 > **局部事实说明**:
 > `TableColumn<T>` 与 `ChartDataPoint` 已存在于共享组件 / 工具类型模块中，但尚未并入 `src/api/types/extensions/` 统一收口。
-> 当前未检出 `FormField` / validation types 的现行类型定义；仓库里仅能看到 `web/frontend/scripts/migrate-to-element-plus.sh` 中遗留的 `FormField -> el-input` 迁移脚本片段，不能作为类型实现证据。
+> `FormField` / validation types 当前已在 `web/frontend/src/api/types/extensions/ui.ts` 落地，并由 `extensions/index.ts` 统一导出；该层仍属于 frontend-only UI metadata，而不是后端契约生成结果。
 
 - [x] Define `TableColumn<T>` for data tables
 - [x] Create `ChartDataPoint` for visualization
-- [ ] Add `FormField` and validation types
+- [x] Add `FormField` and validation types
+  - Repo-truth（2026-05-03）：当前已新增 `FormField`、`FormValidationRule`、`FormValidationSchema`、`FormValidationState`、`FormFieldOption`、`FormFieldComponent` 等表单/UI 元数据类型，路径为 `web/frontend/src/api/types/extensions/ui.ts`。
 
 ### 3.2 API Utility Types (30 minutes)
 - [x] Create `APIResponse<T>` wrapper type

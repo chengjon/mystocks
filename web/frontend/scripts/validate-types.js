@@ -33,6 +33,7 @@ async function validateTypes() {
       "strategy.ts",
       "market/index.ts",
       "common.ts",
+      "ui.ts",
     ];
 
     for (const file of requiredFiles) {

@@ -16,6 +16,7 @@
 - `web/frontend/src/api/types/extensions/index.ts`
 - `web/frontend/src/api/types/extensions/strategy.ts`
 - `web/frontend/src/api/types/extensions/common.ts`
+- `web/frontend/src/api/types/extensions/ui.ts`
 - `web/frontend/src/api/types/extensions/market/index.ts`
 - `web/frontend/src/api/types/extensions/market/types-1.ts`
 - `web/frontend/src/api/types/extensions/market/types-2.ts`
@@ -67,6 +68,7 @@ export * as extensions from "./extensions";
 import type { StrategyVM, BacktestResultVM } from "@/api/types/extensions/strategy";
 import type { MarketOverviewVM, KLineChartData } from "@/api/types/extensions/market";
 import type { PositionVM, APIResponseVM } from "@/api/types/extensions/common";
+import type { FormField, FormValidationSchema } from "@/api/types/extensions/ui";
 ```
 
 如果只是做入口发现或文档化引用，也可以通过根 barrel 访问：
@@ -114,6 +116,7 @@ npm run type-check
    - strategy -> `extensions/strategy.ts`
    - market -> `extensions/market/*`
    - common utility / ViewModel helper -> `extensions/common.ts`
+   - form / UI metadata -> `extensions/ui.ts`
 2. 先确认名字不会和现有顶层公开 surface 冲突
 3. 如有新的 market 子模块导出，先更新 `extensions/market/index.ts`
 4. 跑脚本：

@@ -9,6 +9,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[3]
 FRONTEND_ROOT = PROJECT_ROOT / "web" / "frontend"
 TYPE_INDEX = FRONTEND_ROOT / "src" / "api" / "types" / "index.ts"
 TSCONFIG = FRONTEND_ROOT / "tsconfig.json"
+EXTENSIONS_INDEX = FRONTEND_ROOT / "src" / "api" / "types" / "extensions" / "index.ts"
+UI_EXTENSION = FRONTEND_ROOT / "src" / "api" / "types" / "extensions" / "ui.ts"
 
 
 def _run_node_script(relative_path: str) -> subprocess.CompletedProcess[str]:
@@ -39,6 +41,18 @@ def test_validate_types_script_succeeds_against_repo_truth_layout() -> None:
     assert completed.returncode == 0, completed.stderr or completed.stdout
     assert "Main index.ts exports extensions" in completed.stdout
     assert "market/index.ts exists" in completed.stdout
+    assert "ui.ts exists" in completed.stdout
+
+
+def test_ui_extension_defines_form_field_and_validation_exports() -> None:
+    assert UI_EXTENSION.is_file()
+
+    ui_content = UI_EXTENSION.read_text(encoding="utf-8")
+    extensions_index_content = EXTENSIONS_INDEX.read_text(encoding="utf-8")
+
+    assert "export interface FormField" in ui_content
+    assert "export type FormValidationSchema" in ui_content
+    assert "export * from './ui.ts'" in extensions_index_content
 
 
 def test_check_type_conflicts_script_reports_clean_repo_truth_surface() -> None:
