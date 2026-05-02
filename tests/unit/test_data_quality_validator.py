@@ -13,6 +13,188 @@ from src.core.data_source.data_quality_validator import (
 )
 
 
+def _build_valid_ohlcv_frame(
+    length: int = 5,
+    *,
+    base_price: float = 10.0,
+    step: float = 0.05,
+    volume: int = 1000,
+) -> pd.DataFrame:
+    close = [base_price + step * index for index in range(length)]
+    return pd.DataFrame(
+        {
+            "open": [value - 0.05 for value in close],
+            "high": [value + 0.20 for value in close],
+            "low": [value - 0.20 for value in close],
+            "close": close,
+            "volume": [volume] * length,
+        }
+    )
+
+
+def _build_abnormal_volume_frame(seed: int) -> pd.DataFrame:
+    frame = _build_valid_ohlcv_frame(length=13, base_price=10.0 + seed * 0.01)
+    frame["volume"] = [1000] * 12 + [200000 + seed * 1000]
+    return frame
+
+
+def _build_suspended_frame(seed: int) -> pd.DataFrame:
+    price = 10.0 + seed * 0.01
+    return pd.DataFrame(
+        {
+            "open": [price] * 5,
+            "high": [price] * 5,
+            "low": [price] * 5,
+            "close": [price] * 5,
+            "volume": [0] * 5,
+        }
+    )
+
+
+def _build_anomaly_scenarios():
+    scenarios = []
+
+    for index in range(15):
+        frame = _build_valid_ohlcv_frame(base_price=10.0 + index * 0.1)
+        frame.loc[1, "high"] = frame.loc[1, "low"] - 0.05
+        scenarios.append(
+            pytest.param(
+                frame,
+                None,
+                {},
+                "logic_check",
+                "High < Low detected",
+                False,
+                id=f"logic-high-below-low-{index:02d}",
+            )
+        )
+
+    for index in range(15):
+        frame = _build_valid_ohlcv_frame(base_price=12.0 + index * 0.1)
+        frame.loc[2, "close"] = frame.loc[2, "high"] + 0.30
+        scenarios.append(
+            pytest.param(
+                frame,
+                None,
+                {},
+                "logic_check",
+                "Close outside [Low, High] range",
+                False,
+                id=f"logic-close-out-of-range-{index:02d}",
+            )
+        )
+
+    for index in range(10):
+        frame = _build_valid_ohlcv_frame(base_price=14.0 + index * 0.1)
+        frame.loc[0, "volume"] = -(index + 1)
+        scenarios.append(
+            pytest.param(
+                frame,
+                None,
+                {},
+                "logic_check",
+                "Negative volume detected",
+                False,
+                id=f"logic-negative-volume-{index:02d}",
+            )
+        )
+
+    for index in range(10):
+        frame = _build_valid_ohlcv_frame(base_price=16.0 + index * 0.1)
+        frame.loc[1, ["open", "high", "low", "close"]] = [0.05, 0.10, 0.0, 0.0]
+        scenarios.append(
+            pytest.param(
+                frame,
+                None,
+                {},
+                "business_check",
+                "Zero or negative price detected",
+                False,
+                id=f"business-zero-price-{index:02d}",
+            )
+        )
+
+    for index in range(15):
+        frame = _build_valid_ohlcv_frame(length=4, base_price=18.0 + index * 0.1)
+        frame.loc[3, "close"] = frame.loc[2, "close"] * 1.25
+        frame.loc[3, "open"] = frame.loc[3, "close"] - 0.05
+        frame.loc[3, "high"] = frame.loc[3, "close"] + 0.20
+        frame.loc[3, "low"] = frame.loc[3, "close"] - 0.20
+        scenarios.append(
+            pytest.param(
+                frame,
+                None,
+                {},
+                "business_check",
+                "Extreme price change detected",
+                True,
+                id=f"business-extreme-price-{index:02d}",
+            )
+        )
+
+    for index in range(15):
+        scenarios.append(
+            pytest.param(
+                _build_abnormal_volume_frame(index),
+                None,
+                {},
+                "business_check",
+                "Abnormal volume detected",
+                True,
+                id=f"business-abnormal-volume-{index:02d}",
+            )
+        )
+
+    for index in range(10):
+        scenarios.append(
+            pytest.param(
+                _build_suspended_frame(index),
+                None,
+                {},
+                "business_check",
+                "Suspended stock detected",
+                True,
+                id=f"business-suspended-stock-{index:02d}",
+            )
+        )
+
+    for index in range(15):
+        frame = _build_valid_ohlcv_frame(length=31, base_price=20.0 + index * 0.1)
+        frame.loc[30, ["open", "high", "low", "close"]] = [1000.0, 1000.5, 999.5, 1000.0]
+        scenarios.append(
+            pytest.param(
+                frame,
+                None,
+                {},
+                "statistical_check",
+                "Statistical outliers detected",
+                True,
+                id=f"statistical-outlier-{index:02d}",
+            )
+        )
+
+    for index in range(15):
+        data = _build_valid_ohlcv_frame(base_price=22.0 + index * 0.1)
+        reference = data.copy()
+        reference["close"] = reference["close"] * 1.03
+        scenarios.append(
+            pytest.param(
+                data,
+                reference,
+                {"enable_cross_source_check": True},
+                "cross_source_check",
+                "Cross-source check failed",
+                False,
+                id=f"cross-source-price-drift-{index:02d}",
+            )
+        )
+
+    return scenarios
+
+
+ANOMALY_SCENARIOS = _build_anomaly_scenarios()
+
+
 class TestDataQualityValidator:
     """DataQualityValidator 单元测试"""
 
@@ -377,3 +559,30 @@ class TestDataQualityValidator:
         logic_result = next((r for r in result.results if r.check_type == "logic_check"), None)
         assert logic_result is not None
         assert "Missing required columns" in logic_result.message
+
+    def test_anomaly_scenario_matrix_has_100_plus_cases(self):
+        """测试异常场景矩阵已覆盖 100+ 用例数据"""
+        assert len(ANOMALY_SCENARIOS) >= 100
+
+
+@pytest.mark.parametrize(
+    "data, reference_data, validator_kwargs, expected_check_type, expected_message, expected_passed",
+    ANOMALY_SCENARIOS,
+)
+def test_anomaly_scenario_matrix_covers_100_plus_cases(
+    data,
+    reference_data,
+    validator_kwargs,
+    expected_check_type,
+    expected_message,
+    expected_passed,
+):
+    """测试 100+ 异常场景矩阵的预期结果"""
+    validator = DataQualityValidator(**validator_kwargs)
+
+    result = validator.validate(data, data_source="matrix_case", reference_data=reference_data)
+
+    matched_result = next((item for item in result.results if item.check_type == expected_check_type), None)
+    assert matched_result is not None
+    assert expected_message in matched_result.message
+    assert matched_result.passed is expected_passed
