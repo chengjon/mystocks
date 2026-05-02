@@ -25,6 +25,8 @@
   - `optimize-data-source-v2` 当前已落地能力的运维入口
 - [`DATA_SOURCE_DEVELOPER_GUIDE.md`](./DATA_SOURCE_DEVELOPER_GUIDE.md)
   - `DataSourceManagerV2` 主链路、扩展点与验证矩阵
+- [`../akshare/INDEX.md`](../akshare/INDEX.md)
+  - `expand-akshare-data-sources` 当前 AkShare 专题 guide family 入口
 
 ## Retained Specialized References
 
