@@ -363,5 +363,6 @@
 - [x] 12.4 开发者文档（API 使用、配置说明）
   - [x] Repo-truth（2026-05-02）：已新增 `docs/guides/data-source/DATA_SOURCE_DEVELOPER_GUIDE.md`，梳理 `DataSourceManagerV2 -> router.py -> handler.py -> monitoring.py -> metrics.py -> GovernanceDataFetcher/BatchProcessor` 当前主链路、相邻能力边界、扩展点与验证矩阵，并同步更新 `docs/guides/data-source/INDEX.md`。
 - [ ] 12.5 最终验收会议
-- [ ] 12.6 项目总结和经验教训
+- [x] 12.6 项目总结和经验教训
+  - [x] Repo-truth（2026-05-02）：已新增 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LESSONS_LEARNED_2026-05-02.md`，按当前仓库事实总结了这条线的主要收口成果、调用链与部署侧完成度的区分、canonical path 漂移治理、benchmark 与正式收益口径分离等经验教训。该文档是 repo-local 总结，不等同于 `12.5` 的最终验收会议纪要。
 - [ ] 12.7 归档 OpenSpec 变更（`openspec archive optimize-data-source-v2`）
