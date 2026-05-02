@@ -98,7 +98,8 @@
 
 ## 4. Phase 1 验收和部署（1-2天）
 
-- [ ] 4.1 运行所有单元测试和并发测试
+- [x] 4.1 运行所有单元测试和并发测试
+  - [x] Repo-truth（2026-05-02）：已通过 `pytest tests/unit/test_smart_cache.py tests/unit/test_circuit_breaker.py tests/unit/test_circuit_breaker_integration.py tests/unit/test_data_quality_validator.py tests/unit/test_gpu_validator_integration.py -q --no-cov -o log_cli=false -p no:tdd-guard -p no:timing` 验证当前 Phase 1 本地测试集，结果 `47 passed`。为使该套件可稳定完成，本次同时修复了 `src/core/data_source/circuit_breaker.py` 中 `get_stats() -> get_state()` 的非重入锁死锁，并把 `tests/unit/test_data_quality_validator.py` 的异常成交量样本修正为真实满足“>10 倍均值”的数据形状。
 - [ ] 4.2 性能测试：对比优化前后的基准指标
 - [ ] 4.3 灰度部署到测试环境
 - [ ] 4.4 监控关键指标（缓存命中率、API 调用成本、响应时间）
@@ -106,8 +107,10 @@
   - [ ] 4.5.1 缓存命中率 > 80%
   - [ ] 4.5.2 API 调用成本降低 40%
   - [ ] 4.5.3 响应时间减少 50%（500ms → 250ms）
-  - [ ] 4.5.4 所有单元测试通过
-  - [ ] 4.5.5 并发测试通过
+  - [x] 4.5.4 所有单元测试通过
+    - [x] Repo-truth（2026-05-02）：见 `4.1` 验证命令；当前 Phase 1 repo-owned 单元测试集 `47 passed`。
+  - [x] 4.5.5 并发测试通过
+    - [x] Repo-truth（2026-05-02）：同一套件中已覆盖 `tests/unit/test_smart_cache.py::test_concurrent_access`（100 线程并发）与 `tests/unit/test_circuit_breaker.py::test_concurrent_state_transitions`，并在 `CircuitBreaker` 死锁修复后通过整组回归。
 - [ ] 4.6 修复发现的问题
 - [ ] 4.7 准备 Phase 2 环境
 

@@ -87,14 +87,19 @@ class TestDataQualityValidator:
         """测试业务规则验证 (异常成交量 > 10 倍均值)"""
         validator = DataQualityValidator()
 
-        # 创建异常成交量数据
+        # 创建异常成交量数据:
+        # 使用多条正常成交量 + 一条极端放量，确保最后一条记录仍然 > 10 倍均值。
+        normal_close = [10.0 + index * 0.01 for index in range(12)]
+        abnormal_close = normal_close + [10.2]
+        abnormal_volume = [1000] * 12 + [200000]
+
         data = pd.DataFrame(
             {
-                "open": [10.0, 10.0, 10.0],
-                "high": [11.0, 11.0, 11.0],
-                "low": [9.0, 9.0, 9.0],
-                "close": [10.0, 10.0, 10.0],
-                "volume": [1000, 1000, 15000],  # 15 倍均值
+                "open": abnormal_close,
+                "high": [value + 0.2 for value in abnormal_close],
+                "low": [value - 0.2 for value in abnormal_close],
+                "close": abnormal_close,
+                "volume": abnormal_volume,
             }
         )
 

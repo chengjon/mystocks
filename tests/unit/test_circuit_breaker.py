@@ -273,6 +273,22 @@ class TestCircuitBreaker:
         assert stats["success_rate"] == 0.5
         assert stats["state"] == CircuitState.CLOSED.value
 
+    def test_get_stats_does_not_deadlock_when_state_is_collected(self):
+        """测试 get_stats 在采集状态时不会死锁"""
+        cb = CircuitBreaker(failure_threshold=3, recovery_timeout=60)
+        result = {}
+        finished = threading.Event()
+
+        def collect_stats():
+            result.update(cb.get_stats())
+            finished.set()
+
+        thread = threading.Thread(target=collect_stats, daemon=True)
+        thread.start()
+
+        assert finished.wait(timeout=1.0), "get_stats should not deadlock"
+        assert result["state"] == CircuitState.CLOSED.value
+
     def test_expected_exception(self):
         """测试预期的异常类型"""
         # 只捕获 ValueError

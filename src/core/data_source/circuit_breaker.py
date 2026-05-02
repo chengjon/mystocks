@@ -65,7 +65,8 @@ class CircuitBreaker:
         self.opened_at = None
 
         # 线程安全
-        self.lock = threading.Lock()
+        # get_stats() / __str__() 会在持锁上下文里读取状态，需允许同线程重入。
+        self.lock = threading.RLock()
 
         # 统计信息
         self.total_calls = 0
