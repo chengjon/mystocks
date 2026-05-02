@@ -24,6 +24,8 @@
 
 ## Retained Specialized References
 
+- [`DATA_LINEAGE_TRACKER_GUIDE.md`](./DATA_LINEAGE_TRACKER_GUIDE.md)
+  - governance-side `DataLineageTracker` 与可选 Neo4j 存储说明
 - [`DATA_CLEANING_QUICK_START.md`](./DATA_CLEANING_QUICK_START.md)
   - 数据清洗与验证快速开始
 - [`DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE.md`](./DATA_SOURCE_ENDPOINT_REGISTRATION_GUIDE.md)

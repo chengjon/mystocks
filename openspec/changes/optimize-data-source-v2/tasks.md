@@ -262,23 +262,33 @@
 # Phase 3: 高级特性（2-3个月，可选）
 
 ## 9. DataLineageTracker 实现（可选）
-> **局部事实说明（2026-04-28）**:
-> 当前仓库已存在“通用数据血缘能力”的相邻实现：
+> **局部事实说明（2026-05-02）**:
+> 当前仓库已同时存在两套相邻但不相同的血缘能力：
 > - 核心模型与追踪器：`src/data_governance/lineage.py` 中的 `LineageTracker` / `LineageStorage`
 > - 数据源集成：`src/core/data_source/lineage_integration.py` 中的 `LineageIntegrationMixin`
 > - API 暴露：`web/backend/app/api/data_lineage.py`
 > - 单元/API测试：`tests/unit/test_governance/test_lineage.py`、`tests/api/file_tests/test_data_lineage_api.py`
-> 但它并不等于本提案原文目标：当前未落地 `src/governance/lineage/tracker.py`、未出现名为 `DataLineageTracker` 的类、未见 `networkx` 构建此专题血缘图主链路、也未见 Neo4j 存储闭环。
-> 因此 9.1-9.8 继续保留未完成，避免把“相邻能力已存在”误写成“本 change 的 Phase 3 目标已按原路径与语义完成”。
+> 本批次新增了提案原路径下的 governance-side 轻量追踪器：
+> - `src/governance/lineage/tracker.py`
+> - `tests/unit/test_governance/test_data_lineage_tracker.py`
+> - `tests/integration/test_data_lineage_tracker_integration.py`
+> - `docs/guides/data-source/DATA_LINEAGE_TRACKER_GUIDE.md`
+> 但当前仍只证明：
+> - `networkx` 主链路可用
+> - 可选 `Neo4jLineageStore` 为 non-blocking / optional persistence
+> - repo-local tracker + optional store 组合测试通过
+> 还没有证明 live Neo4j 联通、现有 `data_lineage` API 已切到这条新 tracker、或大规模生产性能闭环。
 
-- [ ] 9.1 创建 `src/governance/lineage/tracker.py` 文件
-- [ ] 9.2 实现 `DataLineageTracker` 类
-- [ ] 9.3 实现 `record_lineage()` 方法（记录数据血缘）
-- [ ] 9.4 实现 `trace_lineage()` 方法（追溯血缘）
-- [ ] 9.5 使用 `networkx` 构建血缘图
-- [ ] 9.6 实现Neo4j 存储逻辑（可选）
-- [ ] 9.7 编写单元测试和集成测试
-- [ ] 9.8 更新文档：添加数据血缘使用说明
+- [x] 9.1 创建 `src/governance/lineage/tracker.py` 文件
+- [x] 9.2 实现 `DataLineageTracker` 类
+- [x] 9.3 实现 `record_lineage()` 方法（记录数据血缘）
+- [x] 9.4 实现 `trace_lineage()` 方法（追溯血缘）
+- [x] 9.5 使用 `networkx` 构建血缘图
+- [x] 9.6 实现Neo4j 存储逻辑（可选）
+  - repo-truth: 当前 `Neo4jLineageStore` 为可选持久化层；缺少配置或驱动时 no-op，不阻塞本地 `networkx` 链路
+- [x] 9.7 编写单元测试和集成测试
+  - repo-truth: 当前覆盖 `tests/unit/test_governance/test_data_lineage_tracker.py` 与 `tests/integration/test_data_lineage_tracker_integration.py`；集成层是 repo-local tracker + optional store 组合验证，不是 live Neo4j 联调
+- [x] 9.8 更新文档：添加数据血缘使用说明
 
 ## 10. AdaptiveRateLimiter 实现（可选）
 > **局部事实说明（2026-04-28）**:
