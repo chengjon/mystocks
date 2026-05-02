@@ -8,14 +8,17 @@
 
 这一 family 当前角色是 `supporting`，用于 TypeScript 使用说明、培训材料和历史治理方案，不承担仓库级 trunk。推荐阅读顺序：
 
-1. [`Typescript_QUICKSTART.md`](./Typescript_QUICKSTART.md)
-2. [`Typescript_USER_GUIDE.md`](./Typescript_USER_GUIDE.md)
-3. [`Typescript_BEST_PRACTICES.md`](./Typescript_BEST_PRACTICES.md)
-4. [`Typescript_CONFIG_REFERENCE.md`](./Typescript_CONFIG_REFERENCE.md)
-5. 再按需进入 API 参考、培训、排障和历史实施方案
+1. [`TYPESCRIPT_EXTENSION_SYSTEM_REPO_TRUTH_GUIDE.md`](./TYPESCRIPT_EXTENSION_SYSTEM_REPO_TRUTH_GUIDE.md)
+2. [`Typescript_QUICKSTART.md`](./Typescript_QUICKSTART.md)
+3. [`Typescript_USER_GUIDE.md`](./Typescript_USER_GUIDE.md)
+4. [`Typescript_BEST_PRACTICES.md`](./Typescript_BEST_PRACTICES.md)
+5. [`Typescript_CONFIG_REFERENCE.md`](./Typescript_CONFIG_REFERENCE.md)
+6. 再按需进入 API 参考、培训、排障和历史实施方案
 
 ## Active Supporting Guides
 
+- [`TYPESCRIPT_EXTENSION_SYSTEM_REPO_TRUTH_GUIDE.md`](./TYPESCRIPT_EXTENSION_SYSTEM_REPO_TRUTH_GUIDE.md)
+  - 当前前端扩展类型系统的 repo-truth 结构、命名、脚本和验证入口
 - [`Typescript_QUICKSTART.md`](./Typescript_QUICKSTART.md)
   - TypeScript 快速开始入口
 - [`Typescript_USER_GUIDE.md`](./Typescript_USER_GUIDE.md)

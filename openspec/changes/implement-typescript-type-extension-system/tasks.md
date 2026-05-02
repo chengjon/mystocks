@@ -129,9 +129,10 @@
 - [x] Test import paths and type resolution
 
 ### 4.3 Documentation (30 minutes)
-- [ ] Create type extension usage guide
-- [ ] Document naming conventions and patterns
-- [ ] Add examples for common use cases
+- [x] Create type extension usage guide
+- [x] Document naming conventions and patterns
+- [x] Add examples for common use cases
+  - Repo-truth（2026-05-03）：当前使用指南已落在 `docs/guides/typescript/TYPESCRIPT_EXTENSION_SYSTEM_REPO_TRUTH_GUIDE.md`，内容聚焦当前真实结构、命名规则、导入建议、验证脚本与常见边界，不再复述旧实施计划。
 
 ## Phase 5: Deployment & Monitoring (1 hour)
 
