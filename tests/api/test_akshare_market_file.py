@@ -1,7 +1,7 @@
 """
 File-level tests for akshare_market.py API endpoints
 
-Tests all 34 endpoints in akshare_market.py as a cohesive unit to ensure:
+Tests all 37 endpoints in akshare_market.py as a cohesive unit to ensure:
 - All market data endpoints are functional and return proper responses
 - Integration between different data sources (akshare-based)
 - Data consistency across related market endpoints
@@ -22,7 +22,7 @@ class TestAkShareMarketAPIFile:
     """File-level tests for akshare_market.py API endpoints"""
     @pytest.mark.asyncio
     async def test_akshare_market_file_endpoints_accessibility(self, client, auth_headers):
-        """Test that all 34 endpoints in akshare_market.py are accessible"""
+        """Test that all 37 endpoints in akshare_market.py are accessible"""
         endpoints = [
             "/api/akshare-market/sse/overview",
             "/api/akshare-market/szse/overview",
@@ -36,6 +36,8 @@ class TestAkShareMarketAPIFile:
             "/api/akshare-market/stock/comment-detail/em",
             "/api/akshare-market/stock/news/em",
             "/api/akshare-market/stock/bid-ask/em",
+            "/api/akshare-market/stock/hot-follow/xq",
+            "/api/akshare-market/stock/changes/em",
             "/api/akshare-market/fund-flow/hsgt-summary",
             "/api/akshare-market/fund-flow/hsgt-detail",
             "/api/akshare-market/fund-flow/north-daily",
@@ -55,6 +57,7 @@ class TestAkShareMarketAPIFile:
             "/api/akshare-market/board/industry/cons/000001",
             "/api/akshare-market/board/industry/history/000001",
             "/api/akshare-market/board/industry/minute/000001",
+            "/api/akshare-market/board/change/em",
             "/api/akshare-market/sector/hot-ranking",
             "/api/akshare-market/sector/fund-flow-ranking",
             "/api/akshare-market/sse/daily-deal",

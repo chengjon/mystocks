@@ -71,19 +71,23 @@
 > 在当前 AkShare 市场适配器 / API / 配置注册表 / 测试链路中，未检出 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_news_main_em`、`stock_zt_pool_em`、`stock_dt_pool_em`、`stock_strong_pool_em`、`stock_weak_pool_em`、`stock_changes_em`、`stock_new_em` 的现行实现痕迹。
 > `src/adapters/akshare/market_adapter/stock_sentiment.py` 当前仅覆盖第 2 节已完成的 `stock_comment_em`、`stock_comment_detail_zlkp_jgcyd_em`、`stock_news_em`、`stock_bid_ask_em`。
 > 仓库虽在其他模块存在相邻能力（如 `byapi` 的涨跌停股池、`wencai` 的强势股查询），但它们不属于本 change 要求的 AkShare 市场适配器 / API / registry / test 闭环，不能外推为 6.1-6.12 已完成。
+> **仓库事实校对（2026-05-02）**:
+> 当前仓库已补齐本地 `akshare` 版本中可直接确认存在的 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_changes_em`，落点分别为 `src/adapters/akshare/market_adapter/stock_sentiment.py`、`web/backend/app/api/akshare_market/stock_info.py`、`web/backend/app/api/akshare_market/boards.py`、`config/data_sources_registry.yaml`，并由 `tests/unit/adapters/test_akshare_stock_sentiment_incremental.py` 与 `tests/backend/test_akshare_market_additional_routes.py` 提供 focused 验证。
+> 当前本地 `akshare` 环境仍未检出 `stock_news_main_em`、`stock_dt_pool_em`、`stock_strong_pool_em`、`stock_weak_pool_em`、`stock_new_em` 的同名函数，因此 6.3-6.7 / 6.9 继续保持未完成。
 
-- [ ] 6.1 实现股票热度数据 (akshare.stock_hot_follow_xq)
-- [ ] 6.2 实现板块异动详情 (akshare.stock_board_change_em)
+- [x] 6.1 实现股票热度数据 (akshare.stock_hot_follow_xq)
+- [x] 6.2 实现板块异动详情 (akshare.stock_board_change_em)
 - [ ] 6.3 实现财经内容精选 (akshare.stock_news_main_em)
 - [ ] 6.4 实现涨停板行情 (akshare.stock_zt_pool_em)
 - [ ] 6.5 实现跌停板行情 (akshare.stock_dt_pool_em)
 - [ ] 6.6 实现强势股池 (akshare.stock_strong_pool_em)
 - [ ] 6.7 实现弱势股池 (akshare.stock_weak_pool_em)
-- [ ] 6.8 实现盘口异动 (akshare.stock_changes_em)
+- [x] 6.8 实现盘口异动 (akshare.stock_changes_em)
 - [ ] 6.9 实现次新股池 (akshare.stock_new_em)
 - [ ] 6.10 添加行情和情绪数据到数据源配置注册表
 - [ ] 6.11 创建行情和情绪数据的API端点
 - [ ] 6.12 编写行情和情绪数据的单元测试
+  - [ ] Repo-truth：当前 registry / API / focused tests 只闭合了 6.1 / 6.2 / 6.8；在 6.3-6.7 / 6.9 仍未实现前，不将本节统一收口任务勾选完成。
 
 ## 7. 系统集成和优化
 > **仓库事实校对（2026-04-27）**:

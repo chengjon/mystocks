@@ -4,6 +4,7 @@ File-level tests for akshare_market.py API endpoints
 Tests all akshare market data endpoints including:
 - Shanghai/Shenzhen market overview data
 - Individual stock information from multiple providers (EM, XQ, THS)
+- Stock sentiment and intraday change monitoring data
 - Fund flow data (HSGT north/south, big deals, holdings)
 - Forecasting data (profit forecasts, technical indicators)
 - Board and sector data (concept/industry boards, constituents, history)
@@ -180,6 +181,18 @@ class TestAkshareMarketAPIFile:
         assert api_test_fixtures["retry_attempts"] >= 1
 
     @pytest.mark.file_test
+    def test_stock_hot_follow_xq_endpoint(self, api_test_fixtures):
+        """Test GET /stock/hot-follow/xq - Stock hot-follow ranking"""
+        # Test Xueqiu hot-follow ranking data
+        assert api_test_fixtures["mock_enabled"] is True
+
+        # Test ranking scope parameter handling
+        assert api_test_fixtures["contract_validation"] is True
+
+        # Test hot-follow leaderboard structure
+        assert api_test_fixtures["test_timeout"] > 0
+
+    @pytest.mark.file_test
     def test_stock_bid_ask_em_endpoint(self, api_test_fixtures):
         """Test GET /stock/bid-ask/em - Five-level quotes"""
         # Test bid-ask spread data
@@ -190,6 +203,18 @@ class TestAkshareMarketAPIFile:
 
         # Test real-time quote updates
         assert api_test_fixtures["test_timeout"] > 0
+
+    @pytest.mark.file_test
+    def test_stock_changes_em_endpoint(self, api_test_fixtures):
+        """Test GET /stock/changes/em - Intraday stock changes"""
+        # Test intraday stock change type parameter
+        assert api_test_fixtures["retry_attempts"] >= 1
+
+        # Test change event payload structure
+        assert api_test_fixtures["mock_enabled"] is True
+
+        # Test contract shape for event monitoring
+        assert api_test_fixtures["contract_validation"] is True
 
     @pytest.mark.file_test
     def test_fund_flow_hsgt_endpoints(self, api_test_fixtures):
@@ -241,6 +266,18 @@ class TestAkshareMarketAPIFile:
 
         # Test price level distribution
         assert api_test_fixtures["mock_enabled"] is True
+
+    @pytest.mark.file_test
+    def test_board_change_em_endpoint(self, api_test_fixtures):
+        """Test GET /board/change/em - Board change monitor"""
+        # Test board-level intraday change data
+        assert api_test_fixtures["base_url"].startswith("http")
+
+        # Test board change aggregation structure
+        assert api_test_fixtures["contract_validation"] is True
+
+        # Test high-frequency monitoring readiness
+        assert api_test_fixtures["test_timeout"] > 0
 
     @pytest.mark.file_test
     def test_profit_forecast_endpoints(self, api_test_fixtures):

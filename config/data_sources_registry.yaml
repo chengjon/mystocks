@@ -621,6 +621,39 @@ data_sources:
       test_parameters:
         symbol: '000001'
       update_frequency: realtime
+    akshare_stock_board_change_em:
+      call_method: function_call
+      classification_level: 1
+      data_category: REALTIME_QUOTES
+      data_classification: market_data
+      data_quality_score: 9.0
+      description: AKShare板块异动详情
+      endpoint_name: akshare.stock_board_change_em
+      parameters: {}
+      priority: 1
+      quality_rules:
+        max_response_time: 10.0
+        min_record_count: 1
+        required_columns:
+        - 板块名称
+        - 涨跌幅
+        - 主力净流入
+        - 板块异动总次数
+      source_name: akshare
+      source_type: api_library
+      status: active
+      table_name: stock_board_change_em
+      tags:
+      - board
+      - change
+      - realtime
+      - em
+      - market
+      - akshare
+      - high-frequency
+      target_db: postgresql
+      test_parameters: {}
+      update_frequency: realtime
     akshare_stock_board_concept_cons_em:
       call_method: function_call
       classification_level: 2
@@ -985,6 +1018,46 @@ data_sources:
       test_parameters:
         symbol: '000001'
       update_frequency: daily
+    akshare_stock_changes_em:
+      call_method: function_call
+      classification_level: 1
+      data_category: REALTIME_QUOTES
+      data_classification: market_data
+      data_quality_score: 9.0
+      description: AKShare盘口异动
+      endpoint_name: akshare.stock_changes_em
+      parameters:
+        symbol:
+          description: 盘口异动类型
+          example: 大笔买入
+          required: false
+          type: string
+      priority: 1
+      quality_rules:
+        max_response_time: 10.0
+        min_record_count: 1
+        required_columns:
+        - 时间
+        - 代码
+        - 名称
+        - 板块
+        - 相关信息
+      source_name: akshare
+      source_type: api_library
+      status: active
+      table_name: stock_changes_em
+      tags:
+      - stock
+      - change
+      - realtime
+      - em
+      - market
+      - akshare
+      - high-frequency
+      target_db: postgresql
+      test_parameters:
+        symbol: 大笔买入
+      update_frequency: realtime
     akshare_stock_cyq_em:
       call_method: function_call
       classification_level: 3
@@ -1471,6 +1544,45 @@ data_sources:
       target_db: postgresql
       test_parameters:
         symbol: '000001'
+      update_frequency: hourly
+    akshare_stock_hot_follow_xq:
+      call_method: function_call
+      classification_level: 3
+      data_category: DERIVED_DATA
+      data_classification: derived_data
+      data_quality_score: 8.5
+      description: AKShare股票热度排行-雪球
+      endpoint_name: akshare.stock_hot_follow_xq
+      parameters:
+        symbol:
+          description: 热度榜类型
+          example: 最热门
+          required: false
+          type: string
+      priority: 2
+      quality_rules:
+        max_response_time: 15.0
+        min_record_count: 1
+        required_columns:
+        - 股票代码
+        - 股票简称
+        - 关注
+        - 最新价
+      source_name: akshare
+      source_type: api_library
+      status: active
+      table_name: stock_hot_follow_xq
+      tags:
+      - stock
+      - hot
+      - follow
+      - xq
+      - sentiment
+      - derived
+      - akshare
+      target_db: postgresql
+      test_parameters:
+        symbol: 最热门
       update_frequency: hourly
     akshare_stock_profit_forecast_em:
       call_method: function_call

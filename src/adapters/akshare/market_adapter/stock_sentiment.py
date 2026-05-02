@@ -11,6 +11,118 @@ import pandas as pd
 class StockSentimentMixin:
     """个股情绪与新闻数据方法集合"""
 
+    async def get_stock_hot_follow_xq(self, symbol: str = "最热门") -> pd.DataFrame:
+        """
+        获取股票热度数据 (akshare.stock_hot_follow_xq)
+        """
+        try:
+            self.logger.info("[Akshare] 开始获取股票热度数据，范围: %s", symbol)
+
+            @self._retry_api_call
+            async def _get_stock_hot_follow():
+                return ak.stock_hot_follow_xq(symbol=symbol)
+
+            df = await _get_stock_hot_follow()
+
+            if df is None or df.empty:
+                self.logger.warning("[Akshare] 未能获取到股票热度数据，范围: %s", symbol)
+                return pd.DataFrame()
+
+            self.logger.info("[Akshare] 成功获取股票热度数据，范围 %s，共 %s 行", symbol, len(df))
+
+            df = df.rename(
+                columns={
+                    "股票代码": "symbol",
+                    "股票简称": "stock_name",
+                    "关注": "follow_count",
+                    "最新价": "latest_price",
+                }
+            )
+
+            df["query_scope"] = symbol
+            df["query_timestamp"] = pd.Timestamp.now()
+            return df
+
+        except Exception as e:
+            self.logger.error("[Akshare] 获取股票热度数据失败，范围 %s: %s", symbol, e, exc_info=True)
+            return pd.DataFrame()
+
+    async def get_stock_board_change_em(self) -> pd.DataFrame:
+        """
+        获取板块异动详情 (akshare.stock_board_change_em)
+        """
+        try:
+            self.logger.info("[Akshare] 开始获取板块异动详情")
+
+            @self._retry_api_call
+            async def _get_board_change():
+                return ak.stock_board_change_em()
+
+            df = await _get_board_change()
+
+            if df is None or df.empty:
+                self.logger.warning("[Akshare] 未能获取到板块异动详情")
+                return pd.DataFrame()
+
+            self.logger.info("[Akshare] 成功获取板块异动详情，共 %s 行", len(df))
+
+            df = df.rename(
+                columns={
+                    "板块名称": "board_name",
+                    "涨跌幅": "change_percent",
+                    "主力净流入": "main_net_inflow",
+                    "板块异动总次数": "change_event_count",
+                    "板块异动最频繁个股及所属类型-股票代码": "frequent_stock_symbol",
+                    "板块异动最频繁个股及所属类型-股票名称": "frequent_stock_name",
+                    "板块异动最频繁个股及所属类型-买卖方向": "frequent_stock_direction",
+                    "板块具体异动类型列表及出现次数": "change_type_summary",
+                }
+            )
+
+            df["query_timestamp"] = pd.Timestamp.now()
+            return df
+
+        except Exception as e:
+            self.logger.error("[Akshare] 获取板块异动详情失败: %s", e, exc_info=True)
+            return pd.DataFrame()
+
+    async def get_stock_changes_em(self, symbol: str = "大笔买入") -> pd.DataFrame:
+        """
+        获取盘口异动 (akshare.stock_changes_em)
+        """
+        try:
+            self.logger.info("[Akshare] 开始获取盘口异动，类型: %s", symbol)
+
+            @self._retry_api_call
+            async def _get_stock_changes():
+                return ak.stock_changes_em(symbol=symbol)
+
+            df = await _get_stock_changes()
+
+            if df is None or df.empty:
+                self.logger.warning("[Akshare] 未能获取到盘口异动数据，类型: %s", symbol)
+                return pd.DataFrame()
+
+            self.logger.info("[Akshare] 成功获取盘口异动数据，类型 %s，共 %s 行", symbol, len(df))
+
+            df = df.rename(
+                columns={
+                    "时间": "change_time",
+                    "代码": "symbol",
+                    "名称": "stock_name",
+                    "板块": "change_type",
+                    "相关信息": "related_info",
+                }
+            )
+
+            df["query_type"] = symbol
+            df["query_timestamp"] = pd.Timestamp.now()
+            return df
+
+        except Exception as e:
+            self.logger.error("[Akshare] 获取盘口异动失败，类型 %s: %s", symbol, e, exc_info=True)
+            return pd.DataFrame()
+
     async def get_stock_comment_em(self, symbol: str) -> pd.DataFrame:
         """
         获取千股千评 (akshare.stock_comment_em)

@@ -2,7 +2,7 @@
 AkShare Market Data API (Facade)
 
 Modularized into:
-- sse, szse, stock_info, fund_flow, boards, analysis
+- sse, szse, stock_info, fund_flow, boards, analysis, sentiment_monitor
 """
 import logging
 
@@ -17,6 +17,7 @@ try:
     from .boards import router as boards_router
     from .fund_flow import router as fund_flow_router
     from .sse import router as sse_router
+    from .sentiment_monitor import router as sentiment_monitor_router
     from .stock_info import router as stock_info_router
     from .szse import router as szse_router
 except Exception as exc:
@@ -28,5 +29,6 @@ else:
     router.include_router(fund_flow_router)
     router.include_router(boards_router)
     router.include_router(analysis_router)
+    router.include_router(sentiment_monitor_router)
 
 __all__ = ["router"]
