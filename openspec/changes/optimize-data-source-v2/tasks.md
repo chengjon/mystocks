@@ -142,7 +142,8 @@
   - [x] 5.10.3 测试负载均衡（避免过载）
   - [x] 5.10.4 测试地域感知（最近节点）
   - [x] 5.10.5 测试多维度综合评分
-- [ ] 5.11 A/B 测试：对比新旧路由策略的性能差异
+- [x] 5.11 A/B 测试：对比新旧路由策略的性能差异
+  - repo-truth: 当前以 `tests/performance/test_smart_router_ab_benchmark.py` 形成可复跑 benchmark，对比 legacy `priority + quality` 排序与 `SmartRouter.route()` 的路由决策开销；这不是生产流量灰度或正式收益验收
 - [x] 5.12 代码审查：确保路由逻辑正确
   - [x] Repo-truth（2026-05-02）：`src/core/data_source/router.py:get_best_endpoint()` 现已懒加载 `SmartRouter`，把 endpoint `config` 平铺为可路由输入后调用 `src/core/data_source/smart_router.py:route()`，并在返回时保持旧 `config` 嵌套结构；`SmartRouter` 当前综合性能、成本、负载、地域四类评分选择最高分端点，空结果则回退到首个 routable endpoint。验证锚点见 `tests/unit/test_smart_router.py`、`tests/unit/test_smart_router_integration.py`、`src/governance/tests/test_fetcher_bridge.py` 与 `tests/unit/adapters/test_runtime_data_source_regressions.py`。当前 review 口径仅覆盖 repo-owned 单进程内存统计路由链路，不等同于 `5.11` 的 A/B 实测。
 - [x] 5.13 更新文档：添加 SmartRouter 使用说明

@@ -345,7 +345,8 @@ manager.smart_router = SmartRouter(
 
 - 当前已实现的是“候选端点选择接线”，不是完整的线上性能闭环。
 - `caller_location` 当前来自 `_identify_caller()` 的 best-effort 推断；拿不到时回退为 `default`。
-- `SmartRouter` 已接入主选择链路，但 `5.11 A/B 测试`、正式性能验收和灰度部署仍需独立完成。
+- `SmartRouter` 已接入主选择链路，并已有 repo-local A/B benchmark：`tests/performance/test_smart_router_ab_benchmark.py`
+- 当前 benchmark 证明的是“可复跑的 legacy 排序 vs `SmartRouter.route()` 决策开销对比”，不是线上正式性能验收或灰度收益证明。
 
 ---
 
