@@ -42,8 +42,8 @@
 ### 1.3 Create Type Validator Tool
 - [x] Implement `TypeValidator.ts` for conflict detection
 - [x] Add type completeness validation
-- [ ] Create usage statistics generator
-  - [ ] Repo-truth：`web/frontend/package.json` 虽声明 `type:usage` -> `node scripts/generate-type-usage.js`，但当前未找到该脚本文件，因此不能视为 usage statistics generator 已落地。
+- [x] Create usage statistics generator
+  - Repo-truth（2026-05-03）：`web/frontend/scripts/generate-type-usage.js` 已落地；当前会输出 `extensions.files`、`extensions.exported_types`、`main_index.exports_extensions`、`combined_public_surface.exported_types` 等 JSON summary。
 
 ## Phase 2: Core Type Definitions (2 hours)
 
@@ -71,8 +71,9 @@
 - [x] Add basic validation types
 
 ### 2.4 Export Configuration (15 minutes)
-- [ ] Update `src/api/types/index.ts` to merge exports
-- [ ] Ensure backward compatibility with existing imports
+- [x] Update `src/api/types/index.ts` to merge exports
+- [x] Ensure backward compatibility with existing imports
+  - Repo-truth（2026-05-03）：当前仓库采用 `export * as extensions from './extensions';` 的命名空间导出，而不是顶层 `export *` 平铺；这样既暴露统一入口，又避免与 `src/api/types/common/all.ts` 已公开的 `APIResponse` / `PaginatedResponse` / `PaginationParams` 等现有顶层类型发生冲突。
 
 ## Phase 3: Extended Type Definitions (1.5 hours)
 
@@ -97,27 +98,33 @@
 
 ## Phase 4: Integration & Validation (1.5 hours)
 
-> **局部事实说明**:
-> 当前仓库已有全局 TypeScript / vue-tsc CI 工作流，
-> 但本专题自身的集成并未完全闭环，因为 `extensions` 仍未被 `src/api/types/index.ts` 合并导出，且 `tsconfig.json` 当前把 `extensions/**/*` 排除在外。
+> **局部事实说明（2026-05-03）**:
+> 当前仓库已有全局 TypeScript / vue-tsc CI 工作流；本专题在 repo 内的关键缺口已缩小为：
+> - `extensions` 已经通过 `src/api/types/index.ts` 以命名空间方式公开
+> - `tsconfig.json` 已不再排除 `extensions/**/*`
+> - `npm run type-check` 当前可在包含扩展类型的前提下通过
+> 仍未闭环的主要是 Vite 专项配置、专题使用文档，以及“42 types”这类历史计数口径与当前仓库事实不一致的问题。
 
 ### 4.1 Build Integration (30 minutes)
-> **局部事实说明（2026-04-28）**:
-> `web/frontend/tsconfig.json` 当前虽然设置了 `allowImportingTsExtensions: true`，但同时把 `src/api/types/extensions/**/*` 排除在 typecheck 之外；`web/frontend/vite.config.mts` 也未见面向该扩展系统的专门 type-only import / extensions 集成配置。
-> 因此 4.1.1 / 4.1.2 对应的集成收口仍未完成。
+> **局部事实说明（2026-05-03）**:
+> `web/frontend/tsconfig.json` 目前仍保留 `allowImportingTsExtensions: true`，且已将 `src/api/types/extensions/**/*` 重新纳入 typecheck；`cd web/frontend && npm run type-check` 当前通过。
+> 但 `web/frontend/vite.config.mts` 仍未见面向该扩展系统的专门 type-only import / extensions 集成配置，因此本节只闭合 `tsconfig` 侧，不拔高到 Vite 全量闭环。
 
-- [ ] Update `tsconfig.json` with type checking paths
+- [x] Update `tsconfig.json` with type checking paths
 - [ ] Configure Vite for type-only imports
 - [x] Add type checking to CI/CD pipeline
 
 ### 4.2 Testing & Validation (45 minutes)
-> **局部事实说明（2026-04-28）**:
-> 当前仓库可以确认存在“类型相关回归/卫生测试”，例如：
-> - `web/frontend/src/api/__tests__/strategy.test.ts` 直接导入 `@/api/types/extensions/strategy`
-> - `web/frontend/tests/unit/config/*types-cleanup.spec.ts` 覆盖多个类型文件的 `ts-nocheck` 清理约束
-> 但这仍不足以视为本专题要求的“扩展类型定义单元测试 + 42 types compile 闭环”；当前未找到专门面向 `extensions/` 目录全集的独立测试套件或编译核验报告。
+> **局部事实说明（2026-05-03）**:
+> 当前仓库已新增面向本专题脚本闭环的独立测试：
+> - `tests/unit/scripts/test_frontend_type_extension_tooling.py`
+> 该测试会直接验证：
+> - 主索引公开 `extensions`
+> - `tsconfig.json` 不再排除 `extensions/**/*`
+> - `scripts/validate-types.js`、`scripts/check-type-conflicts.js`、`scripts/generate-type-usage.js` 全部可运行
+> 但 “Validate all 42 types compile correctly” 这一历史计数口径仍与当前仓库事实不一致：`type:usage` 当前统计到 `extensions.exported_types = 85`，因此仅能确认“包含扩展类型的 `npm run type-check` 通过”，不能把旧的 `42` 计数照抄为完成。
 
-- [ ] Create type definition unit tests
+- [x] Create type definition unit tests
 - [ ] Validate all 42 types compile correctly
 - [x] Test import paths and type resolution
 
@@ -142,7 +149,7 @@
 - [x] Configure type checking in pre-commit hooks
 - [ ] Set up automated type validation reports
 - [ ] Create type health monitoring dashboard
-  - [ ] Repo-truth：当前未找到自动生成类型校验报告或“type health dashboard”的现行实现；`type:check:conflicts` 与 `type:usage` 依赖的 `scripts/check-type-conflicts.js`、`scripts/generate-type-usage.js` 文件都不存在。
+  - Repo-truth（2026-05-03）：`type:check:conflicts` 与 `type:usage` 脚本现已落地，但当前仍是本地手动执行入口，尚未接入自动产物归档、定时报告或 dashboard。
 
 ## Validation Criteria
 
@@ -150,7 +157,8 @@
 - [ ] All 36 TypeScript errors resolved
 - [ ] All 42 types successfully compile
 - [x] Import statements work correctly
-- [ ] No type conflicts detected
+- [x] No type conflicts detected
+  - Repo-truth（2026-05-03）：`cd web/frontend && node scripts/check-type-conflicts.js` 当前返回 `No type conflicts detected`；主索引对 `extensions` 的公开方式是命名空间导出，不再把扩展层直接平铺到顶层 public surface。
 
 ### Integration Validation
 > **局部事实说明（2026-04-28）**:

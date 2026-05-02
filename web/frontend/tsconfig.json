@@ -87,7 +87,6 @@
     "src/**/*.spec.ts",
     "src/**/*.test.ts",
     "src/api/types/generated-types.ts",  // 自动生成文件，类型冲突
-    "src/api/types/extensions/**/*",     // 自动生成的扩展类型
     "src/api/types/additional-types.ts", // 自动生成的补充类型
     "src/api/advancedAnalysis.ts",       // API层低优先级文件
     "src/api/dataAdapter.ts",            // 依赖缺失的适配器

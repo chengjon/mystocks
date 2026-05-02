@@ -17,3 +17,6 @@ export * from './system';
 
 // Trading domain types
 export * from './trading';
+
+// Frontend extension types
+export * as extensions from './extensions';
