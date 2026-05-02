@@ -5,9 +5,11 @@ Tracks the complete data flow from sources to storage,
 supporting problem troubleshooting and impact analysis.
 """
 
+import asyncio
+import inspect
 import json
 import logging
-from contextlib import contextmanager
+from contextlib import asynccontextmanager, contextmanager
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
@@ -76,6 +78,15 @@ class LineageStorage:
     def __init__(self, db_connection):
         self._db = db_connection
 
+    @asynccontextmanager
+    async def _acquire_connection(self):
+        acquired = self._db.acquire_connection()
+        if inspect.isawaitable(acquired):
+            acquired = await acquired
+
+        async with acquired as conn:
+            yield conn
+
     async def init_tables(self) -> None:
         """Initialize database tables for lineage storage"""
         # Tables are created separately via migration scripts
@@ -83,7 +94,7 @@ class LineageStorage:
     async def save_node(self, node: LineageNode) -> None:
         """Save a lineage node to storage"""
         try:
-            async with self._db.acquire_connection() as conn:
+            async with self._acquire_connection() as conn:
                 await conn.execute(
                     """
                     INSERT INTO data_lineage_nodes
@@ -101,13 +112,13 @@ class LineageStorage:
                     node.created_at,
                     node.updated_at,
                 )
-        except Exception:
-            logger.error("Failed to save node {node.node_id}: %(e)s")
+        except Exception as exc:
+            logger.error("Failed to save node %s: %s", node.node_id, exc)
 
     async def save_edge(self, edge: LineageEdge) -> None:
         """Save a lineage edge to storage"""
         try:
-            async with self._db.acquire_connection() as conn:
+            async with self._acquire_connection() as conn:
                 await conn.execute(
                     """
                     INSERT INTO data_lineage_edges
@@ -120,8 +131,8 @@ class LineageStorage:
                     edge.timestamp,
                     json.dumps(edge.metadata),
                 )
-        except Exception:
-            logger.error("Failed to save edge: %(e)s")
+        except Exception as exc:
+            logger.error("Failed to save edge %s -> %s: %s", edge.from_node, edge.to_node, exc)
 
     async def get_lineage(self, node_id: str) -> Tuple[List[LineageNode], List[LineageEdge]]:
         """
@@ -134,7 +145,7 @@ class LineageStorage:
         edges = []
 
         try:
-            async with self._db.acquire_connection() as conn:
+            async with self._acquire_connection() as conn:
                 # Get the starting node
                 node_rows = await conn.fetch("SELECT * FROM data_lineage_nodes WHERE node_id = $1", node_id)
                 for row in node_rows:
@@ -209,8 +220,8 @@ class LineageStorage:
                             )
                         )
 
-        except Exception:
-            logger.error("Failed to get lineage: %(e)s")
+        except Exception as exc:
+            logger.error("Failed to get lineage for %s: %s", node_id, exc)
 
         return nodes, edges
 
@@ -307,6 +318,20 @@ class LineageTracker:
             op_metadata.update(metadata)
         self._record_operation(OperationType.SERVE, target_id, NodeType.API, op_metadata)
 
+    async def _persist_operation(self, new_node: LineageNode, edge: LineageEdge) -> None:
+        await self._storage.save_node(new_node)
+        await self._storage.save_edge(edge)
+
+    def _dispatch_persistence(self, new_node: LineageNode, edge: LineageEdge) -> None:
+        persistence_job = self._persist_operation(new_node, edge)
+
+        try:
+            loop = asyncio.get_running_loop()
+        except RuntimeError:
+            asyncio.run(persistence_job)
+        else:
+            loop.create_task(persistence_job)
+
     def _record_operation(
         self,
         operation: OperationType,
@@ -333,10 +358,7 @@ class LineageTracker:
         self._current_chain.append(new_node)
 
         # Save to storage
-        import asyncio
-
-        asyncio.create_task(self._storage.save_node(new_node))
-        asyncio.create_task(self._storage.save_edge(edge))
+        self._dispatch_persistence(new_node, edge)
 
     def get_current_chain(self) -> List[LineageNode]:
         """
