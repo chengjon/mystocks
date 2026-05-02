@@ -35,7 +35,8 @@
   - [x] 1.9.7 测试后台刷新失败处理
   - [x] 1.9.8 测试线程池限制（max_workers=5）
 - [ ] 1.10 性能测试：对比优化前后的缓存命中率和响应时间
-- [ ] 1.11 代码审查：确保线程安全性和错误处理
+- [x] 1.11 代码审查：确保线程安全性和错误处理
+  - [x] Repo-truth（2026-05-02）：`src/core/data_source/smart_cache.py` 当前主访问链路 `get()` / `set()` / `invalidate()` / `clear()` / `cleanup_expired()` 与后台刷新写回都由 `threading.RLock` 保护；重复刷新通过 `refreshing` set 抑制，并受 `ThreadPoolExecutor(max_workers=5)` 限流；`_run_refresh()` 的异常路径会记录 `refresh_failures`，并在 `finally` 中清理刷新标记。验证锚点见 `tests/unit/test_smart_cache.py` 的 100 线程并发访问、后台刷新失败、线程池限制、软/硬过期与 shutdown 用例。当前 review 口径仅覆盖 repo-owned 内存缓存主链路，不等同于 `1.10` 的性能验收。
 - [x] 1.12 更新文档：添加 SmartCache 使用说明
 
 ## 2. CircuitBreaker 实现（3-4天）
@@ -63,7 +64,8 @@
   - [x] 2.12.8 测试可配置阈值
 - [x] 2.13 集成测试：模拟故障场景验证熔断器行为
   - [x] Repo-truth（2026-05-01）：`tests/unit/test_circuit_breaker_integration.py` 当前已覆盖两类主调用链故障场景：首次失败后被 `CircuitBreakerOpenError` 短路，以及超时后经 `src/core/data_source/handler.py:_call_endpoint()` 主链路恢复成功；配套状态机验证见 `tests/unit/test_circuit_breaker.py` 的 OPEN / HALF_OPEN / recover / reopen 用例。
-- [ ] 2.14 代码审查：确保状态转换逻辑正确
+- [x] 2.14 代码审查：确保状态转换逻辑正确
+  - [x] Repo-truth（2026-05-02）：`src/core/data_source/circuit_breaker.py` 当前 `CLOSED -> OPEN -> HALF_OPEN -> CLOSED/OPEN` 状态迁移均集中在 `_can_attempt()` / `_on_success()` / `_on_failure()` / `get_state()` / `reset()`，并由同一把 `threading.Lock` 保护；`OPEN` 仅在 `_should_attempt_reset()` 超时后转入 `HALF_OPEN`，`HALF_OPEN` 连续 2 次成功后回到 `CLOSED`，试探失败则立即回 `OPEN`。验证见 `tests/unit/test_circuit_breaker.py` 的阈值、超时、恢复、回退、并发状态转换、剩余时间反馈用例，以及 `tests/unit/test_circuit_breaker_integration.py` 的主调用链接入验证。
 - [x] 2.15 更新文档：添加 CircuitBreaker 使用说明
 
 ## 3. DataQualityValidator 实现（3-4天）
@@ -89,7 +91,8 @@
   - [x] 3.9.5 测试验证汇总（summary）
   - [ ] 3.9.6 测试 GPU 加速验证（100,000行数据）
 - [ ] 3.10 准备 100+ 测试用例数据（覆盖各种异常场景）
-- [ ] 3.11 代码审查：确保验证逻辑完整
+- [x] 3.11 代码审查：确保验证逻辑完整
+  - [x] Repo-truth（2026-05-02）：`src/core/data_source/data_quality_validator.py` 当前 `validate()` 主链路已按固定顺序协调 `logic` / `business` / `statistical` / `cross_source` 四类检查，并通过 `ValidationSummary` 汇总 `passed_checks` / `failed_checks` / `quality_score`；单项检查内部已覆盖缺列、零/负价格、极端波动、异常成交量、停牌、3-sigma 离群值与跨源差异等分支。验证锚点见 `tests/unit/test_data_quality_validator.py`（包含 dict 输入转换、缺列、跨源通过/失败、100000 行大样本时限测试等）以及 `tests/unit/test_gpu_validator_integration.py`（治理层 `quality_summary` 回传）。需要单独保留认知的是：当前仓库虽有 100000 行大样本测试，但这不等同于 `3.9.6` 所要求的 GPU 加速验证闭环。
 - [x] 3.12 更新文档：添加 DataQualityValidator 使用说明
 
 ## 4. Phase 1 验收和部署（1-2天）
@@ -133,7 +136,8 @@
   - [x] 5.10.4 测试地域感知（最近节点）
   - [x] 5.10.5 测试多维度综合评分
 - [ ] 5.11 A/B 测试：对比新旧路由策略的性能差异
-- [ ] 5.12 代码审查：确保路由逻辑正确
+- [x] 5.12 代码审查：确保路由逻辑正确
+  - [x] Repo-truth（2026-05-02）：`src/core/data_source/router.py:get_best_endpoint()` 现已懒加载 `SmartRouter`，把 endpoint `config` 平铺为可路由输入后调用 `src/core/data_source/smart_router.py:route()`，并在返回时保持旧 `config` 嵌套结构；`SmartRouter` 当前综合性能、成本、负载、地域四类评分选择最高分端点，空结果则回退到首个 routable endpoint。验证锚点见 `tests/unit/test_smart_router.py`、`tests/unit/test_smart_router_integration.py`、`src/governance/tests/test_fetcher_bridge.py` 与 `tests/unit/adapters/test_runtime_data_source_regressions.py`。当前 review 口径仅覆盖 repo-owned 单进程内存统计路由链路，不等同于 `5.11` 的 A/B 实测。
 - [x] 5.13 更新文档：添加 SmartRouter 使用说明
   - [x] Repo-truth（2026-05-01）：`docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md` 现已补充 `SmartRouter` 当前接入方式、默认权重、endpoint 兼容 shape、懒加载路由链路与现阶段边界说明；该文档对齐了 `src/core/data_source/router.py:get_best_endpoint()` 与 `src/core/data_source/smart_router.py` 的当前实现，不再只停留在 Phase 1 三组件说明。
 
@@ -186,7 +190,8 @@
 - [x] 6.10 验证 Prometheus 指标可查询
   - [x] Repo-truth（2026-05-01）：`tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 当前已验证 `src/core/data_source/metrics.py:DataSourceMetrics.generate_metrics()` 导出的 Prometheus exposition 文本可查询到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等已记录指标及其标签。此项证据覆盖本地 registry/exposition 可查询性，不等同于生产 Prometheus 抓取链路已验收。
 - [ ] 6.11 验证 Grafana 仪表板正常显示
-- [ ] 6.12 代码审查：确保指标命名符合 Prometheus 规范
+- [x] 6.12 代码审查：确保指标命名符合 Prometheus 规范
+  - [x] Repo-truth（2026-05-02）：`src/core/data_source/metrics.py` 当前指标命名均采用小写 snake_case 的 `datasource_*` 前缀；计数器使用 `_total` 后缀，延迟直方图使用 `_seconds` 单位后缀，标签名 `endpoint` / `data_category` / `status` / `check_type` 也符合 Prometheus 常见约定。导出面验证见 `tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics`。此项 review 仅覆盖 repo-owned registry / exposition 命名，不等同于 `6.7` / `6.9` / `6.11` 的监控栈部署验收。
 - [x] 6.13 更新文档：添加监控使用说明
   - [x] Repo-truth（2026-05-01）：`docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md` 现已按当前仓库实现重写为双轨说明：优先描述 `web/backend/app/main.py` 的运行时 `GET /metrics` 主路径，其次说明 `src/core/data_source/metrics.py` 的 `datasource_*` 局部指标链与 `DataSourceManagerV2` hook 关系，并把 `src/monitoring/data_source_metrics.py` + `scripts/runtime/start_metrics_server.py` 明确收窄为 optional / legacy exporter。旧文档里对缺失 Grafana/provisioning 路径的默认前提已去除，当前指南同时补入了本地验证命令、双指标族边界和部署侧扩展说明。
 
