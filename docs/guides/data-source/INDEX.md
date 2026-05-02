@@ -21,6 +21,10 @@
   - 数据源管理工具完整使用说明
 - [`DATA_SOURCE_TOOLS_QUICK_REFERENCE.md`](./DATA_SOURCE_TOOLS_QUICK_REFERENCE.md)
   - 数据源管理与调用速查卡片
+- [`DATA_SOURCE_OPERATIONS_MANUAL.md`](./DATA_SOURCE_OPERATIONS_MANUAL.md)
+  - `optimize-data-source-v2` 当前已落地能力的运维入口
+- [`DATA_SOURCE_DEVELOPER_GUIDE.md`](./DATA_SOURCE_DEVELOPER_GUIDE.md)
+  - `DataSourceManagerV2` 主链路、扩展点与验证矩阵
 
 ## Retained Specialized References
 
@@ -37,7 +41,7 @@
 - [`DATA_SOURCE_MONITORING_GUIDE.md`](./DATA_SOURCE_MONITORING_GUIDE.md)
   - 数据源监控系统集成指南
 - [`DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`](./DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md)
-  - 优化方案部署检查清单
+  - 与当前运维手册/开发者文档对齐后的部署前检查入口
 - [`DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`](./DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
   - 优化方案快速参考
 

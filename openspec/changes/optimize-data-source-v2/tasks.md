@@ -339,21 +339,29 @@
 
 ## 12. 项目收尾（1周）
 > **局部事实说明（2026-04-28）**:
-> 当前仓库内可见的是局部指南与历史报告，例如：
+> 当前仓库内可见的是局部指南、历史报告与本地收尾文档，例如：
 > - `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`
 > - `docs/guides/data-source/DATA_SOURCE_MONITORING_GUIDE.md`
 > - `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`
-> 但它们不足以直接证明以下收尾物已经形成：
-> - 面向当前实现的完整性能压测报告 / 成本节约分析
-> - 与现行 `/metrics` / 双轨指标实现对齐的运维手册
-> - 覆盖本 change 全量能力的开发者文档
-> - 最终验收会议、项目总结、以及 `openspec archive optimize-data-source-v2` 已执行
-> 因此 12.1-12.7 当前继续保持未完成。
+> - `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PERFORMANCE_REPORT_2026-05-02.md`
+> - `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_COST_ANALYSIS_2026-05-02.md`
+> - `docs/guides/data-source/DATA_SOURCE_OPERATIONS_MANUAL.md`
+> - `docs/guides/data-source/DATA_SOURCE_DEVELOPER_GUIDE.md`
+> 当前 repo-truth 已足够支持 12.1-12.4 这类“本地报告 / 手册 / 开发文档”交付物；
+> 但仍不足以直接证明：
+> - 最终验收会议已召开
+> - 面向外部发布的项目总结/经验教训已完成
+> - `openspec archive optimize-data-source-v2` 已执行
+> 因此 12.5-12.7 继续保持未完成。
 
-- [ ] 12.1 完整的性能压测报告
-- [ ] 12.2 成本节约分析报告（对比优化前后）
-- [ ] 12.3 运维手册（监控、告警、故障排查）
-- [ ] 12.4 开发者文档（API 使用、配置说明）
+- [x] 12.1 完整的性能压测报告
+  - [x] Repo-truth（2026-05-02）：已新增 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PERFORMANCE_REPORT_2026-05-02.md`，基于当前仓库可复跑的 repo-local benchmark 汇总 SmartCache、BatchProcessor、SmartRouter 与监控资产引用一致性的本地观测值，并明确区分 synthetic / stub workload 结论与尚未完成的灰度 / 生产验收。
+- [x] 12.2 成本节约分析报告（对比优化前后）
+  - [x] Repo-truth（2026-05-02）：已新增 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_COST_ANALYSIS_2026-05-02.md`，把当前成本结论收紧为“已测代理指标 + 可观测能力 + 尚待部署期验证的 ROI”，不再沿用旧历史报告中的金额/百分比承诺。
+- [x] 12.3 运维手册（监控、告警、故障排查）
+  - [x] Repo-truth（2026-05-02）：已新增 `docs/guides/data-source/DATA_SOURCE_OPERATIONS_MANUAL.md`，并把 `DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md` 重写为与当前 `datasource_*` 指标族、dashboard / alert rule canonical 路径、双轨 `/metrics` 实现和 repo-owned 回归命令对齐的部署前检查入口。
+- [x] 12.4 开发者文档（API 使用、配置说明）
+  - [x] Repo-truth（2026-05-02）：已新增 `docs/guides/data-source/DATA_SOURCE_DEVELOPER_GUIDE.md`，梳理 `DataSourceManagerV2 -> router.py -> handler.py -> monitoring.py -> metrics.py -> GovernanceDataFetcher/BatchProcessor` 当前主链路、相邻能力边界、扩展点与验证矩阵，并同步更新 `docs/guides/data-source/INDEX.md`。
 - [ ] 12.5 最终验收会议
 - [ ] 12.6 项目总结和经验教训
 - [ ] 12.7 归档 OpenSpec 变更（`openspec archive optimize-data-source-v2`）
