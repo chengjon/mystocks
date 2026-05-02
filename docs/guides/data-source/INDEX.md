@@ -24,6 +24,8 @@
 
 ## Retained Specialized References
 
+- [`ADAPTIVE_RATE_LIMITER_GUIDE.md`](./ADAPTIVE_RATE_LIMITER_GUIDE.md)
+  - 独立 `AdaptiveRateLimiter` 组件与当前接入边界说明
 - [`DATA_LINEAGE_TRACKER_GUIDE.md`](./DATA_LINEAGE_TRACKER_GUIDE.md)
   - governance-side `DataLineageTracker` 与可选 Neo4j 存储说明
 - [`DATA_CLEANING_QUICK_START.md`](./DATA_CLEANING_QUICK_START.md)

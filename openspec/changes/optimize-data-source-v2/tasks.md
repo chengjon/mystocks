@@ -291,20 +291,28 @@
 - [x] 9.8 更新文档：添加数据血缘使用说明
 
 ## 10. AdaptiveRateLimiter 实现（可选）
-> **局部事实说明（2026-04-28）**:
-> 当前仓库未找到 `src/core/data_source/adaptive_rate_limiter.py` 或 `AdaptiveRateLimiter` 类的现行实现。
-> 现有 `_record_success()` / 监控计数逻辑主要分布于 `src/core/data_source/base.py`、`handler.py`、`monitoring.py`，属于既有监控/状态记录能力，不等于“基于错误率动态调节许可速率”的自适应限流器。
-> 文档与历史 proposal 中虽有 `AdaptiveRateLimiter` 草图，但不能作为当前代码完成证据。
-> 因此 10.1-10.8 继续保持未完成。
+> **局部事实说明（2026-05-02）**:
+> 当前仓库已新增独立实现：
+> - `src/core/data_source/adaptive_rate_limiter.py`
+> - `tests/unit/test_adaptive_rate_limiter.py`
+> - `docs/guides/data-source/ADAPTIVE_RATE_LIMITER_GUIDE.md`
+> 它已经证明：
+> - 存在名为 `AdaptiveRateLimiter` 的现行类
+> - 支持基于错误率的动态加速 / 降速
+> - 支持 `acquire()`、`record_error()`、`record_success()`、速率边界配置
+> 但当前 repo-truth 也必须保留：
+> - 这还是独立组件
+> - 尚未自动接入 `DataSourceManagerV2` / `handler.py` / `monitoring.py` 主出站链路
+> 因此本批完成的是“组件落地”，不是“主链默认启用”。
 
-- [ ] 10.1 创建 `src/core/data_source/adaptive_rate_limiter.py` 文件
-- [ ] 10.2 实现 `AdaptiveRateLimiter` 类
-- [ ] 10.3 实现基于错误率的动态速率调整
-- [ ] 10.4 实现 `acquire()` 方法（获取许可）
-- [ ] 10.5 实现 `record_error()` 和 `record_success()` 方法
-- [ ] 10.6 添加速率配置（initial_rate=10, min_rate=1, max_rate=100）
-- [ ] 10.7 编写单元测试
-- [ ] 10.8 更新文档：添加限流使用说明
+- [x] 10.1 创建 `src/core/data_source/adaptive_rate_limiter.py` 文件
+- [x] 10.2 实现 `AdaptiveRateLimiter` 类
+- [x] 10.3 实现基于错误率的动态速率调整
+- [x] 10.4 实现 `acquire()` 方法（获取许可）
+- [x] 10.5 实现 `record_error()` 和 `record_success()` 方法
+- [x] 10.6 添加速率配置（initial_rate=10, min_rate=1, max_rate=100）
+- [x] 10.7 编写单元测试
+- [x] 10.8 更新文档：添加限流使用说明
 
 ## 11. Phase 3 验收和部署（可选）
 > **局部事实说明（2026-04-28）**:
