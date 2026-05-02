@@ -198,3 +198,49 @@ def test_validate_monitoring_prometheus_references_supports_dashboard_targets(tm
     assert payload["pass"] is True
     assert payload["dashboard_files"] == [str(dashboard_path.resolve())]
     assert payload["declared_metric_python_files"] == [str(declared_metrics_path.resolve())]
+
+
+def test_datasource_monitoring_assets_reference_declared_datasource_metrics(tmp_path: Path):
+    repo_root = Path(__file__).resolve().parents[2]
+    metrics_path = tmp_path / "metrics.raw.txt"
+    output_path = tmp_path / "report.json"
+
+    metrics_path.write_text(
+        "\n".join(
+            [
+                'datasource_api_latency_seconds_bucket{endpoint="akshare.stock_zh_a_hist",data_category="DAILY_KLINE",le="0.5"} 3',
+                'datasource_api_latency_seconds_bucket{endpoint="akshare.stock_zh_a_hist",data_category="DAILY_KLINE",le="+Inf"} 3',
+                'datasource_api_calls_total{endpoint="akshare.stock_zh_a_hist",data_category="DAILY_KLINE",status="success"} 10',
+                'datasource_cache_hits_total{endpoint="akshare.stock_zh_a_hist"} 8',
+                'datasource_cache_misses_total{endpoint="akshare.stock_zh_a_hist"} 2',
+                'datasource_circuit_breaker_state{endpoint="akshare.stock_zh_a_hist"} 0',
+                'datasource_api_cost_estimated{endpoint="akshare.stock_zh_a_hist"} 0.12',
+                'datasource_data_quality{endpoint="akshare.stock_zh_a_hist",check_type="logic_check"} 100',
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    subprocess.run(
+        [
+            "python",
+            "scripts/dev/quality_gate/validate_monitoring_prometheus_references.py",
+            "--metrics-file",
+            str(metrics_path),
+            "--rule-file",
+            str(repo_root / "config/monitoring-stack/config/rules/data-source-alerts.yml"),
+            "--dashboard-file",
+            str(repo_root / "config/monitoring-stack/grafana-dashboards/data_source_monitoring.json"),
+            "--declared-metrics-python-file",
+            str(repo_root / "src/core/data_source/metrics.py"),
+            "--output",
+            str(output_path),
+        ],
+        cwd=repo_root,
+        check=True,
+    )
+
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    assert payload["pass"] is True
+    assert payload["violations"] == []

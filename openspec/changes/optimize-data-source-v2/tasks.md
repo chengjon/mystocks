@@ -175,25 +175,27 @@
   - [x] 6.6.1 添加 `/metrics` 路由
   - [x] 6.6.2 返回 Prometheus exposition 格式
   - [x] 6.6.3 使用全局 REGISTRY
-- [ ] 6.7 创建 Grafana 仪表板配置
-  - [ ] 6.7.1 创建 `grafana/dashboards/data-source-metrics.json`
-  - [ ] 6.7.2 添加 API 延迟面板（P50/P95/P99）
-  - [ ] 6.7.3 添加成功率面板
-  - [ ] 6.7.4 添加缓存命中率面板
-  - [ ] 6.7.5 添加熔断器状态面板
-  - [ ] 6.7.6 添加 API 成本面板
+- [x] 6.7 创建 Grafana 仪表板配置
+  - [x] 6.7.1 创建 `grafana/dashboards/data-source-metrics.json`
+  - [x] 6.7.2 添加 API 延迟面板（P50/P95/P99）
+  - [x] 6.7.3 添加成功率面板
+  - [x] 6.7.4 添加缓存命中率面板
+  - [x] 6.7.5 添加熔断器状态面板
+  - [x] 6.7.6 添加 API 成本面板
+  - [x] Repo-truth（2026-05-02）：当前仓库的 canonical dashboard 文件为 `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json`，而不是任务原文中的简化路径。该 dashboard 现已对齐 `src/core/data_source/metrics.py` 的 `datasource_*` 指标族，并包含 API 延迟（P50/P95/P99）、成功率、缓存命中率、熔断器状态、API 成本与调用速率等面板。引用一致性已由 `tests/performance/test_validate_monitoring_prometheus_references.py::test_datasource_monitoring_assets_reference_declared_datasource_metrics` 验证。
 - [x] 6.8 编写单元测试 `tests/unit/test_metrics.py`
   - [x] 6.8.1 测试指标记录（成功/失败）
   - [x] 6.8.2 测试延迟 histogram
   - [x] 6.8.3 测试缓存 hit/miss 计数
   - [x] 6.8.4 测试熔断器状态 gauge
   - [x] Repo-truth（2026-05-01）：已新增 `tests/unit/test_metrics.py`，覆盖 `record_api_call()` 成功/失败计数、`get_avg_latency()`、缓存命中率与 `record_circuit_breaker_state()`。补测过程中确认 `src/core/data_source/metrics.py:get_avg_latency()` 原先错误依赖 Histogram 私有字段；现已改为基于 `collect().samples` 的 `_sum/_count` 样本计算平均值。验证见 `tests/unit/test_metrics.py`、`tests/unit/test_data_source_metrics_integration.py`。
-- [ ] 6.9 配置 Prometheus 告警规则
-  - [ ] 6.9.1 创建 `monitoring-stack/config/rules/data-source-alerts.yml`
-  - [ ] 6.9.2 添加成功率 < 95% 告警
-  - [ ] 6.9.3 添加 P95 延迟 > 500ms 告警
-  - [ ] 6.9.4 添加熔断器开启告警
-  - [ ] 6.9.5 添加缓存命中率 < 50% 告警
+- [x] 6.9 配置 Prometheus 告警规则
+  - [x] 6.9.1 创建 `monitoring-stack/config/rules/data-source-alerts.yml`
+  - [x] 6.9.2 添加成功率 < 95% 告警
+  - [x] 6.9.3 添加 P95 延迟 > 500ms 告警
+  - [x] 6.9.4 添加熔断器开启告警
+  - [x] 6.9.5 添加缓存命中率 < 50% 告警
+  - [x] Repo-truth（2026-05-02）：当前仓库的 canonical 告警规则文件为 `config/monitoring-stack/config/rules/data-source-alerts.yml`。该规则集现已对齐 `datasource_*` 指标，覆盖成功率 `< 95%`、P95 延迟 `> 500ms`、熔断器 `OPEN` 与缓存命中率 `< 50%` 四类告警；引用一致性同样由 `tests/performance/test_validate_monitoring_prometheus_references.py::test_datasource_monitoring_assets_reference_declared_datasource_metrics` 验证。
 - [x] 6.10 验证 Prometheus 指标可查询
   - [x] Repo-truth（2026-05-01）：`tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 当前已验证 `src/core/data_source/metrics.py:DataSourceMetrics.generate_metrics()` 导出的 Prometheus exposition 文本可查询到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等已记录指标及其标签。此项证据覆盖本地 registry/exposition 可查询性，不等同于生产 Prometheus 抓取链路已验收。
 - [ ] 6.11 验证 Grafana 仪表板正常显示

@@ -35,7 +35,11 @@
 > **Repo-truth（2026-05-01）**:
 > - `GET /metrics` 已在 [main.py](/opt/claude/mystocks_spec/web/backend/app/main.py:735) 存在，但当前主要暴露的是 performance middleware 的全局 registry 指标。
 > - `src/core/data_source/metrics.py` 已有 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等指标，并已接到 `DataSourceManagerV2` hook。
-> - `src/monitoring/data_source_metrics.py` 与 `scripts/runtime/start_metrics_server.py` 仍存在，但文档中过去引用的 `monitoring-stack/grafana-dashboards/data_source_monitoring.json`、`monitoring-stack/provisioning/dashboards/` 等路径并非当前仓库已验证事实。
+> - `src/monitoring/data_source_metrics.py` 与 `scripts/runtime/start_metrics_server.py` 仍存在，但它们不再是唯一监控真相源。
+> - 当前仓库已存在并维护数据源监控 dashboard / alert rule 的 canonical 配置：
+>   - `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json`
+>   - `config/monitoring-stack/config/rules/data-source-alerts.yml`
+> - 这些监控产物当前已对齐 `src/core/data_source/metrics.py` 的 `datasource_*` 指标族，并由 `tests/performance/test_validate_monitoring_prometheus_references.py::test_datasource_monitoring_assets_reference_declared_datasource_metrics` 做引用一致性验证。
 > - 因此，本指南优先描述当前可直接验证的运行时 `/metrics` 与本地 exposition 用法，再把独立 exporter 标记为可选路径。
 
 ---
@@ -86,8 +90,8 @@
 - 适合需要单独抓取数据源指标的场景
 
 > **当前边界**:
-> - 当前没有直接本地证据证明 Grafana dashboard JSON、Prometheus 告警规则和 auto-provisioning 文件已经按现状同步完成。
-> - 所以本节不再把缺失路径当作默认前提，只保留“如果你的部署侧另行提供这些文件，可按部署环境接入”。
+> - 当前已有本地证据证明 dashboard JSON 与 Prometheus 告警规则文件存在且引用的指标名与现行 `datasource_*` 指标族一致。
+> - 但这仍不等同于 Grafana provisioning、服务启动和浏览器内实际渲染都已完成，因此 `6.11` 类“显示正常”验收项仍需部署环境验证。
 
 ---
 

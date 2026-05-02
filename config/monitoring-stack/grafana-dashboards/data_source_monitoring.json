@@ -82,11 +82,11 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "data_source_up",
+          "expr": "datasource_circuit_breaker_state",
           "refId": "A"
         }
       ],
-      "title": "数据源可用性状态",
+      "title": "熔断器状态面板",
       "type": "stat"
     },
     {
@@ -162,17 +162,17 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "rate(data_source_calls_total{status=\"success\"}[5m])",
-          "legendFormat": "{{endpoint_name}} - 成功",
+          "expr": "sum(rate(datasource_api_calls_total{status=\"success\"}[5m])) by (endpoint)",
+          "legendFormat": "{{endpoint}} - 成功",
           "refId": "A"
         },
         {
-          "expr": "rate(data_source_calls_total{status=\"failure\"}[5m])",
-          "legendFormat": "{{endpoint_name}} - 失败",
+          "expr": "sum(rate(datasource_api_calls_total{status=\"failure\"}[5m])) by (endpoint)",
+          "legendFormat": "{{endpoint}} - 失败",
           "refId": "B"
         }
       ],
-      "title": "数据源调用速率 (QPS)",
+      "title": "API 调用速率面板",
       "type": "timeseries"
     },
     {
@@ -249,11 +249,11 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "data_source_health_status",
+          "expr": "datasource_api_cost_estimated",
           "refId": "A"
         }
       ],
-      "title": "数据源健康状态",
+      "title": "API 成本面板",
       "type": "stat"
     },
     {
@@ -329,22 +329,22 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, rate(data_source_response_time_seconds_bucket[5m]))",
-          "legendFormat": "{{endpoint_name}} - P50",
+          "expr": "histogram_quantile(0.50, sum(rate(datasource_api_latency_seconds_bucket[5m])) by (le, endpoint))",
+          "legendFormat": "{{endpoint}} - P50",
           "refId": "A"
         },
         {
-          "expr": "histogram_quantile(0.95, rate(data_source_response_time_seconds_bucket[5m]))",
-          "legendFormat": "{{endpoint_name}} - P95",
+          "expr": "histogram_quantile(0.95, sum(rate(datasource_api_latency_seconds_bucket[5m])) by (le, endpoint))",
+          "legendFormat": "{{endpoint}} - P95",
           "refId": "B"
         },
         {
-          "expr": "histogram_quantile(0.99, rate(data_source_response_time_seconds_bucket[5m]))",
-          "legendFormat": "{{endpoint_name}} - P99",
+          "expr": "histogram_quantile(0.99, sum(rate(datasource_api_latency_seconds_bucket[5m])) by (le, endpoint))",
+          "legendFormat": "{{endpoint}} - P99",
           "refId": "C"
         }
       ],
-      "title": "数据源响应时间分布",
+      "title": "API 延迟面板（P50/P95/P99）",
       "type": "timeseries"
     },
     {
@@ -400,7 +400,7 @@
               }
             ]
           },
-          "unit": "percent"
+          "unit": "percentunit"
         }
       },
       "gridPos": {
@@ -428,12 +428,12 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "data_source_success_rate",
-          "legendFormat": "{{endpoint_name}}",
+          "expr": "sum(rate(datasource_api_calls_total{status=\"success\"}[5m])) by (endpoint) / clamp_min(sum(rate(datasource_api_calls_total[5m])) by (endpoint), 1e-9)",
+          "legendFormat": "{{endpoint}}",
           "refId": "A"
         }
       ],
-      "title": "数据源成功率趋势",
+      "title": "成功率面板",
       "type": "timeseries"
     },
     {
@@ -514,7 +514,7 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "data_source_quality_score",
+          "expr": "datasource_data_quality",
           "refId": "A"
         }
       ],
@@ -569,11 +569,11 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "data_source_consecutive_failures",
+          "expr": "sum(rate(datasource_cache_hits_total[10m])) by (endpoint) / clamp_min(sum(rate(datasource_cache_hits_total[10m])) by (endpoint) + sum(rate(datasource_cache_misses_total[10m])) by (endpoint), 1e-9)",
           "refId": "A"
         }
       ],
-      "title": "连续失败次数",
+      "title": "缓存命中率面板",
       "type": "stat"
     },
     {
@@ -620,11 +620,11 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "data_source_total_calls",
+          "expr": "datasource_api_cost_estimated",
           "refId": "A"
         }
       ],
-      "title": "总调用次数",
+      "title": "最新 API 成本值",
       "type": "stat"
     },
     {
@@ -668,12 +668,12 @@
       },
       "targets": [
         {
-          "expr": "count(data_source_up{endpoint_name=~\".*\"}) by (source_name)",
-          "legendFormat": "{{source_name}}",
+          "expr": "count(datasource_circuit_breaker_state{endpoint=~\".*\"}) by (endpoint)",
+          "legendFormat": "{{endpoint}}",
           "refId": "A"
         }
       ],
-      "title": "数据源分布 (按来源)",
+      "title": "端点分布",
       "type": "piechart"
     },
     {
@@ -717,12 +717,12 @@
       },
       "targets": [
         {
-          "expr": "count(data_source_up{endpoint_name=~\".*\"}) by (data_category)",
+          "expr": "count(datasource_api_calls_total{data_category=~\".*\"}) by (data_category)",
           "legendFormat": "{{data_category}}",
           "refId": "A"
         }
       ],
-      "title": "数据源分布 (按数据分类)",
+      "title": "数据分类分布",
       "type": "piechart"
     },
     {
@@ -752,7 +752,7 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "data_source_total_calls",
+          "expr": "sum(datasource_api_calls_total) by (endpoint, data_category, status)",
           "format": "table",
           "instant": true,
           "refId": "A"
@@ -771,14 +771,15 @@
             "indexByName": {
               "Value": 4,
               "data_category": 2,
-              "endpoint_name": 0,
-              "source_name": 1
+              "endpoint": 0,
+              "status": 1,
+              "data_category": 2
             },
             "renameByName": {
               "Value": "总调用次数",
               "data_category": "数据分类",
-              "endpoint_name": "端点名称",
-              "source_name": "数据源"
+              "endpoint": "端点名称",
+              "status": "状态"
             }
           }
         }
@@ -855,11 +856,11 @@
       "pluginVersion": "8.0.0",
       "targets": [
         {
-          "expr": "rate(data_source_record_count_bucket[5m])",
+          "expr": "sum(rate(datasource_api_latency_seconds_bucket[5m])) by (le, endpoint)",
           "refId": "A"
         }
       ],
-      "title": "数据源返回记录数热力图",
+      "title": "数据源延迟热力图",
       "type": "timeseries"
     }
   ],
