@@ -34,7 +34,8 @@
   - [x] 1.9.6 测试并发访问（100线程并发）
   - [x] 1.9.7 测试后台刷新失败处理
   - [x] 1.9.8 测试线程池限制（max_workers=5）
-- [ ] 1.10 性能测试：对比优化前后的缓存命中率和响应时间
+- [x] 1.10 性能测试：对比优化前后的缓存命中率和响应时间
+  - [x] Repo-truth（2026-05-02）：已新增 `tests/performance/test_smart_cache_benchmark.py`，并通过 `pytest tests/performance/test_smart_cache_benchmark.py -q --no-cov --run-performance` 验证在本地 synthetic workload 下，`SmartCache + soft expiry + background refresh` 相比显式 `LRU + blocking TTL reload` 基线具有更高缓存命中率和更低平均读取延迟。该证据仅覆盖本地对照基准，不等同于 `4.x` / `12.x` 所需的真实流量命中率或端到端响应时间验收。
 - [x] 1.11 代码审查：确保线程安全性和错误处理
   - [x] Repo-truth（2026-05-02）：`src/core/data_source/smart_cache.py` 当前主访问链路 `get()` / `set()` / `invalidate()` / `clear()` / `cleanup_expired()` 与后台刷新写回都由 `threading.RLock` 保护；重复刷新通过 `refreshing` set 抑制，并受 `ThreadPoolExecutor(max_workers=5)` 限流；`_run_refresh()` 的异常路径会记录 `refresh_failures`，并在 `finally` 中清理刷新标记。验证锚点见 `tests/unit/test_smart_cache.py` 的 100 线程并发访问、后台刷新失败、线程池限制、软/硬过期与 shutdown 用例。当前 review 口径仅覆盖 repo-owned 内存缓存主链路，不等同于 `1.10` 的性能验收。
 - [x] 1.12 更新文档：添加 SmartCache 使用说明

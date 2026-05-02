@@ -108,6 +108,20 @@ stats = cache.get_stats()
 # }
 ```
 
+### 本地性能基准
+
+当前仓库已补充一个只在 `--run-performance` 下执行的本地 synthetic benchmark：
+
+```bash
+pytest tests/performance/test_smart_cache_benchmark.py -q --no-cov --run-performance
+```
+
+该基准对比的是：
+- 当前 `SmartCache + soft expiry + background refresh`
+- 一个显式的 `LRU + blocking TTL reload` 本地基线
+
+它用于验证“命中率与平均读取延迟”的本地改进趋势，不等同于真实生产流量下的缓存命中率或端到端 API 响应时间验收。
+
 ---
 
 ## CircuitBreaker 使用
