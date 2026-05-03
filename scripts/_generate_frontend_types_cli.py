@@ -38,6 +38,12 @@ def generate_index_file(domains: list[str], output_dir: Path) -> str:
             lines.append(f"export * from './{domain}';")
             lines.append("")
 
+    extensions_index = output_dir / "extensions" / "index.ts"
+    if extensions_index.exists():
+        lines.append("// Frontend-only type extensions")
+        lines.append("export * as extensions from './extensions';")
+        lines.append("")
+
     return "\n".join(lines)
 
 

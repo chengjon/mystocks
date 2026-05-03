@@ -33,7 +33,14 @@ def test_generate_type_validation_report_writes_latest_and_timestamped_json(tmp_
     assert payload["conflicts"]["ok"] is True
     assert payload["audit"]["naming"]["ok"] is True
     assert payload["audit"]["jsdoc"]["ok"] is True
-    assert payload["audit"]["unused"]["count"] >= 1
+    assert payload["audit"]["unused"]["count"] == 0
+    assert payload["coverage"]["metric"] == "consumed_extension_exports"
+    assert payload["coverage"]["target_percent"] == 95
+    assert payload["coverage"]["ok"] is True
+    assert payload["coverage"]["percent"] >= 95
+    assert payload["coverage"]["covered_exported_types"] == payload["coverage"]["total_exported_types"]
+    assert payload["overall"]["checks"]["coverage"] is True
+    assert payload["overall"]["observations"]["type_coverage_percent"] >= 95
 
     latest_report = Path(payload["report_paths"]["latest_json"])
     timestamped_report = Path(payload["report_paths"]["timestamped_json"])
@@ -44,4 +51,6 @@ def test_generate_type_validation_report_writes_latest_and_timestamped_json(tmp_
     latest_payload = json.loads(latest_report.read_text(encoding="utf-8"))
 
     assert latest_payload["overall"]["ok"] is True
-    assert latest_payload["audit"]["unused"]["count"] >= 1
+    assert latest_payload["audit"]["unused"]["count"] == 0
+    assert latest_payload["coverage"]["ok"] is True
+    assert latest_payload["coverage"]["percent"] >= 95

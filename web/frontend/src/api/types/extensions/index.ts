@@ -12,13 +12,17 @@
  */
 
 // ========== Strategy Domain Types ==========
-export * from './strategy.ts';
+export * from './strategy/index.ts';
 
 // ========== Market Domain Types ==========
 export * from './market/index.ts';
 
 // ========== Common Utility Types (ViewModel) ==========
-export * from './common.ts';
+export * from './common/index.ts';
 
 // ========== UI Form Types ==========
-export * from './ui.ts';
+export * from './ui/index.ts';
+
+// ========== Reserved Extension Domains ==========
+export * from './api/index.ts';
+export * from './utils/index.ts';

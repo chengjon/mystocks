@@ -26,10 +26,23 @@ def test_generate_type_health_dashboard_writes_latest_and_timestamped_html(tmp_p
                     "unused": {"count": 2, "names": ["UnusedAlpha", "UnusedBeta"]},
                 },
                 "usage": {"extensions": {"files": 7, "exported_types": 94}},
+                "coverage": {
+                    "metric": "consumed_extension_exports",
+                    "target_percent": 95,
+                    "total_exported_types": 94,
+                    "covered_exported_types": 92,
+                    "uncovered_exported_types": 2,
+                    "percent": 97.87,
+                    "ok": True,
+                },
                 "typecheck": {"ok": True, "type_error_count": 0},
                 "overall": {
                     "ok": True,
-                    "observations": {"unused_type_definition_count": 2},
+                    "checks": {"coverage": True},
+                    "observations": {
+                        "unused_type_definition_count": 2,
+                        "type_coverage_percent": 97.87,
+                    },
                 },
             }
         ),
@@ -63,5 +76,7 @@ def test_generate_type_health_dashboard_writes_latest_and_timestamped_html(tmp_p
 
     html = latest_dashboard.read_text(encoding="utf-8")
     assert "Type Extension Health Dashboard" in html
+    assert "Type coverage" in html
+    assert "97.87%" in html
     assert "UnusedAlpha" in html
     assert "UnusedBeta" in html

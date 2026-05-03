@@ -31,9 +31,14 @@ async function validateTypes() {
     const requiredFiles = [
       "index.ts",
       "strategy.ts",
+      "strategy/index.ts",
       "market/index.ts",
       "common.ts",
+      "common/index.ts",
       "ui.ts",
+      "ui/index.ts",
+      "api/index.ts",
+      "utils/index.ts",
     ];
 
     for (const file of requiredFiles) {

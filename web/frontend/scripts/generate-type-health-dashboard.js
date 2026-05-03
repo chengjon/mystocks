@@ -85,9 +85,14 @@ function renderUnusedList(unusedNames) {
   `;
 }
 
+function formatPercent(value) {
+  return Number.isFinite(value) ? `${Number(value).toFixed(2)}%` : "unknown";
+}
+
 function renderHtml(report) {
   const usage = report.usage?.extensions ?? {};
   const unusedNames = report.audit?.unused?.names ?? [];
+  const coverage = report.coverage ?? {};
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -209,6 +214,13 @@ function renderHtml(report) {
           <strong>${escapeHtml(usage.exported_types ?? "unknown")}</strong>
           <p>Current exported extension type count across tracked files.</p>
         </article>
+        <article class="card">
+          <span class="badge ${statusClass(coverage.ok)}">${statusLabel(coverage.ok)}</span>
+          <strong>${escapeHtml(formatPercent(coverage.percent))}</strong>
+          <p>Type coverage across extension public exports. Target: ${escapeHtml(
+            coverage.target_percent ?? 95,
+          )}%.</p>
+        </article>
       </section>
 
       <section class="card">
@@ -219,6 +231,7 @@ function renderHtml(report) {
             ${renderCheckRow("Conflict check", report.conflicts?.ok)}
             ${renderCheckRow("Naming audit", report.audit?.naming?.ok)}
             ${renderCheckRow("JSDoc audit", report.audit?.jsdoc?.ok)}
+            ${renderCheckRow("Type coverage", coverage.ok)}
             ${renderCheckRow("TypeScript type-check", report.typecheck?.ok)}
           </tbody>
         </table>
@@ -239,6 +252,16 @@ function renderHtml(report) {
             <tr>
               <th>Unused definitions</th>
               <td>${escapeHtml(report.audit?.unused?.count ?? 0)}</td>
+            </tr>
+            <tr>
+              <th>Covered / total exports</th>
+              <td>${escapeHtml(coverage.covered_exported_types ?? "unknown")} / ${escapeHtml(
+                coverage.total_exported_types ?? "unknown",
+              )}</td>
+            </tr>
+            <tr>
+              <th>Type coverage</th>
+              <td>${escapeHtml(formatPercent(coverage.percent))}</td>
             </tr>
           </tbody>
         </table>

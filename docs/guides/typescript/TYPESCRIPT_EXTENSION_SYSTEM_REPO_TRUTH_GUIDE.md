@@ -14,12 +14,22 @@
 当前扩展类型系统的核心路径是：
 
 - `web/frontend/src/api/types/extensions/index.ts`
+- `web/frontend/src/api/types/extensions/strategy/index.ts`
+- `web/frontend/src/api/types/extensions/common/index.ts`
+- `web/frontend/src/api/types/extensions/ui/index.ts`
+- `web/frontend/src/api/types/extensions/market/index.ts`
+- `web/frontend/src/api/types/extensions/api/index.ts`
+- `web/frontend/src/api/types/extensions/utils/index.ts`
+- `web/frontend/src/api/types/extensions/market/types-1.ts`
+- `web/frontend/src/api/types/extensions/market/types-2.ts`
+
+兼容层入口仍保留在：
+
 - `web/frontend/src/api/types/extensions/strategy.ts`
 - `web/frontend/src/api/types/extensions/common.ts`
 - `web/frontend/src/api/types/extensions/ui.ts`
-- `web/frontend/src/api/types/extensions/market/index.ts`
-- `web/frontend/src/api/types/extensions/market/types-1.ts`
-- `web/frontend/src/api/types/extensions/market/types-2.ts`
+
+但这三个 root-level 文件当前只做薄 re-export shim，不再承载主实现。
 
 主类型入口是：
 
@@ -34,7 +44,7 @@ export * as extensions from "./extensions";
 这样做的原因很直接：
 
 - 允许 `src/api/types/index.ts` 暴露扩展系统的统一入口
-- 保持旧的顶层导出面不被 `extensions/common.ts` 中的 `APIResponse`、`PaginatedResponse`、`PaginationParams` 等名字污染
+- 保持旧的顶层导出面不被 extension common 域中的 `APIResponse`、`PaginatedResponse`、`PaginationParams` 等名字污染
 - 为后续继续扩展 `extensions/` 提供稳定边界
 
 ## 2. 命名约定
@@ -97,11 +107,13 @@ type PositionVM = extensions.PositionVM;
   - 检查当前公开 surface 是否存在冲突
 - `node scripts/audit-type-extension-quality.js`
   - 输出命名约定、顶层 JSDoc 覆盖情况，以及当前仍未被 `web/frontend/src` 消费的扩展类型清单
+  - 当前口径会把“在同一扩展文件内被其他导出类型引用的支撑型声明”视为已使用，避免把 `StrategyParametersVM`、`FormValidationRule` 这类 intra-file support types 误报成 unused
   - 当前会把 `list`、`date_type` 视为 repo-truth 允许保留的 legacy utility aliases，而不是命名违规
 - `node scripts/generate-type-usage.js`
   - 输出扩展文件数、导出类型数、主索引扩展导出模式等 JSON summary
 - `node scripts/generate-type-validation-report.js`
   - 归并 `validate-types`、`check-type-conflicts`、`audit-type-extension-quality`、`generate-type-usage` 和 `npm run type-check`
+  - 同时计算 extension public-surface coverage，当前口径为 `covered_exported_types / total_exported_types`
   - 默认把 JSON artifact 写入 `reports/analysis/typescript-extension-validation/`
   - 会同时生成：
     - 时间戳报告：`YYYYMMDDTHHMMSSZ-type-extension-validation-report.json`
@@ -112,6 +124,7 @@ type PositionVM = extensions.PositionVM;
   - 会同时生成：
     - 时间戳 HTML：`YYYYMMDDTHHMMSSZ-type-extension-health-dashboard.html`
     - 最新指针：`latest.html`
+  - 当前 dashboard 会展示 coverage 百分比及其 `>=95%` 门槛状态
 
 常用验证命令：
 
@@ -128,15 +141,28 @@ npm run type-check
 
 当前 `tsconfig.json` 已不再排除 `src/api/types/extensions/**/*`，因此 `npm run type-check` 会真实覆盖扩展类型，而不是绕过它们。
 
+当前 build/dev 集成也已经闭环：
+
+- `python scripts/generate_frontend_types.py` 可成功生成前端类型
+- 自动生成后的 `web/frontend/src/api/types/index.ts` 仍会保留 `export * as extensions from "./extensions";`
+- `cd web/frontend && npm run build` 可在默认 `generate-types -> vue-tsc -> vite build` 链路下通过
+- `cd web/frontend && npm run dev -- --host 127.0.0.1 --port 4174 --strictPort` 可成功启动 Vite dev server
+- `curl http://127.0.0.1:4174/` 返回的 HTML 已注入 `/@vite/client`
+- `curl http://127.0.0.1:4174/src/views/artdeco-pages/strategy-tabs/backtestAnalysisHelpers.ts` 可成功返回转译后的 JS；该模块直接 `import type { BacktestRequestVM } from "@/api/types/extensions"`
+
+这意味着当前 repo-truth 下，不需要再为 extension system 额外追加一个“专门处理 type-only imports 的 Vite 插件”；默认 Vite dev/build 管线已经能消化这类消费者模块。
+
 ## 5. 新增类型时的最小流程
 
 推荐按这个顺序做：
 
 1. 选对域文件
-   - strategy -> `extensions/strategy.ts`
-   - market -> `extensions/market/*`
-   - common utility / ViewModel helper -> `extensions/common.ts`
-   - form / UI metadata -> `extensions/ui.ts`
+   - strategy -> `extensions/strategy/index.ts`
+   - market -> `extensions/market/index.ts` 或其下子模块
+   - common utility / ViewModel helper -> `extensions/common/index.ts`
+   - form / UI metadata -> `extensions/ui/index.ts`
+   - 预留域位 -> `extensions/api/index.ts`、`extensions/utils/index.ts`
+   - `extensions/strategy.ts`、`extensions/common.ts`、`extensions/ui.ts` 仅用于兼容旧导入，不要把新实现继续写回 shim
 2. 先确认名字不会和现有顶层公开 surface 冲突
 3. 如有新的 market 子模块导出，先更新 `extensions/market/index.ts`
 4. 跑脚本：
@@ -175,7 +201,7 @@ npm run type-check
 - 现有扩展类型名字符合当前 repo-truth 约定
 - 顶层导出都有对应 JSDoc 注释
 
-它不会把“仍未消费的扩展类型”自动洗成完成项。当前 `audit-type-extension-quality.js` 仍会报告一批未在 `web/frontend/src` 中被引用的扩展类型，因此 `No unused type definitions` 继续属于开放治理项，而不是已闭环项。
+它不会把“仍未消费的扩展类型”自动洗成完成项。当前 repo-truth 已先后补齐同文件支撑型类型误报修正，并把保留型 public-surface 扩展类型纳入 `compatibility-smoke.ts` 的 compile-time 覆盖；在这套口径下，`audit-type-extension-quality.js` 当前返回 `unused.count = 0`，因此 extension 层的“可观测 unused type definitions”已完成当前批次收口。
 
 ### 6.5 自动报告和单次脚本检查的区别是什么？
 
@@ -205,9 +231,25 @@ node scripts/generate-type-health-dashboard.js --report-dir ../../reports/analys
 当前 dashboard 是 repo-owned 的静态 HTML artifact，不依赖额外服务或运行时面板。它聚焦当前最重要的 repo-truth 信号：
 
 - overall validation status
-- validation / conflicts / naming / jsdoc / typecheck 五项检查结果
+- validation / conflicts / naming / jsdoc / coverage / typecheck 六项检查结果
 - exported extension type 数量
 - 当前未使用扩展类型数量及名称
+- extension public-surface coverage 百分比，以及 `>=95%` 是否达标
+
+### 6.5.1 这里的 coverage 指的是什么？
+
+这里不是 Python 测试覆盖率，也不是通用的 TS 行覆盖率。
+
+当前专题里的 coverage repo-truth 是：
+
+- 分子：`covered_exported_types`
+  - 也就是当前已被前端源码消费，或被 `compatibility-smoke.ts` compile-time fixture 覆盖到的扩展导出类型
+- 分母：`total_exported_types`
+  - 也就是当前 extension 层导出类型总数
+- 指标名：`coverage.metric = consumed_extension_exports`
+- 门槛：`coverage.target_percent = 95`
+
+在当前仓库状态下，`unused.count = 0`，因此 `type:report` 当前给出的 `coverage.percent = 100`。
 
 ### 6.6 仓库里有没有“兼容性 smoke”证据？
 
@@ -218,7 +260,7 @@ node scripts/generate-type-health-dashboard.js --report-dir ../../reports/analys
 它专门用于让 `npm run type-check` 同时覆盖：
 
 - 旧的根级导出：`APIResponse`、`PaginationParams`、`UnifiedResponse`
-- 新的扩展层导出：`StrategyVM`、`FormField`
+- 新的扩展层导出：`StrategyVM`、`FormField`、`FormValidationSchema`、`FormValidationState`、`StrategyComparisonDataVM`、`StrategyOptimizationRequestVM`、`StrategyOptimizationResultVM`，以及 common domain 下的 pagination / validation / upload / websocket / utility public-surface types
 
 这不是运行时模块，也不是业务页面依赖；它只是一个最小编译时夹具，用来证明“新增 `extensions` 命名空间之后，现有根级导出没有被破坏”。
 
@@ -248,7 +290,7 @@ node scripts/generate-type-health-dashboard.js --report-dir ../../reports/analys
 至少满足：
 
 - 目标扩展类型落在正确域文件
-- `extensions/index.ts` / `extensions/market/index.ts` 导出链路正确
+- `extensions/index.ts` 与对应域入口 `extensions/*/index.ts` 导出链路正确
 - `node scripts/validate-types.js` 通过
 - `node scripts/check-type-conflicts.js` 通过
 - `node scripts/audit-type-extension-quality.js` 中 `naming.ok=true` 且 `jsdoc.ok=true`

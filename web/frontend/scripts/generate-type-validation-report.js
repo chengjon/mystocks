@@ -128,6 +128,28 @@ function runTypeCheck() {
   };
 }
 
+function buildCoverageSummary(audit, usage) {
+  const totalExportedTypes =
+    usage?.extensions?.exported_types ??
+    audit?.extensions?.exported_types ??
+    0;
+  const uncoveredExportedTypes = audit?.unused?.count ?? 0;
+  const coveredExportedTypes = Math.max(0, totalExportedTypes - uncoveredExportedTypes);
+  const percent = totalExportedTypes > 0
+    ? Number.parseFloat(((coveredExportedTypes / totalExportedTypes) * 100).toFixed(2))
+    : 0;
+
+  return {
+    metric: "consumed_extension_exports",
+    target_percent: 95,
+    total_exported_types: totalExportedTypes,
+    covered_exported_types: coveredExportedTypes,
+    uncovered_exported_types: uncoveredExportedTypes,
+    percent,
+    ok: percent >= 95,
+  };
+}
+
 async function generateTypeValidationReport({ reportDir = DEFAULT_REPORT_DIR } = {}) {
   const generatedAt = new Date().toISOString();
   const validation = runValidationScript();
@@ -135,6 +157,7 @@ async function generateTypeValidationReport({ reportDir = DEFAULT_REPORT_DIR } =
   const audit = runJsonScript("scripts/audit-type-extension-quality.js");
   const usage = runJsonScript("scripts/generate-type-usage.js");
   const typecheck = runTypeCheck();
+  const coverage = buildCoverageSummary(audit, usage);
 
   const report = {
     summary_schema_version: 1,
@@ -144,6 +167,7 @@ async function generateTypeValidationReport({ reportDir = DEFAULT_REPORT_DIR } =
     conflicts,
     audit,
     usage,
+    coverage,
     typecheck,
     overall: {
       ok:
@@ -151,16 +175,19 @@ async function generateTypeValidationReport({ reportDir = DEFAULT_REPORT_DIR } =
         conflicts.ok &&
         audit.naming.ok &&
         audit.jsdoc.ok &&
+        coverage.ok &&
         typecheck.ok,
       checks: {
         validation: validation.ok,
         conflicts: conflicts.ok,
         naming: audit.naming.ok,
         jsdoc: audit.jsdoc.ok,
+        coverage: coverage.ok,
         typecheck: typecheck.ok,
       },
       observations: {
         unused_type_definition_count: audit.unused.count,
+        type_coverage_percent: coverage.percent,
       },
     },
   };
