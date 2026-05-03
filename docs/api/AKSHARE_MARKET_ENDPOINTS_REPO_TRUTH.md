@@ -91,3 +91,29 @@
 - `docs/reports/AKSHARE_DATA_SOURCE_API_SUMMARY.md`
 
 它们可用来理解历史设计或交付快照，但当前实现事实应回到本文件、OpenSpec 台账和当前代码。
+
+## 8. 推荐验证入口
+
+在推进 `expand-akshare-data-sources` 第 6 节相关工作前，优先运行 wrapper：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+解释：
+
+- `akshare-market-function-availability.json` 回答“当前本地 `akshare` 有哪些同名函数”
+- `akshare-market-repo-truth-gate.json` 回答“当前仓库的 OpenSpec / repo-truth / registry / adapter / route / focused tests 是否与这个现实一致”
+- `akshare-market-gates-summary.json` 给出统一 pass/fail 汇总，供 runtime / CI 直接消费
+
+如需拆分诊断，再单独运行叶子脚本：
+
+```bash
+python scripts/dev/quality_gate/collect_akshare_market_function_availability.py \
+  --output /tmp/akshare-market-function-availability.json
+python scripts/dev/quality_gate/validate_akshare_market_repo_truth.py \
+  --output /tmp/akshare-market-repo-truth-gate.json
+```
+
+wrapper 通过以后，才适合把某个 `False -> True` 的函数拉入单接口微批次。

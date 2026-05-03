@@ -98,10 +98,9 @@ def test_collect_akshare_market_function_availability_surfaces_help_candidates(m
     assert rows["stock_news_main_em"]["available"] is False
     assert rows["stock_news_main_em"]["help_candidates"] == ["stock_news_main_cx"]
     assert rows["stock_dt_pool_em"]["help_candidates"] == ["stock_zt_pool_dtgc_em"]
-    assert rows["stock_new_em"]["help_candidates"][0] == "stock_zt_pool_sub_new_em"
-    assert "stock_zh_a_new_em" in rows["stock_new_em"]["help_candidates"]
+    assert rows["stock_new_em"]["help_candidates"] == ["stock_zt_pool_sub_new_em"]
     assert payload["summary"]["help_candidate_functions"] == {
         "stock_news_main_em": ["stock_news_main_cx"],
         "stock_dt_pool_em": ["stock_zt_pool_dtgc_em"],
-        "stock_new_em": rows["stock_new_em"]["help_candidates"],
+        "stock_new_em": ["stock_zt_pool_sub_new_em"],
     }

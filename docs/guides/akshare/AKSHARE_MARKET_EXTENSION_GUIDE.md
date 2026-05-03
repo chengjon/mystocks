@@ -33,6 +33,39 @@
 
 这些缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出对应同名函数，不能拿近似接口替代。
 
+### 1.1 当前门禁快照
+
+2026-05-03 在当前环境实跑：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+结果是：
+
+- 本地 `akshare` 版本：`1.18.60`
+- 追踪函数总数：`9`
+- 当前可用：`4`
+- 当前缺失：`5`
+- repo-truth violation：`0`
+- 统一门禁结果：`pass=true`
+
+当前 availability 报告还会补充 `summary.help_candidate_functions`：
+
+- `stock_news_main_em` -> `stock_news_main_cx`
+- `stock_dt_pool_em` -> `stock_zt_pool_dtgc_em`
+- `stock_strong_pool_em` -> `stock_zt_pool_strong_em`
+- `stock_new_em` -> `stock_zt_pool_sub_new_em`
+- `stock_weak_pool_em` -> 当前未发现同类候选
+
+额外已考虑但不映射到当前第 6 节条目的官方 pool 函数：
+
+- `stock_zt_pool_previous_em`：昨日涨停股池
+- `stock_zt_pool_zbgc_em`：炸板股池
+
+这些提示只用于“本地包里是否存在相近能力”的审计参考，不改变 same-name 门禁结论。
+
 ## 2. 当前入口分布
 
 ### 2.1 Adapter 入口
@@ -59,6 +92,28 @@
 - `GET /api/akshare/market/stock/zt-pool/em`
 - `GET /api/akshare/market/stock/changes/em`
 - `GET /api/akshare/market/board/change/em`
+
+### 2.3 扩展前的标准门禁入口
+
+在继续实现任何第 6 节缺口前，先运行统一门禁：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+优先关注 3 份报告：
+
+- `/tmp/akshare-market-gates/akshare-market-function-availability.json`
+- `/tmp/akshare-market-gates/akshare-market-repo-truth-gate.json`
+- `/tmp/akshare-market-gates/akshare-market-gates-summary.json`
+
+其中 availability 报告新增可读字段：
+
+- `functions[].help_candidates`
+- `summary.help_candidate_functions`
+
+若只想拆分定位，再单独运行叶子脚本。MyStocks 这一侧只负责校验与审计，不自动生成业务代码，也不补第三方替代实现。
 
 ## 3. 使用示例
 

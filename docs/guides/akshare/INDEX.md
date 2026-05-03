@@ -9,9 +9,26 @@
 1. [`AKSHARE_MARKET_EXTENSION_GUIDE.md`](./AKSHARE_MARKET_EXTENSION_GUIDE.md)
    - 当前 AkShare 市场扩充接口的使用入口、已实现范围、更新频率与缓存边界
 2. [`AKSHARE_MARKET_TROUBLESHOOTING.md`](./AKSHARE_MARKET_TROUBLESHOOTING.md)
-   - 常见故障排查与验证命令
+   - 常见故障排查、同名函数探测与 repo-truth 门禁命令
 3. [`AKSHARE_MARKET_MAINTENANCE.md`](./AKSHARE_MARKET_MAINTENANCE.md)
-   - 版本兼容、增量扩展和维护 checklist
+   - 版本兼容、增量扩展、门禁脚本入口和维护 checklist
+
+## Gate Scripts
+
+当前这条线的标准门禁命令是 wrapper：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+默认会产出：
+
+- `akshare-market-function-availability.json`
+- `akshare-market-repo-truth-gate.json`
+- `akshare-market-gates-summary.json`
+
+如需拆分诊断，再分别运行两个叶子脚本。它们都只做校验和审计，不生成业务代码。
 
 ## Relationship To Historical Docs
 

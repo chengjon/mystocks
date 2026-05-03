@@ -29,15 +29,48 @@
 
 ## 3. 推荐扩展顺序
 
-1. 先确认本地 `akshare` 是否存在同名函数
+1. 先运行同名函数可用性探测脚本，确认本地 `akshare` 是否存在同名函数
 2. 再写 adapter 方法
 3. 再加独立 / guard-compliant 路由
 4. 再补 registry
 5. 再补 focused tests
 6. 最后回写 OpenSpec 与文档
 
+推荐命令：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+默认会产出：
+
+- `/tmp/akshare-market-gates/akshare-market-function-availability.json`
+- `/tmp/akshare-market-gates/akshare-market-repo-truth-gate.json`
+- `/tmp/akshare-market-gates/akshare-market-gates-summary.json`
+
+如需拆分排查，再分别运行底层脚本：
+
+```bash
+python scripts/dev/quality_gate/collect_akshare_market_function_availability.py \
+  --output /tmp/akshare-market-function-availability.json
+```
+
+```bash
+python scripts/dev/quality_gate/validate_akshare_market_repo_truth.py \
+  --output /tmp/akshare-market-repo-truth-gate.json
+```
+
+这些脚本都只做校验与审计：
+
+- 不会生成业务代码
+- 不会自动修改 OpenSpec / registry / adapter / route
+- 只用于判断“当前本地 `akshare` 能力”与“当前仓库闭环状态”是否一致
+
 ## 4. 维护 checklist
 
+- [ ] `run_akshare_market_gates.py` 已完成统一门禁校验并检查 summary
+- [ ] 如有失败，已用叶子脚本拆分确认“函数可用性”与“repo-truth 一致性”分别状态
 - [ ] 同名 AkShare 函数在本地环境存在
 - [ ] adapter 返回列名已标准化
 - [ ] 新路由通过 `UnifiedResponse` guard

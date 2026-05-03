@@ -84,6 +84,13 @@
 - [ ] 6.7 实现弱势股池 (akshare.stock_weak_pool_em)
 - [x] 6.8 实现盘口异动 (akshare.stock_changes_em)
 - [ ] 6.9 实现次新股池 (akshare.stock_new_em)
+  - Repo-truth 方案说明：当前仅把以下映射视为“可讨论的官方改名候选”，尚未批准实现：
+    - `stock_dt_pool_em` -> `stock_zt_pool_dtgc_em`
+    - `stock_strong_pool_em` -> `stock_zt_pool_strong_em`
+    - `stock_new_em` -> `stock_zt_pool_sub_new_em`
+    - `stock_zt_pool_previous_em`、`stock_zt_pool_zbgc_em` 已纳入评估，但当前没有对应 OpenSpec 条目
+    - `stock_news_main_em` -> `stock_news_main_cx` 明确排除
+    - `stock_weak_pool_em` 继续保持无候选 gap
 - [ ] 6.10 添加行情和情绪数据到数据源配置注册表
 - [ ] 6.11 创建行情和情绪数据的API端点
 - [ ] 6.12 编写行情和情绪数据的单元测试
@@ -94,6 +101,9 @@
 > 适配器聚合入口已在 `src/adapters/akshare/market_adapter/adapter.py` 完成 mixin 组合，API 路由已在 `web/backend/app/api/akshare_market/__init__.py` 与 `web/backend/app/router_registry.py` 注册。
 > 本节保持未完成，直到第 6 节剩余接口补齐并重新验证所有集成收口项。
 > 另据 `tests/api/file_tests/test_akshare_market_api.py`，现有 `test_smart_cache_integration()` 仍是注释型占位断言，不足以证明第 6 节新增接口的缓存策略优化已经落地；当前也未见面向这些剩余接口的多股票批量请求实现/测试闭环，因此 7.4 / 7.5 继续保留未完成。
+> **仓库事实校对（2026-05-03）**:
+> `scripts/dev/quality_gate/run_akshare_market_gates.py` 已将“本地同名函数可用性探测 + repo-truth 一致性校验”收口为统一 audit-only 入口，并接入 `scripts/run_runtime_delivery_summary_local.sh`、`.github/workflows/frontend-testing.yml` 与 `scripts/dev/quality_gate/build_runtime_ci_bundle.py` 的汇总链路。
+> 该门禁只产出校验 / 审计报告，不自动生成业务代码，也不代表 7.4 / 7.5 的缓存 / 批量优化已经落地。
 
 - [x] 7.1 更新适配器聚合入口，纳入新增市场 mixin
 - [ ] 7.2 更新数据源配置注册表，补齐剩余接口的质量规则
@@ -101,13 +111,16 @@
 - [ ] 7.4 实现数据缓存策略优化，避免重复API调用
 - [ ] 7.5 实现批量数据请求优化，支持多股票同时查询
 - [x] 7.6 更新项目文档，添加新数据源的使用说明
-  - [ ] Repo-truth：当前可确认的现行文档主要是 `docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md` 与 `docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md` 这类通用接入指南；`docs/api/AKSHARE_INTERFACE_MAPPING.md` 已明确标注为历史快照/设计映射，不足以作为本 change“新增数据源使用说明已更新完成”的闭环证据。
+  - [x] Repo-truth：通用接入指南不再是唯一依据；当前专题使用说明已明确落到 `docs/guides/akshare/AKSHARE_MARKET_EXTENSION_GUIDE.md`，历史 `docs/api/AKSHARE_INTERFACE_MAPPING.md` 仅作为快照 / 设计材料保留，不能单独充当完成证据。
   - [x] Repo-truth：当前专题使用说明已落到 `docs/guides/akshare/AKSHARE_MARKET_EXTENSION_GUIDE.md`，并由 `docs/guides/akshare/INDEX.md` 与 `docs/guides/data-source/INDEX.md` 提供入口。
 
 ## 8. 测试和验证
 > **仓库事实校对（2026-04-27）**:
 > 适配器层已有 `tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part1.py`、`part2.py`、`part3.py`，API侧已有 `tests/api/test_akshare_market_file.py` 覆盖已实现子集。
 > 由于第 6 节原始 scope 仍未落地，本节继续保留为未完成状态。
+> **仓库事实校对（2026-05-03）**:
+> `tests/unit/scripts/test_collect_akshare_market_function_availability.py`、`tests/unit/scripts/test_validate_akshare_market_repo_truth.py`、`tests/unit/scripts/test_run_akshare_market_gates.py`、`tests/unit/scripts/test_frontend_testing_akshare_runtime_gate.py`、`tests/performance/test_build_runtime_ci_bundle.py`、`tests/performance/test_runtime_delivery_summary_local_script.py` 已覆盖门禁叶子脚本、wrapper 入口以及 runtime / CI 汇总链路的审计能力。
+> 这些验证只证明“校验 / 报告闭环”可运行，不外推为剩余 AkShare 业务接口、缓存优化、批量请求优化或端到端展示链路已经完成，因此 8.1-8.5 继续保留未完成。
 
 - [ ] 8.1 补齐完整的单元测试套件，覆盖剩余接口与收口场景
 - [ ] 8.2 执行集成测试，确保API端点正常工作
@@ -116,16 +129,17 @@
 - [ ] 8.5 执行端到端测试，验证从数据获取到前端展示的完整流程
 
 ## 9. 文档和维护
-> **仓库事实校对（2026-04-27）**:
+> **仓库事实校对（2026-05-03）**:
 > 当前与本 change 直接相关的文档层可分为三类：
 > - 当前契约真相源：`docs/api/openapi.json` 已为 1-5 节已实现端点提供路径与描述
-> - 当前接入/开发指引入口：`docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md` 与 `docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
+> - 当前专题真相源 / 维护入口：`docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md`、`docs/guides/akshare/AKSHARE_MARKET_EXTENSION_GUIDE.md`、`docs/guides/akshare/AKSHARE_MARKET_TROUBLESHOOTING.md`、`docs/guides/akshare/AKSHARE_MARKET_MAINTENANCE.md`、`docs/guides/akshare/INDEX.md`
+> - 当前接入/开发通用指引入口：`docs/guides/NEW_API_SOURCE_INTEGRATION_GUIDE.md` 与 `docs/guides/data-source/NEW_API_SOURCE_INTEGRATION_GUIDE.md`
 > - 历史/设计/总结材料：`docs/api/AKSHARE_INTERFACE_MAPPING.md`、`docs/reports/AKSHARE_DATA_SOURCE_API_SUMMARY.md`
-> 由于第 6 节原始 scope 仍未落地，且当前未找到专门覆盖“更新频率与缓存策略 / 故障排除 / 维护手册”的现行 AkShare 专题文档闭环，本节继续保留未完成状态。
+> 文档层当前已经形成面向本 change 的专题闭环，并补充了 wrapper-first 的门禁执行口径；但这不外推为第 6 节剩余接口或第 7-8 节未完成能力已经实现。
 
 - [x] 9.1 更新API文档，添加所有新端点的详细说明
 - [x] 9.2 创建数据源使用指南，帮助开发者理解各个接口的用途
-  - [ ] Repo-truth：仓库当前存在的是通用 API / 数据源接入指南，而不是面向本次 AkShare 扩充接口集合的现行专题使用手册；历史 `AKSHARE_INTERFACE_MAPPING.md` 不能直接当作当前完成证据。
+  - [x] Repo-truth：面向本次 AkShare 扩充接口集合的现行专题使用手册已落到 `docs/guides/akshare/AKSHARE_MARKET_EXTENSION_GUIDE.md`，并由 `docs/guides/akshare/INDEX.md` 暴露入口；历史 `AKSHARE_INTERFACE_MAPPING.md` 不能直接当作当前完成证据。
 - [x] 9.3 编写数据更新频率和缓存策略说明
 - [x] 9.4 创建故障排除指南，帮助处理常见问题
 - [x] 9.5 编写维护手册，包括数据源更新和版本兼容性说明

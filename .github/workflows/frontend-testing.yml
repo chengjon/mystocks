@@ -12,6 +12,9 @@ on:
       - 'scripts/run_containerized_runtime_smoke.sh'
       - 'scripts/dev/quality_gate/build_runtime_ci_bundle.py'
       - 'scripts/dev/quality_gate/build_runtime_quality_summary.py'
+      - 'scripts/dev/quality_gate/collect_akshare_market_function_availability.py'
+      - 'scripts/dev/quality_gate/run_akshare_market_gates.py'
+      - 'scripts/dev/quality_gate/validate_akshare_market_repo_truth.py'
       - 'scripts/run_pm2_integration_workflow.sh'
       - 'scripts/run_e2e_pm2.sh'
       - 'tests/performance/benchmark.py'
@@ -21,6 +24,10 @@ on:
       - 'tests/performance/test_container_runtime_smoke_script.py'
       - 'tests/unit/core/test_web_container_assets.py'
       - 'tests/performance/test_build_runtime_quality_summary.py'
+      - 'tests/unit/scripts/test_collect_akshare_market_function_availability.py'
+      - 'tests/unit/scripts/test_validate_akshare_market_repo_truth.py'
+      - 'tests/unit/scripts/test_frontend_testing_akshare_runtime_gate.py'
+      - 'tests/unit/scripts/test_run_akshare_market_gates.py'
       - 'web/backend/Dockerfile'
       - 'web/backend/requirements.txt'
       - 'web/docker-compose.yml'
@@ -48,6 +55,9 @@ on:
       - 'scripts/run_containerized_runtime_smoke.sh'
       - 'scripts/dev/quality_gate/build_runtime_ci_bundle.py'
       - 'scripts/dev/quality_gate/build_runtime_quality_summary.py'
+      - 'scripts/dev/quality_gate/collect_akshare_market_function_availability.py'
+      - 'scripts/dev/quality_gate/run_akshare_market_gates.py'
+      - 'scripts/dev/quality_gate/validate_akshare_market_repo_truth.py'
       - 'scripts/run_pm2_integration_workflow.sh'
       - 'scripts/run_e2e_pm2.sh'
       - 'tests/performance/benchmark.py'
@@ -57,6 +67,10 @@ on:
       - 'tests/performance/test_container_runtime_smoke_script.py'
       - 'tests/unit/core/test_web_container_assets.py'
       - 'tests/performance/test_build_runtime_quality_summary.py'
+      - 'tests/unit/scripts/test_collect_akshare_market_function_availability.py'
+      - 'tests/unit/scripts/test_validate_akshare_market_repo_truth.py'
+      - 'tests/unit/scripts/test_frontend_testing_akshare_runtime_gate.py'
+      - 'tests/unit/scripts/test_run_akshare_market_gates.py'
       - 'web/backend/Dockerfile'
       - 'web/backend/requirements.txt'
       - 'web/docker-compose.yml'
@@ -555,6 +569,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    - name: Install AkShare runtime delivery dependency
+      run: |
+        python -m pip install --upgrade pip
+        pip install "akshare>=1.11.0"
+
     - name: Validate runtime delivery prerequisites
       run: |
         if [ "${{ needs.route-layout-pm2-detect.outputs.gate_required }}" = "true" ] && [ "${{ needs.route-layout-runtime-baseline.result }}" != "success" ]; then
@@ -617,6 +641,15 @@ jobs:
         echo "MONITORING_AUTH_DIR=${MONITORING_AUTH_DIR}" >> "$GITHUB_ENV"
         echo "DOCKER_RUNTIME_DIR=${DOCKER_RUNTIME_DIR}" >> "$GITHUB_ENV"
 
+    - name: Generate AkShare market gate reports
+      run: |
+        mkdir -p reports/analysis/runtime-quality-summary-ci
+        python scripts/dev/quality_gate/run_akshare_market_gates.py \
+          --output-dir reports/analysis/runtime-quality-summary-ci \
+          --availability-output reports/analysis/runtime-quality-summary-ci/akshare-market-function-availability.json \
+          --repo-truth-output reports/analysis/runtime-quality-summary-ci/akshare-market-repo-truth-gate.json \
+          --summary-output reports/analysis/runtime-quality-summary-ci/akshare-market-gates-summary.json
+
     - name: Build combined runtime quality summary
       run: |
         mkdir -p reports/analysis/runtime-quality-summary-ci
@@ -673,6 +706,9 @@ jobs:
           python scripts/dev/quality_gate/build_runtime_ci_bundle.py
           --runtime-quality-dir reports/analysis/runtime-quality-summary-ci
           --runtime-observability-drift-report reports/analysis/runtime-quality-summary-ci/runtime-observability-drift-report.json
+          --akshare-market-function-availability-report reports/analysis/runtime-quality-summary-ci/akshare-market-function-availability.json
+          --akshare-market-repo-truth-report reports/analysis/runtime-quality-summary-ci/akshare-market-repo-truth-gate.json
+          --akshare-market-gates-summary-report reports/analysis/runtime-quality-summary-ci/akshare-market-gates-summary.json
           --output-manifest reports/analysis/runtime-ci-bundle-combined/runtime-artifact-manifest.json
           --output-index reports/analysis/runtime-ci-bundle-combined/runtime-artifact-index.md
         )

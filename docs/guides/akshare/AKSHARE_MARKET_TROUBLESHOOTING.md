@@ -33,6 +33,34 @@ PY
 - 只实现本地可确认存在的同名函数
 - 若同名函数不存在，不用相近函数替代并冒充完成
 
+标准入口优先使用 wrapper：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+如需只聚焦“本地有没有这个同名函数”，再单独运行探测叶子脚本：
+
+```bash
+python scripts/dev/quality_gate/collect_akshare_market_function_availability.py \
+  --output /tmp/akshare-market-function-availability.json
+```
+
+读结果时重点看：
+
+- `summary.available_functions`
+- `summary.missing_functions`
+- `summary.help_candidate_functions`
+- `module_version`
+
+说明：
+
+- `help_candidate_functions` 只表示“当前本地 `akshare` 包里存在相近名字 / 相近语义的候选函数”
+- 它不能直接把 `stock_news_main_cx`、`stock_zt_pool_dtgc_em`、`stock_zt_pool_strong_em`、`stock_zt_pool_sub_new_em` 自动等价成 OpenSpec 里的缺失同名函数
+- 若要从 same-name 扩展为“接受官方改名函数”，那是单独的方案变更，不在本轮 MyStocks 门禁范围内
+- `stock_zt_pool_previous_em`、`stock_zt_pool_zbgc_em` 属于已考虑的邻接 pool 能力，但当前 OpenSpec 第 6 节没有对应任务项
+
 ## 2. 路由存在但 commit hook 报 `UnifiedResponse` guard
 
 症状：
@@ -66,6 +94,29 @@ PY
 3. 实际请求路径是 `/api/akshare/market/...`
 
 ## 5. 推荐验证命令
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+默认产物：
+
+- `/tmp/akshare-market-gates/akshare-market-function-availability.json`
+- `/tmp/akshare-market-gates/akshare-market-repo-truth-gate.json`
+- `/tmp/akshare-market-gates/akshare-market-gates-summary.json`
+
+如需拆分定位，再分别运行：
+
+```bash
+python scripts/dev/quality_gate/collect_akshare_market_function_availability.py \
+  --output /tmp/akshare-market-function-availability.json
+```
+
+```bash
+python scripts/dev/quality_gate/validate_akshare_market_repo_truth.py \
+  --output /tmp/akshare-market-repo-truth-gate.json
+```
 
 ```bash
 pytest \

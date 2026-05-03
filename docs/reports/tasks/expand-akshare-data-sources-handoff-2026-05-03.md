@@ -99,6 +99,98 @@ stock_new_em=False
 - 新条线接手后，第一步不是写代码，而是先重新确认本地 `akshare` 版本是否发生变化
 - 只有 `False` 变成 `True` 的接口，才进入实现批次
 
+### 3.1 当前标准门禁入口
+
+当前仓库已经补了标准化门禁入口，优先使用 wrapper，而不是继续手写临时 Python 片段或只跑单个叶子脚本：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+默认会产出 3 份报告：
+
+- `/tmp/akshare-market-gates/akshare-market-function-availability.json`
+- `/tmp/akshare-market-gates/akshare-market-repo-truth-gate.json`
+- `/tmp/akshare-market-gates/akshare-market-gates-summary.json`
+
+其中：
+
+- 第一份回答“当前本地 `akshare` 到底暴露了哪些同名函数”
+- 第二份回答“当前仓库的 OpenSpec / repo-truth / registry / adapter / route / focused tests 是否与这个现实一致”
+- 第三份给出统一 pass/fail 汇总，供本地 runtime summary 与 CI 直接收口
+
+如需拆分诊断，再单独运行探测叶子脚本：
+
+```bash
+python scripts/dev/quality_gate/collect_akshare_market_function_availability.py \
+  --output /tmp/akshare-market-function-availability.json
+```
+
+建议重点关注输出中的：
+
+- `module_version`
+- `summary.available_functions`
+- `summary.missing_functions`
+
+这个叶子脚本的职责只有一个：
+
+- 报告“当前本地 `akshare` 到底暴露了哪些同名函数”
+
+它**不会**：
+
+- 自动生成业务代码
+- 自动修改 OpenSpec / registry / docs
+- 自动把缺失函数变成可实现状态
+
+### 3.2 2026-05-03 统一门禁实跑结果
+
+当前环境已实际运行：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+实测结论：
+
+- 本地 `akshare` 版本：`1.18.60`
+- 跟踪函数总数：`9`
+- 可用函数数：`4`
+- 缺失函数数：`5`
+- repo-truth violation：`0`
+- 统一门禁结果：`pass=true`
+
+可用函数：
+
+- `stock_hot_follow_xq`
+- `stock_board_change_em`
+- `stock_zt_pool_em`
+- `stock_changes_em`
+
+缺失函数：
+
+- `stock_news_main_em`
+- `stock_dt_pool_em`
+- `stock_strong_pool_em`
+- `stock_weak_pool_em`
+- `stock_new_em`
+
+当前标准 availability 报告还会额外给出 `summary.help_candidate_functions`，用于提示本地包内发现的相近候选：
+
+- `stock_news_main_em` -> `stock_news_main_cx`
+- `stock_dt_pool_em` -> `stock_zt_pool_dtgc_em`
+- `stock_strong_pool_em` -> `stock_zt_pool_strong_em`
+- `stock_new_em` -> `stock_zt_pool_sub_new_em`
+- `stock_weak_pool_em` -> 暂无候选
+
+另外，本地 `akshare 1.18.60` 还提供了相邻但当前不映射到第 6 节任务项的 pool 函数：
+
+- `stock_zt_pool_previous_em`：昨日涨停股池
+- `stock_zt_pool_zbgc_em`：炸板股池
+
+这层提示只帮助后续人工判断“是不是 AkShare 官方已经改名”，不等于当前 MyStocks 可以直接把这些候选函数视为同名闭环完成。
+
 ---
 
 ## 4. 新条线优先阅读的文件
@@ -193,7 +285,20 @@ stock_new_em=False
 
 ### 7.1 第一步：先确认本地函数可用性
 
-推荐先跑一遍：
+推荐先跑标准门禁入口：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+优先检查：
+
+- `/tmp/akshare-market-gates/akshare-market-function-availability.json`
+- `/tmp/akshare-market-gates/akshare-market-repo-truth-gate.json`
+- `/tmp/akshare-market-gates/akshare-market-gates-summary.json`
+
+如需临时手工复核，再补跑：
 
 ```bash
 python - <<'PY'
@@ -213,6 +318,23 @@ for name in names:
     print(f"{name}={hasattr(ak, name)}")
 PY
 ```
+
+如需拆分排查 repo-truth 一致性，再单独运行：
+
+```bash
+python scripts/dev/quality_gate/validate_akshare_market_repo_truth.py \
+  --output /tmp/akshare-market-repo-truth-gate.json
+```
+
+这一步的目的不是新增功能，而是确认：
+
+- OpenSpec 台账
+- repo-truth 文档
+- registry
+- adapter / route
+- focused tests
+
+是否仍与“当前本地 `akshare` 可用性”保持一致。
 
 ### 7.2 第二步：如果有新函数可用，只做单接口微批次
 
@@ -237,6 +359,22 @@ PY
 ---
 
 ## 8. 推荐验证命令
+
+在真正进入某个接口的微批次前，建议先跑：
+
+```bash
+python scripts/dev/quality_gate/run_akshare_market_gates.py \
+  --output-dir /tmp/akshare-market-gates
+```
+
+如需拆分诊断，再补跑：
+
+```bash
+python scripts/dev/quality_gate/collect_akshare_market_function_availability.py \
+  --output /tmp/akshare-market-function-availability.json
+python scripts/dev/quality_gate/validate_akshare_market_repo_truth.py \
+  --output /tmp/akshare-market-repo-truth-gate.json
+```
 
 每个新增接口至少跑：
 

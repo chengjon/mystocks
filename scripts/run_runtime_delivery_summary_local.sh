@@ -15,6 +15,10 @@ MONITORING_RULE_REPORT_PATH="${SUMMARY_DIR}/monitoring-rule-metric-reference-rep
 BACKEND_RUNTIME_DEP_REPORT_PATH="${SUMMARY_DIR}/backend-runtime-dependency-report.json"
 CONTAINER_DEPLOYMENT_CONTRACT_REPORT_PATH="${SUMMARY_DIR}/container-deployment-contract-report.json"
 DEPLOYMENT_ENV_CONTRACT_REPORT_PATH="${SUMMARY_DIR}/deployment-env-contract-report.json"
+AKSHARE_AVAILABILITY_REPORT_PATH="${SUMMARY_DIR}/akshare-market-function-availability.json"
+AKSHARE_REPO_TRUTH_REPORT_PATH="${SUMMARY_DIR}/akshare-market-repo-truth-gate.json"
+AKSHARE_GATE_SUMMARY_REPORT_PATH="${SUMMARY_DIR}/akshare-market-gates-summary.json"
+API_PERFORMANCE_BASELINE_PATH="${API_PERFORMANCE_BASELINE_JSON:-${PROJECT_ROOT}/reports/analysis/api-performance-baseline.json}"
 MANIFEST_PATH="${BUNDLE_DIR}/runtime-artifact-manifest.json"
 INDEX_PATH="${BUNDLE_DIR}/runtime-artifact-index.md"
 docker_dir="${DOCKER_RUNTIME_DIR:-}"
@@ -79,6 +83,9 @@ bundle_cmd=(
     --backend-runtime-dependency-report "${BACKEND_RUNTIME_DEP_REPORT_PATH}"
     --container-deployment-contract-report "${CONTAINER_DEPLOYMENT_CONTRACT_REPORT_PATH}"
     --deployment-env-contract-report "${DEPLOYMENT_ENV_CONTRACT_REPORT_PATH}"
+    --akshare-market-function-availability-report "${AKSHARE_AVAILABILITY_REPORT_PATH}"
+    --akshare-market-repo-truth-report "${AKSHARE_REPO_TRUTH_REPORT_PATH}"
+    --akshare-market-gates-summary-report "${AKSHARE_GATE_SUMMARY_REPORT_PATH}"
     --output-manifest "${MANIFEST_PATH}"
     --output-index "${INDEX_PATH}"
 )
@@ -141,13 +148,18 @@ python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_deployment_env_contrac
     --backend-ecosystem "${PROJECT_ROOT}/web/backend/ecosystem.config.js" \
     --frontend-ecosystem "${PROJECT_ROOT}/web/frontend/ecosystem.config.js" \
     --output "${DEPLOYMENT_ENV_CONTRACT_REPORT_PATH}"
+python "${PROJECT_ROOT}/scripts/dev/quality_gate/run_akshare_market_gates.py" \
+    --output-dir "${SUMMARY_DIR}" \
+    --availability-output "${AKSHARE_AVAILABILITY_REPORT_PATH}" \
+    --repo-truth-output "${AKSHARE_REPO_TRUTH_REPORT_PATH}" \
+    --summary-output "${AKSHARE_GATE_SUMMARY_REPORT_PATH}"
 if [ "${has_pm2_runtime}" -eq 1 ]; then
     python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_api_performance_drift.py" \
-        --baseline "${PROJECT_ROOT}/reports/analysis/api-performance-baseline.json" \
+        --baseline "${API_PERFORMANCE_BASELINE_PATH}" \
         --current-benchmark-json "${api_dir}/benchmark.json" \
         --output "${API_PERFORMANCE_DRIFT_REPORT_PATH}"
 fi
-RUNTIME_OBSERVABILITY_BASELINE_JSON="${PROJECT_ROOT}/reports/analysis/runtime-observability-baseline.json" \
+RUNTIME_OBSERVABILITY_BASELINE_JSON="${RUNTIME_OBSERVABILITY_BASELINE_JSON:-${PROJECT_ROOT}/reports/analysis/runtime-observability-baseline.json}" \
 RUNTIME_QUALITY_SUMMARY_JSON="${JSON_PATH}" \
 RUNTIME_OBSERVABILITY_DRIFT_REPORT_JSON="${DRIFT_REPORT_PATH}" \
     bash "${PROJECT_ROOT}/scripts/run_runtime_observability_drift_gate.sh"
@@ -164,4 +176,7 @@ printf 'Monitoring rule metric reference report written to %s\n' "${MONITORING_R
 printf 'Backend runtime dependency report written to %s\n' "${BACKEND_RUNTIME_DEP_REPORT_PATH}"
 printf 'Container deployment contract report written to %s\n' "${CONTAINER_DEPLOYMENT_CONTRACT_REPORT_PATH}"
 printf 'Deployment env contract report written to %s\n' "${DEPLOYMENT_ENV_CONTRACT_REPORT_PATH}"
+printf 'AkShare function availability report written to %s\n' "${AKSHARE_AVAILABILITY_REPORT_PATH}"
+printf 'AkShare repo-truth gate report written to %s\n' "${AKSHARE_REPO_TRUTH_REPORT_PATH}"
+printf 'AkShare gate summary report written to %s\n' "${AKSHARE_GATE_SUMMARY_REPORT_PATH}"
 printf 'Runtime delivery bundle index written to %s\n' "${INDEX_PATH}"

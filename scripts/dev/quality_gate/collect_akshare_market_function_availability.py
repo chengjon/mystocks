@@ -25,6 +25,7 @@ CANONICAL_FUNCTIONS = [
 ]
 GENERIC_TOKENS = {"stock", "em", "zh", "a"}
 PREFERRED_HELP_CANDIDATES = {
+    "stock_news_main_em": ("stock_news_main_cx",),
     "stock_dt_pool_em": ("stock_zt_pool_dtgc_em",),
     "stock_strong_pool_em": ("stock_zt_pool_strong_em",),
     "stock_new_em": ("stock_zt_pool_sub_new_em",),
@@ -53,6 +54,8 @@ def _find_help_candidates(module: Any, target_name: str, limit: int = 3) -> list
         candidate_obj = getattr(module, candidate_name, None)
         if callable(candidate_obj):
             preferred_candidates.append(candidate_name)
+    if preferred_candidates:
+        return preferred_candidates[:limit]
 
     ranked_candidates: list[tuple[int, int, str]] = []
     for candidate_name in dir(module):

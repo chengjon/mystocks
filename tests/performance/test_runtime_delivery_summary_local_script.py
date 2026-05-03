@@ -15,10 +15,14 @@ def test_runtime_delivery_summary_local_script_supports_pm2_and_docker_modes():
     assert 'BACKEND_RUNTIME_DEP_REPORT_PATH="${SUMMARY_DIR}/backend-runtime-dependency-report.json"' in script
     assert 'CONTAINER_DEPLOYMENT_CONTRACT_REPORT_PATH="${SUMMARY_DIR}/container-deployment-contract-report.json"' in script
     assert 'DEPLOYMENT_ENV_CONTRACT_REPORT_PATH="${SUMMARY_DIR}/deployment-env-contract-report.json"' in script
+    assert 'AKSHARE_AVAILABILITY_REPORT_PATH="${SUMMARY_DIR}/akshare-market-function-availability.json"' in script
+    assert 'AKSHARE_REPO_TRUTH_REPORT_PATH="${SUMMARY_DIR}/akshare-market-repo-truth-gate.json"' in script
+    assert 'AKSHARE_GATE_SUMMARY_REPORT_PATH="${SUMMARY_DIR}/akshare-market-gates-summary.json"' in script
+    assert 'API_PERFORMANCE_BASELINE_PATH="${API_PERFORMANCE_BASELINE_JSON:-${PROJECT_ROOT}/reports/analysis/api-performance-baseline.json}"' in script
     assert 'resolve_latest_dir()' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_quality_summary.py"' in script
     assert 'bash "${PROJECT_ROOT}/scripts/run_runtime_observability_drift_gate.sh"' in script
-    assert 'RUNTIME_OBSERVABILITY_BASELINE_JSON="${PROJECT_ROOT}/reports/analysis/runtime-observability-baseline.json"' in script
+    assert 'RUNTIME_OBSERVABILITY_BASELINE_JSON="${RUNTIME_OBSERVABILITY_BASELINE_JSON:-${PROJECT_ROOT}/reports/analysis/runtime-observability-baseline.json}"' in script
     assert 'RUNTIME_QUALITY_SUMMARY_JSON="${JSON_PATH}"' in script
     assert 'RUNTIME_OBSERVABILITY_DRIFT_REPORT_JSON="${DRIFT_REPORT_PATH}"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_api_performance_drift.py"' in script
@@ -26,6 +30,7 @@ def test_runtime_delivery_summary_local_script_supports_pm2_and_docker_modes():
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_backend_runtime_dependencies.py"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_container_deployment_contract.py"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/validate_deployment_env_contract.py"' in script
+    assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/run_akshare_market_gates.py"' in script
     assert 'python "${PROJECT_ROOT}/scripts/dev/quality_gate/build_runtime_ci_bundle.py"' in script
     assert '--runtime-observability-drift-report "${DRIFT_REPORT_PATH}"' in script
     assert '--api-performance-drift-report "${API_PERFORMANCE_DRIFT_REPORT_PATH}"' in script
@@ -33,6 +38,13 @@ def test_runtime_delivery_summary_local_script_supports_pm2_and_docker_modes():
     assert '--backend-runtime-dependency-report "${BACKEND_RUNTIME_DEP_REPORT_PATH}"' in script
     assert '--container-deployment-contract-report "${CONTAINER_DEPLOYMENT_CONTRACT_REPORT_PATH}"' in script
     assert '--deployment-env-contract-report "${DEPLOYMENT_ENV_CONTRACT_REPORT_PATH}"' in script
+    assert '--output-dir "${SUMMARY_DIR}"' in script
+    assert '--availability-output "${AKSHARE_AVAILABILITY_REPORT_PATH}"' in script
+    assert '--repo-truth-output "${AKSHARE_REPO_TRUTH_REPORT_PATH}"' in script
+    assert '--summary-output "${AKSHARE_GATE_SUMMARY_REPORT_PATH}"' in script
+    assert '--akshare-market-function-availability-report "${AKSHARE_AVAILABILITY_REPORT_PATH}"' in script
+    assert '--akshare-market-repo-truth-report "${AKSHARE_REPO_TRUTH_REPORT_PATH}"' in script
+    assert '--akshare-market-gates-summary-report "${AKSHARE_GATE_SUMMARY_REPORT_PATH}"' in script
     assert '--dashboard-file "${PROJECT_ROOT}/config/monitoring/dashboards/api-overview.json"' in script
     assert '--dashboard-file "${PROJECT_ROOT}/config/monitoring/dashboards/user-experience-dashboard.json"' in script
     assert '--declared-metrics-python-file "${PROJECT_ROOT}/web/backend/app/api/metrics.py"' in script
@@ -43,6 +55,9 @@ def test_runtime_delivery_summary_local_script_supports_pm2_and_docker_modes():
     assert 'if [ -n "${docker_dir}" ]; then' in script
     assert 'Runtime delivery summary requires PM2 baseline dirs or DOCKER_RUNTIME_DIR' in script
     assert 'Runtime delivery summary requires at least one metrics.raw.txt snapshot for monitoring rule validation' in script
+    assert "AkShare function availability report written to %s\\n" in script
+    assert "AkShare repo-truth gate report written to %s\\n" in script
+    assert "AkShare gate summary report written to %s\\n" in script
 
 
 def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(tmp_path: Path):
@@ -51,6 +66,8 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
     monitoring_dir = tmp_path / "monitoring"
     docker_dir = tmp_path / "docker"
     backend_runtime_dep_report_path = tmp_path / "backend-runtime-dependency-report.json"
+    api_performance_baseline_path = tmp_path / "api-performance-baseline.json"
+    runtime_observability_baseline_path = tmp_path / "runtime-observability-baseline.json"
     summary_dir = tmp_path / "runtime-quality-summary-ci-local"
     bundle_dir = tmp_path / "runtime-ci-bundle-combined-local"
 
@@ -98,6 +115,57 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
         + "\n",
         encoding="utf-8",
     )
+    api_performance_baseline_path.write_text(
+        json.dumps(
+            {
+                "generated_at": "2026-04-20T10:24:00+00:00",
+                "metric_version": "v1",
+                "source_benchmark_json": str((api_dir / "benchmark.json").resolve()),
+                "source_generated_at": "2026-04-20T10:24:00+00:00",
+                "base_url": "http://localhost:8020",
+                "concurrent_users": 5,
+                "iterations": 20,
+                "slo_status": "COMPLIANT",
+                "endpoint_count": 3,
+                "overall_avg_ms": 18.47,
+                "overall_p95_ms": 22.94,
+                "workload_classes": {},
+                "slowest_endpoint": {
+                    "key": "GET /api/trading/status",
+                    "p95_ms": 12.2,
+                    "error_rate_percent": 0.0,
+                },
+                "endpoints": {
+                    "GET /api/trading/status": {
+                        "endpoint": "/api/trading/status",
+                        "method": "GET",
+                        "p95_ms": 12.2,
+                        "avg_ms": None,
+                        "error_rate_percent": 0.0,
+                        "status_codes": {},
+                    },
+                    "GET /api/trading/market/snapshot": {
+                        "endpoint": "/api/trading/market/snapshot",
+                        "method": "GET",
+                        "p95_ms": 11.6,
+                        "avg_ms": None,
+                        "error_rate_percent": 0.0,
+                        "status_codes": {},
+                    },
+                    "GET /api/trading/risk/metrics": {
+                        "endpoint": "/api/trading/risk/metrics",
+                        "method": "GET",
+                        "p95_ms": 10.5,
+                        "avg_ms": None,
+                        "error_rate_percent": 0.0,
+                        "status_codes": {},
+                    },
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
     (api_dir / "metrics-summary.json").write_text(
         json.dumps(
             {
@@ -105,6 +173,12 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
                 "prometheus_snapshot": {
                     "slow_http_requests_total": 0,
                     "slow_http_requests_total_delta": 0,
+                    "technical_analysis_history_requests_total": 4,
+                    "technical_analysis_history_requests_total_delta": 2,
+                    "technical_analysis_history_fallback_total": 1,
+                    "technical_analysis_history_fallback_total_delta": 1,
+                    "technical_analysis_history_fallback_ratio": 0.25,
+                    "technical_analysis_history_fallback_ratio_delta": 0.5,
                     "slow_request_endpoints": [],
                     "slow_request_endpoints_delta": [],
                 },
@@ -228,6 +302,41 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
         + "\n",
         encoding="utf-8",
     )
+    runtime_observability_baseline_path.write_text(
+        json.dumps(
+            {
+                "generated_at": "2026-04-20T10:24:00+00:00",
+                "metric_version": "v1",
+                "overall_gate_status": "PASS",
+                "frontend_runtime": {
+                    "type_errors_current": 0,
+                    "type_errors_baseline": 0,
+                },
+                "api_performance": {
+                    "overall_p95_ms": 22.94,
+                    "observability_status": "healthy",
+                    "slow_http_requests_total_delta": 0.0,
+                    "technical_analysis_history_fallback_total_delta": 1.0,
+                    "technical_analysis_history_fallback_ratio_delta": 0.5,
+                },
+                "monitoring_auth_performance": {
+                    "alert_rules_p95_ms": 271.53,
+                    "observability_status": "healthy",
+                    "slow_http_requests_total_delta": 0,
+                },
+                "docker_runtime": {
+                    "backend_health": "PASS",
+                    "backend_readiness": "PASS",
+                    "frontend_index": "PASS",
+                    "metrics_health": "healthy",
+                    "http_requests_total_delta": 4.0,
+                    "slow_http_requests_total_delta": 0.0,
+                },
+            }
+        )
+        + "\n",
+        encoding="utf-8",
+    )
 
     subprocess.run(
         [
@@ -243,6 +352,8 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
             "DOCKER_RUNTIME_DIR": str(docker_dir),
             "RUNTIME_DELIVERY_SUMMARY_DIR": str(summary_dir),
             "RUNTIME_DELIVERY_BUNDLE_DIR": str(bundle_dir),
+            "API_PERFORMANCE_BASELINE_JSON": str(api_performance_baseline_path),
+            "RUNTIME_OBSERVABILITY_BASELINE_JSON": str(runtime_observability_baseline_path),
         },
         check=True,
     )
@@ -271,6 +382,7 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
     assert "## Container Deployment Contract Gate" in summary_text
     assert "## Deployment Env Contract Gate" in summary_text
     assert "Overall gate status: `PASS`" in summary_text
+    assert "Technical analysis history requests / fallback delta: `2 / 1`" in summary_text
     assert summary_payload["overall_gate_status"] == "PASS"
     assert summary_payload["runtime_observability_drift"]["pass"] is True
     assert summary_payload["api_performance_drift"]["pass"] is True
@@ -290,6 +402,13 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
     assert manifest["api_performance_drift_report"] == str((summary_dir / "api-performance-drift-report.json").resolve())
     assert manifest["monitoring_rule_report"] == str((summary_dir / "monitoring-rule-metric-reference-report.json").resolve())
     assert manifest["backend_runtime_dependency_report"] == str((summary_dir / "backend-runtime-dependency-report.json").resolve())
+    assert manifest["akshare_market_function_availability_report"] == str(
+        (summary_dir / "akshare-market-function-availability.json").resolve()
+    )
+    assert manifest["akshare_market_repo_truth_report"] == str((summary_dir / "akshare-market-repo-truth-gate.json").resolve())
+    assert manifest["akshare_market_gates_summary_report"] == str(
+        (summary_dir / "akshare-market-gates-summary.json").resolve()
+    )
     assert manifest["container_deployment_contract_report"] == str(
         (summary_dir / "container-deployment-contract-report.json").resolve()
     )
@@ -299,6 +418,7 @@ def test_runtime_delivery_summary_local_script_rebuilds_pm2_and_docker_outputs(t
     assert "Drift gate pass: `True`" in index_text
     assert "API performance drift pass: `True`" in index_text
     assert "Rule metric reference pass: `True`" in index_text
+    assert "AkShare repo-truth gate pass: `True`" in index_text
     assert "Backend runtime dependency pass: `True`" in index_text
     assert "Container deployment contract pass: `True`" in index_text
     assert "Deployment env contract pass: `True`" in index_text

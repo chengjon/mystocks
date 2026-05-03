@@ -92,7 +92,7 @@
 | 前端/交互入口 | [市场主路由目录](../web/frontend/src/views/market/)<br>[资金流向页](../web/frontend/src/views/data/FundFlow.vue)<br>[ArtDeco 市场页](../web/frontend/src/views/artdeco-pages/market-data-tabs/) | 市场主路由入口；`FundFlow.vue` 承担资金流入口，ArtDeco tabs 更偏嵌入式展示层；市场数据交互入口 |
 | 核心代码入口 | [数据适配器](../src/adapters/)<br>[市场数据应用层](../src/application/market_data/) | 市场数据实现入口 |
 | 测试与验证入口 | [市场 API 测试](../tests/api/file_tests/test_market_api.py)<br>[E2E 市场数据](../tests/e2e/market-data.spec.ts)<br>[前端 E2E 行情](../web/frontend/tests/e2e/market-data.spec.ts) | 市场数据验证入口 |
-| 运行与排障入口 | [测试指南](./testing/E2E_TEST_GUIDE.md) | 市场数据排障入口 |
+| 运行与排障入口 | [测试指南](./testing/E2E_TEST_GUIDE.md)<br>[AKShare 市场专题索引](./guides/akshare/INDEX.md)<br>[AkShare 市场统一门禁](../scripts/dev/quality_gate/run_akshare_market_gates.py) | 市场数据与 AkShare 门禁排障入口 |
 
 ### 1.1 实时行情监控 {#domain-01-node-01}
 
@@ -130,6 +130,17 @@
 | 日线数据 | ✅ | `src/adapters/tdx/kline_data_service.py` | 日K线获取 |
 | 分钟线数据 | ✅ | `src/adapters/akshare/misc_data/` | 1/5/15/30/60分钟 |
 | 复权处理 | ✅ | `src/core/` | 前后复权计算 |
+
+### 1.5 AkShare 市场门禁与 Repo-Truth 收口 {#domain-01-node-05}
+
+边界说明：MyStocks 仅接入本地已存在的 AkShare 同名函数；缺失函数只记录官方同源改名候选和 gap，不在本仓库自研替代实现，也不复用异源接口补位。
+
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 本地函数可用性探测 | ✅ | `scripts/dev/quality_gate/collect_akshare_market_function_availability.py` | 扫描当前环境 `akshare` 同名函数可用性，并输出 help candidates 供人工复核 |
+| Repo-truth 一致性校验 | ✅ | `scripts/dev/quality_gate/validate_akshare_market_repo_truth.py` | 联动 OpenSpec、事实文档、注册配置与代码线索做对齐检查，只产出审计结果 |
+| 统一门禁入口 | ✅ | `scripts/dev/quality_gate/run_akshare_market_gates.py` | 汇总 availability / repo-truth / summary 三份报告，供本地与 CI 复用 |
+| 官方改名候选台账 | ⚠️ | `docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md` | 当前仅把 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`、`stock_strong_pool_em -> stock_zt_pool_strong_em`、`stock_new_em -> stock_zt_pool_sub_new_em` 记为人工评估候选；`stock_news_main_em` 与 `stock_weak_pool_em` 仍未纳入闭环 |
 
 ---
 
