@@ -61,6 +61,8 @@ export * as extensions from "./extensions";
 
 1. 直接从扩展域文件导入具体类型
 2. 仅在需要“统一发现入口”时再使用根 barrel 的 `extensions` 命名空间
+3. 如需验证 legacy root exports 与扩展层能否共存，可参考 compile-time smoke fixture：
+   - `web/frontend/src/api/types/compatibility-smoke.ts`
 
 推荐示例：
 
@@ -207,7 +209,41 @@ node scripts/generate-type-health-dashboard.js --report-dir ../../reports/analys
 - exported extension type 数量
 - 当前未使用扩展类型数量及名称
 
-## 7. 变更完成判定
+### 6.6 仓库里有没有“兼容性 smoke”证据？
+
+有。当前 repo-truth 的 compile-time smoke fixture 是：
+
+- `web/frontend/src/api/types/compatibility-smoke.ts`
+
+它专门用于让 `npm run type-check` 同时覆盖：
+
+- 旧的根级导出：`APIResponse`、`PaginationParams`、`UnifiedResponse`
+- 新的扩展层导出：`StrategyVM`、`FormField`
+
+这不是运行时模块，也不是业务页面依赖；它只是一个最小编译时夹具，用来证明“新增 `extensions` 命名空间之后，现有根级导出没有被破坏”。
+
+## 7. 回滚计划
+
+如果本专题扩展层在本地开发或专题分支上引入回归，当前 repo-truth 的最小回滚顺序是：
+
+1. 回退 `web/frontend/src/api/types/index.ts` 中的 `export * as extensions from "./extensions";`
+2. 删除或回退 `web/frontend/src/api/types/extensions/` 下新增或修改的专题类型
+3. 删除或回退 `web/frontend/src/api/types/compatibility-smoke.ts`
+4. 回退专题脚本入口：
+   - `type:validate`
+   - `type:check:conflicts`
+   - `type:audit:quality`
+   - `type:usage`
+   - `type:report`
+   - `type:dashboard`
+5. 重新执行：
+   - `node scripts/validate-types.js`
+   - `node scripts/check-type-conflicts.js`
+   - `npm run type-check`
+
+如果只是某一批新增扩展类型有问题，而不是整套扩展系统失败，优先按 micro-batch 回退，不要一次性抹掉整条扩展线。
+
+## 8. 变更完成判定
 
 至少满足：
 

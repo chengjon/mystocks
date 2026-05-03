@@ -139,8 +139,10 @@
 
 ### 5.1 Deployment Preparation (20 minutes)
 - [x] Run full type check on entire codebase
-- [ ] Validate no breaking changes to existing code
-- [ ] Prepare rollback plan if needed
+- [x] Validate no breaking changes to existing code
+  - Repo-truth（2026-05-03）：当前已新增 compile-time smoke fixture `web/frontend/src/api/types/compatibility-smoke.ts`，并通过 `cd web/frontend && npm run type-check` 验证 legacy root exports（`APIResponse` / `PaginationParams` / `UnifiedResponse`）与扩展层导出（`StrategyVM` / `FormField`）可在同一编译链中共存。
+- [x] Prepare rollback plan if needed
+  - Repo-truth（2026-05-03）：当前回滚顺序已写入 `docs/guides/typescript/TYPESCRIPT_EXTENSION_SYSTEM_REPO_TRUTH_GUIDE.md` 第 7 节，覆盖 `extensions` 命名空间导出、专题类型文件、compatibility smoke fixture 以及 `type:validate` / `type:check:conflicts` / `type:audit:quality` / `type:usage` / `type:report` / `type:dashboard` 脚本入口的最小回退路径。
 
 ### 5.2 Production Deployment (20 minutes)
 - [ ] Commit type extension system
