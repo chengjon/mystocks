@@ -72,3 +72,17 @@ def test_generate_type_usage_script_emits_usage_summary_json() -> None:
     assert payload["extensions"]["files"] >= 1
     assert payload["extensions"]["exported_types"] >= 1
     assert payload["main_index"]["exports_extensions"] is True
+
+
+def test_audit_type_extension_quality_reports_clean_naming_and_jsdoc() -> None:
+    completed = _run_node_script("scripts/audit-type-extension-quality.js")
+
+    assert completed.returncode == 0, completed.stderr or completed.stdout
+
+    payload = json.loads(completed.stdout)
+
+    assert payload["naming"]["ok"] is True
+    assert payload["naming"]["violations"] == []
+    assert payload["jsdoc"]["ok"] is True
+    assert payload["jsdoc"]["missing"] == []
+    assert payload["unused"]["count"] >= 1

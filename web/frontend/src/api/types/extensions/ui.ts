@@ -16,8 +16,14 @@ export type FormFieldComponent =
   | 'date'
   | 'date-range';
 
+/**
+ * Validation trigger union used by frontend-only form schemas.
+ */
 export type FormValidationTrigger = 'blur' | 'change' | 'submit';
 
+/**
+ * Value categories supported by reusable validation rules.
+ */
 export type FormValidationValueType =
   | 'string'
   | 'number'
@@ -26,6 +32,9 @@ export type FormValidationValueType =
   | 'date'
   | 'enum';
 
+/**
+ * Selectable option metadata for enum-like form fields.
+ */
 export interface FormFieldOption<T = string | number | boolean> {
   label: string;
   value: T;
@@ -33,6 +42,9 @@ export interface FormFieldOption<T = string | number | boolean> {
   description?: string;
 }
 
+/**
+ * Validation rule definition consumed by frontend form builders.
+ */
 export interface FormValidationRule {
   required?: boolean;
   type?: FormValidationValueType;
@@ -44,8 +56,14 @@ export interface FormValidationRule {
   validator_name?: string;
 }
 
+/**
+ * Field-to-rule mapping for a complete frontend form schema.
+ */
 export type FormValidationSchema = Record<string, FormValidationRule[]>;
 
+/**
+ * Runtime validation state tracked for a single form field.
+ */
 export interface FormValidationState {
   is_valid: boolean;
   is_dirty: boolean;
@@ -54,6 +72,9 @@ export interface FormValidationState {
   warnings?: string[];
 }
 
+/**
+ * Frontend-only form field metadata used by shared form renderers.
+ */
 export interface FormField<T = unknown> {
   key: string;
   label: string;

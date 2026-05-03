@@ -157,6 +157,9 @@ export interface RiskParametersVM {
   max_sector_concentration: number;
 }
 
+/**
+ * Entry and exit rule bundle used by strategy parameter forms.
+ */
 export interface TradeRuleVM {
   // Entry rules
   entry_conditions: string[];
@@ -170,6 +173,9 @@ export interface TradeRuleVM {
   take_profit_value: number;
 }
 
+/**
+ * Optional symbol, sector, and trading-hour constraints applied to a strategy.
+ */
 export interface StrategyConstraintsVM {
   // Allowed trading symbols
   allowed_symbols: string[];
@@ -186,6 +192,9 @@ export interface StrategyConstraintsVM {
   market_conditions: string[];
 }
 
+/**
+ * Portfolio- and trade-level risk ceilings enforced for a strategy.
+ */
 export interface RiskLimitsVM {
   // Daily P&L limits
   daily_pnl_limit: number;
@@ -201,6 +210,9 @@ export interface RiskLimitsVM {
   max_loss_per_trade: number;
 }
 
+/**
+ * Performance summary shown in strategy management and backtest views.
+ */
 export interface StrategyPerformanceVM {
   // Return metrics
   total_return: number;
@@ -222,6 +234,9 @@ export interface StrategyPerformanceVM {
   information_ratio: number;
 }
 
+/**
+ * Frontend backtest request payload and task-tracking envelope.
+ */
 export interface BacktestRequestVM {
   strategy_id: string;
   symbol: string;
@@ -238,6 +253,9 @@ export interface BacktestRequestVM {
   symbols?: string[];
 }
 
+/**
+ * Backtest trade record surfaced in frontend analysis views.
+ */
 export interface BacktestTradeVM {
   trade_id: string;
   symbol: string;
@@ -249,6 +267,9 @@ export interface BacktestTradeVM {
   pnl?: number;
 }
 
+/**
+ * Aggregated backtest result payload used by strategy-facing pages.
+ */
 export interface BacktestResultVM {
   strategy_id: string;
   symbol: string;
@@ -266,6 +287,9 @@ export interface BacktestResultVM {
   completed_at?: string;
 }
 
+/**
+ * Frontend create-strategy payload with explicit constraints and risk limits.
+ */
 export interface CreateStrategyRequestVM {
   name: string;
   description: string;
@@ -275,6 +299,9 @@ export interface CreateStrategyRequestVM {
   risk_limits: RiskLimitsVM;
 }
 
+/**
+ * Partial update payload for editable strategy metadata and parameters.
+ */
 export interface UpdateStrategyRequestVM {
   id: string;
   name?: string;
@@ -285,6 +312,9 @@ export interface UpdateStrategyRequestVM {
   status?: StrategyStatusVM;
 }
 
+/**
+ * Paginated strategy list payload returned to management pages.
+ */
 export interface StrategyListResponseVM {
   items: StrategyConfig[];
   total: number;
@@ -293,6 +323,9 @@ export interface StrategyListResponseVM {
   strategies?: StrategyConfig[];
 }
 
+/**
+ * Strategy-to-strategy comparison dataset for analytics dashboards.
+ */
 export interface StrategyComparisonDataVM {
   strategies: Array<{
     strategy_id: string;
@@ -309,6 +342,9 @@ export interface StrategyComparisonDataVM {
   };
 }
 
+/**
+ * Optimization request for parameter sweeps against a chosen performance target.
+ */
 export interface StrategyOptimizationRequestVM {
   strategy_id: string;
   optimization_target: 'sharpe_ratio' | 'total_return' | 'max_drawdown' | 'win_rate';
@@ -317,6 +353,9 @@ export interface StrategyOptimizationRequestVM {
   cross_validation_folds: number;
 }
 
+/**
+ * Optimization result summary with best parameters and sensitivity analysis.
+ */
 export interface StrategyOptimizationResultVM {
   strategy_id: string;
   optimization_target: string;

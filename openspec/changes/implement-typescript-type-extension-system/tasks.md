@@ -151,7 +151,7 @@
 - [x] Configure type checking in pre-commit hooks
 - [ ] Set up automated type validation reports
 - [ ] Create type health monitoring dashboard
-  - Repo-truth（2026-05-03）：`type:check:conflicts` 与 `type:usage` 脚本现已落地，但当前仍是本地手动执行入口，尚未接入自动产物归档、定时报告或 dashboard。
+  - Repo-truth（2026-05-03）：`type:check:conflicts`、`type:audit:quality` 与 `type:usage` 脚本现已落地，但当前仍是本地手动执行入口，尚未接入自动产物归档、定时报告或 dashboard。
 
 ## Validation Criteria
 
@@ -175,9 +175,12 @@
 - [ ] Hot reload works with new types
 
 ### Quality Validation
-- [ ] Type definitions follow naming conventions
-- [ ] JSDoc comments complete and accurate
+- [x] Type definitions follow naming conventions
+  - Repo-truth（2026-05-03）：`cd web/frontend && npm run type:audit:quality` 当前返回 `naming.ok = true`，并把 `list`、`date_type` 视为当前仓库明确允许保留的 legacy utility aliases，而不是命名违规。
+- [x] JSDoc comments complete and accurate
+  - Repo-truth（2026-05-03）：`cd web/frontend && npm run type:audit:quality` 当前返回 `jsdoc.ok = true`、`jsdoc.missing = []`；此前缺失的 `strategy.ts` / `ui.ts` 顶层导出注释已补齐。
 - [ ] No unused type definitions
+  - Repo-truth（2026-05-03）：`type:audit:quality` 当前仍报告 `unused.count = 47`，因此这项继续保持未完成，避免把“可观测到未使用”误写成“已治理完成”。
 - [ ] Type coverage meets 95% target
 
 ## Dependencies

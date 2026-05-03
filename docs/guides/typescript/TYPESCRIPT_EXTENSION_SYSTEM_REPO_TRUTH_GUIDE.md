@@ -87,12 +87,15 @@ type PositionVM = extensions.PositionVM;
 
 ## 4. 维护脚本
 
-当前这套系统依赖 3 个本地脚本：
+当前这套系统依赖 4 个本地脚本：
 
 - `node scripts/validate-types.js`
   - 校验扩展目录、关键入口文件和主索引扩展导出是否存在
 - `node scripts/check-type-conflicts.js`
   - 检查当前公开 surface 是否存在冲突
+- `node scripts/audit-type-extension-quality.js`
+  - 输出命名约定、顶层 JSDoc 覆盖情况，以及当前仍未被 `web/frontend/src` 消费的扩展类型清单
+  - 当前会把 `list`、`date_type` 视为 repo-truth 允许保留的 legacy utility aliases，而不是命名违规
 - `node scripts/generate-type-usage.js`
   - 输出扩展文件数、导出类型数、主索引扩展导出模式等 JSON summary
 
@@ -102,6 +105,7 @@ type PositionVM = extensions.PositionVM;
 cd web/frontend
 node scripts/validate-types.js
 node scripts/check-type-conflicts.js
+node scripts/audit-type-extension-quality.js
 node scripts/generate-type-usage.js
 npm run type-check
 ```
@@ -122,6 +126,7 @@ npm run type-check
 4. 跑脚本：
    - `node scripts/validate-types.js`
    - `node scripts/check-type-conflicts.js`
+   - `node scripts/audit-type-extension-quality.js`
    - `npm run type-check`
 5. 若需要统计或审计，再跑 `node scripts/generate-type-usage.js`
 
@@ -145,6 +150,15 @@ npm run type-check
 
 `src/api/types/tools/validators/TypeValidator.ts` 仍是占位型实现，不能把它误当成当前主链路验证器。
 
+### 6.4 质量审计是不是已经等于“无技术债”？
+
+不是。当前质量审计脚本只证明两件事：
+
+- 现有扩展类型名字符合当前 repo-truth 约定
+- 顶层导出都有对应 JSDoc 注释
+
+它不会把“仍未消费的扩展类型”自动洗成完成项。当前 `audit-type-extension-quality.js` 仍会报告一批未在 `web/frontend/src` 中被引用的扩展类型，因此 `No unused type definitions` 继续属于开放治理项，而不是已闭环项。
+
 ## 7. 变更完成判定
 
 至少满足：
@@ -153,6 +167,7 @@ npm run type-check
 - `extensions/index.ts` / `extensions/market/index.ts` 导出链路正确
 - `node scripts/validate-types.js` 通过
 - `node scripts/check-type-conflicts.js` 通过
+- `node scripts/audit-type-extension-quality.js` 中 `naming.ok=true` 且 `jsdoc.ok=true`
 - `npm run type-check` 通过
 
 若只是历史方案、旧报告或计划文档更新，而没有上述脚本或类型检查证据，不能视为本系统已完成收口。
