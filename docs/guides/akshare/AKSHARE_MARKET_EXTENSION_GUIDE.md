@@ -21,17 +21,16 @@
 - 第 3 节：资金流向
 - 第 4 节：预测和分析
 - 第 5 节：板块和行业
-- 第 6 节：仅补齐 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_zt_pool_em`、`stock_changes_em`
+- 第 6 节：已补齐 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_zt_pool_em`、`stock_dt_pool_em`、`stock_changes_em`
 
 当前仍未落地的第 6 节接口：
 
 - `stock_news_main_em`
-- `stock_dt_pool_em`
 - `stock_strong_pool_em`
 - `stock_weak_pool_em`
 - `stock_new_em`
 
-这些缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出对应同名函数，不能拿近似接口替代。
+除 `stock_dt_pool_em -> stock_zt_pool_dtgc_em` 这一条已批准并落地的官方改名映射外，这些缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出可直接接受的实现，不能拿近似接口替代。
 
 ### 1.1 当前门禁快照
 
@@ -46,15 +45,20 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 
 - 本地 `akshare` 版本：`1.18.60`
 - 追踪函数总数：`9`
-- 当前可用：`4`
-- 当前缺失：`5`
+- 当前可用：`5`
+- 当前缺失：`4`
 - repo-truth violation：`0`
 - 统一门禁结果：`pass=true`
 
-当前 availability 报告还会补充 `summary.help_candidate_functions`：
+当前 availability 报告的分辨口径是：
+
+- `native`：同名函数直接可用
+- `mapped`：命中已批准的官方改名映射，当前仅 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`
+- `missing`：既没有同名函数，也没有已批准映射
+
+当前 `summary.help_candidate_functions` 仍只保留尚未批准的人工评估线索：
 
 - `stock_news_main_em` -> `stock_news_main_cx`
-- `stock_dt_pool_em` -> `stock_zt_pool_dtgc_em`
 - `stock_strong_pool_em` -> `stock_zt_pool_strong_em`
 - `stock_new_em` -> `stock_zt_pool_sub_new_em`
 - `stock_weak_pool_em` -> 当前未发现同类候选
@@ -64,7 +68,7 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 - `stock_zt_pool_previous_em`：昨日涨停股池
 - `stock_zt_pool_zbgc_em`：炸板股池
 
-这些提示只用于“本地包里是否存在相近能力”的审计参考，不改变 same-name 门禁结论。
+这些提示只用于“本地包里是否存在相近能力”的审计参考；除 `stock_dt_pool_em` 外，不自动计为已实现。
 
 ## 2. 当前入口分布
 
@@ -73,11 +77,12 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 - 聚合类：`src/adapters/akshare/market_adapter/adapter.py`
 - 情绪 / 监控类方法：`src/adapters/akshare/market_adapter/stock_sentiment.py`
 
-本轮新增的 4 个方法是：
+本轮新增 / 当前推荐关注的 5 个方法是：
 
 - `get_stock_hot_follow_xq(symbol="最热门")`
 - `get_stock_board_change_em()`
 - `get_stock_zt_pool_em(date)`
+- `get_stock_dt_pool_em(date)`
 - `get_stock_changes_em(symbol="大笔买入")`
 
 ### 2.2 API 路由入口
@@ -90,6 +95,7 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 
 - `GET /api/akshare/market/stock/hot-follow/xq`
 - `GET /api/akshare/market/stock/zt-pool/em`
+- `GET /api/akshare/market/stock/dt-pool/em`
 - `GET /api/akshare/market/stock/changes/em`
 - `GET /api/akshare/market/board/change/em`
 
@@ -144,7 +150,15 @@ curl "http://localhost:8888/api/akshare/market/stock/zt-pool/em?date=20241008"
 
 该接口要求显式传入交易日 `date`，格式为 `YYYYMMDD`。
 
-### 3.4 板块异动
+### 3.4 跌停股池
+
+```bash
+curl "http://localhost:8888/api/akshare/market/stock/dt-pool/em?date=20241011"
+```
+
+该接口对外仍保持 canonical 名称 `stock_dt_pool_em`，内部映射到本地 `akshare.stock_zt_pool_dtgc_em(date=...)`。
+
+### 3.5 板块异动
 
 ```bash
 curl "http://localhost:8888/api/akshare/market/board/change/em"
@@ -161,16 +175,17 @@ curl "http://localhost:8888/api/akshare/market/board/change/em"
 - `akshare_stock_hot_follow_xq`: `hourly`
 - `akshare_stock_board_change_em`: `realtime`
 - `akshare_stock_zt_pool_em`: `realtime`
+- `akshare_stock_dt_pool_em`: `realtime`
 - `akshare_stock_changes_em`: `realtime`
 
 ### 4.2 缓存边界
 
-当前仓库没有为这 3 个接口单独落一套 AkShare 专题缓存层。
+当前仓库没有为这组接口单独落一套 AkShare 专题缓存层。
 
 这意味着：
 
 - 当前可确认的缓存语义主要是“配置层面的 `update_frequency` 元数据”
-- `tests/api/file_tests/test_akshare_market_api.py::test_smart_cache_integration` 仍只是 file-level placeholder，不应被解读为这 3 个接口已有专属缓存闭环
+- `tests/api/file_tests/test_akshare_market_api.py::test_smart_cache_integration` 仍只是 file-level placeholder，不应被解读为这组接口已有专属缓存闭环
 - 若后续要把这些接口接入明确缓存策略，应单独补：
   - runtime cache 入口
   - cache invalidation 规则
@@ -191,5 +206,6 @@ curl "http://localhost:8888/api/akshare/market/board/change/em"
 禁止的做法：
 
 - 用“名称相近”的 AkShare 函数顶替缺失的同名函数，然后直接勾任务
+- 绕开 gate / repo-truth，私下把未批准候选升级成运行时映射
 - 只改 registry 或只改 API，不补 adapter / tests
 - 把历史 `AKSHARE_INTERFACE_MAPPING.md` 当成当前实现完成证据

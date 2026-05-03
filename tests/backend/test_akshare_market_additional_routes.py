@@ -118,3 +118,30 @@ def test_stock_zt_pool_em_route_returns_success_payload():
     assert payload["data"]["count"] == 1
     assert payload["data"]["provider"] == "em"
     assert payload["data"]["data_type"] == "zt_pool"
+
+
+def test_stock_dt_pool_em_route_returns_success_payload():
+    df = pd.DataFrame(
+        {
+            "sequence_no": [1],
+            "symbol": ["000001"],
+            "stock_name": ["平安银行"],
+            "change_percent": [-9.98],
+            "latest_price": [8.21],
+            "query_date": ["20241011"],
+        }
+    )
+
+    with patch(
+        "app.api.akshare_market.sentiment_monitor.akshare_market_adapter.get_stock_dt_pool_em",
+        new=AsyncMock(return_value=df),
+    ):
+        response = client.get("/api/akshare/market/stock/dt-pool/em?date=20241011")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["data"]["date"] == "20241011"
+    assert payload["data"]["count"] == 1
+    assert payload["data"]["provider"] == "em"
+    assert payload["data"]["data_type"] == "dt_pool"

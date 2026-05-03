@@ -135,3 +135,55 @@ async def test_get_stock_zt_pool_em_normalizes_columns():
         "query_timestamp",
     } <= set(result.columns)
     assert result["query_date"].tolist() == ["20241008"]
+
+
+@pytest.mark.asyncio
+async def test_get_stock_dt_pool_em_normalizes_columns():
+    adapter = AkshareMarketDataAdapter()
+
+    with patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_zt_pool_dtgc_em", create=True) as mock_dt_pool:
+        mock_dt_pool.return_value = pd.DataFrame(
+            {
+                "序号": [1],
+                "代码": ["000001"],
+                "名称": ["平安银行"],
+                "涨跌幅": [-9.98],
+                "最新价": [8.21],
+                "成交额": [560000000.0],
+                "流通市值": [145000000000.0],
+                "总市值": [182000000000.0],
+                "动态市盈率": [5.8],
+                "换手率": [3.2],
+                "封单资金": [68000000.0],
+                "最后封板时间": ["145501"],
+                "板上成交额": [120000000.0],
+                "连续跌停": [2],
+                "开板次数": [1],
+                "所属行业": ["银行"],
+            }
+        )
+
+        result = await adapter.get_stock_dt_pool_em("20241011")
+
+    assert len(result) == 1
+    assert {
+        "sequence_no",
+        "symbol",
+        "stock_name",
+        "change_percent",
+        "latest_price",
+        "turnover_amount",
+        "circulating_market_cap",
+        "total_market_cap",
+        "dynamic_pe_ratio",
+        "turnover_rate",
+        "limit_down_fund",
+        "last_limit_down_time",
+        "board_turnover_amount",
+        "consecutive_limit_down_count",
+        "reopen_count",
+        "industry",
+        "query_date",
+        "query_timestamp",
+    } <= set(result.columns)
+    assert result["query_date"].tolist() == ["20241011"]

@@ -30,6 +30,9 @@ PREFERRED_HELP_CANDIDATES = {
     "stock_strong_pool_em": ("stock_zt_pool_strong_em",),
     "stock_new_em": ("stock_zt_pool_sub_new_em",),
 }
+APPROVED_RUNTIME_MAPPINGS = {
+    "stock_dt_pool_em": ("stock_zt_pool_dtgc_em",),
+}
 
 
 def _normalize_tokens(name: str) -> list[str]:
@@ -113,16 +116,35 @@ def collect_availability(module_name: str, function_names: list[str]) -> tuple[d
     missing_functions: list[str] = []
     help_candidate_functions: dict[str, list[str]] = {}
     for name in function_names:
-        available = hasattr(module, name)
-        row = {"name": name, "available": available}
-        if available:
+        target_available = hasattr(module, name)
+        row = {"name": name, "target_available": target_available}
+        if target_available:
+            row["available"] = True
+            row["resolved_function"] = name
+            row["resolution_status"] = "native"
             available_functions.append(name)
         else:
-            missing_functions.append(name)
             help_candidates = _find_help_candidates(module, name)
-            row["help_candidates"] = help_candidates
-            if help_candidates:
-                help_candidate_functions[name] = help_candidates
+            approved_mapping = next(
+                (
+                    candidate_name
+                    for candidate_name in APPROVED_RUNTIME_MAPPINGS.get(name, ())
+                    if callable(getattr(module, candidate_name, None))
+                ),
+                None,
+            )
+            if approved_mapping is not None:
+                row["available"] = True
+                row["resolved_function"] = approved_mapping
+                row["resolution_status"] = "mapped"
+                available_functions.append(name)
+            else:
+                row["available"] = False
+                row["help_candidates"] = help_candidates
+                row["resolution_status"] = "missing"
+                missing_functions.append(name)
+                if help_candidates:
+                    help_candidate_functions[name] = help_candidates
         function_rows.append(row)
 
     payload["functions"] = function_rows

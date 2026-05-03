@@ -7,7 +7,7 @@
 > **故障排查说明**:
 > 本文件面向 `expand-akshare-data-sources` 的当前实现，用于快速定位“函数缺失 / 路由不通 / registry 漏配 / focused tests 失败”等常见问题。
 
-## 1. 本地 `akshare` 缺少同名函数
+## 1. 本地 `akshare` 缺少 canonical 同名函数
 
 症状：
 
@@ -30,8 +30,10 @@ PY
 
 处理原则：
 
-- 只实现本地可确认存在的同名函数
-- 若同名函数不存在，不用相近函数替代并冒充完成
+- 默认只实现本地可确认存在的同名函数
+- 仅当 gate 中存在已批准的官方改名映射时，才允许以 canonical 名称暴露运行时能力
+- 当前已批准映射只有：`stock_dt_pool_em -> stock_zt_pool_dtgc_em`
+- 除上述特例外，若同名函数不存在，不用相近函数替代并冒充完成
 
 标准入口优先使用 wrapper：
 
@@ -57,8 +59,9 @@ python scripts/dev/quality_gate/collect_akshare_market_function_availability.py 
 说明：
 
 - `help_candidate_functions` 只表示“当前本地 `akshare` 包里存在相近名字 / 相近语义的候选函数”
-- 它不能直接把 `stock_news_main_cx`、`stock_zt_pool_dtgc_em`、`stock_zt_pool_strong_em`、`stock_zt_pool_sub_new_em` 自动等价成 OpenSpec 里的缺失同名函数
-- 若要从 same-name 扩展为“接受官方改名函数”，那是单独的方案变更，不在本轮 MyStocks 门禁范围内
+- 它不能直接把 `stock_news_main_cx`、`stock_zt_pool_strong_em`、`stock_zt_pool_sub_new_em` 自动等价成 OpenSpec 里的缺失同名函数
+- `stock_zt_pool_dtgc_em` 现在是已批准映射，只对 `stock_dt_pool_em` 生效；其余候选仍停留在 advisory 状态
+- 若要把其它候选从 advisory 升级为“接受官方改名函数”，必须单独走一批方案变更与门禁回写
 - `stock_zt_pool_previous_em`、`stock_zt_pool_zbgc_em` 属于已考虑的邻接 pool 能力，但当前 OpenSpec 第 6 节没有对应任务项
 
 ## 2. 路由存在但 commit hook 报 `UnifiedResponse` guard

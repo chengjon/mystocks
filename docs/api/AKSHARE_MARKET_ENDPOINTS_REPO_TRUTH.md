@@ -77,7 +77,7 @@
 | 6.2 | `stock_board_change_em` | `/api/akshare/market/board/change/em` | `get_stock_board_change_em()` | 已实现 |
 | 6.3 | `stock_news_main_em` | - | - | 本地 `akshare` 未检出同名函数 |
 | 6.4 | `stock_zt_pool_em` | `/api/akshare/market/stock/zt-pool/em` | `get_stock_zt_pool_em()` | 已实现 |
-| 6.5 | `stock_dt_pool_em` | - | - | 本地 `akshare` 未检出同名函数 |
+| 6.5 | `stock_dt_pool_em` | `/api/akshare/market/stock/dt-pool/em` | `get_stock_dt_pool_em()` | 已实现（官方改名映射：stock_zt_pool_dtgc_em） |
 | 6.6 | `stock_strong_pool_em` | - | - | 本地 `akshare` 未检出同名函数 |
 | 6.7 | `stock_weak_pool_em` | - | - | 本地 `akshare` 未检出同名函数 |
 | 6.8 | `stock_changes_em` | `/api/akshare/market/stock/changes/em` | `get_stock_changes_em()` | 已实现 |

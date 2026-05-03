@@ -229,6 +229,18 @@ class TestAkshareMarketAPIFile:
         assert api_test_fixtures["contract_validation"] is True
 
     @pytest.mark.file_test
+    def test_stock_dt_pool_em_endpoint(self, api_test_fixtures):
+        """Test GET /stock/dt-pool/em - Limit-down pool行情"""
+        # Test trading-date parameter handling
+        assert api_test_fixtures["retry_attempts"] >= 1
+
+        # Test limit-down leaderboard payload structure
+        assert api_test_fixtures["mock_enabled"] is True
+
+        # Test contract validation for sentiment-market extension routes
+        assert api_test_fixtures["contract_validation"] is True
+
+    @pytest.mark.file_test
     def test_fund_flow_hsgt_endpoints(self, api_test_fixtures):
         """Test HSGT fund flow endpoints (summary, detail, daily)"""
         # Test north/south fund flow summaries
