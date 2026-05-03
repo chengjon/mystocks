@@ -149,9 +149,10 @@
 
 ### 5.3 Monitoring Setup (20 minutes)
 - [x] Configure type checking in pre-commit hooks
-- [ ] Set up automated type validation reports
+- [x] Set up automated type validation reports
+  - Repo-truth（2026-05-03）：`web/frontend/scripts/generate-type-validation-report.js` 已落地，并由 `npm run type:report` 暴露；当前会归并 `validate-types`、`check-type-conflicts`、`audit-type-extension-quality`、`generate-type-usage` 与 `npm run type-check`，默认写入 `reports/analysis/typescript-extension-validation/`，同时生成时间戳 JSON 与 `latest.json`。
 - [ ] Create type health monitoring dashboard
-  - Repo-truth（2026-05-03）：`type:check:conflicts`、`type:audit:quality` 与 `type:usage` 脚本现已落地，但当前仍是本地手动执行入口，尚未接入自动产物归档、定时报告或 dashboard。
+  - Repo-truth（2026-05-03）：当前已经具备 `type:report` 的 JSON artifact 生成能力，但仍未接入可视化 dashboard、定时调度或持续监控面板。
 
 ## Validation Criteria
 

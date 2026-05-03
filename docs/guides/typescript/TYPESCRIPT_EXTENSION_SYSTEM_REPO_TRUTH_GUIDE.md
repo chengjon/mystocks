@@ -87,7 +87,7 @@ type PositionVM = extensions.PositionVM;
 
 ## 4. 维护脚本
 
-当前这套系统依赖 4 个本地脚本：
+当前这套系统依赖 5 个本地脚本：
 
 - `node scripts/validate-types.js`
   - 校验扩展目录、关键入口文件和主索引扩展导出是否存在
@@ -98,6 +98,12 @@ type PositionVM = extensions.PositionVM;
   - 当前会把 `list`、`date_type` 视为 repo-truth 允许保留的 legacy utility aliases，而不是命名违规
 - `node scripts/generate-type-usage.js`
   - 输出扩展文件数、导出类型数、主索引扩展导出模式等 JSON summary
+- `node scripts/generate-type-validation-report.js`
+  - 归并 `validate-types`、`check-type-conflicts`、`audit-type-extension-quality`、`generate-type-usage` 和 `npm run type-check`
+  - 默认把 JSON artifact 写入 `reports/analysis/typescript-extension-validation/`
+  - 会同时生成：
+    - 时间戳报告：`YYYYMMDDTHHMMSSZ-type-extension-validation-report.json`
+    - 最新指针：`latest.json`
 
 常用验证命令：
 
@@ -107,6 +113,7 @@ node scripts/validate-types.js
 node scripts/check-type-conflicts.js
 node scripts/audit-type-extension-quality.js
 node scripts/generate-type-usage.js
+node scripts/generate-type-validation-report.js
 npm run type-check
 ```
 
@@ -128,7 +135,9 @@ npm run type-check
    - `node scripts/check-type-conflicts.js`
    - `node scripts/audit-type-extension-quality.js`
    - `npm run type-check`
-5. 若需要统计或审计，再跑 `node scripts/generate-type-usage.js`
+5. 若需要统计或留存 artifact，再跑：
+   - `node scripts/generate-type-usage.js`
+   - `node scripts/generate-type-validation-report.js`
 
 ## 6. 常见边界
 
@@ -159,6 +168,29 @@ npm run type-check
 
 它不会把“仍未消费的扩展类型”自动洗成完成项。当前 `audit-type-extension-quality.js` 仍会报告一批未在 `web/frontend/src` 中被引用的扩展类型，因此 `No unused type definitions` 继续属于开放治理项，而不是已闭环项。
 
+### 6.5 自动报告和单次脚本检查的区别是什么？
+
+单次脚本检查适合本地快速确认：
+
+- `validate-types`
+- `check-type-conflicts`
+- `audit-type-extension-quality`
+- `type-check`
+
+自动报告适合把这几项结果固定成可审计 artifact。当前推荐命令是：
+
+```bash
+cd web/frontend
+node scripts/generate-type-validation-report.js
+```
+
+如果需要指定输出目录：
+
+```bash
+cd web/frontend
+node scripts/generate-type-validation-report.js --report-dir ../../reports/analysis/typescript-extension-validation
+```
+
 ## 7. 变更完成判定
 
 至少满足：
@@ -169,5 +201,6 @@ npm run type-check
 - `node scripts/check-type-conflicts.js` 通过
 - `node scripts/audit-type-extension-quality.js` 中 `naming.ok=true` 且 `jsdoc.ok=true`
 - `npm run type-check` 通过
+- 若需要留存证据，`node scripts/generate-type-validation-report.js` 可生成时间戳报告与 `latest.json`
 
 若只是历史方案、旧报告或计划文档更新，而没有上述脚本或类型检查证据，不能视为本系统已完成收口。
