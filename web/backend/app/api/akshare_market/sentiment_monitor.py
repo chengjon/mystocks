@@ -202,7 +202,11 @@ async def get_stock_hot_follow_xq(
     responses=STOCK_ZT_POOL_EM_RESPONSES,
 )
 async def get_stock_zt_pool_em(
-    date: str = Query(..., description="交易日，格式 YYYYMMDD", example="20241008"),
+    date: str = Query(
+        ...,
+        description="交易日，格式 YYYYMMDD",
+        examples={"trading_day": {"summary": "交易日示例", "value": "20241008"}},
+    ),
     current_user: User = Depends(get_current_user),
 ):
     """
