@@ -1,442 +1,404 @@
-# AkShare Official Rename Mapping Design
+# AkShare Official Rename Candidate Evaluation Design
 
 > **权威来源声明**:
-> 本文件是专题说明或状态说明，不是仓库共享规则的唯一事实来源。
-> 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 `architecture/STANDARDS.md`；若涉及执行入口、提案流程或当前实现事实，再分别参考根目录 `AGENTS.md`、根目录 `CLAUDE.md`、`openspec/AGENTS.md` 与当前代码。
+> 本文件是专题设计草稿，不是仓库共享规则或当前实现真相的唯一事实来源。
+> 仓库级共享规则与审批门禁以 `architecture/STANDARDS.md` 为准；当前变更真相以 `openspec/changes/expand-akshare-data-sources/`、`README.md`、`docs/FUNCTION_TREE.md` 和相关 repo-truth 文档为准。
 
 ## Context
 
-`expand-akshare-data-sources` has already landed a wrapper-first governance chain for AkShare market expansion:
+`expand-akshare-data-sources` 的门禁基线已经在提交 `435bc8f00` (`akshare: add market repo-truth gates`) 中收口。该提交已经完成：
 
-- `scripts/dev/quality_gate/collect_akshare_market_function_availability.py`
-- `scripts/dev/quality_gate/validate_akshare_market_repo_truth.py`
-- `scripts/dev/quality_gate/run_akshare_market_gates.py`
+- wrapper-first AkShare 市场门禁链路
+  - `scripts/dev/quality_gate/collect_akshare_market_function_availability.py`
+  - `scripts/dev/quality_gate/validate_akshare_market_repo_truth.py`
+  - `scripts/dev/quality_gate/run_akshare_market_gates.py`
+- runtime / CI 汇总接线
+- `README.md` 与 `docs/FUNCTION_TREE.md` 真相源补齐
+- OpenSpec、AkShare 专题文档、handoff 台账与 Graphiti 同步
 
-That chain currently emits three reports:
+当前基线已经明确：
 
-- availability
-- repo-truth
-- summary
+- MyStocks 只把本地已存在的 AkShare 同名函数视为已实现运行时能力
+- 官方同源改名能力可以作为 `help_candidates` 暴露给人工评估
+- advisory candidate 不自动升级为已实现能力
+- 本仓库不自研替代函数，不跨到 `akquant` 或其他异源接口补缺
 
-It also keeps `help_candidates` and `summary.help_candidate_functions` strictly advisory. The current approved repo boundary is still "MyStocks only integrates locally present AkShare capabilities and does not borrow replacement implementations from `akquant` or third-party sources."
+基于本地 `akshare 1.18.60` 的真实情况，当前 advisory candidate 只保留三项人工评估线索：
 
-Local verification on `2026-05-03` shows that `akshare` is now `1.18.60`, and several section 6 targets in `expand-akshare-data-sources` have moved to official same-family renamed functions:
-
-- `stock_news_main_em` is no longer present; `stock_news_main_cx` exists
-- `stock_dt_pool_em` is no longer present; `stock_zt_pool_dtgc_em` exists
-- `stock_strong_pool_em` is no longer present; `stock_zt_pool_strong_em` exists
-- `stock_new_em` is no longer present; `stock_zt_pool_sub_new_em` exists
-- `stock_weak_pool_em` has no accepted direct replacement in local `akshare`
-
-This design updates the change boundary from "same-name only" to "approved official rename within the same family," while preserving the existing governance, audit, and wrapper-first delivery model.
-
-## Goals
-
-- Align `expand-akshare-data-sources` with the real function set exposed by local `akshare 1.18.60`
-- Accept a narrow, explicit set of official rename mappings for section 6 targets
-- Keep route semantics, task numbering, and business target naming stable where possible
-- Upgrade the gate logic from `same-name only` to `canonical target + approved mapping`
-- Retire `stock_weak_pool_em` as an upstream-removed target instead of leaving it as a permanent unresolved gap
-
-## Non-Goals
-
-- Do not accept third-party substitutes, cross-repo borrowed implementations, or self-invented equivalence
-- Do not map `stock_dt_pool_em` to `stock_zt_pool_em`
-- Do not map `stock_new_em` to `stock_zh_a_new_em`, because it models A-share new listings rather than the "次新股池" target in section 6.9
-- Do not use `help_candidates` as automatic implementation approval
-- Do not expand scope to unrelated pool functions such as `stock_zt_pool_previous_em` or `stock_zt_pool_zbgc_em`
-- Do not close caching, batching, or broad test tasks unless those items are actually implemented and verified
-
-## Section 1. Boundary And Target
-
-This batch first changes the proposal boundary, not the runtime behavior. The change moves from:
-
-- same-name only
-
-to:
-
-- approved official rename within the same family
-
-The only accepted formal mappings are:
-
-- `stock_news_main_em -> stock_news_main_cx`
 - `stock_dt_pool_em -> stock_zt_pool_dtgc_em`
 - `stock_strong_pool_em -> stock_zt_pool_strong_em`
 - `stock_new_em -> stock_zt_pool_sub_new_em`
 
-This accepted set already exists in advisory form inside `PREFERRED_HELP_CANDIDATES` in `collect_akshare_market_function_availability.py`. The proposal change here is not to invent a new mapping set from scratch, but to promote a subset of those advisory candidates into approved runtime mappings.
+同时确认：
 
-The following substitutions remain explicitly rejected:
+- `stock_news_main_em` 本地缺失，`stock_news_main_cx` 仅作为邻近官方函数存在，不在当前保留候选集内
+- `stock_weak_pool_em` 本地缺失，当前没有可接受候选
 
-- `stock_dt_pool_em -> stock_zt_pool_em`
-- `stock_new_em -> stock_zh_a_new_em`
-- any third-party source, provider drift without approval, cross-repo borrowing, or self-assembled replacement
+本设计稿的职责不是重写已经落地的 gate baseline，而是：
+
+1. 记录 `435bc8f00` 已经落地的治理事实
+2. 定义后续如何在不污染当前 repo-truth 的前提下评估官方改名候选
+
+## Goals
+
+- 记录 `435bc8f00` 已交付的 gate baseline
+- 把后续候选评估口径对齐到本地 `akshare 1.18.60` 的真实情况
+- 将手工评估线收敛到 `Section 3.2` 中定义的三个 retained candidate
+- 如果未来某个候选被提升，保持 OpenSpec task 名、业务语义名、路由语义的稳定性
+- 定义从 advisory candidate 升级为 approved runtime mapping 的前置条件
+
+## Non-Goals
+
+- 不在当前批次批准 `stock_news_main_em -> stock_news_main_cx`
+- 不在当前批次把 `stock_weak_pool_em` 改写成 retired item
+- 不放宽当前 same-name gate baseline
+- 不自研替代函数
+- 不用异源接口补缺
+- 不把 `help_candidates` 当作自动通过条件
+- 不把 `stock_dt_pool_em` 映射到 `stock_zt_pool_em`
+- 不把 `stock_new_em` 映射到 `stock_zh_a_new_em`，因为它描述的是更宽泛的 `新股`，不是 `次新股池`
+- 不把 `stock_zt_pool_previous_em`、`stock_zt_pool_zbgc_em` 等相邻能力混进本批范围
+
+## Section 1. Boundary And Target
+
+本批首先改变的是“设计记录方式”，不是“当前运行时真相”。
+
+当前真相仍然是：
+
+- same-name only 才算已实现
+- official rename candidate 仅作为 advisory 提示
+
+候选、排除项和 unresolved gap 的唯一库存定义以 `Section 3.2 Current Candidate Inventory` 为准。
+
+本节只补充边界性强调：
+
+- `stock_dt_pool_em -> stock_zt_pool_em` 继续明确拒绝
+- `stock_new_em -> stock_zh_a_new_em` 继续明确拒绝
+- `stock_weak_pool_em` 的任何近似替代继续明确拒绝
+- 任何第三方或跨仓库借用实现继续明确拒绝
 
 ### 1.1 Decision Record For `stock_news_main_cx`
 
-Earlier OpenSpec material explicitly rejected `stock_news_main_em -> stock_news_main_cx` for two reasons:
+`stock_news_main_cx` 在当前批次继续排除，原因如下：
 
-- the change crossed provider family from `em` to `cx`
-- under the old `same-name only` boundary, provider drift was treated as an automatic reject
+1. `435bc8f00` 收口后的 repo-truth 已明确只把 `dt / strong / new` 保留为人工评估候选
+2. `stock_news_main_cx` 不是同名函数
+3. 它的本地签名是 `() -> DataFrame`
+4. 实测返回列是 `tag / summary / url`
+5. 这说明它更像 provider-drift 的内容精选接口，而不是一个可直接视为同源平移的市场池类接口
 
-That rejection is being reversed for this design because of three new facts:
+因此当前结论是：
 
-1. local `akshare 1.18.60` no longer exposes `stock_news_main_em`, while `stock_news_main_cx` is the only upstream official function in the local package that serves the "财经内容精选" content family
-2. the user explicitly approved approach `B`, which changes the proposal boundary from `same-name only` to `approved official rename within the same family`
-3. task `6.3` is named "财经内容精选", not "个股新闻", so the target semantics can be fulfilled by a provider-shifted curated content feed if that shift is made explicit in the route, payload metadata, repo-truth, and risk model
+- `stock_news_main_cx` 可以继续作为 help candidate 或邻近官方线索存在
+- 它不是当前 change line 中的 approved runtime mapping
+- 如果未来要提升，必须单独补一份 decision record，并单独做实现微批
 
-This reversal does not mean `stock_news_main_cx` is treated as semantically identical to an `em` endpoint. It means MyStocks accepts it as the only approved upstream implementation of the `6.3` business target, under a stricter contract:
+### 1.2 Decision Record For `stock_weak_pool_em`
 
-- canonical route moves to `/stock/news-main/cx`
-- compatibility alias remains `/stock/news-main/em`
-- payload metadata must disclose the `cx` provider and upstream function name
-- schema and data-quality rules are defined separately from the `zt_pool` family and cannot be inferred from older `stock_news_em` expectations
+`stock_weak_pool_em` 当前保持“未实现且无可接受候选”的状态。
 
-`stock_weak_pool_em` is treated as an upstream-removed capability:
+当前不做两件事：
 
-- it leaves the current implementation target set
-- it remains documented for history and audit
-- it no longer stays open as a normal pending implementation item
+- 不把它伪装成“已退役”
+- 不用近似功能替代来把任务勾掉
 
-All later adapter, route, registry, test, and gate work in this change must use these four accepted mappings plus one retired item.
+这意味着它仍是 gap，而不是已解决项。
+
+#### 1.2.1 Gap Closure Criteria
+
+`stock_weak_pool_em` 只有在以下条件之一满足时，才应从当前 unresolved gap 状态退出：
+
+1. 本地 AkShare 恢复了 `stock_weak_pool_em` 同名函数，且 gate 与 repo-truth 一起验证通过
+2. 找到语义足够接近、并经过单独 proposal / design / runtime 微批批准的新官方候选
+3. 业务侧明确决定弱势股池能力不再需要，此时才能把它改写为 retired / removed with reason
 
 ## Section 2. Change Surface And Delivery Order
 
-The work is split into two layers.
+### 2.1 What `435bc8f00` Already Delivered
 
-### 2.1 Governance And Proposal Layer First
+该提交已经落地的范围包括：
 
-Files in scope:
+- gate 脚本本体
+- gate 测试
+- `tests/unit/scripts/test_frontend_testing_akshare_runtime_gate.py` 所代表的 runtime / CI wiring verification
+- runtime / CI 汇总接线
+- `README.md`
+- `docs/FUNCTION_TREE.md`
+- OpenSpec 与 AkShare 专题文档
+- Graphiti 记忆更新
 
-- `openspec/changes/expand-akshare-data-sources/proposal.md`
-- `openspec/changes/expand-akshare-data-sources/design.md`
-- `openspec/changes/expand-akshare-data-sources/tasks.md`
-- `docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md`
-- `scripts/dev/quality_gate/collect_akshare_market_function_availability.py`
-- `scripts/dev/quality_gate/validate_akshare_market_repo_truth.py`
-- `scripts/dev/quality_gate/run_akshare_market_gates.py`
-- `tests/unit/scripts/test_collect_akshare_market_function_availability.py`
-- `tests/unit/scripts/test_validate_akshare_market_repo_truth.py`
-- `tests/unit/scripts/test_run_akshare_market_gates.py`
-- `tests/unit/scripts/test_frontend_testing_akshare_runtime_gate.py`
+这部分不应在本设计稿里被重新表述成“待设计”或“待确认”。
 
-This layer only changes the meaning of truth and gates:
+### 2.2 What This Design Adds
 
-- old task names stay as canonical targets for traceability
-- gates stop using raw same-name presence as the only criterion
-- `stock_weak_pool_em` moves to retired status
-- frontend runtime / CI wiring assertions stay in scope as wrapper-chain verification, but they are not the canonical gate-logic tests
+本设计稿只新增三类内容：
 
-### 2.2 Runtime Integration Layer Second
+1. advisory candidate 与 approved runtime mapping 的明确分层
+2. `Section 3.2` 中 retained candidate 的后续提升规则
+3. `Section 1.1` 和 `Section 1.2` 所述排除项 / unresolved gap 的明文说明
 
-Files in scope:
+### 2.3 Recommended Delivery Order For Future Promotion
 
-- `src/adapters/akshare/market_adapter/stock_sentiment.py`
-- `web/backend/app/api/akshare_market/sentiment_monitor.py`
-- `config/data_sources_registry.yaml`
-- `tests/unit/adapters/test_akshare_stock_sentiment_incremental.py`
-- `tests/backend/test_akshare_market_additional_routes.py`
-- `tests/api/file_tests/test_akshare_market_api.py`
+如果未来真的启动实现微批，建议顺序固定为：
 
-This layer keeps user-facing business semantics stable while switching internal upstream calls to the accepted renamed functions.
+1. 先改 OpenSpec / repo-truth / gate 口径
+2. 再做 `stock_dt_pool_em`
+3. 再做 `stock_strong_pool_em`
+4. 再做 `stock_new_em`
+5. 再重新评估 `stock_news_main_em`
+6. 最后再处理 `stock_weak_pool_em` 是否仍需保留为 open gap
 
-### 2.3 Delivery Order
+排序依据明确如下：
 
-Recommended execution order:
+1. `dt` 排第一，因为它与现有板池类归一化管线最接近，且 `跌停股池` 语义最收敛，复用成本最低
+2. `strong` 排第二，因为仍属于同一家族，但比 `dt` 多出 `入选理由`、`是否新高`、`量比` 等扩展字段，归一化复杂度略高
+3. `new` 排第三，因为它引入 `转手率`、`开板日期`、`上市日期` 等次新语义字段，字段解释和前端消费差异最大
 
-1. Update OpenSpec, repo-truth, and gate rules
-2. Implement `stock_dt_pool_em`
-3. Implement `stock_strong_pool_em`
-4. Implement `stock_new_em`
-5. Implement `stock_news_main_em`
-6. Retire `stock_weak_pool_em`
-7. Then close `6.10 / 6.11 / 6.12`
-8. Then reassess `7.2 / 7.4 / 7.5`
-9. Finally move into `8.x`
-
-This keeps the `zt_pool` family together before handling the only provider-shifted mapping, `stock_news_main_cx`.
+这个顺序既保持了 `zt_pool` 家族的一致性，也避免在当前批次过早处理 `news_main_cx` 的 provider drift 风险。
 
 ## Section 3. Gate Rules And Repo-Truth Semantics
 
-The existing gate model answers only "does local `akshare` expose the same-named function?" That is no longer sufficient.
+### 3.1 Current Gate Truth
 
-### 3.1 Availability Output Model
+当前 gate 语义保持 `435bc8f00` 的口径不变：
 
-Each tracked target should resolve using the following semantics:
+1. 先检查 OpenSpec 目标函数是否在本地 AkShare 中同名存在
+2. 如果不存在，可以输出邻近官方函数作为 `help_candidates`
+3. `help_candidates` 只用于人工排查和评估
+4. advisory candidate 不计入“已实现”
 
-- `target_name`
-- `target_available`
-- `resolved_function`
-- `resolution_status`
-- `mapping_policy`
+### 3.2 Current Candidate Inventory
 
-The allowed `resolution_status` values are:
+| Canonical target | Current local status | Advisory candidate | Current repo decision |
+| --- | --- | --- | --- |
+| `stock_news_main_em` | missing | `stock_news_main_cx` | excluded from current candidate set |
+| `stock_dt_pool_em` | missing | `stock_zt_pool_dtgc_em` | retain as manual evaluation candidate |
+| `stock_strong_pool_em` | missing | `stock_zt_pool_strong_em` | retain as manual evaluation candidate |
+| `stock_new_em` | missing | `stock_zt_pool_sub_new_em` | retain as manual evaluation candidate |
+| `stock_weak_pool_em` | missing | none | unresolved gap |
 
-- `native`
-- `mapped`
-- `missing`
-- `retired`
+### 3.3 Relationship To `PREFERRED_HELP_CANDIDATES`
 
-Meaning:
+`PREFERRED_HELP_CANDIDATES` 已存在于
+`collect_akshare_market_function_availability.py`。
 
-- `native`: original function exists
-- `mapped`: original function does not exist, but an approved upstream mapping exists
-- `missing`: neither original nor approved mapped function exists
-- `retired`: target was removed from the active implementation set
+这里必须明确：
 
-### 3.2 Gate Manifest Model
+- 它是 advisory discovery 机制
+- 它是当前 gate baseline 的一部分
+- 它不是 runtime approval 清单
 
-Each manifest item should carry:
+本设计稿使用它作为“后续人工评估的输入”，而不是“当前自动通过的真相源”。
 
-- `task_id`
-- `canonical_target`
-- `accepted_upstream_functions`
-- `registry_key`
-- `adapter_method`
-- `route_fragment`
-- focused test tokens
+### 3.4 Future Promotion Rule
 
-Optional:
+如果未来某个候选被提升，语义才会从：
 
-- `retired: true`
+- missing + advisory candidate
 
-For example, `stock_dt_pool_em` remains the canonical target, while `stock_zt_pool_dtgc_em` becomes the accepted upstream function.
+升级为：
 
-For the current proposal, the accepted mapping source is the existing advisory table in `PREFERRED_HELP_CANDIDATES`. The gate change upgrades those entries from "show as a hint" to "pass as approved mapping" only for the four explicitly accepted targets in this design.
+- approved official rename mapping
 
-### 3.3 Repo-Truth Status Semantics
+这种升级只能在以下内容一起更新后发生：
 
-`docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md` should use four explicit status families:
+1. OpenSpec proposal / design / tasks
+2. repo-truth 文档
+3. gate 语义
+4. adapter / route / registry 实现
+5. focused tests
 
-- `已实现（原名）`
-- `已实现（官方改名映射）`
-- `未实现`
-- `已下线/上游移除`
+在这些条件满足之前，当前 gate baseline 仍然是唯一真相。
 
-Expected outcomes for this batch:
+## Section 4. Runtime API And Adapter Design For Future Promotion
 
-- `stock_news_main_em`: `已实现（官方改名映射：stock_news_main_cx）`
-- `stock_dt_pool_em`: `已实现（官方改名映射：stock_zt_pool_dtgc_em）`
-- `stock_strong_pool_em`: `已实现（官方改名映射：stock_zt_pool_strong_em）`
-- `stock_new_em`: `已实现（官方改名映射：stock_zt_pool_sub_new_em）`
-- `stock_weak_pool_em`: `已下线/上游移除`
+本节描述的是“如果未来提升候选，运行时该怎么做”，不是“现在已经这样做了”。
 
-### 3.4 Gate Pass Rules
+### 4.1 Candidate Promotion Order
 
-- `native` or `mapped`
-  - OpenSpec task checked
-  - registry, adapter, route, and focused tests must exist
-- `missing`
-  - OpenSpec task unchecked
-  - runtime artifacts must not exist
-- `retired`
-  - no longer treated as a pending implementation target
-  - runtime artifacts are not required
-  - OpenSpec and repo-truth must document retirement explicitly
+推荐的候选提升顺序：
 
-`stock_weak_pool_em` uses retirement validation, not runtime validation.
+这里的有序集合与 `Section 3.2` 中的 retained candidate subset 完全一致。
 
-## Section 4. Runtime API And Adapter Design
+1. `stock_dt_pool_em -> stock_zt_pool_dtgc_em`
+2. `stock_strong_pool_em -> stock_zt_pool_strong_em`
+3. `stock_new_em -> stock_zt_pool_sub_new_em`
 
-### 4.1 Adapter Method Naming
+`stock_news_main_cx` 不在当前提升顺序内。
 
-Adapter methods keep business target naming stable:
+### 4.2 Observed Local Signatures And Payload Shapes
 
-- `get_stock_news_main_em()`
-- `get_stock_dt_pool_em()`
-- `get_stock_strong_pool_em()`
-- `get_stock_new_em()`
+以下表格记录的是本地 `akshare 1.18.60` 观测结果，用于后续人工评估，不代表当前已批准映射。
 
-But their implementations call the real upstream functions:
+| Canonical target | Observed candidate | Local signature | Observed payload shape | Current decision |
+| --- | --- | --- | --- | --- |
+| `stock_news_main_em` | `stock_news_main_cx` | `() -> DataFrame` | columns: `tag`, `summary`, `url` | excluded from current promotion set |
+| `stock_dt_pool_em` | `stock_zt_pool_dtgc_em` | `(date: str = '20241011') -> DataFrame` | 16 columns, includes `代码`, `名称`, `涨跌幅`, `最新价`, `封单资金`, `最后封板时间`, `连续跌停`, `所属行业` | retained candidate |
+| `stock_strong_pool_em` | `stock_zt_pool_strong_em` | `(date: str = '20241231') -> DataFrame` | 16 columns, includes `代码`, `名称`, `涨跌幅`, `换手率`, `是否新高`, `涨停统计`, `入选理由` | retained candidate |
+| `stock_new_em` | `stock_zt_pool_sub_new_em` | `(date: str = '20241231') -> DataFrame` | 16 columns, includes `代码`, `名称`, `最新价`, `转手率`, `开板几日`, `开板日期`, `上市日期` | retained candidate |
 
-- `get_stock_news_main_em()` -> `ak.stock_news_main_cx()`
-- `get_stock_dt_pool_em()` -> `ak.stock_zt_pool_dtgc_em()`
-- `get_stock_strong_pool_em()` -> `ak.stock_zt_pool_strong_em()`
-- `get_stock_new_em()` -> `ak.stock_zt_pool_sub_new_em()`
+### 4.2.1 Supporting Observations For Section 1.1
 
-### 4.2 Response Stability With Mapping Metadata
+下面这些观测项是 `Section 1.1 Decision Record For stock_news_main_cx` 的技术支撑：
 
-Route payloads should keep business-facing fields stable. They should not expose upstream rename churn directly as a breaking response change.
+1. 它不是 pool 风格接口
+2. 它不是 `zt_pool` 家族的同类数据表
+3. 它暴露的是 curated content feed，而不是板块池快照
+4. 它的 payload contract 与其他三项没有共用归一化策略
 
-Additional audit metadata should be included:
+因此如果以后再评估它，至少要补：
 
-- `canonical_target`
-- `upstream_function`
-- `mapping_policy`
-- `provider`
+- 独立路由契约评审
+- 独立前端消费评审
+- 独立 repo-truth decision
 
-For example:
+### 4.3 Normalized Pool Output Contract For Future Promotion
 
-- `canonical_target: "stock_dt_pool_em"`
-- `upstream_function: "stock_zt_pool_dtgc_em"`
-- `mapping_policy: "approved_official_rename"`
+如果 `dt / strong / new` 将来被提升，后端应把它们归一化成稳定 contract，而不是把 AkShare 原始列直接泄漏成公共 API 契约。
 
-### 4.2.1 Mapping-Specific Schema Contract
+建议的归一化字段如下，要求实现者按“是否必填 + 候选适用性”一起实现：
 
-The four accepted mappings do not share a single schema story. The runtime contract must be defined per target.
+| Normalized field | Required / Optional | `dt` applicability / source | `strong` applicability / source | `new` applicability / source | Notes |
+| --- | --- | --- | --- | --- | --- |
+| `symbol` | Required | `代码` | `代码` | `代码` | stable primary key |
+| `name` | Required | `名称` | `名称` | `名称` | stable display name |
+| `change_percent` | Required | `涨跌幅` | `涨跌幅` | `涨跌幅` | numeric normalization required |
+| `latest_price` | Required | `最新价` | `最新价` | `最新价` | numeric normalization required |
+| `turnover_rate` | Optional | `换手率` | `换手率` | `转手率` | absent values normalize to `null` |
+| `turnover_amount` | Optional | `成交额` | `成交额` | `成交额` | numeric normalization when present |
+| `circulating_market_value` | Optional | `流通市值` | `流通市值` | `流通市值` | numeric normalization when present |
+| `total_market_value` | Optional | `总市值` | `总市值` | `总市值` | numeric normalization when present |
+| `industry` | Optional | `所属行业` | `所属行业` | `所属行业` | string or `null` |
+| `selection_reason` | Optional | not provided -> `null` | `入选理由` | not provided -> `null` | never coerce to empty string |
+| `board_time` | Optional | `最后封板时间` | not provided -> `null` | not provided -> `null` | string or normalized time token |
+| `board_metrics` | Optional | see fixed object schema below | see fixed object schema below | see fixed object schema below | always object when present, never free-form text |
+| `listed_date` | Optional | not provided -> `null` | not provided -> `null` | `上市日期` | date-like string or `null` |
+| `open_board_date` | Optional | not provided -> `null` | not provided -> `null` | `开板日期` | date-like string or `null` |
+
+`board_metrics` 不应是自由形式的 dict。建议固定为如下 optional object schema：
+
+```json
+{
+  "consecutive_limit_down_count": null,
+  "reopen_count": null,
+  "board_turnover_amount": null,
+  "limit_up_stats": null,
+  "is_new_high": null,
+  "volume_ratio": null,
+  "change_speed": null,
+  "open_board_days": null
+}
+```
 
-| Canonical target | Upstream function | Observed upstream columns / signature | Contract consequence |
-|---|---|---|---|
-| `stock_dt_pool_em` | `stock_zt_pool_dtgc_em(date)` | 16 columns including `序号/代码/名称/涨跌幅/最新价/成交额/流通市值/总市值/动态市盈率/换手率/封单资金/最后封板时间/板上成交额/连续跌停/开板次数/所属行业` | Safe to normalize as a `zt_pool`-family market board with a dedicated `dt_pool` field mapping |
-| `stock_strong_pool_em` | `stock_zt_pool_strong_em(date)` | 16 columns including `序号/代码/名称/涨跌幅/最新价/涨停价/成交额/流通市值/总市值/换手率/涨速/是否新高/量比/涨停统计/入选理由/所属行业` | Safe to normalize as a `zt_pool`-family strong-pool board, but it needs a reason/high-water-mark contract |
-| `stock_new_em` | `stock_zt_pool_sub_new_em(date)` | 16 columns including `序号/代码/名称/涨跌幅/最新价/涨停价/成交额/流通市值/总市值/转手率/开板几日/开板日期/上市日期/是否新高/涨停统计/所属行业` | Safe to normalize as a `sub_new` board, but `转手率` and listing/open-board dates require explicit route-level field naming |
-| `stock_news_main_em` | `stock_news_main_cx()` | signature `()` and 3 columns `tag/summary/url` | Not schema-equivalent to legacy stock-news expectations. It needs its own curated-content contract and must not reuse `stock_news_em`-style symbol/news columns |
+按候选适用性填充：
+
+- `dt`
+  - `consecutive_limit_down_count <- 连续跌停`
+  - `reopen_count <- 开板次数`
+  - `board_turnover_amount <- 板上成交额`
+- `strong`
+  - `limit_up_stats <- 涨停统计`
+  - `is_new_high <- 是否新高`
+  - `volume_ratio <- 量比`
+  - `change_speed <- 涨速`
+- `new`
+  - `limit_up_stats <- 涨停统计`
+  - `is_new_high <- 是否新高`
+  - `open_board_days <- 开板几日`
 
-The design assumption is therefore:
+### 4.3.1 Contract Evolution Policy
 
-- `dt/strong/sub_new` are same-family board datasets that can share a normalization strategy
-- `news_main_cx` is a separate curated-content contract and must be modeled independently
+该归一化 contract 采用保守演进策略：
 
-### 4.2.2 `news_main` Route Contract
+1. 只允许 additive extension，不删除已公开字段
+2. 新字段默认 `optional`
+3. 前端按 feature detection 消费新增字段，不预设所有候选都完整提供
+4. 若某字段语义需要破坏性调整，应通过单独 proposal / contract change 处理，而不是静默重载旧字段
 
-`stock_news_main_cx()` is zero-argument and currently returns curated content rows with:
+### 4.3.2 Mapping-Specific Notes
 
-- `tag`
-- `summary`
-- `url`
+- `stock_zt_pool_dtgc_em`
+  - 是 `stock_dt_pool_em` 的最佳候选
+  - 不能回退成 `stock_zt_pool_em`，因为本地 docstring 和 payload 都指向 `跌停股池`
+- `stock_zt_pool_strong_em`
+  - 与 `stock_strong_pool_em` 语义最接近
+  - `入选理由` 应保留进归一化结果
+- `stock_zt_pool_sub_new_em`
+  - 比 `stock_zh_a_new_em` 更合理
+  - `stock_zh_a_new_em` 是更宽泛的 `新股`，而 `sub_new_em` 更接近 `次新股池` 语义
 
-Therefore the `6.3` route contract must not pretend to be a symbol-scoped stock-news feed. The runtime design for `news_main` is:
+### 4.4 Adapter And Route Policy For Future Promotion
 
-- no `symbol` query parameter
-- response data rows normalized from `tag/summary/url`
-- provider metadata set to `cx`
-- canonical target still recorded as `stock_news_main_em`
-- any future enrichment such as publish time or content classification must be treated as optional, not guaranteed by the upstream function
+如果未来提升某个候选，应遵循以下兼容规则：
 
-### 4.3 Pool Family Normalization
+1. 公共 API key 和 route 名继续沿用 canonical OpenSpec target name
+2. 上游函数改名细节隐藏在 adapter / service / registry 内部
+3. 不把上游 candidate 函数名直接暴露成公共 route 名
 
-The `zt / dt / strong / sub_new` family should normalize output columns according to business target semantics, not leak raw upstream naming differences directly into route responses.
+例子：
 
-### 4.3.1 Normalized Pool Output Columns
+- public contract 仍可叫 `stock_dt_pool_em`
+- internal upstream call 才解析到 `stock_zt_pool_dtgc_em`
 
-The shared normalized column base for board-like responses should be:
+### 4.5 Provider Drift Guardrail
 
-| Normalized field | `dt_pool` source | `strong_pool` source | `sub_new` source |
-|---|---|---|---|
-| `sequence_no` | `序号` | `序号` | `序号` |
-| `symbol` | `代码` | `代码` | `代码` |
-| `stock_name` | `名称` | `名称` | `名称` |
-| `change_percent` | `涨跌幅` | `涨跌幅` | `涨跌幅` |
-| `latest_price` | `最新价` | `最新价` | `最新价` |
-| `turnover_amount` | `成交额` | `成交额` | `成交额` |
-| `circulating_market_cap` | `流通市值` | `流通市值` | `流通市值` |
-| `total_market_cap` | `总市值` | `总市值` | `总市值` |
-| `industry` | `所属行业` | `所属行业` | `所属行业` |
-| `query_date` | request date | request date | request date |
-| `query_timestamp` | generated locally | generated locally | generated locally |
+`dt / strong / new` 这三项仍然只是 official rename candidate，不是当前已批准 alias。
 
-Pool-specific normalized fields:
+将来提升前必须确认：
 
-| Canonical target | Additional normalized fields |
-|---|---|
-| `stock_dt_pool_em` | `pe_ratio`, `turnover_rate`, `sealed_order_fund`, `last_limit_time`, `board_turnover_amount`, `consecutive_limit_down_count`, `reopen_count` |
-| `stock_strong_pool_em` | `limit_up_price`, `turnover_rate`, `change_speed`, `is_new_high`, `volume_ratio`, `limit_up_stats`, `selection_reason` |
-| `stock_new_em` | `limit_up_price`, `turnover_rate` mapped from upstream `转手率`, `open_board_days`, `open_board_date`, `listing_date`, `is_new_high`, `limit_up_stats` |
+1. 语义对齐
+2. payload 稳定
+3. 归一化成本可控
+4. 不与现有前端契约假设冲突
 
-Empty-data days are valid outcomes for all three routes. The route contract must preserve an empty dataset plus metadata rather than converting emptiness into a schema failure.
+`stock_news_main_cx` 的门槛更高，因为它属于 provider-drift candidate，不是简单同家族 rename candidate。
 
-### 4.4 No Runtime Implementation For `stock_weak_pool_em`
+### 4.5.1 Upstream Re-rename Contingency
 
-No adapter method, route, registry entry, or focused runtime test should be added for `stock_weak_pool_em`. Its only required handling is explicit retirement in specs, repo-truth, and gate semantics.
+如果 AkShare 后续版本再次改名，例如某个保留候选再次漂移，当前策略应是“显式失败并重新评估”，而不是静默兜底。
 
-### 4.5 News Main Provider Decision
+具体规则：
 
-`stock_news_main_cx` is the only mapping that changes provider family.
+1. gate 应重新把该目标标记为 `missing` 或 `missing with advisory candidate`，CI 中断属于预期保护行为
+2. `PREFERRED_HELP_CANDIDATES` 如需支持多版本候选，应升级为有序候选列表，并在 repo-truth 中记录适用的 AkShare 版本窗口
+3. runtime adapter 不应对未批准的新上游名做静默 fallback；最多只允许抛出显式错误并提示 repo-truth 已失配
+4. 任何再改名修复都应重新经过 candidate evaluation，而不是把新的 help candidate 自动视为兼容升级
 
-Approved route policy:
+## Section 5. Registry, Route, And Naming Rules
 
-- canonical route: `/stock/news-main/cx`
-- compatibility alias: `/stock/news-main/em`
+### 5.1 Current Truth
 
-The response must explicitly disclose:
+当前：
 
-- `canonical_target: "stock_news_main_em"`
-- `upstream_function: "stock_news_main_cx"`
-- `provider: "cx"`
-- `mapping_policy: "approved_official_rename"`
+- 还没有任何 rename mapping 在 runtime 层被正式批准
+- 不能把新的 adapter alias 当作既成 canonical reality
+- gate 与 repo-truth 文档仍然是当前真相源
 
-This keeps old callers working while making the new provider truth explicit.
+### 5.2 Future Promotion Rule
 
-### 4.5.1 Provider Drift Quality Gates For `news_main_cx`
+如果未来某个候选被提升：
 
-Route compatibility alone is not enough for `news_main_cx`. The design must also require a content-quality gate because this mapping changes provider family from `em`-style expectations to a `cx` content feed.
+1. registry key 仍使用 canonical OpenSpec target name
+2. adapter method 可以在内部 dispatch 到批准后的 upstream candidate
+3. route name 继续保持 canonical target 语义
+4. tests 必须同时覆盖实现正确性和 repo-truth 对齐
 
-Minimum quality checks for `news_main`:
+### 5.3 Explicit Non-Rule
 
-- required row fields: `tag`, `summary`, `url`
-- non-empty `summary` rate must remain acceptable for returned rows
-- `url` values must remain present and routable
-- no consumer may assume the presence of `symbol`, `title`, or `publish_time`
+本设计稿当前不批准：
 
-User-visible behavior may change:
+- `/stock/news-main/cx` 作为公共 canonical route
+- 以 `stock_zt_pool_dtgc_em` 为名的公共 registry key
+- 以 `stock_zt_pool_strong_em` 为名的公共 route
+- 以 `stock_zt_pool_sub_new_em` 为名的公共 route
 
-- content becomes curated finance highlights instead of a symbol-scoped stock-news list
-- provider label changes to `cx`
-- route documentation and any frontend consumer must be updated if they previously assumed `em` semantics
-
-If future runtime validation shows that `news_main_cx` cannot satisfy the curated-content target consistently, this mapping must be reconsidered as a separate proposal adjustment rather than silently treated as complete.
-
-## Section 5. Registry And Route Compatibility Policy
-
-### 5.1 Registry Keys Stay On Business Target Names
-
-Registry keys should remain:
-
-- `akshare_stock_news_main_em`
-- `akshare_stock_dt_pool_em`
-- `akshare_stock_strong_pool_em`
-- `akshare_stock_new_em`
-
-This avoids unnecessary churn across tasks, docs, and tests.
-
-### 5.2 Registry Records Real Upstream Functions Explicitly
-
-Each relevant registry entry should record:
-
-- `canonical_target`
-- `endpoint_name`
-
-Recommended additional fields:
-
-- `mapping_policy`
-- `upstream_provider`
-
-Example:
-
-- `canonical_target: stock_dt_pool_em`
-- `endpoint_name: akshare.stock_zt_pool_dtgc_em`
-
-### 5.3 Route Compatibility Rules
-
-For `dt / strong / new`, keep existing business semantic routes:
-
-- `/stock/dt-pool/em`
-- `/stock/strong-pool/em`
-- `/stock/new/em`
-
-For `news-main`, use canonical-plus-alias routing:
-
-- canonical: `/stock/news-main/cx`
-- compatibility alias: `/stock/news-main/em`
-
-### 5.4 Compatibility Lifecycle
-
-The `/stock/news-main/em` alias is a temporary compatibility layer, not the long-term canonical truth. Repo-truth should distinguish canonical route from compatibility alias, and alias retirement should happen in a separate later batch once callers have migrated.
-
-### 5.5 Test Naming Policy
-
-Test names may continue using business target names for continuity, but assertions must validate:
-
-- mapped upstream function usage
-- correct `mapping_policy`
-- correct `provider`
-- correct `upstream_function`
+如果未来提升，这些 upstream 名仍然只应是内部实现细节。
 
 ## Section 6. Verification And Rollout Rules
 
-### 6.1 Governance Layer Verification
+### 6.1 Governance Baseline Verification
 
-Required commands:
+当前基线的验证命令保持：
 
 ```bash
 pytest tests/unit/scripts/test_collect_akshare_market_function_availability.py -q --no-cov
@@ -447,158 +409,113 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py --output-dir /tmp/ak
 openspec validate expand-akshare-data-sources --strict
 ```
 
-Success criteria:
+当前已知通过结果来自收口提交 `435bc8f00` 对应批次：
 
-- `summary.pass = true`
-- `repo_truth_violation_count = 0`
-- OpenSpec strict validation passes
+- 相关脚本 / 门禁测试 `8 passed, 4 skipped`
+- `python scripts/dev/quality_gate/run_akshare_market_gates.py --output-dir /tmp/akshare-market-gates` 返回 `pass=true`
+- `openspec validate expand-akshare-data-sources --strict` 通过
 
-The `openspec validate expand-akshare-data-sources --strict` command was re-verified successfully in the local project environment on `2026-05-04`.
+本轮于 `2026-05-04` 额外复核：
 
-### 6.2 Runtime Micro-Batch Verification
+- `openspec validate expand-akshare-data-sources --strict` 当前仍可执行且返回 `Change 'expand-akshare-data-sources' is valid`
+- `tests/unit/scripts/test_frontend_testing_akshare_runtime_gate.py` 在这里被视为 runtime / CI wiring verification，而不是 gate 逻辑真相源本身
 
-For each integrated interface:
+### 6.2 Promotion Batch Verification
 
-```bash
-pytest tests/unit/adapters/test_akshare_stock_sentiment_incremental.py -q --no-cov
-pytest tests/backend/test_akshare_market_additional_routes.py -q --no-cov
-pytest tests/api/file_tests/test_akshare_market_api.py -q --no-cov
-python -m py_compile src/adapters/akshare/market_adapter/stock_sentiment.py web/backend/app/api/akshare_market/sentiment_monitor.py
-python scripts/dev/quality_gate/run_akshare_market_gates.py --output-dir /tmp/akshare-market-gates
-openspec validate expand-akshare-data-sources --strict
-```
+如果未来真的提升某一个保留候选，批次必须额外补：
 
-Prefer narrower targeted tests before full group runs when only a single route or adapter method changes.
+1. focused adapter tests
+2. focused backend route tests
+3. API contract tests
+4. repo-truth 和 gate regression tests
+
+提升应保持“一次一个 candidate”的微批模式。
 
 ### 6.3 Task Closure Rules
 
-- `6.3 / 6.5 / 6.6 / 6.9` are checked only after adapter, route, registry, focused tests, repo-truth, and gates are aligned
-- `stock_weak_pool_em` is retired rather than kept as a normal open checkbox
-- `6.10 / 6.11 / 6.12` close only after the four mapped interfaces plus retirement handling are complete
-- `7.2` closes only after registry quality rules reflect mapping semantics
-- `7.4 / 7.5 / 8.x` must not be checked unless truly implemented and verified
+当前任务语义应保持：
 
-Task `6.7` in `tasks.md` should not remain as a normal unchecked implementation checkbox. The update plan is:
+- `6.3 stock_news_main_em`
+  - remains open
+  - excluded from current promotion set
+- `6.5 stock_dt_pool_em`
+  - may proceed in a later promotion micro-batch
+- `6.6 stock_strong_pool_em`
+  - may proceed in a later promotion micro-batch
+- `6.7 stock_weak_pool_em`
+  - remains an unresolved gap
+  - should not be rewritten as retired in the current batch
+- `6.9 stock_new_em`
+  - may proceed in a later promotion micro-batch
 
-- remove `6.7` from the active executable checkbox set
-- replace it with an explicit retirement note tied to `stock_weak_pool_em`
-- record that the target is retired because local `akshare 1.18.60` exposes no accepted direct mapping
+`6.10`、`6.11`、`6.12`、`7.2`、`7.4`、`7.5`、`8.x` 这些下游任务，不能因为 advisory candidate 存在就提前闭合。
 
 ### 6.4 Commit Strategy
 
-Continue using:
+未来如果进入实现微批，应继续：
 
-- one governance batch per commit, or one interface per commit
-- path-level staging
-- path-level commit review with `git show`
-
-In the current dirty worktree, `gitnexus detect_changes(scope="staged")` is still required before commit but cannot be used as the precise micro-batch verdict if unrelated staged files remain present.
+1. 一次一个 candidate
+2. docs / gates 先行，或与 runtime code 同批但严格限定路径
+3. 只 stage 当前 candidate 相关路径
+4. 用路径级 `git show` 复核提交文件集
 
 ## Section 7. Documentation And OpenSpec Editing Plan
 
-### 7.1 Keep The Existing Active Change
+### 7.1 What Is Already Landed
 
-Do not open a second change. Update the existing active change:
+以下仓库真相已由 `435bc8f00` 同步完成：
 
-- `openspec/changes/expand-akshare-data-sources/proposal.md`
-- `openspec/changes/expand-akshare-data-sources/design.md`
-- `openspec/changes/expand-akshare-data-sources/tasks.md`
+- `README.md`
+- `docs/FUNCTION_TREE.md`
+- OpenSpec proposal / design / tasks
+- AkShare guide / troubleshooting / handoff docs
+- Graphiti memory
 
-### 7.2 OpenSpec Must Explicitly Record
+本设计稿必须与这条已落地基线一致，不能静默把 repo-truth 提前升级成“已批准映射”。
 
-- the four accepted formal mappings
-- the explicit rejections
-- retirement of `stock_weak_pool_em`
-- `help_candidates` remain advisory only
-- wrapper-first gate chain remains canonical
+### 7.2 What This Document Adds
 
-### 7.3 Repo-Truth Document Role
+本设计稿只新增：
 
-`docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md` becomes the canonical mapping ledger for:
+1. advisory candidate 与 approved runtime mapping 的明确分层
+2. `Section 3.2` retained candidate queue 的提升蓝图
+3. `Section 1.1` 与 `Section 1.2` 的排除 / gap 记录
+4. 如果将来提升候选，adapter / route / normalization 应如何落地的蓝图
 
-- canonical target
-- canonical route
-- upstream function
-- current implementation state
+### 7.3 Required Follow-Up If Promotion Happens Later
 
-### 7.4 Guide Document Role
+如果未来某个 retained candidate 被正式提升，以下文件需要一起更新：
 
-The following remain explanatory and operational, not canonical truth:
+| File | Typical change type |
+| --- | --- |
+| `openspec/changes/expand-akshare-data-sources/proposal.md` | update scope wording / approval boundary |
+| `openspec/changes/expand-akshare-data-sources/design.md` | record promoted mapping and runtime contract |
+| `openspec/changes/expand-akshare-data-sources/tasks.md` | move candidate task state forward |
+| `README.md` | append or revise high-level truth note |
+| `docs/FUNCTION_TREE.md` | append function-tree truth note |
+| `docs/api/AKSHARE_MARKET_ENDPOINTS_REPO_TRUTH.md` | append mapping ledger entry or change status |
+| `docs/guides/akshare/AKSHARE_MARKET_EXTENSION_GUIDE.md` | update operator guidance |
+| `docs/guides/akshare/AKSHARE_MARKET_TROUBLESHOOTING.md` | update failure / fallback notes |
+| `docs/reports/tasks/expand-akshare-data-sources-handoff-2026-05-03.md` | append delivery and verification record |
 
-- `docs/guides/akshare/AKSHARE_MARKET_EXTENSION_GUIDE.md`
-- `docs/guides/akshare/AKSHARE_MARKET_TROUBLESHOOTING.md`
-- `docs/guides/akshare/AKSHARE_MARKET_MAINTENANCE.md`
-- `docs/reports/tasks/expand-akshare-data-sources-handoff-2026-05-03.md`
+## Section 8. Final Decisions
 
-They should explain:
+本设计稿最终记录的结论是：
 
-- why `stock_dt_pool_em` must map to `stock_zt_pool_dtgc_em`
-- why `stock_new_em` maps to `stock_zt_pool_sub_new_em` instead of `stock_zh_a_new_em`
-- why `stock_weak_pool_em` is retired
-- why wrapper-first remains the default execution path
-
-### 7.5 Design Draft Role
-
-This file is the consolidated design draft for the mapping policy shift:
-
-- `docs/superpowers/specs/2026-05-03-akshare-official-rename-mapping-design.md`
-
-It is not repo-truth and not an OpenSpec delta. It exists so later implementation work can follow one approved design record instead of reconstructing decisions from chat history.
-
-### 7.6 Documentation Update Order
-
-1. Write this design draft
-2. Update OpenSpec proposal, design, and tasks
-3. Update repo-truth
-4. Update gates and focused tests
-5. Update guide and handoff documents as implementation results land
-
-That update sequence must explicitly include:
-
-- revising `tasks.md` item `6.7` from an open implementation task into a retirement record
-- keeping runtime-delivery wiring assertions in sync with any gate script argument or output schema changes
-
-## Section 8. Risks, Non-Goals, And Decision Record
-
-### 8.1 Risks
-
-- `stock_news_main_cx` provider drift risk
-  - Mitigation: canonical `/cx` route, `/em` alias, explicit response metadata, and dedicated content-quality checks on `tag/summary/url`
-- `stock_zh_a_new_em` accidental misuse risk
-  - Mitigation: explicit rejection in design, gate, and repo-truth because it models A-share new listings rather than the "次新股池" target
-- dirty worktree scope pollution
-  - Mitigation: path-level stage, path-level commit, path-level `git show` review
-- docs drifting ahead of runtime
-  - Mitigation: update design and truth layers first, close runtime tasks only after verification
-
-### 8.2 Non-Goals Reaffirmed
-
-- no cross-repo borrowing
-- no third-party replacements
-- no unapproved adjacent pool expansions
-- no implementation of `stock_weak_pool_em` parity by approximation
-- no reclassification of `help_candidates` into automatic pass rules
-
-### 8.3 Final Approved Decisions
-
-- adopt approach `B`: approved official same-family rename mappings
-- accept only these four mappings:
-  - `stock_news_main_em -> stock_news_main_cx`
-  - `stock_dt_pool_em -> stock_zt_pool_dtgc_em`
-  - `stock_strong_pool_em -> stock_zt_pool_strong_em`
-  - `stock_new_em -> stock_zt_pool_sub_new_em`
-- retire `stock_weak_pool_em`
-- upgrade gates from `same-name only` to `canonical target + approved mapping`
-- use `/stock/news-main/cx` as canonical route and `/stock/news-main/em` as compatibility alias
-- keep registry keys on business target names
-- execute in the order `dt -> strong -> sub_new -> news_main -> weak retired`
+1. `435bc8f00` 落地的 gate baseline 已完成，并继续作为 canonical truth
+2. 当前已批准的 runtime boundary 仍然只有本地 AkShare 同名函数
+3. `help_candidates` 继续保持 advisory 语义，不代表已实现能力
+4. 当前仅保留三个 official rename evaluation candidate
+   - `stock_dt_pool_em -> stock_zt_pool_dtgc_em`
+   - `stock_strong_pool_em -> stock_zt_pool_strong_em`
+   - `stock_new_em -> stock_zt_pool_sub_new_em`
+5. `stock_news_main_em -> stock_news_main_cx` 当前继续排除在提升批次之外
+6. `stock_weak_pool_em` 当前仍是 no-candidate unresolved gap
+7. 未来如要提升任一候选，必须用单独微批同时更新 gate、repo-truth、runtime code 和 tests
 
 ## Next Step
 
-After this document is reviewed, the next phase is to translate it into:
+这份设计稿 review 通过后，下一步不是直接写运行时代码，而是先决定：
 
-- OpenSpec proposal/design/tasks updates
-- gate manifest and script updates
-- runtime integration micro-batches
-
-No implementation plan should start until this design draft is reviewed and accepted as a written artifact.
+- 是否把 `stock_dt_pool_em` 作为第一个 candidate promotion 微批
+- 还是先只把 OpenSpec / repo-truth / gate 文案进一步细化为可执行 implementation plan

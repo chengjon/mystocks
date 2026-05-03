@@ -74,6 +74,7 @@
 > **仓库事实校对（2026-05-03）**:
 > 当前仓库已补齐本地 `akshare` 版本中可直接确认存在的 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_zt_pool_em`、`stock_changes_em`，落点分别为 `src/adapters/akshare/market_adapter/stock_sentiment.py`、`web/backend/app/api/akshare_market/sentiment_monitor.py`、`config/data_sources_registry.yaml`，并由 `tests/unit/adapters/test_akshare_stock_sentiment_incremental.py` 与 `tests/backend/test_akshare_market_additional_routes.py` 提供 focused 验证。
 > 当前本地 `akshare` 环境仍未检出 `stock_news_main_em`、`stock_dt_pool_em`、`stock_strong_pool_em`、`stock_weak_pool_em`、`stock_new_em` 的同名函数，因此 6.3 / 6.5-6.7 / 6.9 继续保持未完成。
+> 当前 canonical truth 仍是 `435bc8f00` 落地的 same-name gate baseline；`help_candidates` 只作为人工评估线索，不自动计为实现完成。
 
 - [x] 6.1 实现股票热度数据 (akshare.stock_hot_follow_xq)
 - [x] 6.2 实现板块异动详情 (akshare.stock_board_change_em)
@@ -82,6 +83,7 @@
 - [ ] 6.5 实现跌停板行情 (akshare.stock_dt_pool_em)
 - [ ] 6.6 实现强势股池 (akshare.stock_strong_pool_em)
 - [ ] 6.7 实现弱势股池 (akshare.stock_weak_pool_em)
+  - Gap closure criteria：仅当本地 AkShare 恢复同名函数、或找到经单独批准的新官方候选、或业务明确决定下线该能力时，才允许退出当前 unresolved gap 状态
 - [x] 6.8 实现盘口异动 (akshare.stock_changes_em)
 - [ ] 6.9 实现次新股池 (akshare.stock_new_em)
   - Repo-truth 方案说明：当前仅把以下映射视为“可讨论的官方改名候选”，尚未批准实现：
@@ -91,10 +93,12 @@
     - `stock_zt_pool_previous_em`、`stock_zt_pool_zbgc_em` 已纳入评估，但当前没有对应 OpenSpec 条目
     - `stock_news_main_em` -> `stock_news_main_cx` 明确排除
     - `stock_weak_pool_em` 继续保持无候选 gap
+  - Promotion rule：若未来批准任一 retained candidate，必须单独微批同时更新 OpenSpec、repo-truth、gate、runtime code 与 focused tests
 - [ ] 6.10 添加行情和情绪数据到数据源配置注册表
 - [ ] 6.11 创建行情和情绪数据的API端点
 - [ ] 6.12 编写行情和情绪数据的单元测试
   - [ ] Repo-truth：当前 registry / API / focused tests 只闭合了 6.1 / 6.2 / 6.4 / 6.8；在 6.3 / 6.5-6.7 / 6.9 仍未实现前，不将本节统一收口任务勾选完成。
+  - [ ] Promotion sequencing：如启动候选提升，顺序固定为 `6.5 dt -> 6.6 strong -> 6.9 new`；`6.3` 维持 excluded，`6.7` 维持 unresolved gap，直到另有单独批准
 
 ## 7. 系统集成和优化
 > **仓库事实校对（2026-04-27）**:
