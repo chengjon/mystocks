@@ -124,6 +124,35 @@ BOARD_CHANGE_EM_RESPONSES = {
 }
 
 
+STOCK_ZT_POOL_EM_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到涨停股池数据",
+        {"success": False, "error_code": "DATA_NOT_FOUND", "message": "No zt-pool data found for date 20241008"},
+    ),
+    **_error_response_spec(
+        500,
+        "涨停股池查询失败",
+        {"success": False, "error_code": "INTERNAL_ERROR", "message": "Failed to get zt-pool data for 20241008"},
+    ),
+    **_success_response_spec(
+        "涨停股池数据",
+        {
+            "success": True,
+            "data": {
+                "date": "20241008",
+                "data": [{"sequence_no": 1, "symbol": "603777", "stock_name": "来伊份", "change_percent": 10.02}],
+                "count": 1,
+                "columns": ["sequence_no", "symbol", "stock_name", "change_percent"],
+                "source": "akshare",
+                "provider": "em",
+                "data_type": "zt_pool",
+            },
+        },
+    ),
+}
+
+
 @router.get(
     "/stock/hot-follow/xq",
     summary="获取股票热度排行",
@@ -163,6 +192,49 @@ async def get_stock_hot_follow_xq(
         return create_error_response(
             ErrorCodes.INTERNAL_ERROR,
             f"Failed to get stock hot-follow data for {symbol}: {str(e)}"
+        )
+
+
+@router.get(
+    "/stock/zt-pool/em",
+    summary="获取涨停股池",
+    response_model=UnifiedResponse[Dict[str, Any]],
+    responses=STOCK_ZT_POOL_EM_RESPONSES,
+)
+async def get_stock_zt_pool_em(
+    date: str = Query(..., description="交易日，格式 YYYYMMDD", example="20241008"),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    获取涨停股池 (akshare.stock_zt_pool_em)
+
+    返回指定交易日的涨停股池行情数据
+    """
+    try:
+        df = await akshare_market_adapter.get_stock_zt_pool_em(date)
+
+        if df.empty:
+            return create_error_response(
+                ErrorCodes.DATA_NOT_FOUND,
+                f"No zt-pool data found for date {date}"
+            )
+
+        result = {
+            "date": date,
+            "data": df.to_dict("records"),
+            "count": len(df),
+            "columns": list(df.columns),
+            "source": "akshare",
+            "provider": "em",
+            "data_type": "zt_pool",
+        }
+
+        return create_success_response(result)
+
+    except Exception as e:
+        return create_error_response(
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get zt-pool data for {date}: {str(e)}"
         )
 
 

@@ -91,3 +91,30 @@ def test_board_change_em_route_returns_success_payload():
     assert payload["data"]["count"] == 1
     assert payload["data"]["provider"] == "em"
     assert payload["data"]["data_type"] == "board_change"
+
+
+def test_stock_zt_pool_em_route_returns_success_payload():
+    df = pd.DataFrame(
+        {
+            "sequence_no": [1],
+            "symbol": ["603777"],
+            "stock_name": ["来伊份"],
+            "change_percent": [10.02],
+            "latest_price": [24.55],
+            "query_date": ["20241008"],
+        }
+    )
+
+    with patch(
+        "app.api.akshare_market.sentiment_monitor.akshare_market_adapter.get_stock_zt_pool_em",
+        new=AsyncMock(return_value=df),
+    ):
+        response = client.get("/api/akshare/market/stock/zt-pool/em?date=20241008")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["data"]["date"] == "20241008"
+    assert payload["data"]["count"] == 1
+    assert payload["data"]["provider"] == "em"
+    assert payload["data"]["data_type"] == "zt_pool"

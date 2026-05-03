@@ -1584,6 +1584,46 @@ data_sources:
       test_parameters:
         symbol: 最热门
       update_frequency: hourly
+    akshare_stock_zt_pool_em:
+      call_method: function_call
+      classification_level: 1
+      data_category: REALTIME_QUOTES
+      data_classification: market_data
+      data_quality_score: 9.0
+      description: AKShare涨停股池
+      endpoint_name: akshare.stock_zt_pool_em
+      parameters:
+        date:
+          description: 交易日
+          example: '20241008'
+          required: true
+          type: string
+      priority: 1
+      quality_rules:
+        max_response_time: 15.0
+        min_record_count: 1
+        required_columns:
+        - 序号
+        - 代码
+        - 名称
+        - 涨跌幅
+        - 最新价
+      source_name: akshare
+      source_type: api_library
+      status: active
+      table_name: stock_zt_pool_em
+      tags:
+      - stock
+      - zt-pool
+      - limit-up
+      - em
+      - market
+      - akshare
+      - realtime
+      target_db: postgresql
+      test_parameters:
+        date: '20241008'
+      update_frequency: realtime
     akshare_stock_profit_forecast_em:
       call_method: function_call
       classification_level: 3

@@ -21,12 +21,11 @@
 - 第 3 节：资金流向
 - 第 4 节：预测和分析
 - 第 5 节：板块和行业
-- 第 6 节：仅补齐 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_changes_em`
+- 第 6 节：仅补齐 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_zt_pool_em`、`stock_changes_em`
 
 当前仍未落地的第 6 节接口：
 
 - `stock_news_main_em`
-- `stock_zt_pool_em`
 - `stock_dt_pool_em`
 - `stock_strong_pool_em`
 - `stock_weak_pool_em`
@@ -41,10 +40,11 @@
 - 聚合类：`src/adapters/akshare/market_adapter/adapter.py`
 - 情绪 / 监控类方法：`src/adapters/akshare/market_adapter/stock_sentiment.py`
 
-本轮新增的 3 个方法是：
+本轮新增的 4 个方法是：
 
 - `get_stock_hot_follow_xq(symbol="最热门")`
 - `get_stock_board_change_em()`
+- `get_stock_zt_pool_em(date)`
 - `get_stock_changes_em(symbol="大笔买入")`
 
 ### 2.2 API 路由入口
@@ -56,6 +56,7 @@
 公开路径：
 
 - `GET /api/akshare/market/stock/hot-follow/xq`
+- `GET /api/akshare/market/stock/zt-pool/em`
 - `GET /api/akshare/market/stock/changes/em`
 - `GET /api/akshare/market/board/change/em`
 
@@ -80,7 +81,15 @@ curl "http://localhost:8888/api/akshare/market/stock/changes/em?symbol=大笔买
 
 当前仓库只保证把 query 原样透传给 `akshare.stock_changes_em(symbol=...)`。可用值应以当前安装的 `akshare` 版本为准。
 
-### 3.3 板块异动
+### 3.3 涨停股池
+
+```bash
+curl "http://localhost:8888/api/akshare/market/stock/zt-pool/em?date=20241008"
+```
+
+该接口要求显式传入交易日 `date`，格式为 `YYYYMMDD`。
+
+### 3.4 板块异动
 
 ```bash
 curl "http://localhost:8888/api/akshare/market/board/change/em"
@@ -96,6 +105,7 @@ curl "http://localhost:8888/api/akshare/market/board/change/em"
 
 - `akshare_stock_hot_follow_xq`: `hourly`
 - `akshare_stock_board_change_em`: `realtime`
+- `akshare_stock_zt_pool_em`: `realtime`
 - `akshare_stock_changes_em`: `realtime`
 
 ### 4.2 缓存边界

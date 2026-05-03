@@ -83,3 +83,55 @@ async def test_get_stock_changes_em_normalizes_columns():
         result.columns
     )
     assert result["query_type"].tolist() == ["大笔买入"]
+
+
+@pytest.mark.asyncio
+async def test_get_stock_zt_pool_em_normalizes_columns():
+    adapter = AkshareMarketDataAdapter()
+
+    with patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_zt_pool_em", create=True) as mock_zt_pool:
+        mock_zt_pool.return_value = pd.DataFrame(
+            {
+                "序号": [1],
+                "代码": ["603777"],
+                "名称": ["来伊份"],
+                "涨跌幅": [10.02],
+                "最新价": [24.55],
+                "成交额": [580000000.0],
+                "流通市值": [8400000000.0],
+                "总市值": [12300000000.0],
+                "换手率": [16.8],
+                "封板资金": [186000000.0],
+                "首次封板时间": ["093015"],
+                "最后封板时间": ["145700"],
+                "炸板次数": [2],
+                "涨停统计": ["3/5"],
+                "连板数": [2],
+                "所属行业": ["食品饮料"],
+            }
+        )
+
+        result = await adapter.get_stock_zt_pool_em("20241008")
+
+    assert len(result) == 1
+    assert {
+        "sequence_no",
+        "symbol",
+        "stock_name",
+        "change_percent",
+        "latest_price",
+        "turnover_amount",
+        "circulating_market_cap",
+        "total_market_cap",
+        "turnover_rate",
+        "limit_up_fund",
+        "first_limit_up_time",
+        "last_limit_up_time",
+        "reopen_count",
+        "limit_up_stats",
+        "consecutive_limit_up_count",
+        "industry",
+        "query_date",
+        "query_timestamp",
+    } <= set(result.columns)
+    assert result["query_date"].tolist() == ["20241008"]

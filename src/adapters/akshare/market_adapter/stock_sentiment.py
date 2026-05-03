@@ -11,6 +11,54 @@ import pandas as pd
 class StockSentimentMixin:
     """个股情绪与新闻数据方法集合"""
 
+    async def get_stock_zt_pool_em(self, date: str) -> pd.DataFrame:
+        """
+        获取涨停股池 (akshare.stock_zt_pool_em)
+        """
+        try:
+            self.logger.info("[Akshare] 开始获取涨停股池，交易日: %s", date)
+
+            @self._retry_api_call
+            async def _get_stock_zt_pool():
+                return ak.stock_zt_pool_em(date=date)
+
+            df = await _get_stock_zt_pool()
+
+            if df is None or df.empty:
+                self.logger.warning("[Akshare] 未能获取到涨停股池数据，交易日: %s", date)
+                return pd.DataFrame()
+
+            self.logger.info("[Akshare] 成功获取涨停股池数据，交易日 %s，共 %s 行", date, len(df))
+
+            df = df.rename(
+                columns={
+                    "序号": "sequence_no",
+                    "代码": "symbol",
+                    "名称": "stock_name",
+                    "涨跌幅": "change_percent",
+                    "最新价": "latest_price",
+                    "成交额": "turnover_amount",
+                    "流通市值": "circulating_market_cap",
+                    "总市值": "total_market_cap",
+                    "换手率": "turnover_rate",
+                    "封板资金": "limit_up_fund",
+                    "首次封板时间": "first_limit_up_time",
+                    "最后封板时间": "last_limit_up_time",
+                    "炸板次数": "reopen_count",
+                    "涨停统计": "limit_up_stats",
+                    "连板数": "consecutive_limit_up_count",
+                    "所属行业": "industry",
+                }
+            )
+
+            df["query_date"] = date
+            df["query_timestamp"] = pd.Timestamp.now()
+            return df
+
+        except Exception as e:
+            self.logger.error("[Akshare] 获取涨停股池失败，交易日 %s: %s", date, e, exc_info=True)
+            return pd.DataFrame()
+
     async def get_stock_hot_follow_xq(self, symbol: str = "最热门") -> pd.DataFrame:
         """
         获取股票热度数据 (akshare.stock_hot_follow_xq)
