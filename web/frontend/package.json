@@ -15,6 +15,7 @@
     "type:check:conflicts": "node scripts/check-type-conflicts.js",
     "type:audit:quality": "node scripts/audit-type-extension-quality.js",
     "type:report": "node scripts/generate-type-validation-report.js",
+    "type:dashboard": "node scripts/generate-type-health-dashboard.js",
     "type:usage": "node scripts/generate-type-usage.js",
     "type:build": "npm run generate-types && npm run type:validate && npm run type-check",
     "preview": "vite preview",

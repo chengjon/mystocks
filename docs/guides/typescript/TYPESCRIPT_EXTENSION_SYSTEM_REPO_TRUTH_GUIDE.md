@@ -104,6 +104,12 @@ type PositionVM = extensions.PositionVM;
   - 会同时生成：
     - 时间戳报告：`YYYYMMDDTHHMMSSZ-type-extension-validation-report.json`
     - 最新指针：`latest.json`
+- `node scripts/generate-type-health-dashboard.js`
+  - 读取 `type:report` 生成的 `latest.json`
+  - 默认把静态 dashboard 写入 `reports/analysis/typescript-extension-validation/dashboard/`
+  - 会同时生成：
+    - 时间戳 HTML：`YYYYMMDDTHHMMSSZ-type-extension-health-dashboard.html`
+    - 最新指针：`latest.html`
 
 常用验证命令：
 
@@ -114,6 +120,7 @@ node scripts/check-type-conflicts.js
 node scripts/audit-type-extension-quality.js
 node scripts/generate-type-usage.js
 node scripts/generate-type-validation-report.js
+node scripts/generate-type-health-dashboard.js
 npm run type-check
 ```
 
@@ -182,6 +189,7 @@ npm run type-check
 ```bash
 cd web/frontend
 node scripts/generate-type-validation-report.js
+node scripts/generate-type-health-dashboard.js
 ```
 
 如果需要指定输出目录：
@@ -189,7 +197,15 @@ node scripts/generate-type-validation-report.js
 ```bash
 cd web/frontend
 node scripts/generate-type-validation-report.js --report-dir ../../reports/analysis/typescript-extension-validation
+node scripts/generate-type-health-dashboard.js --report-dir ../../reports/analysis/typescript-extension-validation
 ```
+
+当前 dashboard 是 repo-owned 的静态 HTML artifact，不依赖额外服务或运行时面板。它聚焦当前最重要的 repo-truth 信号：
+
+- overall validation status
+- validation / conflicts / naming / jsdoc / typecheck 五项检查结果
+- exported extension type 数量
+- 当前未使用扩展类型数量及名称
 
 ## 7. 变更完成判定
 
@@ -202,5 +218,6 @@ node scripts/generate-type-validation-report.js --report-dir ../../reports/analy
 - `node scripts/audit-type-extension-quality.js` 中 `naming.ok=true` 且 `jsdoc.ok=true`
 - `npm run type-check` 通过
 - 若需要留存证据，`node scripts/generate-type-validation-report.js` 可生成时间戳报告与 `latest.json`
+- 若需要可读监控面板，`node scripts/generate-type-health-dashboard.js` 可从 `latest.json` 生成静态 HTML dashboard 与 `latest.html`
 
 若只是历史方案、旧报告或计划文档更新，而没有上述脚本或类型检查证据，不能视为本系统已完成收口。
