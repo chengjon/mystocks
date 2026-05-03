@@ -5,7 +5,7 @@
 > 其中勾选状态、执行顺序和局部说明仅代表任务推进视角，不应脱离 proposal、design、正式 specs、`architecture/STANDARDS.md` 与实际验证结果单独解读为最终事实。
 
 > **仓库事实校对（2026-05-03）**:
-> 当前仓库中的 TypeScript 扩展系统已经从“部分雏形”推进到“主体闭环、少量计划项仍未收口”的状态。
+> 当前仓库中的 TypeScript 扩展系统已经完成当前专题范围内的闭环交付。
 > 已核对到的核心证据包括：
 > - 扩展目录与入口：`web/frontend/src/api/types/extensions/`、`web/frontend/src/api/types/extensions/index.ts`
 > - 类型验证器：`web/frontend/src/api/types/tools/validators/TypeValidator.ts`
@@ -17,8 +17,8 @@
 > - 扩展目录外的共享类型沉淀：`src/components/shared/types.ts` 已提供 `TableColumn<T>`，`src/utils/chartDataUtils.types.ts` 已提供 `ChartDataPoint`
 > - 主索引公开方式：`web/frontend/src/api/types/index.ts` 当前通过 `export * as extensions from './extensions';` 暴露命名空间入口
 > - 实测验证：`cd web/frontend && npm run type-check`、`npm run build`、`npm run type:audit:quality`、`npm run type:report`、`npm run type:dashboard` 均已通过，且 `unused.count = 0`、`coverage.percent = 100`
-> 当前剩余未闭环项也很明确：
-> - `Commit type extension system` 仍属于操作型任务；当前工作树存在大量既有 staged 变更，未做独立 commit 前不应误勾选
+> 当前 active task checklist 已全部勾选完成。
+> 若后续仍需推进该条线，优先级不再是补本专题脚本或目录结构，而是等待分支合并/发布后再决定是否执行 OpenSpec archive 等生命周期动作。
 > 因此下方勾选状态继续以“当前仓库证据 + 实测验证”为准，不把历史阻塞项或旧口径误写成当前事实。
 
 

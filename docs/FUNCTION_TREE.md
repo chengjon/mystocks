@@ -7,7 +7,7 @@
 > 文内完成度、状态标签、功能归属和稳定 ID 如未重新复核，应视为阶段性快照；但凡本次改动已经改变功能边界、入口或状态，必须在同一变更批次同步更新本文件，不得让 `FUNCTION_TREE.md` 长期滞后于当前实现。
 
 
-> **版本**: 1.1.1 | **更新日期**: 2026-04-26 | **维护者**: 开发团队
+> **版本**: 1.1.2 | **更新日期**: 2026-05-03 | **维护者**: 开发团队
 > **文档类型**: 功能管理 / 功能边界总览 | **状态**: 活跃维护
 
 ---
@@ -415,7 +415,7 @@ Q2 closure note:
 
 ## 08-系统管理与配置 {#domain-08}
 
-**模块路径**: `web/backend/app/api/auth.py`, `web/backend/app/api/v1/system/`, `web/frontend/src/views/system/`
+**模块路径**: `web/backend/app/api/auth.py`, `web/backend/app/api/v1/system/`, `web/frontend/src/views/system/`, `web/frontend/src/api/types/`, `web/frontend/scripts/`, `scripts/_generate_frontend_types_cli.py`
 **API前缀**: `/api/v1/auth/*`, `/api/v1/system/settings/*`, `/api/v1/system/health/*`, `/api/backup-recovery/*`
 **完成度**: 85%
 
@@ -426,8 +426,8 @@ Q2 closure note:
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[运维文档总览](./operations/README.md) | 认证、系统配置与恢复治理入口 |
 | API/契约入口 | [认证 API](../web/backend/app/api/auth.py)<br>[系统设置 API](../web/backend/app/api/v1/system/settings.py)<br>[系统健康 API](../web/backend/app/api/v1/system/health.py)<br>[备份恢复 API](../web/backend/app/api/backup_recovery.py) | 认证、系统与恢复接口入口 |
 | 前端/交互入口 | [登录页](../web/frontend/src/views/Login.vue)<br>[系统主路由目录](../web/frontend/src/views/system/) | 系统管理主路由入口；`Login.vue` 承担认证入口；系统管理交互入口 |
-| 核心代码入口 | [认证 Store](../web/frontend/src/stores/auth.ts)<br>[备份恢复模块](../src/infrastructure/backup_recovery/)<br>[Docker 部署说明](../docker/README.md) | 系统管理实现入口 |
-| 测试与验证入口 | [认证 API 测试](../tests/api/auth.spec.ts)<br>[系统 API 测试](../tests/api/system.spec.ts)<br>[JWT 安全测试](../tests/security/test_jwt_authentication.py) | 系统管理验证入口 |
+| 核心代码入口 | [认证 Store](../web/frontend/src/stores/auth.ts)<br>[备份恢复模块](../src/infrastructure/backup_recovery/)<br>[前端类型主索引](../web/frontend/src/api/types/index.ts)<br>[前端类型扩展目录](../web/frontend/src/api/types/extensions/)<br>[前端类型生成器](../scripts/_generate_frontend_types_cli.py)<br>[类型治理脚本目录](../web/frontend/scripts/)<br>[Docker 部署说明](../docker/README.md) | 系统管理与工程治理实现入口 |
+| 测试与验证入口 | [认证 API 测试](../tests/api/auth.spec.ts)<br>[系统 API 测试](../tests/api/system.spec.ts)<br>[JWT 安全测试](../tests/security/test_jwt_authentication.py)<br>[扩展类型工具链测试](../tests/unit/scripts/test_frontend_type_extension_tooling.py)<br>[扩展类型兼容性测试](../tests/unit/scripts/test_frontend_type_extension_compatibility.py) | 系统管理与工程治理验证入口 |
 | 运行与排障入口 | [部署文档总览](./operations/deployment/README.md)<br>[部署指南](./operations/deployment-guide.md)<br>[Docker README](../docker/README.md) | 系统管理排障入口 |
 
 ### 8.1 认证授权 {#domain-08-node-01}
@@ -453,6 +453,15 @@ Q2 closure note:
 | 数据备份 | ✅ | `web/backend/app/api/backup_recovery.py`, `src/infrastructure/backup_recovery/backup_manager.py` | 备份 API 与 TDengine/PostgreSQL 备份管理器已在 |
 | 数据恢复 | ✅ | `web/backend/app/api/backup_recovery.py`, `src/infrastructure/backup_recovery/recovery_manager.py` | 恢复任务、恢复日志与状态查询能力存在 |
 | 备份调度 | ✅ | `src/infrastructure/backup_recovery/backup_scheduler.py` | 已有全量/增量备份调度，当前未见独立前台入口 |
+
+### 8.4 前端类型扩展与治理 {#domain-08-node-04}
+
+| 功能点 | 状态 | 代码位置 | 说明 |
+|--------|------|----------|------|
+| 扩展命名空间入口 | ✅ | `web/frontend/src/api/types/index.ts`, `web/frontend/src/api/types/extensions/index.ts` | 当前以 `export * as extensions from './extensions'` 暴露 frontend-only 类型扩展面，并保留 root-level shim 兼容旧导入 |
+| canonical 子目录结构 | ✅ | `web/frontend/src/api/types/extensions/strategy/index.ts`, `web/frontend/src/api/types/extensions/common/index.ts`, `web/frontend/src/api/types/extensions/ui/index.ts`, `web/frontend/src/api/types/extensions/market/index.ts`, `web/frontend/src/api/types/extensions/api/index.ts`, `web/frontend/src/api/types/extensions/utils/index.ts` | 当前 canonical 结构已从 root-level 域文件切换为子目录入口；`strategy.ts`、`common.ts`、`ui.ts` 仅作为薄兼容 shim 保留 |
+| 兼容性与编译烟测 | ✅ | `web/frontend/src/api/types/compatibility-smoke.ts`, `tests/unit/scripts/test_frontend_type_extension_compatibility.py` | compile-time smoke 会同时覆盖 legacy root exports 与 extension public surface，证明扩展命名空间未破坏既有主索引消费方 |
+| 类型治理报告与 dashboard | ✅ | `web/frontend/scripts/generate-type-validation-report.js`, `web/frontend/scripts/generate-type-health-dashboard.js`, `reports/analysis/typescript-extension-validation/` | 当前已具备 validation/conflicts/naming/jsdoc/coverage/typecheck 汇总报告与静态 dashboard，`coverage.percent=100`、`unused.count=0` 为 2026-05-03 实测值 |
 
 ---
 
@@ -556,4 +565,4 @@ Q2 closure note:
 
 ---
 
-*最后更新: 2026-04-26*
+*最后更新: 2026-05-03*
