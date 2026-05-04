@@ -111,6 +111,9 @@
 > - `4.3` = 部署激活：需要真实测试环境灰度发布，不是 repo-local 改动或文档交付物
 > - `4.4` = live 观测：需要灰度环境里的连续监控数据
 > - `4.5.2` = ROI 验收：需要部署期真实成本样本，不可由本地 synthetic workload 替代
+>
+> **Repo-local 收口状态（2026-05-05）**:
+> 截至当前这条线的最新验证结果，已不存在还能仅凭仓库内代码、测试、文档或本机运行环境就可以继续合法勾选的剩余项。Phase 1 的未闭合条目全部属于部署激活、灰度期持续观测或 ROI 验收，继续推进必须引入仓库外的真实环境证据。
 
 - [x] 4.1 运行所有单元测试和并发测试
   - [x] Repo-truth（2026-05-02）：已通过 `pytest tests/unit/test_smart_cache.py tests/unit/test_circuit_breaker.py tests/unit/test_circuit_breaker_integration.py tests/unit/test_data_quality_validator.py tests/unit/test_gpu_validator_integration.py -q --no-cov -o log_cli=false -p no:tdd-guard -p no:timing` 验证当前 Phase 1 本地测试集，结果 `169 passed`。为使该套件可稳定完成，本次同时修复了 `src/core/data_source/circuit_breaker.py` 中 `get_stats() -> get_state()` 的非重入锁死锁、把 `tests/unit/test_data_quality_validator.py` 的异常成交量样本修正为真实满足“>10 倍均值”的数据形状，并补齐了 120 个参数化异常样本与 `GPUValidator` 的 100000 行大样本入口验证。
@@ -266,6 +269,9 @@
 > - 部署激活：`8.3`、`8.7`
 > - live 观测 / 人工监屏：`8.4`、`8.5.2`、`8.5.4`
 > - 当前 repo-local 代码、测试、benchmark 与文档只能为这些项提供前置条件，不能直接构成完成证据
+>
+> **Repo-local 收口状态（2026-05-05）**:
+> 在 `6.11` 与 `8.5.2` 已被 live 监控栈证据闭合后，Phase 2 剩余未闭合项只剩真实灰度发布、灰度窗口指标观测和扩量动作；这些都不能再由仓库内 synthetic benchmark、单机 PM2、或本地 Docker 监控栈替代完成。
 
 - [x] 8.1 运行所有单元测试和集成测试
   - [x] Repo-truth（2026-05-05）：已通过 change-owned Phase 2 本地矩阵 `pytest tests/unit/test_smart_router.py tests/unit/test_smart_router_integration.py tests/unit/test_metrics.py tests/unit/test_data_source_metrics_integration.py src/governance/tests/test_fetcher_bridge.py tests/integration/test_batch_processing.py tests/unit/adapters/test_runtime_data_source_regressions.py -q --no-cov`，结果 `36 passed`。
@@ -358,6 +364,9 @@
 > - 部署激活：`11.3`
 > - live availability / SLA 观测：`11.2`、`11.4`、`11.5.3`
 > - 当前 repo-local 组件测试无法单独证明 `99.9%` 可用性或生产恢复时间
+>
+> **Repo-local 收口状态（2026-05-05）**:
+> Phase 3 当前也没有新的 repo-local checklist 可继续闭合。剩余项全部需要真实部署窗口、连续可用性样本或正式 SLA 验收记录；继续补本地组件测试不会改变这些 task 的完成状态。
 
 - [x] 11.1 运行所有单元测试和集成测试
   - [x] Repo-truth（2026-05-05）：已通过 `pytest -c pytest.ini tests/unit/test_adaptive_rate_limiter.py tests/unit/test_governance/test_data_lineage_tracker.py tests/integration/test_data_lineage_tracker_integration.py tests/unit/test_governance/test_lineage.py tests/api/file_tests/test_data_lineage_api.py -q --no-cov`，结果 `42 passed`。
@@ -413,3 +422,6 @@
 - [x] 12.6 项目总结和经验教训
   - [x] Repo-truth（2026-05-02）：已新增 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LESSONS_LEARNED_2026-05-02.md`，按当前仓库事实总结了这条线的主要收口成果、调用链与部署侧完成度的区分、canonical path 漂移治理、benchmark 与正式收益口径分离等经验教训。该文档是 repo-local 总结，不等同于 `12.5` 的最终验收会议纪要。
 - [ ] 12.7 归档 OpenSpec 变更（`openspec archive optimize-data-source-v2`）
+
+> **总括（2026-05-05）**:
+> 当前仍未闭合的 checklist 项为 `4.3`、`4.4`、`4.5.2`、`8.3`、`8.4`、`8.5.4`、`8.7`、`11.2`、`11.3`、`11.4`、`11.5.3`、`12.5`、`12.7`。这些项全部要求仓库外的部署、观测、会议或归档动作；因此 “仓库内可完成” 的任务已经清空。

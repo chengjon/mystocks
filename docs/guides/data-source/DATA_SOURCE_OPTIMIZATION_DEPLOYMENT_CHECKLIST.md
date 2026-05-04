@@ -144,6 +144,9 @@
 > **说明**:
 > 上表刻意把 repo-local 能完成的前置校验与真正的外部验收分开。即使本清单第 2、3 节全部通过，也不能直接勾选这些项。
 >
+> **Repo-local 收口状态（2026-05-05）**:
+> 截至当前最新验证批次，`optimize-data-source-v2` 已没有剩余的“仅凭仓库内代码、测试、文档或本机运行环境即可继续合法闭合”的未完成项。当前未闭合的 OpenSpec task 已全部属于外部部署、live 观测、SLA/ROI 验收、会议纪要或归档动作。
+>
 > **现场验通事实（2026-05-05）**:
 > - 当前监控栈已完成 live 修复：Prometheus 通过 compose `extra_hosts` 解析 `host.docker.internal`，backend scrape target 已对齐 `8020`，JSON health jobs 已从 active scrape 集合中移除，canonical dashboard `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json` 也已接入 Grafana provisioning。
 > - `src/monitoring/data_source_metrics.py:start_metrics_server()` 现已真正阻塞保活；同时 exporter 会把 `Info` metadata 中的 `NaN` 归一化为空字符串，因此 `http://localhost:8001/metrics` 不再返回 `500`。
