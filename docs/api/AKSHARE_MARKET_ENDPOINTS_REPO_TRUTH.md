@@ -75,7 +75,7 @@
 |---|---|---|---|---|
 | 6.1 | `stock_hot_follow_xq` | `/api/akshare/market/stock/hot-follow/xq` | `get_stock_hot_follow_xq()` | 已实现 |
 | 6.2 | `stock_board_change_em` | `/api/akshare/market/board/change/em` | `get_stock_board_change_em()` | 已实现 |
-| 6.3 | `stock_news_main_em` | - | - | 本地 `akshare` 未检出同名函数 |
+| 6.3 | `stock_news_main_em` | - | - | 已排除/不在当前 scope（候选漂移到财新来源） |
 | 6.4 | `stock_zt_pool_em` | `/api/akshare/market/stock/zt-pool/em` | `get_stock_zt_pool_em()` | 已实现 |
 | 6.5 | `stock_dt_pool_em` | `/api/akshare/market/stock/dt-pool/em` | `get_stock_dt_pool_em()` | 已实现（官方改名映射：stock_zt_pool_dtgc_em） |
 | 6.6 | `stock_strong_pool_em` | `/api/akshare/market/stock/strong-pool/em` | `get_stock_strong_pool_em()` | 已实现（官方改名映射：stock_zt_pool_strong_em） |

@@ -68,7 +68,7 @@
 - same-name native 仍然有效
 - `dt / strong / new` 已作为 approved mapping 落地
 - `stock_weak_pool_em` 已改写为 retired item
-- `stock_news_main_em` 仍只保留 advisory 线索
+- `stock_news_main_em` 已正式收口为 excluded item
 
 候选、排除项和 retired item 的唯一库存定义以 `Section 3.2 Current Candidate Inventory` 为准。
 
@@ -439,8 +439,8 @@ openspec validate expand-akshare-data-sources --strict
 当前任务语义应保持：
 
 - `6.3 stock_news_main_em`
-  - remains open
-  - excluded from current promotion set
+  - already closed as excluded item
+  - should not retain registry / adapter / route / focused test artifacts
 - `6.5 stock_dt_pool_em`
   - already closed as approved runtime mapping
 - `6.6 stock_strong_pool_em`
@@ -451,7 +451,7 @@ openspec validate expand-akshare-data-sources --strict
 - `6.9 stock_new_em`
   - already closed as approved runtime mapping
 
-`6.10`、`6.11`、`6.12`、`7.2`、`7.4`、`7.5`、`8.x` 这些下游任务，不能因为 advisory candidate 存在就提前闭合。
+`6.10`、`6.11`、`6.12` 与 `7.2` 现在可以在 `6.3 excluded + 6.7 retired` 的口径下闭合；`7.4`、`7.5`、`8.x` 仍不能因为 advisory candidate 或 gate 收口就提前闭合。
 
 ### 6.4 Commit Strategy
 

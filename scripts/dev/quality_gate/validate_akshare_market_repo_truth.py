@@ -57,6 +57,8 @@ DEFAULT_MANIFEST = [
         "unit_test_token": "test_get_stock_news_main_em",
         "backend_test_token": "/api/akshare/market/stock/news-main/em",
         "api_test_token": "test_stock_news_main_em_endpoint",
+        "lifecycle": "excluded",
+        "expected_resolution_status": "missing",
     },
     {
         "task_id": "6.4",
@@ -220,6 +222,20 @@ def validate_function(
                 {
                     "kind": "availability",
                     "message": f"resolution_status for retired function {function_name} is '{resolution_status}', expected '{expected_resolution_status}'",
+                }
+            )
+    elif lifecycle == "excluded":
+        expected_task_checked = True
+        expected_status_fragment = "已排除/不在当前 scope"
+        artifact_expectation = False
+        if available:
+            violations.append({"kind": "availability", "message": f"excluded function {function_name} unexpectedly reported available"})
+        expected_resolution_status = item.get("expected_resolution_status")
+        if expected_resolution_status is not None and resolution_status != expected_resolution_status:
+            violations.append(
+                {
+                    "kind": "availability",
+                    "message": f"resolution_status for excluded function {function_name} is '{resolution_status}', expected '{expected_resolution_status}'",
                 }
             )
     else:

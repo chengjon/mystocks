@@ -23,7 +23,7 @@
 - 第 5 节：板块和行业
 - 第 6 节：已补齐 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_zt_pool_em`、`stock_dt_pool_em`、`stock_strong_pool_em`、`stock_changes_em`、`stock_new_em`
 
-当前仍未落地的第 6 节接口：
+当前仍技术性缺失、但已排除出 runtime scope 的第 6 节条目：
 
 - `stock_news_main_em`
 
@@ -31,7 +31,7 @@
 
 - `stock_weak_pool_em`
 
-除 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`、`stock_strong_pool_em -> stock_zt_pool_strong_em` 与 `stock_new_em -> stock_zt_pool_sub_new_em` 这三条已批准并落地的官方改名映射外，剩余缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出可直接接受的实现，不能拿近似接口替代。`stock_weak_pool_em` 则已基于业务决策与上游缺口正式收口为 retired item。
+除 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`、`stock_strong_pool_em -> stock_zt_pool_strong_em` 与 `stock_new_em -> stock_zt_pool_sub_new_em` 这三条已批准并落地的官方改名映射外，剩余缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出可直接接受的实现，不能拿近似接口替代。`stock_news_main_em` 当前已作为 excluded item 收口，`stock_weak_pool_em` 则已基于业务决策与上游缺口正式收口为 retired item。
 
 ### 1.1 当前门禁快照
 
@@ -51,6 +51,8 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 - 当前已退役：`1`
 - repo-truth violation：`0`
 - 统一门禁结果：`pass=true`
+
+当前唯一 `missing` 项对应 `stock_news_main_em`，但它已在 OpenSpec 与 repo-truth 中正式标记为 excluded，不再阻塞第 6 节运行时收口。
 
 当前 availability 报告的分辨口径是：
 

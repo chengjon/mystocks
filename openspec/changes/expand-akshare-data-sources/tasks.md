@@ -76,11 +76,14 @@
 > 当前 canonical truth 仍以 `435bc8f00` 落地的 same-name gate baseline 为起点；但本轮已单独批准并落地 `stock_dt_pool_em -> stock_zt_pool_dtgc_em` 的官方改名映射，因此 6.5 已转为完成状态。
 > 在此基础上，本轮继续批准并落地 `stock_strong_pool_em -> stock_zt_pool_strong_em` 的官方改名映射，因此 6.6 也已转为完成状态。
 > 本轮继续批准并落地 `stock_new_em -> stock_zt_pool_sub_new_em` 的官方改名映射，因此 6.9 已转为完成状态。
-> 当前本地 `akshare` 环境仍未检出 `stock_news_main_em` 的可接受实现；`stock_weak_pool_em` 已基于业务决策与上游缺口正式改写为 retired item，不再作为待实现 runtime 能力保留。
+> 当前本地 `akshare` 环境仍未检出 `stock_news_main_em` 的可接受实现；该项已基于 provider drift 与当前业务边界正式改写为 excluded item。`stock_weak_pool_em` 则已基于业务决策与上游缺口正式改写为 retired item，两者都不再作为待实现 runtime 能力保留。
 
 - [x] 6.1 实现股票热度数据 (akshare.stock_hot_follow_xq)
 - [x] 6.2 实现板块异动详情 (akshare.stock_board_change_em)
-- [ ] 6.3 实现财经内容精选 (akshare.stock_news_main_em)
+- [x] 6.3 排除财经内容精选能力 (akshare.stock_news_main_em)
+  - Repo-truth：当前以 excluded / out of current scope 收口，状态为 `已排除/不在当前 scope`
+  - Runtime boundary：registry / adapter / route / focused tests 均不得保留 `stock_news_main_em` 工件
+  - Advisory boundary：`stock_news_main_cx` 只保留为 help candidate，不自动等价为已实现 runtime 能力
 - [x] 6.4 实现涨停板行情 (akshare.stock_zt_pool_em)
 - [x] 6.5 实现跌停板行情 (akshare.stock_dt_pool_em)
 - [x] 6.6 实现强势股池 (akshare.stock_strong_pool_em)
@@ -91,11 +94,11 @@
 - [x] 6.9 实现次新股池 (akshare.stock_new_em)
   - Repo-truth：canonical 名称保持 `stock_new_em`，运行时映射到本地 `stock_zt_pool_sub_new_em`
   - Scope boundary：`stock_zt_pool_previous_em`、`stock_zt_pool_zbgc_em` 仍只作为邻接官方 pool 能力保留，不对应当前 OpenSpec 第 6 节条目
-- [ ] 6.10 添加行情和情绪数据到数据源配置注册表
-- [ ] 6.11 创建行情和情绪数据的API端点
-- [ ] 6.12 编写行情和情绪数据的单元测试
-  - [ ] Repo-truth：当前 registry / API / focused tests 已闭合 6.1 / 6.2 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8 / 6.9；在 6.3 仍未实现前，不将本节统一收口任务勾选完成。
-  - [ ] Scope remainder：`6.3` 维持 excluded；`6.7` 已正式 retired，不再作为 open gap 保留
+- [x] 6.10 添加行情和情绪数据到数据源配置注册表
+- [x] 6.11 创建行情和情绪数据的API端点
+- [x] 6.12 编写行情和情绪数据的单元测试
+  - [x] Repo-truth：当前 registry / API / focused tests 已闭合 6.1 / 6.2 / 6.4 / 6.5 / 6.6 / 6.8 / 6.9；`6.3` 已正式 excluded，`6.7` 已正式 retired。
+  - [x] Scope remainder：当前第 6 节已无 open gap；`6.3` excluded，`6.7` retired，不再阻塞统一收口。
 
 ## 7. 系统集成和优化
 > **仓库事实校对（2026-04-27）**:
@@ -107,7 +110,8 @@
 > 该门禁只产出校验 / 审计报告，不自动生成业务代码，也不代表 7.4 / 7.5 的缓存 / 批量优化已经落地。
 
 - [x] 7.1 更新适配器聚合入口，纳入新增市场 mixin
-- [ ] 7.2 更新数据源配置注册表，补齐剩余接口的质量规则
+- [x] 7.2 更新数据源配置注册表，补齐剩余接口的质量规则
+  - [x] Repo-truth：当前质量规则已覆盖 `native / mapped / excluded / retired` 四类状态，不再把 `stock_news_main_cx` 之类 advisory candidate 自动外推为已实现。
 - [x] 7.3 更新API路由文件，注册已实现端点
 - [ ] 7.4 实现数据缓存策略优化，避免重复API调用
 - [ ] 7.5 实现批量数据请求优化，支持多股票同时查询
@@ -118,10 +122,10 @@
 ## 8. 测试和验证
 > **仓库事实校对（2026-04-27）**:
 > 适配器层已有 `tests/adapters/test_akshare_adapter/test_akshare_market_data_adapter_methods/part1.py`、`part2.py`、`part3.py`，API侧已有 `tests/api/test_akshare_market_file.py` 覆盖已实现子集。
-> 由于第 6 节原始 scope 仍未落地，本节继续保留为未完成状态。
+> 由于第 6 节原始 scope 在当时仍未收口，本节当日快照继续保留为未完成状态。
 > **仓库事实校对（2026-05-03）**:
 > `tests/unit/scripts/test_collect_akshare_market_function_availability.py`、`tests/unit/scripts/test_validate_akshare_market_repo_truth.py`、`tests/unit/scripts/test_run_akshare_market_gates.py`、`tests/unit/scripts/test_frontend_testing_akshare_runtime_gate.py`、`tests/performance/test_build_runtime_ci_bundle.py`、`tests/performance/test_runtime_delivery_summary_local_script.py` 已覆盖门禁叶子脚本、wrapper 入口以及 runtime / CI 汇总链路的审计能力。
-> 这些验证只证明“校验 / 报告闭环”可运行，不外推为剩余 AkShare 业务接口、缓存优化、批量请求优化或端到端展示链路已经完成，因此 8.1-8.5 继续保留未完成。
+> 当前第 6 节 approved runtime scope 已闭合，但这些验证仍只证明“校验 / 报告闭环”可运行，不外推为缓存优化、批量请求优化或端到端展示链路已经完成，因此 8.1-8.5 继续保留未完成。
 
 - [ ] 8.1 补齐完整的单元测试套件，覆盖剩余接口与收口场景
 - [ ] 8.2 执行集成测试，确保API端点正常工作
