@@ -254,7 +254,7 @@
 > - `pytest tests/unit/test_smart_router.py tests/unit/test_smart_router_integration.py tests/unit/test_metrics.py tests/unit/test_data_source_metrics_integration.py src/governance/tests/test_fetcher_bridge.py tests/integration/test_batch_processing.py tests/unit/adapters/test_runtime_data_source_regressions.py -q --no-cov` -> `36 passed`
 > - `pytest tests/performance/test_batch_processor_throughput.py tests/performance/test_validate_monitoring_prometheus_references.py tests/performance/test_smart_router_ab_benchmark.py -q --no-cov --run-performance` -> `6 passed`
 > - `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PERFORMANCE_REPORT_2026-05-02.md` 当前已记录本地 `BatchProcessor` stub workload `speedup_x = 9.66x`
-> 上述证据足以关闭 repo-local 的 `8.1`、`8.2`、`8.5.1`、`8.5.3`、`8.5.5`，但仍不能替代 `8.3/8.4/8.5.2/8.5.4/8.6/8.7` 所要求的灰度/生产验收。
+> 上述证据足以关闭 repo-local 的 `8.1`、`8.2`、`8.5.1`、`8.5.3`、`8.5.5`；结合本地回归期间已实际修复并验证过的 Phase 2 问题，也足以关闭 `8.6`。仍不能替代的外部验收项集中在 `8.3/8.4/8.5.2/8.5.4/8.7`。
 
 - [x] 8.1 运行所有单元测试和集成测试
   - [x] Repo-truth（2026-05-05）：已通过 change-owned Phase 2 本地矩阵 `pytest tests/unit/test_smart_router.py tests/unit/test_smart_router_integration.py tests/unit/test_metrics.py tests/unit/test_data_source_metrics_integration.py src/governance/tests/test_fetcher_bridge.py tests/integration/test_batch_processing.py tests/unit/adapters/test_runtime_data_source_regressions.py -q --no-cov`，结果 `36 passed`。
@@ -271,7 +271,8 @@
   - [ ] 8.5.4 P95 延迟 < 200ms
   - [x] 8.5.5 所有单元测试通过
     - [x] Repo-truth（2026-05-05）：当前 Phase 2 change-owned 本地矩阵 `36 passed`，见 `8.1`。
-- [ ] 8.6 修复发现的问题
+- [x] 8.6 修复发现的问题
+  - [x] Repo-truth（2026-05-05）：当前 Phase 2 本地验证过程中已实际发现并修复两类 change-owned 问题：一是 `src/core/data_source/metrics.py:get_avg_latency()` 原先错误依赖 Histogram 私有字段，现已改为基于 exposition samples 计算平均值，并由 `tests/unit/test_metrics.py`、`tests/unit/test_data_source_metrics_integration.py` 回归覆盖；二是数据源监控 dashboard / alert rule 的 canonical path 与指标引用发生过漂移，现已统一到 `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json` 与 `config/monitoring-stack/config/rules/data-source-alerts.yml`，并由 `tests/performance/test_validate_monitoring_prometheus_references.py` 绑定验证。该项闭合仅代表 repo-local 发现的问题已修复，不等同于 `8.5.2` / `8.5.4` / `8.7` 的部署验收。
 - [ ] 8.7 逐步扩大灰度范围（50% → 100%）
 
 ---
@@ -339,7 +340,7 @@
 > 当前仓库已能证明 Phase 3 的 repo-local 组件和测试主链可用：
 > - `pytest -c pytest.ini tests/unit/test_adaptive_rate_limiter.py tests/unit/test_governance/test_data_lineage_tracker.py tests/integration/test_data_lineage_tracker_integration.py tests/unit/test_governance/test_lineage.py tests/api/file_tests/test_data_lineage_api.py -q --no-cov` -> `42 passed`
 > - `AdaptiveRateLimiter` 额外补入了 `import src.core.data_source.adaptive_rate_limiter` 不再因包级 eager import 触发 `base.py` 的回归断言
-> 因此 `11.1`、`11.5.1`、`11.5.2`、`11.5.4` 现在可以按 repo-local 功能与测试证据闭合；仍未闭合的项集中在 live deployment / availability / 99.9% SLA 验收。
+> 因此 `11.1`、`11.5.1`、`11.5.2`、`11.5.4` 现在可以按 repo-local 功能与测试证据闭合；结合本地验证期间已实际修复的问题，`11.6` 也可按 repo-local 口径闭合。仍未闭合的项集中在 `11.2/11.3/11.4/11.5.3` 这些 live deployment / availability / 99.9% SLA 验收。
 
 - [x] 11.1 运行所有单元测试和集成测试
   - [x] Repo-truth（2026-05-05）：已通过 `pytest -c pytest.ini tests/unit/test_adaptive_rate_limiter.py tests/unit/test_governance/test_data_lineage_tracker.py tests/integration/test_data_lineage_tracker_integration.py tests/unit/test_governance/test_lineage.py tests/api/file_tests/test_data_lineage_api.py -q --no-cov`，结果 `42 passed`。
@@ -354,7 +355,8 @@
   - [ ] 11.5.3 系统可用性达到 99.9%
   - [x] 11.5.4 所有测试通过
     - [x] Repo-truth（2026-05-05）：见 `11.1`；当前 Phase 3 repo-local 验证矩阵 `42 passed`。
-- [ ] 11.6 修复发现的问题
+- [x] 11.6 修复发现的问题
+  - [x] Repo-truth（2026-05-05）：当前 Phase 3 本地验证实际发现并修复了一项 change-owned 问题：`import src.core.data_source.adaptive_rate_limiter` 会因 `src/core/data_source/__init__.py` 的 eager import 触发 `base.py` 提前加载，并在测试环境里放大 `config.data_sources_loader` 依赖；现已将包级导出改为 lazy export，并由 `tests/unit/test_adaptive_rate_limiter.py::test_adaptive_rate_limiter_import_does_not_eagerly_load_base_module` 回归覆盖。该项闭合仅代表 repo-local 发现的问题已修复，不等同于 `11.2/11.3/11.4/11.5.3` 的 live acceptance。
 
 ---
 
