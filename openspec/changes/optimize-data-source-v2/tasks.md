@@ -216,6 +216,7 @@
 - [x] 6.10 验证 Prometheus 指标可查询
   - [x] Repo-truth（2026-05-01）：`tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 当前已验证 `src/core/data_source/metrics.py:DataSourceMetrics.generate_metrics()` 导出的 Prometheus exposition 文本可查询到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等已记录指标及其标签。此项证据覆盖本地 registry/exposition 可查询性，不等同于生产 Prometheus 抓取链路已验收。
 - [ ] 6.11 验证 Grafana 仪表板正常显示
+  - [ ] Repo-truth（2026-05-05）：本地监控栈现场探测已证明当前仍不满足关闭条件。`docker start` 后，`mystocks-prometheus` 可达且 `curl http://localhost:9090/-/ready` 返回 ready，但 `mystocks-grafana` 这个历史容器没有宿主机端口绑定（`docker inspect ... PortBindings -> {}`），因此 `http://localhost:3000/api/health` 无法访问；容器内健康接口只在 `127.0.0.1:3002/api/health` 返回成功。同时，`http://localhost:9090/api/v1/targets` 显示 `mystocks-backend` / `mystocks-data-sources` 等目标仍抓取 `host.docker.internal:8000/8001`，在当前 Linux + backend `8020` 环境下均为 `down`。因此此项仍需先修复监控栈可达性与 scrape target 漂移，再做浏览器内人工验收。
 - [x] 6.12 代码审查：确保指标命名符合 Prometheus 规范
   - [x] Repo-truth（2026-05-02）：`src/core/data_source/metrics.py` 当前指标命名均采用小写 snake_case 的 `datasource_*` 前缀；计数器使用 `_total` 后缀，延迟直方图使用 `_seconds` 单位后缀，标签名 `endpoint` / `data_category` / `status` / `check_type` 也符合 Prometheus 常见约定。导出面验证见 `tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics`。此项 review 仅覆盖 repo-owned registry / exposition 命名，不等同于 `6.7` / `6.9` / `6.11` 的监控栈部署验收。
 - [x] 6.13 更新文档：添加监控使用说明
@@ -276,6 +277,7 @@
   - [x] 8.5.1 Prometheus 指标可查询
     - [x] Repo-truth（2026-05-05）：本地可查询性已由 `tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 与当前 Phase 2 change-owned 测试矩阵共同验证；当前证据覆盖 repo-local registry / exposition 查询，不等同于 Prometheus live scrape 部署验收。
   - [ ] 8.5.2 Grafana 仪表板正常显示
+    - [ ] Repo-truth（2026-05-05）：见 `6.11`。当前 Prometheus 服务虽已 ready，但 Grafana 仅能在旧容器内部 `3002` 端口返回健康响应，宿主机 `3000` 不可达；同时 MyStocks 相关 Prometheus target 仍因 `host.docker.internal:8000/8001` 漂移而 `down`。该项不能用“dashboard 文件存在”或“Grafana 容器 running”替代完成证据。
   - [x] 8.5.3 批量获取性能提升 3-5 倍
     - [x] Repo-truth（2026-05-05）：见 `8.2`；当前本地报告记录 `BatchProcessor` stub workload `speedup_x = 9.66x`，已满足 repo-local 吞吐提升门槛。
   - [ ] 8.5.4 P95 延迟 < 200ms

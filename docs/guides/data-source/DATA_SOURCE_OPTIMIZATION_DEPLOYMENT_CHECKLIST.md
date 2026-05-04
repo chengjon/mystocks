@@ -143,6 +143,12 @@
 
 > **说明**:
 > 上表刻意把 repo-local 能完成的前置校验与真正的外部验收分开。即使本清单第 2、3 节全部通过，也不能直接勾选这些项。
+>
+> **现场阻塞事实（2026-05-05）**:
+> - 本地 `docker start` 后，`mystocks-prometheus` 可在 `http://localhost:9090/-/ready` 返回 ready。
+> - 但现存 `mystocks-grafana` 是历史容器，`docker inspect` 显示宿主机 `PortBindings` 为空；容器内部健康接口仅在 `127.0.0.1:3002/api/health` 成功，因此 `http://localhost:3000` 目前不能作为验收入口。
+> - `http://localhost:9090/api/v1/targets` 当前显示 `mystocks-backend`、`mystocks-data-sources` 等 target 抓取的仍是 `host.docker.internal:8000/8001`，在当前 Linux + backend `8020` 环境下为 `down`。
+> - 因此 `6.11` / `8.5.2` 的下一步不是补 repo-local 测试，而是先修复 Grafana 可达性和 Prometheus scrape target 漂移。
 
 ---
 
