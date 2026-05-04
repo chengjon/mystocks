@@ -32,7 +32,7 @@
 同时确认：
 
 - `stock_news_main_em` 本地缺失，`stock_news_main_cx` 仅作为邻近官方函数存在，不在当前保留候选集内
-- `stock_weak_pool_em` 本地缺失，当前没有可接受候选
+- `stock_weak_pool_em` 当前没有可接受候选，并已基于业务决策正式收口为 retired item
 
 本设计稿的职责不是重写已经落地的 gate baseline，而是：
 
@@ -42,15 +42,15 @@
 ## Goals
 
 - 记录 `435bc8f00` 已交付的 gate baseline
-- 把后续候选评估口径对齐到本地 `akshare 1.18.60` 的真实情况
-- 将手工评估线收敛到 `Section 3.2` 中定义的三个 retained candidate
+- 把后续候选评估与退役口径对齐到本地 `akshare 1.18.60` 的真实情况
+- 将手工评估线与已退役条目统一收敛到 `Section 3.2`
 - 如果未来某个候选被提升，保持 OpenSpec task 名、业务语义名、路由语义的稳定性
 - 定义从 advisory candidate 升级为 approved runtime mapping 的前置条件
 
 ## Non-Goals
 
 - 不在当前批次批准 `stock_news_main_em -> stock_news_main_cx`
-- 不在当前批次把 `stock_weak_pool_em` 改写成 retired item
+- 不为已退役的 `stock_weak_pool_em` 保留任何伪 runtime 工件
 - 不放宽当前 same-name gate baseline
 - 不自研替代函数
 - 不用异源接口补缺
@@ -63,12 +63,14 @@
 
 本批首先改变的是“设计记录方式”，不是“当前运行时真相”。
 
-当前真相仍然是：
+当前真相已经是：
 
-- same-name only 才算已实现
-- official rename candidate 仅作为 advisory 提示
+- same-name native 仍然有效
+- `dt / strong / new` 已作为 approved mapping 落地
+- `stock_weak_pool_em` 已改写为 retired item
+- `stock_news_main_em` 仍只保留 advisory 线索
 
-候选、排除项和 unresolved gap 的唯一库存定义以 `Section 3.2 Current Candidate Inventory` 为准。
+候选、排除项和 retired item 的唯一库存定义以 `Section 3.2 Current Candidate Inventory` 为准。
 
 本节只补充边界性强调：
 
@@ -95,22 +97,23 @@
 
 ### 1.2 Decision Record For `stock_weak_pool_em`
 
-`stock_weak_pool_em` 当前保持“未实现且无可接受候选”的状态。
+`stock_weak_pool_em` 当前已正式改写为 `retired / removed with reason`。
 
-当前不做两件事：
+原因是：
 
-- 不把它伪装成“已退役”
-- 不用近似功能替代来把任务勾掉
+1. 本地 AkShare 1.18.60 未提供 `stock_weak_pool_em` 同名函数
+2. 当前未找到可接受的官方同源候选
+3. 业务侧已明确决定不再承接弱势股池能力
 
-这意味着它仍是 gap，而不是已解决项。
+这意味着它不再作为 open gap 保留，也不再要求任何 runtime 工件。
 
-#### 1.2.1 Gap Closure Criteria
+#### 1.2.1 Re-entry Rule
 
-`stock_weak_pool_em` 只有在以下条件之一满足时，才应从当前 unresolved gap 状态退出：
+如果未来要重新引入 `stock_weak_pool_em`，应视为新的 capability re-entry，而不是恢复当前 retired 项。新的重新引入批次至少需要：
 
-1. 本地 AkShare 恢复了 `stock_weak_pool_em` 同名函数，且 gate 与 repo-truth 一起验证通过
-2. 找到语义足够接近、并经过单独 proposal / design / runtime 微批批准的新官方候选
-3. 业务侧明确决定弱势股池能力不再需要，此时才能把它改写为 retired / removed with reason
+1. 本地 AkShare 恢复同名函数，或出现经单独批准的新官方候选
+2. 业务侧重新确认弱势股池能力仍有需求
+3. gate、repo-truth、OpenSpec 和 runtime code 一起重新闭环
 
 ## Section 2. Change Surface And Delivery Order
 
@@ -134,19 +137,19 @@
 本设计稿只新增三类内容：
 
 1. advisory candidate 与 approved runtime mapping 的明确分层
-2. `Section 3.2` 中 retained candidate 的后续提升规则
-3. `Section 1.1` 和 `Section 1.2` 所述排除项 / unresolved gap 的明文说明
+2. `Section 3.2` 中 approved mapping 与 retired item 的统一库存
+3. `Section 1.1` 和 `Section 1.2` 所述排除项 / retired item 的明文说明
 
 ### 2.3 Recommended Delivery Order For Future Promotion
 
-如果未来真的启动实现微批，建议顺序固定为：
+历史上实际采用的实现微批顺序是：
 
 1. 先改 OpenSpec / repo-truth / gate 口径
 2. 再做 `stock_dt_pool_em`
 3. 再做 `stock_strong_pool_em`
 4. 再做 `stock_new_em`
 5. 再重新评估 `stock_news_main_em`
-6. 最后再处理 `stock_weak_pool_em` 是否仍需保留为 open gap
+6. 最后再把 `stock_weak_pool_em` 以 retired / removed with reason 收口
 
 排序依据明确如下：
 
@@ -154,28 +157,28 @@
 2. `strong` 排第二，因为仍属于同一家族，但比 `dt` 多出 `入选理由`、`是否新高`、`量比` 等扩展字段，归一化复杂度略高
 3. `new` 排第三，因为它引入 `转手率`、`开板日期`、`上市日期` 等次新语义字段，字段解释和前端消费差异最大
 
-这个顺序既保持了 `zt_pool` 家族的一致性，也避免在当前批次过早处理 `news_main_cx` 的 provider drift 风险。
+这个顺序既保持了 `zt_pool` 家族的一致性，也避免在早期批次过早处理 `news_main_cx` 的 provider drift 风险。
 
 ## Section 3. Gate Rules And Repo-Truth Semantics
 
 ### 3.1 Current Gate Truth
 
-当前 gate 语义保持 `435bc8f00` 的口径不变：
+当前 gate 语义已经从 `435bc8f00` 的 same-name baseline 扩展为：
 
-1. 先检查 OpenSpec 目标函数是否在本地 AkShare 中同名存在
-2. 如果不存在，可以输出邻近官方函数作为 `help_candidates`
-3. `help_candidates` 只用于人工排查和评估
-4. advisory candidate 不计入“已实现”
+1. `native`：OpenSpec 目标函数在本地 AkShare 中同名存在
+2. `mapped`：命中已批准的官方改名映射
+3. `retired`：业务已决定不再承接，且当前没有保留 runtime 工件
+4. `help_candidates` 仍只用于人工排查和评估，不自动变成 runtime approval
 
 ### 3.2 Current Candidate Inventory
 
 | Canonical target | Current local status | Advisory candidate | Current repo decision |
 | --- | --- | --- | --- |
 | `stock_news_main_em` | missing | `stock_news_main_cx` | excluded from current candidate set |
-| `stock_dt_pool_em` | missing | `stock_zt_pool_dtgc_em` | retain as manual evaluation candidate |
-| `stock_strong_pool_em` | missing | `stock_zt_pool_strong_em` | retain as manual evaluation candidate |
-| `stock_new_em` | missing | `stock_zt_pool_sub_new_em` | retain as manual evaluation candidate |
-| `stock_weak_pool_em` | missing | none | unresolved gap |
+| `stock_dt_pool_em` | mapped | `stock_zt_pool_dtgc_em` | approved runtime mapping |
+| `stock_strong_pool_em` | mapped | `stock_zt_pool_strong_em` | approved runtime mapping |
+| `stock_new_em` | mapped | `stock_zt_pool_sub_new_em` | approved runtime mapping |
+| `stock_weak_pool_em` | retired | none | retired / removed with reason |
 
 ### 3.3 Relationship To `PREFERRED_HELP_CANDIDATES`
 
@@ -439,14 +442,14 @@ openspec validate expand-akshare-data-sources --strict
   - remains open
   - excluded from current promotion set
 - `6.5 stock_dt_pool_em`
-  - may proceed in a later promotion micro-batch
+  - already closed as approved runtime mapping
 - `6.6 stock_strong_pool_em`
-  - may proceed in a later promotion micro-batch
+  - already closed as approved runtime mapping
 - `6.7 stock_weak_pool_em`
-  - remains an unresolved gap
-  - should not be rewritten as retired in the current batch
+  - retired / removed with reason
+  - should not retain registry / adapter / route / focused test artifacts
 - `6.9 stock_new_em`
-  - may proceed in a later promotion micro-batch
+  - already closed as approved runtime mapping
 
 `6.10`、`6.11`、`6.12`、`7.2`、`7.4`、`7.5`、`8.x` 这些下游任务，不能因为 advisory candidate 存在就提前闭合。
 
@@ -510,7 +513,7 @@ openspec validate expand-akshare-data-sources --strict
    - `stock_strong_pool_em -> stock_zt_pool_strong_em`
    - `stock_new_em -> stock_zt_pool_sub_new_em`
 5. `stock_news_main_em -> stock_news_main_cx` 当前继续排除在提升批次之外
-6. `stock_weak_pool_em` 当前仍是 no-candidate unresolved gap
+6. `stock_weak_pool_em` 当前已是 no-candidate retired item
 7. 未来如要提升任一候选，必须用单独微批同时更新 gate、repo-truth、runtime code 和 tests
 
 ## Next Step

@@ -413,3 +413,115 @@ def test_validate_akshare_market_repo_truth_accepts_new_pool_mapped_status(tmp_p
     assert payload["summary"]["violation_count"] == 0
     assert payload["functions"][0]["function_name"] == "stock_new_em"
     assert payload["functions"][0]["available"] is True
+
+
+def test_validate_akshare_market_repo_truth_accepts_weak_pool_retired_status(tmp_path: Path):
+    manifest = [
+        {
+            "task_id": "6.7",
+            "function_name": "stock_weak_pool_em",
+            "registry_key": "akshare_stock_weak_pool_em",
+            "adapter_method": "get_stock_weak_pool_em",
+            "route_fragment": "/stock/weak-pool/em",
+            "unit_test_token": "test_get_stock_weak_pool_em",
+            "backend_test_token": "/api/akshare/market/stock/weak-pool/em",
+            "api_test_token": "test_stock_weak_pool_em_endpoint",
+            "lifecycle": "retired",
+            "expected_resolution_status": "retired",
+        }
+    ]
+    availability = {
+        "module": "akshare",
+        "import_ok": True,
+        "functions": [
+            {
+                "name": "stock_weak_pool_em",
+                "available": False,
+                "target_available": False,
+                "resolution_status": "retired",
+                "retired_reason": "业务已决定不再承接该能力，且当前本地 akshare 无同名函数或已批准官方候选",
+            }
+        ],
+        "summary": {
+            "tracked_count": 1,
+            "available_count": 0,
+            "missing_count": 0,
+            "retired_count": 1,
+            "available_functions": [],
+            "missing_functions": [],
+            "retired_functions": ["stock_weak_pool_em"],
+        },
+    }
+
+    tasks_path = tmp_path / "tasks.md"
+    tasks_path.write_text("- [x] 6.7 下线弱势股池能力 (akshare.stock_weak_pool_em)\n", encoding="utf-8")
+
+    repo_truth_path = tmp_path / "repo_truth.md"
+    repo_truth_path.write_text(
+        "| 6.7 | `stock_weak_pool_em` | - | - | 已下线/上游移除（本地 akshare 无同名函数且无批准候选） |\n",
+        encoding="utf-8",
+    )
+
+    registry_path = tmp_path / "registry.yaml"
+    registry_path.write_text("", encoding="utf-8")
+
+    adapter_path = tmp_path / "stock_sentiment.py"
+    adapter_path.write_text("", encoding="utf-8")
+
+    route_path = tmp_path / "sentiment_monitor.py"
+    route_path.write_text("", encoding="utf-8")
+
+    unit_test_path = tmp_path / "unit_test.py"
+    unit_test_path.write_text("", encoding="utf-8")
+
+    backend_test_path = tmp_path / "backend_test.py"
+    backend_test_path.write_text("", encoding="utf-8")
+
+    api_test_path = tmp_path / "api_test.py"
+    api_test_path.write_text("", encoding="utf-8")
+
+    manifest_path = tmp_path / "manifest.json"
+    manifest_path.write_text(json.dumps(manifest, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    availability_path = tmp_path / "availability.json"
+    availability_path.write_text(json.dumps(availability, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+    output_path = tmp_path / "repo_truth_gate.json"
+    subprocess.run(
+        [
+            "python",
+            "scripts/dev/quality_gate/validate_akshare_market_repo_truth.py",
+            "--manifest-json",
+            str(manifest_path),
+            "--availability-report",
+            str(availability_path),
+            "--tasks-path",
+            str(tasks_path),
+            "--repo-truth-path",
+            str(repo_truth_path),
+            "--registry-path",
+            str(registry_path),
+            "--adapter-path",
+            str(adapter_path),
+            "--route-path",
+            str(route_path),
+            "--unit-test-path",
+            str(unit_test_path),
+            "--backend-test-path",
+            str(backend_test_path),
+            "--api-file-test-path",
+            str(api_test_path),
+            "--output",
+            str(output_path),
+        ],
+        cwd=Path(__file__).resolve().parents[3],
+        check=True,
+    )
+
+    payload = json.loads(output_path.read_text(encoding="utf-8"))
+    assert payload["pass"] is True
+    assert payload["summary"]["tracked_count"] == 1
+    assert payload["summary"]["violation_count"] == 0
+    assert payload["functions"][0]["function_name"] == "stock_weak_pool_em"
+    assert payload["functions"][0]["lifecycle"] == "retired"
+    assert payload["functions"][0]["resolution_status"] == "retired"

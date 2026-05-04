@@ -196,3 +196,31 @@ def test_collect_akshare_market_function_availability_marks_new_pool_as_mapped(m
     assert row["resolved_function"] == "stock_zt_pool_sub_new_em"
     assert payload["summary"]["available_count"] == 1
     assert payload["summary"]["missing_count"] == 0
+
+
+def test_collect_akshare_market_function_availability_marks_weak_pool_as_retired(monkeypatch):
+    class FakeModule:
+        __version__ = "test-version"
+
+    def fake_import(name: str):
+        assert name == "fake_akshare"
+        return FakeModule
+
+    monkeypatch.setattr("scripts.dev.quality_gate.collect_akshare_market_function_availability.importlib.import_module", fake_import)
+
+    payload, exit_code = collect_availability(
+        module_name="fake_akshare",
+        function_names=["stock_weak_pool_em"],
+    )
+
+    assert exit_code == 0
+    row = payload["functions"][0]
+    assert row["name"] == "stock_weak_pool_em"
+    assert row["available"] is False
+    assert row["target_available"] is False
+    assert row["resolution_status"] == "retired"
+    assert "不再承接" in row["retired_reason"]
+    assert payload["summary"]["available_count"] == 0
+    assert payload["summary"]["missing_count"] == 0
+    assert payload["summary"]["retired_count"] == 1
+    assert payload["summary"]["retired_functions"] == ["stock_weak_pool_em"]

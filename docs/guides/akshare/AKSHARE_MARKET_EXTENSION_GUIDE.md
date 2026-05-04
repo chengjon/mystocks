@@ -26,9 +26,12 @@
 当前仍未落地的第 6 节接口：
 
 - `stock_news_main_em`
+
+当前已退役的第 6 节条目：
+
 - `stock_weak_pool_em`
 
-除 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`、`stock_strong_pool_em -> stock_zt_pool_strong_em` 与 `stock_new_em -> stock_zt_pool_sub_new_em` 这三条已批准并落地的官方改名映射外，这些缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出可直接接受的实现，不能拿近似接口替代。
+除 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`、`stock_strong_pool_em -> stock_zt_pool_strong_em` 与 `stock_new_em -> stock_zt_pool_sub_new_em` 这三条已批准并落地的官方改名映射外，剩余缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出可直接接受的实现，不能拿近似接口替代。`stock_weak_pool_em` 则已基于业务决策与上游缺口正式收口为 retired item。
 
 ### 1.1 当前门禁快照
 
@@ -44,7 +47,8 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 - 本地 `akshare` 版本：`1.18.60`
 - 追踪函数总数：`9`
 - 当前可用：`7`
-- 当前缺失：`2`
+- 当前缺失：`1`
+- 当前已退役：`1`
 - repo-truth violation：`0`
 - 统一门禁结果：`pass=true`
 
@@ -52,19 +56,19 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 
 - `native`：同名函数直接可用
 - `mapped`：命中已批准的官方改名映射，当前包括 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`、`stock_strong_pool_em -> stock_zt_pool_strong_em` 与 `stock_new_em -> stock_zt_pool_sub_new_em`
+- `retired`：业务已决定不再承接，且当前本地 `akshare` 无同名函数或已批准官方候选
 - `missing`：既没有同名函数，也没有已批准映射
 
 当前 `summary.help_candidate_functions` 仍只保留尚未批准的人工评估线索：
 
 - `stock_news_main_em` -> `stock_news_main_cx`
-- `stock_weak_pool_em` -> 当前未发现同类候选
 
 额外已考虑但不映射到当前第 6 节条目的官方 pool 函数：
 
 - `stock_zt_pool_previous_em`：昨日涨停股池
 - `stock_zt_pool_zbgc_em`：炸板股池
 
-这些提示只用于“本地包里是否存在相近能力”的审计参考；除 `stock_dt_pool_em` 和 `stock_strong_pool_em` 外，不自动计为已实现。
+这些提示只用于“本地包里是否存在相近能力”的审计参考；除已批准映射项外，不自动计为已实现。
 
 ## 2. 当前入口分布
 
@@ -73,7 +77,7 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 - 聚合类：`src/adapters/akshare/market_adapter/adapter.py`
 - 情绪 / 监控类方法：`src/adapters/akshare/market_adapter/stock_sentiment.py`
 
-本轮新增 / 当前推荐关注的 6 个方法是：
+本轮新增 / 当前推荐关注的 7 个方法是：
 
 - `get_stock_hot_follow_xq(symbol="最热门")`
 - `get_stock_board_change_em()`
@@ -117,6 +121,8 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 其中 availability 报告新增可读字段：
 
 - `functions[].help_candidates`
+- `functions[].resolution_status`
+- `summary.retired_functions`
 - `summary.help_candidate_functions`
 
 若只想拆分定位，再单独运行叶子脚本。MyStocks 这一侧只负责校验与审计，不自动生成业务代码，也不补第三方替代实现。

@@ -76,7 +76,7 @@
 > 当前 canonical truth 仍以 `435bc8f00` 落地的 same-name gate baseline 为起点；但本轮已单独批准并落地 `stock_dt_pool_em -> stock_zt_pool_dtgc_em` 的官方改名映射，因此 6.5 已转为完成状态。
 > 在此基础上，本轮继续批准并落地 `stock_strong_pool_em -> stock_zt_pool_strong_em` 的官方改名映射，因此 6.6 也已转为完成状态。
 > 本轮继续批准并落地 `stock_new_em -> stock_zt_pool_sub_new_em` 的官方改名映射，因此 6.9 已转为完成状态。
-> 当前本地 `akshare` 环境仍未检出 `stock_news_main_em`、`stock_weak_pool_em` 的可接受实现；`help_candidates` 对这些条目仍只作为人工评估线索，不自动计为实现完成。
+> 当前本地 `akshare` 环境仍未检出 `stock_news_main_em` 的可接受实现；`stock_weak_pool_em` 已基于业务决策与上游缺口正式改写为 retired item，不再作为待实现 runtime 能力保留。
 
 - [x] 6.1 实现股票热度数据 (akshare.stock_hot_follow_xq)
 - [x] 6.2 实现板块异动详情 (akshare.stock_board_change_em)
@@ -84,8 +84,9 @@
 - [x] 6.4 实现涨停板行情 (akshare.stock_zt_pool_em)
 - [x] 6.5 实现跌停板行情 (akshare.stock_dt_pool_em)
 - [x] 6.6 实现强势股池 (akshare.stock_strong_pool_em)
-- [ ] 6.7 实现弱势股池 (akshare.stock_weak_pool_em)
-  - Gap closure criteria：仅当本地 AkShare 恢复同名函数、或找到经单独批准的新官方候选、或业务明确决定下线该能力时，才允许退出当前 unresolved gap 状态
+- [x] 6.7 下线弱势股池能力 (akshare.stock_weak_pool_em)
+  - Repo-truth：当前以 retired / removed with reason 收口，状态为 `已下线/上游移除`
+  - Runtime boundary：registry / adapter / route / focused tests 均不得保留 `stock_weak_pool_em` 工件
 - [x] 6.8 实现盘口异动 (akshare.stock_changes_em)
 - [x] 6.9 实现次新股池 (akshare.stock_new_em)
   - Repo-truth：canonical 名称保持 `stock_new_em`，运行时映射到本地 `stock_zt_pool_sub_new_em`
@@ -93,8 +94,8 @@
 - [ ] 6.10 添加行情和情绪数据到数据源配置注册表
 - [ ] 6.11 创建行情和情绪数据的API端点
 - [ ] 6.12 编写行情和情绪数据的单元测试
-  - [ ] Repo-truth：当前 registry / API / focused tests 已闭合 6.1 / 6.2 / 6.4 / 6.5 / 6.6 / 6.8 / 6.9；在 6.3 / 6.7 仍未实现前，不将本节统一收口任务勾选完成。
-  - [ ] Scope remainder：`6.3` 维持 excluded，`6.7` 维持 unresolved gap，直到另有单独批准
+  - [ ] Repo-truth：当前 registry / API / focused tests 已闭合 6.1 / 6.2 / 6.4 / 6.5 / 6.6 / 6.7 / 6.8 / 6.9；在 6.3 仍未实现前，不将本节统一收口任务勾选完成。
+  - [ ] Scope remainder：`6.3` 维持 excluded；`6.7` 已正式 retired，不再作为 open gap 保留
 
 ## 7. 系统集成和优化
 > **仓库事实校对（2026-04-27）**:

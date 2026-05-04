@@ -97,6 +97,8 @@ DEFAULT_MANIFEST = [
         "unit_test_token": "test_get_stock_weak_pool_em",
         "backend_test_token": "/api/akshare/market/stock/weak-pool/em",
         "api_test_token": "test_stock_weak_pool_em_endpoint",
+        "lifecycle": "retired",
+        "expected_resolution_status": "retired",
     },
     {
         "task_id": "6.8",
@@ -164,13 +166,12 @@ def parse_repo_truth_rows(text: str) -> dict[str, dict[str, str]]:
     return rows
 
 
-def build_availability_index(payload: dict[str, Any]) -> dict[str, bool]:
-    index: dict[str, bool] = {}
+def build_availability_index(payload: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    index: dict[str, dict[str, Any]] = {}
     for item in payload.get("functions", []):
         name = item.get("name")
-        available = item.get("available")
-        if isinstance(name, str) and isinstance(available, bool):
-            index[name] = available
+        if isinstance(name, str) and isinstance(item, dict):
+            index[name] = item
     return index
 
 
@@ -184,7 +185,7 @@ def resolve_path(path: Path) -> Path:
 
 def validate_function(
     item: dict[str, str],
-    availability: dict[str, bool],
+    availability: dict[str, dict[str, Any]],
     task_checks: dict[str, bool],
     repo_truth_rows: dict[str, dict[str, str]],
     registry_text: str,
@@ -196,17 +197,46 @@ def validate_function(
 ) -> dict[str, Any]:
     function_name = item["function_name"]
     task_id = item["task_id"]
-    available = availability.get(function_name)
+    lifecycle = item.get("lifecycle", "active")
+    availability_row = availability.get(function_name)
     violations: list[dict[str, str]] = []
-    if available is None:
+    if availability_row is None:
         violations.append({"kind": "availability", "message": f"availability report missing function {function_name}"})
         available = False
+        resolution_status = None
+    else:
+        available = bool(availability_row.get("available"))
+        resolution_status = availability_row.get("resolution_status")
+
+    if lifecycle == "retired":
+        expected_task_checked = True
+        expected_status_fragment = "已下线/上游移除"
+        artifact_expectation = False
+        if available:
+            violations.append({"kind": "availability", "message": f"retired function {function_name} unexpectedly reported available"})
+        expected_resolution_status = item.get("expected_resolution_status")
+        if expected_resolution_status is not None and resolution_status != expected_resolution_status:
+            violations.append(
+                {
+                    "kind": "availability",
+                    "message": f"resolution_status for retired function {function_name} is '{resolution_status}', expected '{expected_resolution_status}'",
+                }
+            )
+    else:
+        expected_task_checked = available
+        expected_status_fragment = "已实现" if available else "未检出同名函数"
+        artifact_expectation = available
 
     task_checked = task_checks.get(task_id)
     if task_checked is None:
         violations.append({"kind": "openspec", "message": f"OpenSpec task {task_id} not found"})
-    elif task_checked != available:
-        violations.append({"kind": "openspec", "message": f"OpenSpec task {task_id} checked={task_checked} expected={available}"})
+    elif task_checked != expected_task_checked:
+        violations.append(
+            {
+                "kind": "openspec",
+                "message": f"OpenSpec task {task_id} checked={task_checked} expected={expected_task_checked}",
+            }
+        )
 
     repo_truth_row = repo_truth_rows.get(function_name)
     if repo_truth_row is None:
@@ -214,7 +244,6 @@ def validate_function(
         repo_truth_status = None
     else:
         repo_truth_status = repo_truth_row["status"]
-        expected_status_fragment = "已实现" if available else "未检出同名函数"
         if expected_status_fragment not in repo_truth_status:
             violations.append(
                 {
@@ -223,7 +252,6 @@ def validate_function(
                 }
             )
 
-    artifact_expectation = available
     artifact_states = {
         "registry": item["registry_key"] in registry_text,
         "adapter": item["adapter_method"] in adapter_text,
@@ -244,7 +272,9 @@ def validate_function(
     return {
         "task_id": task_id,
         "function_name": function_name,
+        "lifecycle": lifecycle,
         "available": available,
+        "resolution_status": resolution_status,
         "repo_truth_status": repo_truth_status,
         "task_checked": task_checked,
         "artifact_states": artifact_states,

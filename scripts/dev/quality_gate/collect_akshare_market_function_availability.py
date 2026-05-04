@@ -35,6 +35,9 @@ APPROVED_RUNTIME_MAPPINGS = {
     "stock_strong_pool_em": ("stock_zt_pool_strong_em",),
     "stock_new_em": ("stock_zt_pool_sub_new_em",),
 }
+RETIRED_RUNTIME_TARGETS = {
+    "stock_weak_pool_em": "业务已决定不再承接该能力，且当前本地 akshare 无同名函数或已批准官方候选",
+}
 
 
 def _normalize_tokens(name: str) -> list[str]:
@@ -105,8 +108,10 @@ def collect_availability(module_name: str, function_names: list[str]) -> tuple[d
             "tracked_count": len(function_names),
             "available_count": 0,
             "missing_count": len(function_names),
+            "retired_count": 0,
             "available_functions": [],
             "missing_functions": function_names,
+            "retired_functions": [],
         }
         return payload, 1
 
@@ -116,6 +121,7 @@ def collect_availability(module_name: str, function_names: list[str]) -> tuple[d
     function_rows: list[dict[str, Any]] = []
     available_functions: list[str] = []
     missing_functions: list[str] = []
+    retired_functions: list[str] = []
     help_candidate_functions: dict[str, list[str]] = {}
     for name in function_names:
         target_available = hasattr(module, name)
@@ -125,6 +131,11 @@ def collect_availability(module_name: str, function_names: list[str]) -> tuple[d
             row["resolved_function"] = name
             row["resolution_status"] = "native"
             available_functions.append(name)
+        elif name in RETIRED_RUNTIME_TARGETS:
+            row["available"] = False
+            row["resolution_status"] = "retired"
+            row["retired_reason"] = RETIRED_RUNTIME_TARGETS[name]
+            retired_functions.append(name)
         else:
             help_candidates = _find_help_candidates(module, name)
             approved_mapping = next(
@@ -154,8 +165,10 @@ def collect_availability(module_name: str, function_names: list[str]) -> tuple[d
         "tracked_count": len(function_names),
         "available_count": len(available_functions),
         "missing_count": len(missing_functions),
+        "retired_count": len(retired_functions),
         "available_functions": available_functions,
         "missing_functions": missing_functions,
+        "retired_functions": retired_functions,
         "help_candidate_functions": help_candidate_functions,
     }
     return payload, 0

@@ -111,6 +111,7 @@ def test_run_akshare_market_gates_writes_all_reports(tmp_path: Path):
     assert summary_report["summary"]["tracked_count"] == 1
     assert summary_report["summary"]["available_count"] == 1
     assert summary_report["summary"]["missing_count"] == 0
+    assert summary_report["summary"]["retired_count"] == 0
     assert summary_report["summary"]["repo_truth_violation_count"] == 0
 
 

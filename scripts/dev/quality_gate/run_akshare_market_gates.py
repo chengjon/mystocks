@@ -128,6 +128,7 @@ def main() -> int:
             "tracked_count": availability_summary.get("tracked_count", repo_truth_summary.get("tracked_count", 0)),
             "available_count": availability_summary.get("available_count", 0),
             "missing_count": availability_summary.get("missing_count", 0),
+            "retired_count": availability_summary.get("retired_count", 0),
             "repo_truth_passed_count": repo_truth_summary.get("passed_count", 0),
             "repo_truth_failed_count": repo_truth_summary.get("failed_count", 0),
             "repo_truth_violation_count": repo_truth_summary.get("violation_count", len(repo_truth_payload.get("violations", []))),
