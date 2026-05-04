@@ -187,3 +187,55 @@ async def test_get_stock_dt_pool_em_normalizes_columns():
         "query_timestamp",
     } <= set(result.columns)
     assert result["query_date"].tolist() == ["20241011"]
+
+
+@pytest.mark.asyncio
+async def test_get_stock_strong_pool_em_normalizes_columns():
+    adapter = AkshareMarketDataAdapter()
+
+    with patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_zt_pool_strong_em", create=True) as mock_strong_pool:
+        mock_strong_pool.return_value = pd.DataFrame(
+            {
+                "序号": [1],
+                "代码": ["002594"],
+                "名称": ["比亚迪"],
+                "涨跌幅": [9.98],
+                "最新价": [268.12],
+                "涨停价": [268.12],
+                "成交额": [3560000000.0],
+                "流通市值": [712000000000.0],
+                "总市值": [780000000000.0],
+                "换手率": [4.8],
+                "涨速": [1.2],
+                "是否新高": ["是"],
+                "量比": [1.6],
+                "涨停统计": ["3/5"],
+                "入选理由": ["60日新高"],
+                "所属行业": ["汽车整车"],
+            }
+        )
+
+        result = await adapter.get_stock_strong_pool_em("20241011")
+
+    assert len(result) == 1
+    assert {
+        "sequence_no",
+        "symbol",
+        "stock_name",
+        "change_percent",
+        "latest_price",
+        "limit_up_price",
+        "turnover_amount",
+        "circulating_market_cap",
+        "total_market_cap",
+        "turnover_rate",
+        "change_speed",
+        "is_new_high",
+        "volume_ratio",
+        "limit_up_stats",
+        "selection_reason",
+        "industry",
+        "query_date",
+        "query_timestamp",
+    } <= set(result.columns)
+    assert result["query_date"].tolist() == ["20241011"]
