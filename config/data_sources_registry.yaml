@@ -1693,6 +1693,35 @@ data_sources:
       test_parameters:
         date: '20241011'
       update_frequency: realtime
+    akshare_stock_new_em:
+      call_method: function_call
+      classification_level: 1
+      data_category: REALTIME_QUOTES
+      data_classification: market_data
+      data_quality_score: 9.0
+      description: AKShare次新股池
+      endpoint_name: akshare.stock_new_em
+      parameters:
+        date:
+          description: 交易日
+          example: '20241011'
+          required: true
+          type: string
+      priority: medium
+      provider: akshare
+      remarks: 行情和情绪扩充接口，官方改名映射到 stock_zt_pool_sub_new_em
+      return_schema:
+        columns:
+        - sequence_no
+        - symbol
+        - stock_name
+        - change_percent
+        - latest_price
+      route_path: /api/akshare/market/stock/new/em
+      target_db: postgresql
+      test_parameters:
+        date: '20241011'
+      update_frequency: realtime
     akshare_stock_profit_forecast_em:
       call_method: function_call
       classification_level: 3

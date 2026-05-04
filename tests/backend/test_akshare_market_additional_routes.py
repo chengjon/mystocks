@@ -172,3 +172,30 @@ def test_stock_strong_pool_em_route_returns_success_payload():
     assert payload["data"]["count"] == 1
     assert payload["data"]["provider"] == "em"
     assert payload["data"]["data_type"] == "strong_pool"
+
+
+def test_stock_new_em_route_returns_success_payload():
+    df = pd.DataFrame(
+        {
+            "sequence_no": [1],
+            "symbol": ["001389"],
+            "stock_name": ["广合科技"],
+            "change_percent": [9.99],
+            "is_new_high": ["是"],
+            "query_date": ["20241011"],
+        }
+    )
+
+    with patch(
+        "app.api.akshare_market.sentiment_monitor.akshare_market_adapter.get_stock_new_em",
+        new=AsyncMock(return_value=df),
+    ):
+        response = client.get("/api/akshare/market/stock/new/em?date=20241011")
+
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["success"] is True
+    assert payload["data"]["date"] == "20241011"
+    assert payload["data"]["count"] == 1
+    assert payload["data"]["provider"] == "em"
+    assert payload["data"]["data_type"] == "new_pool"

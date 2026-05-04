@@ -101,11 +101,11 @@ def test_collect_akshare_market_function_availability_surfaces_help_candidates(m
     assert rows["stock_dt_pool_em"]["target_available"] is False
     assert rows["stock_dt_pool_em"]["resolution_status"] == "mapped"
     assert rows["stock_dt_pool_em"]["resolved_function"] == "stock_zt_pool_dtgc_em"
-    assert rows["stock_new_em"]["help_candidates"] == ["stock_zt_pool_sub_new_em"]
-    assert payload["summary"]["help_candidate_functions"] == {
-        "stock_news_main_em": ["stock_news_main_cx"],
-        "stock_new_em": ["stock_zt_pool_sub_new_em"],
-    }
+    assert rows["stock_new_em"]["available"] is True
+    assert rows["stock_new_em"]["target_available"] is False
+    assert rows["stock_new_em"]["resolution_status"] == "mapped"
+    assert rows["stock_new_em"]["resolved_function"] == "stock_zt_pool_sub_new_em"
+    assert payload["summary"]["help_candidate_functions"] == {"stock_news_main_em": ["stock_news_main_cx"]}
 
 
 def test_collect_akshare_market_function_availability_marks_dt_pool_as_mapped(monkeypatch):
@@ -164,5 +164,35 @@ def test_collect_akshare_market_function_availability_marks_strong_pool_as_mappe
     assert row["target_available"] is False
     assert row["resolution_status"] == "mapped"
     assert row["resolved_function"] == "stock_zt_pool_strong_em"
+    assert payload["summary"]["available_count"] == 1
+    assert payload["summary"]["missing_count"] == 0
+
+
+def test_collect_akshare_market_function_availability_marks_new_pool_as_mapped(monkeypatch):
+    class FakeModule:
+        __version__ = "test-version"
+
+        @staticmethod
+        def stock_zt_pool_sub_new_em(date: str = "20241011"):
+            return None
+
+    def fake_import(name: str):
+        assert name == "fake_akshare"
+        return FakeModule
+
+    monkeypatch.setattr("scripts.dev.quality_gate.collect_akshare_market_function_availability.importlib.import_module", fake_import)
+
+    payload, exit_code = collect_availability(
+        module_name="fake_akshare",
+        function_names=["stock_new_em"],
+    )
+
+    assert exit_code == 0
+    row = payload["functions"][0]
+    assert row["name"] == "stock_new_em"
+    assert row["available"] is True
+    assert row["target_available"] is False
+    assert row["resolution_status"] == "mapped"
+    assert row["resolved_function"] == "stock_zt_pool_sub_new_em"
     assert payload["summary"]["available_count"] == 1
     assert payload["summary"]["missing_count"] == 0

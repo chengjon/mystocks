@@ -211,6 +211,35 @@ STOCK_STRONG_POOL_EM_RESPONSES = {
 }
 
 
+STOCK_NEW_EM_RESPONSES = {
+    **_error_response_spec(
+        404,
+        "未找到次新股池数据",
+        {"success": False, "error_code": "DATA_NOT_FOUND", "message": "No new-pool data found for date 20241011"},
+    ),
+    **_error_response_spec(
+        500,
+        "次新股池查询失败",
+        {"success": False, "error_code": "INTERNAL_ERROR", "message": "Failed to get new-pool data for 20241011"},
+    ),
+    **_success_response_spec(
+        "次新股池数据",
+        {
+            "success": True,
+            "data": {
+                "date": "20241011",
+                "data": [{"sequence_no": 1, "symbol": "001389", "stock_name": "广合科技", "change_percent": 9.99}],
+                "count": 1,
+                "columns": ["sequence_no", "symbol", "stock_name", "change_percent"],
+                "source": "akshare",
+                "provider": "em",
+                "data_type": "new_pool",
+            },
+        },
+    ),
+}
+
+
 @router.get(
     "/stock/hot-follow/xq",
     summary="获取股票热度排行",
@@ -391,6 +420,53 @@ async def get_stock_strong_pool_em(
         return create_error_response(
             ErrorCodes.INTERNAL_ERROR,
             f"Failed to get strong-pool data for {date}: {str(e)}"
+        )
+
+
+@router.get(
+    "/stock/new/em",
+    summary="获取次新股池",
+    response_model=UnifiedResponse[Dict[str, Any]],
+    responses=STOCK_NEW_EM_RESPONSES,
+)
+async def get_stock_new_em(
+    date: str = Query(
+        ...,
+        description="交易日，格式 YYYYMMDD",
+        examples={"trading_day": {"summary": "交易日示例", "value": "20241011"}},
+    ),
+    current_user: User = Depends(get_current_user),
+):
+    """
+    获取次新股池 (akshare.stock_zt_pool_sub_new_em)
+
+    返回指定交易日的次新股池行情数据
+    """
+    try:
+        df = await akshare_market_adapter.get_stock_new_em(date)
+
+        if df.empty:
+            return create_error_response(
+                ErrorCodes.DATA_NOT_FOUND,
+                f"No new-pool data found for date {date}"
+            )
+
+        result = {
+            "date": date,
+            "data": df.to_dict("records"),
+            "count": len(df),
+            "columns": list(df.columns),
+            "source": "akshare",
+            "provider": "em",
+            "data_type": "new_pool",
+        }
+
+        return create_success_response(result)
+
+    except Exception as e:
+        return create_error_response(
+            ErrorCodes.INTERNAL_ERROR,
+            f"Failed to get new-pool data for {date}: {str(e)}"
         )
 
 

@@ -239,3 +239,55 @@ async def test_get_stock_strong_pool_em_normalizes_columns():
         "query_timestamp",
     } <= set(result.columns)
     assert result["query_date"].tolist() == ["20241011"]
+
+
+@pytest.mark.asyncio
+async def test_get_stock_new_em_normalizes_columns():
+    adapter = AkshareMarketDataAdapter()
+
+    with patch("src.adapters.akshare.market_adapter.stock_sentiment.ak.stock_zt_pool_sub_new_em", create=True) as mock_new_pool:
+        mock_new_pool.return_value = pd.DataFrame(
+            {
+                "序号": [1],
+                "代码": ["001389"],
+                "名称": ["广合科技"],
+                "涨跌幅": [9.99],
+                "最新价": [42.31],
+                "涨停价": [42.31],
+                "成交额": [1180000000.0],
+                "流通市值": [8600000000.0],
+                "总市值": [17200000000.0],
+                "转手率": [24.8],
+                "开板几日": [3],
+                "开板日期": ["2024-04-15"],
+                "上市日期": ["2024-04-02"],
+                "是否新高": ["是"],
+                "涨停统计": ["2/4"],
+                "所属行业": ["电子元件"],
+            }
+        )
+
+        result = await adapter.get_stock_new_em("20241011")
+
+    assert len(result) == 1
+    assert {
+        "sequence_no",
+        "symbol",
+        "stock_name",
+        "change_percent",
+        "latest_price",
+        "limit_up_price",
+        "turnover_amount",
+        "circulating_market_cap",
+        "total_market_cap",
+        "turnover_rate",
+        "open_board_days",
+        "open_board_date",
+        "listed_date",
+        "is_new_high",
+        "limit_up_stats",
+        "industry",
+        "query_date",
+        "query_timestamp",
+    } <= set(result.columns)
+    assert result["query_date"].tolist() == ["20241011"]

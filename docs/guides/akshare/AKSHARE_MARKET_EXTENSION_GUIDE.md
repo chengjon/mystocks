@@ -21,15 +21,14 @@
 - 第 3 节：资金流向
 - 第 4 节：预测和分析
 - 第 5 节：板块和行业
-- 第 6 节：已补齐 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_zt_pool_em`、`stock_dt_pool_em`、`stock_strong_pool_em`、`stock_changes_em`
+- 第 6 节：已补齐 `stock_hot_follow_xq`、`stock_board_change_em`、`stock_zt_pool_em`、`stock_dt_pool_em`、`stock_strong_pool_em`、`stock_changes_em`、`stock_new_em`
 
 当前仍未落地的第 6 节接口：
 
 - `stock_news_main_em`
 - `stock_weak_pool_em`
-- `stock_new_em`
 
-除 `stock_dt_pool_em -> stock_zt_pool_dtgc_em` 与 `stock_strong_pool_em -> stock_zt_pool_strong_em` 这两条已批准并落地的官方改名映射外，这些缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出可直接接受的实现，不能拿近似接口替代。
+除 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`、`stock_strong_pool_em -> stock_zt_pool_strong_em` 与 `stock_new_em -> stock_zt_pool_sub_new_em` 这三条已批准并落地的官方改名映射外，这些缺口当前不是“忘记接线”，而是本地 `akshare` 环境里未检出可直接接受的实现，不能拿近似接口替代。
 
 ### 1.1 当前门禁快照
 
@@ -44,21 +43,20 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 
 - 本地 `akshare` 版本：`1.18.60`
 - 追踪函数总数：`9`
-- 当前可用：`6`
-- 当前缺失：`3`
+- 当前可用：`7`
+- 当前缺失：`2`
 - repo-truth violation：`0`
 - 统一门禁结果：`pass=true`
 
 当前 availability 报告的分辨口径是：
 
 - `native`：同名函数直接可用
-- `mapped`：命中已批准的官方改名映射，当前包括 `stock_dt_pool_em -> stock_zt_pool_dtgc_em` 与 `stock_strong_pool_em -> stock_zt_pool_strong_em`
+- `mapped`：命中已批准的官方改名映射，当前包括 `stock_dt_pool_em -> stock_zt_pool_dtgc_em`、`stock_strong_pool_em -> stock_zt_pool_strong_em` 与 `stock_new_em -> stock_zt_pool_sub_new_em`
 - `missing`：既没有同名函数，也没有已批准映射
 
 当前 `summary.help_candidate_functions` 仍只保留尚未批准的人工评估线索：
 
 - `stock_news_main_em` -> `stock_news_main_cx`
-- `stock_new_em` -> `stock_zt_pool_sub_new_em`
 - `stock_weak_pool_em` -> 当前未发现同类候选
 
 额外已考虑但不映射到当前第 6 节条目的官方 pool 函数：
@@ -82,6 +80,7 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 - `get_stock_zt_pool_em(date)`
 - `get_stock_dt_pool_em(date)`
 - `get_stock_strong_pool_em(date)`
+- `get_stock_new_em(date)`
 - `get_stock_changes_em(symbol="大笔买入")`
 
 ### 2.2 API 路由入口
@@ -96,6 +95,7 @@ python scripts/dev/quality_gate/run_akshare_market_gates.py \
 - `GET /api/akshare/market/stock/zt-pool/em`
 - `GET /api/akshare/market/stock/dt-pool/em`
 - `GET /api/akshare/market/stock/strong-pool/em`
+- `GET /api/akshare/market/stock/new/em`
 - `GET /api/akshare/market/stock/changes/em`
 - `GET /api/akshare/market/board/change/em`
 
@@ -158,8 +158,6 @@ curl "http://localhost:8888/api/akshare/market/stock/dt-pool/em?date=20241011"
 
 该接口对外仍保持 canonical 名称 `stock_dt_pool_em`，内部映射到本地 `akshare.stock_zt_pool_dtgc_em(date=...)`。
 
-### 3.5 板块异动
-
 ### 3.5 强势股池
 
 ```bash
@@ -168,7 +166,15 @@ curl "http://localhost:8888/api/akshare/market/stock/strong-pool/em?date=2024101
 
 该接口对外仍保持 canonical 名称 `stock_strong_pool_em`，内部映射到本地 `akshare.stock_zt_pool_strong_em(date=...)`。
 
-### 3.6 板块异动
+### 3.6 次新股池
+
+```bash
+curl "http://localhost:8888/api/akshare/market/stock/new/em?date=20241011"
+```
+
+该接口对外仍保持 canonical 名称 `stock_new_em`，内部映射到本地 `akshare.stock_zt_pool_sub_new_em(date=...)`。
+
+### 3.7 板块异动
 
 ```bash
 curl "http://localhost:8888/api/akshare/market/board/change/em"
@@ -187,6 +193,7 @@ curl "http://localhost:8888/api/akshare/market/board/change/em"
 - `akshare_stock_zt_pool_em`: `realtime`
 - `akshare_stock_dt_pool_em`: `realtime`
 - `akshare_stock_strong_pool_em`: `realtime`
+- `akshare_stock_new_em`: `realtime`
 - `akshare_stock_changes_em`: `realtime`
 
 ### 4.2 缓存边界

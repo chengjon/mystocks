@@ -32,9 +32,10 @@ PY
 
 - 默认只实现本地可确认存在的同名函数
 - 仅当 gate 中存在已批准的官方改名映射时，才允许以 canonical 名称暴露运行时能力
-- 当前已批准映射有两条：
+- 当前已批准映射有三条：
   - `stock_dt_pool_em -> stock_zt_pool_dtgc_em`
   - `stock_strong_pool_em -> stock_zt_pool_strong_em`
+  - `stock_new_em -> stock_zt_pool_sub_new_em`
 - 除上述特例外，若同名函数不存在，不用相近函数替代并冒充完成
 
 标准入口优先使用 wrapper：
@@ -61,8 +62,8 @@ python scripts/dev/quality_gate/collect_akshare_market_function_availability.py 
 说明：
 
 - `help_candidate_functions` 只表示“当前本地 `akshare` 包里存在相近名字 / 相近语义的候选函数”
-- 它不能直接把 `stock_news_main_cx`、`stock_zt_pool_sub_new_em` 自动等价成 OpenSpec 里的缺失同名函数
-- `stock_zt_pool_dtgc_em` 与 `stock_zt_pool_strong_em` 现在是已批准映射，分别只对 `stock_dt_pool_em` 与 `stock_strong_pool_em` 生效；其余候选仍停留在 advisory 状态
+- 它不能直接把 `stock_news_main_cx` 自动等价成 OpenSpec 里的缺失同名函数
+- `stock_zt_pool_dtgc_em`、`stock_zt_pool_strong_em` 与 `stock_zt_pool_sub_new_em` 现在是已批准映射，分别只对 `stock_dt_pool_em`、`stock_strong_pool_em` 与 `stock_new_em` 生效；其余候选仍停留在 advisory 状态
 - 若要把其它候选从 advisory 升级为“接受官方改名函数”，必须单独走一批方案变更与门禁回写
 - `stock_zt_pool_previous_em`、`stock_zt_pool_zbgc_em` 属于已考虑的邻接 pool 能力，但当前 OpenSpec 第 6 节没有对应任务项
 

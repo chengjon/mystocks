@@ -33,6 +33,7 @@ PREFERRED_HELP_CANDIDATES = {
 APPROVED_RUNTIME_MAPPINGS = {
     "stock_dt_pool_em": ("stock_zt_pool_dtgc_em",),
     "stock_strong_pool_em": ("stock_zt_pool_strong_em",),
+    "stock_new_em": ("stock_zt_pool_sub_new_em",),
 }
 
 
