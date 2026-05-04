@@ -1,8 +1,22 @@
 from __future__ import annotations
 
+import importlib
+import sys
+
 import pytest
 
 from src.core.data_source.adaptive_rate_limiter import AdaptiveRateLimiter
+
+
+def test_adaptive_rate_limiter_import_does_not_eagerly_load_base_module():
+    sys.modules.pop("src.core.data_source.adaptive_rate_limiter", None)
+    sys.modules.pop("src.core.data_source.base", None)
+    sys.modules.pop("src.core.data_source", None)
+
+    module = importlib.import_module("src.core.data_source.adaptive_rate_limiter")
+
+    assert module.AdaptiveRateLimiter is not None
+    assert "src.core.data_source.base" not in sys.modules
 
 
 def test_initial_configuration_is_exposed():

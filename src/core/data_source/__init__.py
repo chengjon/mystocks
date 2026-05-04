@@ -14,7 +14,26 @@ Data Source Manager子模块
 - cache: LRUCache类
 """
 
-from src.core.data_source.base import DataSourceManagerV2
-from src.core.data_source.cache import LRUCache
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from src.core.data_source.base import DataSourceManagerV2
+    from src.core.data_source.cache import LRUCache
 
 __all__ = ["DataSourceManagerV2", "LRUCache"]
+
+
+def __getattr__(name: str) -> Any:
+    if name == "DataSourceManagerV2":
+        from src.core.data_source.base import DataSourceManagerV2
+
+        return DataSourceManagerV2
+
+    if name == "LRUCache":
+        from src.core.data_source.cache import LRUCache
+
+        return LRUCache
+
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
