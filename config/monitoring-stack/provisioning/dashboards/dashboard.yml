@@ -11,3 +11,12 @@ providers:
     allowUiUpdates: true
     options:
       path: /etc/grafana/provisioning/dashboards
+  - name: 'DataSourceMonitoring'
+    orgId: 1
+    folder: 'Data Source'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 10
+    allowUiUpdates: true
+    options:
+      path: /etc/grafana/grafana-dashboards

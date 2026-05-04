@@ -144,11 +144,12 @@
 > **说明**:
 > 上表刻意把 repo-local 能完成的前置校验与真正的外部验收分开。即使本清单第 2、3 节全部通过，也不能直接勾选这些项。
 >
-> **现场阻塞事实（2026-05-05）**:
-> - 本地 `docker start` 后，`mystocks-prometheus` 可在 `http://localhost:9090/-/ready` 返回 ready。
-> - 但现存 `mystocks-grafana` 是历史容器，`docker inspect` 显示宿主机 `PortBindings` 为空；容器内部健康接口仅在 `127.0.0.1:3002/api/health` 成功，因此 `http://localhost:3000` 目前不能作为验收入口。
-> - `http://localhost:9090/api/v1/targets` 当前显示 `mystocks-backend`、`mystocks-data-sources` 等 target 抓取的仍是 `host.docker.internal:8000/8001`，在当前 Linux + backend `8020` 环境下为 `down`。
-> - 因此 `6.11` / `8.5.2` 的下一步不是补 repo-local 测试，而是先修复 Grafana 可达性和 Prometheus scrape target 漂移。
+> **现场验通事实（2026-05-05）**:
+> - 当前监控栈已完成 live 修复：Prometheus 通过 compose `extra_hosts` 解析 `host.docker.internal`，backend scrape target 已对齐 `8020`，JSON health jobs 已从 active scrape 集合中移除，canonical dashboard `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json` 也已接入 Grafana provisioning。
+> - `src/monitoring/data_source_metrics.py:start_metrics_server()` 现已真正阻塞保活；同时 exporter 会把 `Info` metadata 中的 `NaN` 归一化为空字符串，因此 `http://localhost:8001/metrics` 不再返回 `500`。
+> - 实测 `curl http://localhost:9090/api/v1/targets` 显示 `mystocks-backend`、`mystocks-data-sources`、`node`、`prometheus`、`tempo-metrics` 为 `5/5 UP`。
+> - 实测 `curl -u admin:admin http://localhost:3301/api/search` 已可检索到 `uid=mystocks-data-sources` 的 `MyStocks 数据源监控仪表板`。
+> - 由于本机宿主环境已有外部进程占用 `3000`，本次 live 验收使用 `GRAFANA_PORT=3301` / `GRAFANA_ROOT_URL=http://localhost:3301` 的 host override；repo 默认 Grafana 配置仍保持 `3000`。
 
 ---
 

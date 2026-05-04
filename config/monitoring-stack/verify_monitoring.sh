@@ -3,6 +3,38 @@
 # 监控系统验证脚本
 # 验证Grafana数据源、Dashboard、Loki和Tempo功能
 
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ENV_FILE="$SCRIPT_DIR/.env.monitoring"
+
+if [ -f "$ENV_FILE" ]; then
+    while IFS='=' read -r key value; do
+        if [[ -z "$key" || "$key" =~ ^[[:space:]]*# ]]; then
+            continue
+        fi
+        if [ -z "${!key+x}" ]; then
+            export "$key=$value"
+        fi
+    done < "$ENV_FILE"
+fi
+
+GRAFANA_USER="${GRAFANA_ADMIN_USER:-admin}"
+GRAFANA_PASSWORD="${GRAFANA_ADMIN_PASSWORD:-admin}"
+GRAFANA_AUTH="${GRAFANA_USER}:${GRAFANA_PASSWORD}"
+PROMETHEUS_PORT="${PROMETHEUS_PORT:-9090}"
+GRAFANA_PORT="${GRAFANA_PORT:-3000}"
+LOKI_PORT="${LOKI_PORT:-3100}"
+TEMPO_PORT="${TEMPO_PORT:-3200}"
+NODE_EXPORTER_PORT="${NODE_EXPORTER_PORT:-9100}"
+PROMETHEUS_URL="http://localhost:${PROMETHEUS_PORT}"
+GRAFANA_URL="http://localhost:${GRAFANA_PORT}"
+LOKI_URL="http://localhost:${LOKI_PORT}"
+TEMPO_URL="http://localhost:${TEMPO_PORT}"
+NODE_EXPORTER_URL="http://localhost:${NODE_EXPORTER_PORT}"
+CANONICAL_DATASOURCE_DASHBOARD="$SCRIPT_DIR/grafana-dashboards/data_source_monitoring.json"
+PROVISIONED_DASHBOARD_DIR="$SCRIPT_DIR/provisioning/dashboards"
+
 echo "=================================="
 echo "MyStocks 监控系统验证"
 echo "=================================="
@@ -18,7 +50,7 @@ NC='\033[0m' # No Color
 test_service() {
     local name=$1
     local url=$2
-    local auth=$3
+    local auth="${3:-}"
 
     echo -n "Testing $name... "
     if [ -z "$auth" ]; then
@@ -38,17 +70,17 @@ test_service() {
 
 echo "1. 服务健康检查"
 echo "----------------------------------------"
-test_service "Prometheus" "http://localhost:9090/-/ready"
-test_service "Grafana" "http://localhost:3000/api/health"
-test_service "Loki" "http://localhost:3100/ready"
-test_service "Tempo" "http://localhost:3200/ready"
-test_service "Node Exporter" "http://localhost:9100/metrics"
+test_service "Prometheus" "${PROMETHEUS_URL}/-/ready"
+test_service "Grafana" "${GRAFANA_URL}/api/health"
+test_service "Loki" "${LOKI_URL}/ready"
+test_service "Tempo" "${TEMPO_URL}/ready"
+test_service "Node Exporter" "${NODE_EXPORTER_URL}/metrics"
 echo ""
 
 echo "2. Grafana数据源验证"
 echo "----------------------------------------"
 echo "Checking Prometheus datasource..."
-ds_result=$(curl -s 'http://localhost:3000/api/datasources' --user admin:admin 2>&1)
+ds_result=$(curl -s "${GRAFANA_URL}/api/datasources" --user "$GRAFANA_AUTH" 2>&1)
 
 if echo "$ds_result" | grep -q "Prometheus"; then
     echo -e "${GREEN}✅ Prometheus datasource found${NC}"
@@ -74,7 +106,7 @@ echo "3. Grafana Dashboard验证"
 echo "----------------------------------------"
 echo "Checking for provisioned dashboards..."
 
-dashboard_list=$(curl -s 'http://localhost:3000/api/search' --user admin:admin 2>&1)
+dashboard_list=$(curl -s "${GRAFANA_URL}/api/search" --user "$GRAFANA_AUTH" 2>&1)
 
 if echo "$dashboard_list" | grep -q "GPU"; then
     echo -e "${GREEN}✅ GPU监控Dashboard已加载${NC}"
@@ -99,12 +131,18 @@ if echo "$dashboard_list" | grep -q "MyStocks"; then
 else
     echo -e "${RED}❌ MyStocks健康Dashboard未加载${NC}"
 fi
+
+if echo "$dashboard_list" | grep -q "MyStocks 数据源监控仪表板"; then
+    echo -e "${GREEN}✅ 数据源监控Dashboard已加载${NC}"
+else
+    echo -e "${RED}❌ 数据源监控Dashboard未加载${NC}"
+fi
 echo ""
 
 echo "4. Prometheus指标抓取验证"
 echo "----------------------------------------"
 echo "Checking scraped targets..."
-targets=$(curl -s http://localhost:9090/api/v1/targets)
+targets=$(curl -s "${PROMETHEUS_URL}/api/v1/targets")
 
 backend_status=$(echo "$targets" | grep -o '"job":"mystocks-backend"' | wc -l)
 node_exporter_status=$(echo "$targets" | grep -o '"job":"node"' | wc -l)
@@ -131,7 +169,7 @@ echo ""
 echo "5. Tempo追踪功能测试"
 echo "----------------------------------------"
 echo "Testing Tempo search API..."
-tempo_search=$(curl -s http://localhost:3200/api/search 2>&1)
+tempo_search=$(curl -s "${TEMPO_URL}/api/search" 2>&1)
 
 if echo "$tempo_search" | grep -q "traces"; then
     echo -e "${GREEN}✅ Tempo搜索API正常${NC}"
@@ -144,7 +182,7 @@ echo ""
 
 echo "6. Dashboard文件验证"
 echo "----------------------------------------"
-dashboard_dir="/opt/claude/mystocks_spec/monitoring-stack/provisioning/dashboards"
+dashboard_dir="$PROVISIONED_DASHBOARD_DIR"
 
 if [ -f "$dashboard_dir/gpu-monitoring-dashboard.json" ]; then
     echo -e "${GREEN}✅ GPU监控Dashboard文件存在${NC}"
@@ -163,6 +201,12 @@ if [ -f "$dashboard_dir/system-resource-dashboard.json" ]; then
 else
     echo -e "${RED}❌ 系统资源Dashboard文件不存在${NC}"
 fi
+
+if [ -f "$CANONICAL_DATASOURCE_DASHBOARD" ]; then
+    echo -e "${GREEN}✅ 数据源监控 canonical dashboard 文件存在${NC}"
+else
+    echo -e "${RED}❌ 数据源监控 canonical dashboard 文件不存在${NC}"
+fi
 echo ""
 
 echo "=================================="
@@ -170,17 +214,18 @@ echo "验证完成"
 echo "=================================="
 echo ""
 echo "访问地址:"
-echo "  - Prometheus: http://localhost:9090"
-echo "  - Grafana:   http://localhost:3000 (admin/admin)"
-echo "  - Loki:      http://localhost:3100"
-echo "  - Tempo:     http://localhost:3200"
+echo "  - Prometheus: ${PROMETHEUS_URL}"
+echo "  - Grafana:   ${GRAFANA_URL} (${GRAFANA_USER}/******)"
+echo "  - Loki:      ${LOKI_URL}"
+echo "  - Tempo:     ${TEMPO_URL}"
 echo ""
 echo "手动导入Dashboard (如需):"
-echo "  1. 访问 http://localhost:3000"
-echo "  2. 登录 (admin/admin)"
+echo "  1. 访问 ${GRAFANA_URL}"
+echo "  2. 登录 (${GRAFANA_USER}/******)"
 echo "  3. 进入 Dashboards -> Import"
 echo "  4. 上传以下JSON文件:"
 echo "     - $dashboard_dir/gpu-monitoring-dashboard.json"
 echo "     - $dashboard_dir/api-performance-dashboard.json"
 echo "     - $dashboard_dir/system-resource-dashboard.json"
+echo "     - $CANONICAL_DATASOURCE_DASHBOARD"
 echo ""

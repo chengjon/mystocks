@@ -30,6 +30,8 @@ services:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./config/rules:/etc/prometheus/rules:ro
       - /data/docker/prometheus:/prometheus
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
@@ -64,7 +66,9 @@ services:
       - GF_LOG_LEVEL=${GRAFANA_LOG_LEVEL:-info}
     volumes:
       - /data/docker/grafana:/var/lib/grafana
-      - ./provisioning:/etc/grafana/provisioning:ro
+      - ./provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana-dashboards:/etc/grafana/grafana-dashboards:ro
     networks:
       - mystocks-monitoring
     depends_on:

@@ -26,10 +26,21 @@
 """
 
 import logging
+import math
+import time
 
 from prometheus_client import Counter, Gauge, Histogram, Info, start_http_server
 
 logger = logging.getLogger(__name__)
+
+
+def _normalize_info_value(value) -> str:
+    """将 Info metric 元数据归一化为 Prometheus 可安全编码的字符串值。"""
+    if value is None:
+        return ""
+    if isinstance(value, float) and math.isnan(value):
+        return ""
+    return str(value)
 
 # ============================================================================
 # 定义数据源监控指标
@@ -129,15 +140,15 @@ class DataSourceMetricsExporter:
 
         # 初始化info（元数据）
         info_data = {
-            "data_category": data_category,
-            "source_type": metadata.get("source_type", ""),
-            "classification_level": str(metadata.get("classification_level", "")),
-            "target_db": metadata.get("target_db", ""),
-            "table_name": metadata.get("table_name", ""),
-            "description": metadata.get("description", ""),
-            "version": metadata.get("version", "1.0"),
-            "priority": str(metadata.get("priority", "")),
-            "status": metadata.get("status", "unknown"),
+            "data_category": _normalize_info_value(data_category),
+            "source_type": _normalize_info_value(metadata.get("source_type", "")),
+            "classification_level": _normalize_info_value(metadata.get("classification_level", "")),
+            "target_db": _normalize_info_value(metadata.get("target_db", "")),
+            "table_name": _normalize_info_value(metadata.get("table_name", "")),
+            "description": _normalize_info_value(metadata.get("description", "")),
+            "version": _normalize_info_value(metadata.get("version", "1.0")),
+            "priority": _normalize_info_value(metadata.get("priority", "")),
+            "status": _normalize_info_value(metadata.get("status", "unknown")),
         }
 
         data_source_info.labels(endpoint_name=endpoint_name, source_name=source_name).info(info_data)
@@ -154,7 +165,7 @@ class DataSourceMetricsExporter:
         data_source_total_calls.labels(endpoint_name=endpoint_name, source_name=source_name).set(0)
 
         self.initialized_sources.add(endpoint_name)
-        logger.info("初始化metrics: %(endpoint_name)s")
+        logger.info("初始化metrics: %s", endpoint_name)
 
     def update_call_metrics(
         self,
@@ -206,7 +217,7 @@ class DataSourceMetricsExporter:
                 endpoint_name=endpoint_name, source_name=source_name, data_category=data_category
             ).set(0)
 
-            logger.error("数据源调用失败: %(endpoint_name)s, 错误: %(error_msg)s")
+            logger.error("数据源调用失败: %s, 错误: %s", endpoint_name, error_msg)
 
     def update_health_metrics(
         self,
@@ -360,13 +371,15 @@ def start_metrics_server(port: int = 8001):
     """
     try:
         start_http_server(port)
-        logger.info("Prometheus metrics服务器已启动: http://localhost:%(port)s/metrics")
+        logger.info("Prometheus metrics服务器已启动: http://localhost:%s/metrics", port)
+        while True:
+            time.sleep(3600)
     except Exception:
-        logger.error("启动metrics服务器失败: %(e)s")
+        logger.exception("启动metrics服务器失败")
         raise
 
 
 if __name__ == "__main__":
     # 测试metrics服务器
-    print("启动Prometheus metrics测试服务器...")
+    logger.info("启动Prometheus metrics测试服务器...")
     start_metrics_server(8001)
