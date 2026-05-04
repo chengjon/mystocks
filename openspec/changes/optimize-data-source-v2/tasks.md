@@ -106,6 +106,11 @@
 > - `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_COST_ANALYSIS_2026-05-02.md` 明确保留“当前本地证据不能宣称 API 调用成本已降低 40%”的边界
 > - `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md` 已把 Phase 2 本地回归、benchmark 与监控前置检查整理为后续执行入口
 > 因此 `4.5.1`、`4.5.3`、`4.7` 现在可以按 repo-local 验收闭合；`4.5.2` 和 `4.3/4.4` 继续保留为部署/持续观测项。
+>
+> **剩余项分层（2026-05-05）**:
+> - `4.3` = 部署激活：需要真实测试环境灰度发布，不是 repo-local 改动或文档交付物
+> - `4.4` = live 观测：需要灰度环境里的连续监控数据
+> - `4.5.2` = ROI 验收：需要部署期真实成本样本，不可由本地 synthetic workload 替代
 
 - [x] 4.1 运行所有单元测试和并发测试
   - [x] Repo-truth（2026-05-02）：已通过 `pytest tests/unit/test_smart_cache.py tests/unit/test_circuit_breaker.py tests/unit/test_circuit_breaker_integration.py tests/unit/test_data_quality_validator.py tests/unit/test_gpu_validator_integration.py -q --no-cov -o log_cli=false -p no:tdd-guard -p no:timing` 验证当前 Phase 1 本地测试集，结果 `169 passed`。为使该套件可稳定完成，本次同时修复了 `src/core/data_source/circuit_breaker.py` 中 `get_stats() -> get_state()` 的非重入锁死锁、把 `tests/unit/test_data_quality_validator.py` 的异常成交量样本修正为真实满足“>10 倍均值”的数据形状，并补齐了 120 个参数化异常样本与 `GPUValidator` 的 100000 行大样本入口验证。
@@ -255,6 +260,11 @@
 > - `pytest tests/performance/test_batch_processor_throughput.py tests/performance/test_validate_monitoring_prometheus_references.py tests/performance/test_smart_router_ab_benchmark.py -q --no-cov --run-performance` -> `6 passed`
 > - `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PERFORMANCE_REPORT_2026-05-02.md` 当前已记录本地 `BatchProcessor` stub workload `speedup_x = 9.66x`
 > 上述证据足以关闭 repo-local 的 `8.1`、`8.2`、`8.5.1`、`8.5.3`、`8.5.5`；结合本地回归期间已实际修复并验证过的 Phase 2 问题，也足以关闭 `8.6`。仍不能替代的外部验收项集中在 `8.3/8.4/8.5.2/8.5.4/8.7`。
+>
+> **剩余项分层（2026-05-05）**:
+> - 部署激活：`8.3`、`8.7`
+> - live 观测 / 人工监屏：`8.4`、`8.5.2`、`8.5.4`
+> - 当前 repo-local 代码、测试、benchmark 与文档只能为这些项提供前置条件，不能直接构成完成证据
 
 - [x] 8.1 运行所有单元测试和集成测试
   - [x] Repo-truth（2026-05-05）：已通过 change-owned Phase 2 本地矩阵 `pytest tests/unit/test_smart_router.py tests/unit/test_smart_router_integration.py tests/unit/test_metrics.py tests/unit/test_data_source_metrics_integration.py src/governance/tests/test_fetcher_bridge.py tests/integration/test_batch_processing.py tests/unit/adapters/test_runtime_data_source_regressions.py -q --no-cov`，结果 `36 passed`。
@@ -341,6 +351,11 @@
 > - `pytest -c pytest.ini tests/unit/test_adaptive_rate_limiter.py tests/unit/test_governance/test_data_lineage_tracker.py tests/integration/test_data_lineage_tracker_integration.py tests/unit/test_governance/test_lineage.py tests/api/file_tests/test_data_lineage_api.py -q --no-cov` -> `42 passed`
 > - `AdaptiveRateLimiter` 额外补入了 `import src.core.data_source.adaptive_rate_limiter` 不再因包级 eager import 触发 `base.py` 的回归断言
 > 因此 `11.1`、`11.5.1`、`11.5.2`、`11.5.4` 现在可以按 repo-local 功能与测试证据闭合；结合本地验证期间已实际修复的问题，`11.6` 也可按 repo-local 口径闭合。仍未闭合的项集中在 `11.2/11.3/11.4/11.5.3` 这些 live deployment / availability / 99.9% SLA 验收。
+>
+> **剩余项分层（2026-05-05）**:
+> - 部署激活：`11.3`
+> - live availability / SLA 观测：`11.2`、`11.4`、`11.5.3`
+> - 当前 repo-local 组件测试无法单独证明 `99.9%` 可用性或生产恢复时间
 
 - [x] 11.1 运行所有单元测试和集成测试
   - [x] Repo-truth（2026-05-05）：已通过 `pytest -c pytest.ini tests/unit/test_adaptive_rate_limiter.py tests/unit/test_governance/test_data_lineage_tracker.py tests/integration/test_data_lineage_tracker_integration.py tests/unit/test_governance/test_lineage.py tests/api/file_tests/test_data_lineage_api.py -q --no-cov`，结果 `42 passed`。
@@ -378,6 +393,11 @@
 > - 面向外部发布的项目总结/经验教训已完成
 > - `openspec archive optimize-data-source-v2` 已执行
 > 因此 12.5-12.7 继续保持未完成。
+>
+> **剩余项分层（2026-05-05）**:
+> - 流程收尾：`12.5`
+> - 归档动作：`12.7`
+> - 这两项依赖前述部署 / live acceptance 证据齐备后再推进，不属于 repo-local 代码或文档实现缺口
 
 - [x] 12.1 完整的性能压测报告
   - [x] Repo-truth（2026-05-02）：已新增 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PERFORMANCE_REPORT_2026-05-02.md`，基于当前仓库可复跑的 repo-local benchmark 汇总 SmartCache、BatchProcessor、SmartRouter 与监控资产引用一致性的本地观测值，并明确区分 synthetic / stub workload 结论与尚未完成的灰度 / 生产验收。
