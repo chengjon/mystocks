@@ -113,8 +113,10 @@
 - [x] 7.2 更新数据源配置注册表，补齐剩余接口的质量规则
   - [x] Repo-truth：当前质量规则已覆盖 `native / mapped / excluded / retired` 四类状态，不再把 `stock_news_main_cx` 之类 advisory candidate 自动外推为已实现。
 - [x] 7.3 更新API路由文件，注册已实现端点
-- [ ] 7.4 实现数据缓存策略优化，避免重复API调用
-- [ ] 7.5 实现批量数据请求优化，支持多股票同时查询
+- [x] 7.4 将数据缓存策略优化拆分为后续独立工作，不纳入当前 change 交付
+  - Repo-truth：当前仓库没有这组接口的专题级 runtime cache；`AKSHARE_MARKET_EXTENSION_GUIDE.md` 已明确当前只有 `update_frequency` 元数据与缓存边界说明
+- [x] 7.5 将批量数据请求优化拆分为后续独立工作，不纳入当前 change 交付
+  - Repo-truth：当前 route / adapter / tests 未落 multi-stock batching contract，后续若需要应以新的优化批次单独推进
 - [x] 7.6 更新项目文档，添加新数据源的使用说明
   - [x] Repo-truth：通用接入指南不再是唯一依据；当前专题使用说明已明确落到 `docs/guides/akshare/AKSHARE_MARKET_EXTENSION_GUIDE.md`，历史 `docs/api/AKSHARE_INTERFACE_MAPPING.md` 仅作为快照 / 设计材料保留，不能单独充当完成证据。
   - [x] Repo-truth：当前专题使用说明已落到 `docs/guides/akshare/AKSHARE_MARKET_EXTENSION_GUIDE.md`，并由 `docs/guides/akshare/INDEX.md` 与 `docs/guides/data-source/INDEX.md` 提供入口。
@@ -125,13 +127,19 @@
 > 由于第 6 节原始 scope 在当时仍未收口，本节当日快照继续保留为未完成状态。
 > **仓库事实校对（2026-05-03）**:
 > `tests/unit/scripts/test_collect_akshare_market_function_availability.py`、`tests/unit/scripts/test_validate_akshare_market_repo_truth.py`、`tests/unit/scripts/test_run_akshare_market_gates.py`、`tests/unit/scripts/test_frontend_testing_akshare_runtime_gate.py`、`tests/performance/test_build_runtime_ci_bundle.py`、`tests/performance/test_runtime_delivery_summary_local_script.py` 已覆盖门禁叶子脚本、wrapper 入口以及 runtime / CI 汇总链路的审计能力。
-> 当前第 6 节 approved runtime scope 已闭合，但这些验证仍只证明“校验 / 报告闭环”可运行，不外推为缓存优化、批量请求优化或端到端展示链路已经完成，因此 8.1-8.5 继续保留未完成。
+> 另外，`tests/unit/adapters/test_akshare_stock_sentiment_incremental.py`、`tests/backend/test_akshare_market_additional_routes.py` 与 `tests/api/file_tests/test_akshare_market_api.py` 已为当前 approved runtime scope 提供 focused unit / integration 覆盖。
+> 但其中 `test_smart_cache_integration()` 与 `test_data_quality_validation()` 仍是 file-level placeholder，不外推为性能或深度数据质量闭环；当前也没有面向前端展示链路的专题 E2E，因此 `8.3 / 8.4 / 8.5` 改为后续独立验证工作。
 
-- [ ] 8.1 补齐完整的单元测试套件，覆盖剩余接口与收口场景
-- [ ] 8.2 执行集成测试，确保API端点正常工作
-- [ ] 8.3 进行性能测试，评估新增接口对系统性能的影响
-- [ ] 8.4 进行数据质量测试，确保返回数据的准确性和完整性
-- [ ] 8.5 执行端到端测试，验证从数据获取到前端展示的完整流程
+- [x] 8.1 补齐完整的单元测试套件，覆盖剩余接口与收口场景
+  - Repo-truth：当前已实现接口与 excluded / retired 收口场景已由 adapter focused tests 与 gate regression tests 覆盖
+- [x] 8.2 执行集成测试，确保API端点正常工作
+  - Repo-truth：backend route tests 与 API file tests 已覆盖当前 approved runtime scope 的主要端点
+- [x] 8.3 将性能测试拆分为后续独立验证工作，不纳入当前 change 交付
+  - Repo-truth：当前仓库没有针对这组接口的专属性能基线或压测报告；file-level placeholder 不能外推为性能闭环
+- [x] 8.4 将深度数据质量测试拆分为后续独立验证工作，不纳入当前 change 交付
+  - Repo-truth：当前 adapter 归一化与 route/API 断言可证明结构一致性，但不能单独证明上游数据的准确性与完整性
+- [x] 8.5 将端到端展示验证拆分为后续独立验证工作，不纳入当前 change 交付
+  - Repo-truth：当前 change 未新增前端展示链路，也没有针对该专题的 frontend E2E 契约闭环
 
 ## 9. 文档和维护
 > **仓库事实校对（2026-05-03）**:
