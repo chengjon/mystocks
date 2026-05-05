@@ -53,6 +53,16 @@ SLOW_REQUESTS = Counter(
 
 APP_INFO = Info("mystocks_app", "MyStocks Application Information")
 
+CANONICAL_DATASOURCE_HELP_MARKERS = (
+    b"# HELP datasource_api_latency_seconds ",
+    b"# HELP datasource_api_calls_total ",
+    b"# HELP datasource_data_quality ",
+    b"# HELP datasource_cache_hits_total ",
+    b"# HELP datasource_cache_misses_total ",
+    b"# HELP datasource_circuit_breaker_state ",
+    b"# HELP datasource_api_cost_estimated ",
+)
+
 
 def _merge_prometheus_payloads(*payloads: bytes) -> bytes:
     """Merge multiple Prometheus exposition payloads into one response body."""
@@ -61,6 +71,11 @@ def _merge_prometheus_payloads(*payloads: bytes) -> bytes:
         return b""
 
     return b"\n".join(non_empty_payloads) + b"\n"
+
+
+def _contains_canonical_datasource_metrics(payload: bytes) -> bool:
+    """Check whether the runtime payload already includes canonical data source metrics."""
+    return any(marker in payload for marker in CANONICAL_DATASOURCE_HELP_MARKERS)
 
 
 def get_endpoint_name(path: str) -> str:
@@ -212,7 +227,7 @@ def metrics_endpoint() -> Response:
         from src.core.data_source.metrics import get_metrics
 
         datasource_payload = get_metrics().generate_metrics()
-        if datasource_payload and b"datasource_" not in runtime_payload:
+        if datasource_payload and not _contains_canonical_datasource_metrics(runtime_payload):
             runtime_payload = _merge_prometheus_payloads(runtime_payload, datasource_payload)
     except Exception:
         logger.exception("Failed to merge canonical data source metrics into runtime /metrics payload")

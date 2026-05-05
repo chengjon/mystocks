@@ -8,7 +8,7 @@
 
 
 > **版本**: v2.0（当前仓库实现对齐）
-> **最后更新**: 2026-05-01
+> **最后更新**: 2026-05-05
 > **相关组件**: DataSourceManagerV2, FastAPI `/metrics`, `src/core/data_source/metrics.py`, `src/monitoring/data_source_metrics.py`
 
 ---
@@ -46,6 +46,8 @@
 > - backend `web/backend/app/core/middleware/performance.py:metrics_endpoint()` 现已在运行时 `/metrics` 响应中合并 `src.core.data_source.metrics.get_metrics().generate_metrics()` 的 canonical `datasource_*` payload，不再只暴露 performance middleware 的全局 `REGISTRY`。
 > - 因此，只要当前 backend 进程内确实发生了 `DataSourceManagerV2` 调用，Prometheus 抓取 `http://localhost:8020/metrics` 时就可以看到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total` 等时间序列。
 > - backend `web/backend/app/api/data_source_registry.py:test_data_source()` 仍保留 direct handler 形态，但 `src/core/data_source_handlers_v2.py` 现已补入 compatibility `get_handler()` 工厂与轻量 instrumentation proxy；因此在具备合法认证的环境里，`POST /api/v1/data-sources/{endpoint_name}/test` 现在也能记录 canonical `datasource_*` 样本，而不需要继续修改该超大路由文件。
+> - `metrics_endpoint()` 的 merge guard 现已从宽泛的 `b"datasource_"` substring 判定收紧为 canonical help marker 检测，避免 `mystocks_datasource_availability` 这类非 canonical 指标误伤合并逻辑。
+> - 隔离运行态验证已通过：在临时 backend `http://127.0.0.1:8120` 上，先获取 CSRF token，再执行 `POST /api/v1/data-sources/mock.daily_kline/test`，随后 `GET /metrics` 已能返回 `datasource_api_latency_seconds` 与 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}` 样本；这证明“manual test route -> runtime /metrics” 链路当前在 repo-local 运行态下已打通。
 > - 这项修复解决的是“canonical metrics 能否被 runtime 暴露”的 repo-local 接线问题，不等同于 `8.4 / 8.5.4` 所要求的真实灰度窗口监控样本。
 
 ---
@@ -112,6 +114,18 @@ curl http://localhost:8020/metrics | rg "http_request|slow_http_requests|datasou
 当前 repo-truth 下，runtime `/metrics` 已经会合并 `src/core/data_source/metrics.py` 的 canonical registry；因此只要 backend 进程里产生过真实数据源调用，这里就应该看到 `datasource_*` 指标。若暂时看不到，优先判断的是“是否尚未产生对应数据源流量”，而不是“runtime 一定没接这组 metrics”。
 
 在需要本地手动触发这组流量时，当前仓库里可直接复用 `POST /api/v1/data-sources/{endpoint_name}/test`。这条路由虽然仍走 handler factory，但其兼容工厂已经补上 canonical metrics instrumentation，因此也会把 `datasource_*` 指标打进 runtime `/metrics`。
+
+若要复现实测最小链路，当前仓库已验证下面这组命令在隔离 backend `8120` 上成立：
+
+```bash
+curl http://127.0.0.1:8120/api/csrf-token
+curl -X POST http://127.0.0.1:8120/api/v1/data-sources/mock.daily_kline/test \
+  -H "Authorization: Bearer <jwt>" \
+  -H "X-CSRF-Token: <csrf>" \
+  -H "Content-Type: application/json" \
+  -d '{"test_params":{"symbol":"000001","start_date":"20240102","end_date":"20240103","period":"daily"}}'
+curl http://127.0.0.1:8120/metrics | rg "^datasource_|^# HELP datasource_|^# TYPE datasource_"
+```
 
 ### 路径 B：直接验证数据源局部 exposition（本地验证）
 

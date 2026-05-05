@@ -145,7 +145,7 @@
 > 上表刻意把 repo-local 能完成的前置校验与真正的外部验收分开。即使本清单第 2、3 节全部通过，也不能直接勾选这些项。
 >
 > **Repo-local 收口状态（2026-05-05）**:
-> 截至当前最新验证批次，`optimize-data-source-v2` 已没有剩余的“仅凭仓库内代码、测试、文档或本机运行环境即可继续合法闭合”的未完成项。当前未闭合的 OpenSpec task 已全部属于外部部署、live 观测、SLA/ROI 验收、会议纪要或归档动作。
+> 截至当前最新验证批次，`optimize-data-source-v2` 已没有剩余的“仅凭仓库内代码、测试、文档或本机运行环境即可继续合法闭合”的未完成项。2026-05-05 又额外收掉了一个 repo-local 监控接线缺口：`metrics_endpoint()` 之前用宽泛的 `b"datasource_"` substring 判定是否已存在 canonical metrics，遇到 `mystocks_datasource_availability` 会误跳过合并；现已改为 canonical help marker 检测，并用隔离 backend `8120` 实测 `POST /api/v1/data-sources/mock.daily_kline/test -> GET /metrics` 可返回 `datasource_api_calls_total` / `datasource_api_latency_seconds` 样本。当前未闭合的 OpenSpec task 仍全部属于外部部署、live 观测、SLA/ROI 验收、会议纪要或归档动作。
 >
 > **现场验通事实（2026-05-05）**:
 > - 当前监控栈已完成 live 修复：Prometheus 通过 compose `extra_hosts` 解析 `host.docker.internal`，backend scrape target 已对齐 `8020`，JSON health jobs 已从 active scrape 集合中移除，canonical dashboard `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json` 也已接入 Grafana provisioning。

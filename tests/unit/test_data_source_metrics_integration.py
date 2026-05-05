@@ -72,6 +72,30 @@ def test_backend_metrics_endpoint_includes_canonical_datasource_metrics(monkeypa
     assert 'endpoint="demo.endpoint"' in body
 
 
+def test_backend_metrics_endpoint_merges_canonical_metrics_even_with_runtime_datasource_prefix(monkeypatch):
+    from web.backend.app.core.middleware import performance
+    from src.core.data_source import metrics as metrics_module
+
+    metrics = DataSourceMetrics(registry=CollectorRegistry())
+    metrics.record_api_call("demo.endpoint", "DAILY_KLINE", latency=0.5, success=True)
+    monkeypatch.setattr(metrics_module, "_global_metrics", metrics)
+    monkeypatch.setattr(
+        performance,
+        "generate_latest",
+        lambda: (
+            b"# HELP mystocks_datasource_availability Data source availability (1=available, 0=unavailable)\n"
+            b"# TYPE mystocks_datasource_availability gauge\n"
+        ),
+    )
+
+    response = performance.metrics_endpoint()
+    body = response.body.decode("utf-8")
+
+    assert "mystocks_datasource_availability" in body
+    assert "datasource_api_calls_total" in body
+    assert 'endpoint="demo.endpoint"' in body
+
+
 @pytest.mark.asyncio
 async def test_manual_datasource_test_route_records_canonical_metrics(monkeypatch):
     backend_root = REPO_ROOT / "web" / "backend"
