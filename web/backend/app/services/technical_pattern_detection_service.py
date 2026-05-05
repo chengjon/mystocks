@@ -10,7 +10,7 @@ from typing import Any
 
 import pandas as pd
 
-from app.api._technical_patterns_models import PatternAnchorPoint, PatternDetection
+from app.api._technical_patterns_models import GapZone, PatternAnchorPoint, PatternDetection
 from app.services.data_source_factory import DataSourceFactory
 
 
@@ -57,10 +57,19 @@ class TechnicalPatternDetectionService:
                 pattern_name=finding.pattern_name,
                 direction=finding.direction,
                 confidence=finding.confidence,
-                anchor_points=[
+                anchor_points=[] if finding.gap_zone is not None else [
                     PatternAnchorPoint(role=point.role, timestamp=point.timestamp, value=point.value)
                     for point in finding.anchor_points
                 ],
+                gap_side=finding.gap_side,
+                gap_fill_status=finding.gap_fill_status,
+                gap_zone=GapZone(
+                    start_timestamp=finding.gap_zone.start_timestamp,
+                    end_timestamp=finding.gap_zone.end_timestamp,
+                    upper_value=finding.gap_zone.upper_value,
+                    lower_value=finding.gap_zone.lower_value,
+                    filled_at=finding.gap_zone.filled_at,
+                ) if finding.gap_zone is not None else None,
             )
             for finding in findings
         ]
