@@ -50,6 +50,7 @@
 > - 隔离运行态验证已通过：在临时 backend `http://127.0.0.1:8120` 上，先获取 CSRF token，再执行 `POST /api/v1/data-sources/mock.daily_kline/test`，随后 `GET /metrics` 已能返回 `datasource_api_latency_seconds` 与 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}` 样本；这证明“manual test route -> runtime /metrics” 链路当前在 repo-local 运行态下已打通。
 > - canonical PM2 运行态验证也已通过：重启 `mystocks-backend` 后，`http://localhost:8020/metrics` 已能直接暴露 `datasource_*` HELP/TYPE 头；再对 `http://localhost:8020/api/v1/data-sources/mock.daily_kline/test` 发起带 JWT + CSRF 的手动测试请求后，`http://localhost:8020/metrics` 已返回 `datasource_api_latency_seconds` 与 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}` 样本。
 > - 缓存命中 / 未命中样本的证据边界要单独看：`manual test route` 走的是 direct handler instrumentation，不会穿过 `DataSourceManagerV2` 的 endpoint-local cache，因此不能单靠这条路由证明 `datasource_cache_hits_total` / `datasource_cache_misses_total`。当前 repo-local proof 来自 manager-driven repeated call：`src/core/data_source/handler.py:_call_endpoint()` 现已生成稳定 cache key 并真正读写 `source["cache"]`，因此第二次同参调用会直接复用缓存并产出 `datasource_cache_hits_total{endpoint="demo.endpoint"} 1.0`；对应验证见 `tests/unit/test_data_source_metrics_integration.py::test_call_endpoint_cache_miss_then_hit_records_canonical_cache_metrics`、`::test_backend_metrics_endpoint_includes_cache_hit_and_miss_samples` 和本地 proof script。
+> - 当前 public-route inventory 也已经明确：`/api/v1/data-sources/{endpoint_name}/test` 是 direct handler instrumentation，`/backtest/*` 当前走 `DataService`，`/api/v1/strategy/backtest/run` 只负责落库并启动使用 mock timeseries 的后台任务；仓库内现有挂载的 HTTP 路由没有哪一条会自然穿过 `src/infrastructure/market_data/adapter.py:DataSourceV2Adapter` 或 `DataSourceManagerV2.get_stock_daily()/get_stock_realtime()` 这条 manager-path。因此，如果目标是“在 canonical PM2 public route 上看到 cache hit/miss 样本”，那已经不属于继续排查现有路径的问题，而是新的已审批行为变更。
 > - 这项修复解决的是“canonical metrics 能否被 runtime 暴露”的 repo-local 接线问题，不等同于 `8.4 / 8.5.4` 所要求的真实灰度窗口监控样本。
 
 ---
@@ -120,6 +121,15 @@ curl http://localhost:8020/metrics | rg "http_request|slow_http_requests|datasou
 在需要本地手动触发这组流量时，当前仓库里可直接复用 `POST /api/v1/data-sources/{endpoint_name}/test`。这条路由虽然仍走 handler factory，但其兼容工厂已经补上 canonical metrics instrumentation，因此也会把 `datasource_*` 指标打进 runtime `/metrics`。
 
 需要单独区分的是缓存指标：`POST /api/v1/data-sources/{endpoint_name}/test` 当前不会穿过 `DataSourceManagerV2` 的 endpoint-local cache，因此它适合证明 `datasource_api_latency_seconds` / `datasource_api_calls_total` / `datasource_api_cost_estimated` 主链，不适合单独证明 `datasource_cache_hits_total` / `datasource_cache_misses_total`。后者当前的 repo-local 最小 proof 是 repeated identical manager call，同一 endpoint 同一参数第一次 miss、第二次 hit。
+
+如果你的目标是拿到 **PM2 public-route live cache hit/miss proof**，先不要继续对现有 HTTP 路由做盲测。当前仓库的 route inventory 已经说明：
+- `POST /api/v1/data-sources/{endpoint_name}/test` 走 direct handler instrumentation
+- `/backtest/*` 走 `DataService`
+- `/api/v1/strategy/backtest/run` 走 `MyStocksUnifiedManager + mock timeseries background task`
+
+也就是说，现有挂载的 public routes 没有哪一条会自然经过 `DataSourceManagerV2` 的 endpoint-local cache。要拿到这类 PM2 live 样本，只剩两种合法路径：
+- 继续使用 manager-driven repo-local repeated-call proof 作为当前真相源
+- 发起新的已审批行为变更，把某个现有 public/admin route 收敛到 manager-path
 
 若要复现实测最小链路，当前仓库已验证下面这组命令在隔离 backend `8120` 上成立：
 

@@ -8,7 +8,7 @@
 > 本文件用于提供某一局部主题的使用方法、操作步骤、背景说明或参考材料，帮助理解仓库中的具体实践。
 > 其中的命令、路径、流程和示例应与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果一并核对，不应单独视为共享规则或当前状态的唯一事实来源。
 
-**最后更新**: 2026-05-02  
+**最后更新**: 2026-05-05
 **配套文档**:
 - [`DATA_SOURCE_OPERATIONS_MANUAL.md`](./DATA_SOURCE_OPERATIONS_MANUAL.md)
 - [`DATA_SOURCE_DEVELOPER_GUIDE.md`](./DATA_SOURCE_DEVELOPER_GUIDE.md)
@@ -146,7 +146,7 @@
 > 上表刻意把 repo-local 能完成的前置校验与真正的外部验收分开。即使本清单第 2、3 节全部通过，也不能直接勾选这些项。
 >
 > **Repo-local 收口状态（2026-05-05）**:
-> 截至当前最新验证批次，`optimize-data-source-v2` 已没有剩余的“仅凭仓库内代码、测试、文档或本机运行环境即可继续合法闭合”的未完成项。2026-05-05 额外收掉了两类 repo-local 监控接线缺口：一是 `metrics_endpoint()` 之前用宽泛的 `b"datasource_"` substring 判定是否已存在 canonical metrics，遇到 `mystocks_datasource_availability` 会误跳过合并；现已改为 canonical help marker 检测，并先用隔离 backend `8120`、后用 canonical PM2 backend `8020` 实测 `POST /api/v1/data-sources/mock.daily_kline/test -> GET /metrics` 可返回 `datasource_api_calls_total` / `datasource_api_latency_seconds` 样本。二是 `src/core/data_source/handler.py:_call_endpoint()` 虽然一直为 endpoint 挂了 `SmartCache/LRUCache`，但活跃 fetch 路径此前从未读写 `source["cache"]`，导致 `datasource_cache_hits_total` / `datasource_cache_misses_total` 只能暴露空 family；现已补入稳定 cache key、真实 cache lookup/store 与 hit/miss 计数，manager-driven repeated call 当前可产出 `datasource_cache_misses_total{endpoint="demo.endpoint"} 1.0` 与 `datasource_cache_hits_total{endpoint="demo.endpoint"} 1.0`，并由 `tests/unit/test_data_source_metrics_integration.py::test_call_endpoint_cache_miss_then_hit_records_canonical_cache_metrics`、`::test_backend_metrics_endpoint_includes_cache_hit_and_miss_samples` 与本地 proof script 锁定。当前未闭合的 OpenSpec task 仍全部属于外部部署、live 观测、SLA/ROI 验收、会议纪要或归档动作。
+> 截至当前最新验证批次，`optimize-data-source-v2` 已没有剩余的“仅凭仓库内代码、测试、文档或本机运行环境即可继续合法闭合”的未完成项。2026-05-05 额外收掉了两类 repo-local 监控接线缺口：一是 `metrics_endpoint()` 之前用宽泛的 `b"datasource_"` substring 判定是否已存在 canonical metrics，遇到 `mystocks_datasource_availability` 会误跳过合并；现已改为 canonical help marker 检测，并先用隔离 backend `8120`、后用 canonical PM2 backend `8020` 实测 `POST /api/v1/data-sources/mock.daily_kline/test -> GET /metrics` 可返回 `datasource_api_calls_total` / `datasource_api_latency_seconds` 样本。二是 `src/core/data_source/handler.py:_call_endpoint()` 虽然一直为 endpoint 挂了 `SmartCache/LRUCache`，但活跃 fetch 路径此前从未读写 `source["cache"]`，导致 `datasource_cache_hits_total` / `datasource_cache_misses_total` 只能暴露空 family；现已补入稳定 cache key、真实 cache lookup/store 与 hit/miss 计数，manager-driven repeated call 当前可产出 `datasource_cache_misses_total{endpoint="demo.endpoint"} 1.0` 与 `datasource_cache_hits_total{endpoint="demo.endpoint"} 1.0`，并由 `tests/unit/test_data_source_metrics_integration.py::test_call_endpoint_cache_miss_then_hit_records_canonical_cache_metrics`、`::test_backend_metrics_endpoint_includes_cache_hit_and_miss_samples` 与本地 proof script 锁定。进一步的 route inventory 复核还确认，当前 canonical PM2 public routes 中没有现成 HTTP 入口会自然经过 `DataSourceManagerV2` 的 endpoint-local cache：`/api/v1/data-sources/{endpoint_name}/test` 是 direct handler instrumentation，`/backtest/*` 走 `DataService`，`/api/v1/strategy/backtest/run` 走 `MyStocksUnifiedManager + mock timeseries background task`。因此 cache hit/miss 的 live PM2 public-route 证据若要继续推进，只能作为新的已审批行为变更处理；当前未闭合的 OpenSpec task 仍全部属于外部部署、live 观测、SLA/ROI 验收、会议纪要或归档动作。
 >
 > **现场验通事实（2026-05-05）**:
 > - 当前监控栈已完成 live 修复：Prometheus 通过 compose `extra_hosts` 解析 `host.docker.internal`，backend scrape target 已对齐 `8020`，JSON health jobs 已从 active scrape 集合中移除，canonical dashboard `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json` 也已接入 Grafana provisioning。
