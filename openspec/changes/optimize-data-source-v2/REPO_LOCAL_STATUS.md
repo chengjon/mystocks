@@ -18,6 +18,9 @@ It does not replace `proposal.md`, `design.md`, or `tasks.md`.
 
 As of `2026-05-05`, the **repo-local implementation scope is exhausted**.
 
+The current repo-local iteration is also **formally closed**.
+The closeout record is captured in `openspec/changes/optimize-data-source-v2/ITERATION_CLOSEOUT_2026-05-05.md`.
+
 What is already true inside the repository:
 
 1. OpenSpec change remains valid: `openspec validate optimize-data-source-v2 --strict`
@@ -64,6 +67,12 @@ Instead, the next valid moves are:
 2. collect live metric evidence
 3. update `tasks.md` only when those external acceptance conditions are truly satisfied
 4. archive the change only after the deployment-side checklist is complete
+
+## Iteration Closeout Anchor
+
+For the formal statement that this iteration is closed for repo-local work while external items remain open, see:
+
+`openspec/changes/optimize-data-source-v2/ITERATION_CLOSEOUT_2026-05-05.md`
 
 ## Validation Anchor
 
