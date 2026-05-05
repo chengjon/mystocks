@@ -9,6 +9,7 @@ from fastapi import APIRouter, HTTPException, Path, Query, status
 from app.api._technical_patterns_models import PatternDetection, PatternDetectionData, PatternPeriod
 from app.core.responses import UnifiedResponse
 from app.openapi_config import COMMON_RESPONSES
+from app.services.technical_pattern_detection_service import TechnicalPatternDetectionService
 
 router = APIRouter()
 SUPPORTED_PATTERN_PERIODS = get_args(PatternPeriod)
@@ -53,9 +54,17 @@ TECHNICAL_PATTERN_RESPONSES = {
 
 
 async def _detect_patterns_for_symbol(symbol: str, period: str) -> list[PatternDetection]:
-    """Task 1 keeps the reviewed route contract stable; Task 2 provides real detections."""
-    _ = (symbol, period)
-    return []
+    """Return reviewed pattern detections for the requested symbol and period."""
+    try:
+        service = TechnicalPatternDetectionService()
+        return await service.detect_for_symbol(symbol=symbol, period=period)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Pattern analysis unavailable: {exc}",
+        ) from exc
 
 
 def _normalize_pattern_period(period: str) -> str:
