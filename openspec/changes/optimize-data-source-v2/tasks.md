@@ -279,6 +279,7 @@
   - [x] Repo-truth（2026-05-05）：`pytest tests/performance/test_batch_processor_throughput.py tests/performance/test_validate_monitoring_prometheus_references.py tests/performance/test_smart_router_ab_benchmark.py -q --no-cov --run-performance` 结果 `6 passed`；配套本地报告 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PERFORMANCE_REPORT_2026-05-02.md` 当前记录 `BatchProcessor` 在 60-symbol stub workload 下 `speedup_x = 9.66x`，超过 `3-5x` 门槛。该证据仍仅代表 repo-local synthetic / stub workload，不等同于真实部署吞吐量验收。
 - [ ] 8.3 灰度部署到生产环境（10% 流量）
 - [ ] 8.4 监控关键指标（P95 延迟、吞吐量、成本）
+  - [ ] Repo-truth（2026-05-05）：当前 canonical PM2 runtime 与本机 Prometheus 抓取链路已能提供一组“本机 live 但非灰度/生产”的指标快照：重启 `mystocks-backend` 后，先对 `http://localhost:8020/api/v1/data-sources/mock.daily_kline/test` 发起合法 JWT + CSRF 请求，再查询 `http://localhost:9090/api/v1/query`，当前已能读到 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"} = 2`、`histogram_quantile(0.95, ... datasource_api_latency_seconds_bucket ...) ≈ 0.00485s`，以及 `sum(rate(datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}[5m])) ≈ 0.00351 req/s`。这证明 `PM2 backend -> /metrics -> Prometheus scrape -> PromQL` 主链已打通；但该样本仍然只是本机 mock route 的短窗口观测，不覆盖真实灰度流量、持续吞吐窗口或成本下降证据，因此 `8.4` 继续保持未完成。
   - [ ] 8.5 验收确认：
   - [x] 8.5.1 Prometheus 指标可查询
     - [x] Repo-truth（2026-05-05）：本地可查询性已由 `tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 与当前 Phase 2 change-owned 测试矩阵共同验证；当前证据覆盖 repo-local registry / exposition 查询，不等同于 Prometheus live scrape 部署验收。
@@ -287,6 +288,7 @@
   - [x] 8.5.3 批量获取性能提升 3-5 倍
     - [x] Repo-truth（2026-05-05）：见 `8.2`；当前本地报告记录 `BatchProcessor` stub workload `speedup_x = 9.66x`，已满足 repo-local 吞吐提升门槛。
   - [ ] 8.5.4 P95 延迟 < 200ms
+    - [ ] Repo-truth（2026-05-05）：当前本机 Prometheus 已能对 `mock.daily_kline` 的 `datasource_api_latency_seconds_bucket` 计算出非空 P95，实测 `histogram_quantile(0.95, sum by (le) (rate(datasource_api_latency_seconds_bucket{endpoint="mock.daily_kline"}[5m]))) ≈ 0.00485s`。这证明 canonical histogram 在监控栈里可被正常消费；但该值来自本机 mock route 的短时间窗口，不等同于 OpenSpec 要求的“真实灰度或生产窗口下 P95 < 200ms” 验收，因此此项仍保持未完成。
   - [x] 8.5.5 所有单元测试通过
     - [x] Repo-truth（2026-05-05）：当前 Phase 2 change-owned 本地矩阵 `36 passed`，见 `8.1`。
 - [x] 8.6 修复发现的问题
