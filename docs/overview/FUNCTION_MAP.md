@@ -6,7 +6,34 @@
 
 ## Purpose
 
-本文件用于快速定位本轮 `MongoDB Multi-CLI Coordination` 的主要能力入口。
+本文件用于快速定位当前专题工作流中的主要能力入口。
+
+## 0. Data Source Optimization V2 Closeout
+
+- `openspec/changes/optimize-data-source-v2/proposal.md`
+  - `optimize-data-source-v2` 的专题目标、范围与阶段划分
+- `openspec/changes/optimize-data-source-v2/design.md`
+  - SmartCache、CircuitBreaker、SmartRouter、BatchProcessor、监控与可选 Phase 3 能力的设计约束
+- `openspec/changes/optimize-data-source-v2/tasks.md`
+  - 当前最完整的执行清单；已明确区分 repo-local 已闭合项与外部部署 / 观测 / 验收项
+- `openspec/changes/optimize-data-source-v2/REPO_LOCAL_STATUS.md`
+  - 单页结论：仓库内实现、测试、文档与治理已正式闭环；剩余未勾选项全部属于外部动作
+- `docs/guides/data-source/INDEX.md`
+  - 数据源专题文档导航入口
+- `docs/guides/data-source/DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`
+  - 后续外部部署 / 灰度 / 观测执行入口
+- `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PERFORMANCE_REPORT_2026-05-02.md`
+  - 本地性能与吞吐 benchmark 收口报告
+- `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_COST_ANALYSIS_2026-05-02.md`
+  - 本地成本代理指标与 ROI 边界说明
+- `docs/guides/data-source/DATA_SOURCE_OPERATIONS_MANUAL.md`
+  - 运维、告警、监控与排障操作手册
+- `docs/guides/data-source/DATA_SOURCE_DEVELOPER_GUIDE.md`
+  - 开发者视角的调用链、扩展点与验证矩阵
+
+> 当前结论：
+> `optimize-data-source-v2` 已无合法可继续推进的仓库内新增改动；
+> 后续只剩外部部署、live 观测、SLA 验收、会议与归档动作。
 
 ## 1. Control Plane
 

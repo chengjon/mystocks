@@ -290,7 +290,7 @@
   - [x] 8.5.5 所有单元测试通过
     - [x] Repo-truth（2026-05-05）：当前 Phase 2 change-owned 本地矩阵 `36 passed`，见 `8.1`。
 - [x] 8.6 修复发现的问题
-  - [x] Repo-truth（2026-05-05）：当前 Phase 2 本地验证过程中已实际发现并修复三类 change-owned 问题：一是 `src/core/data_source/metrics.py:get_avg_latency()` 原先错误依赖 Histogram 私有字段，现已改为基于 exposition samples 计算平均值，并由 `tests/unit/test_metrics.py`、`tests/unit/test_data_source_metrics_integration.py` 回归覆盖；二是数据源监控 dashboard / alert rule 的 canonical path 与指标引用发生过漂移，现已统一到 `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json` 与 `config/monitoring-stack/config/rules/data-source-alerts.yml`，并由 `tests/performance/test_validate_monitoring_prometheus_references.py` 绑定验证；三是 backend `web/backend/app/core/middleware/performance.py:metrics_endpoint()` 之前只暴露全局 `REGISTRY`，导致 `DataSourceManagerV2` 记录的 canonical `datasource_*` registry 无法出现在运行时 `/metrics`，现已改为合并 `src/core.data_source.metrics.get_metrics().generate_metrics()` 的 payload，并由 `tests/unit/test_data_source_metrics_integration.py::test_backend_metrics_endpoint_includes_canonical_datasource_metrics` 回归覆盖。该项闭合仅代表 repo-local 发现的问题已修复，不等同于 `8.5.2` / `8.5.4` / `8.7` 的部署验收；后者仍需要真实灰度流量和持续观测窗口。
+  - [x] Repo-truth（2026-05-05）：当前 Phase 2 本地验证过程中已实际发现并修复四类 change-owned 问题：一是 `src/core/data_source/metrics.py:get_avg_latency()` 原先错误依赖 Histogram 私有字段，现已改为基于 exposition samples 计算平均值，并由 `tests/unit/test_metrics.py`、`tests/unit/test_data_source_metrics_integration.py` 回归覆盖；二是数据源监控 dashboard / alert rule 的 canonical path 与指标引用发生过漂移，现已统一到 `config/monitoring-stack/grafana-dashboards/data_source_monitoring.json` 与 `config/monitoring-stack/config/rules/data-source-alerts.yml`，并由 `tests/performance/test_validate_monitoring_prometheus_references.py` 绑定验证；三是 backend `web/backend/app/core/middleware/performance.py:metrics_endpoint()` 之前只暴露全局 `REGISTRY`，导致 `DataSourceManagerV2` 记录的 canonical `datasource_*` registry 无法出现在运行时 `/metrics`，现已改为合并 `src/core.data_source.metrics.get_metrics().generate_metrics()` 的 payload，并由 `tests/unit/test_data_source_metrics_integration.py::test_backend_metrics_endpoint_includes_canonical_datasource_metrics` 回归覆盖；四是 backend `web/backend/app/api/data_source_registry.py:test_data_source()` 之前直接走 handler fetch 分支，既绕开 `DataSourceManagerV2._call_endpoint()` 的 canonical metrics hook，也依赖并不存在的 `src.core.data_source_handlers_v2.get_handler` 导出，现已改为构造标准 `endpoint_info` 后统一转入 manager 调用链，并由 `tests/unit/test_data_source_metrics_integration.py::test_manual_datasource_test_route_uses_manager_call_chain` 回归覆盖。该项闭合仅代表 repo-local 发现的问题已修复，不等同于 `8.5.2` / `8.5.4` / `8.7` 的部署验收；后者仍需要真实灰度流量和持续观测窗口。
 - [ ] 8.7 逐步扩大灰度范围（50% → 100%）
 
 ---
@@ -425,3 +425,6 @@
 
 > **总括（2026-05-05）**:
 > 当前仍未闭合的 checklist 项为 `4.3`、`4.4`、`4.5.2`、`8.3`、`8.4`、`8.5.4`、`8.7`、`11.2`、`11.3`、`11.4`、`11.5.3`、`12.5`、`12.7`。这些项全部要求仓库外的部署、观测、会议或归档动作；因此 “仓库内可完成” 的任务已经清空。
+>
+> **Repo-local status anchor（2026-05-05）**:
+> 对于“为什么当前不再继续勾选 repo-local 任务”的单页说明，见 `openspec/changes/optimize-data-source-v2/REPO_LOCAL_STATUS.md`。
