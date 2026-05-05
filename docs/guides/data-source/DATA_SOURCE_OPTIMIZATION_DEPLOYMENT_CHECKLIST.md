@@ -15,6 +15,7 @@
 - [`DATA_SOURCE_MONITORING_GUIDE.md`](./DATA_SOURCE_MONITORING_GUIDE.md)
 - [`DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`](./DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
 - [`../reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PROMETHEUS_RUNTIME_PROOF_2026-05-05.md`](../reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PROMETHEUS_RUNTIME_PROOF_2026-05-05.md)
+- [`../../reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md`](../../reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md)
 
 ---
 
