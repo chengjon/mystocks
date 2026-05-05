@@ -42,6 +42,11 @@
 > - 这些监控产物当前已对齐 `src/core/data_source/metrics.py` 的 `datasource_*` 指标族，并由 `tests/performance/test_validate_monitoring_prometheus_references.py::test_datasource_monitoring_assets_reference_declared_datasource_metrics` 做引用一致性验证。
 > - 因此，本指南优先描述当前可直接验证的运行时 `/metrics` 与本地 exposition 用法，再把独立 exporter 标记为可选路径。
 
+> **Repo-truth 更新（2026-05-05）**:
+> - backend `web/backend/app/core/middleware/performance.py:metrics_endpoint()` 现已在运行时 `/metrics` 响应中合并 `src.core.data_source.metrics.get_metrics().generate_metrics()` 的 canonical `datasource_*` payload，不再只暴露 performance middleware 的全局 `REGISTRY`。
+> - 因此，只要当前 backend 进程内确实发生了 `DataSourceManagerV2` 调用，Prometheus 抓取 `http://localhost:8020/metrics` 时就可以看到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total` 等时间序列。
+> - 这项修复解决的是“canonical metrics 能否被 runtime 暴露”的 repo-local 接线问题，不等同于 `8.4 / 8.5.4` 所要求的真实灰度窗口监控样本。
+
 ---
 
 ## 🎯 核心组件
@@ -103,7 +108,7 @@
 curl http://localhost:8020/metrics | rg "http_request|slow_http_requests|datasource_"
 ```
 
-如果当前运行时已经把 `src/core/data_source/metrics.py` 里的 registry 显式并入全局 `REGISTRY`，这里会看到 `datasource_*` 指标；如果没有并入，你至少仍应看到 `http_request_*`、`http_requests_*`、`slow_http_requests_total` 等运行时指标。
+当前 repo-truth 下，runtime `/metrics` 已经会合并 `src/core/data_source/metrics.py` 的 canonical registry；因此只要 backend 进程里产生过真实数据源调用，这里就应该看到 `datasource_*` 指标。若暂时看不到，优先判断的是“是否尚未产生对应数据源流量”，而不是“runtime 一定没接这组 metrics”。
 
 ### 路径 B：直接验证数据源局部 exposition（本地验证）
 
@@ -256,8 +261,8 @@ update_call_metrics(
 3. 直接实例化 `DataSourceMetrics(...).generate_metrics()`，确认局部 registry 能导出指标
 
 > **当前边界**:
-> - 当前仓库并没有本地证据证明所有部署都会把 `src/core/data_source/metrics.py` 的 registry 自动并入运行时全局 `REGISTRY`。
-> - 所以“局部指标可记录”与“运行时 `/metrics` 必然直接暴露这些指标”要分开判断。
+> - 当前代码已经把 canonical `datasource_*` payload 合并进 runtime `/metrics`，但 Prometheus 上是否出现非空时间序列，仍取决于部署后的 backend 进程里是否真的发生了数据源调用。
+> - 所以“运行时已具备暴露能力”与“灰度 / 生产窗口里已经采到足够样本支撑 `8.4 / 8.5.4` 验收”仍然要分开判断。
 
 ### 问题3：独立 exporter 无法启动
 

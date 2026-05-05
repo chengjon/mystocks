@@ -50,3 +50,18 @@ def test_record_success_updates_runtime_stats_and_prometheus_metrics(monkeypatch
         == 1
     )
     assert metrics.circuit_breaker_state.labels(endpoint="demo.endpoint")._value.get() == 0
+
+
+def test_backend_metrics_endpoint_includes_canonical_datasource_metrics(monkeypatch):
+    from web.backend.app.core.middleware.performance import metrics_endpoint
+    from src.core.data_source import metrics as metrics_module
+
+    metrics = DataSourceMetrics(registry=CollectorRegistry())
+    metrics.record_api_call("demo.endpoint", "DAILY_KLINE", latency=0.5, success=True)
+    monkeypatch.setattr(metrics_module, "_global_metrics", metrics)
+
+    response = metrics_endpoint()
+    body = response.body.decode("utf-8")
+
+    assert "datasource_api_calls_total" in body
+    assert 'endpoint="demo.endpoint"' in body

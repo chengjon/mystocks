@@ -54,6 +54,15 @@ SLOW_REQUESTS = Counter(
 APP_INFO = Info("mystocks_app", "MyStocks Application Information")
 
 
+def _merge_prometheus_payloads(*payloads: bytes) -> bytes:
+    """Merge multiple Prometheus exposition payloads into one response body."""
+    non_empty_payloads = [payload.rstrip() for payload in payloads if payload]
+    if not non_empty_payloads:
+        return b""
+
+    return b"\n".join(non_empty_payloads) + b"\n"
+
+
 def get_endpoint_name(path: str) -> str:
     """Convert path to endpoint name for metrics"""
     if path.startswith("/api/"):
@@ -197,8 +206,19 @@ class PerformanceMiddleware:
 
 def metrics_endpoint() -> Response:
     """Prometheus metrics endpoint"""
+    runtime_payload = generate_latest()
+
+    try:
+        from src.core.data_source.metrics import get_metrics
+
+        datasource_payload = get_metrics().generate_metrics()
+        if datasource_payload and b"datasource_" not in runtime_payload:
+            runtime_payload = _merge_prometheus_payloads(runtime_payload, datasource_payload)
+    except Exception:
+        logger.exception("Failed to merge canonical data source metrics into runtime /metrics payload")
+
     return Response(
-        content=generate_latest(),
+        content=runtime_payload,
         media_type="text/plain; version=0.0.4; charset=utf-8",
     )
 
