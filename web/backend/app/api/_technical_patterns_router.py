@@ -1,12 +1,17 @@
 """Technical analysis pattern routes."""
 
-from typing import Any, Dict
+from __future__ import annotations
 
-from fastapi import APIRouter, Path, Query
+from typing import get_args
 
+from fastapi import APIRouter, HTTPException, Path, Query, status
+
+from app.api._technical_patterns_models import PatternDetection, PatternDetectionData, PatternPeriod
 from app.core.responses import UnifiedResponse
+from app.openapi_config import COMMON_RESPONSES
 
 router = APIRouter()
+SUPPORTED_PATTERN_PERIODS = get_args(PatternPeriod)
 
 
 TECHNICAL_PATTERN_RESPONSES = {
@@ -17,65 +22,80 @@ TECHNICAL_PATTERN_RESPONSES = {
                 "example": {
                     "success": True,
                     "code": 200,
-                    "message": "Technical patterns inferred from request context",
+                    "message": "Technical patterns evaluated",
                     "data": {
-                        "status": "available",
-                        "symbol": "IF2504",
-                        "period": "daily",
-                        "patterns": ["breakout_setup", "trend_continuation"],
+                        "status": "empty",
+                        "symbol": "600519.SH",
+                        "period": "weekly",
+                        "patterns": [],
                     },
                 }
             }
         },
-    }
+    },
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+    503: {
+        "description": "技术形态分析当前不可用",
+        "content": {
+            "application/json": {
+                "example": {
+                    "success": False,
+                    "code": 503,
+                    "message": "Technical pattern detection is currently unavailable",
+                    "data": None,
+                    "timestamp": "2026-05-05T08:00:00+00:00",
+                }
+            }
+        },
+    },
 }
 
 
-def _build_pattern_candidates(symbol: str, period: str) -> list[str]:
-    patterns: list[str] = []
-    normalized_symbol = symbol.upper()
+async def _detect_patterns_for_symbol(symbol: str, period: str) -> list[PatternDetection]:
+    """Task 1 keeps the reviewed route contract stable; Task 2 provides real detections."""
+    _ = (symbol, period)
+    return []
+
+
+def _normalize_pattern_period(period: str) -> str:
     normalized_period = period.lower()
-
-    if normalized_period in {"intraday", "1m", "5m", "15m", "30m", "60m"}:
-        patterns.append("intraday_range_break")
-    elif normalized_period in {"weekly", "monthly"}:
-        patterns.append("primary_trend_channel")
-    else:
-        patterns.append("trend_continuation")
-
-    if normalized_symbol.startswith(("IF", "IH", "IC", "IM")):
-        patterns.append("futures_momentum_setup")
-    elif normalized_symbol.endswith((".HK", ".US", ".SH", ".SZ")):
-        patterns.append("breakout_setup")
-    else:
-        patterns.append("swing_consolidation")
-
-    if "250" in normalized_symbol or len(normalized_symbol) >= 8:
-        patterns.append("volatility_expansion_watch")
-
-    return list(dict.fromkeys(patterns))
+    if normalized_period not in SUPPORTED_PATTERN_PERIODS:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=f"Unsupported period '{period}'. Expected one of: {', '.join(SUPPORTED_PATTERN_PERIODS)}.",
+        )
+    return normalized_period
 
 
 @router.get(
     "/patterns/{symbol}",
     summary="检测技术形态",
-    description="返回指定标的在给定周期下基于代码特征与周期规则推导出的技术形态标签。",
-    response_model=UnifiedResponse[Dict[str, Any]],
+    description="返回指定标的在给定周期下的结构化技术形态检测结果；若无形态命中则返回空结果，而不是推导式标签。",
+    response_model=UnifiedResponse[PatternDetectionData],
     responses=TECHNICAL_PATTERN_RESPONSES,
 )
 async def detect_patterns(
-    symbol: str = Path(..., description="标的代码，例如 600519、0700.HK 或 IF2504。"),
-    period: str = Query("daily", description="数据周期，例如 daily、weekly 或 intraday。"),
-) -> UnifiedResponse[Dict[str, Any]]:
-    """返回指定标的在给定周期下的轻量技术形态检测结果。"""
+    symbol: str = Path(..., description="标的代码，例如 600519.SH、0700.HK 或 IF2504。"),
+    period: str = Query(
+        "daily",
+        description="检测周期，仅支持 daily、weekly、monthly；大小写不敏感。",
+        json_schema_extra={"enum": list(SUPPORTED_PATTERN_PERIODS)},
+    ),
+) -> UnifiedResponse[PatternDetectionData]:
+    """返回指定标的在给定周期下的 reviewed 技术形态检测结果。"""
+    normalized_symbol = symbol.upper()
+    normalized_period = _normalize_pattern_period(period)
+    detections = await _detect_patterns_for_symbol(symbol=normalized_symbol, period=normalized_period)
+    payload = PatternDetectionData(
+        status="available" if detections else "empty",
+        symbol=normalized_symbol,
+        period=normalized_period,
+        patterns=detections,
+    )
     return UnifiedResponse(
         success=True,
-        code=200,
-        message="Technical patterns inferred from request context",
-        data={
-            "status": "available",
-            "symbol": symbol,
-            "period": period,
-            "patterns": _build_pattern_candidates(symbol, period),
-        },
+        code=status.HTTP_200_OK,
+        message="Technical patterns evaluated",
+        data=payload,
     )
