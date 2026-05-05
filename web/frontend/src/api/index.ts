@@ -23,6 +23,150 @@ import type { LoginResponse } from '../types/user/index.ts'
 // Legacy compatibility export for modules still importing `request` from this entry.
 export const request = apiClient
 
+type TechnicalIndicatorType = 'trend' | 'momentum' | 'volatility' | 'volume'
+
+interface TechnicalIndicatorsPayload {
+  symbol?: string
+  latest_date?: string
+  trend?: Record<string, unknown>
+  momentum?: Record<string, unknown>
+  volatility?: Record<string, unknown>
+  volume?: Record<string, unknown>
+}
+
+interface TechnicalIndicatorRow {
+  id: string
+  name: string
+  type: TechnicalIndicatorType
+  value: number
+  signal?: 'buy' | 'sell' | 'hold'
+  status: 'normal' | 'warning' | 'alert'
+  description: string
+  last_updated: string
+}
+
+type TechnicalPatternPeriod = 'daily' | 'weekly' | 'monthly'
+
+interface TechnicalPatternAnchorPoint {
+  role: string
+  timestamp: number
+  value: number
+}
+
+interface TechnicalPatternDetection {
+  pattern_name: 'double_top' | 'double_bottom' | 'head_shoulders_top' | 'head_shoulders_bottom'
+  direction: 'bullish' | 'bearish'
+  confidence: number
+  anchor_points: TechnicalPatternAnchorPoint[]
+}
+
+interface TechnicalPatternData {
+  status: 'available' | 'empty'
+  symbol: string
+  period: TechnicalPatternPeriod
+  patterns: TechnicalPatternDetection[]
+}
+
+function toNumericValue(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return value
+  }
+
+  if (typeof value === 'string') {
+    const parsed = Number.parseFloat(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+
+  return null
+}
+
+function inferIndicatorSignal(name: string, value: number): 'buy' | 'sell' | 'hold' | undefined {
+  if (name.startsWith('rsi')) {
+    if (value <= 30) return 'buy'
+    if (value >= 70) return 'sell'
+    return 'hold'
+  }
+
+  if (name === 'macd' || name === 'macd_hist') {
+    return value >= 0 ? 'buy' : 'sell'
+  }
+
+  return undefined
+}
+
+function inferIndicatorStatus(name: string, value: number): 'normal' | 'warning' | 'alert' {
+  if (name.startsWith('rsi')) {
+    if (value <= 20 || value >= 80) return 'alert'
+    if (value <= 30 || value >= 70) return 'warning'
+  }
+
+  if ((name === 'macd' || name === 'macd_hist') && value < 0) {
+    return 'warning'
+  }
+
+  return 'normal'
+}
+
+function normalizeTechnicalIndicators(payload: TechnicalIndicatorsPayload) {
+  const rows: TechnicalIndicatorRow[] = []
+  const indicatorGroups: Array<[TechnicalIndicatorType, Record<string, unknown> | undefined]> = [
+    ['trend', payload.trend],
+    ['momentum', payload.momentum],
+    ['volatility', payload.volatility],
+    ['volume', payload.volume],
+  ]
+
+  for (const [type, indicators] of indicatorGroups) {
+    if (!indicators) {
+      continue
+    }
+
+    for (const [name, rawValue] of Object.entries(indicators)) {
+      const value = toNumericValue(rawValue)
+      if (value === null) {
+        continue
+      }
+
+      rows.push({
+        id: `${type}-${name}`,
+        name: name.toUpperCase(),
+        type,
+        value,
+        signal: inferIndicatorSignal(name, value),
+        status: inferIndicatorStatus(name, value),
+        description: `${type} indicator ${name.toUpperCase()}`,
+        last_updated: payload.latest_date || new Date().toISOString(),
+      })
+    }
+  }
+
+  return {
+    success: true,
+    symbol: payload.symbol || '',
+    stock_name: payload.symbol || 'UNKNOWN STOCK',
+    indicators: rows,
+    data: payload,
+  }
+}
+
+function normalizeTechnicalBatchResult(response: Record<string, unknown>) {
+  const results = (response.results && typeof response.results === 'object')
+    ? response.results as Record<string, unknown>
+    : {}
+
+  const stocksCount = Object.keys(results).length
+  return {
+    ...response,
+    success: response.success !== false,
+    data: {
+      stocks_count: stocksCount,
+      success_count: stocksCount,
+      signals_count: stocksCount,
+    },
+    results,
+  }
+}
+
 // --- Auth API (v1 compatible) ---
 export const authApi = {
   login: (username: string, password: string): Promise<UnifiedResponse<LoginResponse>> => {
@@ -84,10 +228,21 @@ export const strategyApi = {
 
 // --- Technical API (v1 compatible) ---
 export const technicalApi = {
-  getIndicators: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/technical/indicators/${symbol}`),
-  getAnalysis: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/technical/analysis/${symbol}`),
-  getBatchIndicators: (symbols: string[], params: { indicators: string[] }): Promise<UnifiedResponse<unknown>> =>
-    apiClient.post('/v1/technical/batch', { symbols, ...params }),
+  async getIndicators(symbol: string): Promise<UnifiedResponse<unknown>> {
+    const response = await apiClient.get<TechnicalIndicatorsPayload>(`/v1/technical/${symbol}/indicators`)
+    return normalizeTechnicalIndicators(response) as unknown as UnifiedResponse<unknown>
+  },
+  getAnalysis: (symbol: string): Promise<UnifiedResponse<unknown>> => apiClient.get(`/v1/technical/${symbol}/signals`),
+  getPatterns: (symbol: string, period: TechnicalPatternPeriod): Promise<UnifiedResponse<TechnicalPatternData>> =>
+    apiClient.get(`/v1/technical/patterns/${symbol}`, { params: { period } }),
+  async getBatchIndicators(symbols: string[], _params: { indicators: string[] }): Promise<UnifiedResponse<unknown>> {
+    const response = await apiClient.post<Record<string, unknown>>(
+      '/v1/technical/batch/indicators',
+      {},
+      { params: { symbols } },
+    )
+    return normalizeTechnicalBatchResult(response) as unknown as UnifiedResponse<unknown>
+  },
 }
 
 // --- Default Export (Compatibility) ---

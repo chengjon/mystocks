@@ -15,7 +15,8 @@
         <div class="kline-wrapper">
             <KLineChart
                 ref="klineChartRef"
-                :ohlcv-data="data"
+                :symbol="symbol"
+                :ohlcv-data="safeData"
                 :indicators="indicators"
                 :loading="loading"
                 @indicator-remove="$emit('indicatorRemove', $event)"
@@ -29,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { computed, ref } from 'vue'
     import ArtDecoCard from '../base/ArtDecoCard.vue'
     import ArtDecoBadge from '../base/ArtDecoBadge.vue'
     import KLineChart from '@/components/technical/KLineChart.vue'
@@ -59,7 +60,7 @@
         lastUpdate?: Date | string | number
     }
 
-    withDefaults(defineProps<Props>(), {
+    const props = withDefaults(defineProps<Props>(), {
         title: '',
         symbol: '',
         data: undefined,
@@ -73,6 +74,14 @@
     }>()
 
     const klineChartRef = ref<InstanceType<typeof KLineChart>>()
+    const safeData = computed<OHLCVData>(() => props.data ?? {
+        dates: [],
+        open: [],
+        high: [],
+        low: [],
+        close: [],
+        volume: []
+    })
 
     const formatTime = (time: Date | string | number): string => {
         if (!time) return ''

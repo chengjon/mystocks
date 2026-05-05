@@ -21,12 +21,12 @@
       <el-space wrap>
         <!-- 周期切换 -->
         <el-radio-group v-model="currentPeriod" size="small" @change="handlePeriodChange">
-          <el-radio-button label="1min">分时</el-radio-button>
-          <el-radio-button label="5min">5分钟</el-radio-button>
-          <el-radio-button label="15min">15分钟</el-radio-button>
-          <el-radio-button label="30min">30分钟</el-radio-button>
-          <el-radio-button label="60min">60分钟</el-radio-button>
-          <el-radio-button label="1day">日线</el-radio-button>
+          <el-radio-button value="1min">分时</el-radio-button>
+          <el-radio-button value="5min">5分钟</el-radio-button>
+          <el-radio-button value="15min">15分钟</el-radio-button>
+          <el-radio-button value="30min">30分钟</el-radio-button>
+          <el-radio-button value="60min">60分钟</el-radio-button>
+          <el-radio-button value="1day">日线</el-radio-button>
         </el-radio-group>
 
         <!-- 图表类型 -->
@@ -64,6 +64,30 @@
             <component :is="indicator.visible ? View : Hide" />
           </el-icon>
           {{ indicator.name }}
+        </el-tag>
+
+        <!-- 分隔线 -->
+        <el-divider direction="vertical" />
+
+        <!-- 画线工具 -->
+        <el-button-group size="small">
+          <el-button :type="activeDrawingTool === 'trendline' ? 'primary' : 'default'" @click="startManualDrawing('trendline')">
+            趋势线
+          </el-button>
+          <el-button
+            :type="activeDrawingTool === 'horizontalLine' ? 'primary' : 'default'"
+            @click="startManualDrawing('horizontalLine')"
+          >
+            水平线
+          </el-button>
+          <el-button :type="activeDrawingTool === 'rectangle' ? 'primary' : 'default'" @click="startManualDrawing('rectangle')">
+            矩形
+          </el-button>
+          <el-button @click="clearManualDrawings">清空画线</el-button>
+        </el-button-group>
+
+        <el-tag v-if="automaticPatternMessage" size="small" type="warning">
+          {{ automaticPatternMessage }}
         </el-tag>
 
         <!-- 分隔线 -->
@@ -120,11 +144,16 @@ import { Refresh, ArrowDown, View, Hide, Odometer } from '@element-plus/icons-vu
 import { ElMessage } from 'element-plus'
 import ChartLoadingSkeleton from '@/components/common/ChartLoadingSkeleton.vue'
 import PerformanceMonitor from '@/components/common/PerformanceMonitor.vue'
-import { CHART_INIT_OPTIONS, getIndicatorColor } from '@/components/technical/config/klineChartConfig'
+import { useKLinePatternOverlays } from '@/components/technical/composables/useKLinePatternOverlays'
+import { CHART_INIT_OPTIONS, ZOOM_LEVELS, getIndicatorColor } from '@/components/technical/config/klineChartConfig'
 import { useKLineData } from '@/composables/useKLineData'
 import { useKLineControls } from '@/composables/useKLineControls'
 
 const props = defineProps({
+  symbol: {
+    type: String,
+    default: ''
+  },
   ohlcvData: {
     type: Object,
     required: true,
@@ -172,6 +201,7 @@ const currentChartType = ref('蜡烛图')
 const overlayIndicators = ref([])
 const performanceMonitor = ref(null)
 const actionSubscriptions = ref([])
+const zoomLevels = ZOOM_LEVELS
 
 const {
   loadingProgress,
@@ -194,6 +224,17 @@ const {
   handlePeriodChange: handlePeriodChangeControl,
   togglePerformanceMonitor,
 } = useKLineControls(chart, performanceMonitor)
+const {
+  activeDrawingTool,
+  automaticPatternMessage,
+  startManualDrawing,
+  clearManualDrawings,
+  loadAutomaticPatterns,
+  cleanupPatternOverlays
+} = useKLinePatternOverlays(chart, {
+  getSymbol: () => props.symbol,
+  getChartPeriod: () => currentPeriod.value
+})
 
 const initChart = async () => {
   await nextTick()
@@ -215,6 +256,8 @@ const initChart = async () => {
     if (props.indicators?.length > 0) {
       updateIndicators(props.indicators)
     }
+
+    await loadAutomaticPatterns()
   } catch (error) {
     console.error('[KLineChart] Failed to initialize chart:', error)
     ElMessage.error('图表初始化失败')
@@ -249,6 +292,7 @@ const unsubscribeFromChartActions = () => {
 
 const cleanup = () => {
   unsubscribeFromChartActions()
+  cleanupPatternOverlays()
   cleanupData()
 
   if (chart.value && chartContainer.value) {
@@ -334,6 +378,7 @@ const handleChartTypeChange = (type) => {
 
 const handlePeriodChange = (period) => {
   handlePeriodChangeControl(period)
+  void loadAutomaticPatterns()
 }
 
 onMounted(() => {
@@ -364,6 +409,15 @@ watch(
     }
   },
   { deep: true }
+)
+
+watch(
+  () => props.symbol,
+  () => {
+    if (chart.value) {
+      void loadAutomaticPatterns()
+    }
+  }
 )
 </script>
 
