@@ -49,6 +49,7 @@
 > - `metrics_endpoint()` 的 merge guard 现已从宽泛的 `b"datasource_"` substring 判定收紧为 canonical help marker 检测，避免 `mystocks_datasource_availability` 这类非 canonical 指标误伤合并逻辑。
 > - 隔离运行态验证已通过：在临时 backend `http://127.0.0.1:8120` 上，先获取 CSRF token，再执行 `POST /api/v1/data-sources/mock.daily_kline/test`，随后 `GET /metrics` 已能返回 `datasource_api_latency_seconds` 与 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}` 样本；这证明“manual test route -> runtime /metrics” 链路当前在 repo-local 运行态下已打通。
 > - canonical PM2 运行态验证也已通过：重启 `mystocks-backend` 后，`http://localhost:8020/metrics` 已能直接暴露 `datasource_*` HELP/TYPE 头；再对 `http://localhost:8020/api/v1/data-sources/mock.daily_kline/test` 发起带 JWT + CSRF 的手动测试请求后，`http://localhost:8020/metrics` 已返回 `datasource_api_latency_seconds` 与 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}` 样本。
+> - 缓存命中 / 未命中样本的证据边界要单独看：`manual test route` 走的是 direct handler instrumentation，不会穿过 `DataSourceManagerV2` 的 endpoint-local cache，因此不能单靠这条路由证明 `datasource_cache_hits_total` / `datasource_cache_misses_total`。当前 repo-local proof 来自 manager-driven repeated call：`src/core/data_source/handler.py:_call_endpoint()` 现已生成稳定 cache key 并真正读写 `source["cache"]`，因此第二次同参调用会直接复用缓存并产出 `datasource_cache_hits_total{endpoint="demo.endpoint"} 1.0`；对应验证见 `tests/unit/test_data_source_metrics_integration.py::test_call_endpoint_cache_miss_then_hit_records_canonical_cache_metrics`、`::test_backend_metrics_endpoint_includes_cache_hit_and_miss_samples` 和本地 proof script。
 > - 这项修复解决的是“canonical metrics 能否被 runtime 暴露”的 repo-local 接线问题，不等同于 `8.4 / 8.5.4` 所要求的真实灰度窗口监控样本。
 
 ---
@@ -117,6 +118,8 @@ curl http://localhost:8020/metrics | rg "http_request|slow_http_requests|datasou
 对 `datasource_api_cost_estimated` 需要再多一层判断：除了要有数据源流量，对应 endpoint 还必须在 registry 里显式声明 `cost`。当前仓库的最小 repo-local proof 使用 `mock.daily_kline`，它在 `config/data_sources_registry.yaml` 里声明了 free cost config，因此手动测试后现在能在 runtime `/metrics` 里看到 `datasource_api_cost_estimated{endpoint="mock.daily_kline"} 0.0`。
 
 在需要本地手动触发这组流量时，当前仓库里可直接复用 `POST /api/v1/data-sources/{endpoint_name}/test`。这条路由虽然仍走 handler factory，但其兼容工厂已经补上 canonical metrics instrumentation，因此也会把 `datasource_*` 指标打进 runtime `/metrics`。
+
+需要单独区分的是缓存指标：`POST /api/v1/data-sources/{endpoint_name}/test` 当前不会穿过 `DataSourceManagerV2` 的 endpoint-local cache，因此它适合证明 `datasource_api_latency_seconds` / `datasource_api_calls_total` / `datasource_api_cost_estimated` 主链，不适合单独证明 `datasource_cache_hits_total` / `datasource_cache_misses_total`。后者当前的 repo-local 最小 proof 是 repeated identical manager call，同一 endpoint 同一参数第一次 miss、第二次 hit。
 
 若要复现实测最小链路，当前仓库已验证下面这组命令在隔离 backend `8120` 上成立：
 
@@ -192,6 +195,8 @@ result = manager.get_stock_daily(symbol="000001")
 # - 调用链会进入 handler.py:_call_endpoint()
 # - 成功/失败后会触发 _record_success() / _record_failure()
 # - 这些 hook 会继续写入 src/core/data_source/metrics.py
+# - 若同一 endpoint 以相同参数连续调用两次，第二次调用现在会复用 endpoint-local cache，
+#   并为 runtime `/metrics` 产出 `datasource_cache_hits_total` / `datasource_cache_misses_total` 样本
 ```
 
 #### 示例3：使用独立 exporter（可选 / legacy）
@@ -279,9 +284,10 @@ update_call_metrics(
 **排查步骤**:
 
 1. 先确认数据源调用链确实执行过
-2. 直接运行 `tests/unit/test_data_source_metrics_integration.py`
-3. 如果缺的是 `datasource_api_cost_estimated`，额外检查 endpoint 的 `cost` 配置是否存在，并确认 `src/core/data_source/registry.py:_merge_sources()` 没有在 DB+YAML 合并时丢掉该字段
-3. 直接实例化 `DataSourceMetrics(...).generate_metrics()`，确认局部 registry 能导出指标
+2. 如果只有 `# HELP/# TYPE datasource_cache_*` 没有 sample，确认这次流量是否真的经过 `src/core/data_source/handler.py:_call_endpoint()`，并且是否对同一 endpoint / 同一参数重复执行了至少两次；仅跑 `manual test route` 不会生成 cache hit/miss sample
+3. 直接运行 `tests/unit/test_data_source_metrics_integration.py`
+4. 如果缺的是 `datasource_api_cost_estimated`，额外检查 endpoint 的 `cost` 配置是否存在，并确认 `src/core/data_source/registry.py:_merge_sources()` 没有在 DB+YAML 合并时丢掉该字段
+5. 直接实例化 `DataSourceMetrics(...).generate_metrics()`，确认局部 registry 能导出指标
 
 > **当前边界**:
 > - 当前代码已经把 canonical `datasource_*` payload 合并进 runtime `/metrics`，但 Prometheus 上是否出现非空时间序列，仍取决于部署后的 backend 进程里是否真的发生了数据源调用。

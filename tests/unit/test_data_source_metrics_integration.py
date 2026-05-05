@@ -2,6 +2,7 @@ import sys
 from pathlib import Path
 from unittest.mock import patch
 
+import pandas as pd
 import pytest
 from prometheus_client import CollectorRegistry
 
@@ -156,3 +157,136 @@ async def test_manual_datasource_test_route_records_canonical_metrics(monkeypatc
         == 1
     )
     assert 'datasource_api_cost_estimated{endpoint="demo.daily_kline"} 0.0' in metrics.generate_metrics().decode("utf-8")
+
+
+def test_call_endpoint_cache_miss_then_hit_records_canonical_cache_metrics(monkeypatch):
+    from src.core.data_source import metrics as metrics_module
+    from src.core.data_source.handler import _call_endpoint
+    from src.core.data_source.smart_cache import SmartCache
+
+    class CountingHandler:
+        def __init__(self):
+            self.fetch_calls = 0
+
+        def fetch(self, **kwargs):
+            self.fetch_calls += 1
+            return pd.DataFrame(
+                [
+                    {
+                        "symbol": kwargs["symbol"],
+                        "close": 10.0,
+                    }
+                ]
+            )
+
+    class FakeManager:
+        def __init__(self, handler):
+            self._handler = handler
+            self.registry = {
+                "demo.endpoint": {
+                    "config": {
+                        "data_category": "DAILY_KLINE",
+                    },
+                    "handler": None,
+                    "cache": SmartCache(maxsize=10, default_ttl=60, soft_expiry=False),
+                }
+            }
+            self.circuit_breakers = {}
+            self.success_records = []
+            self.failure_records = []
+
+        def _create_handler(self, endpoint_info):
+            return self._handler
+
+        def _identify_caller(self):
+            return {"service": "unit-test"}
+
+        def _record_success(self, *args):
+            self.success_records.append(args)
+
+        def _record_failure(self, *args):
+            self.failure_records.append(args)
+
+    handler = CountingHandler()
+    manager = FakeManager(handler)
+    metrics = DataSourceMetrics(registry=CollectorRegistry())
+    monkeypatch.setattr(metrics_module, "_global_metrics", metrics)
+
+    endpoint = {
+        "endpoint_name": "demo.endpoint",
+        "source_type": "mock",
+    }
+
+    try:
+        first = _call_endpoint(manager, endpoint, symbol="000001", start_date="20240101", end_date="20240102")
+        second = _call_endpoint(manager, endpoint, symbol="000001", start_date="20240101", end_date="20240102")
+    finally:
+        manager.registry["demo.endpoint"]["cache"].shutdown()
+
+    assert handler.fetch_calls == 1
+    assert len(manager.success_records) == 1
+    assert manager.failure_records == []
+    assert first.equals(second)
+    assert metrics.cache_misses_total.labels(endpoint="demo.endpoint")._value.get() == 1
+    assert metrics.cache_hits_total.labels(endpoint="demo.endpoint")._value.get() == 1
+
+
+def test_backend_metrics_endpoint_includes_cache_hit_and_miss_samples(monkeypatch):
+    from src.core.data_source import metrics as metrics_module
+    from src.core.data_source.handler import _call_endpoint
+    from src.core.data_source.smart_cache import SmartCache
+    from web.backend.app.core.middleware.performance import metrics_endpoint
+
+    class CountingHandler:
+        def __init__(self):
+            self.fetch_calls = 0
+
+        def fetch(self, **kwargs):
+            self.fetch_calls += 1
+            return pd.DataFrame([{"symbol": kwargs["symbol"], "close": 10.0}])
+
+    class FakeManager:
+        def __init__(self, handler):
+            self._handler = handler
+            self.registry = {
+                "demo.endpoint": {
+                    "config": {
+                        "data_category": "DAILY_KLINE",
+                    },
+                    "handler": None,
+                    "cache": SmartCache(maxsize=10, default_ttl=60, soft_expiry=False),
+                }
+            }
+            self.circuit_breakers = {}
+
+        def _create_handler(self, endpoint_info):
+            return self._handler
+
+        def _identify_caller(self):
+            return {"service": "unit-test"}
+
+        def _record_success(self, *args):
+            return None
+
+        def _record_failure(self, *args):
+            return None
+
+    handler = CountingHandler()
+    manager = FakeManager(handler)
+    metrics = DataSourceMetrics(registry=CollectorRegistry())
+    monkeypatch.setattr(metrics_module, "_global_metrics", metrics)
+
+    endpoint = {
+        "endpoint_name": "demo.endpoint",
+        "source_type": "mock",
+    }
+
+    try:
+        _call_endpoint(manager, endpoint, symbol="000001", start_date="20240101", end_date="20240102")
+        _call_endpoint(manager, endpoint, symbol="000001", start_date="20240101", end_date="20240102")
+        body = metrics_endpoint().body.decode("utf-8")
+    finally:
+        manager.registry["demo.endpoint"]["cache"].shutdown()
+
+    assert 'datasource_cache_misses_total{endpoint="demo.endpoint"} 1.0' in body
+    assert 'datasource_cache_hits_total{endpoint="demo.endpoint"} 1.0' in body

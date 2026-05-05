@@ -168,6 +168,7 @@ datasource_api_cost_estimated{endpoint="mock.daily_kline"}
 - `8.5.4` 已完成
 - `11.2` 或 `11.5.3` 的 `99.9%` 可用性结论
 - 真实灰度/生产窗口下的 P95、吞吐量、成本下降
+- `datasource_cache_hits_total` / `datasource_cache_misses_total` 已在 PM2 public route 上拿到 live proof
 
 原因：
 
@@ -176,6 +177,10 @@ datasource_api_cost_estimated{endpoint="mock.daily_kline"}
 - 没有真实灰度流量
 - 没有连续观测周期
 - 当前只有显式 free/mock zero-cost sample，没有真实付费成本样本
+- 当前触发入口是 `POST /api/v1/data-sources/mock.daily_kline/test`，它走 direct handler instrumentation，不经过 `DataSourceManagerV2` 的 endpoint-local cache；因此这份 PM2/Prometheus 报告只能证明 API 调用、延迟和显式成本指标主链，不能单独证明 cache hit/miss 样本
+
+> **补充 repo-local 事实（2026-05-05）**:
+> `src/core/data_source/handler.py:_call_endpoint()` 现已真正接入 endpoint-local cache，manager-driven repeated call 的最小 proof 当前已经存在：第一次同参调用会产出 `datasource_cache_misses_total{endpoint="demo.endpoint"} 1.0`，第二次会产出 `datasource_cache_hits_total{endpoint="demo.endpoint"} 1.0`。这项证据来自 `tests/unit/test_data_source_metrics_integration.py::test_call_endpoint_cache_miss_then_hit_records_canonical_cache_metrics`、`::test_backend_metrics_endpoint_includes_cache_hit_and_miss_samples` 与本地 proof script；它证明 repo-local cache metrics contract 已闭环，但不属于本报告的 PM2 public-route 取证范围。
 
 ---
 

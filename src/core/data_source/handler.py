@@ -1,10 +1,68 @@
+import json
 import logging
 import time
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 import pandas as pd
 
 logger = logging.getLogger(__name__)
+
+
+def _normalize_cache_value(value: Any) -> Any:
+    """Normalize cache-key values into a stable JSON-serializable shape."""
+    if isinstance(value, dict):
+        return {str(key): _normalize_cache_value(value[key]) for key in sorted(value)}
+
+    if isinstance(value, (list, tuple)):
+        return [_normalize_cache_value(item) for item in value]
+
+    if isinstance(value, set):
+        normalized_items = [_normalize_cache_value(item) for item in value]
+        return sorted(normalized_items, key=lambda item: json.dumps(item, sort_keys=True, ensure_ascii=False))
+
+    return value
+
+
+def _build_cache_key(endpoint_name: str, kwargs: Dict[str, Any]) -> str:
+    """Build a stable cache key for endpoint fetch arguments."""
+    normalized_payload = _normalize_cache_value(kwargs)
+    serialized_payload = json.dumps(normalized_payload, sort_keys=True, ensure_ascii=False, default=str)
+    return f"{endpoint_name}:{serialized_payload}"
+
+
+def _resolve_cache_ttl(config: Dict[str, Any]) -> Optional[int]:
+    """Resolve an optional cache TTL from endpoint config."""
+    ttl = config.get("cache_ttl")
+    if ttl is None:
+        cache_config = config.get("cache")
+        if isinstance(cache_config, dict):
+            ttl = cache_config.get("ttl_seconds")
+
+    if ttl is None:
+        return None
+
+    try:
+        return int(ttl)
+    except (TypeError, ValueError):
+        logger.warning("Invalid cache TTL for %s: %r", config.get("endpoint_name"), ttl)
+        return None
+
+
+def _store_cache_value(
+    cache: Any,
+    cache_key: str,
+    value: Any,
+    config: Dict[str, Any],
+    refresh_func: Optional[Any] = None,
+) -> None:
+    """Store a result in either SmartCache or legacy LRUCache."""
+    ttl = _resolve_cache_ttl(config)
+
+    if hasattr(cache, "set"):
+        cache.set(cache_key, value, ttl=ttl, refresh_func=refresh_func)
+        return
+
+    cache[cache_key] = value
 
 
 def get_best_endpoint(self, data_category: str, exclude_failed: bool = True) -> Optional[Dict]:
@@ -159,6 +217,19 @@ def _call_endpoint(self, endpoint_info: Dict, **kwargs) -> pd.DataFrame:
     if not source:
         raise ValueError(f"端点 {endpoint_name} 未注册")
 
+    cache = source.get("cache")
+    cache_key = None
+    if cache is not None:
+        from .metrics import get_metrics
+
+        cache_key = _build_cache_key(endpoint_name, kwargs)
+        cached_data = cache.get(cache_key)
+        if cached_data is not None:
+            get_metrics().record_cache_hit(endpoint_name)
+            return cached_data
+
+        get_metrics().record_cache_miss(endpoint_name)
+
     # 延迟创建handler
     if source["handler"] is None:
         source["handler"] = self._create_handler(endpoint_info)
@@ -181,6 +252,14 @@ def _call_endpoint(self, endpoint_info: Dict, **kwargs) -> pd.DataFrame:
         # 记录成功
         response_time = time.time() - start_time
         self._record_success(endpoint_name, response_time, len(data), caller)
+
+        if cache is not None and cache_key is not None:
+            def refresh_func():
+                if circuit_breaker is not None:
+                    return circuit_breaker.call(handler.fetch, **kwargs)
+                return handler.fetch(**kwargs)
+
+            _store_cache_value(cache, cache_key, data, source.get("config", {}), refresh_func=refresh_func)
 
         return data
 
