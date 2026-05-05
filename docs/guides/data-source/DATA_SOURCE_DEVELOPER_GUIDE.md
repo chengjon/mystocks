@@ -8,8 +8,14 @@
 > 本文件用于提供某一局部主题的使用方法、操作步骤、背景说明或参考材料，帮助理解仓库中的具体实践。
 > 其中的命令、路径、流程和示例应与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果一并核对，不应单独视为共享规则或当前状态的唯一事实来源。
 
-**最后更新**: 2026-05-02  
+**最后更新**: 2026-05-05
 **适用读者**: 维护 `DataSourceManagerV2`、治理层抓取链、指标链和相关测试的开发者
+
+> **边界提醒（2026-05-05）**:
+> 这份文档描述的是 `optimize-data-source-v2` 当前仓库内已经落地的实现、验证与扩展点。
+> 若后续工作已经变成灰度发布、Prometheus/Grafana 持续观测、ROI/SLA 收证据或 OpenSpec 归档，
+> 应直接进入 `docs/reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md`，
+> 而不是继续在本地实现层寻找未闭合编码项。
 
 ---
 

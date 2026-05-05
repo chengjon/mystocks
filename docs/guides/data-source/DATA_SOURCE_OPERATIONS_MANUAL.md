@@ -8,12 +8,19 @@
 > 本文件用于提供某一局部主题的使用方法、操作步骤、背景说明或参考材料，帮助理解仓库中的具体实践。
 > 其中的命令、路径、流程和示例应与 `architecture/STANDARDS.md`、当前代码实现及最新验证结果一并核对，不应单独视为共享规则或当前状态的唯一事实来源。
 
-**最后更新**: 2026-05-02  
+**最后更新**: 2026-05-05
 **适用范围**: `optimize-data-source-v2` 当前 repo-owned 能力  
 **相关文档**:
 - [`DATA_SOURCE_MONITORING_GUIDE.md`](./DATA_SOURCE_MONITORING_GUIDE.md)
 - [`DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`](./DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
 - [`DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md`](./DATA_SOURCE_OPTIMIZATION_DEPLOYMENT_CHECKLIST.md)
+- [`../../reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md`](../../reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md)
+
+> **边界提醒（2026-05-05）**:
+> 本手册当前只覆盖 `optimize-data-source-v2` 已落地的 repo-owned 运行与验证入口。
+> 若问题已经进入灰度部署、live 观测、ROI/SLA 验收、最终会议或 archive 时序，请直接转到
+> `docs/reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md`，
+> 不要继续把这些事项当作仓库内编码或本地测试任务处理。
 
 ---
 
