@@ -125,6 +125,7 @@ def test_merge_sources_does_not_duplicate_yaml_alias_endpoint() -> None:
             "endpoint_name": "canonical.endpoint",
             "status": "active",
             "description": "yaml version",
+            "cost": {"estimated_cny_per_call": 0.0, "is_free": True},
             "test_parameters": {"symbol": "000001"},
             "_loaded_from": "yaml",
         }
@@ -137,4 +138,5 @@ def test_merge_sources_does_not_duplicate_yaml_alias_endpoint() -> None:
 
     assert list(result.keys()) == ["canonical.endpoint"]
     assert result["canonical.endpoint"]["description"] == "yaml version"
+    assert result["canonical.endpoint"]["cost"] == {"estimated_cny_per_call": 0.0, "is_free": True}
     assert result["canonical.endpoint"]["test_parameters"] == {"symbol": "000001"}

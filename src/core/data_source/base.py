@@ -150,7 +150,7 @@ class DataSourceManagerV2:
         return list_all_endpoints(self)
 
     def _record_success(self, *args, **kwargs):
-        from .metrics import get_metrics
+        from .metrics import get_metrics, resolve_configured_call_cost
         from .monitoring import _record_success as monitoring_record_success
 
         endpoint_name = args[0] if args else kwargs.get("endpoint_name")
@@ -169,6 +169,7 @@ class DataSourceManagerV2:
             data_category=config.get("data_category", "unknown"),
             latency=response_time,
             success=True,
+            cost=resolve_configured_call_cost(config),
         )
 
         circuit_breaker = self.circuit_breakers.get(endpoint_name)
@@ -176,7 +177,7 @@ class DataSourceManagerV2:
             metrics.record_circuit_breaker_state(endpoint_name, _map_circuit_breaker_state(circuit_breaker.get_state()))
 
     def _record_failure(self, *args, **kwargs):
-        from .metrics import get_metrics
+        from .metrics import get_metrics, resolve_configured_call_cost
         from .monitoring import _record_failure as monitoring_record_failure
 
         endpoint_name = args[0] if args else kwargs.get("endpoint_name")
@@ -195,6 +196,7 @@ class DataSourceManagerV2:
             data_category=config.get("data_category", "unknown"),
             latency=response_time,
             success=False,
+            cost=resolve_configured_call_cost(config),
         )
 
         circuit_breaker = self.circuit_breakers.get(endpoint_name)

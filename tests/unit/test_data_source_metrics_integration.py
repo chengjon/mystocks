@@ -24,6 +24,9 @@ def test_record_success_updates_runtime_stats_and_prometheus_metrics(monkeypatch
                 "total_calls": 0,
                 "failed_calls": 0,
                 "health_status": "unknown",
+                "cost": {
+                    "estimated_cny_per_call": 0.12,
+                },
             }
         }
     }
@@ -55,6 +58,7 @@ def test_record_success_updates_runtime_stats_and_prometheus_metrics(monkeypatch
         == 1
     )
     assert metrics.circuit_breaker_state.labels(endpoint="demo.endpoint")._value.get() == 0
+    assert 'datasource_api_cost_estimated{endpoint="demo.endpoint"} 0.12' in metrics.generate_metrics().decode("utf-8")
 
 
 def test_backend_metrics_endpoint_includes_canonical_datasource_metrics(monkeypatch):
@@ -113,6 +117,10 @@ async def test_manual_datasource_test_route_records_canonical_metrics(monkeypatc
                         "data_category": "DAILY_KLINE",
                         "source_type": "mock",
                         "source_name": "demo",
+                        "cost": {
+                            "is_free": True,
+                            "estimated_cny_per_call": 0.0,
+                        },
                     }
                 }
             }
@@ -147,3 +155,4 @@ async def test_manual_datasource_test_route_records_canonical_metrics(monkeypatc
         )._value.get()
         == 1
     )
+    assert 'datasource_api_cost_estimated{endpoint="demo.daily_kline"} 0.0' in metrics.generate_metrics().decode("utf-8")

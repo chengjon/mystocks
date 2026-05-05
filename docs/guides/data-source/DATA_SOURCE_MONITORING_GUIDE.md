@@ -85,7 +85,7 @@
 | `datasource_cache_hits_total` | Counter | endpoint | 缓存命中次数 |
 | `datasource_cache_misses_total` | Counter | endpoint | 缓存未命中次数 |
 | `datasource_circuit_breaker_state` | Gauge | endpoint | 熔断器状态 |
-| `datasource_api_cost_estimated` | Gauge | endpoint | 估算 API 成本 |
+| `datasource_api_cost_estimated` | Gauge | endpoint | 估算 API 成本；仅在 endpoint 显式声明 `cost` 配置时产出 sample，free endpoint 会保留 `0.0` |
 
 ### 3. 独立 exporter（可选 / legacy）
 
@@ -113,6 +113,8 @@ curl http://localhost:8020/metrics | rg "http_request|slow_http_requests|datasou
 ```
 
 当前 repo-truth 下，runtime `/metrics` 已经会合并 `src/core/data_source/metrics.py` 的 canonical registry；因此只要 backend 进程里产生过真实数据源调用，这里就应该看到 `datasource_*` 指标。若暂时看不到，优先判断的是“是否尚未产生对应数据源流量”，而不是“runtime 一定没接这组 metrics”。
+
+对 `datasource_api_cost_estimated` 需要再多一层判断：除了要有数据源流量，对应 endpoint 还必须在 registry 里显式声明 `cost`。当前仓库的最小 repo-local proof 使用 `mock.daily_kline`，它在 `config/data_sources_registry.yaml` 里声明了 free cost config，因此手动测试后现在能在 runtime `/metrics` 里看到 `datasource_api_cost_estimated{endpoint="mock.daily_kline"} 0.0`。
 
 在需要本地手动触发这组流量时，当前仓库里可直接复用 `POST /api/v1/data-sources/{endpoint_name}/test`。这条路由虽然仍走 handler factory，但其兼容工厂已经补上 canonical metrics instrumentation，因此也会把 `datasource_*` 指标打进 runtime `/metrics`。
 
@@ -278,6 +280,7 @@ update_call_metrics(
 
 1. 先确认数据源调用链确实执行过
 2. 直接运行 `tests/unit/test_data_source_metrics_integration.py`
+3. 如果缺的是 `datasource_api_cost_estimated`，额外检查 endpoint 的 `cost` 配置是否存在，并确认 `src/core/data_source/registry.py:_merge_sources()` 没有在 DB+YAML 合并时丢掉该字段
 3. 直接实例化 `DataSourceMetrics(...).generate_metrics()`，确认局部 registry 能导出指标
 
 > **当前边界**:

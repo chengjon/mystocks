@@ -2186,6 +2186,9 @@ data_sources:
   mock_daily_kline:
     call_method: function_call
     classification_level: 1
+    cost:
+      estimated_cny_per_call: 0.0
+      is_free: true
     data_category: DAILY_KLINE
     data_classification: market_data
     data_quality_score: 9.0

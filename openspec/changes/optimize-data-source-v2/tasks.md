@@ -113,7 +113,7 @@
 > - `4.5.2` = ROI 验收：需要部署期真实成本样本，不可由本地 synthetic workload 替代
 >
 > **Repo-local 收口状态（2026-05-05）**:
-> 截至当前这条线的最新验证结果，已不存在还能仅凭仓库内代码、测试、文档或本机运行环境就可以继续合法勾选的剩余项。Phase 1 的未闭合条目全部属于部署激活、灰度期持续观测或 ROI 验收，继续推进必须引入仓库外的真实环境证据。
+> 截至当前这条线的最新验证结果，repo-local 监控链路里最后一项隐藏缺口也已补齐：`src/core/data_source/metrics.py:record_api_call()` 现会累加显式单次成本并保留 `0.0` free sample，`src/core/data_source/registry.py:_merge_sources()` 也会保留 YAML `cost` 配置，因此 `mock.daily_kline` 已能在 PM2 runtime 与 Prometheus 中产出 `datasource_api_cost_estimated{endpoint="mock.daily_kline"} 0`。在此基础上，已不存在还能仅凭仓库内代码、测试、文档或本机运行环境就可以继续合法勾选的剩余项；Phase 1 的未闭合条目全部属于部署激活、灰度期持续观测或 ROI 验收。
 
 - [x] 4.1 运行所有单元测试和并发测试
   - [x] Repo-truth（2026-05-02）：已通过 `pytest tests/unit/test_smart_cache.py tests/unit/test_circuit_breaker.py tests/unit/test_circuit_breaker_integration.py tests/unit/test_data_quality_validator.py tests/unit/test_gpu_validator_integration.py -q --no-cov -o log_cli=false -p no:tdd-guard -p no:timing` 验证当前 Phase 1 本地测试集，结果 `169 passed`。为使该套件可稳定完成，本次同时修复了 `src/core/data_source/circuit_breaker.py` 中 `get_stats() -> get_state()` 的非重入锁死锁、把 `tests/unit/test_data_quality_validator.py` 的异常成交量样本修正为真实满足“>10 倍均值”的数据形状，并补齐了 120 个参数化异常样本与 `GPUValidator` 的 100000 行大样本入口验证。
@@ -191,6 +191,7 @@
 - [x] 6.4 实现 `DataSourceMetrics` 类（指标收集器）
 - [x] 6.5 在 `DataSourceManagerV2._call_endpoint()` 添加指标埋点
   - [x] Repo-truth（2026-05-01）：当前 `src/core/data_source/handler.py:_call_endpoint()` 继续通过 `self._record_success()` / `self._record_failure()` 进入 `src/core/data_source/base.py` hook；这些 hook 现已委托到 `src/core/data_source/monitoring.py` 的运行时统计逻辑，并同步调用 `src/core/data_source/metrics.py:get_metrics()` 记录 `datasource_api_calls_total` / `datasource_api_latency_seconds` / `datasource_circuit_breaker_state`。验证见 `tests/unit/test_data_source_metrics_integration.py`、`tests/unit/test_circuit_breaker_integration.py`、`src/governance/tests/test_fetcher_bridge.py`、`tests/unit/adapters/test_runtime_data_source_regressions.py`。
+  - [x] Repo-truth（2026-05-05）：当前 manager hook 与 direct-handler instrumentation path 都会在 endpoint 显式声明 `cost` 时同步记录 `datasource_api_cost_estimated`；`src/core/data_source/metrics.py:record_api_call()` 现在按“单次成本增量”累加，并保留 `0.0` free sample，`src/core/data_source/registry.py:_merge_sources()` 也已补上 `cost` 字段透传，避免 DB+YAML 合并时把 pricing metadata 吃掉。验证见 `tests/unit/test_metrics.py`、`tests/unit/test_data_source_metrics_integration.py`、`tests/unit/adapters/test_runtime_data_source_regressions.py`。
 - [x] 6.6 在 `web/backend/app/main.py` 集成 `/metrics` 端点
   - [x] 6.6.1 添加 `/metrics` 路由
   - [x] 6.6.2 返回 Prometheus exposition 格式
@@ -218,6 +219,7 @@
   - [x] Repo-truth（2026-05-02）：当前仓库的 canonical 告警规则文件为 `config/monitoring-stack/config/rules/data-source-alerts.yml`。该规则集现已对齐 `datasource_*` 指标，覆盖成功率 `< 95%`、P95 延迟 `> 500ms`、熔断器 `OPEN` 与缓存命中率 `< 50%` 四类告警；引用一致性同样由 `tests/performance/test_validate_monitoring_prometheus_references.py::test_datasource_monitoring_assets_reference_declared_datasource_metrics` 验证。
 - [x] 6.10 验证 Prometheus 指标可查询
   - [x] Repo-truth（2026-05-01）：`tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 当前已验证 `src/core/data_source/metrics.py:DataSourceMetrics.generate_metrics()` 导出的 Prometheus exposition 文本可查询到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total`、`datasource_circuit_breaker_state` 等已记录指标及其标签。此项证据覆盖本地 registry/exposition 可查询性，不等同于生产 Prometheus 抓取链路已验收。
+  - [x] Repo-truth（2026-05-05）：当前已补充 `tests/unit/test_metrics.py::test_record_api_call_accumulates_explicit_cost_and_exposes_zero_cost_sample`，验证 `datasource_api_cost_estimated` 在显式 `cost` 配置存在时既能累加成本，也会为 free endpoint 保留 `0.0` exposition sample。
 - [x] 6.11 验证 Grafana 仪表板正常显示
   - [x] Repo-truth（2026-05-05）：当前监控栈已完成 live 修复并重新验通。`config/monitoring-stack/docker-compose.yml` 现在为 Prometheus 添加 `host.docker.internal:host-gateway`，Grafana provisioning 也已直接挂载 canonical dashboard 目录 `config/monitoring-stack/grafana-dashboards/`；`config/monitoring-stack/config/prometheus.yml` 同步把 backend scrape target 收敛到 `host.docker.internal:8020`，并移除了会长期 parse-error 的 JSON health jobs；`src/monitoring/data_source_metrics.py:start_metrics_server()` 现已真正阻塞保活，且会把 `Info` metadata 中的 `NaN` 归一化为空字符串，避免 `GET /metrics` 返回 `500`。在当前机器上，由于宿主机 `3000` 已被外部进程占用，本次 live 验收使用 host override `GRAFANA_PORT=3301`（repo 默认配置仍保持 `3000`）。实际结果：`env GRAFANA_PORT=3301 GRAFANA_ROOT_URL=http://localhost:3301 bash config/monitoring-stack/verify_monitoring.sh` 全部通过；`curl -u admin:admin http://localhost:3301/api/search` 已返回 `uid=mystocks-data-sources` 的 `MyStocks 数据源监控仪表板`，`curl http://localhost:9090/api/v1/targets` 显示 `mystocks-backend` / `mystocks-data-sources` / `node` / `prometheus` / `tempo-metrics` 为 `5/5 UP`。
 - [x] 6.12 代码审查：确保指标命名符合 Prometheus 规范
@@ -271,7 +273,7 @@
 > - 当前 repo-local 代码、测试、benchmark 与文档只能为这些项提供前置条件，不能直接构成完成证据
 >
 > **Repo-local 收口状态（2026-05-05）**:
-> 在 `6.11` 与 `8.5.2` 已被 live 监控栈证据闭合后，Phase 2 剩余未闭合项只剩真实灰度发布、灰度窗口指标观测和扩量动作；这些都不能再由仓库内 synthetic benchmark、单机 PM2、或本地 Docker 监控栈替代完成。
+> 在 `6.11` 与 `8.5.2` 已被 live 监控栈证据闭合后，Phase 2 的 repo-local 监控链路也已把显式成本样本补齐：canonical PM2 runtime `/metrics` 与本机 Prometheus 现均能查询到 `datasource_api_cost_estimated{endpoint="mock.daily_kline"} = 0`。在此基础上，Phase 2 剩余未闭合项只剩真实灰度发布、灰度窗口指标观测和扩量动作；这些都不能再由仓库内 synthetic benchmark、单机 PM2、或本地 Docker 监控栈替代完成。
 
 - [x] 8.1 运行所有单元测试和集成测试
   - [x] Repo-truth（2026-05-05）：已通过 change-owned Phase 2 本地矩阵 `pytest tests/unit/test_smart_router.py tests/unit/test_smart_router_integration.py tests/unit/test_metrics.py tests/unit/test_data_source_metrics_integration.py src/governance/tests/test_fetcher_bridge.py tests/integration/test_batch_processing.py tests/unit/adapters/test_runtime_data_source_regressions.py -q --no-cov`，结果 `36 passed`。
@@ -279,7 +281,7 @@
   - [x] Repo-truth（2026-05-05）：`pytest tests/performance/test_batch_processor_throughput.py tests/performance/test_validate_monitoring_prometheus_references.py tests/performance/test_smart_router_ab_benchmark.py -q --no-cov --run-performance` 结果 `6 passed`；配套本地报告 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PERFORMANCE_REPORT_2026-05-02.md` 当前记录 `BatchProcessor` 在 60-symbol stub workload 下 `speedup_x = 9.66x`，超过 `3-5x` 门槛。该证据仍仅代表 repo-local synthetic / stub workload，不等同于真实部署吞吐量验收。
 - [ ] 8.3 灰度部署到生产环境（10% 流量）
 - [ ] 8.4 监控关键指标（P95 延迟、吞吐量、成本）
-  - [ ] Repo-truth（2026-05-05）：当前 canonical PM2 runtime 与本机 Prometheus 抓取链路已能提供一组“本机 live 但非灰度/生产”的指标快照：重启 `mystocks-backend` 后，先对 `http://localhost:8020/api/v1/data-sources/mock.daily_kline/test` 发起合法 JWT + CSRF 请求，再查询 `http://localhost:9090/api/v1/query`，当前已能读到 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"} = 3`、`histogram_quantile(0.95, ... datasource_api_latency_seconds_bucket ...) ≈ 0.00475s`，以及 `sum(rate(datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}[5m])) ≈ 0.00351 req/s`。这证明 `PM2 backend -> /metrics -> Prometheus scrape -> PromQL` 主链已打通；完整本机取证见 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PROMETHEUS_RUNTIME_PROOF_2026-05-05.md`。但该样本仍然只是本机 mock route 的短窗口观测，不覆盖真实灰度流量、持续吞吐窗口或成本下降证据，因此 `8.4` 继续保持未完成。
+  - [ ] Repo-truth（2026-05-05）：当前 canonical PM2 runtime 与本机 Prometheus 抓取链路已能提供一组“本机 live 但非灰度/生产”的指标快照：重启 `mystocks-backend` 后，先对 `http://localhost:8020/api/v1/data-sources/mock.daily_kline/test` 发起合法 JWT + CSRF 请求，再查询 `http://localhost:9090/api/v1/query`，当前已能读到 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"} = 1`、`datasource_api_cost_estimated{endpoint="mock.daily_kline"} = 0`，并在先前短窗口观测中读到 `histogram_quantile(0.95, ... datasource_api_latency_seconds_bucket ...) ≈ 0.00475s` 与 `sum(rate(datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}[5m])) ≈ 0.00351 req/s`。这证明 `PM2 backend -> /metrics -> Prometheus scrape -> PromQL` 对延迟、吞吐量和显式 free-cost sample 的主链都已打通；完整本机取证见 `docs/reports/DATA_SOURCE_OPTIMIZATION_V2_LOCAL_PROMETHEUS_RUNTIME_PROOF_2026-05-05.md`。但这些样本仍然只是本机 mock route 的短窗口观测，不覆盖真实灰度流量、持续吞吐窗口或成本下降证据，因此 `8.4` 继续保持未完成。
   - [ ] 8.5 验收确认：
   - [x] 8.5.1 Prometheus 指标可查询
     - [x] Repo-truth（2026-05-05）：本地可查询性已由 `tests/unit/test_metrics.py::test_generate_metrics_exposes_recorded_datasource_metrics` 与当前 Phase 2 change-owned 测试矩阵共同验证；当前证据覆盖 repo-local registry / exposition 查询，不等同于 Prometheus live scrape 部署验收。

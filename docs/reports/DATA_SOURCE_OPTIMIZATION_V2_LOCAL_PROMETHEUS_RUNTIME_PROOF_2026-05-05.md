@@ -132,13 +132,30 @@ sum(rate(datasource_api_calls_total{endpoint="mock.daily_kline",status="success"
 
 这只是短窗口下的本机观测值，不具备业务吞吐量结论意义。
 
+### 3.5 成本样本查询
+
+查询：
+
+```promql
+datasource_api_cost_estimated{endpoint="mock.daily_kline"}
+```
+
+返回：
+
+- `value="0"`
+
+解释：
+
+- 这不是“真实 API 成本已降到 0”，而是 `mock.daily_kline` 当前在 registry 中显式声明为 free endpoint，并通过 `cost.estimated_cny_per_call=0.0` 进入了 canonical runtime metrics 链路。
+- 这条样本的意义是：`PM2 backend -> /metrics -> Prometheus scrape -> PromQL` 现在已经能承载显式成本指标，包括 `0.0` free sample。
+
 ---
 
 ## 4. 当前能安全宣称的结论
 
 1. `mystocks-backend` 的 canonical PM2 `/metrics` 已暴露 `datasource_*` 指标
 2. Prometheus 已在当前监控栈中成功抓取 `host.docker.internal:8020`
-3. `datasource_api_calls_total`、`datasource_api_latency_seconds_bucket` 的 PromQL 查询已跑通
+3. `datasource_api_calls_total`、`datasource_api_latency_seconds_bucket`、`datasource_api_cost_estimated` 的 PromQL 查询已跑通
 4. `PM2 backend -> /metrics -> Prometheus scrape -> PromQL` 当前主链已在本机完成端到端验证
 
 ---
@@ -158,7 +175,7 @@ sum(rate(datasource_api_calls_total{endpoint="mock.daily_kline",status="success"
 - 采样窗口很短
 - 没有真实灰度流量
 - 没有连续观测周期
-- 没有真实成本样本
+- 当前只有显式 free/mock zero-cost sample，没有真实付费成本样本
 
 ---
 

@@ -127,6 +127,7 @@ def _merge_sources(self, db_sources: Dict, yaml_sources: Dict) -> Dict:
             config_fields = [
                 "parameters",
                 "description",
+                "cost",
                 "test_parameters",
                 "source_config",
                 "quality_rules",

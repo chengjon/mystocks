@@ -555,7 +555,7 @@ def _normalize_endpoint_info(endpoint_name: str, endpoint_info: Dict[str, Any]) 
 
 
 def _record_direct_fetch_metrics(endpoint_info: Dict[str, Any], latency: float, *, success: bool) -> None:
-    from src.core.data_source.metrics import get_metrics
+    from src.core.data_source.metrics import get_metrics, resolve_configured_call_cost
 
     total_calls = int(endpoint_info.get("total_calls", 0) or 0)
     failed_calls = int(endpoint_info.get("failed_calls", 0) or 0)
@@ -582,6 +582,7 @@ def _record_direct_fetch_metrics(endpoint_info: Dict[str, Any], latency: float, 
         data_category=endpoint_info.get("data_category", "unknown"),
         latency=latency,
         success=success,
+        cost=resolve_configured_call_cost(endpoint_info),
     )
 
 

@@ -7,7 +7,7 @@ Prometheus 监控指标模块
 import logging
 import time
 from functools import wraps
-from typing import Optional
+from typing import Any, Optional
 
 try:
     from prometheus_client import (
@@ -25,6 +25,31 @@ except ImportError:
     logging.warning("prometheus_client not available, metrics disabled")
 
 logger = logging.getLogger(__name__)
+
+
+def resolve_configured_call_cost(endpoint_info: Any) -> Optional[float]:
+    """Resolve an explicit per-call cost from endpoint configuration."""
+    if not isinstance(endpoint_info, dict):
+        return None
+
+    cost_info = endpoint_info.get("cost")
+    if not isinstance(cost_info, dict):
+        return None
+
+    try:
+        if "estimated_cny_per_call" in cost_info:
+            return float(cost_info["estimated_cny_per_call"])
+
+        if "estimated_cny_per_1000_calls" in cost_info:
+            return float(cost_info["estimated_cny_per_1000_calls"]) / 1000.0
+    except (TypeError, ValueError):
+        logger.warning("Invalid endpoint cost configuration for %s: %r", endpoint_info.get("endpoint_name"), cost_info)
+        return None
+
+    if cost_info.get("is_free") is True:
+        return 0.0
+
+    return None
 
 
 class DataSourceMetrics:
@@ -127,7 +152,7 @@ class DataSourceMetrics:
         data_category: str,
         latency: float,
         success: bool,
-        cost: float = 0.0,
+        cost: Optional[float] = None,
     ):
         """
         记录 API 调用
@@ -137,7 +162,7 @@ class DataSourceMetrics:
             data_category: 数据分类
             latency: 调用延迟 (秒)
             success: 是否成功
-            cost: 估算的成本 (元)
+            cost: 显式声明的单次估算成本 (元)
         """
         if not self.enabled:
             return
@@ -151,10 +176,16 @@ class DataSourceMetrics:
         self.api_calls_total.labels(endpoint=endpoint, data_category=data_category, status=status).inc()
 
         # 记录成本
-        if cost > 0:
-            self.api_cost_estimated.labels(endpoint=endpoint).set(cost)
+        if cost is not None:
+            self.api_cost_estimated.labels(endpoint=endpoint).inc(cost)
 
-        logger.debug("Recorded API call: {endpoint}, latency={latency:.3f}s, " f"status={status}, cost={cost:.4f}")
+        logger.debug(
+            "Recorded API call: %s latency=%.3fs status=%s cost=%s",
+            endpoint,
+            latency,
+            status,
+            "unknown" if cost is None else f"{cost:.4f}",
+        )
 
     def record_cache_hit(self, endpoint: str):
         """
@@ -386,7 +417,7 @@ def track_api_call(metrics: Optional[DataSourceMetrics] = None):
 
                 # 记录成功调用
                 success = True
-                cost = result.get("cost", 0.0) if isinstance(result, dict) else 0.0
+                cost = result.get("cost") if isinstance(result, dict) else None
 
                 metrics.record_api_call(
                     endpoint=endpoint,

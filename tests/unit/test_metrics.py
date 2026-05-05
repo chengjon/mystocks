@@ -74,3 +74,16 @@ def test_generate_metrics_exposes_recorded_datasource_metrics():
     assert "datasource_cache_hits_total" in payload
     assert "datasource_circuit_breaker_state" in payload
     assert metrics.get_content_type()
+
+
+def test_record_api_call_accumulates_explicit_cost_and_exposes_zero_cost_sample():
+    metrics = DataSourceMetrics(registry=CollectorRegistry())
+
+    metrics.record_api_call("paid.endpoint", "DAILY_KLINE", latency=0.25, success=True, cost=0.12)
+    metrics.record_api_call("paid.endpoint", "DAILY_KLINE", latency=0.5, success=True, cost=0.08)
+    metrics.record_api_call("free.endpoint", "DAILY_KLINE", latency=0.1, success=True, cost=0.0)
+
+    payload = metrics.generate_metrics().decode("utf-8")
+
+    assert metrics.api_cost_estimated.labels(endpoint="paid.endpoint")._value.get() == pytest.approx(0.20)
+    assert 'datasource_api_cost_estimated{endpoint="free.endpoint"} 0.0' in payload
