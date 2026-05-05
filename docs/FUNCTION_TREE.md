@@ -178,14 +178,14 @@
 | K线渲染 | ✅ | `web/frontend/src/components/technical/KLineChart.vue` | KLineCharts集成 |
 | 指标叠加 | ✅ | `web/frontend/src/composables/useKLineData.ts` | 多指标叠加显示 |
 | 十字光标 | ✅ | `web/frontend/src/utils/crosshair.ts` | 交互式十字线 |
-| 画线工具 | 🚧 | - | 计划中 |
+| 画线工具 | ✅ | `web/frontend/src/components/technical/KLineChart.vue` | 趋势线、水平线、矩形 |
 
 ### 2.3 技术形态识别 {#domain-02-node-03}
 
 | 形态类型 | 状态 | 说明 |
 |----------|------|------|
 | K线形态 | ✅ | 吞没、锤子线、十字星等 |
-| 图表形态 | 🚧 | 头肩顶底、双顶双底 |
+| 图表形态 | ✅ | `web/backend/app/api/_technical_patterns_router.py`<br>头肩顶底、双顶双底 |
 | 缺口识别 | 📝 | 计划中 |
 
 ---
