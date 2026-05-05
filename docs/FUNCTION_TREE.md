@@ -7,7 +7,7 @@
 > 文内完成度、状态标签、功能归属和稳定 ID 如未重新复核，应视为阶段性快照；但凡本次改动已经改变功能边界、入口或状态，必须在同一变更批次同步更新本文件，不得让 `FUNCTION_TREE.md` 长期滞后于当前实现。
 
 
-> **版本**: 1.1.2 | **更新日期**: 2026-05-03 | **维护者**: 开发团队
+> **版本**: 1.1.3 | **更新日期**: 2026-05-05 | **维护者**: 开发团队
 > **文档类型**: 功能管理 / 功能边界总览 | **状态**: 活跃维护
 
 ---
@@ -297,11 +297,11 @@ Q2 closure note:
 
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
-| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[功能管理工作流](./guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md)<br>[Broker Execution Truth Registry](./guides/quant-trading/broker-execution-truth-registry.md)<br>[Windows qmt Agent / Live Contract 审核稿](./guides/quant-trading/windows-qmt-agent-live-contract-requirements-review.md)<br>[Windows qmt Service Ready Checklist](./guides/quant-trading/windows-qmt-service-ready-checklist.md)<br>[Windows qmt Contract Acceptance Guide](./guides/quant-trading/windows-qmt-agent-contract-acceptance-guide.md) | 交易链路、broker truth 通道拓扑、Windows `qmt` agent 对接要求，以及从 `WSL 上的 Ubuntu 24.04.4 LTS` 侧先做 readiness probe、再做本地 mock-mode 合同联调的入口 |
+| 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[功能管理工作流](./guides/governance/FEATURE_MANAGEMENT_WORKFLOW.md)<br>[Broker Execution Truth Registry](./guides/quant-trading/broker-execution-truth-registry.md)<br>[Windows qmt Agent / Live Contract 审核稿](./guides/quant-trading/windows-qmt-agent-live-contract-requirements-review.md)<br>[Windows qmt Service Ready Checklist](./guides/quant-trading/windows-qmt-service-ready-checklist.md)<br>[Windows qmt Contract Acceptance Guide](./guides/quant-trading/windows-qmt-agent-contract-acceptance-guide.md) | 交易链路、broker truth 通道拓扑、Windows `qmt` agent 对接要求，以及从 `WSL 上的 Ubuntu 24.04.4 LTS` 侧先做 readiness probe、再做本地 mock-mode 合同联调的治理入口 |
 | API/契约入口 | [交易包路由](../web/backend/app/api/trade/__init__.py)<br>[交易主路由](../web/backend/app/api/trade/routes.py)<br>[交易运行时 API](../web/backend/app/api/trading_runtime.py)<br>[交易监控 API](../web/backend/app/api/trading_monitor.py)<br>[旧交易数据实现](../web/backend/app/api/data/trading_api.py) | 主接口以 `trade/` 包路由和运行时 API 为主；`data/trading_api.py` 更偏旧服务实现；交易接口入口 |
 | 前端/交互入口 | [交易主路由目录](../web/frontend/src/views/trade/)<br>[交易终端](../web/frontend/src/views/TradingDashboard.vue)<br>[ArtDeco 交易页](../web/frontend/src/views/artdeco-pages/trading-tabs/)<br>[旧交易工作台](../web/frontend/src/views/trading/)<br>[旧交易决策组件](../web/frontend/src/views/trading-decision/) | 交易主路由入口；旧目录更多承担历史工作台/组件角色；交易交互入口 |
-| 核心代码入口 | [组合应用层](../src/application/portfolio/)<br>[交易应用层](../src/application/trading/)<br>[交易领域模型](../src/domain/trading/)<br>[Windows qmt reference service](../scripts/windows_qmt_agent/app.py) | 交易与持仓实现入口；Windows `qmt` reference service 是当前仓库内 canonical Windows 侧合同实现 |
-| 测试与验证入口 | [交易路由 API 测试](../tests/api/file_tests/test_trade_routes_api.py)<br>[交易 E2E](../tests/e2e/trade-management.spec.ts)<br>[组合 DDD 测试](../tests/ddd/test_phase_5_portfolio.py)<br>[交易应用层 DDD 测试](../tests/ddd/test_phase_7_application.py)<br>[miniQMT live bridge contract 测试](../web/backend/tests/services/test_miniqmt_live_bridge.py)<br>[Windows qmt bridge adapter 测试](../web/backend/tests/services/test_windows_bridge_adapter.py)<br>[Windows qmt reference service 测试](../tests/unit/windows_qmt_agent/test_reference_service.py)<br>[Windows qmt readiness probe 测试](../tests/unit/scripts/test_probe_windows_qmt_service_readiness.py)<br>[Windows qmt acceptance harness 测试](../tests/unit/scripts/test_verify_windows_qmt_agent_contract.py)<br>[Windows qmt formal sequence 测试](../tests/unit/scripts/test_run_windows_qmt_contract_formal_sequence.py)<br>[Windows qmt readiness probe 脚本](../scripts/dev/probe_windows_qmt_service_readiness.py)<br>[Windows qmt acceptance harness 脚本](../scripts/dev/verify_windows_qmt_agent_contract.py)<br>[Windows qmt formal sequence 脚本](../scripts/dev/run_windows_qmt_contract_formal_sequence.py) | 交易与持仓验证入口；broker truth foundation、channel-topology、`miniQMT` primary runtime、authenticated live bridge contract、Windows `qmt` adapter 边界与 Windows 侧 reference service 的当前验证主要落在 `test_phase_7_application.py`、`test_miniqmt_live_bridge.py`、`test_windows_bridge_adapter.py`、`test_reference_service.py`，以及从 `WSL 上的 Ubuntu 24.04.4 LTS` 侧触发的只读 readiness probe、mock-mode acceptance harness 与 formal sequence；对接独立 `miniQMT` v1 kernel 时，应先使用 `probe_windows_qmt_service_readiness.py` 固化 `L1/L2/L3` verdict，再用 `run_windows_qmt_contract_formal_sequence.py` 或 `verify_windows_qmt_agent_contract.py --contract-profile kernel-phase-a` 匹配 `source_name=mock/live` 与 `broker_event_type` 可空的 Phase A 结果语义 |
+| 核心代码入口 | [组合应用层](../src/application/portfolio/)<br>[交易应用层](../src/application/trading/)<br>[交易领域模型](../src/domain/trading/)<br>[Windows qmt reference service](../scripts/windows_qmt_agent/app.py) | 交易与持仓及 Windows `qmt` reference service 的实现入口 |
+| 测试与验证入口 | [交易路由 API 测试](../tests/api/file_tests/test_trade_routes_api.py)<br>[交易 E2E](../tests/e2e/trade-management.spec.ts)<br>[组合 DDD 测试](../tests/ddd/test_phase_5_portfolio.py)<br>[交易应用层 DDD 测试](../tests/ddd/test_phase_7_application.py)<br>[miniQMT live bridge contract 测试](../web/backend/tests/services/test_miniqmt_live_bridge.py)<br>[Windows qmt bridge adapter 测试](../web/backend/tests/services/test_windows_bridge_adapter.py)<br>[Windows qmt reference service 测试](../tests/unit/windows_qmt_agent/test_reference_service.py)<br>[Windows qmt readiness probe 测试](../tests/unit/scripts/test_probe_windows_qmt_service_readiness.py)<br>[Windows qmt acceptance harness 测试](../tests/unit/scripts/test_verify_windows_qmt_agent_contract.py)<br>[Windows qmt formal sequence 测试](../tests/unit/scripts/test_run_windows_qmt_contract_formal_sequence.py)<br>[Windows qmt readiness probe 脚本](../scripts/dev/probe_windows_qmt_service_readiness.py)<br>[Windows qmt acceptance harness 脚本](../scripts/dev/verify_windows_qmt_agent_contract.py)<br>[Windows qmt formal sequence 脚本](../scripts/dev/run_windows_qmt_contract_formal_sequence.py) | 交易与持仓、broker truth foundation、Windows `qmt` adapter 与 reference service 的验证入口 |
 | 运行与排障入口 | [运维手册](./operations/OPS_MANUAL.md)<br>[交易终端](../web/frontend/src/views/TradingDashboard.vue) | 交易排障入口 |
 
 ### 5.1 持仓管理 {#domain-05-node-01}
@@ -420,7 +420,7 @@ Q2 closure note:
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | 新闻情感 | 🚧 | `web/backend/app/api/v1/analysis/sentiment.py`, `src/advanced_analysis/sentiment_analyzer/` | 后端 API 与分析模块已在，但主路由树未见 AI 域独立入口 |
-| 舆情监控 | 📝 | `web/frontend/src/views/risk/News.vue`, `web/backend/app/api/v1/analysis/sentiment.py` | 当前活跃工作台仍归属 `06-风险管理`，不宜视为 `07` 域独立闭环 |
+| 舆情监控 | 🚧 | `web/frontend/src/views/risk/News.vue`, `web/backend/app/api/v1/analysis/sentiment.py` | 风险域工作台与情感 API 已存在，具备实现证据；但当前仍归属 `/risk/news`，未形成 `07` 域独立主入口，因此不宜视为 AI 域独立闭环 |
 
 ---
 
@@ -576,4 +576,4 @@ Q2 closure note:
 
 ---
 
-*最后更新: 2026-05-03*
+*最后更新: 2026-05-05*
