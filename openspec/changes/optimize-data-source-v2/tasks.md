@@ -438,3 +438,6 @@
 >
 > **Iteration closeout anchor（2026-05-05）**:
 > 对于“为什么本轮迭代可以正式收工、且已完成 repo-local 任务应视为闭合”的正式记录，见 `openspec/changes/optimize-data-source-v2/ITERATION_CLOSEOUT_2026-05-05.md`。
+>
+> **External acceptance handoff anchor（2026-05-05）**:
+> 对于“剩余外部项应该按什么顺序收证据、分别需要什么证明材料”的交接文档，见 `docs/reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md`。

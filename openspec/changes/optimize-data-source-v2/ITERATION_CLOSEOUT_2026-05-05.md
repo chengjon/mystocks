@@ -74,6 +74,7 @@ For the current repo-local truth, use:
 2. `openspec/changes/optimize-data-source-v2/REPO_LOCAL_STATUS.md`
 3. `openspec/changes/optimize-data-source-v2/proposal.md`
 4. `openspec/changes/optimize-data-source-v2/design.md`
+5. `docs/reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md`
 
 ## Validation Anchor
 

@@ -46,6 +46,8 @@
   - 与当前运维手册/开发者文档对齐后的部署前检查入口
 - [`DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md`](./DATA_SOURCE_OPTIMIZATION_QUICK_REFERENCE.md)
   - 优化方案快速参考
+- [`../../reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md`](../../reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md)
+  - `optimize-data-source-v2` 当前 repo-local 收口后的外部验收交接入口
 
 ## Retention Rule
 

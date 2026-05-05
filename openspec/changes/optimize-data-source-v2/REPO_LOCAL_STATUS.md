@@ -86,6 +86,12 @@ For the formal statement that this iteration is closed for repo-local work while
 
 `openspec/changes/optimize-data-source-v2/ITERATION_CLOSEOUT_2026-05-05.md`
 
+## External Acceptance Handoff Anchor
+
+For the operator-facing handoff that explains how the remaining external-only items should be executed and evidenced, see:
+
+`docs/reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md`
+
 ## Validation Anchor
 
 At the time this note was updated:
