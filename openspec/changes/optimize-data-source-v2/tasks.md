@@ -275,7 +275,7 @@
 > - 当前 repo-local 代码、测试、benchmark 与文档只能为这些项提供前置条件，不能直接构成完成证据
 >
 > **Repo-local 收口状态（2026-05-05）**:
-> 在 `6.11` 与 `8.5.2` 已被 live 监控栈证据闭合后，Phase 2 的 repo-local 监控链路也已把显式成本样本补齐：canonical PM2 runtime `/metrics` 与本机 Prometheus 现均能查询到 `datasource_api_cost_estimated{endpoint="mock.daily_kline"} = 0`。在此基础上，Phase 2 剩余未闭合项只剩真实灰度发布、灰度窗口指标观测和扩量动作；这些都不能再由仓库内 synthetic benchmark、单机 PM2、或本地 Docker 监控栈替代完成。
+> 在 `6.11` 与 `8.5.2` 已被 live 监控栈证据闭合后，Phase 2 的 repo-local 监控链路又先后补齐了两类隐藏缺口：一是显式成本样本，canonical PM2 runtime `/metrics` 与本机 Prometheus 现均能查询到 `datasource_api_cost_estimated{endpoint="mock.daily_kline"} = 0`；二是 manager-path cache samples，`src/core/data_source/handler.py:_call_endpoint()` 现已真正接入 endpoint-local cache，manager-driven repeated call 可产出 `datasource_cache_misses_total{endpoint="demo.endpoint"} 1.0` 与 `datasource_cache_hits_total{endpoint="demo.endpoint"} 1.0`，并由 `tests/unit/test_data_source_metrics_integration.py::test_call_endpoint_cache_miss_then_hit_records_canonical_cache_metrics`、`::test_backend_metrics_endpoint_includes_cache_hit_and_miss_samples` 与本地 proof script 锁定。在此基础上，Phase 2 剩余未闭合项只剩真实灰度发布、灰度窗口指标观测和扩量动作；这些都不能再由仓库内 synthetic benchmark、单机 PM2、或本地 Docker 监控栈替代完成。
 
 - [x] 8.1 运行所有单元测试和集成测试
   - [x] Repo-truth（2026-05-05）：已通过 change-owned Phase 2 本地矩阵 `pytest tests/unit/test_smart_router.py tests/unit/test_smart_router_integration.py tests/unit/test_metrics.py tests/unit/test_data_source_metrics_integration.py src/governance/tests/test_fetcher_bridge.py tests/integration/test_batch_processing.py tests/unit/adapters/test_runtime_data_source_regressions.py -q --no-cov`，结果 `36 passed`。
