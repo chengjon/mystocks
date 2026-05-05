@@ -15,6 +15,8 @@
 import importlib
 import logging
 import os
+import time
+from datetime import datetime
 from typing import Any, Dict
 
 import pandas as pd
@@ -488,3 +490,103 @@ class WebCrawlerHandler(BaseDataSourceHandler):
     def __del__(self):
         """析构函数"""
         self.close()
+
+
+class InstrumentedHandlerProxy:
+    """Wrap direct handler fetches so manual route calls still emit canonical metrics."""
+
+    def __init__(self, handler: BaseDataSourceHandler, endpoint_info: Dict[str, Any]):
+        self._handler = handler
+        self._endpoint_info = endpoint_info
+
+    def __getattr__(self, name: str) -> Any:
+        return getattr(self._handler, name)
+
+    def fetch(self, **kwargs) -> pd.DataFrame:
+        start_time = time.perf_counter()
+
+        try:
+            data = self._handler.fetch(**kwargs)
+        except Exception:
+            _record_direct_fetch_metrics(self._endpoint_info, time.perf_counter() - start_time, success=False)
+            raise
+
+        _record_direct_fetch_metrics(
+            self._endpoint_info,
+            time.perf_counter() - start_time,
+            success=True,
+        )
+        return data
+
+
+def _resolve_api_library_handler(source_name: str) -> type[BaseDataSourceHandler]:
+    return {
+        "akshare": AkshareHandler,
+        "tushare": TushareHandler,
+        "baostock": TushareHandler,
+    }.get(source_name, AkshareHandler)
+
+
+def _resolve_handler_class(endpoint_info: Dict[str, Any]) -> type[BaseDataSourceHandler]:
+    source_type = endpoint_info.get("source_type", "")
+    source_name = endpoint_info.get("source_name", "")
+
+    handler_map: Dict[str, type[BaseDataSourceHandler]] = {
+        "akshare": AkshareHandler,
+        "tushare": TushareHandler,
+        "baostock": BaostockHandler,
+        "tdx": TdxHandler,
+        "database": TdxHandler,
+        "crawler": WebCrawlerHandler,
+        "mock": MockHandler,
+        "api_library": _resolve_api_library_handler(source_name),
+    }
+
+    handler_class = handler_map.get(source_type)
+    if handler_class is None:
+        raise ValueError(f"不支持的数据源类型: {source_type}")
+    return handler_class
+
+
+def _normalize_endpoint_info(endpoint_name: str, endpoint_info: Dict[str, Any]) -> Dict[str, Any]:
+    normalized = dict(endpoint_info)
+    normalized.setdefault("endpoint_name", endpoint_name)
+    return normalized
+
+
+def _record_direct_fetch_metrics(endpoint_info: Dict[str, Any], latency: float, *, success: bool) -> None:
+    from src.core.data_source.metrics import get_metrics
+
+    total_calls = int(endpoint_info.get("total_calls", 0) or 0)
+    failed_calls = int(endpoint_info.get("failed_calls", 0) or 0)
+
+    if success:
+        old_avg = float(endpoint_info.get("avg_response_time", 0.0) or 0.0)
+        new_total_calls = total_calls + 1
+        endpoint_info["avg_response_time"] = (old_avg * total_calls + latency) / new_total_calls
+        endpoint_info["total_calls"] = new_total_calls
+        endpoint_info["success_rate"] = (new_total_calls - failed_calls) / new_total_calls * 100
+        endpoint_info["consecutive_failures"] = 0
+        endpoint_info["health_status"] = "degraded" if latency > 5.0 else "healthy"
+        endpoint_info["last_success_time"] = datetime.now()
+    else:
+        consecutive_failures = int(endpoint_info.get("consecutive_failures", 0) or 0) + 1
+        endpoint_info["failed_calls"] = failed_calls + 1
+        endpoint_info["consecutive_failures"] = consecutive_failures
+        endpoint_info["last_failure_time"] = datetime.now()
+        if consecutive_failures >= 3:
+            endpoint_info["health_status"] = "failed"
+
+    get_metrics().record_api_call(
+        endpoint=endpoint_info["endpoint_name"],
+        data_category=endpoint_info.get("data_category", "unknown"),
+        latency=latency,
+        success=success,
+    )
+
+
+def get_handler(endpoint_name: str, endpoint_info: Dict[str, Any]) -> BaseDataSourceHandler:
+    """Compatibility factory for direct route callers that still use handler.fetch()."""
+    normalized = _normalize_endpoint_info(endpoint_name, endpoint_info)
+    handler_class = _resolve_handler_class(normalized)
+    return InstrumentedHandlerProxy(handler_class(normalized), normalized)

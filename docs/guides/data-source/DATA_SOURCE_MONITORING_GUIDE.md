@@ -45,6 +45,7 @@
 > **Repo-truth 更新（2026-05-05）**:
 > - backend `web/backend/app/core/middleware/performance.py:metrics_endpoint()` 现已在运行时 `/metrics` 响应中合并 `src.core.data_source.metrics.get_metrics().generate_metrics()` 的 canonical `datasource_*` payload，不再只暴露 performance middleware 的全局 `REGISTRY`。
 > - 因此，只要当前 backend 进程内确实发生了 `DataSourceManagerV2` 调用，Prometheus 抓取 `http://localhost:8020/metrics` 时就可以看到 `datasource_api_latency_seconds`、`datasource_api_calls_total`、`datasource_cache_hits_total` 等时间序列。
+> - backend `web/backend/app/api/data_source_registry.py:test_data_source()` 仍保留 direct handler 形态，但 `src/core/data_source_handlers_v2.py` 现已补入 compatibility `get_handler()` 工厂与轻量 instrumentation proxy；因此在具备合法认证的环境里，`POST /api/v1/data-sources/{endpoint_name}/test` 现在也能记录 canonical `datasource_*` 样本，而不需要继续修改该超大路由文件。
 > - 这项修复解决的是“canonical metrics 能否被 runtime 暴露”的 repo-local 接线问题，不等同于 `8.4 / 8.5.4` 所要求的真实灰度窗口监控样本。
 
 ---
@@ -109,6 +110,8 @@ curl http://localhost:8020/metrics | rg "http_request|slow_http_requests|datasou
 ```
 
 当前 repo-truth 下，runtime `/metrics` 已经会合并 `src/core/data_source/metrics.py` 的 canonical registry；因此只要 backend 进程里产生过真实数据源调用，这里就应该看到 `datasource_*` 指标。若暂时看不到，优先判断的是“是否尚未产生对应数据源流量”，而不是“runtime 一定没接这组 metrics”。
+
+在需要本地手动触发这组流量时，当前仓库里可直接复用 `POST /api/v1/data-sources/{endpoint_name}/test`。这条路由虽然仍走 handler factory，但其兼容工厂已经补上 canonical metrics instrumentation，因此也会把 `datasource_*` 指标打进 runtime `/metrics`。
 
 ### 路径 B：直接验证数据源局部 exposition（本地验证）
 

@@ -1,9 +1,14 @@
+import sys
+from pathlib import Path
 from unittest.mock import patch
 
+import pytest
 from prometheus_client import CollectorRegistry
 
 from src.core.data_source.circuit_breaker import CircuitBreaker
 from src.core.data_source.metrics import DataSourceMetrics
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def test_record_success_updates_runtime_stats_and_prometheus_metrics(monkeypatch):
@@ -65,3 +70,56 @@ def test_backend_metrics_endpoint_includes_canonical_datasource_metrics(monkeypa
 
     assert "datasource_api_calls_total" in body
     assert 'endpoint="demo.endpoint"' in body
+
+
+@pytest.mark.asyncio
+async def test_manual_datasource_test_route_records_canonical_metrics(monkeypatch):
+    backend_root = REPO_ROOT / "web" / "backend"
+    if str(backend_root) not in sys.path:
+        sys.path.insert(0, str(backend_root))
+
+    from app.api import data_source_registry as registry_module
+    from src.core.data_source import metrics as metrics_module
+
+    class FakeManager:
+        def __init__(self):
+            self.registry = {
+                "demo.daily_kline": {
+                    "config": {
+                        "data_category": "DAILY_KLINE",
+                        "source_type": "mock",
+                        "source_name": "demo",
+                    }
+                }
+            }
+
+    manager = FakeManager()
+    metrics = DataSourceMetrics(registry=CollectorRegistry())
+    monkeypatch.setattr(registry_module, "get_manager", lambda: manager)
+    monkeypatch.setattr(registry_module, "_require_write_auth", lambda authorization: None)
+    monkeypatch.setattr(metrics_module, "_global_metrics", metrics)
+
+    response = await registry_module.test_data_source(
+        endpoint_name="demo.daily_kline",
+        request=registry_module.TestRequest(
+            test_params={
+                "symbol": "000001",
+                "start_date": "20240102",
+                "end_date": "20240103",
+            }
+        ),
+        authorization="Bearer local-test",
+    )
+
+    assert response["success"] is True
+    assert response["row_count"] >= 1
+    assert response["error"] is None
+    assert response["quality_checks"]["has_data"] is True
+    assert (
+        metrics.api_calls_total.labels(
+            endpoint="demo.daily_kline",
+            data_category="DAILY_KLINE",
+            status="success",
+        )._value.get()
+        == 1
+    )
