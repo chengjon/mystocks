@@ -102,7 +102,7 @@ def test_detect_patterns_returns_503_when_detection_service_fails(monkeypatch):
     response = client.get("/patterns/600519.SH", params={"period": "daily"})
 
     assert response.status_code == 503
-    assert "Pattern analysis unavailable" in response.json()["detail"]
+    assert response.json()["detail"] == "Pattern analysis unavailable"
 
 
 def test_detect_patterns_returns_available_structured_payload_when_service_finds_detection(monkeypatch):

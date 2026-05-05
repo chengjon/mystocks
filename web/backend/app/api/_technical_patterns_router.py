@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import get_args
 
 from fastapi import APIRouter, HTTPException, Path, Query, status
@@ -11,6 +12,7 @@ from app.core.responses import UnifiedResponse
 from app.openapi_config import COMMON_RESPONSES
 from app.services.technical_pattern_detection_service import TechnicalPatternDetectionService
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 SUPPORTED_PATTERN_PERIODS = get_args(PatternPeriod)
 
@@ -61,9 +63,10 @@ async def _detect_patterns_for_symbol(symbol: str, period: str) -> list[PatternD
     except HTTPException:
         raise
     except Exception as exc:
+        logger.warning("Pattern analysis unavailable for %s/%s: %s", symbol, period, exc)
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail=f"Pattern analysis unavailable: {exc}",
+            detail="Pattern analysis unavailable",
         ) from exc
 
 

@@ -66,6 +66,7 @@ def _detect_double_top(frame: pd.DataFrame) -> list[DetectedPattern]:
     highs = frame["high"].tolist()
     lows = frame["low"].tolist()
     closes = frame["close"].tolist()
+    candidates: list[DetectedPattern] = []
 
     for left_peak, right_peak in _adjacent_pairs(peaks):
         if right_peak - left_peak < 2:
@@ -92,7 +93,7 @@ def _detect_double_top(frame: pd.DataFrame) -> list[DetectedPattern]:
             continue
 
         confidence = round(max(0.55, min(0.95, 1.0 - peak_gap_ratio - max(0.0, 0.08 - retracement_ratio))), 4)
-        return [
+        candidates.append(
             DetectedPattern(
                 pattern_name="double_top",
                 direction="bearish",
@@ -103,9 +104,9 @@ def _detect_double_top(frame: pd.DataFrame) -> list[DetectedPattern]:
                     _anchor(frame, right_peak, "right_peak", "high"),
                 ],
             )
-        ]
+        )
 
-    return []
+    return _select_preferred_pattern(candidates)
 
 
 def _detect_double_bottom(frame: pd.DataFrame) -> list[DetectedPattern]:
@@ -116,6 +117,7 @@ def _detect_double_bottom(frame: pd.DataFrame) -> list[DetectedPattern]:
     highs = frame["high"].tolist()
     lows = frame["low"].tolist()
     closes = frame["close"].tolist()
+    candidates: list[DetectedPattern] = []
 
     for left_bottom, right_bottom in _adjacent_pairs(bottoms):
         if right_bottom - left_bottom < 2:
@@ -142,7 +144,7 @@ def _detect_double_bottom(frame: pd.DataFrame) -> list[DetectedPattern]:
             continue
 
         confidence = round(max(0.55, min(0.95, 1.0 - bottom_gap_ratio - max(0.0, 0.08 - rebound_ratio))), 4)
-        return [
+        candidates.append(
             DetectedPattern(
                 pattern_name="double_bottom",
                 direction="bullish",
@@ -153,9 +155,9 @@ def _detect_double_bottom(frame: pd.DataFrame) -> list[DetectedPattern]:
                     _anchor(frame, right_bottom, "right_bottom", "low"),
                 ],
             )
-        ]
+        )
 
-    return []
+    return _select_preferred_pattern(candidates)
 
 
 def _detect_head_shoulders_top(frame: pd.DataFrame) -> list[DetectedPattern]:
@@ -165,6 +167,8 @@ def _detect_head_shoulders_top(frame: pd.DataFrame) -> list[DetectedPattern]:
 
     highs = frame["high"].tolist()
     lows = frame["low"].tolist()
+    closes = frame["close"].tolist()
+    candidates: list[DetectedPattern] = []
 
     for left_shoulder, head, right_shoulder in _sliding_triplets(peaks):
         if head - left_shoulder < 2 or right_shoulder - head < 2:
@@ -182,12 +186,27 @@ def _detect_head_shoulders_top(frame: pd.DataFrame) -> list[DetectedPattern]:
 
         left_neckline = min(range(left_shoulder + 1, head), key=lambda idx: lows[idx])
         right_neckline = min(range(head + 1, right_shoulder), key=lambda idx: lows[idx])
+        neckline_level = min(lows[left_neckline], lows[right_neckline])
+        head_prominence_ratio = (head_value - shoulder_avg) / shoulder_avg
+        neckline_depth_ratio = (shoulder_avg - neckline_level) / shoulder_avg
+        trailing_closes = closes[right_shoulder + 1 :] or [closes[right_shoulder]]
 
-        return [
+        if head_prominence_ratio < 0.03 or neckline_depth_ratio < 0.03:
+            continue
+
+        if min(trailing_closes) > neckline_level * 1.02:
+            continue
+
+        confidence = round(
+            max(0.55, min(0.92, 0.55 + head_prominence_ratio + neckline_depth_ratio - abs(left_value - right_value) / shoulder_avg)),
+            4,
+        )
+
+        candidates.append(
             DetectedPattern(
                 pattern_name="head_shoulders_top",
                 direction="bearish",
-                confidence=0.7,
+                confidence=confidence,
                 anchor_points=[
                     _anchor(frame, left_shoulder, "left_shoulder", "high"),
                     _anchor(frame, left_neckline, "left_neckline", "low"),
@@ -196,9 +215,9 @@ def _detect_head_shoulders_top(frame: pd.DataFrame) -> list[DetectedPattern]:
                     _anchor(frame, right_shoulder, "right_shoulder", "high"),
                 ],
             )
-        ]
+        )
 
-    return []
+    return _select_preferred_pattern(candidates)
 
 
 def _detect_head_shoulders_bottom(frame: pd.DataFrame) -> list[DetectedPattern]:
@@ -208,6 +227,8 @@ def _detect_head_shoulders_bottom(frame: pd.DataFrame) -> list[DetectedPattern]:
 
     lows = frame["low"].tolist()
     highs = frame["high"].tolist()
+    closes = frame["close"].tolist()
+    candidates: list[DetectedPattern] = []
 
     for left_shoulder, head, right_shoulder in _sliding_triplets(bottoms):
         if head - left_shoulder < 2 or right_shoulder - head < 2:
@@ -225,12 +246,27 @@ def _detect_head_shoulders_bottom(frame: pd.DataFrame) -> list[DetectedPattern]:
 
         left_neckline = max(range(left_shoulder + 1, head), key=lambda idx: highs[idx])
         right_neckline = max(range(head + 1, right_shoulder), key=lambda idx: highs[idx])
+        neckline_level = max(highs[left_neckline], highs[right_neckline])
+        head_prominence_ratio = (shoulder_avg - head_value) / shoulder_avg
+        neckline_height_ratio = (neckline_level - shoulder_avg) / shoulder_avg
+        trailing_closes = closes[right_shoulder + 1 :] or [closes[right_shoulder]]
 
-        return [
+        if head_prominence_ratio < 0.03 or neckline_height_ratio < 0.03:
+            continue
+
+        if max(trailing_closes) < neckline_level * 0.98:
+            continue
+
+        confidence = round(
+            max(0.55, min(0.92, 0.55 + head_prominence_ratio + neckline_height_ratio - abs(left_value - right_value) / shoulder_avg)),
+            4,
+        )
+
+        candidates.append(
             DetectedPattern(
                 pattern_name="head_shoulders_bottom",
                 direction="bullish",
-                confidence=0.7,
+                confidence=confidence,
                 anchor_points=[
                     _anchor(frame, left_shoulder, "left_shoulder", "low"),
                     _anchor(frame, left_neckline, "left_neckline", "high"),
@@ -239,9 +275,9 @@ def _detect_head_shoulders_bottom(frame: pd.DataFrame) -> list[DetectedPattern]:
                     _anchor(frame, right_shoulder, "right_shoulder", "low"),
                 ],
             )
-        ]
+        )
 
-    return []
+    return _select_preferred_pattern(candidates)
 
 
 def _local_extrema(series: pd.Series, kind: Literal["max", "min"]) -> list[int]:
@@ -273,3 +309,11 @@ def _adjacent_pairs(indices: list[int]) -> list[tuple[int, int]]:
 
 def _sliding_triplets(indices: list[int]) -> list[tuple[int, int, int]]:
     return [(indices[idx], indices[idx + 1], indices[idx + 2]) for idx in range(len(indices) - 2)]
+
+
+def _select_preferred_pattern(candidates: list[DetectedPattern]) -> list[DetectedPattern]:
+    if not candidates:
+        return []
+
+    preferred = max(candidates, key=lambda candidate: (candidate.anchor_points[-1].timestamp, candidate.confidence))
+    return [preferred]

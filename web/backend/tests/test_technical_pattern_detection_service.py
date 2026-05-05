@@ -57,6 +57,45 @@ def _build_head_shoulders_bottom_frame() -> pd.DataFrame:
     )
 
 
+def _build_multiple_double_top_candidates_frame() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "date": pd.date_range("2026-05-01", periods=11, freq="D"),
+            "open": [10.0, 10.8, 11.1, 10.5, 11.0, 10.7, 10.8, 11.8, 10.3, 11.7, 9.8],
+            "high": [10.2, 10.9, 11.2, 10.7, 11.1, 10.8, 10.9, 12.0, 10.8, 11.9, 10.1],
+            "low": [9.9, 10.5, 10.8, 10.4, 10.9, 10.6, 10.7, 11.4, 10.1, 11.3, 9.6],
+            "close": [10.0, 10.8, 11.1, 10.5, 11.0, 10.7, 10.8, 11.8, 10.3, 11.7, 9.7],
+            "volume": [100, 120, 140, 130, 150, 145, 155, 180, 165, 175, 190],
+        }
+    )
+
+
+def _build_head_shoulders_top_near_miss_frame() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "date": pd.date_range("2026-06-01", periods=7, freq="D"),
+            "open": [10.2, 11.6, 11.0, 11.9, 11.1, 11.6, 11.3],
+            "high": [10.5, 12.0, 11.0, 12.1, 11.1, 11.9, 11.5],
+            "low": [10.0, 11.3, 10.9, 11.4, 10.95, 11.2, 11.0],
+            "close": [10.3, 11.8, 11.0, 12.0, 11.1, 11.7, 11.2],
+            "volume": [100, 140, 120, 180, 130, 150, 155],
+        }
+    )
+
+
+def _build_head_shoulders_bottom_near_miss_frame() -> pd.DataFrame:
+    return pd.DataFrame(
+        {
+            "date": pd.date_range("2026-07-01", periods=7, freq="D"),
+            "open": [12.2, 11.0, 11.8, 10.9, 11.7, 11.1, 11.2],
+            "high": [12.5, 11.2, 12.0, 11.1, 12.1, 11.3, 11.6],
+            "low": [12.0, 10.8, 11.5, 10.7, 11.4, 10.9, 11.2],
+            "close": [12.3, 11.0, 11.9, 10.9, 11.8, 11.2, 11.1],
+            "volume": [110, 150, 125, 185, 135, 145, 150],
+        }
+    )
+
+
 def test_detect_patterns_returns_double_top_with_ordered_anchor_roles():
     service = TechnicalPatternDetectionService()
 
@@ -94,6 +133,33 @@ def test_detect_patterns_returns_head_shoulders_top_with_ordered_anchor_roles():
         "right_shoulder",
     ]
     assert 0.0 <= detections[0].confidence <= 1.0
+
+
+def test_detect_patterns_prefers_the_more_recent_double_top_candidate():
+    service = TechnicalPatternDetectionService()
+
+    detections = service.detect_from_history_frame(_build_multiple_double_top_candidates_frame())
+
+    assert detections
+    assert detections[0].pattern_name == "double_top"
+    assert detections[0].anchor_points[0].timestamp == int(pd.Timestamp("2026-05-08").value // 1_000_000)
+    assert detections[0].anchor_points[2].timestamp == int(pd.Timestamp("2026-05-10").value // 1_000_000)
+
+
+def test_detect_patterns_does_not_emit_head_shoulders_top_without_break_confirmation():
+    service = TechnicalPatternDetectionService()
+
+    detections = service.detect_from_history_frame(_build_head_shoulders_top_near_miss_frame())
+
+    assert "head_shoulders_top" not in {detection.pattern_name for detection in detections}
+
+
+def test_detect_patterns_does_not_emit_head_shoulders_bottom_without_break_confirmation():
+    service = TechnicalPatternDetectionService()
+
+    detections = service.detect_from_history_frame(_build_head_shoulders_bottom_near_miss_frame())
+
+    assert "head_shoulders_bottom" not in {detection.pattern_name for detection in detections}
 
 
 def test_detect_patterns_returns_head_shoulders_bottom_with_ordered_anchor_roles():
