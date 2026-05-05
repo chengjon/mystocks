@@ -19,6 +19,15 @@ type PatternDetection = {
   pattern_name: string;
   direction: string;
   confidence: number;
+  gap_side?: string | null;
+  gap_fill_status?: string | null;
+  gap_zone?: {
+    start_timestamp: number;
+    end_timestamp: number;
+    upper_value: number;
+    lower_value: number;
+    filled_at: number | null;
+  } | null;
   anchor_points: PatternAnchorPoint[];
 };
 
@@ -34,6 +43,7 @@ const MANUAL_OVERLAY_BY_TOOL: Record<Exclude<ManualDrawingTool, null>, string> =
 };
 
 let rectangleOverlayRegistered = false;
+let gapZoneOverlayRegistered = false;
 
 function ensureRectangleOverlayRegistered() {
   if (rectangleOverlayRegistered) {
@@ -64,10 +74,69 @@ function ensureRectangleOverlayRegistered() {
   rectangleOverlayRegistered = true;
 }
 
+function ensureGapZoneOverlayRegistered() {
+  if (gapZoneOverlayRegistered) {
+    return;
+  }
+
+  registerOverlay({
+    name: "mvpGapZone",
+    totalStep: 2,
+    createPointFigures: ({ coordinates }) => {
+      if (!coordinates || coordinates.length < 2) {
+        return null;
+      }
+
+      const [start, end] = coordinates;
+      return {
+        type: "rect",
+        attrs: {
+          x: Math.min(start.x, end.x),
+          y: Math.min(start.y, end.y),
+          width: Math.max(Math.abs(end.x - start.x), 1),
+          height: Math.max(Math.abs(end.y - start.y), 1),
+        },
+      };
+    },
+  });
+
+  gapZoneOverlayRegistered = true;
+}
+
 function buildAutomaticPatternOverlays(patterns: PatternDetection[]) {
   return patterns
-    .filter((pattern) => Array.isArray(pattern.anchor_points) && pattern.anchor_points.length > 1)
     .flatMap((pattern) => {
+      if (pattern.gap_zone) {
+        return [{
+          name: "mvpGapZone",
+          paneId: "candle_pane",
+          points: [
+            {
+              timestamp: pattern.gap_zone.start_timestamp,
+              value: pattern.gap_zone.upper_value,
+            },
+            {
+              timestamp: pattern.gap_zone.end_timestamp,
+              value: pattern.gap_zone.lower_value,
+            },
+          ],
+          extendData: {
+            source: "AUTO",
+            patternName: pattern.pattern_name,
+            gapSide: pattern.gap_side,
+            gapFillStatus: pattern.gap_fill_status,
+            upperValue: pattern.gap_zone.upper_value,
+            lowerValue: pattern.gap_zone.lower_value,
+            confidence: pattern.confidence,
+            direction: pattern.direction,
+          },
+        }];
+      }
+
+      if (!Array.isArray(pattern.anchor_points) || pattern.anchor_points.length <= 1) {
+        return [];
+      }
+
       const points = pattern.anchor_points.map((point) => ({
         timestamp: point.timestamp,
         value: point.value,
@@ -183,7 +252,11 @@ export function useKLinePatternOverlays(
         throw new Error(response?.message || "automatic pattern request failed");
       }
 
-      syncAutomaticOverlays(buildAutomaticPatternOverlays(response.data.patterns as PatternDetection[]));
+      const patterns = response.data.patterns as PatternDetection[];
+      if (patterns.some((pattern) => pattern.gap_zone)) {
+        ensureGapZoneOverlayRegistered();
+      }
+      syncAutomaticOverlays(buildAutomaticPatternOverlays(patterns));
     } catch (error) {
       if (requestId !== patternRequestSequence.value) {
         return;

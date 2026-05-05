@@ -186,6 +186,17 @@ describe("KLineChart overlays", () => {
       }),
       "candle_pane",
     );
+
+    const setupState = wrapper.vm.$.setupState as {
+      startManualDrawing: (tool: "trendline" | "horizontalLine" | "rectangle") => void
+    };
+
+    setupState.startManualDrawing("trendline");
+
+    expect(chartInstance?.createOverlay).toHaveBeenLastCalledWith(
+      expect.objectContaining({ name: "segment" }),
+      "candle_pane",
+    );
   });
 
   it("surfaces a user-facing warning when automatic pattern loading fails without hiding manual tools", async () => {
@@ -232,17 +243,19 @@ describe("KLineChart overlays", () => {
           period: "daily",
           patterns: [
             {
-              pattern_name: "double_bottom",
+              pattern_name: "runaway_gap",
               direction: "bullish",
               confidence: 0.77,
-              gap_side: null,
-              gap_fill_status: null,
-              gap_zone: null,
-              anchor_points: [
-                { role: "left_bottom", timestamp: 11, value: 9.5 },
-                { role: "neckline", timestamp: 12, value: 10.1 },
-                { role: "right_bottom", timestamp: 13, value: 9.6 },
-              ],
+              gap_side: "up",
+              gap_fill_status: "partially_filled",
+              gap_zone: {
+                start_timestamp: 11,
+                end_timestamp: 13,
+                upper_value: 10.2,
+                lower_value: 9.9,
+                filled_at: null,
+              },
+              anchor_points: [],
             },
           ],
         },
@@ -257,11 +270,12 @@ describe("KLineChart overlays", () => {
     await flushPromises();
 
     const chartInstance = vi.mocked(init).mock.results.at(-1)?.value;
-    expect(chartInstance?.createOverlay).toHaveBeenCalledTimes(2);
+    expect(chartInstance?.createOverlay).toHaveBeenCalledTimes(1);
     expect(chartInstance?.createOverlay).toHaveBeenNthCalledWith(
       1,
       expect.objectContaining({
-        extendData: expect.objectContaining({ patternName: "double_bottom" }),
+        name: "mvpGapZone",
+        extendData: expect.objectContaining({ patternName: "runaway_gap" }),
       }),
       "candle_pane",
     );
@@ -291,10 +305,10 @@ describe("KLineChart overlays", () => {
     });
     await flushPromises();
 
-    expect(chartInstance?.createOverlay).toHaveBeenCalledTimes(2);
+    expect(chartInstance?.createOverlay).toHaveBeenCalledTimes(1);
   });
 
-  it("clears automatic overlays for unsupported non-daily periods while keeping manual tools available", async () => {
+  it("clears rendered gap overlays for unsupported non-daily periods while keeping manual tools available", async () => {
     getPatternsMock.mockResolvedValue({
       success: true,
       data: {
@@ -303,17 +317,19 @@ describe("KLineChart overlays", () => {
         period: "daily",
         patterns: [
           {
-            pattern_name: "double_top",
-            direction: "bearish",
+            pattern_name: "breakaway_gap",
+            direction: "bullish",
             confidence: 0.82,
-            gap_side: null,
-            gap_fill_status: null,
-            gap_zone: null,
-            anchor_points: [
-              { role: "left_peak", timestamp: 1, value: 10.5 },
-              { role: "neckline", timestamp: 2, value: 9.8 },
-              { role: "right_peak", timestamp: 3, value: 10.4 },
-            ],
+            gap_side: "up",
+            gap_fill_status: "open",
+            gap_zone: {
+              start_timestamp: 1,
+              end_timestamp: 3,
+              upper_value: 10.8,
+              lower_value: 10.25,
+              filled_at: null,
+            },
+            anchor_points: [],
           },
         ],
       },
@@ -334,7 +350,6 @@ describe("KLineChart overlays", () => {
 
     expect(wrapper.text()).toContain("自动形态当前仅支持日线视图");
     expect(chartInstance?.removeOverlay).toHaveBeenCalledWith("overlay-1");
-    expect(chartInstance?.removeOverlay).toHaveBeenCalledWith("overlay-2");
     expect(wrapper.text()).toContain("趋势线");
     expect(wrapper.text()).toContain("水平线");
     expect(wrapper.text()).toContain("矩形");
