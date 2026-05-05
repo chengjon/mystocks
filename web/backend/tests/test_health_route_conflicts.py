@@ -1010,7 +1010,7 @@ def test_indicator_registry_endpoints_have_request_examples_and_parameter_docs()
     assert any(code.startswith(("4", "5")) for code in detail_operation["responses"])
 
 
-def test_sentiment_and_technical_pattern_endpoints_have_docs_examples_and_parameter_descriptions() -> None:
+def test_sentiment_endpoint_has_docs_examples_and_parameter_descriptions() -> None:
     app.openapi_schema = None
     schema = app.openapi()
 
@@ -1030,6 +1030,11 @@ def test_sentiment_and_technical_pattern_endpoints_have_docs_examples_and_parame
     assert sentiment_example["data"]["key_phrases"]
     assert any(code.startswith(("4", "5")) for code in sentiment_operation["responses"])
 
+
+def test_technical_patterns_endpoint_has_docs_examples_and_parameter_descriptions() -> None:
+    app.openapi_schema = None
+    schema = app.openapi()
+
     patterns_operation = schema["paths"]["/api/v1/technical/patterns/{symbol}"]["get"]
     patterns_parameters = patterns_operation.get("parameters", [])
     patterns_success_json = patterns_operation["responses"]["200"]["content"]["application/json"]
@@ -1039,6 +1044,13 @@ def test_sentiment_and_technical_pattern_endpoints_have_docs_examples_and_parame
     for parameter_name in ["symbol", "period"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in patterns_parameters)
     assert "example" in patterns_success_json or "examples" in patterns_success_json
+    patterns_example = patterns_success_json.get("example") or next(iter(patterns_success_json["examples"].values()))["value"]
+    assert patterns_example["success"] is True
+    assert patterns_example["code"] == 200
+    assert patterns_example["data"]["symbol"]
+    assert patterns_example["data"]["period"] in {"daily", "weekly", "monthly"}
+    assert patterns_example["data"]["status"] in {"available", "empty"}
+    assert isinstance(patterns_example["data"]["patterns"], list)
     assert any(code.startswith(("4", "5")) for code in patterns_operation["responses"])
 
 
