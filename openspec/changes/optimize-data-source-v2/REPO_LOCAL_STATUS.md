@@ -28,6 +28,11 @@ What is already true inside the repository:
 3. Phase 2 repo-local implementation, metrics integration, monitoring asset references, tests, and local benchmark evidence are already recorded in `tasks.md`
 4. Phase 3 optional repo-local components, tests, and local integration evidence are already recorded in `tasks.md`
 5. Supporting reports, guides, and operational documentation already exist in-repo and are referenced from `tasks.md`
+6. The remaining cache hit/miss proof boundary has been explicitly inventory-checked:
+   current canonical PM2 public routes do not naturally traverse `DataSourceManagerV2` endpoint-local cache.
+   `POST /api/v1/data-sources/{endpoint_name}/test` is direct handler instrumentation,
+   `/backtest/*` currently uses `DataService`,
+   and `/api/v1/strategy/backtest/run` only persists a record and launches a mock-timeseries background task.
 
 ## Remaining Unchecked Tasks
 
@@ -57,6 +62,12 @@ These tasks cannot be truthfully completed by local code edits, synthetic benchm
 4. meeting records or explicit release timing
 5. confirmation that the change is actually ready to archive
 
+An additional boundary now matters for monitoring claims:
+
+6. obtaining PM2 public-route cache hit/miss samples would require a new approved behavior change,
+   not more investigation of existing routes, because no mounted public HTTP route currently goes through
+   `DataSourceManagerV2.get_stock_daily()` / `get_stock_realtime()` in a way that exercises endpoint-local cache
+
 ## Practical Next Step
 
 The practical next step is **not** more repository implementation.
@@ -67,6 +78,7 @@ Instead, the next valid moves are:
 2. collect live metric evidence
 3. update `tasks.md` only when those external acceptance conditions are truly satisfied
 4. archive the change only after the deployment-side checklist is complete
+5. if PM2 public-route cache hit/miss proof is still required, create a new approved behavior change rather than treating it as unfinished repo-local plumbing
 
 ## Iteration Closeout Anchor
 

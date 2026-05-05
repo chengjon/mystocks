@@ -25,6 +25,8 @@ The closeout scope includes:
 3. Phase 3 optional repo-local components, local tests, and local integration evidence
 4. Supporting repo-local guides, reports, quick references, deployment checklist, and developer documentation
 5. Repo-local truth clarification that no unchecked item can be honestly completed through additional local code edits alone
+6. Repo-local truth clarification that current canonical PM2 public routes do not naturally pass through
+   `DataSourceManagerV2` endpoint-local cache, so public-route cache hit/miss proof is outside the closed iteration
 
 ## What This Closeout Means
 
@@ -33,6 +35,7 @@ After this closeout:
 1. no new repo-local implementation work is required to advance the current iteration
 2. completed local tasks should be treated as closed unless later regression evidence reopens them
 3. remaining unchecked tasks stay open because they require external deployment, live observation, acceptance, or archive timing
+4. any future attempt to obtain PM2 public-route cache hit/miss proof must be treated as a new approved behavior change, not as unfinished local wiring
 
 ## What This Closeout Does Not Mean
 
