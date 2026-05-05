@@ -73,6 +73,9 @@ describe("KLineChart overlays", () => {
             pattern_name: "double_top",
             direction: "bearish",
             confidence: 0.82,
+            gap_side: null,
+            gap_fill_status: null,
+            gap_zone: null,
             anchor_points: [
               { role: "left_peak", timestamp: 1, value: 10.5 },
               { role: "neckline", timestamp: 2, value: 9.8 },
@@ -127,6 +130,64 @@ describe("KLineChart overlays", () => {
     );
   });
 
+  it("renders reviewed automatic gap zones once supported while keeping manual tools available", async () => {
+    getPatternsMock.mockResolvedValue({
+      success: true,
+      data: {
+        status: "available",
+        symbol: "600519.SH",
+        period: "daily",
+        patterns: [
+          {
+            pattern_name: "breakaway_gap",
+            direction: "bullish",
+            confidence: 0.74,
+            anchor_points: [],
+            gap_side: "up",
+            gap_fill_status: "open",
+            gap_zone: {
+              start_timestamp: 1767225600000,
+              end_timestamp: 1767312000000,
+              upper_value: 10.8,
+              lower_value: 10.25,
+              filled_at: null,
+            },
+          },
+        ],
+      },
+    });
+
+    const wrapper = mountKLineChart();
+
+    await flushPromises();
+
+    expect(getPatternsMock).toHaveBeenCalledWith("600519.SH", "daily");
+    expect(wrapper.text()).toContain("趋势线");
+    expect(wrapper.text()).toContain("水平线");
+    expect(wrapper.text()).toContain("矩形");
+    expect(wrapper.text()).toContain("清空画线");
+
+    const chartInstance = vi.mocked(init).mock.results.at(-1)?.value;
+    expect(chartInstance?.createOverlay).toHaveBeenCalledWith(
+      expect.objectContaining({
+        name: "mvpGapZone",
+        points: [
+          { timestamp: 1767225600000, value: 10.8 },
+          { timestamp: 1767312000000, value: 10.25 },
+        ],
+        extendData: expect.objectContaining({
+          source: "AUTO",
+          patternName: "breakaway_gap",
+          gapSide: "up",
+          gapFillStatus: "open",
+          upperValue: 10.8,
+          lowerValue: 10.25,
+        }),
+      }),
+      "candle_pane",
+    );
+  });
+
   it("surfaces a user-facing warning when automatic pattern loading fails without hiding manual tools", async () => {
     getPatternsMock.mockRejectedValue(new Error("pattern backend unavailable"));
     const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
@@ -174,6 +235,9 @@ describe("KLineChart overlays", () => {
               pattern_name: "double_bottom",
               direction: "bullish",
               confidence: 0.77,
+              gap_side: null,
+              gap_fill_status: null,
+              gap_zone: null,
               anchor_points: [
                 { role: "left_bottom", timestamp: 11, value: 9.5 },
                 { role: "neckline", timestamp: 12, value: 10.1 },
@@ -213,6 +277,9 @@ describe("KLineChart overlays", () => {
             pattern_name: "double_top",
             direction: "bearish",
             confidence: 0.82,
+            gap_side: null,
+            gap_fill_status: null,
+            gap_zone: null,
             anchor_points: [
               { role: "left_peak", timestamp: 1, value: 10.5 },
               { role: "neckline", timestamp: 2, value: 9.8 },
@@ -239,6 +306,9 @@ describe("KLineChart overlays", () => {
             pattern_name: "double_top",
             direction: "bearish",
             confidence: 0.82,
+            gap_side: null,
+            gap_fill_status: null,
+            gap_zone: null,
             anchor_points: [
               { role: "left_peak", timestamp: 1, value: 10.5 },
               { role: "neckline", timestamp: 2, value: 9.8 },

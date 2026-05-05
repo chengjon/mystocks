@@ -46,6 +46,25 @@ interface TechnicalIndicatorRow {
 }
 
 type TechnicalPatternPeriod = 'daily' | 'weekly' | 'monthly'
+type TechnicalPatternName =
+  | 'double_top'
+  | 'double_bottom'
+  | 'head_shoulders_top'
+  | 'head_shoulders_bottom'
+  | 'common_gap'
+  | 'breakaway_gap'
+  | 'runaway_gap'
+  | 'exhaustion_gap'
+export type TechnicalGapSide = 'up' | 'down'
+export type TechnicalGapFillStatus = 'open' | 'partially_filled' | 'filled'
+
+export interface TechnicalGapZone {
+  start_timestamp: number
+  end_timestamp: number
+  upper_value: number
+  lower_value: number
+  filled_at: number | null
+}
 
 interface TechnicalPatternAnchorPoint {
   role: string
@@ -53,14 +72,17 @@ interface TechnicalPatternAnchorPoint {
   value: number
 }
 
-interface TechnicalPatternDetection {
-  pattern_name: 'double_top' | 'double_bottom' | 'head_shoulders_top' | 'head_shoulders_bottom'
+export interface TechnicalPatternDetection {
+  pattern_name: TechnicalPatternName
   direction: 'bullish' | 'bearish'
   confidence: number
   anchor_points: TechnicalPatternAnchorPoint[]
+  gap_side: TechnicalGapSide | null
+  gap_fill_status: TechnicalGapFillStatus | null
+  gap_zone: TechnicalGapZone | null
 }
 
-interface TechnicalPatternData {
+export interface TechnicalPatternData {
   status: 'available' | 'empty'
   symbol: string
   period: TechnicalPatternPeriod
