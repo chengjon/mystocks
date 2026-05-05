@@ -6,10 +6,31 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-PatternName = Literal["double_top", "double_bottom", "head_shoulders_top", "head_shoulders_bottom"]
+PatternName = Literal[
+    "double_top",
+    "double_bottom",
+    "head_shoulders_top",
+    "head_shoulders_bottom",
+    "common_gap",
+    "breakaway_gap",
+    "runaway_gap",
+    "exhaustion_gap",
+]
 PatternDirection = Literal["bullish", "bearish"]
 PatternPeriod = Literal["daily", "weekly", "monthly"]
 PatternStatus = Literal["available", "empty"]
+GapSide = Literal["up", "down"]
+GapFillStatus = Literal["open", "partially_filled", "filled"]
+
+
+class GapZone(BaseModel):
+    """A reviewed price gap zone used by technical-pattern payloads."""
+
+    start_timestamp: int = Field(..., description="Millisecond epoch timestamp for the gap start.")
+    end_timestamp: int = Field(..., description="Millisecond epoch timestamp for the gap end.")
+    upper_value: float = Field(..., description="Upper price bound of the gap zone.")
+    lower_value: float = Field(..., description="Lower price bound of the gap zone.")
+    filled_at: int | None = Field(None, description="Millisecond epoch timestamp when the gap became filled.")
 
 
 class PatternAnchorPoint(BaseModel):
@@ -30,6 +51,9 @@ class PatternDetection(BaseModel):
         default_factory=list,
         description="Ordered anchor points that can be rendered directly on the chart.",
     )
+    gap_side: GapSide | None = Field(None, description="Direction of the detected price gap.")
+    gap_fill_status: GapFillStatus | None = Field(None, description="Current fill state of the detected gap.")
+    gap_zone: GapZone | None = Field(None, description="Structured zone describing the reviewed gap bounds.")
 
 
 class PatternDetectionData(BaseModel):

@@ -8,7 +8,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 
-from app.api._technical_patterns_models import PatternAnchorPoint, PatternDetection, PatternDetectionData
+from app.api._technical_patterns_models import GapZone, PatternAnchorPoint, PatternDetection, PatternDetectionData
 
 
 def _import_patterns_router_module():
@@ -138,3 +138,68 @@ def test_detect_patterns_returns_available_structured_payload_when_service_finds
     assert payload["patterns"][0]["pattern_name"] == "double_top"
     assert payload["patterns"][0]["direction"] == "bearish"
     assert payload["patterns"][0]["anchor_points"][0]["role"] == "left_peak"
+
+
+def test_detect_patterns_returns_reviewed_gap_payload_when_service_finds_breakaway_gap(monkeypatch):
+    module = _import_patterns_router_module()
+
+    async def _fake_detect(*_args, **_kwargs):
+        return [
+            PatternDetection(
+                pattern_name="breakaway_gap",
+                direction="bullish",
+                confidence=0.74,
+                anchor_points=[],
+                gap_side="up",
+                gap_fill_status="open",
+                gap_zone=GapZone(
+                    start_timestamp=1767225600000,
+                    end_timestamp=1767312000000,
+                    upper_value=10.8,
+                    lower_value=10.25,
+                    filled_at=None,
+                ),
+            )
+        ]
+
+    monkeypatch.setattr(module, "_detect_patterns_for_symbol", _fake_detect)
+
+    app = FastAPI()
+    app.include_router(module.router)
+    client = TestClient(app)
+
+    response = client.get("/patterns/600519.SH", params={"period": "daily"})
+
+    assert response.status_code == 200
+    payload = response.json()["data"]["patterns"][0]
+    assert payload["pattern_name"] == "breakaway_gap"
+    assert payload["direction"] == "bullish"
+    assert payload["confidence"] == 0.74
+    assert payload["anchor_points"] == []
+    assert payload["gap_side"] == "up"
+    assert payload["gap_fill_status"] == "open"
+    assert payload["gap_zone"]["start_timestamp"] == 1767225600000
+    assert payload["gap_zone"]["end_timestamp"] == 1767312000000
+    assert payload["gap_zone"]["upper_value"] == 10.8
+    assert payload["gap_zone"]["lower_value"] == 10.25
+    assert payload["gap_zone"]["filled_at"] is None
+
+
+def test_pattern_detection_accepts_partially_filled_gap_status():
+    detection = PatternDetection(
+        pattern_name="common_gap",
+        direction="bearish",
+        confidence=0.61,
+        anchor_points=[],
+        gap_side="down",
+        gap_fill_status="partially_filled",
+        gap_zone=GapZone(
+            start_timestamp=1767400000000,
+            end_timestamp=1767486400000,
+            upper_value=9.6,
+            lower_value=9.2,
+            filled_at=None,
+        ),
+    )
+
+    assert detection.gap_fill_status == "partially_filled"
