@@ -48,6 +48,7 @@
 > - backend `web/backend/app/api/data_source_registry.py:test_data_source()` 仍保留 direct handler 形态，但 `src/core/data_source_handlers_v2.py` 现已补入 compatibility `get_handler()` 工厂与轻量 instrumentation proxy；因此在具备合法认证的环境里，`POST /api/v1/data-sources/{endpoint_name}/test` 现在也能记录 canonical `datasource_*` 样本，而不需要继续修改该超大路由文件。
 > - `metrics_endpoint()` 的 merge guard 现已从宽泛的 `b"datasource_"` substring 判定收紧为 canonical help marker 检测，避免 `mystocks_datasource_availability` 这类非 canonical 指标误伤合并逻辑。
 > - 隔离运行态验证已通过：在临时 backend `http://127.0.0.1:8120` 上，先获取 CSRF token，再执行 `POST /api/v1/data-sources/mock.daily_kline/test`，随后 `GET /metrics` 已能返回 `datasource_api_latency_seconds` 与 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}` 样本；这证明“manual test route -> runtime /metrics” 链路当前在 repo-local 运行态下已打通。
+> - canonical PM2 运行态验证也已通过：重启 `mystocks-backend` 后，`http://localhost:8020/metrics` 已能直接暴露 `datasource_*` HELP/TYPE 头；再对 `http://localhost:8020/api/v1/data-sources/mock.daily_kline/test` 发起带 JWT + CSRF 的手动测试请求后，`http://localhost:8020/metrics` 已返回 `datasource_api_latency_seconds` 与 `datasource_api_calls_total{endpoint="mock.daily_kline",status="success"}` 样本。
 > - 这项修复解决的是“canonical metrics 能否被 runtime 暴露”的 repo-local 接线问题，不等同于 `8.4 / 8.5.4` 所要求的真实灰度窗口监控样本。
 
 ---
@@ -126,6 +127,8 @@ curl -X POST http://127.0.0.1:8120/api/v1/data-sources/mock.daily_kline/test \
   -d '{"test_params":{"symbol":"000001","start_date":"20240102","end_date":"20240103","period":"daily"}}'
 curl http://127.0.0.1:8120/metrics | rg "^datasource_|^# HELP datasource_|^# TYPE datasource_"
 ```
+
+当前 canonical PM2 runtime `8020` 也已验通，最小命令序列与上面一致，只需要把目标地址替换成 `http://localhost:8020`。
 
 ### 路径 B：直接验证数据源局部 exposition（本地验证）
 
