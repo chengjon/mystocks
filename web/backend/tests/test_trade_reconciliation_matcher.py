@@ -132,3 +132,19 @@ def test_match_reconciliation_rows_does_not_reuse_one_broker_row_for_multiple_in
     assert [item["match_status"] for item in results] == ["matched", "missing_broker_record"]
     assert results[0]["broker_row"] == broker_rows[0]
     assert results[1]["broker_row"] is None
+
+
+def test_match_reconciliation_rows_prefers_trade_id_within_same_fallback_key():
+    module = _load_module()
+    internal_rows = [
+        _internal_row(trade_id="101", order_id="internal-101"),
+        _internal_row(trade_id="102", order_id="internal-102"),
+    ]
+    broker_rows = [
+        _broker_row(trade_id="102", order_id="broker-202"),
+        _broker_row(trade_id="101", order_id="broker-201"),
+    ]
+
+    results = module.match_reconciliation_rows(internal_rows, broker_rows)
+
+    assert [item["broker_row"]["trade_id"] for item in results] == ["101", "102"]

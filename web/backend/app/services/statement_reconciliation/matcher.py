@@ -74,6 +74,25 @@ def _pop_first_unused(candidates: deque[int], used_indexes: set[int]) -> int | N
     return None
 
 
+def _pop_preferred_broker_index(
+    *,
+    internal_row: dict[str, Any],
+    candidates: deque[int],
+    broker_rows: list[dict[str, Any]],
+    used_indexes: set[int],
+) -> int | None:
+    preferred_trade_id = _normalize_text(internal_row.get("trade_id", ""))
+    if preferred_trade_id:
+        for broker_index in list(candidates):
+            if broker_index in used_indexes:
+                continue
+            if _normalize_text(broker_rows[broker_index].get("trade_id", "")) == preferred_trade_id:
+                candidates.remove(broker_index)
+                return broker_index
+
+    return _pop_first_unused(candidates, used_indexes)
+
+
 def match_reconciliation_rows(
     internal_rows: list[dict[str, Any]],
     broker_rows: list[dict[str, Any]],
@@ -96,7 +115,12 @@ def match_reconciliation_rows(
         if order_id:
             broker_index = _pop_first_unused(order_id_index[order_id], used_broker_indexes)
         if broker_index is None:
-            broker_index = _pop_first_unused(fallback_index[_fallback_key(internal_row)], used_broker_indexes)
+            broker_index = _pop_preferred_broker_index(
+                internal_row=internal_row,
+                candidates=fallback_index[_fallback_key(internal_row)],
+                broker_rows=broker_rows,
+                used_indexes=used_broker_indexes,
+            )
 
         if broker_index is None:
             results.append(

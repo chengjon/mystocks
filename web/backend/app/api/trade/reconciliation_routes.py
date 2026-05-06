@@ -134,6 +134,44 @@ def _query_internal_statement_rows(
         ) from exc
 
 
+def _query_all_internal_statement_rows(
+    *,
+    account_id: str,
+    start_date: str | None,
+    end_date: str | None,
+    page_size: int = 10000,
+) -> dict[str, Any]:
+    first_page = _query_internal_statement_rows(
+        account_id=account_id,
+        start_date=start_date,
+        end_date=end_date,
+        page=1,
+        page_size=page_size,
+    )
+
+    total_count = int(first_page["total_count"])
+    items = list(first_page["items"])
+    if len(items) >= total_count:
+        return {**first_page, "items": items}
+
+    current_page = 2
+    while len(items) < total_count:
+        next_page = _query_internal_statement_rows(
+            account_id=account_id,
+            start_date=start_date,
+            end_date=end_date,
+            page=current_page,
+            page_size=page_size,
+        )
+        next_items = list(next_page["items"])
+        if not next_items:
+            break
+        items.extend(next_items)
+        current_page += 1
+
+    return {**first_page, "items": items}
+
+
 def _load_import_batch(import_batch_id: str) -> dict[str, Any]:
     try:
         return get_import_batch(import_batch_id)
@@ -163,12 +201,10 @@ def _load_reconciliation_rows(
     end_date: str | None,
     match_status: MatchStatus | None,
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    internal_payload = _query_internal_statement_rows(
+    internal_payload = _query_all_internal_statement_rows(
         account_id=account_id,
         start_date=start_date,
         end_date=end_date,
-        page=1,
-        page_size=10000,
     )
     batch = _load_import_batch(import_batch_id)
     broker_rows = _filter_import_rows_for_account(

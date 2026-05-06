@@ -562,6 +562,112 @@ def test_reconciliation_results_paginate_and_filter_by_match_status(monkeypatch)
     }
 
 
+def test_reconciliation_results_drains_all_internal_statement_pages(monkeypatch):
+    package = _load_trade_package()
+    routes_module = importlib.import_module("app.api.trade.reconciliation_routes")
+    calls = []
+
+    def _fake_query_internal_statements(**kwargs):
+        calls.append(kwargs)
+        if kwargs["page"] == 1:
+            return {
+                "account_id": kwargs["account_id"],
+                "items": [
+                    {
+                        "account_id": kwargs["account_id"],
+                        "trade_id": "101",
+                        "order_id": "backtest-7-101",
+                        "symbol": "600519.SH",
+                        "direction": "buy",
+                        "trade_time": "2026-05-06T09:31:00",
+                        "price": "1750.00",
+                        "quantity": 100,
+                        "amount": "175000.00",
+                        "commission": "52.50",
+                    }
+                ],
+                "summary": {
+                    "total_count": 2,
+                    "total_amount": "350000.00",
+                    "total_commission": "105.00",
+                },
+                "total_count": 2,
+                "page": 1,
+                "page_size": kwargs["page_size"],
+                "source": "backtest_trades",
+            }
+        return {
+            "account_id": kwargs["account_id"],
+            "items": [
+                {
+                    "account_id": kwargs["account_id"],
+                    "trade_id": "102",
+                    "order_id": "backtest-7-102",
+                    "symbol": "600519.SH",
+                    "direction": "buy",
+                    "trade_time": "2026-05-06T09:32:00",
+                    "price": "1750.00",
+                    "quantity": 100,
+                    "amount": "175000.00",
+                    "commission": "52.50",
+                }
+            ],
+            "summary": {
+                "total_count": 2,
+                "total_amount": "350000.00",
+                "total_commission": "105.00",
+            },
+            "total_count": 2,
+            "page": 2,
+            "page_size": kwargs["page_size"],
+            "source": "backtest_trades",
+        }
+
+    monkeypatch.setattr(routes_module, "query_internal_statements", _fake_query_internal_statements)
+    monkeypatch.setattr(
+        routes_module,
+        "get_import_batch",
+        lambda import_batch_id: {
+            "import_batch_id": import_batch_id,
+            "account_id": "backtest:7",
+            "rows": [
+                {"account_id": "backtest:7", "trade_id": "101", "order_id": "backtest-7-101"},
+                {"account_id": "backtest:7", "trade_id": "102", "order_id": "backtest-7-102"},
+            ],
+        },
+        raising=False,
+    )
+    monkeypatch.setattr(
+        routes_module,
+        "match_reconciliation_rows",
+        lambda internal_rows, broker_rows: [
+            {
+                "match_status": "matched",
+                "internal_row": internal_rows[0],
+                "broker_row": None,
+                "mismatch_fields": [],
+            },
+            {
+                "match_status": "matched",
+                "internal_row": internal_rows[1],
+                "broker_row": None,
+                "mismatch_fields": [],
+            },
+        ],
+        raising=False,
+    )
+
+    client = _build_client(package)
+    response = client.get(
+        "/api/v1/trade/reconciliation/results",
+        params={"account_id": "backtest:7", "import_batch_id": "batch-001"},
+    )
+
+    assert response.status_code == 200
+    assert [call["page"] for call in calls] == [1, 2]
+    assert response.json()["data"]["total_count"] == 2
+
+
 def test_reconciliation_export_returns_csv_attachment(monkeypatch):
     package = _load_trade_package()
     routes_module = importlib.import_module("app.api.trade.reconciliation_routes")
@@ -645,5 +751,11 @@ def test_reconciliation_export_returns_csv_attachment(monkeypatch):
     assert response.headers["content-disposition"] == (
         'attachment; filename="reconciliation-backtest_7-batch-001-page-all.csv"'
     )
-    assert "match_status,internal_trade_id,internal_order_id" in response.text
+    assert response.text.splitlines()[0] == (
+        "match_status,internal_trade_id,internal_order_id,internal_account_id,internal_symbol,"
+        "internal_direction,internal_trade_time,internal_price,internal_quantity,internal_amount,"
+        "internal_commission,broker_trade_id,broker_order_id,broker_account_id,broker_symbol,"
+        "broker_direction,broker_trade_time,broker_price,broker_quantity,broker_amount,"
+        "broker_commission,broker_source_type,broker_raw_row_number,mismatch_fields"
+    )
     assert "matched,101,backtest-7-101" in response.text
