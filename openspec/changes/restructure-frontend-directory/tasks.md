@@ -466,6 +466,7 @@
 
 ## 13. Testing – End-to-End (Phase 5)
 - 2026-04-06 repo-truth note: the current frontend repo uses Playwright, not Cypress, so phase `13.1` through `13.4` close against the verified Playwright matrix chain and focused real-read UI smoke work already preserved in Mongo.
+  - 2026-05-07 supplement: after the later runtime-truth recovery batch, `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium` passed `295/295` against the shared PM2 frontend; see `docs/reports/tasks/2026-05-07-frontend-chromium-full-suite-recovery.md` and commit `4186a699a`.
   - Verified matrix work items:
     - `2026-04-05-frontend-mainline-phase1-matrix-spec-main`
     - `2026-04-05-frontend-mainline-phase2-matrix-spec-main`
@@ -577,5 +578,6 @@ Historical planning estimate from the original approval package, not a current m
 - ✅ `npm run lint && npm run type-check` after each file move
 - ✅ Safe smoke gate chain before merge: `npm run test:e2e:stable`, `npm run test:e2e:axe`, `npm run test:e2e:lighthouse`
 - ✅ Playwright matrix plus focused real-read UI smoke coverage before merge
+  - 2026-05-07 repo-truth supplement: the shared-PM2 full Chromium project later revalidated green at `295/295`.
 - ✅ Architecture Board approval before implementation
 - ⏳ Formal review/sign-off, merge/deploy, staging validation, and OpenSpec archive remain pending external workflow gates

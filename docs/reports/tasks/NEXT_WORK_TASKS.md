@@ -6,6 +6,13 @@
 >
 > 文内优先级、缺口清单、执行步骤、目标值、时间线和建议动作如未重新复核，应视为历史计划上下文，不得直接当作当前事实。
 
+> 2026-05-07 补充说明：
+> 本文档中关于“所有 Playwright E2E 文件与 ArtDeco 优先架构对齐”的 P1 目标，后续已通过多轮主线修复与运行时真相收口实质完成。
+> 最新共享 PM2 前端验证结果为：
+> - `test:e2e:stable` `chromium 10/10` 通过
+> - `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium` `295/295` 通过
+> 正式恢复报告见 [2026-05-07-frontend-chromium-full-suite-recovery.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-05-07-frontend-chromium-full-suite-recovery.md)。
+
 
 根据您提交的P0任务完成报告，Web客户端已成功运行，所有核心通信渠道（CORS、WebSocket、API端点）工作正常。恭喜您！
 
