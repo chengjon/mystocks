@@ -376,3 +376,274 @@ def test_reconciliation_import_normalized_template_does_not_override_row_account
 
     assert response.status_code == 200
     assert captured["account_id"] is None
+
+
+def test_reconciliation_results_paginate_and_filter_by_match_status(monkeypatch):
+    package = _load_trade_package()
+    routes_module = importlib.import_module("app.api.trade.reconciliation_routes")
+    captured = {}
+
+    def _fake_query_internal_statements(**kwargs):
+        captured["statement_query"] = kwargs
+        return {
+            "account_id": kwargs["account_id"],
+            "items": [
+                {
+                    "account_id": kwargs["account_id"],
+                    "trade_id": "103",
+                    "order_id": "backtest-7-103",
+                    "symbol": "000001.SZ",
+                    "direction": "sell",
+                    "trade_time": "2026-05-06T09:33:00",
+                    "price": "12.00",
+                    "quantity": 100,
+                    "amount": "1200.00",
+                    "commission": "1.20",
+                }
+            ],
+            "summary": {
+                "total_count": 1,
+                "total_amount": "1200.00",
+                "total_commission": "1.20",
+            },
+            "total_count": 1,
+            "page": kwargs["page"],
+            "page_size": kwargs["page_size"],
+            "source": "backtest_trades",
+        }
+
+    monkeypatch.setattr(routes_module, "query_internal_statements", _fake_query_internal_statements)
+    monkeypatch.setattr(
+        routes_module,
+        "get_import_batch",
+        lambda import_batch_id: {
+            "import_batch_id": import_batch_id,
+            "account_id": "backtest:7",
+            "rows": [{"order_id": "backtest-7-103"}],
+        },
+        raising=False,
+    )
+    monkeypatch.setattr(
+        routes_module,
+        "match_reconciliation_rows",
+        lambda internal_rows, broker_rows: [
+            {
+                "match_status": "matched",
+                "internal_row": {
+                    **internal_rows[0],
+                    "trade_id": "101",
+                    "order_id": "backtest-7-101",
+                },
+                "broker_row": {
+                    "account_id": "backtest:7",
+                    "trade_id": "201",
+                    "order_id": "backtest-7-101",
+                    "symbol": "600519.SH",
+                    "direction": "buy",
+                    "trade_time": "2026-05-06 09:31:00",
+                    "price": "1750.00",
+                    "quantity": "100",
+                    "amount": "175000.00",
+                    "commission": "52.50",
+                    "source_type": "normalized_template",
+                    "raw_row_number": 2,
+                },
+                "mismatch_fields": [],
+            },
+            {
+                "match_status": "mismatched",
+                "internal_row": {
+                    **internal_rows[0],
+                    "trade_id": "102",
+                    "order_id": "backtest-7-102",
+                },
+                "broker_row": {
+                    "account_id": "backtest:7",
+                    "trade_id": "202",
+                    "order_id": "backtest-7-102",
+                    "symbol": "600519.SH",
+                    "direction": "buy",
+                    "trade_time": "2026-05-06 09:32:00",
+                    "price": "1750.00",
+                    "quantity": "100",
+                    "amount": "175100.00",
+                    "commission": "52.50",
+                    "source_type": "normalized_template",
+                    "raw_row_number": 3,
+                },
+                "mismatch_fields": ["amount"],
+            },
+            {
+                "match_status": "matched",
+                "internal_row": internal_rows[0],
+                "broker_row": {
+                    "account_id": "backtest:7",
+                    "trade_id": "203",
+                    "order_id": "backtest-7-103",
+                    "symbol": "000001.SZ",
+                    "direction": "sell",
+                    "trade_time": "2026-05-06 09:33:00",
+                    "price": "12.00",
+                    "quantity": "100",
+                    "amount": "1200.00",
+                    "commission": "1.20",
+                    "source_type": "normalized_template",
+                    "raw_row_number": 4,
+                },
+                "mismatch_fields": [],
+            },
+        ],
+        raising=False,
+    )
+
+    client = _build_client(package)
+    response = client.get(
+        "/api/v1/trade/reconciliation/results",
+        params={
+            "account_id": "backtest:7",
+            "import_batch_id": "batch-001",
+            "match_status": "matched",
+            "page": 2,
+            "page_size": 1,
+        },
+    )
+
+    assert response.status_code == 200
+    assert captured["statement_query"] == {
+        "account_id": "backtest:7",
+        "start_date": None,
+        "end_date": None,
+        "page": 1,
+        "page_size": 10000,
+    }
+    assert response.json()["data"] == {
+        "status": "available",
+        "endpoint": "trade",
+        "resource": "reconciliation_results",
+        "account_id": "backtest:7",
+        "import_batch_id": "batch-001",
+        "items": [
+            {
+                "match_status": "matched",
+                "internal_row": {
+                    "account_id": "backtest:7",
+                    "trade_id": "103",
+                    "order_id": "backtest-7-103",
+                    "symbol": "000001.SZ",
+                    "direction": "sell",
+                    "trade_time": "2026-05-06T09:33:00",
+                    "price": "12.00",
+                    "quantity": 100,
+                    "amount": "1200.00",
+                    "commission": "1.20",
+                },
+                "broker_row": {
+                    "account_id": "backtest:7",
+                    "trade_id": "203",
+                    "order_id": "backtest-7-103",
+                    "symbol": "000001.SZ",
+                    "direction": "sell",
+                    "trade_time": "2026-05-06 09:33:00",
+                    "price": "12.00",
+                    "quantity": 100,
+                    "amount": "1200.00",
+                    "commission": "1.20",
+                    "source_type": "normalized_template",
+                    "raw_row_number": 4,
+                },
+                "mismatch_fields": [],
+            }
+        ],
+        "total_count": 2,
+        "page": 2,
+        "page_size": 1,
+        "source": "backtest_trades",
+        "match_status": "matched",
+    }
+
+
+def test_reconciliation_export_returns_csv_attachment(monkeypatch):
+    package = _load_trade_package()
+    routes_module = importlib.import_module("app.api.trade.reconciliation_routes")
+
+    monkeypatch.setattr(
+        routes_module,
+        "query_internal_statements",
+        lambda **kwargs: {
+            "account_id": kwargs["account_id"],
+            "items": [
+                {
+                    "account_id": kwargs["account_id"],
+                    "trade_id": "101",
+                    "order_id": "backtest-7-101",
+                    "symbol": "600519.SH",
+                    "direction": "buy",
+                    "trade_time": "2026-05-06T09:31:00",
+                    "price": "1750.00",
+                    "quantity": 100,
+                    "amount": "175000.00",
+                    "commission": "52.50",
+                }
+            ],
+            "summary": {
+                "total_count": 1,
+                "total_amount": "175000.00",
+                "total_commission": "52.50",
+            },
+            "total_count": 1,
+            "page": kwargs["page"],
+            "page_size": kwargs["page_size"],
+            "source": "backtest_trades",
+        },
+        raising=False,
+    )
+    monkeypatch.setattr(
+        routes_module,
+        "get_import_batch",
+        lambda import_batch_id: {
+            "import_batch_id": import_batch_id,
+            "account_id": "backtest:7",
+            "rows": [{"order_id": "backtest-7-101"}],
+        },
+        raising=False,
+    )
+    monkeypatch.setattr(
+        routes_module,
+        "match_reconciliation_rows",
+        lambda internal_rows, broker_rows: [
+            {
+                "match_status": "matched",
+                "internal_row": internal_rows[0],
+                "broker_row": {
+                    "account_id": "backtest:7",
+                    "trade_id": "201",
+                    "order_id": "backtest-7-101",
+                    "symbol": "600519.SH",
+                    "direction": "buy",
+                    "trade_time": "2026-05-06 09:31:00",
+                    "price": "1750.00",
+                    "quantity": "100",
+                    "amount": "175000.00",
+                    "commission": "52.50",
+                    "source_type": "normalized_template",
+                    "raw_row_number": 2,
+                },
+                "mismatch_fields": [],
+            }
+        ],
+        raising=False,
+    )
+
+    client = _build_client(package)
+    response = client.get(
+        "/api/v1/trade/reconciliation/export",
+        params={"account_id": "backtest:7", "import_batch_id": "batch-001"},
+    )
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "text/csv; charset=utf-8"
+    assert response.headers["content-disposition"] == (
+        'attachment; filename="reconciliation-backtest_7-batch-001-page-all.csv"'
+    )
+    assert "match_status,internal_trade_id,internal_order_id" in response.text
+    assert "matched,101,backtest-7-101" in response.text
