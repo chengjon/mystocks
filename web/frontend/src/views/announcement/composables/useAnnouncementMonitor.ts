@@ -1,6 +1,11 @@
 import { ref, reactive, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import axios from 'axios'
+
+type AnnouncementAuxSliceState = 'idle' | 'ready' | 'unavailable' | 'stale'
+type AnnouncementPrimarySliceState = 'idle' | 'ready' | 'unavailable' | 'stale'
+type AnnouncementRow = Record<string, unknown>
 
 interface AnnouncementMonitorRule {
   id?: number | null
@@ -31,16 +36,65 @@ interface EditingRuleState {
   is_active: boolean
 }
 
+interface AnnouncementListSnapshot {
+  rows: AnnouncementRow[]
+  total: number
+}
+
+function readAnnouncementString(row: AnnouncementRow, primaryKey: string, fallbackKey: string): string | undefined {
+  const primaryValue = row[primaryKey]
+  if (typeof primaryValue === 'string' && primaryValue.trim()) {
+    return primaryValue
+  }
+
+  const fallbackValue = row[fallbackKey]
+  if (typeof fallbackValue === 'string' && fallbackValue.trim()) {
+    return fallbackValue
+  }
+
+  return undefined
+}
+
+function normalizeAnnouncementRow(row: AnnouncementRow): AnnouncementRow {
+  const title = readAnnouncementString(row, 'title', 'announcement_title')
+  const type = readAnnouncementString(row, 'type', 'announcement_type')
+
+  return {
+    ...row,
+    ...(title ? { title } : {}),
+    ...(type ? { type } : {}),
+  }
+}
+
+function normalizeAnnouncementRows(payload: unknown): AnnouncementRow[] {
+  if (!Array.isArray(payload)) {
+    return []
+  }
+
+  return payload
+    .filter((item): item is AnnouncementRow => item !== null && typeof item === 'object')
+    .map(normalizeAnnouncementRow)
+}
+
 export function useAnnouncementMonitor() {
+const route = useRoute()
 
 // API base URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ''
 
 // 响应式数据
 const stats = ref({})
-const announcements = ref([])
+const verifiedStatsSnapshots = ref<Record<string, Record<string, unknown>>>({})
+const announcements = ref<AnnouncementRow[]>([])
+const announcementSliceState = ref<AnnouncementPrimarySliceState>('idle')
 const monitorRules = ref([])
 const triggeredRecords = ref([])
+const monitorRulesSliceState = ref<AnnouncementAuxSliceState>('idle')
+const triggeredRecordsSliceState = ref<AnnouncementAuxSliceState>('idle')
+const lastVerifiedAnnouncementSelectorKey = ref<string | null>(null)
+const verifiedAnnouncementSnapshots = ref<Record<string, AnnouncementListSnapshot>>({})
+const hasVerifiedMonitorRulesSnapshot = ref(false)
+const hasVerifiedTriggeredRecordsSnapshot = ref(false)
 
 const loading = reactive({
   announcements: false,
@@ -63,6 +117,44 @@ const pagination = reactive({
   pageSize: 20,
   total: 0
 })
+
+const buildAnnouncementSelectorKey = (): string => JSON.stringify({
+  stock_code: searchForm.stock_code || '',
+  announcement_type: searchForm.announcement_type || '',
+  min_importance: searchForm.min_importance || 0,
+  date_range: Array.isArray(searchForm.dateRange) ? [...searchForm.dateRange] : [],
+  page: pagination.page,
+  page_size: pagination.pageSize,
+})
+
+const buildStatsSelectorKey = (): string => {
+  const symbol = typeof route.params.symbol === 'string' ? route.params.symbol.trim() : ''
+  return symbol ? `detail:${symbol}` : 'global'
+}
+
+const syncAnnouncementSelectorSnapshot = (selectorKey: string): boolean => {
+  const snapshot = verifiedAnnouncementSnapshots.value[selectorKey]
+  if (!snapshot) {
+    announcements.value = []
+    pagination.total = 0
+    return false
+  }
+
+  announcements.value = snapshot.rows
+  pagination.total = snapshot.total
+  return true
+}
+
+const syncStatsSelectorSnapshot = (selectorKey: string): boolean => {
+  const snapshot = verifiedStatsSnapshots.value[selectorKey]
+  if (!snapshot) {
+    stats.value = {}
+    return false
+  }
+
+  stats.value = snapshot
+  return true
+}
 
 // 规则对话框
 const showRuleDialog = ref(false)
@@ -89,10 +181,23 @@ const ruleFormRules = {
 
 // 获取统计信息
 const fetchStats = async () => {
+  const selectorKey = buildStatsSelectorKey()
+  syncStatsSelectorSnapshot(selectorKey)
   try {
     const response = await axios.get(`${API_BASE_URL}/api/announcement/stats`)
+    if (response.data?.success === false) {
+      stats.value = {}
+      ElMessage.error(response.data.message || '获取统计信息失败')
+      return
+    }
+
     stats.value = response.data
+    verifiedStatsSnapshots.value = {
+      ...verifiedStatsSnapshots.value,
+      [selectorKey]: response.data,
+    }
   } catch (error) {
+    stats.value = {}
     console.error('获取统计信息失败:', error)
     ElMessage.error('获取统计信息失败')
   }
@@ -101,6 +206,8 @@ const fetchStats = async () => {
 // 获取公告列表
 const fetchAnnouncements = async () => {
   loading.announcements = true
+  const selectorKey = buildAnnouncementSelectorKey()
+  const hasVerifiedSelectorSnapshot = syncAnnouncementSelectorSnapshot(selectorKey)
   try {
     const params = {
       stock_code: searchForm.stock_code || undefined,
@@ -115,12 +222,30 @@ const fetchAnnouncements = async () => {
     const response = await axios.get(`${API_BASE_URL}/api/announcement/list`, { params })
 
     if (response.data.success) {
-      announcements.value = response.data.data
+      const normalizedRows = normalizeAnnouncementRows(response.data.data)
+      announcements.value = normalizedRows
       pagination.total = response.data.total
+      verifiedAnnouncementSnapshots.value = {
+        ...verifiedAnnouncementSnapshots.value,
+        [selectorKey]: {
+          rows: normalizedRows,
+          total: response.data.total,
+        },
+      }
+      lastVerifiedAnnouncementSelectorKey.value = selectorKey
+      announcementSliceState.value = 'ready'
     } else {
-      ElMessage.error(response.data.error || '获取公告列表失败')
+      throw new Error(response.data.error || '获取公告列表失败')
     }
   } catch (error) {
+    if (hasVerifiedSelectorSnapshot) {
+      syncAnnouncementSelectorSnapshot(selectorKey)
+      announcementSliceState.value = 'stale'
+    } else {
+      announcements.value = []
+      pagination.total = 0
+      announcementSliceState.value = 'unavailable'
+    }
     console.error('获取公告列表失败:', error)
     ElMessage.error('获取公告列表失败')
   } finally {
@@ -135,7 +260,7 @@ const fetchTodayAnnouncements = async () => {
     const response = await axios.get(`${API_BASE_URL}/api/announcement/today`)
 
     if (response.data.success) {
-      announcements.value = response.data.announcements
+      announcements.value = normalizeAnnouncementRows(response.data.announcements)
       pagination.total = response.data.count
       ElMessage.success(`获取今日公告 ${response.data.count} 条`)
     } else {
@@ -156,7 +281,7 @@ const fetchImportantAnnouncements = async () => {
     const response = await axios.get(`${API_BASE_URL}/api/announcement/important`)
 
     if (response.data.success) {
-      announcements.value = response.data.announcements
+      announcements.value = normalizeAnnouncementRows(response.data.announcements)
       pagination.total = response.data.count
       ElMessage.success(`获取重要公告 ${response.data.count} 条`)
     } else {
@@ -175,8 +300,24 @@ const fetchMonitorRules = async () => {
   loading.rules = true
   try {
     const response = await axios.get(`${API_BASE_URL}/api/announcement/monitor-rules`)
-    monitorRules.value = response.data
+    if (response.data?.success === false) {
+      throw new Error(response.data.error || response.data.message || '获取监控规则失败')
+    }
+
+    monitorRules.value = Array.isArray(response.data?.data)
+      ? response.data.data
+      : Array.isArray(response.data)
+        ? response.data
+        : []
+    hasVerifiedMonitorRulesSnapshot.value = true
+    monitorRulesSliceState.value = 'ready'
   } catch (error) {
+    if (!hasVerifiedMonitorRulesSnapshot.value) {
+      monitorRules.value = []
+      monitorRulesSliceState.value = 'unavailable'
+    } else {
+      monitorRulesSliceState.value = 'stale'
+    }
     console.error('获取监控规则失败:', error)
     ElMessage.error('获取监控规则失败')
   } finally {
@@ -192,10 +333,18 @@ const fetchTriggeredRecords = async () => {
 
     if (response.data.success) {
       triggeredRecords.value = response.data.data
+      hasVerifiedTriggeredRecordsSnapshot.value = true
+      triggeredRecordsSliceState.value = 'ready'
     } else {
-      ElMessage.error(response.data.error || '获取触发记录失败')
+      throw new Error(response.data.error || '获取触发记录失败')
     }
   } catch (error) {
+    if (!hasVerifiedTriggeredRecordsSnapshot.value) {
+      triggeredRecords.value = []
+      triggeredRecordsSliceState.value = 'unavailable'
+    } else {
+      triggeredRecordsSliceState.value = 'stale'
+    }
     console.error('获取触发记录失败:', error)
     ElMessage.error('获取触发记录失败')
   } finally {
@@ -369,8 +518,11 @@ onMounted(() => {
   return {
     stats,
     announcements,
+    announcementSliceState,
     monitorRules,
+    monitorRulesSliceState,
     triggeredRecords,
+    triggeredRecordsSliceState,
     loading,
     searchForm,
     pagination,

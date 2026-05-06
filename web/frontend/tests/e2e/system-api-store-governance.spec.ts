@@ -60,7 +60,7 @@ test.describe('System API store governance', () => {
       })
     })
 
-    await page.route('**/trading/signals**', async (route) => {
+    await page.route('**/trade/signals**', async (route) => {
       await route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -93,7 +93,7 @@ test.describe('System API store governance', () => {
     await expect(page.getByText('Backend: ready')).toBeVisible()
     await expect(page.getByText('Request ID: req-ready-1')).toBeVisible()
 
-    const tradingSignalsResponse = page.waitForResponse((response) => response.url().includes('/trading/signals'))
+    const tradingSignalsResponse = page.waitForResponse((response) => response.url().includes('/trade/signals'))
     const riskAlertsResponse = page.waitForResponse((response) => response.url().includes('/risk/alerts'))
     const watchlistsResponse = page.waitForResponse((response) => response.url().includes('/monitoring/watchlists'))
 

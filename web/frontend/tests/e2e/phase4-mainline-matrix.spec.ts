@@ -52,11 +52,35 @@ type DataSourceConfigRecord = {
   status: "active" | "maintenance"
 }
 
+type WatchlistRecord = {
+  id: number
+  name: string
+  is_active: boolean
+}
+
+type WatchlistStockRecord = {
+  stock_code: string
+  name?: string
+  stock_name?: string
+  entry_price: number
+  stop_loss_price?: number
+}
+
+type QuoteRowRecord = {
+  symbol: string
+  name: string
+  current_price?: number
+  price?: number
+}
+
 type Phase4State = {
   alertRules: AlertRuleRecord[]
   alertRecords: AlertRecord[]
   announcements: AnnouncementRecord[]
   dataSourceConfigs: DataSourceConfigRecord[]
+  watchlists: WatchlistRecord[]
+  watchlistStocks: WatchlistStockRecord[]
+  quoteRows: QuoteRowRecord[]
   lastBatchPayload: Record<string, unknown> | null
   lastGeneralSettingsPayload: Record<string, unknown> | null
   detailedHealthFetchCount: number
@@ -228,12 +252,15 @@ function buildUnifiedResponse<T>(data: T, overrides?: Partial<Record<string, unk
   }
 }
 
-function createPhase4State(): Phase4State {
+function createPhase4State(overrides?: Partial<Pick<Phase4State, "watchlists" | "watchlistStocks" | "quoteRows">>): Phase4State {
   return {
     alertRules: ALERT_RULES.map((row) => ({ ...row })),
     alertRecords: ALERT_RECORDS.map((row) => ({ ...row })),
     announcements: ANNOUNCEMENTS.map((row) => ({ ...row })),
     dataSourceConfigs: DATA_SOURCE_CONFIGS.map((row) => ({ ...row })),
+    watchlists: overrides?.watchlists?.map((row) => ({ ...row })) ?? WATCHLISTS.map((row) => ({ ...row })),
+    watchlistStocks: overrides?.watchlistStocks?.map((row) => ({ ...row })) ?? WATCHLIST_STOCKS.map((row) => ({ ...row })),
+    quoteRows: overrides?.quoteRows?.map((row) => ({ ...row })) ?? QUOTE_ROWS.map((row) => ({ ...row })),
     lastBatchPayload: null,
     lastGeneralSettingsPayload: null,
     detailedHealthFetchCount: 0,
@@ -349,8 +376,11 @@ async function restoreAuthSession(page: Page): Promise<void> {
   }, { user: E2E_USER })
 }
 
-async function setupPhase4Mock(page: Page): Promise<Phase4State> {
-  const state = createPhase4State()
+async function setupPhase4Mock(
+  page: Page,
+  overrides?: Partial<Pick<Phase4State, "watchlists" | "watchlistStocks" | "quoteRows">>,
+): Promise<Phase4State> {
+  const state = createPhase4State(overrides)
   await page.setViewportSize({ width: 1440, height: 900 })
   await installBrowserSpies(page)
   await seedAuth(page)
@@ -592,6 +622,54 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
       return
     }
 
+    if (normalizedPath === "/announcement/stats" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-announcement-stats",
+        },
+        body: JSON.stringify({
+          success: true,
+          total_count: state.announcements.length,
+          today_count: state.announcements.length,
+          important_count: state.announcements.filter((row) => row.importance_level >= 4).length,
+          triggered_count: 0,
+          by_source: {},
+          by_type: {},
+          by_sentiment: {},
+        }),
+      })
+      return
+    }
+
+    if (normalizedPath === "/announcement/monitor-rules" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-announcement-rules",
+        },
+        body: JSON.stringify([]),
+      })
+      return
+    }
+
+    if (normalizedPath === "/announcement/triggered-records" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-announcement-triggered",
+        },
+        body: JSON.stringify({
+          success: true,
+          data: [],
+        }),
+      })
+      return
+    }
+
     if (normalizedPath === "/v1/monitoring/watchlists" && method === "GET") {
       await route.fulfill({
         status: 200,
@@ -599,7 +677,7 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
           "content-type": "application/json",
           "x-request-id": "req-phase4-watchlists",
         },
-        body: JSON.stringify(buildUnifiedResponse(WATCHLISTS, { request_id: "req-phase4-watchlists" })),
+        body: JSON.stringify(buildUnifiedResponse(state.watchlists, { request_id: "req-phase4-watchlists" })),
       })
       return
     }
@@ -611,7 +689,7 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
           "content-type": "application/json",
           "x-request-id": "req-phase4-watchlist-stocks",
         },
-        body: JSON.stringify(buildUnifiedResponse(WATCHLIST_STOCKS, { request_id: "req-phase4-watchlist-stocks" })),
+        body: JSON.stringify(buildUnifiedResponse(state.watchlistStocks, { request_id: "req-phase4-watchlist-stocks" })),
       })
       return
     }
@@ -623,7 +701,7 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
           "content-type": "application/json",
           "x-request-id": "req-phase4-quotes",
         },
-        body: JSON.stringify(buildUnifiedResponse(QUOTE_ROWS, { request_id: "req-phase4-quotes" })),
+        body: JSON.stringify(buildUnifiedResponse(state.quoteRows, { request_id: "req-phase4-quotes" })),
       })
       return
     }
@@ -694,6 +772,8 @@ async function gotoRoute(page: Page, path: string): Promise<void> {
 }
 
 test.describe("Phase 4 Mainline Matrix", () => {
+  test.use({ serviceWorkers: "block" })
+
   test.describe.configure({ timeout: 180000 })
 
   test("Risk-Management renders portfolio guard shell and actions", async ({ page }) => {
@@ -706,10 +786,69 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.getByText("风险管理中心").first()).toBeVisible()
     await expect(page.getByText("风险控制工作流").first()).toBeVisible()
     await expect(page.getByRole("tab", { name: "风险概览" })).toHaveAttribute("aria-selected", "true")
-    await expect(riskContent).toContainText("风险预警列表")
+    await expect(page.locator(".stats-grid")).toContainText("总资产")
+    await expect(page.locator(".stats-grid")).toContainText("今日收益")
+    await expect(page.locator(".stats-grid")).not.toContainText("+1.84%")
+    await expect(page.locator(".stats-grid")).not.toContainText("+0%")
+    await expect(page.locator(".risk-footer")).not.toContainText("每5分钟自动更新")
+    await expect(page.locator(".risk-footer")).toContainText("按当前页同步结果更新")
+    await expect(riskContent).toContainText("风险观察列表")
     await expect(riskContent).toContainText("股票名称")
+    await expect(riskContent).toContainText("当前仅基于真实持仓暴露生成风险观察项，未接入止损/减仓策略参数。")
+    await expect(riskContent).toContainText("策略状态")
+    await expect(riskContent).toContainText("复核状态")
+    await expect(riskContent).toContainText("待复核")
+    await expect(riskContent).toContainText("未校验")
+    await expect(riskContent).not.toContainText("风险预警列表")
     await expect(page.getByRole("button", { name: "导出" })).toBeVisible()
     await expect(page.getByRole("button", { name: "设置", exact: true })).toBeVisible()
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-Management keeps footer freshness unresolved when the first positions payload fails before any verified snapshot exists", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/v1/trade/positions", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-management-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "positions unavailable",
+            request_id: "req-phase4-risk-management-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/management")
+
+    await expect(page.getByText("风险管理中心").first()).toBeVisible()
+    await expect(page.locator(".error-boundary")).toContainText("数据请求失败，请稍后重试")
+    await expect(page.locator(".risk-footer")).toContainText("最后一次更新：--")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-Management stock tab degrades unsupported single-name analysis into pending integration copy", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await gotoRoute(page, "/risk/management")
+    await page.getByRole("tab", { name: "个股分析" }).click()
+
+    const riskContent = page.locator("#artdeco-main-content")
+
+    await expect(page.getByRole("tab", { name: "个股分析" })).toHaveAttribute("aria-selected", "true")
+    await expect(riskContent).toContainText("个股风险分析入口")
+    await expect(riskContent).toContainText("当前仅保留个股风险分析入口，个股级仓位、止损与波动联动待接入。")
+    await expect(riskContent).toContainText("当前路由仍复用组合级风险数据，不直接生成单标的风控动作。")
+    await expect(page.getByRole("button", { name: "查看接入说明" })).toBeVisible()
+    await expect(riskContent).not.toContainText("下钻单一标的的仓位、止损与波动特征，形成可执行的个股风控动作。")
+    await expect(riskContent).not.toContainText("选择持仓股票查看详细风险分析")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -719,10 +858,224 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await gotoRoute(page, "/risk/overview")
 
     await expect(page.getByText("风险概览工作台").first()).toBeVisible()
+    await expect(page.locator(".content-shell")).toContainText("未校验")
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).not.toContainText("+0%")
+    await expect(page.locator(".stats-strip")).not.toContainText("1.00")
+    await expect(page.locator(".stats-strip")).not.toContainText("0.00")
     await page.getByRole("button", { name: "规则清单" }).click()
     await expect(page.locator(".content-shell")).toContainText("单票止损线")
+    await expect(page.locator(".content-shell")).not.toContainText("1.00")
+    await expect(page.locator(".content-shell")).not.toContainText("2.00")
     await page.getByRole("button", { name: "预警消息" }).click()
-    await expect(page.locator(".alerts-list")).toContainText("组合波动率超过阈值 18%")
+    await expect(page.locator(".alerts-list")).toContainText("已跌破止损线，请立即处理。")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-Overview keeps unavailable provenance honest when the first rules and alerts payloads fail before any verified snapshot exists", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/v1/monitoring/alert-rules", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-overview-rules-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk rules unavailable",
+            request_id: "req-phase4-risk-overview-rules-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await page.context().route("**/api/v1/monitoring/alerts?page=1&page_size=50", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-overview-alerts-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk alerts unavailable",
+            request_id: "req-phase4-risk-overview-alerts-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/overview")
+
+    await expect(page.getByText("风险概览工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("ALERTS: --")
+    await expect(page.locator(".stats-strip")).toContainText("--")
+    await expect(page.locator(".content-shell")).toContainText("获取预警记录失败，当前暂无已验证风险概览快照。")
+    await expect(page.locator(".content-shell")).toContainText("当前暂无已验证风险概览快照。")
+    await expect(page.locator(".content-shell")).not.toContainText("req-phase4-risk-overview-rules-first-fail")
+    await expect(page.locator(".content-shell")).not.toContainText("req-phase4-risk-overview-alerts-first-fail")
+    await expect(page.locator(".content-shell")).not.toContainText("今日告警0")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-Overview exposes the verified rules slice when alerts are still unavailable on the first load", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/v1/monitoring/alert-rules", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-overview-rules-first-success",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(ALERT_RULES, {
+            request_id: "req-phase4-risk-overview-rules-first-success",
+          }),
+        ),
+      })
+    })
+
+    await page.context().route("**/api/v1/monitoring/alerts?page=1&page_size=50", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-overview-alerts-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk alerts unavailable",
+            request_id: "req-phase4-risk-overview-alerts-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/overview")
+
+    await expect(page.getByText("风险概览工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("ALERTS: --")
+    await expect(page.locator(".stats-strip")).toContainText("2")
+    await expect(page.locator(".stats-strip")).toContainText("--")
+    await expect(page.locator(".stats-strip")).toContainText("未校验")
+
+    await page.getByRole("button", { name: "规则清单" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-overview-rules-first-success")
+    await expect(page.locator(".content-shell-meta")).toContainText("RULES: 2")
+    await expect(page.locator(".content-shell")).toContainText("单票止损线")
+    await expect(page.locator(".content-shell")).toContainText("获取预警记录失败，当前预警消息暂不可用。")
+    await expect(page.locator(".content-shell")).toContainText("当前预警消息暂不可用。")
+    await expect(page.locator(".content-shell")).not.toContainText("当前暂无已验证风险概览快照。")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-Overview keeps the last verified request id and visible rows when a manual refresh fails", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let rulesFetchCount = 0
+    let alertsFetchCount = 0
+
+    await page.context().route("**/api/v1/monitoring/alert-rules", async (route) => {
+      rulesFetchCount += 1
+
+      if (rulesFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-risk-overview-rules-success",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse(ALERT_RULES, {
+              request_id: "req-phase4-risk-overview-rules-success",
+            }),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-overview-rules-refresh-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk rules refresh unavailable",
+            request_id: "req-phase4-risk-overview-rules-refresh-fail",
+          }),
+        ),
+      })
+    })
+
+    await page.context().route("**/api/v1/monitoring/alerts?page=1&page_size=50", async (route) => {
+      alertsFetchCount += 1
+
+      if (alertsFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-risk-overview-alerts-success",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse(ALERT_RECORDS, {
+              request_id: "req-phase4-risk-overview-alerts-success",
+            }),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-overview-alerts-refresh-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk alerts refresh unavailable",
+            request_id: "req-phase4-risk-overview-alerts-refresh-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/overview")
+
+    await expect(page.getByText("风险概览工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-overview-alerts-success")
+    await expect(page.locator(".stats-strip")).toContainText("2")
+    await expect(page.locator(".stats-strip")).toContainText("2")
+    await expect(page.locator(".stats-strip")).toContainText("未校验")
+
+    await page.getByRole("button", { name: "刷新概览" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-overview-alerts-success")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-risk-overview-rules-refresh-fail")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-risk-overview-alerts-refresh-fail")
+    await expect(page.locator(".content-shell")).toContainText("获取预警记录失败，当前仍显示上次成功同步的风险概览快照。")
+    await expect(page.locator(".content-shell")).toContainText("当前仍显示上次成功同步的风险概览快照。")
+    await expect(page.locator(".stats-strip")).toContainText("2")
+    await page.getByRole("button", { name: "规则清单" }).click()
+    await expect(page.locator(".content-shell")).toContainText("单票止损线")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -735,7 +1088,9 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.locator(".positions-grid .position-item")).toHaveCount(2)
     await expect(page.locator(".portfolio-overview-tab")).toContainText("Top Positions")
     await expect(page.locator(".portfolio-overview-tab")).toContainText("贵州茅台")
-    await expect(page.locator(".rebalance-section")).toContainText("自动再平衡建议")
+    await expect(page.locator(".rebalance-section")).toContainText("再平衡策略待接入")
+    await expect(page.locator(".rebalance-section")).not.toContainText("目标 25%")
+    await expect(page.locator(".rebalance-section")).not.toContainText("建议减仓约")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -748,6 +1103,279 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.locator(".risk-card")).toHaveCount(2)
     await expect(page.locator(".monitor-grid")).toContainText("TRIGGERED")
     await expect(page.locator(".monitor-grid")).toContainText("宁德时代")
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).not.toContainText("+0%")
+    await expect(page.locator(".stats-strip")).not.toContainText("1.00")
+    await expect(page.locator(".stats-strip")).not.toContainText("0.00")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-StopLoss degrades to pending-policy copy when watchlist stocks have no stop-loss thresholds", async ({ page }) => {
+    const state = await setupPhase4Mock(page, {
+      watchlistStocks: [
+        {
+          stock_code: "600519",
+          stock_name: "贵州茅台",
+          entry_price: 1820,
+        },
+      ],
+      quoteRows: [
+        {
+          symbol: "600519",
+          name: "贵州茅台",
+          current_price: 1805,
+        },
+      ],
+    })
+
+    await gotoRoute(page, "/risk/stop-loss")
+
+    await expect(page.getByText("止损雷达工作台").first()).toBeVisible()
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("策略待接入")
+    await expect(page.locator(".content-shell")).toContainText("当前仅同步观察标的与行情，止损参数待接入。")
+    await expect(page.locator(".monitor-grid")).toContainText("待接入")
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).not.toContainText("+0%")
+    await expect(page.locator(".stats-strip")).not.toContainText("1.00")
+    await expect(page.locator(".stats-strip")).not.toContainText("0.00")
+    await expect(page.locator(".stop-loss-monitor-tab")).not.toContainText("止损观察中")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-StopLoss keeps unavailable provenance honest when the first watchlist-stock payload fails before any verified snapshot exists", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/v1/monitoring/watchlists/101/stocks", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-stoploss-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "watchlist stocks unavailable",
+            request_id: "req-phase4-stoploss-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/stop-loss")
+
+    await expect(page.getByText("止损雷达工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("CRITICAL: --")
+    await expect(page.locator(".hero-meta")).toContainText("TRIGGERED: --")
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).toContainText("--")
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("watchlist stocks unavailable")
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("当前暂无已验证止损快照。")
+    await expect(page.locator(".stop-loss-monitor-tab")).not.toContainText("req-phase4-stoploss-first-fail")
+    await expect(page.locator(".stop-loss-monitor-tab")).not.toContainText("暂无止损监控卡片")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-StopLoss keeps the last verified request id and cards when a manual refresh fails", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let stopLossStockFetchCount = 0
+
+    await page.context().route("**/api/v1/monitoring/watchlists/101/stocks", async (route) => {
+      stopLossStockFetchCount += 1
+
+      if (stopLossStockFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-stoploss-success",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse(state.watchlistStocks, {
+              request_id: "req-phase4-stoploss-success",
+            }),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-stoploss-refresh-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "watchlist stocks refresh unavailable",
+            request_id: "req-phase4-stoploss-refresh-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/stop-loss")
+
+    await expect(page.getByText("止损雷达工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-stoploss-success")
+    await expect(page.locator(".risk-card")).toHaveCount(2)
+    await expect(page.locator(".monitor-grid")).toContainText("宁德时代")
+
+    await page.getByRole("button", { name: "刷新雷达" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-stoploss-success")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-stoploss-refresh-fail")
+    await expect(page.locator(".risk-card")).toHaveCount(2)
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("watchlist stocks refresh unavailable")
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("当前仍显示上次成功同步的止损快照。")
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("贵州茅台")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-StopLoss does not keep the previous watchlist cards visible while a new primary watchlist is still unresolved", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let watchlistRequestCount = 0
+
+    await page.context().route("**/api/v1/monitoring/watchlists", async (route) => {
+      watchlistRequestCount += 1
+
+      if (watchlistRequestCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-watchlists-101",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse([{ id: 101, name: "核心止损监控", is_active: true }], {
+              request_id: "req-phase4-watchlists-101",
+            }),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-watchlists-202",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            [
+              { id: 202, name: "成长止损监控", is_active: true },
+              { id: 101, name: "核心止损监控", is_active: false },
+            ],
+            { request_id: "req-phase4-watchlists-202" },
+          ),
+        ),
+      })
+    })
+
+    await page.context().route("**/api/v1/monitoring/watchlists/202/stocks", async () => {
+      await new Promise(() => {})
+    })
+
+    await gotoRoute(page, "/risk/stop-loss")
+
+    await expect(page.getByText("止损雷达工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-watchlist-stocks")
+    await expect(page.locator(".risk-card")).toHaveCount(2)
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("贵州茅台")
+
+    await page.getByRole("button", { name: "刷新雷达" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("CRITICAL: --")
+    await expect(page.locator(".hero-meta")).toContainText("TRIGGERED: --")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText(["--", "--", "--", "--"])
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("止损标的同步中...")
+    await expect(page.locator(".risk-card")).toHaveCount(0)
+    await expect(page.locator(".stop-loss-monitor-tab")).not.toContainText("贵州茅台")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-StopLoss does not leak a previous watchlist snapshot after the primary watchlist switched to a new selector without its own verified cards", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let watchlistRequestCount = 0
+
+    await page.context().route("**/api/v1/monitoring/watchlists", async (route) => {
+      watchlistRequestCount += 1
+
+      if (watchlistRequestCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-watchlists-101",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse([{ id: 101, name: "核心止损监控", is_active: true }], {
+              request_id: "req-phase4-watchlists-101",
+            }),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-watchlists-202",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            [
+              { id: 202, name: "成长止损监控", is_active: true },
+              { id: 101, name: "核心止损监控", is_active: false },
+            ],
+            { request_id: "req-phase4-watchlists-202" },
+          ),
+        ),
+      })
+    })
+
+    await page.context().route("**/api/v1/monitoring/watchlists/202/stocks", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-stoploss-202-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "watchlist 202 stocks unavailable",
+            request_id: "req-phase4-stoploss-202-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/stop-loss")
+
+    await expect(page.getByText("止损雷达工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-watchlist-stocks")
+    await expect(page.locator(".risk-card")).toHaveCount(2)
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("贵州茅台")
+
+    await page.getByRole("button", { name: "刷新雷达" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("CRITICAL: --")
+    await expect(page.locator(".hero-meta")).toContainText("TRIGGERED: --")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText(["--", "--", "--", "--"])
+    await expect(page.locator(".risk-card")).toHaveCount(0)
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("watchlist 202 stocks unavailable")
+    await expect(page.locator(".stop-loss-monitor-tab")).toContainText("当前暂无已验证止损快照。")
+    await expect(page.locator(".stop-loss-monitor-tab")).not.toContainText("贵州茅台")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -761,6 +1389,224 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.locator(".risk-alerts")).toContainText("已跌破止损线，请立即处理。")
     await expect(page.locator(".risk-alerts")).toContainText("规则列表")
     await expect(page.locator(".risk-alerts")).toContainText("组合波动率约束")
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).not.toContainText("+0%")
+    await expect(page.locator(".stats-strip")).not.toContainText("2.00")
+    await expect(page.locator(".stats-strip")).not.toContainText("1.00")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-Alerts keeps unavailable provenance honest when the first rules and alerts payloads fail before any verified snapshot exists", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/v1/monitoring/alert-rules", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-alerts-rules-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk alert rules unavailable",
+            request_id: "req-phase4-risk-alerts-rules-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await page.context().route("**/api/v1/monitoring/alerts?page=1&page_size=50", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-alerts-records-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk alert records unavailable",
+            request_id: "req-phase4-risk-alerts-records-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/alerts")
+
+    await expect(page.getByText("风险告警工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("UNREAD: --")
+    await expect(page.locator(".content-shell-meta")).toContainText("RULES: --")
+    await expect(page.locator(".content-shell-meta")).toContainText("ALERTS: --")
+    await expect(page.locator(".stats-strip")).toContainText("--")
+    await expect(page.locator(".risk-alerts")).toContainText("获取告警记录失败")
+    await expect(page.locator(".risk-alerts")).toContainText("当前暂无已验证告警快照。")
+    await expect(page.locator(".risk-alerts")).not.toContainText("req-phase4-risk-alerts-rules-first-fail")
+    await expect(page.locator(".risk-alerts")).not.toContainText("req-phase4-risk-alerts-records-first-fail")
+    await expect(page.locator(".risk-alerts")).not.toContainText("暂无告警记录，近期告警面板为空。")
+    await expect(page.locator(".risk-alerts")).not.toContainText("暂无风险告警规则。")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-Alerts keeps verified rules visible when alert records fail on the first load before any full snapshot exists", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/v1/monitoring/alert-rules", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-alerts-rules-first-success",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(ALERT_RULES, {
+            request_id: "req-phase4-risk-alerts-rules-first-success",
+          }),
+        ),
+      })
+    })
+
+    await page.context().route("**/api/v1/monitoring/alerts?page=1&page_size=50", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-alerts-records-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk alerts unavailable",
+            request_id: "req-phase4-risk-alerts-records-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/alerts")
+
+    await expect(page.getByText("风险告警工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("UNREAD: --")
+    await expect(page.locator(".content-shell-meta")).toContainText("RULES: 2")
+    await expect(page.locator(".content-shell-meta")).toContainText("ALERTS: --")
+    await expect(page.locator(".stats-strip")).toContainText("2")
+    await expect(page.locator(".stats-strip")).toContainText("--")
+    await expect(page.locator(".risk-alerts")).toContainText("获取告警记录失败")
+    await expect(page.locator(".risk-alerts")).toContainText("当前告警记录暂不可用。")
+    await expect(page.locator(".risk-alerts")).toContainText("组合波动率约束")
+    await expect(page.locator(".risk-alerts")).not.toContainText("req-phase4-risk-alerts-rules-first-success")
+    await expect(page.locator(".risk-alerts")).not.toContainText("req-phase4-risk-alerts-records-first-fail")
+    await expect(page.locator(".risk-alerts")).not.toContainText("已跌破止损线，请立即处理。")
+    await expect(page.locator(".risk-alerts")).not.toContainText("当前暂无已验证告警快照。")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-Alerts keeps the last verified request id and visible rows when a manual refresh fails", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let rulesFetchCount = 0
+    let alertsFetchCount = 0
+
+    await page.context().route("**/api/v1/monitoring/alert-rules", async (route) => {
+      rulesFetchCount += 1
+
+      if (rulesFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-risk-alerts-rules-success",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse(ALERT_RULES, {
+              request_id: "req-phase4-risk-alerts-rules-success",
+            }),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-alerts-rules-refresh-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk alert rules refresh unavailable",
+            request_id: "req-phase4-risk-alerts-rules-refresh-fail",
+          }),
+        ),
+      })
+    })
+
+    await page.context().route("**/api/v1/monitoring/alerts?page=1&page_size=50", async (route) => {
+      alertsFetchCount += 1
+
+      if (alertsFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-risk-alerts-success",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse(ALERT_RECORDS, {
+              request_id: "req-phase4-risk-alerts-success",
+            }),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-alerts-refresh-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "risk alert records refresh unavailable",
+            request_id: "req-phase4-risk-alerts-refresh-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/alerts")
+
+    await expect(page.getByText("风险告警工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-alerts-success")
+    await expect(page.locator(".hero-meta")).toContainText("UNREAD: 1")
+    await expect(page.locator(".content-shell-meta")).toContainText("RULES: 2")
+    await expect(page.locator(".content-shell-meta")).toContainText("ALERTS: 2")
+    await expect(page.locator(".stats-strip")).toContainText("2")
+    await expect(page.locator(".stats-strip")).toContainText("1")
+    await expect(page.locator(".risk-alerts")).toContainText("组合波动率约束")
+    await expect(page.locator(".risk-alerts")).toContainText("已跌破止损线，请立即处理。")
+
+    await page.getByRole("button", { name: "刷新告警" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-alerts-success")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-risk-alerts-rules-refresh-fail")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-risk-alerts-refresh-fail")
+    await expect(page.locator(".content-shell-meta")).toContainText("RULES: 2")
+    await expect(page.locator(".content-shell-meta")).toContainText("ALERTS: 2")
+    await expect(page.locator(".risk-alerts")).toContainText("获取告警记录失败")
+    await expect(page.locator(".risk-alerts")).toContainText("当前仍显示上次成功同步的告警快照。")
+    await expect(page.locator(".risk-alerts")).toContainText("组合波动率约束")
+    await expect(page.locator(".risk-alerts")).toContainText("已跌破止损线，请立即处理。")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -772,9 +1618,589 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.getByText("公告与舆情工作台").first()).toBeVisible()
     await expect(page.locator(".announcement-monitor")).toContainText("公告列表")
     await expect(page.locator(".announcement-monitor")).toContainText("2026 年第一季度经营数据公告")
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).not.toContainText("+0%")
+    await expect(page.locator(".stats-strip")).not.toContainText("2.00")
+    await expect(page.locator(".stats-strip")).not.toContainText("1.00")
     await page.getByRole("button", { name: "查看原文" }).first().click()
     const openedUrls = await page.evaluate(() => (window as typeof window & { __phase4OpenedUrls: string[] }).__phase4OpenedUrls)
     expect(openedUrls).toEqual(["https://example.com/announcements/600519-q1"])
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-News keeps unavailable provenance honest when the first announcements payload fails before any verified snapshot exists", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/announcement/list**", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-news-first-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "announcement feed unavailable",
+            request_id: "req-phase4-risk-news-first-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/news")
+
+    await expect(page.getByText("公告与舆情工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("TODAY: --")
+    await expect(page.locator(".content-shell-meta")).toContainText("ANNOUNCEMENTS: --")
+    await expect(page.locator(".content-shell-meta")).toContainText("LINKED: --")
+    await expect(page.locator(".stats-strip")).toContainText("--")
+    await expect(page.locator(".announcement-monitor")).toContainText("获取公告失败")
+    await expect(page.locator(".announcement-monitor")).toContainText("当前暂无已验证公告快照。")
+    await expect(page.locator(".announcement-monitor")).not.toContainText("req-phase4-risk-news-first-fail")
+    await expect(page.locator(".announcement-monitor")).not.toContainText("暂无公告数据，公告列表为空。")
+    await expect(page.locator(".announcement-monitor")).not.toContainText("当前没有可展示的公告记录。")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Risk-News keeps the last verified request id and visible rows when a manual refresh fails", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let announcementsFetchCount = 0
+
+    await page.context().route("**/api/announcement/list**", async (route) => {
+      announcementsFetchCount += 1
+
+      if (announcementsFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-risk-news-success",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse(ANNOUNCEMENTS, {
+              request_id: "req-phase4-risk-news-success",
+            }),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-news-refresh-fail",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(null, {
+            success: false,
+            code: 503,
+            message: "announcement refresh unavailable",
+            request_id: "req-phase4-risk-news-refresh-fail",
+          }),
+        ),
+      })
+    })
+
+    await gotoRoute(page, "/risk/news")
+
+    await expect(page.getByText("公告与舆情工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-news-success")
+    await expect(page.locator(".content-shell-meta")).toContainText("ANNOUNCEMENTS: 2")
+    await expect(page.locator(".content-shell-meta")).toContainText("LINKED: 1")
+    await expect(page.locator(".announcement-monitor")).toContainText("2026 年第一季度经营数据公告")
+
+    await page.getByRole("button", { name: "刷新公告" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-news-success")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-risk-news-refresh-fail")
+    await expect(page.locator(".content-shell-meta")).toContainText("ANNOUNCEMENTS: 2")
+    await expect(page.locator(".content-shell-meta")).toContainText("LINKED: 1")
+    await expect(page.locator(".announcement-monitor")).toContainText("获取公告失败")
+    await expect(page.locator(".announcement-monitor")).toContainText("当前仍显示上次成功同步的公告快照。")
+    await expect(page.locator(".announcement-monitor")).toContainText("2026 年第一季度经营数据公告")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Detail-News renders live announcement stats instead of zero fallback or label-only stat cards", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await gotoRoute(page, "/detail/news/600519")
+
+    await expect(page.getByText("ANNOUNCEMENT MONITOR").first()).toBeVisible()
+    await expect(page.locator(".route-banner")).toContainText("当前详情标的: 600519")
+    await expect(page.locator(".announcements-card")).toContainText("2026 年第一季度经营数据公告")
+    await expect(page.locator(".stats-grid .stat-number")).toHaveCount(4)
+    await expect(page.locator(".stats-grid .stat-number").nth(0)).toHaveText("2")
+    await expect(page.locator(".stats-grid .stat-number").nth(1)).toHaveText("2")
+    await expect(page.locator(".stats-grid .stat-number").nth(2)).toHaveText("1")
+    await expect(page.locator(".stats-grid .stat-number").nth(3)).toHaveText("0")
+    await expect(page.locator(".stats-grid")).not.toContainText("--")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Detail-News clears stale stats cards when the announcement stats slice refresh fails but keeps the verified announcement rows", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let statsFetchCount = 0
+
+    await page.context().route("**/api/announcement/stats", async (route) => {
+      statsFetchCount += 1
+
+      if (statsFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-announcement-stats-success",
+          },
+          body: JSON.stringify({
+            success: true,
+            total_count: 2,
+            today_count: 2,
+            important_count: 1,
+            triggered_count: 0,
+            by_source: {},
+            by_type: {},
+            by_sentiment: {},
+          }),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 503,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-announcement-stats-fail",
+        },
+        body: JSON.stringify({
+          success: false,
+          message: "announcement stats unavailable",
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/detail/news/600519")
+
+    await expect(page.locator(".announcements-card")).toContainText("2026 年第一季度经营数据公告")
+    await expect(page.locator(".stats-grid .stat-number").nth(0)).toHaveText("2")
+    await expect(page.locator(".stats-grid .stat-number").nth(1)).toHaveText("2")
+    await expect(page.locator(".stats-grid .stat-number").nth(2)).toHaveText("1")
+    await expect(page.locator(".stats-grid .stat-number").nth(3)).toHaveText("0")
+
+    await page.locator(".search-card").getByRole("button", { name: "刷新" }).click()
+
+    await expect(page.locator(".announcements-card")).toContainText("2026 年第一季度经营数据公告")
+    await expect(page.locator(".stats-grid .stat-number").nth(0)).toHaveText("--")
+    await expect(page.locator(".stats-grid .stat-number").nth(1)).toHaveText("--")
+    await expect(page.locator(".stats-grid .stat-number").nth(2)).toHaveText("--")
+    await expect(page.locator(".stats-grid .stat-number").nth(3)).toHaveText("--")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Detail-News keeps the last verified auxiliary rule and trigger snapshots when those slices fail on a later refresh", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let rulesFetchCount = 0
+    let triggeredFetchCount = 0
+
+    await page.context().route("**/api/announcement/monitor-rules", async (route) => {
+      rulesFetchCount += 1
+
+      if (rulesFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-announcement-rules-success",
+          },
+          body: JSON.stringify([
+            {
+              id: 11,
+              rule_name: "高重要性公告",
+              stock_codes: ["600519"],
+              keywords: ["经营数据"],
+              min_importance_level: 4,
+              notify_enabled: true,
+              is_active: true,
+            },
+          ]),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 503,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-announcement-rules-fail",
+        },
+        body: JSON.stringify({
+          success: false,
+          error: "monitor rules unavailable",
+        }),
+      })
+    })
+
+    await page.context().route("**/api/announcement/triggered-records", async (route) => {
+      triggeredFetchCount += 1
+
+      if (triggeredFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-announcement-triggered-success",
+          },
+          body: JSON.stringify({
+            success: true,
+            data: [
+              {
+                rule_name: "高重要性公告",
+                stock_code: "600519",
+                announcement_title: "2026 年第一季度经营数据公告",
+                matched_keywords: ["经营数据"],
+                triggered_at: "2026-05-05 10:00:00",
+              },
+            ],
+          }),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 503,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-announcement-triggered-fail",
+        },
+        body: JSON.stringify({
+          success: false,
+          error: "triggered records unavailable",
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/detail/news/600519")
+
+    await expect(page.locator(".rules-card")).toContainText("高重要性公告")
+    await expect(page.locator(".records-card")).toContainText("2026 年第一季度经营数据公告")
+
+    await page.locator(".search-card").getByRole("button", { name: "刷新" }).click()
+
+    await expect(page.locator(".rules-card")).toContainText("当前仍显示上次成功同步的监控规则快照。")
+    await expect(page.locator(".rules-card")).toContainText("高重要性公告")
+    await expect(page.locator(".records-card")).toContainText("当前仍显示上次成功同步的触发记录快照。")
+    await expect(page.locator(".records-card")).toContainText("2026 年第一季度经营数据公告")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Detail-News clears the previous symbol rows when a new detail symbol failed before its first verified announcement snapshot", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/announcement/list**", async (route) => {
+      const url = new URL(route.request().url())
+      const stockCode = url.searchParams.get("stock_code") || ""
+
+      if (stockCode === "000001") {
+        await route.fulfill({
+          status: 503,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-detail-news-symbol-fail",
+          },
+          body: JSON.stringify({
+            success: false,
+            error: "announcement list unavailable for 000001",
+          }),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-detail-news-symbol-success",
+        },
+        body: JSON.stringify({
+          success: true,
+          data: [
+            {
+              id: 1,
+              stock_code: "600519",
+              stock_name: "贵州茅台",
+              title: "2026 年第一季度经营数据公告",
+              type: "经营数据",
+              importance_level: 4,
+              sentiment: "neutral",
+              publish_date: "2026-05-05",
+              data_source: "cninfo",
+              url: "https://example.com/600519-q1",
+            },
+          ],
+          total: 1,
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/detail/news/600519")
+
+    await expect(page.locator(".route-banner")).toContainText("当前详情标的: 600519")
+    await expect(page.locator(".announcements-card")).toContainText("2026 年第一季度经营数据公告")
+
+    await gotoRoute(page, "/detail/news/000001")
+
+    await expect(page.locator(".route-banner")).toContainText("当前详情标的: 000001")
+    await expect(page.locator(".announcements-card")).toContainText("当前标的公告暂不可用，请稍后重试。")
+    await expect(page.locator(".announcements-card")).not.toContainText("2026 年第一季度经营数据公告")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Detail-News clears the previous symbol rows while a newly selected detail symbol is still unresolved", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/announcement/list**", async (route) => {
+      const url = new URL(route.request().url())
+      const stockCode = url.searchParams.get("stock_code") || ""
+
+      if (stockCode === "000001") {
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-detail-news-symbol-pending-success",
+        },
+        body: JSON.stringify({
+          success: true,
+          data: [
+            {
+              id: 1,
+              stock_code: "600519",
+              stock_name: "贵州茅台",
+              title: "2026 年第一季度经营数据公告",
+              type: "经营数据",
+              importance_level: 4,
+              sentiment: "neutral",
+              publish_date: "2026-05-05",
+              data_source: "cninfo",
+              url: "https://example.com/600519-q1",
+            },
+          ],
+          total: 1,
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/detail/news/600519")
+
+    await expect(page.locator(".route-banner")).toContainText("当前详情标的: 600519")
+    await expect(page.locator(".announcements-card")).toContainText("2026 年第一季度经营数据公告")
+
+    await gotoRoute(page, "/detail/news/000001")
+
+    await expect(page.locator(".route-banner")).toContainText("当前详情标的: 000001")
+    await expect(page.locator(".announcements-card")).not.toContainText("2026 年第一季度经营数据公告")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Detail-News clears the previous stats cards while a newly selected detail symbol stats slice is still unresolved", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let statsFetchCount = 0
+
+    await page.context().route("**/api/announcement/stats", async (route) => {
+      statsFetchCount += 1
+
+      if (statsFetchCount === 2) {
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": `req-phase4-detail-news-stats-${statsFetchCount}`,
+        },
+        body: JSON.stringify({
+          success: true,
+          total_count: 2,
+          today_count: 2,
+          important_count: 1,
+          triggered_count: 0,
+        }),
+      })
+    })
+
+    await page.context().route("**/api/announcement/list**", async (route) => {
+      const url = new URL(route.request().url())
+      const stockCode = url.searchParams.get("stock_code") || ""
+
+      if (stockCode === "000001") {
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-detail-news-stats-symbol-pending-success",
+        },
+        body: JSON.stringify({
+          success: true,
+          data: [
+            {
+              id: 1,
+              stock_code: "600519",
+              stock_name: "贵州茅台",
+              title: "2026 年第一季度经营数据公告",
+              type: "经营数据",
+              importance_level: 4,
+              sentiment: "neutral",
+              publish_date: "2026-05-05",
+              data_source: "cninfo",
+              url: "https://example.com/600519-q1",
+            },
+          ],
+          total: 1,
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/detail/news/600519")
+
+    await expect(page.locator(".stats-grid .stat-number").nth(0)).toHaveText("2")
+    await expect(page.locator(".stats-grid .stat-number").nth(1)).toHaveText("2")
+    await expect(page.locator(".stats-grid .stat-number").nth(2)).toHaveText("1")
+    await expect(page.locator(".stats-grid .stat-number").nth(3)).toHaveText("0")
+
+    await gotoRoute(page, "/detail/news/000001")
+
+    await expect(page.locator(".route-banner")).toContainText("当前详情标的: 000001")
+    await expect(page.locator(".stats-grid .stat-number").nth(0)).toHaveText("--")
+    await expect(page.locator(".stats-grid .stat-number").nth(1)).toHaveText("--")
+    await expect(page.locator(".stats-grid .stat-number").nth(2)).toHaveText("--")
+    await expect(page.locator(".stats-grid .stat-number").nth(3)).toHaveText("--")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Detail-News does not leak selector-specific auxiliary rows into a new detail symbol shell", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/announcement/list**", async (route) => {
+      const url = new URL(route.request().url())
+      const stockCode = url.searchParams.get("stock_code") || ""
+
+      if (stockCode === "000001") {
+        await route.fulfill({
+          status: 503,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-detail-news-aux-symbol-fail",
+          },
+          body: JSON.stringify({
+            success: false,
+            error: "announcement list unavailable for 000001",
+          }),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-detail-news-aux-symbol-success",
+        },
+        body: JSON.stringify({
+          success: true,
+          data: [
+            {
+              id: 1,
+              stock_code: "600519",
+              stock_name: "贵州茅台",
+              title: "2026 年第一季度经营数据公告",
+              type: "经营数据",
+              importance_level: 4,
+              sentiment: "neutral",
+              publish_date: "2026-05-05",
+              data_source: "cninfo",
+              url: "https://example.com/600519-q1",
+            },
+          ],
+          total: 1,
+        }),
+      })
+    })
+
+    await page.context().route("**/api/announcement/monitor-rules", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-detail-news-aux-rules",
+        },
+        body: JSON.stringify([
+          {
+            id: 11,
+            rule_name: "高重要性公告",
+            stock_codes: ["600519"],
+            keywords: ["经营数据"],
+            min_importance_level: 4,
+            notify_enabled: true,
+            is_active: true,
+          },
+          {
+            id: 12,
+            rule_name: "全市场风险提示",
+            stock_codes: [],
+            keywords: ["风险提示"],
+            min_importance_level: 3,
+            notify_enabled: true,
+            is_active: true,
+          },
+        ]),
+      })
+    })
+
+    await page.context().route("**/api/announcement/triggered-records", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-detail-news-aux-records",
+        },
+        body: JSON.stringify({
+          success: true,
+          data: [
+            {
+              rule_name: "高重要性公告",
+              stock_code: "600519",
+              announcement_title: "2026 年第一季度经营数据公告",
+              matched_keywords: ["经营数据"],
+              triggered_at: "2026-05-05 10:00:00",
+            },
+          ],
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/detail/news/600519")
+
+    await expect(page.locator(".rules-card")).toContainText("高重要性公告")
+    await expect(page.locator(".records-card")).toContainText("2026 年第一季度经营数据公告")
+
+    await gotoRoute(page, "/detail/news/000001")
+
+    await expect(page.locator(".route-banner")).toContainText("当前详情标的: 000001")
+    await expect(page.locator(".rules-card")).toContainText("全市场风险提示")
+    await expect(page.locator(".rules-card")).not.toContainText("高重要性公告")
+    await expect(page.locator(".records-card")).not.toContainText("高重要性公告")
+    await expect(page.locator(".records-card")).not.toContainText("2026 年第一季度经营数据公告")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -787,7 +2213,24 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.locator(".analysis-blocker")).toContainText("System-Config 仍按分段真相运行")
     await expect(page.locator(".analysis-blocker")).toContainText("general 与 security 已接入系统级 /api/v1/system/settings/* 契约")
     await expect(page.locator(".header-meta")).toContainText("DATA: REAL")
+    await expect(page.locator(".header-meta")).toContainText("REQ_ID: req-phase4-config")
+    await expect(page.locator(".stats-grid .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-grid")).toContainText("3")
+    await expect(page.locator(".stats-grid")).toContainText("2")
+    await expect(page.locator(".stats-grid")).toContainText("ON")
+    await expect(page.locator(".stats-grid")).not.toContainText("+0%")
+    await expect(page.locator(".stats-grid")).not.toContainText("4.00")
+    await expect(page.locator(".stats-grid")).not.toContainText("3/4")
+    await expect(page.locator(".stats-grid")).not.toContainText("28,412")
+    await expect(page.locator(".stats-grid")).not.toContainText("2.00")
+    await expect(page.locator(".hybrid-table__content")).toContainText("AKShare 行情")
+    await expect(page.locator(".hybrid-table__content")).toContainText("Tushare 因子")
+    await expect(page.locator(".hybrid-table__content")).toContainText("TDX 实时深度")
+    await expect(page.locator(".hybrid-table__content")).not.toContainText("Wind")
+    await page.locator(".tabs").getByRole("button", { name: "系统监控", exact: true }).click()
+    await expect(page.locator(".header-meta")).toContainText("REQ_ID: req-phase4-health-detailed")
     await page.locator(".tabs").getByRole("button", { name: "系统设置", exact: true }).click()
+    await expect(page.locator(".header-meta")).toContainText("REQ_ID: req-phase4-general-settings")
     await page.locator(".form-grid input").first().fill("http://localhost:9999")
     await page.getByRole("button", { name: "保存系统设置", exact: true }).click()
     await expect.poll(() => state.lastGeneralSettingsPayload).toEqual({
@@ -809,6 +2252,89 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.locator(".health-grid")).toContainText("mystocks-backend")
     await expect(page.locator(".health-grid")).toContainText("Performance Tracing")
     await expect(page.locator(".content-shell")).toContainText("服务状态与中间件面板")
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).not.toContainText("+0%")
+    await expect(page.locator(".stats-strip")).not.toContainText("3.00")
+    await expect(page.locator(".stats-strip")).not.toContainText("2.00")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("System-Health does not leak failed request ids before any verified health snapshot exists", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/health", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-health-first-fail",
+        },
+        body: JSON.stringify({
+          success: false,
+          code: 503,
+          message: "health failed",
+          request_id: "req-phase4-health-first-fail",
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/system/health")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-health-first-fail")
+    await expect(page.locator(".runtime-message")).toContainText("无法连接到后端服务")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("System-Health keeps the last verified request id when refresh fails after success", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let healthFetchCount = 0
+
+    await page.context().route("**/api/health", async (route) => {
+      healthFetchCount += 1
+
+      if (healthFetchCount <= 2) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": healthFetchCount === 1 ? "req-phase4-health-preflight" : "req-phase4-health-success",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse(
+              HEALTH_DATA,
+              {
+                request_id: healthFetchCount === 1 ? "req-phase4-health-preflight" : "req-phase4-health-success",
+              },
+            ),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-health-refresh-fail",
+        },
+        body: JSON.stringify({
+          success: false,
+          code: 503,
+          message: "health failed",
+          request_id: "req-phase4-health-refresh-fail",
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/system/health")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-health-success")
+    await page.getByRole("button", { name: "刷新矩阵" }).click()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-health-success")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-health-refresh-fail")
+    await expect(page.locator(".health-grid")).toContainText("mystocks-backend")
+    await expect(page.locator(".runtime-message")).toContainText("无法连接到后端服务")
     expect(state.unhandledRequests).toEqual([])
   })
 
@@ -819,6 +2345,10 @@ test.describe("Phase 4 Mainline Matrix", () => {
 
     await expect(page.getByText("系统监控工作台").first()).toBeVisible()
     await expect(page.locator(".health-grid")).toContainText("mystocks-backend")
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).not.toContainText("+0%")
+    await expect(page.locator(".stats-strip")).not.toContainText("3.00")
+    await expect(page.locator(".stats-strip")).not.toContainText("2.00")
     await page.getByRole("button", { name: "导出报告" }).click()
     const blobUrls = await page.evaluate(
       () => (window as typeof window & { __phase4BlobUrls: string[] }).__phase4BlobUrls
@@ -829,12 +2359,104 @@ test.describe("Phase 4 Mainline Matrix", () => {
     expect(state.unhandledRequests).toEqual([])
   })
 
+  test("System-API does not leak failed request ids before any verified system probe snapshot exists", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/health", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-system-api-first-fail",
+        },
+        body: JSON.stringify({
+          success: false,
+          code: 503,
+          message: "health failed",
+          request_id: "req-phase4-system-api-first-fail",
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/system/api")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-system-api-first-fail")
+    await expect(page.locator(".content-shell-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".runtime-message")).toContainText("无法连接到后端服务")
+    await expect(page.locator(".runtime-message")).toContainText("当前暂无已验证系统探针快照。")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("System-API keeps the last verified request id and visible snapshot when refresh fails after success", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let healthFetchCount = 0
+
+    await page.context().route("**/api/health", async (route) => {
+      healthFetchCount += 1
+
+      if (healthFetchCount <= 2) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": healthFetchCount === 1 ? "req-phase4-system-api-preflight" : "req-phase4-system-api-success",
+          },
+          body: JSON.stringify(
+            buildUnifiedResponse(
+              HEALTH_DATA,
+              {
+                request_id: healthFetchCount === 1 ? "req-phase4-system-api-preflight" : "req-phase4-system-api-success",
+              },
+            ),
+          ),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-system-api-refresh-fail",
+        },
+        body: JSON.stringify({
+          success: false,
+          code: 503,
+          message: "health failed",
+          request_id: "req-phase4-system-api-refresh-fail",
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/system/api")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-system-api-success")
+    await expect(page.locator(".health-grid")).toContainText("mystocks-backend")
+    await expect(page.locator(".health-grid")).toContainText("2.0.0")
+
+    await page.getByRole("button", { name: "刷新探针" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-system-api-success")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-system-api-refresh-fail")
+    await expect(page.locator(".content-shell-meta")).toContainText("REQ_ID: req-phase4-system-api-success")
+    await expect(page.locator(".runtime-message")).toContainText("无法连接到后端服务")
+    await expect(page.locator(".runtime-message")).toContainText("当前仍显示上次成功同步的系统探针快照。")
+    await expect(page.locator(".health-grid")).toContainText("mystocks-backend")
+    await expect(page.locator(".health-grid")).toContainText("2.0.0")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
   test("System-Data renders config table and posts batch write payload", async ({ page }) => {
     const state = await setupPhase4Mock(page)
 
     await gotoRoute(page, "/system/data")
 
     await expect(page.getByText("数据源治理工作台").first()).toBeVisible()
+    await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
+    await expect(page.locator(".stats-strip")).not.toContainText("+0%")
+    await expect(page.locator(".stats-strip")).not.toContainText("3.00")
+    await expect(page.locator(".stats-strip")).not.toContainText("2.00")
     await expect(page.locator(".config-row:not(.header)")).toHaveCount(3)
     await expect(page.locator(".config-table")).toContainText("AKShare 行情")
     const firstConfigRow = page.locator(".config-row").filter({ hasText: "AKShare 行情" })
@@ -853,6 +2475,79 @@ test.describe("Phase 4 Mainline Matrix", () => {
         },
       ],
     })
+    await expect(page.locator(".config-table")).toContainText("TDX 实时深度")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("System-Data does not fabricate a request id when the verified config snapshot has no request metadata", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+
+    await page.context().route("**/api/v1/data-sources/config/", async (route) => {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify(buildUnifiedResponse(state.dataSourceConfigs, { request_id: "" })),
+      })
+    })
+
+    await gotoRoute(page, "/system/data")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".stats-strip")).toContainText("当前请求")
+    await expect(page.locator(".stats-strip")).toContainText("N/A")
+    await expect(page.locator(".hero-meta")).not.toContainText("cfg-")
+    await expect(page.locator(".stats-strip")).not.toContainText("cfg-")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("System-Data keeps the last verified request id and visible rows when refresh fails after success", async ({ page }) => {
+    const state = await setupPhase4Mock(page)
+    let dataSourceFetchCount = 0
+
+    await page.context().route("**/api/v1/data-sources/config/", async (route) => {
+      dataSourceFetchCount += 1
+
+      if (dataSourceFetchCount === 1) {
+        await route.fulfill({
+          status: 200,
+          headers: {
+            "content-type": "application/json",
+            "x-request-id": "req-phase4-system-data-success",
+          },
+          body: JSON.stringify(buildUnifiedResponse(state.dataSourceConfigs, { request_id: "req-phase4-system-data-success" })),
+        })
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-system-data-refresh-fail",
+        },
+        body: JSON.stringify({
+          success: false,
+          code: 503,
+          message: "config refresh failed",
+          request_id: "req-phase4-system-data-refresh-fail",
+        }),
+      })
+    })
+
+    await gotoRoute(page, "/system/data")
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-system-data-success")
+    await expect(page.locator(".config-table")).toContainText("AKShare 行情")
+
+    await page.getByRole("button", { name: "刷新配置" }).click()
+
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-system-data-success")
+    await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-system-data-refresh-fail")
+    await expect(page.locator(".runtime-message")).toContainText("获取数据源配置失败")
+    await expect(page.locator(".runtime-message")).toContainText("当前仍显示上次成功同步的数据源配置快照。")
+    await expect(page.locator(".config-table")).toContainText("AKShare 行情")
     await expect(page.locator(".config-table")).toContainText("TDX 实时深度")
     expect(state.unhandledRequests).toEqual([])
   })

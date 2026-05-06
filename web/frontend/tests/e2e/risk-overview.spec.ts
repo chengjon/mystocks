@@ -115,6 +115,18 @@ async function mockRiskOverviewApis(page: Parameters<typeof test>[0]["page"]) {
       return
     }
 
+    if (url.pathname === "/api/v1/monitoring/alerts") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-risk-alerts-empty",
+        },
+        body: JSON.stringify(buildUnifiedResponse([], { request_id: "req-risk-alerts-empty" })),
+      })
+      return
+    }
+
     await route.fulfill({
       status: 200,
       contentType: "application/json",
@@ -137,13 +149,17 @@ test.describe("Risk Overview E2E", () => {
     await expect(page.getByRole("button", { name: "刷新概览" })).toBeVisible()
     await expect(page.locator(".stats-strip")).toContainText("规则总数")
     await expect(page.locator(".stats-strip")).toContainText("启用规则")
+    await expect(page.locator(".stats-strip")).toContainText("今日告警0")
+    await expect(page.locator(".content-shell")).toContainText("风险指标仍待接入实时风险引擎，当前概览表仅显示未校验状态。")
+    await expect(page.locator(".content-shell")).toContainText("未校验")
+    await expect(page.locator(".content-shell")).not.toContainText("38.6%")
 
     await page.getByRole("button", { name: "规则清单" }).click()
     await expect(page.locator(".content-shell")).toContainText("单票止损线")
     await expect(page.locator(".content-shell")).toContainText("组合波动率约束")
 
     await page.getByRole("button", { name: "预警消息" }).click()
-    await expect(page.locator(".alerts-list")).toContainText("组合波动率超过阈值 18%")
+    await expect(page.locator(".content-shell")).toContainText("暂无预警消息。")
 
     await page.getByRole("button", { name: "刷新概览" }).click()
     await expect(page.getByRole("heading", { level: 1, name: "风险概览工作台" })).toBeVisible()

@@ -131,17 +131,20 @@ test.describe("Risk PnL E2E", () => {
     await mockRiskPnlApis(page)
   })
 
-  test("loads portfolio shell, top positions, and rebalance block", async ({ page }) => {
+  test("loads portfolio shell, top positions, and honest pending rebalance policy state", async ({ page }) => {
     await page.goto(`${FRONTEND_BASE_URL}/risk/pnl`, { waitUntil: "domcontentloaded" })
 
     await expect(page.getByRole("heading", { level: 1, name: "组合资产工作台" })).toBeVisible()
     await expect(page.getByRole("button", { name: "刷新资产" })).toBeVisible()
     await expect(page.locator(".stats-strip")).toContainText("总资产")
     await expect(page.locator(".stats-strip")).toContainText("持仓数量")
+    await expect(page.locator(".stats-strip")).toContainText("再平衡建议待接入")
     await expect(page.locator(".positions-grid .position-item")).toHaveCount(2)
     await expect(page.locator(".portfolio-overview-tab")).toContainText("Top Positions")
     await expect(page.locator(".portfolio-overview-tab")).toContainText("贵州茅台")
-    await expect(page.locator(".rebalance-section")).toContainText("自动再平衡建议")
+    await expect(page.locator(".rebalance-section")).toContainText("再平衡策略待接入")
+    await expect(page.locator(".rebalance-section")).not.toContainText("目标 25%")
+    await expect(page.locator(".rebalance-section")).not.toContainText("建议减仓约")
 
     await page.getByRole("button", { name: "刷新资产" }).click()
     await expect(page.getByRole("heading", { level: 1, name: "组合资产工作台" })).toBeVisible()
