@@ -581,3 +581,4 @@ Historical planning estimate from the original approval package, not a current m
   - 2026-05-07 repo-truth supplement: the shared-PM2 full Chromium project later revalidated green at `295/295`.
 - ✅ Architecture Board approval before implementation
 - ⏳ Formal review/sign-off, merge/deploy, staging validation, and OpenSpec archive remain pending external workflow gates
+  - External acceptance handoff: `docs/reports/tasks/restructure-frontend-directory-external-acceptance-handoff-2026-05-07.md`
