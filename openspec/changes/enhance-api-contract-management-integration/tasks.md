@@ -28,6 +28,9 @@
 > - 单元 / 集成契约测试入口：`tests/unit/contract/`、`tests/integration/contract/`
 > - 遗留目录仍保留：`tests/contract/`
 > 因此 3.2 不能勾选为完成；当前更接近“部分迁移已发生，但旧真相源未完全退场”。
+> `2026-05-07` 补充：
+> - 唯一仍位于 `tests/contract/` 的真实 pytest case `test_api_contract_schemathesis.py` 已迁入 `tests/integration/contract/`
+> - `tests/contract/` 当前剩余内容以 support / compatibility module 为主，仍需后续继续拆出 misnamed framework modules，3.2 继续保持未完成
 
 - [x] 3.1 Refactor contract tests to use pytest markers
 - [ ] 3.2 Move contract tests from tests/contract/ to main test structure

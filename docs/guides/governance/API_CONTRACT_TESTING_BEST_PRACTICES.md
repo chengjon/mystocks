@@ -18,6 +18,7 @@
 这意味着：
 - 新增 contract tests 优先落在 `tests/integration/contract/` 或 `tests/unit/contract/`
 - `tests/contract/` 仍保留为 legacy tree，不能再把它当唯一 canonical 目录
+- `tests/contract/` 当前更接近 support / compatibility tree；真实 pytest case 已优先迁入主测试结构
 
 ## Canonical Helpers
 
@@ -44,6 +45,7 @@
 - [`test_contract_executor.py`](/opt/claude/mystocks_spec/tests/integration/contract/test_contract_executor.py)
 - [`test_contract_generator.py`](/opt/claude/mystocks_spec/tests/integration/contract/test_contract_generator.py)
 - [`test_contract_validator.py`](/opt/claude/mystocks_spec/tests/integration/contract/test_contract_validator.py)
+- [`test_api_contract_schemathesis.py`](/opt/claude/mystocks_spec/tests/integration/contract/test_api_contract_schemathesis.py)
 
 ### 2. Unit repo-truth tests
 

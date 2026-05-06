@@ -164,7 +164,7 @@ run_stateful_tests() {
     cd "$PROJECT_ROOT"
 
     # 执行状态ful测试
-    python -m pytest tests/contract/test_api_contract_schemathesis.py::TestAPIStatefulContract \
+    python -m pytest tests/integration/contract/test_api_contract_schemathesis.py::TestAPIStatefulContract \
         -v --tb=short --maxfail=3 \
         --junitxml="${REPORT_DIR}/stateful_tests_${TIMESTAMP}.xml"
 
