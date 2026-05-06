@@ -95,6 +95,8 @@ The top section should provide four controls:
 - CSV import action
 - CSV export action
 
+The account switcher is backed by the new reconciliation account-descriptor contract. It must not assume that the current history view or the current `/api/trade/trades` endpoint already exposes an account-filterable UI surface.
+
 ### Main layout
 
 The page body should be split into three stable zones:
@@ -156,6 +158,7 @@ The first batch should lock the following contract details:
 - `GET /api/trade/reconciliation/accounts`
   - request: no body
   - response: list of reconciliation account descriptors with `account_id`, display label, and account type
+  - this is a first-batch contract surface and should be projected explicitly from available trade account/session truth, rather than assumed to already exist in the current `/trades` history flow
 - `GET /api/trade/reconciliation/statements`
   - query params: `account_id`, `start_date`, `end_date`, `page`, `page_size`
   - response: paginated internal statement rows plus statement summary
