@@ -186,7 +186,7 @@
 |----------|------|------|
 | K线形态 | ✅ | 吞没、锤子线、十字星等 |
 | 图表形态 | ✅ | `web/backend/app/api/_technical_patterns_router.py`<br>头肩顶底、双顶双底 |
-| 缺口识别 | 📝 | 计划中 |
+| 缺口识别 | ✅ | `web/backend/app/api/_technical_patterns_router.py`<br>`web/frontend/src/components/technical/KLineChart.vue`<br>reviewed `common / breakaway / runaway / exhaustion` 缺口识别与 K 线区间叠加 |
 
 ---
 
