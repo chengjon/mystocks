@@ -171,6 +171,9 @@ npm run test:e2e
 # Stable shared-PM2 subset
 PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 E2E_FRONTEND_URL=http://127.0.0.1:3020 npm run test:e2e:stable
 
+# Full Chromium suite against the current PM2 frontend
+PLAYWRIGHT_EXTERNAL_FRONTEND=1 FRONTEND_BASE_URL=http://127.0.0.1:3020 E2E_FRONTEND_URL=http://127.0.0.1:3020 npx playwright test --config playwright.config.js --project=chromium
+
 # Specific browser
 npm run test:e2e:chromium
 npm run test:e2e:firefox
@@ -185,6 +188,10 @@ npm run test:e2e:lighthouse
 # With UI (debugging)
 npx playwright test --ui
 ```
+
+Latest verified runtime note:
+- `2026-05-07`: shared-PM2 stable subset `chromium 10/10` passed
+- `2026-05-07`: shared-PM2 full Chromium project `295/295` passed via `PLAYWRIGHT_EXTERNAL_FRONTEND=1`
 
 ### Writing E2E Tests
 

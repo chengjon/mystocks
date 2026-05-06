@@ -107,6 +107,7 @@ npm run test:e2e:business-smoke
 - `test:e2e:business-smoke` 是当前 PR 阻塞主线，覆盖登录鉴权、菜单/路由、行情页、策略管理、回测链路、K 线图表。
 - `test:e2e:stable` 当前执行 `chromium` stable 子集，适合作为共享环境下的安全回归入口。
 - 若只跑 `test:e2e:stable`，必须注明这是 stable 子集，不得表述为“全量 E2E 已通过”。
+- 截至 `2026-05-07`，复用 PM2 前端执行 `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium` 已实测 `295/295` 通过；该结果可作为当前 Chromium 全量基线，但不自动代表 Firefox / WebKit 同步通过。
 
 #### 可访问性与性能 Smoke
 新增的无障碍与性能入口和业务 E2E 分开执行：

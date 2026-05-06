@@ -717,3 +717,11 @@ try {
 - Model: `gpt-5`
 - Files: `../../.github/workflows/e2e-testing.yml`, `../../docs/guides/CLAUDE_AGENTS_SUMMARY.md`, `../../docs/guides/web/WEB_TESTING_TOOLS_SETUP.md`, `../../docs/api/guides/integration/前后端整合与部署完整方案.md`, `package.json`, `package-lock.json`, `scripts/test-pages.mjs`, `tests/unit/config/testing-mainline-gates.spec.ts`, `tests/unit/port-config-consistency.spec.ts`, `scripts/stable-unit-suite.js`, `FRONTEND_IMPLEMENTATION_SUMMARY.md`, `FRONTEND_SSE_INTEGRATION_COMPLETE.md`, `README_SSE_INTEGRATION.md`, `cypress.config.ts`, `cypress/e2e/my-app.cy.ts`, `test_all_pages.js`, `scripts/diagnose-pages.js`
 - Transcript: `N/A (interactive session summary recorded manually)`
+
+
+## [MANUAL] 2026-05-07 00:26:44 Session interactive-2026-05-07-chromium-full-suite-recovery
+- Completion: true
+- Summary: 已完成 Chromium 全量回归恢复批次收口。关键结果：修复公告监控数据归一化缺口（`announcement_title -> title`、`announcement_type -> type`），并修正回测分析上下文标签回退逻辑，避免已解析的策略名称退化成 `策略 {id}`；同步把 Phase 3 / Phase 4 风险、系统、回测、新闻链路的 E2E 真相口径收平到当前运行时。实测验证：复用 PM2 前端的 `test:e2e:stable` 维持 `chromium 10/10` 通过，完整 `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium` 达到 `295/295` 全通过。
+- Model: `gpt-5`
+- Files: `src/views/announcement/composables/useAnnouncementMonitor.ts`, `src/views/announcement/__tests__/useAnnouncementMonitor.spec.ts`, `src/views/artdeco-pages/strategy-tabs/backtestAnalysisViewModel.ts`, `src/views/artdeco-pages/strategy-tabs/__tests__/ArtDecoBacktestAnalysis.spec.ts`, `src/views/risk/__tests__/Alerts.spec.ts`, `src/views/risk/__tests__/Overview.spec.ts`, `tests/e2e/phase3-mainline-matrix.spec.ts`, `tests/e2e/phase4-mainline-matrix.spec.ts`, `tests/e2e/risk-overview.spec.ts`, `tests/e2e/risk-pnl.spec.ts`, `tests/e2e/system-api-store-governance.spec.ts`
+- Transcript: `N/A (interactive session summary recorded manually)`
