@@ -57,7 +57,8 @@
 python -m pytest -q \
   tests/integration/contract/test_contract_executor.py \
   tests/integration/contract/test_contract_generator.py \
-  tests/integration/contract/test_contract_validator.py
+  tests/integration/contract/test_contract_validator.py \
+  tests/integration/contract/test_api_contract_schemathesis.py
 ```
 
 前端单测实际应通过 Vitest 执行：

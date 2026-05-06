@@ -57,6 +57,11 @@ results = await runner.run_all_tests()
 
 ### 3. 运行契约测试
 
+> 当前 repo-truth：
+> - 主测试入口优先使用 `tests/integration/contract/` 与 `tests/unit/contract/`
+> - `tests.contract` 仍保留 compatibility import surface，但不再是新增 contract tests 的 canonical 目录
+> - 详细目录口径以 `docs/guides/governance/API_CONTRACT_TESTING_BEST_PRACTICES.md` 为准
+
 ```python
 from tests.contract import ContractTestExecutor, ContractTestConfig
 
@@ -146,7 +151,15 @@ project_context = {
 results = await system.run_intelligent_testing(project_context, test_executors)
 ```
 
-### 2. 契约测试 (`tests/contract/`)
+### 2. 契约测试
+
+#### 当前目录真相
+
+- canonical integration entry: `tests/integration/contract/`
+- canonical unit / repo-truth entry: `tests/unit/contract/`
+- retained compatibility / support tree: `tests/contract/`
+
+`tests/contract/` 当前主要承载 compatibility export 与 support module；真实 pytest case 已优先迁入主测试结构。
 
 #### 核心组件
 - **ContractTestExecutor**: 契约测试执行器
@@ -263,6 +276,8 @@ ContractTestConfig(
 - 为所有API端点定义清晰的契约
 - 定期更新契约以反映API变化
 - 集成契约测试到CI/CD流程
+- 新增 contract test 优先落在 `tests/integration/contract/` 或 `tests/unit/contract/`
+- `tests.contract` 兼容导入仍可短期使用，但不应继续扩大为新的主测试面
 
 ### 4. 性能优化
 - 监控测试执行时间和资源消耗
@@ -331,7 +346,7 @@ logging.basicConfig(
 ## 📚 相关文档
 
 - [AI辅助测试详细文档](tests/ai/README.md)
-- [契约测试指南](tests/contract/README.md)
+- [契约测试 current-state 指南](../docs/guides/governance/API_CONTRACT_TESTING_BEST_PRACTICES.md)
 - [数据管理最佳实践](tests/data/README.md)
 - [测试配置参考](docs/testing/configuration.md)
 
