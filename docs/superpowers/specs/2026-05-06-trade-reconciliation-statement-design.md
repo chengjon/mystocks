@@ -64,6 +64,22 @@ This capability is a new reconciliation surface inside the existing trade domain
 - new reconciliation contract under the existing trade route package
   - no parallel capability or parallel route family
 
+### Relationship to existing broker reconciliation code
+
+The repository already contains `src/application/trading/broker_reconciliation.py`. That module is not the target implementation surface for this feature.
+
+- `src/application/trading/broker_reconciliation.py`
+  - handles broker-lifecycle acknowledgement, event correlation, divergence evidence, and follow-up review preparation for execution tracking
+- this feature
+  - handles trade-statement CSV normalization, statement-row matching, and discrepancy display for `5.2 对账单`
+
+The two surfaces intentionally stay separate:
+
+- broker-lifecycle reconciliation belongs to `5.3 执行跟踪`
+- statement matching belongs to `5.2 对账单`
+
+To avoid code-level naming collision, first-batch implementation should prefer `statement_reconciliation` or `statement_matching` naming in new files rather than reusing `broker_reconciliation`.
+
 ## Frontend Design
 
 ### Page
@@ -97,6 +113,27 @@ The page body should be split into three stable zones:
 
 The backend stays inside the current trade-domain route family.
 
+### File decomposition
+
+The reconciliation capability should not be added inline to `web/backend/app/api/trade/routes.py`, which is already a large trade-domain entry point. The first batch should decompose the implementation surface like this:
+
+- `web/backend/app/api/trade/reconciliation_routes.py`
+  - reconciliation route handlers
+- `web/backend/app/api/trade/reconciliation_models.py`
+  - Pydantic request and response models for reconciliation
+- `web/backend/app/services/statement_reconciliation/matcher.py`
+  - deterministic one-to-one matching logic
+- `web/backend/app/services/statement_reconciliation/parsers/normalized_template.py`
+  - normalized-template CSV parser
+- `web/backend/app/services/statement_reconciliation/parsers/miniqmt.py`
+  - `miniQMT` raw CSV parser
+- `web/backend/app/services/statement_reconciliation/export.py`
+  - CSV export serializer
+- `web/backend/app/services/statement_reconciliation/internal_statement_source.py`
+  - internal statement projection and account-aware query path
+
+The existing trade route package should mount the reconciliation router, but the feature should not bloat `routes.py` into a second monolith.
+
 ### Endpoints
 
 - `GET /api/trade/reconciliation/accounts`
@@ -112,13 +149,47 @@ The backend stays inside the current trade-domain route family.
 
 All endpoints must continue using the project-standard `UnifiedResponse`.
 
+### Request and response contract details
+
+The first batch should lock the following contract details:
+
+- `GET /api/trade/reconciliation/accounts`
+  - request: no body
+  - response: list of reconciliation account descriptors with `account_id`, display label, and account type
+- `GET /api/trade/reconciliation/statements`
+  - query params: `account_id`, `start_date`, `end_date`, `page`, `page_size`
+  - response: paginated internal statement rows plus statement summary
+- `POST /api/trade/reconciliation/import`
+  - request: multipart upload with one CSV file and declared `source_type`
+  - allowed `source_type`: `normalized_template`, `miniqmt`
+  - response: imported broker-row summary, parser diagnostics, and an import batch identifier
+- `GET /api/trade/reconciliation/results`
+  - query params: `account_id`, `start_date`, `end_date`, `import_batch_id`, optional `match_status`, `page`, `page_size`
+  - response: paginated reconciliation result rows plus status summary
+- `GET /api/trade/reconciliation/export`
+  - query params must mirror the current result-filter surface
+  - response: CSV download of the current filtered result set
+
+Error semantics for the first batch should stay explicit:
+
+- `400`
+  - malformed date range or invalid pagination
+- `422`
+  - unsupported `source_type`, missing required CSV columns, invalid CSV field formats
+- `503`
+  - internal statement source unavailable or reconciliation service unavailable
+
 ## Data Contract
 
 The design uses three explicit row layers.
 
 ### InternalStatementRow
 
-This is the internal truth row derived from current trade-domain history sources. At minimum it should contain:
+This is the internal truth row derived from a dedicated reconciliation projection over current trade-domain history sources. The source should not be described vaguely as "whatever `/trades` currently returns". The first batch should add an explicit internal statement query path that projects persisted trade-history records into reconciliation rows and makes `account_id` part of the queryable statement surface.
+
+The current `GET /api/trade/trades` endpoint remains a history workbench surface and is not the canonical reconciliation statement contract. Reconciliation should use its own account-aware query path even if it reuses the same underlying trade-history repository.
+
+At minimum `InternalStatementRow` should contain:
 
 - `account_id`
 - `trade_id`
@@ -199,6 +270,10 @@ Its implementation must be explicit:
 
 The raw `miniQMT` file must pass through its parser first, then become the same `BrokerStatementRow` model used by the normalized template path.
 
+### Unsupported source types
+
+Any `source_type` outside `normalized_template` and `miniqmt` must return a structured `422` response listing the valid source types.
+
 ## Matching Rules
 
 The first batch uses deterministic one-to-one matching only.
@@ -215,7 +290,12 @@ The first batch uses deterministic one-to-one matching only.
 
 ### Time tolerance
 
-A small normalization tolerance is allowed only to reconcile formatting differences in timestamps. It must not be used to weaken business semantics or to justify fuzzy broad matching.
+Time handling must be deterministic in the first batch:
+
+- both sides normalize timestamps to whole-second precision before comparison
+- after normalization, timestamp comparison requires exact equality
+
+No broader tolerance window is allowed in this batch.
 
 ### Cardinality rules
 
@@ -248,6 +328,13 @@ The first batch supports CSV export only.
 - include internal fields, broker fields, `match_status`, and `match_reason`
 - preserve enough detail for downstream review without reopening the application
 
+### Export response headers
+
+The CSV download response should include:
+
+- `Content-Type: text/csv; charset=utf-8`
+- `Content-Disposition: attachment; filename=reconciliation-<timestamp>.csv`
+
 ## Testing Strategy
 
 The feature should close through four validation layers.
@@ -264,9 +351,11 @@ Cover:
 Key assertions:
 
 - valid CSV normalizes into canonical broker rows
+- empty CSV and header-only CSV return explicit structured validation errors
 - missing columns, bad dates, and bad numeric values return structured errors
 - `matched`, `mismatched`, and `missing_broker_record` are deterministic
 - one-to-one matching does not double-consume rows
+- zero-match imports and all-match imports both produce stable summaries
 
 ### Backend route and contract tests
 
@@ -284,6 +373,8 @@ Key assertions:
 - stable field names
 - correct error semantics
 - empty-result semantics remain explicit
+- multipart upload mechanics for `POST /import` stay locked
+- export response headers remain locked
 
 ### Frontend unit tests
 
@@ -350,6 +441,13 @@ Mitigation:
 Mitigation:
 
 - normalize every import path into the same `BrokerStatementRow` before matching
+
+### Risk: current trade history does not already expose account-aware reconciliation queries
+
+Mitigation:
+
+- make `internal_statement_source.py` an explicit first-batch responsibility
+- treat the account-aware reconciliation query surface as new contract work, not as an assumption about the current `/trades` endpoint
 
 ### Risk: uncontrolled import variance
 
