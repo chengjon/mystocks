@@ -45,6 +45,7 @@
 - 📄 [2026-03-25-directory-governance-isolated-execution-guide](2026-03-25-directory-governance-isolated-execution-guide.md)
 - 📄 [2026-04-03-git-ref-cleanup-summary](2026-04-03-git-ref-cleanup-summary.md)
 - 📄 [2026-04-03-maestro-local-acceptance-report](2026-04-03-maestro-local-acceptance-report.md)
+- 📄 [2026-05-07-frontend-chromium-full-suite-recovery](2026-05-07-frontend-chromium-full-suite-recovery.md)
 - 📄 [HANDOVER_TASK](HANDOVER_TASK.md)
 - 📄 [NEXT_WORK_TASKS](NEXT_WORK_TASKS.md)
 - 📄 [TASK](TASK.md)
