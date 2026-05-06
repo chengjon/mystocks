@@ -13,6 +13,7 @@
 > - `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium` `295/295` 通过
 > 正式恢复报告见 [2026-05-07-frontend-chromium-full-suite-recovery.md](/opt/claude/mystocks_spec/docs/reports/tasks/2026-05-07-frontend-chromium-full-suite-recovery.md)。
 > `restructure-frontend-directory` 当前仓库内实现与本地验证也已收口；剩余事项仅为外部审批、合并部署、staging 验证与 archive，统一转到 [restructure-frontend-directory-external-acceptance-handoff-2026-05-07.md](/opt/claude/mystocks_spec/docs/reports/tasks/restructure-frontend-directory-external-acceptance-handoff-2026-05-07.md)。
+> `optimize-data-source-v2` 当前仓库内实现与 repo-local 监控链路也已收口；剩余事项仅为外部部署、live 观测、ROI/SLA 证据、流程收尾与 archive，统一转到 [optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md](/opt/claude/mystocks_spec/docs/reports/tasks/optimize-data-source-v2-external-acceptance-handoff-2026-05-05.md)。
 
 
 根据您提交的P0任务完成报告，Web客户端已成功运行，所有核心通信渠道（CORS、WebSocket、API端点）工作正常。恭喜您！
