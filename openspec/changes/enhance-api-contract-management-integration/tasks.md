@@ -98,13 +98,21 @@
 > - `docs/api/CONTRACT_MANAGEMENT_API.md` 主要是 API 端点使用文档，且声明端点/示例如未复核应视为参考或历史材料
 > - `docs/standards/OPENAPI_CONTRACT_GOVERNANCE.md` 是仓库级 OpenAPI 治理细则，不等于本 change 所要求的 runtime validation developer guide / impact analysis usage guide
 > - `docs/reports/README_API_CONTRACT.md` 是 2025-12-29 的 Phase 6 报告索引，不是当前培训闭环或现行操作手册
-> 因此 7.2-7.5 继续保持未完成更符合当前 repo-truth。
+> `2026-05-07` 补充：
+> 当前已补齐一组 current-state canonical guides：
+> - `docs/guides/governance/API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md`
+> - `docs/guides/governance/API_CONTRACT_TESTING_BEST_PRACTICES.md`
+> - `docs/guides/governance/API_CONTRACT_IMPACT_ANALYSIS_USAGE_GUIDE.md`
+> 它们明确区分了当前已实现链路与未实现目标态，因此 7.2-7.4 现可按 repo-truth 关闭；7.5 仍属于外部培训动作，继续保持未完成。
 
 - [x] 7.1 Update API_CONTRACT_INTEGRATION_ASSESSMENT.md with implementation details
   - Repo-truth note: 该 assessment 文档已包含实现现状、CI/CD 集成、runtime validation、version negotiation 与 impact analysis 方案细节，但它仍是历史分析/评估材料，不应替代当前 canonical developer guide。
-- [ ] 7.2 Create runtime contract validation developer guide
-- [ ] 7.3 Add contract testing best practices documentation
-- [ ] 7.4 Create contract impact analysis usage guide
+- [x] 7.2 Create runtime contract validation developer guide
+  - Repo-truth result: current-state developer guide now lives at `docs/guides/governance/API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md`, and explicitly documents the current backend validator + CI gate chain plus the frontend `unifiedApiClient.ts` legacy-wrapper boundary.
+- [x] 7.3 Add contract testing best practices documentation
+  - Repo-truth result: canonical testing guidance now lives at `docs/guides/governance/API_CONTRACT_TESTING_BEST_PRACTICES.md`, including current directory truth (`tests/integration/contract`, `tests/unit/contract`, retained `tests/contract`) and recommended validation commands.
+- [x] 7.4 Create contract impact analysis usage guide
+  - Repo-truth result: current diff-based usage guide now lives at `docs/guides/governance/API_CONTRACT_IMPACT_ANALYSIS_USAGE_GUIDE.md`; it documents the implemented `/api/contracts/diff`, `/api/contracts/validate`, and `/api/contracts/sync/report` workflow without overstating the still-missing `ContractImpactAnalyzer` target state.
 - [ ] 7.5 Organize contract management training session
 
 ## 8. Validation and Testing

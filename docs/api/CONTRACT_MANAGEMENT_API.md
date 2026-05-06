@@ -6,6 +6,13 @@
 >
 > 文内端点、命令、统计值和示例如未重新复核，应视为参考或历史材料，不得直接当作当前事实。
 
+## Canonical Current-State Guides
+
+当前如需查看 repo-truth 操作口径，请优先阅读：
+
+- [`API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md`](/opt/claude/mystocks_spec/docs/guides/governance/API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md)
+- [`API_CONTRACT_IMPACT_ANALYSIS_USAGE_GUIDE.md`](/opt/claude/mystocks_spec/docs/guides/governance/API_CONTRACT_IMPACT_ANALYSIS_USAGE_GUIDE.md)
+
 
 ## 📚 概述
 

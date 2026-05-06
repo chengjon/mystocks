@@ -18,6 +18,12 @@
   - 功能状态、功能树、task card / PR 镜像与变更同步流程
 - [`TECHNICAL_DEBT_MANAGEMENT.md`](./TECHNICAL_DEBT_MANAGEMENT.md)
   - 技术债识别、分级、偿还与预防的专题执行细则
+- [`API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md`](./API_CONTRACT_RUNTIME_VALIDATION_DEVELOPER_GUIDE.md)
+  - API 契约 runtime validation 的 current-state developer guide
+- [`API_CONTRACT_TESTING_BEST_PRACTICES.md`](./API_CONTRACT_TESTING_BEST_PRACTICES.md)
+  - API 契约测试目录、fixtures、推荐命令与反模式说明
+- [`API_CONTRACT_IMPACT_ANALYSIS_USAGE_GUIDE.md`](./API_CONTRACT_IMPACT_ANALYSIS_USAGE_GUIDE.md)
+  - 当前 diff-based contract impact analysis 工作流使用说明
 
 ## Retention Rule
 
