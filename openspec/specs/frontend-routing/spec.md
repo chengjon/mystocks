@@ -166,3 +166,18 @@ The system SHALL validate ArtDeco route or layout changes with PM2 smoke and pag
 - **THEN** the report SHALL include `http://localhost:3020` and `http://localhost:8020`
 - **AND** it SHALL distinguish newly introduced regressions from pre-existing technical debt
 
+### Requirement: Trade Reconciliation Route
+The frontend routing system SHALL expose a dedicated trade reconciliation statement route.
+
+#### Scenario: User navigates to the reconciliation route
+- **WHEN** the user opens `/trade/reconciliation`
+- **THEN** the router SHALL load the dedicated reconciliation statement page
+
+### Requirement: Trade Navigation Labels
+The frontend routing system SHALL keep trade navigation labels aligned with the approved trade-domain surfaces.
+
+#### Scenario: Reconciliation and history labels are rendered
+- **WHEN** the frontend renders the trade navigation surfaces
+- **THEN** the navigation label for `/trade/reconciliation` SHALL be `对账单`
+- **AND** the navigation label for `/trade/history` SHALL be `交易历史`
+
