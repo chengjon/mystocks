@@ -45,6 +45,7 @@
 
 - Mongo work items are the source of truth for execution status; this file is a projection snapshot refreshed to match that control-plane state.
 - Phases 4 and 5 were closed through repo-truth ledger reconciliation batches on `2026-04-06`, replacing stale references to a second router rewrite, `npm run test:smoke`, and Cypress full-suite execution.
+- `2026-05-07` external acceptance handoff is recorded in `docs/reports/tasks/restructure-frontend-directory-external-acceptance-handoff-2026-05-07.md`, including the later shared-PM2 Chromium `295/295` recovery baseline and the remaining external-only gate list.
 - Phase 6 now has local review evidence on file, but PR comment/sign-off still remain external workflow gates.
 - Phases 7 and 8 remain intentionally open because they depend on external merge, deployment, staging validation, and archive timing that have not happened yet.
 - Phase 9 is locally closed through migration-progress refresh except for external GitHub issue closure and project-channel reporting.
