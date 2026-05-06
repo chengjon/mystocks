@@ -50,3 +50,13 @@ class ReconciliationStatementsPayload(BaseModel):
     page: int = Field(description="Current page number")
     page_size: int = Field(description="Current page size")
     source: str = Field(description="Underlying internal truth source")
+
+
+class ReconciliationImportBatchPayload(BaseModel):
+    status: str = Field(description="Availability status")
+    endpoint: str = Field(description="Owning endpoint family")
+    resource: str = Field(description="Resource identifier")
+    import_batch_id: str = Field(description="In-memory import batch identifier")
+    account_id: str | None = Field(description="Resolved reconciliation account for this batch")
+    source_type: str = Field(description="Imported CSV source type")
+    row_count: int = Field(description="Imported canonical row count")

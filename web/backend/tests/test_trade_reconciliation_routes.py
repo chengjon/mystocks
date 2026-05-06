@@ -177,3 +177,202 @@ def test_reconciliation_statements_forwards_query_to_internal_statement_source(m
         "page_size": 50,
         "source": "backtest_trades",
     }
+
+
+def test_reconciliation_import_rejects_unsupported_source_type():
+    package = _load_trade_package()
+    client = _build_client(package)
+
+    response = client.post(
+        "/api/v1/trade/reconciliation/import",
+        data={"source_type": "unknown"},
+        files={"file": ("reconciliation.csv", b"header\nvalue\n", "text/csv")},
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["message"] == "unsupported source_type"
+
+
+def test_reconciliation_import_requires_account_id_for_miniqmt():
+    package = _load_trade_package()
+    client = _build_client(package)
+
+    response = client.post(
+        "/api/v1/trade/reconciliation/import",
+        data={"source_type": "miniqmt"},
+        files={
+            "file": (
+                "reconciliation.csv",
+                (
+                    "证券代码,买卖方向,成交价格,成交数量,成交金额,手续费,委托编号,成交编号,成交时间\n"
+                    "600519.SH,买入,1750.00,100,175000.00,52.50,backtest-7-101,101,2026-05-06 09:31:00\n"
+                ).encode("utf-8-sig"),
+                "text/csv",
+            )
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["message"] == "account_id is required for miniqmt imports"
+
+
+def test_reconciliation_import_requires_file_payload():
+    package = _load_trade_package()
+    client = _build_client(package)
+
+    response = client.post(
+        "/api/v1/trade/reconciliation/import",
+        data={"source_type": "normalized_template"},
+    )
+
+    assert response.status_code == 422
+    assert isinstance(response.json()["detail"], list)
+
+
+def test_reconciliation_import_rejects_unknown_miniqmt_direction():
+    package = _load_trade_package()
+    client = _build_client(package)
+
+    response = client.post(
+        "/api/v1/trade/reconciliation/import",
+        data={"source_type": "miniqmt", "account_id": "backtest:7"},
+        files={
+            "file": (
+                "reconciliation.csv",
+                (
+                    "证券代码,买卖方向,成交价格,成交数量,成交金额,手续费,委托编号,成交编号,成交时间\n"
+                    "600519.SH,撤单,1750.00,100,175000.00,52.50,backtest-7-101,101,2026-05-06 09:31:00\n"
+                ).encode("utf-8-sig"),
+                "text/csv",
+            )
+        },
+    )
+
+    assert response.status_code == 422
+    assert response.json()["detail"]["message"] == "unsupported miniQMT direction: 撤单"
+
+
+def test_reconciliation_import_returns_batch_payload(monkeypatch):
+    package = _load_trade_package()
+    routes_module = importlib.import_module("app.api.trade.reconciliation_routes")
+
+    monkeypatch.setattr(
+        routes_module,
+        "parse_normalized_template_csv",
+        lambda csv_bytes: [
+            {
+                "account_id": "backtest:7",
+                "trade_time": "2026-05-06 09:31:00",
+                "symbol": "600519.SH",
+                "direction": "buy",
+                "price": "1750.00",
+                "quantity": "100",
+                "amount": "175000.00",
+                "commission": "52.50",
+                "order_id": "backtest-7-101",
+                "trade_id": "101",
+                "source_type": "normalized_template",
+                "raw_row_number": 2,
+            }
+        ],
+        raising=False,
+    )
+    monkeypatch.setattr(
+        routes_module,
+        "create_import_batch",
+        lambda **kwargs: {
+            "import_batch_id": "batch-001",
+            "account_id": kwargs["rows"][0]["account_id"],
+            "source_type": kwargs["source_type"],
+            "row_count": len(kwargs["rows"]),
+        },
+        raising=False,
+    )
+
+    client = _build_client(package)
+    response = client.post(
+        "/api/v1/trade/reconciliation/import",
+        data={"source_type": "normalized_template"},
+        files={
+            "file": (
+                "reconciliation.csv",
+                (
+                    "account_id,trade_date,trade_time,symbol,direction,price,quantity,amount,commission,order_id,trade_id\n"
+                    "backtest:7,2026-05-06,09:31:00,600519.SH,buy,1750.00,100,175000.00,52.50,backtest-7-101,101\n"
+                ).encode("utf-8"),
+                "text/csv",
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    assert response.json()["data"] == {
+        "status": "available",
+        "endpoint": "trade",
+        "resource": "reconciliation_import_batch",
+        "import_batch_id": "batch-001",
+        "account_id": "backtest:7",
+        "source_type": "normalized_template",
+        "row_count": 1,
+    }
+
+
+def test_reconciliation_import_normalized_template_does_not_override_row_account_id(monkeypatch):
+    package = _load_trade_package()
+    routes_module = importlib.import_module("app.api.trade.reconciliation_routes")
+    captured = {}
+
+    monkeypatch.setattr(
+        routes_module,
+        "parse_normalized_template_csv",
+        lambda csv_bytes: [
+            {
+                "account_id": "backtest:7",
+                "trade_time": "2026-05-06 09:31:00",
+                "symbol": "600519.SH",
+                "direction": "buy",
+                "price": "1750.00",
+                "quantity": "100",
+                "amount": "175000.00",
+                "commission": "52.50",
+                "order_id": "backtest-7-101",
+                "trade_id": "101",
+                "source_type": "normalized_template",
+                "raw_row_number": 2,
+            }
+        ],
+        raising=False,
+    )
+    monkeypatch.setattr(
+        routes_module,
+        "create_import_batch",
+        lambda **kwargs: (
+            captured.update(kwargs)
+            or {
+                "import_batch_id": "batch-002",
+                "account_id": "backtest:7",
+                "source_type": kwargs["source_type"],
+                "row_count": len(kwargs["rows"]),
+            }
+        ),
+        raising=False,
+    )
+
+    client = _build_client(package)
+    response = client.post(
+        "/api/v1/trade/reconciliation/import",
+        data={"source_type": "normalized_template", "account_id": "backtest:999"},
+        files={
+            "file": (
+                "reconciliation.csv",
+                (
+                    "account_id,trade_date,trade_time,symbol,direction,price,quantity,amount,commission,order_id,trade_id\n"
+                    "backtest:7,2026-05-06,09:31:00,600519.SH,buy,1750.00,100,175000.00,52.50,backtest-7-101,101\n"
+                ).encode("utf-8"),
+                "text/csv",
+            )
+        },
+    )
+
+    assert response.status_code == 200
+    assert captured["account_id"] is None

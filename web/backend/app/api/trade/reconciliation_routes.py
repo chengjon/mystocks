@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import TypeVar
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, File, Form, HTTPException, Query, UploadFile
 from pydantic import BaseModel
 
 from app.core.responses import ErrorCodes, UnifiedResponse, create_error_response, create_unified_success_response
@@ -12,12 +12,16 @@ from app.api.trade.reconciliation_models import (
     InternalStatementSummary,
     ReconciliationAccountDescriptor,
     ReconciliationAccountsPayload,
+    ReconciliationImportBatchPayload,
     ReconciliationStatementsPayload,
 )
 from app.services.statement_reconciliation.internal_statement_source import (
     list_reconciliation_accounts,
     query_internal_statements,
 )
+from app.services.statement_reconciliation.import_batch_store import create_import_batch
+from app.services.statement_reconciliation.parsers.miniqmt import parse_miniqmt_csv
+from app.services.statement_reconciliation.parsers.normalized_template import parse_normalized_template_csv
 
 router = APIRouter(prefix="/reconciliation", tags=["trade-reconciliation"])
 ResponsePayloadT = TypeVar("ResponsePayloadT", bound=BaseModel)
@@ -122,5 +126,65 @@ async def get_reconciliation_statements(
 
     return _success_reconciliation_response(
         message="Reconciliation statements loaded",
+        data_model=response_payload,
+    )
+
+
+@router.post("/import", response_model=UnifiedResponse[ReconciliationImportBatchPayload])
+async def import_reconciliation_csv(
+    file: UploadFile = File(...),
+    source_type: str = Form(...),
+    account_id: str | None = Form(None),
+) -> UnifiedResponse[ReconciliationImportBatchPayload]:
+    csv_bytes = await file.read()
+
+    try:
+        if source_type == "normalized_template":
+            rows = parse_normalized_template_csv(csv_bytes)
+            batch_account_id = None
+        elif source_type == "miniqmt":
+            if not account_id:
+                raise HTTPException(
+                    status_code=422,
+                    detail=create_error_response(
+                        error_code=ErrorCodes.VALIDATION_ERROR,
+                        message="account_id is required for miniqmt imports",
+                    ).model_dump(mode="json"),
+                )
+            rows = parse_miniqmt_csv(csv_bytes, account_id=account_id)
+            batch_account_id = account_id
+        else:
+            raise HTTPException(
+                status_code=422,
+                detail=create_error_response(
+                    error_code=ErrorCodes.VALIDATION_ERROR,
+                    message="unsupported source_type",
+                ).model_dump(mode="json"),
+            )
+    except ValueError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=create_error_response(
+                error_code=ErrorCodes.VALIDATION_ERROR,
+                message=str(exc),
+            ).model_dump(mode="json"),
+        ) from exc
+
+    batch = create_import_batch(
+        account_id=batch_account_id,
+        source_type=source_type,
+        rows=rows,
+    )
+    response_payload = ReconciliationImportBatchPayload(
+        status="available",
+        endpoint="trade",
+        resource="reconciliation_import_batch",
+        import_batch_id=str(batch["import_batch_id"]),
+        account_id=batch["account_id"] if batch["account_id"] is None else str(batch["account_id"]),
+        source_type=str(batch["source_type"]),
+        row_count=int(batch["row_count"]),
+    )
+    return _success_reconciliation_response(
+        message="Reconciliation import batch created",
         data_model=response_payload,
     )
