@@ -209,12 +209,12 @@ describe('comprehensive E2E route coverage', () => {
     expect(e2ePaths).toEqual(routerPaths)
   })
 
-  it('keeps the comprehensive E2E page inventory at 34 routed pages', () => {
+  it('keeps the comprehensive E2E page inventory at 35 routed pages', () => {
     const e2ePaths = getComprehensiveE2EPagePaths()
 
-    // The historical 35/35 figure includes the backend health probe test.
-    // The routed page inventory itself is 34 entries: login + 33 authenticated routes.
-    expect(e2ePaths).toHaveLength(34)
+    // The historical 35/35 figure included the backend health probe test.
+    // After trade reconciliation MVP, the routed page inventory is 35 entries: login + 34 authenticated routes.
+    expect(e2ePaths).toHaveLength(35)
   })
 
   it('requires every page entry to declare core visible selectors', () => {

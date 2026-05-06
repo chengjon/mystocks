@@ -30,7 +30,7 @@ const routes: RouteRecordRaw[] = [
         path: 'dashboard',
         name: HOME_ROUTE_NAME,
         component: () => import('@/views/artdeco-pages/ArtDecoDashboard.vue'),
-        meta: { title: '交易室', requiresAuth: true, api: '/api/v1/market/overview' }
+        meta: { title: '交易室', requiresAuth: true, api: '/api/v1/market/quotes' }
       },
 
       // 1. Market Domain (市场行情)
@@ -70,7 +70,7 @@ const routes: RouteRecordRaw[] = [
             path: 'industry',
             name: 'data-industry',
             component: () => import('@/views/data/Industry.vue'),
-            meta: { title: '板块动向', requiresAuth: true, api: '/api/akshare_market/boards' }
+            meta: { title: '板块动向', requiresAuth: true, api: '/api/v2/market/sector/fund-flow?sector_type=行业' }
           },
           {
             path: 'concept',
@@ -82,7 +82,7 @@ const routes: RouteRecordRaw[] = [
             path: 'fund-flow',
             name: 'data-fund-flow',
             component: () => import('@/views/data/FundFlow.vue'),
-            meta: { title: '资金流向', requiresAuth: true, api: '/api/akshare/market/fund-flow' }
+            meta: { title: '资金流向', requiresAuth: true, api: '/api/akshare/market/fund-flow/hsgt-summary' }
           },
           {
             path: 'indicator',
@@ -130,7 +130,7 @@ const routes: RouteRecordRaw[] = [
             path: 'repo',
             name: 'strategy-repo',
             component: () => import('@/views/strategy/List.vue'),
-            meta: { title: '策略仓库', requiresAuth: true, api: '/api/v1/strategy/list' }
+            meta: { title: '策略仓库', requiresAuth: true, api: '/api/v1/strategy/strategies' }
           },
           {
             path: 'parameters',
@@ -148,7 +148,7 @@ const routes: RouteRecordRaw[] = [
             path: 'backtest',
             name: 'strategy-backtest',
             component: () => import('@/views/strategy/Backtest.vue'),
-            meta: { title: '回测引擎', requiresAuth: true, api: '/api/v1/strategy/backtest' }
+            meta: { title: '回测引擎', requiresAuth: true, api: '/api/v1/strategy/strategies' }
           },
           {
             path: 'gpu',
@@ -205,7 +205,13 @@ const routes: RouteRecordRaw[] = [
             path: 'history',
             name: 'trade-history',
             component: () => import('@/views/trade/History.vue'),
-            meta: { title: '历史对账', requiresAuth: true }
+            meta: { title: '交易历史', requiresAuth: true }
+          },
+          {
+            path: 'reconciliation',
+            name: 'trade-reconciliation',
+            component: () => import('@/views/trade/Reconciliation.vue'),
+            meta: { title: '对账单', requiresAuth: true, api: '/api/v1/trade/reconciliation/accounts' }
           }
         ]
       },
@@ -278,7 +284,7 @@ const routes: RouteRecordRaw[] = [
             path: 'api',
             name: 'system-api',
             component: () => import('@/views/system/API.vue'),
-            meta: { title: 'API 终端', requiresAuth: true }
+            meta: { title: 'API 终端', requiresAuth: true, api: '/api/health' }
           },
           {
             path: 'data',

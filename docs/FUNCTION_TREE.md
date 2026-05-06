@@ -318,7 +318,7 @@ Q2 closure note:
 |--------|------|----------|------|
 | 交易流水 | ✅ | `web/frontend/src/views/trade/History.vue` | 历史交易记录 |
 | 成交查询 | ✅ | `web/frontend/src/views/trade/History.vue` | 成交明细 |
-| 对账单 | 🚧 | `web/frontend/src/views/trade/History.vue` | 计划中 |
+| 对账单 | ✅ | `web/frontend/src/views/trade/Reconciliation.vue`<br>`web/backend/app/api/trade/reconciliation_routes.py`<br>`web/backend/app/services/statement_reconciliation/` | 多账户切换、内部账单投影、`normalized_template` 与 `miniQMT` CSV 导入、自动对账状态与 CSV 导出 |
 
 ### 5.3 交易决策 {#domain-05-node-03}
 

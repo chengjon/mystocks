@@ -50,7 +50,7 @@ const PAGES: PageContract[] = [
     path: '/dashboard',
     requiresAuth: true,
     expectedSelectors: ['.artdeco-content', '.section-title', 'h1', 'h2'],
-    expectedApiPath: '/api/v1/market/overview',
+    expectedApiPath: '/api/v1/market/quotes',
   },
 
   // 1. Market Domain (市场行情 - 3 pages)
@@ -58,21 +58,21 @@ const PAGES: PageContract[] = [
     name: 'Market-Realtime',
     path: '/market/realtime',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.market-realtime-tab', '.content-shell-title', '.distribution-bar'],
     expectedApiPath: '/api/v1/market/quotes',
   },
   {
     name: 'Market-Technical',
     path: '/market/technical',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.market-kline-tab', '.stats-strip', '.content-shell-title'],
     expectedApiPath: '/api/v1/market/kline',
   },
   {
     name: 'Market-LHB',
     path: '/market/lhb',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.lhb-analysis', '.stats-strip', '.content-shell-title'],
     expectedApiPath: '/api/v2/market/lhb',
   },
 
@@ -81,28 +81,28 @@ const PAGES: PageContract[] = [
     name: 'Data-Industry',
     path: '/data/industry',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
-    expectedApiPath: '/api/akshare_market/boards',
+    expectedSelectors: ['.industry-analysis-page', '.stats-strip', '.content-shell-title'],
+    expectedApiPath: '/api/v2/market/sector/fund-flow?sector_type=行业',
   },
   {
     name: 'Data-Concept',
     path: '/data/concept',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.market-concept-tab', '.stats-strip', '.content-shell-title'],
     expectedApiPath: '/api/v2/market/sector/fund-flow?sector_type=概念',
   },
   {
     name: 'Data-FundFlow',
     path: '/data/fund-flow',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
-    expectedApiPath: '/api/akshare/market/fund-flow',
+    expectedSelectors: ['.fund-flow-analysis', '.stats-strip', '.content-shell-title'],
+    expectedApiPath: '/api/akshare/market/fund-flow/hsgt-summary',
   },
   {
     name: 'Data-Indicator',
     path: '/data/indicator',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.artdeco-data-analysis', '.main-tabs', '.page-title'],
     expectedApiPath: '/api/v1/indicators/registry',
   },
 
@@ -111,21 +111,21 @@ const PAGES: PageContract[] = [
     name: 'Watchlist-Manage',
     path: '/watchlist/manage',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.watchlist-manager', '.overview-grid', '.watchlist-header'],
     expectedApiPath: '/api/v1/monitoring/watchlists',
   },
   {
     name: 'Watchlist-Signals',
     path: '/watchlist/signals',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.strategy-signals-tab', '.content-shell-title', '.stats-strip'],
     expectedApiPath: '/api/v1/trade/signals',
   },
   {
     name: 'Watchlist-Screener',
     path: '/watchlist/screener',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.watchlist-screener', '.stats-strip', '.content-shell-title'],
     expectedApiPath: '/api/v1/data/stocks/basic',
   },
 
@@ -134,29 +134,29 @@ const PAGES: PageContract[] = [
     name: 'Strategy-Repo',
     path: '/strategy/repo',
     requiresAuth: true,
-    expectedSelectors: ['.strategy-management', '.section-title', '.el-button', 'button'],
-    expectedApiPath: '/api/v1/strategy/list',
+    expectedSelectors: ['.strategy-management', '.content-shell-title', '.strategy-table'],
+    expectedApiPath: '/api/v1/strategy/strategies',
   },
   {
     name: 'Strategy-Parameters',
     path: '/strategy/parameters',
     requiresAuth: true,
-    expectedSelectors: ['.strategy-management', '.section-title', '.el-button', 'button'],
+    expectedSelectors: ['.strategy-parameters-tab', '.content-shell-title', '.strategy-grid'],
     expectedApiPath: '/api/v1/strategy/strategies',
   },
   {
     name: 'Strategy-Signals',
     path: '/strategy/signals',
     requiresAuth: true,
-    expectedSelectors: ['.strategy-management', '.section-title', '.el-button', 'button'],
+    expectedSelectors: ['.strategy-signals-tab', '.stats-strip', '.content-shell-title'],
     expectedApiPath: '/api/v1/trade/signals',
   },
   {
     name: 'Strategy-Backtest',
     path: '/strategy/backtest',
     requiresAuth: true,
-    expectedSelectors: ['.backtest-analysis-page', '.section-title', '.el-button', 'button'],
-    expectedApiPath: '/api/v1/strategy/backtest',
+    expectedSelectors: ['.backtest-analysis-page', '.stats-strip', '.ops-strip'],
+    expectedApiPath: '/api/v1/strategy/strategies',
   },
   {
     name: 'Strategy-GPU',
@@ -176,11 +176,11 @@ const PAGES: PageContract[] = [
     name: 'Strategy-Pos',
     path: '/strategy/pos',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
+    expectedSelectors: ['.artdeco-trading-positions', '.stats-strip', '.content-shell-title'],
     expectedApiPath: '/api/v1/trade/positions',
   },
 
-  // 5. Trade (交易管理 - 5 pages)
+  // 5. Trade (交易管理 - 6 pages)
   {
     name: 'Trade-Positions',
     path: '/trade/positions',
@@ -215,6 +215,13 @@ const PAGES: PageContract[] = [
     requiresAuth: true,
     expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
     noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Trade-Reconciliation',
+    path: '/trade/reconciliation',
+    requiresAuth: true,
+    expectedSelectors: ['.trade-reconciliation', '[data-testid="reconciliation-account-select"]', 'button', 'h1'],
+    expectedApiPath: '/api/v1/trade/reconciliation/accounts',
   },
 
   // 6. Risk (风险管理 - 6 pages)
@@ -280,8 +287,8 @@ const PAGES: PageContract[] = [
     name: 'System-API',
     path: '/system/api',
     requiresAuth: true,
-    expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
-    noApiAssertionReason: 'route shell has no stable route meta api contract',
+    expectedSelectors: ['.monitoring-dashboard', '.health-grid', '.content-shell-title'],
+    expectedApiPath: '/api/health',
   },
   {
     name: 'System-Data',
@@ -330,6 +337,51 @@ const INTERACTIVE_SELECTORS = [
   '.el-button',
 ];
 
+const RUNTIME_API_ASSERTION_PAGES = new Set([
+  'Dashboard',
+  'Market-Realtime',
+  'Market-Technical',
+  'Market-LHB',
+  'Data-Industry',
+  'Data-Concept',
+  'Data-FundFlow',
+  'Watchlist-Manage',
+  'Watchlist-Signals',
+  'Strategy-Repo',
+  'Strategy-Parameters',
+  'Strategy-Backtest',
+  'Strategy-Pos',
+  'Strategy-Signals',
+  'System-API',
+]);
+
+const RUNTIME_API_RECOVERY_PAGES = new Set([
+  'Dashboard',
+  'Data-Industry',
+  'Watchlist-Manage',
+]);
+
+function normalizeObservedRequestUrl(rawUrl: string): string {
+  try {
+    const url = new URL(rawUrl);
+    return `${url.pathname}${url.search}`;
+  } catch {
+    return rawUrl;
+  }
+}
+
+function didRequestExpectedApi(observedRequests: string[], expectedApiPath: string): boolean {
+  return observedRequests.some((requestPath) => {
+    if (requestPath === expectedApiPath) {
+      return true;
+    }
+
+    const [requestPathname] = requestPath.split('?');
+    const [expectedPathname] = expectedApiPath.split('?');
+    return requestPathname === expectedPathname;
+  });
+}
+
 async function isAnySelectorVisible(page: Page, selectors: string[], timeoutMs = 2500): Promise<boolean> {
   for (const selector of selectors) {
     const visible = await page.locator(selector).first().isVisible({ timeout: timeoutMs }).catch(() => false);
@@ -338,6 +390,79 @@ async function isAnySelectorVisible(page: Page, selectors: string[], timeoutMs =
     }
   }
   return false;
+}
+
+async function waitForAppReadiness(page: Page): Promise<void> {
+  const checkingShell = page.locator('[data-testid="app-readiness-checking"]');
+  const blockingShell = page.locator('[data-testid="app-readiness-error"]');
+  const readyShell = page.locator('.app-shell[data-readiness-state="ready"]');
+
+  await checkingShell.waitFor({ state: 'hidden', timeout: 10000 }).catch(() => {});
+
+  const hasBlockingShell = await blockingShell.isVisible({ timeout: 1000 }).catch(() => false);
+  if (hasBlockingShell) {
+    return;
+  }
+
+  await readyShell.waitFor({ state: 'visible', timeout: 10000 }).catch(() => {});
+}
+
+async function waitForPageContent(page: Page, selectors: string[]): Promise<void> {
+  await expect
+    .poll(
+      async () => {
+        const hasLayoutShell = await isAnySelectorVisible(page, [
+          '.artdeco-layout',
+          'main.artdeco-main',
+          '.app-shell[data-readiness-state="ready"]',
+          '.artdeco-content',
+        ], 1000);
+        const hasCoreContent = await isAnySelectorVisible(page, CORE_CONTENT_SELECTORS, 1000);
+        const hasExpectedContent = await isAnySelectorVisible(page, selectors, 1000);
+
+        return {
+          hasLayoutShell,
+          hasCoreContent,
+          hasExpectedContent,
+        };
+      },
+      {
+        timeout: 10000,
+      }
+    )
+    .toMatchObject({
+      hasExpectedContent: true,
+    });
+}
+
+async function ensurePageContent(page: Page, selectors: string[]): Promise<void> {
+  try {
+    await waitForPageContent(page, selectors);
+  } catch {
+    await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
+    await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+    await waitForAppReadiness(page);
+    await waitForPageContent(page, selectors);
+  }
+}
+
+async function recoverMissingRuntimeApiRequest(
+  page: Page,
+  pageInfo: PageContract,
+  observedRequests: Set<string>
+): Promise<void> {
+  if (!RUNTIME_API_RECOVERY_PAGES.has(pageInfo.name) || !pageInfo.expectedApiPath) {
+    return;
+  }
+
+  if (didRequestExpectedApi(Array.from(observedRequests), pageInfo.expectedApiPath)) {
+    return;
+  }
+
+  await page.reload({ waitUntil: 'domcontentloaded', timeout: 30000 }).catch(() => {});
+  await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+  await waitForAppReadiness(page);
+  await ensurePageContent(page, pageInfo.expectedSelectors);
 }
 
 async function gotoWithRetry(page: Page, url: string, attempts = 3) {
@@ -559,6 +684,7 @@ test.describe('All Pages (Authenticated)', async () => {
   for (const pageInfo of PAGES.filter(p => p.requiresAuth)) {
     test(`${pageInfo.name} (${pageInfo.path})`, async ({ page }) => {
       const errors: string[] = [];
+      const observedApiRequests = new Set<string>();
       
       page.on('console', msg => {
         if (msg.type() === 'error' && !isIgnoredError(msg.text())) {
@@ -569,11 +695,24 @@ test.describe('All Pages (Authenticated)', async () => {
       page.on('pageerror', error => {
         errors.push(error.message);
       });
+
+      page.on('request', request => {
+        if (!['fetch', 'xhr'].includes(request.resourceType())) {
+          return;
+        }
+
+        const normalizedPath = normalizeObservedRequestUrl(request.url());
+        if (normalizedPath.includes('/api/')) {
+          observedApiRequests.add(normalizedPath);
+        }
+      });
       
       const response = await gotoWithRetry(page, `${FRONTEND_URL}${pageInfo.path}`).catch(() => null);
       
       // Prefer condition-based waiting to reduce timeout flakiness.
       await page.waitForLoadState('networkidle', { timeout: 10000 }).catch(() => {});
+      await waitForAppReadiness(page);
+      await ensurePageContent(page, pageInfo.expectedSelectors);
       
       // Log results
       console.log(`${pageInfo.name}: HTTP ${response?.status() || 'N/A'}`);
@@ -602,6 +741,20 @@ test.describe('All Pages (Authenticated)', async () => {
       // Basic interaction readiness check
       const hasInteractiveElement = await isAnySelectorVisible(page, INTERACTIVE_SELECTORS);
       expect(hasInteractiveElement || hasCoreContent).toBe(true);
+
+      if (pageInfo.expectedApiPath && RUNTIME_API_ASSERTION_PAGES.has(pageInfo.name)) {
+        await recoverMissingRuntimeApiRequest(page, pageInfo, observedApiRequests);
+
+        await expect
+          .poll(
+            () => didRequestExpectedApi(Array.from(observedApiRequests), pageInfo.expectedApiPath ?? ''),
+            {
+              timeout: 10000,
+              message: `${pageInfo.name} should request ${pageInfo.expectedApiPath} at least once. Observed: ${Array.from(observedApiRequests).join(', ') || 'none'}`,
+            }
+          )
+          .toBe(true);
+      }
     });
   }
 });

@@ -5,7 +5,7 @@
  * To make permanent changes, update the generation script and run:
  *   npm run generate-page-config
  * 
- * Generated at: 2026-04-17T09:09:42.233Z
+ * Generated at: 2026-04-25T12:08:54.243Z
  * Routes processed: 35
  */
 
@@ -87,7 +87,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'indicator',
     title: '指标分析',
     description: '指标分析',
-    apiEndpoint: '/api/data/indicator',
+    apiEndpoint: '/api/v1/indicators/registry',
     wsChannel: 'data:indicator',
     component: 'Advanced.vue',
     requiresAuth: true,
@@ -230,11 +230,20 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
   'trade-history': {
     type: 'page',
     routePath: 'history',
-    title: '历史对账',
-    description: '历史对账',
+    title: '交易历史',
+    description: '交易历史',
     apiEndpoint: '/api/v1/trade/trades',
     wsChannel: 'trade:history',
     component: 'History.vue',
+    requiresAuth: true,
+  },
+  'trade-reconciliation': {
+    type: 'page',
+    routePath: 'reconciliation',
+    title: '对账单',
+    description: '对账单',
+    apiEndpoint: '/api/v1/trade/reconciliation/accounts',
+    component: 'Reconciliation.vue',
     requiresAuth: true,
   },
   'risk-overview': {

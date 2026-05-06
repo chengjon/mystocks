@@ -115,7 +115,8 @@ const TRADE_DOMAIN: MenuItem = {
     { path: '/trade/terminal', label: '交易操作', icon: 'StrategyTrading', businessKey: 'trade.terminal' },
     { path: '/trade/signals', label: '信号监控', icon: ARTDECO_ICONS.SIGNALS, businessKey: 'trade.signals' },
     { path: '/trade/portfolio', label: '持仓透视', icon: ARTDECO_ICONS.PORTFOLIO, businessKey: 'trade.portfolio' },
-    { path: '/trade/history', label: '历史对账', icon: 'TradeHistory', businessKey: 'trade.history' }
+    { path: '/trade/history', label: '交易历史', icon: 'TradeHistory', businessKey: 'trade.history' },
+    { path: '/trade/reconciliation', label: '对账单', icon: 'TradeHistory', businessKey: 'trade.reconciliation' }
   ]
 }
 
