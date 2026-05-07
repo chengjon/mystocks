@@ -89,6 +89,14 @@
   - 这说明当前 bundle 仍处于“分析已完成、优化余量仍显著”的状态；`1.4.5` 继续保持未完成，因为 2.5MB 目标尚未达成。
 - [x] 1.4.2 实施精确的分包策略 (基于实际构建数据的优化)
 - [ ] 1.4.3 移除未使用的依赖和死代码
+  - Repo-truth blocker（2026-05-07）: 当前还不能把这项按事实勾选。
+  - 依赖层面：`ant-design-vue` 本体虽已移出 runtime `dependencies`，但 `@ant-design/icons-vue` 仍在活跃源码中使用，至少包括：
+    - `web/frontend/src/views/monitoring/composables/useRiskDashboard.ts`
+    - `web/frontend/src/components/monitoring/MonitoringAlertPanel.vue`
+    - `web/frontend/src/components/monitoring/MonitoringDataTable.vue`
+  - 死代码层面：`web/frontend/src/_entry-archive/` 仍保留多份历史 `main*.js/ts` 资产；它们当前更接近 archive / retained assets，而不是已确认可删除的死代码。
+  - 本次还同步修正了 `web/frontend/ENTRY-TRUTH.md`：当前唯一活跃浏览器入口是 `index.html -> src/main-standard.ts`，此前关于 `verify-mount.js -> src/main.js` 的说法已不符合当前树状态。
+  - 因此 1.4.3 继续保持未完成；后续只有在 `@ant-design/icons-vue` 迁移完成、archive 资产的保留/删除边界被单独批准后，才能真正收口。
 - [x] 1.4.4 优化ECharts按需引入
 - [ ] 1.4.5 验证Bundle大小达到2.5MB目标
 
