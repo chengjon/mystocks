@@ -6,7 +6,7 @@
  *   npm run generate-page-config
  * 
  * Generated at: 2026-04-25T12:08:54.243Z
- * Routes processed: 35
+ * Routes processed: 36
  */
 
 import type { PageConfigType, TabConfig, MonolithicPageConfig, StandardPageConfig, PageConfig } from '@/types/pageConfig'
@@ -186,6 +186,15 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     description: '仓位管理',
     apiEndpoint: '/api/v1/trade/positions',
     component: 'ArtDecoTradingPositions.vue',
+    requiresAuth: true,
+  },
+  'ai-sentiment': {
+    type: 'page',
+    routePath: 'sentiment',
+    title: '情感分析',
+    description: 'AI 情感工作台',
+    apiEndpoint: '/api/v1/analysis/sentiment/market',
+    component: 'Sentiment.vue',
     requiresAuth: true,
   },
   'trade-positions': {

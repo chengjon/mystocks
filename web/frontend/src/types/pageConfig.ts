@@ -98,6 +98,7 @@ export function isRouteName(name: string): name is RouteName {
     'strategy-gpu',
     'strategy-opt',
     'strategy-pos',
+    'ai-sentiment',
     'trade-positions',
     'trade-terminal',
     'trade-signals',

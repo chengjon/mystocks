@@ -17,6 +17,7 @@ describe('pageConfig current contract', () => {
       expect(isRouteName('market-realtime')).toBe(true)
       expect(isRouteName('data-fund-flow')).toBe(true)
       expect(isRouteName('strategy-repo')).toBe(true)
+      expect(isRouteName('ai-sentiment')).toBe(true)
 
       expect(isRouteName('market-fund-flow')).toBe(false)
       expect(isRouteName('stock-management')).toBe(false)
@@ -80,6 +81,14 @@ describe('pageConfig current contract', () => {
       expect(parametersConfig?.component).toBe('Parameters.vue')
       expect(backtestConfig?.component).toBe('Backtest.vue')
       expect(optimizationConfig?.component).toBe('Optimization.vue')
+    })
+
+    it('returns current standard page config for ai sentiment route using canonical domain filename', () => {
+      const sentimentConfig = getPageConfig('ai-sentiment')
+
+      expect(sentimentConfig?.component).toBe('Sentiment.vue')
+      expect(sentimentConfig?.routePath).toBe('sentiment')
+      expect(sentimentConfig?.apiEndpoint).toBe('/api/v1/analysis/sentiment/market')
     })
 
     it('returns current standard page config for trade routes using canonical domain filenames', () => {

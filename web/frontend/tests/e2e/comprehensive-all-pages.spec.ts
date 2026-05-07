@@ -180,7 +180,16 @@ const PAGES: PageContract[] = [
     expectedApiPath: '/api/v1/trade/positions',
   },
 
-  // 5. Trade (交易管理 - 6 pages)
+  // 5. AI (高级分析与AI - 1 page)
+  {
+    name: 'AI-Sentiment',
+    path: '/ai/sentiment',
+    requiresAuth: true,
+    expectedSelectors: ['.ai-sentiment-page', '.hero-meta', 'button', 'h1'],
+    expectedApiPath: '/api/v1/analysis/sentiment/market',
+  },
+
+  // 6. Trade (交易管理 - 6 pages)
   {
     name: 'Trade-Positions',
     path: '/trade/positions',
@@ -224,7 +233,7 @@ const PAGES: PageContract[] = [
     expectedApiPath: '/api/v1/trade/reconciliation/accounts',
   },
 
-  // 6. Risk (风险管理 - 6 pages)
+  // 7. Risk (风险管理 - 6 pages)
   {
     name: 'Risk-Management',
     path: '/risk/management',
@@ -264,11 +273,11 @@ const PAGES: PageContract[] = [
     name: 'Risk-News',
     path: '/risk/news',
     requiresAuth: true,
-    expectedSelectors: ['.risk-management-page', '.section-title', '.el-button', 'button'],
+    expectedSelectors: ['.announcement-monitor', '.hero-meta', '.el-button', 'button'],
     noApiAssertionReason: 'route shell has no stable route meta api contract',
   },
 
-  // 7. System (系统设置 - 5 pages)
+  // 8. System (系统设置 - 5 pages)
   {
     name: 'System-Config',
     path: '/system/config',

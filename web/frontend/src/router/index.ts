@@ -171,7 +171,22 @@ const routes: RouteRecordRaw[] = [
         ]
       },
 
-      // 5. Trade (交易管理)
+      // 5. AI (高级分析与AI)
+      {
+        path: 'ai',
+        redirect: '/ai/sentiment',
+        meta: { title: 'AI 分析', group: 'ai' },
+        children: [
+          {
+            path: 'sentiment',
+            name: 'ai-sentiment',
+            component: () => import('@/views/ai/Sentiment.vue'),
+            meta: { title: '情感分析', requiresAuth: true, api: '/api/v1/analysis/sentiment/market' }
+          }
+        ]
+      },
+
+      // 6. Trade (交易管理)
       {
         path: 'trade',
         redirect: '/trade/terminal',
@@ -216,7 +231,7 @@ const routes: RouteRecordRaw[] = [
         ]
       },
 
-      // 6. Risk (风险管理)
+      // 7. Risk (风险管理)
       {
         path: 'risk',
         redirect: '/risk/overview',
@@ -262,7 +277,7 @@ const routes: RouteRecordRaw[] = [
         ]
       },
 
-      // 7. System (系统设置)
+      // 8. System (系统设置)
       {
         path: 'system',
         redirect: '/system/config',

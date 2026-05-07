@@ -134,6 +134,24 @@ const menuConfig = [
     ]
   },
 
+  // AI分析
+  {
+    id: 'ai-analysis',
+    title: 'AI分析',
+    icon: 'ChatDotRound',
+    disabled: false,
+    roles: ['admin', 'user'],
+    children: [
+      {
+        id: 'ai-sentiment',
+        title: '情感分析',
+        path: '/ai/sentiment',
+        icon: 'ChatLineRound',
+        disabled: false
+      }
+    ]
+  },
+
   // 风险管理 (Risk Management) - V3.1 System
   {
     id: 'risk-management',

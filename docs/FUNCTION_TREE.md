@@ -419,8 +419,8 @@ Q2 closure note:
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
-| 新闻情感 | 🚧 | `web/backend/app/api/v1/analysis/sentiment.py`, `src/advanced_analysis/sentiment_analyzer/` | 后端 API 与分析模块已在，但主路由树未见 AI 域独立入口 |
-| 舆情监控 | 🚧 | `web/frontend/src/views/risk/News.vue`, `web/backend/app/api/v1/analysis/sentiment.py` | 风险域工作台与情感 API 已存在，具备实现证据；但当前仍归属 `/risk/news`，未形成 `07` 域独立主入口，因此不宜视为 AI 域独立闭环 |
+| 新闻情感 | ✅ | `web/frontend/src/views/ai/Sentiment.vue`, `web/backend/app/api/v1/analysis/sentiment.py`, `src/advanced_analysis/sentiment_analyzer/` | AI 域独立入口 `/ai/sentiment` 已落地，并整合文本分析、个股趋势与市场情绪概览 |
+| 舆情监控 | ✅ | `web/frontend/src/views/ai/Sentiment.vue`, `web/frontend/src/views/risk/News.vue`, `web/backend/app/api/v1/analysis/sentiment.py` | AI 域 canonical 工作台已接管公告/舆情主入口；`/risk/news` 保留为风险域包装页并复用共享工作台逻辑 |
 
 ---
 

@@ -6,15 +6,15 @@
           <span class="hero-eyebrow">news and sentiment desk</span>
           <div class="hero-meta">
             <span>REQ_ID: {{ displayRequestId }}</span>
-            <span>TODAY: {{ todayCount }}</span>
-            <span>FOCUS: announcements</span>
+            <span>TODAY: {{ displayTodayCount }}</span>
+            <span>FOCUS: risk wrapper</span>
           </div>
         </div>
       </div>
 
       <ArtDecoHeader
-        title="公告与舆情工作台"
-        subtitle="追踪公告、重要事件和原文跳转能力，形成风险治理中的舆情节点"
+        title="舆情预警"
+        subtitle="保留风险域入口，并复用 AI 情感工作台的统一公告与情绪编排"
         :show-status="true"
         :status-text="pageStatusText"
         :status-type="pageStatusType"
@@ -26,46 +26,57 @@
             </template>
             刷新公告
           </ArtDecoButton>
+          <ArtDecoButton variant="outline" size="sm" @click="onGoToAiWorkbench">
+            <template #icon>
+              <ArtDecoIcon name="arrow-right" />
+            </template>
+            前往 AI 工作台
+          </ArtDecoButton>
         </template>
       </ArtDecoHeader>
     </section>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="公告总数" :value="announcements.length" variant="gold" />
-      <ArtDecoStatCard label="今日公告" :value="todayCount" variant="rise" />
-      <ArtDecoStatCard label="重要公告" :value="importantCount" variant="fall" />
-      <ArtDecoStatCard label="原文链接" :value="linkedCount" variant="gold" />
+      <ArtDecoStatCard label="公告总数" :value="statCards.total" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="今日公告" :value="statCards.today" :show-change="false" variant="rise" />
+      <ArtDecoStatCard label="重要公告" :value="statCards.important" :show-change="false" variant="fall" />
+      <ArtDecoStatCard label="原文链接" :value="statCards.linked" :show-change="false" variant="gold" />
     </section>
 
     <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
-          <span class="content-shell-kicker">announcement review route</span>
-          <h3 class="content-shell-title">公告记录面板</h3>
+          <span class="content-shell-kicker">risk-domain wrapper</span>
+          <h2 class="content-shell-title">风险公告记录面板</h2>
           <p class="content-shell-subtitle">{{ contentShellDescription }}</p>
         </div>
         <div class="content-shell-meta">
-          <span>ANNOUNCEMENTS: {{ announcements.length }}</span>
-          <span>LINKED: {{ linkedCount }}</span>
+          <span>ANNOUNCEMENTS: {{ displayAnnouncementCount }}</span>
+          <span>LINKED: {{ displayLinkedCount }}</span>
         </div>
       </div>
 
+      <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+
       <div class="stats-grid" v-loading="loading">
         <ArtDecoCard title="公告总数" hoverable>
-          <div class="stat-value">{{ announcements.length }}</div>
+          <div class="stat-value">{{ statCards.total }}</div>
         </ArtDecoCard>
         <ArtDecoCard title="今日公告" hoverable>
-          <div class="stat-value positive">{{ todayCount }}</div>
+          <div class="stat-value positive">{{ statCards.today }}</div>
         </ArtDecoCard>
         <ArtDecoCard title="重要公告" hoverable>
-          <div class="stat-value warning">{{ importantCount }}</div>
+          <div class="stat-value warning">{{ statCards.important }}</div>
         </ArtDecoCard>
         <ArtDecoCard title="含原文链接" hoverable>
-          <div class="stat-value">{{ linkedCount }}</div>
+          <div class="stat-value">{{ statCards.linked }}</div>
         </ArtDecoCard>
       </div>
 
       <ArtDecoCard title="公告列表" class="table-card" hoverable>
+        <div v-if="!loading && !showSummaryPlaceholders && announcements.length === 0" class="empty-state">
+          暂无公告数据，公告列表为空。
+        </div>
         <el-table :data="announcements" stripe empty-text="暂无公告数据">
           <el-table-column prop="stock_code" label="代码" width="110" />
           <el-table-column prop="stock_name" label="名称" width="140" />
@@ -93,13 +104,11 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { monitoringApi } from '@/api/index'
-import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
-import type { AnnouncementBase } from '@/api/types/common'
+import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
-type JsonLike = Record<string, unknown>
+import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { useAiSentimentWorkbench } from '@/views/ai/composables/useAiSentimentWorkbench'
 
 interface Props {
   functionKey?: string
@@ -109,46 +118,64 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
-const announcements = ref<AnnouncementBase[]>([])
-const requestId = ref('')
+const router = useRouter()
+const {
+  announcements,
+  contentShellDescription,
+  displayRequestId,
+  formatPublishDate: sharedFormatPublishDate,
+  hasStartedSync,
+  hasVerifiedSnapshot,
+  loading,
+  pageStatusText: sharedPageStatusText,
+  pageStatusType: sharedPageStatusType,
+  refreshWorkbench,
+  runtimeMessage,
+  openAnnouncement,
+} = useAiSentimentWorkbench('risk')
 
 const isEmbedded = computed(() => Boolean(props.functionKey))
-const displayRequestId = computed(() => requestId.value || 'N/A')
-const todayCount = computed(() => {
+const showSummaryPlaceholders = computed(
+  () => !hasVerifiedSnapshot.value && (!hasStartedSync.value || loading.value)
+)
+const announcementStats = computed(() => {
   const today = new Date().toISOString().slice(0, 10)
-  return announcements.value.filter((item) => (item.publish_date || '').startsWith(today)).length
-})
-const importantCount = computed(() => announcements.value.filter((item) => (item.importance_level || 0) >= 4).length)
-const linkedCount = computed(() => announcements.value.filter((item) => !!item.url).length)
-const pageStatusText = computed(() => {
-  if (loading.value) return '同步中'
-  return importantCount.value > 0 ? '存在重要公告' : '公告平稳'
-})
-const pageStatusType = computed(() => (importantCount.value > 0 ? 'warning' : 'success'))
-const contentShellDescription = computed(() => '审查近期公告、重要性等级和原文链接，作为风险治理链路里的舆情审阅面板。')
+  const total = announcements.value.length
+  const todayCount = announcements.value.filter((item) => (item.publish_date || '').startsWith(today)).length
+  const important = announcements.value.filter((item) => Number(item.importance_level || 0) >= 4).length
+  const linked = announcements.value.filter((item) => Boolean(item.url)).length
 
-function normalizeList<T>(payload: unknown, keys: string[]): T[] {
-  if (Array.isArray(payload)) return payload as T[]
-  if (!payload || typeof payload !== 'object') return []
-
-  const dict = payload as JsonLike
-  for (const key of keys) {
-    const maybe = dict[key]
-    if (Array.isArray(maybe)) return maybe as T[]
+  if (!hasVerifiedSnapshot.value && (!hasStartedSync.value || loading.value)) {
+    return {
+      total: '--',
+      today: '--',
+      important: '--',
+      linked: '--',
+    }
   }
-  return []
+
+  return {
+    total: `${total}`,
+    today: `${todayCount}`,
+    important: `${important}`,
+    linked: `${linked}`,
+  }
+})
+const statCards = computed(() => announcementStats.value)
+const displayTodayCount = computed(() => statCards.value.today)
+const displayAnnouncementCount = computed(() => statCards.value.total)
+const displayLinkedCount = computed(() => statCards.value.linked)
+const pageStatusText = computed(() => {
+  return hasVerifiedSnapshot.value ? '风险舆情在线' : sharedPageStatusText.value
+})
+const pageStatusType = computed(() => {
+  return hasVerifiedSnapshot.value ? 'success' : sharedPageStatusType.value
+})
+const onGoToAiWorkbench = async (): Promise<void> => {
+  await router.push('/ai/sentiment')
 }
 
-const fetchAnnouncements = async (): Promise<void> => {
-  const data = await exec(() => monitoringApi.getAnnouncements({ page: 1, page_size: 50 }), {
-    errorMsg: '获取公告失败',
-    silent: true,
-  })
-
-  announcements.value = normalizeList<AnnouncementBase>(data, ['announcements', 'items', 'records', 'data'])
-  requestId.value = lastRequestId.value || requestId.value
-}
+const fetchAnnouncements = refreshWorkbench
 
 const importanceType = (level?: number): 'danger' | 'warning' | 'success' | 'info' => {
   const value = Number(level || 0)
@@ -159,16 +186,16 @@ const importanceType = (level?: number): 'danger' | 'warning' | 'success' | 'inf
 }
 
 const formatPublishDate = (date?: string, time?: string | null): string => {
-  if (!date) return '-'
-  return time ? `${date} ${time}` : date
+  return sharedFormatPublishDate(date, time)
 }
 
 const openSource = (url?: string | null): void => {
-  if (!url) return
-  window.open(url, '_blank', 'noopener,noreferrer')
+  openAnnouncement(url)
 }
 
-onMounted(fetchAnnouncements)
+onMounted(() => {
+  void refreshWorkbench()
+})
 </script>
 
 <style scoped lang="scss">
@@ -257,6 +284,13 @@ onMounted(fetchAnnouncements)
 
 .stats-grid {
   margin-bottom: var(--artdeco-spacing-6);
+}
+
+.runtime-message,
+.empty-state {
+  margin: 0 0 var(--artdeco-spacing-4);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
 }
 
 .stat-value {
