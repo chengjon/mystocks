@@ -17,6 +17,10 @@ describe('system route canonical component paths', () => {
     expect(routerSource).toContain("component: () => import('@/views/system/API.vue')")
   })
 
+  it('uses the canonical system resources component path', () => {
+    expect(routerSource).toContain("component: () => import('@/views/system/Resources.vue')")
+  })
+
   it('uses the canonical system data-source component path', () => {
     expect(routerSource).toContain("component: () => import('@/views/system/DataSource.vue')")
   })

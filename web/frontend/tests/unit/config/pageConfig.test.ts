@@ -110,6 +110,7 @@ describe('pageConfig current contract', () => {
       const configConfig = getPageConfig('system-config')
       const healthConfig = getPageConfig('system-health')
       const apiConfig = getPageConfig('system-api')
+      const resourcesConfig = getPageConfig('system-resources')
       const dataConfig = getPageConfig('system-data')
 
       expect(configConfig?.component).toBe('Settings.vue')
@@ -121,6 +122,9 @@ describe('pageConfig current contract', () => {
       expect(apiConfig?.component).toBe('API.vue')
       expect(apiConfig?.apiEndpoint).toBe('/health')
       expect(apiConfig?.wsChannel).toBeUndefined()
+      expect(resourcesConfig?.component).toBe('Resources.vue')
+      expect(resourcesConfig?.apiEndpoint).toBe('/api/v1/system/resources')
+      expect(resourcesConfig?.wsChannel).toBeUndefined()
       expect(dataConfig?.component).toBe('DataSource.vue')
       expect(dataConfig?.apiEndpoint).toBe('/v1/data-sources/config/')
       expect(dataConfig?.wsChannel).toBeUndefined()

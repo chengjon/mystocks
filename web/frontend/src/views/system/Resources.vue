@@ -157,4 +157,4 @@ const {
   </div>
 </template>
 
-<style scoped lang="scss" src="./styles/Resources.scss"></style>
+<style scoped lang="scss" src="@/views/system/styles/Resources.scss"></style>

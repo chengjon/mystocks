@@ -268,7 +268,7 @@ const PAGES: PageContract[] = [
     noApiAssertionReason: 'route shell has no stable route meta api contract',
   },
 
-  // 7. System (系统设置 - 4 pages)
+  // 7. System (系统设置 - 5 pages)
   {
     name: 'System-Config',
     path: '/system/config',
@@ -289,6 +289,13 @@ const PAGES: PageContract[] = [
     requiresAuth: true,
     expectedSelectors: ['.monitoring-dashboard', '.health-grid', '.content-shell-title'],
     expectedApiPath: '/api/health',
+  },
+  {
+    name: 'System-Resources',
+    path: '/system/resources',
+    requiresAuth: true,
+    expectedSelectors: ['.resource-usage-page', '.host-grid', '.content-shell-title'],
+    expectedApiPath: '/api/v1/system/resources',
   },
   {
     name: 'System-Data',
