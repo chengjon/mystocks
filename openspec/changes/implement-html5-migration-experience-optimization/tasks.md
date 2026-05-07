@@ -324,6 +324,19 @@
   - 因此这条功能成功指标现可按当前 repo-local 真实验证闭合。
 - [ ] ✅ PWA可安装和离线功能正常
 - [ ] ✅ IndexedDB数据存储和检索正常
+  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
+  - 当前仓库确实已有活跃代码面：
+    - `web/frontend/src/utils/indexedDB.ts` 提供 wrapper / schema / TTL cache
+    - `web/frontend/src/stores/marketData.ts` 已把 `IndexedDB → Network → Fallback` 作为现行缓存策略的一部分
+  - 但当前最直接的测试证据 `cd web/frontend && npm run test -- tests/unit/utils/indexedDB.spec.ts` 只证明：
+    - API contract 与 TypeScript 结构存在
+    - 相关 placeholder 测试本身可运行（`12 passed`）
+  - 同一测试文件也明确写着：
+    - `Note: Full IndexedDB tests require browser environment`
+    - `Note: Offline tests require browser environment`
+  - 这说明现行 repo-local 证据仍停留在“接口层/结构层可验证”，还不能扩写成“浏览器中的 IndexedDB 存储和检索已经被真实验证为正常”。
+  - 另外 `3.2.3 验证IndexedDB数据持久化和迁移` 仍未闭合，也与这条成功指标当前不能收口相互印证。
+  - 因此这条成功指标继续保持未完成；后续只有在浏览器环境下得到真实持久化/读取/迁移证据，或任务口径被正式收窄后，才能按 repo-truth 收口。
 - [ ] ✅ Web Workers性能提升量化验证
 - [ ] ✅ HTML5 APIs在支持浏览器中正常工作
 
