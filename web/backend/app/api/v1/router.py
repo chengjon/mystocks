@@ -19,7 +19,7 @@ from fastapi import APIRouter
 from .admin import audit_router, optimization_router
 from .analysis import backtest_router, kronos_router, sentiment_router, stress_test_router
 from .strategy import indicators_router, ml_router
-from .system import health_router, routing_router, settings_router
+from .system import health_router, resources_router, routing_router, settings_router
 from .trading import positions_router, session_router
 
 api_v1_router = APIRouter(
@@ -29,6 +29,7 @@ api_v1_router = APIRouter(
 
 # 系统管理路由
 api_v1_router.include_router(health_router)
+api_v1_router.include_router(resources_router)
 api_v1_router.include_router(routing_router)
 api_v1_router.include_router(settings_router)
 
