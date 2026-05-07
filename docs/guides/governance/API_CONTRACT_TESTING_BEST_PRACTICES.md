@@ -12,11 +12,14 @@
   - [`tests/integration/contract/`](/opt/claude/mystocks_spec/tests/integration/contract)
 - current unit / repo-truth checks
   - [`tests/unit/contract/`](/opt/claude/mystocks_spec/tests/unit/contract)
+- current canonical support implementation package
+  - [`tests/contract_support/`](/opt/claude/mystocks_spec/tests/contract_support)
 - retained legacy contract tree
   - [`tests/contract/`](/opt/claude/mystocks_spec/tests/contract)
 
 这意味着：
 - 新增 contract tests 优先落在 `tests/integration/contract/` 或 `tests/unit/contract/`
+- contract framework/support code 的 canonical 主实现应优先落在 `tests/contract_support/`
 - `tests/contract/` 仍保留为 legacy tree，不能再把它当唯一 canonical 目录
 - `tests/contract/` 当前更接近 support / compatibility tree；真实 pytest case 已优先迁入主测试结构
 
@@ -54,6 +57,7 @@
 - 避免 regression 把 runtime-generated OpenAPI 又退回静态 spec truth
 
 现有入口：
+- [`test_contract_support_aliases.py`](/opt/claude/mystocks_spec/tests/unit/contract/test_contract_support_aliases.py)
 - [`test_contract_engine_runtime_source.py`](/opt/claude/mystocks_spec/tests/unit/contract/test_contract_engine_runtime_source.py)
 - [`test_risk_router_runtime_import.py`](/opt/claude/mystocks_spec/tests/unit/contract/test_risk_router_runtime_import.py)
 - [`test_ci_workflow_runtime_setup.py`](/opt/claude/mystocks_spec/tests/unit/scripts/test_ci_workflow_runtime_setup.py)
@@ -83,6 +87,7 @@ Unit repo-truth contract checks:
 
 ```bash
 python -m pytest -q \
+  tests/unit/contract/test_contract_support_aliases.py \
   tests/unit/contract/test_contract_engine_runtime_source.py \
   tests/unit/contract/test_risk_router_runtime_import.py \
   tests/unit/scripts/test_ci_workflow_runtime_setup.py

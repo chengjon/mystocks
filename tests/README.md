@@ -59,6 +59,7 @@ results = await runner.run_all_tests()
 
 > 当前 repo-truth：
 > - 主测试入口优先使用 `tests/integration/contract/` 与 `tests/unit/contract/`
+> - `tests/contract_support/` 已开始承载 contract framework/support code 的 canonical 主实现
 > - `tests.contract` 仍保留 compatibility import surface，但不再是新增 contract tests 的 canonical 目录
 > - 详细目录口径以 `docs/guides/governance/API_CONTRACT_TESTING_BEST_PRACTICES.md` 为准
 
@@ -157,9 +158,10 @@ results = await system.run_intelligent_testing(project_context, test_executors)
 
 - canonical integration entry: `tests/integration/contract/`
 - canonical unit / repo-truth entry: `tests/unit/contract/`
+- canonical support implementation package: `tests/contract_support/`
 - retained compatibility / support tree: `tests/contract/`
 
-`tests/contract/` 当前主要承载 compatibility export 与 support module；真实 pytest case 已优先迁入主测试结构。
+`tests/contract_support/` 当前已开始承载 canonical support 实现，`tests/contract/` 主要保留 compatibility export 与尚未收敛完的 support module；真实 pytest case 已优先迁入主测试结构。
 
 #### 核心组件
 - **ContractTestExecutor**: 契约测试执行器
