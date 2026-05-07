@@ -338,6 +338,14 @@
   - 另外 `3.2.3 验证IndexedDB数据持久化和迁移` 仍未闭合，也与这条成功指标当前不能收口相互印证。
   - 因此这条成功指标继续保持未完成；后续只有在浏览器环境下得到真实持久化/读取/迁移证据，或任务口径被正式收窄后，才能按 repo-truth 收口。
 - [ ] ✅ Web Workers性能提升量化验证
+  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
+  - 当前仓库确实已有部分活跃代码面：
+    - `web/frontend/src/workers/indicatorDataWorker.worker.ts` 存在技术指标 worker 文件
+    - `web/frontend/src/stores/marketData.ts` 已通过 `workersManager.calculateIndicator(...)` 调用 worker façade
+  - 但当前 canonical manager `web/frontend/src/utils/workersManager/workers-manager.ts` 的 `calculateIndicator()` 仍直接写着 `Placeholder implementation - in production this would use actual Web Worker`，返回值也是即时构造的 mock-style 结果，而不是可验证的真实 worker 生命周期编排。
+  - 当前最直接的测试证据 `cd web/frontend && npm run test -- tests/unit/config/indicator-worker-types-cleanup.spec.ts` 也只证明 worker 文件没有退化回 `@ts-nocheck`（`1 passed`），并不能提供任何性能量化结果。
+  - 另外 `2.4.2`（K线数据处理 Worker 主链路）、`2.4.5`（错误处理与生命周期管理）和 `3.2.4`（测试Web Workers性能提升量化）都仍未闭合，也与这条成功指标当前不能收口相互印证。
+  - 因此这条成功指标继续保持未完成；后续只有在现行主链路上拿到真实 worker 编排与量化收益证据，或任务口径被正式收窄后，才能按 repo-truth 收口。
 - [ ] ✅ HTML5 APIs在支持浏览器中正常工作
 
 ### Performance Validation
