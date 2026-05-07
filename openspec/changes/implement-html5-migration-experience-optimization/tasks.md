@@ -64,6 +64,16 @@
 - [ ] 1.2.3 统一使用Element Plus + ArtDeco组件
 - [x] 1.2.4 更新构建配置移除冲突 (参考Vite配置优化经验)
 - [ ] 1.2.5 验证样式一致性 (ArtDeco设计系统完整覆盖)
+  - Repo-truth blocker（2026-05-08）: 当前样式一致性仍不能按现行仓库证据勾选，不是因为已经确认存在样式回归，而是因为专用 Playwright style gates 已经与当前测试配置漂移：
+    - `cd web/frontend && npm run test:design-token`
+    - `cd web/frontend && npm run test:stock-colors`
+    - `cd web/frontend && npm run test:artdeco-style`
+  - 三个命令在提权读取 `web/frontend/.env` 后，均进一步失败为 `No tests found`。
+  - 当前直接原因已经确认：
+    - `web/frontend/playwright.config.ts` 的 `testMatch` 只匹配 `*.spec.(ts|js)`
+    - 但 `test:design-token` 和 `test:stock-colors` 指向的是 `tests/design-token.test.ts`、`tests/stock-colors.test.ts`
+    - `test:artdeco-style` 指向的 `tests/artdeco-style.test.ts` 当前文件并不存在
+  - 因此 1.2.5 继续保持未完成；后续只有在样式一致性 gate 入口与现行 Playwright 配置重新对齐，并且得到真实通过结果后，才能按 repo-truth 收口。
 
 ### 1.3 测试基础设施完善
 - [x] 1.3.1 配置Vitest覆盖率报告 (基于228个测试文件的实际经验)
