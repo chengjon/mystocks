@@ -5,7 +5,7 @@
 > 若涉及仓库级共享规则、审批门禁或治理口径，请优先阅读 `architecture/STANDARDS.md`；若涉及执行入口、提案流程或当前实现事实，再分别参考根目录 `AGENTS.md`、根目录 `CLAUDE.md`、`openspec/AGENTS.md` 与当前代码。
 
 ## Purpose
-TBD - created by archiving change add-system-resource-usage-monitoring. Update Purpose after archive.
+Define the current-truth contract and UI capability boundaries for the dedicated single-node system resource usage workbench at `/system/resources`.
 ## Requirements
 ### Requirement: Dedicated System Resource Usage Surface
 The system SHALL provide a dedicated resource usage monitoring capability for the current runtime node.
@@ -66,4 +66,3 @@ The capability SHALL refresh through polling and support operator pause/resume c
 - **THEN** the frontend SHALL start polling resource metrics on the approved default cadence
 - **AND** the user SHALL be able to pause and resume polling
 - **AND** the first batch SHALL NOT require WebSocket or SSE transport
-
