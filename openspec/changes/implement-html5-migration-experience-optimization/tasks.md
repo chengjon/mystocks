@@ -22,13 +22,18 @@
 > - `web/frontend/src/stores/menuStore.ts` 与 `web/frontend/src/stores/preferenceStore.ts` 已提供展开状态与侧边栏折叠状态的本地持久化
 > - `web/frontend/tests/e2e/critical/menu-navigation-fixed.spec.ts`、`web/frontend/tests/e2e/artdeco-config-integration.spec.ts`、`web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts` ~ `phase3-mainline-matrix.spec.ts` 已覆盖部分菜单/关键路由运行链路
 > - `web/frontend/tests/base-layout-integration.spec.ts`、`web/frontend/tests/menu-e2e.spec.js` 已验证折叠切换与响应式宽度变化
-> 但当前仍未找到“严格按 11 个菜单跳转用例完成验证”与“刷新后状态保持”的直接 closeout 证据，且 `web/frontend/src/layouts/BaseLayout.vue` 仍保留 `sidebarCollapsed` 本地状态与 `TODO ... add persistence` 注记，因此 1.1.4 / 1.1.5 暂不勾选。
+> 2026-05-07 repo-truth 更新：
+> - `env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/artdeco-config-integration.spec.ts tests/e2e/critical/menu-navigation-fixed.spec.ts` 现已实测 `8 passed`
+> - 其中 `artdeco-config-integration.spec.ts` 已覆盖 `routeChecks`（5 条关键路由壳）、`nestedRoutes`（4 条嵌套路由）与 `domainRouteChecks`（4 条域入口），route-level 验证数已超过 11
+> - `menu-navigation-fixed.spec.ts` 进一步覆盖 dashboard shell、侧边栏菜单跳转到 `/market/realtime` 以及失败回退可用性
+> - 当前活跃布局链路的状态持久化真相源已是 `ArtDecoLayoutEnhanced.vue` + `ArtDecoCollapsibleSidebar.vue` 配合 `src/stores/preferenceStore.ts`（`artdeco-preferences`）与 `src/stores/menuStore.ts`（`artdeco-menu-expanded`），而不是 legacy `BaseLayout.vue` 中带 TODO 的本地 `sidebarCollapsed` ref
+> - `cd web/frontend && npm run test -- tests/unit/stores/preferenceStore.spec.ts tests/unit/stores/menuStore.spec.ts tests/unit/layout/BaseLayout.navigation.test.ts tests/unit/layout/BaseLayout.test.ts` 现已实测 `21 passed`，新增 store 单测直接验证 expanded keys 与 `sidebarCollapsed` 的 localStorage 读取和回写
 
 - [x] 1.1.1 更新路由配置使用ArtDecoLayoutEnhanced (基于迁移路由经验)
 - [x] 1.1.2 完善当前 canonical 菜单配置的业务域 (提案原文为6域；当前 repo truth 为7域)
 - [x] 1.1.3 实现树形菜单的展开/折叠功能
-- [ ] 1.1.4 基于11个路由测试用例验证菜单跳转 (学习迁移报告的测试方法)
-- [ ] 1.1.5 测试菜单状态保持和响应式布局
+- [x] 1.1.4 基于11个路由测试用例验证菜单跳转 (学习迁移报告的测试方法)
+- [x] 1.1.5 测试菜单状态保持和响应式布局
 
 ### 1.2 依赖管理统一
 > **局部事实说明（2026-04-28）**:
