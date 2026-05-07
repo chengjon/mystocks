@@ -6,7 +6,7 @@
 
 ## Context
 
-`FUNCTION_TREE` currently marks `3.3 归因分析` as unfinished and describes it as `Brinson归因、因子归因`. The repository does contain attribution-shaped traces, but none of them form a canonical, user-facing attribution capability.
+`FUNCTION_TREE` currently marks the `归因分析` row under `3.3 回测分析` as unfinished and describes it as `Brinson归因、因子归因`. The repository does contain attribution-shaped traces, but none of them form a canonical, user-facing attribution capability.
 
 Current repository truth is:
 
@@ -75,6 +75,18 @@ The approved first-batch scope is:
   - specified-date historical portfolio snapshot
 - frontend shared component skeleton with both strategy and trade shells
 
+### Factor name mapping
+
+The design uses these canonical mappings:
+
+| Chinese | Canonical field |
+|---------|-----------------|
+| 规模 | `size` |
+| 价值 | `value` |
+| 动量 | `momentum` |
+| 波动率 | `volatility` |
+| 质量 | `quality` |
+
 ## Capability Boundary
 
 This feature adds a formal attribution-analysis capability. It does not merely extend one existing view.
@@ -107,9 +119,76 @@ The following existing surfaces are not canonical attribution truth sources:
 - `src/data_sources/real/composite_business.py` current simplified attribution payload
 - `src/data_sources/mock/business_mock.py` random attribution helper
 
+### Migration notes
+
+The first batch should not leave these non-canonical surfaces ambiguous.
+
+- `web/frontend/src/views/trade/Portfolio.vue`
+  - the existing local contribution cards should be replaced by the new shared attribution presentation surface rather than coexisting as a competing attribution truth
+- `src/data_sources/real/composite_business.py`
+  - the existing `perform_attribution_analysis(...)` implementation should stop owning attribution logic and become either:
+    - a thin compatibility wrapper that delegates to the shared engine after snapshot normalization, or
+    - an explicitly deprecated convenience surface
+- `src/data_sources/mock/business_mock.py`
+  - the existing random attribution helper should stop inventing independent attribution logic and should either delegate to the shared engine or be marked as legacy test/demo fallback only
+
 ## Shared Engine Contract
 
 The shared engine should operate on three normalized inputs.
+
+### Data source dependencies
+
+The first batch should use existing repo-local data sources rather than inventing a parallel market-data stack.
+
+- benchmark constituents
+  - canonical first-batch source: `src/data_sources/baostock_importer.py`
+  - specifically `query_hs300_stocks(...)`
+- industry classification
+  - canonical first-batch source: `src/data_sources/baostock_importer.py`
+  - specifically `query_stock_industry(...)`
+- price history, return windows, and volatility inputs
+  - canonical first-batch service surface: `web/backend/app/services/data_service.py`
+  - specifically `DataService.get_daily_ohlcv(...)`
+  - this gives one normalized OHLCV truth surface already used in backend analysis flows
+- financial and market-cap raw fields for factor construction
+  - canonical first-batch enrichment surfaces:
+    - `src/adapters/efinance_adapter/efinance_data_source_methods/core.py`
+      - existing normalized fields include `roe` and `circulating_market_value`
+    - `src/adapters/financial/financial_report_adapter.py`
+      - existing financial extraction includes `ROE`, `市盈率`, and `市净率`
+
+If one of these fields is unavailable for a target symbol/date, the adapter must surface that gap explicitly rather than silently inventing a replacement value.
+
+### Interface alignment
+
+The existing abstract interface `src/interfaces/business_data_source.py` currently defines:
+
+- `perform_attribution_analysis(self, user_id, start_date, end_date)`
+
+The current mock and real implementations already diverge in signature. The first batch should resolve this explicitly:
+
+- the new shared engine is not implemented as a parallel ad-hoc contract
+- the canonical computation lives under a dedicated shared backend service module, recommended path:
+  - `web/backend/app/services/attribution/engine.py`
+- domain adapters should live under:
+  - `web/backend/app/services/attribution/adapters/backtest_snapshot.py`
+  - `web/backend/app/services/attribution/adapters/trade_portfolio_snapshot.py`
+- `BusinessDataSource.perform_attribution_analysis(...)` should be treated as a legacy compatibility surface, not as the canonical API contract
+- if retained, the real and mock implementations should reconcile to one canonical compatibility signature and delegate inward to the shared engine
+- the mock-only extra `portfolio` parameter should not survive as a parallel canonical signature
+
+### Prerequisites and assumptions
+
+The first batch depends on several facts that are not fully true in the current repo and therefore must be treated as explicit implementation prerequisites:
+
+- backtest result payloads currently expose summary metrics, equity curves, and trades, but do not yet expose a ready-made position-level attribution snapshot
+  - strategy-side attribution therefore requires a backtest-result enrichment step that reconstructs or projects:
+    - `symbol`
+    - `weight`
+    - `return`
+    - `industry`
+- industry classification coverage must be available for all analyzed instruments, or the adapter must fail explicitly rather than emitting a partial Brinson breakdown without notice
+- factor raw fields must be available at the same effective analysis date as the portfolio or benchmark snapshot, or the adapter must follow the stale/fail rules defined later in this document
 
 ### PortfolioSnapshot
 
@@ -234,13 +313,13 @@ The first batch should use dual entry points with one shared response shape.
 
 ### Strategy domain
 
-- `GET /api/v1/strategy/backtests/{backtest_id}/attribution`
+- `GET /api/v1/backtest/{backtest_id}/attribution`
 
-This endpoint analyzes the selected backtest-result snapshot.
+This endpoint analyzes the selected backtest-result snapshot and aligns with the current v1 analysis router, which already exposes backtest functionality under `/api/v1/backtest`.
 
 ### Trade domain
 
-- `GET /api/v1/trade/portfolio/attribution`
+- `GET /api/v1/positions/attribution`
 
 Query behavior:
 
@@ -249,7 +328,7 @@ Query behavior:
 - `date=YYYY-MM-DD`
   - analyze the specified historical portfolio snapshot
 
-This parameterized trade endpoint is preferred over separate `/history` attribution endpoints for the first batch.
+This parameterized trade endpoint is preferred over separate `/history` attribution endpoints for the first batch and aligns with the current v1 trading surface, which already exposes portfolio position data under `/api/v1/positions`.
 
 ## Frontend Information Architecture
 
@@ -313,7 +392,7 @@ The first batch should explicitly separate stale-handling by domain.
 
 ### Strategy domain: hard fail
 
-`/api/v1/strategy/backtests/{backtest_id}/attribution` should hard-fail if required benchmark, factor, or industry snapshots are unavailable or incomplete.
+`/api/v1/backtest/{backtest_id}/attribution` should hard-fail if required benchmark, factor, or industry snapshots are unavailable or incomplete.
 
 Rationale:
 
@@ -322,7 +401,7 @@ Rationale:
 
 ### Trade domain, current snapshot: stale degradation allowed
 
-`GET /api/v1/trade/portfolio/attribution` without `date` may return a degraded but explicit stale result when current supporting snapshots are late.
+`GET /api/v1/positions/attribution` without `date` may return a degraded but explicit stale result when current supporting snapshots are late.
 
 The response should include, at minimum:
 
@@ -333,7 +412,7 @@ The frontend should display a prominent warning that the attribution result is b
 
 ### Trade domain, historical snapshot: hard fail
 
-`GET /api/v1/trade/portfolio/attribution?date=YYYY-MM-DD` should hard-fail if the required historical benchmark, factor, or industry snapshots are missing or incomplete.
+`GET /api/v1/positions/attribution?date=YYYY-MM-DD` should hard-fail if the required historical benchmark, factor, or industry snapshots are missing or incomplete.
 
 Rationale:
 
@@ -362,13 +441,14 @@ Validate:
   - current trade snapshot stale degradation
   - historical trade snapshot hard failure
   - strategy snapshot hard failure
+  - current trade snapshot freshness threshold violation returning the documented stale/error semantics
 
 ### Backend contract tests
 
 Validate:
 
-- `GET /api/v1/strategy/backtests/{backtest_id}/attribution`
-- `GET /api/v1/trade/portfolio/attribution`
+- `GET /api/v1/backtest/{backtest_id}/attribution`
+- `GET /api/v1/positions/attribution`
 
 Tests should lock:
 
@@ -401,7 +481,7 @@ At minimum:
 
 ### FUNCTION_TREE
 
-`3.3 归因分析` may move from `🚧` to `✅` only when all of the following are true:
+the `归因分析` row under `3.3 回测分析` may move from `🚧` to `✅` only when all of the following are true:
 
 - strategy domain can attribute selected backtest-result snapshots
 - trade domain can attribute both:
@@ -428,13 +508,34 @@ The change should affect at least:
 The recommended implementation sequence is:
 
 1. Create the OpenSpec change.
+   - recommended change id: `add-portfolio-attribution-analysis`
 2. Define shared snapshot models and shared attribution engine contracts.
+   - primary targets:
+     - `web/backend/app/services/attribution/engine.py`
+     - `web/backend/app/services/attribution/models.py`
 3. Implement the strategy-domain adapter and route.
+   - primary targets:
+     - `web/backend/app/services/attribution/adapters/backtest_snapshot.py`
+     - `web/backend/app/api/v1/analysis/backtest.py`
 4. Implement the trade-domain adapter and route.
-5. Add the shared frontend attribution component skeleton.
-6. Wire the strategy/backtest shell.
-7. Wire the trade/portfolio shell.
-8. Run backend, frontend, and smoke verification.
-9. Update `FUNCTION_TREE` and archive the OpenSpec change after closure.
+   - primary targets:
+     - `web/backend/app/services/attribution/adapters/trade_portfolio_snapshot.py`
+     - `web/backend/app/api/v1/trading/positions.py`
+5. Align the legacy business-data compatibility surface.
+   - primary targets:
+     - `src/interfaces/business_data_source.py`
+     - `src/data_sources/real/composite_business.py`
+     - `src/data_sources/mock/business_mock.py`
+6. Add the shared frontend attribution component skeleton.
+   - primary targets:
+     - shared attribution components under `web/frontend/src/components/` or a shared domain-local attribution component folder
+7. Wire the strategy/backtest shell.
+   - primary target:
+     - `web/frontend/src/views/strategy/Backtest.vue`
+8. Wire the trade/portfolio shell.
+   - primary target:
+     - `web/frontend/src/views/trade/Portfolio.vue`
+9. Run backend, frontend, and smoke verification.
+10. Update `FUNCTION_TREE` and archive the OpenSpec change after closure.
 
 This order keeps the truth source stable before wiring UI shells and avoids building two separate page implementations over an unsettled attribution contract.
