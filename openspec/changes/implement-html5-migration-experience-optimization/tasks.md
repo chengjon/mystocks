@@ -305,7 +305,13 @@
 ## Success Metrics & Validation
 
 ### Functional Validation
-- [ ] ✅ 7个业务域菜单完整实现并正常工作 (提案原文为6域)
+- [x] ✅ 7个业务域菜单完整实现并正常工作 (提案原文为6域)
+  - Repo-truth closeout（2026-05-08）: 当前 canonical 菜单 SSOT 已固定为 `web/frontend/src/layouts/MenuConfig.ts` 中的 7 个业务域：`Market / Data / Watchlist / Strategy / Trade / Risk / System`。
+  - 活跃路由组仍由 `web/frontend/src/router/index.ts` 对齐承接；当前 route-level 回归已再次实测：
+    - `cd web/frontend && env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/artdeco-config-integration.spec.ts tests/e2e/critical/menu-navigation-fixed.spec.ts`
+    - 结果为 `8 passed`
+  - 其中 `artdeco-config-integration.spec.ts` 已覆盖关键 route shells、nested routes、redirects、domain entry routes 与关键 console error 检查；`menu-navigation-fixed.spec.ts` 已覆盖 dashboard shell、侧边栏菜单跳转到 `/market/realtime` 和关键 API 失败时的可用性保持。
+  - 因此这条功能成功指标现可按当前 repo-local 真实验证闭合。
 - [ ] ✅ PWA可安装和离线功能正常
 - [ ] ✅ IndexedDB数据存储和检索正常
 - [ ] ✅ Web Workers性能提升量化验证
