@@ -273,7 +273,12 @@
 > - Service Worker / manifest / IndexedDB / worker 协议与 manager 当前都已有真实运行时代码面
 > - `vite-plugin-pwa` 仍禁用，`manifest` 截图资源缺失，多个 Playwright spec 显式 `serviceWorkers: 'block'`
 > 因此开发文档已更新，但 `2.1.x / 3.2.x / 3.3.x` 的 PWA 完整验收和部署链路仍继续保持未闭合。
-- [ ] 3.4.2 创建用户指南 (PWA安装/离线使用/通知设置)
+- [x] 3.4.2 创建用户指南 (PWA安装/离线使用/通知设置)
+> 已由 `docs/guides/frontend/HTML5_RUNTIME_USER_GUIDE.md` 回写 current-state 用户说明，明确：
+> - 当前 PWA 安装体验属于“基础安装面已存在”，但不是完整产品化验收闭环
+> - 当前离线使用属于 best-effort cache / fallback，不等价于核心业务全离线可用
+> - 当前通知偏好契约与前端预留能力已存在，但活跃 `system/Settings.vue` 尚未暴露完整通知偏好表单
+> 因此“用户指南”已具备 current-state supporting guide，但 `2.5.x / 3.2.x / 3.3.x` 等能力闭环任务仍继续保持未完成。
 - [x] 3.4.3 准备运维文档 (监控指标/故障排查)
 > 已由 `docs/guides/frontend/HTML5_RUNTIME_OPERATIONS_GUIDE.md` 回写当前 repo-truth 运维入口，明确了：
 > - PWA / Service Worker / IndexedDB / Web Workers 当前可观察的 runtime surface
