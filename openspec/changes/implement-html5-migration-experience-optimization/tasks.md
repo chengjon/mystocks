@@ -44,8 +44,19 @@
 > - `web/frontend/src/components/monitoring/MonitoringDataTable.vue`
 >   仍直接从 `@ant-design/icons-vue` 导入图标
 > 因此 1.2.1-1.2.5 继续保持未完成，避免把“主界面已大体迁移到 Element Plus + ArtDeco”误写成“依赖冲突已清理完毕”。
+> 2026-05-07 repo-truth 更新：
+> - 审计已确认 `ant-design-vue` 本体已经不在 `web/frontend/package.json` 的 runtime `dependencies` 中，当前残留的是 icon bridge `@ant-design/icons-vue`
+> - `rg -n "@ant-design/icons-vue|ant-design-vue" web/frontend/src web/frontend/tests web/frontend/package.json` 当前命中表明，活跃源码里的残留导入集中在：
+>   - `web/frontend/src/views/monitoring/composables/useRiskDashboard.ts`
+>   - `web/frontend/src/components/monitoring/MonitoringAlertPanel.vue`
+>   - `web/frontend/src/components/monitoring/MonitoringDataTable.vue`
+> - 现有 `web/frontend/tests/unit/components/ant-design-migration.spec.ts` 已实测 `3 passed`，并直接守护：
+>   - `ant-design-vue` 运行时不可用
+>   - `element-plus` 与 `@element-plus/icons-vue` 仍在
+>   - `@ant-design/icons-vue` 仍作为迁移过渡依赖保留
+> - 因此 1.2.1 已可按“审计完成”勾选；但 1.2.2-1.2.5 继续保持未完成，因为真实残留导入与过渡依赖尚未移除。
 
-- [ ] 1.2.1 审计当前依赖使用情况 (Element Plus + Ant Design Vue冲突分析)
+- [x] 1.2.1 审计当前依赖使用情况 (Element Plus + Ant Design Vue冲突分析)
 - [ ] 1.2.2 移除ant-design-vue相关组件 (基于迁移报告的清理策略)
 - [ ] 1.2.3 统一使用Element Plus + ArtDeco组件
 - [ ] 1.2.4 更新构建配置移除冲突 (参考Vite配置优化经验)
