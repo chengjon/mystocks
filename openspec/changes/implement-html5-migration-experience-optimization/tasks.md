@@ -274,7 +274,13 @@
 > - `vite-plugin-pwa` 仍禁用，`manifest` 截图资源缺失，多个 Playwright spec 显式 `serviceWorkers: 'block'`
 > 因此开发文档已更新，但 `2.1.x / 3.2.x / 3.3.x` 的 PWA 完整验收和部署链路仍继续保持未闭合。
 - [ ] 3.4.2 创建用户指南 (PWA安装/离线使用/通知设置)
-- [ ] 3.4.3 准备运维文档 (监控指标/故障排查)
+- [x] 3.4.3 准备运维文档 (监控指标/故障排查)
+> 已由 `docs/guides/frontend/HTML5_RUNTIME_OPERATIONS_GUIDE.md` 回写当前 repo-truth 运维入口，明确了：
+> - PWA / Service Worker / IndexedDB / Web Workers 当前可观察的 runtime surface
+> - 共享 PM2 前端下的最小 reachability 检查命令
+> - 浏览器侧 `Manifest / Service Workers / IndexedDB / Console` 排查路径
+> - 当前不能误写成生产级闭环的边界：`vite-plugin-pwa` 仍禁用、manifest 截图缺失、多个 E2E spec 显式 `serviceWorkers: 'block'`、worker manager 仍是轻量 façade
+> 因此“运维文档”已具备 current-state supporting guide，但 `3.2.x / 3.3.x / 2.9.x` 的验收与监控闭环仍继续保持未完成。
 - [ ] 3.4.4 组织团队培训和技术分享
 
 ## Success Metrics & Validation
