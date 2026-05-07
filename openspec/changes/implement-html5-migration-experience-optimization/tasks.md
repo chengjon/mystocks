@@ -113,7 +113,16 @@
   - Repo-truth：`web/frontend/index.html` 已对 Google Fonts 配置 `preconnect` + `preload as="style"`，形成当前活跃入口的关键资源预加载策略；`src/utils/performance/part-1.ts` 也提供了 `preloadResources()` 辅助能力。
 - [ ] 1.5.3 图片和字体优化 (WebP + 响应式)
 - [x] 1.5.4 缓存策略实施 (学习迁移报告的缓存配置)
-- [ ] 1.5.5 验证首屏时间达到2.5s目标
+- [x] 1.5.5 验证首屏时间达到2.5s目标
+  - Repo-truth closeout（2026-05-08）: `cd web/frontend && npm run test:e2e:lighthouse` 已在当前仓库内实际跑通，构建 `dist-lighthouse` 后对 6 个认证路由执行了 Lighthouse smoke：
+    - `/login`: `FCP 0.4s`, `LCP 0.6s`, `Performance 100`
+    - `/dashboard`: `FCP 0.3s`, `LCP 0.5s`, `Performance 96`
+    - `/market/realtime`: `FCP 0.2s`, `LCP 0.5s`, `Performance 100`
+    - `/strategy/repo`: `FCP 0.2s`, `LCP 0.5s`, `Performance 100`
+    - `/risk/overview`: `FCP 0.2s`, `LCP 0.4s`, `Performance 100`
+    - `/trade/terminal`: `FCP 0.3s`, `LCP 0.5s`, `Performance 100`
+  - 本次 `.lighthouseci/assertion-results.json` 为空数组，说明现行 assertion 没有失败；当前最慢 route 的 `LCP` 也仅 `0.6s`，明显低于 `2.5s` 目标。
+  - 因此 `1.5.5` 现可按 repo-local 真实验证闭合。
 
 ### 1.6 运行时性能优化
 > **局部事实说明（2026-04-28）**:
@@ -304,7 +313,7 @@
 
 ### Performance Validation
 - [ ] ✅ Bundle大小 ≤ 2.5MB (当前3.8MB → 目标)
-- [ ] ✅ 首屏加载时间 ≤ 2.5s (当前~2.8s)
+- [x] ✅ 首屏加载时间 ≤ 2.5s (当前已由 2026-05-08 Lighthouse smoke 验证)
 - [ ] ✅ Lighthouse评分 ≥ 90 (性能/可访问性/PWA)
 - [ ] ✅ 测试覆盖率 ≥ 60% (当前~5%)
 - [ ] ✅ Web Vitals各项指标达标
