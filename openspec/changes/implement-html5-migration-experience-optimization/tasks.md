@@ -331,6 +331,20 @@
 - [ ] ✅ Bundle大小 ≤ 2.5MB (当前3.8MB → 目标)
 - [x] ✅ 首屏加载时间 ≤ 2.5s (当前已由 2026-05-08 Lighthouse smoke 验证)
 - [ ] ✅ Lighthouse评分 ≥ 90 (性能/可访问性/PWA)
+  - Repo-truth blocker（2026-05-08）: 当前 Lighthouse smoke 已能证明若干子项达标，但还不能按这条完整成功指标勾选。
+  - 直接证据来自 `cd web/frontend && npm run test:e2e:lighthouse`，当前 6 个认证路由的类别分数为：
+    - `performance`: `96-100`
+    - `accessibility`: `95-100`
+    - `best-practices`: `96`
+    - `seo`: `82`（当前在 `lighthouserc.cjs` 中显式 `off`）
+    - `pwa`: `N/A`（当前 report 未产出 `categories.pwa`）
+  - 同次运行中 `.lighthouseci/assertion-results.json` 为空数组，说明现行 Lighthouse gate 已通过；但现行 gate 只断言：
+    - `categories:performance`
+    - `categories:accessibility`
+    - `categories:best-practices`
+    - `categories:seo` 明确关闭
+  - 因此当前可以说“现行 Lighthouse smoke 下 performance / accessibility / best-practices 已达到 90+ 水平”，但不能把它扩写成“性能 / 可访问性 / PWA 全部达到 90+”。
+  - 这条成功指标继续保持未完成；后续只有在当前 smoke 明确覆盖 PWA 维度，或任务口径被正式收窄后，才能按 repo-truth 收口。
 - [ ] ✅ 测试覆盖率 ≥ 60% (当前~5%)
 - [ ] ✅ Web Vitals各项指标达标
 
