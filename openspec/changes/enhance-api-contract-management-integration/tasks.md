@@ -32,6 +32,7 @@
 > - 唯一仍位于 `tests/contract/` 的真实 pytest case `test_api_contract_schemathesis.py` 已迁入 `tests/integration/contract/`
 > - `tests/contract/` 当前剩余内容以 support / compatibility module 为主，仍需后续继续拆出 misnamed framework modules，3.2 继续保持未完成
 > - 进一步 blast-radius 核对显示 `tests/contract/models.py` 的上游 fan-out 为 `HIGH`（direct=20），其直接依赖已扩散到 `tests/test_runner.py`、`tests/ai/*`、多个 `scripts/dev/analysis/*` 与部分 `src/algorithms/*`；因此 support-module 收敛不能再作为无审批的小型 rename / move 继续推进，需单独设计 canonical support package 与 compatibility shim 退场顺序
+> - 该顺序与边界现已记录在 `openspec/changes/enhance-api-contract-management-integration/design.md`
 
 - [x] 3.1 Refactor contract tests to use pytest markers
 - [ ] 3.2 Move contract tests from tests/contract/ to main test structure
