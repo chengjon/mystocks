@@ -16,10 +16,11 @@
 6. [`HTML5_RUNTIME_CAPABILITY_GUIDE.md`](./HTML5_RUNTIME_CAPABILITY_GUIDE.md)
 7. [`HTML5_RUNTIME_OPERATIONS_GUIDE.md`](./HTML5_RUNTIME_OPERATIONS_GUIDE.md)
 8. [`HTML5_RUNTIME_USER_GUIDE.md`](./HTML5_RUNTIME_USER_GUIDE.md)
-9. [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
-10. [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
-11. [`css-scss-development-guide.md`](./css-scss-development-guide.md)
-12. 再按需进入 service adapter、routing optimization、dayjs 与其他历史任务/总结材料
+9. [`HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md`](./HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md)
+10. [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
+11. [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
+12. [`css-scss-development-guide.md`](./css-scss-development-guide.md)
+13. 再按需进入 service adapter、routing optimization、dayjs 与其他历史任务/总结材料
 
 ## Active Supporting Guides
 
@@ -39,6 +40,8 @@
   - HTML5 runtime 当前运维观察面、最小检查命令与故障排查入口
 - [`HTML5_RUNTIME_USER_GUIDE.md`](./HTML5_RUNTIME_USER_GUIDE.md)
   - HTML5 runtime 当前用户使用说明：PWA 安装、离线使用与通知设置边界
+- [`HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md`](./HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md)
+  - HTML5 runtime 当前对外沟通、支持 FAQ 与内部培训材料口径
 - [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
   - History mode 部署与故障排查指南
 - [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
