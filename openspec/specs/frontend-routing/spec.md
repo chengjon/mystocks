@@ -181,3 +181,17 @@ The frontend routing system SHALL keep trade navigation labels aligned with the 
 - **THEN** the navigation label for `/trade/reconciliation` SHALL be `对账单`
 - **AND** the navigation label for `/trade/history` SHALL be `交易历史`
 
+### Requirement: System Resource Usage Route
+The frontend routing system SHALL expose a dedicated system resource usage route.
+
+#### Scenario: User navigates to the resource usage route
+- **WHEN** the user opens `/system/resources`
+- **THEN** the router SHALL load the dedicated system resource usage page
+
+### Requirement: System Navigation Labels For Resource Usage
+The frontend routing system SHALL keep system navigation labels aligned with the approved resource usage surface.
+
+#### Scenario: Resource usage label is rendered
+- **WHEN** the frontend renders the active system navigation surfaces
+- **THEN** the navigation label for `/system/resources` SHALL be `资源使用`
+
