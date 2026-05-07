@@ -329,6 +329,14 @@
 
 ### Performance Validation
 - [ ] ✅ Bundle大小 ≤ 2.5MB (当前3.8MB → 目标)
+  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
+  - 直接证据来自 `cd web/frontend && npm run build:no-types`，构建当前已通过，但最新 chunk 体积仍显示主 bundle 压力集中在：
+    - `echarts` `838.76 kB`（gzip `258.95 kB`）
+    - `element-plus` `535.32 kB`（gzip `153.57 kB`）
+    - `vendor` `308.38 kB`（gzip `103.98 kB`）
+    - `vue-core` `107.40 kB`（gzip `40.49 kB`）
+  - 因此当前只能说“bundle 构成分析与现行 build 证据已具备”，不能把它扩写成“总 bundle 已达到 ≤ 2.5MB 目标”。
+  - 这条成功指标继续保持未完成；后续只有在构建输出明确满足目标，或任务口径被正式调整后，才能按 repo-truth 收口。
 - [x] ✅ 首屏加载时间 ≤ 2.5s (当前已由 2026-05-08 Lighthouse smoke 验证)
 - [ ] ✅ Lighthouse评分 ≥ 90 (性能/可访问性/PWA)
   - Repo-truth blocker（2026-05-08）: 当前 Lighthouse smoke 已能证明若干子项达标，但还不能按这条完整成功指标勾选。
