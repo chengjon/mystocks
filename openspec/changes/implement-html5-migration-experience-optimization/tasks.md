@@ -59,7 +59,13 @@
 - [ ] 1.3.5 建立测试覆盖率基线 (目标60%)
 
 ### 1.4 Bundle大小优化
-- [ ] 1.4.1 分析当前3.8MB Bundle构成 (vue-framework + echarts + vendor)
+- [x] 1.4.1 分析当前3.8MB Bundle构成 (vue-framework + echarts + vendor)
+  - Repo-truth closeout（2026-05-07）: 当前 Vite `build:no-types` 的 bundle 结构已经重新测量，主体仍由 `echarts`、`element-plus`、`vendor`、`vue-core` 构成。最新构建输出显示：
+    - `echarts` chunk 838.76 kB（gzip 258.95 kB）
+    - `element-plus` chunk 535.32 kB（gzip 153.57 kB）
+    - `vendor` chunk 308.38 kB（gzip 103.98 kB）
+    - `vue-core` chunk 107.40 kB（gzip 40.49 kB）
+  - 这说明当前 bundle 仍处于“分析已完成、优化余量仍显著”的状态；`1.4.5` 继续保持未完成，因为 2.5MB 目标尚未达成。
 - [x] 1.4.2 实施精确的分包策略 (基于实际构建数据的优化)
 - [ ] 1.4.3 移除未使用的依赖和死代码
 - [x] 1.4.4 优化ECharts按需引入
