@@ -346,6 +346,14 @@
   - 因此当前可以说“现行 Lighthouse smoke 下 performance / accessibility / best-practices 已达到 90+ 水平”，但不能把它扩写成“性能 / 可访问性 / PWA 全部达到 90+”。
   - 这条成功指标继续保持未完成；后续只有在当前 smoke 明确覆盖 PWA 维度，或任务口径被正式收窄后，才能按 repo-truth 收口。
 - [ ] ✅ 测试覆盖率 ≥ 60% (当前~5%)
+  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
+  - 直接证据来自 `cd web/frontend && npm run test:coverage`：命令当前以退出码 `1` 结束，且未生成 `web/frontend/coverage/` 目录，因此“覆盖率基线已建立并达到目标”这一前提本身尚未成立。
+  - 同次实测汇总为 `293 passed / 3 failed`、测试用例 `1173 passed / 3 failed`；阻塞项均是既有无关红测，而非本条线新增实现：
+    - `MarketKLineTab.spec.ts` 仍断言 `period: "daily"`，但当前真实调用参数已是 `"1d"`
+    - `comprehensive-e2e-route-coverage.spec.ts` 仍断言 routed page inventory 为 `35`，当前已是 `36`
+    - `ci-workflow-gates.spec.ts` 仍断言 workflow 文本包含 `validate_runtime_observability_drift.py`，当前链路实际调用的是 `bash scripts/run_runtime_observability_drift_gate.sh`
+  - 因此当前只能说“覆盖率全量 gate 尚未稳定转绿”；不能把它扩写成“覆盖率 ≥ 60% 已验证达成”。
+  - 这条成功指标继续保持未完成；后续只有在覆盖率全量运行真正产出 report，或另行批准“按稳定子集建立覆盖率基线”的新口径后，才能按 repo-truth 收口。
 - [ ] ✅ Web Vitals各项指标达标
 
 ### User Experience Validation
