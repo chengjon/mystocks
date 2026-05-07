@@ -13,10 +13,11 @@
 3. [`DASHBOARD_API_INTEGRATION_GUIDE.md`](./DASHBOARD_API_INTEGRATION_GUIDE.md)
 4. [`pinia-api-standardization-guide.md`](./pinia-api-standardization-guide.md)
 5. [`DASHBOARD_API_ENRICHMENT_GUIDE.md`](./DASHBOARD_API_ENRICHMENT_GUIDE.md)
-6. [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
-7. [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
-8. [`css-scss-development-guide.md`](./css-scss-development-guide.md)
-9. 再按需进入 service adapter、routing optimization、dayjs 与其他历史任务/总结材料
+6. [`HTML5_RUNTIME_CAPABILITY_GUIDE.md`](./HTML5_RUNTIME_CAPABILITY_GUIDE.md)
+7. [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
+8. [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
+9. [`css-scss-development-guide.md`](./css-scss-development-guide.md)
+10. 再按需进入 service adapter、routing optimization、dayjs 与其他历史任务/总结材料
 
 ## Active Supporting Guides
 
@@ -30,6 +31,8 @@
   - Pinia API 标准化模式、迁移步骤与验证要求
 - [`DASHBOARD_API_ENRICHMENT_GUIDE.md`](./DASHBOARD_API_ENRICHMENT_GUIDE.md)
   - Dashboard API 丰富化说明
+- [`HTML5_RUNTIME_CAPABILITY_GUIDE.md`](./HTML5_RUNTIME_CAPABILITY_GUIDE.md)
+  - HTML5 runtime 当前能力面：PWA/IndexedDB/Web Workers 真相源与边界说明
 - [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
   - History mode 部署与故障排查指南
 - [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)

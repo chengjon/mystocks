@@ -259,7 +259,12 @@
 - [ ] 3.3.4 准备用户沟通和培训材料
 
 ### 3.4 文档和培训
-- [ ] 3.4.1 更新开发文档 (PWA配置/IndexedDB使用/Web Workers)
+- [x] 3.4.1 更新开发文档 (PWA配置/IndexedDB使用/Web Workers)
+> 已由 `docs/guides/frontend/HTML5_RUNTIME_CAPABILITY_GUIDE.md` 和 `docs/guides/frontend/INDEX.md` 回写当前 repo-truth：
+> - 浏览器入口是 `index.html -> src/main-standard.ts`
+> - Service Worker / manifest / IndexedDB / worker 协议与 manager 当前都已有真实运行时代码面
+> - `vite-plugin-pwa` 仍禁用，`manifest` 截图资源缺失，多个 Playwright spec 显式 `serviceWorkers: 'block'`
+> 因此开发文档已更新，但 `2.1.x / 3.2.x / 3.3.x` 的 PWA 完整验收和部署链路仍继续保持未闭合。
 - [ ] 3.4.2 创建用户指南 (PWA安装/离线使用/通知设置)
 - [ ] 3.4.3 准备运维文档 (监控指标/故障排查)
 - [ ] 3.4.4 组织团队培训和技术分享
