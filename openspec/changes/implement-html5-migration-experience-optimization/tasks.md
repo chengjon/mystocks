@@ -57,6 +57,13 @@
 - [x] 1.3.3 实现E2E自动化测试 (参考迁移报告的部署验证)
 - [x] 1.3.4 配置CI/CD测试流水线
 - [ ] 1.3.5 建立测试覆盖率基线 (目标60%)
+  - Repo-truth blocker（2026-05-07）: `cd web/frontend && npm run test:coverage` 当前未能产出覆盖率报告，命令以退出码 `1` 结束，且未生成 `web/frontend/coverage/` 目录，因此“覆盖率基线已建立”不能按当前事实勾选。
+  - 本次实测汇总：`296` 个测试文件中 `293 passed / 3 failed`，测试用例 `1173 passed / 3 failed`。
+  - 当前阻塞失败均为既有无关红测，而非本批新增实现：
+    - `src/views/artdeco-pages/market-tabs/__tests__/MarketKLineTab.spec.ts` 仍断言 `period: "daily"`，但当前真实调用参数已是 `period: "1d"`。
+    - `tests/unit/config/comprehensive-e2e-route-coverage.spec.ts` 仍断言 routed page inventory 为 `35`，但当前清单已增长到 `36`。
+    - `tests/unit/workflows/ci-workflow-gates.spec.ts` 仍断言 workflow 文本包含 `validate_runtime_observability_drift.py`，但当前链路实际调用的是 `bash scripts/run_runtime_observability_drift_gate.sh`。
+  - 因此 1.3.5 继续保持未完成；后续只有在覆盖率全量运行转绿并真正产出 report，或另行批准“按稳定子集建立基线”的新口径后，才能收口。
 
 ### 1.4 Bundle大小优化
 - [x] 1.4.1 分析当前3.8MB Bundle构成 (vue-framework + echarts + vendor)
