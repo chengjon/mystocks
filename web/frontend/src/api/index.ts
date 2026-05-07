@@ -224,6 +224,8 @@ export const monitoringApi = {
   // Existing methods
   getSystemHealth: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/health'),
   getDetailedSystemHealth: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/health/detailed'),
+  getSystemResources: (params: Record<string, unknown>): Promise<UnifiedResponse<unknown>> =>
+    apiClient.get('/v1/system/resources', { params }),
   getSystemGeneralSettings: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/v1/system/settings/general'),
   updateSystemGeneralSettings: (data: Record<string, unknown>): Promise<UnifiedResponse<unknown>> =>
     apiClient.post('/v1/system/settings/general', data),

@@ -287,6 +287,12 @@ const routes: RouteRecordRaw[] = [
             meta: { title: 'API 终端', requiresAuth: true, api: '/api/health' }
           },
           {
+            path: 'resources',
+            name: 'system-resources',
+            component: () => import('@/views/system/Resources.vue'),
+            meta: { title: '资源使用', requiresAuth: true, api: '/api/v1/system/resources' }
+          },
+          {
             path: 'data',
             name: 'system-data',
             component: () => import('@/views/system/DataSource.vue'),

@@ -323,6 +323,15 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     component: 'API.vue',
     requiresAuth: true,
   },
+  'system-resources': {
+    type: 'page',
+    routePath: 'resources',
+    title: '资源使用',
+    description: '资源使用',
+    apiEndpoint: '/api/v1/system/resources',
+    component: 'Resources.vue',
+    requiresAuth: true,
+  },
   'system-data': {
     type: 'page',
     routePath: 'data',

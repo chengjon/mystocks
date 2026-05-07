@@ -25,5 +25,6 @@
 - [x] 4.2 Run targeted frontend unit tests and lint checks.
 - [x] 4.3 Run at least one page-level E2E or smoke verification for `/system/resources`.
 - [x] 4.4 Update `docs/FUNCTION_TREE.md` to close `6.1 资源使用` only if the independent page, unified contract, and verification evidence are complete.
-- [ ] 4.5 Commit the implementation in focused batches.
+- [x] 4.5 Commit the implementation in focused batches.
+  - [x] Repo-truth（2026-05-07）：这条 change 的实现已按 focused batches 收口，而不是单次大提交。后端 unified contract / aggregation / route / backend tests 已由 `86f0f7514` `feat(system): add resource usage backend contract` 落地；当前 batch 补齐并提交剩余的前端 `/system/resources` 路由入口与 `Resources.vue` 工作台、前端 targeted tests、`monitoringApi` 资源契约接线，以及 `docs/FUNCTION_TREE.md` 中 `6.1 资源使用` 的闭环更新。验证命令为 `pytest web/backend/tests/test_system_resource_metrics_service.py web/backend/tests/test_system_resources_route.py -q --no-cov`、`cd web/frontend && npm run test -- src/api/__tests__/monitoringApi.spec.ts src/views/system/__tests__/Resources.spec.ts`、`cd web/frontend && env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/system-resources.spec.ts`，均已通过。
 - [ ] 4.6 Archive `add-system-resource-usage-monitoring` after the implementation and validations are complete.

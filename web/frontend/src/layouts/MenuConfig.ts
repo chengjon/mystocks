@@ -146,6 +146,7 @@ const SYSTEM_DOMAIN: MenuItem = {
     { path: '/system/config', label: '系统配置', icon: ARTDECO_ICONS.SYSTEM, businessKey: 'system.config' },
     { path: '/system/health', label: '健康矩阵', icon: ARTDECO_ICONS.HEALTH, businessKey: 'system.health' },
     { path: '/system/api', label: 'API 终端', icon: 'APIHealth', businessKey: 'system.api' },
+    { path: '/system/resources', label: '资源使用', icon: 'Monitor', businessKey: 'system.resources' },
     { path: '/system/data', label: '数据源管理', icon: 'DataUpdate', businessKey: 'system.datasource' }
   ]
 }

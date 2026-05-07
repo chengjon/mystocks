@@ -353,7 +353,7 @@ Q2 closure note:
 |--------|------|----------|------|
 | 性能监控 | ✅ | `web/frontend/src/views/system/Settings.vue`, `web/frontend/src/views/system/API.vue` | 当前主事实是 API 性能表、健康探针与遥测面板 |
 | 服务状态 | ✅ | `web/frontend/src/views/system/API.vue`, `web/frontend/src/views/monitor.vue` | 已有后端健康、中间件状态与前后端/数据库连通性检查 |
-| 资源使用 | 🚧 | `web/frontend/src/views/system/API.vue` | 当前仍以服务健康和中间件遥测为主，未见独立 CPU/内存/磁盘面板闭环 |
+| 资源使用 | ✅ | `web/frontend/src/views/system/Resources.vue`, `web/backend/app/api/v1/system/resources.py` | 已形成独立资源使用工作台，提供 host / process / dependency 快照、短窗口趋势、阈值状态与轮询控制 |
 
 ### 6.2 数据质量 {#domain-06-node-02}
 

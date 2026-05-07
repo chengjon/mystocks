@@ -31,4 +31,12 @@ describe('monitoringApi data source config endpoints', () => {
 
     expect(apiGetMock).toHaveBeenCalledWith('/v1/data-sources/config/')
   })
+
+  it('uses the dedicated v1 system resources contract for the resource usage workbench', async () => {
+    await monitoringApi.getSystemResources({ window_minutes: 60, include_processes: true })
+
+    expect(apiGetMock).toHaveBeenCalledWith('/v1/system/resources', {
+      params: { window_minutes: 60, include_processes: true },
+    })
+  })
 })
