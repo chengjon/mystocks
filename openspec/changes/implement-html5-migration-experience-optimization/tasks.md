@@ -235,6 +235,9 @@
 > 因此本节中偏移动端或与桌面主线无直接关系的 HTML5 API 目标，不再应被当作当前 change 的正向交付目标推进。
 > 当前仓库里唯一仍可直接确认的相关活跃能力，是 `web/frontend/src/composables/useNetworkStatus.ts` 对 `navigator.onLine` 与 `navigator.connection?.effectiveType` 的局部读取；它服务于桌面端网络状态感知，不等于整组 2.7.x APIs 已进入交付范围。
 > 后续若继续治理本节，默认方向应是：将移动端专属/无关能力去作用域、标记为历史伸展项，或在 scope 正式改写后再决定是否保留。
+> 当前建议的 repo-truth 理解：
+> - `2.7.1`、`2.7.2`、`2.7.3`、`2.7.5` 属于已去作用域的历史伸展项
+> - `2.7.4` 当前只有局部网络状态感知实现，不再作为独立 feature 交付目标追踪
 
 - [ ] 2.7.1 Add Geolocation API for location-based features (附近券商/市场分析)
 - [ ] 2.7.2 Implement Vibration API for haptic feedback (交易确认/告警通知)
@@ -366,19 +369,14 @@
   - 另外 `2.4.2`（K线数据处理 Worker 主链路）、`2.4.5`（错误处理与生命周期管理）和 `3.2.4`（测试Web Workers性能提升量化）都仍未闭合，也与这条成功指标当前不能收口相互印证。
   - 因此这条成功指标继续保持未完成；后续只有在现行主链路上拿到真实 worker 编排与量化收益证据，或任务口径被正式收窄后，才能按 repo-truth 收口。
 - [ ] ✅ HTML5 APIs在支持浏览器中正常工作
-  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
-  - 当前 `2.7.1` 到 `2.7.5` 仍全部未闭合，说明这组扩展 HTML5 APIs 并未形成已验收的实现集合。
+  - Repo-truth de-scope（2026-05-08）: 在 **Desktop-only** 产品口径下，这条成功指标不再应被视为当前 change 的正向交付目标。
   - 现行仓库里唯一能直接确认的局部能力是 `web/frontend/src/composables/useNetworkStatus.ts`：
     - 读取 `navigator.onLine`
     - 读取 `navigator.connection?.effectiveType` / `mozConnection` / `webkitConnection`
     - 监听 `online` / `offline` / `connection change`
-  - 但这只构成 `Network Information API` 的局部使用面，并不等于：
-    - `Geolocation API` 已接入
-    - `Vibration API` 已接入
-    - `Battery API` 已接入
-    - `Device Orientation API` 已接入
-  - 当前代码检索未发现 `navigator.geolocation`、`navigator.vibrate(...)`、`navigator.getBattery(...)` 或 `deviceorientation` 的活跃业务实现，因此不能把局部网络状态能力扩写成“HTML5 APIs 在支持浏览器中正常工作”。
-  - 因此这条成功指标继续保持未完成；后续只有在 2.7.x 目标能力得到真实实现与验证，或任务口径被正式收窄后，才能按 repo-truth 收口。
+  - 这只构成桌面端网络状态感知的一部分，不等于整组扩展 HTML5 APIs 已进入当前交付范围。
+  - 当前代码检索仍未发现 `navigator.geolocation`、`navigator.vibrate(...)`、`navigator.getBattery(...)` 或 `deviceorientation` 的活跃业务实现；这些能力在现 scope 下应理解为已去作用域，而不是待完成桌面端目标。
+  - 因此这条指标当前更准确的语义应是“已去作用域的历史伸展目标”；只有在 scope 被正式改写、重新纳入这组 APIs 后，才应恢复为交付指标。
 
 ### Performance Validation
 - [ ] ✅ Bundle大小 ≤ 2.5MB (当前3.8MB → 目标)
