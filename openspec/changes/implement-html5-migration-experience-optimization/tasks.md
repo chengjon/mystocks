@@ -239,11 +239,11 @@
 > - `2.7.1`、`2.7.2`、`2.7.3`、`2.7.5` 属于已去作用域的历史伸展项
 > - `2.7.4` 当前只有局部网络状态感知实现，不再作为独立 feature 交付目标追踪
 
-- [ ] 2.7.1 Add Geolocation API for location-based features (附近券商/市场分析)
-- [ ] 2.7.2 Implement Vibration API for haptic feedback (交易确认/告警通知)
-- [ ] 2.7.3 Add Battery API for power-aware optimizations (低电量模式)
-- [ ] 2.7.4 Implement Network Information API for adaptive loading (网络质量自适应)
-- [ ] 2.7.5 Add Device Orientation API support (移动端图表交互)
+- [x] 2.7.1 Add Geolocation API for location-based features (附近券商/市场分析) `[DE-SCOPED: Desktop-only]`
+- [x] 2.7.2 Implement Vibration API for haptic feedback (交易确认/告警通知) `[DE-SCOPED: Desktop-only]`
+- [x] 2.7.3 Add Battery API for power-aware optimizations (低电量模式) `[DE-SCOPED: Desktop-only]`
+- [x] 2.7.4 Implement Network Information API for adaptive loading (网络质量自适应) `[DE-SCOPED: not tracked as standalone Desktop feature]`
+- [x] 2.7.5 Add Device Orientation API support (移动端图表交互) `[DE-SCOPED: Desktop-only]`
 
 ### 2.8 Accessibility Enhancements
 > **局部事实说明（2026-04-28）**:
@@ -368,7 +368,7 @@
   - 当前最直接的测试证据 `cd web/frontend && npm run test -- tests/unit/config/indicator-worker-types-cleanup.spec.ts` 也只证明 worker 文件没有退化回 `@ts-nocheck`（`1 passed`），并不能提供任何性能量化结果。
   - 另外 `2.4.2`（K线数据处理 Worker 主链路）、`2.4.5`（错误处理与生命周期管理）和 `3.2.4`（测试Web Workers性能提升量化）都仍未闭合，也与这条成功指标当前不能收口相互印证。
   - 因此这条成功指标继续保持未完成；后续只有在现行主链路上拿到真实 worker 编排与量化收益证据，或任务口径被正式收窄后，才能按 repo-truth 收口。
-- [ ] ✅ HTML5 APIs在支持浏览器中正常工作
+- [x] ✅ HTML5 APIs在支持浏览器中正常工作 `[DE-SCOPED: Desktop-only scope]`
   - Repo-truth de-scope（2026-05-08）: 在 **Desktop-only** 产品口径下，这条成功指标不再应被视为当前 change 的正向交付目标。
   - 现行仓库里唯一能直接确认的局部能力是 `web/frontend/src/composables/useNetworkStatus.ts`：
     - 读取 `navigator.onLine`
@@ -431,7 +431,7 @@
     - 没有 push 订阅 accept/deny 的稳定验收统计
     - 也没有对应的 OpenSpec 子任务闭环可支撑“> 60%”这一业务阈值
   - 因此这条指标继续保持未完成；后续只有在活跃设置入口、通知交互链路和用户采纳度统计三者都形成桌面端闭环后，才能按 repo-truth 收口。
-- [ ] ✅ 移动端响应式体验完善
+- [x] ✅ 移动端响应式体验完善 `[DE-SCOPED: Desktop-only scope]`
   - Repo-truth de-scope（2026-05-08）: 用户已再次确认当前前端产品口径为 **Desktop-only**，因此这条成功指标不再应被视为当前 change 的正向交付目标。
   - 当前仓库的设计系统基础事实仍然偏向桌面端：
     - `web/frontend/src/styles/theme-tokens.scss` 明确写着 `Breakpoints (Desktop-only, no mobile)`
@@ -483,7 +483,7 @@
     - 当前 active change 没有一份按同口径、同路由集、同测试链路保留下来的历史 baseline 可供精确对比
     - 旧文档里虽有 `5s -> 2.5s`、`-34%`、`-50%` 等预估或历史报告，但它们不构成当前 change 的可审计 repo-truth 基线
   - 因此当前更准确的结论是“现行绝对性能达标，但相对提升百分比尚未建立可信基线”；后续只有在补齐可比前后基线后，才能按这条业务影响指标收口。
-- [ ] ✅ 移动端使用率提升 > 40%
+- [x] ✅ 移动端使用率提升 > 40% `[DE-SCOPED: Desktop-only scope]`
   - Repo-truth de-scope（2026-05-08）: 当前前端产品口径为 **Desktop-only**，因此这条业务影响指标不再应被视为当前 change 的有效验收目标。
   - 在桌面端范围内继续保留它，只会误导后续把移动端 adoption 当成必须交付的结果项。
   - 若未来 scope 重新扩展到移动端产品化，再恢复该指标更合理；在当前 repo-truth 下，它应按“已去作用域目标”理解，而非待完成业务 KPI。
