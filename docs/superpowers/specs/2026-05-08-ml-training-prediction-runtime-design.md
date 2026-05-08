@@ -138,6 +138,21 @@ First-batch implementation should explicitly evaluate reuse of:
 
 The shared runtime should consolidate duplicated behavior from the current web-backend surfaces. It should not leave `src/ml_strategy/` and `web/backend/app/services/ml_runtime/` as long-term parallel canonical training engines.
 
+The expected first-batch reuse mode is:
+
+- `src/ml_strategy/feature_engineering.py`
+  - reuse through wrapper/adaptation where possible
+  - this is the preferred lower-level source for rolling feature derivation semantics
+- `src/ml_strategy/price_predictor.py`
+  - do not treat as the canonical web runtime
+  - implementation may mine configuration defaults and artifact conventions from it, but shared runtime should replace it as the active web-facing LightGBM path
+- `src/ml_strategy/ml_strategy.py`
+  - treat as legacy/general strategy-ML helper surface
+  - do not let it remain a second canonical training engine for the web runtime
+- `src/ml_strategy/strategy/ml_strategy_base.py`
+  - strategy shell may reuse or wrap signal interpretation semantics where practical
+  - shared runtime still owns canonical training, registry, and prediction execution
+
 ## Shared Runtime Contract
 
 The shared runtime should live under:
@@ -288,7 +303,11 @@ The first batch may include indicators such as:
 
 Use repo-local financial and fundamentals enrichment surfaces already exposed through the current adapter stack.
 
-Canonical first-batch enrichment surfaces should be named explicitly during implementation, rather than left as generic "adapter stack" references. At minimum this includes the currently available web-backend data access surfaces plus the existing financial/fundamental adapter layer already used elsewhere in the repository.
+The current repo does not expose one clear web-backend canonical financial-snapshot service comparable to `DataService.get_daily_ohlcv(...)`. The first batch should therefore make this explicit instead of deferring it:
+
+- add `web/backend/app/services/ml_runtime/financial_snapshot_source.py` as the canonical backend access surface for financial feature assembly
+- this thin adapter should normalize access to the existing financial/fundamental adapter layer already present in the repository
+- if the implementation cannot identify a single stable upstream adapter surface, that gap must be closed before the runtime is considered complete
 
 The first batch may include features such as:
 
@@ -312,22 +331,18 @@ If the fallback snapshot is materially stale relative to the most recent complet
 
 The first batch should not assume ML training dependencies are already available. Current backend requirements do not explicitly pin the shared-runtime packages required by the existing optional ML surfaces.
 
-The design target is:
+The first batch should hard-require:
 
 - `lightgbm`
   - required for the first-batch canonical regression path
 - `scikit-learn`
   - required for RandomForest and shared metrics
 - `joblib`
-  - recommended for artifact serialization if selected by implementation
-- `xgboost`
-  - optional and dependency-gated in the first batch
+  - required for artifact serialization in the first batch
 
-The implementation plan should explicitly decide:
+These packages must be added to `web/backend/requirements.txt` as part of implementation. The first batch should not leave them as implicit environment assumptions.
 
-- which of these are mandatory for the first-batch runtime
-- how missing optional dependencies are surfaced
-- whether unsupported model families are rejected or hidden from the UI
+`xgboost` is not a required first-batch dependency. It may be treated as a future-batch extension rather than an optional first-batch promise.
 
 ## Training Flow
 
@@ -355,7 +370,6 @@ The first-batch model families should be constrained to classic tabular models a
 
 - `lightgbm`
 - `random_forest`
-- optionally `xgboost` when dependency availability is confirmed
 
 ## Prediction Flow
 
@@ -436,6 +450,24 @@ Output should include:
 - `predicted_price`
 - `confidence`
 - `model_domain`
+
+### Existing generic-endpoint disposition
+
+The current `web/backend/app/api/ml.py` exposes more than the four canonical endpoints above. The first batch must classify them explicitly instead of leaving them orphaned.
+
+| Current endpoint | First-batch status | Notes |
+|---|---|---|
+| `POST /api/ml/features/generate` | keep, route through shared feature-assembly semantics | It overlaps directly with canonical feature preparation and must not drift from shared runtime rules |
+| `GET /api/ml/tdx/stocks/{market}` | keep as auxiliary data-discovery surface | Not part of canonical runtime contract, but may remain as input helper for the workbench |
+| `POST /api/ml/tdx/data` | keep as auxiliary raw-data inspection surface | Not part of canonical runtime contract; should not own training logic |
+| `POST /api/ml/models/train` | canonical | Must route through shared runtime |
+| `POST /api/ml/models/predict` | canonical | Must route through shared runtime |
+| `GET /api/ml/models` | canonical | Must read from shared registry |
+| `GET /api/ml/models/{model_name}` | canonical | Must read from shared registry |
+| `POST /api/ml/models/hyperparameter-search` | out of first-batch canonical closure | May remain legacy/compatibility only or be explicitly deprecated |
+| `POST /api/ml/models/evaluate` | out of first-batch canonical closure | May remain legacy/compatibility only or be explicitly deprecated |
+
+Any endpoint retained outside the canonical closure must be labeled as compatibility or auxiliary surface rather than allowed to evolve into a second training/prediction truth source.
 
 ### Strategy shell
 
