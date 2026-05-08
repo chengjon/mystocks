@@ -35,13 +35,13 @@
 - [`DASHBOARD_API_ENRICHMENT_GUIDE.md`](./DASHBOARD_API_ENRICHMENT_GUIDE.md)
   - Dashboard API 丰富化说明
 - [`HTML5_RUNTIME_CAPABILITY_GUIDE.md`](./HTML5_RUNTIME_CAPABILITY_GUIDE.md)
-  - HTML5 runtime 当前能力面：PWA/IndexedDB/Web Workers 真相源与边界说明
+  - HTML5 runtime 当前能力面：以 Desktop-only 为前提的 PWA/IndexedDB/Web Workers 真相源与边界说明
 - [`HTML5_RUNTIME_OPERATIONS_GUIDE.md`](./HTML5_RUNTIME_OPERATIONS_GUIDE.md)
-  - HTML5 runtime 当前运维观察面、最小检查命令与故障排查入口
+  - HTML5 runtime 当前运维观察面、最小检查命令与故障排查入口（Desktop-only）
 - [`HTML5_RUNTIME_USER_GUIDE.md`](./HTML5_RUNTIME_USER_GUIDE.md)
-  - HTML5 runtime 当前用户使用说明：PWA 安装、离线使用与通知设置边界
+  - HTML5 runtime 当前用户使用说明：以桌面浏览器为范围的 PWA 安装、离线使用与通知设置边界
 - [`HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md`](./HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md)
-  - HTML5 runtime 当前对外沟通、支持 FAQ 与内部培训材料口径
+  - HTML5 runtime 当前对外沟通、支持 FAQ 与内部培训材料口径（Desktop-only）
 - [`history-mode-deployment-guide.md`](./history-mode-deployment-guide.md)
   - History mode 部署与故障排查指南
 - [`SASS_DEPRECATION_FIX.md`](./SASS_DEPRECATION_FIX.md)
