@@ -323,6 +323,19 @@
   - 其中 `artdeco-config-integration.spec.ts` 已覆盖关键 route shells、nested routes、redirects、domain entry routes 与关键 console error 检查；`menu-navigation-fixed.spec.ts` 已覆盖 dashboard shell、侧边栏菜单跳转到 `/market/realtime` 和关键 API 失败时的可用性保持。
   - 因此这条功能成功指标现可按当前 repo-local 真实验证闭合。
 - [ ] ✅ PWA可安装和离线功能正常
+  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
+  - 当前仓库确实已有部分 PWA / offline 代码面：
+    - `web/frontend/index.html` 已挂接 `/manifest.json`
+    - `web/frontend/src/main-standard.ts` 会注册 `/sw.js`
+    - `web/frontend/public/sw.js` 已实现静态资源、导航请求、API 请求的缓存与离线 fallback 逻辑
+    - `web/frontend/public/offline.html` 已存在
+  - 但当前仍有多个未闭合缺口直接阻断“可安装且离线功能正常”的结论：
+    - `2.1.2` 未闭合：`manifest.json` 仍引用缺失的 `screenshots/*` 与 `shortcut-*.png`
+    - `2.1.5` 未闭合：`vite.config.mts` 中 `vite-plugin-pwa` 仍处于禁用状态
+    - `2.2.4` 未闭合：background sync 端到端链路未找到现行前端注册调用
+    - 多个 Playwright spec 仍显式 `serviceWorkers: 'block'`，说明现行主测试口径也没有把 service worker / offline 行为作为稳定验收基线
+  - 因此当前只能说“PWA / offline 基础代码面存在”，不能把它扩写成“PWA 可安装且离线功能正常”。
+  - 这条成功指标继续保持未完成；后续只有在安装资源、构建插件、离线验证链路和相关验收口径真正闭合后，才能按 repo-truth 收口。
 - [ ] ✅ IndexedDB数据存储和检索正常
   - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
   - 当前仓库确实已有活跃代码面：
