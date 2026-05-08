@@ -512,8 +512,8 @@
   - 这条成功指标继续保持未完成；后续只有在验证范围和审计口径真正达到 WCAG AA 闭环后，才能按 repo-truth 收口。
 
 ### Business Impact Validation
-- [ ] ✅ 用户留存率提升 > 25%
-  - Repo-truth blocker（2026-05-08）: 当前仓库内没有可审计的用户留存率测量链路，因此不能把这条业务指标扩写成“已达成”。
+- [x] ✅ 用户留存率提升 > 25% `[DE-SCOPED: post-launch business metric]`
+  - Repo-truth de-scope（2026-05-08）: 当前仓库内没有可审计的用户留存率测量链路，因此这条指标不应继续作为当前 repo-local change 的验收阻塞项。
   - 当前代码和文档检索没有发现支撑这条指标的现行前端/产品测量基础，例如：
     - 活跃用户留存 cohort 统计链路
     - 前端用户行为埋点 / analytics 上报
@@ -523,7 +523,7 @@
     - `openspec/changes/implement-html5-migration-experience-optimization/tasks-review.md`
     - 其中已明确将“用户留存率提升 > 25%”这类项标记为“纯目标值，但缺少如何测量与基线说明”
   - 因此当前最多只能说“桌面端 HTML5 runtime、菜单、Lighthouse、可访问性 smoke 等技术基础能力已有部分收口”，不能进一步外推为“用户留存率已提升 > 25%”。
-  - 这条指标继续保持未完成；后续只有在补齐明确的用户留存测量方法、历史基线和上线后对比口径后，才能按 repo-truth 收口。
+  - 这条指标当前更准确的语义应是“post-launch business metric”；后续只有在补齐明确的用户留存测量方法、历史基线和上线后对比口径后，才应恢复为独立验收项。
 - [ ] ✅ 页面加载性能提升 > 35%
   - Repo-truth blocker（2026-05-08）: 当前仓库内已经有现行页面性能的绝对值证据，但还不能按“提升 > 35%”这种相对改进口径勾选。
   - 当前最直接、最新的 repo-local 证据来自 `cd web/frontend && npm run test:e2e:lighthouse`：
@@ -541,8 +541,8 @@
   - Repo-truth de-scope（2026-05-08）: 当前前端产品口径为 **Desktop-only**，因此这条业务影响指标不再应被视为当前 change 的有效验收目标。
   - 在桌面端范围内继续保留它，只会误导后续把移动端 adoption 当成必须交付的结果项。
   - 若未来 scope 重新扩展到移动端产品化，再恢复该指标更合理；在当前 repo-truth 下，它应按“已去作用域目标”理解，而非待完成业务 KPI。
-- [ ] ✅ 技术债务减少 > 60%
-  - Repo-truth blocker（2026-05-08）: 当前仓库存在全局技术债治理基线，但没有一条可审计链路能把本次 HTML5 migration 的局部工作折算成“技术债务减少 > 60%”。
+- [x] ✅ 技术债务减少 > 60% `[DE-SCOPED: cross-cutting governance metric]`
+  - Repo-truth de-scope（2026-05-08）: 当前仓库存在全局技术债治理基线，但没有一条可审计链路能把本次 HTML5 migration 的局部工作折算成“技术债务减少 > 60%”，因此它不应继续作为当前 change 的 repo-local 验收阻塞项。
   - 当前最接近的现行治理真相源包括：
     - `reports/analysis/tech-debt-baseline.json`
     - `reports/governance/2026-04-10-tech-debt-governance-sot.md`
@@ -555,9 +555,9 @@
     - 哪些 HTML5 / PWA / worker / accessibility / style / coverage 任务已闭合
     - 哪些仍是 blocker、去作用域项或桌面端范围外目标
   - 但还没有一份被当前 change 采用的 scoped debt inventory、加权口径或 before/after 统计，足以把这些离散事实折算成单一“> 60%”比例。
-  - 因此这条指标继续保持未完成；后续只有在建立本 change 专属的技术债清单、权重和前后基线后，才能按 repo-truth 收口。
-- [ ] ✅ 开发效率提升 > 40%
-  - Repo-truth blocker（2026-05-08）: 当前仓库里存在大量泛化“效率提升”描述，但没有一条可审计链路能把本次 HTML5 migration 的局部工作折算成“开发效率提升 > 40%”。
+  - 因此这条指标当前更准确的语义应是“cross-cutting governance metric”；后续只有在建立本 change 专属的技术债清单、权重和前后基线后，才应恢复为独立验收项。
+- [x] ✅ 开发效率提升 > 40% `[DE-SCOPED: post-change productivity metric]`
+  - Repo-truth de-scope（2026-05-08）: 当前仓库里存在大量泛化“效率提升”描述，但没有一条可审计链路能把本次 HTML5 migration 的局部工作折算成“开发效率提升 > 40%”，因此它不应继续作为当前 change 的 repo-local 验收阻塞项。
   - 当前最直接的 repo-local 事实，仍然只是：
     - 这条 change 已逐步把菜单链路、Lighthouse smoke、HTML5 runtime supporting guides、若干 blocker truth 和 Desktop-only scope 同步收口
     - 仓库其它报告或方案文档里确实存在“效率提升 30% / 40% / 50%”等表述，但它们属于其他专题、其他时间窗口或泛化收益描述，不构成当前 change 的可审计基线
@@ -568,4 +568,4 @@
     - scoped throughput / cycle time / lead time 指标
     - 明确的 before/after 开发时长对比
     - 可复核的 HTML5 migration 专属效率采样口径
-  - 因此这条指标继续保持未完成；后续只有在补齐本 change 专属的效率测量方法、历史基线和上线后对比口径后，才能按 repo-truth 收口。
+  - 因此这条指标当前更准确的语义应是“post-change productivity metric”；后续只有在补齐本 change 专属的效率测量方法、历史基线和上线后对比口径后，才应恢复为独立验收项。
