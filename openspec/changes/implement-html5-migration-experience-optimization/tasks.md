@@ -320,6 +320,13 @@
 > - 当前不能误写成生产级闭环的边界：`vite-plugin-pwa` 仍禁用、manifest 截图缺失、多个 E2E spec 显式 `serviceWorkers: 'block'`、worker manager 仍是轻量 façade
 > 因此“运维文档”已具备 current-state supporting guide，但 `3.2.x / 3.3.x / 2.9.x` 的验收与监控闭环仍继续保持未完成。
 - [ ] 3.4.4 组织团队培训和技术分享
+  - Repo-truth blocker（2026-05-08）: 当前仓库里只能证明“沟通/培训材料已准备”，不能证明“实际团队培训和技术分享已经组织完成”。
+  - 当前最直接的 repo-local 事实是：
+    - `docs/guides/frontend/HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md` 明确写着“当前只是沟通与培训材料已准备”，并且在 Closeout Boundary 里说明它**不意味着** `3.4.4` 已完成
+    - 相关 supporting guide 也已完成，但它们都属于材料层，不是培训执行记录
+    - 仓库检索未发现与这条 change 直接绑定的培训纪要、签到、录屏、议程或反馈记录
+  - 因此当前只能说“培训材料已准备”，不能把它扩写成“团队培训和技术分享已经实际组织完成”。
+  - 后续只有在出现可复核的培训执行证据（例如议程、参会记录、分享纪要或录屏）后，才能按 repo-truth 收口。
 
 ## Success Metrics & Validation
 
