@@ -347,6 +347,19 @@
   - 另外 `2.4.2`（K线数据处理 Worker 主链路）、`2.4.5`（错误处理与生命周期管理）和 `3.2.4`（测试Web Workers性能提升量化）都仍未闭合，也与这条成功指标当前不能收口相互印证。
   - 因此这条成功指标继续保持未完成；后续只有在现行主链路上拿到真实 worker 编排与量化收益证据，或任务口径被正式收窄后，才能按 repo-truth 收口。
 - [ ] ✅ HTML5 APIs在支持浏览器中正常工作
+  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
+  - 当前 `2.7.1` 到 `2.7.5` 仍全部未闭合，说明这组扩展 HTML5 APIs 并未形成已验收的实现集合。
+  - 现行仓库里唯一能直接确认的局部能力是 `web/frontend/src/composables/useNetworkStatus.ts`：
+    - 读取 `navigator.onLine`
+    - 读取 `navigator.connection?.effectiveType` / `mozConnection` / `webkitConnection`
+    - 监听 `online` / `offline` / `connection change`
+  - 但这只构成 `Network Information API` 的局部使用面，并不等于：
+    - `Geolocation API` 已接入
+    - `Vibration API` 已接入
+    - `Battery API` 已接入
+    - `Device Orientation API` 已接入
+  - 当前代码检索未发现 `navigator.geolocation`、`navigator.vibrate(...)`、`navigator.getBattery(...)` 或 `deviceorientation` 的活跃业务实现，因此不能把局部网络状态能力扩写成“HTML5 APIs 在支持浏览器中正常工作”。
+  - 因此这条成功指标继续保持未完成；后续只有在 2.7.x 目标能力得到真实实现与验证，或任务口径被正式收窄后，才能按 repo-truth 收口。
 
 ### Performance Validation
 - [ ] ✅ Bundle大小 ≤ 2.5MB (当前3.8MB → 目标)
