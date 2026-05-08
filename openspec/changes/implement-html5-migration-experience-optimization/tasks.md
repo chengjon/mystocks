@@ -417,6 +417,18 @@
 - [ ] ✅ 通知系统用户接受率 > 60%
 - [ ] ✅ 移动端响应式体验完善
 - [ ] ✅ 可访问性WCAG 2.1 AA标准达标
+  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
+  - 当前仓库确实已有局部 accessibility 验证能力：
+    - `web/frontend/package.json` 暴露 `test:e2e:axe`
+    - `web/frontend/tests/e2e/accessibility-smoke.spec.ts` 使用 `@axe-core/playwright`
+    - `cd web/frontend && env PLAYWRIGHT_EXTERNAL_FRONTEND=1 npm run test:e2e:axe` 现已实测 `4 passed`
+  - 但这组现行证据的覆盖范围仍然有限：
+    - 当前只覆盖 `login`、`strategy/repo`、`risk/overview`、`trade/terminal` 四个 smoke 页面
+    - 断言口径只拦截 `serious` / `critical` 级 axe 问题，不等于完整 WCAG 2.1 AA 审核
+    - 现行 repo-truth 仍未发现 WAVE 相关执行链路
+  - 同时 `2.8.1` 到 `2.8.5` 仍全部未闭合，说明语义化元素、ARIA、键盘导航、读屏优化和可访问性工具验证并未形成已验收闭环。
+  - 因此当前只能说“局部 axe accessibility smoke 已通过”，不能把它扩写成“可访问性已达到 WCAG 2.1 AA 标准”。
+  - 这条成功指标继续保持未完成；后续只有在验证范围和审计口径真正达到 WCAG AA 闭环后，才能按 repo-truth 收口。
 
 ### Business Impact Validation
 - [ ] ✅ 用户留存率提升 > 25%
