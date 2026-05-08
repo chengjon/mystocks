@@ -503,3 +503,15 @@
   - 但还没有一份被当前 change 采用的 scoped debt inventory、加权口径或 before/after 统计，足以把这些离散事实折算成单一“> 60%”比例。
   - 因此这条指标继续保持未完成；后续只有在建立本 change 专属的技术债清单、权重和前后基线后，才能按 repo-truth 收口。
 - [ ] ✅ 开发效率提升 > 40%
+  - Repo-truth blocker（2026-05-08）: 当前仓库里存在大量泛化“效率提升”描述，但没有一条可审计链路能把本次 HTML5 migration 的局部工作折算成“开发效率提升 > 40%”。
+  - 当前最直接的 repo-local 事实，仍然只是：
+    - 这条 change 已逐步把菜单链路、Lighthouse smoke、HTML5 runtime supporting guides、若干 blocker truth 和 Desktop-only scope 同步收口
+    - 仓库其它报告或方案文档里确实存在“效率提升 30% / 40% / 50%”等表述，但它们属于其他专题、其他时间窗口或泛化收益描述，不构成当前 change 的可审计基线
+  - 同时，评审材料也已经明确指出这类业务指标缺少 measurement methodology：
+    - `openspec/changes/implement-html5-migration-experience-optimization/tasks-review.md`
+    - 其中把“开发效率提升 > 40%”与留存率、技术债务一起列为缺少测量方法和 baseline 的 aspirational metric
+  - 当前仓库里没有被这条 change 正式采用的：
+    - scoped throughput / cycle time / lead time 指标
+    - 明确的 before/after 开发时长对比
+    - 可复核的 HTML5 migration 专属效率采样口径
+  - 因此这条指标继续保持未完成；后续只有在补齐本 change 专属的效率测量方法、历史基线和上线后对比口径后，才能按 repo-truth 收口。
