@@ -419,6 +419,18 @@
 - [ ] ✅ PWA安装成功率 > 80%
 - [ ] ✅ 离线功能覆盖核心使用场景
 - [ ] ✅ 通知系统用户接受率 > 60%
+  - Repo-truth blocker（2026-05-08）: 当前仓库内只能证明“通知相关契约与部分预留能力存在”，不能把它扩写成“通知系统用户接受率 > 60% 已达成”。
+  - 当前可直接确认的代码面包括：
+    - 后端/接口契约：`/api/notification/preferences`
+    - 前端客户端封装：`web/frontend/src/api/user.ts` 中的 `getNotificationSettings()` / `updateNotificationSettings()` / `subscribeToNotifications()` / `unsubscribeFromNotifications()`
+    - 兼容服务封装：`web/frontend/src/services/TradingApiManager.ts`
+  - 但当前活跃桌面设置页 [web/frontend/src/views/system/Settings.vue](/opt/claude/mystocks_spec/web/frontend/src/views/system/Settings.vue) 只说明该契约存在，并未暴露完整通知偏好表单。
+  - 仓库里虽然保留了 [web/frontend/src/views/artdeco-pages/settings/NotificationSettings.vue](/opt/claude/mystocks_spec/web/frontend/src/views/artdeco-pages/settings/NotificationSettings.vue)，但它当前不构成活跃 routed settings truth，不能当作“普通用户已经在现行设置页中完整使用通知配置”的证据。
+  - 同时，当前 repo-local 也没有发现用户接受率的可审计基线：
+    - 没有通知偏好表单的活跃埋点/采纳率报表
+    - 没有 push 订阅 accept/deny 的稳定验收统计
+    - 也没有对应的 OpenSpec 子任务闭环可支撑“> 60%”这一业务阈值
+  - 因此这条指标继续保持未完成；后续只有在活跃设置入口、通知交互链路和用户采纳度统计三者都形成桌面端闭环后，才能按 repo-truth 收口。
 - [ ] ✅ 移动端响应式体验完善
   - Repo-truth de-scope（2026-05-08）: 用户已再次确认当前前端产品口径为 **Desktop-only**，因此这条成功指标不再应被视为当前 change 的正向交付目标。
   - 当前仓库的设计系统基础事实仍然偏向桌面端：
