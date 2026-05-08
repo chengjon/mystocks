@@ -414,10 +414,41 @@
   - 因此当前只能说“覆盖率全量 gate 尚未稳定转绿”；不能把它扩写成“覆盖率 ≥ 60% 已验证达成”。
   - 这条成功指标继续保持未完成；后续只有在覆盖率全量运行真正产出 report，或另行批准“按稳定子集建立覆盖率基线”的新口径后，才能按 repo-truth 收口。
 - [ ] ✅ Web Vitals各项指标达标
+  - Repo-truth blocker（2026-05-08）: 当前仓库里存在局部 Web Vitals 采集代码面，但还不能把这条成功指标按事实勾选。
+  - 当前最直接的 repo-local 事实包括：
+    - `web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue` 已挂接 `components/common/PerformanceMonitor.vue`
+    - `web/frontend/src/views/system/PerformanceMonitor.vue` 已实现对 `largest-contentful-paint`、`first-input`、`layout-shift` 的 `PerformanceObserver` 监听
+    - 最近一次 `cd web/frontend && npm run test:e2e:lighthouse` 也能提供若干关键路由的 `FCP/LCP` 绝对值
+  - 但这些证据仍不足以扩写成“Web Vitals 各项指标已达标”，因为：
+    - `router/index.ts` 与 `layouts/MenuConfig.ts` 当前没有把 `views/system/PerformanceMonitor.vue` 暴露为活跃路由真相源
+    - 现行 repo-local 验证没有形成一套针对全部核心桌面端路由的 LCP / INP(FID) / CLS 持续验收链路
+    - 当前 change 里也没有可审计的阈值报告，能统一说明所有核心路径已稳定满足目标
+  - 因此当前最多只能说“局部 Web Vitals 采集与 Lighthouse 绝对性能证据存在”，不能把它扩写成“Web Vitals 各项指标达标”。
 
 ### User Experience Validation
 - [ ] ✅ PWA安装成功率 > 80%
+  - Repo-truth blocker（2026-05-08）: 当前仓库里没有可审计的安装成功率测量链路，因此不能把这条用户体验指标扩写成“已达到 > 80%”。
+  - 当前只能确认 PWA 安装面的部分基础代码存在：
+    - `web/frontend/index.html` 已挂接 `/manifest.json`
+    - `web/frontend/src/main-standard.ts` 会注册 `/sw.js`
+    - `web/frontend/public/manifest.json` 已配置应用名称、图标与 shortcuts
+  - 但当前仍缺少支撑“安装成功率”这一比例指标的关键闭环：
+    - `manifest.json` 仍引用缺失的 `screenshots/*` 与 `shortcut-*.png`
+    - `vite-plugin-pwa` 在 `web/frontend/vite.config.mts` 中仍禁用
+    - 当前 repo-local 没有发现针对 `beforeinstallprompt` / `appinstalled` 的活跃埋点统计或成功率报表
+    - `2.9.3 Implement PWA usage metrics (安装率/使用时长)` 仍未闭合
+  - 因此当前只能说“安装相关基础代码面存在”，不能把它扩写成“PWA 安装成功率 > 80% 已达成”。
 - [ ] ✅ 离线功能覆盖核心使用场景
+  - Repo-truth blocker（2026-05-08）: 当前仓库里存在离线 fallback 基础代码，但还不能把这条成功指标按事实勾选。
+  - 当前最直接的 repo-local 事实包括：
+    - `web/frontend/public/sw.js` 已实现静态资源、导航请求和部分 API 请求缓存逻辑
+    - `web/frontend/public/offline.html` 已存在
+    - `web/frontend/src/utils/indexedDB.ts` 与 `web/frontend/src/stores/marketData.ts` 已提供部分本地缓存/降级能力
+  - 但这些证据仍不足以扩写成“离线功能覆盖核心使用场景”，因为：
+    - 多个 Playwright spec 仍显式 `serviceWorkers: 'block'`，说明现行主测试口径没有把离线行为当作稳定验收基线
+    - `2.2.4 Implement background sync for offline actions` 仍未闭合
+    - 当前 repo-local 没有发现一组被当前 change 采用的“核心使用场景离线覆盖矩阵”或端到端离线验收报告
+  - 因此当前更准确的结论是“离线 fallback / cache 基础代码存在，但核心场景离线覆盖尚未形成可审计闭环”；后续只有在核心桌面端业务场景的离线验收真正闭合后，才能按 repo-truth 收口。
 - [ ] ✅ 通知系统用户接受率 > 60%
   - Repo-truth blocker（2026-05-08）: 当前仓库内只能证明“通知相关契约与部分预留能力存在”，不能把它扩写成“通知系统用户接受率 > 60% 已达成”。
   - 当前可直接确认的代码面包括：
