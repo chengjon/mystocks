@@ -488,4 +488,18 @@
   - 在桌面端范围内继续保留它，只会误导后续把移动端 adoption 当成必须交付的结果项。
   - 若未来 scope 重新扩展到移动端产品化，再恢复该指标更合理；在当前 repo-truth 下，它应按“已去作用域目标”理解，而非待完成业务 KPI。
 - [ ] ✅ 技术债务减少 > 60%
+  - Repo-truth blocker（2026-05-08）: 当前仓库存在全局技术债治理基线，但没有一条可审计链路能把本次 HTML5 migration 的局部工作折算成“技术债务减少 > 60%”。
+  - 当前最接近的现行治理真相源包括：
+    - `reports/analysis/tech-debt-baseline.json`
+    - `reports/governance/2026-04-10-tech-debt-governance-sot.md`
+    - 若干 `frontend-runtime-gate` / `runtime-quality-summary` 产物
+  - 但这些工件反映的是全局或运行门禁层面的债务快照，不等于“implement-html5-migration-experience-optimization 这条 change 已完成 60% 的技术债消减”。
+  - 同时，评审材料也已经明确指出这类业务指标缺少 measurement methodology：
+    - `openspec/changes/implement-html5-migration-experience-optimization/tasks-review.md`
+    - 其中把“技术债务减少 > 60%”列为缺少测量基础的 aspirational metric
+  - 当前仓库里虽然能逐条写实：
+    - 哪些 HTML5 / PWA / worker / accessibility / style / coverage 任务已闭合
+    - 哪些仍是 blocker、去作用域项或桌面端范围外目标
+  - 但还没有一份被当前 change 采用的 scoped debt inventory、加权口径或 before/after 统计，足以把这些离散事实折算成单一“> 60%”比例。
+  - 因此这条指标继续保持未完成；后续只有在建立本 change 专属的技术债清单、权重和前后基线后，才能按 repo-truth 收口。
 - [ ] ✅ 开发效率提升 > 40%
