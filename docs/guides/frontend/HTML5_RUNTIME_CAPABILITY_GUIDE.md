@@ -12,6 +12,10 @@
 > 本文档记录 `implement-html5-migration-experience-optimization` 在线仓库中的 HTML5 runtime capability 真相，包括 PWA runtime surface、IndexedDB 使用面和 Web Workers 当前接线。
 > 它是 current-state supporting guide，不等于“PWA/离线/性能目标已全部验收通过”的证明。
 
+> **产品口径说明（2026-05-08）**:
+> 当前前端产品范围以 **Desktop-only** 为准。
+> 因此本文提到的 PWA meta、touch icon、网络状态 API 或其他浏览器能力，只能按“桌面端运行时表面”理解，不能自动扩写成“移动端产品能力正在建设”。
+
 ## Scope
 
 本文只回答三个问题：
@@ -34,6 +38,7 @@
 - [index.html](/opt/claude/mystocks_spec/web/frontend/index.html)
   - 已接入 `manifest.json`
   - 已配置 `theme-color`、Apple mobile web app meta、touch icon 和 `msapplication` meta
+  - 上述 meta 目前仅代表保留的浏览器安装/展示兼容面，不代表移动端产品化范围
 - [main-standard.ts](/opt/claude/mystocks_spec/web/frontend/src/main-standard.ts)
   - 在 `window.load` 后手动注册 `/sw.js`
   - 在检测到 `controllerchange` 时触发页面刷新
@@ -49,6 +54,7 @@
 
 - [vite.config.mts](/opt/claude/mystocks_spec/web/frontend/vite.config.mts) 中 `vite-plugin-pwa` 仍然处于注释禁用状态。
 - 因此当前 PWA 是“手动 manifest + 手动 service worker 注册”模式，不是插件托管的完整构建链路。
+- 同时在 **Desktop-only** 口径下，当前 PWA 能力应理解为“桌面浏览器安装/缓存表面”，而不是移动端优先特性。
 - `manifest.json` 引用的截图资源当前并不完整：
   - `public/screenshots/dashboard.png` 不存在
   - `public/screenshots/analysis.png` 不存在
