@@ -416,6 +416,18 @@
 - [ ] ✅ 离线功能覆盖核心使用场景
 - [ ] ✅ 通知系统用户接受率 > 60%
 - [ ] ✅ 移动端响应式体验完善
+  - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
+  - 当前仓库的设计系统基础事实仍然偏向桌面端：
+    - `web/frontend/src/styles/theme-tokens.scss` 明确写着 `Breakpoints (Desktop-only, no mobile)`
+    - 多个组件/样式文件注释也直接说明“本项目仅支持桌面端，不包含移动端响应式代码”
+  - 虽然仓库里存在部分与响应式相关的代码面：
+    - `web/frontend/src/components/common/ResponsiveSidebar.vue` 支持 `is-mobile`、触摸滑动与 ESC 关闭
+    - 一些页面/样式文件含有 `@media` / `tablet` / `mobile` 适配痕迹
+  - 但现行验证面并不能证明“移动端响应式体验完善”：
+    - `web/frontend/src/tests/navigation-responsive.test.ts` 只是 `expect(true).toBe(true)` 的行为文档式占位测试
+    - 现有响应式/可视化测试更多是在验证桌面、平板布局稳定，而不是完整移动端体验闭环
+  - 因此当前只能说“存在少量响应式辅助实现与布局约束”，不能把它扩写成“移动端响应式体验已完善”。
+  - 这条成功指标继续保持未完成；后续只有在移动端体验真的形成可验证闭环后，才能按 repo-truth 收口。
 - [ ] ✅ 可访问性WCAG 2.1 AA标准达标
   - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
   - 当前仓库确实已有局部 accessibility 验证能力：
