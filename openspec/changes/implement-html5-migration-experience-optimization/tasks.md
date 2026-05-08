@@ -85,16 +85,25 @@
 - [x] 1.3.4 配置CI/CD测试流水线
 - [ ] 1.3.5 建立测试覆盖率基线 (目标60%)
   - Repo-truth blocker（2026-05-07）: `cd web/frontend && npm run test:coverage` 当前未能产出覆盖率报告，命令以退出码 `1` 结束，且未生成 `web/frontend/coverage/` 目录，因此“覆盖率基线已建立”不能按当前事实勾选。
-  - 本次实测汇总：`296` 个测试文件中 `293 passed / 3 failed`，测试用例 `1173 passed / 3 failed`。
-  - 当前阻塞失败均为既有无关红测，而非本批新增实现：
-    - `src/views/artdeco-pages/market-tabs/__tests__/MarketKLineTab.spec.ts` 仍断言 `period: "daily"`，但当前真实调用参数已是 `period: "1d"`。
-    - `tests/unit/config/comprehensive-e2e-route-coverage.spec.ts` 仍断言 routed page inventory 为 `35`，但当前清单已增长到 `36`。
-    - `tests/unit/workflows/ci-workflow-gates.spec.ts` 仍断言 workflow 文本包含 `validate_runtime_observability_drift.py`，但当前链路实际调用的是 `bash scripts/run_runtime_observability_drift_gate.sh`。
-  - 因此 1.3.5 继续保持未完成；后续只有在覆盖率全量运行转绿并真正产出 report，或另行批准“按稳定子集建立基线”的新口径后，才能收口。
+  - 2026-05-08 remediation closeout:
+    - `src/views/artdeco-pages/market-tabs/__tests__/MarketKLineTab.spec.ts` 已从 `period: "daily"` 对齐为当前真实调用参数 `period: "1d"`。
+    - `tests/unit/config/comprehensive-e2e-route-coverage.spec.ts` 已对齐 routed page inventory 为 `37`（login + 36 authenticated routes），不再是当前红测阻塞项。
+    - `tests/unit/workflows/ci-workflow-gates.spec.ts` 已从 `validate_runtime_observability_drift.py` 对齐为当前 workflow 调用的 `bash scripts/run_runtime_observability_drift_gate.sh`。
+  - 定向验证：`cd web/frontend && npm run test -- src/views/artdeco-pages/market-tabs/__tests__/MarketKLineTab.spec.ts tests/unit/config/comprehensive-e2e-route-coverage.spec.ts tests/unit/workflows/ci-workflow-gates.spec.ts` 实测 `3 passed` files / `36 passed` tests。
+  - 完整 coverage 复测：`cd web/frontend && npm run test:coverage` 仍以退出码 `1` 结束，当前汇总为 `337 passed / 7 failed` files、`1222 passed / 8 failed` tests。
+  - 新的真实失败点已经转移到 risk/news wrapper 与 style-normalization 既有门禁：
+    - `src/views/risk/__tests__/News.spec.ts`
+    - `tests/unit/views/risk-wrapper-retention.spec.ts`
+    - `tests/unit/config/monitoring-system-strategy-style-normalization.spec.ts`
+    - `tests/unit/config/root-demo-style-entrypoints.spec.ts`
+    - `tests/unit/config/technical-web3-style-support.spec.ts`
+    - `tests/unit/config/trade-management-style-entrypoint.spec.ts`
+    - `tests/unit/config/trading-style-normalization.spec.ts`
+  - 因此 1.3.5 继续保持未完成；后续只有在新的 8 个失败用例转绿并真正产出 coverage report，或另行批准“按稳定子集建立基线”的新口径后，才能收口。
   - Remediation subtasks:
-    - [ ] 1.3.5a 修正 `MarketKLineTab.spec.ts` 的 `period: "daily"` 断言为当前 `period: "1d"`
-    - [ ] 1.3.5b 修正 `comprehensive-e2e-route-coverage.spec.ts` 的路由数断言为当前 `36`
-    - [ ] 1.3.5c 修正 `ci-workflow-gates.spec.ts` 的 workflow 文本断言为 `bash scripts/run_runtime_observability_drift_gate.sh`
+    - [x] 1.3.5a 修正 `MarketKLineTab.spec.ts` 的 `period: "daily"` 断言为当前 `period: "1d"`
+    - [x] 1.3.5b 修正 `comprehensive-e2e-route-coverage.spec.ts` 的路由数断言为当前 `37`
+    - [x] 1.3.5c 修正 `ci-workflow-gates.spec.ts` 的 workflow 文本断言为 `bash scripts/run_runtime_observability_drift_gate.sh`
 
 ### 1.4 Bundle大小优化
 - [x] 1.4.1 分析当前3.8MB Bundle构成 (vue-framework + echarts + vendor)
@@ -444,10 +453,8 @@
 - [ ] ✅ 测试覆盖率 ≥ 60% (当前~5%)
   - Repo-truth blocker（2026-05-08）: 当前还不能把这条成功指标按事实勾选。
   - 直接证据来自 `cd web/frontend && npm run test:coverage`：命令当前以退出码 `1` 结束，且未生成 `web/frontend/coverage/` 目录，因此“覆盖率基线已建立并达到目标”这一前提本身尚未成立。
-  - 同次实测汇总为 `293 passed / 3 failed`、测试用例 `1173 passed / 3 failed`；阻塞项均是既有无关红测，而非本条线新增实现：
-    - `MarketKLineTab.spec.ts` 仍断言 `period: "daily"`，但当前真实调用参数已是 `"1d"`
-    - `comprehensive-e2e-route-coverage.spec.ts` 仍断言 routed page inventory 为 `35`，当前已是 `36`
-    - `ci-workflow-gates.spec.ts` 仍断言 workflow 文本包含 `validate_runtime_observability_drift.py`，当前链路实际调用的是 `bash scripts/run_runtime_observability_drift_gate.sh`
+  - 2026-05-08 remediation 后复测汇总为 `337 passed / 7 failed` files、`1222 passed / 8 failed` tests；原先记录的 `MarketKLineTab.spec.ts`、`comprehensive-e2e-route-coverage.spec.ts`、`ci-workflow-gates.spec.ts` 三个陈旧断言已经转绿或已对齐。
+  - 当前新的 coverage 阻塞点是 risk/news wrapper 与 style-normalization 既有门禁，尚未进入本批修复范围。
   - 因此当前只能说“覆盖率全量 gate 尚未稳定转绿”；不能把它扩写成“覆盖率 ≥ 60% 已验证达成”。
   - 这条成功指标继续保持未完成；后续只有在覆盖率全量运行真正产出 report，或另行批准“按稳定子集建立覆盖率基线”的新口径后，才能按 repo-truth 收口。
 - [ ] ✅ Web Vitals各项指标达标

@@ -164,7 +164,7 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("build_runtime_quality_summary.py");
     expect(workflowText).toContain("Validate runtime observability drift");
     expect(workflowText).toContain("Rebuild combined runtime quality summary with drift report");
-    expect(workflowText).toContain("validate_runtime_observability_drift.py");
+    expect(workflowText).toContain("bash scripts/run_runtime_observability_drift_gate.sh");
     expect(workflowText).toContain("runtime-observability-baseline.json");
     expect(workflowText).toContain("runtime-observability-drift-report.json");
     expect(workflowText).toContain("--docker-dir");
