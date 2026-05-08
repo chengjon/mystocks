@@ -459,6 +459,17 @@
 
 ### Business Impact Validation
 - [ ] ✅ 用户留存率提升 > 25%
+  - Repo-truth blocker（2026-05-08）: 当前仓库内没有可审计的用户留存率测量链路，因此不能把这条业务指标扩写成“已达成”。
+  - 当前代码和文档检索没有发现支撑这条指标的现行前端/产品测量基础，例如：
+    - 活跃用户留存 cohort 统计链路
+    - 前端用户行为埋点 / analytics 上报
+    - 可复核的 DAU / MAU / 回访率报表
+    - 与本次 HTML5 migration 直接绑定的 before/after retention baseline
+  - 现有最接近的 repo-local 事实，反而是评审材料已经指出这类业务指标缺少 measurement methodology：
+    - `openspec/changes/implement-html5-migration-experience-optimization/tasks-review.md`
+    - 其中已明确将“用户留存率提升 > 25%”这类项标记为“纯目标值，但缺少如何测量与基线说明”
+  - 因此当前最多只能说“桌面端 HTML5 runtime、菜单、Lighthouse、可访问性 smoke 等技术基础能力已有部分收口”，不能进一步外推为“用户留存率已提升 > 25%”。
+  - 这条指标继续保持未完成；后续只有在补齐明确的用户留存测量方法、历史基线和上线后对比口径后，才能按 repo-truth 收口。
 - [ ] ✅ 页面加载性能提升 > 35%
   - Repo-truth blocker（2026-05-08）: 当前仓库内已经有现行页面性能的绝对值证据，但还不能按“提升 > 35%”这种相对改进口径勾选。
   - 当前最直接、最新的 repo-local 证据来自 `cd web/frontend && npm run test:e2e:lighthouse`：
