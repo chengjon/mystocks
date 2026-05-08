@@ -115,6 +115,29 @@ The following existing surfaces are not the future canonical runtime:
 - direct training/prediction logic embedded inside `web/backend/app/api/v1/strategy/machine_learning.py`
 - menu-only `/ml/*` entries without router-backed canonical pages
 
+### Relationship to `src/ml_strategy/`
+
+The repository already contains a substantial lower-level ML package under `src/ml_strategy/`. The first batch must not ignore it and accidentally create a third independent ML stack.
+
+The intended layering is:
+
+- `src/ml_strategy/`
+  - lower-level ML and strategy implementation surface
+  - reusable sources for feature engineering, tabular-model behavior, and strategy-side ML semantics
+- `web/backend/app/services/ml_runtime/`
+  - canonical web-backend orchestration layer
+  - adapts web/API requests into shared runtime jobs
+  - may reuse lower-level functionality from `src/ml_strategy/` where practical
+
+First-batch implementation should explicitly evaluate reuse of:
+
+- `src/ml_strategy/feature_engineering.py`
+- `src/ml_strategy/price_predictor.py`
+- `src/ml_strategy/ml_strategy.py`
+- `src/ml_strategy/strategy/ml_strategy_base.py`
+
+The shared runtime should consolidate duplicated behavior from the current web-backend surfaces. It should not leave `src/ml_strategy/` and `web/backend/app/services/ml_runtime/` as long-term parallel canonical training engines.
+
 ## Shared Runtime Contract
 
 The shared runtime should live under:
@@ -122,6 +145,15 @@ The shared runtime should live under:
 - `web/backend/app/services/ml_runtime/`
 
 and should become the only canonical location for model training and prediction behavior.
+
+Recommended first-batch module split:
+
+- `web/backend/app/services/ml_runtime/feature_assembly.py`
+- `web/backend/app/services/ml_runtime/training.py`
+- `web/backend/app/services/ml_runtime/prediction.py`
+- `web/backend/app/services/ml_runtime/registry.py`
+- `web/backend/app/services/ml_runtime/schemas.py`
+- `web/backend/app/services/ml_runtime/runtime.py`
 
 ### 1. FeatureAssembly
 
@@ -167,7 +199,7 @@ The target is fixed in the first batch:
 
 - `future_1d_return = (close_t+1 - close_t) / close_t`
 
-This target definition intentionally aligns with the repository's interval-return interpretation used elsewhere. The runtime should not switch to log-return semantics in the first batch.
+This target definition intentionally aligns with the repository's general interval-return math used elsewhere, even though `future_1d_return` itself is introduced as a new standardized target in this batch. The runtime should not switch to log-return semantics in the first batch.
 
 If `T+1` is missing, incomplete, or suspended, that sample must be filtered out before training rather than imputed silently.
 
@@ -177,7 +209,6 @@ The model registry is the only truth source for model listing, detail lookup, re
 
 At minimum each record must include:
 
-- `model_id`
 - `model_name`
 - `model_family`
 - `domain`
@@ -194,6 +225,8 @@ At minimum each record must include:
 - `created_at`
 - `extra_metadata`
 
+`model_name` is the first-batch external identifier and should stay aligned with the current generic ML API surface. An internal surrogate key may still exist in persistence storage, but it is not the canonical first-batch API selector.
+
 `feature_schema_signature` should be immutable and derived from feature names, order, type, and missing-value policy. Prediction requests must be validated against it.
 
 `symbol_scope` may represent:
@@ -206,6 +239,12 @@ Prediction should only be allowed for symbols that fall within the model's train
 
 Artifact persistence may use local filesystem paths in the first batch, but the runtime should still expose a deterministic retention policy. The recommended implementation target is to retain only the most recent bounded set of artifacts per domain/model family rather than keep unbounded historical artifacts indefinitely.
 
+Registry persistence should be explicit in the first batch:
+
+- registry rows should be stored in PostgreSQL through the existing SQLAlchemy model stack
+- model artifacts may remain on local filesystem paths in the first batch
+- registry writes and artifact persistence should be treated as one logical operation, with failure handling defined so that partially persisted models do not appear as healthy registry rows
+
 ## Data Source Dependencies
 
 The first batch should not invent a new ML data pipeline. It should assemble features from existing repo-local truth surfaces.
@@ -213,6 +252,11 @@ The first batch should not invent a new ML data pipeline. It should assemble fea
 ### Daily market data
 
 Use the existing daily OHLCV data surfaces already available in the repository.
+
+Canonical first-batch access surface:
+
+- `web/backend/app/services/data_service.py`
+  - `DataService.get_daily_ohlcv(...)`
 
 This data provides:
 
@@ -226,6 +270,12 @@ This data provides:
 
 Use existing indicator and feature-engineering surfaces already present in the repository.
 
+Canonical first-batch reuse targets:
+
+- `src/ml_strategy/feature_engineering.py`
+  - `RollingFeatureGenerator`
+- `web/backend/app/services/feature_engineering_service.py`
+
 The first batch may include indicators such as:
 
 - RSI
@@ -237,6 +287,8 @@ The first batch may include indicators such as:
 ### Financial snapshot features
 
 Use repo-local financial and fundamentals enrichment surfaces already exposed through the current adapter stack.
+
+Canonical first-batch enrichment surfaces should be named explicitly during implementation, rather than left as generic "adapter stack" references. At minimum this includes the currently available web-backend data access surfaces plus the existing financial/fundamental adapter layer already used elsewhere in the repository.
 
 The first batch may include features such as:
 
@@ -256,6 +308,27 @@ For current prediction:
 
 If the fallback snapshot is materially stale relative to the most recent complete trading day, the response should surface explicit freshness metadata instead of silently claiming fully current inference.
 
+## Dependency Requirements
+
+The first batch should not assume ML training dependencies are already available. Current backend requirements do not explicitly pin the shared-runtime packages required by the existing optional ML surfaces.
+
+The design target is:
+
+- `lightgbm`
+  - required for the first-batch canonical regression path
+- `scikit-learn`
+  - required for RandomForest and shared metrics
+- `joblib`
+  - recommended for artifact serialization if selected by implementation
+- `xgboost`
+  - optional and dependency-gated in the first batch
+
+The implementation plan should explicitly decide:
+
+- which of these are mandatory for the first-batch runtime
+- how missing optional dependencies are surfaced
+- whether unsupported model families are rejected or hidden from the UI
+
 ## Training Flow
 
 The first-batch training flow should be fixed as:
@@ -269,6 +342,14 @@ The first-batch training flow should be fixed as:
 7. runtime persists model artifact
 8. runtime writes `ModelRegistryRecord`
 9. runtime returns canonical training result
+
+The first batch should treat training as a synchronous request/response flow for bounded job sizes. Oversized training scopes should be rejected by explicit request guardrails rather than silently turned into long-running blocking HTTP requests.
+
+The implementation plan should define concrete first-batch limits such as:
+
+- maximum symbol-scope breadth for synchronous jobs
+- maximum historical window for synchronous jobs
+- maximum sample-count or feature-table size before the request is rejected
 
 The first-batch model families should be constrained to classic tabular models already compatible with repo-local execution. The implementation plan must lock the exact supported family set based on installed runtime dependencies, but the design target is:
 
@@ -305,12 +386,12 @@ Prediction responses must include:
 
 Keep the generic shell under the existing route family:
 
-- `POST /api/ml/train`
+- `POST /api/ml/models/train`
 - `GET /api/ml/models`
-- `GET /api/ml/models/{model_id}`
-- `POST /api/ml/predict`
+- `GET /api/ml/models/{model_name}`
+- `POST /api/ml/models/predict`
 
-#### POST /api/ml/train
+#### POST /api/ml/models/train
 
 Input should include:
 
@@ -323,7 +404,7 @@ Input should include:
 
 Output should include:
 
-- `model_id`
+- `model_name`
 - `model_family`
 - `feature_summary`
 - `validation_metrics`
@@ -337,15 +418,15 @@ This surface should be backed exclusively by the shared registry and should supp
 - `domain`
 - date range
 
-#### GET /api/ml/models/{model_id}
+#### GET /api/ml/models/{model_name}
 
 Should return full model metadata, validation metrics, feature schema, and artifact status.
 
-#### POST /api/ml/predict
+#### POST /api/ml/models/predict
 
 Input should include:
 
-- `model_id`
+- `model_name`
 - `symbol`
 
 Output should include:
@@ -365,6 +446,8 @@ Keep the strategy shell under the existing v1 route family:
 - `GET /api/v1/strategies`
 
 These endpoints should stop owning independent training/prediction internals and instead adapt requests to the shared runtime.
+
+The existing strategy-side `/backtest` surface remains outside the first-batch shared-runtime closure. This batch focuses on training, prediction, registry/listing, and signal mapping.
 
 #### POST /api/v1/strategies/train
 
@@ -442,12 +525,24 @@ The first batch should add shared components such as:
 - `MlErrorState.vue`
 - `MlEmptyState.vue`
 
+The first batch should also add named shared frontend orchestration surfaces:
+
+- `web/frontend/src/api/mlRuntime.ts`
+- `web/frontend/src/views/ml/composables/useMlTrainingWorkbench.ts`
+- `web/frontend/src/views/ml/composables/useMlPredictionWorkbench.ts`
+
 The generic shell and strategy shell should consume the same canonical composable/API client/result model. They may differ only in:
 
 - copy and page framing
 - parameter panels
 - result interpretation
 - strategy signal mapping
+
+`MlModelRegistryTable.vue` should support at least:
+
+- model-family filtering
+- domain filtering
+- date-range filtering
 
 ## Migration Plan
 
@@ -486,10 +581,10 @@ Cover:
 
 Cover:
 
-- `/api/ml/train`
+- `/api/ml/models/train`
 - `/api/ml/models`
-- `/api/ml/models/{model_id}`
-- `/api/ml/predict`
+- `/api/ml/models/{model_name}`
+- `/api/ml/models/predict`
 - `/api/v1/strategies/train`
 - `/api/v1/strategies/predict`
 - `/api/v1/strategies`
@@ -545,6 +640,7 @@ The implementation plan should set an explicit minimum large-sample smoke bar, s
 - old parallel canonical training/prediction logic no longer remains as a second truth source
 - prediction output stably returns:
   - `analysis_date`
+  - `model_name`
   - `predicted_return`
   - `predicted_price`
   - strategy signal mapping
