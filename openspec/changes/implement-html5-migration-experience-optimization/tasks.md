@@ -262,17 +262,33 @@
 
 ### 2.9 Performance Monitoring & Analytics
 > **局部事实说明（2026-04-28）**:
-> 当前仓库可以确认两层性能监控能力：
+> 当前仓库可以直接确认的性能监控能力，已经收敛成一条桌面端活跃布局链路：
 > - 活跃布局链路：`web/frontend/src/layouts/ArtDecoLayoutEnhanced.vue` 挂接 `components/common/PerformanceMonitor.vue`，通过 `usePerformanceMonitor.ts` 提供 FPS / JS Heap 监控
-> - 独立页面实现：`web/frontend/src/views/system/PerformanceMonitor.vue` 已编写 `PerformanceObserver` 监听 `largest-contentful-paint`、`first-input`、`layout-shift`，并提供趋势/预算面板
-> 但当前 `router/index.ts` 与 `layouts/MenuConfig.ts` 都未把 `views/system/PerformanceMonitor.vue` 暴露为活跃路由，活跃链路中的全局监控面板也尚未承接 cache hit、PWA usage、RUM 等指标。
+> - `web/frontend/src/views/system/PerformanceMonitor.vue` 当前已被降级为 legacy static shell，不再承载已验证的 Web Vitals / 预算 / 趋势真相
+> - `router/index.ts` 与 `layouts/MenuConfig.ts` 也都未把 `views/system/PerformanceMonitor.vue` 暴露为活跃路由
+> 因此当前活跃链路中的全局监控面板仍未承接 Web Vitals、cache hit、PWA usage、RUM 或 canonical performance dashboard 指标。
 > 因此 2.9.1、2.9.2、2.9.3、2.9.4、2.9.5 暂不勾选，避免把“孤立页面实现”误写成“现行性能分析体系已接入完成”。
 
 - [ ] 2.9.1 Implement Web Vitals tracking (LCP/FID/CLS) (基于迁移报告的性能基准)
+  - Repo-truth blocker（2026-05-08）: 当前活跃桌面端链路 `ArtDecoLayoutEnhanced.vue -> components/common/PerformanceMonitor.vue -> usePerformanceMonitor.ts` 只暴露 FPS / JS Heap。
+  - `views/system/PerformanceMonitor.vue` 当前已是 legacy static shell，`router/index.ts` 与 `layouts/MenuConfig.ts` 也没有把它暴露为活跃路由。
+  - 因此当前不能把 `largest-contentful-paint` / `first-input` / `layout-shift` 的孤立代码残影扩写成“现行 Web Vitals tracking 已接入完成”。
 - [ ] 2.9.2 Add cache hit rate analytics (PWA缓存效果监控)
+  - Repo-truth blocker（2026-05-08）: 当前未发现活跃性能分析链路输出 cache hit rate 指标。
+  - 代码检索中出现的 `cacheHitRate` 只存在于 `web/frontend/src/composables/useArtDecoSettings.ts` 与 `web/frontend/src/views/artdeco-pages/settings/SystemInfoSettings.vue` 的静态 / 示例数据面，不构成运行时分析真相。
+  - 虽然 `indexedDB.ts` 与 `marketData.ts` 仍保留缓存相关代码，但当前没有 canonical dashboard / active route 去承接已验证的 cache hit analytics。
 - [ ] 2.9.3 Implement PWA usage metrics (安装率/使用时长)
+  - Repo-truth blocker（2026-05-08）: 当前只能确认安装与缓存基础代码面存在：`index.html`、`src/main-standard.ts`、`public/sw.js`、`public/manifest.json`。
+  - 当前未找到 `beforeinstallprompt` / `appinstalled` 事件统计、安装率埋点或使用时长 telemetry。
+  - 多个 Playwright spec 仍显式设置 `serviceWorkers: 'block'`，因此当前测试真相也不能支持“PWA usage metrics 已形成稳定验收链路”。
 - [ ] 2.9.4 Add Real User Monitoring (RUM) integration
+  - Repo-truth blocker（2026-05-08）: 当前源码审计未发现活跃的 RUM / Real User Monitoring 集成或外部 telemetry SDK 接线。
+  - 现行全局监控面板只展示 FPS / 内存，未形成 route-level 用户真实访问、资源耗时、会话分布或错误采样上报链路。
+  - 因此当前不能把局部性能监控表面扩写成“RUM integration 已完成”。
 - [ ] 2.9.5 Create performance dashboard (基于技术指标)
+  - Repo-truth blocker（2026-05-08）: 当前不存在 canonical active route 承接性能仪表板。
+  - `views/system/PerformanceMonitor.vue` 已明确降级为 legacy static shell；`router/index.ts` 与 `layouts/MenuConfig.ts` 也没有暴露对应活跃入口。
+  - 当前活跃桌面端真相只有悬浮式 FPS / JS Heap overlay，不构成“基于技术指标的 performance dashboard”。
 
 ## Phase 3: Integration & Validation
 
