@@ -74,6 +74,9 @@
     - 但 `test:design-token` 和 `test:stock-colors` 指向的是 `tests/design-token.test.ts`、`tests/stock-colors.test.ts`
     - `test:artdeco-style` 指向的 `tests/artdeco-style.test.ts` 当前文件并不存在
   - 因此 1.2.5 继续保持未完成；后续只有在样式一致性 gate 入口与现行 Playwright 配置重新对齐，并且得到真实通过结果后，才能按 repo-truth 收口。
+  - Remediation subtasks:
+    - [ ] 1.2.5a 对齐 `test:design-token` / `test:stock-colors` 与现行 Playwright `testMatch`
+    - [ ] 1.2.5b 补齐或重命名 `tests/artdeco-style.test.ts`
 
 ### 1.3 测试基础设施完善
 - [x] 1.3.1 配置Vitest覆盖率报告 (基于228个测试文件的实际经验)
@@ -88,6 +91,10 @@
     - `tests/unit/config/comprehensive-e2e-route-coverage.spec.ts` 仍断言 routed page inventory 为 `35`，但当前清单已增长到 `36`。
     - `tests/unit/workflows/ci-workflow-gates.spec.ts` 仍断言 workflow 文本包含 `validate_runtime_observability_drift.py`，但当前链路实际调用的是 `bash scripts/run_runtime_observability_drift_gate.sh`。
   - 因此 1.3.5 继续保持未完成；后续只有在覆盖率全量运行转绿并真正产出 report，或另行批准“按稳定子集建立基线”的新口径后，才能收口。
+  - Remediation subtasks:
+    - [ ] 1.3.5a 修正 `MarketKLineTab.spec.ts` 的 `period: "daily"` 断言为当前 `period: "1d"`
+    - [ ] 1.3.5b 修正 `comprehensive-e2e-route-coverage.spec.ts` 的路由数断言为当前 `36`
+    - [ ] 1.3.5c 修正 `ci-workflow-gates.spec.ts` 的 workflow 文本断言为 `bash scripts/run_runtime_observability_drift_gate.sh`
 
 ### 1.4 Bundle大小优化
 - [x] 1.4.1 分析当前3.8MB Bundle构成 (vue-framework + echarts + vendor)
