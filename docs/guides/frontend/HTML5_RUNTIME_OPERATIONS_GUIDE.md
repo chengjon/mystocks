@@ -15,6 +15,10 @@
 
 若需要能力清单，请先看 [HTML5_RUNTIME_CAPABILITY_GUIDE.md](./HTML5_RUNTIME_CAPABILITY_GUIDE.md)。
 
+> **产品口径说明（2026-05-08）**:
+> 当前前端产品范围以 **Desktop-only** 为准。
+> 因此本文中的 PWA / Service Worker / IndexedDB / Web Worker 排障步骤，应按桌面浏览器运行时表面理解，而不是移动端运维支持承诺。
+
 ## 1. Current Monitoring Surface
 
 ### 1.1 PWA / Service Worker
@@ -31,6 +35,8 @@
 - Service Worker 文件：[web/frontend/public/sw.js](/opt/claude/mystocks_spec/web/frontend/public/sw.js)
   - 已定义缓存名
   - 已实现 API / 静态资源 / 导航请求的不同缓存策略
+
+在 **Desktop-only** 口径下，上述检查用于确认桌面浏览器安装/缓存表面是否仍然存在，不代表移动端 PWA 产品链路已纳入当前运维范围。
 
 当前可用的最小检查：
 
