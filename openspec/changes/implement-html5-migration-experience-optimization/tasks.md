@@ -448,6 +448,18 @@
 ### Business Impact Validation
 - [ ] ✅ 用户留存率提升 > 25%
 - [ ] ✅ 页面加载性能提升 > 35%
+  - Repo-truth blocker（2026-05-08）: 当前仓库内已经有现行页面性能的绝对值证据，但还不能按“提升 > 35%”这种相对改进口径勾选。
+  - 当前最直接、最新的 repo-local 证据来自 `cd web/frontend && npm run test:e2e:lighthouse`：
+    - `/login`: `FCP 0.4s`, `LCP 0.6s`, `Performance 100`
+    - `/dashboard`: `FCP 0.3s`, `LCP 0.5s`, `Performance 96`
+    - `/market/realtime`: `FCP 0.2s`, `LCP 0.5s`, `Performance 100`
+    - `/strategy/repo`: `FCP 0.2s`, `LCP 0.5s`, `Performance 100`
+    - `/risk/overview`: `FCP 0.2s`, `LCP 0.4s`, `Performance 100`
+    - `/trade/terminal`: `FCP 0.3s`, `LCP 0.5s`, `Performance 100`
+  - 这些结果足以支持“当前桌面端关键路由加载表现良好”，但不能自动推出“相对迁移前已提升 > 35%”，因为：
+    - 当前 active change 没有一份按同口径、同路由集、同测试链路保留下来的历史 baseline 可供精确对比
+    - 旧文档里虽有 `5s -> 2.5s`、`-34%`、`-50%` 等预估或历史报告，但它们不构成当前 change 的可审计 repo-truth 基线
+  - 因此当前更准确的结论是“现行绝对性能达标，但相对提升百分比尚未建立可信基线”；后续只有在补齐可比前后基线后，才能按这条业务影响指标收口。
 - [ ] ✅ 移动端使用率提升 > 40%
   - Repo-truth de-scope（2026-05-08）: 当前前端产品口径为 **Desktop-only**，因此这条业务影响指标不再应被视为当前 change 的有效验收目标。
   - 在桌面端范围内继续保留它，只会误导后续把移动端 adoption 当成必须交付的结果项。
