@@ -61,8 +61,21 @@ class ContributionRow:
 
 
 @dataclass(frozen=True)
+class SnapshotMeta:
+    analysis_date: str
+    constituent_count: int
+    total_weight: float
+    total_market_value: float | None
+    total_return: float
+    stale: bool = False
+    stale_reason: str | None = None
+
+
+@dataclass(frozen=True)
 class AttributionAnalysisResult:
     analysis_date: str
+    snapshot_meta: SnapshotMeta
+    benchmark_meta: SnapshotMeta
     brinson: BrinsonBreakdown
     factor_attribution: FactorAttributionPayload
     top_contributors: list[ContributionRow]

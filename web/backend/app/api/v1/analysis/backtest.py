@@ -6,16 +6,23 @@
 
 from __future__ import annotations
 
+from dataclasses import asdict
 from datetime import datetime, timezone
 from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
+from fastapi.encoders import jsonable_encoder
 from fastapi import APIRouter, Body, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
+from app.core.database import SessionLocal
 from app.core.responses import UnifiedResponse
 from app.openapi_config import COMMON_RESPONSES
+from app.repositories.backtest_repository import BacktestRepository
+from app.services.attribution import AttributionDependencyError, AttributionEngine
+from app.services.attribution.adapters import build_backtest_attribution_snapshot
+from app.services.attribution.market_data_dependencies import AttributionMarketDataDependencies
 from app.services.data_service import DataService, StockDataNotFoundError
 from src.backtesting.advanced_backtest_engine import MonteCarloConfig, MonteCarloSimulation
 from src.ml_strategy.backtest.performance_metrics import PerformanceMetrics
@@ -217,6 +224,48 @@ EQUITY_CURVE_SUCCESS_EXAMPLE = {
 MONTE_CARLO_SUCCESS_RESPONSE = _success_response_spec("蒙特卡洛回测真实计算结果。", MONTE_CARLO_SUCCESS_EXAMPLE)
 BACKTEST_STRESS_SUCCESS_RESPONSE = _success_response_spec("回测压力测试真实计算结果。", BACKTEST_STRESS_SUCCESS_EXAMPLE)
 EQUITY_CURVE_SUCCESS_RESPONSE = _success_response_spec("权益曲线摘要真实计算结果。", EQUITY_CURVE_SUCCESS_EXAMPLE)
+BACKTEST_ATTRIBUTION_SUCCESS_RESPONSE = _success_response_spec(
+    "回测归因分析真实计算结果。",
+    {
+        "success": True,
+        "code": 200,
+        "message": "Backtest attribution retrieved",
+        "data": {
+            "analysis_date": "2026-05-08",
+            "snapshot_meta": {
+                "analysis_date": "2026-05-08",
+                "constituent_count": 2,
+                "total_weight": 1.0,
+                "total_market_value": 1000000.0,
+                "total_return": 0.052,
+                "stale": False,
+                "stale_reason": None,
+            },
+            "benchmark_meta": {
+                "analysis_date": "2026-05-08",
+                "constituent_count": 2,
+                "total_weight": 1.0,
+                "total_market_value": None,
+                "total_return": 0.045,
+                "stale": False,
+                "stale_reason": None,
+            },
+            "brinson": {
+                "allocation_effect": 0.007,
+                "selection_effect": -0.005,
+                "interaction_effect": -0.001,
+                "industry_breakdown": [],
+            },
+            "factor_attribution": {
+                "factor_exposures": {},
+                "factor_contributions": {},
+                "specific_return": 0.0031,
+            },
+            "top_contributors": [],
+            "top_detractors": [],
+        },
+    },
+)
 
 
 def _resolve_query_value(value: Any) -> Any:
@@ -228,6 +277,34 @@ def _get_backtest_data_service() -> DataService:
     if _DATA_SERVICE is None:
         _DATA_SERVICE = DataService(auto_fetch=False, use_cache=False)
     return _DATA_SERVICE
+
+
+def _get_attribution_engine() -> AttributionEngine:
+    return AttributionEngine()
+
+
+def _get_attribution_dependencies() -> AttributionMarketDataDependencies:
+    return AttributionMarketDataDependencies()
+
+
+def _load_backtest_result(backtest_id: int):
+    session = SessionLocal()
+    try:
+        return BacktestRepository(session).get_backtest(backtest_id)
+    finally:
+        session.close()
+
+
+def _run_backtest_attribution(backtest_result):
+    snapshot = build_backtest_attribution_snapshot(
+        backtest_result=backtest_result,
+        dependencies=_get_attribution_dependencies(),
+    )
+    return _get_attribution_engine().analyze(
+        portfolio=snapshot.portfolio,
+        benchmark=snapshot.benchmark,
+        factors=snapshot.factors,
+    )
 
 
 def _generate_synthetic_price_frame(symbol: str, start_dt: datetime, end_dt: datetime) -> pd.DataFrame:
@@ -544,4 +621,67 @@ async def get_equity_curve(
         code=200,
         message="Equity curve summary retrieved",
         data=response.model_dump(),
+    )
+
+
+@router.get(
+    "/{backtest_id}/attribution",
+    response_model=UnifiedResponse[Dict[str, Any]],
+    summary="Get Backtest Attribution",
+    description="对指定回测结果执行单期 Brinson + 五因子归因分析。缺失 benchmark、industry 或 factor 依赖时采用 hard-fail，不做 stale 降级。",
+    responses={
+        **BACKTEST_ATTRIBUTION_SUCCESS_RESPONSE,
+        404: COMMON_RESPONSES[404],
+        503: {
+            "description": "归因依赖数据不可用",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "success": False,
+                        "code": 503,
+                        "message": "missing benchmark data",
+                        "data": {"backtest_id": 42},
+                    }
+                }
+            },
+        },
+    },
+)
+async def get_backtest_attribution(
+    backtest_id: int = Path(..., description="需要执行归因分析的回测ID", ge=1),
+):
+    backtest_result = _load_backtest_result(backtest_id)
+    if backtest_result is None:
+        raise HTTPException(
+            status_code=404,
+            detail=jsonable_encoder(
+                UnifiedResponse(
+                    success=False,
+                    code=404,
+                    message="Backtest not found",
+                    data={"backtest_id": backtest_id},
+                ).model_dump()
+            ),
+        )
+
+    try:
+        result = _run_backtest_attribution(backtest_result)
+    except AttributionDependencyError as exc:
+        raise HTTPException(
+            status_code=503,
+            detail=jsonable_encoder(
+                UnifiedResponse(
+                    success=False,
+                    code=503,
+                    message=str(exc),
+                    data={"backtest_id": backtest_id},
+                ).model_dump()
+            ),
+        ) from exc
+
+    return UnifiedResponse(
+        success=True,
+        code=200,
+        message="Backtest attribution retrieved",
+        data=asdict(result),
     )

@@ -10,6 +10,7 @@ from .models import (
     FactorExposureDetail,
     FactorExposureSnapshot,
     PortfolioConstituentSnapshot,
+    SnapshotMeta,
 )
 
 FACTOR_PREMIUMS: dict[str, float] = {
@@ -57,6 +58,20 @@ class AttributionEngine:
 
         return AttributionAnalysisResult(
             analysis_date=factors.analysis_date,
+            snapshot_meta=SnapshotMeta(
+                analysis_date=factors.analysis_date,
+                constituent_count=len(portfolio),
+                total_weight=sum(row.weight for row in portfolio),
+                total_market_value=sum(row.market_value for row in portfolio),
+                total_return=portfolio_total_return,
+            ),
+            benchmark_meta=SnapshotMeta(
+                analysis_date=factors.analysis_date,
+                constituent_count=len(benchmark),
+                total_weight=sum(row.weight for row in benchmark),
+                total_market_value=None,
+                total_return=benchmark_total_return,
+            ),
             brinson=brinson,
             factor_attribution=factor_attribution,
             top_contributors=contribution_rows,
@@ -162,4 +177,5 @@ __all__ = [
     "FactorExposureDetail",
     "FactorExposureSnapshot",
     "PortfolioConstituentSnapshot",
+    "SnapshotMeta",
 ]
