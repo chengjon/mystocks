@@ -315,6 +315,13 @@
 - [ ] 3.3.1 配置服务器PWA支持 (Service Worker + Manifest)
 - [ ] 3.3.2 实施渐进式部署策略 (基于迁移经验的风险控制)
 - [ ] 3.3.3 建立回滚机制和监控告警
+  - Repo-truth blocker（2026-05-08）: 当前这项不能按事实勾选，因为仓库只具备局部 HTML5 runtime 表面和 supporting guides，还没有被当前 change 采用的正式 rollback runbook 或监控告警闭环。
+  - 在当前 `Desktop-only` scope 下，合理的回滚边界应至少覆盖：
+    - 回退 `index.html` / `src/main-standard.ts` 中的 manifest 与 service worker 注册表面
+    - 清理或停用已安装浏览器中的 service worker / cache 影响
+    - 保留当前 active desktop route shell 可用性，不把 PWA / offline 失败扩散成页面不可用
+    - 用 PM2 health、full Chromium baseline、Lighthouse smoke 或对应 runtime gate 验证回滚后状态
+  - 但当前 repo-local 仍未形成正式执行材料、负责人、触发条件、告警信号和回滚验证记录；因此 `3.3.3` 继续保持未完成。
 - [x] 3.3.4 准备用户沟通和培训材料
 > 已由 `docs/guides/frontend/HTML5_RUNTIME_ROLLOUT_COMMUNICATION_GUIDE.md` 回写当前 repo-truth 的沟通与培训材料草案，明确：
 > - 当前对外口径只能描述为“基础 HTML5 runtime 能力与 supporting guides 已具备，仍处于灰度与验收前阶段”
