@@ -64,13 +64,23 @@ The system SHALL expose a canonical external execution trigger path that records
 - **AND** the response SHALL NOT claim broker acknowledgement or fill state unless broker lifecycle identity is present
 
 ### Requirement: Execution Tracking Evidence Workbench
-The system SHALL provide an execution tracking query surface that aggregates internal order or trade references, bridge evidence, broker correlation state, and reconciliation status.
+The system SHALL provide an execution tracking query surface that aggregates internal order or trade references, miniQMT bridge submission evidence, broker correlation state, and reconciliation status.
 
 #### Scenario: Execution tracking list is queried
 - **WHEN** the frontend queries execution tracking rows
 - **THEN** the backend SHALL return execution chain rows with internal order identity, bridge task identity, broker correlation state, and reconciliation status
+- **AND** miniQMT bridge submission attempts SHALL be included when available for the requested account, order id, or bridge task id
 - **AND** bridge-only terminal results SHALL remain `review_required` when broker lifecycle identity is missing
 
+#### Scenario: miniQMT bridge evidence has no broker lifecycle identity
+- **WHEN** a bridge task has a terminal bridge result but no broker lifecycle identity
+- **THEN** execution tracking SHALL expose the bridge result as review evidence
+- **AND** execution tracking SHALL NOT mark the chain as broker acknowledged or filled
+
+#### Scenario: Broker lifecycle identity is present
+- **WHEN** miniQMT evidence includes broker lifecycle identity and acknowledgement event type
+- **THEN** execution tracking MAY mark the chain as broker acknowledged
+- **AND** the evidence timeline SHALL include the broker identity source used for that state transition
 ### Requirement: Legacy Trade Execute Compatibility
 The system SHALL keep legacy trade execution endpoints available as compatibility surfaces while excluding them from the new canonical external trigger workbench.
 
