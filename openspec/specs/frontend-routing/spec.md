@@ -220,3 +220,19 @@ The frontend routing system SHALL keep `/risk/news` reachable as a risk-domain w
 - **AND** that page SHALL remain reachable from risk navigation
 - **AND** that page SHALL NOT replace `/ai/sentiment` as the canonical AI-domain route
 
+### Requirement: Trade Execution Tracking Route
+The frontend routing system SHALL expose a dedicated trade execution tracking route under the trade domain.
+
+#### Scenario: User navigates to execution tracking
+- **WHEN** the user opens `/trade/execution`
+- **THEN** the router SHALL load the execution tracking workbench
+- **AND** the trade navigation shall surface the new route as a canonical trade-domain surface
+
+### Requirement: Execution Tracking Navigation Label
+The trade navigation SHALL expose an execution tracking label for the dedicated workbench.
+
+#### Scenario: Trade menu renders execution tracking
+- **WHEN** the trade menu is rendered
+- **THEN** the menu SHALL include an execution tracking entry
+- **AND** the label SHALL distinguish the workbench from trade history and reconciliation
+

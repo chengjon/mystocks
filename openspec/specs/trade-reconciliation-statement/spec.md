@@ -66,3 +66,19 @@ The system SHALL support CSV export of the currently filtered reconciliation res
 - **WHEN** the user requests export for the current account, date range, import batch, and status filter
 - **THEN** the system SHALL return a CSV download of the filtered reconciliation result set
 - **AND** the export SHALL preserve the same reconciliation statuses and row pairing used by the UI
+
+### Requirement: Execution Tracking to Reconciliation Link
+The system SHALL support navigation from execution tracking evidence to the trade reconciliation statement surface using account and order context.
+
+#### Scenario: User jumps from execution evidence to reconciliation
+- **WHEN** the user opens an execution tracking detail and chooses the reconciliation link
+- **THEN** the system SHALL navigate to `/trade/reconciliation`
+- **AND** the navigation SHALL preserve account identity, order identity, and bridge task identity as query context
+
+### Requirement: Reconciliation Reverse Context Link
+The system SHALL expose a reverse reconciliation context link back to the execution tracking surface when reconciliation is opened with execution context.
+
+#### Scenario: Reconciliation page receives execution context
+- **WHEN** `/trade/reconciliation` is opened with execution-related query context
+- **THEN** the surface SHALL expose a link back to the execution tracking surface
+- **AND** the link SHALL preserve the incoming query context for order and bridge task lookup

@@ -7,9 +7,7 @@
 ## Purpose
 
 Define the governance contract for trading execution path classification, pre-execution safety controls, deduplication policy, confirmation requirements, and minimum audit retention behavior before any trading path is described as production-grade.
-
 ## Requirements
-
 ### Requirement: Trading Domain Safety Contract
 The project SHALL define an explicit safety contract for trading execution paths before they are described as production-grade.
 
@@ -55,3 +53,28 @@ Trading execution paths SHALL emit a minimum audit record for each submitted act
 - **WHEN** a trading audit record is created
 - **THEN** the record SHALL be persisted to durable storage
 - **AND** the minimum retention period SHALL be defined by the trading safety contract
+
+### Requirement: External Execution Tracking Canonical Trigger
+The system SHALL expose a canonical external execution trigger path that records trigger intent and bridge receipt evidence without claiming broker execution truth.
+
+#### Scenario: External trigger is submitted
+- **WHEN** the frontend submits an execution trigger for the first-batch miniQMT channel
+- **THEN** the backend SHALL record an external trigger request
+- **AND** the response SHALL expose bridge task receipt evidence
+- **AND** the response SHALL NOT claim broker acknowledgement or fill state unless broker lifecycle identity is present
+
+### Requirement: Execution Tracking Evidence Workbench
+The system SHALL provide an execution tracking query surface that aggregates internal order or trade references, bridge evidence, broker correlation state, and reconciliation status.
+
+#### Scenario: Execution tracking list is queried
+- **WHEN** the frontend queries execution tracking rows
+- **THEN** the backend SHALL return execution chain rows with internal order identity, bridge task identity, broker correlation state, and reconciliation status
+- **AND** bridge-only terminal results SHALL remain `review_required` when broker lifecycle identity is missing
+
+### Requirement: Legacy Trade Execute Compatibility
+The system SHALL keep legacy trade execution endpoints available as compatibility surfaces while excluding them from the new canonical external trigger workbench.
+
+#### Scenario: New execution workbench is opened
+- **WHEN** the user opens `/trade/execution`
+- **THEN** the page SHALL use `/api/v1/trade/execution-tracking/trigger` for new trigger requests
+- **AND** it SHALL NOT depend on `/api/v1/trade/execute` as the canonical entrypoint
