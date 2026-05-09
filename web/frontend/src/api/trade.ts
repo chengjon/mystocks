@@ -1,9 +1,3 @@
-/**
- * Trade Management API Service
- *
- * Provides methods for managing trades, orders, and positions.
- */
-
 import { request } from '@/utils/request.ts'
 import { TradeAdapter } from '@/utils/trade-adapters.ts'
 import {
@@ -25,6 +19,23 @@ import {
   fetchReconciliationResults,
   fetchReconciliationStatements,
   uploadReconciliationCsv,
+} from './tradeReconciliation.ts'
+import {
+  fetchExecutionTracking,
+  fetchExecutionTrackingDetail,
+  postExternalExecutionTrigger,
+  type ExecutionTrackingDetailPayload,
+  type ExecutionTrackingPayload,
+  type ExternalExecutionTriggerPayload,
+  type ExternalExecutionTriggerRequest,
+} from './tradeExecutionTracking.ts'
+import type {
+  ReconciliationAccountDescriptor,
+  ReconciliationImportBatchPayload,
+  ReconciliationImportSourceType,
+  ReconciliationMatchStatus,
+  ReconciliationResultsPayload,
+  ReconciliationStatementsPayload,
 } from './tradeReconciliation.ts'
 import type {
   OrderRequest
@@ -344,6 +355,26 @@ class TradeApiService {
     matchStatus?: ReconciliationMatchStatus
   }): Promise<Blob> {
     return downloadReconciliationResults(params)
+  }
+
+  async getExecutionTracking(params?: {
+    accountId?: string
+    orderId?: string
+    bridgeTaskId?: string
+    page?: number
+    pageSize?: number
+  }): Promise<ExecutionTrackingPayload> {
+    return fetchExecutionTracking(params)
+  }
+
+  async getExecutionTrackingDetail(trackingId: string): Promise<ExecutionTrackingDetailPayload> {
+    return fetchExecutionTrackingDetail(trackingId)
+  }
+
+  async triggerExternalExecution(
+    params: ExternalExecutionTriggerRequest,
+  ): Promise<ExternalExecutionTriggerPayload> {
+    return postExternalExecutionTrigger(params)
   }
 
   /**

@@ -17,10 +17,14 @@ const {
   importRowCount,
   importing,
   loading,
+  currentSnapshotRequestId,
+  currentSnapshotUpdatedAt,
+  displayMatchedCount,
+  displayMismatchedCount,
+  displayMissingBrokerRecordCount,
   pageStatusText,
   pageStatusType,
   refresh,
-  resultMetrics,
   resultRows,
   selectedAccountId,
   selectedFileName,
@@ -54,6 +58,35 @@ const runtimeMessage = computed(() => {
   return ''
 })
 
+const executionContext = computed(() => {
+  const params = new URLSearchParams(window.location.search)
+  const accountId = params.get('account_id') || ''
+  const orderId = params.get('order_id') || ''
+  const bridgeTaskId = params.get('bridge_task_id') || ''
+
+  if (!accountId && !orderId && !bridgeTaskId) {
+    return null
+  }
+
+  const target = new URLSearchParams()
+  if (accountId) {
+    target.set('account_id', accountId)
+  }
+  if (orderId) {
+    target.set('order_id', orderId)
+  }
+  if (bridgeTaskId) {
+    target.set('bridge_task_id', bridgeTaskId)
+  }
+
+  return {
+    accountId,
+    orderId,
+    bridgeTaskId,
+    href: `/trade/execution?${target.toString()}`,
+  }
+})
+
 const onFileChange = (event: Event) => {
   const input = event.target as HTMLInputElement | null
   const file = input?.files?.[0] ?? null
@@ -74,6 +107,8 @@ const onAccountChange = async (event: Event) => {
           <span class="hero-eyebrow">trade reconciliation desk</span>
           <div class="hero-meta">
             <span>ACCOUNT: {{ selectedAccountId || 'N/A' }}</span>
+            <span>REQ_ID: {{ currentSnapshotRequestId || 'N/A' }}</span>
+            <span>UPDATED: {{ currentSnapshotUpdatedAt }}</span>
             <span>IMPORT_BATCH: {{ importBatchId || '未导入' }}</span>
             <span>ROWS: {{ importRowCount || 0 }}</span>
           </div>
@@ -185,12 +220,18 @@ const onAccountChange = async (event: Event) => {
       <ArtDecoStatCard label="总笔数" :value="statementSummary.totalCount" :show-change="false" variant="gold" />
       <ArtDecoStatCard label="账单金额" :value="statementSummary.totalAmount" :show-change="false" variant="gold" />
       <ArtDecoStatCard label="手续费" :value="statementSummary.totalCommission" :show-change="false" variant="gold" />
-      <ArtDecoStatCard label="已匹配" :value="String(resultMetrics.matched)" :show-change="false" variant="rise" />
-      <ArtDecoStatCard label="差异" :value="String(resultMetrics.mismatched)" :show-change="false" variant="gold" />
-      <ArtDecoStatCard label="缺少券商记录" :value="String(resultMetrics.missingBrokerRecord)" :show-change="false" variant="fall" />
+      <ArtDecoStatCard label="已匹配" :value="displayMatchedCount" :show-change="false" variant="rise" />
+      <ArtDecoStatCard label="差异" :value="displayMismatchedCount" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="缺少券商记录" :value="displayMissingBrokerRecordCount" :show-change="false" variant="fall" />
     </section>
 
     <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+
+    <section v-if="executionContext" class="execution-context artdeco-card-shell">
+      <span>执行跟踪上下文</span>
+      <strong>{{ executionContext.orderId || executionContext.bridgeTaskId || executionContext.accountId }}</strong>
+      <a :href="executionContext.href">返回执行跟踪详情</a>
+    </section>
 
     <section class="grid-shell">
       <ArtDecoCard title="内部账单快照">
@@ -323,6 +364,29 @@ const onAccountChange = async (event: Event) => {
   border-radius: 14px;
   background: rgba(255, 248, 235, 0.92);
   color: #6d512d;
+}
+
+.execution-context {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  color: var(--artdeco-text-primary, #f2f0e4);
+}
+
+.execution-context span {
+  color: var(--artdeco-text-muted, #a0a0a0);
+  font-size: 12px;
+}
+
+.execution-context strong {
+  font-family: var(--artdeco-font-data, 'JetBrains Mono', monospace);
+  font-size: 12px;
+}
+
+.execution-context a {
+  color: var(--artdeco-gold, #d4af37);
+  font-size: 12px;
 }
 
 .grid-shell {

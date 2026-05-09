@@ -205,6 +205,12 @@ const routes: RouteRecordRaw[] = [
             meta: { title: '交易操作', requiresAuth: true }
           },
           {
+            path: 'execution',
+            name: 'trade-execution',
+            component: () => import('@/views/trade/Execution.vue'),
+            meta: { title: '执行跟踪', requiresAuth: true, api: '/api/v1/trade/execution-tracking' }
+          },
+          {
             path: 'signals',
             name: 'trade-signals',
             component: () => import('@/views/trade/Signals.vue'),
