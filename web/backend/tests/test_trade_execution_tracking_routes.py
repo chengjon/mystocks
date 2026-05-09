@@ -26,6 +26,83 @@ def _build_client(package):
     return TestClient(app)
 
 
+class FakeExecutionTrackingEvidenceService:
+    def __init__(self):
+        self.record = {
+            "tracking_id": "attempt-local-777",
+            "account_id": "backtest:7",
+            "order_id": "order-777",
+            "symbol": "600000.SH",
+            "direction": "buy",
+            "quantity": 300,
+            "price": "10.25",
+            "requested_at": "2026-05-09T09:45:00+00:00",
+            "channel": "miniqmt",
+            "submission_status": "bridge_task_accepted",
+            "bridge_task_id": "bridge-task-777",
+            "receipt_status": "accepted",
+            "bridge_result_status": None,
+            "source_name": "miniqmt/windows_bridge",
+            "external_order_id": None,
+            "broker_event_type": None,
+            "broker_state": "review_required",
+            "identity_status": "missing_broker_identity",
+            "reconciliation_status": "not_imported",
+        }
+
+    def load_records(self, **kwargs):
+        assert kwargs["account_id"] == "backtest:7"
+        return [dict(self.record)]
+
+    def load_record_by_tracking_id(self, tracking_id: str):
+        if tracking_id == self.record["tracking_id"]:
+            return dict(self.record)
+        return None
+
+    def build_timeline(self, record):
+        return [
+            {
+                "event_type": "bridge_submission_receipt",
+                "occurred_at": record["requested_at"],
+                "summary": "miniQMT bridge 接收任务回执，不等于券商确认",
+                "evidence": {"bridge_task_id": record["bridge_task_id"]},
+            }
+        ]
+
+
+def test_execution_tracking_routes_can_use_injected_miniqmt_evidence_service(monkeypatch):
+    package = _load_trade_package()
+    routes_module = importlib.import_module("app.api.trade.execution_tracking_routes")
+
+    fake_service = FakeExecutionTrackingEvidenceService()
+    monkeypatch.setattr(routes_module, "get_execution_tracking_evidence_service", lambda: fake_service)
+    monkeypatch.setattr(
+        routes_module,
+        "query_internal_statements",
+        lambda **kwargs: {
+            "account_id": kwargs["account_id"],
+            "items": [],
+            "summary": {"total_count": 0, "total_amount": "0", "total_commission": "0"},
+            "total_count": 0,
+            "page": kwargs["page"],
+            "page_size": kwargs["page_size"],
+            "source": "test",
+        },
+    )
+
+    client = _build_client(package)
+    list_response = client.get("/api/v1/trade/execution-tracking", params={"account_id": "backtest:7"})
+    detail_response = client.get("/api/v1/trade/execution-tracking/attempt-local-777")
+
+    assert list_response.status_code == 200
+    item = list_response.json()["data"]["items"][0]
+    assert item["tracking_id"] == "attempt-local-777"
+    assert item["bridge_evidence"]["bridge_task_id"] == "bridge-task-777"
+    assert item["broker_state"] == "review_required"
+    assert detail_response.status_code == 200
+    assert detail_response.json()["data"]["evidence_timeline"][0]["event_type"] == "bridge_submission_receipt"
+
+
 def test_execution_tracking_list_aggregates_internal_rows_and_bridge_evidence(monkeypatch):
     package = _load_trade_package()
     routes_module = importlib.import_module("app.api.trade.execution_tracking_routes")

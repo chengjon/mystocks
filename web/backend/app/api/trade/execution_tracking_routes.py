@@ -9,7 +9,10 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel, Field
 
 from app.core.responses import ErrorCodes, UnifiedResponse, create_error_response, create_unified_success_response
+from app.services.trade.execution_tracking_evidence import ExecutionTrackingEvidenceService
 from app.services.statement_reconciliation.internal_statement_source import query_internal_statements
+from src.application.trading.broker_divergence import build_default_trading_broker_divergence_store
+from src.application.trading.broker_submission_attempt import build_default_trading_broker_submission_attempt_store
 
 router = APIRouter(prefix="/execution-tracking", tags=["trade-execution-tracking"])
 ResponsePayloadT = TypeVar("ResponsePayloadT", bound=BaseModel)
@@ -131,7 +134,9 @@ def _as_int(value: Any, fallback: int = 0) -> int:
 
 
 def _broker_state_for(record: dict[str, Any]) -> BrokerState:
-    if record.get("external_order_id") and record.get("submission_status") == "broker_acknowledged":
+    if record.get("broker_state") in {"review_required", "broker_acknowledged"}:
+        return record["broker_state"]
+    if record.get("external_order_id") and record.get("broker_event_type"):
         return "broker_acknowledged"
     return "review_required"
 
@@ -203,10 +208,19 @@ def _build_tracking_item(record: dict[str, Any]) -> ExecutionTrackingItem:
         broker_correlation=ExecutionBrokerCorrelation(
             external_order_id=record.get("external_order_id"),
             broker_event_type=record.get("broker_event_type"),
-            identity_status=(
-                "matched_broker_identity" if broker_state == "broker_acknowledged" else "missing_broker_identity"
+            identity_status=str(
+                record.get("identity_status")
+                or ("matched_broker_identity" if broker_state == "broker_acknowledged" else "missing_broker_identity")
             ),
         ),
+    )
+
+
+def get_execution_tracking_evidence_service() -> ExecutionTrackingEvidenceService:
+    return ExecutionTrackingEvidenceService(
+        submission_attempt_store=build_default_trading_broker_submission_attempt_store(),
+        divergence_store=build_default_trading_broker_divergence_store(),
+        session_trigger_records=_EXECUTION_TRIGGERS,
     )
 
 
@@ -274,6 +288,17 @@ def _load_execution_records(
         record
         for record in _EXECUTION_TRIGGERS.values()
         if record.get("account_id") == account_id and record.get("tracking_id") not in known_ids
+    )
+    records.extend(
+        record
+        for record in get_execution_tracking_evidence_service().load_records(
+            account_id=account_id,
+            order_id=order_id,
+            bridge_task_id=bridge_task_id,
+            page=page,
+            page_size=page_size,
+        )
+        if record.get("tracking_id") not in known_ids
     )
 
     if order_id:
@@ -412,7 +437,8 @@ async def trigger_external_execution(
 async def get_execution_tracking_detail(
     tracking_id: str,
 ) -> UnifiedResponse[ExecutionTrackingDetailPayload]:
-    record = _EXECUTION_TRIGGERS.get(tracking_id)
+    evidence_service = get_execution_tracking_evidence_service()
+    record = evidence_service.load_record_by_tracking_id(tracking_id) or _EXECUTION_TRIGGERS.get(tracking_id)
     if record is None:
         raise HTTPException(
             status_code=404,
@@ -427,6 +453,8 @@ async def get_execution_tracking_detail(
         endpoint="trade",
         resource="execution_tracking_detail",
         item=_build_tracking_item(record),
-        evidence_timeline=_build_timeline(record),
+        evidence_timeline=[
+            ExecutionEvidenceEvent(**event) for event in evidence_service.build_timeline(record)
+        ],
     )
     return _success_execution_response("Execution tracking detail loaded", payload)
