@@ -37,7 +37,7 @@
 
 - [ ] 6.1 Wire attribution into the strategy/backtest shell for selected backtest-result snapshots
 - [x] 6.2 Replace trade pseudo-attribution cards with the shared attribution surface in `Portfolio.vue`
-- [ ] 6.3 Add current-vs-date-scoped trade attribution controls and shell-specific tests
+- [x] 6.3 Add current-vs-date-scoped trade attribution controls and shell-specific tests
 
 ## 7. Verification And Governance
 

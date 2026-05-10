@@ -26,6 +26,8 @@ const props = withDefaults(defineProps<{ functionKey?: string }>(), {
 const portfolio = ref<PortfolioOverviewData>(toPortfolioOverviewData(null))
 const hasSuccessfulPortfolioSnapshot = ref(false)
 const lastVerifiedRequestId = ref('')
+const attributionMode = ref<'current' | 'date'>('current')
+const attributionDate = ref('')
 const isEmbedded = computed(() => Boolean(props.functionKey))
 const isPendingFirstPortfolioLoad = computed(() => loading.value && !hasSuccessfulPortfolioSnapshot.value)
 const isUnavailableFirstPortfolioLoad = computed(() => Boolean(error.value) && !hasSuccessfulPortfolioSnapshot.value)
@@ -129,7 +131,24 @@ const fetchAttribution = async () => {
     return
   }
 
-  await loadAttribution({ source: 'trade' })
+  await loadAttribution({
+    source: 'trade',
+    date: attributionMode.value === 'date' && attributionDate.value ? attributionDate.value : undefined,
+  })
+}
+
+const setAttributionMode = (mode: 'current' | 'date') => {
+  attributionMode.value = mode
+  if (mode === 'current') {
+    void fetchAttribution()
+  }
+}
+
+const handleAttributionDateChange = () => {
+  attributionMode.value = 'date'
+  if (attributionDate.value) {
+    void fetchAttribution()
+  }
 }
 
 const fetchPortfolio = async () => {
@@ -246,6 +265,38 @@ onMounted(() => {
     </div>
 
     <div class="attribution-section">
+      <div class="attribution-controls artdeco-card">
+        <div class="attribution-controls__group" role="group" aria-label="归因口径">
+          <button
+            type="button"
+            class="attribution-controls__mode"
+            :class="{ active: attributionMode === 'current' }"
+            data-testid="attribution-mode-current"
+            @click="setAttributionMode('current')"
+          >
+            当前快照
+          </button>
+          <button
+            type="button"
+            class="attribution-controls__mode"
+            :class="{ active: attributionMode === 'date' }"
+            data-testid="attribution-mode-date"
+            @click="setAttributionMode('date')"
+          >
+            指定日期
+          </button>
+        </div>
+        <label class="attribution-controls__date">
+          <span>归因日期</span>
+          <input
+            v-model="attributionDate"
+            type="date"
+            data-testid="attribution-date-input"
+            :disabled="attributionMode !== 'date'"
+            @change="handleAttributionDateChange"
+          />
+        </label>
+      </div>
       <AttributionPanel
         :analysis="attribution"
         :loading="isPendingFirstPortfolioLoad || attributionLoading"

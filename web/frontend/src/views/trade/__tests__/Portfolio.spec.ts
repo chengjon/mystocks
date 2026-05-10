@@ -226,6 +226,86 @@ describe('TradePortfolio routed policy truth', () => {
     expect(wrapper.text()).toContain('600519')
   })
 
+  it('requests date-scoped attribution when the attribution date control changes', async () => {
+    getMock.mockImplementation((url: string, config?: { params?: Record<string, string> }) => {
+      if (url === '/v1/positions/attribution') {
+        return Promise.resolve({
+          success: true,
+          request_id: config?.params?.date ? 'req-position-attribution-date' : 'req-position-attribution-current',
+          data: {
+            analysis_date: config?.params?.date || '2026-05-10',
+            snapshot_meta: {
+              stale: !config?.params?.date,
+              stale_reason: config?.params?.date ? null : 'runtime_position_prices',
+              total_return: 0.0312,
+              constituent_count: 2,
+            },
+            benchmark_meta: {
+              total_return: 0.018,
+              constituent_count: 3,
+            },
+            brinson: {
+              allocation_effect: 0.004,
+              selection_effect: 0.007,
+              interaction_effect: 0.002,
+              industry_breakdown: {},
+            },
+            factor_attribution: {
+              factor_exposures: {},
+              factor_contributions: {},
+              specific_return: 0.0042,
+            },
+            top_contributors: [],
+            top_detractors: [],
+          },
+        })
+      }
+
+      return Promise.resolve({
+        success: true,
+        request_id: 'req-trade-portfolio',
+        data: {
+          positions: [
+            {
+              symbol: '600519',
+              symbol_name: '贵州茅台',
+              market_value: 202584,
+              profit_loss_percent: -0.69,
+            },
+            {
+              symbol: '300750',
+              symbol_name: '宁德时代',
+              market_value: 170080,
+              profit_loss_percent: 1.24,
+            },
+          ],
+          total_market_value: 372664,
+          total_profit_loss: 6844,
+          total_profit_loss_percent: 1.84,
+        },
+      })
+    })
+
+    const wrapper = mountPortfolioPage()
+
+    await flushPromises()
+
+    expect(getMock).toHaveBeenCalledWith('/v1/positions/attribution', { params: {} })
+
+    await wrapper.get('[data-testid="attribution-mode-date"]').trigger('click')
+    await wrapper.get('[data-testid="attribution-date-input"]').setValue('2026-05-08')
+    await wrapper.get('[data-testid="attribution-date-input"]').trigger('change')
+    await flushPromises()
+
+    expect(getMock).toHaveBeenCalledWith('/v1/positions/attribution', {
+      params: {
+        date: '2026-05-08',
+      },
+    })
+    expect(wrapper.text()).toContain('2026-05-08')
+    expect(wrapper.text()).not.toContain('runtime_position_prices')
+  })
+
   it('keeps first-load portfolio summary surfaces in pending placeholders instead of fabricated zero balances and false empty-state copy', async () => {
     getMock.mockImplementation(() => new Promise(() => {}))
 
