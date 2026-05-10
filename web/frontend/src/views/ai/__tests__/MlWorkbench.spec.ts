@@ -71,6 +71,7 @@ const trainingDateRangeInvalidMock = ref(false)
 const trainingSymbolBlankMock = ref(false)
 const predictionSymbolMismatchMock = ref(false)
 const predictionSymbolBlankMock = ref(false)
+const predictionModelIdBlankMock = ref(false)
 const predictionHorizonMismatchMock = ref(false)
 
 vi.mock('../composables/useMlWorkbench', () => ({
@@ -98,6 +99,7 @@ vi.mock('../composables/useMlWorkbench', () => ({
     trainingSymbolBlank: trainingSymbolBlankMock,
     predictionSymbolMismatch: predictionSymbolMismatchMock,
     predictionSymbolBlank: predictionSymbolBlankMock,
+    predictionModelIdBlank: predictionModelIdBlankMock,
     predictionHorizonMismatch: predictionHorizonMismatchMock,
     refreshRuntime: refreshRuntimeMock,
     submitTraining: submitTrainingMock,
@@ -128,6 +130,9 @@ describe('AI ML workbench page', () => {
     runtimeMessageMock.value = ''
     selectedModelIdMock.value = 'svm_600519_abc'
     trainingFormMock.value.model_family = 'svm'
+    predictionFormMock.value.model_id = 'svm_600519_abc'
+    predictionFormMock.value.symbol = '600519.SH'
+    predictionFormMock.value.prediction_horizon = 5
     modelFamilyOptionsMock.value = [
       { value: 'svm', label: 'SVM', available: true, status: 'available' },
       { value: 'lightgbm', label: 'LightGBM', available: true, status: 'available' },
@@ -141,6 +146,7 @@ describe('AI ML workbench page', () => {
     trainingSymbolBlankMock.value = false
     predictionSymbolMismatchMock.value = false
     predictionSymbolBlankMock.value = false
+    predictionModelIdBlankMock.value = false
     predictionHorizonMismatchMock.value = false
   })
 
@@ -253,6 +259,18 @@ describe('AI ML workbench page', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('预测标的不能为空')
+    expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('surfaces blank prediction model id before prediction submission', async () => {
+    predictionFormMock.value.model_id = '   '
+    predictionModelIdBlankMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('请先选择模型')
     expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
   })
 

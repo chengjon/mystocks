@@ -494,6 +494,13 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('请先选择模型')
   })
 
+  it('marks prediction model id as blank when manual input is whitespace', async () => {
+    const workbench = useMlWorkbench()
+    workbench.predictionForm.model_id = '   '
+
+    expect(workbench.predictionModelIdBlank.value).toBe(true)
+  })
+
   it('does not submit prediction when symbol is blank', async () => {
     const workbench = useMlWorkbench()
     workbench.runtimeStatus.value = successfulRuntimeStatus.data

@@ -27,6 +27,7 @@ const {
   trainingSymbolBlank,
   predictionSymbolMismatch,
   predictionSymbolBlank,
+  predictionModelIdBlank,
   predictionHorizonMismatch,
   refreshRuntime,
   submitTraining,
@@ -168,6 +169,9 @@ onMounted(() => {
           模型 ID
           <input v-model="predictionForm.model_id" type="text" />
         </label>
+        <p v-if="predictionModelIdBlank" class="runtime-message compact">
+          请先选择模型后再执行预测。
+        </p>
         <label>
           标的
           <input v-model="predictionForm.symbol" type="text" />
@@ -192,7 +196,7 @@ onMounted(() => {
           data-testid="ml-predict-submit"
           class="primary-button"
           type="button"
-          :disabled="predictionLoading || !predictionForm.model_id || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch || predictionSymbolBlank || predictionHorizonMismatch"
+          :disabled="predictionLoading || predictionModelIdBlank || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch || predictionSymbolBlank || predictionHorizonMismatch"
           @click="submitPrediction"
         >
           执行预测

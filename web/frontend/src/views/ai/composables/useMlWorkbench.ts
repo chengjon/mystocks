@@ -144,6 +144,9 @@ export function useMlWorkbench() {
     return Boolean(selectedModel && predictionForm.symbol !== selectedModel.symbol)
   })
   const predictionSymbolBlank = computed(() => predictionForm.symbol.trim().length === 0)
+  const predictionModelIdBlank = computed(
+    () => (predictionForm.model_id || selectedModelId.value).trim().length === 0,
+  )
   const predictionHorizonMismatch = computed(() => {
     const selectedModel = selectedPredictionModel.value
     const trainedHorizon = selectedModel?.feature_context?.prediction_horizon
@@ -313,6 +316,7 @@ export function useMlWorkbench() {
     trainingSymbolBlank,
     predictionSymbolMismatch,
     predictionSymbolBlank,
+    predictionModelIdBlank,
     predictionHorizonMismatch,
     refreshRuntime,
     submitTraining,
