@@ -230,7 +230,7 @@
 | 收益分析 | ✅ | 累计收益、年化收益、超额收益 |
 | 风险分析 | ✅ | 最大回撤、夏普比率、波动率 |
 | 交易分析 | ✅ | 胜率、盈亏比、持仓周期 |
-| 归因分析 | 🚧 | Brinson归因、因子归因 |
+| 归因分析 | ✅ | `GET /api/v1/backtest/{backtest_id}/attribution`、`web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoBacktestAnalysis.vue`、`web/frontend/tests/e2e/strategy-backtest.spec.ts`；Brinson 归因与因子归因已接入回测报告归因面板 |
 
 ---
 
@@ -310,7 +310,7 @@ Q2 closure note:
 |--------|------|----------|------|
 | 持仓查询 | ✅ | `web/frontend/src/views/trade/Center.vue` | 实时持仓展示 |
 | 盈亏计算 | ✅ | `web/frontend/src/views/trade/Center.vue` | 浮动盈亏统计 |
-| 持仓分析 | ✅ | `web/frontend/src/views/trade/Portfolio.vue` | 行业分布、集中度与持仓透视 |
+| 持仓分析 | ✅ | `web/frontend/src/views/trade/Portfolio.vue` | 行业分布、集中度、持仓透视与 `GET /api/v1/positions/attribution` 当前/日期口径绩效归因 |
 
 ### 5.2 交易记录 {#domain-05-node-02}
 

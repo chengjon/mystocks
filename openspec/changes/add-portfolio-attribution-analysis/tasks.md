@@ -43,5 +43,5 @@
 
 - [x] 7.1 Run targeted backend attribution tests
 - [x] 7.2 Run targeted frontend attribution unit tests
-- [ ] 7.3 Run attribution E2E smoke for strategy and trade shells
-- [ ] 7.4 Update `docs/FUNCTION_TREE.md` after both shells and both attribution types are verified
+- [x] 7.3 Run attribution E2E smoke for strategy and trade shells
+- [x] 7.4 Update `docs/FUNCTION_TREE.md` after both shells and both attribution types are verified

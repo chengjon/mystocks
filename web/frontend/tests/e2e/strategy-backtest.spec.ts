@@ -31,6 +31,11 @@ const backtestResultEndpoints = (taskId: string) => [
   `**/api/api/v1/strategy/backtest/results/${taskId}**`,
 ]
 
+const backtestAttributionEndpoints = (backtestId: number) => [
+  `**/api/v1/backtest/${backtestId}/attribution**`,
+  `**/api/api/v1/backtest/${backtestId}/attribution**`,
+]
+
 function buildUnifiedResponse<T>(data: T, overrides?: Partial<Record<string, unknown>>) {
   return {
     success: true,
@@ -91,6 +96,16 @@ async function routeBacktestResult(
   handler: Parameters<typeof page.route>[1]
 ) {
   for (const endpoint of backtestResultEndpoints(taskId)) {
+    await page.route(endpoint, handler)
+  }
+}
+
+async function routeBacktestAttribution(
+  page: Parameters<typeof test>[0]["page"],
+  backtestId: number,
+  handler: Parameters<typeof page.route>[1]
+) {
+  for (const endpoint of backtestAttributionEndpoints(backtestId)) {
     await page.route(endpoint, handler)
   }
 }
@@ -174,13 +189,63 @@ test.describe("Strategy Management - Backtesting", () => {
   })
 
   test("loads backtest workbench successfully", async ({ page }) => {
-    await page.goto(`${FRONTEND_BASE_URL}/strategy/backtest`)
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/backtest`, { waitUntil: "domcontentloaded" })
 
-    await expect(page.getByRole("heading", { name: "策略回测管理中心" })).toBeVisible()
+    await expect(page.locator(".backtest-analysis-page")).toBeVisible()
+    await expect(page.locator(".backtest-header .section-title")).toContainText("策略回测管理中心")
     await expect(page.getByRole("button", { name: "执行中枢" })).toBeVisible()
     await expect(page.getByRole("button", { name: "回测任务" })).toBeVisible()
+    await expect(page.getByRole("button", { name: "生成上下文快照" })).toBeVisible()
+    await expect(page.getByRole("button", { name: "查看 GPU 接入状态" })).toBeVisible()
+    await expect(page.locator(".state-banner")).toContainText("任务、KPI 与报告摘要仍基于策略列表派生")
     await expect(page.locator(".progress-panel")).toBeVisible()
     await expect(page.locator(".log-panel")).toBeVisible()
+  })
+
+  test("keeps non-run execution actions informational instead of issuing fake backend work", async ({ page }) => {
+    let runCalls = 0
+    const apiRequests: string[] = []
+
+    page.on("request", (request) => {
+      if (request.url().includes("/api/")) {
+        apiRequests.push(`${request.method()} ${request.url()}`)
+      }
+    })
+
+    await routeBacktestRun(page, async (route) => {
+      runCalls += 1
+      await route.fulfill({
+        status: 202,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-backtest-run-informational",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              backtest_id: "bt-info-101",
+              status: "pending",
+              message: "回测任务已提交",
+            },
+            { request_id: "req-backtest-run-informational" }
+          )
+        ),
+      })
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/strategy/backtest?strategyId=101`)
+
+    await page.getByRole("button", { name: "生成上下文快照" }).click()
+    await expect(page.locator(".state-banner")).toContainText("不会创建后端任务")
+    await expect(page.locator(".execution-action-hint")).toContainText("最近快照")
+    expect(runCalls).toBe(0)
+
+    await page.getByRole("button", { name: "查看 GPU 接入状态" }).click()
+    await expect(page.locator(".state-banner")).toContainText("未接入 GPU 资源分配 API")
+    expect(runCalls).toBe(0)
+
+    const runRequests = apiRequests.filter((entry) => entry.includes("/strategy/backtest/run"))
+    expect(runRequests).toHaveLength(0)
   })
 
   test("switches tabs and renders corresponding content", async ({ page }) => {
@@ -200,6 +265,7 @@ test.describe("Strategy Management - Backtesting", () => {
     let runPayload: Record<string, unknown> | null = null
     let statusCalls = 0
     let resultCalls = 0
+    let attributionCalls = 0
     const apiRequests: string[] = []
 
     page.on("request", (request) => {
@@ -287,6 +353,41 @@ test.describe("Strategy Management - Backtesting", () => {
       })
     })
 
+    await routeBacktestAttribution(page, 101, async (route) => {
+      attributionCalls += 1
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-backtest-attribution",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              analysis_date: "2026-03-10",
+              brinson: {
+                allocation_effect: 0.012,
+                selection_effect: 0.018,
+                interaction_effect: -0.003,
+              },
+              factor_attribution: {
+                factor_exposures: {
+                  value: {
+                    portfolio_exposure: 0.42,
+                    benchmark_exposure: 0.21,
+                    active_exposure: 0.21,
+                  },
+                },
+                factor_contributions: { value: 0.014 },
+                specific_return: 0.006,
+              },
+            },
+            { request_id: "req-backtest-attribution" }
+          )
+        ),
+      })
+    })
+
     await page.goto(`${FRONTEND_BASE_URL}/strategy/backtest`)
 
     await page.getByRole("button", { name: "启动回测" }).click()
@@ -301,6 +402,12 @@ test.describe("Strategy Management - Backtesting", () => {
     await page.getByRole("button", { name: "报告中心" }).click()
     await expect(page.locator(".hybrid-table__content")).toContainText("Momentum Alpha")
     await expect(page.locator(".hybrid-table__content")).toContainText("+15.2%")
+    await page.locator('[data-testid="backtest-attribution-101"]').click()
+    await expect.poll(() => attributionCalls).toBe(1)
+    await expect(page.locator(".attribution-panel")).toContainText("回测归因")
+    await expect(page.locator(".attribution-panel")).toContainText("Brinson 归因")
+    await expect(page.locator(".attribution-panel")).toContainText("五因子归因")
+    await expect(page.locator(".attribution-panel")).toContainText("req-backtest-attribution")
   })
 
   test("shows the real backend error when v1 backtest run fails", async ({ page }) => {

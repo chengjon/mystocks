@@ -44,6 +44,7 @@ type Phase3State = {
   tradesPayload: Record<string, unknown>
   tradesRequestCount: number
   failTradesRefreshAfterFirst: boolean
+  hangReconciliationAccountId: string | null
   tradingRunning: boolean
   backtestStatusCalls: number
   unhandledRequests: string[]
@@ -131,6 +132,46 @@ const POSITIONS_PAYLOAD = {
   total_profit_loss_percent: 1.87,
 }
 
+const POSITIONS_ATTRIBUTION_PAYLOAD = {
+  analysis_date: "2026-04-03",
+  snapshot_meta: {
+    analysis_date: "2026-04-03",
+    constituent_count: 2,
+    total_market_value: 372664,
+    total_return: 0.0187,
+    stale: false,
+  },
+  brinson: {
+    allocation_effect: 0.009,
+    selection_effect: 0.014,
+    interaction_effect: -0.002,
+    industry_breakdown: {
+      消费: {
+        portfolio_weight: 0.54,
+        benchmark_weight: 0.4,
+        portfolio_return: 0.017,
+        benchmark_return: 0.01,
+        allocation_effect: 0.004,
+        selection_effect: 0.006,
+        interaction_effect: 0.001,
+      },
+    },
+  },
+  factor_attribution: {
+    factor_exposures: {
+      value: {
+        portfolio_exposure: 0.35,
+        benchmark_exposure: 0.18,
+        active_exposure: 0.17,
+      },
+    },
+    factor_contributions: { value: 0.011 },
+    specific_return: 0.005,
+  },
+  top_contributors: [{ symbol: "600519", industry: "消费", weight: 0.54, return_rate: 0.017, contribution_value: 0.009 }],
+  top_detractors: [],
+}
+
 const TRADES_PAYLOAD = {
   trades: [
     {
@@ -156,6 +197,179 @@ const TRADES_PAYLOAD = {
       status: "pending",
     },
   ],
+}
+
+const RECONCILIATION_ACCOUNTS = [
+  { account_id: "backtest:7", label: "Backtest #7", account_type: "backtest" },
+  { account_id: "backtest:8", label: "Backtest #8", account_type: "backtest" },
+]
+
+const RECONCILIATION_STATEMENTS_BY_ACCOUNT: Record<string, Record<string, unknown>> = {
+  "backtest:7": {
+    status: "available",
+    endpoint: "trade",
+    resource: "reconciliation_statements",
+    account_id: "backtest:7",
+    items: [
+      {
+        account_id: "backtest:7",
+        trade_id: "101",
+        order_id: "backtest-7-101",
+        symbol: "600519.SH",
+        direction: "buy",
+        trade_time: "2026-05-06T09:31:00",
+        price: 1750,
+        quantity: 100,
+        amount: 175000,
+        commission: 52.5,
+      },
+    ],
+    summary: {
+      total_count: 1,
+      total_amount: 175000,
+      total_commission: 52.5,
+    },
+    total_count: 1,
+    page: 1,
+    page_size: 20,
+    source: "backtest_trades",
+  },
+  "backtest:8": {
+    status: "available",
+    endpoint: "trade",
+    resource: "reconciliation_statements",
+    account_id: "backtest:8",
+    items: [
+      {
+        account_id: "backtest:8",
+        trade_id: "202",
+        order_id: "backtest-8-202",
+        symbol: "300750.SZ",
+        direction: "sell",
+        trade_time: "2026-05-06T10:15:00",
+        price: 212.5,
+        quantity: 50,
+        amount: 10625,
+        commission: 6.2,
+      },
+    ],
+    summary: {
+      total_count: 1,
+      total_amount: 10625,
+      total_commission: 6.2,
+    },
+    total_count: 1,
+    page: 1,
+    page_size: 20,
+    source: "backtest_trades",
+  },
+}
+
+const RECONCILIATION_RESULTS_BY_ACCOUNT: Record<string, Record<string, unknown>> = {
+  "backtest:7": {
+    status: "available",
+    endpoint: "trade",
+    resource: "reconciliation_results",
+    account_id: "backtest:7",
+    import_batch_id: "batch-7",
+    items: [
+      {
+        match_status: "matched",
+        internal_row: {
+          account_id: "backtest:7",
+          trade_id: "101",
+          order_id: "backtest-7-101",
+          symbol: "600519.SH",
+          direction: "buy",
+          trade_time: "2026-05-06T09:31:00",
+          price: 1750,
+          quantity: 100,
+          amount: 175000,
+          commission: 52.5,
+        },
+        broker_row: {
+          account_id: "backtest:7",
+          trade_id: "101",
+          order_id: "backtest-7-101",
+          symbol: "600519.SH",
+          direction: "buy",
+          trade_time: "2026-05-06T09:31:00",
+          price: 1750,
+          quantity: 100,
+          amount: 175000,
+          commission: 52.5,
+          source_type: "miniqmt",
+          raw_row_number: 2,
+        },
+        mismatch_fields: [],
+      },
+      {
+        match_status: "mismatched",
+        internal_row: {
+          account_id: "backtest:7",
+          trade_id: "102",
+          order_id: "backtest-7-102",
+          symbol: "601318.SH",
+          direction: "sell",
+          trade_time: "2026-05-06T10:01:00",
+          price: 55.5,
+          quantity: 300,
+          amount: 16650,
+          commission: 5.1,
+        },
+        broker_row: {
+          account_id: "backtest:7",
+          trade_id: "102-broker",
+          order_id: "backtest-7-102",
+          symbol: "601318.SH",
+          direction: "sell",
+          trade_time: "2026-05-06T10:01:00",
+          price: 55.5,
+          quantity: 300,
+          amount: 16660,
+          commission: 5.5,
+          source_type: "miniqmt",
+          raw_row_number: 3,
+        },
+        mismatch_fields: ["amount", "commission"],
+      },
+      {
+        match_status: "missing_broker_record",
+        internal_row: {
+          account_id: "backtest:7",
+          trade_id: "103",
+          order_id: "backtest-7-103",
+          symbol: "000001.SZ",
+          direction: "buy",
+          trade_time: "2026-05-06T10:21:00",
+          price: 12.5,
+          quantity: 1000,
+          amount: 12500,
+          commission: 4.1,
+        },
+        broker_row: null,
+        mismatch_fields: [],
+      },
+    ],
+    total_count: 3,
+    page: 1,
+    page_size: 20,
+    source: "backtest_trades",
+    match_status: null,
+  },
+  "backtest:8": {
+    status: "available",
+    endpoint: "trade",
+    resource: "reconciliation_results",
+    account_id: "backtest:8",
+    import_batch_id: "batch-7",
+    items: [],
+    total_count: 0,
+    page: 1,
+    page_size: 20,
+    source: "backtest_trades",
+    match_status: null,
+  },
 }
 
 function normalizePathname(url: string): string {
@@ -192,6 +406,7 @@ function createPhase3State(): Phase3State {
     tradesPayload: JSON.parse(JSON.stringify(TRADES_PAYLOAD)) as Record<string, unknown>,
     tradesRequestCount: 0,
     failTradesRefreshAfterFirst: false,
+    hangReconciliationAccountId: null,
     tradingRunning: false,
     backtestStatusCalls: 0,
     unhandledRequests: [],
@@ -263,7 +478,7 @@ async function stubPhase3Apis(page: Page, state: Phase3State): Promise<void> {
       return
     }
 
-    if (normalizedPath === "/csrf-token") {
+    if (normalizedPath === "/csrf-token" || normalizedPath === "/auth/csrf") {
       await route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -332,6 +547,21 @@ async function stubPhase3Apis(page: Page, state: Phase3State): Promise<void> {
       return
     }
 
+    if (normalizedPath === "/v1/positions/attribution" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase3-positions-attribution",
+          "x-process-time": "34ms",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(POSITIONS_ATTRIBUTION_PAYLOAD, { request_id: "req-phase3-positions-attribution" }),
+        ),
+      })
+      return
+    }
+
     if (normalizedPath === "/v1/trade/trades" && method === "GET") {
       state.tradesRequestCount += 1
 
@@ -362,6 +592,107 @@ async function stubPhase3Apis(page: Page, state: Phase3State): Promise<void> {
           "x-process-time": "29ms",
         },
         body: JSON.stringify(buildUnifiedResponse(state.tradesPayload, { request_id: "req-phase3-trades" })),
+      })
+      return
+    }
+
+    if (
+      (normalizedPath.startsWith("/v1/trade/reconciliation/accounts") ||
+        normalizedPath.startsWith("/trade/reconciliation/accounts")) &&
+      method === "GET"
+    ) {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase3-reconciliation-accounts",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse({ items: RECONCILIATION_ACCOUNTS }, { request_id: "req-phase3-reconciliation-accounts" }),
+        ),
+      })
+      return
+    }
+
+    if (
+      (normalizedPath.startsWith("/v1/trade/reconciliation/statements") ||
+        normalizedPath.startsWith("/trade/reconciliation/statements")) &&
+      method === "GET"
+    ) {
+      const accountId = new URL(request.url()).searchParams.get("account_id") ?? "backtest:7"
+
+      if (state.hangReconciliationAccountId === accountId) {
+        await new Promise(() => {})
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": `req-phase3-reconciliation-statements-${accountId.replace(/[:]/g, "-")}`,
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(RECONCILIATION_STATEMENTS_BY_ACCOUNT[accountId], {
+            request_id: `req-phase3-reconciliation-statements-${accountId.replace(/[:]/g, "-")}`,
+          }),
+        ),
+      })
+      return
+    }
+
+    if (
+      (normalizedPath.startsWith("/v1/trade/reconciliation/import") ||
+        normalizedPath.startsWith("/trade/reconciliation/import")) &&
+      method === "POST"
+    ) {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase3-reconciliation-import",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              status: "available",
+              endpoint: "trade",
+              resource: "reconciliation_import_batch",
+              import_batch_id: "batch-7",
+              account_id: "backtest:7",
+              source_type: "miniqmt",
+              row_count: 3,
+            },
+            { request_id: "req-phase3-reconciliation-import" },
+          ),
+        ),
+      })
+      return
+    }
+
+    if (
+      (normalizedPath.startsWith("/v1/trade/reconciliation/results") ||
+        normalizedPath.startsWith("/trade/reconciliation/results")) &&
+      method === "GET"
+    ) {
+      const accountId = new URL(request.url()).searchParams.get("account_id") ?? "backtest:7"
+
+      if (state.hangReconciliationAccountId === accountId) {
+        await new Promise(() => {})
+        return
+      }
+
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": `req-phase3-reconciliation-results-${accountId.replace(/[:]/g, "-")}`,
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(RECONCILIATION_RESULTS_BY_ACCOUNT[accountId], {
+            request_id: `req-phase3-reconciliation-results-${accountId.replace(/[:]/g, "-")}`,
+          }),
+        ),
       })
       return
     }
@@ -588,6 +919,7 @@ async function stubPhase3Apis(page: Page, state: Phase3State): Promise<void> {
 
 test.describe("Phase 3 Mainline Matrix", () => {
   test.describe.configure({ timeout: 180000 })
+  test.use({ serviceWorkers: "block" })
 
   test("Strategy-Repo renders strategy repository shell and actions", async ({ page }) => {
     const state = await setupPhase3Mock(page)
@@ -1905,6 +2237,10 @@ test.describe("Phase 3 Mainline Matrix", () => {
     await expect(page.locator(".positions-grid .position-item")).toHaveCount(2)
     await expect(page.locator(".portfolio-overview-tab")).toContainText("Top Positions")
     await expect(page.locator(".portfolio-overview-tab")).toContainText("贵州茅台")
+    await expect(page.locator(".attribution-panel")).toContainText("绩效归因")
+    await expect(page.locator(".attribution-panel")).toContainText("Brinson 归因")
+    await expect(page.locator(".attribution-panel")).toContainText("五因子归因")
+    await expect(page.locator(".attribution-panel")).toContainText("req-phase3-positions-attribution")
     await expect(page.locator(".rebalance-section")).toContainText("再平衡策略待接入")
     await expect(page.locator(".rebalance-section")).not.toContainText("目标 25%")
     await expect(page.locator(".rebalance-section")).not.toContainText("建议减仓约")
@@ -2134,6 +2470,51 @@ test.describe("Phase 3 Mainline Matrix", () => {
     await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
     await expect(page.locator(".artdeco-trading-history")).toContainText("交易历史接口失败")
     await expect(page.locator(".artdeco-trading-history")).not.toContainText("暂无历史成交记录")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
+  test("Trade-Reconciliation clears stale statement and result rows while a newly selected account snapshot is still unresolved", async ({
+    page,
+  }) => {
+    const state = await setupPhase3Mock(page)
+
+    await page.goto(`${FRONTEND_BASE_URL}/trade/reconciliation`)
+
+    await expect(page.getByText("对账单工作台").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("ACCOUNT: backtest:7")
+    await expect(page.locator(".trade-reconciliation")).toContainText("600519.SH")
+
+    await page.getByTestId("reconciliation-source-select").selectOption("miniqmt")
+    await page.getByTestId("reconciliation-file-input").setInputFiles({
+      name: "miniqmt.csv",
+      mimeType: "text/csv",
+      buffer: Buffer.from("symbol,price\n600519.SH,1750\n", "utf8"),
+    })
+    await page.getByRole("button", { name: "导入并对账" }).click()
+
+    await expect(page.locator(".trade-reconciliation")).toContainText("600519.SH")
+    await expect(page.locator(".trade-reconciliation")).toContainText("601318.SH")
+    await expect(page.locator(".trade-reconciliation")).toContainText("000001.SZ")
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase3-reconciliation-results-backtest-7")
+    await expect(page.locator(".hero-meta")).not.toContainText("UPDATED: --")
+
+    state.hangReconciliationAccountId = "backtest:8"
+    await page.getByTestId("reconciliation-account-select").selectOption("backtest:8")
+
+    await expect(page.locator(".hero-meta")).toContainText("ACCOUNT: backtest:8")
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
+    await expect(page.locator(".hero-meta")).toContainText("UPDATED: --")
+    await expect(page.locator(".hero-meta")).toContainText("IMPORT_BATCH: 未导入")
+    await expect(page.locator(".hero-meta")).toContainText("ROWS: 0")
+    await expect(page.locator(".hero-meta")).not.toContainText("REQ_ID: req-phase3-reconciliation-results-backtest-7")
+    await expect(page.locator(".hero-meta")).not.toContainText("IMPORT_BATCH: batch-7")
+    await expect(page.locator(".hero-meta")).not.toContainText("ROWS: 3")
+    await expect(page.locator(".trade-reconciliation")).not.toContainText("600519.SH")
+    await expect(page.locator(".trade-reconciliation")).not.toContainText("601318.SH")
+    await expect(page.locator(".trade-reconciliation")).not.toContainText("000001.SZ")
+    await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText(["--", "--", "--", "--", "--", "--"])
+    await expect(page.getByText("暂无内部账单记录。")).toBeVisible()
+    await expect(page.getByText("导入完成后将在这里展示只读对账结果。")).toBeVisible()
     expect(state.unhandledRequests).toEqual([])
   })
 })
