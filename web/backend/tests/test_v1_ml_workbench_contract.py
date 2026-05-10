@@ -75,6 +75,36 @@ async def test_v1_ml_runtime_status_reports_missing_optional_dependency(monkeypa
     assert "lightgbm_unavailable" in payload.data["warnings"]
 
 
+async def test_v1_ml_training_rejects_unavailable_lightgbm_dependency(monkeypatch):
+    module = _load_module()
+    workbench_module = _load_workbench_module()
+
+    real_find_spec = workbench_module.importlib.util.find_spec
+
+    def fake_find_spec(package_name: str):
+        if package_name == "lightgbm":
+            return None
+        return real_find_spec(package_name)
+
+    monkeypatch.setattr(workbench_module.importlib.util, "find_spec", fake_find_spec)
+
+    with pytest.raises(module.HTTPException) as excinfo:
+        await module.train_ml_workbench_model(
+            module.MLWorkbenchTrainingRequest(
+                model_family=module.MLWorkbenchModelFamily.LIGHTGBM,
+                symbol="600519.SH",
+                start_date="2024-01-01",
+                end_date="2024-12-31",
+                feature_window=20,
+                prediction_horizon=5,
+            )
+        )
+
+    assert excinfo.value.status_code == 503
+    assert excinfo.value.detail["error_code"] == "ml_backend_unavailable"
+    assert excinfo.value.detail["dependency"] == "lightgbm"
+
+
 async def test_v1_ml_training_rejects_insufficient_samples(monkeypatch):
     module = _load_module()
     workbench_module = _load_workbench_module()
@@ -199,6 +229,50 @@ async def test_v1_ml_prediction_rejects_incompatible_model_metadata():
 
     assert excinfo.value.status_code == 409
     assert "Model metadata incompatible" in excinfo.value.detail
+
+
+async def test_v1_ml_prediction_rejects_unavailable_model_backend(monkeypatch):
+    _reset_runtime_state()
+    module = _load_module()
+    workbench_module = _load_workbench_module()
+    module.runtime_store.upsert(
+        module.TrainedStrategyState(
+            strategy_id="lightgbm_model",
+            strategy_type="lightgbm",
+            symbol="600519.SH",
+            parameters={
+                "workbench_model": True,
+                "feature_context": {
+                    "feature_window": 20,
+                    "prediction_horizon": 5,
+                },
+            },
+            trained=True,
+            performance={"validation_score": 0.5},
+            feature_importance={},
+        )
+    )
+    real_find_spec = workbench_module.importlib.util.find_spec
+
+    def fake_find_spec(package_name: str):
+        if package_name == "lightgbm":
+            return None
+        return real_find_spec(package_name)
+
+    monkeypatch.setattr(workbench_module.importlib.util, "find_spec", fake_find_spec)
+
+    with pytest.raises(module.HTTPException) as excinfo:
+        await module.predict_ml_workbench_model(
+            module.MLWorkbenchPredictionRequest(
+                model_id="lightgbm_model",
+                symbol="600519.SH",
+                prediction_horizon=5,
+            )
+        )
+
+    assert excinfo.value.status_code == 503
+    assert excinfo.value.detail["error_code"] == "ml_backend_unavailable"
+    assert excinfo.value.detail["dependency"] == "lightgbm"
 
 
 async def test_v1_ml_prediction_rejects_symbol_scope_mismatch():

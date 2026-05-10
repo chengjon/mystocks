@@ -5,7 +5,8 @@
 > 它不自动等同于“当前已上线实现”或仓库共享治理规则的唯一真相源；执行时需同时核对 `architecture/STANDARDS.md`、审批状态、当前代码实现以及相关 `openspec/specs/` 正式规格。
 
 ## Purpose
-TBD - created by archiving change add-ml-training-prediction-workbench. Update Purpose after archive.
+Define the first-batch canonical contract for 7.1 model training and prediction inference, including runtime readiness, supervised training, prediction safety semantics, model artifact inspection, and compatibility boundaries for legacy ML routes.
+
 ## Requirements
 ### Requirement: Canonical ML Training And Prediction Surface
 The system SHALL provide a canonical v1 surface for `7.1 模型训练 / 预测推理`.

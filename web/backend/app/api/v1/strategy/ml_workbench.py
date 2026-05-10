@@ -54,6 +54,28 @@ def _dependency_status(package_name: str) -> dict[str, Any]:
     return {"available": available, "package": package_name}
 
 
+def _model_backend_dependency(model_family: str | MLWorkbenchModelFamily) -> str | None:
+    family = getattr(model_family, "value", model_family)
+    if family == MLWorkbenchModelFamily.LIGHTGBM.value:
+        return "lightgbm"
+    return None
+
+
+def _ensure_model_backend_available(model_family: str | MLWorkbenchModelFamily) -> None:
+    dependency = _model_backend_dependency(model_family)
+    if dependency and not _dependency_status(dependency)["available"]:
+        family = getattr(model_family, "value", model_family)
+        raise HTTPException(
+            status_code=503,
+            detail={
+                "error_code": "ml_backend_unavailable",
+                "dependency": dependency,
+                "model_family": family,
+                "message": f"Optional ML dependency '{dependency}' is required for {family} models.",
+            },
+        )
+
+
 def _ml_safety_payload() -> dict[str, Any]:
     return {
         "analytical_output_only": True,
@@ -134,6 +156,7 @@ async def get_ml_runtime_status():
     description="训练 7.1 canonical 模型工作台运行时模型，并返回模型指标与特征上下文。",
 )
 async def train_ml_workbench_model(request: MLWorkbenchTrainingRequest):
+    _ensure_model_backend_available(request.model_family)
     frame = _load_price_frame(request.symbol, request.start_date, request.end_date)
     if len(frame) <= request.feature_window + request.prediction_horizon:
         raise HTTPException(status_code=400, detail="Insufficient samples for ML training")
@@ -193,6 +216,7 @@ async def predict_ml_workbench_model(request: MLWorkbenchPredictionRequest):
     if state is None or state.parameters.get("workbench_model") is not True:
         raise HTTPException(status_code=404, detail=f"Unknown model_id: {request.model_id}")
 
+    _ensure_model_backend_available(state.strategy_type)
     feature_context = state.parameters.get("feature_context", {})
     if not feature_context.get("feature_window"):
         raise HTTPException(status_code=409, detail=f"Model metadata incompatible: {request.model_id}")
