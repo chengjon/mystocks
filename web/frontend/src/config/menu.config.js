@@ -116,20 +116,6 @@ const menuConfig = [
         path: '/strategy/signals',
         icon: 'Broadcast',
         disabled: false
-      },
-      {
-        id: 'ml-training',
-        title: '模型训练',
-        path: '/ml/training',
-        icon: 'School',
-        disabled: false
-      },
-      {
-        id: 'ml-prediction',
-        title: '价格预测',
-        path: '/ml/prediction',
-        icon: 'TrendCharts',
-        disabled: false
       }
     ]
   },
@@ -147,6 +133,13 @@ const menuConfig = [
         title: '情感分析',
         path: '/ai/sentiment',
         icon: 'ChatLineRound',
+        disabled: false
+      },
+      {
+        id: 'ai-ml',
+        title: '模型训练 / 预测',
+        path: '/ai/ml',
+        icon: 'School',
         disabled: false
       }
     ]

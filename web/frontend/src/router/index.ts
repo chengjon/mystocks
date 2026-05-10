@@ -182,6 +182,12 @@ const routes: RouteRecordRaw[] = [
             name: 'ai-sentiment',
             component: () => import('@/views/ai/Sentiment.vue'),
             meta: { title: '情感分析', requiresAuth: true, api: '/api/v1/analysis/sentiment/market' }
+          },
+          {
+            path: 'ml',
+            name: 'ai-ml',
+            component: () => import('@/views/ai/MlWorkbench.vue'),
+            meta: { title: '模型训练 / 预测', requiresAuth: true, api: '/api/v1/strategies/ml/runtime-status' }
           }
         ]
       },

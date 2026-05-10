@@ -7,7 +7,7 @@
 > 文内完成度、状态标签、功能归属和稳定 ID 如未重新复核，应视为阶段性快照；但凡本次改动已经改变功能边界、入口或状态，必须在同一变更批次同步更新本文件，不得让 `FUNCTION_TREE.md` 长期滞后于当前实现。
 
 
-> **版本**: 1.1.4 | **更新日期**: 2026-05-09 | **维护者**: 开发团队
+> **版本**: 1.1.5 | **更新日期**: 2026-05-10 | **维护者**: 开发团队
 > **文档类型**: 功能管理 / 功能边界总览 | **状态**: 活跃维护
 
 ---
@@ -393,8 +393,8 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[OpenSpec 工作流](../openspec/AGENTS.md) | AI 与实验能力治理入口 |
-| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[机器学习 API](../web/backend/app/api/ml.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py)<br>[情感分析 API](../web/backend/app/api/v1/analysis/sentiment.py)<br>[算法兼容入口](../web/backend/app/api/algorithms.py) | AI 与高级分析接口入口 |
-| 前端/交互入口 | [策略主路由目录](../web/frontend/src/views/strategy/)<br>[GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略信号页](../web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue) | AI 与高级分析主路由入口；AI 与高级分析交互入口 |
+| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[机器学习兼容 API](../web/backend/app/api/ml.py)<br>[v1 机器学习策略 API](../web/backend/app/api/v1/strategy/machine_learning.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py)<br>[情感分析 API](../web/backend/app/api/v1/analysis/sentiment.py)<br>[算法兼容入口](../web/backend/app/api/algorithms.py) | AI 与高级分析接口入口 |
+| 前端/交互入口 | [AI 情感分析页](../web/frontend/src/views/ai/Sentiment.vue)<br>[AI 模型训练 / 预测页](../web/frontend/src/views/ai/MlWorkbench.vue)<br>[策略主路由目录](../web/frontend/src/views/strategy/)<br>[GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略信号页](../web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue) | AI 与高级分析主路由入口；AI 与高级分析交互入口 |
 | 核心代码入口 | [高级分析模块](../src/advanced_analysis/)<br>[机器学习策略模块](../src/ml_strategy/)<br>[情感分析模块](../src/advanced_analysis/sentiment_analyzer/)<br>[GPU API 服务](../src/gpu/api_system/services/) | AI 与高级分析实现入口 |
 | 测试与验证入口 | [机器学习 API 测试](../tests/api/test_ml_file.py)<br>[高级回测测试](../tests/unit/test_advanced_backtest_engine.py)<br>[GPU 测试 README](../src/gpu/api_system/tests/README.md) | AI 与高级分析验证入口 |
 | 运行与排障入口 | [自动化说明](../src/ml_strategy/automation/README.md)<br>[GPU API README](../src/gpu/api_system/README.md)<br>[WSL2 GPU 设置](../src/gpu/api_system/WSL2_GPU_SETUP.md) | AI 与高级分析排障入口 |
@@ -404,8 +404,8 @@ Q2 closure note:
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
 | 特征工程 | ✅ | `src/ml_strategy/feature_engineering.py`, `web/backend/app/api/ml.py` | 特征生成与样本构造接口已存在 |
-| 模型训练 | 🚧 | `web/backend/app/api/ml.py`, `src/ml_strategy/strategy/ml_strategy_base.py` | 训练接口与策略框架已在，但运行时仍依赖可选 `MLPredictionService` |
-| 预测推理 | 🚧 | `web/backend/app/api/ml.py`, `src/ml_strategy/price_predictor.py` | 预测入口已在，但仍需按可选依赖和运行环境保守解读 |
+| 模型训练 | ✅ | `web/backend/app/api/v1/strategy/machine_learning.py`, `web/frontend/src/views/ai/MlWorkbench.vue`, `web/frontend/src/api/mlWorkbench.ts` | 首批 canonical 入口为 `/api/v1/strategies/ml/train` 与 `/ai/ml`；旧 `/api/ml/models/*` 保留为兼容面 |
+| 预测推理 | ✅ | `web/backend/app/api/v1/strategy/machine_learning.py`, `web/frontend/src/views/ai/MlWorkbench.vue`, `web/frontend/src/api/mlWorkbench.ts` | 首批 canonical 入口为 `/api/v1/strategies/ml/predict` 与 `/ai/ml`；预测结果明确为分析输出，不代表交易指令或成交事实 |
 
 ### 7.2 批量分析 {#domain-07-node-02}
 

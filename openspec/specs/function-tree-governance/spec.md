@@ -92,7 +92,6 @@ The system SHALL allow governance infrastructure changes to use reserved meta-go
 - **THEN** the scope gate SHALL accept `function_tree.update_status=not-needed`
 - **AND** it SHALL NOT require `docs/FUNCTION_TREE.md` synchronization.
 
-
 ### Requirement: Criteria-Backed Completion Semantics
 
 The function tree SHALL use criteria-backed completion semantics instead of subjective completion percentages alone.
@@ -111,3 +110,15 @@ The function tree SHALL use criteria-backed completion semantics instead of subj
 - **WHEN** the function tree classifies whether a capability is safety-sensitive
 - **THEN** capabilities involving funds movement, position change, or pre-execution risk decisions SHALL be treated as safety-sensitive
 - **AND** capabilities governed by a production-eligible trading execution path SHALL inherit that safety-sensitive classification
+
+### Requirement: FUNCTION_TREE Status Updates Must Follow Evidence
+`docs/FUNCTION_TREE.md` status changes SHALL reflect implemented and verified repository behavior rather than proposal intent.
+
+#### Scenario: Mark capability complete
+- **WHEN** a function-tree node is updated from in-progress to complete
+- **THEN** the update SHALL cite or be backed by implementation evidence, tests, and route/API truth
+- **AND** proposal-only or design-only work SHALL NOT be sufficient for completion status
+
+#### Scenario: Mark 7.1 training and prediction complete
+- **WHEN** `7.1 机器学习策略 -> 模型训练` and `预测推理` are marked complete
+- **THEN** the canonical v1 API, `/ai/ml` workbench route, runtime readiness, model training, prediction inference, safety semantics, and targeted tests SHALL all be implemented and verified
