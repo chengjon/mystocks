@@ -181,6 +181,10 @@ export function useMlWorkbench() {
   function selectModel(modelId: string) {
     selectedModelId.value = modelId
     predictionForm.model_id = modelId
+    const selectedModel = models.value.find((model) => model.model_id === modelId)
+    if (selectedModel?.symbol) {
+      predictionForm.symbol = selectedModel.symbol
+    }
   }
 
   function clearSelectedModel() {

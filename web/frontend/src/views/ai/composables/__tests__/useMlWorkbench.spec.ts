@@ -67,6 +67,35 @@ const populatedModelList = {
   request_id: 'req-ml-models-populated',
 }
 
+const multiSymbolModelList = {
+  success: true,
+  code: 200,
+  message: 'ok',
+  data: {
+    models: [
+      {
+        model_id: 'svm_600519_abc',
+        model_family: 'svm',
+        symbol: '600519.SH',
+        artifact_status: 'runtime_registered',
+        feature_context: { feature_window: 20, prediction_horizon: 5 },
+        metrics: { validation_score: 0.61 },
+      },
+      {
+        model_id: 'svm_000001_def',
+        model_family: 'svm',
+        symbol: '000001.SZ',
+        artifact_status: 'runtime_registered',
+        feature_context: { feature_window: 20, prediction_horizon: 5 },
+        metrics: { validation_score: 0.58 },
+      },
+    ],
+    total: 2,
+  },
+  timestamp: '2026-05-10T00:00:00Z',
+  request_id: 'req-ml-models-multi-symbol',
+}
+
 const successfulTrainingResult = {
   success: true,
   code: 200,
@@ -246,5 +275,20 @@ describe('useMlWorkbench', () => {
     expect(workbench.selectedModelId.value).toBe('')
     expect(workbench.predictionForm.model_id).toBe('')
     expect(workbench.runtimeMessage.value).toContain('ML model registry unavailable')
+  })
+
+  it('syncs prediction symbol when selecting a model from registry', async () => {
+    vi.mocked(listMlWorkbenchModels).mockResolvedValue(multiSymbolModelList as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    expect(workbench.predictionForm.model_id).toBe('svm_600519_abc')
+    expect(workbench.predictionForm.symbol).toBe('600519.SH')
+
+    workbench.selectModel('svm_000001_def')
+
+    expect(workbench.selectedModelId.value).toBe('svm_000001_def')
+    expect(workbench.predictionForm.model_id).toBe('svm_000001_def')
+    expect(workbench.predictionForm.symbol).toBe('000001.SZ')
   })
 })
