@@ -63,6 +63,7 @@ const modelFamilyOptionsMock = ref([
   { value: 'lightgbm', label: 'LightGBM', available: true, status: 'available' },
 ])
 const selectedModelFamilyBlockedMock = ref(false)
+const runtimeServiceBlockedMock = ref(false)
 
 vi.mock('../composables/useMlWorkbench', () => ({
   useMlWorkbench: () => ({
@@ -81,6 +82,7 @@ vi.mock('../composables/useMlWorkbench', () => ({
     readinessClass: readinessClassMock,
     modelFamilyOptions: modelFamilyOptionsMock,
     selectedModelFamilyBlocked: selectedModelFamilyBlockedMock,
+    runtimeServiceBlocked: runtimeServiceBlockedMock,
     refreshRuntime: refreshRuntimeMock,
     submitTraining: submitTrainingMock,
     submitPrediction: submitPredictionMock,
@@ -115,6 +117,7 @@ describe('AI ML workbench page', () => {
       { value: 'lightgbm', label: 'LightGBM', available: true, status: 'available' },
     ]
     selectedModelFamilyBlockedMock.value = false
+    runtimeServiceBlockedMock.value = false
   })
 
   it('loads runtime status on mount and renders canonical safety copy', async () => {
@@ -172,5 +175,16 @@ describe('AI ML workbench page', () => {
     expect(lightgbmOption.attributes('disabled')).toBeDefined()
     expect(wrapper.text()).toContain('当前模型族后端依赖不可用')
     expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('disables train and predict actions when runtime service is blocked', async () => {
+    runtimeServiceBlockedMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
   })
 })

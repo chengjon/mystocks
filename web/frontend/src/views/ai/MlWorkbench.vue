@@ -19,6 +19,7 @@ const {
   readinessClass,
   modelFamilyOptions,
   selectedModelFamilyBlocked,
+  runtimeServiceBlocked,
   refreshRuntime,
   submitTraining,
   submitPrediction,
@@ -110,7 +111,7 @@ onMounted(() => {
           data-testid="ml-train-submit"
           class="primary-button"
           type="button"
-          :disabled="trainingLoading || selectedModelFamilyBlocked"
+          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeServiceBlocked"
           @click="submitTraining"
         >
           提交训练
@@ -159,7 +160,7 @@ onMounted(() => {
           data-testid="ml-predict-submit"
           class="primary-button"
           type="button"
-          :disabled="predictionLoading || !predictionForm.model_id"
+          :disabled="predictionLoading || !predictionForm.model_id || runtimeServiceBlocked"
           @click="submitPrediction"
         >
           执行预测

@@ -52,6 +52,24 @@ const lightgbmUnavailableRuntimeStatus = {
   request_id: 'req-ml-runtime-lightgbm-unavailable',
 }
 
+const serviceUnavailableRuntimeStatus = {
+  success: true,
+  code: 200,
+  message: 'ok',
+  data: {
+    service_available: false,
+    model_backend: 'runtime_registry',
+    optional_dependencies: {
+      lightgbm: { available: true, package: 'lightgbm' },
+    },
+    legacy_api_available: true,
+    supported_operations: ['train', 'predict'],
+    warnings: ['runtime_unavailable'],
+  },
+  timestamp: '2026-05-10T00:00:00Z',
+  request_id: 'req-ml-runtime-service-unavailable',
+}
+
 const emptyModelList = {
   success: true,
   code: 200,
@@ -193,6 +211,17 @@ describe('useMlWorkbench', () => {
 
     expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
     expect(workbench.runtimeMessage.value).toContain('当前模型族后端依赖不可用')
+  })
+
+  it('does not submit training when runtime service is unavailable', async () => {
+    vi.mocked(getMlRuntimeStatus).mockResolvedValue(serviceUnavailableRuntimeStatus as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('ML runtime is unavailable')
   })
 
   it('surfaces machine-readable prediction backend errors from UnifiedResponse', async () => {
@@ -380,5 +409,17 @@ describe('useMlWorkbench', () => {
 
     expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
     expect(workbench.runtimeMessage.value).toContain('请先选择模型')
+  })
+
+  it('does not submit prediction when runtime service is unavailable', async () => {
+    vi.mocked(getMlRuntimeStatus).mockResolvedValue(serviceUnavailableRuntimeStatus as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    workbench.predictionForm.model_id = 'svm_600519_abc'
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('ML runtime is unavailable')
   })
 })

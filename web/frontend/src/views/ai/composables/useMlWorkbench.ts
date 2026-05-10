@@ -122,6 +122,8 @@ export function useMlWorkbench() {
     return selectedOption?.available === false
   })
 
+  const runtimeServiceBlocked = computed(() => runtimeStatus.value?.service_available === false)
+
   const refreshRuntime = async () => {
     loading.value = true
     runtimeMessage.value = ''
@@ -153,6 +155,9 @@ export function useMlWorkbench() {
     runtimeMessage.value = ''
     lastTrainingResult.value = null
     try {
+      if (runtimeServiceBlocked.value) {
+        throw new Error('ML runtime is unavailable. Please refresh runtime status before submitting work.')
+      }
       if (selectedModelFamilyBlocked.value) {
         throw new Error('当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。')
       }
@@ -174,6 +179,9 @@ export function useMlWorkbench() {
     runtimeMessage.value = ''
     lastPredictionResult.value = null
     try {
+      if (runtimeServiceBlocked.value) {
+        throw new Error('ML runtime is unavailable. Please refresh runtime status before submitting work.')
+      }
       const modelId = (predictionForm.model_id || selectedModelId.value).trim()
       if (!modelId) {
         throw new Error('请先选择模型后再执行预测。')
@@ -234,6 +242,7 @@ export function useMlWorkbench() {
     readinessClass,
     modelFamilyOptions,
     selectedModelFamilyBlocked,
+    runtimeServiceBlocked,
     refreshRuntime,
     submitTraining,
     submitPrediction,
