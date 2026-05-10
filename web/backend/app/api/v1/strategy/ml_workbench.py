@@ -4,9 +4,10 @@ from __future__ import annotations
 
 import importlib.util
 import os
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from enum import Enum
 from pathlib import Path
+import re
 from typing import Annotated, Any, Dict
 from uuid import uuid4
 
@@ -22,6 +23,16 @@ from .runtime_state import TrainedStrategyState, runtime_store
 router = APIRouter(prefix="/ml")
 
 NonBlankString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+DATE_ONLY_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+def _parse_workbench_date(value: str) -> date:
+    if not DATE_ONLY_PATTERN.fullmatch(value):
+        raise ValueError("training dates must use YYYY-MM-DD format")
+    try:
+        return date.fromisoformat(value)
+    except ValueError as exc:
+        raise ValueError("training dates must use YYYY-MM-DD format") from exc
 
 
 class MLWorkbenchModelFamily(str, Enum):
@@ -44,8 +55,8 @@ class MLWorkbenchTrainingRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_date_range(self) -> "MLWorkbenchTrainingRequest":
-        start_dt = datetime.fromisoformat(self.start_date)
-        end_dt = datetime.fromisoformat(self.end_date)
+        start_dt = _parse_workbench_date(self.start_date)
+        end_dt = _parse_workbench_date(self.end_date)
         if start_dt >= end_dt:
             raise ValueError("start_date must be earlier than end_date")
         return self

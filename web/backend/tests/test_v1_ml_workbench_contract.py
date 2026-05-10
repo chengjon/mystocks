@@ -167,6 +167,22 @@ def test_v1_ml_training_request_rejects_invalid_date_range():
     assert "start_date must be earlier than end_date" in str(excinfo.value)
 
 
+def test_v1_ml_training_request_rejects_non_date_iso_datetime():
+    module = _load_module()
+
+    with pytest.raises(ValidationError) as excinfo:
+        module.MLWorkbenchTrainingRequest(
+            model_family=module.MLWorkbenchModelFamily.SVM,
+            symbol="600519.SH",
+            start_date="2024-01-01T00:00:00",
+            end_date="2024-12-31",
+            feature_window=20,
+            prediction_horizon=5,
+        )
+
+    assert "training dates must use YYYY-MM-DD format" in str(excinfo.value)
+
+
 def test_v1_ml_prediction_request_rejects_blank_scope_fields():
     module = _load_module()
 
