@@ -133,10 +133,10 @@ export function useMlWorkbench() {
       runtimeStatus.value = requireMlResponseData(statusResponse, 'ML runtime request failed')
       const modelList = requireMlResponseData(modelsResponse, 'ML model list request failed')
       models.value = modelList.models || []
-      if (!selectedModelId.value && models.value.length > 0) {
-        selectModel(models.value[0].model_id)
-      }
+      syncModelSelection()
     } catch (error) {
+      models.value = []
+      clearSelectedModel()
       runtimeMessage.value = error instanceof Error ? error.message : 'ML runtime request failed'
     } finally {
       loading.value = false
@@ -181,6 +181,25 @@ export function useMlWorkbench() {
   function selectModel(modelId: string) {
     selectedModelId.value = modelId
     predictionForm.model_id = modelId
+  }
+
+  function clearSelectedModel() {
+    selectedModelId.value = ''
+    predictionForm.model_id = ''
+  }
+
+  function syncModelSelection() {
+    if (models.value.length === 0) {
+      clearSelectedModel()
+      return
+    }
+
+    const selectedModelStillExists = models.value.some(
+      (model) => model.model_id === selectedModelId.value,
+    )
+    if (!selectedModelStillExists) {
+      selectModel(models.value[0].model_id)
+    }
   }
 
   return {
