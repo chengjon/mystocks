@@ -300,3 +300,30 @@ async def test_v1_ml_prediction_rejects_symbol_scope_mismatch():
 
     assert excinfo.value.status_code == 409
     assert "Model symbol scope mismatch" in excinfo.value.detail
+
+
+async def test_v1_ml_prediction_rejects_horizon_scope_mismatch():
+    _reset_runtime_state()
+    module = _load_module()
+    train_payload = await module.train_ml_workbench_model(
+        module.MLWorkbenchTrainingRequest(
+            model_family=module.MLWorkbenchModelFamily.SVM,
+            symbol="600519.SH",
+            start_date="2024-01-01",
+            end_date="2024-12-31",
+            feature_window=20,
+            prediction_horizon=5,
+        )
+    )
+
+    with pytest.raises(module.HTTPException) as excinfo:
+        await module.predict_ml_workbench_model(
+            module.MLWorkbenchPredictionRequest(
+                model_id=train_payload.data["model_id"],
+                symbol="600519.SH",
+                prediction_horizon=10,
+            )
+        )
+
+    assert excinfo.value.status_code == 409
+    assert "Model horizon scope mismatch" in excinfo.value.detail

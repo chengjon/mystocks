@@ -225,6 +225,12 @@ async def predict_ml_workbench_model(request: MLWorkbenchPredictionRequest):
             status_code=409,
             detail=f"Model symbol scope mismatch: {request.symbol} is not {state.symbol}",
         )
+    trained_horizon = feature_context.get("prediction_horizon")
+    if trained_horizon and request.prediction_horizon != trained_horizon:
+        raise HTTPException(
+            status_code=409,
+            detail=f"Model horizon scope mismatch: {request.prediction_horizon} is not {trained_horizon}",
+        )
 
     frame = _load_price_frame(request.symbol, "2024-01-01", datetime.now(timezone.utc).date().isoformat())
     prediction, confidence = _workbench_signal(

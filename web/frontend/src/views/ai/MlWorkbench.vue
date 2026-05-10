@@ -24,6 +24,7 @@ const {
   trainingOperationBlocked,
   predictionOperationBlocked,
   predictionSymbolMismatch,
+  predictionHorizonMismatch,
   refreshRuntime,
   submitTraining,
   submitPrediction,
@@ -165,6 +166,9 @@ onMounted(() => {
         <p v-if="predictionSymbolMismatch" class="runtime-message compact">
           预测标的必须与所选模型一致，请重新选择模型或刷新模型列表。
         </p>
+        <p v-if="predictionHorizonMismatch" class="runtime-message compact">
+          预测周期必须与所选模型一致，请重新选择模型或刷新模型列表。
+        </p>
         <p v-if="predictionOperationBlocked" class="runtime-message compact">
           当前 ML 运行时不支持预测，请刷新运行时状态或检查后端能力。
         </p>
@@ -176,7 +180,7 @@ onMounted(() => {
           data-testid="ml-predict-submit"
           class="primary-button"
           type="button"
-          :disabled="predictionLoading || !predictionForm.model_id || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch"
+          :disabled="predictionLoading || !predictionForm.model_id || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch || predictionHorizonMismatch"
           @click="submitPrediction"
         >
           执行预测

@@ -137,6 +137,11 @@ export function useMlWorkbench() {
     const selectedModel = selectedPredictionModel.value
     return Boolean(selectedModel && predictionForm.symbol !== selectedModel.symbol)
   })
+  const predictionHorizonMismatch = computed(() => {
+    const selectedModel = selectedPredictionModel.value
+    const trainedHorizon = selectedModel?.feature_context?.prediction_horizon
+    return Boolean(trainedHorizon && predictionForm.prediction_horizon !== trainedHorizon)
+  })
 
   const refreshRuntime = async () => {
     loading.value = true
@@ -187,6 +192,9 @@ export function useMlWorkbench() {
       await refreshRuntime()
       selectModel(trainingResult.model_id)
       predictionForm.symbol = trainingResult.symbol
+      if (trainingResult.feature_context?.prediction_horizon) {
+        predictionForm.prediction_horizon = trainingResult.feature_context.prediction_horizon
+      }
     } catch (error) {
       runtimeMessage.value = error instanceof Error ? error.message : 'ML training failed'
     } finally {
@@ -215,6 +223,9 @@ export function useMlWorkbench() {
       if (predictionSymbolMismatch.value) {
         throw new Error('预测标的必须与所选模型一致，请重新选择模型或刷新模型列表。')
       }
+      if (predictionHorizonMismatch.value) {
+        throw new Error('预测周期必须与所选模型一致，请重新选择模型或刷新模型列表。')
+      }
       const response = await predictMlWorkbenchModel({
         ...predictionForm,
         model_id: modelId,
@@ -233,6 +244,9 @@ export function useMlWorkbench() {
     const selectedModel = models.value.find((model) => model.model_id === modelId)
     if (selectedModel?.symbol) {
       predictionForm.symbol = selectedModel.symbol
+    }
+    if (selectedModel?.feature_context?.prediction_horizon) {
+      predictionForm.prediction_horizon = selectedModel.feature_context.prediction_horizon
     }
   }
 
@@ -276,6 +290,7 @@ export function useMlWorkbench() {
     trainingOperationBlocked,
     predictionOperationBlocked,
     predictionSymbolMismatch,
+    predictionHorizonMismatch,
     refreshRuntime,
     submitTraining,
     submitPrediction,

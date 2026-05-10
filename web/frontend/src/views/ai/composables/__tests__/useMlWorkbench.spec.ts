@@ -158,7 +158,7 @@ const multiSymbolModelList = {
         model_family: 'svm',
         symbol: '000001.SZ',
         artifact_status: 'runtime_registered',
-        feature_context: { feature_window: 20, prediction_horizon: 5 },
+        feature_context: { feature_window: 20, prediction_horizon: 10 },
         metrics: { validation_score: 0.58 },
       },
     ],
@@ -433,6 +433,7 @@ describe('useMlWorkbench', () => {
     expect(workbench.selectedModelId.value).toBe('svm_000001_def')
     expect(workbench.predictionForm.model_id).toBe('svm_000001_def')
     expect(workbench.predictionForm.symbol).toBe('000001.SZ')
+    expect(workbench.predictionForm.prediction_horizon).toBe(10)
   })
 
   it('syncs prediction symbol from training result when registry has not refreshed the new model', async () => {
@@ -446,7 +447,7 @@ describe('useMlWorkbench', () => {
         model_family: 'svm',
         symbol: '000001.SZ',
         artifact_status: 'runtime_registered',
-        feature_context: { feature_window: 20, prediction_horizon: 5 },
+        feature_context: { feature_window: 20, prediction_horizon: 10 },
         metrics: { validation_score: 0.59 },
       },
       timestamp: '2026-05-10T00:00:00Z',
@@ -460,6 +461,7 @@ describe('useMlWorkbench', () => {
     expect(workbench.selectedModelId.value).toBe('svm_000001_new')
     expect(workbench.predictionForm.model_id).toBe('svm_000001_new')
     expect(workbench.predictionForm.symbol).toBe('000001.SZ')
+    expect(workbench.predictionForm.prediction_horizon).toBe(10)
   })
 
   it('does not submit prediction without a selected model', async () => {
@@ -491,6 +493,19 @@ describe('useMlWorkbench', () => {
 
     expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
     expect(workbench.runtimeMessage.value).toContain('预测标的必须与所选模型一致')
+  })
+
+  it('does not submit prediction when manual horizon differs from the selected model', async () => {
+    vi.mocked(listMlWorkbenchModels).mockResolvedValue(multiSymbolModelList as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    workbench.selectModel('svm_600519_abc')
+    workbench.predictionForm.prediction_horizon = 10
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('预测周期必须与所选模型一致')
   })
 
   it('does not submit prediction when runtime service is unavailable', async () => {
