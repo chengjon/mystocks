@@ -151,6 +151,22 @@ def test_v1_ml_training_request_rejects_blank_symbol():
         )
 
 
+def test_v1_ml_training_request_rejects_invalid_date_range():
+    module = _load_module()
+
+    with pytest.raises(ValidationError) as excinfo:
+        module.MLWorkbenchTrainingRequest(
+            model_family=module.MLWorkbenchModelFamily.SVM,
+            symbol="600519.SH",
+            start_date="2024-12-31",
+            end_date="2024-01-01",
+            feature_window=20,
+            prediction_horizon=5,
+        )
+
+    assert "start_date must be earlier than end_date" in str(excinfo.value)
+
+
 def test_v1_ml_prediction_request_rejects_blank_scope_fields():
     module = _load_module()
 

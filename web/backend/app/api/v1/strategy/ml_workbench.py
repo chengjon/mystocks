@@ -12,7 +12,7 @@ from uuid import uuid4
 
 import pandas as pd
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field, StringConstraints
+from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 from app.core.responses import UnifiedResponse
 
@@ -41,6 +41,14 @@ class MLWorkbenchTrainingRequest(BaseModel):
     feature_window: int = Field(20, ge=5, le=120, description="Rolling feature window")
     prediction_horizon: int = Field(1, ge=1, le=30, description="Prediction horizon in trading periods")
     parameters: Dict[str, Any] = Field(default_factory=dict, description="Model parameters")
+
+    @model_validator(mode="after")
+    def validate_date_range(self) -> "MLWorkbenchTrainingRequest":
+        start_dt = datetime.fromisoformat(self.start_date)
+        end_dt = datetime.fromisoformat(self.end_date)
+        if start_dt >= end_dt:
+            raise ValueError("start_date must be earlier than end_date")
+        return self
 
 
 class MLWorkbenchPredictionRequest(BaseModel):
