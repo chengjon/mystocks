@@ -163,4 +163,52 @@ test.describe('AI ML workbench', () => {
     await expect(page.locator('.result-panel')).toContainText('buy')
     await expect(page.locator('.result-panel')).toContainText('0.72')
   })
+
+  test('disables actions when runtime does not advertise train or predict support', async ({ page }) => {
+    await page.unroute('**/api/v1/strategies/ml/runtime-status')
+    await page.route('**/api/v1/strategies/ml/runtime-status', async (route) => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              service_available: true,
+              model_backend: 'runtime_registry',
+              optional_dependencies: {
+                lightgbm: { available: true, package: 'lightgbm' },
+              },
+              legacy_api_available: true,
+              supported_operations: ['models:list', 'models:detail'],
+              warnings: ['train_unsupported', 'predict_unsupported'],
+              safety: {
+                analytical_output_only: true,
+                disclaimer: 'ML predictions are analytical outputs, not a trade instruction or execution fact.',
+              },
+            },
+            'req-ai-ml-status-unsupported-operations',
+          ),
+        ),
+      })
+    })
+
+    await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
+
+    await expect(page.getByRole('heading', { name: '模型训练 / 预测' })).toBeVisible({ timeout: 15000 })
+    await expect(page.locator('.ai-ml-workbench')).toContainText('当前 ML 运行时不支持训练')
+    await expect(page.locator('.ai-ml-workbench')).toContainText('当前 ML 运行时不支持预测')
+    await expect(page.getByTestId('ml-train-submit')).toBeDisabled()
+    await expect(page.getByTestId('ml-predict-submit')).toBeDisabled()
+  })
+
+  test('disables prediction when manual symbol differs from selected model scope', async ({ page }) => {
+    await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
+
+    await expect(page.getByRole('heading', { name: '模型训练 / 预测' })).toBeVisible({ timeout: 15000 })
+    const predictionPanel = page.locator('.panel').filter({ hasText: '预测推理' })
+    await predictionPanel.getByLabel('标的').fill('000001.SZ')
+
+    await expect(page.locator('.ai-ml-workbench')).toContainText('预测标的必须与所选模型一致')
+    await expect(page.getByTestId('ml-predict-submit')).toBeDisabled()
+  })
 })
