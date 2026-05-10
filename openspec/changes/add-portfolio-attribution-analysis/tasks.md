@@ -28,20 +28,20 @@
 
 ## 5. Frontend Shared Attribution Surface
 
-- [ ] 5.1 Add shared attribution API client and canonical frontend types
-- [ ] 5.2 Add canonical attribution composable for loading, stale handling, and request-id capture
-- [ ] 5.3 Add shared attribution overview, Brinson, industry, factor, contributor, empty-state, and error-state components
-- [ ] 5.4 Add targeted frontend unit tests for shared attribution rendering and orchestration
+- [x] 5.1 Add shared attribution API client and canonical frontend types
+- [x] 5.2 Add canonical attribution composable for loading, stale handling, and request-id capture
+- [x] 5.3 Add shared attribution overview, Brinson, industry, factor, contributor, empty-state, and error-state components
+- [x] 5.4 Add targeted frontend unit tests for shared attribution rendering and orchestration
 
 ## 6. Frontend Domain Shells
 
 - [ ] 6.1 Wire attribution into the strategy/backtest shell for selected backtest-result snapshots
-- [ ] 6.2 Replace trade pseudo-attribution cards with the shared attribution surface in `Portfolio.vue`
+- [x] 6.2 Replace trade pseudo-attribution cards with the shared attribution surface in `Portfolio.vue`
 - [ ] 6.3 Add current-vs-date-scoped trade attribution controls and shell-specific tests
 
 ## 7. Verification And Governance
 
 - [x] 7.1 Run targeted backend attribution tests
-- [ ] 7.2 Run targeted frontend attribution unit tests
+- [x] 7.2 Run targeted frontend attribution unit tests
 - [ ] 7.3 Run attribution E2E smoke for strategy and trade shells
 - [ ] 7.4 Update `docs/FUNCTION_TREE.md` after both shells and both attribution types are verified

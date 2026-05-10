@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import AttributionPanel from '@/components/shared/attribution/AttributionPanel.vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
+import { useAttributionAnalysis } from '@/composables/attribution/useAttributionAnalysis.ts'
 import { apiClient } from '@/api/apiClient'
 import {
   extractTradePositionsPayload,
@@ -9,39 +11,63 @@ import {
   type PortfolioOverviewData,
 } from '@/views/artdeco-pages/portfolio-tabs/portfolioOverviewData'
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
+const { loading, error, lastRequestId, exec } = useArtDecoApi()
+const {
+  data: attribution,
+  loading: attributionLoading,
+  error: attributionError,
+  lastRequestId: attributionRequestId,
+  loadAttribution,
+  clearAttribution,
+} = useAttributionAnalysis()
+const props = withDefaults(defineProps<{ functionKey?: string }>(), {
+  functionKey: '',
+})
 const portfolio = ref<PortfolioOverviewData>(toPortfolioOverviewData(null))
+const hasSuccessfulPortfolioSnapshot = ref(false)
+const lastVerifiedRequestId = ref('')
+const isEmbedded = computed(() => Boolean(props.functionKey))
+const isPendingFirstPortfolioLoad = computed(() => loading.value && !hasSuccessfulPortfolioSnapshot.value)
+const isUnavailableFirstPortfolioLoad = computed(() => Boolean(error.value) && !hasSuccessfulPortfolioSnapshot.value)
+const shouldUsePortfolioPlaceholders = computed(() => isPendingFirstPortfolioLoad.value || isUnavailableFirstPortfolioLoad.value)
+const displayRequestId = computed(() => {
+  if (shouldUsePortfolioPlaceholders.value) {
+    return 'N/A'
+  }
+
+  return lastVerifiedRequestId.value || lastRequestId.value || 'N/A'
+})
 const pageStatusText = computed(() => {
+  if (error.value) return '拉取失败'
   if (loading.value) return '同步中'
+  if ((portfolio.value?.positions?.length ?? 0) === 0) return '组合为空'
   return (portfolio.value?.today_pnl ?? 0) >= 0 ? '组合偏强' : '组合承压'
 })
-const pageStatusType = computed(() => ((portfolio.value?.today_pnl ?? 0) >= 0 ? 'success' : 'warning'))
-
-const performanceAttribution = computed(() => {
-  const positions = portfolio.value?.positions ?? []
-  const total = Math.max(
-    1,
-    positions.reduce((sum, item) => sum + item.market_value, 0),
-  )
-
-  return positions
-    .map((item) => {
-      const weight = item.market_value / total
-      const pnlContribution = weight * item.pnl_pct
-      return {
-        symbol: item.symbol,
-        name: item.name,
-        weight: Number((weight * 100).toFixed(2)),
-        pnlContribution: Number(pnlContribution.toFixed(2)),
-      }
-    })
-    .sort((a, b) => Math.abs(b.pnlContribution) - Math.abs(a.pnlContribution))
-    .slice(0, 8)
+const pageStatusType = computed(() => {
+  if (error.value) return 'warning'
+  if ((portfolio.value?.positions?.length ?? 0) === 0) return 'info'
+  return (portfolio.value?.today_pnl ?? 0) >= 0 ? 'success' : 'warning'
 })
+const runtimeMessage = computed(() => {
+  if (error.value) {
+    return hasSuccessfulPortfolioSnapshot.value
+      ? `${error.value}，当前仍显示上次成功同步的组合快照。`
+      : `${error.value}，当前暂无已验证组合快照。`
+  }
+  if (loading.value) {
+    return '组合资产同步中...'
+  }
+  if ((portfolio.value?.positions?.length ?? 0) === 0) {
+    return '当前暂无持仓，归因与再平衡建议已折叠为空状态。'
+  }
+  return ''
+})
+
+const rebalancePolicyReady = computed(() => portfolio.value?.rebalance_policy_ready === true)
 
 const autoRebalanceSuggestions = computed(() => {
   const positions = portfolio.value?.positions ?? []
-  if (positions.length === 0) {
+  if (positions.length === 0 || !rebalancePolicyReady.value) {
     return []
   }
 
@@ -50,14 +76,16 @@ const autoRebalanceSuggestions = computed(() => {
     positions.reduce((sum, item) => sum + item.market_value, 0),
   )
 
-  const targetWeight = Math.min(25, Number((100 / positions.length).toFixed(2)))
-
   return positions
-    .map((item) => {
+    .flatMap((item) => {
+      if (item.target_weight === null) {
+        return []
+      }
       const currentWeight = Number(((item.market_value / total) * 100).toFixed(2))
+      const targetWeight = Number(item.target_weight.toFixed(2))
       const gap = Number((currentWeight - targetWeight).toFixed(2))
       const amount = Number(((Math.abs(gap) / 100) * total).toFixed(2))
-      return {
+      return [{
         symbol: item.symbol,
         name: item.name,
         currentWeight,
@@ -65,27 +93,63 @@ const autoRebalanceSuggestions = computed(() => {
         gap,
         amount,
         action: gap > 0 ? '减仓' : '加仓',
-      }
+      }]
     })
     .filter((item) => Math.abs(item.gap) >= 3)
     .sort((a, b) => Math.abs(b.gap) - Math.abs(a.gap))
     .slice(0, 6)
 })
 
+const rebalanceStatValue = computed(() => (
+  rebalancePolicyReady.value ? autoRebalanceSuggestions.value.length : '待接入'
+))
+
 const positionCount = computed(() => portfolio.value?.positions?.length || 0)
+const displayPositionCount = computed(() => (shouldUsePortfolioPlaceholders.value ? '--' : `${positionCount.value}`))
 const totalAssetsLabel = computed(() =>
   portfolio.value?.total_assets?.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) || '0.00',
 )
+const displayTotalAssetsLabel = computed(() => (shouldUsePortfolioPlaceholders.value ? '--' : totalAssetsLabel.value))
 const todayPnlLabel = computed(() =>
   `${(portfolio.value?.today_pnl ?? 0) >= 0 ? '+' : ''}${portfolio.value?.today_pnl?.toLocaleString() || 0}`,
 )
+const displayTodayPnlLabel = computed(() => (shouldUsePortfolioPlaceholders.value ? '--' : todayPnlLabel.value))
+const displayTodayPnlPct = computed(() => (shouldUsePortfolioPlaceholders.value ? '--' : `${portfolio.value?.today_pnl_pct ?? 0}%`))
+const displayRebalanceStatValue = computed(() => (shouldUsePortfolioPlaceholders.value ? '--' : `${rebalanceStatValue.value}`))
+const todayPnlStatVariant = computed(() => (
+  shouldUsePortfolioPlaceholders.value ? 'gold' : (portfolio.value?.today_pnl ?? 0) >= 0 ? 'rise' : 'fall'
+))
+const todayPnlHeroClass = computed(() => (
+  shouldUsePortfolioPlaceholders.value ? 'pending' : (portfolio.value?.today_pnl ?? 0) >= 0 ? 'rise' : 'down'
+))
+
+const fetchAttribution = async () => {
+  if ((portfolio.value?.positions?.length ?? 0) === 0) {
+    clearAttribution()
+    return
+  }
+
+  await loadAttribution({ source: 'trade' })
+}
 
 const fetchPortfolio = async () => {
   const responseData = await exec(() => apiClient.get('/v1/trade/positions'), {
     silent: true,
   })
 
-  portfolio.value = toPortfolioOverviewData(extractTradePositionsPayload(responseData))
+  const payload = extractTradePositionsPayload(responseData)
+  if (payload) {
+    portfolio.value = toPortfolioOverviewData(payload)
+    hasSuccessfulPortfolioSnapshot.value = true
+    lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
+    await fetchAttribution()
+    return
+  }
+
+  if (!hasSuccessfulPortfolioSnapshot.value) {
+    portfolio.value = toPortfolioOverviewData(null)
+    clearAttribution()
+  }
 }
 
 onMounted(() => {
@@ -94,15 +158,15 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="portfolio-overview-tab page-enter">
-    <section class="hero-shell artdeco-card-shell">
+  <div class="portfolio-overview-tab page-enter" :class="{ 'is-embedded': isEmbedded }">
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
       <div class="hero-rail">
         <div class="hero-copy">
           <span class="hero-eyebrow">portfolio assets desk</span>
           <div class="hero-meta">
-            <span v-if="lastRequestId">REQ: {{ lastRequestId }}</span>
-            <span>POSITIONS: {{ positionCount }}</span>
-            <span>REBALANCE: {{ autoRebalanceSuggestions.length }}</span>
+            <span>REQ: {{ displayRequestId }}</span>
+            <span>POSITIONS: {{ displayPositionCount }}</span>
+            <span>REBALANCE: {{ displayRebalanceStatValue }}</span>
           </div>
         </div>
       </div>
@@ -125,37 +189,42 @@ onMounted(() => {
       </ArtDecoHeader>
     </section>
 
-    <section class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="总资产" :value="totalAssetsLabel" variant="gold" />
+    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
+      <ArtDecoStatCard label="总资产" :value="displayTotalAssetsLabel" :show-change="false" variant="gold" />
       <ArtDecoStatCard
         label="今日盈亏"
-        :value="todayPnlLabel"
-        :variant="(portfolio?.today_pnl ?? 0) >= 0 ? 'rise' : 'fall'"
+        :value="displayTodayPnlLabel"
+        :show-change="false"
+        :variant="todayPnlStatVariant"
       />
-      <ArtDecoStatCard label="持仓数量" :value="positionCount" variant="gold" />
-      <ArtDecoStatCard label="再平衡建议" :value="autoRebalanceSuggestions.length" variant="gold" />
+      <ArtDecoStatCard label="持仓数量" :value="displayPositionCount" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="再平衡建议" :value="displayRebalanceStatValue" :show-change="false" variant="gold" />
     </section>
 
     <div class="assets-hero artdeco-card" v-loading="loading">
       <div class="hero-content">
         <div class="asset-main">
-          <label>Total Assets (CNY)</label>
-          <div class="value">{{ portfolio?.total_assets?.toLocaleString('zh-CN', { minimumFractionDigits: 2 }) }}</div>
+          <span class="asset-label">Total Assets (CNY)</span>
+          <div class="value">{{ displayTotalAssetsLabel }}</div>
         </div>
         <div class="asset-pnl">
-          <label>Today's P&amp;L</label>
-          <div :class="['pnl-value', (portfolio?.today_pnl ?? 0) >= 0 ? 'rise' : 'down']">
-            {{ (portfolio?.today_pnl ?? 0) >= 0 ? '+' : '' }}{{ portfolio?.today_pnl?.toLocaleString() }}
-            <span class="pct">({{ portfolio?.today_pnl_pct }}%)</span>
+          <span class="asset-label">Today's P&amp;L</span>
+          <div :class="['pnl-value', todayPnlHeroClass]">
+            {{ displayTodayPnlLabel }}
+            <span class="pct">({{ displayTodayPnlPct }})</span>
           </div>
         </div>
       </div>
       <div class="hero-decoration"></div>
     </div>
 
+    <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+
     <div class="position-list-section">
       <h3 class="subsection-title">Top Positions</h3>
-      <div class="positions-grid">
+      <div v-if="isPendingFirstPortfolioLoad" class="section-empty artdeco-card">持仓明细同步中，正在等待真实组合返回。</div>
+      <div v-else-if="isUnavailableFirstPortfolioLoad" class="section-empty artdeco-card">组合资产不可用，暂无可展示的持仓快照。</div>
+      <div v-else-if="portfolio?.positions?.length" class="positions-grid">
         <div v-for="pos in portfolio?.positions" :key="pos.symbol" class="position-item artdeco-card">
           <div class="pos-header">
             <span class="name">{{ pos.name }}</span>
@@ -173,38 +242,32 @@ onMounted(() => {
           </div>
         </div>
       </div>
+      <div v-else class="section-empty artdeco-card">暂无持仓数据。</div>
     </div>
 
     <div class="attribution-section">
-      <h3 class="subsection-title">绩效归因</h3>
-      <div class="attribution-grid">
-        <div
-          v-for="item in performanceAttribution"
-          :key="`attr-${item.symbol}`"
-          class="attribution-item artdeco-card"
-        >
-          <div class="item-head">
-            <span class="name">{{ item.name }}</span>
-            <span class="symbol">{{ item.symbol }}</span>
-          </div>
-          <div class="item-row">
-            <span>权重</span>
-            <strong>{{ item.weight }}%</strong>
-          </div>
-          <div class="item-row">
-            <span>收益贡献</span>
-            <strong :class="item.pnlContribution >= 0 ? 'rise' : 'down'">
-              {{ item.pnlContribution >= 0 ? '+' : '' }}{{ item.pnlContribution }}%
-            </strong>
-          </div>
-        </div>
-      </div>
+      <AttributionPanel
+        :analysis="attribution"
+        :loading="isPendingFirstPortfolioLoad || attributionLoading"
+        :error="isUnavailableFirstPortfolioLoad ? '组合资产不可用，暂无可展示的归因快照。' : attributionError"
+        title="绩效归因"
+        :request-id="attributionRequestId"
+      />
     </div>
 
     <div class="rebalance-section">
       <h3 class="subsection-title">自动再平衡建议</h3>
       <div class="rebalance-list artdeco-card">
-        <div v-if="autoRebalanceSuggestions.length === 0" class="rebalance-empty">
+        <div v-if="isPendingFirstPortfolioLoad" class="rebalance-empty">
+          再平衡上下文同步中，正在等待真实持仓返回。
+        </div>
+        <div v-else-if="isUnavailableFirstPortfolioLoad" class="rebalance-empty">
+          组合资产不可用，当前暂无可评估的再平衡上下文。
+        </div>
+        <div v-else-if="positionCount > 0 && !rebalancePolicyReady" class="rebalance-empty">
+          再平衡策略待接入，当前持仓数据未提供目标仓位或组合约束。
+        </div>
+        <div v-else-if="autoRebalanceSuggestions.length === 0" class="rebalance-empty">
           当前持仓权重偏离较小，暂无自动再平衡建议。
         </div>
         <div v-else>
@@ -231,311 +294,5 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
-@use '@/styles/artdeco-tokens.scss' as *;
-
-.portfolio-overview-tab {
-  padding: var(--artdeco-spacing-6);
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-6);
-}
-
-.hero-shell,
-.stats-strip {
-  width: 100%;
-}
-
-.hero-shell {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-5);
-}
-
-.hero-rail {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--artdeco-spacing-4);
-  flex-wrap: wrap;
-}
-
-.hero-copy {
-  display: flex;
-  flex-direction: column;
-  gap: var(--artdeco-spacing-2);
-}
-
-.hero-eyebrow {
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  color: var(--artdeco-gold-dim);
-  text-transform: uppercase;
-  letter-spacing: var(--artdeco-tracking-wide);
-}
-
-.hero-meta {
-  display: flex;
-  gap: var(--artdeco-spacing-3);
-  flex-wrap: wrap;
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  color: var(--artdeco-fg-muted);
-}
-
-.stats-strip {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: var(--artdeco-spacing-4);
-}
-
-.assets-hero {
-  position: relative;
-  background: var(--artdeco-bg-elevated);
-  margin-bottom: var(--artdeco-spacing-10);
-  padding: var(--artdeco-spacing-8);
-
-  @include artdeco-stepped-corners(var(--artdeco-spacing-5));
-
-  border: 1px solid var(--artdeco-gold-primary);
-
-  .hero-content {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    z-index: 1;
-    position: relative;
-  }
-
-  label {
-    font-family: var(--artdeco-font-display);
-    color: var(--artdeco-fg-muted);
-    text-transform: uppercase;
-    font-size: var(--artdeco-text-sm);
-    letter-spacing: 0.1em;
-    display: block;
-    margin-bottom: var(--artdeco-spacing-2);
-  }
-
-  .value {
-    font-family: var(--artdeco-font-mono);
-    font-size: var(--artdeco-text-4xl);
-    color: var(--artdeco-gold-primary);
-    font-weight: bold;
-  }
-
-  .pnl-value {
-    font-family: var(--artdeco-font-mono);
-    font-size: var(--artdeco-text-2xl);
-
-    &.rise {
-      color: var(--artdeco-rise);
-    }
-
-    &.down {
-      color: var(--artdeco-down);
-    }
-
-    .pct {
-      font-size: var(--artdeco-text-lg);
-      margin-left: calc(var(--artdeco-spacing-5) / 2);
-    }
-  }
-}
-
-.positions-grid {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-6)), 1fr)
-  );
-  gap: var(--artdeco-spacing-6);
-}
-
-.position-item {
-  padding: var(--artdeco-spacing-5);
-
-  @include artdeco-geometric-corners;
-
-  background: var(--artdeco-bg-card);
-
-  .pos-header {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: var(--artdeco-spacing-4);
-
-    .name {
-      font-family: var(--artdeco-font-display);
-      font-size: var(--artdeco-text-lg);
-      color: var(--artdeco-gold-light);
-    }
-
-    .symbol {
-      font-family: var(--artdeco-font-mono);
-      color: var(--artdeco-fg-muted);
-    }
-  }
-
-  .pos-data {
-    display: flex;
-    justify-content: space-between;
-
-    .data-group {
-      label {
-        font-size: calc(var(--artdeco-spacing-5) / 2);
-        color: var(--artdeco-fg-muted);
-        text-transform: uppercase;
-        margin-bottom: var(--artdeco-spacing-1);
-        display: block;
-      }
-
-      .val {
-        font-family: var(--artdeco-font-mono);
-        font-size: var(--artdeco-text-md);
-
-        &.rise {
-          color: var(--artdeco-rise);
-        }
-
-        &.down {
-          color: var(--artdeco-down);
-        }
-      }
-    }
-  }
-}
-
-.subsection-title {
-  font-family: var(--artdeco-font-display);
-  color: var(--artdeco-gold-primary);
-  margin-bottom: var(--artdeco-spacing-6);
-  text-transform: uppercase;
-  letter-spacing: 0.15em;
-  border-left: var(--artdeco-spacing-1) solid var(--artdeco-gold-primary);
-  padding-left: var(--artdeco-spacing-3);
-}
-
-.attribution-section,
-.rebalance-section {
-  margin-top: var(--artdeco-spacing-8);
-}
-
-.attribution-grid {
-  display: grid;
-  grid-template-columns: repeat(
-    auto-fit,
-    minmax(calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-12) + var(--artdeco-spacing-3)), 1fr)
-  );
-  gap: var(--artdeco-spacing-4);
-}
-
-.attribution-item {
-  padding: var(--artdeco-spacing-4);
-
-  .item-head {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: var(--artdeco-spacing-3);
-  }
-
-  .name {
-    color: var(--artdeco-gold-light);
-    font-family: var(--artdeco-font-display);
-  }
-
-  .symbol {
-    color: var(--artdeco-fg-muted);
-    font-family: var(--artdeco-font-mono);
-    font-size: var(--artdeco-text-xs);
-  }
-
-  .item-row {
-    display: flex;
-    justify-content: space-between;
-    margin-top: var(--artdeco-spacing-2);
-    color: var(--artdeco-fg-primary);
-    font-size: var(--artdeco-text-sm);
-
-    .rise {
-      color: var(--artdeco-rise);
-    }
-
-    .down {
-      color: var(--artdeco-down);
-    }
-  }
-}
-
-.rebalance-list {
-  padding: var(--artdeco-spacing-4);
-}
-
-.rebalance-empty {
-  color: var(--artdeco-fg-muted);
-  font-size: var(--artdeco-text-sm);
-}
-
-.rebalance-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: var(--artdeco-spacing-3);
-  align-items: center;
-  padding: var(--artdeco-spacing-3) 0;
-  border-bottom: 1px solid var(--artdeco-gold-opacity-10);
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  .rebalance-main {
-    display: flex;
-    flex-direction: column;
-    gap: calc(var(--artdeco-spacing-1) / 2);
-
-    .name {
-      color: var(--artdeco-gold-light);
-      font-family: var(--artdeco-font-display);
-    }
-
-    .symbol {
-      color: var(--artdeco-fg-muted);
-      font-family: var(--artdeco-font-mono);
-      font-size: var(--artdeco-text-xs);
-    }
-  }
-
-  .rebalance-detail {
-    color: var(--artdeco-fg-muted);
-    font-size: var(--artdeco-text-sm);
-  }
-
-  .rebalance-action {
-    font-family: var(--artdeco-font-mono);
-    font-size: var(--artdeco-text-sm);
-    font-weight: 600;
-
-    &.rise {
-      color: var(--artdeco-rise);
-    }
-
-    &.down {
-      color: var(--artdeco-down);
-    }
-  }
-}
-
-@media (width <= 75rem) {
-  .stats-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (width <= 48rem) {
-  .stats-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-meta {
-    width: 100%;
-  }
-}
+@use './styles/Portfolio';
 </style>
