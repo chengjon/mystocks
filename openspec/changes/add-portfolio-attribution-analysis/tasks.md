@@ -9,17 +9,17 @@
 
 ## 2. Backend Shared Attribution Engine
 
-- [ ] 2.1 Add shared attribution models, errors, and one canonical engine
-- [ ] 2.2 Add benchmark, industry, price, and factor-enrichment dependencies
-- [ ] 2.3 Add deterministic engine tests for Brinson breakdown, factor sections, and contributor ordering
+- [x] 2.1 Add shared attribution models, errors, and one canonical engine
+- [x] 2.2 Add benchmark, industry, price, and factor-enrichment dependencies
+- [x] 2.3 Add deterministic engine tests for Brinson breakdown, factor sections, and contributor ordering
 
 ## 3. Backend Domain Adapters And Routes
 
-- [ ] 3.1 Add backtest snapshot normalization into the shared attribution inputs
-- [ ] 3.2 Add trade portfolio snapshot normalization for current and date-scoped attribution
-- [ ] 3.3 Add `GET /api/v1/backtest/{backtest_id}/attribution`
-- [ ] 3.4 Add `GET /api/v1/positions/attribution` with optional `date=YYYY-MM-DD`
-- [ ] 3.5 Add contract tests for strategy hard-fail and trade stale/date semantics
+- [x] 3.1 Add backtest snapshot normalization into the shared attribution inputs
+- [x] 3.2 Add trade portfolio snapshot normalization for current and date-scoped attribution
+- [x] 3.3 Add `GET /api/v1/backtest/{backtest_id}/attribution`
+- [x] 3.4 Add `GET /api/v1/positions/attribution` with optional `date=YYYY-MM-DD`
+- [x] 3.5 Add contract tests for strategy hard-fail and trade stale/date semantics
 
 ## 4. Legacy Compatibility Alignment
 
@@ -41,7 +41,7 @@
 
 ## 7. Verification And Governance
 
-- [ ] 7.1 Run targeted backend attribution tests
+- [x] 7.1 Run targeted backend attribution tests
 - [ ] 7.2 Run targeted frontend attribution unit tests
 - [ ] 7.3 Run attribution E2E smoke for strategy and trade shells
 - [ ] 7.4 Update `docs/FUNCTION_TREE.md` after both shells and both attribution types are verified

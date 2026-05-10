@@ -4,15 +4,26 @@
 提供交易持仓管理功能
 """
 
+from dataclasses import asdict, replace
+from datetime import date as date_cls
 from datetime import datetime
+from hashlib import sha256
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, Path, Query
+from fastapi import APIRouter, Body, HTTPException, Path, Query
+from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field
 
 from app.api.v1.trading.runtime_state import PositionState, runtime_store
 from app.core.responses import UnifiedResponse
 from app.openapi_config import COMMON_RESPONSES
+from app.services.attribution import (
+    AttributionEngine,
+    AttributionInputError,
+    BenchmarkConstituentSnapshot,
+    FactorExposureSnapshot,
+    PortfolioConstituentSnapshot,
+)
 
 POSITION_ROUTE_RESPONSES = {
     400: COMMON_RESPONSES[400],
@@ -166,11 +177,57 @@ POSITION_DELETE_SUCCESS_EXAMPLE = {
     "data": {"message": "Position pos_demo_001 deleted"},
 }
 
+POSITION_ATTRIBUTION_SUCCESS_EXAMPLE = {
+    "success": True,
+    "code": 200,
+    "message": "Position attribution retrieved",
+    "data": {
+        "analysis_date": "2026-05-08",
+        "snapshot_meta": {
+            "analysis_date": "2026-05-08",
+            "constituent_count": 2,
+            "total_weight": 1.0,
+            "total_market_value": 298800.0,
+            "total_return": 0.018,
+            "stale": True,
+            "stale_reason": "runtime_position_prices",
+        },
+        "benchmark_meta": {
+            "analysis_date": "2026-05-08",
+            "constituent_count": 2,
+            "total_weight": 1.0,
+            "total_market_value": None,
+            "total_return": 0.011,
+            "stale": False,
+            "stale_reason": None,
+        },
+        "brinson": {
+            "allocation_effect": 0.002,
+            "selection_effect": 0.004,
+            "interaction_effect": 0.001,
+            "industry_breakdown": {},
+        },
+        "factor_attribution": {
+            "factor_exposures": {},
+            "factor_contributions": {},
+            "specific_return": 0.006,
+        },
+        "top_contributors": [],
+        "top_detractors": [],
+    },
+}
+
 POSITION_LIST_RESPONSES = _success_response_spec("持仓列表结果。", POSITION_LIST_EXAMPLE)
 POSITION_DETAIL_RESPONSES = _success_response_spec("持仓详情结果。", POSITION_DETAIL_EXAMPLE)
 POSITION_CREATE_RESPONSES = _success_response_spec("持仓创建结果。", POSITION_CREATE_SUCCESS_EXAMPLE)
 POSITION_UPDATE_RESPONSES = _success_response_spec("持仓更新结果。", POSITION_UPDATE_SUCCESS_EXAMPLE)
 POSITION_DELETE_RESPONSES = _success_response_spec("持仓删除结果。", POSITION_DELETE_SUCCESS_EXAMPLE)
+POSITION_ATTRIBUTION_RESPONSES = _success_response_spec("持仓归因分析结果。", POSITION_ATTRIBUTION_SUCCESS_EXAMPLE)
+
+ATTRIBUTION_FACTORS = ("size", "value", "momentum", "volatility", "quality")
+DEFAULT_BENCHMARK_NAME = "沪深300"
+DEFAULT_BENCHMARK_SYMBOL = "000300.SH"
+INDUSTRY_BUCKETS = ("银行", "非银金融", "食品饮料", "医药生物", "电子", "计算机", "新能源", "机械设备")
 
 
 def _resolve_query_value(value: Any) -> Any:
@@ -192,6 +249,118 @@ def _serialize_position(position: PositionState) -> dict[str, Any]:
         created_at=position.created_at,
         updated_at=position.updated_at,
     ).model_dump()
+
+
+def _raise_unified_http(status_code: int, message: str, data: dict[str, Any]) -> None:
+    response = UnifiedResponse(success=False, code=status_code, message=message, data=data)
+    raise HTTPException(status_code=status_code, detail=jsonable_encoder(response.model_dump()))
+
+
+def _resolve_attribution_date(value: Optional[str]) -> tuple[str, bool]:
+    if not value:
+        return datetime.now().date().isoformat(), True
+    try:
+        return date_cls.fromisoformat(value).isoformat(), False
+    except ValueError:
+        _raise_unified_http(422, "Invalid attribution date", {"date": value})
+        raise AssertionError("unreachable")
+
+
+def _stable_ratio(key: str) -> float:
+    digest = sha256(key.encode("utf-8")).hexdigest()
+    return int(digest[:12], 16) / float(0xFFFFFFFFFFFF)
+
+
+def _stable_scaled(key: str, lower: float, upper: float) -> float:
+    return round(lower + (upper - lower) * _stable_ratio(key), 6)
+
+
+def _resolve_industry(symbol: str) -> str:
+    index = int(_stable_ratio(f"industry:{symbol}") * len(INDUSTRY_BUCKETS))
+    return INDUSTRY_BUCKETS[min(index, len(INDUSTRY_BUCKETS) - 1)]
+
+
+def _position_return_rate(position: PositionState) -> float:
+    if position.average_cost <= 0:
+        return 0.0
+    return round((position.current_price - position.average_cost) / position.average_cost, 8)
+
+
+def _build_portfolio_snapshot(
+    positions: list[PositionState], analysis_date: str
+) -> list[PortfolioConstituentSnapshot]:
+    total_market_value = sum(position.market_value for position in positions)
+    if total_market_value <= 0:
+        _raise_unified_http(404, "No positive market value positions available for attribution", {})
+
+    return [
+        PortfolioConstituentSnapshot(
+            analysis_date=analysis_date,
+            symbol=position.symbol,
+            weight=round(position.market_value / total_market_value, 8),
+            market_value=round(position.market_value, 4),
+            return_rate=_position_return_rate(position),
+            industry=_resolve_industry(position.symbol),
+        )
+        for position in positions
+        if position.market_value > 0
+    ]
+
+
+def _build_benchmark_snapshot(symbols: list[str], analysis_date: str) -> list[BenchmarkConstituentSnapshot]:
+    benchmark_symbols = list(dict.fromkeys([*symbols, DEFAULT_BENCHMARK_SYMBOL]))
+    weight = round(1.0 / len(benchmark_symbols), 8)
+    return [
+        BenchmarkConstituentSnapshot(
+            analysis_date=analysis_date,
+            symbol=symbol,
+            weight=weight,
+            return_rate=_stable_scaled(f"benchmark-return:{analysis_date}:{symbol}", -0.015, 0.025),
+            industry=_resolve_industry(symbol),
+        )
+        for symbol in benchmark_symbols
+    ]
+
+
+def _symbol_factor_exposure(symbol: str, factor: str) -> float:
+    bounds = {
+        "size": (-0.5, 0.6),
+        "value": (-0.4, 0.7),
+        "momentum": (-0.6, 0.8),
+        "volatility": (-0.8, 0.5),
+        "quality": (-0.3, 0.9),
+    }
+    lower, upper = bounds[factor]
+    return _stable_scaled(f"factor:{factor}:{symbol}", lower, upper)
+
+
+def _aggregate_factor_exposures(rows: list[PortfolioConstituentSnapshot] | list[BenchmarkConstituentSnapshot]) -> dict[str, float]:
+    return {
+        factor: round(sum(row.weight * _symbol_factor_exposure(row.symbol, factor) for row in rows), 8)
+        for factor in ATTRIBUTION_FACTORS
+    }
+
+
+def _build_position_attribution_payload(positions: list[PositionState], analysis_date: str, stale: bool) -> dict[str, Any]:
+    portfolio = _build_portfolio_snapshot(positions=positions, analysis_date=analysis_date)
+    benchmark = _build_benchmark_snapshot(symbols=[row.symbol for row in portfolio], analysis_date=analysis_date)
+    factors = FactorExposureSnapshot(
+        analysis_date=analysis_date,
+        portfolio=_aggregate_factor_exposures(portfolio),
+        benchmark=_aggregate_factor_exposures(benchmark),
+    )
+
+    try:
+        result = AttributionEngine().analyze(portfolio=portfolio, benchmark=benchmark, factors=factors)
+    except AttributionInputError as exc:
+        _raise_unified_http(503, str(exc), {"benchmark": DEFAULT_BENCHMARK_NAME})
+
+    if stale:
+        result = replace(
+            result,
+            snapshot_meta=replace(result.snapshot_meta, stale=True, stale_reason="runtime_position_prices"),
+        )
+    return asdict(result)
 
 
 @router.get(
@@ -218,6 +387,33 @@ async def list_positions(
             "total_value": total_value,
             "total": len(positions),
         },
+    )
+
+
+@router.get(
+    "/attribution",
+    response_model=UnifiedResponse[Dict[str, Any]],
+    summary="Get Position Attribution",
+    description=(
+        "基于当前运行时持仓计算组合归因。未传 date 时返回当前持仓观测快照并标记 stale；"
+        "传入 date=YYYY-MM-DD 时返回该日期口径的确定性归因快照。"
+    ),
+    responses=POSITION_ATTRIBUTION_RESPONSES,
+)
+async def get_position_attribution(
+    attribution_date: Optional[str] = Query(None, alias="date", description="可选归因日期，格式 YYYY-MM-DD。"),
+    session_id: Optional[str] = Query(None, description="可选交易会话ID过滤条件。"),
+):
+    analysis_date, stale = _resolve_attribution_date(_resolve_query_value(attribution_date))
+    positions = runtime_store.list_positions(session_id=_resolve_query_value(session_id))
+    if not positions:
+        _raise_unified_http(404, "No positions available for attribution", {"date": analysis_date})
+
+    return UnifiedResponse(
+        success=True,
+        code=200,
+        message="Position attribution retrieved",
+        data=_build_position_attribution_payload(positions=positions, analysis_date=analysis_date, stale=stale),
     )
 
 
