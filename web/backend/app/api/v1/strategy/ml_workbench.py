@@ -157,6 +157,8 @@ async def get_ml_runtime_status():
     warnings = []
     if not optional_dependencies["lightgbm"]["available"]:
         warnings.append("lightgbm_unavailable")
+    if not optional_dependencies["sklearn"]["available"]:
+        warnings.append("sklearn_unavailable")
 
     data = {
         "service_available": True,

@@ -76,6 +76,26 @@ async def test_v1_ml_runtime_status_reports_missing_optional_dependency(monkeypa
     assert "lightgbm_unavailable" in payload.data["warnings"]
 
 
+async def test_v1_ml_runtime_status_reports_missing_svm_dependency(monkeypatch):
+    module = _load_module()
+    workbench_module = _load_workbench_module()
+
+    real_find_spec = workbench_module.importlib.util.find_spec
+
+    def fake_find_spec(package_name: str):
+        if package_name == "sklearn":
+            return None
+        return real_find_spec(package_name)
+
+    monkeypatch.setattr(workbench_module.importlib.util, "find_spec", fake_find_spec)
+
+    payload = await module.get_ml_runtime_status()
+
+    assert payload.success is True
+    assert payload.data["optional_dependencies"]["sklearn"]["available"] is False
+    assert "sklearn_unavailable" in payload.data["warnings"]
+
+
 async def test_v1_ml_training_rejects_unavailable_lightgbm_dependency(monkeypatch):
     module = _load_module()
     workbench_module = _load_workbench_module()
