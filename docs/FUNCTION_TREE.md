@@ -7,7 +7,7 @@
 > 文内完成度、状态标签、功能归属和稳定 ID 如未重新复核，应视为阶段性快照；但凡本次改动已经改变功能边界、入口或状态，必须在同一变更批次同步更新本文件，不得让 `FUNCTION_TREE.md` 长期滞后于当前实现。
 
 
-> **版本**: 1.1.5 | **更新日期**: 2026-05-10 | **维护者**: 开发团队
+> **版本**: 1.1.6 | **更新日期**: 2026-05-10 | **维护者**: 开发团队
 > **文档类型**: 功能管理 / 功能边界总览 | **状态**: 活跃维护
 
 ---
@@ -393,8 +393,8 @@ Q2 closure note:
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md)<br>[OpenSpec 工作流](../openspec/AGENTS.md) | AI 与实验能力治理入口 |
-| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[机器学习兼容 API](../web/backend/app/api/ml.py)<br>[v1 机器学习策略 API](../web/backend/app/api/v1/strategy/machine_learning.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py)<br>[情感分析 API](../web/backend/app/api/v1/analysis/sentiment.py)<br>[算法兼容入口](../web/backend/app/api/algorithms.py) | AI 与高级分析接口入口 |
-| 前端/交互入口 | [AI 情感分析页](../web/frontend/src/views/ai/Sentiment.vue)<br>[AI 模型训练 / 预测页](../web/frontend/src/views/ai/MlWorkbench.vue)<br>[策略主路由目录](../web/frontend/src/views/strategy/)<br>[GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略信号页](../web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue) | AI 与高级分析主路由入口；AI 与高级分析交互入口 |
+| API/契约入口 | [高级分析 API](../web/backend/app/api/advanced_analysis.py)<br>[机器学习兼容 API](../web/backend/app/api/ml.py)<br>[v1 机器学习策略 API](../web/backend/app/api/v1/strategy/machine_learning.py)<br>[AI 批量分析 API](../web/backend/app/api/v1/strategy/batch_analysis.py)<br>[GPU 监控 API](../web/backend/app/api/gpu_monitoring.py)<br>[情感分析 API](../web/backend/app/api/v1/analysis/sentiment.py)<br>[算法兼容入口](../web/backend/app/api/algorithms.py) | AI 与高级分析接口入口 |
+| 前端/交互入口 | [AI 情感分析页](../web/frontend/src/views/ai/Sentiment.vue)<br>[AI 模型训练 / 预测页](../web/frontend/src/views/ai/MlWorkbench.vue)<br>[AI 批量分析页](../web/frontend/src/views/ai/BatchAnalysis.vue)<br>[策略主路由目录](../web/frontend/src/views/strategy/)<br>[GPU 回测页](../web/frontend/src/views/strategy/BacktestGPU.vue)<br>[策略信号页](../web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue) | AI 与高级分析主路由入口；AI 与高级分析交互入口 |
 | 核心代码入口 | [高级分析模块](../src/advanced_analysis/)<br>[机器学习策略模块](../src/ml_strategy/)<br>[情感分析模块](../src/advanced_analysis/sentiment_analyzer/)<br>[GPU API 服务](../src/gpu/api_system/services/) | AI 与高级分析实现入口 |
 | 测试与验证入口 | [机器学习 API 测试](../tests/api/test_ml_file.py)<br>[高级回测测试](../tests/unit/test_advanced_backtest_engine.py)<br>[GPU 测试 README](../src/gpu/api_system/tests/README.md) | AI 与高级分析验证入口 |
 | 运行与排障入口 | [自动化说明](../src/ml_strategy/automation/README.md)<br>[GPU API README](../src/gpu/api_system/README.md)<br>[WSL2 GPU 设置](../src/gpu/api_system/WSL2_GPU_SETUP.md) | AI 与高级分析排障入口 |
@@ -411,9 +411,9 @@ Q2 closure note:
 
 | 功能点 | 状态 | 代码位置 | 说明 |
 |--------|------|----------|------|
-| 批量回测 | ✅ | `web/frontend/src/views/strategy/Backtest.vue`, `src/ml_strategy/backtest/backtest_engine.py` | 当前活跃回测工作台与统一回测引擎均存在 |
-| 批量选股 | ✅ | `src/ml_strategy/strategy/stock_screener.py` | 筛选引擎已在，但主路由入口更偏自选/筛选域，而非 AI 独立工作台 |
-| 批量监控 | ✅ | `src/ml_strategy/automation/scheduler.py`, `src/ml_strategy/strategy/strategy_executor.py` | 调度与批执行框架已在，当前以前后台任务为主 |
+| 批量回测 | ✅ | `web/backend/app/api/v1/strategy/batch_analysis.py`, `web/frontend/src/views/ai/BatchAnalysis.vue`, `web/frontend/src/api/batchAnalysis.ts`, `web/frontend/src/views/strategy/Backtest.vue`, `src/ml_strategy/backtest/backtest_engine.py` | `/ai/batch` 与 `/api/v1/strategies/batch-analysis/*` 已作为 7.2 canonical 批量分析观测入口，聚合批量回测证据；首批只返回运行时任务证据与分析摘要，不替代既有回测引擎 |
+| 批量选股 | ✅ | `web/backend/app/api/v1/strategy/batch_analysis.py`, `web/frontend/src/views/ai/BatchAnalysis.vue`, `src/ml_strategy/strategy/stock_screener.py` | canonical 工作台支持 `batch_screening` 任务提交、列表与详情；结果为分析证据，不是交易指令或自动调仓建议 |
+| 批量监控 | ✅ | `web/backend/app/api/v1/strategy/batch_analysis.py`, `web/frontend/src/views/ai/BatchAnalysis.vue`, `src/ml_strategy/automation/scheduler.py`, `src/ml_strategy/strategy/strategy_executor.py` | canonical 工作台暴露 `batch_monitoring` 扩展位与底层 evidence modules；首批不做 production scheduler mutation、实时流式进度或自动化处置闭环 |
 
 ### 7.3 情感分析 {#domain-07-node-03}
 

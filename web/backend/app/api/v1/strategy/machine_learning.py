@@ -321,7 +321,17 @@ from .ml_workbench import (  # noqa: E402
     router as ml_workbench_router,
     train_ml_workbench_model,
 )
+from .batch_analysis import (  # noqa: E402
+    BatchAnalysisOperation,
+    BatchAnalysisRequest,
+    get_batch_analysis_runtime_status,
+    get_batch_analysis_task_detail,
+    list_batch_analysis_tasks,
+    router as batch_analysis_router,
+    submit_batch_analysis_task,
+)
 
+router.include_router(batch_analysis_router)
 router.include_router(ml_workbench_router)
 
 

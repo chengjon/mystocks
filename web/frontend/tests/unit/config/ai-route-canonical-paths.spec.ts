@@ -25,4 +25,16 @@ describe('ai route canonical component paths', () => {
     expect(menuSource).toContain("title: '模型训练 / 预测'")
     expect(menuSource).toContain("path: '/ai/ml'")
   })
+
+  it('uses the canonical ai batch analysis component path', () => {
+    expect(routerSource).toContain("path: 'batch'")
+    expect(routerSource).toContain("name: 'ai-batch'")
+    expect(routerSource).toContain("component: () => import('@/views/ai/BatchAnalysis.vue')")
+  })
+
+  it('surfaces the ai batch analysis workbench from ai navigation', () => {
+    expect(menuSource).toContain("id: 'ai-batch'")
+    expect(menuSource).toContain("title: '批量分析'")
+    expect(menuSource).toContain("path: '/ai/batch'")
+  })
 })

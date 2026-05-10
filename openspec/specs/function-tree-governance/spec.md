@@ -122,3 +122,8 @@ The function tree SHALL use criteria-backed completion semantics instead of subj
 #### Scenario: Mark 7.1 training and prediction complete
 - **WHEN** `7.1 机器学习策略 -> 模型训练` and `预测推理` are marked complete
 - **THEN** the canonical v1 API, `/ai/ml` workbench route, runtime readiness, model training, prediction inference, safety semantics, and targeted tests SHALL all be implemented and verified
+
+#### Scenario: Mark 7.2 batch analysis complete
+- **WHEN** `7.2 批量分析` is marked or kept complete
+- **THEN** `FUNCTION_TREE.md` SHALL reference the canonical `/ai/batch` page and `/api/v1/strategies/batch-analysis/*` route family
+- **AND** the evidence note SHALL preserve first-batch limits and safety semantics

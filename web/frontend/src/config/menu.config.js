@@ -141,6 +141,13 @@ const menuConfig = [
         path: '/ai/ml',
         icon: 'School',
         disabled: false
+      },
+      {
+        id: 'ai-batch',
+        title: '批量分析',
+        path: '/ai/batch',
+        icon: 'Operation',
+        disabled: false
       }
     ]
   },

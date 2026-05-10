@@ -188,6 +188,12 @@ const routes: RouteRecordRaw[] = [
             name: 'ai-ml',
             component: () => import('@/views/ai/MlWorkbench.vue'),
             meta: { title: '模型训练 / 预测', requiresAuth: true, api: '/api/v1/strategies/ml/runtime-status' }
+          },
+          {
+            path: 'batch',
+            name: 'ai-batch',
+            component: () => import('@/views/ai/BatchAnalysis.vue'),
+            meta: { title: '批量分析', requiresAuth: true, api: '/api/v1/strategies/batch-analysis/runtime-status' }
           }
         ]
       },

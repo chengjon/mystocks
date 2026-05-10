@@ -260,3 +260,19 @@ Historical `/ml/training` and `/ml/prediction` entries SHALL NOT be treated as c
 - **THEN** `/ai/ml` SHALL be treated as canonical
 - **AND** historical `/ml/training` and `/ml/prediction` menu entries SHALL be classified as legacy or redirected explicitly before use
 
+### Requirement: AI Batch Analysis Workbench Route
+The frontend routing system SHALL expose a dedicated AI-domain batch analysis workbench route.
+
+#### Scenario: User navigates to the batch analysis workbench
+- **WHEN** a user navigates to `/ai/batch`
+- **THEN** the router SHALL render the canonical AI batch analysis workbench
+- **AND** that page SHALL be the AI-domain route truth source for `7.2 批量分析`
+
+### Requirement: AI Navigation Label For Batch Analysis Workbench
+The frontend navigation SHALL expose a visible AI entry for the canonical batch analysis workbench.
+
+#### Scenario: AI navigation label is rendered
+- **WHEN** the frontend renders the active navigation surfaces
+- **THEN** the menu SHALL include a `/ai/batch` entry labelled `批量分析`
+- **AND** the entry SHALL be grouped under the AI domain
+
