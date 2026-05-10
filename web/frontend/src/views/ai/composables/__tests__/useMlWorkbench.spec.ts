@@ -268,6 +268,17 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('请先刷新 ML 运行时状态')
   })
 
+  it('does not submit training when the date range is invalid', async () => {
+    const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
+    workbench.trainingForm.start_date = '2024-12-31'
+    workbench.trainingForm.end_date = '2024-01-01'
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('训练开始日期必须早于结束日期')
+  })
+
   it('does not submit training when runtime does not advertise train support', async () => {
     vi.mocked(getMlRuntimeStatus).mockResolvedValue(trainUnsupportedRuntimeStatus as never)
 

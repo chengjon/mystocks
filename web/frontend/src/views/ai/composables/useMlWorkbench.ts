@@ -128,6 +128,11 @@ export function useMlWorkbench() {
     !runtimeStatus.value || runtimeStatus.value.supported_operations.includes(operation)
   const trainingOperationBlocked = computed(() => !runtimeSupportsOperation('train'))
   const predictionOperationBlocked = computed(() => !runtimeSupportsOperation('predict'))
+  const trainingDateRangeInvalid = computed(() => {
+    const startTime = Date.parse(trainingForm.start_date)
+    const endTime = Date.parse(trainingForm.end_date)
+    return Number.isFinite(startTime) && Number.isFinite(endTime) && startTime >= endTime
+  })
   const selectedPredictionModel = computed(() =>
     models.value.find(
       (model) => model.model_id === (predictionForm.model_id || selectedModelId.value),
@@ -182,6 +187,9 @@ export function useMlWorkbench() {
       }
       if (trainingOperationBlocked.value) {
         throw new Error('当前 ML 运行时不支持训练，请刷新运行时状态或检查后端能力。')
+      }
+      if (trainingDateRangeInvalid.value) {
+        throw new Error('训练开始日期必须早于结束日期。')
       }
       if (selectedModelFamilyBlocked.value) {
         throw new Error('当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。')
@@ -289,6 +297,7 @@ export function useMlWorkbench() {
     runtimeServiceBlocked,
     trainingOperationBlocked,
     predictionOperationBlocked,
+    trainingDateRangeInvalid,
     predictionSymbolMismatch,
     predictionHorizonMismatch,
     refreshRuntime,

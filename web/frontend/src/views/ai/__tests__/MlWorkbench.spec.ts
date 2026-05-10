@@ -67,6 +67,7 @@ const runtimeReadinessPendingMock = ref(false)
 const runtimeServiceBlockedMock = ref(false)
 const trainingOperationBlockedMock = ref(false)
 const predictionOperationBlockedMock = ref(false)
+const trainingDateRangeInvalidMock = ref(false)
 const predictionSymbolMismatchMock = ref(false)
 const predictionHorizonMismatchMock = ref(false)
 
@@ -91,6 +92,7 @@ vi.mock('../composables/useMlWorkbench', () => ({
     runtimeServiceBlocked: runtimeServiceBlockedMock,
     trainingOperationBlocked: trainingOperationBlockedMock,
     predictionOperationBlocked: predictionOperationBlockedMock,
+    trainingDateRangeInvalid: trainingDateRangeInvalidMock,
     predictionSymbolMismatch: predictionSymbolMismatchMock,
     predictionHorizonMismatch: predictionHorizonMismatchMock,
     refreshRuntime: refreshRuntimeMock,
@@ -131,6 +133,7 @@ describe('AI ML workbench page', () => {
     runtimeServiceBlockedMock.value = false
     trainingOperationBlockedMock.value = false
     predictionOperationBlockedMock.value = false
+    trainingDateRangeInvalidMock.value = false
     predictionSymbolMismatchMock.value = false
     predictionHorizonMismatchMock.value = false
   })
@@ -189,6 +192,17 @@ describe('AI ML workbench page', () => {
     const lightgbmOption = wrapper.get('[data-testid="ml-model-family-lightgbm"]')
     expect(lightgbmOption.attributes('disabled')).toBeDefined()
     expect(wrapper.text()).toContain('当前模型族后端依赖不可用')
+    expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('surfaces invalid training date range before training submission', async () => {
+    trainingDateRangeInvalidMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('训练开始日期必须早于结束日期')
     expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
   })
 
