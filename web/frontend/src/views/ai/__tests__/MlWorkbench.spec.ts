@@ -74,6 +74,7 @@ const trainingPredictionHorizonInvalidMock = ref(false)
 const predictionSymbolMismatchMock = ref(false)
 const predictionSymbolBlankMock = ref(false)
 const predictionModelIdBlankMock = ref(false)
+const predictionHorizonRangeInvalidMock = ref(false)
 const predictionHorizonMismatchMock = ref(false)
 
 vi.mock('../composables/useMlWorkbench', () => ({
@@ -104,6 +105,7 @@ vi.mock('../composables/useMlWorkbench', () => ({
     predictionSymbolMismatch: predictionSymbolMismatchMock,
     predictionSymbolBlank: predictionSymbolBlankMock,
     predictionModelIdBlank: predictionModelIdBlankMock,
+    predictionHorizonRangeInvalid: predictionHorizonRangeInvalidMock,
     predictionHorizonMismatch: predictionHorizonMismatchMock,
     refreshRuntime: refreshRuntimeMock,
     submitTraining: submitTrainingMock,
@@ -153,6 +155,7 @@ describe('AI ML workbench page', () => {
     predictionSymbolMismatchMock.value = false
     predictionSymbolBlankMock.value = false
     predictionModelIdBlankMock.value = false
+    predictionHorizonRangeInvalidMock.value = false
     predictionHorizonMismatchMock.value = false
   })
 
@@ -303,6 +306,17 @@ describe('AI ML workbench page', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('请先选择模型')
+    expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('surfaces prediction horizon range errors before prediction submission', async () => {
+    predictionHorizonRangeInvalidMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('预测周期必须介于 1 到 30')
     expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
   })
 

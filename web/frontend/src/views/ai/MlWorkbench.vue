@@ -30,6 +30,7 @@ const {
   predictionSymbolMismatch,
   predictionSymbolBlank,
   predictionModelIdBlank,
+  predictionHorizonRangeInvalid,
   predictionHorizonMismatch,
   refreshRuntime,
   submitTraining,
@@ -190,6 +191,9 @@ onMounted(() => {
         <p v-if="predictionSymbolBlank" class="runtime-message compact">
           预测标的不能为空。
         </p>
+        <p v-if="predictionHorizonRangeInvalid" class="runtime-message compact">
+          预测周期必须介于 1 到 30。
+        </p>
         <p v-if="predictionHorizonMismatch" class="runtime-message compact">
           预测周期必须与所选模型一致，请重新选择模型或刷新模型列表。
         </p>
@@ -204,7 +208,7 @@ onMounted(() => {
           data-testid="ml-predict-submit"
           class="primary-button"
           type="button"
-          :disabled="predictionLoading || predictionModelIdBlank || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch || predictionSymbolBlank || predictionHorizonMismatch"
+          :disabled="predictionLoading || predictionModelIdBlank || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch || predictionSymbolBlank || predictionHorizonRangeInvalid || predictionHorizonMismatch"
           @click="submitPrediction"
         >
           执行预测

@@ -154,6 +154,9 @@ export function useMlWorkbench() {
   })
   const predictionSymbolBlank = computed(() => predictionForm.symbol.trim().length === 0)
   const predictionModelIdBlank = computed(() => predictionForm.model_id.trim().length === 0)
+  const predictionHorizonRangeInvalid = computed(
+    () => !isFiniteNumberInRange(predictionForm.prediction_horizon, 1, 30),
+  )
   const predictionHorizonMismatch = computed(() => {
     const selectedModel = selectedPredictionModel.value
     const trainedHorizon = selectedModel?.feature_context?.prediction_horizon
@@ -255,6 +258,9 @@ export function useMlWorkbench() {
       if (predictionSymbolBlank.value) {
         throw new Error('预测标的不能为空。')
       }
+      if (predictionHorizonRangeInvalid.value) {
+        throw new Error('预测周期必须介于 1 到 30。')
+      }
       if (predictionSymbolMismatch.value) {
         throw new Error('预测标的必须与所选模型一致，请重新选择模型或刷新模型列表。')
       }
@@ -332,6 +338,7 @@ export function useMlWorkbench() {
     predictionSymbolMismatch,
     predictionSymbolBlank,
     predictionModelIdBlank,
+    predictionHorizonRangeInvalid,
     predictionHorizonMismatch,
     refreshRuntime,
     submitTraining,

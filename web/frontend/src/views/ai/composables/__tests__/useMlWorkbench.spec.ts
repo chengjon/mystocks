@@ -546,6 +546,17 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('预测标的不能为空')
   })
 
+  it('does not submit prediction when horizon is outside the supported range', async () => {
+    const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
+    workbench.predictionForm.model_id = 'svm_600519_abc'
+    workbench.predictionForm.prediction_horizon = 31
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('预测周期必须介于 1 到 30')
+  })
+
   it('does not submit prediction before runtime readiness is confirmed', async () => {
     const workbench = useMlWorkbench()
     workbench.predictionForm.model_id = 'svm_600519_abc'
