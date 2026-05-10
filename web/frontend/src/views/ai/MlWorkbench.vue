@@ -20,6 +20,7 @@ const {
   modelFamilyOptions,
   selectedModelFamilyBlocked,
   runtimeServiceBlocked,
+  predictionSymbolMismatch,
   refreshRuntime,
   submitTraining,
   submitPrediction,
@@ -152,6 +153,9 @@ onMounted(() => {
           标的
           <input v-model="predictionForm.symbol" type="text" />
         </label>
+        <p v-if="predictionSymbolMismatch" class="runtime-message compact">
+          预测标的必须与所选模型一致，请重新选择模型或刷新模型列表。
+        </p>
         <label>
           预测周期
           <input v-model.number="predictionForm.prediction_horizon" type="number" min="1" max="30" />
@@ -160,7 +164,7 @@ onMounted(() => {
           data-testid="ml-predict-submit"
           class="primary-button"
           type="button"
-          :disabled="predictionLoading || !predictionForm.model_id || runtimeServiceBlocked"
+          :disabled="predictionLoading || !predictionForm.model_id || runtimeServiceBlocked || predictionSymbolMismatch"
           @click="submitPrediction"
         >
           执行预测

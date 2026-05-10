@@ -123,6 +123,15 @@ export function useMlWorkbench() {
   })
 
   const runtimeServiceBlocked = computed(() => runtimeStatus.value?.service_available === false)
+  const selectedPredictionModel = computed(() =>
+    models.value.find(
+      (model) => model.model_id === (predictionForm.model_id || selectedModelId.value),
+    ),
+  )
+  const predictionSymbolMismatch = computed(() => {
+    const selectedModel = selectedPredictionModel.value
+    return Boolean(selectedModel && predictionForm.symbol !== selectedModel.symbol)
+  })
 
   const refreshRuntime = async () => {
     loading.value = true
@@ -186,6 +195,9 @@ export function useMlWorkbench() {
       if (!modelId) {
         throw new Error('请先选择模型后再执行预测。')
       }
+      if (predictionSymbolMismatch.value) {
+        throw new Error('预测标的必须与所选模型一致，请重新选择模型或刷新模型列表。')
+      }
       const response = await predictMlWorkbenchModel({
         ...predictionForm,
         model_id: modelId,
@@ -243,6 +255,7 @@ export function useMlWorkbench() {
     modelFamilyOptions,
     selectedModelFamilyBlocked,
     runtimeServiceBlocked,
+    predictionSymbolMismatch,
     refreshRuntime,
     submitTraining,
     submitPrediction,

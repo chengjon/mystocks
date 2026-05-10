@@ -64,6 +64,7 @@ const modelFamilyOptionsMock = ref([
 ])
 const selectedModelFamilyBlockedMock = ref(false)
 const runtimeServiceBlockedMock = ref(false)
+const predictionSymbolMismatchMock = ref(false)
 
 vi.mock('../composables/useMlWorkbench', () => ({
   useMlWorkbench: () => ({
@@ -83,6 +84,7 @@ vi.mock('../composables/useMlWorkbench', () => ({
     modelFamilyOptions: modelFamilyOptionsMock,
     selectedModelFamilyBlocked: selectedModelFamilyBlockedMock,
     runtimeServiceBlocked: runtimeServiceBlockedMock,
+    predictionSymbolMismatch: predictionSymbolMismatchMock,
     refreshRuntime: refreshRuntimeMock,
     submitTraining: submitTrainingMock,
     submitPrediction: submitPredictionMock,
@@ -118,6 +120,7 @@ describe('AI ML workbench page', () => {
     ]
     selectedModelFamilyBlockedMock.value = false
     runtimeServiceBlockedMock.value = false
+    predictionSymbolMismatchMock.value = false
   })
 
   it('loads runtime status on mount and renders canonical safety copy', async () => {
@@ -185,6 +188,17 @@ describe('AI ML workbench page', () => {
     await flushPromises()
 
     expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('surfaces selected model and prediction symbol mismatch before prediction submission', async () => {
+    predictionSymbolMismatchMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('预测标的必须与所选模型一致')
     expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
   })
 })

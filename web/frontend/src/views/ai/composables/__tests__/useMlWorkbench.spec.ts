@@ -411,6 +411,19 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('请先选择模型')
   })
 
+  it('does not submit prediction when manual symbol differs from the selected model', async () => {
+    vi.mocked(listMlWorkbenchModels).mockResolvedValue(multiSymbolModelList as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    workbench.selectModel('svm_600519_abc')
+    workbench.predictionForm.symbol = '000001.SZ'
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('预测标的必须与所选模型一致')
+  })
+
   it('does not submit prediction when runtime service is unavailable', async () => {
     vi.mocked(getMlRuntimeStatus).mockResolvedValue(serviceUnavailableRuntimeStatus as never)
 
