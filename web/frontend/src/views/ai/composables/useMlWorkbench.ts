@@ -125,16 +125,21 @@ export function useMlWorkbench() {
   const refreshRuntime = async () => {
     loading.value = true
     runtimeMessage.value = ''
+    let nextRuntimeStatus: MlRuntimeStatus | null = null
     try {
       const [statusResponse, modelsResponse] = await Promise.all([
         getMlRuntimeStatus(),
         listMlWorkbenchModels(),
       ])
-      runtimeStatus.value = requireMlResponseData(statusResponse, 'ML runtime request failed')
+      nextRuntimeStatus = requireMlResponseData(statusResponse, 'ML runtime request failed')
+      runtimeStatus.value = nextRuntimeStatus
       const modelList = requireMlResponseData(modelsResponse, 'ML model list request failed')
       models.value = modelList.models || []
       syncModelSelection()
     } catch (error) {
+      if (!nextRuntimeStatus) {
+        runtimeStatus.value = null
+      }
       models.value = []
       clearSelectedModel()
       runtimeMessage.value = error instanceof Error ? error.message : 'ML runtime request failed'

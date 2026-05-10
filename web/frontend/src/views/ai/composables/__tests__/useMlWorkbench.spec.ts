@@ -308,6 +308,31 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('ML model registry unavailable')
   })
 
+  it('clears stale runtime readiness when runtime status refresh fails', async () => {
+    vi.mocked(getMlRuntimeStatus)
+      .mockResolvedValueOnce(successfulRuntimeStatus)
+      .mockResolvedValueOnce({
+        success: false,
+        code: 503,
+        message: 'ML runtime unavailable',
+        data: null,
+        timestamp: '2026-05-10T00:00:00Z',
+        request_id: 'req-ml-runtime-failed',
+      } as never)
+    vi.mocked(listMlWorkbenchModels).mockResolvedValue(emptyModelList)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    expect(workbench.runtimeStatus.value?.service_available).toBe(true)
+    expect(workbench.readinessLabel.value).toBe('运行时可用')
+
+    await workbench.refreshRuntime()
+
+    expect(workbench.runtimeStatus.value).toBeNull()
+    expect(workbench.readinessLabel.value).toBe('运行时待检查')
+    expect(workbench.runtimeMessage.value).toContain('ML runtime unavailable')
+  })
+
   it('syncs prediction symbol when selecting a model from registry', async () => {
     vi.mocked(listMlWorkbenchModels).mockResolvedValue(multiSymbolModelList as never)
 
