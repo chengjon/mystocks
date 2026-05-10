@@ -63,6 +63,7 @@ const modelFamilyOptionsMock = ref([
   { value: 'lightgbm', label: 'LightGBM', available: true, status: 'available' },
 ])
 const selectedModelFamilyBlockedMock = ref(false)
+const runtimeReadinessPendingMock = ref(false)
 const runtimeServiceBlockedMock = ref(false)
 const trainingOperationBlockedMock = ref(false)
 const predictionOperationBlockedMock = ref(false)
@@ -85,6 +86,7 @@ vi.mock('../composables/useMlWorkbench', () => ({
     readinessClass: readinessClassMock,
     modelFamilyOptions: modelFamilyOptionsMock,
     selectedModelFamilyBlocked: selectedModelFamilyBlockedMock,
+    runtimeReadinessPending: runtimeReadinessPendingMock,
     runtimeServiceBlocked: runtimeServiceBlockedMock,
     trainingOperationBlocked: trainingOperationBlockedMock,
     predictionOperationBlocked: predictionOperationBlockedMock,
@@ -123,6 +125,7 @@ describe('AI ML workbench page', () => {
       { value: 'lightgbm', label: 'LightGBM', available: true, status: 'available' },
     ]
     selectedModelFamilyBlockedMock.value = false
+    runtimeReadinessPendingMock.value = false
     runtimeServiceBlockedMock.value = false
     trainingOperationBlockedMock.value = false
     predictionOperationBlockedMock.value = false
@@ -218,6 +221,18 @@ describe('AI ML workbench page', () => {
 
     expect(wrapper.text()).toContain('当前 ML 运行时不支持训练')
     expect(wrapper.text()).toContain('当前 ML 运行时不支持预测')
+    expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+    expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('disables train and predict actions while runtime readiness is pending', async () => {
+    runtimeReadinessPendingMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('请先刷新 ML 运行时状态')
     expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
     expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
   })

@@ -19,6 +19,7 @@ const {
   readinessClass,
   modelFamilyOptions,
   selectedModelFamilyBlocked,
+  runtimeReadinessPending,
   runtimeServiceBlocked,
   trainingOperationBlocked,
   predictionOperationBlocked,
@@ -90,6 +91,9 @@ onMounted(() => {
         <p v-if="selectedModelFamilyBlocked" class="runtime-message compact">
           当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。
         </p>
+        <p v-if="runtimeReadinessPending" class="runtime-message compact">
+          请先刷新 ML 运行时状态，再提交训练或预测任务。
+        </p>
         <p v-if="trainingOperationBlocked" class="runtime-message compact">
           当前 ML 运行时不支持训练，请刷新运行时状态或检查后端能力。
         </p>
@@ -117,7 +121,7 @@ onMounted(() => {
           data-testid="ml-train-submit"
           class="primary-button"
           type="button"
-          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeServiceBlocked || trainingOperationBlocked"
+          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeReadinessPending || runtimeServiceBlocked || trainingOperationBlocked"
           @click="submitTraining"
         >
           提交训练
@@ -172,7 +176,7 @@ onMounted(() => {
           data-testid="ml-predict-submit"
           class="primary-button"
           type="button"
-          :disabled="predictionLoading || !predictionForm.model_id || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch"
+          :disabled="predictionLoading || !predictionForm.model_id || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch"
           @click="submitPrediction"
         >
           执行预测

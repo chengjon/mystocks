@@ -122,6 +122,7 @@ export function useMlWorkbench() {
     return selectedOption?.available === false
   })
 
+  const runtimeReadinessPending = computed(() => !runtimeStatus.value)
   const runtimeServiceBlocked = computed(() => runtimeStatus.value?.service_available === false)
   const runtimeSupportsOperation = (operation: string) =>
     !runtimeStatus.value || runtimeStatus.value.supported_operations.includes(operation)
@@ -168,6 +169,9 @@ export function useMlWorkbench() {
     runtimeMessage.value = ''
     lastTrainingResult.value = null
     try {
+      if (runtimeReadinessPending.value) {
+        throw new Error('请先刷新 ML 运行时状态，再提交训练或预测任务。')
+      }
       if (runtimeServiceBlocked.value) {
         throw new Error('ML runtime is unavailable. Please refresh runtime status before submitting work.')
       }
@@ -195,6 +199,9 @@ export function useMlWorkbench() {
     runtimeMessage.value = ''
     lastPredictionResult.value = null
     try {
+      if (runtimeReadinessPending.value) {
+        throw new Error('请先刷新 ML 运行时状态，再提交训练或预测任务。')
+      }
       if (runtimeServiceBlocked.value) {
         throw new Error('ML runtime is unavailable. Please refresh runtime status before submitting work.')
       }
@@ -264,6 +271,7 @@ export function useMlWorkbench() {
     readinessClass,
     modelFamilyOptions,
     selectedModelFamilyBlocked,
+    runtimeReadinessPending,
     runtimeServiceBlocked,
     trainingOperationBlocked,
     predictionOperationBlocked,

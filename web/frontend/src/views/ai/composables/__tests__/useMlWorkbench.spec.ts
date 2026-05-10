@@ -260,6 +260,14 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('ML runtime is unavailable')
   })
 
+  it('does not submit training before runtime readiness is confirmed', async () => {
+    const workbench = useMlWorkbench()
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('请先刷新 ML 运行时状态')
+  })
+
   it('does not submit training when runtime does not advertise train support', async () => {
     vi.mocked(getMlRuntimeStatus).mockResolvedValue(trainUnsupportedRuntimeStatus as never)
 
@@ -289,6 +297,7 @@ describe('useMlWorkbench', () => {
     } as never)
 
     const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
     workbench.predictionForm.model_id = 'lightgbm_model'
     await workbench.submitPrediction()
 
@@ -309,6 +318,7 @@ describe('useMlWorkbench', () => {
       } as never)
 
     const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
     await workbench.submitTraining()
     expect(workbench.lastTrainingResult.value?.model_id).toBe('svm_600519_abc')
 
@@ -331,6 +341,7 @@ describe('useMlWorkbench', () => {
       } as never)
 
     const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
     workbench.predictionForm.model_id = 'svm_600519_abc'
     await workbench.submitPrediction()
     expect(workbench.lastPredictionResult.value?.prediction.signal).toBe('buy')
@@ -443,6 +454,7 @@ describe('useMlWorkbench', () => {
     } as never)
 
     const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
     await workbench.submitTraining()
 
     expect(workbench.selectedModelId.value).toBe('svm_000001_new')
@@ -452,10 +464,20 @@ describe('useMlWorkbench', () => {
 
   it('does not submit prediction without a selected model', async () => {
     const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
     await workbench.submitPrediction()
 
     expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
     expect(workbench.runtimeMessage.value).toContain('请先选择模型')
+  })
+
+  it('does not submit prediction before runtime readiness is confirmed', async () => {
+    const workbench = useMlWorkbench()
+    workbench.predictionForm.model_id = 'svm_600519_abc'
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('请先刷新 ML 运行时状态')
   })
 
   it('does not submit prediction when manual symbol differs from the selected model', async () => {
