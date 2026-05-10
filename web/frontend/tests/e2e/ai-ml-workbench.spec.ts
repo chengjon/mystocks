@@ -248,6 +248,19 @@ test.describe('AI ML workbench', () => {
     await expect(page.getByTestId('ml-predict-submit')).toBeDisabled()
   })
 
+  test('runs prediction when symbol matches the selected model after trimming', async ({ page }) => {
+    await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
+
+    await expect(page.getByRole('heading', { name: '模型训练 / 预测' })).toBeVisible({ timeout: 15000 })
+    const predictionPanel = page.locator('.panel').filter({ hasText: '预测推理' })
+    await predictionPanel.getByLabel('标的').fill(' 600519.SH ')
+
+    await expect(page.locator('.ai-ml-workbench')).not.toContainText('预测标的必须与所选模型一致')
+    await expect(page.getByTestId('ml-predict-submit')).toBeEnabled()
+    await page.getByTestId('ml-predict-submit').click()
+    await expect(page.locator('.result-panel')).toContainText('buy')
+  })
+
   test('disables prediction when symbol is blank', async ({ page }) => {
     await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
 

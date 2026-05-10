@@ -150,7 +150,7 @@ export function useMlWorkbench() {
   )
   const predictionSymbolMismatch = computed(() => {
     const selectedModel = selectedPredictionModel.value
-    return Boolean(selectedModel && predictionForm.symbol !== selectedModel.symbol)
+    return Boolean(selectedModel && predictionForm.symbol.trim() !== selectedModel.symbol)
   })
   const predictionSymbolBlank = computed(() => predictionForm.symbol.trim().length === 0)
   const predictionModelIdBlank = computed(() => predictionForm.model_id.trim().length === 0)

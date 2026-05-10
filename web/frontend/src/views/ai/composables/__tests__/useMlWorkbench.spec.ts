@@ -579,6 +579,24 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('预测标的必须与所选模型一致')
   })
 
+  it('submits prediction with a trimmed symbol when it matches the selected model scope', async () => {
+    vi.mocked(listMlWorkbenchModels).mockResolvedValue(populatedModelList as never)
+    vi.mocked(predictMlWorkbenchModel).mockResolvedValue(successfulPredictionResult as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    workbench.predictionForm.symbol = ' 600519.SH '
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).toHaveBeenCalledWith(
+      expect.objectContaining({
+        model_id: 'svm_600519_abc',
+        symbol: '600519.SH',
+      }),
+    )
+    expect(workbench.runtimeMessage.value).toBe('')
+  })
+
   it('does not submit prediction when manual horizon differs from the selected model', async () => {
     vi.mocked(listMlWorkbenchModels).mockResolvedValue(multiSymbolModelList as never)
 
