@@ -213,6 +213,17 @@ test.describe('AI ML workbench', () => {
     await expect(page.getByTestId('ml-train-submit')).toBeDisabled()
   })
 
+  test('disables training when symbol is blank', async ({ page }) => {
+    await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
+
+    await expect(page.getByRole('heading', { name: '模型训练 / 预测' })).toBeVisible({ timeout: 15000 })
+    const trainingPanel = page.locator('.panel').filter({ hasText: '训练配置' })
+    await trainingPanel.getByLabel('标的').fill('')
+
+    await expect(page.locator('.ai-ml-workbench')).toContainText('训练标的不能为空')
+    await expect(page.getByTestId('ml-train-submit')).toBeDisabled()
+  })
+
   test('disables prediction when manual symbol differs from selected model scope', async ({ page }) => {
     await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
 
@@ -221,6 +232,17 @@ test.describe('AI ML workbench', () => {
     await predictionPanel.getByLabel('标的').fill('000001.SZ')
 
     await expect(page.locator('.ai-ml-workbench')).toContainText('预测标的必须与所选模型一致')
+    await expect(page.getByTestId('ml-predict-submit')).toBeDisabled()
+  })
+
+  test('disables prediction when symbol is blank', async ({ page }) => {
+    await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
+
+    await expect(page.getByRole('heading', { name: '模型训练 / 预测' })).toBeVisible({ timeout: 15000 })
+    const predictionPanel = page.locator('.panel').filter({ hasText: '预测推理' })
+    await predictionPanel.getByLabel('标的').fill('')
+
+    await expect(page.locator('.ai-ml-workbench')).toContainText('预测标的不能为空')
     await expect(page.getByTestId('ml-predict-submit')).toBeDisabled()
   })
 

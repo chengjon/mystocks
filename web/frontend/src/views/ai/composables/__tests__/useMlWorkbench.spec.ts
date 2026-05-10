@@ -279,6 +279,16 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('训练开始日期必须早于结束日期')
   })
 
+  it('does not submit training when symbol is blank', async () => {
+    const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
+    workbench.trainingForm.symbol = '   '
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('训练标的不能为空')
+  })
+
   it('does not submit training when runtime does not advertise train support', async () => {
     vi.mocked(getMlRuntimeStatus).mockResolvedValue(trainUnsupportedRuntimeStatus as never)
 
@@ -482,6 +492,17 @@ describe('useMlWorkbench', () => {
 
     expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
     expect(workbench.runtimeMessage.value).toContain('请先选择模型')
+  })
+
+  it('does not submit prediction when symbol is blank', async () => {
+    const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
+    workbench.predictionForm.model_id = 'svm_600519_abc'
+    workbench.predictionForm.symbol = ' '
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('预测标的不能为空')
   })
 
   it('does not submit prediction before runtime readiness is confirmed', async () => {

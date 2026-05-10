@@ -7,12 +7,12 @@ import os
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict
+from typing import Annotated, Any, Dict
 from uuid import uuid4
 
 import pandas as pd
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, StringConstraints
 
 from app.core.responses import UnifiedResponse
 
@@ -20,6 +20,8 @@ from .ml_runtime_helpers import _feature_snapshot, _load_price_frame
 from .runtime_state import TrainedStrategyState, runtime_store
 
 router = APIRouter(prefix="/ml")
+
+NonBlankString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
 
 
 class MLWorkbenchModelFamily(str, Enum):
@@ -33,7 +35,7 @@ class MLWorkbenchTrainingRequest(BaseModel):
     """Canonical ML workbench training request."""
 
     model_family: MLWorkbenchModelFamily = Field(MLWorkbenchModelFamily.SVM, description="Model backend family")
-    symbol: str = Field(..., description="Training symbol")
+    symbol: NonBlankString = Field(..., description="Training symbol")
     start_date: str = Field(..., description="Training start date (YYYY-MM-DD)")
     end_date: str = Field(..., description="Training end date (YYYY-MM-DD)")
     feature_window: int = Field(20, ge=5, le=120, description="Rolling feature window")
@@ -44,8 +46,8 @@ class MLWorkbenchTrainingRequest(BaseModel):
 class MLWorkbenchPredictionRequest(BaseModel):
     """Canonical ML workbench prediction request."""
 
-    model_id: str = Field(..., description="Trained model ID")
-    symbol: str = Field(..., description="Prediction symbol")
+    model_id: NonBlankString = Field(..., description="Trained model ID")
+    symbol: NonBlankString = Field(..., description="Prediction symbol")
     prediction_horizon: int = Field(1, ge=1, le=30, description="Prediction horizon in trading periods")
 
 

@@ -68,7 +68,9 @@ const runtimeServiceBlockedMock = ref(false)
 const trainingOperationBlockedMock = ref(false)
 const predictionOperationBlockedMock = ref(false)
 const trainingDateRangeInvalidMock = ref(false)
+const trainingSymbolBlankMock = ref(false)
 const predictionSymbolMismatchMock = ref(false)
+const predictionSymbolBlankMock = ref(false)
 const predictionHorizonMismatchMock = ref(false)
 
 vi.mock('../composables/useMlWorkbench', () => ({
@@ -93,7 +95,9 @@ vi.mock('../composables/useMlWorkbench', () => ({
     trainingOperationBlocked: trainingOperationBlockedMock,
     predictionOperationBlocked: predictionOperationBlockedMock,
     trainingDateRangeInvalid: trainingDateRangeInvalidMock,
+    trainingSymbolBlank: trainingSymbolBlankMock,
     predictionSymbolMismatch: predictionSymbolMismatchMock,
+    predictionSymbolBlank: predictionSymbolBlankMock,
     predictionHorizonMismatch: predictionHorizonMismatchMock,
     refreshRuntime: refreshRuntimeMock,
     submitTraining: submitTrainingMock,
@@ -134,7 +138,9 @@ describe('AI ML workbench page', () => {
     trainingOperationBlockedMock.value = false
     predictionOperationBlockedMock.value = false
     trainingDateRangeInvalidMock.value = false
+    trainingSymbolBlankMock.value = false
     predictionSymbolMismatchMock.value = false
+    predictionSymbolBlankMock.value = false
     predictionHorizonMismatchMock.value = false
   })
 
@@ -206,6 +212,17 @@ describe('AI ML workbench page', () => {
     expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
   })
 
+  it('surfaces blank training symbol before training submission', async () => {
+    trainingSymbolBlankMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('训练标的不能为空')
+    expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+  })
+
   it('disables train and predict actions when runtime service is blocked', async () => {
     runtimeServiceBlockedMock.value = true
 
@@ -225,6 +242,17 @@ describe('AI ML workbench page', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('预测标的必须与所选模型一致')
+    expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('surfaces blank prediction symbol before prediction submission', async () => {
+    predictionSymbolBlankMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('预测标的不能为空')
     expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
   })
 

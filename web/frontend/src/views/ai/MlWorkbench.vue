@@ -24,7 +24,9 @@ const {
   trainingOperationBlocked,
   predictionOperationBlocked,
   trainingDateRangeInvalid,
+  trainingSymbolBlank,
   predictionSymbolMismatch,
+  predictionSymbolBlank,
   predictionHorizonMismatch,
   refreshRuntime,
   submitTraining,
@@ -102,6 +104,9 @@ onMounted(() => {
         <p v-if="trainingDateRangeInvalid" class="runtime-message compact">
           训练开始日期必须早于结束日期。
         </p>
+        <p v-if="trainingSymbolBlank" class="runtime-message compact">
+          训练标的不能为空。
+        </p>
         <label>
           标的
           <input v-model="trainingForm.symbol" type="text" />
@@ -126,7 +131,7 @@ onMounted(() => {
           data-testid="ml-train-submit"
           class="primary-button"
           type="button"
-          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeReadinessPending || runtimeServiceBlocked || trainingOperationBlocked || trainingDateRangeInvalid"
+          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeReadinessPending || runtimeServiceBlocked || trainingOperationBlocked || trainingDateRangeInvalid || trainingSymbolBlank"
           @click="submitTraining"
         >
           提交训练
@@ -170,6 +175,9 @@ onMounted(() => {
         <p v-if="predictionSymbolMismatch" class="runtime-message compact">
           预测标的必须与所选模型一致，请重新选择模型或刷新模型列表。
         </p>
+        <p v-if="predictionSymbolBlank" class="runtime-message compact">
+          预测标的不能为空。
+        </p>
         <p v-if="predictionHorizonMismatch" class="runtime-message compact">
           预测周期必须与所选模型一致，请重新选择模型或刷新模型列表。
         </p>
@@ -184,7 +192,7 @@ onMounted(() => {
           data-testid="ml-predict-submit"
           class="primary-button"
           type="button"
-          :disabled="predictionLoading || !predictionForm.model_id || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch || predictionHorizonMismatch"
+          :disabled="predictionLoading || !predictionForm.model_id || runtimeReadinessPending || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch || predictionSymbolBlank || predictionHorizonMismatch"
           @click="submitPrediction"
         >
           执行预测

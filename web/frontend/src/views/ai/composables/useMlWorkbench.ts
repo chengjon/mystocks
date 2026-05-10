@@ -133,6 +133,7 @@ export function useMlWorkbench() {
     const endTime = Date.parse(trainingForm.end_date)
     return Number.isFinite(startTime) && Number.isFinite(endTime) && startTime >= endTime
   })
+  const trainingSymbolBlank = computed(() => trainingForm.symbol.trim().length === 0)
   const selectedPredictionModel = computed(() =>
     models.value.find(
       (model) => model.model_id === (predictionForm.model_id || selectedModelId.value),
@@ -142,6 +143,7 @@ export function useMlWorkbench() {
     const selectedModel = selectedPredictionModel.value
     return Boolean(selectedModel && predictionForm.symbol !== selectedModel.symbol)
   })
+  const predictionSymbolBlank = computed(() => predictionForm.symbol.trim().length === 0)
   const predictionHorizonMismatch = computed(() => {
     const selectedModel = selectedPredictionModel.value
     const trainedHorizon = selectedModel?.feature_context?.prediction_horizon
@@ -191,10 +193,16 @@ export function useMlWorkbench() {
       if (trainingDateRangeInvalid.value) {
         throw new Error('训练开始日期必须早于结束日期。')
       }
+      if (trainingSymbolBlank.value) {
+        throw new Error('训练标的不能为空。')
+      }
       if (selectedModelFamilyBlocked.value) {
         throw new Error('当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。')
       }
-      const response = await trainMlWorkbenchModel({ ...trainingForm })
+      const response = await trainMlWorkbenchModel({
+        ...trainingForm,
+        symbol: trainingForm.symbol.trim(),
+      })
       const trainingResult = requireMlResponseData(response, 'ML training failed')
       lastTrainingResult.value = trainingResult
       await refreshRuntime()
@@ -228,6 +236,9 @@ export function useMlWorkbench() {
       if (!modelId) {
         throw new Error('请先选择模型后再执行预测。')
       }
+      if (predictionSymbolBlank.value) {
+        throw new Error('预测标的不能为空。')
+      }
       if (predictionSymbolMismatch.value) {
         throw new Error('预测标的必须与所选模型一致，请重新选择模型或刷新模型列表。')
       }
@@ -237,6 +248,7 @@ export function useMlWorkbench() {
       const response = await predictMlWorkbenchModel({
         ...predictionForm,
         model_id: modelId,
+        symbol: predictionForm.symbol.trim(),
       })
       lastPredictionResult.value = requireMlResponseData(response, 'ML prediction failed')
     } catch (error) {
@@ -298,7 +310,9 @@ export function useMlWorkbench() {
     trainingOperationBlocked,
     predictionOperationBlocked,
     trainingDateRangeInvalid,
+    trainingSymbolBlank,
     predictionSymbolMismatch,
+    predictionSymbolBlank,
     predictionHorizonMismatch,
     refreshRuntime,
     submitTraining,

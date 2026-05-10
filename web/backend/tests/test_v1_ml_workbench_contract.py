@@ -6,6 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from pydantic import ValidationError
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -134,6 +135,38 @@ async def test_v1_ml_training_rejects_insufficient_samples(monkeypatch):
 
     assert excinfo.value.status_code == 400
     assert "Insufficient samples" in excinfo.value.detail
+
+
+def test_v1_ml_training_request_rejects_blank_symbol():
+    module = _load_module()
+
+    with pytest.raises(ValidationError):
+        module.MLWorkbenchTrainingRequest(
+            model_family=module.MLWorkbenchModelFamily.SVM,
+            symbol="   ",
+            start_date="2024-01-01",
+            end_date="2024-12-31",
+            feature_window=20,
+            prediction_horizon=5,
+        )
+
+
+def test_v1_ml_prediction_request_rejects_blank_scope_fields():
+    module = _load_module()
+
+    with pytest.raises(ValidationError):
+        module.MLWorkbenchPredictionRequest(
+            model_id=" ",
+            symbol="600519.SH",
+            prediction_horizon=5,
+        )
+
+    with pytest.raises(ValidationError):
+        module.MLWorkbenchPredictionRequest(
+            model_id="svm_600519_abc",
+            symbol=" ",
+            prediction_horizon=5,
+        )
 
 
 async def test_v1_ml_training_prediction_and_model_registry_are_canonical():
