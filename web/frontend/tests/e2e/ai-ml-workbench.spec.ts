@@ -211,4 +211,15 @@ test.describe('AI ML workbench', () => {
     await expect(page.locator('.ai-ml-workbench')).toContainText('预测标的必须与所选模型一致')
     await expect(page.getByTestId('ml-predict-submit')).toBeDisabled()
   })
+
+  test('disables prediction when manual horizon differs from selected model scope', async ({ page }) => {
+    await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
+
+    await expect(page.getByRole('heading', { name: '模型训练 / 预测' })).toBeVisible({ timeout: 15000 })
+    const predictionPanel = page.locator('.panel').filter({ hasText: '预测推理' })
+    await predictionPanel.getByLabel('预测周期').fill('10')
+
+    await expect(page.locator('.ai-ml-workbench')).toContainText('预测周期必须与所选模型一致')
+    await expect(page.getByTestId('ml-predict-submit')).toBeDisabled()
+  })
 })
