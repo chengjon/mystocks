@@ -67,6 +67,24 @@ const requireMlResponseData = <T>(response: UnifiedResponse<T>, fallback: string
 const isFiniteNumberInRange = (value: unknown, min: number, max: number): boolean =>
   typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max
 
+const isValidIsoDate = (value: string): boolean => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value)
+  if (!match) {
+    return false
+  }
+
+  const [, yearText, monthText, dayText] = match
+  const year = Number(yearText)
+  const month = Number(monthText)
+  const day = Number(dayText)
+  const date = new Date(Date.UTC(year, month - 1, day))
+  return (
+    date.getUTCFullYear() === year &&
+    date.getUTCMonth() === month - 1 &&
+    date.getUTCDate() === day
+  )
+}
+
 export function useMlWorkbench() {
   const loading = ref(false)
   const trainingLoading = ref(false)
@@ -131,7 +149,13 @@ export function useMlWorkbench() {
     !runtimeStatus.value || runtimeStatus.value.supported_operations.includes(operation)
   const trainingOperationBlocked = computed(() => !runtimeSupportsOperation('train'))
   const predictionOperationBlocked = computed(() => !runtimeSupportsOperation('predict'))
+  const trainingDateFormatInvalid = computed(
+    () => !isValidIsoDate(trainingForm.start_date) || !isValidIsoDate(trainingForm.end_date),
+  )
   const trainingDateRangeInvalid = computed(() => {
+    if (trainingDateFormatInvalid.value) {
+      return false
+    }
     const startTime = Date.parse(trainingForm.start_date)
     const endTime = Date.parse(trainingForm.end_date)
     return Number.isFinite(startTime) && Number.isFinite(endTime) && startTime >= endTime
@@ -202,6 +226,9 @@ export function useMlWorkbench() {
       }
       if (trainingOperationBlocked.value) {
         throw new Error('当前 ML 运行时不支持训练，请刷新运行时状态或检查后端能力。')
+      }
+      if (trainingDateFormatInvalid.value) {
+        throw new Error('训练日期格式必须为 YYYY-MM-DD。')
       }
       if (trainingDateRangeInvalid.value) {
         throw new Error('训练开始日期必须早于结束日期。')
@@ -331,6 +358,7 @@ export function useMlWorkbench() {
     runtimeServiceBlocked,
     trainingOperationBlocked,
     predictionOperationBlocked,
+    trainingDateFormatInvalid,
     trainingDateRangeInvalid,
     trainingSymbolBlank,
     trainingFeatureWindowInvalid,

@@ -279,6 +279,16 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('训练开始日期必须早于结束日期')
   })
 
+  it('does not submit training when date fields are not valid ISO dates', async () => {
+    const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
+    workbench.trainingForm.start_date = 'not-a-date'
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('训练日期格式必须为 YYYY-MM-DD')
+  })
+
   it('does not submit training when symbol is blank', async () => {
     const workbench = useMlWorkbench()
     workbench.runtimeStatus.value = successfulRuntimeStatus.data

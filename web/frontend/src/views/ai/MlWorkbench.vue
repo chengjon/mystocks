@@ -23,6 +23,7 @@ const {
   runtimeServiceBlocked,
   trainingOperationBlocked,
   predictionOperationBlocked,
+  trainingDateFormatInvalid,
   trainingDateRangeInvalid,
   trainingSymbolBlank,
   trainingFeatureWindowInvalid,
@@ -105,6 +106,9 @@ onMounted(() => {
         <p v-if="trainingOperationBlocked" class="runtime-message compact">
           当前 ML 运行时不支持训练，请刷新运行时状态或检查后端能力。
         </p>
+        <p v-if="trainingDateFormatInvalid" class="runtime-message compact">
+          训练日期格式必须为 YYYY-MM-DD。
+        </p>
         <p v-if="trainingDateRangeInvalid" class="runtime-message compact">
           训练开始日期必须早于结束日期。
         </p>
@@ -141,7 +145,7 @@ onMounted(() => {
           data-testid="ml-train-submit"
           class="primary-button"
           type="button"
-          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeReadinessPending || runtimeServiceBlocked || trainingOperationBlocked || trainingDateRangeInvalid || trainingSymbolBlank || trainingFeatureWindowInvalid || trainingPredictionHorizonInvalid"
+          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeReadinessPending || runtimeServiceBlocked || trainingOperationBlocked || trainingDateFormatInvalid || trainingDateRangeInvalid || trainingSymbolBlank || trainingFeatureWindowInvalid || trainingPredictionHorizonInvalid"
           @click="submitTraining"
         >
           提交训练

@@ -67,6 +67,7 @@ const runtimeReadinessPendingMock = ref(false)
 const runtimeServiceBlockedMock = ref(false)
 const trainingOperationBlockedMock = ref(false)
 const predictionOperationBlockedMock = ref(false)
+const trainingDateFormatInvalidMock = ref(false)
 const trainingDateRangeInvalidMock = ref(false)
 const trainingSymbolBlankMock = ref(false)
 const trainingFeatureWindowInvalidMock = ref(false)
@@ -98,6 +99,7 @@ vi.mock('../composables/useMlWorkbench', () => ({
     runtimeServiceBlocked: runtimeServiceBlockedMock,
     trainingOperationBlocked: trainingOperationBlockedMock,
     predictionOperationBlocked: predictionOperationBlockedMock,
+    trainingDateFormatInvalid: trainingDateFormatInvalidMock,
     trainingDateRangeInvalid: trainingDateRangeInvalidMock,
     trainingSymbolBlank: trainingSymbolBlankMock,
     trainingFeatureWindowInvalid: trainingFeatureWindowInvalidMock,
@@ -148,6 +150,7 @@ describe('AI ML workbench page', () => {
     runtimeServiceBlockedMock.value = false
     trainingOperationBlockedMock.value = false
     predictionOperationBlockedMock.value = false
+    trainingDateFormatInvalidMock.value = false
     trainingDateRangeInvalidMock.value = false
     trainingSymbolBlankMock.value = false
     trainingFeatureWindowInvalidMock.value = false
@@ -224,6 +227,17 @@ describe('AI ML workbench page', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('训练开始日期必须早于结束日期')
+    expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('surfaces invalid training date format before training submission', async () => {
+    trainingDateFormatInvalidMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('训练日期格式必须为 YYYY-MM-DD')
     expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
   })
 
