@@ -79,6 +79,8 @@ def _model_backend_dependency(model_family: str | MLWorkbenchModelFamily) -> str
     family = getattr(model_family, "value", model_family)
     if family == MLWorkbenchModelFamily.LIGHTGBM.value:
         return "lightgbm"
+    if family == MLWorkbenchModelFamily.SVM.value:
+        return "sklearn"
     return None
 
 

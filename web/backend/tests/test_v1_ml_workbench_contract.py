@@ -106,6 +106,36 @@ async def test_v1_ml_training_rejects_unavailable_lightgbm_dependency(monkeypatc
     assert excinfo.value.detail["dependency"] == "lightgbm"
 
 
+async def test_v1_ml_training_rejects_unavailable_sklearn_dependency(monkeypatch):
+    module = _load_module()
+    workbench_module = _load_workbench_module()
+
+    real_find_spec = workbench_module.importlib.util.find_spec
+
+    def fake_find_spec(package_name: str):
+        if package_name == "sklearn":
+            return None
+        return real_find_spec(package_name)
+
+    monkeypatch.setattr(workbench_module.importlib.util, "find_spec", fake_find_spec)
+
+    with pytest.raises(module.HTTPException) as excinfo:
+        await module.train_ml_workbench_model(
+            module.MLWorkbenchTrainingRequest(
+                model_family=module.MLWorkbenchModelFamily.SVM,
+                symbol="600519.SH",
+                start_date="2024-01-01",
+                end_date="2024-12-31",
+                feature_window=20,
+                prediction_horizon=5,
+            )
+        )
+
+    assert excinfo.value.status_code == 503
+    assert excinfo.value.detail["error_code"] == "ml_backend_unavailable"
+    assert excinfo.value.detail["dependency"] == "sklearn"
+
+
 async def test_v1_ml_training_rejects_insufficient_samples(monkeypatch):
     module = _load_module()
     workbench_module = _load_workbench_module()
