@@ -64,6 +64,7 @@ onMounted(() => {
       </div>
       <div class="status-meta">
         <span>legacy API: {{ runtimeStatus?.legacy_api_available ? 'available' : 'unknown' }}</span>
+        <span>SVM: {{ runtimeStatus?.optional_dependencies?.sklearn?.available ? 'available' : 'unavailable' }}</span>
         <span>LightGBM: {{ runtimeStatus?.optional_dependencies?.lightgbm?.available ? 'available' : 'unavailable' }}</span>
       </div>
     </section>

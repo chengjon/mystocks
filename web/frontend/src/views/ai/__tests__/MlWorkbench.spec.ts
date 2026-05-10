@@ -14,6 +14,7 @@ const runtimeStatusMock = ref({
   service_available: true,
   model_backend: 'runtime_registry',
   optional_dependencies: {
+    sklearn: { available: true, package: 'sklearn' },
     lightgbm: { available: true, package: 'lightgbm' },
   },
   supported_operations: ['train', 'predict'],
@@ -217,6 +218,16 @@ describe('AI ML workbench page', () => {
     expect(lightgbmOption.attributes('disabled')).toBeDefined()
     expect(wrapper.text()).toContain('当前模型族后端依赖不可用')
     expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('renders SVM runtime dependency status from runtime readiness', async () => {
+    runtimeStatusMock.value.optional_dependencies.sklearn = { available: false, package: 'sklearn' }
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('SVM: unavailable')
   })
 
   it('surfaces invalid training date range before training submission', async () => {
