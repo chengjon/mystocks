@@ -9,8 +9,16 @@ import {
   type MlRuntimeStatus,
   type MlTrainingRequest,
   type MlTrainingResult,
+  type MlWorkbenchModelFamily,
   type MlWorkbenchModel,
 } from '@/api/mlWorkbench.ts'
+
+interface ModelFamilyOption {
+  value: MlWorkbenchModelFamily
+  label: string
+  available: boolean
+  status: 'available' | 'unavailable'
+}
 
 const defaultTrainingForm = (): MlTrainingRequest => ({
   model_family: 'svm',
@@ -51,6 +59,33 @@ export function useMlWorkbench() {
       return 'is-pending'
     }
     return runtimeStatus.value.service_available ? 'is-ready' : 'is-blocked'
+  })
+
+  const modelFamilyOptions = computed<ModelFamilyOption[]>(() => {
+    const lightgbmAvailable =
+      runtimeStatus.value?.optional_dependencies?.lightgbm?.available === true
+
+    return [
+      {
+        value: 'svm',
+        label: 'SVM',
+        available: true,
+        status: 'available',
+      },
+      {
+        value: 'lightgbm',
+        label: 'LightGBM',
+        available: lightgbmAvailable,
+        status: lightgbmAvailable ? 'available' : 'unavailable',
+      },
+    ]
+  })
+
+  const selectedModelFamilyBlocked = computed(() => {
+    const selectedOption = modelFamilyOptions.value.find(
+      (option) => option.value === trainingForm.model_family,
+    )
+    return selectedOption?.available === false
   })
 
   const refreshRuntime = async () => {
@@ -124,6 +159,8 @@ export function useMlWorkbench() {
     runtimeMessage,
     readinessLabel,
     readinessClass,
+    modelFamilyOptions,
+    selectedModelFamilyBlocked,
     refreshRuntime,
     submitTraining,
     submitPrediction,

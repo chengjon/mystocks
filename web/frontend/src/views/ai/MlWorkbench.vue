@@ -17,6 +17,8 @@ const {
   runtimeMessage,
   readinessLabel,
   readinessClass,
+  modelFamilyOptions,
+  selectedModelFamilyBlocked,
   refreshRuntime,
   submitTraining,
   submitPrediction,
@@ -65,6 +67,26 @@ onMounted(() => {
           <span>{{ trainingLoading ? '提交中' : '待提交' }}</span>
         </div>
         <label>
+          模型族
+          <select
+            v-model="trainingForm.model_family"
+            data-testid="ml-model-family"
+          >
+            <option
+              v-for="option in modelFamilyOptions"
+              :key="option.value"
+              :value="option.value"
+              :disabled="!option.available"
+              :data-testid="`ml-model-family-${option.value}`"
+            >
+              {{ option.label }} · {{ option.status }}
+            </option>
+          </select>
+        </label>
+        <p v-if="selectedModelFamilyBlocked" class="runtime-message compact">
+          当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。
+        </p>
+        <label>
           标的
           <input v-model="trainingForm.symbol" type="text" />
         </label>
@@ -88,7 +110,7 @@ onMounted(() => {
           data-testid="ml-train-submit"
           class="primary-button"
           type="button"
-          :disabled="trainingLoading"
+          :disabled="trainingLoading || selectedModelFamilyBlocked"
           @click="submitTraining"
         >
           提交训练
@@ -277,13 +299,19 @@ label {
   font-size: 13px;
 }
 
-input {
+input,
+select {
   min-height: 36px;
   border: 1px solid rgba(148, 163, 184, 0.26);
   border-radius: 6px;
   padding: 0 10px;
   background: rgba(15, 23, 42, 0.88);
   color: #f8fafc;
+}
+
+select:disabled,
+option:disabled {
+  color: rgba(226, 232, 240, 0.42);
 }
 
 button {

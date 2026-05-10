@@ -58,6 +58,11 @@ const lastPredictionResultMock = ref({
 const runtimeMessageMock = ref('')
 const readinessLabelMock = ref('运行时可用')
 const readinessClassMock = ref('is-ready')
+const modelFamilyOptionsMock = ref([
+  { value: 'svm', label: 'SVM', available: true, status: 'available' },
+  { value: 'lightgbm', label: 'LightGBM', available: true, status: 'available' },
+])
+const selectedModelFamilyBlockedMock = ref(false)
 
 vi.mock('../composables/useMlWorkbench', () => ({
   useMlWorkbench: () => ({
@@ -74,6 +79,8 @@ vi.mock('../composables/useMlWorkbench', () => ({
     runtimeMessage: runtimeMessageMock,
     readinessLabel: readinessLabelMock,
     readinessClass: readinessClassMock,
+    modelFamilyOptions: modelFamilyOptionsMock,
+    selectedModelFamilyBlocked: selectedModelFamilyBlockedMock,
     refreshRuntime: refreshRuntimeMock,
     submitTraining: submitTrainingMock,
     submitPrediction: submitPredictionMock,
@@ -102,6 +109,12 @@ describe('AI ML workbench page', () => {
     ]
     runtimeMessageMock.value = ''
     selectedModelIdMock.value = 'svm_600519_abc'
+    trainingFormMock.value.model_family = 'svm'
+    modelFamilyOptionsMock.value = [
+      { value: 'svm', label: 'SVM', available: true, status: 'available' },
+      { value: 'lightgbm', label: 'LightGBM', available: true, status: 'available' },
+    ]
+    selectedModelFamilyBlockedMock.value = false
   })
 
   it('loads runtime status on mount and renders canonical safety copy', async () => {
@@ -141,5 +154,23 @@ describe('AI ML workbench page', () => {
     expect(wrapper.text()).toContain('暂无运行时模型')
     expect(wrapper.text()).toContain('runtime unavailable')
     expect(wrapper.text()).toContain('not a trade instruction')
+  })
+
+  it('surfaces unavailable LightGBM backend before training submission', async () => {
+    modelFamilyOptionsMock.value = [
+      { value: 'svm', label: 'SVM', available: true, status: 'available' },
+      { value: 'lightgbm', label: 'LightGBM', available: false, status: 'unavailable' },
+    ]
+    trainingFormMock.value.model_family = 'lightgbm'
+    selectedModelFamilyBlockedMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    const lightgbmOption = wrapper.get('[data-testid="ml-model-family-lightgbm"]')
+    expect(lightgbmOption.attributes('disabled')).toBeDefined()
+    expect(wrapper.text()).toContain('当前模型族后端依赖不可用')
+    expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
   })
 })
