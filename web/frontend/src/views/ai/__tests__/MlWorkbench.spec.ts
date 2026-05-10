@@ -69,6 +69,8 @@ const trainingOperationBlockedMock = ref(false)
 const predictionOperationBlockedMock = ref(false)
 const trainingDateRangeInvalidMock = ref(false)
 const trainingSymbolBlankMock = ref(false)
+const trainingFeatureWindowInvalidMock = ref(false)
+const trainingPredictionHorizonInvalidMock = ref(false)
 const predictionSymbolMismatchMock = ref(false)
 const predictionSymbolBlankMock = ref(false)
 const predictionModelIdBlankMock = ref(false)
@@ -97,6 +99,8 @@ vi.mock('../composables/useMlWorkbench', () => ({
     predictionOperationBlocked: predictionOperationBlockedMock,
     trainingDateRangeInvalid: trainingDateRangeInvalidMock,
     trainingSymbolBlank: trainingSymbolBlankMock,
+    trainingFeatureWindowInvalid: trainingFeatureWindowInvalidMock,
+    trainingPredictionHorizonInvalid: trainingPredictionHorizonInvalidMock,
     predictionSymbolMismatch: predictionSymbolMismatchMock,
     predictionSymbolBlank: predictionSymbolBlankMock,
     predictionModelIdBlank: predictionModelIdBlankMock,
@@ -144,6 +148,8 @@ describe('AI ML workbench page', () => {
     predictionOperationBlockedMock.value = false
     trainingDateRangeInvalidMock.value = false
     trainingSymbolBlankMock.value = false
+    trainingFeatureWindowInvalidMock.value = false
+    trainingPredictionHorizonInvalidMock.value = false
     predictionSymbolMismatchMock.value = false
     predictionSymbolBlankMock.value = false
     predictionModelIdBlankMock.value = false
@@ -226,6 +232,19 @@ describe('AI ML workbench page', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('训练标的不能为空')
+    expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('surfaces invalid training numeric ranges before training submission', async () => {
+    trainingFeatureWindowInvalidMock.value = true
+    trainingPredictionHorizonInvalidMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('特征窗口必须介于 5 到 120')
+    expect(wrapper.text()).toContain('训练预测周期必须介于 1 到 30')
     expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
   })
 

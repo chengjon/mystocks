@@ -64,6 +64,9 @@ const requireMlResponseData = <T>(response: UnifiedResponse<T>, fallback: string
   return response.data
 }
 
+const isFiniteNumberInRange = (value: unknown, min: number, max: number): boolean =>
+  typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max
+
 export function useMlWorkbench() {
   const loading = ref(false)
   const trainingLoading = ref(false)
@@ -134,6 +137,12 @@ export function useMlWorkbench() {
     return Number.isFinite(startTime) && Number.isFinite(endTime) && startTime >= endTime
   })
   const trainingSymbolBlank = computed(() => trainingForm.symbol.trim().length === 0)
+  const trainingFeatureWindowInvalid = computed(
+    () => !isFiniteNumberInRange(trainingForm.feature_window, 5, 120),
+  )
+  const trainingPredictionHorizonInvalid = computed(
+    () => !isFiniteNumberInRange(trainingForm.prediction_horizon, 1, 30),
+  )
   const selectedPredictionModel = computed(() =>
     models.value.find(
       (model) => model.model_id === predictionForm.model_id.trim(),
@@ -196,6 +205,12 @@ export function useMlWorkbench() {
       }
       if (trainingSymbolBlank.value) {
         throw new Error('训练标的不能为空。')
+      }
+      if (trainingFeatureWindowInvalid.value) {
+        throw new Error('特征窗口必须介于 5 到 120。')
+      }
+      if (trainingPredictionHorizonInvalid.value) {
+        throw new Error('训练预测周期必须介于 1 到 30。')
       }
       if (selectedModelFamilyBlocked.value) {
         throw new Error('当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。')
@@ -312,6 +327,8 @@ export function useMlWorkbench() {
     predictionOperationBlocked,
     trainingDateRangeInvalid,
     trainingSymbolBlank,
+    trainingFeatureWindowInvalid,
+    trainingPredictionHorizonInvalid,
     predictionSymbolMismatch,
     predictionSymbolBlank,
     predictionModelIdBlank,

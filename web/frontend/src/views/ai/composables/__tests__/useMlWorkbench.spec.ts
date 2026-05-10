@@ -289,6 +289,26 @@ describe('useMlWorkbench', () => {
     expect(workbench.runtimeMessage.value).toContain('训练标的不能为空')
   })
 
+  it('does not submit training when feature window is outside the supported range', async () => {
+    const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
+    workbench.trainingForm.feature_window = 4
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('特征窗口必须介于 5 到 120')
+  })
+
+  it('does not submit training when prediction horizon is outside the supported range', async () => {
+    const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
+    workbench.trainingForm.prediction_horizon = 31
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('训练预测周期必须介于 1 到 30')
+  })
+
   it('does not submit training when runtime does not advertise train support', async () => {
     vi.mocked(getMlRuntimeStatus).mockResolvedValue(trainUnsupportedRuntimeStatus as never)
 

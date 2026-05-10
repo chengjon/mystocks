@@ -25,6 +25,8 @@ const {
   predictionOperationBlocked,
   trainingDateRangeInvalid,
   trainingSymbolBlank,
+  trainingFeatureWindowInvalid,
+  trainingPredictionHorizonInvalid,
   predictionSymbolMismatch,
   predictionSymbolBlank,
   predictionModelIdBlank,
@@ -108,6 +110,12 @@ onMounted(() => {
         <p v-if="trainingSymbolBlank" class="runtime-message compact">
           训练标的不能为空。
         </p>
+        <p v-if="trainingFeatureWindowInvalid" class="runtime-message compact">
+          特征窗口必须介于 5 到 120。
+        </p>
+        <p v-if="trainingPredictionHorizonInvalid" class="runtime-message compact">
+          训练预测周期必须介于 1 到 30。
+        </p>
         <label>
           标的
           <input v-model="trainingForm.symbol" type="text" />
@@ -132,7 +140,7 @@ onMounted(() => {
           data-testid="ml-train-submit"
           class="primary-button"
           type="button"
-          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeReadinessPending || runtimeServiceBlocked || trainingOperationBlocked || trainingDateRangeInvalid || trainingSymbolBlank"
+          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeReadinessPending || runtimeServiceBlocked || trainingOperationBlocked || trainingDateRangeInvalid || trainingSymbolBlank || trainingFeatureWindowInvalid || trainingPredictionHorizonInvalid"
           @click="submitTraining"
         >
           提交训练

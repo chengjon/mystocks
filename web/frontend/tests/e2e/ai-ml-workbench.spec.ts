@@ -224,6 +224,19 @@ test.describe('AI ML workbench', () => {
     await expect(page.getByTestId('ml-train-submit')).toBeDisabled()
   })
 
+  test('disables training when numeric ranges are invalid', async ({ page }) => {
+    await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
+
+    await expect(page.getByRole('heading', { name: '模型训练 / 预测' })).toBeVisible({ timeout: 15000 })
+    const trainingPanel = page.locator('.panel').filter({ hasText: '训练配置' })
+    await trainingPanel.getByLabel('特征窗口').fill('4')
+    await trainingPanel.getByLabel('预测周期').fill('31')
+
+    await expect(page.locator('.ai-ml-workbench')).toContainText('特征窗口必须介于 5 到 120')
+    await expect(page.locator('.ai-ml-workbench')).toContainText('训练预测周期必须介于 1 到 30')
+    await expect(page.getByTestId('ml-train-submit')).toBeDisabled()
+  })
+
   test('disables prediction when manual symbol differs from selected model scope', async ({ page }) => {
     await page.goto(`${FRONTEND_BASE_URL}/ai/ml`)
 
