@@ -23,8 +23,8 @@
 
 ## 4. Legacy Compatibility Alignment
 
-- [ ] 4.1 Reconcile `perform_attribution_analysis(...)` as a legacy compatibility surface
-- [ ] 4.2 Delegate current real and mock attribution helpers to the shared engine or mark them explicit legacy/demo fallback
+- [x] 4.1 Reconcile `perform_attribution_analysis(...)` as a legacy compatibility surface
+- [x] 4.2 Delegate current real and mock attribution helpers to the shared engine or mark them explicit legacy/demo fallback
 
 ## 5. Frontend Shared Attribution Surface
 

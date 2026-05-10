@@ -522,9 +522,13 @@ class CompositeBusinessDataSource(IBusinessDataSource):
 
     def perform_attribution_analysis(self, user_id: int, start_date: date, end_date: date) -> Dict[str, Any]:
         """
-        执行归因分析
+        执行归因分析。
 
-        整合持仓数据、行情数据、市场数据进行收益归因
+        Legacy compatibility surface. The canonical Brinson + factor
+        attribution truth source now lives behind the v1 attribution endpoints:
+        `/api/v1/backtest/{backtest_id}/attribution` and
+        `/api/v1/positions/attribution`. This method keeps the historic payload
+        for older data-source callers and explicitly marks it as non-canonical.
         """
         try:
             logger.info("执行归因分析: user_id=%s", user_id)
@@ -565,6 +569,15 @@ class CompositeBusinessDataSource(IBusinessDataSource):
                     {"symbol": "000001", "contribution": 0.012},
                 ],
                 "top_detractors": [{"symbol": "600001", "contribution": -0.008}],
+                "legacy_compatibility": {
+                    "surface": "CompositeBusinessDataSource.perform_attribution_analysis",
+                    "payload_status": "legacy_fallback",
+                    "canonical_engine": "web.backend.app.services.attribution.AttributionEngine",
+                    "canonical_endpoints": [
+                        "/api/v1/backtest/{backtest_id}/attribution",
+                        "/api/v1/positions/attribution",
+                    ],
+                },
             }
 
             logger.info("归因分析完成: user_id=%s", user_id)

@@ -428,11 +428,27 @@ class MockBusinessDataSource(IBusinessDataSource):
         start_date: date,
         end_date: date,
     ) -> Dict[str, Any]:
-        """执行归因分析"""
+        """
+        执行归因分析。
+
+        Legacy/demo fallback only. The canonical Brinson + factor attribution
+        contract is served by the v1 attribution endpoints; this mock helper is
+        retained for older data-source demos and must not be treated as the
+        calculation truth source.
+        """
         # 简化的归因分析
         total_return = round(random.uniform(-10.0, 20.0), 2)
 
         attribution = {
+            "legacy_compatibility": {
+                "surface": "MockBusinessDataSource.perform_attribution_analysis",
+                "payload_status": "mock_legacy_fallback",
+                "canonical_engine": "web.backend.app.services.attribution.AttributionEngine",
+                "canonical_endpoints": [
+                    "/api/v1/backtest/{backtest_id}/attribution",
+                    "/api/v1/positions/attribution",
+                ],
+            },
             "total_return": total_return,
             "sector_attribution": {
                 "银行": round(random.uniform(-2.0, 3.0), 2),

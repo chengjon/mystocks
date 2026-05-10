@@ -474,7 +474,18 @@ class IBusinessDataSource(ABC):
     @abstractmethod
     def perform_attribution_analysis(self, user_id: int, start_date: date, end_date: date) -> Dict[str, Any]:
         """
-        执行归因分析
+        执行归因分析。
+
+        Legacy compatibility surface:
+            This method predates the canonical one-period Brinson + factor
+            attribution engine. New strategy/backtest and trade/portfolio
+            callers should use the v1 attribution endpoints instead:
+            - GET /api/v1/backtest/{backtest_id}/attribution
+            - GET /api/v1/positions/attribution[?date=YYYY-MM-DD]
+
+            Implementations that keep this method for compatibility must mark
+            returned payloads as legacy/demo fallback and must not present this
+            payload as the canonical attribution-analysis contract.
 
         Args:
             user_id: 用户ID
@@ -519,7 +530,16 @@ class IBusinessDataSource(ABC):
                 ],
                 "top_detractors": [
                     {"symbol": "600001", "contribution": -0.008}
-                ]
+                ],
+
+                # 兼容面标识：非 canonical v1 attribution contract
+                "legacy_compatibility": {
+                    "surface": "IBusinessDataSource.perform_attribution_analysis",
+                    "canonical_endpoints": [
+                        "/api/v1/backtest/{backtest_id}/attribution",
+                        "/api/v1/positions/attribution"
+                    ]
+                }
             }
 
         性能要求: < 1s
