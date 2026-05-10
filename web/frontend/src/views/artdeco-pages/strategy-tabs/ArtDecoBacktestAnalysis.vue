@@ -5,6 +5,8 @@
         subtitle="面向策略设计、参数编排、任务调度与结果复盘的一体化工作台"
         :status-text="systemStatus"
         :last-updated="lastUpdated"
+        :run-disabled="loading || isRunningBacktest"
+        :reset-disabled="loading || isRunningBacktest"
         @reset="resetConfig"
         @run="handleRunBacktest"
       />
@@ -25,8 +27,10 @@
         <span>UPDATED: {{ lastUpdated }}</span>
       </div>
       <div class="embedded-summary-actions">
-        <ArtDecoButton variant="outline" size="sm" @click="resetConfig">重置参数</ArtDecoButton>
-        <ArtDecoButton variant="solid" size="sm" @click="handleRunBacktest">启动回测</ArtDecoButton>
+        <ArtDecoButton variant="outline" size="sm" :disabled="loading || isRunningBacktest" @click="resetConfig">重置参数</ArtDecoButton>
+        <ArtDecoButton variant="solid" size="sm" :disabled="loading || isRunningBacktest" @click="handleRunBacktest">
+          {{ isRunningBacktest ? '回测执行中' : '启动回测' }}
+        </ArtDecoButton>
       </div>
     </section>
 
@@ -48,6 +52,20 @@
         </span>
       </section>
 
+      <div class="state-banner" :class="`state-banner--${runtimeNoticeTone}`" role="status" aria-live="polite">
+        <span>{{ runtimeNotice }}</span>
+      </div>
+
+      <div v-if="loading && !hasLoaded" class="state-panel artdeco-card" role="status" aria-live="polite">
+        <p>回测上下文同步中</p>
+        <span>正在加载策略列表、回测任务和初始工作台配置。</span>
+      </div>
+
+      <div v-else-if="error" class="state-panel artdeco-card" role="alert">
+        <p>回测上下文加载失败</p>
+        <span>{{ error }}</span>
+      </div>
+
       <section class="ops-strip">
         <article v-for="item in opsOverview" :key="item.label" class="ops-item artdeco-card">
           <span class="label">{{ item.label }}</span>
@@ -57,6 +75,7 @@
       </section>
 
       <BacktestWorkbenchTabs
+        v-if="hasLoaded || !loading"
         v-model:active-tab="activeTab"
         :tabs="tabsWithIcons"
         eyebrow="strategy validation route"
@@ -117,29 +136,36 @@
 
       <section v-else-if="activeTab === 'execution'" class="tab-panel">
         <div class="action-row">
-          <ArtDecoButton variant="outline" size="sm">生成参数快照</ArtDecoButton>
-          <ArtDecoButton variant="outline" size="sm">分配 GPU 资源</ArtDecoButton>
-          <ArtDecoButton variant="solid" size="sm" @click="handleRunBacktest">立即执行</ArtDecoButton>
+          <ArtDecoButton variant="outline" size="sm" :disabled="loading || isRunningBacktest" @click="handleGenerateParameterSnapshot">
+            生成上下文快照
+          </ArtDecoButton>
+          <ArtDecoButton variant="outline" size="sm" :disabled="loading || isRunningBacktest" @click="handleInspectGpuAllocation">
+            查看 GPU 接入状态
+          </ArtDecoButton>
+          <ArtDecoButton variant="solid" size="sm" :disabled="loading || isRunningBacktest" @click="handleRunBacktest">
+            {{ isRunningBacktest ? '执行中...' : '立即执行' }}
+          </ArtDecoButton>
         </div>
+        <p class="execution-action-hint">{{ executionActionHint }}</p>
 
         <div class="hub-grid">
           <ArtDecoCard title="配置面板" hoverable>
             <div class="form-grid">
               <div class="field">
                 <label class="label">策略模板</label>
-                <ArtDecoSelect v-model="config.strategy" :options="strategyOptions" placeholder="选择策略" />
+                <ArtDecoSelect v-model="config.strategy" :options="strategyOptions" label="策略模板" placeholder="选择策略" :disabled="loading || isRunningBacktest" />
               </div>
               <div class="field">
                 <label class="label">回测周期</label>
-                <ArtDecoSelect v-model="config.period" :options="periodOptions" placeholder="选择周期" />
+                <ArtDecoSelect v-model="config.period" :options="periodOptions" label="回测周期" placeholder="选择周期" :disabled="loading || isRunningBacktest" />
               </div>
               <div class="field">
                 <label class="label">初始资金</label>
-                <ArtDecoInput v-model="config.capital" placeholder="例如 1000000" />
+                <ArtDecoInput v-model="config.capital" label="初始资金" placeholder="例如 1000000" :disabled="loading || isRunningBacktest" />
               </div>
               <div class="field">
                 <label class="label">对比基准</label>
-                <ArtDecoSelect v-model="config.benchmark" :options="benchmarkOptions" placeholder="选择基准" />
+                <ArtDecoSelect v-model="config.benchmark" :options="benchmarkOptions" label="对比基准" placeholder="选择基准" :disabled="loading || isRunningBacktest" />
               </div>
             </div>
           </ArtDecoCard>
@@ -209,6 +235,29 @@
             </div>
           </ArtDecoCard>
         </div>
+
+        <section class="backtest-attribution-shell">
+          <div class="action-row">
+            <ArtDecoButton
+              v-for="row in reportRowsWithAttribution"
+              :key="`backtest-attribution-${row.backtestId}`"
+              variant="outline"
+              size="sm"
+              :disabled="attributionLoading"
+              :data-testid="`backtest-attribution-${row.backtestId}`"
+              @click="handleLoadBacktestAttribution(row.backtestId)"
+            >
+              {{ selectedBacktestAttributionId === row.backtestId ? '已选择' : '查看归因' }} · {{ row.name }}
+            </ArtDecoButton>
+          </div>
+          <AttributionPanel
+            :analysis="backtestAttribution"
+            :loading="attributionLoading"
+            :error="attributionError"
+            title="回测归因"
+            :request-id="attributionRequestId"
+          />
+        </section>
       </section>
       </BacktestWorkbenchTabs>
     </section>
@@ -216,8 +265,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { ArtDecoBadge, ArtDecoButton, ArtDecoCard, ArtDecoInput, ArtDecoSelect, ArtDecoTable } from '@/components/artdeco'
+import AttributionPanel from '@/components/shared/attribution/AttributionPanel.vue'
+import { useAttributionAnalysis } from '@/composables/attribution/useAttributionAnalysis.ts'
 import BacktestHeader from './components/BacktestHeader.vue'
 import BacktestKpiGrid from './components/BacktestKpiGrid.vue'
 import BacktestWorkbenchTabs from './components/BacktestWorkbenchTabs.vue'
@@ -235,6 +286,14 @@ const props = withDefaults(defineProps<Props>(), {
   systemConfig: undefined
 })
 const isEmbedded = computed(() => Boolean(props.functionKey))
+const selectedBacktestAttributionId = ref<number | null>(null)
+const {
+  data: backtestAttribution,
+  loading: attributionLoading,
+  error: attributionError,
+  lastRequestId: attributionRequestId,
+  loadAttribution
+} = useAttributionAnalysis()
 
 function getBacktestStatusBadgeVariant(status: string): 'pending' | 'holding' | 'neutral' | 'loss' {
   if (status === 'queued') return 'pending'
@@ -275,7 +334,14 @@ const {
   backtestTasks,
   benchmarkOptions,
   config,
+  executionActionHint,
+  handleGenerateParameterSnapshot,
+  handleInspectGpuAllocation,
   handleRunBacktest,
+  hasLoaded,
+  loading,
+  error,
+  isRunningBacktest,
   kpiItems,
   lastUpdated,
   opsOverview,
@@ -288,6 +354,8 @@ const {
   reportRows,
   reportSummary,
   resetConfig,
+  runtimeNotice,
+  runtimeNoticeTone,
   runLogs,
   selectedStrategyId,
   selectedStrategySnapshot,
@@ -315,6 +383,19 @@ const backtestRailMeta = computed(() => [
   `UPDATED: ${lastUpdated.value}`,
   `TABS: ${tabs.value.length}`
 ])
+
+const reportRowsWithAttribution = computed(() =>
+  reportRows.value.filter((row) => typeof row.backtestId === 'number')
+)
+
+function handleLoadBacktestAttribution(backtestId: number | undefined) {
+  if (typeof backtestId !== 'number') {
+    return
+  }
+
+  selectedBacktestAttributionId.value = backtestId
+  void loadAttribution({ source: 'backtest', backtestId })
+}
 </script>
 
 <style scoped lang="scss">

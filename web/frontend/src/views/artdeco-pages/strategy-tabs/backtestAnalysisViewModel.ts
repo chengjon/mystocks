@@ -610,7 +610,8 @@ export function useBacktestAnalysisViewModel() {
         ),
         updatedAt: formatUpdatedAtLabel(
           readString(payload, ['completed_at', 'completedAt', 'updated_at', 'updatedAt'])
-        )
+        ),
+        backtestId: readNumber(payload, ['backtest_id', 'backtestId', 'id']) ?? undefined
       }
 
       const existingRows = verifiedReportRowsByStrategyId.value.get(strategyId) ?? []

@@ -35,7 +35,7 @@
 
 ## 6. Frontend Domain Shells
 
-- [ ] 6.1 Wire attribution into the strategy/backtest shell for selected backtest-result snapshots
+- [x] 6.1 Wire attribution into the strategy/backtest shell for selected backtest-result snapshots
 - [x] 6.2 Replace trade pseudo-attribution cards with the shared attribution surface in `Portfolio.vue`
 - [x] 6.3 Add current-vs-date-scoped trade attribution controls and shell-specific tests
 

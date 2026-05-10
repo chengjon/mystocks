@@ -1,7 +1,7 @@
 import type { StrategyConfig, StrategyStatus } from '@/api/types/common'
 
 export type BacktestDataMode = 'mock' | 'real'
-export type BacktestStatusClass = 'running' | 'queued' | 'done'
+export type BacktestStatusClass = 'running' | 'queued' | 'done' | 'failed'
 type BacktestOption = { label: string; value: string }
 type BacktestMetricVariant = '' | 'rise' | 'fall'
 type BacktestMetricVariantWithGold = BacktestMetricVariant | 'gold'
@@ -39,7 +39,7 @@ export interface BacktestWorkbenchDataConfig {
   runLogs: Array<{ ts: string; msg: string }>
   optimizeRows: Array<{ name: string; score: string; annual: string; drawdown: string }>
   optimizeHints: Array<{ label: string; value: string; variant: BacktestMetricVariantWithGold }>
-  reportRows: Array<{ name: string; period: string; return: string; drawdown: string; updatedAt: string }>
+  reportRows: Array<{ name: string; period: string; return: string; drawdown: string; updatedAt: string; backtestId?: number }>
   reportSummary: Array<{ label: string; value: string; variant: BacktestMetricVariantWithGold }>
 }
 
@@ -71,11 +71,10 @@ function createDefaultBenchmarkOptions(): BacktestOption[] {
 }
 
 function createEmptyBacktestWorkbenchConfig(): BacktestWorkbenchDataConfig {
-  const now = new Date()
   return {
     tabs: createBacktestTabs(),
-    systemStatus: '运行中 · REAL 数据源待同步',
-    lastUpdated: now.toLocaleString(),
+    systemStatus: '运行中 · 策略上下文待同步',
+    lastUpdated: '--',
     summary: {
       totalRuns: 0,
       winRate: 0,
@@ -83,9 +82,9 @@ function createEmptyBacktestWorkbenchConfig(): BacktestWorkbenchDataConfig {
       maxDrawdown: 0
     },
     opsOverview: [
-      { label: 'REAL 策略总数', value: '0', meta: '等待策略数据同步', variant: 'gold' },
-      { label: '任务队列深度', value: '0', meta: '暂无回测任务', variant: 'rise' },
-      { label: '风险告警', value: '0 条', meta: '暂无告警', variant: 'rise' }
+      { label: '策略总数', value: '0', meta: '等待策略列表同步', variant: 'gold' },
+      { label: '任务视图', value: '0', meta: '暂无真实回测任务回填', variant: 'rise' },
+      { label: '状态提示', value: '0 条', meta: '暂无需提示项', variant: 'rise' }
     ],
     strategyOptions: [],
     periodOptions: createDefaultPeriodOptions(),
@@ -97,8 +96,8 @@ function createEmptyBacktestWorkbenchConfig(): BacktestWorkbenchDataConfig {
       { label: '归档策略', value: '0 项', variant: '' }
     ],
     signalFlow: [
-      { label: '策略装载', value: '等待 REAL 策略数据' },
-      { label: '数据来源', value: 'REAL API /v1/strategy/strategies' },
+      { label: '策略装载', value: '等待策略列表数据' },
+      { label: '数据来源', value: '策略列表 API /v1/strategy/strategies' },
       { label: '执行频率', value: '每 5 分钟' },
       { label: '异常告警', value: '暂无' }
     ],
@@ -114,7 +113,7 @@ function createEmptyBacktestWorkbenchConfig(): BacktestWorkbenchDataConfig {
         { name: '绩效计算', status: 'queued', statusClass: 'queued' }
       ]
     },
-    runLogs: [{ ts: now.toTimeString().slice(0, 8), msg: 'REAL 模式已就绪，等待策略数据。' }],
+    runLogs: [{ ts: '--:--:--', msg: '策略上下文模式已就绪，等待策略列表同步。' }],
     optimizeRows: [],
     optimizeHints: [
       { label: '建议仓位上限', value: '--', variant: '' },
@@ -235,7 +234,7 @@ export function createBacktestWorkbenchRealConfig(strategies: StrategyConfig[]):
   if (!strategies.length) {
     return {
       ...baseConfig,
-      systemStatus: '运行中 · REAL 策略接口可用（暂无策略）',
+      systemStatus: '运行中 · 策略列表接口可用（暂无策略）',
       lastUpdated: currentTimestamp
     }
   }
@@ -273,7 +272,7 @@ export function createBacktestWorkbenchRealConfig(strategies: StrategyConfig[]):
 
   return {
     ...baseConfig,
-    systemStatus: '运行中 · REAL 策略接口可用',
+    systemStatus: '运行中 · 策略列表接口可用',
     lastUpdated: currentTimestamp,
     summary: {
       totalRuns: strategies.length,
@@ -283,21 +282,21 @@ export function createBacktestWorkbenchRealConfig(strategies: StrategyConfig[]):
     },
     opsOverview: [
       {
-        label: 'REAL 策略总数',
+        label: '策略总数',
         value: `${strategies.length}`,
         meta: `活跃 ${activeCount} · 归档 ${archivedCount}`,
         variant: 'rise'
       },
       {
-        label: '任务队列深度',
+        label: '任务视图',
         value: `${queuedCount}`,
-        meta: queuedCount > 0 ? '待调度策略存在' : '暂无排队策略',
+        meta: queuedCount > 0 ? '基于策略状态派生，存在待调度策略' : '基于策略状态派生，暂无排队策略',
         variant: queuedCount > 0 ? 'gold' : 'rise'
       },
       {
-        label: '风险告警',
+        label: '状态提示',
         value: archivedCount > 0 ? '1 条' : '0 条',
-        meta: archivedCount > 0 ? '存在归档策略，请复核' : '策略状态稳定',
+        meta: archivedCount > 0 ? '存在归档策略，请复核列表状态' : '列表状态稳定，等待真实回测回填',
         variant: archivedCount > 0 ? 'fall' : 'rise'
       }
     ],
@@ -312,13 +311,13 @@ export function createBacktestWorkbenchRealConfig(strategies: StrategyConfig[]):
     backtestTasks,
     signalFlow: [
       { label: '策略装载', value: `已加载 ${strategies.length} 个策略` },
-      { label: '数据来源', value: 'REAL API /v1/strategy/strategies' },
+      { label: '数据来源', value: '策略列表 API /v1/strategy/strategies' },
       ...baseConfig.signalFlow.slice(2)
     ],
     runLogs: [
       {
         ts: new Date().toTimeString().slice(0, 8),
-        msg: `REAL 模式已接入，策略列表同步完成（${strategies.length} 条）。`
+        msg: `策略列表同步完成（${strategies.length} 条）；任务、KPI 与报告摘要等待真实回测结果回填。`
       }
     ]
   }
