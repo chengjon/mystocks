@@ -148,6 +148,9 @@ export function useMlWorkbench() {
     runtimeMessage.value = ''
     lastTrainingResult.value = null
     try {
+      if (selectedModelFamilyBlocked.value) {
+        throw new Error('当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。')
+      }
       const response = await trainMlWorkbenchModel({ ...trainingForm })
       const trainingResult = requireMlResponseData(response, 'ML training failed')
       lastTrainingResult.value = trainingResult
@@ -166,7 +169,10 @@ export function useMlWorkbench() {
     runtimeMessage.value = ''
     lastPredictionResult.value = null
     try {
-      const modelId = predictionForm.model_id || selectedModelId.value
+      const modelId = (predictionForm.model_id || selectedModelId.value).trim()
+      if (!modelId) {
+        throw new Error('请先选择模型后再执行预测。')
+      }
       const response = await predictMlWorkbenchModel({
         ...predictionForm,
         model_id: modelId,

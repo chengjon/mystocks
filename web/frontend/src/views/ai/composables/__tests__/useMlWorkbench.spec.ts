@@ -34,6 +34,24 @@ const successfulRuntimeStatus = {
   request_id: 'req-ml-runtime',
 }
 
+const lightgbmUnavailableRuntimeStatus = {
+  success: true,
+  code: 200,
+  message: 'ok',
+  data: {
+    service_available: true,
+    model_backend: 'runtime_registry',
+    optional_dependencies: {
+      lightgbm: { available: false, package: 'lightgbm' },
+    },
+    legacy_api_available: true,
+    supported_operations: ['train', 'predict'],
+    warnings: ['lightgbm_unavailable'],
+  },
+  timestamp: '2026-05-10T00:00:00Z',
+  request_id: 'req-ml-runtime-lightgbm-unavailable',
+}
+
 const emptyModelList = {
   success: true,
   code: 200,
@@ -157,11 +175,24 @@ describe('useMlWorkbench', () => {
     } as never)
 
     const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
     workbench.trainingForm.model_family = 'lightgbm'
     await workbench.submitTraining()
 
     expect(workbench.lastTrainingResult.value).toBeNull()
     expect(workbench.runtimeMessage.value).toContain("Optional ML dependency 'lightgbm'")
+  })
+
+  it('does not submit training when selected model family is blocked by runtime readiness', async () => {
+    vi.mocked(getMlRuntimeStatus).mockResolvedValue(lightgbmUnavailableRuntimeStatus as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    workbench.trainingForm.model_family = 'lightgbm'
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('当前模型族后端依赖不可用')
   })
 
   it('surfaces machine-readable prediction backend errors from UnifiedResponse', async () => {
@@ -316,5 +347,13 @@ describe('useMlWorkbench', () => {
     expect(workbench.selectedModelId.value).toBe('svm_000001_new')
     expect(workbench.predictionForm.model_id).toBe('svm_000001_new')
     expect(workbench.predictionForm.symbol).toBe('000001.SZ')
+  })
+
+  it('does not submit prediction without a selected model', async () => {
+    const workbench = useMlWorkbench()
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('请先选择模型')
   })
 })
