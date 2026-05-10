@@ -4,6 +4,7 @@ import importlib.util
 import json
 from pathlib import Path
 
+import pytest
 import yaml
 from jsonschema import Draft202012Validator
 
@@ -68,6 +69,25 @@ def test_catalog_nodes_define_coverage_paths_and_entrypoints() -> None:
             assert node["entrypoints"], f"node {node['id']} must declare entrypoints"
 
 
+def test_ml_strategy_catalog_points_to_canonical_training_prediction_surface() -> None:
+    catalog = load_catalog()
+    ml_node = next(
+        node
+        for domain in catalog["domains"]
+        if domain["id"] == "domain-07"
+        for node in domain["nodes"]
+        if node["id"] == "domain-07-node-01"
+    )
+
+    assert "web/backend/app/api/v1/strategy/ml_workbench.py" in ml_node["coverage_paths"]
+    assert "web/frontend/src/views/ai/MlWorkbench.vue" in ml_node["coverage_paths"]
+    assert "web/backend/app/api/v1/strategy/ml_workbench.py" in ml_node["entrypoints"]["api"]
+    assert "web/frontend/src/views/ai/MlWorkbench.vue" in ml_node["entrypoints"]["frontend"]
+    assert "web/frontend/src/api/mlWorkbench.ts" in ml_node["entrypoints"]["frontend"]
+    assert "web/backend/tests/test_v1_ml_workbench_contract.py" in ml_node["entrypoints"]["tests"]
+    assert "web/frontend/tests/e2e/ai-ml-workbench.spec.ts" in ml_node["entrypoints"]["tests"]
+
+
 def test_load_function_tree_catalog_rejects_duplicate_domain_ids(tmp_path: Path) -> None:
     module = load_scope_gate_module()
     catalog = load_catalog()
@@ -79,12 +99,10 @@ def test_load_function_tree_catalog_rejects_duplicate_domain_ids(tmp_path: Path)
     schema_path.write_text(SCHEMA_PATH.read_text(encoding="utf-8"), encoding="utf-8")
     catalog_path.write_text(yaml.safe_dump(catalog, sort_keys=False, allow_unicode=True), encoding="utf-8")
 
-    try:
+    with pytest.raises(ValueError) as excinfo:
         module.load_function_tree_catalog(catalog_path=catalog_path, schema_path=schema_path)
-    except ValueError as exc:
-        assert "duplicate function tree domain id" in str(exc)
-    else:
-        raise AssertionError("duplicate domain ids must be rejected")
+
+    assert "duplicate function tree domain id" in str(excinfo.value)
 
 
 def test_load_function_tree_catalog_rejects_duplicate_node_ids(tmp_path: Path) -> None:
@@ -98,12 +116,10 @@ def test_load_function_tree_catalog_rejects_duplicate_node_ids(tmp_path: Path) -
     schema_path.write_text(SCHEMA_PATH.read_text(encoding="utf-8"), encoding="utf-8")
     catalog_path.write_text(yaml.safe_dump(catalog, sort_keys=False, allow_unicode=True), encoding="utf-8")
 
-    try:
+    with pytest.raises(ValueError) as excinfo:
         module.load_function_tree_catalog(catalog_path=catalog_path, schema_path=schema_path)
-    except ValueError as exc:
-        assert "duplicate function tree node id" in str(exc)
-    else:
-        raise AssertionError("duplicate node ids must be rejected")
+
+    assert "duplicate function tree node id" in str(excinfo.value)
 
 
 def test_catalog_literal_entrypoint_paths_exist() -> None:

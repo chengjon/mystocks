@@ -435,18 +435,31 @@ domains:
         coverage_paths:
           - "src/ml_strategy/**"
           - "web/backend/app/api/ml.py"
+          - "web/backend/app/api/v1/strategy/machine_learning.py"
+          - "web/backend/app/api/v1/strategy/ml_workbench.py"
+          - "web/frontend/src/api/mlWorkbench.ts"
+          - "web/frontend/src/views/ai/MlWorkbench.vue"
+          - "web/frontend/src/views/ai/composables/useMlWorkbench.ts"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
+            - "web/backend/app/api/v1/strategy/machine_learning.py"
+            - "web/backend/app/api/v1/strategy/ml_workbench.py"
             - "web/backend/app/api/ml.py"
           frontend:
+            - "web/frontend/src/views/ai/MlWorkbench.vue"
+            - "web/frontend/src/api/mlWorkbench.ts"
             - "web/frontend/src/views/strategy/BacktestGPU.vue"
             - "web/frontend/src/views/artdeco-pages/strategy-tabs/ArtDecoStrategyOptimization.vue"
           core:
             - "src/ml_strategy/**"
             - "src/gpu/api_system/services/**"
           tests:
+            - "web/backend/tests/test_v1_ml_workbench_contract.py"
+            - "web/frontend/src/views/ai/__tests__/MlWorkbench.spec.ts"
+            - "web/frontend/src/views/ai/composables/__tests__/useMlWorkbench.spec.ts"
+            - "web/frontend/tests/e2e/ai-ml-workbench.spec.ts"
             - "tests/api/test_ml_file.py"
             - "src/gpu/api_system/tests/README.md"
           operations:
