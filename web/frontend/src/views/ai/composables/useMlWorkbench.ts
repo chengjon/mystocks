@@ -12,6 +12,7 @@ import {
   type MlWorkbenchModelFamily,
   type MlWorkbenchModel,
 } from '@/api/mlWorkbench.ts'
+import type { UnifiedResponse } from '@/api/types/common.ts'
 
 interface ModelFamilyOption {
   value: MlWorkbenchModelFamily
@@ -29,6 +30,39 @@ const defaultTrainingForm = (): MlTrainingRequest => ({
   prediction_horizon: 5,
   parameters: {},
 })
+
+const asRecord = (value: unknown): Record<string, unknown> | null => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>
+  }
+  return null
+}
+
+const extractMlResponseMessage = (response: UnifiedResponse<unknown>, fallback: string): string => {
+  const errors = asRecord(response.errors)
+  const detail = errors ? errors.detail : null
+  if (typeof detail === 'string' && detail.trim()) {
+    return detail
+  }
+
+  const detailRecord = asRecord(detail)
+  const detailMessage = detailRecord?.message
+  if (typeof detailMessage === 'string' && detailMessage.trim()) {
+    return detailMessage
+  }
+
+  if (typeof response.message === 'string' && response.message.trim()) {
+    return response.message
+  }
+  return fallback
+}
+
+const requireMlResponseData = <T>(response: UnifiedResponse<T>, fallback: string): T => {
+  if (!response.success || response.data === null || response.data === undefined) {
+    throw new Error(extractMlResponseMessage(response as UnifiedResponse<unknown>, fallback))
+  }
+  return response.data
+}
 
 export function useMlWorkbench() {
   const loading = ref(false)
@@ -96,8 +130,9 @@ export function useMlWorkbench() {
         getMlRuntimeStatus(),
         listMlWorkbenchModels(),
       ])
-      runtimeStatus.value = statusResponse.data
-      models.value = modelsResponse.data?.models || []
+      runtimeStatus.value = requireMlResponseData(statusResponse, 'ML runtime request failed')
+      const modelList = requireMlResponseData(modelsResponse, 'ML model list request failed')
+      models.value = modelList.models || []
       if (!selectedModelId.value && models.value.length > 0) {
         selectModel(models.value[0].model_id)
       }
@@ -113,9 +148,10 @@ export function useMlWorkbench() {
     runtimeMessage.value = ''
     try {
       const response = await trainMlWorkbenchModel({ ...trainingForm })
-      lastTrainingResult.value = response.data
+      const trainingResult = requireMlResponseData(response, 'ML training failed')
+      lastTrainingResult.value = trainingResult
       await refreshRuntime()
-      selectModel(response.data.model_id)
+      selectModel(trainingResult.model_id)
     } catch (error) {
       runtimeMessage.value = error instanceof Error ? error.message : 'ML training failed'
     } finally {
@@ -132,7 +168,7 @@ export function useMlWorkbench() {
         ...predictionForm,
         model_id: modelId,
       })
-      lastPredictionResult.value = response.data
+      lastPredictionResult.value = requireMlResponseData(response, 'ML prediction failed')
     } catch (error) {
       runtimeMessage.value = error instanceof Error ? error.message : 'ML prediction failed'
     } finally {
