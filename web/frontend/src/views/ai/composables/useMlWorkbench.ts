@@ -146,6 +146,7 @@ export function useMlWorkbench() {
   const submitTraining = async () => {
     trainingLoading.value = true
     runtimeMessage.value = ''
+    lastTrainingResult.value = null
     try {
       const response = await trainMlWorkbenchModel({ ...trainingForm })
       const trainingResult = requireMlResponseData(response, 'ML training failed')
@@ -162,6 +163,7 @@ export function useMlWorkbench() {
   const submitPrediction = async () => {
     predictionLoading.value = true
     runtimeMessage.value = ''
+    lastPredictionResult.value = null
     try {
       const modelId = predictionForm.model_id || selectedModelId.value
       const response = await predictMlWorkbenchModel({
