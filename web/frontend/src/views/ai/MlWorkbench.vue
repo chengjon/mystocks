@@ -20,6 +20,8 @@ const {
   modelFamilyOptions,
   selectedModelFamilyBlocked,
   runtimeServiceBlocked,
+  trainingOperationBlocked,
+  predictionOperationBlocked,
   predictionSymbolMismatch,
   refreshRuntime,
   submitTraining,
@@ -88,6 +90,9 @@ onMounted(() => {
         <p v-if="selectedModelFamilyBlocked" class="runtime-message compact">
           当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。
         </p>
+        <p v-if="trainingOperationBlocked" class="runtime-message compact">
+          当前 ML 运行时不支持训练，请刷新运行时状态或检查后端能力。
+        </p>
         <label>
           标的
           <input v-model="trainingForm.symbol" type="text" />
@@ -112,7 +117,7 @@ onMounted(() => {
           data-testid="ml-train-submit"
           class="primary-button"
           type="button"
-          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeServiceBlocked"
+          :disabled="trainingLoading || selectedModelFamilyBlocked || runtimeServiceBlocked || trainingOperationBlocked"
           @click="submitTraining"
         >
           提交训练
@@ -156,6 +161,9 @@ onMounted(() => {
         <p v-if="predictionSymbolMismatch" class="runtime-message compact">
           预测标的必须与所选模型一致，请重新选择模型或刷新模型列表。
         </p>
+        <p v-if="predictionOperationBlocked" class="runtime-message compact">
+          当前 ML 运行时不支持预测，请刷新运行时状态或检查后端能力。
+        </p>
         <label>
           预测周期
           <input v-model.number="predictionForm.prediction_horizon" type="number" min="1" max="30" />
@@ -164,7 +172,7 @@ onMounted(() => {
           data-testid="ml-predict-submit"
           class="primary-button"
           type="button"
-          :disabled="predictionLoading || !predictionForm.model_id || runtimeServiceBlocked || predictionSymbolMismatch"
+          :disabled="predictionLoading || !predictionForm.model_id || runtimeServiceBlocked || predictionOperationBlocked || predictionSymbolMismatch"
           @click="submitPrediction"
         >
           执行预测

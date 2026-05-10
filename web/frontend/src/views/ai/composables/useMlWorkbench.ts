@@ -123,6 +123,10 @@ export function useMlWorkbench() {
   })
 
   const runtimeServiceBlocked = computed(() => runtimeStatus.value?.service_available === false)
+  const runtimeSupportsOperation = (operation: string) =>
+    !runtimeStatus.value || runtimeStatus.value.supported_operations.includes(operation)
+  const trainingOperationBlocked = computed(() => !runtimeSupportsOperation('train'))
+  const predictionOperationBlocked = computed(() => !runtimeSupportsOperation('predict'))
   const selectedPredictionModel = computed(() =>
     models.value.find(
       (model) => model.model_id === (predictionForm.model_id || selectedModelId.value),
@@ -167,6 +171,9 @@ export function useMlWorkbench() {
       if (runtimeServiceBlocked.value) {
         throw new Error('ML runtime is unavailable. Please refresh runtime status before submitting work.')
       }
+      if (trainingOperationBlocked.value) {
+        throw new Error('当前 ML 运行时不支持训练，请刷新运行时状态或检查后端能力。')
+      }
       if (selectedModelFamilyBlocked.value) {
         throw new Error('当前模型族后端依赖不可用，请先切换模型族或安装对应运行时依赖。')
       }
@@ -190,6 +197,9 @@ export function useMlWorkbench() {
     try {
       if (runtimeServiceBlocked.value) {
         throw new Error('ML runtime is unavailable. Please refresh runtime status before submitting work.')
+      }
+      if (predictionOperationBlocked.value) {
+        throw new Error('当前 ML 运行时不支持预测，请刷新运行时状态或检查后端能力。')
       }
       const modelId = (predictionForm.model_id || selectedModelId.value).trim()
       if (!modelId) {
@@ -255,6 +265,8 @@ export function useMlWorkbench() {
     modelFamilyOptions,
     selectedModelFamilyBlocked,
     runtimeServiceBlocked,
+    trainingOperationBlocked,
+    predictionOperationBlocked,
     predictionSymbolMismatch,
     refreshRuntime,
     submitTraining,

@@ -64,6 +64,8 @@ const modelFamilyOptionsMock = ref([
 ])
 const selectedModelFamilyBlockedMock = ref(false)
 const runtimeServiceBlockedMock = ref(false)
+const trainingOperationBlockedMock = ref(false)
+const predictionOperationBlockedMock = ref(false)
 const predictionSymbolMismatchMock = ref(false)
 
 vi.mock('../composables/useMlWorkbench', () => ({
@@ -84,6 +86,8 @@ vi.mock('../composables/useMlWorkbench', () => ({
     modelFamilyOptions: modelFamilyOptionsMock,
     selectedModelFamilyBlocked: selectedModelFamilyBlockedMock,
     runtimeServiceBlocked: runtimeServiceBlockedMock,
+    trainingOperationBlocked: trainingOperationBlockedMock,
+    predictionOperationBlocked: predictionOperationBlockedMock,
     predictionSymbolMismatch: predictionSymbolMismatchMock,
     refreshRuntime: refreshRuntimeMock,
     submitTraining: submitTrainingMock,
@@ -120,6 +124,8 @@ describe('AI ML workbench page', () => {
     ]
     selectedModelFamilyBlockedMock.value = false
     runtimeServiceBlockedMock.value = false
+    trainingOperationBlockedMock.value = false
+    predictionOperationBlockedMock.value = false
     predictionSymbolMismatchMock.value = false
   })
 
@@ -199,6 +205,20 @@ describe('AI ML workbench page', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('预测标的必须与所选模型一致')
+    expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('disables unsupported runtime operations before submission', async () => {
+    trainingOperationBlockedMock.value = true
+    predictionOperationBlockedMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('当前 ML 运行时不支持训练')
+    expect(wrapper.text()).toContain('当前 ML 运行时不支持预测')
+    expect(wrapper.get('[data-testid="ml-train-submit"]').attributes('disabled')).toBeDefined()
     expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
   })
 })

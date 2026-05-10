@@ -70,6 +70,42 @@ const serviceUnavailableRuntimeStatus = {
   request_id: 'req-ml-runtime-service-unavailable',
 }
 
+const trainUnsupportedRuntimeStatus = {
+  success: true,
+  code: 200,
+  message: 'ok',
+  data: {
+    service_available: true,
+    model_backend: 'runtime_registry',
+    optional_dependencies: {
+      lightgbm: { available: true, package: 'lightgbm' },
+    },
+    legacy_api_available: true,
+    supported_operations: ['predict'],
+    warnings: ['train_unsupported'],
+  },
+  timestamp: '2026-05-10T00:00:00Z',
+  request_id: 'req-ml-runtime-train-unsupported',
+}
+
+const predictUnsupportedRuntimeStatus = {
+  success: true,
+  code: 200,
+  message: 'ok',
+  data: {
+    service_available: true,
+    model_backend: 'runtime_registry',
+    optional_dependencies: {
+      lightgbm: { available: true, package: 'lightgbm' },
+    },
+    legacy_api_available: true,
+    supported_operations: ['train'],
+    warnings: ['predict_unsupported'],
+  },
+  timestamp: '2026-05-10T00:00:00Z',
+  request_id: 'req-ml-runtime-predict-unsupported',
+}
+
 const emptyModelList = {
   success: true,
   code: 200,
@@ -222,6 +258,17 @@ describe('useMlWorkbench', () => {
 
     expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
     expect(workbench.runtimeMessage.value).toContain('ML runtime is unavailable')
+  })
+
+  it('does not submit training when runtime does not advertise train support', async () => {
+    vi.mocked(getMlRuntimeStatus).mockResolvedValue(trainUnsupportedRuntimeStatus as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('当前 ML 运行时不支持训练')
   })
 
   it('surfaces machine-readable prediction backend errors from UnifiedResponse', async () => {
@@ -434,5 +481,17 @@ describe('useMlWorkbench', () => {
 
     expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
     expect(workbench.runtimeMessage.value).toContain('ML runtime is unavailable')
+  })
+
+  it('does not submit prediction when runtime does not advertise predict support', async () => {
+    vi.mocked(getMlRuntimeStatus).mockResolvedValue(predictUnsupportedRuntimeStatus as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    workbench.predictionForm.model_id = 'svm_600519_abc'
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('当前 ML 运行时不支持预测')
   })
 })
