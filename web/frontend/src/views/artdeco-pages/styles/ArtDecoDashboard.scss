@@ -13,7 +13,7 @@
 // ============================================
 .artdeco-dashboard {
     min-height: 100vh;
-    padding: 2rem;
+    padding: var(--artdeco-spacing-8);
     max-width: calc(var(--artdeco-spacing-32) * 14 + var(--artdeco-spacing-2));
     margin: 0 auto;
     position: relative;
@@ -31,18 +31,8 @@
         font-size: var(--artdeco-text-sm);
     }
 
-    // 戏剧性背景
-    &::before {
-        content: '';
-        position: absolute;
-        inset: 0 0 0 0;
-        background:
-            radial-gradient(circle at 30% 20%, color-mix(in srgb, var(--artdeco-gold-primary) 4%, transparent) 0%, transparent 40%),
-            radial-gradient(circle at 70% 80%, color-mix(in srgb, var(--artdeco-bronze) 3%, transparent) 0%, transparent 40%),
-            linear-gradient(135deg, color-mix(in srgb, var(--artdeco-bg-global) 2%, transparent) 0%, transparent 100%);
-        pointer-events: none;
-        z-index: -1;
-    }
+    // 渐变覆盖层已移除：数据关键页面不使用装饰性背景
+    // 如需恢复，参考 git history 中此位置的 ::before 规则
 
     // 金色装饰线条
     &::after {
@@ -124,8 +114,24 @@
 
 .content-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); // 从2列改为3列，提升数据密度
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--artdeco-dense-gap-sm);
+
+    .heat-map-card {
+        grid-column: span 2;
+    }
+
+    .capital-flow-card {
+        grid-column: span 1;
+    }
+
+    .stock-pool-card {
+        grid-column: span 2;
+    }
+
+    .quick-nav-card {
+        grid-column: 1 / -1;
+    }
 }
 
 .heat-map-card,
@@ -462,13 +468,12 @@
     }
 
     .nav-icon {
-        font-size: var(--artdeco-text-3xl);
         margin-bottom: var(--artdeco-spacing-3);
         display: block;
     }
 
     .nav-label {
-        font-family: var(--artdeco-font-display);
+        font-family: var(--artdeco-font-body);
         font-size: var(--artdeco-text-lg);
         font-weight: 700;
         color: var(--artdeco-gold-primary);
@@ -489,6 +494,12 @@
 @media (width <= calc(var(--artdeco-spacing-32) * 9 + var(--artdeco-spacing-12))) {
     .content-grid {
         grid-template-columns: 1fr;
+
+        .heat-map-card,
+        .stock-pool-card,
+        .quick-nav-card {
+            grid-column: span 1;
+        }
     }
 
     .nav-grid {
@@ -521,7 +532,7 @@
     }
 
     .indicator-name {
-        font-family: var(--artdeco-font-display);
+        font-family: var(--artdeco-font-body);
         font-size: var(--artdeco-text-sm);
         font-weight: 600;
         color: var(--artdeco-gold-primary);
@@ -644,7 +655,7 @@
 
     .artdeco-icon {
         color: var(--artdeco-gold-primary);
-        opacity: 86%;
+        opacity: 85%;
     }
 
     h3,
@@ -669,7 +680,21 @@
     margin-top: var(--artdeco-spacing-4);
     padding: var(--artdeco-spacing-4);
     border: 1px solid var(--artdeco-border-default);
-    background: linear-gradient(135deg, var(--artdeco-gold-opacity-05), transparent 65%);
+}
+
+.chart-fixed-height {
+    height: calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-12));
+}
+
+.skeleton-center {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.skeleton-gap {
+    margin-top: var(--artdeco-spacing-2);
 }
 
 .content-grid {
@@ -733,9 +758,9 @@
 
 .stress-test-btn {
     border: 1px solid var(--artdeco-gold-opacity-30);
-    background: linear-gradient(135deg, var(--artdeco-gold-opacity-15), var(--artdeco-gold-opacity-05));
+    background: transparent;
     color: var(--artdeco-gold-primary);
-    font-family: var(--artdeco-font-display);
+    font-family: var(--artdeco-font-body);
     font-size: var(--artdeco-text-sm);
     letter-spacing: var(--artdeco-tracking-wide);
     text-transform: uppercase;
@@ -832,5 +857,65 @@
     .flow-tabs,
     .pool-tabs {
         flex-wrap: wrap;
+    }
+}
+
+// Tabular numeric alignment for all financial data
+.sector-change,
+.item-flow,
+.item-change,
+.indicator-value,
+.pool-stat .stat-value,
+.stock-price,
+.stock-change,
+.stress-metric-item .metric-value,
+.monitor-value {
+    font-variant-numeric: tabular-nums;
+}
+
+// Text overflow protection for long CJK names
+.item-info {
+    min-width: 0;
+
+    .item-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
+.sector-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.stock-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.monitor-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+    .heat-item,
+    .flow-item,
+    .stock-item,
+    .nav-item,
+    .flow-tab::after {
+        transition: none;
+    }
+
+    .heat-item:hover,
+    .nav-item:hover,
+    .flow-item:hover,
+    .stock-item:hover {
+        transform: none;
     }
 }

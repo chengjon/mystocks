@@ -1,9 +1,6 @@
 import { ref, computed, onMounted, onUnmounted, watch, type ComputedRef, type Ref } from 'vue'
-import { marketService } from '@/api/services/marketService'
 import { useHeaderSummary } from '@/composables/useHeaderSummary'
 import { mockWebSocket } from '@/api/mockWebSocket'
-import dashboardService from '@/api/services/dashboardService'
-import { extractKlineRows } from '../market-tabs/marketKlineData.ts'
 import {
     createCapitalFlowHeatmapOption,
     createFundFlowChartOption,
@@ -11,6 +8,7 @@ import {
     createMarketTrendOption,
     createSectorRotationRadarOption
 } from './useArtDecoDashboard.chart-options.ts'
+import { useDashboardFetchers } from './useArtDecoDashboard.fetchers.ts'
 import type {
     IndicatorItem,
     MarketData,
@@ -20,8 +18,14 @@ import type {
     TopStock
 } from './useArtDecoDashboard.types.ts'
 
+type CapitalFlowRow = {
+    name: string
+    code: string
+    amount: number
+    change: number
+}
+
 export function useArtDecoDashboard() {
-    // Chart Options Generation
     const fundFlowChartOption = computed(() => createFundFlowChartOption(marketData.value))
     const marketTrendOption = computed(() => createMarketTrendOption(trendData.value))
     const heatmapOption = computed(() => createHeatmapOption(marketHeat.value))
@@ -30,27 +34,33 @@ export function useArtDecoDashboard() {
     )
     const sectorRotationRadarOption = computed(() => createSectorRotationRadarOption(marketHeat.value, toNumber))
 
-    // 响应式数据
     const currentTime: Ref<string> = ref('')
     const activeFlowTab: Ref<string> = ref('1day')
     const activePoolTab: Ref<string> = ref('watchlist')
     const refreshing: Ref<boolean> = ref(false)
-    const lastRequestId: Ref<string> = ref('')
-    const displayProcessTime: Ref<string> = ref('--')
+    const lastVerifiedCoreRequestId: Ref<string> = ref('')
+    const lastVerifiedCoreProcessTime: Ref<string> = ref('--')
+    const hasVerifiedFundFlowSnapshot: Ref<boolean> = ref(false)
+    const hasVerifiedIndustrySnapshot: Ref<boolean> = ref(false)
+    const hasVerifiedTrendSnapshot: Ref<boolean> = ref(false)
+    const hasVerifiedIndicatorSnapshot: Ref<boolean> = ref(false)
+    const hasVerifiedMonitoringSnapshot: Ref<boolean> = ref(false)
+    const fundFlowDegradedMessage: Ref<string> = ref('')
+    const industryDegradedMessage: Ref<string> = ref('')
+    const capitalFlowLoadingTab: Ref<string> = ref('')
+    const verifiedCapitalFlowTabs: Ref<Record<string, boolean>> = ref({})
+    const verifiedCapitalFlowRowsByTab: Ref<Record<string, CapitalFlowRow[]>> = ref({})
+    const capitalFlowDegradedMessagesByTab: Ref<Record<string, string>> = ref({})
+    const trendStateMessage: Ref<string> = ref('')
+    const indicatorStateMessage: Ref<string> = ref('')
+    const monitoringStateMessage: Ref<string> = ref('')
+    const loadingTrendData: Ref<boolean> = ref(true)
     const trendData: Ref<number[]> = ref([])
     const activeStrategiesCount: Ref<number> = ref(0)
     const todayPnLValue: Ref<string> = ref('¥0.00')
-    const indicatorList: Ref<IndicatorItem[]> = ref([
-        { name: 'RSI', value: '--', trend: 'neutral', signal: '--' },
-        { name: 'MACD', value: '--', trend: 'neutral', signal: '--' },
-        { name: 'KDJ', value: '--', trend: 'neutral', signal: '--' },
-        { name: '布林带', value: '--', trend: 'neutral', signal: '--' }
-    ])
+    const indicatorList: Ref<IndicatorItem[]> = ref([])
     const systemHealth: Ref<SystemHealthItem[]> = ref([])
 
-    // ============================================
-    // 加载状态管理
-    // ============================================
     const loading: Ref<{ market: boolean; fundFlow: boolean; industry: boolean; indicators: boolean; monitoring: boolean; strategies: boolean; pnl: boolean }> = ref({
         market: true,
         fundFlow: true,
@@ -83,7 +93,16 @@ export function useArtDecoDashboard() {
     })
 
     const marketHeat: Ref<MarketHeatItem[]> = ref([])
-    const capitalFlowData: Ref<unknown[]> = ref([])
+    const hasCurrentVerifiedCapitalFlowSnapshot = computed(() => Boolean(verifiedCapitalFlowTabs.value[activeFlowTab.value]))
+    const capitalFlowData = computed<CapitalFlowRow[]>(() => (
+        hasCurrentVerifiedCapitalFlowSnapshot.value
+            ? (verifiedCapitalFlowRowsByTab.value[activeFlowTab.value] ?? [])
+            : []
+    ))
+    const showCapitalFlowSkeleton = computed(() => (
+        capitalFlowLoadingTab.value === activeFlowTab.value && !hasCurrentVerifiedCapitalFlowSnapshot.value
+    ))
+    const capitalFlowDegradedMessage = computed(() => capitalFlowDegradedMessagesByTab.value[activeFlowTab.value] ?? '')
 
     const flowTabs = [
         { key: '1day', label: '1日' },
@@ -119,17 +138,12 @@ export function useArtDecoDashboard() {
 
     const stressTestResult: Ref<StressTestResult | null> = ref(null)
 
-    const indicatorsExpanded: Ref<boolean> = ref(true)
-    const monitoringExpanded: Ref<boolean> = ref(true)
+    const indicatorsExpanded: Ref<boolean> = ref(false)
+    const monitoringExpanded: Ref<boolean> = ref(false)
 
     const toNumber = (value: unknown, fallback = 0): number => {
         const numeric = Number(value)
         return Number.isFinite(numeric) ? numeric : fallback
-    }
-
-    const formatBillions = (value: unknown): string => {
-        const normalized = toNumber(value)
-        return `${(normalized / 100000000).toFixed(2)}亿`
     }
 
     const formatProcessTime = (value: unknown): string => {
@@ -149,17 +163,88 @@ export function useArtDecoDashboard() {
         return /ms$/i.test(normalized) ? normalized : `${normalized}ms`
     }
 
-    const captureTrace = (response: { request_id?: string; process_time?: string } | null | undefined): void => {
+    const captureCoreTrace = (response: { request_id?: string; process_time?: string } | null | undefined): void => {
         const requestId = response?.request_id?.trim()
         if (requestId) {
-            lastRequestId.value = requestId
+            lastVerifiedCoreRequestId.value = requestId
         }
 
-        displayProcessTime.value = formatProcessTime(response?.process_time)
+        lastVerifiedCoreProcessTime.value = formatProcessTime(response?.process_time)
     }
 
+    const displayRequestId = computed(() => lastVerifiedCoreRequestId.value || 'N/A')
+    const displayProcessTime = computed(() => lastVerifiedCoreProcessTime.value)
+
     const dashboardAlerts = computed(() => {
-        return [error.value.market, error.value.fundFlow, error.value.industry].filter(Boolean)
+        return [
+            error.value.market,
+            error.value.fundFlow || fundFlowDegradedMessage.value,
+            error.value.industry || industryDegradedMessage.value
+        ].filter(Boolean)
+    })
+
+    const showFundFlowSkeleton = computed(() => loading.value.fundFlow && !hasVerifiedFundFlowSnapshot.value)
+
+    const primarySlicesPending = computed(() => (
+        loading.value.market && loading.value.fundFlow && loading.value.industry
+    ))
+
+    const primarySlicesHaveAnyLoading = computed(() => (
+        loading.value.market || loading.value.fundFlow || loading.value.industry
+    ))
+
+    const primarySlicesHaveAnyError = computed(() => (
+        Boolean(error.value.market) ||
+        Boolean(error.value.fundFlow || fundFlowDegradedMessage.value) ||
+        Boolean(error.value.industry || industryDegradedMessage.value)
+    ))
+
+    const primarySlicesHaveSuccess = computed(() => (
+        (!loading.value.market && !error.value.market) ||
+        (!loading.value.fundFlow && !error.value.fundFlow) ||
+        (!loading.value.industry && !error.value.industry)
+    ))
+
+    const primarySlicesUnavailable = computed(() => (
+        !loading.value.market &&
+        !loading.value.fundFlow &&
+        !loading.value.industry &&
+        Boolean(error.value.market) &&
+        Boolean(error.value.fundFlow) &&
+        Boolean(error.value.industry) &&
+        !primarySlicesHaveSuccess.value
+    ))
+
+    const aggregateDataStatus = computed(() => {
+        if (primarySlicesPending.value && !primarySlicesHaveSuccess.value && !primarySlicesHaveAnyError.value) {
+            return 'PENDING'
+        }
+        if (primarySlicesUnavailable.value) {
+            return 'UNAVAILABLE'
+        }
+        if (primarySlicesHaveAnyError.value || primarySlicesHaveAnyLoading.value) {
+            return 'MIXED'
+        }
+        return 'REAL'
+    })
+
+    const aggregateSyncStatus = computed(() => {
+        if (refreshing.value) {
+            return 'UPDATING'
+        }
+        if (primarySlicesPending.value && !primarySlicesHaveSuccess.value && !primarySlicesHaveAnyError.value) {
+            return 'PENDING'
+        }
+        if (primarySlicesUnavailable.value) {
+            return 'UNAVAILABLE'
+        }
+        if (primarySlicesHaveAnyError.value) {
+            return 'DEGRADED'
+        }
+        if (primarySlicesHaveAnyLoading.value) {
+            return 'PARTIAL'
+        }
+        return 'READY'
     })
 
     const isStressTestDisabled = computed(() => {
@@ -216,193 +301,75 @@ export function useArtDecoDashboard() {
         monitoringExpanded.value = typeof expanded === 'boolean' ? expanded : !monitoringExpanded.value
     }
 
-    const fetchMarketOverview = async (): Promise<void> => {
-        loading.value.market = true
-        error.value.market = ''
-
-        try {
-            const response = await dashboardService.getMarketOverview(20)
-            captureTrace(response)
-            const marketList = Array.isArray(response?.data)
-                ? response.data
-                : (Array.isArray(response) ? response : [])
-
-            const formatIndex = (item: Record<string, unknown>): { index: string; change: string } => ({
-                index: toNumber(item?.latest_price ?? item?.price).toFixed(2),
-                change: toNumber(item?.change_percent ?? item?.change).toFixed(2)
-            })
-
-            if (marketList.length > 0) {
-                marketData.value.shanghai = formatIndex(marketList[0])
-            }
-            if (marketList.length > 1) {
-                marketData.value.shenzhen = formatIndex(marketList[1])
-            }
-            if (marketList.length > 2) {
-                marketData.value.chuangye = formatIndex(marketList[2])
-            }
-
-            if (marketList.length > 0) {
-                let totalVolume = 0
-                for (const item of marketList) {
-                    totalVolume += toNumber(item?.volume)
-                }
-                marketData.value.volume.amount = totalVolume > 0 ? formatBillions(totalVolume) : '--'
-            }
-        } catch {
-            error.value.market = '市场数据暂不可用'
-        } finally {
-            loading.value.market = false
+    const handleFlowTabKeydown = (e: KeyboardEvent): void => {
+        const idx = flowTabs.findIndex(t => t.key === activeFlowTab.value)
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault()
+            const dir = e.key === 'ArrowRight' ? 1 : -1
+            const next = (idx + dir + flowTabs.length) % flowTabs.length
+            activeFlowTab.value = flowTabs[next].key
+            const tablist = e.currentTarget as HTMLElement
+            const buttons = tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+            buttons[next]?.focus()
         }
     }
 
-    const fetchFundFlow = async () => {
-        loading.value.fundFlow = true
-        error.value.fundFlow = ''
-
-        try {
-            const response = await dashboardService.getFundFlow()
-            captureTrace(response)
-            const flowData = response?.data ?? response
-
-            if (flowData && typeof flowData === 'object') {
-                const normalized = {
-                    hgt: { ...marketData.value.fundFlow.hgt, ...(flowData.hgt || {}) },
-                    sgt: { ...marketData.value.fundFlow.sgt, ...(flowData.sgt || {}) },
-                    northTotal: { ...marketData.value.fundFlow.northTotal, ...(flowData.northTotal || {}) },
-                    mainForce: { ...marketData.value.fundFlow.mainForce, ...(flowData.mainForce || {}) }
-                }
-
-                marketData.value.fundFlow = normalized
-                marketData.value.northFund = {
-                    amount: `${toNumber(normalized.northTotal.amount).toFixed(2)}亿`,
-                    change: toNumber(normalized.hgt.change) + toNumber(normalized.sgt.change)
-                }
-            }
-        } catch {
-            error.value.fundFlow = '资金流向数据暂不可用'
-        } finally {
-            loading.value.fundFlow = false
+    const handlePoolTabKeydown = (e: KeyboardEvent): void => {
+        const idx = poolTabs.findIndex(t => t.key === activePoolTab.value)
+        if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+            e.preventDefault()
+            const dir = e.key === 'ArrowRight' ? 1 : -1
+            const next = (idx + dir + poolTabs.length) % poolTabs.length
+            activePoolTab.value = poolTabs[next].key
+            const tablist = e.currentTarget as HTMLElement
+            const buttons = tablist.querySelectorAll<HTMLButtonElement>('[role="tab"]')
+            buttons[next]?.focus()
         }
     }
 
-    const fetchIndustryFlow = async () => {
-        loading.value.industry = true
-        error.value.industry = ''
+    const {
+        fetchMarketOverview,
+        fetchFundFlow,
+        fetchIndustryFlow,
+        fetchStockFlowRanking,
+        fetchTrendData,
+        fetchSystemStats,
+        refreshData,
+        handleTrendUpdate,
+        runOneClickStressTest
+    } = useDashboardFetchers({
+        loading,
+        error,
+        refreshing,
+        marketData,
+        marketHeat,
+        fundFlowDegradedMessage,
+        industryDegradedMessage,
+        hasVerifiedFundFlowSnapshot,
+        hasVerifiedIndustrySnapshot,
+        hasVerifiedTrendSnapshot,
+        hasVerifiedIndicatorSnapshot,
+        hasVerifiedMonitoringSnapshot,
+        capitalFlowLoadingTab,
+        verifiedCapitalFlowTabs,
+        verifiedCapitalFlowRowsByTab,
+        capitalFlowDegradedMessagesByTab,
+        trendStateMessage,
+        indicatorStateMessage,
+        monitoringStateMessage,
+        loadingTrendData,
+        trendData,
+        indicatorList,
+        systemHealth,
+        activeStrategiesCount,
+        todayPnLValue,
+        stressTestResult,
+        activeFlowTab,
+        captureCoreTrace,
+        isStressTestDisabled,
+        marketSentiment
+    })
 
-        try {
-            const response = await dashboardService.getIndustryFlow('change_percent', 12)
-            captureTrace(response)
-            const flowList = Array.isArray(response?.data)
-                ? response.data
-                : (Array.isArray(response) ? response : [])
-
-            marketHeat.value = flowList.map((item) => ({
-                name: item?.name || '--',
-                change: toNumber(item?.change),
-                amount: toNumber(item?.amount)
-            }))
-
-            const rising = marketHeat.value.filter((item) => item.change > 0).length
-            const falling = marketHeat.value.filter((item) => item.change < 0).length
-            marketData.value.stocks = { up: rising, down: falling }
-        } catch {
-            marketHeat.value = []
-            error.value.industry = '行业热度数据暂不可用'
-            marketData.value.stocks = { up: 0, down: 0 }
-        } finally {
-            loading.value.industry = false
-        }
-    }
-
-    const fetchStockFlowRanking = async () => {
-        try {
-            const response = await dashboardService.getStockFlowRanking(activeFlowTab.value, 10)
-            captureTrace(response)
-            const rankingList = Array.isArray(response?.data)
-                ? response.data
-                : (Array.isArray(response) ? response : [])
-
-            capitalFlowData.value = rankingList.map((item) => ({
-                name: item?.name || '--',
-                code: item?.code || item?.symbol || '--',
-                amount: toNumber(item?.amount),
-                change: toNumber(item?.change)
-            }))
-        } catch {
-            capitalFlowData.value = []
-        }
-    }
-
-    const fetchTrendData = async () => {
-        try {
-            const response = await marketService.getKline({
-                stock_code: '000001',
-                period: 'daily'
-            })
-            const rows = extractKlineRows(response)
-            trendData.value = rows.slice(-30).map((row) => row.close).filter((point) => Number.isFinite(point))
-        } catch {
-            trendData.value = []
-        }
-    }
-
-    /**
-     * 获取系统与策略状态 (P1)
-     */
-    const fetchSystemStats = async () => {
-        try {
-            // 1. 获取策略数
-            const stratRes = await dashboardService.getActiveStrategies(1) // mock uid
-            captureTrace(stratRes)
-            activeStrategiesCount.value = stratRes.data?.length || 0
-
-            // 2. 获取收益与风险
-            const riskRes = await dashboardService.getPositionRisk(1)
-            captureTrace(riskRes)
-            todayPnLValue.value = `¥${riskRes.data?.totalPnL?.toLocaleString() || '0.00'}`
-
-            // 3. 获取系统健康度
-            const healthRes = await dashboardService.getSystemHealth()
-            captureTrace(healthRes)
-            systemHealth.value = (healthRes.data || []) as unknown as SystemHealthItem[]
-
-            // 4. 获取技术指标建议
-            const indRes = await dashboardService.getTechnicalIndicators(['000001.SH'], ['RSI', 'MACD', 'KDJ', 'BOLL'])
-            captureTrace(indRes)
-            const stockInds = indRes.data?.['000001.SH'] || []
-            if (stockInds.length > 0) {
-                indicatorList.value = stockInds as IndicatorItem[]
-            }
-        } catch (e) {
-            console.error('Failed to fetch system stats', e)
-        } finally {
-            loading.value.strategies = false
-            loading.value.pnl = false
-            loading.value.monitoring = false
-            loading.value.indicators = false
-        }
-    }
-
-    // 刷新数据
-    const refreshData = async () => {
-        refreshing.value = true
-        try {
-            updateTime()
-            await Promise.all([
-                fetchMarketOverview(),
-                fetchFundFlow(),
-                fetchIndustryFlow(),
-                fetchStockFlowRanking(),
-                fetchTrendData(),
-                fetchSystemStats()
-            ])
-        } finally {
-            refreshing.value = false
-        }
-    }
-
-    // 更新时间
     let timeInterval: ReturnType<typeof setInterval> | null = null
 
     const updateTime = () => {
@@ -416,55 +383,20 @@ export function useArtDecoDashboard() {
         })
     }
 
-    const handleTrendUpdate = (msg: { data?: { price?: string | number }; price?: string | number }): void => {
-        const price = msg?.data?.price ?? msg?.price
-        if (price !== undefined && price !== null) {
-            // Append new point
-            // For ECharts dynamic update, we might need to shift if array is too long
-            const newPoint = parseFloat(String(price))
-            if (trendData.value && Array.isArray(trendData.value)) {
-                const newData = [...trendData.value, newPoint]
-                if (newData.length > 240) newData.shift() // Keep window size
-                trendData.value = newData
-            }
-        }
-    }
-
-    const runOneClickStressTest = (): void => {
-        if (isStressTestDisabled.value) {
-            return
-        }
-
-        const marketShock = Math.abs(toNumber(marketData.value.shanghai.change))
-        const flowShock = Math.abs(toNumber(marketData.value.fundFlow.mainForce.amount)) / 10
-        const breadthRisk = marketSentiment.value < 45 ? 1.2 : 0.6
-
-        const drawdown = Math.min(25, Number((6 + marketShock * 2.8 + flowShock * 1.6 + breadthRisk).toFixed(2)))
-        const var95 = Math.min(12, Number((3 + marketShock * 0.8 + flowShock * 0.5).toFixed(2)))
-        const concentrationRisk = Number((Math.max(2.5, drawdown * 0.35)).toFixed(2))
-
-        stressTestResult.value = {
-            drawdown,
-            var95,
-            concentrationRisk,
-            timestamp: new Date().toLocaleString('zh-CN')
-        }
-    }
-
-    // Sync summary data to layout header
     const headerSummary = useHeaderSummary()
     headerSummary.setRefreshFn(refreshData)
 
     watch(
-      [marketStatus, activeStrategiesCount, todayPnLValue, currentTime, refreshing, lastRequestId, loading],
+      [marketStatus, activeStrategiesCount, todayPnLValue, currentTime, refreshing, lastVerifiedCoreRequestId, loading],
       () => {
-        const hasInitialSummaryTrace = Boolean(lastRequestId.value)
+        const hasInitialSummaryTrace = Boolean(lastVerifiedCoreRequestId.value)
         const isBootstrappingSummary =
           !hasInitialSummaryTrace &&
           (loading.value.market || loading.value.fundFlow || loading.value.strategies || loading.value.pnl)
 
         if (isBootstrappingSummary) {
           headerSummary.reset()
+          headerSummary.setRefreshFn(refreshData)
           return
         }
 
@@ -487,7 +419,6 @@ export function useArtDecoDashboard() {
         updateTime()
         timeInterval = setInterval(updateTime, 1000)
 
-        // 获取P0优先级数据
         fetchMarketOverview()
         fetchFundFlow()
         fetchIndustryFlow()
@@ -519,16 +450,25 @@ export function useArtDecoDashboard() {
     trendData,
     activeStrategiesCount,
     todayPnLValue,
-    lastRequestId,
+    displayRequestId,
     displayProcessTime,
     indicatorList,
     systemHealth,
     loading,
     error,
     dashboardAlerts,
+    showFundFlowSkeleton,
+    aggregateDataStatus,
+    aggregateSyncStatus,
     marketData,
     marketHeat,
     capitalFlowData,
+    showCapitalFlowSkeleton,
+    capitalFlowDegradedMessage,
+    trendStateMessage,
+    indicatorStateMessage,
+    monitoringStateMessage,
+    loadingTrendData,
     flowTabs,
     poolTabs,
     topStocks,
@@ -544,6 +484,8 @@ export function useArtDecoDashboard() {
     stressTestResult,
     handleIndicatorsToggle,
     handleMonitoringToggle,
+    handleFlowTabKeydown,
+    handlePoolTabKeydown,
     fetchMarketOverview,
     fetchFundFlow,
     fetchIndustryFlow,
