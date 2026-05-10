@@ -501,6 +501,20 @@ describe('useMlWorkbench', () => {
     expect(workbench.predictionModelIdBlank.value).toBe(true)
   })
 
+  it('does not submit prediction by falling back to a stale selected model when model id input is cleared', async () => {
+    const workbench = useMlWorkbench()
+    workbench.runtimeStatus.value = successfulRuntimeStatus.data
+    workbench.models.value = populatedModelList.data.models
+    workbench.selectedModelId.value = 'svm_600519_abc'
+    workbench.predictionForm.model_id = ''
+    workbench.predictionForm.symbol = '600519.SH'
+
+    await workbench.submitPrediction()
+
+    expect(predictMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('请先选择模型')
+  })
+
   it('does not submit prediction when symbol is blank', async () => {
     const workbench = useMlWorkbench()
     workbench.runtimeStatus.value = successfulRuntimeStatus.data

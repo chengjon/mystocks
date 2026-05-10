@@ -274,6 +274,19 @@ describe('AI ML workbench page', () => {
     expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
   })
 
+  it('disables prediction when model id input is cleared even if a model row remains selected', async () => {
+    selectedModelIdMock.value = 'svm_600519_abc'
+    predictionFormMock.value.model_id = ''
+    predictionModelIdBlankMock.value = true
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('请先选择模型')
+    expect(wrapper.get('[data-testid="ml-predict-submit"]').attributes('disabled')).toBeDefined()
+  })
+
   it('surfaces selected model and prediction horizon mismatch before prediction submission', async () => {
     predictionHorizonMismatchMock.value = true
 

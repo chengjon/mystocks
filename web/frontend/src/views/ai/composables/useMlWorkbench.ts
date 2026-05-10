@@ -136,7 +136,7 @@ export function useMlWorkbench() {
   const trainingSymbolBlank = computed(() => trainingForm.symbol.trim().length === 0)
   const selectedPredictionModel = computed(() =>
     models.value.find(
-      (model) => model.model_id === (predictionForm.model_id || selectedModelId.value),
+      (model) => model.model_id === predictionForm.model_id.trim(),
     ),
   )
   const predictionSymbolMismatch = computed(() => {
@@ -144,9 +144,7 @@ export function useMlWorkbench() {
     return Boolean(selectedModel && predictionForm.symbol !== selectedModel.symbol)
   })
   const predictionSymbolBlank = computed(() => predictionForm.symbol.trim().length === 0)
-  const predictionModelIdBlank = computed(
-    () => (predictionForm.model_id || selectedModelId.value).trim().length === 0,
-  )
+  const predictionModelIdBlank = computed(() => predictionForm.model_id.trim().length === 0)
   const predictionHorizonMismatch = computed(() => {
     const selectedModel = selectedPredictionModel.value
     const trainedHorizon = selectedModel?.feature_context?.prediction_horizon
@@ -235,7 +233,7 @@ export function useMlWorkbench() {
       if (predictionOperationBlocked.value) {
         throw new Error('当前 ML 运行时不支持预测，请刷新运行时状态或检查后端能力。')
       }
-      const modelId = (predictionForm.model_id || selectedModelId.value).trim()
+      const modelId = predictionForm.model_id.trim()
       if (!modelId) {
         throw new Error('请先选择模型后再执行预测。')
       }
