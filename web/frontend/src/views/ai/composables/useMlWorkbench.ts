@@ -153,6 +153,7 @@ export function useMlWorkbench() {
       lastTrainingResult.value = trainingResult
       await refreshRuntime()
       selectModel(trainingResult.model_id)
+      predictionForm.symbol = trainingResult.symbol
     } catch (error) {
       runtimeMessage.value = error instanceof Error ? error.message : 'ML training failed'
     } finally {

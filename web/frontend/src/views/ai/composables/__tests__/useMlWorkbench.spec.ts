@@ -291,4 +291,30 @@ describe('useMlWorkbench', () => {
     expect(workbench.predictionForm.model_id).toBe('svm_000001_def')
     expect(workbench.predictionForm.symbol).toBe('000001.SZ')
   })
+
+  it('syncs prediction symbol from training result when registry has not refreshed the new model', async () => {
+    vi.mocked(listMlWorkbenchModels).mockResolvedValue(emptyModelList)
+    vi.mocked(trainMlWorkbenchModel).mockResolvedValue({
+      success: true,
+      code: 200,
+      message: 'ok',
+      data: {
+        model_id: 'svm_000001_new',
+        model_family: 'svm',
+        symbol: '000001.SZ',
+        artifact_status: 'runtime_registered',
+        feature_context: { feature_window: 20, prediction_horizon: 5 },
+        metrics: { validation_score: 0.59 },
+      },
+      timestamp: '2026-05-10T00:00:00Z',
+      request_id: 'req-ml-train-new',
+    } as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.submitTraining()
+
+    expect(workbench.selectedModelId.value).toBe('svm_000001_new')
+    expect(workbench.predictionForm.model_id).toBe('svm_000001_new')
+    expect(workbench.predictionForm.symbol).toBe('000001.SZ')
+  })
 })
