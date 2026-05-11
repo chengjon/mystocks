@@ -41,6 +41,17 @@ def test_v1_ml_workbench_registers_canonical_routes():
     assert ("/strategies/ml/models/{model_id}", ("GET",)) in route_methods
 
 
+def test_v1_ml_workbench_static_openapi_exports_canonical_routes():
+    openapi_path = ROOT / "docs" / "api" / "openapi.json"
+    openapi_text = openapi_path.read_text(encoding="utf-8")
+
+    assert '"/api/v1/strategies/ml/runtime-status"' in openapi_text
+    assert '"/api/v1/strategies/ml/train"' in openapi_text
+    assert '"/api/v1/strategies/ml/predict"' in openapi_text
+    assert '"/api/v1/strategies/ml/models"' in openapi_text
+    assert '"/api/v1/strategies/ml/models/{model_id}"' in openapi_text
+
+
 async def test_v1_ml_runtime_status_is_machine_readable():
     module = _load_module()
 
