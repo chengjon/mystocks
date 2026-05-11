@@ -8,8 +8,10 @@ import {
     createMarketTrendOption,
     createSectorRotationRadarOption
 } from './useArtDecoDashboard.chart-options.ts'
+import { buildDashboardAlertItems } from './useArtDecoDashboard.alerts.ts'
 import { useDashboardFetchers } from './useArtDecoDashboard.fetchers.ts'
 import type {
+    DashboardAlertItem,
     IndicatorItem,
     MarketData,
     MarketHeatItem,
@@ -175,12 +177,16 @@ export function useArtDecoDashboard() {
     const displayRequestId = computed(() => lastVerifiedCoreRequestId.value || 'N/A')
     const displayProcessTime = computed(() => lastVerifiedCoreProcessTime.value)
 
+    const dashboardAlertItems = computed<DashboardAlertItem[]>(() => buildDashboardAlertItems({
+        marketError: error.value.market,
+        fundFlowError: error.value.fundFlow,
+        industryError: error.value.industry,
+        fundFlowDegradedMessage: fundFlowDegradedMessage.value,
+        industryDegradedMessage: industryDegradedMessage.value
+    }))
+
     const dashboardAlerts = computed(() => {
-        return [
-            error.value.market,
-            error.value.fundFlow || fundFlowDegradedMessage.value,
-            error.value.industry || industryDegradedMessage.value
-        ].filter(Boolean)
+        return dashboardAlertItems.value.map((alert) => alert.message)
     })
 
     const showFundFlowSkeleton = computed(() => loading.value.fundFlow && !hasVerifiedFundFlowSnapshot.value)
@@ -457,6 +463,7 @@ export function useArtDecoDashboard() {
     loading,
     error,
     dashboardAlerts,
+    dashboardAlertItems,
     showFundFlowSkeleton,
     aggregateDataStatus,
     aggregateSyncStatus,

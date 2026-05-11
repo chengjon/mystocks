@@ -34,7 +34,6 @@
     // 渐变覆盖层已移除：数据关键页面不使用装饰性背景
     // 如需恢复，参考 git history 中此位置的 ::before 规则
 
-    // 金色装饰线条
     &::after {
         content: '';
         position: absolute;
@@ -42,9 +41,9 @@
         left: 50%;
         transform: translateX(-50%);
         width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
-        height: calc(var(--artdeco-spacing-1) / 2);
-        background: linear-gradient(90deg, transparent, var(--artdeco-gold-primary), var(--artdeco-bronze), var(--artdeco-gold-primary), transparent);
-        box-shadow: 0 0 var(--artdeco-spacing-5) color-mix(in srgb, var(--artdeco-gold-primary) 50%, transparent);
+        height: var(--artdeco-spacing-px);
+        background: var(--artdeco-gold-primary);
+        opacity: 28%;
     }
 }
 
@@ -115,22 +114,47 @@
 .content-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+        'heat heat capital'
+        'sector stress ranking'
+        'long block ranking'
+        'stock stock quick';
     gap: var(--artdeco-dense-gap-sm);
 
     .heat-map-card {
-        grid-column: span 2;
+        grid-area: heat;
+    }
+
+    .capital-heatmap-card {
+        grid-area: capital;
+    }
+
+    .sector-radar-card {
+        grid-area: sector;
+    }
+
+    .stress-test-card {
+        grid-area: stress;
     }
 
     .capital-flow-card {
-        grid-column: span 1;
+        grid-area: ranking;
+    }
+
+    .long-hu-bang-card {
+        grid-area: long;
+    }
+
+    .block-trading-card {
+        grid-area: block;
     }
 
     .stock-pool-card {
-        grid-column: span 2;
+        grid-area: stock;
     }
 
     .quick-nav-card {
-        grid-column: 1 / -1;
+        grid-area: quick;
     }
 }
 
@@ -272,14 +296,6 @@
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
-    transition:
-        border-color var(--artdeco-transition-base),
-        box-shadow var(--artdeco-transition-base);
-
-    &:hover {
-        border-color: var(--artdeco-gold-primary);
-        box-shadow: var(--artdeco-glow-subtle);
-    }
 
     .item-info {
         flex: 1;
@@ -392,15 +408,7 @@
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
-    transition:
-        border-color var(--artdeco-transition-base),
-        box-shadow var(--artdeco-transition-base);
     text-align: left;
-
-    &:hover {
-        border-color: var(--artdeco-gold-primary);
-        box-shadow: var(--artdeco-glow-subtle);
-    }
 
     .stock-info {
         .stock-name {
@@ -504,12 +512,16 @@
 @media (width <= var(--artdeco-breakpoint-lg)) {
     .content-grid {
         grid-template-columns: 1fr;
-
-        .heat-map-card,
-        .stock-pool-card,
-        .quick-nav-card {
-            grid-column: span 1;
-        }
+        grid-template-areas:
+            'heat'
+            'capital'
+            'sector'
+            'stress'
+            'ranking'
+            'long'
+            'block'
+            'stock'
+            'quick';
     }
 
     .nav-grid {
@@ -534,14 +546,6 @@
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     text-align: center;
-    transition:
-        border-color var(--artdeco-transition-base),
-        box-shadow var(--artdeco-transition-base);
-
-    &:hover {
-        border-color: var(--artdeco-gold-primary);
-        box-shadow: var(--artdeco-glow-subtle);
-    }
 
     .indicator-name {
         font-family: var(--artdeco-font-body);
@@ -601,14 +605,6 @@
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
-    transition:
-        border-color var(--artdeco-transition-base),
-        box-shadow var(--artdeco-transition-base);
-
-    &:hover {
-        border-color: var(--artdeco-gold-primary);
-        box-shadow: var(--artdeco-glow-subtle);
-    }
 
     .monitor-label {
         font-family: var(--artdeco-font-body);
@@ -715,8 +711,6 @@
     gap: var(--artdeco-spacing-4);
 }
 
-.flow-item,
-.stock-item,
 .nav-item {
     transition: border-color var(--artdeco-transition-base), transform var(--artdeco-transition-base), box-shadow var(--artdeco-transition-base);
 }
@@ -732,18 +726,14 @@
 
 .flow-item {
     padding: var(--artdeco-spacing-4);
-
-    &:hover {
-        transform: translateY(calc(var(--artdeco-spacing-px) * -1));
-    }
 }
 
 .stock-item {
     gap: var(--artdeco-spacing-2);
+}
 
-    &:hover {
-        transform: translateY(calc(var(--artdeco-spacing-px) * -1));
-    }
+.priority-action-card {
+    border-color: var(--artdeco-gold-opacity-30);
 }
 
 .nav-item {
@@ -882,17 +872,13 @@
 // Reduced motion support
 @media (prefers-reduced-motion: reduce) {
     .heat-item,
-    .flow-item,
-    .stock-item,
     .nav-item,
     .flow-tab::after {
         transition: none;
     }
 
     .heat-item:hover,
-    .nav-item:hover,
-    .flow-item:hover,
-    .stock-item:hover {
+    .nav-item:hover {
         transform: none;
     }
 }

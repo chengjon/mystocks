@@ -52,3 +52,13 @@ export interface StressTestResult {
   concentrationRisk: number
   timestamp: string
 }
+
+export type DashboardAlertSeverity = 'failed' | 'degraded' | 'stale'
+
+export interface DashboardAlertItem {
+  id: string
+  severity: DashboardAlertSeverity
+  label: string
+  message: string
+  action: string
+}

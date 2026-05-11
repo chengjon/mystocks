@@ -2,8 +2,8 @@
     <section class="artdeco-dashboard">
         <!-- 戏剧性的页面头部 -->
         <ArtDecoHeader
-            title="QUANTIX"
-            subtitle="实时 洞察 策略 执行"
+            title="量化驾驶舱"
+            subtitle="QUANTIX · 实时洞察 · 策略执行"
             :show-status="true"
             :status-text="marketStatus"
             :status-type="marketStatusType"
@@ -16,10 +16,17 @@
             <span>SYNC: {{ aggregateSyncStatus }}</span>
         </div>
 
-        <div v-if="dashboardAlerts.length > 0" class="dashboard-alerts" aria-live="polite">
-            <div v-for="message in dashboardAlerts" :key="message" class="dashboard-alert">
+        <div v-if="dashboardAlertItems.length > 0" class="dashboard-alerts" aria-live="polite">
+            <div
+                v-for="alert in dashboardAlertItems"
+                :key="alert.id"
+                class="dashboard-alert"
+                :class="`dashboard-alert--${alert.severity}`"
+            >
                 <ArtDecoIcon name="alert-circle" />
-                <span>{{ message }}</span>
+                <span class="alert-label">{{ alert.label }}</span>
+                <span class="alert-message">{{ alert.message }}</span>
+                <span class="alert-action">{{ alert.action }}</span>
             </div>
         </div>
 
@@ -116,7 +123,7 @@
                 </section>
             </ArtDecoCard>
 
-            <ArtDecoCard title="一键压力测试" hoverable class="stress-test-card">
+            <ArtDecoCard title="一键压力测试" hoverable class="stress-test-card priority-action-card">
                 <div class="stress-test-actions">
                     <button
                         type="button"
@@ -155,7 +162,7 @@
             <ArtDecoBlockTrading class="block-trading-card" />
 
             <!-- Capital Flow Ranking -->
-            <ArtDecoCard title="资金流向持续排名" hoverable class="capital-flow-card">
+            <ArtDecoCard title="资金流向持续排名" :hoverable="false" class="capital-flow-card">
                 <div class="flow-tabs" role="tablist" @keydown="handleFlowTabKeydown">
                     <button
                         v-for="(tab, _idx) in flowTabs"
@@ -198,7 +205,7 @@
             </ArtDecoCard>
 
             <!-- Stock Pool Performance -->
-            <ArtDecoCard title="我的股票池表现" hoverable class="stock-pool-card">
+            <ArtDecoCard title="我的股票池表现" :hoverable="false" class="stock-pool-card">
                 <div class="pool-tabs" role="tablist" @keydown="handlePoolTabKeydown">
                     <button
                         v-for="(tab, _idx) in poolTabs"
@@ -236,7 +243,7 @@
             </ArtDecoCard>
 
             <!-- Quick Navigation -->
-            <ArtDecoCard title="快速导航" hoverable class="quick-nav-card">
+            <ArtDecoCard title="快速导航" :hoverable="false" class="quick-nav-card">
                 <nav class="nav-section">
                     <router-link to="/market" class="nav-item">
                         <ArtDecoIcon name="Market" size="xl" class="nav-icon" />
@@ -297,7 +304,7 @@ const {
   systemHealth,
   loading,
   error,
-  dashboardAlerts,
+  dashboardAlertItems,
   showFundFlowSkeleton,
   aggregateDataStatus,
   aggregateSyncStatus,
@@ -368,9 +375,37 @@ const {
   align-items: center;
   gap: var(--artdeco-spacing-2);
   padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
-  border: 1px solid color-mix(in srgb, var(--artdeco-down) 32%, transparent);
-  background: color-mix(in srgb, var(--artdeco-down) 8%, transparent);
+  border: 1px solid var(--artdeco-border-default);
+  background: color-mix(in srgb, var(--artdeco-bg-card) 90%, transparent);
   color: var(--artdeco-fg-primary);
   font-size: var(--artdeco-text-sm);
+}
+
+.dashboard-alert--failed,
+.chart-state-note {
+  border-color: color-mix(in srgb, var(--artdeco-down) 32%, transparent);
+  background: color-mix(in srgb, var(--artdeco-down) 8%, transparent);
+}
+
+.dashboard-alert--degraded {
+  border-color: var(--artdeco-gold-opacity-30);
+  background: var(--artdeco-gold-opacity-05);
+}
+
+.alert-label {
+  color: var(--artdeco-gold-primary);
+  font-family: var(--artdeco-font-mono);
+  font-size: var(--artdeco-text-xs);
+  font-weight: 700;
+  letter-spacing: var(--artdeco-tracking-wide);
+}
+
+.alert-message {
+  font-weight: 600;
+}
+
+.alert-action {
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-xs);
 }
 </style>
