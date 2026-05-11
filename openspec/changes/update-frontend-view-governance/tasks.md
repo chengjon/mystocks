@@ -203,4 +203,6 @@
 - [x] 3.29a Add canonical UI coverage for delete-current-watchlist and minimal add-stock while preserving verified snapshot/stale-state semantics and keeping legacy random/fallback stats unabsorbed.
 - [x] 3.30 Select the next A3 Watchlist batch as `A3-watchlist-archive-prep` after canonical action and UI coverage were committed.
 - [x] 3.31 Prepare `A3-watchlist-archive-prep` approval package naming exact archive candidates, direct guard retirements, and validation gates without moving files.
-- [ ] 3.32 If approved, execute `A3-watchlist-archive` by moving only the legacy monitoring Watchlist page, its local composable, and its style into governed archive while retiring only their direct config guards.
+- [x] 3.32 Execute `A3-watchlist-archive` by moving only the legacy monitoring Watchlist page, its local composable, and its style into governed archive while retiring only their direct config guards.
+- [x] 3.32a Confirm active source/package references to `monitoring/WatchlistManagement.vue`, `useWatchlistManagement.ts`, and `WatchlistManagement.scss` are clear after the move; remaining mentions are historical docs, archive records, non-importing legacy E2E labels, or distinct OpenStock demo components.
+- [ ] 3.33 Close out A3 monitoring lifecycle cleanup and select the next frontend-view governance domain.

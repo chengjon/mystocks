@@ -9,7 +9,6 @@ function readSource(pathFromFrontendRoot: string): string {
 describe('monitoring/system/strategy page style normalization', () => {
   it('normalizes page style entrypoints onto @use', () => {
     const files = [
-      'src/views/monitoring/WatchlistManagement.vue',
       'src/views/system/Architecture.vue',
       'src/views/system/DatabaseMonitor.vue',
       'src/views/system/PerformanceMonitor.vue',
