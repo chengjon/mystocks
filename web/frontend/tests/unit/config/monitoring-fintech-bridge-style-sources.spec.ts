@@ -9,7 +9,6 @@ function readSource(pathFromFrontendRoot: string): string {
 describe('monitoring fintech bridge style sources', () => {
   it('bridges legacy fintech variables onto ArtDeco tokens', () => {
     const files = [
-      'src/views/monitoring/styles/RiskDashboard.scss',
       'src/views/monitoring/styles/WatchlistManagement.scss',
     ]
 

@@ -194,4 +194,6 @@
 - [x] 3.24 Select the next A3 monitoring successor-coverage batch as `A3-risk-coverage-review`, before any further archive move.
 - [x] 3.24a Record `monitoring/RiskDashboard.vue` successor coverage against canonical `/risk/*` routes and confirm old random/fallback-derived risk metrics should not be absorbed as runtime truth.
 - [x] 3.25 Prepare `A3-risk-dashboard-archive-prep` approval package naming exact archive candidates, direct guard retirements, and validation gates without moving files.
-- [ ] 3.26 If approved, execute `A3-risk-dashboard-archive` by moving only the risk dashboard legacy monitoring page, its local composable, and its style into governed archive while retiring only their direct config guards.
+- [x] 3.26 Execute `A3-risk-dashboard-archive` by moving only the risk dashboard legacy monitoring page, its local composable, and its style into governed archive while retiring only their direct config guards.
+- [x] 3.26a Confirm active source/package references to `monitoring/RiskDashboard.vue`, `useRiskDashboard.ts`, and `RiskDashboard.scss` are clear after the move; remaining mentions are historical docs, archive records, generated API types, or non-importing legacy E2E labels.
+- [ ] 3.27 Select the next narrow A3 monitoring batch, likely `WatchlistManagement` archive-prep or defer decision, before any further archive move.
