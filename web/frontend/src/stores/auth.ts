@@ -33,6 +33,7 @@ const AUTH_TOKEN_KEY = 'auth_token'
 const AUTH_USER_KEY = 'auth_user'
 const LEGACY_AUTH_TOKEN_KEY = 'token'
 const LEGACY_AUTH_USER_KEY = 'user'
+const REFRESH_TOKEN_KEY = 'refresh_token'
 
 function readStoredValue(primaryKey: string, legacyKey: string): string | null {
   return localStorage.getItem(primaryKey) || localStorage.getItem(legacyKey)
@@ -43,6 +44,7 @@ function clearStoredAuth() {
   localStorage.removeItem(AUTH_USER_KEY)
   localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY)
   localStorage.removeItem(LEGACY_AUTH_USER_KEY)
+  localStorage.removeItem(REFRESH_TOKEN_KEY)
 }
 
 function isStoredUser(value: unknown): value is User {

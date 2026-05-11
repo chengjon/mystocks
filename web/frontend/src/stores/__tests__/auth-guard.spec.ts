@@ -156,6 +156,7 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('token')
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('user')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('refresh_token')
       expect(mockAuthApi.logout).toHaveBeenCalledTimes(1)
     })
 
