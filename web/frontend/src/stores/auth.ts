@@ -210,6 +210,7 @@ export const useAuthStore = defineStore('auth', () => {
         username: userData?.username || username,
         email: userData?.email || `${username}@example.com`,
         role: userData?.role || 'user',
+        roles: userData?.roles,
         permissions: userData?.permissions || []
       })
 

@@ -123,6 +123,32 @@ describe('Authentication Guards', () => {
       expect(authStore.user?.username).toBe('testuser')
     })
 
+    it('should preserve roles returned by the login response', async () => {
+      mockAuthApi.login.mockResolvedValue({
+        success: true,
+        code: 200,
+        message: 'OK',
+        data: {
+          token: 'admin-token',
+          token_type: 'bearer',
+          user: {
+            id: 1,
+            username: 'adminuser',
+            email: 'admin@example.com',
+            role: 'user',
+            roles: ['admin'],
+            permissions: []
+          }
+        }
+      })
+
+      const result = await authStore.login('adminuser', 'password')
+
+      expect(result.success).toBe(true)
+      expect(authStore.user?.roles).toEqual(['admin'])
+      expect(authStore.isAdmin).toBe(true)
+    })
+
     it('should handle login failure', async () => {
       mockAuthApi.login.mockRejectedValue(new Error('Invalid credentials'))
 
