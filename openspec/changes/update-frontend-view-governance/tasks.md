@@ -170,3 +170,5 @@
 - [x] 3.12 Run A2 post-move reference checks and OpenSpec validation; active references are clear and OpenSpec passes.
 - [x] 3.13 Run staged GitNexus change detection and final commit-scope checks for A2.
 - [ ] 3.14 Resolve or explicitly record the unrelated `lint:artdeco:changed` failure caused by existing `advanced-analysis` token debt before marking global frontend lint clean.
+- [x] 3.15 Draft A3 monitoring absorption plan and compare it against root style cleanup without moving files.
+- [ ] 3.16 Select an A3 profile before editing `views/monitoring/*`, monitoring guards, router, menu, package scripts, or canonical risk/watchlist/system pages.
