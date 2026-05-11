@@ -219,4 +219,5 @@
 - [x] 3.44 Confirm post-move active references, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 root test sandbox minimal archive.
 - [x] 3.45 Select the next A4 root demo/test/sandbox batch as `A4-artdeco-test-target-file-archive-prep`.
 - [x] 3.46 Prepare `A4-artdeco-test-target-file-archive-prep` without moving files or retiring package guards.
-- [ ] 3.47 Decide whether to execute `A4-artdeco-test-target-file-archive` by moving only `ArtDecoTest.vue` into governed archive and retiring only its direct package target-file guard.
+- [x] 3.47 Execute `A4-artdeco-test-target-file-archive` by moving only `ArtDecoTest.vue` into governed archive and retiring only its direct package target-file guard.
+- [x] 3.48 Confirm post-move active references, package guard validity, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 ArtDecoTest archive.
