@@ -184,3 +184,5 @@
 - [x] 3.19 Select the next narrow mutation batch after A3 watchlist absorption is committed.
 - [x] 3.19a Record `A3-alert-rules-coverage-review` and confirm `monitoring/AlertRulesManagement.vue` is not archive-approved because canonical `/risk/alerts` does not yet cover alert-rule CRUD.
 - [ ] 3.20 Decide whether to approve `A3-alert-rules-crud-absorb-decision` before any runtime code edit or archive move.
+- [x] 3.20a Prepare the `A3-alert-rules-crud-absorb-decision` approval package with scope, guardrails, TDD plan, verification, and archive separation.
+- [ ] 3.21 If approved, execute `A3-alert-rules-crud-absorb-minimal` as a separate runtime/test micro-batch; otherwise record the rejection/defer decision and keep the legacy page unarchived.
