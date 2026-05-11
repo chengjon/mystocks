@@ -196,4 +196,6 @@
 - [x] 3.25 Prepare `A3-risk-dashboard-archive-prep` approval package naming exact archive candidates, direct guard retirements, and validation gates without moving files.
 - [x] 3.26 Execute `A3-risk-dashboard-archive` by moving only the risk dashboard legacy monitoring page, its local composable, and its style into governed archive while retiring only their direct config guards.
 - [x] 3.26a Confirm active source/package references to `monitoring/RiskDashboard.vue`, `useRiskDashboard.ts`, and `RiskDashboard.scss` are clear after the move; remaining mentions are historical docs, archive records, generated API types, or non-importing legacy E2E labels.
-- [ ] 3.27 Select the next narrow A3 monitoring batch, likely `WatchlistManagement` archive-prep or defer decision, before any further archive move.
+- [x] 3.27 Select the next narrow A3 monitoring batch as `A3-watchlist-ui-coverage-decision`, before any further archive move.
+- [x] 3.27a Confirm `monitoring/WatchlistManagement.vue` is not yet archive-ready because canonical `/watchlist/manage` has absorbed action helpers but still lacks UI-level delete-watchlist and add-stock coverage decisions.
+- [ ] 3.28 Prepare `A3-watchlist-ui-coverage-minimal` approval package without moving files or archiving `WatchlistManagement`.
