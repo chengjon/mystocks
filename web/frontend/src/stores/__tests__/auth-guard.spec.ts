@@ -166,6 +166,22 @@ describe('Authentication Guards', () => {
       expect(freshStore.isAuthenticated).toBe(true)
     })
 
+    it('should clear orphaned stored tokens when the user payload is missing', () => {
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return 'orphaned-token'
+        if (key === 'auth_user') return null
+        return null
+      })
+
+      authStore.initializeAuth()
+
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should bootstrap lighthouse auth for protected mock pages when enabled', () => {
       const freshStore = useAuthStore()
       const originalFlag = import.meta.env.VITE_LHCI_AUTH_BYPASS

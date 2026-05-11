@@ -38,6 +38,13 @@ function readStoredValue(primaryKey: string, legacyKey: string): string | null {
   return localStorage.getItem(primaryKey) || localStorage.getItem(legacyKey)
 }
 
+function clearStoredAuth() {
+  localStorage.removeItem(AUTH_TOKEN_KEY)
+  localStorage.removeItem(AUTH_USER_KEY)
+  localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY)
+  localStorage.removeItem(LEGACY_AUTH_USER_KEY)
+}
+
 const useLoginStore = PiniaStoreFactory.createApiStore<{
   access_token: string
   token_type: string
@@ -116,10 +123,7 @@ export const useAuthStore = defineStore('auth', () => {
     token.value = null
     isAuthenticated.value = false
     loginStore.clear()
-    localStorage.removeItem(AUTH_TOKEN_KEY)
-    localStorage.removeItem(AUTH_USER_KEY)
-    localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY)
-    localStorage.removeItem(LEGACY_AUTH_USER_KEY)
+    clearStoredAuth()
   }
 
   const initializeAuth = () => {
@@ -138,14 +142,16 @@ export const useAuthStore = defineStore('auth', () => {
         } catch (error) {
           console.error('Failed to parse saved user data:', error)
           // Clear corrupted data
-          localStorage.removeItem(AUTH_TOKEN_KEY)
-          localStorage.removeItem(AUTH_USER_KEY)
-          localStorage.removeItem(LEGACY_AUTH_TOKEN_KEY)
-          localStorage.removeItem(LEGACY_AUTH_USER_KEY)
+          clearStoredAuth()
           token.value = null
           user.value = null
           isAuthenticated.value = false
         }
+      } else {
+        clearStoredAuth()
+        token.value = null
+        user.value = null
+        isAuthenticated.value = false
       }
       return
     }
