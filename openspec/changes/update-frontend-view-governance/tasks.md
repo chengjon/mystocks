@@ -201,4 +201,5 @@
 - [x] 3.28 Prepare `A3-watchlist-ui-coverage-minimal` approval package without moving files or archiving `WatchlistManagement`.
 - [x] 3.29 Execute `A3-watchlist-ui-coverage-minimal` on canonical `/watchlist/manage` only, without archiving `WatchlistManagement`.
 - [x] 3.29a Add canonical UI coverage for delete-current-watchlist and minimal add-stock while preserving verified snapshot/stale-state semantics and keeping legacy random/fallback stats unabsorbed.
-- [ ] 3.30 Select the next A3 Watchlist archive-prep or defer decision after UI coverage is committed.
+- [x] 3.30 Select the next A3 Watchlist batch as `A3-watchlist-archive-prep` after canonical action and UI coverage were committed.
+- [ ] 3.31 Prepare `A3-watchlist-archive-prep` approval package naming exact archive candidates, direct guard retirements, and validation gates without moving files.
