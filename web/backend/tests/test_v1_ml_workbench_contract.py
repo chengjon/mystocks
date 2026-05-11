@@ -333,6 +333,34 @@ async def test_v1_ml_model_detail_rejects_blank_model_id():
     assert "Model ID is required" in excinfo.value.detail
 
 
+async def test_v1_ml_model_detail_rejects_untrained_workbench_model():
+    _reset_runtime_state()
+    module = _load_module()
+    module.runtime_store.upsert(
+        module.TrainedStrategyState(
+            strategy_id="pending_model",
+            strategy_type="svm",
+            symbol="600519.SH",
+            parameters={
+                "workbench_model": True,
+                "feature_context": {
+                    "feature_window": 20,
+                    "prediction_horizon": 5,
+                },
+            },
+            trained=False,
+            performance={},
+            feature_importance={},
+        )
+    )
+
+    with pytest.raises(module.HTTPException) as excinfo:
+        await module.get_ml_workbench_model_detail("pending_model")
+
+    assert excinfo.value.status_code == 404
+    assert "Unknown model_id" in excinfo.value.detail
+
+
 async def test_v1_ml_prediction_rejects_incompatible_model_metadata():
     _reset_runtime_state()
     module = _load_module()
