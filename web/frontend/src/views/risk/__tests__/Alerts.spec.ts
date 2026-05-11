@@ -4,6 +4,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 const {
   getAlertRulesMock,
   getAlertsMock,
+  createAlertRuleMock,
+  updateAlertRuleMock,
+  deleteAlertRuleMock,
   loadingMock,
   errorMock,
   lastRequestIdMock,
@@ -19,12 +22,18 @@ const {
   })(),
   getAlertRulesMock: vi.fn(),
   getAlertsMock: vi.fn(),
+  createAlertRuleMock: vi.fn(),
+  updateAlertRuleMock: vi.fn(),
+  deleteAlertRuleMock: vi.fn(),
 }))
 
 vi.mock('@/api/index', () => ({
   monitoringApi: {
     getAlertRules: getAlertRulesMock,
     getAlerts: getAlertsMock,
+    createAlertRule: createAlertRuleMock,
+    updateAlertRule: updateAlertRuleMock,
+    deleteAlertRule: deleteAlertRuleMock,
   },
 }))
 
@@ -135,6 +144,22 @@ describe('RiskAlerts routed count-kpi truth', () => {
         },
       ],
     })
+    createAlertRuleMock.mockReset().mockResolvedValue({
+      success: true,
+      request_id: 'req-alert-rule-create',
+      data: { id: 2, rule_name: '新建规则' },
+    })
+    updateAlertRuleMock.mockReset().mockResolvedValue({
+      success: true,
+      request_id: 'req-alert-rule-update',
+      data: { id: 1, rule_name: '更新规则' },
+    })
+    deleteAlertRuleMock.mockReset().mockResolvedValue({
+      success: true,
+      request_id: 'req-alert-rule-delete',
+      data: null,
+    })
+    vi.stubGlobal('confirm', vi.fn(() => true))
   })
 
   it('does not render alert-count stat cards as faux delta metrics with +0 percent chrome', async () => {
@@ -290,5 +315,86 @@ describe('RiskAlerts routed count-kpi truth', () => {
     expect(wrapper.text()).toContain('获取告警记录失败')
     expect(wrapper.text()).toContain('组合波动率约束')
     expect(wrapper.text()).toContain('已跌破止损线，请立即处理。')
+  })
+
+  it('creates an alert rule through the canonical risk alerts page and refreshes the verified snapshot after success', async () => {
+    const wrapper = mountAlertsPage()
+
+    await flushPromises()
+
+    await wrapper.findAll('button').find((button) => button.text().includes('新建规则'))!.trigger('click')
+    await wrapper.find('[data-test="alert-rule-name-input"]').setValue('突破放量规则')
+    await wrapper.find('[data-test="alert-rule-symbol-input"]').setValue('600519')
+    await wrapper.find('[data-test="alert-rule-stock-name-input"]').setValue('贵州茅台')
+    await wrapper.find('[data-test="alert-rule-change-threshold-input"]').setValue('5')
+    await wrapper.find('[data-test="alert-rule-volume-threshold-input"]').setValue('2')
+    await wrapper.find('[data-test="alert-rule-save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(createAlertRuleMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        rule_name: '突破放量规则',
+        symbol: '600519',
+        stock_name: '贵州茅台',
+        rule_type: 'limit_up',
+        priority: 5,
+        is_active: true,
+      }),
+    )
+    expect(createAlertRuleMock.mock.calls[0][0].parameters).toEqual(
+      expect.objectContaining({
+        include_st: false,
+        change_percent_threshold: 5,
+        volume_ratio_threshold: 2,
+      }),
+    )
+    expect(getAlertRulesMock).toHaveBeenCalledTimes(2)
+    expect(getAlertsMock).toHaveBeenCalledTimes(2)
+  })
+
+  it('keeps the last verified rules visible when an alert rule update fails', async () => {
+    updateAlertRuleMock.mockResolvedValueOnce({
+      success: false,
+      message: 'update unavailable',
+      request_id: 'req-alert-rule-update-fail',
+      data: null,
+    })
+
+    const wrapper = mountAlertsPage()
+
+    await flushPromises()
+
+    await wrapper.find('[data-test="alert-rule-edit-1"]').trigger('click')
+    await wrapper.find('[data-test="alert-rule-name-input"]').setValue('更新后的规则')
+    await wrapper.find('[data-test="alert-rule-save-button"]').trigger('click')
+    await flushPromises()
+
+    expect(updateAlertRuleMock).toHaveBeenCalledWith(
+      '1',
+      expect.objectContaining({
+        rule_name: '更新后的规则',
+        symbol: '600519',
+      }),
+    )
+    expect(getAlertRulesMock).toHaveBeenCalledTimes(1)
+    expect(wrapper.text()).toContain('单票止损线')
+    expect(wrapper.text()).toContain('update unavailable')
+    expect(wrapper.text()).not.toContain('req-alert-rule-update-fail')
+  })
+
+  it('deletes an alert rule only after confirmation and refreshes the canonical snapshot after success', async () => {
+    const confirmMock = vi.fn(() => true)
+    vi.stubGlobal('confirm', confirmMock)
+    const wrapper = mountAlertsPage()
+
+    await flushPromises()
+
+    await wrapper.find('[data-test="alert-rule-delete-1"]').trigger('click')
+    await flushPromises()
+
+    expect(confirmMock).toHaveBeenCalledWith('确定要删除此告警规则吗？')
+    expect(deleteAlertRuleMock).toHaveBeenCalledWith('1')
+    expect(getAlertRulesMock).toHaveBeenCalledTimes(2)
+    expect(getAlertsMock).toHaveBeenCalledTimes(2)
   })
 })

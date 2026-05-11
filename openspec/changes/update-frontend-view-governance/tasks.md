@@ -185,4 +185,6 @@
 - [x] 3.19a Record `A3-alert-rules-coverage-review` and confirm `monitoring/AlertRulesManagement.vue` is not archive-approved because canonical `/risk/alerts` does not yet cover alert-rule CRUD.
 - [ ] 3.20 Decide whether to approve `A3-alert-rules-crud-absorb-decision` before any runtime code edit or archive move.
 - [x] 3.20a Prepare the `A3-alert-rules-crud-absorb-decision` approval package with scope, guardrails, TDD plan, verification, and archive separation.
-- [ ] 3.21 If approved, execute `A3-alert-rules-crud-absorb-minimal` as a separate runtime/test micro-batch; otherwise record the rejection/defer decision and keep the legacy page unarchived.
+- [x] 3.21 Execute `A3-alert-rules-crud-absorb-minimal` as a separate runtime/test micro-batch after approval.
+- [x] 3.21a Add minimal create/update/delete alert-rule coverage to canonical `/risk/alerts` while preserving verified snapshot refresh semantics and keeping `monitoring/AlertRulesManagement.vue` unarchived.
+- [ ] 3.22 Select the next narrow mutation or archive-decision batch after A3 alert-rules CRUD absorption is committed.

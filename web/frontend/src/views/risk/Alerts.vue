@@ -6,7 +6,7 @@
           <span class="hero-eyebrow">alert governance desk</span>
           <div class="hero-meta">
             <span>REQ_ID: {{ displayRequestId }}</span>
-            <span>UNREAD: {{ unreadAlertCount }}</span>
+            <span>UNREAD: {{ displayUnreadAlertCount }}</span>
             <span>FOCUS: alert center</span>
           </div>
         </div>
@@ -31,42 +31,47 @@
     </section>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="规则总数" :value="alertRules.length" variant="gold" />
-      <ArtDecoStatCard label="启用规则" :value="activeRuleCount" variant="rise" />
-      <ArtDecoStatCard label="未读告警" :value="unreadAlertCount" variant="gold" />
-      <ArtDecoStatCard label="高优先级" :value="criticalAlertCount" variant="fall" />
+      <ArtDecoStatCard label="规则总数" :value="statCards.total" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="启用规则" :value="statCards.active" :show-change="false" variant="rise" />
+      <ArtDecoStatCard label="未读告警" :value="statCards.unread" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="高优先级" :value="statCards.critical" :show-change="false" variant="fall" />
     </section>
 
     <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">alert review route</span>
-          <h3 class="content-shell-title">告警记录与规则面板</h3>
+          <h2 class="content-shell-title">告警记录与规则面板</h2>
           <p class="content-shell-subtitle">{{ contentShellDescription }}</p>
         </div>
         <div class="content-shell-meta">
-          <span>RULES: {{ alertRules.length }}</span>
-          <span>ALERTS: {{ alertRecords.length }}</span>
+          <span>RULES: {{ displayRuleCount }}</span>
+          <span>ALERTS: {{ displayAlertCount }}</span>
         </div>
       </div>
 
+      <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+
       <div class="stats-grid" v-loading="loading">
         <ArtDecoCard title="规则总数" hoverable>
-          <div class="stat-value">{{ alertRules.length }}</div>
+          <div class="stat-value">{{ statCards.total }}</div>
         </ArtDecoCard>
         <ArtDecoCard title="启用规则" hoverable>
-          <div class="stat-value positive">{{ activeRuleCount }}</div>
+          <div class="stat-value positive">{{ statCards.active }}</div>
         </ArtDecoCard>
         <ArtDecoCard title="未读告警" hoverable>
-          <div class="stat-value warning">{{ unreadAlertCount }}</div>
+          <div class="stat-value warning">{{ statCards.unread }}</div>
         </ArtDecoCard>
         <ArtDecoCard title="高优先级" hoverable>
-          <div class="stat-value danger">{{ criticalAlertCount }}</div>
+          <div class="stat-value danger">{{ statCards.critical }}</div>
         </ArtDecoCard>
       </div>
 
       <ArtDecoCard title="近期告警" class="table-card" hoverable>
-        <el-table :data="alertRecords" stripe empty-text="暂无告警记录">
+        <div v-if="!loading && hasVerifiedAlertsSnapshot && alertRecords.length === 0" class="empty-state">
+          暂无告警记录，近期告警面板为空。
+        </div>
+        <el-table :data="alertRecords" stripe :empty-text="alertsEmptyText">
           <el-table-column prop="symbol" label="代码" width="110" />
           <el-table-column prop="stock_name" label="名称" width="140" />
           <el-table-column prop="alert_type" label="告警类型" width="140" />
@@ -84,23 +89,18 @@
         </el-table>
       </ArtDecoCard>
 
-      <ArtDecoCard title="规则列表" class="table-card" hoverable>
-        <el-table :data="alertRules" stripe empty-text="暂无规则">
-          <el-table-column prop="rule_name" label="规则名" min-width="220" show-overflow-tooltip />
-          <el-table-column prop="rule_type" label="规则类型" width="150" />
-          <el-table-column prop="symbol" label="标的" width="120" />
-          <el-table-column label="启用状态" width="120">
-            <template #default="{ row }">
-              <el-tag :type="row.is_active ? 'success' : 'info'">{{ row.is_active ? '启用' : '停用' }}</el-tag>
-            </template>
-          </el-table-column>
-          <el-table-column prop="updated_at" label="更新时间" width="180">
-            <template #default="{ row }">
-              <span class="mono">{{ formatTime(row.updated_at || row.created_at) }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-      </ArtDecoCard>
+      <AlertRuleManagementPanel
+        :alert-rules="alertRules"
+        :editable="!isEmbedded"
+        :format-time="formatTime"
+        :has-verified-rules-snapshot="hasVerifiedRulesSnapshot"
+        :loading="loading"
+        :mutation-message="ruleMutationMessage"
+        :rules-empty-text="rulesEmptyText"
+        @create-rule="createRule"
+        @delete-rule="deleteRule"
+        @update-rule="updateRule"
+      />
     </section>
   </div>
 </template>
@@ -111,8 +111,10 @@ import { monitoringApi } from '@/api/index'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import type { AlertRecordResponse, AlertRuleResponse } from '@/api/types/common'
+import AlertRuleManagementPanel from './AlertRuleManagementPanel.vue'
 
 type JsonLike = Record<string, unknown>
+type AlertRuleMutationResponse = { success?: boolean; message?: string; data?: unknown }
 
 interface Props {
   functionKey?: string
@@ -122,13 +124,39 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
+const { loading, error, lastRequestId, exec } = useArtDecoApi()
 const alertRules = ref<AlertRuleResponse[]>([])
 const alertRecords = ref<AlertRecordResponse[]>([])
-const requestId = ref('')
+const hasVerifiedRulesSnapshot = ref(false)
+const hasVerifiedAlertsSnapshot = ref(false)
+const lastVerifiedRulesRequestId = ref('')
+const lastVerifiedAlertsRequestId = ref('')
+const lastVerifiedRouteRequestId = ref('')
+const latestRulesFailure = ref<string | null>(null)
+const latestAlertsFailure = ref<string | null>(null)
+const staleRulesError = ref<string | null>(null)
+const staleAlertsError = ref<string | null>(null)
+const ruleMutationMessage = ref('')
 
 const isEmbedded = computed(() => Boolean(props.functionKey))
-const displayRequestId = computed(() => requestId.value || 'N/A')
+const hasVerifiedFullSnapshot = computed(() => hasVerifiedRulesSnapshot.value && hasVerifiedAlertsSnapshot.value)
+const hasAnyVerifiedSlice = computed(() => hasVerifiedRulesSnapshot.value || hasVerifiedAlertsSnapshot.value)
+const displayRequestId = computed(() =>
+  hasVerifiedFullSnapshot.value
+    ? (lastVerifiedRouteRequestId.value || lastVerifiedAlertsRequestId.value || lastVerifiedRulesRequestId.value || 'N/A')
+    : 'N/A'
+)
+const displayRuleCount = computed(() => (hasVerifiedRulesSnapshot.value ? `${alertRules.value.length}` : '--'))
+const displayAlertCount = computed(() => (hasVerifiedAlertsSnapshot.value ? `${alertRecords.value.length}` : '--'))
+const displayUnreadAlertCount = computed(() => (hasVerifiedAlertsSnapshot.value ? `${unreadAlertCount.value}` : '--'))
+const statCards = computed(() => {
+  return {
+    total: hasVerifiedRulesSnapshot.value ? `${alertRules.value.length}` : '--',
+    active: hasVerifiedRulesSnapshot.value ? `${activeRuleCount.value}` : '--',
+    unread: hasVerifiedAlertsSnapshot.value ? `${unreadAlertCount.value}` : '--',
+    critical: hasVerifiedAlertsSnapshot.value ? `${criticalAlertCount.value}` : '--',
+  }
+})
 const activeRuleCount = computed(() => alertRules.value.filter((rule) => rule.is_active).length)
 const unreadAlertCount = computed(() => alertRecords.value.filter((item) => !item.is_read).length)
 const criticalAlertCount = computed(() =>
@@ -137,12 +165,61 @@ const criticalAlertCount = computed(() =>
     return level === 'critical' || level === 'error' || level === 'danger'
   }).length
 )
-const pageStatusText = computed(() => {
-  if (loading.value) return '同步中'
-  return unreadAlertCount.value > 0 ? '存在未读告警' : '告警已清空'
+const rulesEmptyText = computed(() => {
+  if (loading.value && !hasVerifiedRulesSnapshot.value) return '风险规则同步中'
+  if (latestRulesFailure.value && !hasVerifiedRulesSnapshot.value) return '当前告警规则暂不可用'
+  return '暂无规则'
 })
-const pageStatusType = computed(() => (criticalAlertCount.value > 0 ? 'warning' : 'success'))
+const alertsEmptyText = computed(() => {
+  if (loading.value && !hasVerifiedAlertsSnapshot.value) return '告警记录同步中'
+  if (latestAlertsFailure.value && !hasVerifiedAlertsSnapshot.value) return '当前告警记录暂不可用'
+  return '暂无告警记录'
+})
+const pageStatusText = computed(() => {
+  if (staleRulesError.value || staleAlertsError.value) return '刷新异常'
+  if ((latestRulesFailure.value && !hasVerifiedRulesSnapshot.value) || (latestAlertsFailure.value && !hasVerifiedAlertsSnapshot.value)) {
+    return hasAnyVerifiedSlice.value ? '部分同步' : '同步异常'
+  }
+  if (loading.value) return hasAnyVerifiedSlice.value ? '刷新中' : '同步中'
+  if (hasVerifiedRulesSnapshot.value && hasVerifiedAlertsSnapshot.value && alertRules.value.length === 0 && alertRecords.value.length === 0) {
+    return '告警为空'
+  }
+  if (hasVerifiedAlertsSnapshot.value && unreadAlertCount.value > 0) return '存在未读告警'
+  if (hasAnyVerifiedSlice.value) return '告警在线'
+  return '同步中'
+})
+const pageStatusType = computed(() => {
+  if (staleRulesError.value || staleAlertsError.value) return 'warning'
+  if ((latestRulesFailure.value && !hasVerifiedRulesSnapshot.value) || (latestAlertsFailure.value && !hasVerifiedAlertsSnapshot.value)) {
+    return hasAnyVerifiedSlice.value ? 'warning' : 'info'
+  }
+  if (hasVerifiedRulesSnapshot.value && hasVerifiedAlertsSnapshot.value && alertRules.value.length === 0 && alertRecords.value.length === 0) {
+    return 'info'
+  }
+  return hasVerifiedAlertsSnapshot.value && criticalAlertCount.value > 0 ? 'warning' : 'success'
+})
 const contentShellDescription = computed(() => '审查近期告警、规则启用状态和高优先级事件，作为风险治理链路里的告警审阅面板。')
+const runtimeMessage = computed(() => {
+  if (staleRulesError.value && staleAlertsError.value) {
+    return `${staleAlertsError.value || staleRulesError.value}，当前仍显示上次成功同步的告警快照。`
+  }
+  if (staleAlertsError.value) return `${staleAlertsError.value}，当前仍显示上次成功同步的告警记录快照。`
+  if (staleRulesError.value) return `${staleRulesError.value}，当前仍显示上次成功同步的告警规则快照。`
+  if (latestAlertsFailure.value && !hasVerifiedAlertsSnapshot.value && hasVerifiedRulesSnapshot.value) {
+    return `${latestAlertsFailure.value}，当前告警记录暂不可用。`
+  }
+  if (latestRulesFailure.value && !hasVerifiedRulesSnapshot.value && hasVerifiedAlertsSnapshot.value) {
+    return `${latestRulesFailure.value}，当前告警规则暂不可用。`
+  }
+  if (latestAlertsFailure.value || latestRulesFailure.value) {
+    return `${latestAlertsFailure.value || latestRulesFailure.value}，当前暂无已验证告警快照。`
+  }
+  if (loading.value) return hasAnyVerifiedSlice.value ? '风险告警刷新中...' : '风险告警同步中...'
+  if (hasVerifiedRulesSnapshot.value && hasVerifiedAlertsSnapshot.value && alertRules.value.length === 0 && alertRecords.value.length === 0) {
+    return '当前没有可展示的告警记录或规则。'
+  }
+  return ''
+})
 
 function normalizeList<T>(payload: unknown, keys: string[]): T[] {
   if (Array.isArray(payload)) return payload as T[]
@@ -156,15 +233,88 @@ function normalizeList<T>(payload: unknown, keys: string[]): T[] {
   return []
 }
 
-const fetchRiskAlerts = async (): Promise<void> => {
-  const [rulesData, alertsData] = await Promise.all([
-    exec(() => monitoringApi.getAlertRules(), { errorMsg: '获取告警规则失败', silent: true }),
-    exec(() => monitoringApi.getAlerts({ page: 1, page_size: 50 }), { errorMsg: '获取告警记录失败', silent: true }),
-  ])
+function mutationFailed(response: AlertRuleMutationResponse): string {
+  if (response?.success === false) return response.message || '告警规则操作失败'
+  return ''
+}
 
-  alertRules.value = normalizeList<AlertRuleResponse>(rulesData, ['rules', 'items', 'data'])
+async function createRule(payload: Record<string, unknown>): Promise<void> {
+  ruleMutationMessage.value = ''
+  const response = await monitoringApi.createAlertRule(payload)
+  const failure = mutationFailed(response)
+  if (failure) {
+    ruleMutationMessage.value = failure
+    return
+  }
+
+  await fetchRiskAlerts()
+}
+
+async function updateRule(id: string, payload: Record<string, unknown>): Promise<void> {
+  ruleMutationMessage.value = ''
+  const response = await monitoringApi.updateAlertRule(id, payload)
+  const failure = mutationFailed(response)
+  if (failure) {
+    ruleMutationMessage.value = failure
+    return
+  }
+
+  await fetchRiskAlerts()
+}
+
+async function deleteRule(id: string): Promise<void> {
+  ruleMutationMessage.value = ''
+  const response = await monitoringApi.deleteAlertRule(id)
+  const failure = mutationFailed(response)
+  if (failure) {
+    ruleMutationMessage.value = failure
+    return
+  }
+
+  await fetchRiskAlerts()
+}
+
+const fetchRiskAlerts = async (): Promise<void> => {
+  staleRulesError.value = null
+  staleAlertsError.value = null
+  latestRulesFailure.value = null
+  latestAlertsFailure.value = null
+
+  const rulesData = await exec(() => monitoringApi.getAlertRules(), { errorMsg: '获取告警规则失败', silent: true })
+  const rulesRequestId = lastRequestId.value || ''
+  const rulesError = error.value
+  if (rulesData === null) {
+    latestRulesFailure.value = rulesError || '风险告警规则刷新失败'
+    if (hasVerifiedRulesSnapshot.value) {
+      staleRulesError.value = latestRulesFailure.value
+    }
+  } else {
+    alertRules.value = normalizeList<AlertRuleResponse>(rulesData, ['rules', 'items', 'data'])
+    hasVerifiedRulesSnapshot.value = true
+    lastVerifiedRulesRequestId.value = rulesRequestId || lastVerifiedRulesRequestId.value
+  }
+
+  const alertsData = await exec(() => monitoringApi.getAlerts({ page: 1, page_size: 50 }), {
+    errorMsg: '获取告警记录失败',
+    silent: true,
+  })
+  const alertsRequestId = lastRequestId.value || ''
+  const alertsError = error.value
+  if (alertsData === null) {
+    latestAlertsFailure.value = alertsError || '风险告警记录刷新失败'
+    if (hasVerifiedAlertsSnapshot.value) {
+      staleAlertsError.value = latestAlertsFailure.value
+    }
+    return
+  }
+
   alertRecords.value = normalizeList<AlertRecordResponse>(alertsData, ['alerts', 'items', 'records', 'data'])
-  requestId.value = lastRequestId.value || requestId.value
+  hasVerifiedAlertsSnapshot.value = true
+  lastVerifiedAlertsRequestId.value = alertsRequestId || lastVerifiedAlertsRequestId.value
+
+  if (rulesData !== null) {
+    lastVerifiedRouteRequestId.value = alertsRequestId || rulesRequestId || lastVerifiedRouteRequestId.value
+  }
 }
 
 const levelTagType = (level?: string): 'danger' | 'warning' | 'success' | 'info' => {
@@ -195,7 +345,9 @@ const formatTime = (value?: string): string => {
   return date.toLocaleString('zh-CN', { hour12: false })
 }
 
-onMounted(fetchRiskAlerts)
+onMounted(() => {
+  void fetchRiskAlerts()
+})
 </script>
 
 <style scoped lang="scss">
@@ -284,6 +436,13 @@ onMounted(fetchRiskAlerts)
 
 .stats-grid {
   margin-bottom: var(--artdeco-spacing-6);
+}
+
+.runtime-message,
+.empty-state {
+  margin: 0 0 var(--artdeco-spacing-4);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
 }
 
 .stat-value {
