@@ -198,4 +198,5 @@
 - [x] 3.26a Confirm active source/package references to `monitoring/RiskDashboard.vue`, `useRiskDashboard.ts`, and `RiskDashboard.scss` are clear after the move; remaining mentions are historical docs, archive records, generated API types, or non-importing legacy E2E labels.
 - [x] 3.27 Select the next narrow A3 monitoring batch as `A3-watchlist-ui-coverage-decision`, before any further archive move.
 - [x] 3.27a Confirm `monitoring/WatchlistManagement.vue` is not yet archive-ready because canonical `/watchlist/manage` has absorbed action helpers but still lacks UI-level delete-watchlist and add-stock coverage decisions.
-- [ ] 3.28 Prepare `A3-watchlist-ui-coverage-minimal` approval package without moving files or archiving `WatchlistManagement`.
+- [x] 3.28 Prepare `A3-watchlist-ui-coverage-minimal` approval package without moving files or archiving `WatchlistManagement`.
+- [ ] 3.29 If approved, execute `A3-watchlist-ui-coverage-minimal` on canonical `/watchlist/manage` only, without archiving `WatchlistManagement`.

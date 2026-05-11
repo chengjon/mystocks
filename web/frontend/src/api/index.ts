@@ -202,6 +202,7 @@ export const authApi = {
   },
   logout: (): Promise<UnifiedResponse<void>> => apiClient.post('/v1/auth/logout'),
   getCurrentUser: (): Promise<UnifiedResponse<unknown>> => apiClient.get('/v1/auth/me'),
+  refreshToken: (): Promise<UnifiedResponse<unknown>> => apiClient.post('/v1/auth/refresh'),
 }
 
 // --- Data API (v1 compatible) ---

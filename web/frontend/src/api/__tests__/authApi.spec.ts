@@ -37,4 +37,17 @@ describe('authApi client', () => {
       skipCSRF: true,
     })
   })
+
+  it('calls canonical v1 session endpoints', async () => {
+    vi.mocked(apiClient.get).mockResolvedValue({ success: true, code: 200, data: {} } as never)
+    vi.mocked(apiClient.post).mockResolvedValue({ success: true, code: 200, data: {} } as never)
+
+    await authApi.getCurrentUser()
+    await authApi.refreshToken()
+    await authApi.logout()
+
+    expect(apiClient.get).toHaveBeenCalledWith('/v1/auth/me')
+    expect(apiClient.post).toHaveBeenCalledWith('/v1/auth/refresh')
+    expect(apiClient.post).toHaveBeenCalledWith('/v1/auth/logout')
+  })
 })
