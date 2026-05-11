@@ -313,6 +313,26 @@ describe('Authentication Guards', () => {
       expect(result).toEqual({ path: '/403' })
     })
 
+    it('should redirect authenticated users without an allowed route role', () => {
+      authStore.setUser({
+        id: 1,
+        username: 'operator',
+        email: 'operator@example.com',
+        role: 'user',
+        roles: ['operator'],
+        permissions: ['*']
+      })
+
+      const to = {
+        name: 'admin-settings',
+        meta: { requiresAuth: true, roles: ['admin'] },
+        fullPath: '/system/admin'
+      }
+      const result = authGuard(to)
+
+      expect(result).toEqual({ path: '/403' })
+    })
+
     it('should redirect authenticated users away from login page', () => {
       // Authenticate user
       authStore.setUser({ id: '1', username: 'testuser' })

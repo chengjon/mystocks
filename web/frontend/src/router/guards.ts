@@ -14,6 +14,7 @@ interface AuthErrorLike {
 interface PermissionRouteMeta {
   permission?: string
   permissions?: string[]
+  roles?: string[]
 }
 
 /**
@@ -66,6 +67,17 @@ export const authGuard = (to: RouteLocationNormalized) => {
   ]
 
   if (requiresAuth && requiredPermissions.some((permission) => !authStore.hasPermission(permission))) {
+    ElMessage.error('您没有权限访问此页面')
+    return { path: '/403' }
+  }
+
+  const allowedRoles = permissionMeta.roles ?? []
+  const userRoles = [
+    ...(authStore.user?.role ? [authStore.user.role] : []),
+    ...(authStore.user?.roles ?? [])
+  ]
+
+  if (requiresAuth && allowedRoles.length > 0 && !allowedRoles.some((role) => userRoles.includes(role))) {
     ElMessage.error('您没有权限访问此页面')
     return { path: '/403' }
   }

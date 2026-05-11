@@ -18,6 +18,7 @@ declare module 'vue-router' {
     group?: string
     permission?: string
     permissions?: string[]
+    roles?: string[]
   }
 }
 
