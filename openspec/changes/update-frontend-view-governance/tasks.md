@@ -164,4 +164,9 @@
 - [x] 3.6 Run required route/layout verification for each mutation batch.
 - [x] 3.7 Report whether the batch is governance complete or merge ready.
 - [x] 3.8 Draft A2 error demo shell decision plan without moving files.
-- [ ] 3.9 Select an A2 profile (`A2-archive`, `A2-retain`, or `A2-defer`) before editing `views/errors/*`, package guards, tests, router, or menu.
+- [x] 3.9 Select A2 profile: `A2-archive` for guarded dead-route error demo shells.
+- [x] 3.10 Retire active `views/errors/*` ArtDeco package guard and direct unit guard specs in the same batch as the archive move.
+- [x] 3.11 Move `views/errors/*` demo shells and coupled guard specs into governed archive.
+- [x] 3.12 Run A2 post-move reference checks and OpenSpec validation; active references are clear and OpenSpec passes.
+- [x] 3.13 Run staged GitNexus change detection and final commit-scope checks for A2.
+- [ ] 3.14 Resolve or explicitly record the unrelated `lint:artdeco:changed` failure caused by existing `advanced-analysis` token debt before marking global frontend lint clean.
