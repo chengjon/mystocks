@@ -176,4 +176,6 @@
 - [x] 3.16b Move `MonitoringDashboard.vue`, its local static-shell proof spec, and `MonitoringDashboard.scss` into governed archive.
 - [x] 3.16c Retire only the direct active guard entries for `MonitoringDashboard.vue` and `MonitoringDashboard.scss`.
 - [x] 3.16d Run A3 post-move active-reference checks, targeted config Vitest, OpenSpec validation, Markdown gate, and staged GitNexus detection.
-- [ ] 3.17 Select the next narrow mutation batch only after A3 is committed.
+- [x] 3.17 Select the next narrow batch as `A3-watchlist-coverage-review` after A3 commit, without moving files.
+- [x] 3.17a Record `/watchlist/manage` successor coverage and gaps for `monitoring/WatchlistManagement.vue`.
+- [ ] 3.18 Decide whether to approve `A3-watchlist-absorb-delete-and-rich-add` before any runtime code edit or archive move.
