@@ -238,7 +238,7 @@ async def train_ml_workbench_model(request: MLWorkbenchTrainingRequest):
 )
 async def predict_ml_workbench_model(request: MLWorkbenchPredictionRequest):
     state = runtime_store.get(request.model_id)
-    if state is None or state.parameters.get("workbench_model") is not True:
+    if state is None or not state.trained or state.parameters.get("workbench_model") is not True:
         raise HTTPException(status_code=404, detail=f"Unknown model_id: {request.model_id}")
 
     _ensure_model_backend_available(state.strategy_type)
