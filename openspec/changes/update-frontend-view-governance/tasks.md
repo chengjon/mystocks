@@ -181,4 +181,6 @@
 - [x] 3.18 Decide to execute `A3-watchlist-absorb-delete-and-rich-add` without any archive move.
 - [x] 3.18a Add action-helper coverage for deleting watchlists and rich add-stock payloads in the canonical `/watchlist/manage` chain.
 - [x] 3.18b Keep `monitoring/WatchlistManagement.vue`, its local composable, and style asset unarchived pending a later UI-level decision.
-- [ ] 3.19 Select the next narrow mutation batch after A3 watchlist absorption is committed.
+- [x] 3.19 Select the next narrow mutation batch after A3 watchlist absorption is committed.
+- [x] 3.19a Record `A3-alert-rules-coverage-review` and confirm `monitoring/AlertRulesManagement.vue` is not archive-approved because canonical `/risk/alerts` does not yet cover alert-rule CRUD.
+- [ ] 3.20 Decide whether to approve `A3-alert-rules-crud-absorb-decision` before any runtime code edit or archive move.
