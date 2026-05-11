@@ -3,13 +3,13 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from enum import Enum
 from typing import Any, Dict
 from uuid import uuid4
 
 from fastapi import APIRouter, HTTPException
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.core.responses import UnifiedResponse
 
@@ -34,6 +34,26 @@ class BatchAnalysisRequest(BaseModel):
     start_date: str = Field(..., description="Analysis start date")
     end_date: str = Field(..., description="Analysis end date")
     options: Dict[str, Any] = Field(default_factory=dict, description="Operation options")
+
+    @field_validator("symbols")
+    @classmethod
+    def validate_symbols(cls, symbols: list[str]) -> list[str]:
+        normalized_symbols = [symbol.strip() for symbol in symbols]
+        if any(not symbol for symbol in normalized_symbols):
+            raise ValueError("symbols must not contain blank values")
+        return normalized_symbols
+
+    @model_validator(mode="after")
+    def validate_date_range(self) -> "BatchAnalysisRequest":
+        try:
+            start_date = date.fromisoformat(self.start_date)
+            end_date = date.fromisoformat(self.end_date)
+        except ValueError as exc:
+            raise ValueError("start_date and end_date must be ISO date strings") from exc
+
+        if start_date > end_date:
+            raise ValueError("start_date must be earlier than or equal to end_date")
+        return self
 
 
 @dataclass(slots=True)

@@ -73,10 +73,15 @@ export const listBatchAnalysisTasks = (): Promise<UnifiedResponse<BatchAnalysisT
 
 export const getBatchAnalysisTaskDetail = (
   taskId: string,
-): Promise<UnifiedResponse<BatchAnalysisTask>> =>
-  apiClient.get<UnifiedResponse<BatchAnalysisTask>>(
-    `/v1/strategies/batch-analysis/tasks/${encodeURIComponent(taskId)}`,
+): Promise<UnifiedResponse<BatchAnalysisTask>> => {
+  const resolvedTaskId = taskId.trim()
+  if (!resolvedTaskId) {
+    return Promise.reject(new Error('Batch analysis task ID is required'))
+  }
+  return apiClient.get<UnifiedResponse<BatchAnalysisTask>>(
+    `/v1/strategies/batch-analysis/tasks/${encodeURIComponent(resolvedTaskId)}`,
   )
+}
 
 export const batchAnalysisApi = {
   getBatchAnalysisRuntimeStatus,

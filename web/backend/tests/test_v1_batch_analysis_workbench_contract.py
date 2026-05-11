@@ -104,6 +104,42 @@ async def test_v1_batch_analysis_rejects_oversized_first_batch_request():
     assert (await module.list_batch_analysis_tasks()).data["total"] == 0
 
 
+async def test_v1_batch_analysis_request_rejects_blank_symbol():
+    module = _load_module()
+
+    with pytest.raises(ValueError, match="symbols must not contain blank values"):
+        module.BatchAnalysisRequest(
+            operation="batch_screening",
+            symbols=["600519.SH", "   "],
+            start_date="2024-01-01",
+            end_date="2024-12-31",
+        )
+
+
+async def test_v1_batch_analysis_request_rejects_invalid_date_range():
+    module = _load_module()
+
+    with pytest.raises(ValueError, match="start_date must be earlier than or equal to end_date"):
+        module.BatchAnalysisRequest(
+            operation="batch_screening",
+            symbols=["600519.SH"],
+            start_date="2024-12-31",
+            end_date="2024-01-01",
+        )
+
+
+async def test_v1_batch_analysis_request_rejects_non_date_iso_datetime():
+    module = _load_module()
+
+    with pytest.raises(ValueError, match="start_date and end_date must be ISO date strings"):
+        module.BatchAnalysisRequest(
+            operation="batch_screening",
+            symbols=["600519.SH"],
+            start_date="2024-01-01T09:30:00",
+            end_date="2024-12-31",
+        )
+
+
 async def test_v1_batch_analysis_detail_rejects_missing_task():
     _reset_batch_state()
     module = _load_module()

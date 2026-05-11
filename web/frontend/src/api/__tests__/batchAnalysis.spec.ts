@@ -44,4 +44,18 @@ describe('batchAnalysis API client', () => {
       expect.objectContaining({ operation: 'batch_screening' }),
     )
   })
+
+  it('rejects blank task detail IDs before sending a request', async () => {
+    await expect(getBatchAnalysisTaskDetail('   ')).rejects.toThrow('Batch analysis task ID is required')
+
+    expect(apiClient.get).not.toHaveBeenCalled()
+  })
+
+  it('trims task detail IDs before encoding the canonical path', async () => {
+    vi.mocked(apiClient.get).mockResolvedValue({ success: true, code: 200, data: {} } as never)
+
+    await getBatchAnalysisTaskDetail('  batch_abc  ')
+
+    expect(apiClient.get).toHaveBeenCalledWith('/v1/strategies/batch-analysis/tasks/batch_abc')
+  })
 })
