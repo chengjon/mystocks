@@ -199,4 +199,6 @@
 - [x] 3.27 Select the next narrow A3 monitoring batch as `A3-watchlist-ui-coverage-decision`, before any further archive move.
 - [x] 3.27a Confirm `monitoring/WatchlistManagement.vue` is not yet archive-ready because canonical `/watchlist/manage` has absorbed action helpers but still lacks UI-level delete-watchlist and add-stock coverage decisions.
 - [x] 3.28 Prepare `A3-watchlist-ui-coverage-minimal` approval package without moving files or archiving `WatchlistManagement`.
-- [ ] 3.29 If approved, execute `A3-watchlist-ui-coverage-minimal` on canonical `/watchlist/manage` only, without archiving `WatchlistManagement`.
+- [x] 3.29 Execute `A3-watchlist-ui-coverage-minimal` on canonical `/watchlist/manage` only, without archiving `WatchlistManagement`.
+- [x] 3.29a Add canonical UI coverage for delete-current-watchlist and minimal add-stock while preserving verified snapshot/stale-state semantics and keeping legacy random/fallback stats unabsorbed.
+- [ ] 3.30 Select the next A3 Watchlist archive-prep or defer decision after UI coverage is committed.

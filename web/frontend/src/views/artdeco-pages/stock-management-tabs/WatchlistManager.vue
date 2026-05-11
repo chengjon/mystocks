@@ -1,10 +1,10 @@
 <template>
   <div class="watchlist-manager">
     <div class="overview-grid">
-      <ArtDecoStatCard label="组合数量" :value="displayWatchlists.length" variant="gold" />
-      <ArtDecoStatCard label="当前股票数" :value="stocksCount" variant="gold" />
-      <ArtDecoStatCard label="上涨家数" :value="upCount" variant="rise" />
-      <ArtDecoStatCard label="下跌家数" :value="downCount" variant="fall" />
+      <ArtDecoStatCard label="组合数量" :value="watchlistsCountLabel" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="当前股票数" :value="stocksCountLabel" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="上涨家数" :value="upCountLabel" :show-change="false" variant="rise" />
+      <ArtDecoStatCard label="下跌家数" :value="downCountLabel" :show-change="false" variant="fall" />
     </div>
 
     <div class="watchlist-header">
@@ -24,6 +24,8 @@
         <button type="button" class="add-list-btn" :disabled="loading" @click="handleAddList">+</button>
       </div>
       <div class="actions">
+        <ArtDecoButton variant="outline" size="sm" :disabled="loading || !displayActiveWatchlistId" @click="handleAddStock">添加股票</ArtDecoButton>
+        <ArtDecoButton variant="outline" size="sm" :disabled="loading || !displayActiveWatchlistId" @click="handleDeleteActiveWatchlist">删除组合</ArtDecoButton>
         <ArtDecoButton variant="outline" size="sm" :disabled="loading" @click="handleImport">导入</ArtDecoButton>
         <ArtDecoButton variant="outline" size="sm" :disabled="loading" @click="handleExport">导出</ArtDecoButton>
       </div>
@@ -34,10 +36,16 @@
       <span>正在刷新清单和持仓明细。</span>
     </div>
 
+    <div v-else-if="showStaleState" class="state-panel artdeco-card" role="alert">
+      <p>自选列表刷新异常</p>
+      <span>{{ staleMessage }}</span>
+      <ArtDecoButton variant="outline" size="sm" @click="syncWatchlistState">重试刷新</ArtDecoButton>
+    </div>
+
     <div v-else-if="showErrorState" class="state-panel artdeco-card" role="alert">
       <p>自选列表加载失败</p>
       <span>{{ error }}</span>
-      <ArtDecoButton variant="outline" size="sm" @click="refreshWatchlistState">重试刷新</ArtDecoButton>
+      <ArtDecoButton variant="outline" size="sm" @click="syncWatchlistState">重试刷新</ArtDecoButton>
     </div>
 
     <div v-else-if="showEmptyState" class="state-panel artdeco-card" role="status" aria-live="polite">
@@ -60,10 +68,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { ArtDecoButton, ArtDecoCard, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 import { createMonitoringWatchlistActions, useWatchlistsStore, useWatchlistStocksStore } from '@/stores/apiStores'
-import {
-  buildWatchlistExportDocument,
-  parseWatchlistImportDocument,
-} from './stockManagementRouteActions'
+import { buildWatchlistExportDocument, parseWatchlistImportDocument } from './stockManagementRouteActions'
 
 interface StockRow {
   [key: string]: unknown
@@ -87,13 +92,14 @@ const props = withDefaults(defineProps<Props>(), {
   activeWatchlistId: '',
   currentStocks: () => []
 })
-const emit = defineEmits(['select-list', 'add-list', 'import', 'export', 'remove-stock'])
+const emit = defineEmits(['select-list', 'add-list', 'delete-list', 'add-stock', 'import', 'export', 'remove-stock'])
 const watchlistsStore = useWatchlistsStore()
 const watchlistStocksStore = useWatchlistStocksStore()
 const watchlistActions = createMonitoringWatchlistActions()
 const importedWatchlists = ref<WatchlistItem[] | null>(null)
 const internalActiveWatchlistId = ref('')
 const importedCurrentStocks = ref<StockRow[] | null>(null)
+const verifiedStocksSnapshots = ref<Record<string, StockRow[]>>({})
 const importInput = ref<HTMLInputElement | null>(null)
 const hasLoaded = ref(false)
 const actionError = ref('')
@@ -123,7 +129,13 @@ const displayCurrentStocks = computed(() => {
   if (importedCurrentStocks.value) {
     return importedCurrentStocks.value
   }
-  return (watchlistStocksStore.data as StockRow[] | null) ?? []
+
+  const activeWatchlistId = displayActiveWatchlistId.value
+  if (!activeWatchlistId) {
+    return []
+  }
+
+  return verifiedStocksSnapshots.value[activeWatchlistId] ?? []
 })
 
 const loading = computed(() => watchlistsStore.loading || watchlistStocksStore.loading || actionPending.value)
@@ -139,9 +151,42 @@ const numericChanges = computed(() => displayCurrentStocks.value.map((row) => {
 const stocksCount = computed(() => displayCurrentStocks.value.length)
 const upCount = computed(() => numericChanges.value.filter((v) => v > 0).length)
 const downCount = computed(() => numericChanges.value.filter((v) => v < 0).length)
-const showLoadingState = computed(() => loading.value && !hasLoaded.value)
-const showErrorState = computed(() => !loading.value && hasLoaded.value && Boolean(error.value))
+const hasVerifiedCurrentStocksSnapshot = computed(() => {
+  if (props.currentStocks.length > 0 || importedCurrentStocks.value) {
+    return true
+  }
+
+  const activeWatchlistId = displayActiveWatchlistId.value
+  if (!activeWatchlistId) {
+    return hasLoaded.value && !watchlistsStore.loading && !watchlistsStore.error && displayWatchlists.value.length === 0
+  }
+
+  return Object.prototype.hasOwnProperty.call(verifiedStocksSnapshots.value, activeWatchlistId)
+})
+
+const showLoadingState = computed(() =>
+  loading.value && (!hasLoaded.value || (hasVerifiedWatchlistsSnapshot.value && !hasVerifiedCurrentStocksSnapshot.value))
+)
+const hasVerifiedCombinedSnapshot = computed(() => hasVerifiedWatchlistsSnapshot.value && hasVerifiedStocksSnapshot.value)
+const showStaleState = computed(() => !loading.value && hasLoaded.value && Boolean(error.value) && hasVerifiedCombinedSnapshot.value)
+const showErrorState = computed(() => !loading.value && hasLoaded.value && Boolean(error.value) && !showStaleState.value)
 const showEmptyState = computed(() => !loading.value && hasLoaded.value && !error.value && displayWatchlists.value.length === 0)
+const staleMessage = computed(() => `${error.value}，当前仍显示上次成功同步的自选组合快照。`)
+
+const hasVerifiedWatchlistsSnapshot = computed(() => {
+  if (props.watchlists.length > 0 || importedWatchlists.value || displayWatchlists.value.length > 0) {
+    return true
+  }
+
+  return hasLoaded.value && !watchlistsStore.loading && !watchlistsStore.error
+})
+
+const hasVerifiedStocksSnapshot = computed(() => hasVerifiedCurrentStocksSnapshot.value)
+
+const watchlistsCountLabel = computed(() => (hasVerifiedWatchlistsSnapshot.value ? `${displayWatchlists.value.length}` : '--'))
+const stocksCountLabel = computed(() => (hasVerifiedStocksSnapshot.value ? `${stocksCount.value}` : '--'))
+const upCountLabel = computed(() => (hasVerifiedStocksSnapshot.value ? `${upCount.value}` : '--'))
+const downCountLabel = computed(() => (hasVerifiedStocksSnapshot.value ? `${downCount.value}` : '--'))
 
 async function loadWatchlists() {
   await watchlistsStore.refresh()
@@ -151,34 +196,65 @@ async function loadWatchlists() {
   }
 }
 
-async function loadCurrentStocks() {
+async function loadCurrentStocks(
+  watchlistIdOverride = displayActiveWatchlistId.value,
+  rollbackWatchlistId = '',
+) {
   if (props.currentStocks.length > 0) {
     return
   }
-  const watchlistId = displayActiveWatchlistId.value
+  const watchlistId = watchlistIdOverride
   if (!watchlistId) {
     watchlistStocksStore.clear()
     return
   }
 
-  await watchlistStocksStore.refresh({ watchlistId })
+  try {
+    await watchlistStocksStore.refresh({ watchlistId })
+    verifiedStocksSnapshots.value = {
+      ...verifiedStocksSnapshots.value,
+      [watchlistId]: [...(((watchlistStocksStore.data as StockRow[] | null) ?? []))],
+    }
+  } catch (err) {
+    if (!props.activeWatchlistId && rollbackWatchlistId) {
+      internalActiveWatchlistId.value = rollbackWatchlistId
+    }
+    throw err
+  }
 }
 
 async function refreshWatchlistState() {
   actionError.value = ''
   importedWatchlists.value = null
   importedCurrentStocks.value = null
-  await loadWatchlists()
-  await loadCurrentStocks()
-  hasLoaded.value = true
+  try {
+    await loadWatchlists()
+    await loadCurrentStocks()
+  } finally {
+    hasLoaded.value = true
+  }
 }
 
-function handleSelectList(watchlistId: string) {
+async function syncWatchlistState() {
+  try {
+    await refreshWatchlistState()
+  } catch {
+    // Store-backed error state already drives the failure surface.
+  }
+}
+
+async function handleSelectList(watchlistId: string) {
   emit('select-list', watchlistId)
   if (!props.activeWatchlistId) {
+    const previousActiveWatchlistId = internalActiveWatchlistId.value
+    actionError.value = ''
     internalActiveWatchlistId.value = watchlistId
     importedCurrentStocks.value = null
-    void loadCurrentStocks()
+    try {
+      await loadCurrentStocks(watchlistId, previousActiveWatchlistId)
+    } catch (err) {
+      actionError.value = err instanceof Error ? err.message : '自选组合持仓刷新失败'
+    }
   }
 }
 
@@ -200,6 +276,64 @@ async function handleAddList() {
     await refreshWatchlistState()
   } catch (err) {
     actionError.value = err instanceof Error ? err.message : '创建自选清单失败'
+  } finally {
+    actionPending.value = false
+  }
+}
+
+async function handleDeleteActiveWatchlist() {
+  const watchlistId = displayActiveWatchlistId.value
+  if (!watchlistId) {
+    return
+  }
+
+  emit('delete-list', watchlistId)
+  if (props.watchlists.length > 0) {
+    return
+  }
+
+  if (!window.confirm('确认删除当前自选组合？')) {
+    return
+  }
+
+  actionPending.value = true
+  actionError.value = ''
+  try {
+    await watchlistActions.deleteWatchlist(watchlistId)
+    internalActiveWatchlistId.value = ''
+    verifiedStocksSnapshots.value = {}
+    await refreshWatchlistState()
+  } catch (err) {
+    actionError.value = err instanceof Error ? err.message : '删除自选组合失败'
+  } finally {
+    actionPending.value = false
+  }
+}
+
+async function handleAddStock() {
+  const watchlistId = displayActiveWatchlistId.value
+  if (!watchlistId) {
+    return
+  }
+
+  const rawSymbol = window.prompt('请输入股票代码')
+  const symbol = rawSymbol?.trim()
+  if (!symbol) {
+    return
+  }
+
+  emit('add-stock', { watchlistId, symbol })
+  if (props.currentStocks.length > 0) {
+    return
+  }
+
+  actionPending.value = true
+  actionError.value = ''
+  try {
+    await watchlistActions.addStock(watchlistId, symbol)
+    await refreshWatchlistState()
+  } catch (err) {
+    actionError.value = err instanceof Error ? err.message : '添加自选股失败'
   } finally {
     actionPending.value = false
   }
@@ -268,7 +402,7 @@ async function handleImportFile(event: Event) {
 }
 
 onMounted(async () => {
-  await refreshWatchlistState()
+  await syncWatchlistState()
 })
 
 const columns = [
@@ -362,21 +496,4 @@ const columns = [
   font-size: var(--artdeco-text-sm);
 }
 
-@media (width <= 48rem) {
-  .overview-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .watchlist-header,
-  .watchlist-tabs,
-  .actions {
-    width: 100%;
-  }
-
-  .watchlist-header,
-  .watchlist-tabs,
-  .actions {
-    flex-wrap: wrap;
-  }
-}
 </style>
