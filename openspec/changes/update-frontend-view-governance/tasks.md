@@ -189,4 +189,6 @@
 - [x] 3.21a Add minimal create/update/delete alert-rule coverage to canonical `/risk/alerts` while preserving verified snapshot refresh semantics and keeping `monitoring/AlertRulesManagement.vue` unarchived.
 - [x] 3.22 Select the next narrow mutation or archive-decision batch after A3 alert-rules CRUD absorption is committed.
 - [x] 3.22a Prepare `A3-alert-rules-archive-prep` approval package naming the exact archive candidates, successor coverage, direct guard retirements, and validation gates without moving files.
-- [ ] 3.23 If approved, execute `A3-alert-rules-archive` by moving only the alert-rules legacy monitoring page, its local composable, and its style into governed archive while retiring only their direct config guards.
+- [x] 3.23 Execute `A3-alert-rules-archive` by moving only the alert-rules legacy monitoring page, its local composable, and its style into governed archive while retiring only their direct config guards.
+- [x] 3.23a Confirm active source/test references to `monitoring/AlertRulesManagement.vue`, `useAlertRulesManagement.ts`, and `AlertRulesManagement.scss` are clear after the move; remaining mentions are historical docs or archive records.
+- [ ] 3.24 Select the next A3 monitoring successor-coverage batch, likely `RiskDashboard.vue` or `WatchlistManagement.vue`, before any further archive move.
