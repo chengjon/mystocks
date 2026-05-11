@@ -22,6 +22,24 @@ export interface BacktestResponse {
 
 export type MLStrategyType = 'svm' | 'decision_tree' | 'naive_bayes' | 'lstm' | 'transformer';
 
+export type MLWorkbenchModelFamily = 'svm' | 'lightgbm';
+
+export interface MLWorkbenchPredictionRequest {
+  model_id?: string;
+  symbol?: string;
+  prediction_horizon?: number;
+}
+
+export interface MLWorkbenchTrainingRequest {
+  model_family?: MLWorkbenchModelFamily;
+  symbol?: string;
+  start_date?: string;
+  end_date?: string;
+  feature_window?: number;
+  prediction_horizon?: number;
+  parameters?: Record<string, unknown>;
+}
+
 export interface StrategyInfo {
   strategy_id?: string;
   strategy_type?: string;

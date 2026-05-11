@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 
 const routerSource = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
 const menuSource = readFileSync(resolve(process.cwd(), 'src/config/menu.config.js'), 'utf8')
+const strategyTypesSource = readFileSync(resolve(process.cwd(), 'src/api/types/strategy.ts'), 'utf8')
 
 describe('ai route canonical component paths', () => {
   it('uses the canonical ai sentiment component path', () => {
@@ -24,6 +25,12 @@ describe('ai route canonical component paths', () => {
     expect(menuSource).toContain("id: 'ai-ml'")
     expect(menuSource).toContain("title: '模型训练 / 预测'")
     expect(menuSource).toContain("path: '/ai/ml'")
+  })
+
+  it('exports generated strategy types for the canonical ml workbench requests', () => {
+    expect(strategyTypesSource).toContain("export type MLWorkbenchModelFamily = 'svm' | 'lightgbm'")
+    expect(strategyTypesSource).toContain('export interface MLWorkbenchTrainingRequest')
+    expect(strategyTypesSource).toContain('export interface MLWorkbenchPredictionRequest')
   })
 
   it('uses the canonical ai batch analysis component path', () => {
