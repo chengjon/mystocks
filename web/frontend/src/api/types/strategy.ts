@@ -20,6 +20,16 @@ export interface BacktestResponse {
   backtest_duration_ms?: number;
 }
 
+export type BatchAnalysisOperation = 'batch_backtest' | 'batch_screening' | 'batch_monitoring';
+
+export interface BatchAnalysisRequest {
+  operation?: BatchAnalysisOperation;
+  symbols?: string[];
+  start_date?: string;
+  end_date?: string;
+  options?: Record<string, unknown>;
+}
+
 export type MLStrategyType = 'svm' | 'decision_tree' | 'naive_bayes' | 'lstm' | 'transformer';
 
 export type MLWorkbenchModelFamily = 'svm' | 'lightgbm';

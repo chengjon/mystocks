@@ -39,6 +39,13 @@ describe('ai route canonical component paths', () => {
     expect(routerSource).toContain("component: () => import('@/views/ai/BatchAnalysis.vue')")
   })
 
+  it('exports generated strategy types for the canonical ai batch analysis request', () => {
+    expect(strategyTypesSource).toContain(
+      "export type BatchAnalysisOperation = 'batch_backtest' | 'batch_screening' | 'batch_monitoring'",
+    )
+    expect(strategyTypesSource).toContain('export interface BatchAnalysisRequest')
+  })
+
   it('surfaces the ai batch analysis workbench from ai navigation', () => {
     expect(menuSource).toContain("id: 'ai-batch'")
     expect(menuSource).toContain("title: '批量分析'")
