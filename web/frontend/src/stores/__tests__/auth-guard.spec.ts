@@ -24,7 +24,8 @@ vi.mock('element-plus', () => ({
 
 vi.mock('@/api/index.js', () => ({
   authApi: {
-    login: vi.fn()
+    login: vi.fn(),
+    logout: vi.fn()
   }
 }))
 
@@ -38,6 +39,9 @@ describe('Authentication Guards', () => {
     localStorageMock.setItem.mockReset()
     localStorageMock.removeItem.mockReset()
     localStorageMock.clear.mockReset()
+    mockAuthApi.login.mockReset()
+    mockAuthApi.logout.mockReset()
+    mockAuthApi.logout.mockResolvedValue({ success: true, code: 200, data: undefined })
     setActivePinia(createPinia())
     authStore = useAuthStore()
   })
@@ -115,13 +119,14 @@ describe('Authentication Guards', () => {
       expect(result.message).toBe('Invalid credentials')
     })
 
-    it('should logout and clear data', () => {
+    it('should logout and clear data', async () => {
       // Set initial state
       authStore.setToken('test-token')
       authStore.setUser({ id: '1', username: 'testuser' })
+      mockAuthApi.logout.mockResolvedValue({ success: true, code: 200, data: undefined })
 
       // Logout
-      authStore.logout()
+      await authStore.logout()
 
       expect(authStore.token).toBeNull()
       expect(authStore.user).toBeNull()
@@ -130,6 +135,20 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('token')
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('user')
+      expect(mockAuthApi.logout).toHaveBeenCalledTimes(1)
+    })
+
+    it('should keep local logout complete when remote logout fails', async () => {
+      authStore.setToken('test-token')
+      authStore.setUser({ id: '1', username: 'testuser' })
+      mockAuthApi.logout.mockRejectedValue(new Error('logout unavailable'))
+
+      await authStore.logout()
+
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
     })
 
     it('should check auth on initialization', () => {

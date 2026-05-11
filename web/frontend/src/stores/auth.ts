@@ -127,12 +127,18 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem(AUTH_TOKEN_KEY, tokenValue)
   }
 
-  const logout = () => {
+  const logout = async () => {
     user.value = null
     token.value = null
     isAuthenticated.value = false
     loginStore.clear()
     clearStoredAuth()
+
+    try {
+      await authApi.logout()
+    } catch (error) {
+      console.warn('Remote logout failed:', error)
+    }
   }
 
   const initializeAuth = () => {
