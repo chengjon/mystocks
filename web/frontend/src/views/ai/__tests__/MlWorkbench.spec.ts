@@ -230,6 +230,17 @@ describe('AI ML workbench page', () => {
     expect(wrapper.text()).toContain('SVM: unavailable')
   })
 
+  it('renders unknown dependency status before runtime readiness is loaded', async () => {
+    runtimeStatusMock.value = null as never
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('SVM: unknown')
+    expect(wrapper.text()).toContain('LightGBM: unknown')
+  })
+
   it('surfaces invalid training date range before training submission', async () => {
     trainingDateRangeInvalidMock.value = true
 
