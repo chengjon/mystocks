@@ -284,6 +284,10 @@ async def test_v1_ml_training_prediction_and_model_registry_are_canonical():
     assert detail_payload.data["model_id"] == model_id
     assert detail_payload.data["feature_context"]["feature_window"] == 20
 
+    trimmed_detail_payload = await module.get_ml_workbench_model_detail(f"  {model_id}  ")
+    assert trimmed_detail_payload.success is True
+    assert trimmed_detail_payload.data["model_id"] == model_id
+
     predict_payload = await module.predict_ml_workbench_model(
         module.MLWorkbenchPredictionRequest(
             model_id=model_id,

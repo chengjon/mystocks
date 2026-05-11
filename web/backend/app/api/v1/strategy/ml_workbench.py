@@ -301,9 +301,10 @@ async def list_ml_workbench_models():
     description="读取 7.1 canonical ML 工作台运行时模型详情。",
 )
 async def get_ml_workbench_model_detail(model_id: str):
-    state = runtime_store.get(model_id)
+    resolved_model_id = model_id.strip()
+    state = runtime_store.get(resolved_model_id)
     if state is None or state.parameters.get("workbench_model") is not True:
-        raise HTTPException(status_code=404, detail=f"Unknown model_id: {model_id}")
+        raise HTTPException(status_code=404, detail=f"Unknown model_id: {resolved_model_id}")
     return UnifiedResponse(
         success=True,
         code=200,
