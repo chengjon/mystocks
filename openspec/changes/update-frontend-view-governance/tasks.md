@@ -229,3 +229,6 @@
 - [x] 3.54 Prepare `A4-market-data-demo-paired-archive-prep` without moving files or modifying canonical market/data routes.
 - [x] 3.55 Execute `A4-market-data-demo-paired-archive` by moving `MarketDataDemo.vue` together with its sole local composable `useMarketData.js`.
 - [x] 3.56 Confirm post-move active references, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 MarketDataDemo paired archive.
+- [x] 3.57 Select the next A4 root demo/test/sandbox batch as `A4-smart-data-source-test-archive-prep`.
+- [x] 3.58 Prepare `A4-smart-data-source-test-archive-prep` without moving files or retiring guards.
+- [ ] 3.59 Decide whether to execute `A4-smart-data-source-test-archive` by moving `SmartDataSourceTest.vue` with its local style and retiring only its direct package/style-entrypoint guards.
