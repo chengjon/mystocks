@@ -34,9 +34,12 @@ describe('Authentication Guards', () => {
   let authStore: ReturnType<typeof useAuthStore>
 
   beforeEach(() => {
+    localStorageMock.getItem.mockReset()
+    localStorageMock.setItem.mockReset()
+    localStorageMock.removeItem.mockReset()
+    localStorageMock.clear.mockReset()
     setActivePinia(createPinia())
     authStore = useAuthStore()
-    vi.clearAllMocks()
   })
 
   afterEach(() => {
@@ -170,6 +173,22 @@ describe('Authentication Guards', () => {
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'auth_token') return 'orphaned-token'
         if (key === 'auth_user') return null
+        return null
+      })
+
+      authStore.initializeAuth()
+
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
+    it('should clear stored sessions when the user payload is not a valid user object', () => {
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return 'stored-token'
+        if (key === 'auth_user') return JSON.stringify({ permissions: ['*'] })
         return null
       })
 

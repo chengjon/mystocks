@@ -45,6 +45,15 @@ function clearStoredAuth() {
   localStorage.removeItem(LEGACY_AUTH_USER_KEY)
 }
 
+function isStoredUser(value: unknown): value is User {
+  if (!value || typeof value !== 'object') {
+    return false
+  }
+
+  const candidate = value as Partial<User>
+  return typeof candidate.username === 'string' && candidate.username.trim().length > 0
+}
+
 const useLoginStore = PiniaStoreFactory.createApiStore<{
   access_token: string
   token_type: string
@@ -137,6 +146,9 @@ export const useAuthStore = defineStore('auth', () => {
       if (savedUser) {
         try {
           const userData = JSON.parse(savedUser)
+          if (!isStoredUser(userData)) {
+            throw new Error('Invalid stored user payload')
+          }
           user.value = userData
           isAuthenticated.value = true
         } catch (error) {
