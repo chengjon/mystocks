@@ -249,7 +249,7 @@ Follow-up date: 2026-05-11
 
 | Report item | Repair status | Evidence |
 |---|---|---|
-| Keyboard focus still needs live verification | Fixed by automated dashboard E2E coverage | Added `dashboard tablists support keyboard focus and selection semantics` in `web/frontend/tests/e2e/phase1-mainline-matrix.spec.ts`. The test covers ArrowRight and ArrowLeft on both the capital-flow tablist (`1日` / `3日` / `5日`) and stock-pool tablist (`自选` / `持仓` / `重点`), including focus movement, wraparound behavior, active tab class, and `aria-selected` updates. |
+| Keyboard focus still needs live verification | Fixed by automated dashboard E2E coverage | Added dashboard-only coverage in `web/frontend/tests/e2e/dashboard-impeccable.spec.ts`. The keyboard test covers ArrowRight and ArrowLeft on both the capital-flow tablist (`1日` / `3日` / `5日`) and stock-pool tablist (`自选` / `持仓` / `重点`), including focus movement, wraparound behavior, active tab class, and `aria-selected` updates. |
 
 Verification after hardening:
 
@@ -257,6 +257,7 @@ Verification after hardening:
 |---|---|
 | `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/phase1-mainline-matrix.spec.ts -g "dashboard tablists support keyboard focus and selection semantics"` | Passed, `1/1` Chromium. |
 | `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/phase1-mainline-matrix.spec.ts -g "dashboard"` | Passed, `16/16` Chromium after adding the keyboard tablist coverage. |
+| `PLAYWRIGHT_EXTERNAL_FRONTEND=1 npx playwright test --config playwright.config.js --project=chromium tests/e2e/dashboard-impeccable.spec.ts` | Added as the dashboard-only commit gate to avoid coupling this dashboard batch to unrelated Phase 1 market/detail/industry E2E work in the shared matrix file. |
 | `npm run lint:artdeco -- --target-file src/views/artdeco-pages/ArtDecoDashboard.vue --target-file src/views/artdeco-pages/styles/ArtDecoDashboard.scss` | Passed after the follow-up report consistency pass. |
 | `npm_config_cache=/tmp/npm-cache npx impeccable --json --fast src/views/artdeco-pages/ArtDecoDashboard.vue src/views/artdeco-pages/components/DashboardMarketPanorama.vue` | Passed after the follow-up report consistency pass, detector returned `[]`. |
 | `gitnexus_detect_changes(scope="staged")` after staging only the hardening E2E file | Low risk, `changed_files=1`, `changed_count=4`, `affected_processes=[]`. |
