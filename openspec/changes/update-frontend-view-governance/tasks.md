@@ -208,4 +208,5 @@
 - [x] 3.33 Close out A3 monitoring lifecycle cleanup and select the next frontend-view governance domain.
 - [x] 3.34 Prepare the next governance domain package for `A4-demo-openstock-and-root-demo-sidecars` without moving files.
 - [x] 3.35 Prepare `A4-demo-openstock-root-sidecars-inventory` read-only exact inventory and guard reconciliation without moving files.
-- [ ] 3.36 Prepare `A4-openstock-demo-decision` approval package without moving files.
+- [x] 3.36 Prepare `A4-openstock-demo-decision` approval package without moving files.
+- [ ] 3.37 Decide whether to approve `A4-openstock-demo-root-duplicate-archive-prep` before moving files.
