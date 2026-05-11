@@ -88,10 +88,22 @@ export function createMonitoringWatchlistActions() {
         watchlist_type: 'manual',
       })
     },
-    addStock(watchlistId: string, symbol: string) {
-      return apiClient.post(`/v1/monitoring/watchlists/${watchlistId}/stocks`, {
-        stock_code: symbol,
-      })
+    deleteWatchlist(watchlistId: string) {
+      return apiClient.delete(`/v1/monitoring/watchlists/${watchlistId}`)
+    },
+    addStock(
+      watchlistId: string,
+      stock: string | {
+        stock_code: string
+        entry_price?: number | null
+        entry_reason?: string | null
+        stop_loss_price?: number | null
+        target_price?: number | null
+        weight?: number
+      },
+    ) {
+      const payload = typeof stock === 'string' ? { stock_code: stock } : stock
+      return apiClient.post(`/v1/monitoring/watchlists/${watchlistId}/stocks`, payload)
     },
     removeStock(watchlistId: string, symbol: string) {
       return apiClient.delete(`/v1/monitoring/watchlists/${watchlistId}/stocks/${symbol}`)

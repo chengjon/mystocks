@@ -98,23 +98,37 @@ describe('watchlist api stores', () => {
     expect(store.lastRequestId).toBe('req-monitoring-watchlist-stocks-1')
   })
 
-  it('creates and removes monitoring watchlist entries through standardized action helpers', async () => {
+  it('creates, deletes, and manages monitoring watchlist entries through standardized action helpers', async () => {
     vi.mocked(apiClient.post).mockResolvedValue({ success: true })
     vi.mocked(apiClient.delete).mockResolvedValue({ success: true })
 
     const actions = createMonitoringWatchlistActions()
 
     await actions.createWatchlist('趋势观察')
-    await actions.addStock('101', '600519')
+    await actions.deleteWatchlist('101')
+    await actions.addStock('101', {
+      stock_code: '600519',
+      entry_price: 1820,
+      entry_reason: 'manual_pick',
+      stop_loss_price: 1700,
+      target_price: 2100,
+      weight: 0.2,
+    })
     await actions.removeStock('101', '600519')
 
     expect(apiClient.post).toHaveBeenNthCalledWith(1, '/v1/monitoring/watchlists', {
       name: '趋势观察',
       watchlist_type: 'manual',
     })
+    expect(apiClient.delete).toHaveBeenNthCalledWith(1, '/v1/monitoring/watchlists/101')
     expect(apiClient.post).toHaveBeenNthCalledWith(2, '/v1/monitoring/watchlists/101/stocks', {
       stock_code: '600519',
+      entry_price: 1820,
+      entry_reason: 'manual_pick',
+      stop_loss_price: 1700,
+      target_price: 2100,
+      weight: 0.2,
     })
-    expect(apiClient.delete).toHaveBeenCalledWith('/v1/monitoring/watchlists/101/stocks/600519')
+    expect(apiClient.delete).toHaveBeenNthCalledWith(2, '/v1/monitoring/watchlists/101/stocks/600519')
   })
 })

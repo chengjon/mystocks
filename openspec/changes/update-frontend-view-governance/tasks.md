@@ -178,4 +178,7 @@
 - [x] 3.16d Run A3 post-move active-reference checks, targeted config Vitest, OpenSpec validation, Markdown gate, and staged GitNexus detection.
 - [x] 3.17 Select the next narrow batch as `A3-watchlist-coverage-review` after A3 commit, without moving files.
 - [x] 3.17a Record `/watchlist/manage` successor coverage and gaps for `monitoring/WatchlistManagement.vue`.
-- [ ] 3.18 Decide whether to approve `A3-watchlist-absorb-delete-and-rich-add` before any runtime code edit or archive move.
+- [x] 3.18 Decide to execute `A3-watchlist-absorb-delete-and-rich-add` without any archive move.
+- [x] 3.18a Add action-helper coverage for deleting watchlists and rich add-stock payloads in the canonical `/watchlist/manage` chain.
+- [x] 3.18b Keep `monitoring/WatchlistManagement.vue`, its local composable, and style asset unarchived pending a later UI-level decision.
+- [ ] 3.19 Select the next narrow mutation batch after A3 watchlist absorption is committed.
