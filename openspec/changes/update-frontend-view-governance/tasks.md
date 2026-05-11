@@ -193,4 +193,5 @@
 - [x] 3.23a Confirm active source/test references to `monitoring/AlertRulesManagement.vue`, `useAlertRulesManagement.ts`, and `AlertRulesManagement.scss` are clear after the move; remaining mentions are historical docs or archive records.
 - [x] 3.24 Select the next A3 monitoring successor-coverage batch as `A3-risk-coverage-review`, before any further archive move.
 - [x] 3.24a Record `monitoring/RiskDashboard.vue` successor coverage against canonical `/risk/*` routes and confirm old random/fallback-derived risk metrics should not be absorbed as runtime truth.
-- [ ] 3.25 Prepare `A3-risk-dashboard-archive-prep` approval package naming exact archive candidates, direct guard retirements, and validation gates without moving files.
+- [x] 3.25 Prepare `A3-risk-dashboard-archive-prep` approval package naming exact archive candidates, direct guard retirements, and validation gates without moving files.
+- [ ] 3.26 If approved, execute `A3-risk-dashboard-archive` by moving only the risk dashboard legacy monitoring page, its local composable, and its style into governed archive while retiring only their direct config guards.
