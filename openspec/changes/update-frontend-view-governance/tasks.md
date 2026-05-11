@@ -209,4 +209,7 @@
 - [x] 3.34 Prepare the next governance domain package for `A4-demo-openstock-and-root-demo-sidecars` without moving files.
 - [x] 3.35 Prepare `A4-demo-openstock-root-sidecars-inventory` read-only exact inventory and guard reconciliation without moving files.
 - [x] 3.36 Prepare `A4-openstock-demo-decision` approval package without moving files.
-- [ ] 3.37 Decide whether to approve `A4-openstock-demo-root-duplicate-archive-prep` before moving files.
+- [x] 3.37 Decide whether to approve `A4-openstock-demo-root-duplicate-archive-prep` before moving files.
+- [x] 3.38 Execute `A4-openstock-demo-root-duplicate-archive` by moving only the root duplicate `OpenStockDemo.vue` into governed archive.
+- [x] 3.39 Confirm post-move active references, OpenSpec validation, Markdown gate, targeted Vitest, staged GitNexus detection, and commit scope for A4 OpenStock root duplicate archive.
+- [ ] 3.40 Select the next A4 root demo/test/sandbox mutation or decision batch after OpenStock root duplicate archive is committed.
