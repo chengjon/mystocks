@@ -247,7 +247,9 @@ async def predict_ml_workbench_model(request: MLWorkbenchPredictionRequest):
 
     _ensure_model_backend_available(state.strategy_type)
     feature_context = state.parameters.get("feature_context", {})
-    if not _is_positive_int(feature_context.get("feature_window")) or not _is_positive_int(
+    if not isinstance(feature_context, dict) or not _is_positive_int(
+        feature_context.get("feature_window")
+    ) or not _is_positive_int(
         feature_context.get("prediction_horizon")
     ):
         raise HTTPException(status_code=409, detail=f"Model metadata incompatible: {request.model_id}")
