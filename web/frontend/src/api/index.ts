@@ -196,7 +196,8 @@ export const authApi = {
     formData.append('username', username);
     formData.append('password', password);
     return apiClient.post('/v1/auth/login', formData, {
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      skipCSRF: true,
     });
   },
   logout: (): Promise<UnifiedResponse<void>> => apiClient.post('/v1/auth/logout'),
