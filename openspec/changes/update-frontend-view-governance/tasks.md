@@ -207,4 +207,5 @@
 - [x] 3.32a Confirm active source/package references to `monitoring/WatchlistManagement.vue`, `useWatchlistManagement.ts`, and `WatchlistManagement.scss` are clear after the move; remaining mentions are historical docs, archive records, non-importing legacy E2E labels, or distinct OpenStock demo components.
 - [x] 3.33 Close out A3 monitoring lifecycle cleanup and select the next frontend-view governance domain.
 - [x] 3.34 Prepare the next governance domain package for `A4-demo-openstock-and-root-demo-sidecars` without moving files.
-- [ ] 3.35 Prepare `A4-demo-openstock-root-sidecars-inventory` read-only exact inventory and guard reconciliation without moving files.
+- [x] 3.35 Prepare `A4-demo-openstock-root-sidecars-inventory` read-only exact inventory and guard reconciliation without moving files.
+- [ ] 3.36 Prepare `A4-openstock-demo-decision` approval package without moving files.
