@@ -58,4 +58,10 @@ describe('mlWorkbench API client', () => {
 
     expect(apiClient.get).toHaveBeenCalledWith('/v1/strategies/ml/models/svm_600519_abc')
   })
+
+  it('rejects blank model detail IDs before sending a request', async () => {
+    await expect(getMlWorkbenchModelDetail('   ')).rejects.toThrow('Model ID is required')
+
+    expect(apiClient.get).not.toHaveBeenCalled()
+  })
 })

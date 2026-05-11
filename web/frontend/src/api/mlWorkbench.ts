@@ -109,10 +109,15 @@ export const listMlWorkbenchModels = (): Promise<UnifiedResponse<MlModelListPayl
 
 export const getMlWorkbenchModelDetail = (
   modelId: string,
-): Promise<UnifiedResponse<MlWorkbenchModel>> =>
-  apiClient.get<UnifiedResponse<MlWorkbenchModel>>(
-    `/v1/strategies/ml/models/${encodeURIComponent(modelId.trim())}`,
+): Promise<UnifiedResponse<MlWorkbenchModel>> => {
+  const resolvedModelId = modelId.trim()
+  if (!resolvedModelId) {
+    return Promise.reject(new Error('Model ID is required'))
+  }
+  return apiClient.get<UnifiedResponse<MlWorkbenchModel>>(
+    `/v1/strategies/ml/models/${encodeURIComponent(resolvedModelId)}`,
   )
+}
 
 export const mlWorkbenchApi = {
   getMlRuntimeStatus,
