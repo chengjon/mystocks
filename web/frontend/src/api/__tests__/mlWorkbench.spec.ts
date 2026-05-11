@@ -50,4 +50,12 @@ describe('mlWorkbench API client', () => {
     expect(apiClient.post).toHaveBeenCalledWith('/v1/strategies/ml/train', expect.objectContaining({ symbol: '600519.SH' }))
     expect(apiClient.post).toHaveBeenCalledWith('/v1/strategies/ml/predict', expect.objectContaining({ model_id: 'svm_600519_abc' }))
   })
+
+  it('trims model detail IDs before encoding the canonical path', async () => {
+    vi.mocked(apiClient.get).mockResolvedValue({ success: true, code: 200, data: {} } as never)
+
+    await getMlWorkbenchModelDetail('  svm_600519_abc  ')
+
+    expect(apiClient.get).toHaveBeenCalledWith('/v1/strategies/ml/models/svm_600519_abc')
+  })
 })

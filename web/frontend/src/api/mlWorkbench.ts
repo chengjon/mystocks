@@ -111,7 +111,7 @@ export const getMlWorkbenchModelDetail = (
   modelId: string,
 ): Promise<UnifiedResponse<MlWorkbenchModel>> =>
   apiClient.get<UnifiedResponse<MlWorkbenchModel>>(
-    `/v1/strategies/ml/models/${encodeURIComponent(modelId)}`,
+    `/v1/strategies/ml/models/${encodeURIComponent(modelId.trim())}`,
   )
 
 export const mlWorkbenchApi = {
