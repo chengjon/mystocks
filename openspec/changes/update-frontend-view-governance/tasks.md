@@ -237,3 +237,5 @@
 - [x] 3.62 Prepare `A4-data-visualization-showcase-archive-prep` without moving files or retiring guards.
 - [x] 3.63 Execute `A4-data-visualization-showcase-archive` by moving `DataVisualizationShowcase.vue` with its local style and retiring only its direct package/style-entrypoint/console-cleanup guards.
 - [x] 3.64 Confirm post-move active references, package/style-entrypoint/console-cleanup guard validity, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 DataVisualizationShowcase archive.
+- [x] 3.65 Select the next A4 root demo/test/sandbox batch as `A4-skeleton-usage-archive-prep`.
+- [x] 3.66 Prepare `A4-skeleton-usage-archive-prep` without moving files or retiring guards, and identify required guard-successor decisions before execution.
