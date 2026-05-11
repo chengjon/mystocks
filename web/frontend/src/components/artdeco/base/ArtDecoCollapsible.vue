@@ -3,6 +3,7 @@
         <!-- 折叠头部 -->
         <div
             class="artdeco-collapsible-header"
+            :id="headerId"
             @click="toggle"
             @keydown.enter="toggle"
             @keydown.space.prevent="toggle"
@@ -196,7 +197,11 @@
         border: 1px solid var(--artdeco-border-color);
         background: var(--artdeco-bg-elevated);
         margin-bottom: var(--artdeco-spacing-4);
-        transition: all var(--artdeco-transition-base);
+        transition:
+            border-color var(--artdeco-transition-base),
+            box-shadow var(--artdeco-transition-base),
+            background-color var(--artdeco-transition-base),
+            opacity var(--artdeco-transition-base);
 
         // 几何角落装饰
         @include artdeco-geometric-corners;
@@ -225,7 +230,9 @@
         padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
         cursor: pointer;
         user-select: none;
-        transition: all var(--artdeco-transition-base);
+        transition:
+            background-color var(--artdeco-transition-base),
+            box-shadow var(--artdeco-transition-base);
 
         // 焦点状态（键盘导航）
         &:focus-visible {
@@ -285,7 +292,9 @@
         height: var(--artdeco-spacing-2);
         border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
         opacity: 60%;
-        transition: all var(--artdeco-transition-base);
+        transition:
+            border-color var(--artdeco-transition-base),
+            opacity var(--artdeco-transition-base);
 
         &--left {
             top: var(--artdeco-spacing-2);
@@ -320,7 +329,9 @@
     // 过渡动画
     .artdeco-collapse-enter-active,
     .artdeco-collapse-leave-active {
-        transition: all var(--artdeco-transition-base);
+        transition:
+            height var(--artdeco-transition-base),
+            opacity var(--artdeco-transition-base);
         will-change: height, opacity;
     }
 

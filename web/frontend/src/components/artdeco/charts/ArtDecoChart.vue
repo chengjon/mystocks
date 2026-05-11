@@ -1,5 +1,5 @@
 <template>
-  <div class="artdeco-chart-container" :class="{ 'is-loading': loading }">
+  <div class="artdeco-chart-container" :class="{ 'is-loading': loading }" role="img" :aria-label="accessibleLabel || 'Chart'">
     <!-- Chart Container -->
     <div ref="chartElement" class="chart-canvas" :style="{ height: height, width: width }"></div>
 
@@ -28,6 +28,10 @@ let artDecoThemeRegistered = false
 
 // Props
 const props = defineProps({
+  accessibleLabel: {
+    type: String,
+    default: ''
+  },
   option: {
     type: Object as PropType<Record<string, unknown> | null>,
     default: null

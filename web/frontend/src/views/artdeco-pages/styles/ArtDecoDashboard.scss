@@ -158,7 +158,10 @@
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
-    transition: all var(--artdeco-transition-base);
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base),
+        transform var(--artdeco-transition-base);
     min-height: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
     text-align: center;
 
@@ -227,7 +230,7 @@
     text-transform: uppercase;
     letter-spacing: var(--artdeco-tracking-wide);
     cursor: pointer;
-    transition: all var(--artdeco-transition-base);
+    transition: color var(--artdeco-transition-base);
     position: relative;
 
     &::after {
@@ -269,7 +272,9 @@
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
-    transition: all var(--artdeco-transition-base);
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base);
 
     &:hover {
         border-color: var(--artdeco-gold-primary);
@@ -387,7 +392,9 @@
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
-    transition: all var(--artdeco-transition-base);
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base);
     text-align: left;
 
     &:hover {
@@ -452,7 +459,10 @@
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     text-decoration: none;
-    transition: all var(--artdeco-transition-base);
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base),
+        transform var(--artdeco-transition-base);
     text-align: center;
 
     &:hover {
@@ -491,7 +501,7 @@
 }
 
 // 响应式设计（桌面端优先）
-@media (width <= calc(var(--artdeco-spacing-32) * 9 + var(--artdeco-spacing-12))) {
+@media (width <= var(--artdeco-breakpoint-lg)) {
     .content-grid {
         grid-template-columns: 1fr;
 
@@ -524,7 +534,9 @@
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
     text-align: center;
-    transition: all var(--artdeco-transition-base);
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base);
 
     &:hover {
         border-color: var(--artdeco-gold-primary);
@@ -589,7 +601,9 @@
     background: var(--artdeco-bg-card);
     border: 1px solid var(--artdeco-gold-opacity-10);
     border-radius: var(--artdeco-radius-none);
-    transition: all var(--artdeco-transition-base);
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base);
 
     &:hover {
         border-color: var(--artdeco-gold-primary);
@@ -766,7 +780,12 @@
     text-transform: uppercase;
     padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
     cursor: pointer;
-    transition: all var(--artdeco-transition-base);
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base),
+        color var(--artdeco-transition-base),
+        background-color var(--artdeco-transition-base),
+        opacity var(--artdeco-transition-base);
 
     &:hover {
         border-color: var(--artdeco-gold-primary);
@@ -815,48 +834,6 @@
         font-family: var(--artdeco-font-mono);
         font-size: var(--artdeco-text-lg);
         font-weight: 700;
-    }
-}
-
-@media (width <= calc(var(--artdeco-spacing-32) * 8)) {
-    .flow-section,
-    .stress-test-metrics {
-        grid-template-columns: 1fr;
-    }
-}
-
-@media (width <= calc(var(--artdeco-spacing-32) * 6)) {
-    .artdeco-dashboard {
-        padding: var(--artdeco-spacing-4);
-    }
-
-    .market-panorama {
-        gap: var(--artdeco-spacing-4);
-    }
-
-    .stress-test-actions {
-        flex-direction: column;
-        align-items: stretch;
-    }
-}
-
-@media (width <= calc(var(--artdeco-spacing-32) * 3 + var(--artdeco-spacing-1) * 2 + var(--artdeco-spacing-px) * 2)) {
-    .artdeco-dashboard {
-        padding: var(--artdeco-spacing-3);
-    }
-
-    .card-header {
-        align-items: flex-start;
-
-        h3,
-        h4 {
-            line-height: 1.4;
-        }
-    }
-
-    .flow-tabs,
-    .pool-tabs {
-        flex-wrap: wrap;
     }
 }
 

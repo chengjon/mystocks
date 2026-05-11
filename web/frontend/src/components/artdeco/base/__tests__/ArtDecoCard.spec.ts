@@ -53,6 +53,16 @@ describe('ArtDecoCard', () => {
     expect(root.classes()).toContain('artdeco-card--aspect-16-9')
   })
 
+  it('omits the hoverable class when hover affordance is disabled', () => {
+    const wrapper = mount(ArtDecoCard as never, {
+      props: {
+        hoverable: false,
+      },
+    })
+
+    expect(wrapper.get('.artdeco-card').classes()).not.toContain('artdeco-card--hoverable')
+  })
+
   it('emits click only when clickable is enabled', async () => {
     const clickableWrapper = mount(ArtDecoCard as never, {
       props: {

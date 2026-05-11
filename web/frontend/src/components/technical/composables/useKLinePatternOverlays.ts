@@ -1,9 +1,10 @@
 import { ref, type Ref } from "vue";
-import { registerOverlay, type Overlay } from "klinecharts";
+import { registerOverlay, type OverlayCreate } from "klinecharts";
 
 import { technicalApi } from "@/api";
 import {
   useChartOverlays,
+  type AutomaticOverlayDefinition,
   type ManualDrawingTool,
   type OverlayChart,
 } from "@/components/technical/composables/useChartOverlays";
@@ -32,7 +33,7 @@ type PatternDetection = {
 };
 
 type PatternChart = {
-  createOverlay: (value: string | Overlay, paneId?: string) => string | null;
+  createOverlay: (value: string | OverlayCreate, paneId?: string) => string | null;
   removeOverlay: (id: string) => void;
 };
 
@@ -55,7 +56,7 @@ function ensureRectangleOverlayRegistered() {
     totalStep: 2,
     createPointFigures: ({ coordinates }) => {
       if (!coordinates || coordinates.length < 2) {
-        return null;
+        return [];
       }
 
       const [start, end] = coordinates;
@@ -84,7 +85,7 @@ function ensureGapZoneOverlayRegistered() {
     totalStep: 2,
     createPointFigures: ({ coordinates }) => {
       if (!coordinates || coordinates.length < 2) {
-        return null;
+        return [];
       }
 
       const [start, end] = coordinates;
@@ -103,11 +104,12 @@ function ensureGapZoneOverlayRegistered() {
   gapZoneOverlayRegistered = true;
 }
 
-function buildAutomaticPatternOverlays(patterns: PatternDetection[]) {
-  return patterns
-    .flatMap((pattern) => {
-      if (pattern.gap_zone) {
-        return [{
+function buildAutomaticPatternOverlays(patterns: PatternDetection[]): AutomaticOverlayDefinition[] {
+  const overlays: AutomaticOverlayDefinition[] = [];
+
+  patterns.forEach((pattern) => {
+    if (pattern.gap_zone) {
+      overlays.push({
           name: "mvpGapZone",
           paneId: "candle_pane",
           points: [
@@ -130,19 +132,21 @@ function buildAutomaticPatternOverlays(patterns: PatternDetection[]) {
             confidence: pattern.confidence,
             direction: pattern.direction,
           },
-        }];
-      }
+      });
+      return;
+    }
 
-      if (!Array.isArray(pattern.anchor_points) || pattern.anchor_points.length <= 1) {
-        return [];
-      }
+    if (!Array.isArray(pattern.anchor_points) || pattern.anchor_points.length <= 1) {
+      return;
+    }
 
-      const points = pattern.anchor_points.map((point) => ({
-        timestamp: point.timestamp,
-        value: point.value,
-      }));
+    const points = pattern.anchor_points.map((point) => ({
+      timestamp: point.timestamp,
+      value: point.value,
+    }));
 
-      return points.slice(1).map((point, index) => ({
+    points.slice(1).forEach((point, index) => {
+      overlays.push({
         name: "segment",
         paneId: "candle_pane",
         points: [points[index], point],
@@ -154,8 +158,11 @@ function buildAutomaticPatternOverlays(patterns: PatternDetection[]) {
           segmentIndex: index,
           segmentCount: points.length - 1,
         },
-      }));
+      });
     });
+  });
+
+  return overlays;
 }
 
 function mapChartPeriodToPatternPeriod(period: string): PatternPeriod | null {

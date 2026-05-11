@@ -73,41 +73,42 @@
         --artdeco-card-bg-color: var(--ad-card-bg-default);
         --artdeco-card-shadow: var(--ad-card-shadow-default);
 
-        // Art Deco signature: 锐利直角 (radius-none = 0px)
+        // Art Deco signature: 锐利直角
         border-radius: var(--artdeco-radius-none);
         background: var(--artdeco-card-bg-color);
-        border: 2px solid var(--artdeco-card-border-color);  // UI Pro Max优化：从1px增加到2px，增强视觉层级
+        border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-card-border-color);
         padding: var(--artdeco-spacing-4);
         position: relative;
         overflow: hidden;
-        transition: all var(--artdeco-transition-base);
+        transition:
+            border-color var(--artdeco-transition-base),
+            box-shadow var(--artdeco-transition-base),
+            background-color var(--artdeco-transition-base);
         box-sizing: border-box;
         box-shadow: var(--artdeco-card-shadow);
 
         // 几何角落装饰（叠加在阶梯角上）
-        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px);
+        @include artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: var(--artdeco-spacing-4), $border-width: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)));
 
-        // 悬停提升效果
-        @include artdeco-hover-lift-glow;
     }
 
     /* Double-frame effect - 内边框装饰 */
     .artdeco-card::before {
         content: '';
         position: absolute;
-        inset: 6px 6px 6px 6px;
+        inset: calc(var(--artdeco-spacing-1) + var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
         border: 1px solid var(--artdeco-gold-opacity-15);
         pointer-events: none;
         opacity: 30%;
         transition: opacity var(--artdeco-transition-base);
     }
 
-    .artdeco-card:hover::before {
+    .artdeco-card--hoverable:hover::before {
         opacity: 60%;
     }
 
-    .artdeco-card:hover::before,
-    .artdeco-card:hover::after {
+    .artdeco-card--hoverable:hover::before,
+    .artdeco-card--hoverable:hover::after {
         opacity: 80%;
         border-color: var(--artdeco-gold-hover);
     }
@@ -151,6 +152,10 @@
     }
 
     /* Card modifiers - BEM: artdeco-card--modifier */
+    .artdeco-card--hoverable {
+        @include artdeco-hover-lift-glow;
+    }
+
     .artdeco-card--hoverable:hover {
         --artdeco-card-border-color: var(--ad-card-border-hover);
         --artdeco-card-shadow: var(--ad-card-shadow-hover);
@@ -170,7 +175,7 @@
     }
 
     .artdeco-card--bordered {
-        border-width: 2px;
+        border-width: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
     }
 
     // ============================================

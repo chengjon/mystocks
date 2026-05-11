@@ -60,7 +60,12 @@
                 </section>
 
                 <section class="chart-section" v-if="!showFundFlowSkeleton">
-                    <ArtDecoChart :option="fundFlowChartOption" :loading="loading.fundFlow" height="200px" />
+                    <ArtDecoChart
+                        :option="fundFlowChartOption"
+                        :loading="loading.fundFlow"
+                        accessible-label="市场资金流向折线图"
+                        height="200px"
+                    />
                 </section>
             </ArtDecoCard>
         </div>
@@ -119,13 +124,19 @@
                 <div class="trend-chart-title">上证指数分时趋势</div>
                 <p v-if="loadingTrendData && !marketTrendOption" class="integration-note">分时趋势同步中...</p>
                 <p v-else-if="trendStateMessage" class="integration-note">{{ trendStateMessage }}</p>
-                <ArtDecoChart v-if="marketTrendOption" :option="marketTrendOption" :loading="loading.market" height="200px" />
+                <ArtDecoChart
+                    v-if="marketTrendOption"
+                    :option="marketTrendOption"
+                    :loading="loading.market"
+                    accessible-label="上证指数分时趋势图"
+                    height="200px"
+                />
             </section>
         </ArtDecoCard>
 
         <!-- 资金流向和市场情绪 -->
         <section class="flow-section">
-            <ArtDecoCard class="sentiment-card" variant="outlined">
+            <ArtDecoCard class="sentiment-card" variant="bordered">
                 <template #header>
                     <div class="card-header">
                         <ArtDecoIcon name="dollar-sign" />
@@ -190,7 +201,6 @@
 </template>
 
 <script setup lang="ts">
-import type { ComputedRef } from 'vue'
 import type { MarketData } from '../composables/useArtDecoDashboard.types'
 
 defineProps<{
@@ -198,8 +208,8 @@ defineProps<{
     loading: { market: boolean; fundFlow: boolean; industry: boolean; indicators: boolean; monitoring: boolean; strategies: boolean; pnl: boolean }
     error: { market: string; fundFlow: string; industry: string }
     showFundFlowSkeleton: boolean
-    fundFlowChartOption: ComputedRef<Record<string, unknown>>
-    marketTrendOption: ComputedRef<Record<string, unknown> | null>
+    fundFlowChartOption: Record<string, unknown>
+    marketTrendOption: Record<string, unknown> | null
     trendStateMessage: string
     loadingTrendData: boolean
     marketSentiment: number

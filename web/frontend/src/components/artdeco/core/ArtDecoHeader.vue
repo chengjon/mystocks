@@ -7,7 +7,7 @@
         </div>
         
         <div class="header-right">
-            <div v-if="showStatus" class="status-indicator">
+            <div v-if="showStatus" class="status-indicator" :class="statusType ? `status--${statusType}` : ''">
                 <span class="status-dot"></span>
                 <span class="status-text">{{ statusText }}</span>
             </div>
@@ -24,6 +24,7 @@
         subtitle?: string
         showStatus?: boolean
         statusText?: string
+        statusType?: 'success' | 'warning' | 'danger' | 'error' | 'info'
     }>()
 </script>
 
@@ -100,6 +101,27 @@
         height: var(--artdeco-spacing-2);
         background: var(--artdeco-gold-primary);
         box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-primary);
+    }
+
+    .status-indicator.status--success .status-dot {
+        background: var(--artdeco-up);
+        box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-up);
+    }
+
+    .status-indicator.status--danger .status-dot,
+    .status-indicator.status--error .status-dot {
+        background: var(--artdeco-down);
+        box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-down);
+    }
+
+    .status-indicator.status--warning .status-dot {
+        background: var(--artdeco-gold-primary);
+        box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-primary);
+    }
+
+    .status-indicator.status--info .status-dot {
+        background: var(--artdeco-fg-muted);
+        box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-fg-muted);
     }
 
     .status-text {

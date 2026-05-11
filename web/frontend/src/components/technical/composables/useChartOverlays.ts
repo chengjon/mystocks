@@ -1,15 +1,15 @@
 import { ref, type Ref } from "vue";
 
-import type { Overlay } from "klinecharts";
+import type { OverlayCreate } from "klinecharts";
 
 export type ManualDrawingTool = "trendline" | "horizontalLine" | "rectangle" | null;
 
 export type OverlayChart = {
-  createOverlay: (value: string | Overlay, paneId?: string) => string | null;
+  createOverlay: (value: string | OverlayCreate, paneId?: string) => string | null;
   removeOverlay: (id: string) => void;
 };
 
-export type AutomaticOverlayDefinition = Overlay & {
+export type AutomaticOverlayDefinition = OverlayCreate & {
   paneId?: string;
 };
 

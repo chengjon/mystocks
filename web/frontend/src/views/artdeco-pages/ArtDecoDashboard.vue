@@ -72,7 +72,7 @@
         </div>
         <div class="content-grid">
             <!-- Market Heat Map -->
-            <ArtDecoCard title="市场热度板块" hoverable class="heat-map-card">
+            <ArtDecoCard title="市场热度板块" :hoverable="false" class="heat-map-card">
                 <section class="heatmap-section chart-fixed-height">
                     <template v-if="loading.industry">
                          <div class="skeleton-chart skeleton-center">
@@ -81,33 +81,36 @@
                     </template>
                     <div v-else-if="error.industry" class="chart-state-note">{{ error.industry }}</div>
                     <template v-else>
-                        <ArtDecoChart 
-                            :option="heatmapOption" 
-                            :loading="loading.industry" 
-                            height="100%" 
+                        <ArtDecoChart
+                            :option="heatmapOption"
+                            :loading="loading.industry"
+                            accessible-label="市场热度板块热力图"
+                            height="100%"
                         />
                     </template>
                 </section>
             </ArtDecoCard>
 
-            <ArtDecoCard title="资金流向热力图" hoverable class="capital-heatmap-card">
+            <ArtDecoCard title="资金流向热力图" :hoverable="false" class="capital-heatmap-card">
                 <section class="heatmap-section chart-fixed-height">
                     <div v-if="capitalFlowDegradedMessage" class="chart-state-note">{{ capitalFlowDegradedMessage }}</div>
                     <ArtDecoChart
                         :option="capitalFlowHeatmapOption"
                         :loading="showCapitalFlowSkeleton"
+                        accessible-label="资金流向热力图"
                         height="100%"
                     />
                 </section>
             </ArtDecoCard>
 
-            <ArtDecoCard title="行业轮动雷达" hoverable class="sector-radar-card">
+            <ArtDecoCard title="行业轮动雷达" :hoverable="false" class="sector-radar-card">
                 <section class="heatmap-section chart-fixed-height">
                     <div v-if="error.industry && !loading.industry" class="chart-state-note">{{ error.industry }}</div>
                     <ArtDecoChart
                         v-else
                         :option="sectorRotationRadarOption"
                         :loading="loading.industry"
+                        accessible-label="行业轮动雷达图"
                         height="100%"
                     />
                 </section>
@@ -126,9 +129,10 @@
                     <span class="stress-test-time" v-if="stressTestResult?.timestamp">{{ stressTestResult.timestamp }}</span>
                 </div>
                 <p v-if="!stressTestResult" class="integration-note">
-                    {{ isStressTestDisabled ? '等待市场与资金流向真实数据就绪后可执行压力测试。' : '压力测试待执行，点击后基于当前页面已加载的真实行情数据做本地估算。' }}
+                    {{ isStressTestDisabled ? '等待市场与资金流向真实数据就绪后可执行压力测试。' : '压力测试待执行，点击后将基于当前页面已加载的行情数据做本地估算（非后端风险分析）。' }}
                 </p>
-                <div class="stress-test-metrics">
+                <p v-else class="integration-note stress-test-disclaimer">以下为基于当前页面数据的本地估算结果，不构成后端验证的风险分析。</p>
+                <div class="stress-test-metrics" aria-live="polite">
                     <div class="stress-metric-item">
                         <span class="metric-label">预估最大回撤</span>
                         <span class="metric-value">{{ stressTestResult ? `${stressTestResult.drawdown}%` : '--' }}</span>
@@ -156,17 +160,20 @@
                     <button
                         v-for="(tab, _idx) in flowTabs"
                         :key="tab.key"
+                        :id="'flow-tab-' + tab.key"
                         type="button"
                         role="tab"
                         class="flow-tab"
                         :class="{ active: activeFlowTab === tab.key }"
                         :aria-selected="activeFlowTab === tab.key"
+                        :aria-controls="'flow-tabpanel'"
+                        :tabindex="activeFlowTab === tab.key ? 0 : -1"
                         @click="activeFlowTab = tab.key"
                     >
                         {{ tab.label }}
                     </button>
                 </div>
-                <div class="flow-list" role="tabpanel">
+                <div id="flow-tabpanel" class="flow-list" role="tabpanel" :aria-labelledby="'flow-tab-' + activeFlowTab">
                     <p v-if="capitalFlowDegradedMessage" class="integration-note">{{ capitalFlowDegradedMessage }}</p>
                     <template v-if="showCapitalFlowSkeleton">
                         <div class="flow-item" v-for="i in 5" :key="i">
@@ -196,17 +203,20 @@
                     <button
                         v-for="(tab, _idx) in poolTabs"
                         :key="tab.key"
+                        :id="'pool-tab-' + tab.key"
                         type="button"
                         role="tab"
                         class="pool-tab"
                         :class="{ active: activePoolTab === tab.key }"
                         :aria-selected="activePoolTab === tab.key"
+                        :aria-controls="'pool-tabpanel'"
+                        :tabindex="activePoolTab === tab.key ? 0 : -1"
                         @click="activePoolTab = tab.key"
                     >
                         {{ tab.label }}
                     </button>
                 </div>
-                <div role="tabpanel">
+                <div id="pool-tabpanel" role="tabpanel" :aria-labelledby="'pool-tab-' + activePoolTab">
                 <p v-if="topStocks.length === 0" class="integration-note">{{ stockPoolNotice }}</p>
                 <section v-else class="pool-section">
                     <div class="stock-item" v-for="stock in topStocks" :key="stock.code">
@@ -343,6 +353,13 @@ const {
   display: grid;
   gap: var(--artdeco-spacing-2);
   margin-bottom: var(--artdeco-spacing-4);
+}
+
+.stress-test-disclaimer {
+  margin: 0 0 var(--artdeco-spacing-2) 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-xs);
+  line-height: 1.4;
 }
 
 .dashboard-alert,

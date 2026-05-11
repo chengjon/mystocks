@@ -28,15 +28,49 @@ type TraceableResult<T> = {
   process_time?: string
 }
 
+type ErrorEnvelope = {
+  success?: boolean
+  message?: string
+}
+
 const serviceOk = <T>(data: T): ServiceResult<T> => ({ ok: true, data })
 
 const serviceErr = <T>(data: T, error: string): ServiceResult<T> => ({ ok: false, data, error })
+
+const isTechnicalIndicatorData = (payload: unknown): payload is TechnicalIndicatorData => (
+  typeof payload === 'object' &&
+  payload !== null &&
+  'name' in payload &&
+  'value' in payload
+)
+
+const unwrapNestedDataPayload = (payload: unknown): unknown => {
+  if (typeof payload === 'object' && payload !== null && 'data' in payload) {
+    return (payload as { data?: unknown }).data
+  }
+
+  return payload
+}
 
 const withTrace = <T>(response: { request_id?: string; process_time?: string }, data: T): TraceableResult<T> => ({
   data,
   request_id: response.request_id,
   process_time: response.process_time,
 })
+
+const isErrorEnvelope = (response: unknown): response is ErrorEnvelope => (
+  typeof response === 'object' &&
+  response !== null &&
+  'success' in response &&
+  (response as { success?: unknown }).success === false
+)
+
+const toTraceableError = (response: ErrorEnvelope, fallback: string): Error => {
+  const message = typeof response.message === 'string' && response.message.trim()
+    ? response.message
+    : fallback
+  return new Error(message)
+}
 
 export interface MarketOverviewData {
   symbol: string
@@ -137,6 +171,9 @@ export const dashboardService = {
         symbols: '000001.SH,399001.SZ,399006.SZ'
       }
     })
+    if (isErrorEnvelope(response)) {
+      throw toTraceableError(response, 'market overview unavailable')
+    }
     return withTrace(response, normalizeDashboardMarketOverview(response))
   },
 
@@ -155,6 +192,12 @@ export const dashboardService = {
       apiClient.get('/akshare/market/fund-flow/hsgt-summary', { params }),
       apiClient.get('/akshare/market/fund-flow/big-deal')
     ])
+    if (isErrorEnvelope(summaryResponse)) {
+      throw toTraceableError(summaryResponse, 'fund flow summary unavailable')
+    }
+    if (isErrorEnvelope(bigDealResponse)) {
+      throw toTraceableError(bigDealResponse, 'fund flow big deal unavailable')
+    }
     return withTrace(summaryResponse, normalizeDashboardFundFlow(summaryResponse, bigDealResponse))
   },
 
@@ -170,16 +213,23 @@ export const dashboardService = {
     const response = await apiClient.get('/v2/market/sector/fund-flow', {
       params: { sort, limit, sector_type: '行业', timeframe: '今日' }
     })
+    if (isErrorEnvelope(response)) {
+      throw toTraceableError(response, 'industry flow unavailable')
+    }
     let rows = normalizeDashboardIndustryFlow(response)
 
     if (rows.length === 0) {
       const fallbackResponse = await apiClient.get('/akshare/market/sector/fund-flow-ranking')
-      rows = normalizeDashboardIndustryFlow(fallbackResponse)
+      if (!isErrorEnvelope(fallbackResponse)) {
+        rows = normalizeDashboardIndustryFlow(fallbackResponse)
+      }
     }
 
     if (rows.length === 0) {
       const hotRankingResponse = await apiClient.get('/akshare/market/sector/hot-ranking')
-      rows = normalizeDashboardIndustryFlow(hotRankingResponse)
+      if (!isErrorEnvelope(hotRankingResponse)) {
+        rows = normalizeDashboardIndustryFlow(hotRankingResponse)
+      }
     }
 
     return withTrace(response, rows)
@@ -231,6 +281,9 @@ export const dashboardService = {
     const response = await apiClient.get('/akshare/market/fund-flow/big-deal', {
       params: { period, limit }
     })
+    if (isErrorEnvelope(response)) {
+      throw toTraceableError(response, 'stock flow ranking unavailable')
+    }
     return withTrace(response, normalizeDashboardStockFlowRanking(response))
   },
 
@@ -278,8 +331,14 @@ export const dashboardService = {
           '/v1/technical-indicators',
           { params: { symbol, indicators: indicators.join(','), period: 14 } }
         )
-        if (response.data?.data) {
-          results[symbol] = [response.data.data as unknown as TechnicalIndicatorData]
+        if (response.success === false) {
+          errors.push(`${symbol}: ${response.message || 'request failed'}`)
+          return
+        }
+
+        const indicatorPayload = unwrapNestedDataPayload(response.data)
+        if (isTechnicalIndicatorData(indicatorPayload)) {
+          results[symbol] = [indicatorPayload]
           return
         }
 
@@ -336,6 +395,9 @@ export const dashboardService = {
    */
   async getSystemHealth(): Promise<TraceableResult<SystemHealthData[]>> {
     const response = await apiClient.get('/health')
+    if (isErrorEnvelope(response)) {
+      throw toTraceableError(response, 'system health unavailable')
+    }
     return withTrace(response, normalizeDashboardSystemHealth(response))
   },
 
