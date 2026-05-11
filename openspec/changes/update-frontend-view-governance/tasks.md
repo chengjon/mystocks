@@ -227,4 +227,5 @@
 - [x] 3.52 Confirm post-move active references, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 KLineDemo archive.
 - [x] 3.53 Select the next A4 root demo/test/sandbox batch as `A4-market-data-demo-paired-archive-prep`.
 - [x] 3.54 Prepare `A4-market-data-demo-paired-archive-prep` without moving files or modifying canonical market/data routes.
-- [ ] 3.55 Decide whether to execute `A4-market-data-demo-paired-archive` by moving `MarketDataDemo.vue` together with its sole local composable `useMarketData.js`.
+- [x] 3.55 Execute `A4-market-data-demo-paired-archive` by moving `MarketDataDemo.vue` together with its sole local composable `useMarketData.js`.
+- [x] 3.56 Confirm post-move active references, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 MarketDataDemo paired archive.
