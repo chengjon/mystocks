@@ -233,3 +233,6 @@
 - [x] 3.58 Prepare `A4-smart-data-source-test-archive-prep` without moving files or retiring guards.
 - [x] 3.59 Execute `A4-smart-data-source-test-archive` by moving `SmartDataSourceTest.vue` with its local style and retiring only its direct package/style-entrypoint guards.
 - [x] 3.60 Confirm post-move active references, package/style-entrypoint guard validity, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 SmartDataSourceTest archive.
+- [x] 3.61 Select the next A4 root demo/test/sandbox batch as `A4-data-visualization-showcase-archive-prep`.
+- [x] 3.62 Prepare `A4-data-visualization-showcase-archive-prep` without moving files or retiring guards.
+- [ ] 3.63 Decide whether to execute `A4-data-visualization-showcase-archive` by moving `DataVisualizationShowcase.vue` with its local style and retiring only its direct package/style-entrypoint/console-cleanup guards.
