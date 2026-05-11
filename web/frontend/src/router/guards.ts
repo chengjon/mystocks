@@ -11,6 +11,11 @@ interface AuthErrorLike {
   code?: string
 }
 
+interface PermissionRouteMeta {
+  permission?: string
+  permissions?: string[]
+}
+
 /**
  * Authentication guard for Vue Router
  * Checks if user is authenticated before allowing access to protected routes
@@ -26,7 +31,7 @@ export const authGuard = (to: RouteLocationNormalized) => {
     return true
   }
 
-  let authStore
+  let authStore: ReturnType<typeof useAuthStore>
   try {
     authStore = useAuthStore()
   } catch (error) {
@@ -52,6 +57,17 @@ export const authGuard = (to: RouteLocationNormalized) => {
       name: 'login',
       query: { redirect: to.fullPath }
     }
+  }
+
+  const permissionMeta = to.meta as PermissionRouteMeta
+  const requiredPermissions = [
+    ...(permissionMeta.permission ? [permissionMeta.permission] : []),
+    ...(permissionMeta.permissions ?? [])
+  ]
+
+  if (requiresAuth && requiredPermissions.some((permission) => !authStore.hasPermission(permission))) {
+    ElMessage.error('您没有权限访问此页面')
+    return { path: '/403' }
   }
 
   // If user is authenticated and trying to access login page, redirect to main page

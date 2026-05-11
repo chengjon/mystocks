@@ -16,6 +16,8 @@ declare module 'vue-router' {
     layout?: 'ArtDeco' | 'Blank'
     isDetail?: boolean
     group?: string
+    permission?: string
+    permissions?: string[]
   }
 }
 
