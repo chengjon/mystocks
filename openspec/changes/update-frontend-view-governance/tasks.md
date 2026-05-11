@@ -223,4 +223,5 @@
 - [x] 3.48 Confirm post-move active references, package guard validity, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 ArtDecoTest archive.
 - [x] 3.49 Select the next A4 root demo/test/sandbox batch as `A4-kline-demo-archive-prep`.
 - [x] 3.50 Prepare `A4-kline-demo-archive-prep` without moving files or modifying canonical K-line routes/components/tests.
-- [ ] 3.51 Decide whether to execute `A4-kline-demo-archive` by moving only `KLineDemo.vue` into governed archive.
+- [x] 3.51 Execute `A4-kline-demo-archive` by moving only `KLineDemo.vue` into governed archive.
+- [x] 3.52 Confirm post-move active references, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 KLineDemo archive.
