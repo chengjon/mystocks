@@ -231,4 +231,5 @@
 - [x] 3.56 Confirm post-move active references, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 MarketDataDemo paired archive.
 - [x] 3.57 Select the next A4 root demo/test/sandbox batch as `A4-smart-data-source-test-archive-prep`.
 - [x] 3.58 Prepare `A4-smart-data-source-test-archive-prep` without moving files or retiring guards.
-- [ ] 3.59 Decide whether to execute `A4-smart-data-source-test-archive` by moving `SmartDataSourceTest.vue` with its local style and retiring only its direct package/style-entrypoint guards.
+- [x] 3.59 Execute `A4-smart-data-source-test-archive` by moving `SmartDataSourceTest.vue` with its local style and retiring only its direct package/style-entrypoint guards.
+- [x] 3.60 Confirm post-move active references, package/style-entrypoint guard validity, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 SmartDataSourceTest archive.

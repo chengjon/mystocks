@@ -22,7 +22,6 @@ describe('root/demo style entrypoints', () => {
       'src/views/PyprofilingDemo.vue',
       'src/views/RealTimeMonitor.vue',
       'src/views/Settings.vue',
-      'src/views/SmartDataSourceTest.vue',
       'src/views/StockAnalysisDemo.vue',
       'src/views/StockDetail.vue',
       'src/views/StrategyManagement.vue',
