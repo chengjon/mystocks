@@ -127,12 +127,16 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem(AUTH_TOKEN_KEY, tokenValue)
   }
 
-  const logout = async () => {
+  const clearLocalSession = () => {
     user.value = null
     token.value = null
     isAuthenticated.value = false
     loginStore.clear()
     clearStoredAuth()
+  }
+
+  const logout = async () => {
+    clearLocalSession()
 
     try {
       await authApi.logout()
@@ -189,6 +193,7 @@ export const useAuthStore = defineStore('auth', () => {
       const userData = loginData?.user
 
       if (!tokenValue || !userData) {
+        clearLocalSession()
         return {
           success: false,
           message: 'Invalid response from server',
@@ -209,6 +214,7 @@ export const useAuthStore = defineStore('auth', () => {
       return { success: true }
     } catch (error) {
       console.error('Login error:', error)
+      clearLocalSession()
 
       // Handle different error types
       if (error instanceof Error) {

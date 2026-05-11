@@ -119,6 +119,27 @@ describe('Authentication Guards', () => {
       expect(result.message).toBe('Invalid credentials')
     })
 
+    it('should clear stale local session when login fails', async () => {
+      authStore.setToken('stale-token')
+      authStore.setUser({
+        id: 1,
+        username: 'stale-user',
+        email: 'stale@example.com',
+        role: 'user',
+        permissions: []
+      })
+      mockAuthApi.login.mockRejectedValue(new Error('Invalid credentials'))
+
+      const result = await authStore.login('testuser', 'wrongpassword')
+
+      expect(result.success).toBe(false)
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should logout and clear data', async () => {
       // Set initial state
       authStore.setToken('test-token')
