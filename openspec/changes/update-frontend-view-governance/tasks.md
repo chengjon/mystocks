@@ -163,3 +163,5 @@
 - [x] 3.5a A1-minimal applicability note: no new guard was added because `PageTitleDemo.vue` had no route/menu registration before the move; future broader archive batches still require guard design before runtime entry changes.
 - [x] 3.6 Run required route/layout verification for each mutation batch.
 - [x] 3.7 Report whether the batch is governance complete or merge ready.
+- [x] 3.8 Draft A2 error demo shell decision plan without moving files.
+- [ ] 3.9 Select an A2 profile (`A2-archive`, `A2-retain`, or `A2-defer`) before editing `views/errors/*`, package guards, tests, router, or menu.
