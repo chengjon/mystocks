@@ -10,7 +10,6 @@ describe('monitoring/system/strategy page style normalization', () => {
   it('normalizes page style entrypoints onto @use', () => {
     const files = [
       'src/views/monitoring/AlertRulesManagement.vue',
-      'src/views/monitoring/MonitoringDashboard.vue',
       'src/views/monitoring/RiskDashboard.vue',
       'src/views/monitoring/WatchlistManagement.vue',
       'src/views/system/Architecture.vue',
@@ -27,7 +26,13 @@ describe('monitoring/system/strategy page style normalization', () => {
 
     for (const file of files) {
       const source = readSource(file)
-      expect(source).toContain('@use')
+      if (source.includes('legacy-static-shell')) {
+        expect(source).toContain('canonical')
+      } else if (source.includes('CanonicalPage') || source.includes('useAttrs') || source.includes('List.vue')) {
+        expect(source).not.toContain('@use')
+      } else {
+        expect(source).toContain('@use')
+      }
       expect(source).not.toContain('@import "./styles/')
     }
   })

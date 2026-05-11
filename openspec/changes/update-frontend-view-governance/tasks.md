@@ -171,4 +171,9 @@
 - [x] 3.13 Run staged GitNexus change detection and final commit-scope checks for A2.
 - [ ] 3.14 Resolve or explicitly record the unrelated `lint:artdeco:changed` failure caused by existing `advanced-analysis` token debt before marking global frontend lint clean.
 - [x] 3.15 Draft A3 monitoring absorption plan and compare it against root style cleanup without moving files.
-- [ ] 3.16 Select an A3 profile before editing `views/monitoring/*`, monitoring guards, router, menu, package scripts, or canonical risk/watchlist/system pages.
+- [x] 3.16 Select A3 profile `A3-static-shell-archive` before editing `views/monitoring/*`, monitoring guards, router, menu, package scripts, or canonical risk/watchlist/system pages.
+- [x] 3.16a Prepare A3-static-shell approval package for `MonitoringDashboard.vue` without moving files.
+- [x] 3.16b Move `MonitoringDashboard.vue`, its local static-shell proof spec, and `MonitoringDashboard.scss` into governed archive.
+- [x] 3.16c Retire only the direct active guard entries for `MonitoringDashboard.vue` and `MonitoringDashboard.scss`.
+- [x] 3.16d Run A3 post-move active-reference checks, targeted config Vitest, OpenSpec validation, Markdown gate, and staged GitNexus detection.
+- [ ] 3.17 Select the next narrow mutation batch only after A3 is committed.

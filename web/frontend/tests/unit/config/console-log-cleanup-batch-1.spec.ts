@@ -9,7 +9,6 @@ function readSource(pathFromFrontendRoot: string): string {
 describe('console log cleanup batch 1', () => {
   it('removes production console.log calls from monitoring and market quote pages', () => {
     const files = [
-      'src/views/monitoring/MonitoringDashboard.vue',
       'src/views/artdeco-pages/ArtDecoMarketQuotes.vue',
     ]
 

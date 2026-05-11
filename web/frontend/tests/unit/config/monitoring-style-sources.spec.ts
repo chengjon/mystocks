@@ -10,7 +10,6 @@ describe('monitoring style sources', () => {
   it('keeps monitoring styles on ArtDeco token imports and variables', () => {
     const files = [
       'src/views/monitoring/styles/AlertRulesManagement.scss',
-      'src/views/monitoring/styles/MonitoringDashboard.scss',
     ]
 
     for (const file of files) {
