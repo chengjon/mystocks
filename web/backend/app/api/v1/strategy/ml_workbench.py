@@ -110,6 +110,10 @@ def _runtime_model_items() -> list[TrainedStrategyState]:
     return [item for item in runtime_store.list(trained_only=True) if item.parameters.get("workbench_model") is True]
 
 
+def _is_positive_int(value: Any) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool) and value > 0
+
+
 def _serialize_workbench_model(item: TrainedStrategyState) -> dict[str, Any]:
     feature_context = item.parameters.get("feature_context", {})
     return {
@@ -243,7 +247,9 @@ async def predict_ml_workbench_model(request: MLWorkbenchPredictionRequest):
 
     _ensure_model_backend_available(state.strategy_type)
     feature_context = state.parameters.get("feature_context", {})
-    if not feature_context.get("feature_window") or not feature_context.get("prediction_horizon"):
+    if not _is_positive_int(feature_context.get("feature_window")) or not _is_positive_int(
+        feature_context.get("prediction_horizon")
+    ):
         raise HTTPException(status_code=409, detail=f"Model metadata incompatible: {request.model_id}")
     if request.symbol != state.symbol:
         raise HTTPException(
