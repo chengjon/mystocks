@@ -221,3 +221,6 @@
 - [x] 3.46 Prepare `A4-artdeco-test-target-file-archive-prep` without moving files or retiring package guards.
 - [x] 3.47 Execute `A4-artdeco-test-target-file-archive` by moving only `ArtDecoTest.vue` into governed archive and retiring only its direct package target-file guard.
 - [x] 3.48 Confirm post-move active references, package guard validity, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 ArtDecoTest archive.
+- [x] 3.49 Select the next A4 root demo/test/sandbox batch as `A4-kline-demo-archive-prep`.
+- [x] 3.50 Prepare `A4-kline-demo-archive-prep` without moving files or modifying canonical K-line routes/components/tests.
+- [ ] 3.51 Decide whether to execute `A4-kline-demo-archive` by moving only `KLineDemo.vue` into governed archive.
