@@ -86,8 +86,7 @@ instance.interceptors.response.use(
     // Handle JWT token expiration
     if (error.response?.status === 401) {
       // Clear expired token
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('refresh_token');
+      clearStoredSession();
 
       // Redirect to login if not already there
       if (window.location.pathname !== '/login') {
@@ -139,6 +138,14 @@ instance.interceptors.response.use(
 // JWT token management
 function getJWTToken(): string | null {
   return localStorage.getItem('auth_token');
+}
+
+function clearStoredSession(): void {
+  localStorage.removeItem('auth_token');
+  localStorage.removeItem('auth_user');
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  localStorage.removeItem('refresh_token');
 }
 
 const getCSRFToken = createCSRFTokenResolver(async () => {

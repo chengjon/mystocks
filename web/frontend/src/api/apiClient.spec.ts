@@ -4,10 +4,24 @@
  * Tests HTTP request handling, interceptors, and error handling.
  */
 
-import { describe, it, expect } from 'vitest'
+import { beforeEach, describe, it, expect, vi } from 'vitest'
 import apiClient from './apiClient'
 
+const localStorageMock = {
+  getItem: vi.fn(),
+  setItem: vi.fn(),
+  removeItem: vi.fn(),
+  clear: vi.fn(),
+}
+
+Object.defineProperty(window, 'localStorage', { value: localStorageMock })
+
 describe('apiClient', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    window.history.replaceState({}, '', '/login')
+  })
+
   describe('configuration', () => {
     it('should have timeout configured', () => {
       expect(apiClient.defaults.timeout).toBe(30000)
@@ -20,6 +34,33 @@ describe('apiClient', () => {
     it('should be configured with a base URL', () => {
       // The base URL can be configured via environment
       expect(typeof apiClient.defaults.baseURL).toBe('string')
+    })
+  })
+
+  describe('authentication errors', () => {
+    it('should clear all stored session keys when a request returns 401', async () => {
+      const responseHandlers = (
+        apiClient.interceptors.response as unknown as {
+          handlers: Array<{ rejected?: (error: unknown) => Promise<unknown> }>
+        }
+      ).handlers
+      const rejected = responseHandlers.find((handler) => typeof handler.rejected === 'function')?.rejected
+
+      expect(rejected).toBeTypeOf('function')
+
+      await rejected?.({
+        response: {
+          status: 401,
+          headers: {},
+        },
+        config: { headers: {} },
+      })
+
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('user')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('refresh_token')
     })
   })
 })
