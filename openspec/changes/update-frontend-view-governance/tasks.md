@@ -235,4 +235,5 @@
 - [x] 3.60 Confirm post-move active references, package/style-entrypoint guard validity, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 SmartDataSourceTest archive.
 - [x] 3.61 Select the next A4 root demo/test/sandbox batch as `A4-data-visualization-showcase-archive-prep`.
 - [x] 3.62 Prepare `A4-data-visualization-showcase-archive-prep` without moving files or retiring guards.
-- [ ] 3.63 Decide whether to execute `A4-data-visualization-showcase-archive` by moving `DataVisualizationShowcase.vue` with its local style and retiring only its direct package/style-entrypoint/console-cleanup guards.
+- [x] 3.63 Execute `A4-data-visualization-showcase-archive` by moving `DataVisualizationShowcase.vue` with its local style and retiring only its direct package/style-entrypoint/console-cleanup guards.
+- [x] 3.64 Confirm post-move active references, package/style-entrypoint/console-cleanup guard validity, OpenSpec validation, Markdown gate, staged GitNexus detection, and commit scope for A4 DataVisualizationShowcase archive.

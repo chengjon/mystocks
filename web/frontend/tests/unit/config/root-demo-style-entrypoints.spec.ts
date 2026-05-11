@@ -13,7 +13,6 @@ describe('root/demo style entrypoints', () => {
       'src/views/BacktestAnalysis.vue',
       'src/views/BacktestWizard.vue',
       'src/views/Dashboard.vue',
-      'src/views/DataVisualizationShowcase.vue',
       'src/views/EnhancedDashboard.vue',
       'src/views/IndicatorLibrary.vue',
       'src/views/IndustryConceptAnalysis.vue',
