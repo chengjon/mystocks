@@ -1,0 +1,165 @@
+# Tasks
+
+> **历史文档说明**:
+> 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
+> 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
+
+## 0. Guard Map
+
+- [x] 0.1 Generate a page-to-guard map for `*-mainline-gate.spec.ts`.
+- [x] 0.2 Generate a page-to-test map for other `*.spec.ts` references.
+- [x] 0.3 Record page-config, docs, and runtime string references relevant to view archive decisions.
+- [x] 0.4 Save guard-map artifacts before lifecycle classification.
+
+## 1. Read-Only Inventory
+
+- [x] 1.1 Generate the current menu path set from `web/frontend/src/layouts/MenuConfig.ts`.
+- [x] 1.2 Generate the current dynamic route import set from `web/frontend/src/router/index.ts`.
+- [x] 1.3 Generate the full `web/frontend/src/views/**/*.vue` inventory.
+- [x] 1.4 Classify each view as canonical, special route, compatibility candidate, experimental/demo, or candidate-review.
+- [x] 1.5 Run a focused zero-router-reference sweep for `stocks/`, `trading/`, `trading-decision/`, `trade-management/`, `technical/`, and `settings/`.
+- [x] 1.6 Save the inventory artifact for review without moving files.
+
+## 2. Asset Classification
+
+- [ ] 2.1 Review candidate-review pages by business domain.
+- [ ] 2.2 Mark reusable assets by the approved five asset classes.
+- [ ] 2.3 Assign route status and guard status for each non-canonical view.
+- [ ] 2.4 Mark pages requiring compatibility retention.
+- [ ] 2.5 Verify formal business-domain directory coverage against menu and router truth.
+- [ ] 2.6 Mark pages eligible for archive-candidate only after hidden-reference checks and strict redundant-page eligibility checks.
+- [ ] 2.7 Record successor page or explicit `no-successor-needed` rationale for every archive-candidate.
+- [ ] 2.8 Apply the duplicate/fork handling template to known forked pages such as `Phase4Dashboard` and `TechnicalAnalysis` if they enter the batch scope.
+- [ ] 2.9 Complete the redundant-page review checklist for every proposed archive-candidate.
+
+## 2a. Focus Set Classification Batch
+
+- [x] 2a.1 Classify the 24-file zero-router-reference focus set.
+- [x] 2a.2 Record lifecycle status, route status, guard status, and successor/rationale hints for the focus set.
+- [x] 2a.3 Confirm that no focus-set page is currently approved as `archive-candidate`.
+- [x] 2a.4 Save focus-set classification artifacts for review.
+
+## 2b. Per-Page Checklist Micro-Batches
+
+- [x] 2b.1 Complete redundant-page checklist evidence for `views/settings/{General,Notifications,Security,Theme}.vue`.
+- [x] 2b.2 Confirm `views/settings/*` remains `candidate-review` and is not archive-approved.
+- [x] 2b.3 Complete redundant-page checklist evidence for `views/trade-management/components/*.vue`.
+- [x] 2b.4 Confirm `views/trade-management/components/*` remains `candidate-review` and is not archive-approved.
+- [x] 2b.5 Complete redundant-page checklist evidence for `views/trading/*.vue`.
+- [x] 2b.6 Confirm `views/trading/*` remains `candidate-review` or `compat-retained` and is not archive-approved.
+- [x] 2b.7 Complete redundant-page checklist evidence for `views/trading-decision/*.vue`.
+- [x] 2b.8 Confirm `views/trading-decision/*` remains `candidate-review` or `compat-retained` and is not archive-approved.
+- [x] 2b.9 Complete redundant-page checklist evidence for `views/stocks/*.vue`.
+- [x] 2b.10 Confirm `views/stocks/*` remains `candidate-review`, `compat-retained`, or `absorb-assets` and is not archive-approved.
+- [x] 2b.11 Complete redundant-page checklist evidence for `views/technical/TechnicalAnalysis.vue`.
+- [x] 2b.12 Confirm `views/technical/TechnicalAnalysis.vue` remains `candidate-review` and is not archive-approved.
+- [x] 2b.13 Correct the stale high-priority inventory signal for `views/ai/BatchAnalysis.vue` and exclude it from redundant-page archive review.
+- [x] 2b.14 Complete redundant-page checklist evidence for `views/advanced-analysis/*.vue`.
+- [x] 2b.15 Confirm `views/advanced-analysis/*` remains `candidate-review` and is not archive-approved.
+- [x] 2b.16 Complete redundant-page checklist evidence for top-level legacy views.
+- [x] 2b.17 Confirm top-level legacy views remain `candidate-review` or `compat-retained` and are not archive-approved.
+- [x] 2b.18 Complete redundant-page checklist evidence for `views/market/*`.
+- [x] 2b.19 Confirm market active canonical pages are excluded and market legacy pages remain `candidate-review` or `compat-retained`, not archive-approved.
+- [x] 2b.20 Complete redundant-page checklist evidence for `views/strategy/*`.
+- [x] 2b.21 Confirm strategy route wrappers and GPU page are excluded while legacy strategy workbench shells remain `candidate-review`, not archive-approved.
+- [x] 2b.22 Complete redundant-page checklist evidence for `views/risk/*`.
+- [x] 2b.23 Confirm risk active route owners are excluded while risk orphan static shells remain `candidate-review`, not archive-approved.
+- [x] 2b.24 Complete redundant-page checklist evidence for `views/data/*`.
+- [x] 2b.25 Confirm data route owners and helper assets are excluded from archive flow with no `candidate-review` page in this domain batch.
+- [x] 2b.26 Absorb review notes for `frontend-view-checklist-data-2026-05-10-review.md`.
+- [x] 2b.27 Complete redundant-page checklist evidence for `views/watchlist/*`.
+- [x] 2b.28 Confirm watchlist route wrappers remain active route truth and are not archive-approved.
+- [x] 2b.29 Complete redundant-page checklist evidence for `views/system/*`.
+- [x] 2b.30 Confirm system active routes are excluded while legacy static shells remain `candidate-review`, not archive-approved.
+- [x] 2b.31 Complete redundant-page checklist evidence for `views/trade/*`.
+- [x] 2b.32 Confirm trade active route owners and support assets are excluded from archive flow with no `candidate-review` page in this domain batch.
+- [x] 2b.33 Complete redundant-page checklist evidence for `views/ai/*`.
+- [x] 2b.34 Confirm AI routed pages are excluded from archive flow while their current `MenuConfig.ts` absence remains a menu/navigation decision, not redundant-page evidence.
+- [x] 2b.35 Complete redundant-page checklist evidence for `views/announcement/*`.
+- [x] 2b.36 Confirm announcement detail route owner is excluded from archive flow while `AnnouncementMonitor.vue.backup` remains `candidate-review/temp-backup`, not deletion-approved.
+- [x] 2b.37 Complete redundant-page checklist evidence for `views/monitoring/*`.
+- [x] 2b.38 Confirm monitoring legacy pages remain `candidate-review` or `candidate-review/legacy-static-shell`, with no `archive-approved` page until guard retirement and successor mapping are complete.
+- [x] 2b.39 Complete redundant-page checklist evidence for blank-layout active pages and `views/errors/*`.
+- [x] 2b.40 Confirm `/login` and catch-all 404 are excluded from archive flow while `views/errors/*` remains `candidate-review/demo-error-shell`, not archive-approved.
+- [x] 2b.41 Complete redundant-page checklist evidence for `views/examples/*`, `views/freqtrade-demo/*`, and `views/tdxpy-demo/*`.
+- [x] 2b.42 Confirm example/demo tab assets remain `candidate-review/demo-*`, not `archive-approved`, until root demo wrappers, guards, and docs references are handled in one approved mutation batch.
+- [x] 2b.43 Complete redundant-page checklist evidence for `views/demo/*`.
+- [x] 2b.44 Confirm `views/demo/*` remains `candidate-review/demo-*`, not `archive-approved`, because directory guards, style-source specs, shared imports, and possible absorption value remain.
+- [x] 2b.45 Complete redundant-page checklist evidence for `views/components/*`.
+- [x] 2b.46 Confirm `views/components/*` remains `candidate-review/legacy-risk-asset`, not `archive-approved`, until canonical risk coverage, guard retirement, and successor mapping are complete.
+- [x] 2b.47 Complete redundant-page checklist evidence for `views/composables/*`.
+- [x] 2b.48 Confirm `views/composables/*` splits into active trade-terminal local support plus legacy root/demo helpers, with no bulk extraction or archive approval.
+- [x] 2b.49 Complete redundant-page checklist evidence for `views/styles/*`.
+- [x] 2b.50 Confirm `views/styles/*` remains split between active root/demo style support, test-guarded support styles, and legacy style assets, with no bulk archive approval.
+- [x] 2b.51 Complete redundant-page checklist evidence for `views/artdeco-pages/_templates/*`.
+- [x] 2b.52 Confirm `_templates/*` remains split between active shared skeleton support and template/example governance assets, with no archive approval.
+- [x] 2b.53 Complete redundant-page checklist evidence for `views/artdeco-pages/analysis-tabs/*`.
+- [x] 2b.54 Confirm `analysis-tabs/*` splits into active detail-route owner plus legacy embedded backtest prototype, with no archive approval.
+- [x] 2b.55 Complete redundant-page checklist evidence for `views/artdeco-pages/portfolio-tabs/*`.
+- [x] 2b.56 Confirm `portfolio-tabs/*` remains active `/risk/pnl` wrapper plus canonical trade portfolio helper/test support, with no archive approval.
+- [x] 2b.57 Complete redundant-page checklist evidence for `views/artdeco-pages/technical-tabs/*`.
+- [x] 2b.58 Confirm `technical-tabs/*` remains `candidate-review/technical-scanner-asset`, with no archive approval until canonical technical-route absorption or formal retirement is decided.
+- [x] 2b.59 Complete redundant-page checklist evidence for `views/artdeco-pages/system-tabs/*`.
+- [x] 2b.60 Confirm `system-tabs/*` remains split between active embedded system wrappers, canonical system helper support, and guarded compatibility assets, with no archive approval.
+- [x] 2b.61 Complete redundant-page checklist evidence for `views/artdeco-pages/settings/*`.
+- [x] 2b.62 Confirm `settings/*` remains imported ArtDeco settings-tab assets with local-state and pseudo-live risks to absorb or retire, with no archive approval.
+- [x] 2b.63 Complete redundant-page checklist evidence for `views/artdeco-pages/stock-management-tabs/*`.
+- [x] 2b.64 Confirm `stock-management-tabs/*` remains split between active `/watchlist/manage` routed surface ownership, shared watchlist helper support, and an embedded portfolio monitor candidate, with no archive approval.
+- [x] 2b.65 Complete redundant-page checklist evidence for `views/artdeco-pages/market-tabs/*`.
+- [x] 2b.66 Confirm `market-tabs/*` remains split between guarded compatibility wrappers, canonical helper re-exports, and an ETF embedded-panel candidate with fallback-literal risk, with no archive approval.
+- [x] 2b.67 Complete redundant-page checklist evidence for `views/artdeco-pages/market-data-tabs/*`.
+- [x] 2b.68 Confirm `market-data-tabs/*` remains split between compatibility wrappers, guarded static shells, embedded market-data tab assets, and canonical helper re-exports, with no archive approval.
+- [x] 2b.69 Complete redundant-page checklist evidence for `views/artdeco-pages/trading-tabs/*`.
+- [x] 2b.70 Confirm `trading-tabs/*` remains split between active route wrappers, canonical trade support assets, guarded compatibility wrappers, and a trading stats asset candidate, with no archive approval.
+- [x] 2b.71 Complete redundant-page checklist evidence for `views/artdeco-pages/risk-tabs/*`.
+- [x] 2b.72 Confirm `risk-tabs/*` remains split between guarded compatibility wrappers, canonical risk-center support assets, stop-loss support assets, and legacy consumer wrappers, with no archive approval.
+- [x] 2b.73 Complete redundant-page checklist evidence for `views/artdeco-pages/strategy-tabs/*`.
+- [x] 2b.74 Confirm `strategy-tabs/*` remains canonical strategy route-body and support infrastructure, with no archive approval.
+- [x] 2b.75 Complete redundant-page checklist evidence for `views/artdeco-pages/components/*`.
+- [x] 2b.76 Confirm `components/*` remains split between active canonical support assets and candidate-review inactive assets, with no archive approval.
+- [x] 2b.77 Complete redundant-page checklist evidence for `views/artdeco-pages/*.vue`.
+- [x] 2b.78 Confirm root ArtDeco pages split into dashboard route truth, compatibility wrappers/shells, and candidate-review legacy parents, with no archive approval.
+- [x] 2b.79 Complete redundant-page checklist evidence for `views/artdeco-pages/composables/*`.
+- [x] 2b.80 Confirm `artdeco-pages/composables/*` remains active dashboard route-local support plus trade-management shell support, with no archive approval.
+- [x] 2b.81 Complete redundant-page checklist evidence for `views/artdeco-pages/styles/*`.
+- [x] 2b.82 Confirm `artdeco-pages/styles/*` remains split between active dashboard route style, retained compatibility shell styles, and one candidate settings style asset, with no archive approval.
+- [x] 2b.83 Complete redundant-page checklist evidence for empty `views/artdeco-pages/{market,ml-tabs}/` directories.
+- [x] 2b.84 Confirm empty ArtDeco market and ML directories contain no page assets and do not create archive-approved files.
+- [x] 2b.85 Complete redundant-page checklist evidence for empty `views/artdeco-pages/{risk,trade}/` directories.
+- [x] 2b.86 Confirm empty ArtDeco risk and trade directories contain no page assets and do not create archive-approved files.
+- [x] 2b.87 Complete redundant-page checklist evidence for root ArtDeco backup files `ArtDecoMarketData.vue.backup*`.
+- [x] 2b.88 Confirm root ArtDeco backup files are temp-backup candidates, not active runtime pages and not archive-approved.
+- [x] 2b.89 Complete redundant-page checklist evidence for ArtDeco local `__tests__` and `__node_tests__` guard assets.
+- [x] 2b.90 Confirm ArtDeco local tests are guard assets coupled to production lifecycle decisions, with no archive approval.
+- [x] 2b.91 Complete ArtDeco coverage reconciliation for missed component/style delta files.
+- [x] 2b.92 Confirm `DashboardMarketPanorama.vue` and nested backtest component styles are active support assets, with no archive approval.
+- [x] 2b.93 Complete redundant-page checklist evidence for `useArtDecoDashboard.fetchers.ts`.
+- [x] 2b.94 Confirm dashboard fetcher helper is active `/dashboard` route-family support, with no archive approval.
+- [x] 2b.95 Complete ArtDeco coverage rollup for all current `views/artdeco-pages/**` files.
+- [x] 2b.96 Confirm 186 ArtDeco files are covered by read-only checklist evidence with no archive approval.
+- [x] 2b.97 Complete redundant-page checklist evidence for root demo/test/sandbox pages and view sidecar assets.
+- [x] 2b.98 Confirm root demo/test/sandbox pages, `TradingDashboard.vue`, root tests, and view sidecars are covered by read-only evidence with no archive approval.
+- [x] 2b.99 Complete exact-path checklist delta for remaining non-ArtDeco `views/**` files not individually named by prior docs.
+- [x] 2b.100 Confirm the 108-path exact-match gap is documentation granularity only, with no newly archive-approved files.
+- [x] 2b.101 Complete section 2b read-only evidence closeout for current `views/**` governance coverage.
+- [x] 2b.102 Confirm further broad checklist expansion should stop unless a narrow mutation batch or new file delta is selected.
+
+## 3. Approved Mutation Batches
+
+- [x] 3.0a Draft the proposed first narrow mutation batch plan for A1 root sandbox triage without moving files.
+- [x] 3.0b Complete A1 hidden-reference preflight and shrink candidate set before any mutation approval.
+- [x] 3.0c Prepare A1 approval package with explicit minimal/doc-linked execution profiles.
+- [x] 3.0d Decide the proposed governed archive target for A1-minimal before any file move.
+- [x] 3.0e Prepare A1-minimal execution runbook, rollback steps, and completion criteria without moving files.
+- [x] 3.0 Select the first approved narrow mutation batch from the 2b closeout options before moving files or editing runtime code.
+- [ ] 3.1 Extract or merge approved reusable assets into canonical pages or shared layers.
+- [x] 3.1a A1-minimal applicability note: no reusable asset extraction was required because only `PageTitleDemo.vue` was approved for governed archive retention and no canonical page consumption was identified.
+- [ ] 3.2 Migrate or explicitly retire tests and mainline gates before archive moves.
+- [x] 3.2a A1-minimal applicability note: no test or mainline-gate migration was required because post-move reference checks found no active `PageTitleDemo` source, route, menu, pageConfig, package, or frontend test references.
+- [x] 3.3 Move approved archive candidates into the governed archive directory.
+- [ ] 3.4 Restore and reclassify any archived view if a hidden reference is discovered after the move.
+- [x] 3.4a A1-minimal post-move check: no hidden reference was discovered after the move, so no restore/reclassification action was required for this batch.
+- [ ] 3.5 Add guards that prevent archived views from being referenced by menu or router.
+- [x] 3.5a A1-minimal applicability note: no new guard was added because `PageTitleDemo.vue` had no route/menu registration before the move; future broader archive batches still require guard design before runtime entry changes.
+- [x] 3.6 Run required route/layout verification for each mutation batch.
+- [x] 3.7 Report whether the batch is governance complete or merge ready.
