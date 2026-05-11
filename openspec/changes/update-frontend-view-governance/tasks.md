@@ -213,4 +213,5 @@
 - [x] 3.38 Execute `A4-openstock-demo-root-duplicate-archive` by moving only the root duplicate `OpenStockDemo.vue` into governed archive.
 - [x] 3.39 Confirm post-move active references, OpenSpec validation, Markdown gate, targeted Vitest, staged GitNexus detection, and commit scope for A4 OpenStock root duplicate archive.
 - [x] 3.40 Select the next A4 root demo/test/sandbox mutation or decision batch after OpenStock root duplicate archive is committed.
-- [ ] 3.41 Prepare `A4-root-test-sandbox-minimal-preflight` without moving files.
+- [x] 3.41 Prepare `A4-root-test-sandbox-minimal-preflight` without moving files.
+- [ ] 3.42 Decide whether to execute `A4-root-test-sandbox-minimal-archive`.
