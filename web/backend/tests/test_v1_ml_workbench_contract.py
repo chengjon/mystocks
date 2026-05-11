@@ -322,6 +322,17 @@ async def test_v1_ml_prediction_rejects_missing_model():
     assert "Unknown model_id" in excinfo.value.detail
 
 
+async def test_v1_ml_model_detail_rejects_blank_model_id():
+    _reset_runtime_state()
+    module = _load_module()
+
+    with pytest.raises(module.HTTPException) as excinfo:
+        await module.get_ml_workbench_model_detail("   ")
+
+    assert excinfo.value.status_code == 400
+    assert "Model ID is required" in excinfo.value.detail
+
+
 async def test_v1_ml_prediction_rejects_incompatible_model_metadata():
     _reset_runtime_state()
     module = _load_module()

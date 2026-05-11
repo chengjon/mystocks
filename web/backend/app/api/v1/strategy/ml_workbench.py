@@ -302,6 +302,8 @@ async def list_ml_workbench_models():
 )
 async def get_ml_workbench_model_detail(model_id: str):
     resolved_model_id = model_id.strip()
+    if not resolved_model_id:
+        raise HTTPException(status_code=400, detail="Model ID is required")
     state = runtime_store.get(resolved_model_id)
     if state is None or state.parameters.get("workbench_model") is not True:
         raise HTTPException(status_code=404, detail=f"Unknown model_id: {resolved_model_id}")
