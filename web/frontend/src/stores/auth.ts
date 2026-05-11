@@ -108,7 +108,7 @@ export const useAuthStore = defineStore('auth', () => {
   const loginStore = useLoginStore()
 
   // Getters
-  const isAdmin = computed(() => user.value?.role === 'admin')
+  const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.roles?.includes('admin') === true)
   const hasPermission = computed(() => (permission: string) => {
     const permissions = user.value?.permissions ?? []
     return permissions.includes('*') || permissions.includes(permission)

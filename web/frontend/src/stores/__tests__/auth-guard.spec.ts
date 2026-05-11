@@ -85,6 +85,19 @@ describe('Authentication Guards', () => {
       expect(authStore.hasPermission('risk:admin')).toBe(true)
     })
 
+    it('should treat users with admin in roles as administrators', () => {
+      authStore.setUser({
+        id: 1,
+        username: 'role-admin',
+        email: 'role-admin@example.com',
+        role: 'user',
+        roles: ['admin'],
+        permissions: []
+      })
+
+      expect(authStore.isAdmin).toBe(true)
+    })
+
     it('should handle login success', async () => {
       mockAuthApi.login.mockResolvedValue({
         success: true,
