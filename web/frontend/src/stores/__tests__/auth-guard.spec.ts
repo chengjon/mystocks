@@ -66,6 +66,18 @@ describe('Authentication Guards', () => {
       expect(authStore.isAuthenticated).toBe(true)
     })
 
+    it('should honor wildcard permissions for authenticated administrators', () => {
+      authStore.setUser({
+        id: 1,
+        username: 'admin',
+        email: 'admin@example.com',
+        role: 'admin',
+        permissions: ['*']
+      })
+
+      expect(authStore.hasPermission('risk:admin')).toBe(true)
+    })
+
     it('should handle login success', async () => {
       mockAuthApi.login.mockResolvedValue({
         success: true,
