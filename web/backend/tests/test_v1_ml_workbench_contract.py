@@ -423,6 +423,39 @@ async def test_v1_ml_prediction_rejects_incompatible_model_metadata():
     assert "Model metadata incompatible" in excinfo.value.detail
 
 
+async def test_v1_ml_prediction_rejects_missing_horizon_metadata():
+    _reset_runtime_state()
+    module = _load_module()
+    module.runtime_store.upsert(
+        module.TrainedStrategyState(
+            strategy_id="missing_horizon_model",
+            strategy_type="svm",
+            symbol="600519.SH",
+            parameters={
+                "workbench_model": True,
+                "feature_context": {
+                    "feature_window": 20,
+                },
+            },
+            trained=True,
+            performance={"validation_score": 0.5},
+            feature_importance={},
+        )
+    )
+
+    with pytest.raises(module.HTTPException) as excinfo:
+        await module.predict_ml_workbench_model(
+            module.MLWorkbenchPredictionRequest(
+                model_id="missing_horizon_model",
+                symbol="600519.SH",
+                prediction_horizon=5,
+            )
+        )
+
+    assert excinfo.value.status_code == 409
+    assert "Model metadata incompatible" in excinfo.value.detail
+
+
 async def test_v1_ml_prediction_rejects_unavailable_model_backend(monkeypatch):
     _reset_runtime_state()
     module = _load_module()
