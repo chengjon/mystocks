@@ -3,6 +3,16 @@ import { onMounted } from 'vue'
 
 import { useMlWorkbench } from './composables/useMlWorkbench'
 
+const dependencyStatusLabel = (available: boolean | undefined) => {
+  if (available === true) {
+    return 'available'
+  }
+  if (available === false) {
+    return 'unavailable'
+  }
+  return 'unknown'
+}
+
 const {
   loading,
   trainingLoading,
@@ -64,8 +74,8 @@ onMounted(() => {
       </div>
       <div class="status-meta">
         <span>legacy API: {{ runtimeStatus?.legacy_api_available ? 'available' : 'unknown' }}</span>
-        <span>SVM: {{ runtimeStatus ? (runtimeStatus.optional_dependencies?.sklearn?.available ? 'available' : 'unavailable') : 'unknown' }}</span>
-        <span>LightGBM: {{ runtimeStatus ? (runtimeStatus.optional_dependencies?.lightgbm?.available ? 'available' : 'unavailable') : 'unknown' }}</span>
+        <span>SVM: {{ dependencyStatusLabel(runtimeStatus?.optional_dependencies?.sklearn?.available) }}</span>
+        <span>LightGBM: {{ dependencyStatusLabel(runtimeStatus?.optional_dependencies?.lightgbm?.available) }}</span>
       </div>
     </section>
 

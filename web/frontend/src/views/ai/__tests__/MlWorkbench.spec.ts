@@ -136,6 +136,16 @@ describe('AI ML workbench page', () => {
         safety: { analytical_output_only: true, disclaimer: 'ML predictions are analytical outputs, not a trade instruction or execution fact.' },
       },
     ]
+    runtimeStatusMock.value = {
+      service_available: true,
+      model_backend: 'runtime_registry',
+      optional_dependencies: {
+        sklearn: { available: true, package: 'sklearn' },
+        lightgbm: { available: true, package: 'lightgbm' },
+      },
+      supported_operations: ['train', 'predict'],
+      warnings: [],
+    }
     runtimeMessageMock.value = ''
     selectedModelIdMock.value = 'svm_600519_abc'
     trainingFormMock.value.model_family = 'svm'
@@ -232,6 +242,17 @@ describe('AI ML workbench page', () => {
 
   it('renders unknown dependency status before runtime readiness is loaded', async () => {
     runtimeStatusMock.value = null as never
+
+    const wrapper = mount(MlWorkbench as never)
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('SVM: unknown')
+    expect(wrapper.text()).toContain('LightGBM: unknown')
+  })
+
+  it('renders unknown dependency status when runtime omits dependency readiness fields', async () => {
+    runtimeStatusMock.value.optional_dependencies = {} as never
 
     const wrapper = mount(MlWorkbench as never)
 
