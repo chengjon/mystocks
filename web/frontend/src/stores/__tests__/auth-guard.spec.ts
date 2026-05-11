@@ -281,6 +281,30 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
+    it('should clear stored sessions when permissions payload is not an array', () => {
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return 'stored-token'
+        if (key === 'auth_user') {
+          return JSON.stringify({
+            id: 1,
+            username: 'storeduser',
+            email: 'stored@example.com',
+            role: 'user',
+            permissions: '*'
+          })
+        }
+        return null
+      })
+
+      authStore.initializeAuth()
+
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should bootstrap lighthouse auth for protected mock pages when enabled', () => {
       const freshStore = useAuthStore()
       const originalFlag = import.meta.env.VITE_LHCI_AUTH_BYPASS

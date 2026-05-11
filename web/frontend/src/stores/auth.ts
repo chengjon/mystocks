@@ -53,7 +53,9 @@ function isStoredUser(value: unknown): value is User {
   }
 
   const candidate = value as Partial<User>
-  return typeof candidate.username === 'string' && candidate.username.trim().length > 0
+  const hasValidPermissions = candidate.permissions === undefined || Array.isArray(candidate.permissions)
+  const hasValidRoles = candidate.roles === undefined || Array.isArray(candidate.roles)
+  return typeof candidate.username === 'string' && candidate.username.trim().length > 0 && hasValidPermissions && hasValidRoles
 }
 
 const useLoginStore = PiniaStoreFactory.createApiStore<{
