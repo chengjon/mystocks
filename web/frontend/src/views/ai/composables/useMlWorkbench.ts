@@ -117,6 +117,8 @@ export function useMlWorkbench() {
   })
 
   const modelFamilyOptions = computed<ModelFamilyOption[]>(() => {
+    const svmAvailable =
+      runtimeStatus.value?.optional_dependencies?.sklearn?.available !== false
     const lightgbmAvailable =
       runtimeStatus.value?.optional_dependencies?.lightgbm?.available === true
 
@@ -124,8 +126,8 @@ export function useMlWorkbench() {
       {
         value: 'svm',
         label: 'SVM',
-        available: true,
-        status: 'available',
+        available: svmAvailable,
+        status: svmAvailable ? 'available' : 'unavailable',
       },
       {
         value: 'lightgbm',

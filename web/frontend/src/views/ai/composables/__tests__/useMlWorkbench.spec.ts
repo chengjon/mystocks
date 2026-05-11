@@ -52,6 +52,25 @@ const lightgbmUnavailableRuntimeStatus = {
   request_id: 'req-ml-runtime-lightgbm-unavailable',
 }
 
+const sklearnUnavailableRuntimeStatus = {
+  success: true,
+  code: 200,
+  message: 'ok',
+  data: {
+    service_available: true,
+    model_backend: 'runtime_registry',
+    optional_dependencies: {
+      lightgbm: { available: true, package: 'lightgbm' },
+      sklearn: { available: false, package: 'sklearn' },
+    },
+    legacy_api_available: true,
+    supported_operations: ['train', 'predict'],
+    warnings: ['sklearn_unavailable'],
+  },
+  timestamp: '2026-05-10T00:00:00Z',
+  request_id: 'req-ml-runtime-sklearn-unavailable',
+}
+
 const serviceUnavailableRuntimeStatus = {
   success: true,
   code: 200,
@@ -243,6 +262,18 @@ describe('useMlWorkbench', () => {
     const workbench = useMlWorkbench()
     await workbench.refreshRuntime()
     workbench.trainingForm.model_family = 'lightgbm'
+    await workbench.submitTraining()
+
+    expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
+    expect(workbench.runtimeMessage.value).toContain('当前模型族后端依赖不可用')
+  })
+
+  it('does not submit svm training when sklearn runtime dependency is unavailable', async () => {
+    vi.mocked(getMlRuntimeStatus).mockResolvedValue(sklearnUnavailableRuntimeStatus as never)
+
+    const workbench = useMlWorkbench()
+    await workbench.refreshRuntime()
+    workbench.trainingForm.model_family = 'svm'
     await workbench.submitTraining()
 
     expect(trainMlWorkbenchModel).not.toHaveBeenCalled()
