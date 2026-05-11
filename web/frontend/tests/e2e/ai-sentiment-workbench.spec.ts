@@ -119,8 +119,8 @@ test.describe('AI sentiment workbench', () => {
     }
 
     await page.route('**/announcement/list**', fulfillAnnouncements)
-    await page.route('**/api/v1/analysis/sentiment/market**', fulfillMarket)
-    await page.route('**/api/v1/analysis/sentiment/stock/**', fulfillStock)
+    await page.route('**/api/v1/sentiment/market**', fulfillMarket)
+    await page.route('**/api/v1/sentiment/stock/**', fulfillStock)
   })
 
   test('renders the canonical ai sentiment page with news feed and analysis panels', async ({ page }) => {

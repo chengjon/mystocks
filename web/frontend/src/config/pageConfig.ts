@@ -193,7 +193,7 @@ const PAGE_CONFIGS: Record<string, StandardPageConfig> = {
     routePath: 'sentiment',
     title: '情感分析',
     description: 'AI 情感工作台',
-    apiEndpoint: '/api/v1/analysis/sentiment/market',
+    apiEndpoint: '/api/v1/sentiment/market',
     component: 'Sentiment.vue',
     requiresAuth: true,
   },

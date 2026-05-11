@@ -181,7 +181,7 @@ const routes: RouteRecordRaw[] = [
             path: 'sentiment',
             name: 'ai-sentiment',
             component: () => import('@/views/ai/Sentiment.vue'),
-            meta: { title: '情感分析', requiresAuth: true, api: '/api/v1/analysis/sentiment/market' }
+            meta: { title: '情感分析', requiresAuth: true, api: '/api/v1/sentiment/market' }
           },
           {
             path: 'ml',

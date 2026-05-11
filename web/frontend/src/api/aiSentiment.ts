@@ -65,20 +65,20 @@ export function getSentimentNews(params: Record<string, unknown> = {}): Promise<
 }
 
 export function analyzeSentiment(payload: SentimentRequest): Promise<UnifiedResponse<SentimentResponse>> {
-  return http.post('/api/v1/analysis/sentiment/analyze', payload)
+  return http.post('/api/v1/sentiment/analyze', payload)
 }
 
 export function getStockSentiment(
   symbol: string,
   days: number,
 ): Promise<UnifiedResponse<SentimentStockTrendResponse>> {
-  return http.get(`/api/v1/analysis/sentiment/stock/${encodeURIComponent(symbol)}`, {
+  return http.get(`/api/v1/sentiment/stock/${encodeURIComponent(symbol)}`, {
     params: { days },
   })
 }
 
 export function getMarketSentiment(): Promise<UnifiedResponse<SentimentMarketOverviewResponse>> {
-  return http.get('/api/v1/analysis/sentiment/market')
+  return http.get('/api/v1/sentiment/market')
 }
 
 export const aiSentimentApi = {

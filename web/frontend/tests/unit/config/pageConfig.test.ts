@@ -88,7 +88,7 @@ describe('pageConfig current contract', () => {
 
       expect(sentimentConfig?.component).toBe('Sentiment.vue')
       expect(sentimentConfig?.routePath).toBe('sentiment')
-      expect(sentimentConfig?.apiEndpoint).toBe('/api/v1/analysis/sentiment/market')
+      expect(sentimentConfig?.apiEndpoint).toBe('/api/v1/sentiment/market')
     })
 
     it('returns current standard page config for trade routes using canonical domain filenames', () => {
