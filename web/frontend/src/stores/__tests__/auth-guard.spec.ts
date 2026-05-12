@@ -842,6 +842,30 @@ describe('Authentication Guards', () => {
       })
     })
 
+    it('should redirect to login when permission payload is malformed', () => {
+      authStore.isAuthenticated = true
+      authStore.token = 'valid-token'
+      authStore.user = {
+        id: 1,
+        username: 'corrupted',
+        email: 'corrupted@example.com',
+        role: 'user',
+        permissions: '*' as unknown as string[]
+      }
+
+      const to = {
+        name: 'risk-admin',
+        meta: { requiresAuth: true, permission: 'risk:admin' },
+        fullPath: '/risk/admin'
+      }
+      const result = authGuard(to)
+
+      expect(result).toEqual({
+        name: 'login',
+        query: { redirect: '/risk/admin' }
+      })
+    })
+
     it('should allow access to protected routes when authenticated', () => {
       // Authenticate user
       authStore.setToken('test-token')

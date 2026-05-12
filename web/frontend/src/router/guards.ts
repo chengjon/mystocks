@@ -17,14 +17,25 @@ interface PermissionRouteMeta {
   roles?: string[]
 }
 
+function isOptionalStringArray(value: unknown) {
+  return value === undefined || (Array.isArray(value) && value.every((item) => typeof item === 'string'))
+}
+
 function hasValidAuthSession(authStore: ReturnType<typeof useAuthStore>) {
+  const currentUser = authStore.user
+
   return (
     authStore.isAuthenticated &&
     typeof authStore.token === 'string' &&
     authStore.token.trim().length > 0 &&
-    !!authStore.user &&
-    typeof authStore.user.username === 'string' &&
-    authStore.user.username.trim().length > 0
+    !!currentUser &&
+    typeof currentUser.id === 'number' &&
+    typeof currentUser.username === 'string' &&
+    currentUser.username.trim().length > 0 &&
+    (currentUser.email === undefined || typeof currentUser.email === 'string') &&
+    (currentUser.role === undefined || typeof currentUser.role === 'string') &&
+    isOptionalStringArray(currentUser.permissions) &&
+    isOptionalStringArray(currentUser.roles)
   )
 }
 
