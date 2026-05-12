@@ -632,6 +632,32 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
+    it('should clear stored sessions when the canonical token is empty instead of restoring legacy token', () => {
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return ''
+        if (key === 'auth_user') return null
+        if (key === 'token') return 'legacy-token'
+        if (key === 'user') {
+          return JSON.stringify({
+            id: 1,
+            username: 'legacyuser',
+            email: 'legacy@example.com',
+            role: 'user',
+            permissions: []
+          })
+        }
+        return null
+      })
+
+      authStore.initializeAuth()
+
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('token')
+    })
+
     it('should clear orphaned stored tokens when the user payload is missing', () => {
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'auth_token') return 'orphaned-token'

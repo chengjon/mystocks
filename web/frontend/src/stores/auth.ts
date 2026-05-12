@@ -46,7 +46,12 @@ const LEGACY_AUTH_USER_KEY = 'user'
 const REFRESH_TOKEN_KEY = 'refresh_token'
 
 function readStoredValue(primaryKey: string, legacyKey: string): string | null {
-  return localStorage.getItem(primaryKey) || localStorage.getItem(legacyKey)
+  const primaryValue = localStorage.getItem(primaryKey)
+  if (primaryValue !== null && primaryValue !== undefined) {
+    return primaryValue
+  }
+
+  return localStorage.getItem(legacyKey) ?? null
 }
 
 function clearStoredAuth() {
@@ -213,7 +218,7 @@ export const useAuthStore = defineStore('auth', () => {
     const savedUser = readStoredValue(AUTH_USER_KEY, LEGACY_AUTH_USER_KEY)
     const shouldBootstrapLhciAuth = import.meta.env.VITE_LHCI_AUTH_BYPASS === 'true'
 
-    if (savedToken) {
+    if (savedToken !== null) {
       if (savedToken.trim().length === 0) {
         clearLocalSession()
         return
