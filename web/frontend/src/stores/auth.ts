@@ -157,6 +157,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const setToken = (tokenValue: string) => {
+    if (tokenValue.trim().length === 0) {
+      clearLocalSession()
+      return
+    }
+
     token.value = tokenValue
     localStorage.setItem(AUTH_TOKEN_KEY, tokenValue)
   }
