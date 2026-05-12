@@ -24,6 +24,10 @@
                 :readonly="readonly"
                 :maxlength="maxlength"
                 :class="inputClasses"
+                :aria-describedby="inputDescriptionId"
+                :aria-invalid="errorMessage ? 'true' : undefined"
+                :aria-required="required ? 'true' : undefined"
+                :required="required"
                 @input="handleInput"
                 @focus="handleFocus"
                 @blur="handleBlur"
@@ -37,7 +41,7 @@
         </div>
 
         <!-- Helper Text / Error Message -->
-        <div v-if="helperText || errorMessage" class="artdeco-input__helper">
+        <div v-if="helperText || errorMessage" :id="helperTextId" class="artdeco-input__helper">
             <span v-if="errorMessage" class="artdeco-input__error">{{ errorMessage }}</span>
             <span v-else class="artdeco-input__helpertext">{{ helperText }}</span>
         </div>
@@ -49,70 +53,20 @@
 
     const slots = useSlots()
 
-    // ============================================
-    //   COMPONENT: ArtDecoInput
-    //   Art Deco风格输入框组件
-    //
-    //   Design Philosophy:
-    //   - Transparent background
-    //   - Bottom border only (accent underline)
-    //   - No side/top borders
-    //   - Focus: brighter gold + glow shadow
-    //   - Minimalist within maximalism
-    //
-    //   Usage:
-    //   <ArtDecoInput v-model="text" label="Username" placeholder="Enter username" />
-    // ============================================
-
-    // ============================================
-    //   PROPS - 组件属性
-    // ============================================
-
     interface Props {
-        /// Input value (v-model)
         modelValue: string | number
-
-        /// Input label (uppercase, small font size)
         label?: string
-
-        /// Label type style
-        /// - default: Standard uppercase label
-        /// - roman: Roman numeral suffix (e.g., "INPUT I", "INPUT II")
         labelType?: 'default' | 'roman'
-
-        /// Placeholder text (muted gray)
         placeholder?: string
-
-        /// Input type (text, password, email, number, etc.)
         type?: string
-
-        /// Disabled state
         disabled?: boolean
-
-        /// Readonly state
         readonly?: boolean
-
-        /// Required field (shows asterisk)
         required?: boolean
-
-        /// Max length
         maxlength?: number
-
-        /// Helper text (displayed below input)
         helperText?: string
-
-        /// Error message (overrides helper text, shown in red)
         errorMessage?: string
-
-        /// Additional CSS classes
         class?: string
-
-        /// Show clear button
         clearable?: boolean
-
-        /// Input style variant
-        /// - default: Bottom border only (underlined)
-        /// - bordered: Full border (box)
         variant?: 'default' | 'bordered'
     }
 
@@ -133,10 +87,6 @@
         variant: 'default'
     })
 
-    // ============================================
-    //   EMITS - 事件定义
-    // ============================================
-
     const emit = defineEmits<{
         'update:modelValue': [value: string | number]
         focus: [event: FocusEvent]
@@ -144,16 +94,8 @@
         enter: [event: KeyboardEvent]
     }>()
 
-    // ============================================
-    //   REFS - 响应式引用
-    // ============================================
-
     const inputRef = ref<HTMLInputElement>()
     const isFocused = ref(false)
-
-    // ============================================
-    //   COMPUTED - 计算属性
-    // ============================================
 
     /**
      * Generate unique input ID
@@ -162,6 +104,9 @@
     const inputId = computed(() => {
         return `artdeco-input-${Math.random().toString(36).substr(2, 9)}`
     })
+
+    const helperTextId = computed(() => `${inputId.value}-description`)
+    const inputDescriptionId = computed(() => (props.helperText || props.errorMessage ? helperTextId.value : undefined))
 
     /**
      * Generate wrapper CSS classes
