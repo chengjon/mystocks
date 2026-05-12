@@ -57,12 +57,14 @@ function isStoredUser(value: unknown): value is User {
   }
 
   const candidate = value as Partial<User>
+  const hasValidEmail = candidate.email === undefined || typeof candidate.email === 'string'
   const hasValidRole = candidate.role === undefined || typeof candidate.role === 'string'
   const hasValidPermissions = candidate.permissions === undefined || isStringArray(candidate.permissions)
   const hasValidRoles = candidate.roles === undefined || isStringArray(candidate.roles)
   return (
     typeof candidate.username === 'string' &&
     candidate.username.trim().length > 0 &&
+    hasValidEmail &&
     hasValidRole &&
     hasValidPermissions &&
     hasValidRoles
