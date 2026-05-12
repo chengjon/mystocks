@@ -29,6 +29,16 @@ interface LoginResponse {
   message?: string
 }
 
+interface RefreshTokenResponse {
+  success?: boolean
+  data?: {
+    access_token?: string
+    token?: string
+  } | null
+  access_token?: string
+  token?: string
+}
+
 const AUTH_TOKEN_KEY = 'auth_token'
 const AUTH_USER_KEY = 'auth_user'
 const LEGACY_AUTH_TOKEN_KEY = 'token'
@@ -164,6 +174,25 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  const refreshSession = async (): Promise<boolean> => {
+    try {
+      const response = (await authApi.refreshToken()) as RefreshTokenResponse
+      const refreshedToken = response?.data?.access_token || response?.data?.token || response?.access_token || response?.token
+
+      if (!refreshedToken) {
+        clearLocalSession()
+        return false
+      }
+
+      setToken(refreshedToken)
+      return true
+    } catch (error) {
+      console.warn('Session refresh failed:', error)
+      clearLocalSession()
+      return false
+    }
+  }
+
   const initializeAuth = () => {
     const savedToken = readStoredValue(AUTH_TOKEN_KEY, LEGACY_AUTH_TOKEN_KEY)
     const savedUser = readStoredValue(AUTH_USER_KEY, LEGACY_AUTH_USER_KEY)
@@ -288,6 +317,7 @@ export const useAuthStore = defineStore('auth', () => {
     setUser,
     setToken,
     logout,
+    refreshSession,
     initializeAuth,
     login
   }

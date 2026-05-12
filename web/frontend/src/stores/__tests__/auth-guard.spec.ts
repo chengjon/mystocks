@@ -25,7 +25,8 @@ vi.mock('element-plus', () => ({
 vi.mock('@/api/index.js', () => ({
   authApi: {
     login: vi.fn(),
-    logout: vi.fn()
+    logout: vi.fn(),
+    refreshToken: vi.fn()
   }
 }))
 
@@ -41,7 +42,9 @@ describe('Authentication Guards', () => {
     localStorageMock.clear.mockReset()
     mockAuthApi.login.mockReset()
     mockAuthApi.logout.mockReset()
+    mockAuthApi.refreshToken.mockReset()
     mockAuthApi.logout.mockResolvedValue({ success: true, code: 200, data: undefined })
+    mockAuthApi.refreshToken.mockResolvedValue({ success: true, code: 200, data: { access_token: 'refreshed-token' } })
     setActivePinia(createPinia())
     authStore = useAuthStore()
   })
@@ -322,6 +325,59 @@ describe('Authentication Guards', () => {
       expect(authStore.user).toBeNull()
       expect(authStore.isAuthenticated).toBe(false)
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+    })
+
+    it('should refresh the current access token', async () => {
+      authStore.setToken('stale-token')
+      authStore.setUser({
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        role: 'user',
+        permissions: []
+      })
+      mockAuthApi.refreshToken.mockResolvedValue({
+        success: true,
+        code: 200,
+        data: {
+          access_token: 'fresh-token',
+          token_type: 'bearer'
+        }
+      })
+
+      const result = await authStore.refreshSession()
+
+      expect(result).toBe(true)
+      expect(authStore.token).toBe('fresh-token')
+      expect(authStore.user?.username).toBe('testuser')
+      expect(authStore.isAuthenticated).toBe(true)
+      expect(localStorageMock.setItem).toHaveBeenCalledWith('auth_token', 'fresh-token')
+    })
+
+    it('should clear local session when token refresh fails', async () => {
+      authStore.setToken('stale-token')
+      authStore.setUser({
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        role: 'user',
+        permissions: []
+      })
+      mockAuthApi.refreshToken.mockResolvedValue({
+        success: false,
+        code: 401,
+        data: null,
+        message: '登录已过期，请重新登录'
+      })
+
+      const result = await authStore.refreshSession()
+
+      expect(result).toBe(false)
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
     it('should check auth on initialization', () => {
