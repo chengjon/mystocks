@@ -84,9 +84,19 @@ export const authGuard = (to: RouteLocationNormalized) => {
   }
 
   const permissionMeta = to.meta as PermissionRouteMeta
+  const hasMalformedPermissionMeta =
+    (permissionMeta.permission !== undefined && typeof permissionMeta.permission !== 'string') ||
+    !isOptionalStringArray(permissionMeta.permissions) ||
+    !isOptionalStringArray(permissionMeta.roles)
+
+  if (requiresAuth && hasMalformedPermissionMeta) {
+    ElMessage.error('您没有权限访问此页面')
+    return { path: '/403' }
+  }
+
   const requiredPermissions = [
-    ...(permissionMeta.permission ? [permissionMeta.permission] : []),
-    ...(permissionMeta.permissions ?? [])
+    ...(typeof permissionMeta.permission === 'string' && permissionMeta.permission ? [permissionMeta.permission] : []),
+    ...(Array.isArray(permissionMeta.permissions) ? permissionMeta.permissions : [])
   ]
 
   if (requiresAuth && requiredPermissions.some((permission) => !authStore.hasPermission(permission))) {
@@ -94,7 +104,7 @@ export const authGuard = (to: RouteLocationNormalized) => {
     return { path: '/403' }
   }
 
-  const allowedRoles = permissionMeta.roles ?? []
+  const allowedRoles = Array.isArray(permissionMeta.roles) ? permissionMeta.roles : []
   const userRoles = [
     ...(authStore.user?.role ? [authStore.user.role] : []),
     ...(authStore.user?.roles ?? [])
