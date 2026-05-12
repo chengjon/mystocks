@@ -69,13 +69,19 @@ export const generateRoutesFromMenu = (menuList, options = {}) => {
  * @returns {boolean} 是否有权限
  */
 export const hasRoutePermission = (route, userRoles = []) => {
+  const routeRoles = route.meta?.roles
+
   // 如果路由没有定义角色要求，默认允许访问
-  if (!route.meta || !route.meta.roles || route.meta.roles.length === 0) {
+  if (routeRoles === undefined || routeRoles === null || (Array.isArray(routeRoles) && routeRoles.length === 0)) {
     return true
   }
 
+  if (!Array.isArray(routeRoles) || !Array.isArray(userRoles)) {
+    return false
+  }
+
   // 检查用户角色是否在路由允许的角色列表中
-  return route.meta.roles.some(role => userRoles.includes(role))
+  return routeRoles.some(role => userRoles.includes(role))
 }
 
 /**
