@@ -1,5 +1,15 @@
 <template>
-  <div class="artdeco-chart-container" :class="{ 'is-loading': loading }" role="img" :aria-label="accessibleLabel || 'Chart'">
+  <div
+    class="artdeco-chart-container"
+    :class="{ 'is-loading': loading }"
+    role="img"
+    :aria-label="chartAriaLabel"
+    :aria-describedby="chartAriaDescribedBy"
+  >
+    <p v-if="resolvedAccessibleDescription" :id="descriptionId" class="chart-sr-description">
+      {{ resolvedAccessibleDescription }}
+    </p>
+
     <!-- Chart Container -->
     <div ref="chartElement" class="chart-canvas" :style="{ height: height, width: width }"></div>
 
@@ -25,10 +35,15 @@ import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
 import { ARTDECO_THEME } from '@/styles/echarts-theme' // Create this separate file
 
 let artDecoThemeRegistered = false
+let chartDescriptionIdSeed = 0
 
 // Props
 const props = defineProps({
   accessibleLabel: {
+    type: String,
+    default: ''
+  },
+  accessibleDescription: {
     type: String,
     default: ''
   },
@@ -54,14 +69,40 @@ const props = defineProps({
 const chartElement = ref<HTMLElement | null>(null)
 let chartInstance: echarts.ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
+const descriptionId = `artdeco-chart-description-${++chartDescriptionIdSeed}`
 
 // Computed
+const chartAriaLabel = computed(() => props.accessibleLabel || 'Chart')
+const resolvedAccessibleDescription = computed(() => props.accessibleDescription || getOptionDescription(props.option))
+const chartAriaDescribedBy = computed(() => (resolvedAccessibleDescription.value ? descriptionId : undefined))
+
 const isEmpty = computed(() => {
   const option = props.option as { series?: Array<{ data?: unknown[] }> } | null
   const series = option?.series
   if (!series || series.length === 0) return true
   return series.every(s => !Array.isArray(s.data) || s.data.length === 0)
 })
+
+const getOptionDescription = (option: Record<string, unknown> | null): string => {
+  const series = option?.series
+  if (!Array.isArray(series) || series.length === 0) {
+    return ''
+  }
+
+  const seriesSummaries = series
+    .map((item, index) => {
+      const record = item as { name?: unknown; data?: unknown[] }
+      const name = typeof record.name === 'string' && record.name.trim().length > 0
+        ? record.name.trim()
+        : `series ${index + 1}`
+      const pointCount = Array.isArray(record.data) ? record.data.length : 0
+
+      return `${name}: ${pointCount} points`
+    })
+    .join('; ')
+
+  return `Chart contains ${series.length} series. ${seriesSummaries}.`
+}
 
 // Methods
 const initChart = () => {
@@ -145,6 +186,18 @@ onUnmounted(() => {
 
 .chart-canvas {
   width: 100%;
+}
+
+.chart-sr-description {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 .chart-loading-overlay {
