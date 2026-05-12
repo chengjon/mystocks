@@ -81,7 +81,7 @@ AUTH_LOGIN_RESPONSES = {
                 "token": "eyJhbGciOiJIUzI1NiIs...",
                 "token_type": "bearer",
                 "expires_in": 7200,
-                "user": {"username": "trader_admin", "email": "admin@example.com", "role": "admin"},
+                "user": {"id": 1, "username": "trader_admin", "email": "admin@example.com", "role": "admin"},
             },
             "message": "登录成功",
             "timestamp": "2026-04-05T12:00:00Z",
@@ -317,7 +317,7 @@ async def login_for_access_token(
             "token": access_token,
             "token_type": "bearer",
             "expires_in": settings.access_token_expire_minutes * 60,
-            "user": {"username": user.username, "email": user.email, "role": user.role},
+            "user": {"id": user.id, "username": user.username, "email": user.email, "role": user.role},
         },
         message="登录成功",
     )
