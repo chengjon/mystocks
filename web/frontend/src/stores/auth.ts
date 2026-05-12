@@ -47,14 +47,18 @@ function clearStoredAuth() {
   localStorage.removeItem(REFRESH_TOKEN_KEY)
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === 'string')
+}
+
 function isStoredUser(value: unknown): value is User {
   if (!value || typeof value !== 'object') {
     return false
   }
 
   const candidate = value as Partial<User>
-  const hasValidPermissions = candidate.permissions === undefined || Array.isArray(candidate.permissions)
-  const hasValidRoles = candidate.roles === undefined || Array.isArray(candidate.roles)
+  const hasValidPermissions = candidate.permissions === undefined || isStringArray(candidate.permissions)
+  const hasValidRoles = candidate.roles === undefined || isStringArray(candidate.roles)
   return typeof candidate.username === 'string' && candidate.username.trim().length > 0 && hasValidPermissions && hasValidRoles
 }
 
