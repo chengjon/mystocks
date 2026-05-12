@@ -1,5 +1,7 @@
 // Auto-generated types for strategy domain
 
+export type NonBlankString = string;
+
 export interface BacktestRequest {
   strategy_id?: string;
   symbol?: string;
@@ -35,14 +37,14 @@ export type MLStrategyType = 'svm' | 'decision_tree' | 'naive_bayes' | 'lstm' | 
 export type MLWorkbenchModelFamily = 'svm' | 'lightgbm';
 
 export interface MLWorkbenchPredictionRequest {
-  model_id?: string;
-  symbol?: string;
+  model_id?: NonBlankString;
+  symbol?: NonBlankString;
   prediction_horizon?: number;
 }
 
 export interface MLWorkbenchTrainingRequest {
   model_family?: MLWorkbenchModelFamily;
-  symbol?: string;
+  symbol?: NonBlankString;
   start_date?: string;
   end_date?: string;
   feature_window?: number;
