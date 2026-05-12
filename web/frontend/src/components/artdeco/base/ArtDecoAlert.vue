@@ -1,6 +1,13 @@
 <template>
   <transition name="alert-fade">
-    <div v-if="show" class="artdeco-alert" :class="[`artdeco-alert-${type}`, { 'artdeco-alert-dismissible': dismissible }]">
+    <div
+      v-if="show"
+      class="artdeco-alert"
+      :class="[`artdeco-alert-${type}`, { 'artdeco-alert-dismissible': dismissible }]"
+      :role="alertRole"
+      :aria-live="alertLiveRegion"
+      aria-atomic="true"
+    >
       <!-- Icon -->
       <ArtDecoIcon v-if="showIcon" :name="iconName" size="md" class="artdeco-alert-icon" />
 
@@ -63,6 +70,10 @@ const iconName = computed(() => {
   }
   return iconMap[props.type] || iconMap.info
 })
+
+const isAssertiveAlert = computed(() => ['warning', 'danger', 'error'].includes(props.type))
+const alertRole = computed(() => (isAssertiveAlert.value ? 'alert' : 'status'))
+const alertLiveRegion = computed(() => (isAssertiveAlert.value ? 'assertive' : 'polite'))
 
 // Methods
 const handleDismiss = () => {
