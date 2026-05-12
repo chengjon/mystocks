@@ -822,6 +822,26 @@ describe('Authentication Guards', () => {
       })
     })
 
+    it('should redirect to login when auth state is flagged but token is invalid', () => {
+      authStore.isAuthenticated = true
+      authStore.token = ''
+      authStore.user = {
+        id: 1,
+        username: 'corrupted',
+        email: 'corrupted@example.com',
+        role: 'user',
+        permissions: []
+      }
+
+      const to = { name: 'dashboard', meta: { requiresAuth: true }, fullPath: '/dashboard' }
+      const result = authGuard(to)
+
+      expect(result).toEqual({
+        name: 'login',
+        query: { redirect: '/dashboard' }
+      })
+    })
+
     it('should allow access to protected routes when authenticated', () => {
       // Authenticate user
       authStore.setToken('test-token')

@@ -17,6 +17,17 @@ interface PermissionRouteMeta {
   roles?: string[]
 }
 
+function hasValidAuthSession(authStore: ReturnType<typeof useAuthStore>) {
+  return (
+    authStore.isAuthenticated &&
+    typeof authStore.token === 'string' &&
+    authStore.token.trim().length > 0 &&
+    !!authStore.user &&
+    typeof authStore.user.username === 'string' &&
+    authStore.user.username.trim().length > 0
+  )
+}
+
 /**
  * Authentication guard for Vue Router
  * Checks if user is authenticated before allowing access to protected routes
@@ -47,9 +58,10 @@ export const authGuard = (to: RouteLocationNormalized) => {
 
   // Check if route requires authentication (default: true)
   const requiresAuth = to.meta.requiresAuth !== false
+  const hasValidSession = hasValidAuthSession(authStore)
 
   // If route requires auth and user is not authenticated
-  if (requiresAuth && !authStore.isAuthenticated) {
+  if (requiresAuth && !hasValidSession) {
     // Show warning message
     ElMessage.warning('请先登录后再访问此页面')
 
@@ -87,7 +99,7 @@ export const authGuard = (to: RouteLocationNormalized) => {
     return true
   }
 
-  if (authStore.isAuthenticated && to.name === 'login') {
+  if (hasValidSession && to.name === 'login') {
     return { name: HOME_ROUTE_NAME }
   }
 
