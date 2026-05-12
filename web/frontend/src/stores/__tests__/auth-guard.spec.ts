@@ -217,6 +217,34 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
+    it('should reject login responses with non-string token payload', async () => {
+      mockAuthApi.login.mockResolvedValue({
+        success: true,
+        code: 200,
+        message: 'OK',
+        data: {
+          token: 1 as unknown as string,
+          token_type: 'bearer',
+          user: {
+            id: 1,
+            username: 'badtoken',
+            email: 'badtoken@example.com',
+            role: 'user',
+            permissions: []
+          }
+        }
+      })
+
+      const result = await authStore.login('badtoken', 'password')
+
+      expect(result.success).toBe(false)
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should reject login responses with non-string role payload', async () => {
       mockAuthApi.login.mockResolvedValue({
         success: true,
