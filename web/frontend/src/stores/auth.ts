@@ -140,9 +140,12 @@ export const useAuthStore = defineStore('auth', () => {
   const loginStore = useLoginStore()
 
   // Getters
-  const isAdmin = computed(() => user.value?.role === 'admin' || user.value?.roles?.includes('admin') === true)
+  const isAdmin = computed(() => {
+    const roles = isStringArray(user.value?.roles) ? user.value.roles : []
+    return user.value?.role === 'admin' || roles.includes('admin')
+  })
   const hasPermission = computed(() => (permission: string) => {
-    const permissions = user.value?.permissions ?? []
+    const permissions = isStringArray(user.value?.permissions) ? user.value.permissions : []
     return permissions.includes('*') || permissions.includes(permission)
   })
 

@@ -162,6 +162,18 @@ describe('Authentication Guards', () => {
       expect(authStore.hasPermission('risk:admin')).toBe(true)
     })
 
+    it('should not honor malformed wildcard permission payloads', () => {
+      authStore.user = {
+        id: 1,
+        username: 'corrupted',
+        email: 'corrupted@example.com',
+        role: 'user',
+        permissions: '*' as unknown as string[]
+      }
+
+      expect(authStore.hasPermission('risk:admin')).toBe(false)
+    })
+
     it('should treat users with admin in roles as administrators', () => {
       authStore.setToken('role-admin-token')
       authStore.setUser({
@@ -174,6 +186,19 @@ describe('Authentication Guards', () => {
       })
 
       expect(authStore.isAdmin).toBe(true)
+    })
+
+    it('should not treat malformed role arrays as administrators', () => {
+      authStore.user = {
+        id: 1,
+        username: 'corrupted-role',
+        email: 'corrupted-role@example.com',
+        role: 'user',
+        roles: 'admin' as unknown as string[],
+        permissions: []
+      }
+
+      expect(authStore.isAdmin).toBe(false)
     })
 
     it('should handle login success', async () => {
