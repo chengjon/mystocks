@@ -472,6 +472,34 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
+    it('should clear local session when token refresh returns a non-string token', async () => {
+      authStore.setToken('stale-token')
+      authStore.setUser({
+        id: 1,
+        username: 'testuser',
+        email: 'test@example.com',
+        role: 'user',
+        permissions: []
+      })
+      mockAuthApi.refreshToken.mockResolvedValue({
+        success: true,
+        code: 200,
+        data: {
+          access_token: 1 as unknown as string,
+          token_type: 'bearer'
+        }
+      })
+
+      const result = await authStore.refreshSession()
+
+      expect(result).toBe(false)
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should not refresh an orphaned token without a local user session', async () => {
       authStore.setToken('orphaned-token')
       mockAuthApi.refreshToken.mockResolvedValue({

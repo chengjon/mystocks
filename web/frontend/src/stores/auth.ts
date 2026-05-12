@@ -189,7 +189,7 @@ export const useAuthStore = defineStore('auth', () => {
       const response = (await authApi.refreshToken()) as RefreshTokenResponse
       const refreshedToken = response?.data?.access_token || response?.data?.token || response?.access_token || response?.token
 
-      if (!refreshedToken) {
+      if (typeof refreshedToken !== 'string' || refreshedToken.trim().length === 0) {
         clearLocalSession()
         return false
       }
