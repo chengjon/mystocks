@@ -69,11 +69,29 @@ describe('Authentication Guards', () => {
     })
 
     it('should set user and update authentication state', () => {
-      const testUser = { id: '1', username: 'testuser', email: 'test@example.com' }
+      const testUser = { id: 1, username: 'testuser', email: 'test@example.com' }
       authStore.setUser(testUser)
 
       expect(authStore.user).toEqual(testUser)
       expect(authStore.isAuthenticated).toBe(true)
+    })
+
+    it('should reject malformed users passed to setUser', () => {
+      authStore.setToken('stale-token')
+
+      authStore.setUser({
+        id: '1' as unknown as number,
+        username: 'baduser',
+        email: 'bad@example.com',
+        role: 'user',
+        permissions: []
+      })
+
+      expect(authStore.user).toBeNull()
+      expect(authStore.token).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
     it('should honor wildcard permissions for authenticated administrators', () => {
@@ -324,7 +342,7 @@ describe('Authentication Guards', () => {
     it('should logout and clear data', async () => {
       // Set initial state
       authStore.setToken('test-token')
-      authStore.setUser({ id: '1', username: 'testuser' })
+      authStore.setUser({ id: 1, username: 'testuser' })
       mockAuthApi.logout.mockResolvedValue({ success: true, code: 200, data: undefined })
 
       // Logout
@@ -343,7 +361,7 @@ describe('Authentication Guards', () => {
 
     it('should keep local logout complete when remote logout fails', async () => {
       authStore.setToken('test-token')
-      authStore.setUser({ id: '1', username: 'testuser' })
+      authStore.setUser({ id: 1, username: 'testuser' })
       mockAuthApi.logout.mockRejectedValue(new Error('logout unavailable'))
 
       await authStore.logout()
@@ -619,7 +637,7 @@ describe('Authentication Guards', () => {
 
     it('should allow access to protected routes when authenticated', () => {
       // Authenticate user
-      authStore.setUser({ id: '1', username: 'testuser' })
+      authStore.setUser({ id: 1, username: 'testuser' })
 
       const to = { name: 'dashboard', meta: { requiresAuth: true } }
       const result = authGuard(to)
@@ -668,7 +686,7 @@ describe('Authentication Guards', () => {
 
     it('should redirect authenticated users away from login page', () => {
       // Authenticate user
-      authStore.setUser({ id: '1', username: 'testuser' })
+      authStore.setUser({ id: 1, username: 'testuser' })
 
       const to = { name: 'login', meta: { requiresAuth: false } }
       const result = authGuard(to)

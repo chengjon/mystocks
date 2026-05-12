@@ -145,6 +145,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Actions
   const setUser = (userData: User) => {
+    if (!isStoredUser(userData, { requireNumberId: true })) {
+      clearLocalSession()
+      return
+    }
+
     user.value = userData
     isAuthenticated.value = true
     // Save user data to localStorage for persistence
