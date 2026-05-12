@@ -4,6 +4,7 @@ import pytest
 
 from app.api import auth as auth_module
 from app.api import auth_compat as auth_compat_module
+from app.core.security import oauth2_scheme
 
 
 class _FakeRateLimiter:
@@ -48,3 +49,7 @@ async def test_compat_login_response_includes_numeric_user_id(monkeypatch):
 
     assert response.data["user"]["id"] == 9
     assert isinstance(response.data["user"]["id"], int)
+
+
+def test_oauth2_password_flow_uses_canonical_v1_login_path():
+    assert oauth2_scheme.model.flows.password.tokenUrl == "/api/v1/auth/login"

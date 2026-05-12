@@ -17,7 +17,7 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 # OAuth2 密码流
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
 
 class Token(BaseModel):
