@@ -157,7 +157,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const setToken = (tokenValue: string) => {
-    if (tokenValue.trim().length === 0) {
+    if (typeof tokenValue !== 'string' || tokenValue.trim().length === 0) {
       clearLocalSession()
       return
     }

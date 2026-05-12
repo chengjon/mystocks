@@ -78,6 +78,16 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.setItem).not.toHaveBeenCalledWith('auth_token', '   ')
     })
 
+    it('should reject non-string tokens passed to setToken', () => {
+      authStore.setToken(1 as unknown as string)
+
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should set user and update authentication state', () => {
       const testUser = { id: 1, username: 'testuser', email: 'test@example.com' }
       authStore.setToken('test-jwt-token')
