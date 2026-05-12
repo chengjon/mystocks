@@ -149,6 +149,34 @@ describe('Authentication Guards', () => {
       expect(authStore.isAdmin).toBe(true)
     })
 
+    it('should reject login responses with malformed permissions payload', async () => {
+      mockAuthApi.login.mockResolvedValue({
+        success: true,
+        code: 200,
+        message: 'OK',
+        data: {
+          token: 'bad-token',
+          token_type: 'bearer',
+          user: {
+            id: 1,
+            username: 'baduser',
+            email: 'bad@example.com',
+            role: 'user',
+            permissions: '*' as unknown as string[]
+          }
+        }
+      })
+
+      const result = await authStore.login('baduser', 'password')
+
+      expect(result.success).toBe(false)
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should handle login failure', async () => {
       mockAuthApi.login.mockRejectedValue(new Error('Invalid credentials'))
 
