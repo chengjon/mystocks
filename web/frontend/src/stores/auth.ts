@@ -51,12 +51,13 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === 'string')
 }
 
-function isStoredUser(value: unknown): value is User {
+function isStoredUser(value: unknown, options: { requireNumberId?: boolean } = {}): value is User {
   if (!value || typeof value !== 'object') {
     return false
   }
 
   const candidate = value as Partial<User>
+  const hasValidId = options.requireNumberId ? candidate.id === undefined || typeof candidate.id === 'number' : true
   const hasValidEmail = candidate.email === undefined || typeof candidate.email === 'string'
   const hasValidRole = candidate.role === undefined || typeof candidate.role === 'string'
   const hasValidPermissions = candidate.permissions === undefined || isStringArray(candidate.permissions)
@@ -64,6 +65,7 @@ function isStoredUser(value: unknown): value is User {
   return (
     typeof candidate.username === 'string' &&
     candidate.username.trim().length > 0 &&
+    hasValidId &&
     hasValidEmail &&
     hasValidRole &&
     hasValidPermissions &&
@@ -209,7 +211,7 @@ export const useAuthStore = defineStore('auth', () => {
       const tokenValue = loginData?.access_token
       const userData = loginData?.user
 
-      if (!tokenValue || !userData || !isStoredUser(userData)) {
+      if (!tokenValue || !userData || !isStoredUser(userData, { requireNumberId: true })) {
         clearLocalSession()
         return {
           success: false,
