@@ -7,10 +7,11 @@
             @click="toggle"
             @keydown.enter="toggle"
             @keydown.space.prevent="toggle"
-            tabindex="0"
+            :tabindex="disabled ? -1 : 0"
             role="button"
             :aria-expanded="isOpen"
             :aria-controls="contentId"
+            :aria-disabled="disabled ? 'true' : undefined"
         >
             <!-- 标题插槽 -->
             <div class="artdeco-collapsible-title">
