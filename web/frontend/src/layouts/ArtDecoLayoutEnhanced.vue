@@ -1,10 +1,17 @@
 <template>
   <div class="artdeco-layout">
+    <ArtDecoSkipLink />
+
     <!-- Sidebar: Correctly imported collapsible sidebar -->
     <ArtDecoSidebar />
 
     <!-- Main Content Area -->
-    <main class="artdeco-main" :class="{ 'sidebar-collapsed': preferenceStore.sidebarCollapsed }">
+    <main
+      id="main-content"
+      class="artdeco-main"
+      :class="{ 'sidebar-collapsed': preferenceStore.sidebarCollapsed }"
+      tabindex="-1"
+    >
       <!-- Top Bar: Core ArtDeco header -->
       <ArtDecoHeader
         :unread-count="unreadCount"
@@ -90,6 +97,7 @@ import CommandPalette from '@/components/menu/CommandPalette.vue'
 import PerformanceMonitor from '@/components/common/PerformanceMonitor.vue'
 import ArtDecoBreadcrumb from '@/components/artdeco/core/ArtDecoBreadcrumb.vue'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
+import ArtDecoSkipLink from '@/components/artdeco/base/ArtDecoSkipLink.vue'
 
 // ✅ 修正菜单配置引用
 import { ARTDECO_MENU_ITEMS } from './MenuConfig'
