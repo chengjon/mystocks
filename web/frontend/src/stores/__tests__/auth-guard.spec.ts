@@ -483,7 +483,7 @@ describe('Authentication Guards', () => {
       // Mock localStorage for this test
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'auth_token') return 'stored-token'
-        if (key === 'auth_user') return JSON.stringify({ id: '1', username: 'storeduser' })
+        if (key === 'auth_user') return JSON.stringify({ id: 1, username: 'storeduser' })
         return null
       })
 
@@ -502,7 +502,7 @@ describe('Authentication Guards', () => {
         if (key === 'auth_token') return null
         if (key === 'auth_user') return null
         if (key === 'token') return 'legacy-token'
-        if (key === 'user') return JSON.stringify({ id: '9', username: 'legacyuser' })
+        if (key === 'user') return JSON.stringify({ id: 9, username: 'legacyuser' })
         return null
       })
 
@@ -533,6 +533,30 @@ describe('Authentication Guards', () => {
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'auth_token') return 'stored-token'
         if (key === 'auth_user') return JSON.stringify({ permissions: ['*'] })
+        return null
+      })
+
+      authStore.initializeAuth()
+
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
+    it('should clear stored sessions when the user id payload is not numeric', () => {
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return 'stored-token'
+        if (key === 'auth_user') {
+          return JSON.stringify({
+            id: '1',
+            username: 'storeduser',
+            email: 'stored@example.com',
+            role: 'user',
+            permissions: []
+          })
+        }
         return null
       })
 

@@ -214,7 +214,7 @@ export const useAuthStore = defineStore('auth', () => {
       if (savedUser) {
         try {
           const userData = JSON.parse(savedUser)
-          if (!isStoredUser(userData)) {
+          if (!isStoredUser(userData, { requireNumberId: true })) {
             throw new Error('Invalid stored user payload')
           }
           user.value = userData
