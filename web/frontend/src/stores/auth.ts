@@ -175,6 +175,11 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const refreshSession = async (): Promise<boolean> => {
+    if (!token.value || !user.value || !isStoredUser(user.value)) {
+      clearLocalSession()
+      return false
+    }
+
     try {
       const response = (await authApi.refreshToken()) as RefreshTokenResponse
       const refreshedToken = response?.data?.access_token || response?.data?.token || response?.access_token || response?.token
