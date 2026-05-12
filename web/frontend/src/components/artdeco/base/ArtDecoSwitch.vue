@@ -1,5 +1,15 @@
 <template>
-    <div class="artdeco-switch-wrapper" :class="{ 'is-disabled': disabled }" @click="toggle">
+    <div
+        class="artdeco-switch-wrapper"
+        :class="{ 'is-disabled': disabled }"
+        role="switch"
+        :aria-label="accessibleName"
+        :aria-checked="modelValue ? 'true' : 'false'"
+        :aria-disabled="disabled ? 'true' : undefined"
+        :tabindex="disabled ? -1 : 0"
+        @click="toggle"
+        @keydown="handleKeydown"
+    >
         <label v-if="label" class="artdeco-switch-label">{{ label }}</label>
         <div class="artdeco-switch" :class="{ active: modelValue }">
             <div class="artdeco-switch-track"></div>
@@ -12,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
+    import { computed } from 'vue'
+
     interface Props {
         modelValue: boolean
         label?: string
@@ -34,11 +46,21 @@
         change: [value: boolean]
     }>()
 
+    const accessibleName = computed(() => {
+        return props.label || (props.modelValue ? props.onText : props.offText)
+    })
+
     function toggle() {
         if (props.disabled) return
         const newValue = !props.modelValue
         emit('update:modelValue', newValue)
         emit('change', newValue)
+    }
+
+    function handleKeydown(event: KeyboardEvent) {
+        if (event.key !== 'Enter' && event.key !== ' ') return
+        event.preventDefault()
+        toggle()
     }
 </script>
 
