@@ -150,7 +150,11 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Actions
   const setUser = (userData: User) => {
-    if (!token.value || !isStoredUser(userData, { requireNumberId: true })) {
+    if (
+      typeof token.value !== 'string' ||
+      token.value.trim().length === 0 ||
+      !isStoredUser(userData, { requireNumberId: true })
+    ) {
       clearLocalSession()
       return
     }

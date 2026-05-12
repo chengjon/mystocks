@@ -113,6 +113,24 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
+    it('should reject user sessions when the current token state is blank', () => {
+      authStore.token = '   '
+
+      authStore.setUser({
+        id: 1,
+        username: 'blanktoken',
+        email: 'blanktoken@example.com',
+        role: 'user',
+        permissions: []
+      })
+
+      expect(authStore.user).toBeNull()
+      expect(authStore.token).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should reject malformed users passed to setUser', () => {
       authStore.setToken('stale-token')
 
