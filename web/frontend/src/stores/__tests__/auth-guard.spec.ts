@@ -598,6 +598,30 @@ describe('Authentication Guards', () => {
       expect(freshStore.isAuthenticated).toBe(true)
     })
 
+    it('should clear stored sessions when the saved token is blank', () => {
+      localStorageMock.getItem.mockImplementation((key: string) => {
+        if (key === 'auth_token') return '   '
+        if (key === 'auth_user') {
+          return JSON.stringify({
+            id: 1,
+            username: 'storeduser',
+            email: 'stored@example.com',
+            role: 'user',
+            permissions: []
+          })
+        }
+        return null
+      })
+
+      authStore.initializeAuth()
+
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should clear orphaned stored tokens when the user payload is missing', () => {
       localStorageMock.getItem.mockImplementation((key: string) => {
         if (key === 'auth_token') return 'orphaned-token'

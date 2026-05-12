@@ -214,6 +214,11 @@ export const useAuthStore = defineStore('auth', () => {
     const shouldBootstrapLhciAuth = import.meta.env.VITE_LHCI_AUTH_BYPASS === 'true'
 
     if (savedToken) {
+      if (savedToken.trim().length === 0) {
+        clearLocalSession()
+        return
+      }
+
       token.value = savedToken
 
       if (savedUser) {
