@@ -137,7 +137,9 @@ instance.interceptors.response.use(
 
 // JWT token management
 function getJWTToken(): string | null {
-  return localStorage.getItem('auth_token');
+  const storedToken = localStorage.getItem('auth_token');
+  const token = typeof storedToken === 'string' ? storedToken.trim() : '';
+  return token.length > 0 ? token : null;
 }
 
 function clearStoredSession(): void {

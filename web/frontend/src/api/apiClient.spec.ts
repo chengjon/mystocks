@@ -37,6 +37,27 @@ describe('apiClient', () => {
     })
   })
 
+  describe('authentication requests', () => {
+    it('should not attach an authorization header for blank stored tokens', async () => {
+      localStorageMock.getItem.mockReturnValue('   ')
+      const requestHandlers = (
+        apiClient.interceptors.request as unknown as {
+          handlers: Array<{ fulfilled?: (config: unknown) => Promise<unknown> | unknown }>
+        }
+      ).handlers
+      const fulfilled = requestHandlers.find((handler) => typeof handler.fulfilled === 'function')?.fulfilled
+
+      expect(fulfilled).toBeTypeOf('function')
+
+      const config = await fulfilled?.({
+        headers: {},
+        method: 'get',
+      })
+
+      expect((config as { headers: Record<string, string> }).headers.Authorization).toBeUndefined()
+    })
+  })
+
   describe('authentication errors', () => {
     it('should clear all stored session keys when a request returns 401', async () => {
       const responseHandlers = (
