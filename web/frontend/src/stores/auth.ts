@@ -175,7 +175,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   const refreshSession = async (): Promise<boolean> => {
-    if (!token.value || !user.value || !isStoredUser(user.value)) {
+    if (!token.value || !user.value || !isStoredUser(user.value, { requireNumberId: true })) {
       clearLocalSession()
       return false
     }

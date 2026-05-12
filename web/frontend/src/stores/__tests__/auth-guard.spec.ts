@@ -429,6 +429,35 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
+    it('should not refresh a session with a malformed local user id', async () => {
+      authStore.setToken('malformed-token')
+      authStore.setUser({
+        id: '1' as unknown as number,
+        username: 'badid',
+        email: 'badid@example.com',
+        role: 'user',
+        permissions: []
+      })
+      mockAuthApi.refreshToken.mockResolvedValue({
+        success: true,
+        code: 200,
+        data: {
+          access_token: 'fresh-token',
+          token_type: 'bearer'
+        }
+      })
+
+      const result = await authStore.refreshSession()
+
+      expect(result).toBe(false)
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(mockAuthApi.refreshToken).not.toHaveBeenCalled()
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should check auth on initialization', () => {
       // Create a fresh store instance for this test
       const freshStore = useAuthStore()
