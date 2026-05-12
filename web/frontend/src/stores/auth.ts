@@ -67,7 +67,7 @@ function isStoredUser(value: unknown, options: { requireNumberId?: boolean } = {
   }
 
   const candidate = value as Partial<User>
-  const hasValidId = options.requireNumberId ? candidate.id === undefined || typeof candidate.id === 'number' : true
+  const hasValidId = options.requireNumberId ? typeof candidate.id === 'number' : true
   const hasValidEmail = candidate.email === undefined || typeof candidate.email === 'string'
   const hasValidRole = candidate.role === undefined || typeof candidate.role === 'string'
   const hasValidPermissions = candidate.permissions === undefined || isStringArray(candidate.permissions)

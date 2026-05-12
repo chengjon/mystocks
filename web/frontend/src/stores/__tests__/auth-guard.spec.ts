@@ -264,6 +264,33 @@ describe('Authentication Guards', () => {
       expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
+    it('should reject login responses missing user id', async () => {
+      mockAuthApi.login.mockResolvedValue({
+        success: true,
+        code: 200,
+        message: 'OK',
+        data: {
+          token: 'missing-id-token',
+          token_type: 'bearer',
+          user: {
+            username: 'missingid',
+            email: 'missingid@example.com',
+            role: 'user',
+            permissions: []
+          }
+        }
+      })
+
+      const result = await authStore.login('missingid', 'password')
+
+      expect(result.success).toBe(false)
+      expect(authStore.token).toBeNull()
+      expect(authStore.user).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
+    })
+
     it('should handle login failure', async () => {
       mockAuthApi.login.mockRejectedValue(new Error('Invalid credentials'))
 
