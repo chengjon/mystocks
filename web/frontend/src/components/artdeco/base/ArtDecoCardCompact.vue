@@ -1,5 +1,13 @@
 <template>
-  <div class="artdeco-card-compact" :class="cardClasses" @click="handleClick">
+  <div
+    class="artdeco-card-compact"
+    :class="cardClasses"
+    :role="clickableRole"
+    :tabindex="clickableTabIndex"
+    :aria-label="clickableAriaLabel"
+    @click="handleClick"
+    @keydown="handleKeydown"
+  >
     <!-- 简化：仅保留顶部金色细线作为 Art Deco 标识 -->
     <div class="artdeco-card-compact__accent-line"></div>
 
@@ -43,7 +51,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const emit = defineEmits<{
-  click: [event: MouseEvent]
+  click: [event: MouseEvent | KeyboardEvent]
 }>()
 
 const cardClasses = computed(() => ({
@@ -52,10 +60,20 @@ const cardClasses = computed(() => ({
   [`artdeco-card-compact--${props.variant}`]: true
 }))
 
+const clickableRole = computed(() => (props.clickable ? 'button' : undefined))
+const clickableTabIndex = computed(() => (props.clickable ? 0 : undefined))
+const clickableAriaLabel = computed(() => (props.clickable && props.title ? props.title : undefined))
+
 const handleClick = (event: MouseEvent) => {
   if (props.clickable) {
     emit('click', event)
   }
+}
+
+const handleKeydown = (event: KeyboardEvent) => {
+  if (!props.clickable || (event.key !== 'Enter' && event.key !== ' ')) return
+  event.preventDefault()
+  emit('click', event)
 }
 </script>
 
