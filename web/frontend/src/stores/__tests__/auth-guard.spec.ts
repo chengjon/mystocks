@@ -70,10 +70,27 @@ describe('Authentication Guards', () => {
 
     it('should set user and update authentication state', () => {
       const testUser = { id: 1, username: 'testuser', email: 'test@example.com' }
+      authStore.setToken('test-jwt-token')
       authStore.setUser(testUser)
 
       expect(authStore.user).toEqual(testUser)
       expect(authStore.isAuthenticated).toBe(true)
+    })
+
+    it('should reject user sessions without a local token', () => {
+      authStore.setUser({
+        id: 1,
+        username: 'tokenless',
+        email: 'tokenless@example.com',
+        role: 'user',
+        permissions: []
+      })
+
+      expect(authStore.user).toBeNull()
+      expect(authStore.token).toBeNull()
+      expect(authStore.isAuthenticated).toBe(false)
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_token')
+      expect(localStorageMock.removeItem).toHaveBeenCalledWith('auth_user')
     })
 
     it('should reject malformed users passed to setUser', () => {
@@ -95,6 +112,7 @@ describe('Authentication Guards', () => {
     })
 
     it('should honor wildcard permissions for authenticated administrators', () => {
+      authStore.setToken('admin-token')
       authStore.setUser({
         id: 1,
         username: 'admin',
@@ -107,6 +125,7 @@ describe('Authentication Guards', () => {
     })
 
     it('should treat users with admin in roles as administrators', () => {
+      authStore.setToken('role-admin-token')
       authStore.setUser({
         id: 1,
         username: 'role-admin',
@@ -661,6 +680,7 @@ describe('Authentication Guards', () => {
 
     it('should allow access to protected routes when authenticated', () => {
       // Authenticate user
+      authStore.setToken('test-token')
       authStore.setUser({ id: 1, username: 'testuser' })
 
       const to = { name: 'dashboard', meta: { requiresAuth: true } }
@@ -670,6 +690,7 @@ describe('Authentication Guards', () => {
     })
 
     it('should redirect authenticated users without required route permission', () => {
+      authStore.setToken('operator-token')
       authStore.setUser({
         id: 1,
         username: 'operator',
@@ -689,6 +710,7 @@ describe('Authentication Guards', () => {
     })
 
     it('should redirect authenticated users without an allowed route role', () => {
+      authStore.setToken('operator-token')
       authStore.setUser({
         id: 1,
         username: 'operator',
@@ -710,6 +732,7 @@ describe('Authentication Guards', () => {
 
     it('should redirect authenticated users away from login page', () => {
       // Authenticate user
+      authStore.setToken('test-token')
       authStore.setUser({ id: 1, username: 'testuser' })
 
       const to = { name: 'login', meta: { requiresAuth: false } }
