@@ -18,7 +18,15 @@
             </div>
 
             <!-- Gauge -->
-            <div class="artdeco-progress__gauge">
+            <div
+                class="artdeco-progress__gauge"
+                role="progressbar"
+                :aria-label="progressAriaLabel"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                :aria-valuenow="percentage"
+                :aria-valuetext="progressAriaValueText"
+            >
                 <!-- Backlight Layer -->
                 <svg class="artdeco-progress__svg" viewBox="0 0 200 120">
                     <defs>
@@ -148,6 +156,10 @@
     const displayValue = computed(() => {
         return percentage.value.toFixed(1)
     })
+
+    const progressAriaValueText = computed(() => `${displayValue.value}%`)
+
+    const progressAriaLabel = computed(() => `${props.title}: ${progressAriaValueText.value}`)
 
     const displayEpoch = computed(() => {
         const epoch = Math.floor(percentage.value / 10)
