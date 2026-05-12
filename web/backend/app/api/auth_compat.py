@@ -8,7 +8,7 @@ from fastapi import APIRouter, Form
 
 from app.core.config import settings
 from app.core.exceptions import UnauthorizedException
-from app.core.responses import create_success_response
+from app.core.responses import UnifiedResponse, create_unified_success_response
 from app.core.security import authenticate_user, create_access_token
 from app.openapi_config import COMMON_RESPONSES
 
@@ -25,7 +25,7 @@ AUTH_COMPAT_LOGIN_RESPONSES = {
                         "token": "eyJhbGciOiJIUzI1NiIs...",
                         "token_type": "bearer",
                         "expires_in": 7200,
-                        "user": {"username": "trader_admin", "email": "admin@example.com", "role": "admin"},
+                        "user": {"id": 1, "username": "trader_admin", "email": "admin@example.com", "role": "admin"},
                     },
                     "message": "登录成功",
                     "request_id": "req-auth-compat-login-001",
@@ -41,6 +41,7 @@ AUTH_COMPAT_LOGIN_RESPONSES = {
 
 @compat_router.post(
     "/login",
+    response_model=UnifiedResponse[dict],
     summary="兼容登录",
     description="兼容前端历史 `/api/auth/login` 表单登录请求，返回与主登录接口一致的统一令牌响应。",
     responses=AUTH_COMPAT_LOGIN_RESPONSES,
@@ -74,12 +75,12 @@ async def compat_login(
         expires_delta=access_token_expires,
     )
 
-    return create_success_response(
+    return create_unified_success_response(
         data={
             "token": access_token,
             "token_type": "bearer",
             "expires_in": settings.access_token_expire_minutes * 60,
-            "user": {"username": user.username, "email": user.email, "role": user.role},
+            "user": {"id": user.id, "username": user.username, "email": user.email, "role": user.role},
         },
         message="登录成功",
     )

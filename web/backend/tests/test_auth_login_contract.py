@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import pytest
 
 from app.api import auth as auth_module
+from app.api import auth_compat as auth_compat_module
 
 
 class _FakeRateLimiter:
@@ -32,4 +33,18 @@ async def test_login_response_includes_numeric_user_id(monkeypatch):
     )
 
     assert response.data["user"]["id"] == 7
+    assert isinstance(response.data["user"]["id"], int)
+
+
+@pytest.mark.asyncio
+async def test_compat_login_response_includes_numeric_user_id(monkeypatch):
+    fake_user = SimpleNamespace(id=9, username="compatuser", email="compat@example.com", role="user")
+
+    monkeypatch.setattr(auth_compat_module, "authenticate_user", lambda username, password: fake_user)
+    monkeypatch.setattr(auth_compat_module, "create_access_token", lambda data, expires_delta: "compat-jwt-token")
+    monkeypatch.setattr(auth_compat_module.settings, "access_token_expire_minutes", 120)
+
+    response = await auth_compat_module.compat_login(username="compatuser", password="secret")
+
+    assert response.data["user"]["id"] == 9
     assert isinstance(response.data["user"]["id"], int)
