@@ -6,6 +6,7 @@
             :disabled="disabled"
             :placeholder="placeholder"
             :aria-label="accessibleName"
+            :aria-disabled="disabled ? 'true' : undefined"
         >
             <option v-if="placeholder && !modelValue" value="" disabled selected>
                 {{ placeholder }}
@@ -14,8 +15,8 @@
                 {{ option.label }}
             </option>
         </select>
-        <div class="artdeco-select-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="artdeco-select-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" focusable="false">
                 <polyline points="6 9 12 15 18 9"></polyline>
             </svg>
         </div>
