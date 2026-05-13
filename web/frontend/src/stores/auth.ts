@@ -39,6 +39,10 @@ interface RefreshTokenResponse {
   token?: string
 }
 
+function extractLoginResponseToken(data: LoginResponse): unknown {
+  return data?.data?.token ?? data?.access_token ?? data?.token
+}
+
 const AUTH_TOKEN_KEY = 'auth_token'
 const AUTH_USER_KEY = 'auth_user'
 const LEGACY_AUTH_TOKEN_KEY = 'token'
@@ -118,7 +122,10 @@ const useLoginStore = PiniaStoreFactory.createApiStore<{
       user: data?.user
     }
   },
-  validate: (data: LoginResponse): boolean => !!(data && (data?.data?.token || data.access_token || data.token))
+  validate: (data: LoginResponse): boolean => {
+    const tokenValue = extractLoginResponseToken(data)
+    return typeof tokenValue === 'string' && tokenValue.trim().length > 0
+  }
 })
 
 const LHCI_AUTH_USER: User = {
@@ -318,6 +325,13 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Handle different error types
       if (error instanceof Error) {
+        if (error.message === 'Data validation failed') {
+          return {
+            success: false,
+            message: 'Invalid response from server',
+            error: { message: 'Missing auth token or user payload' }
+          }
+        }
         // Check for common HTTP status codes in error message
         if (error.message.includes('401') || error.message.includes('Unauthorized')) {
           return {
