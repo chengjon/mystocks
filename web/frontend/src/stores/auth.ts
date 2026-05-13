@@ -139,12 +139,26 @@ export const useAuthStore = defineStore('auth', () => {
   // Get login store instance for internal use
   const loginStore = useLoginStore()
 
+  const hasValidLocalSession = () =>
+    isAuthenticated.value &&
+    typeof token.value === 'string' &&
+    token.value.trim().length > 0 &&
+    isStoredUser(user.value, { requireNumberId: true })
+
   // Getters
   const isAdmin = computed(() => {
+    if (!hasValidLocalSession()) {
+      return false
+    }
+
     const roles = isStringArray(user.value?.roles) ? user.value.roles : []
     return user.value?.role === 'admin' || roles.includes('admin')
   })
   const hasPermission = computed(() => (permission: string) => {
+    if (!hasValidLocalSession()) {
+      return false
+    }
+
     const permissions = isStringArray(user.value?.permissions) ? user.value.permissions : []
     return permissions.includes('*') || permissions.includes(permission)
   })
