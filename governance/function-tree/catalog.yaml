@@ -512,6 +512,16 @@ domains:
         label: "8.1 认证授权"
         coverage_paths:
           - "web/backend/app/api/auth.py"
+          - "web/frontend/src/views/Login.vue"
+          - "web/frontend/src/stores/auth.ts"
+          - "web/frontend/src/router/guards.ts"
+          - "web/frontend/src/router/utils.js"
+          - "web/frontend/src/api/apiClient.ts"
+          - "web/frontend/src/api/__tests__/authApi.spec.ts"
+          - "web/frontend/src/api/apiClient.spec.ts"
+          - "web/frontend/src/stores/__tests__/auth-guard.spec.ts"
+          - "web/frontend/src/stores/__tests__/auth-guard-route-meta.spec.ts"
+          - "web/frontend/src/router/__tests__/utils.spec.ts"
           - "tests/security/test_jwt_authentication.py"
         entrypoints:
           governance:
@@ -519,13 +529,23 @@ domains:
           api:
             - "web/backend/app/api/auth.py"
           frontend:
+            - "web/frontend/src/views/Login.vue"
             - "web/frontend/src/views/system/**"
             - "web/frontend/src/views/artdeco-pages/system-tabs/**"
           core:
             - "web/backend/app/api/auth.py"
+            - "web/frontend/src/stores/auth.ts"
+            - "web/frontend/src/router/guards.ts"
+            - "web/frontend/src/router/utils.js"
+            - "web/frontend/src/api/apiClient.ts"
           tests:
             - "tests/api/auth.spec.ts"
             - "tests/security/test_jwt_authentication.py"
+            - "web/frontend/src/api/__tests__/authApi.spec.ts"
+            - "web/frontend/src/api/apiClient.spec.ts"
+            - "web/frontend/src/stores/__tests__/auth-guard.spec.ts"
+            - "web/frontend/src/stores/__tests__/auth-guard-route-meta.spec.ts"
+            - "web/frontend/src/router/__tests__/utils.spec.ts"
           operations:
             - "docs/operations/deployment/README.md"
             - "docs/operations/deployment-guide.md"
