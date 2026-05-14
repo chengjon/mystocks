@@ -60,15 +60,15 @@
 > - backend contract integration tests：`tests/integration/contract/test_contract_*.py`
 > 但以下目标仍未形成当前 repo-truth：
 > - `web/frontend/src/api/unifiedApiClient.ts` 当前仍只是指向 `apiClient.ts` 的 legacy wrapper；实际自动适配入口已落在 canonical `apiClient.ts`
-> - `tests/integration/contract/test_contract_*.py` 主要覆盖 backend contract service / generator / validator；`web/frontend/src/services/__tests__/versionNegotiator.spec.ts` 当前已覆盖 frontend version negotiation unit path，但仍不等于前端 version negotiation integration tests
-> - 因此当前仅能证实 unit tests
-> `2026-05-14` 补充：`calculateApiMigrationPath()` 已支持 incompatible major-version path 计算，`adaptApiRequestForVersion()` 已能生成版本 header 与同域 endpoint prefix 适配结果；随后已抽出 `versionNegotiationPolicy.ts`，并由 `apiClient.ts` request interceptor 接入显式目标版本请求的 endpoint/header 自动适配。该批次关闭 4.3，但不关闭仍缺 integration test 的 4.5。
+> - `tests/integration/contract/test_contract_*.py` 主要覆盖 backend contract service / generator / validator；`web/frontend/src/services/__tests__/versionNegotiator.spec.ts` 覆盖 frontend version negotiation unit path；`web/frontend/src/api/__tests__/versionNegotiation.integration.test.ts` 覆盖 public `apiClient.get()` integration path
+> - 因此当前已能同时证实 unit tests 与 frontend integration path
+> `2026-05-14` 补充：`calculateApiMigrationPath()` 已支持 incompatible major-version path 计算，`adaptApiRequestForVersion()` 已能生成版本 header 与同域 endpoint prefix 适配结果；随后已抽出 `versionNegotiationPolicy.ts`，并由 `apiClient.ts` request interceptor 接入显式目标版本请求的 endpoint/header 自动适配。该批次关闭 4.3，并补齐 4.5 所需的 integration evidence。
 
 - [x] 4.1 Extend versionNegotiator.ts with compatibility checking
 - [x] 4.2 Implement migration path calculation for breaking changes
 - [x] 4.3 Add automatic client adaptation for version differences
 - [x] 4.4 Create version negotiation error handling and fallback strategies
-- [ ] 4.5 Add version negotiation unit tests and integration tests
+- [x] 4.5 Add version negotiation unit tests and integration tests
 
 ## 5. Contract Impact Analysis Tools
 > **仓库事实校对（2026-04-27）**:
