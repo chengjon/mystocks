@@ -52,17 +52,19 @@
 > 当前版本协商链路已有明确实现基础：
 > - 核心实现：`web/frontend/src/services/versionNegotiator.ts`
 > - 兼容性检查 / 回退逻辑：`checkCompatibility()`、`negotiateVersion()`、`findFallbackVersion()`
+> - breaking-change migration path：`calculateApiMigrationPath()` / `calculateMigrationPath()`
+> - request adaptation primitive：`adaptApiRequestForVersion()` / `adaptRequestForVersion()`
 > - 组件消费：`web/frontend/src/components/common/ApiVersionManager.vue`
 > - 单元测试：`web/frontend/src/services/__tests__/versionNegotiator.spec.ts`
 > - backend contract integration tests：`tests/integration/contract/test_contract_*.py`
 > 但以下目标仍未形成当前 repo-truth：
-> - 未发现显式的 breaking-change migration path 计算与转换步骤执行
-> - `web/frontend/src/api/unifiedApiClient.ts` 当前只是指向 `apiClient.ts` 的 legacy wrapper，未承载按版本差异自动变换请求/响应的 client adaptation 层
-> - `tests/integration/contract/test_contract_*.py` 主要覆盖 backend contract service / generator / validator；`web/frontend/src/services/__tests__/versionNegotiator.spec.ts` 也仅验证 `/health`、`/contracts/versions/*/active` 探测与 fallback 逻辑，不等于前端 version negotiation 的 integration tests
+> - `web/frontend/src/api/unifiedApiClient.ts` 当前只是指向 `apiClient.ts` 的 legacy wrapper，`apiClient.ts` 也尚未自动调用 `adaptApiRequestForVersion()`；因此 4.3 继续保持未完成
+> - `tests/integration/contract/test_contract_*.py` 主要覆盖 backend contract service / generator / validator；`web/frontend/src/services/__tests__/versionNegotiator.spec.ts` 当前已覆盖 frontend version negotiation unit path，但仍不等于前端 version negotiation integration tests
 > - 因此当前仅能证实 unit tests
+> `2026-05-14` 补充：`calculateApiMigrationPath()` 已支持 incompatible major-version path 计算，`adaptApiRequestForVersion()` 已能生成版本 header 与同域 endpoint prefix 适配结果；该批次只关闭 4.2，不关闭尚未接入 HTTP client 的 4.3，也不关闭仍缺 integration test 的 4.5。
 
 - [x] 4.1 Extend versionNegotiator.ts with compatibility checking
-- [ ] 4.2 Implement migration path calculation for breaking changes
+- [x] 4.2 Implement migration path calculation for breaking changes
 - [ ] 4.3 Add automatic client adaptation for version differences
 - [x] 4.4 Create version negotiation error handling and fallback strategies
 - [ ] 4.5 Add version negotiation unit tests and integration tests
