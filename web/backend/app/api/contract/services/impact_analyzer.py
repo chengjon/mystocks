@@ -34,6 +34,17 @@ class ContractImpactSummary:
 
 
 @dataclass(frozen=True)
+class ContractMigrationEffort:
+    """Estimated migration effort for contract consumers."""
+
+    level: str
+    score: int
+    estimated_hours_min: int
+    estimated_hours_max: int
+    drivers: list[str] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
 class ContractImpactAnalysis:
     """Contract impact analysis result."""
 
@@ -46,6 +57,7 @@ class ContractImpactAnalysis:
     affected_schemas: list[str]
     affected_clients: list[str]
     recommendations: list[str]
+    migration_effort: ContractMigrationEffort
 
 
 class ContractImpactAnalyzer:
@@ -249,6 +261,7 @@ class ContractImpactAnalyzer:
             affected_schemas=self._affected_schemas(impacts),
             affected_clients=self._affected_clients(impacts),
             recommendations=self._recommendations(impacts),
+            migration_effort=self._estimate_migration_effort(impacts),
         )
 
     def _extract_endpoints(self, spec: Mapping[str, Any]) -> dict[str, dict[str, Any]]:
@@ -299,6 +312,55 @@ class ContractImpactAnalyzer:
         if not impacts:
             recommendations.append("No contract consumer impact detected")
         return recommendations
+
+    def _estimate_migration_effort(self, impacts: list[ContractImpactItem]) -> ContractMigrationEffort:
+        score = sum(self._effort_score(impact) for impact in impacts)
+        level, hours_min, hours_max = self._effort_band(score)
+        drivers = [
+            self._effort_driver(impact)
+            for impact in impacts
+            if self._effort_score(impact) > 0
+        ]
+        return ContractMigrationEffort(
+            level=level,
+            score=score,
+            estimated_hours_min=hours_min,
+            estimated_hours_max=hours_max,
+            drivers=drivers,
+        )
+
+    def _effort_score(self, impact: ContractImpactItem) -> int:
+        if impact.category == "endpoint" and impact.change_type == "removed":
+            return 8
+        if impact.category == "schema" and impact.change_type == "removed" and "." in impact.name:
+            return 5
+        if impact.category == "schema" and impact.change_type == "removed":
+            return 6
+        if impact.category == "schema" and impact.change_type == "required_added":
+            return 4
+        if impact.category == "endpoint" and impact.change_type == "added":
+            return 1
+        if impact.is_breaking:
+            return 3
+        return 1 if impact.category in {"endpoint", "schema"} else 0
+
+    def _effort_band(self, score: int) -> tuple[str, int, int]:
+        if score >= 11:
+            return "critical", 16, 40
+        if score >= 7:
+            return "high", 8, 16
+        if score >= 3:
+            return "medium", 3, 8
+        if score >= 1:
+            return "low", 1, 2
+        return "none", 0, 0
+
+    def _effort_driver(self, impact: ContractImpactItem) -> str:
+        if impact.category == "endpoint":
+            return f"{impact.change_type.capitalize()} endpoint {impact.name}"
+        if impact.category == "schema":
+            return f"{impact.change_type.capitalize()} schema {impact.name}"
+        return f"{impact.change_type.capitalize()} contract impact {impact.name}"
 
     def _risk_level(self, impacts: list[ContractImpactItem]) -> str:
         severities = {impact.severity for impact in impacts}

@@ -53,6 +53,11 @@ def test_contract_impact_analyzer_reports_removed_endpoint_and_client_impact() -
     assert analysis.impacts[0].category == "endpoint"
     assert analysis.impacts[0].change_type == "removed"
     assert analysis.impacts[0].is_breaking is True
+    assert analysis.migration_effort.level == "high"
+    assert analysis.migration_effort.score == 8
+    assert analysis.migration_effort.estimated_hours_min == 8
+    assert analysis.migration_effort.estimated_hours_max == 16
+    assert analysis.migration_effort.drivers == ["Removed endpoint GET /api/v1/market/quotes"]
 
 
 def test_contract_impact_analyzer_reports_schema_property_removal() -> None:
@@ -96,3 +101,8 @@ def test_contract_impact_analyzer_reports_schema_property_removal() -> None:
     assert analysis.impacts[0].category == "schema"
     assert analysis.impacts[0].name == "QuoteResponse.price"
     assert "removed" in analysis.recommendations[0]
+    assert analysis.migration_effort.level == "medium"
+    assert analysis.migration_effort.score == 5
+    assert analysis.migration_effort.estimated_hours_min == 3
+    assert analysis.migration_effort.estimated_hours_max == 8
+    assert analysis.migration_effort.drivers == ["Removed schema QuoteResponse.price"]
