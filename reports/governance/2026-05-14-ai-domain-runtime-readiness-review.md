@@ -4,8 +4,8 @@
 > 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
 > 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
 
-日期：2026-05-14  
-分支：`wip/root-dirty-20260403`  
+日期：2026-05-14
+分支：`wip/root-dirty-20260403`
 范围：线 B，只读核验 `7.1 机器学习策略`、`7.2 批量分析`、`7.3 情感分析`；不修改 `FUNCTION_TREE`。
 
 ## 结论
@@ -80,7 +80,7 @@ PM2 与端口检查：
 
 ## 后端 Live Probe
 
-执行时间：2026-05-14 03:35-03:49 UTC  
+执行时间：2026-05-14 03:35-03:49 UTC
 目标：`http://localhost:8020`
 
 ### 7.1 机器学习策略
@@ -130,7 +130,7 @@ PM2 与端口检查：
 
 ## 前端 Smoke
 
-浏览器：`/usr/bin/google-chrome-stable`，Playwright headless。  
+浏览器：`/usr/bin/google-chrome-stable`，Playwright headless。
 认证：登录页 demo 账户 `admin / admin123`，登录后得到 `auth_token` 和 `auth_user`。
 
 ### 未认证访问
