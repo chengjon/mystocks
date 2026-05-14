@@ -14,16 +14,17 @@ from typing import Any, Dict, List, Optional
 
 import yaml
 
-from tests.contract.contract_validator import ContractValidator
-from tests.contract.models import (
+from .executor import ContractTestExecutor
+from .models import (
     ContractTestCase,
     ContractTestConfig,
     ContractTestSuite,
     ContractType,
     TestCategory,
     TestStatus,
+    ValidationRuleFactory,
 )
-from tests.contract.test_executor import ContractTestExecutor
+from .validator import ContractValidator
 
 logger = logging.getLogger(__name__)
 
@@ -112,7 +113,7 @@ class ContractTestEngine:
                             test_cases.append(test_case)
 
             logger.info("从 OpenAPI 规范自动发现 {len(test_cases)} 个测试用例")
-        except Exception as e:
+        except Exception:
             logger.error("从 OpenAPI 规范发现测试用例失败: %(e)s")
 
         return test_cases
@@ -160,7 +161,7 @@ class ContractTestEngine:
 
             return test_case
 
-        except Exception as e:
+        except Exception:
             logger.error("创建测试用例失败: %(e)s")
             return None
 
@@ -177,7 +178,7 @@ class ContractTestEngine:
 
     def _create_validation_rule_from_spec(self, path: str, method: str) -> Dict[str, Any]:
         """从规范创建验证规则"""
-        from tests.contract.models import ValidationRuleFactory
+        from .models import ValidationRuleFactory
 
         rules = []
 
@@ -285,7 +286,7 @@ class ContractTestEngine:
             logger.info("成功加载测试套件: {suite.name} ({len(suite.test_cases)} 个测试用例)")
             return suite
 
-        except Exception as e:
+        except Exception:
             logger.error("加载测试套件失败: %(e)s")
             return None
 
@@ -309,7 +310,7 @@ class ContractTestEngine:
 
             logger.info("保存测试套件成功: %(file_path)s")
 
-        except Exception as e:
+        except Exception:
             logger.error("保存测试套件失败: %(e)s")
 
     def create_default_suite(self) -> ContractTestSuite:

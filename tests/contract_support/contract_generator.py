@@ -642,6 +642,7 @@ class ContractGenerator:
 
         total_parameters = 0
         total_responses = 0
+        total_methods = complexity_metrics["total_methods"]
         method_counts = {}
 
         for path, methods in spec.paths.items():

@@ -13,7 +13,6 @@ from urllib.parse import urljoin
 
 import aiohttp
 
-from .contract_validator import ContractValidator
 from .models import (
     ContractTestCase,
     ContractTestConfig,
@@ -22,6 +21,7 @@ from .models import (
     TestExecutionResult,
     TestStatus,
 )
+from .validator import ContractValidator
 
 logger = logging.getLogger(__name__)
 
@@ -259,7 +259,7 @@ class ContractTestExecutor:
         try:
             async with self.session.get(f"{self.config.api_base_url}/api/health", timeout=5) as response:
                 return response.status == 200
-        except:
+        except Exception:
             return False
 
     async def _check_maintenance_mode(self) -> bool:
@@ -270,7 +270,7 @@ class ContractTestExecutor:
                     data = await response.json()
                     return data.get("maintenance_mode", False)
                 return False
-        except:
+        except Exception:
             return False
 
     async def _prepare_request(self, test_case: ContractTestCase) -> Dict[str, Any]:

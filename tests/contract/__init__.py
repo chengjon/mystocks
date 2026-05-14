@@ -13,9 +13,9 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from .contract_engine import ContractTestEngine
     from .contract_validator import ContractValidator
+    from .executor import ContractTestExecutor
     from .models import ContractTestCase, ContractTestConfig, ContractTestSuite
     from .report_generator import ContractTestReportGenerator
-    from .test_executor import ContractTestExecutor
 
 __all__ = [
     "ContractTestEngine",
@@ -30,7 +30,7 @@ __all__ = [
 _EXPORTS = {
     "ContractTestEngine": (".contract_engine", "ContractTestEngine"),
     "ContractValidator": (".contract_validator", "ContractValidator"),
-    "ContractTestExecutor": (".test_executor", "ContractTestExecutor"),
+    "ContractTestExecutor": (".executor", "ContractTestExecutor"),
     "ContractTestReportGenerator": (".report_generator", "ContractTestReportGenerator"),
     "ContractTestConfig": (".models", "ContractTestConfig"),
     "ContractTestSuite": (".models", "ContractTestSuite"),

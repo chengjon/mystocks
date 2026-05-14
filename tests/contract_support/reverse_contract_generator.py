@@ -624,7 +624,7 @@ async def demo_reverse_contract_generator():
             print(f"  已废弃端点: {coverage['deprecated_endpoints']}")
 
             # 导出契约
-            contract = generator.export_contract(
+            generator.export_contract(
                 scan_result,
                 format="openapi",
                 output_path=f"reverse_contract_{url.replace('://', '_')}.json",

@@ -5,7 +5,6 @@
 """
 
 import asyncio
-import json
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -14,7 +13,7 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
-from ._contract_executor_tail import ContractTestExecutorTailMixin, demo_contract_executor as _demo_contract_executor
+from .executor_tail import ContractTestExecutorTailMixin, demo_contract_executor as _demo_contract_executor
 
 
 class TestExecutionMode(Enum):
@@ -361,7 +360,7 @@ class ResponseValidator:
                     return False
             return True
         elif isinstance(expected, (str, int, float, bool)) and isinstance(actual, (str, int, float, bool)):
-            return type(expected) == type(actual)
+            return type(expected) is type(actual)
         else:
             return isinstance(expected, type(actual))
 

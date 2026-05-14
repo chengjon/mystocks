@@ -21,22 +21,27 @@
 - [x] 2.6 Integrate with existing code-quality.yml workflow
 
 ## 3. Contract Test Integration
-> **仓库事实校对（2026-04-27）**:
-> 本仓库已经形成“主测试结构 + 遗留 contract 目录并存”的局面。
+> **仓库事实校对（2026-05-14）**:
+> 本仓库已经完成“主测试结构 + canonical support package + 遗留 compatibility wrapper”的 contract test 收敛。
 > 已核对到的本地证据包括：
 > - pytest marker / 契约测试支撑：`web/backend/app/api/contract/services/contract_testing.py`
 > - 单元 / 集成契约测试入口：`tests/unit/contract/`、`tests/integration/contract/`
-> - 遗留目录仍保留：`tests/contract/`
-> 因此 3.2 不能勾选为完成；当前更接近“部分迁移已发生，但旧真相源未完全退场”。
+> - canonical support implementation：`tests/contract_support/`
+> - legacy compatibility wrapper：`tests/contract/`
+> - repo-truth guard：`tests/unit/contract/test_legacy_contract_tree_inventory.py`
+> - alias correctness guard：`tests/unit/contract/test_contract_support_aliases.py`
+> 因此 3.2 可按“真实 pytest case 已离开 legacy tree，support 主实现已迁入 canonical package，legacy tree 仅保留 thin wrapper”口径关闭。
 > `2026-05-07` 补充：
 > - 唯一仍位于 `tests/contract/` 的真实 pytest case `test_api_contract_schemathesis.py` 已迁入 `tests/integration/contract/`
-> - `tests/contract/` 当前剩余内容以 support / compatibility module 为主，仍需后续继续拆出 misnamed framework modules，3.2 继续保持未完成
+> - `tests/contract/` 当前剩余内容以 support / compatibility module 为主，仍需后续继续拆出 misnamed framework modules，3.2 继续保持未完成（已由 `2026-05-14` 批次关闭）
 > - 进一步 blast-radius 核对显示 `tests/contract/models.py` 的上游 fan-out 为 `HIGH`（direct=20），其直接依赖已扩散到 `tests/test_runner.py`、`tests/ai/*`、多个 `scripts/dev/analysis/*` 与部分 `src/algorithms/*`；因此 support-module 收敛不能再作为无审批的小型 rename / move 继续推进，需单独设计 canonical support package 与 compatibility shim 退场顺序
 > - 该顺序与边界现已记录在 `openspec/changes/enhance-api-contract-management-integration/design.md`
-> - `2026-05-07` 已完成第一批低风险 support-module canonicalization：`tests/contract_support/engine.py` 成为 `ContractTestEngine` 的 canonical home，`tests/contract/contract_engine.py` 已降级为 thin compatibility wrapper，并新增 `tests/unit/contract/test_contract_support_aliases.py` 保护 legacy import surface；但 validator / executor / reporting / models 尚未全部迁出，因此 3.2 继续保持未完成
+> - `2026-05-07` 已完成第一批低风险 support-module canonicalization：`tests/contract_support/engine.py` 成为 `ContractTestEngine` 的 canonical home，`tests/contract/contract_engine.py` 已降级为 thin compatibility wrapper，并新增 `tests/unit/contract/test_contract_support_aliases.py` 保护 legacy import surface
+> - `2026-05-14` 已完成 validator / executor / reporting / models / generator / reverse generator / split validator support migration；`tests/contract/` 现在只保留 thin compatibility wrapper / re-export，`tests/contract_support/` 成为唯一 support implementation home
+> - 验证：`ruff check tests/contract tests/contract_support tests/unit/contract/test_contract_support_aliases.py tests/unit/contract/test_legacy_contract_tree_inventory.py`、`pytest --no-cov tests/integration/contract tests/unit/contract -q`、`openspec validate enhance-api-contract-management-integration --strict`
 
 - [x] 3.1 Refactor contract tests to use pytest markers
-- [ ] 3.2 Move contract tests from tests/contract/ to main test structure
+- [x] 3.2 Move contract tests from tests/contract/ to main test structure
 - [x] 3.3 Add contract test execution to CI pipeline
 - [x] 3.4 Create contract test coverage reporting
 - [x] 3.5 Implement contract test failure analysis and debugging tools
