@@ -8,6 +8,7 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import type { UnifiedResponse } from './types/common.ts';
 import { createCSRFTokenResolver } from './csrfTokenResolver.ts';
+import { adaptApiClientRequestForVersion } from '../services/versionNegotiationPolicy.ts';
 
 // Request configuration
 interface RequestConfig extends AxiosRequestConfig {
@@ -31,6 +32,47 @@ const instance: AxiosInstance = axios.create({
   withCredentials: true,
 });
 
+function applyVersionNegotiation(config: InternalAxiosRequestConfig): void {
+  const targetVersion = readRequestHeader(config.headers, 'X-API-Version');
+  if (!targetVersion || !config.url) {
+    return;
+  }
+
+  const adapted = adaptApiClientRequestForVersion(config.url, config.data, targetVersion);
+  if (adapted.url !== config.url) {
+    config.url = adapted.url;
+  }
+
+  for (const [header, value] of Object.entries(adapted.headers)) {
+    setRequestHeader(config.headers, header, value);
+  }
+}
+
+function readRequestHeader(headers: InternalAxiosRequestConfig['headers'], name: string): string | null {
+  const getter = (headers as { get?: (headerName: string) => unknown }).get;
+  if (typeof getter === 'function') {
+    const value = getter.call(headers, name);
+    if (value !== undefined && value !== null) {
+      return String(value);
+    }
+  }
+
+  const record = headers as Record<string, unknown>;
+  const matchingKey = Object.keys(record).find((key) => key.toLowerCase() === name.toLowerCase());
+  const value = matchingKey ? record[matchingKey] : undefined;
+  return value === undefined || value === null ? null : String(value);
+}
+
+function setRequestHeader(headers: InternalAxiosRequestConfig['headers'], name: string, value: string): void {
+  const setter = (headers as { set?: (headerName: string, headerValue: string) => void }).set;
+  if (typeof setter === 'function') {
+    setter.call(headers, name, value);
+    return;
+  }
+
+  (headers as Record<string, string>)[name] = value;
+}
+
 // Request interceptor
 instance.interceptors.request.use(
   async (config: InternalAxiosRequestConfig) => {
@@ -53,6 +95,8 @@ instance.interceptors.request.use(
         console.error('[apiClient] Failed to get CSRF token:', error);
       }
     }
+
+    applyVersionNegotiation(config);
 
     return config;
   },

@@ -7,6 +7,30 @@
 
 import { ElNotification } from 'element-plus'
 import { apiClient } from '@/api/apiClient.ts'
+import {
+  VERSION_CONFIG,
+  adaptApiRequestForVersion as adaptVersionedApiRequest,
+  calculateMigrationPath as calculateVersionMigrationPath,
+  describeBreakingChanges,
+  getEndpointVersion as getPolicyEndpointVersion,
+  isVersionCompatible,
+  resolveContractVersionPath,
+  resolveRequiredVersion,
+  type AdaptedApiRequest,
+  type VersionCompatibility,
+  type VersionMigrationPath,
+} from './versionNegotiationPolicy.ts'
+
+export {
+  resolveContractVersionPath,
+}
+
+export type {
+  AdaptedApiRequest,
+  VersionCompatibility,
+  VersionMigrationPath,
+  VersionMigrationStep,
+} from './versionNegotiationPolicy.ts'
 
 interface _ApiVersion {
   name: string
@@ -14,35 +38,6 @@ interface _ApiVersion {
   prefix: string
   tags: string[]
   endpoints?: Record<string, string>
-}
-
-interface VersionCompatibility {
-  isCompatible: boolean
-  currentVersion: string
-  requiredVersion: string
-  breakingChanges?: string[]
-  deprecationWarnings?: string[]
-}
-
-export interface VersionMigrationStep {
-  fromVersion: string
-  toVersion: string
-  type: 'compatible' | 'breaking'
-  changes: string[]
-}
-
-export interface VersionMigrationPath {
-  currentVersion: string
-  targetVersion: string
-  isBreaking: boolean
-  steps: VersionMigrationStep[]
-}
-
-export interface AdaptedApiRequest<TPayload = unknown> {
-  endpoint: string
-  payload: TPayload
-  headers: Record<string, string>
-  migrationPath: VersionMigrationPath
 }
 
 interface NegotiationResult {
@@ -56,49 +51,6 @@ interface NegotiationResult {
 
 interface VersionDetectionOptions {
   probeContracts?: boolean
-}
-
-export function resolveContractVersionPath(endpoint: string): string {
-  const contractName = endpoint
-    .replace('/api/v1/', '')
-    .replace('/api/', '')
-
-  return `/contracts/versions/${contractName}/active`
-}
-
-const VERSION_CONFIG = {
-  supportedVersions: {
-    min: '1.0.0',
-    max: '2.0.0',
-    preferred: '1.0.0'
-  },
-
-  endpoints: {
-    '/api/v1/auth': '1.0.0',
-    '/api/auth': '1.0.0',
-    '/api/v1/market': '1.0.0',
-    '/api/market/v2': '2.0.0',
-    '/api/v1/strategy': '1.0.0',
-    '/api/v1/monitoring': '1.0.0',
-    '/api/v1/technical': '1.0.0',
-    '/api/v1/data': '1.0.0',
-    '/api/v1/system': '1.0.0',
-    '/api/v1/indicators': '1.0.0',
-    '/api/v1/tdx': '1.0.0',
-    '/api/v1/announcement': '1.0.0',
-    '/api/v1/data-sources': '1.0.0',
-    '/api/contracts': '1.0.0'
-  } as Record<string, string>,
-
-  deprecationWarnings: {
-    '0.x.x': 'API版本0.x.x已弃用，请升级到1.0.0+版本',
-    '1.0.0': 'API版本1.0.0计划在未来版本中弃用，建议升级到最新版本'
-  } as Record<string, string>,
-
-  compatibilityMatrix: {
-    '1.0.0': ['1.0.0', '1.1.0', '1.2.0'],
-    '2.0.0': ['2.0.0', '2.1.0']
-  } as Record<string, string[]>
 }
 
 class ApiVersionNegotiator {
@@ -175,19 +127,11 @@ class ApiVersionNegotiator {
   }
 
   private resolveRequiredVersion(apiName: string, requiredVersion?: string): string {
-    if (requiredVersion) {
-      return requiredVersion
-    }
-
-    return (
-      VERSION_CONFIG.endpoints[apiName] ||
-      this.detectedVersions.get(apiName) ||
-      VERSION_CONFIG.supportedVersions.preferred
-    )
+    return resolveRequiredVersion(apiName, requiredVersion, this.detectedVersions)
   }
 
   private describeBreakingChanges(currentVersion: string, requiredVersion: string): string[] {
-    return [`API版本${currentVersion}与所需版本${requiredVersion}不兼容`]
+    return describeBreakingChanges(currentVersion, requiredVersion)
   }
 
   public checkCompatibility(apiName: string, requiredVersion?: string): VersionCompatibility {
@@ -197,7 +141,7 @@ class ApiVersionNegotiator {
       return cachedCompatibility
     }
 
-    const currentVersion = this.detectedVersions.get(apiName) || this.detectedVersions.get('system') || '1.0.0'
+    const currentVersion = getPolicyEndpointVersion(apiName, this.detectedVersions)
     const required = this.resolveRequiredVersion(apiName, requiredVersion)
 
     const compatibility: VersionCompatibility = {
@@ -221,62 +165,11 @@ class ApiVersionNegotiator {
   }
 
   private isVersionCompatible(current: string, required: string): boolean {
-    const compatibilityMatrix = VERSION_CONFIG.compatibilityMatrix
-
-    for (const [_baseVersion, compatibleVersions] of Object.entries(compatibilityMatrix)) {
-      if (compatibleVersions.includes(required)) {
-        return compatibleVersions.includes(current)
-      }
-    }
-
-    return this.compareVersions(current, required) >= 0
-  }
-
-  /**
-   * 语义化版本比较
-   */
-  private compareVersions(version1: string, version2: string): number {
-    const v1 = version1.split('.').map(Number)
-    const v2 = version2.split('.').map(Number)
-
-    for (let i = 0; i < Math.max(v1.length, v2.length); i++) {
-      const num1 = v1[i] || 0
-      const num2 = v2[i] || 0
-
-      if (num1 > num2) return 1
-      if (num1 < num2) return -1
-    }
-
-    return 0
+    return isVersionCompatible(current, required)
   }
 
   public calculateMigrationPath(apiName: string, targetVersion?: string): VersionMigrationPath {
-    const currentVersion = this.getEndpointVersion(apiName)
-    const requiredVersion = this.resolveRequiredVersion(apiName, targetVersion)
-
-    if (currentVersion === requiredVersion) {
-      return {
-        currentVersion,
-        targetVersion: requiredVersion,
-        isBreaking: false,
-        steps: [],
-      }
-    }
-
-    const isCompatible = this.isVersionCompatible(currentVersion, requiredVersion)
-    return {
-      currentVersion,
-      targetVersion: requiredVersion,
-      isBreaking: !isCompatible,
-      steps: [
-        {
-          fromVersion: currentVersion,
-          toVersion: requiredVersion,
-          type: isCompatible ? 'compatible' : 'breaking',
-          changes: isCompatible ? [] : this.describeBreakingChanges(currentVersion, requiredVersion),
-        },
-      ],
-    }
+    return calculateVersionMigrationPath(apiName, targetVersion, this.detectedVersions)
   }
 
   public async negotiateVersion(apiName: string, preferredVersion?: string): Promise<NegotiationResult> {
@@ -318,68 +211,12 @@ class ApiVersionNegotiator {
     return result
   }
 
-  private normalizeEndpointDomain(endpoint: string): string {
-    return endpoint
-      .split('/')
-      .filter(Boolean)
-      .filter((segment) => segment !== 'api' && !/^v\d+$/.test(segment))
-      .join('/')
-  }
-
-  private findConfiguredEndpointPrefix(endpoint: string, version?: string): string | null {
-    const entries = Object.entries(VERSION_CONFIG.endpoints)
-      .sort(([left], [right]) => right.length - left.length)
-
-    const match = entries.find(([prefix, configuredVersion]) => (
-      endpoint.startsWith(prefix) && (!version || configuredVersion === version)
-    ))
-
-    return match?.[0] || null
-  }
-
-  private adaptEndpointForVersion(endpoint: string, targetVersion: string): string {
-    const currentPrefix = this.findConfiguredEndpointPrefix(endpoint)
-    if (!currentPrefix) {
-      return endpoint
-    }
-
-    const currentDomain = this.normalizeEndpointDomain(currentPrefix)
-    const targetEntry = Object.entries(VERSION_CONFIG.endpoints)
-      .sort(([left], [right]) => right.length - left.length)
-      .find(([prefix, version]) => (
-        version === targetVersion && this.normalizeEndpointDomain(prefix) === currentDomain
-      ))
-
-    if (!targetEntry || targetEntry[0] === currentPrefix) {
-      return endpoint
-    }
-
-    return `${targetEntry[0]}${endpoint.slice(currentPrefix.length)}`
-  }
-
   public adaptRequestForVersion<TPayload = unknown>(
     endpoint: string,
     payload: TPayload,
     targetVersion?: string,
   ): AdaptedApiRequest<TPayload> {
-    const migrationPath = this.calculateMigrationPath(endpoint, targetVersion)
-    const headers: Record<string, string> = {
-      'X-API-Version': migrationPath.targetVersion,
-      'X-API-Version-From': migrationPath.currentVersion,
-    }
-
-    if (migrationPath.steps.length > 0) {
-      headers['X-API-Migration-Path'] = migrationPath.steps
-        .map((step) => `${step.fromVersion}->${step.toVersion}`)
-        .join(',')
-    }
-
-    return {
-      endpoint: this.adaptEndpointForVersion(endpoint, migrationPath.targetVersion),
-      payload,
-      headers,
-      migrationPath,
-    }
+    return adaptVersionedApiRequest(endpoint, payload, targetVersion, this.detectedVersions)
   }
 
   private findFallbackVersion(apiName: string, preferredVersion: string): string | null {
@@ -443,24 +280,7 @@ class ApiVersionNegotiator {
   }
 
   public getEndpointVersion(endpoint: string): string {
-    const detectedVersion = this.detectedVersions.get(endpoint)
-    if (detectedVersion) {
-      return detectedVersion
-    }
-
-    for (const [apiEndpoint, version] of this.detectedVersions) {
-      if (endpoint.startsWith(apiEndpoint)) {
-        return version
-      }
-    }
-
-    for (const [configEndpoint, version] of Object.entries(VERSION_CONFIG.endpoints)) {
-      if (endpoint.startsWith(configEndpoint)) {
-        return version
-      }
-    }
-
-    return this.detectedVersions.get('system') || VERSION_CONFIG.supportedVersions.preferred
+    return getPolicyEndpointVersion(endpoint, this.detectedVersions)
   }
 
   public getNegotiationHistory(): NegotiationResult[] {

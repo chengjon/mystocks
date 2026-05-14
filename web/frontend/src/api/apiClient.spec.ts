@@ -58,6 +58,34 @@ describe('apiClient', () => {
     })
   })
 
+  describe('version negotiation requests', () => {
+    it('should adapt versioned API endpoints when a target version is requested', async () => {
+      localStorageMock.getItem.mockReturnValue(null)
+      const requestHandlers = (
+        apiClient.interceptors.request as unknown as {
+          handlers: Array<{ fulfilled?: (config: unknown) => Promise<unknown> | unknown }>
+        }
+      ).handlers
+      const fulfilled = requestHandlers.find((handler) => typeof handler.fulfilled === 'function')?.fulfilled
+
+      expect(fulfilled).toBeTypeOf('function')
+
+      const config = await fulfilled?.({
+        headers: {
+          'X-API-Version': '2.0.0',
+        },
+        method: 'get',
+        url: '/v1/market/quotes',
+      })
+
+      const adaptedConfig = config as { headers: Record<string, string>; url: string }
+      expect(adaptedConfig.url).toBe('/market/v2/quotes')
+      expect(adaptedConfig.headers['X-API-Version']).toBe('2.0.0')
+      expect(adaptedConfig.headers['X-API-Version-From']).toBe('1.0.0')
+      expect(adaptedConfig.headers['X-API-Migration-Path']).toBe('1.0.0->2.0.0')
+    })
+  })
+
   describe('authentication errors', () => {
     it('should clear all stored session keys when a request returns 401', async () => {
       const responseHandlers = (
