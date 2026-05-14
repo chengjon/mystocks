@@ -1,16 +1,7 @@
-import type { AxiosRequestConfig, AxiosResponse } from 'axios'
-
-import request from '@/utils/request.ts'
+import { apiClient } from '@/api/apiClient.ts'
 
 import type { UnifiedResponse } from '@/api/types/common.ts'
 import type { SentimentRequest, SentimentResponse } from '@/api/types/analysis.ts'
-
-const http = {
-  get: <T>(url: string, config?: AxiosRequestConfig): Promise<T> =>
-    request.get(url, config).then((resp: AxiosResponse) => resp.data || resp),
-  post: <T>(url: string, data?: unknown, config?: AxiosRequestConfig): Promise<T> =>
-    request.post(url, data, config).then((resp: AxiosResponse) => resp.data || resp),
-}
 
 export interface SentimentNewsItem {
   stock_code?: string
@@ -61,24 +52,24 @@ export interface SentimentWorkbenchNewsResponse {
 }
 
 export function getSentimentNews(params: Record<string, unknown> = {}): Promise<UnifiedResponse<SentimentWorkbenchNewsResponse>> {
-  return http.get('/announcement/list', { params })
+  return apiClient.get('/announcement/list', { params })
 }
 
 export function analyzeSentiment(payload: SentimentRequest): Promise<UnifiedResponse<SentimentResponse>> {
-  return http.post('/api/v1/sentiment/analyze', payload)
+  return apiClient.post('/v1/sentiment/analyze', payload)
 }
 
 export function getStockSentiment(
   symbol: string,
   days: number,
 ): Promise<UnifiedResponse<SentimentStockTrendResponse>> {
-  return http.get(`/api/v1/sentiment/stock/${encodeURIComponent(symbol)}`, {
+  return apiClient.get(`/v1/sentiment/stock/${encodeURIComponent(symbol)}`, {
     params: { days },
   })
 }
 
 export function getMarketSentiment(): Promise<UnifiedResponse<SentimentMarketOverviewResponse>> {
-  return http.get('/api/v1/sentiment/market')
+  return apiClient.get('/v1/sentiment/market')
 }
 
 export const aiSentimentApi = {
