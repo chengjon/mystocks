@@ -5,33 +5,16 @@ Infrastructure Persistence Exceptions
 定义持久化层相关的异常类。
 """
 
+from src.domain.portfolio.exceptions import PortfolioConcurrencyException
 
-class ConcurrencyException(Exception):
+
+class ConcurrencyException(PortfolioConcurrencyException):
     """
     并发冲突异常
 
     当检测到并发修改冲突时抛出此异常。
     通常由乐观锁（版本号）或分布式锁检测触发。
     """
-
-    def __init__(self, message: str, entity_type: str = None, entity_id: str = None):
-        """
-        初始化并发异常
-
-        Args:
-            message: 错误消息
-            entity_type: 实体类型（可选）
-            entity_id: 实体ID（可选）
-        """
-        self.entity_type = entity_type
-        self.entity_id = entity_id
-
-        if entity_type and entity_id:
-            full_message = f"Concurrency conflict for {entity_type} {entity_id}: {message}"
-        else:
-            full_message = message
-
-        super().__init__(full_message)
 
 
 class RepositoryException(Exception):

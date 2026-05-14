@@ -12,9 +12,9 @@ Portfolio Valuation Service
 import logging
 from typing import Dict, List, Optional
 
+from src.domain.portfolio.exceptions import PortfolioConcurrencyException
 from src.domain.portfolio.repository.iportfolio_repository import IPortfolioRepository
 from src.domain.portfolio.value_objects.performance_metrics import PerformanceMetrics
-from src.infrastructure.persistence.exceptions import ConcurrencyException
 
 logger = logging.getLogger(__name__)
 
@@ -62,7 +62,7 @@ class PortfolioValuationService:
 
         Raises:
             ValueError: 投资组合不存在
-            ConcurrencyException: 并发冲突
+            PortfolioConcurrencyException: 并发冲突
         """
         self.metrics["total_revaluations"] += 1
 
@@ -105,7 +105,7 @@ class PortfolioValuationService:
 
             return performance
 
-        except ConcurrencyException:
+        except PortfolioConcurrencyException:
             self.metrics["concurrency_conflicts"] += 1
             logger.warning("⚠️ Concurrency conflict revaluating portfolio %(portfolio_id)s: %(e)s")
             raise

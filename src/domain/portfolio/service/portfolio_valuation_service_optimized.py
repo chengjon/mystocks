@@ -13,12 +13,12 @@ import logging
 from collections import defaultdict
 from typing import Dict, List, Optional
 
+from src.domain.portfolio.exceptions import PortfolioConcurrencyException
 from src.domain.portfolio.model.portfolio import Portfolio
 from src.domain.portfolio.repository.iportfolio_repository import IPortfolioRepository
+from src.domain.portfolio.service.incremental_calculator import IncrementalCalculator
 from src.domain.portfolio.service.portfolio_valuation_service import PortfolioValuationService
 from src.domain.portfolio.value_objects.performance_metrics import PerformanceMetrics
-from src.infrastructure.persistence.exceptions import ConcurrencyException
-from src.application.services.performance_optimizer import IncrementalCalculator
 
 logger = logging.getLogger(__name__)
 
@@ -120,7 +120,7 @@ class OptimizedPortfolioValuationService(PortfolioValuationService):
 
             return performance
 
-        except ConcurrencyException:
+        except PortfolioConcurrencyException:
             self.metrics["concurrency_conflicts"] += 1
             logger.warning("⚠️ Concurrency conflict revaluating portfolio %(portfolio_id)s: %(e)s")
             raise

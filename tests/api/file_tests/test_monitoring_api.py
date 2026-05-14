@@ -7,6 +7,7 @@ File-level route and helper contract tests for monitoring.py.
 
 from __future__ import annotations
 
+import asyncio
 import importlib
 import sys
 from pathlib import Path
@@ -72,15 +73,21 @@ class TestMonitoringAPIFile:
         assert response_models[("/alert-rules", ("GET",))] == monitoring_module.UnifiedResponse[
             monitoring_module.List[monitoring_module.AlertRuleResponse]
         ]
-        assert response_models[("/alerts", ("GET",))] is monitoring_module.AlertRecordsResponse
-        assert response_models[("/realtime/{symbol}", ("GET",))] is monitoring_module.RealtimeMonitoringResponse
-        assert response_models[("/realtime", ("GET",))] == monitoring_module.List[
+        assert response_models[("/alerts", ("GET",))] == monitoring_module.UnifiedResponse[
+            monitoring_module.AlertRecordsResponse
+        ]
+        assert response_models[("/realtime/{symbol}", ("GET",))] == monitoring_module.UnifiedResponse[
             monitoring_module.RealtimeMonitoringResponse
         ]
-        assert response_models[("/dragon-tiger", ("GET",))] == monitoring_module.List[
-            monitoring_module.DragonTigerListResponse
+        assert response_models[("/realtime", ("GET",))] == monitoring_module.UnifiedResponse[
+            monitoring_module.List[monitoring_module.RealtimeMonitoringResponse]
         ]
-        assert response_models[("/summary", ("GET",))] is monitoring_module.MonitoringSummaryResponse
+        assert response_models[("/dragon-tiger", ("GET",))] == monitoring_module.UnifiedResponse[
+            monitoring_module.List[monitoring_module.DragonTigerListResponse]
+        ]
+        assert response_models[("/summary", ("GET",))] == monitoring_module.UnifiedResponse[
+            monitoring_module.MonitoringSummaryResponse
+        ]
 
     @pytest.mark.file_test
     def test_route_names_remain_stable_for_core_operations(self, monitoring_module):
@@ -132,9 +139,253 @@ class TestMonitoringAPIFile:
     @pytest.mark.file_test
     def test_summary_and_analyze_routes_share_same_response_model(self, monitoring_module):
         response_models = {(route.path, tuple(sorted(route.methods or []))): route.response_model for route in monitoring_module.router.routes}
+        expected_model = monitoring_module.UnifiedResponse[monitoring_module.MonitoringSummaryResponse]
 
-        assert response_models[("/analyze", ("GET",))] is monitoring_module.MonitoringSummaryResponse
-        assert response_models[("/summary", ("GET",))] is monitoring_module.MonitoringSummaryResponse
+        assert response_models[("/analyze", ("GET",))] == expected_model
+        assert response_models[("/summary", ("GET",))] == expected_model
+
+    @pytest.mark.file_test
+    def test_monitoring_summary_route_delegates_to_summary_service(self, monitoring_module, monkeypatch):
+        expected = monitoring_module.MonitoringSummaryResponse(
+            total_stocks=7,
+            limit_up_count=2,
+            limit_down_count=1,
+            strong_up_count=3,
+            strong_down_count=0,
+            avg_change_percent=4.25,
+            total_amount=123456.78,
+            active_alerts=5,
+            unread_alerts=2,
+        )
+
+        class FakeSummaryService:
+            def __init__(self):
+                self.calls = 0
+
+            def get_summary(self):
+                self.calls += 1
+                return expected
+
+        fake_service = FakeSummaryService()
+        monkeypatch.setattr(monitoring_module, "_monitoring_summary_service", fake_service, raising=False)
+
+        result = asyncio.run(monitoring_module.get_monitoring_summary(SimpleNamespace()))
+
+        assert result.data.model_dump() == expected.model_dump()
+        assert fake_service.calls == 1
+
+    @pytest.mark.file_test
+    def test_monitoring_control_routes_delegate_to_control_service(self, monitoring_module, monkeypatch):
+        class LegacySafeMonitoringService:
+            def __init__(self):
+                self.is_monitoring = False
+                self.monitored_symbols = []
+
+            async def start_monitoring(self, symbols=None, interval=60):
+                self.is_monitoring = True
+                self.monitored_symbols = list(symbols or [])
+                try:
+                    while True:
+                        await asyncio.sleep(3600)
+                except asyncio.CancelledError:
+                    raise
+
+            def stop_monitoring(self):
+                self.is_monitoring = False
+
+        class FakeControlService:
+            def __init__(self):
+                self.calls = []
+
+            async def start(self, *, symbols, interval):
+                self.calls.append(("start", symbols, interval))
+                return {
+                    "is_monitoring": True,
+                    "monitored_symbols": list(symbols or []),
+                    "monitored_count": len(symbols or []),
+                    "interval": interval,
+                }
+
+            async def stop(self):
+                self.calls.append(("stop",))
+                return {
+                    "is_monitoring": False,
+                    "monitored_symbols": [],
+                    "monitored_count": 0,
+                }
+
+            def get_status(self):
+                self.calls.append(("status",))
+                return {
+                    "is_monitoring": True,
+                    "monitored_symbols": ["600519"],
+                    "monitored_count": 1,
+                    "update_interval": 15,
+                }
+
+        fake_service = FakeControlService()
+        monkeypatch.setattr(monitoring_module, "monitoring_service", LegacySafeMonitoringService())
+        monkeypatch.setattr(monitoring_module, "_monitoring_control_service", fake_service, raising=False)
+
+        start_response = asyncio.run(
+            monitoring_module.start_monitoring(
+                monitoring_module.MonitoringControlRequest(symbols=["600519"], interval=15),
+                SimpleNamespace(),
+            )
+        )
+        stop_response = asyncio.run(monitoring_module.stop_monitoring(SimpleNamespace()))
+        status_response = asyncio.run(monitoring_module.get_monitoring_status())
+
+        assert fake_service.calls == [
+            ("start", ["600519"], 15),
+            ("stop",),
+            ("status",),
+        ]
+        assert start_response.data["interval"] == 15
+        assert stop_response["data"]["is_monitoring"] is False
+        assert status_response["data"]["update_interval"] == 15
+
+    @pytest.mark.file_test
+    def test_alert_rule_routes_delegate_to_alert_rule_service(self, monitoring_module, monkeypatch):
+        class FakeAlertRuleService:
+            def __init__(self):
+                self.calls = []
+
+            def list_rules(self, *, rule_type, is_active):
+                self.calls.append(("list", rule_type, is_active))
+                return [{"id": 1, "rule_name": "核心仓位跌破止损线"}]
+
+            def create_rule(self, rule):
+                self.calls.append(("create", rule.rule_name))
+                return "created-rule"
+
+            def update_rule(self, rule_id, updates):
+                self.calls.append(("update", rule_id, updates.description))
+                return "updated-rule"
+
+            def delete_rule(self, rule_id):
+                self.calls.append(("delete", rule_id))
+                return {"success": True, "message": "告警规则已删除"}
+
+        fake_service = FakeAlertRuleService()
+        monkeypatch.setattr(monitoring_module, "_monitoring_alert_rule_service", fake_service, raising=False)
+
+        list_response = asyncio.run(
+            monitoring_module.get_alert_rules(monitoring_module.AlertRuleType.LIMIT_UP, True, SimpleNamespace())
+        )
+        created = asyncio.run(
+            monitoring_module.create_alert_rule(
+                monitoring_module.AlertRuleCreate(
+                    rule_name="茅台涨停监控",
+                    rule_type=monitoring_module.AlertRuleType.LIMIT_UP,
+                ),
+                SimpleNamespace(),
+            )
+        )
+        updated = asyncio.run(
+            monitoring_module.update_alert_rule(
+                42,
+                monitoring_module.AlertRuleUpdate(description="更新后的涨停提醒规则"),
+                SimpleNamespace(),
+            )
+        )
+        deleted = asyncio.run(monitoring_module.delete_alert_rule(42, SimpleNamespace()))
+
+        assert fake_service.calls == [
+            ("list", "limit_up", True),
+            ("create", "茅台涨停监控"),
+            ("update", 42, "更新后的涨停提醒规则"),
+            ("delete", 42),
+        ]
+        assert list_response.data == [{"id": 1, "rule_name": "核心仓位跌破止损线"}]
+        assert created.data == "created-rule"
+        assert updated.data == "updated-rule"
+        assert deleted.data == {"success": True, "message": "告警规则已删除"}
+
+    @pytest.mark.file_test
+    def test_alert_record_routes_delegate_to_alert_record_service(self, monitoring_module, monkeypatch):
+        class FakeAlertRecordService:
+            def __init__(self):
+                self.calls = []
+
+            def list_records(
+                self,
+                *,
+                symbol,
+                alert_type,
+                alert_level,
+                is_read,
+                start_date,
+                end_date,
+                limit,
+                offset,
+            ):
+                self.calls.append(
+                    ("list", symbol, alert_type, alert_level, is_read, start_date, end_date, limit, offset)
+                )
+                return SimpleNamespace(
+                    records=[
+                        monitoring_module.AlertRecordResponse(
+                            id=101,
+                            rule_id=10,
+                            rule_name="核心仓位风控",
+                            symbol="600519",
+                            stock_name="贵州茅台",
+                            alert_time=monitoring_module.datetime(2026, 3, 13, 10, 0, 0),
+                            alert_type="price_change",
+                            alert_level="warning",
+                            alert_title="价格异动",
+                            alert_message="触发核心仓位风控提醒",
+                            alert_details={},
+                            snapshot_data={},
+                            is_read=False,
+                            is_handled=False,
+                            created_at=monitoring_module.datetime(2026, 3, 13, 10, 0, 1),
+                        )
+                    ],
+                    total=3,
+                    limit=limit,
+                    offset=offset,
+                )
+
+            def mark_read(self, alert_id):
+                self.calls.append(("mark", alert_id))
+                return {"success": True, "message": "已标记为已读"}
+
+            def mark_all_read(self):
+                self.calls.append(("mark_all",))
+                return {"status": "updated", "scope": "all_alerts", "updated_count": 2}
+
+        fake_service = FakeAlertRecordService()
+        monkeypatch.setattr(monitoring_module, "_monitoring_alert_record_service", fake_service, raising=False)
+
+        list_response = asyncio.run(
+            monitoring_module.get_alert_records(
+                "600519",
+                "price_change",
+                monitoring_module.AlertLevel.WARNING,
+                False,
+                None,
+                None,
+                25,
+                5,
+                SimpleNamespace(),
+            )
+        )
+        marked = asyncio.run(monitoring_module.mark_alert_read(101, SimpleNamespace()))
+        marked_all = asyncio.run(monitoring_module.mark_all_alerts_read(SimpleNamespace()))
+
+        assert fake_service.calls == [
+            ("list", "600519", "price_change", "warning", False, None, None, 25, 5),
+            ("mark", 101),
+            ("mark_all",),
+        ]
+        assert [record.id for record in list_response.data.data] == [101]
+        assert list_response.data.total == 3
+        assert list_response.data.limit == 25
+        assert list_response.data.offset == 5
+        assert marked.data == {"success": True, "message": "已标记为已读"}
+        assert marked_all.data == {"status": "updated", "scope": "all_alerts", "updated_count": 2}
 
     @pytest.mark.file_test
     def test_docstrings_cover_alerts_realtime_and_summary_operations(self, monitoring_module):

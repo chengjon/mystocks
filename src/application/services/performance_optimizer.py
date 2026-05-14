@@ -21,6 +21,20 @@ from typing import Any, Callable, Dict, List, Optional
 
 import structlog
 
+from src.domain.portfolio.service.incremental_calculator import IncrementalCalculator
+
+__all__ = [
+    "BatchProcessor",
+    "CacheKeyGenerator",
+    "IncrementalCalculator",
+    "LRUCache",
+    "PerformanceMonitor",
+    "get_batch_processor",
+    "get_cache",
+    "get_performance_monitor",
+]
+
+
 logger = structlog.get_logger()
 
 
@@ -169,53 +183,6 @@ class BatchProcessor:
             "pending_items": len(self.batch),
             "last_flush": self._last_flush.isoformat(),
         }
-
-
-class IncrementalCalculator:
-    """增量计算器"""
-
-    def __init__(self, initial_value: float = 0.0):
-        """初始化增量计算器"""
-        self.value = initial_value
-        self.history: List[float] = []
-        self.max_history = 100
-
-    def add_delta(self, delta: float) -> float:
-        """添加增量并返回新值"""
-        self.value += delta
-        self.history.append(self.value)
-
-        if len(self.history) > self.max_history:
-            self.history.pop(0)
-
-        return self.value
-
-    def set_value(self, value: float) -> float:
-        """设置值并计算增量"""
-        delta = value - self.value
-        self.value = value
-        self.history.append(value)
-
-        if len(self.history) > self.max_history:
-            self.history.pop(0)
-
-        return delta
-
-    def get_value(self) -> float:
-        """获取当前值"""
-        return self.value
-
-    def get_change(self) -> float:
-        """获取变化量"""
-        if len(self.history) < 2:
-            return 0.0
-        return self.history[-1] - self.history[-2]
-
-    def get_rate_of_change(self, window: int = 5) -> float:
-        """获取变化率"""
-        if len(self.history) < window + 1:
-            return 0.0
-        return (self.history[-1] - self.history[-window - 1]) / window
 
 
 class CacheKeyGenerator:
