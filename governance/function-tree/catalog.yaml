@@ -568,39 +568,19 @@ domains:
         label: "8.2 系统配置"
         coverage_paths:
           - "web/backend/app/api/system.py"
-          - "web/backend/app/api/v1/system/settings.py"
-          - "web/backend/app/api/data_source_config.py"
-          - "web/frontend/src/api/index.ts"
-          - "web/frontend/src/views/system/Settings.vue"
-          - "web/frontend/src/views/system/DataSource.vue"
-          - "web/backend/tests/test_system_settings_contract.py"
-          - "tests/api/file_tests/test_data_source_config_api.py"
-          - "web/frontend/src/api/__tests__/monitoringApi.spec.ts"
-          - "web/frontend/src/views/system/__tests__/Settings.spec.ts"
-          - "web/frontend/src/views/system/__tests__/DataSource.spec.ts"
           - "config/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
             - "web/backend/app/api/system.py"
-            - "web/backend/app/api/v1/system/settings.py"
-            - "web/backend/app/api/data_source_config.py"
           frontend:
-            - "web/frontend/src/views/system/Settings.vue"
-            - "web/frontend/src/views/system/DataSource.vue"
             - "web/frontend/src/views/system/**"
             - "web/frontend/src/views/artdeco-pages/system-tabs/**"
           core:
-            - "web/frontend/src/api/index.ts"
             - "config/**"
           tests:
             - "tests/api/system.spec.ts"
-            - "web/backend/tests/test_system_settings_contract.py"
-            - "tests/api/file_tests/test_data_source_config_api.py"
-            - "web/frontend/src/api/__tests__/monitoringApi.spec.ts"
-            - "web/frontend/src/views/system/__tests__/Settings.spec.ts"
-            - "web/frontend/src/views/system/__tests__/DataSource.spec.ts"
           operations:
             - "docs/operations/deployment/README.md"
             - "docker/README.md"
