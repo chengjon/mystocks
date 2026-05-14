@@ -385,7 +385,7 @@ Q2 closure note:
 ## 07-高级分析与AI {#domain-07}
 
 **模块路径**: `src/advanced_analysis/`, `src/ml_strategy/`
-**API前缀**: `/api/v1/advanced-analysis/*`, `/api/v1/algorithms/*`, `/api/ml/*`, `/api/gpu/*`
+**API前缀**: canonical `/api/v1/strategies/ml/*`, `/api/v1/strategies/batch-analysis/*`, `/api/v1/sentiment/*`, `/api/gpu/*`; compatibility `/api/v1/advanced-analysis/*`, `/api/v1/algorithms/*`, `/api/ml/*`
 **完成度**: 50%
 
 ### 领域入口
