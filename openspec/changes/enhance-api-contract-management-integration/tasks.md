@@ -74,8 +74,9 @@
 > **仓库事实校对（2026-04-27）**:
 > 目前未在 `web/backend/app/api/contract/services/`、前端 API / 组件目录或相关测试中找到 `ContractImpactAnalyzer`、impact analysis API/UI、migration effort estimation 的当前实现证据。
 > 历史分析文档中有方案草图，但不能当作当前代码事实。
+> `2026-05-15` 补充：后端已新增 `web/backend/app/api/contract/services/impact_analyzer.py`，提供纯 service 级 `ContractImpactAnalyzer.analyze_specs()` / `analyze_diff()`，当前覆盖 endpoint/schema/client 影响识别与风险汇总；尚未接入 API endpoint、前端 UI、通知或迁移工作量算法。
 
-- [ ] 5.1 Create ContractImpactAnalyzer service in backend
+- [x] 5.1 Create ContractImpactAnalyzer service in backend
 - [ ] 5.2 Implement frontend impact assessment for contract changes
 - [ ] 5.3 Add migration effort estimation algorithms
 - [ ] 5.4 Create impact analysis API endpoints
