@@ -1,4 +1,5 @@
 import importlib
+import importlib.util
 from pathlib import Path
 
 from scripts.generate_frontend_types import PydanticModelExtractor, TypeGenerationConfig
@@ -45,6 +46,41 @@ def test_generate_frontend_types_cli_accepts_openapi_spec_argument() -> None:
     args = parser.parse_args(["--openapi-spec", "generated_openapi.json"])
 
     assert args.openapi_spec == "generated_openapi.json"
+
+
+def _load_legacy_generate_ts_types_module():
+    module_path = Path("scripts/dev/generate-types/generate_ts_types.py")
+    spec = importlib.util.spec_from_file_location("legacy_generate_ts_types", module_path)
+    assert spec is not None
+    assert spec.loader is not None
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_legacy_generate_ts_types_entrypoint_delegates_to_canonical_generator(monkeypatch) -> None:
+    module = _load_legacy_generate_ts_types_module()
+    canonical = importlib.import_module("scripts.generate_frontend_types")
+    calls: list[bool] = []
+
+    def fake_main() -> None:
+        calls.append(True)
+
+    monkeypatch.setattr(canonical, "main", fake_main)
+
+    assert module.main(["--all"]) == 0
+    assert calls == [True]
+
+
+def test_legacy_generate_ts_types_rejects_old_external_tool_flags(capsys) -> None:
+    module = _load_legacy_generate_ts_types_module()
+
+    assert module.main(["--tool", "openapi-typescript"]) == 2
+
+    captured = capsys.readouterr()
+    assert "scripts/generate_frontend_types.py" in captured.err
+    assert "--tool" in captured.err
 
 
 def test_generated_types_output_is_deterministic(tmp_path: Path) -> None:

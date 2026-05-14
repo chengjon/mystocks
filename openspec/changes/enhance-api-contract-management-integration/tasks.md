@@ -16,6 +16,7 @@
 - [x] 2.1 Create .github/workflows/api-contract-validation.yml
 - [x] 2.2 Add contract validation job triggered on backend API changes
 - [x] 2.3 Implement automated TypeScript type generation in CI
+  - `2026-05-14` repo-truth note: frontend type generation is canonicalized on `scripts/generate_frontend_types.py`; legacy `scripts/dev/generate-types/generate_ts_types.py` is now only a compatibility wrapper and rejects old external-tool flags (`--tool`, `--contracts-dir`, `--output-dir`).
 - [x] 2.4 Add contract drift detection and failure on breaking changes
 - [x] 2.5 Create contract validation reports and notifications
 - [x] 2.6 Integrate with existing code-quality.yml workflow
