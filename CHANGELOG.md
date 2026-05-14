@@ -6,6 +6,20 @@
 >
 > 文内版本状态、验证结果、阶段命名和变更摘要如未重新复核，应视为对应版本的历史快照，不得直接当作当前事实。
 
+## 2026-05-14 — 7.1 模型训练 / 预测推理发布记录补证
+
+### AI 与机器学习
+
+- **7.1 模型训练 / 预测推理 repo-local 闭环**：当前 `FUNCTION_TREE` 已将 `07-高级分析与AI -> 7.1 机器学习策略` 下的 `模型训练` 与 `预测推理` 标记为 `✅`。首批 canonical 入口以 AI 域 `/ai/ml` 工作台为准，后端 canonical API 为 `/api/v1/strategies/ml/*`，旧 `/api/ml/models/*` 仅作为兼容面保留。
+- **运行时契约与安全语义**：`ml-training-prediction` OpenSpec 当前真相层已固定 runtime readiness、监督训练、预测推理、模型 artifact inspection、legacy compatibility boundary，以及缺少模型族依赖时的明确 `service-unavailable` 语义。
+- **验证入口**：后端 v1 ML workbench 契约测试、AI ML workbench E2E、FUNCTION_TREE 治理测试与 OpenSpec specs 校验已作为本次补证的主要证据链；详细证据见 `reports/governance/2026-05-14-ml-workbench-release-evidence.md`。
+
+### 验证结果
+
+- `pytest --no-cov web/backend/tests/test_v1_ml_workbench_contract.py -q` -> `24 passed`
+- `pytest --no-cov tests/unit/governance/test_function_tree_doc_sync.py tests/unit/governance/test_function_tree_catalog.py -q` -> `19 passed`
+- `openspec validate --specs --strict` -> `47 passed, 0 failed`
+
 ## 2026-04-19 — Frontend Header Summary 回归修复
 
 ### 前端修复
