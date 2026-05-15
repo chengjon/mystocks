@@ -8,15 +8,17 @@ MyStocks Web Mock数据覆盖率快速检查
 
 from pathlib import Path
 
+from app.core.logger import logger
+
 
 def check_api_mock_support():
     """检查每个API文件是否支持Mock数据"""
     api_dir = Path(__file__).parent.parent / "api"
 
-    print("🔍 MyStocks Mock数据支持检查")
-    print("=" * 60)
-    print("📅 检查时间: 2025-11-13 21:03:30")
-    print()
+    logger.info("🔍 MyStocks Mock数据支持检查")
+    logger.info("=" * 60)
+    logger.info("📅 检查时间: 2025-11-13 21:03:30")
+    logger.info("")
 
     supported_apis = []
     unsupported_apis = []
@@ -46,28 +48,28 @@ def check_api_mock_support():
                 unsupported_apis.append(py_file.stem)
                 status = "❌"
 
-            print(f"{status} {py_file.stem:25} {'Mock数据支持' if has_mock_support else '缺少Mock支持'}")
+            logger.info(f"{status} {py_file.stem:25} {'Mock数据支持' if has_mock_support else '缺少Mock支持'}")
 
         except Exception as e:
-            print(f"⚠️  {py_file.stem:25} 读取错误: {e}")
+            logger.error("读取错误 %s: %s", py_file.stem, e)
 
-    print()
-    print("📊 覆盖率统计:")
-    print("-" * 30)
+    logger.info("")
+    logger.info("📊 覆盖率统计:")
+    logger.info("-" * 30)
     total_apis = len(supported_apis) + len(unsupported_apis)
     coverage_rate = len(supported_apis) / total_apis * 100 if total_apis > 0 else 0
 
-    print(f"总API文件数: {total_apis}")
-    print(f"支持Mock数据: {len(supported_apis)}")
-    print(f"缺少Mock数据: {len(unsupported_apis)}")
-    print(f"覆盖率: {coverage_rate:.1f}%")
+    logger.info(f"总API文件数: {total_apis}")
+    logger.info(f"支持Mock数据: {len(supported_apis)}")
+    logger.info(f"缺少Mock数据: {len(unsupported_apis)}")
+    logger.info(f"覆盖率: {coverage_rate:.1f}%")
 
     if unsupported_apis:
-        print()
-        print("❌ 需要添加Mock数据支持的API:")
-        print("-" * 40)
+        logger.info("")
+        logger.info("❌ 需要添加Mock数据支持的API:")
+        logger.info("-" * 40)
         for api in unsupported_apis:
-            print(f"  • {api}.py")
+            logger.info(f"  • {api}.py")
 
     return {
         "total": total_apis,

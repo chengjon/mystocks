@@ -13,6 +13,8 @@ import re
 from pathlib import Path
 from typing import Dict, List, Set
 
+from app.core.logger import logger
+
 
 def scan_api_files() -> Dict[str, List[str]]:
     """扫描所有API文件，提取API端点"""
@@ -49,7 +51,7 @@ def scan_api_files() -> Dict[str, List[str]]:
             endpoints.extend(delete_matches)
 
         except Exception as e:
-            print(f"Error reading {py_file}: {e}")
+            logger.error("Error reading %s: %s", py_file, e)
 
         api_endpoints[py_file.stem] = endpoints
 
@@ -85,7 +87,7 @@ def scan_frontend_api_calls() -> Set[str]:
                         api_calls.add(match.strip("/"))
 
         except Exception as e:
-            print(f"Error reading {vue_file}: {e}")
+            logger.error("Error reading %s: %s", vue_file, e)
 
     return api_calls
 
@@ -115,7 +117,7 @@ def check_mock_support() -> Dict[str, bool]:
             mock_support[py_file.stem] = has_mock_support
 
         except Exception as e:
-            print(f"Error reading {py_file}: {e}")
+            logger.error("Error reading %s: %s", py_file, e)
             mock_support[py_file.stem] = False
 
     return mock_support
@@ -123,26 +125,26 @@ def check_mock_support() -> Dict[str, bool]:
 
 def generate_coverage_report():
     """生成Mock数据覆盖率报告"""
-    print("🔍 MyStocks Mock数据覆盖率分析")
-    print("=" * 80)
-    print("📅 分析时间: 2025-11-13 21:03:00")
-    print()
+    logger.info("🔍 MyStocks Mock数据覆盖率分析")
+    logger.info("=" * 80)
+    logger.info("📅 分析时间: 2025-11-13 21:03:00")
+    logger.info("")
 
     # 扫描API端点
     api_endpoints = scan_api_files()
-    print(f"📊 发现API文件: {len(api_endpoints)}个")
+    logger.info(f"📊 发现API文件: {len(api_endpoints)}个")
 
     # 检查Mock支持
     mock_support = check_mock_support()
 
     # 扫描前端API调用
     frontend_calls = scan_frontend_api_calls()
-    print(f"📱 发现前端API调用: {len(frontend_calls)}个")
-    print()
+    logger.info(f"📱 发现前端API调用: {len(frontend_calls)}个")
+    logger.info("")
 
     # 分析覆盖率
-    print("🎯 API文件Mock数据支持状态:")
-    print("-" * 80)
+    logger.info("🎯 API文件Mock数据支持状态:")
+    logger.info("-" * 80)
 
     supported_count = 0
     total_count = len(mock_support)
@@ -154,33 +156,33 @@ def generate_coverage_report():
         # 统计该API的端点数量
         endpoint_count = len(api_endpoints.get(api_name, []))
 
-        print(f"{api_name:20} {status:10} ({endpoint_count:2}个端点)")
+        logger.info(f"{api_name:20} {status:10} ({endpoint_count:2}个端点)")
 
         if is_supported:
             supported_count += 1
 
-    print()
-    print(f"📈 Mock数据覆盖率: {supported_count}/{total_count} ({supported_count / total_count * 100:.1f}%)")
-    print()
+    logger.info("")
+    logger.info(f"📈 Mock数据覆盖率: {supported_count}/{total_count} ({supported_count / total_count * 100:.1f}%)")
+    logger.info("")
 
     # 列出缺失Mock数据的API
     missing_apis = [api for api, supported in mock_support.items() if not supported]
 
     if missing_apis:
-        print("❌ 缺少Mock数据支持的API文件:")
-        print("-" * 50)
+        logger.info("❌ 缺少Mock数据支持的API文件:")
+        logger.info("-" * 50)
         for api in missing_apis:
             endpoints = api_endpoints.get(api, [])
-            print(f"  • {api}.py ({len(endpoints)}个端点)")
+            logger.info(f"  • {api}.py ({len(endpoints)}个端点)")
             for endpoint in endpoints[:3]:  # 只显示前3个端点
-                print(f"    - {endpoint}")
+                logger.info(f"    - {endpoint}")
             if len(endpoints) > 3:
-                print(f"    - ... 还有{len(endpoints) - 3}个端点")
-        print()
+                logger.info(f"    - ... 还有{len(endpoints) - 3}个端点")
+        logger.info("")
 
     # 分析前端API调用与Mock支持匹配度
-    print("🔍 前端API调用与Mock数据匹配分析:")
-    print("-" * 50)
+    logger.info("🔍 前端API调用与Mock数据匹配分析:")
+    logger.info("-" * 50)
 
     # 根据API文件分组前端调用
     api_usage = {}
@@ -211,16 +213,16 @@ def generate_coverage_report():
         else:
             api_usage.setdefault("other", []).append(call)
 
-    print("前端API调用分布:")
+    logger.info("前端API调用分布:")
     for api_name, calls in api_usage.items():
         mock_status = "✅" if mock_support.get(api_name, False) else "❌"
-        print(f"  {api_name:20} {mock_status} ({len(calls)}个调用)")
+        logger.info(f"  {api_name:20} {mock_status} ({len(calls)}个调用)")
 
-    print()
+    logger.info("")
 
     # 提供建议
-    print("💡 改进建议:")
-    print("-" * 30)
+    logger.info("💡 改进建议:")
+    logger.info("-" * 30)
 
     priority_apis = []
     for api in missing_apis:
@@ -233,16 +235,16 @@ def generate_coverage_report():
     priority_apis.sort(key=lambda x: x[1], reverse=True)
 
     if priority_apis:
-        print("建议优先添加Mock数据支持的API (按前端调用频次排序):")
+        logger.info("建议优先添加Mock数据支持的API (按前端调用频次排序):")
         for api, count in priority_apis[:5]:
-            print(f"  • {api}.py (前端调用{count}次)")
+            logger.info(f"  • {api}.py (前端调用{count}次)")
     else:
-        print("✅ 所有前端调用的API都有Mock数据支持")
+        logger.info("✅ 所有前端调用的API都有Mock数据支持")
 
-    print()
-    print("=" * 80)
-    print("🎯 覆盖率目标: 100% Mock数据支持")
-    print(f"📊 当前进度: {supported_count}/{total_count} ({supported_count / total_count * 100:.1f}%)")
+    logger.info("")
+    logger.info("=" * 80)
+    logger.info("🎯 覆盖率目标: 100% Mock数据支持")
+    logger.info(f"📊 当前进度: {supported_count}/{total_count} ({supported_count / total_count * 100:.1f}%)")
 
     return {
         "total_apis": total_count,

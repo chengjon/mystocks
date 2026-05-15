@@ -138,18 +138,18 @@ if __name__ == "__main__":
 
     # 测试获取Dashboard数据
     dashboard_data = manager.get_data("dashboard")
-    print("Dashboard数据测试:")
-    print(f"市场概览: {dashboard_data['market_overview']['indices_count']} 个指数")
-    print(f"市场统计: {dashboard_data['market_stats']['total_market_cap']}")
+    logger.info("Dashboard数据测试:")
+    logger.info(f"市场概览: {dashboard_data['market_overview']['indices_count']} 个指数")
+    logger.info(f"市场统计: {dashboard_data['market_stats']['total_market_cap']}")
 
     # 测试获取股票数据
     stocks_data = manager.get_data("stocks", page=1, page_size=5)
-    print(f"\n股票数据测试: 页面 {stocks_data['page']}, 总计 {stocks_data['total']} 条记录")
+    logger.info(f"股票数据测试: 页面 {stocks_data['page']}, 总计 {stocks_data['total']} 条记录")
 
     # 测试获取自选股数据
     watchlist_data = manager.get_data("watchlist", user_id=1)
-    print(f"\n自选股数据测试: {len(watchlist_data)} 只股票")
+    logger.info(f"自选股数据测试: {len(watchlist_data)} 只股票")
 
     # 获取缓存信息
     cache_info = manager.get_cache_info()
-    print(f"\n缓存信息: {cache_info}")
+    logger.info(f"缓存信息: {cache_info}")

@@ -15,16 +15,6 @@ from .structured import (
     trace_id_var,
     user_id_var,
 )
-from .tracing import (
-    TracingClient,
-    TracingMiddleware,
-    get_current_span_id,
-    get_current_trace_id,
-    get_tracer,
-    get_tracing_client,
-    setup_telemetry,
-    trace_operation,
-)
 
 __all__ = [
     "StructuredLogger",
@@ -40,12 +30,29 @@ __all__ = [
     "trace_id_var",
     "request_id_var",
     "user_id_var",
-    "TracingMiddleware",
-    "TracingClient",
-    "setup_telemetry",
-    "get_tracer",
-    "get_tracing_client",
-    "get_current_trace_id",
-    "get_current_span_id",
-    "trace_operation",
 ]
+
+try:
+    from .tracing import (
+        TracingClient,
+        TracingMiddleware,
+        get_current_span_id,
+        get_current_trace_id,
+        get_tracer,
+        get_tracing_client,
+        setup_telemetry,
+        trace_operation,
+    )
+
+    __all__ += [
+        "TracingMiddleware",
+        "TracingClient",
+        "setup_telemetry",
+        "get_tracer",
+        "get_tracing_client",
+        "get_current_trace_id",
+        "get_current_span_id",
+        "trace_operation",
+    ]
+except ImportError:
+    pass

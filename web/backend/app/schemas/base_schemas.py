@@ -537,15 +537,17 @@ class BatchOperationResponse(StandardResponse):
 
 
 if __name__ == "__main__":
-    print("Base Schema Definitions Module")
-    print("=" * 50)
+    import logging
+    _logger = logging.getLogger(__name__)
+    _logger.info("Base Schema Definitions Module")
+    _logger.info("=" * 50)
 
     # Example: Create a success response
     response = SuccessResponse(status="success", code=200, message="Test successful", data={"test": "data"})
-    print(f"\nSuccess Response:\n{response.json(indent=2)}")
+    _logger.info("Success Response:\n%s", response.json(indent=2))
 
     # Example: Create a paginated response
     pagination = PaginationInfo(page=1, page_size=20, total=100)
-    print(f"\nPagination Info:\n{pagination.json(indent=2)}")
+    _logger.info("Pagination Info:\n%s", pagination.json(indent=2))
 
-    print("\n✅ Base schema definitions module initialized successfully")
+    _logger.info("Base schema definitions module initialized successfully")
