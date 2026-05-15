@@ -3,8 +3,7 @@
 Real-time Monitoring System
 """
 
-import os
-from datetime import date, datetime
+from datetime import date
 from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Body, Depends, Path, Query
@@ -55,6 +54,13 @@ from app.services.monitoring_summary_service import (
     is_monitoring_summary_mock_enabled,
     load_mock_monitoring_summary,
 )
+from app.services.monitoring_runtime_fallbacks import (
+    build_runtime_alert_records as _build_runtime_alert_records,
+    build_runtime_alert_rules as _build_runtime_alert_rules,
+    resolve_query_int as _resolve_query_int,
+    runtime_fallback_enabled as _runtime_fallback_enabled,
+)
+from app.services.monitoring_today_statistics_service import MonitoringTodayStatisticsService
 
 
 __all__ = [
@@ -70,8 +76,6 @@ __all__ = [
 
 router = APIRouter()
 router.include_router(market_monitoring_router)
-
-_RUNTIME_ALERT_TIMESTAMP = datetime(2026, 3, 13, 10, 0, 0)
 _monitoring_control_service = MonitoringControlService(monitoring_service)
 _monitoring_summary_service = MonitoringSummaryService(monitoring_service)
 _monitoring_alert_rule_service = MonitoringAlertRuleService(
@@ -84,6 +88,7 @@ _monitoring_alert_record_service = MonitoringAlertRecordService(
     runtime_fallback_enabled=lambda: _runtime_fallback_enabled(),
     runtime_records_loader=lambda: _build_runtime_alert_records(),
 )
+_monitoring_today_statistics_service = MonitoringTodayStatisticsService(monitoring_service)
 
 
 def _is_monitoring_summary_mock_enabled() -> bool:
@@ -92,95 +97,6 @@ def _is_monitoring_summary_mock_enabled() -> bool:
 
 def _get_mock_monitoring_summary() -> Dict[str, Any]:
     return load_mock_monitoring_summary()
-
-
-
-def _runtime_fallback_enabled() -> bool:
-    return (
-        os.getenv("TESTING", "false").lower() == "true"
-        or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
-    )
-
-
-def _build_runtime_alert_rules() -> List[AlertRuleResponse]:
-    return [
-        AlertRuleResponse(
-            id=9001,
-            rule_name="核心仓位跌破止损线",
-            rule_type="technical_break",
-            description="开发态 fallback: 关键持仓跌破止损价时触发",
-            symbol="600519",
-            stock_name="贵州茅台",
-            parameters={"source": "runtime-fallback", "stop_loss_price": 1750},
-            trigger_conditions={"operator": "<=", "field": "current_price"},
-            notification_config={"channels": ["ui"], "level": "critical"},
-            is_active=True,
-            priority=5,
-            created_at=_RUNTIME_ALERT_TIMESTAMP,
-            updated_at=_RUNTIME_ALERT_TIMESTAMP,
-        ),
-        AlertRuleResponse(
-            id=9002,
-            rule_name="北向资金快速回落",
-            rule_type="price_change",
-            description="开发态 fallback: 北向资金与情绪联动观察",
-            symbol="000001",
-            stock_name="上证指数",
-            parameters={"source": "runtime-fallback", "threshold_percent": 1.5},
-            trigger_conditions={"operator": "<=", "field": "change_percent"},
-            notification_config={"channels": ["ui"], "level": "warning"},
-            is_active=True,
-            priority=3,
-            created_at=_RUNTIME_ALERT_TIMESTAMP,
-            updated_at=_RUNTIME_ALERT_TIMESTAMP,
-        ),
-    ]
-
-
-def _build_runtime_alert_records() -> List[AlertRecordResponse]:
-    return [
-        AlertRecordResponse(
-            id=9101,
-            rule_id=9001,
-            rule_name="核心仓位跌破止损线",
-            symbol="600519",
-            stock_name="贵州茅台",
-            alert_time=_RUNTIME_ALERT_TIMESTAMP,
-            alert_type="technical_break",
-            alert_level="critical",
-            alert_title="止损预警",
-            alert_message="当前价格接近止损线，请优先复核仓位",
-            alert_details={"source": "runtime-fallback", "stop_loss_price": 1750},
-            snapshot_data={"current_price": 1762.0, "distance_to_stop": 0.69},
-            is_read=False,
-            is_handled=False,
-            created_at=_RUNTIME_ALERT_TIMESTAMP,
-        ),
-        AlertRecordResponse(
-            id=9102,
-            rule_id=9002,
-            rule_name="北向资金快速回落",
-            symbol="000001",
-            stock_name="上证指数",
-            alert_time=_RUNTIME_ALERT_TIMESTAMP,
-            alert_type="price_change",
-            alert_level="warning",
-            alert_title="资金波动提醒",
-            alert_message="指数回撤超出监控阈值，建议关注板块扩散风险",
-            alert_details={"source": "runtime-fallback", "threshold_percent": 1.5},
-            snapshot_data={"change_percent": -1.21},
-            is_read=False,
-            is_handled=False,
-            created_at=_RUNTIME_ALERT_TIMESTAMP,
-        ),
-    ]
-
-
-def _resolve_query_int(value: object, default: int) -> int:
-    if isinstance(value, int):
-        return value
-    return int(getattr(value, "default", default))
-
 
 def _build_monitoring_control_payload(*, include_interval_key: Optional[str] = None) -> Dict[str, Any]:
     return _monitoring_control_service.build_payload(include_interval_key=include_interval_key)
@@ -519,30 +435,10 @@ async def get_monitoring_summary(current_user: User = Depends(get_current_user))
 async def get_today_statistics(current_user: User = Depends(get_current_user)):
     """获取今日监控统计聚合结果。"""
     try:
-        session = monitoring_service.get_session()
-        try:
-            # 使用视图查询
-            from sqlalchemy import text
-
-            # 今日告警摘要
-            alerts_summary = session.execute(text("SELECT * FROM v_today_alerts_summary")).fetchall()
-
-            # 活跃规则
-            active_rules = session.execute(text("SELECT * FROM v_active_alert_rules LIMIT 10")).fetchall()
-
-            # 实时监控摘要
-            realtime_summary = session.execute(text("SELECT * FROM v_realtime_summary")).fetchone()
-
-            return create_unified_success_response(
-                data={
-                    "alerts_summary": [dict(row._mapping) for row in alerts_summary],
-                    "active_rules": [dict(row._mapping) for row in active_rules],
-                    "realtime_summary": (dict(realtime_summary._mapping) if realtime_summary else {}),
-                },
-                message="获取今日监控统计成功",
-            )
-        finally:
-            session.close()
+        return create_unified_success_response(
+            data=_monitoring_today_statistics_service.get_today_statistics(),
+            message="获取今日监控统计成功",
+        )
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 

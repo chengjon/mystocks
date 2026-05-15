@@ -107,7 +107,10 @@ Backend composition:
   - Control lifecycle use-case service: `web/backend/app/services/monitoring_control_service.py`
   - Alert-rule use-case service: `web/backend/app/services/monitoring_alert_rule_service.py`
   - Alert-record use-case service: `web/backend/app/services/monitoring_alert_record_service.py`
-  - Keep authentication, parameter parsing, response wrapping, route registration, and HTTP docs in route modules; keep reusable response examples in the response-spec module; keep summary assembly, monitoring lifecycle state, alert-rule persistence orchestration, alert-record pagination/read orchestration, and runtime fallback selection in the use-case services.
+  - Today-statistics use-case service: `web/backend/app/services/monitoring_today_statistics_service.py`
+  - Market-data use-case service: `web/backend/app/services/monitoring_market_data_service.py`
+  - Runtime fallback fixtures: `web/backend/app/services/monitoring_runtime_fallbacks.py`
+  - Keep authentication, parameter parsing, response wrapping, route registration, and HTTP docs in route modules; keep reusable response examples in the response-spec module; keep summary assembly, monitoring lifecycle state, alert-rule persistence orchestration, alert-record pagination/read orchestration, today-statistics view querying, realtime/dragon-tiger market data orchestration, and runtime fallback selection/fixtures in the use-case service layer.
 
 Frontend routing:
 

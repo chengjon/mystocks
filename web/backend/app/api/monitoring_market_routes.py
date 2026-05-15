@@ -11,6 +11,7 @@ from app.core.exceptions import BusinessException, NotFoundException
 from app.core.responses import UnifiedResponse, create_unified_success_response
 from app.core.security import User, get_current_user
 from app.models.monitoring import DragonTigerListResponse, RealtimeMonitoringResponse
+from app.services.monitoring_market_data_service import MonitoringMarketDataService
 from app.services.monitoring_service import monitoring_service
 from app.api.monitoring_response_specs import (
     DRAGON_TIGER_LIST_RESPONSES,
@@ -21,6 +22,7 @@ from app.api.monitoring_response_specs import (
 )
 
 router = APIRouter()
+_monitoring_market_data_service = MonitoringMarketDataService(monitoring_service)
 
 
 # ============================================================================
@@ -49,26 +51,14 @@ async def get_realtime_monitoring(
     - GET /api/monitoring/realtime/600519
     """
     try:
-        session = monitoring_service.get_session()
-        try:
-            from app.models.monitoring import RealtimeMonitoring
+        record = _monitoring_market_data_service.get_realtime_monitoring(symbol)
+        if not record:
+            raise NotFoundException(resource="股票监控数据", identifier="查询条件")
 
-            record = (
-                session.query(RealtimeMonitoring)
-                .filter(RealtimeMonitoring.symbol == symbol)
-                .order_by(RealtimeMonitoring.timestamp.desc())
-                .first()
-            )
-
-            if not record:
-                raise NotFoundException(resource="股票监控数据", identifier="查询条件")
-
-            return create_unified_success_response(
-                data=RealtimeMonitoringResponse.from_orm(record),
-                message="获取实时监控数据成功",
-            )
-        finally:
-            session.close()
+        return create_unified_success_response(
+            data=record,
+            message="获取实时监控数据成功",
+        )
     except (BusinessException, NotFoundException):
         raise
     except Exception as e:
@@ -104,33 +94,17 @@ async def get_realtime_monitoring_list(
     - GET /api/monitoring/realtime?symbols=600519,000001,600000
     """
     try:
-        session = monitoring_service.get_session()
-        try:
-            from app.models.monitoring import RealtimeMonitoring
+        records = _monitoring_market_data_service.list_realtime_monitoring(
+            symbols=symbols,
+            limit=limit,
+            is_limit_up=is_limit_up,
+            is_limit_down=is_limit_down,
+        )
 
-            query = session.query(RealtimeMonitoring).filter(RealtimeMonitoring.trade_date == date.today())
-
-            # 筛选指定股票
-            if symbols:
-                symbol_list = [s.strip() for s in symbols.split(",")]
-                query = query.filter(RealtimeMonitoring.symbol.in_(symbol_list))
-
-            # 筛选涨跌停
-            if is_limit_up is not None:
-                query = query.filter(RealtimeMonitoring.is_limit_up == is_limit_up)
-            if is_limit_down is not None:
-                query = query.filter(RealtimeMonitoring.is_limit_down == is_limit_down)
-
-            # 对于每只股票，只取最新的记录
-            # 这里简化处理，实际应该用子查询
-            records = query.order_by(RealtimeMonitoring.timestamp.desc()).limit(limit).all()
-
-            return create_unified_success_response(
-                data=[RealtimeMonitoringResponse.from_orm(r) for r in records],
-                message="获取实时监控列表成功",
-            )
-        finally:
-            session.close()
+        return create_unified_success_response(
+            data=records,
+            message="获取实时监控列表成功",
+        )
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
@@ -162,22 +136,12 @@ async def fetch_realtime_data(
     ```
     """
     try:
-        df = monitoring_service.fetch_realtime_data(symbols)
-        if df.empty:
+        result = _monitoring_market_data_service.fetch_realtime_data(symbols)
+        if result is None:
             return UnifiedResponse(success=False, code=200, message="未获取到数据", data=None)
 
-        # 保存数据
-        count = monitoring_service.save_realtime_data(df)
-
-        # 评估告警规则
-        alerts = monitoring_service.evaluate_alert_rules(df)
-
         return create_unified_success_response(
-            data={
-                "stocks_count": len(df),
-                "saved_count": count,
-                "alerts_triggered": len(alerts),
-            },
+            data=result,
             message="实时数据获取成功",
         )
     except Exception as e:
@@ -218,28 +182,17 @@ async def get_dragon_tiger_list(
     - GET /api/monitoring/dragon-tiger?symbol=600519
     """
     try:
-        session = monitoring_service.get_session()
-        try:
-            from app.models.monitoring import DragonTigerList
+        records = _monitoring_market_data_service.list_dragon_tiger(
+            trade_date=trade_date,
+            symbol=symbol,
+            min_net_amount=min_net_amount,
+            limit=limit,
+        )
 
-            if trade_date is None:
-                trade_date = date.today()
-
-            query = session.query(DragonTigerList).filter(DragonTigerList.trade_date == trade_date)
-
-            if symbol:
-                query = query.filter(DragonTigerList.symbol == symbol)
-            if min_net_amount is not None:
-                query = query.filter(DragonTigerList.net_amount >= min_net_amount)
-
-            records = query.order_by(DragonTigerList.net_amount.desc()).limit(limit).all()
-
-            return create_unified_success_response(
-                data=[DragonTigerListResponse.from_orm(r) for r in records],
-                message="获取龙虎榜列表成功",
-            )
-        finally:
-            session.close()
+        return create_unified_success_response(
+            data=records,
+            message="获取龙虎榜列表成功",
+        )
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500, error_code="MONITORING_OPERATION_FAILED")
 
@@ -265,14 +218,12 @@ async def fetch_dragon_tiger_data(
         if trade_date is None:
             trade_date = date.today()
 
-        df = monitoring_service.fetch_dragon_tiger_list(trade_date)
-        if df.empty:
+        result = _monitoring_market_data_service.fetch_dragon_tiger_data(trade_date)
+        if result is None:
             return UnifiedResponse(success=False, code=200, message=f"{trade_date} 无龙虎榜数据", data=None)
 
-        count = monitoring_service.save_dragon_tiger_data(df, trade_date)
-
         return create_unified_success_response(
-            data={"trade_date": trade_date.isoformat(), "count": count},
+            data=result,
             message="龙虎榜数据获取成功",
         )
     except Exception as e:

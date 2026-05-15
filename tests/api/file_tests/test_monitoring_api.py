@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import importlib
 import sys
+from datetime import datetime
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -175,6 +176,24 @@ class TestMonitoringAPIFile:
         assert fake_service.calls == 1
 
     @pytest.mark.file_test
+    def test_today_statistics_route_delegates_to_today_statistics_service(self, monitoring_module, monkeypatch):
+        class FakeTodayStatisticsService:
+            def __init__(self):
+                self.calls = 0
+
+            def get_today_statistics(self):
+                self.calls += 1
+                return {"alerts_summary": [{"alert_type": "limit_up", "count": 2}]}
+
+        fake_service = FakeTodayStatisticsService()
+        monkeypatch.setattr(monitoring_module, "_monitoring_today_statistics_service", fake_service, raising=False)
+
+        result = asyncio.run(monitoring_module.get_today_statistics(SimpleNamespace()))
+
+        assert result.data == {"alerts_summary": [{"alert_type": "limit_up", "count": 2}]}
+        assert fake_service.calls == 1
+
+    @pytest.mark.file_test
     def test_monitoring_control_routes_delegate_to_control_service(self, monitoring_module, monkeypatch):
         class LegacySafeMonitoringService:
             def __init__(self):
@@ -331,7 +350,7 @@ class TestMonitoringAPIFile:
                             rule_name="核心仓位风控",
                             symbol="600519",
                             stock_name="贵州茅台",
-                            alert_time=monitoring_module.datetime(2026, 3, 13, 10, 0, 0),
+                            alert_time=datetime(2026, 3, 13, 10, 0, 0),
                             alert_type="price_change",
                             alert_level="warning",
                             alert_title="价格异动",
@@ -340,7 +359,7 @@ class TestMonitoringAPIFile:
                             snapshot_data={},
                             is_read=False,
                             is_handled=False,
-                            created_at=monitoring_module.datetime(2026, 3, 13, 10, 0, 1),
+                            created_at=datetime(2026, 3, 13, 10, 0, 1),
                         )
                     ],
                     total=3,
