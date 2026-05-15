@@ -46,6 +46,18 @@ const impactResponse = {
       estimated_hours_max: 16,
       drivers: ['1 breaking endpoint change'],
     },
+    notifications: [
+      {
+        kind: 'contract_impact',
+        priority: 'urgent',
+        title: 'Contract impact 1.0.0 -> 2.0.0: critical risk',
+        message: '2 impact(s), 1 breaking; migration effort high (8-16h).',
+        targets: ['api-governance', 'market'],
+        action_required: true,
+        action_url: '/system/api',
+        metadata: { risk_level: 'critical' },
+      },
+    ],
   },
 }
 
@@ -62,6 +74,8 @@ describe('ContractImpactPanel', () => {
         criticalImpactCount: 1,
         affectedSurfaceCount: 3,
         topImpacts: impactResponse.data.impacts,
+        notifications: impactResponse.data.notifications,
+        actionableNotificationCount: 1,
       },
     })
   })
@@ -81,5 +95,8 @@ describe('ContractImpactPanel', () => {
     expect(wrapper.text()).toContain('2')
     expect(wrapper.text()).toContain('/api/v1/market/quotes')
     expect(wrapper.text()).toContain('Provide migration guide before rollout')
+    expect(wrapper.text()).toContain('治理通知')
+    expect(wrapper.text()).toContain('urgent')
+    expect(wrapper.text()).toContain('api-governance')
   })
 })

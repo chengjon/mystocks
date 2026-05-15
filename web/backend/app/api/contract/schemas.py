@@ -119,6 +119,19 @@ class ContractMigrationEffortResponse(BaseModel):
     drivers: List[str] = Field(default_factory=list, description="迁移工作量驱动因素")
 
 
+class ContractImpactNotificationResponse(BaseModel):
+    """契约影响分析自动通知响应"""
+
+    kind: str = Field(..., description="通知类型")
+    priority: str = Field(..., description="通知优先级: low|normal|high|urgent")
+    title: str = Field(..., description="通知标题")
+    message: str = Field(..., description="通知正文")
+    targets: List[str] = Field(default_factory=list, description="通知目标域")
+    action_required: bool = Field(..., description="是否需要治理动作")
+    action_url: Optional[str] = Field(None, description="治理动作入口")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="通知元数据")
+
+
 class ContractImpactAnalysisResponse(BaseModel):
     """契约影响分析响应"""
 
@@ -132,6 +145,10 @@ class ContractImpactAnalysisResponse(BaseModel):
     affected_clients: List[str] = Field(default_factory=list, description="受影响客户端域")
     recommendations: List[str] = Field(default_factory=list, description="治理建议")
     migration_effort: ContractMigrationEffortResponse = Field(..., description="迁移工作量估算")
+    notifications: List[ContractImpactNotificationResponse] = Field(
+        default_factory=list,
+        description="自动生成的影响通知",
+    )
 
 
 # ==================== 契约验证 ====================

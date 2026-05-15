@@ -60,6 +60,11 @@
         <strong>{{ assessment.analysis.migration_effort.level }}</strong>
         <small>{{ assessment.analysis.migration_effort.estimated_hours_min }}-{{ assessment.analysis.migration_effort.estimated_hours_max }}h</small>
       </div>
+      <div class="metric-card">
+        <span>治理通知</span>
+        <strong>{{ assessment.actionableNotificationCount }}</strong>
+        <small>{{ assessment.notifications.length }} total</small>
+      </div>
 
       <section class="impact-section">
         <h4>受影响端点</h4>
@@ -88,6 +93,18 @@
             {{ recommendation }}
           </li>
           <li v-if="assessment.analysis.recommendations.length === 0" class="empty-row">暂无额外建议</li>
+        </ul>
+      </section>
+
+      <section class="impact-section">
+        <h4>治理通知</h4>
+        <ul>
+          <li v-for="notification in assessment.notifications" :key="`${notification.kind}:${notification.title}`">
+            <strong>{{ notification.priority }}</strong>
+            <span>{{ notification.title }}</span>
+            <small>{{ notification.targets.join(' / ') }}</small>
+          </li>
+          <li v-if="assessment.notifications.length === 0" class="empty-row">暂无自动通知</li>
         </ul>
       </section>
     </div>

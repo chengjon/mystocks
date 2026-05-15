@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.api.contract.schemas import ContractImpactAnalysisResponse, ContractImpactRequest
 from app.api.contract.services.impact_analyzer import ContractImpactAnalyzer
+from app.api.contract.services.impact_notifications import ContractImpactNotificationService
 from app.api.contract.services.version_manager import VersionManager
 from app.core.database import get_db
 from app.core.responses import UnifiedResponse
@@ -41,5 +42,9 @@ async def analyze_contract_impact(
         from_version=from_version.version,
         to_version=to_version.version,
     )
-    response = ContractImpactAnalysisResponse(**asdict(analysis))
+    notifications = ContractImpactNotificationService().build_notifications(analysis)
+    response = ContractImpactAnalysisResponse(
+        **asdict(analysis),
+        notifications=[asdict(notification) for notification in notifications],
+    )
     return UnifiedResponse[ContractImpactAnalysisResponse](data=response, message="契约影响分析完成")

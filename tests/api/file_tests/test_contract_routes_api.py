@@ -147,6 +147,10 @@ class TestContractRoutesAPIFile:
         assert result.data.risk_level == "critical"
         assert result.data.affected_endpoints == ["/api/v1/market/quotes"]
         assert result.data.migration_effort.level == "high"
+        assert len(result.data.notifications) == 1
+        assert result.data.notifications[0].priority == "urgent"
+        assert result.data.notifications[0].action_required is True
+        assert result.data.notifications[0].targets == ["api-governance", "market"]
 
     @pytest.mark.file_test
     def test_docstrings_cover_version_diff_validate_and_sync_operations(self, contract_module):

@@ -40,6 +40,17 @@ export interface ContractMigrationEffort {
   drivers: string[]
 }
 
+export interface ContractImpactNotification {
+  kind: string
+  priority: 'low' | 'normal' | 'high' | 'urgent' | string
+  title: string
+  message: string
+  targets: string[]
+  action_required: boolean
+  action_url: string | null
+  metadata: Record<string, unknown>
+}
+
 export interface ContractImpactAnalysis {
   from_version: string
   to_version: string
@@ -51,6 +62,7 @@ export interface ContractImpactAnalysis {
   affected_clients: string[]
   recommendations: string[]
   migration_effort: ContractMigrationEffort
+  notifications?: ContractImpactNotification[]
 }
 
 export type ContractImpactAnalysisResponse = ContractImpactAnalysis
@@ -63,6 +75,8 @@ export interface ContractImpactAssessment {
   criticalImpactCount: number
   affectedSurfaceCount: number
   topImpacts: ContractImpactItem[]
+  notifications: ContractImpactNotification[]
+  actionableNotificationCount: number
 }
 
 const severityRank: Record<string, number> = {
@@ -96,6 +110,7 @@ export const requestContractImpactAnalysis = (
 export const analyzeContractImpact = requestContractImpactAnalysis
 
 export const buildContractImpactAssessment = (analysis: ContractImpactAnalysis): ContractImpactAssessment => {
+  const notifications = analysis.notifications ?? []
   const topImpacts = [...analysis.impacts].sort((left, right) => {
     const rankDiff = rankContractImpactSeverity(right.severity) - rankContractImpactSeverity(left.severity)
     if (rankDiff !== 0) {
@@ -113,6 +128,8 @@ export const buildContractImpactAssessment = (analysis: ContractImpactAnalysis):
     affectedSurfaceCount:
       analysis.affected_endpoints.length + analysis.affected_schemas.length + analysis.affected_clients.length,
     topImpacts,
+    notifications,
+    actionableNotificationCount: notifications.filter((notification) => notification.action_required).length,
   }
 }
 

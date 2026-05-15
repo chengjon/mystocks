@@ -70,6 +70,34 @@ const analysis: ContractImpactAnalysis = {
   },
 }
 
+const analysisWithNotifications = {
+  ...analysis,
+  notifications: [
+    {
+      kind: 'contract_impact',
+      priority: 'urgent',
+      title: 'Contract impact 1.0.0 -> 2.0.0: critical risk',
+      message: '3 impact(s), 2 breaking; migration effort high (8-16h).',
+      targets: ['api-governance', 'market'],
+      action_required: true,
+      action_url: '/system/api',
+      metadata: {
+        risk_level: 'critical',
+      },
+    },
+    {
+      kind: 'contract_impact',
+      priority: 'low',
+      title: 'Contract impact observed',
+      message: 'Non-breaking change detected.',
+      targets: ['api-governance'],
+      action_required: false,
+      action_url: null,
+      metadata: {},
+    },
+  ],
+} satisfies ContractImpactAnalysis
+
 describe('contractImpact API client', () => {
   beforeEach(() => {
     vi.mocked(apiClient.post).mockReset()
@@ -97,6 +125,13 @@ describe('contractImpact API client', () => {
     expect(assessment.criticalImpactCount).toBe(1)
     expect(assessment.affectedSurfaceCount).toBe(3)
     expect(assessment.topImpacts.map((impact) => impact.severity)).toEqual(['critical', 'high', 'low'])
+  })
+
+  it('keeps automated impact notifications available for UI surfaces', () => {
+    const assessment = buildContractImpactAssessment(analysisWithNotifications)
+
+    expect(assessment.notifications.map((notification) => notification.priority)).toEqual(['urgent', 'low'])
+    expect(assessment.actionableNotificationCount).toBe(1)
   })
 
   it('returns assessed impact data while preserving the unified response envelope', async () => {
