@@ -62,10 +62,14 @@ export interface ContractImpactAnalysis {
   affected_clients: string[]
   recommendations: string[]
   migration_effort: ContractMigrationEffort
-  notifications?: ContractImpactNotification[]
+  notifications: ContractImpactNotification[]
 }
 
 export type ContractImpactAnalysisResponse = ContractImpactAnalysis
+
+type ContractImpactAnalysisWire = Omit<ContractImpactAnalysis, 'notifications'> & {
+  notifications?: ContractImpactNotification[]
+}
 
 export interface ContractImpactAssessment {
   analysis: ContractImpactAnalysis
@@ -105,12 +109,20 @@ export const rankContractImpactSeverity = (severity: ContractImpactSeverity): nu
 export const requestContractImpactAnalysis = (
   payload: ContractImpactRequest | ContractImpactVersionPair,
 ): Promise<UnifiedResponse<ContractImpactAnalysis>> =>
-  apiClient.post<UnifiedResponse<ContractImpactAnalysis>>('/contracts/impact', toBackendPayload(payload))
+  apiClient
+    .post<UnifiedResponse<ContractImpactAnalysisWire>>('/contracts/impact', toBackendPayload(payload))
+    .then((response) => ({
+      ...response,
+      data: {
+        ...response.data,
+        notifications: response.data.notifications ?? [],
+      },
+    }))
 
 export const analyzeContractImpact = requestContractImpactAnalysis
 
 export const buildContractImpactAssessment = (analysis: ContractImpactAnalysis): ContractImpactAssessment => {
-  const notifications = analysis.notifications ?? []
+  const notifications = analysis.notifications
   const topImpacts = [...analysis.impacts].sort((left, right) => {
     const rankDiff = rankContractImpactSeverity(right.severity) - rankContractImpactSeverity(left.severity)
     if (rankDiff !== 0) {

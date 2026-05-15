@@ -98,5 +98,7 @@ describe('ContractImpactPanel', () => {
     expect(wrapper.text()).toContain('治理通知')
     expect(wrapper.text()).toContain('urgent')
     expect(wrapper.text()).toContain('api-governance')
+    expect(wrapper.find('[data-test="impact-notification-action-status"]').text()).toContain('需要治理动作')
+    expect(wrapper.find('[data-test="impact-notification-action-link"]').attributes('href')).toBe('/system/api')
   })
 })

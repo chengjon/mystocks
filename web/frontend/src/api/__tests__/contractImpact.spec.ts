@@ -68,6 +68,7 @@ const analysis: ContractImpactAnalysis = {
     estimated_hours_max: 16,
     drivers: ['Removed endpoint'],
   },
+  notifications: [],
 }
 
 const analysisWithNotifications = {
@@ -116,6 +117,15 @@ describe('contractImpact API client', () => {
     expect(apiClient.post).toHaveBeenCalledTimes(2)
   })
 
+  it('normalizes missing notification payloads at the API boundary', async () => {
+    const { notifications: _notifications, ...legacyAnalysis } = analysisWithNotifications
+    vi.mocked(apiClient.post).mockResolvedValue({ success: true, code: 200, data: legacyAnalysis } as never)
+
+    const response = await requestContractImpactAnalysis({ fromVersionId: 3, toVersionId: 7 })
+
+    expect(response.data.notifications).toEqual([])
+  })
+
   it('builds a UI-ready assessment from backend impact analysis', () => {
     const assessment = buildContractImpactAssessment(analysis)
 
@@ -147,7 +157,7 @@ describe('contractImpact API client', () => {
     const response = await assessContractImpact({ fromVersionId: 1, toVersionId: 2 })
 
     expect(response.success).toBe(true)
-    expect(response.data.analysis).toBe(analysis)
+    expect(response.data.analysis).toEqual(analysis)
     expect(response.data.hasBreakingChanges).toBe(true)
     expect(response.data.topImpacts[0]?.path).toBe('/api/v1/quotes')
   })

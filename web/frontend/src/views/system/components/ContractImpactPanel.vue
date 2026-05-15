@@ -103,6 +103,17 @@
             <strong>{{ notification.priority }}</strong>
             <span>{{ notification.title }}</span>
             <small>{{ notification.targets.join(' / ') }}</small>
+            <small data-test="impact-notification-action-status">
+              {{ notification.action_required ? '需要治理动作' : '观察即可' }}
+            </small>
+            <a
+              v-if="notification.action_url"
+              class="notification-action-link"
+              data-test="impact-notification-action-link"
+              :href="notification.action_url"
+            >
+              打开治理入口
+            </a>
           </li>
           <li v-if="assessment.notifications.length === 0" class="empty-row">暂无自动通知</li>
         </ul>
@@ -314,6 +325,16 @@ const runImpactAnalysis = async () => {
 
 .impact-section li strong {
   color: var(--artdeco-text-primary, #f7f0dc);
+}
+
+.notification-action-link {
+  color: var(--artdeco-accent, #5fb3ff);
+  font-size: 0.86rem;
+  text-decoration: none;
+}
+
+.notification-action-link:hover {
+  text-decoration: underline;
 }
 
 .empty-row {
