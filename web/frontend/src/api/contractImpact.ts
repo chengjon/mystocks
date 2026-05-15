@@ -10,6 +10,11 @@ export interface ContractImpactRequest {
   to_version_id: number
 }
 
+export interface ContractImpactVersionPair {
+  fromVersionId: number
+  toVersionId: number
+}
+
 export interface ContractImpactItem {
   category: string
   name: string
@@ -48,6 +53,8 @@ export interface ContractImpactAnalysis {
   migration_effort: ContractMigrationEffort
 }
 
+export type ContractImpactAnalysisResponse = ContractImpactAnalysis
+
 export interface ContractImpactAssessment {
   analysis: ContractImpactAnalysis
   hasBreakingChanges: boolean
@@ -67,14 +74,26 @@ const severityRank: Record<string, number> = {
   critical: 5,
 }
 
+const toBackendPayload = (request: ContractImpactRequest | ContractImpactVersionPair): ContractImpactRequest => {
+  if ('from_version_id' in request) {
+    return request
+  }
+  return {
+    from_version_id: request.fromVersionId,
+    to_version_id: request.toVersionId,
+  }
+}
+
 export const rankContractImpactSeverity = (severity: ContractImpactSeverity): number => {
   return severityRank[String(severity).toLowerCase()] ?? severityRank.medium
 }
 
 export const requestContractImpactAnalysis = (
-  payload: ContractImpactRequest,
+  payload: ContractImpactRequest | ContractImpactVersionPair,
 ): Promise<UnifiedResponse<ContractImpactAnalysis>> =>
-  apiClient.post<UnifiedResponse<ContractImpactAnalysis>>('/contracts/impact', payload)
+  apiClient.post<UnifiedResponse<ContractImpactAnalysis>>('/contracts/impact', toBackendPayload(payload))
+
+export const analyzeContractImpact = requestContractImpactAnalysis
 
 export const buildContractImpactAssessment = (analysis: ContractImpactAnalysis): ContractImpactAssessment => {
   const topImpacts = [...analysis.impacts].sort((left, right) => {
@@ -98,7 +117,7 @@ export const buildContractImpactAssessment = (analysis: ContractImpactAnalysis):
 }
 
 export const assessContractImpact = async (
-  payload: ContractImpactRequest,
+  payload: ContractImpactRequest | ContractImpactVersionPair,
 ): Promise<UnifiedResponse<ContractImpactAssessment>> => {
   const response = await requestContractImpactAnalysis(payload)
   return {

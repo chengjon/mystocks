@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { apiClient } from '../apiClient'
 import {
+  analyzeContractImpact,
   assessContractImpact,
   buildContractImpactAssessment,
   requestContractImpactAnalysis,
@@ -69,28 +70,22 @@ const analysis: ContractImpactAnalysis = {
   },
 }
 
-describe('contract impact API client', () => {
+describe('contractImpact API client', () => {
   beforeEach(() => {
     vi.mocked(apiClient.post).mockReset()
   })
 
-  it('requests backend contract impact analysis through the canonical endpoint', async () => {
-    vi.mocked(apiClient.post).mockResolvedValue({
-      success: true,
-      code: 200,
-      message: 'ok',
-      data: analysis,
-      timestamp: '2026-05-15T00:00:00Z',
-      request_id: 'req-1',
-    } as never)
+  it('posts version ids to the canonical contract impact endpoint', async () => {
+    vi.mocked(apiClient.post).mockResolvedValue({ success: true, code: 200, data: analysis } as never)
 
-    const response = await requestContractImpactAnalysis({ from_version_id: 1, to_version_id: 2 })
+    await analyzeContractImpact({ fromVersionId: 3, toVersionId: 7 })
+    await requestContractImpactAnalysis({ from_version_id: 3, to_version_id: 7 })
 
     expect(apiClient.post).toHaveBeenCalledWith('/contracts/impact', {
-      from_version_id: 1,
-      to_version_id: 2,
+      from_version_id: 3,
+      to_version_id: 7,
     })
-    expect(response.data.risk_level).toBe('critical')
+    expect(apiClient.post).toHaveBeenCalledTimes(2)
   })
 
   it('builds a UI-ready assessment from backend impact analysis', () => {
@@ -114,7 +109,7 @@ describe('contract impact API client', () => {
       request_id: 'req-2',
     } as never)
 
-    const response = await assessContractImpact({ from_version_id: 1, to_version_id: 2 })
+    const response = await assessContractImpact({ fromVersionId: 1, toVersionId: 2 })
 
     expect(response.success).toBe(true)
     expect(response.data.analysis).toBe(analysis)

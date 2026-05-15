@@ -98,6 +98,8 @@
         </p>
       </ArtDecoCard>
 
+      <ContractImpactPanel />
+
       <ArtDecoCard v-if="showDeveloperInspector" class="governance-card" title="前端数据治理检查面板" hoverable>
         <div class="governance-meta">
           <span>Readiness: {{ readinessState }}</span>
@@ -160,6 +162,7 @@ import { monitoringApi } from '@/api/index'
 import { useRiskAlertsStore, useTechnicalIndicatorsStore, useTradingSignalsStore, useWatchlistsStore } from '@/stores/apiStores'
 import { frontendStorePolicies } from '@/stores/storePolicies'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import ContractImpactPanel from './components/ContractImpactPanel.vue'
 
 interface MonitoringHealthData {
   request_id?: string
