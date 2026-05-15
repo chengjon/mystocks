@@ -18,6 +18,7 @@ from app.api.contract.schemas import (
     ContractValidateResponse,
     ValidationResult,
 )
+from app.api.contract.services.validation_metrics import record_contract_validation
 
 
 class ContractValidator:
@@ -38,42 +39,49 @@ class ContractValidator:
         Returns:
             验证响应
         """
-        results = []
-        error_count = 0
-        warning_count = 0
+        try:
+            results = []
+            error_count = 0
+            warning_count = 0
 
-        # 1. 基础结构验证
-        basic_errors = ContractValidator._validate_basic_structure(spec)
-        results.extend(basic_errors)
-        error_count += sum(1 for e in basic_errors if e.category == "error")
-        warning_count += sum(1 for e in basic_errors if e.category == "warning")
+            # 1. 基础结构验证
+            basic_errors = ContractValidator._validate_basic_structure(spec)
+            results.extend(basic_errors)
+            error_count += sum(1 for e in basic_errors if e.category == "error")
+            warning_count += sum(1 for e in basic_errors if e.category == "warning")
 
-        # 2. OpenAPI规范验证（如果prance可用）
-        if PRANCE_AVAILABLE:
-            openapi_errors = ContractValidator._validate_openapi_spec(spec)
-            results.extend(openapi_errors)
-            error_count += sum(1 for e in openapi_errors if e.category == "error")
-            warning_count += sum(1 for e in openapi_errors if e.category == "warning")
+            # 2. OpenAPI规范验证（如果prance可用）
+            if PRANCE_AVAILABLE:
+                openapi_errors = ContractValidator._validate_openapi_spec(spec)
+                results.extend(openapi_errors)
+                error_count += sum(1 for e in openapi_errors if e.category == "error")
+                warning_count += sum(1 for e in openapi_errors if e.category == "warning")
 
-        # 3. 破坏性变更检测
-        if check_breaking_changes and compare_to_spec:
-            breaking_errors = ContractValidator._check_breaking_changes(spec, compare_to_spec)
-            results.extend(breaking_errors)
-            warning_count += sum(1 for e in breaking_errors if e.category == "warning")
+            # 3. 破坏性变更检测
+            if check_breaking_changes and compare_to_spec:
+                breaking_errors = ContractValidator._check_breaking_changes(spec, compare_to_spec)
+                results.extend(breaking_errors)
+                warning_count += sum(1 for e in breaking_errors if e.category == "warning")
 
-        # 4. 最佳实践检查
-        practice_warnings = ContractValidator._check_best_practices(spec)
-        results.extend(practice_warnings)
-        warning_count += len(practice_warnings)
+            # 4. 最佳实践检查
+            practice_warnings = ContractValidator._check_best_practices(spec)
+            results.extend(practice_warnings)
+            warning_count += len(practice_warnings)
 
-        valid = error_count == 0
+            valid = error_count == 0
 
-        return ContractValidateResponse(
-            valid=valid,
-            error_count=error_count,
-            warning_count=warning_count,
-            results=results,
-        )
+            response = ContractValidateResponse(
+                valid=valid,
+                error_count=error_count,
+                warning_count=warning_count,
+                results=results,
+            )
+        except Exception:
+            record_contract_validation(False)
+            raise
+
+        record_contract_validation(response.valid)
+        return response
 
     @staticmethod
     def _validate_basic_structure(spec: Dict[str, Any]) -> List[ValidationResult]:

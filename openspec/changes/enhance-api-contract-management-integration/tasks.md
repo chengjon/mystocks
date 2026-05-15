@@ -94,8 +94,9 @@
 > - `docs/reports/api_split/api_health.json`、`api_refresh-health.json` 等是 API 文档拆分产物，不是 contract validation 监控面板或 incident tracking
 > - repo 中存在 `/metrics` 与 Prometheus 基础设施，但未见 contract-specific metrics/alert names 的现行接线
 > 因此本节暂不勾选，避免把工作流存在误写成监控体系完成。
+> `2026-05-15` 补充：已在 `web/backend/app/api/prometheus_exporter.py` 接入 `mystocks_contract_validation_total{result=...}` 与 `mystocks_contract_validation_success_rate`，并由 `/api/contracts/validate` 自动记录验证成功/失败结果。
 
-- [ ] 6.1 Add contract validation success rate metrics to Prometheus
+- [x] 6.1 Add contract validation success rate metrics to Prometheus
 - [ ] 6.2 Implement contract drift incident tracking
 - [ ] 6.3 Create contract validation coverage dashboards in Grafana
 - [ ] 6.4 Add contract health monitoring to existing health checks
