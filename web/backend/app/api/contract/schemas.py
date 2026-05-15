@@ -78,6 +78,62 @@ class ContractDiffResponse(BaseModel):
     summary: str = Field(..., description="差异摘要")
 
 
+# ==================== 契约影响分析 ====================
+
+
+class ContractImpactRequest(BaseModel):
+    """契约影响分析请求"""
+
+    from_version_id: int = Field(..., description="源版本ID")
+    to_version_id: int = Field(..., description="目标版本ID")
+
+
+class ContractImpactItemResponse(BaseModel):
+    """单项契约影响结果"""
+
+    category: str = Field(..., description="影响类别: endpoint|schema|contract")
+    name: str = Field(..., description="受影响对象名称")
+    path: str = Field(..., description="受影响路径")
+    change_type: str = Field(..., description="变更类型")
+    severity: str = Field(..., description="严重级别")
+    is_breaking: bool = Field(..., description="是否为破坏性影响")
+    reason: str = Field(..., description="影响原因")
+
+
+class ContractImpactSummaryResponse(BaseModel):
+    """契约影响汇总"""
+
+    total_impacts: int = Field(..., description="总影响项数量")
+    breaking_impacts: int = Field(..., description="破坏性影响项数量")
+    non_breaking_impacts: int = Field(..., description="非破坏性影响项数量")
+    by_category: Dict[str, int] = Field(default_factory=dict, description="按类别统计的影响项数量")
+
+
+class ContractMigrationEffortResponse(BaseModel):
+    """契约迁移工作量估算"""
+
+    level: str = Field(..., description="迁移工作量等级: none|low|medium|high|critical")
+    score: int = Field(..., description="迁移工作量评分")
+    estimated_hours_min: int = Field(..., description="预估最少迁移工时")
+    estimated_hours_max: int = Field(..., description="预估最多迁移工时")
+    drivers: List[str] = Field(default_factory=list, description="迁移工作量驱动因素")
+
+
+class ContractImpactAnalysisResponse(BaseModel):
+    """契约影响分析响应"""
+
+    from_version: str = Field(..., description="源版本号")
+    to_version: str = Field(..., description="目标版本号")
+    risk_level: str = Field(..., description="综合风险等级")
+    summary: ContractImpactSummaryResponse = Field(..., description="影响汇总")
+    impacts: List[ContractImpactItemResponse] = Field(default_factory=list, description="影响明细")
+    affected_endpoints: List[str] = Field(default_factory=list, description="受影响端点")
+    affected_schemas: List[str] = Field(default_factory=list, description="受影响 Schema")
+    affected_clients: List[str] = Field(default_factory=list, description="受影响客户端域")
+    recommendations: List[str] = Field(default_factory=list, description="治理建议")
+    migration_effort: ContractMigrationEffortResponse = Field(..., description="迁移工作量估算")
+
+
 # ==================== 契约验证 ====================
 
 
