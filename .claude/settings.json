@@ -81,6 +81,16 @@
           }
         ],
         "timeout": 3
+      },
+      {
+        "matcher": "mcp__gitnexus__query|mcp__gitnexus__context|mcp__gitnexus__impact|mcp__gitnexus__detect_changes|mcp__gitnexus__rename|mcp__gitnexus__cypher",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/post-tool-use-gitnexus-evidence-recorder.sh"
+          }
+        ],
+        "timeout": 3
       }
     ],
     "Stop": [
@@ -116,6 +126,15 @@
           {
             "type": "command",
             "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-graphiti-task-closeout.sh"
+          }
+        ],
+        "timeout": 8
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$CLAUDE_PROJECT_DIR/.claude/hooks/stop-gitnexus-workflow-gate.sh"
           }
         ],
         "timeout": 8

@@ -1,0 +1,59 @@
+#!/bin/bash
+# Post-commit hook: asynchronously record git commit closeouts into Graphiti and refresh GitNexus.
+# Install: either `git config core.hooksPath .githooks` or copy this file into `.git/hooks/post-commit`.
+
+set -euo pipefail
+
+PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
+run_graphiti_closeout() {
+  if [[ "${DISABLE_GRAPHITI_POST_COMMIT:-0}" == "1" ]]; then
+    echo "⚠️  Graphiti post-commit closeout skipped via DISABLE_GRAPHITI_POST_COMMIT=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"graphiti-post-commit"* ]]; then
+    echo "⚠️  Graphiti post-commit closeout skipped via SKIP=graphiti-post-commit"
+    return 0
+  fi
+
+  CMD=(python "$PROJECT_ROOT/scripts/runtime/record_graphiti_post_commit_closeout.py" --project-root "$PROJECT_ROOT")
+
+  if [[ "${GRAPHITI_CLOSEOUT_SYNC:-0}" == "1" ]]; then
+    "${CMD[@]}" >/dev/null 2>&1 || true
+  else
+    nohup "${CMD[@]}" >/dev/null 2>&1 &
+  fi
+}
+
+run_gitnexus_analyze() {
+  if [[ "${DISABLE_GITNEXUS_POST_COMMIT_ANALYZE:-0}" == "1" ]]; then
+    echo "⚠️  GitNexus analyze skipped via DISABLE_GITNEXUS_POST_COMMIT_ANALYZE=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"gitnexus-analyze"* ]]; then
+    echo "⚠️  GitNexus analyze skipped via SKIP=gitnexus-analyze"
+    return 0
+  fi
+
+  if ! command -v gitnexus >/dev/null 2>&1; then
+    echo "⚠️  GitNexus analyze skipped: gitnexus CLI not found"
+    return 0
+  fi
+
+  mkdir -p "$PROJECT_ROOT/.claude"
+  CMD=(gitnexus analyze "$PROJECT_ROOT")
+  LOG_FILE="$PROJECT_ROOT/.claude/gitnexus-analyze.log"
+
+  if [[ "${GITNEXUS_ANALYZE_SYNC:-0}" == "1" ]]; then
+    "${CMD[@]}" >"$LOG_FILE" 2>&1 || true
+  else
+    nohup "${CMD[@]}" >"$LOG_FILE" 2>&1 &
+  fi
+}
+
+run_graphiti_closeout
+run_gitnexus_analyze
+
+exit 0

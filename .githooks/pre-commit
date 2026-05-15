@@ -1,5 +1,5 @@
 #!/bin/bash
-# Pre-commit hook: markdown governance + directory governance + production Python guardrails + backend singleton None guard + UnifiedResponse contract guard + frontend/test file size guard + PM2 first-class gate
+# Pre-commit hook: markdown governance + directory governance + production Python guardrails + backend singleton None guard + UnifiedResponse contract guard + frontend/test file size guard + PM2 first-class gate + GitNexus workflow gate
 # Install: git config core.hooksPath .githooks
 
 set -euo pipefail
@@ -202,6 +202,28 @@ run_pm2_first_class_gate() {
   echo "✅ PM2 first-class gate passed"
 }
 
+run_gitnexus_workflow_gate() {
+  if [[ "${DISABLE_GITNEXUS_WORKFLOW_GATE:-0}" == "1" ]]; then
+    echo "⚠️  GitNexus workflow gate skipped via DISABLE_GITNEXUS_WORKFLOW_GATE=1"
+    return 0
+  fi
+
+  if [[ "${SKIP:-}" == *"gitnexus-workflow-gate"* ]]; then
+    echo "⚠️  GitNexus workflow gate skipped via SKIP=gitnexus-workflow-gate"
+    return 0
+  fi
+
+  local gate_script="$PROJECT_ROOT/scripts/hooks/gitnexus_workflow_gate.py"
+  if [[ ! -f "$gate_script" ]]; then
+    echo "⚠️  GitNexus workflow gate script missing: $gate_script"
+    return 0
+  fi
+
+  echo "🔍 Running GitNexus workflow gate on staged changes..."
+  python "$gate_script" pre-commit-gate --project-root "$PROJECT_ROOT"
+  echo "✅ GitNexus workflow gate passed"
+}
+
 run_markdown_governance_gate
 run_directory_governance
 run_production_python_guardrails
@@ -209,3 +231,4 @@ run_backend_singleton_none_guard
 run_unified_response_contract_guard
 run_frontend_test_file_size_guard
 run_pm2_first_class_gate
+run_gitnexus_workflow_gate
