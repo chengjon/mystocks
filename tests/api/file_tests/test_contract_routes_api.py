@@ -12,7 +12,7 @@ import importlib
 import sys
 from pathlib import Path
 from types import SimpleNamespace
-from typing import List
+from typing import Any, Dict
 
 import pytest
 
@@ -56,6 +56,7 @@ class TestContractRoutesAPIFile:
         assert ("/api/contracts/diff", ("POST",)) in route_methods
         assert ("/api/contracts/impact", ("POST",)) in route_methods
         assert ("/api/contracts/validate", ("POST",)) in route_methods
+        assert ("/api/contracts/drift/incidents", ("GET",)) in route_methods
         assert ("/api/contracts/sync", ("POST",)) in route_methods
         assert ("/api/contracts/sync/report", ("GET",)) in route_methods
 
@@ -64,35 +65,51 @@ class TestContractRoutesAPIFile:
         package, _ = contract_module
         route_pairs = [(route.path, tuple(sorted(route.methods or []))) for route in package.router.routes]
 
-        assert len(route_pairs) == 13
+        assert len(route_pairs) == 14
         assert len(route_pairs) == len(set(route_pairs))
 
     @pytest.mark.file_test
     def test_version_management_routes_keep_response_models(self, contract_module):
         package, routes = contract_module
+        from app.core.responses import UnifiedResponse
+
         create_route = next(route for route in package.router.routes if route.path == "/api/contracts/versions" and "POST" in route.methods)
         get_route = next(route for route in package.router.routes if route.path == "/api/contracts/versions/{version_id}" and "GET" in route.methods)
         list_route = next(route for route in package.router.routes if route.path == "/api/contracts/versions" and "GET" in route.methods)
+        activate_route = next(
+            route for route in package.router.routes if route.path == "/api/contracts/versions/{version_id}/activate"
+        )
+        delete_route = next(
+            route for route in package.router.routes if route.path == "/api/contracts/versions/{version_id}" and "DELETE" in route.methods
+        )
 
-        assert create_route.response_model is routes.ContractVersionResponse
-        assert get_route.response_model is routes.ContractVersionResponse
-        assert list_route.response_model == List[routes.ContractVersionResponse]
+        assert create_route.response_model == UnifiedResponse[routes.ContractVersionResponse]
+        assert get_route.response_model == UnifiedResponse[routes.ContractVersionResponse]
+        assert list_route.response_model == UnifiedResponse[list[routes.ContractVersionResponse]]
+        assert activate_route.response_model == UnifiedResponse[Dict[str, Any]]
+        assert delete_route.response_model == UnifiedResponse[Dict[str, Any]]
 
     @pytest.mark.file_test
     def test_contract_list_diff_and_validate_routes_keep_response_models(self, contract_module):
         package, routes = contract_module
-        from app.api.contract.schemas import ContractImpactAnalysisResponse
+        from app.api.contract.schemas import ContractDriftIncidentListResponse, ContractImpactAnalysisResponse
         from app.core.responses import UnifiedResponse
 
         contracts_route = next(route for route in package.router.routes if route.path == "/api/contracts/contracts")
         diff_route = next(route for route in package.router.routes if route.path == "/api/contracts/diff")
         impact_route = next(route for route in package.router.routes if route.path == "/api/contracts/impact")
         validate_route = next(route for route in package.router.routes if route.path == "/api/contracts/validate")
+        drift_route = next(route for route in package.router.routes if route.path == "/api/contracts/drift/incidents")
+        sync_route = next(route for route in package.router.routes if route.path == "/api/contracts/sync" and "POST" in route.methods)
+        sync_report_route = next(route for route in package.router.routes if route.path == "/api/contracts/sync/report")
 
-        assert contracts_route.response_model is routes.ContractListResponse
-        assert diff_route.response_model is routes.ContractDiffResponse
+        assert contracts_route.response_model == UnifiedResponse[routes.ContractListResponse]
+        assert diff_route.response_model == UnifiedResponse[routes.ContractDiffResponse]
         assert impact_route.response_model == UnifiedResponse[ContractImpactAnalysisResponse]
-        assert validate_route.response_model is routes.ContractValidateResponse
+        assert validate_route.response_model == UnifiedResponse[routes.ContractValidateResponse]
+        assert drift_route.response_model == UnifiedResponse[ContractDriftIncidentListResponse]
+        assert sync_route.response_model == UnifiedResponse[routes.SyncResult]
+        assert sync_report_route.response_model == UnifiedResponse[Dict[str, Any]]
 
     @pytest.mark.file_test
     def test_package_exports_router_in___all__(self, contract_module):
@@ -113,6 +130,7 @@ class TestContractRoutesAPIFile:
         assert route_names[("/api/contracts/diff", ("POST",))] == "compare_versions"
         assert route_names[("/api/contracts/impact", ("POST",))] == "analyze_contract_impact"
         assert route_names[("/api/contracts/validate", ("POST",))] == "validate_contract"
+        assert route_names[("/api/contracts/drift/incidents", ("GET",))] == "list_contract_drift_incidents"
         assert route_names[("/api/contracts/sync", ("POST",))] == "sync_contract"
 
     @pytest.mark.file_test
@@ -133,8 +151,18 @@ class TestContractRoutesAPIFile:
             1: SimpleNamespace(version="1.0.0", spec=from_spec),
             2: SimpleNamespace(version="2.0.0", spec=to_spec),
         }
+        dispatched_notifications = []
+
+        async def fake_dispatch_notifications(_service, notifications):
+            dispatched_notifications.extend(notifications)
 
         monkeypatch.setattr(impact_routes.VersionManager, "get_version", staticmethod(lambda _db, version_id: versions[version_id]))
+        monkeypatch.setattr(
+            impact_routes.ContractImpactNotificationService,
+            "dispatch_notifications",
+            fake_dispatch_notifications,
+            raising=False,
+        )
 
         result = asyncio.run(
             impact_routes.analyze_contract_impact(
@@ -151,6 +179,83 @@ class TestContractRoutesAPIFile:
         assert result.data.notifications[0].priority == "urgent"
         assert result.data.notifications[0].action_required is True
         assert result.data.notifications[0].targets == ["api-governance", "market"]
+        assert len(dispatched_notifications) == 1
+        assert dispatched_notifications[0].priority == "urgent"
+
+    @pytest.mark.file_test
+    def test_validate_contract_dispatches_failure_alerts(self, monkeypatch: pytest.MonkeyPatch, contract_module):
+        from app.api.contract.schemas import ValidationResult
+
+        _, routes = contract_module
+        validation_result = routes.ContractValidateResponse(
+            valid=False,
+            error_count=1,
+            warning_count=0,
+            results=[
+                ValidationResult(
+                    valid=False,
+                    category="error",
+                    path="paths./api/example.get.responses.200",
+                    message="缺少响应Schema",
+                )
+            ],
+        )
+        dispatched_alerts = []
+
+        async def fake_dispatch_alerts(_service, alerts):
+            dispatched_alerts.extend(alerts)
+
+        monkeypatch.setattr(routes.ContractValidator, "validate", staticmethod(lambda **_: validation_result))
+        monkeypatch.setattr(
+            routes.ContractValidationAlertService,
+            "dispatch_alerts",
+            fake_dispatch_alerts,
+            raising=False,
+        )
+
+        result = asyncio.run(
+            routes.validate_contract(
+                routes.ContractValidateRequest(
+                    spec={"openapi": "3.1.0", "info": {"title": "Demo", "version": "1.0.0"}, "paths": {}},
+                    check_breaking_changes=False,
+                )
+            )
+        )
+
+        assert result.data == validation_result
+        assert result.message == "契约验证完成"
+        assert len(dispatched_alerts) == 1
+        assert dispatched_alerts[0].kind == "contract_validation_failure"
+        assert dispatched_alerts[0].priority == "high"
+
+    @pytest.mark.file_test
+    def test_list_contract_drift_incidents_returns_tracked_incidents(self, contract_module):
+        _, routes = contract_module
+        from app.api.contract.services.drift_incidents import (
+            ContractDriftIncident,
+            clear_contract_drift_incidents,
+            record_contract_drift_incident,
+        )
+
+        clear_contract_drift_incidents()
+        record_contract_drift_incident(
+            ContractDriftIncident(
+                kind="endpoint_removed",
+                severity="warning",
+                path="paths./api/example",
+                message="删除API端点: /api/example",
+            )
+        )
+
+        response = asyncio.run(routes.list_contract_drift_incidents(limit=10))
+
+        assert response.data.total == 1
+        assert response.data.open_count == 1
+        assert response.data.incidents[0].incident_id.startswith("contract-drift-")
+        assert response.data.incidents[0].kind == "endpoint_removed"
+        assert response.data.incidents[0].status == "open"
+
+        clear_contract_drift_incidents()
 
     @pytest.mark.file_test
     def test_docstrings_cover_version_diff_validate_and_sync_operations(self, contract_module):

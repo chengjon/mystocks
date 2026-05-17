@@ -49,9 +49,10 @@ def record_contract_drift_incident(incident: ContractDriftIncident) -> None:
     contract_drift_incidents_open.set(len(_contract_drift_incidents))
 
 
-def list_contract_drift_incidents() -> list[ContractDriftIncident]:
+def list_contract_drift_incidents(limit: int | None = None) -> list[ContractDriftIncident]:
     """Return all recorded contract drift incidents in insertion order."""
-    return list(_contract_drift_incidents)
+    incidents = list(_contract_drift_incidents)
+    return incidents if limit is None else incidents[:limit]
 
 
 def clear_contract_drift_incidents() -> None:

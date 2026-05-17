@@ -3,7 +3,8 @@ API契约管理 API路由
 提供契约版本管理、差异检测、验证和同步功能
 """
 
-from typing import Any, Dict, List
+import uuid
+from typing import Any, Dict
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
 from sqlalchemy.orm import Session
@@ -11,6 +12,8 @@ from sqlalchemy.orm import Session
 from app.api.contract.schemas import (
     ContractDiffRequest,
     ContractDiffResponse,
+    ContractDriftIncidentListResponse,
+    ContractDriftIncidentResponse,
     ContractListResponse,
     ContractSyncRequest,
     ContractValidateRequest,
@@ -18,11 +21,15 @@ from app.api.contract.schemas import (
     ContractVersionCreate,
     ContractVersionResponse,
     ContractVersionUpdate,
+    SyncResult,
 )
 from app.api.contract.services.diff_engine import DiffEngine
+from app.api.contract.services.drift_incidents import list_contract_drift_incidents as list_tracked_contract_drift_incidents
+from app.api.contract.services.validation_alerts import ContractValidationAlertService
 from app.api.contract.services.validator import ContractValidator
 from app.api.contract.services.version_manager import VersionManager
 from app.core.database import get_db
+from app.core.responses import UnifiedResponse, create_unified_success_response
 
 router = APIRouter(prefix="/api/contracts", tags=["contract-management"])
 
@@ -357,7 +364,7 @@ CONTRACT_SYNC_RESPONSES = {
 
 @router.post(
     "/versions",
-    response_model=ContractVersionResponse,
+    response_model=UnifiedResponse[ContractVersionResponse],
     summary="创建契约版本",
     description="创建新的契约版本记录，并把 OpenAPI 规范、作者、提交号和标签一起写入版本仓库。",
     responses=CONTRACT_VERSION_CREATE_RESPONSES,
@@ -377,10 +384,14 @@ async def create_version(
     - **description**: 版本描述 (可选)
     - **tags**: 版本标签 (可选)
     """
-    return VersionManager.create_version(db, version_data)
+    return create_unified_success_response(data=VersionManager.create_version(db, version_data), message="契约版本创建成功")
 
 
-@router.get("/versions/{version_id}", response_model=ContractVersionResponse, responses=CONTRACT_VERSION_DETAIL_RESPONSES)
+@router.get(
+    "/versions/{version_id}",
+    response_model=UnifiedResponse[ContractVersionResponse],
+    responses=CONTRACT_VERSION_DETAIL_RESPONSES,
+)
 async def get_version(
     version_id: int = Path(..., description="Unique identifier of the contract version to retrieve."),
     db: Session = Depends(get_db),
@@ -389,12 +400,12 @@ async def get_version(
     version = VersionManager.get_version(db, version_id)
     if not version:
         raise HTTPException(status_code=404, detail="契约版本不存在")
-    return version
+    return create_unified_success_response(data=version, message="契约版本获取成功")
 
 
 @router.get(
     "/versions/{name}/active",
-    response_model=ContractVersionResponse,
+    response_model=UnifiedResponse[ContractVersionResponse],
     responses=CONTRACT_VERSION_DETAIL_RESPONSES,
 )
 async def get_active_version(
@@ -405,10 +416,14 @@ async def get_active_version(
     version = VersionManager.get_active_version(db, name)
     if not version:
         raise HTTPException(status_code=404, detail="契约不存在或无激活版本")
-    return version
+    return create_unified_success_response(data=version, message="激活契约版本获取成功")
 
 
-@router.get("/versions", response_model=List[ContractVersionResponse], responses=CONTRACT_VERSION_LIST_RESPONSES)
+@router.get(
+    "/versions",
+    response_model=UnifiedResponse[list[ContractVersionResponse]],
+    responses=CONTRACT_VERSION_LIST_RESPONSES,
+)
 async def list_versions(
     name: str = Query(None, description="Optional contract name filter used to scope the version list."),
     limit: int = Query(50, ge=1, le=200, description="Maximum number of contract versions returned in one page."),
@@ -416,12 +431,12 @@ async def list_versions(
     db: Session = Depends(get_db),
 ):
     """按契约名称和分页条件列出当前可查询的契约版本集合。"""
-    return VersionManager.list_versions(db, name, limit, offset)
+    return create_unified_success_response(data=VersionManager.list_versions(db, name, limit, offset), message="契约版本列表获取成功")
 
 
 @router.put(
     "/versions/{version_id}",
-    response_model=ContractVersionResponse,
+    response_model=UnifiedResponse[ContractVersionResponse],
     summary="更新契约版本元数据",
     description="更新指定契约版本的描述、标签等元数据，不修改该版本对应的 OpenAPI 规范正文。",
     responses=CONTRACT_VERSION_UPDATE_RESPONSES,
@@ -435,10 +450,14 @@ async def update_version(
     version = VersionManager.update_version(db, version_id, update_data)
     if not version:
         raise HTTPException(status_code=404, detail="契约版本不存在")
-    return version
+    return create_unified_success_response(data=version, message="契约版本更新成功")
 
 
-@router.post("/versions/{version_id}/activate", responses=CONTRACT_VERSION_ACTIVATE_RESPONSES)
+@router.post(
+    "/versions/{version_id}/activate",
+    response_model=UnifiedResponse[Dict[str, Any]],
+    responses=CONTRACT_VERSION_ACTIVATE_RESPONSES,
+)
 async def activate_version(
     version_id: int = Path(..., description="Unique identifier of the contract version that should become active."),
     db: Session = Depends(get_db),
@@ -447,10 +466,14 @@ async def activate_version(
     success = VersionManager.activate_version(db, version_id)
     if not success:
         raise HTTPException(status_code=404, detail="契约版本不存在")
-    return {"success": True, "message": "版本已激活"}
+    return create_unified_success_response(data={"success": True, "version_id": version_id}, message="版本已激活")
 
 
-@router.delete("/versions/{version_id}", responses=CONTRACT_VERSION_DELETE_RESPONSES)
+@router.delete(
+    "/versions/{version_id}",
+    response_model=UnifiedResponse[Dict[str, Any]],
+    responses=CONTRACT_VERSION_DELETE_RESPONSES,
+)
 async def delete_version(
     version_id: int = Path(..., description="Unique identifier of the contract version to delete."),
     db: Session = Depends(get_db),
@@ -459,20 +482,18 @@ async def delete_version(
     success = VersionManager.delete_version(db, version_id)
     if not success:
         raise HTTPException(status_code=404, detail="契约版本不存在")
-    return {"success": True, "message": "版本已删除"}
+    return create_unified_success_response(data={"success": True, "version_id": version_id}, message="版本已删除")
 
 
 # ==================== 契约列表 ====================
 
 
-@router.get("/contracts", response_model=ContractListResponse, responses=CONTRACT_LIST_RESPONSES)
+@router.get("/contracts", response_model=UnifiedResponse[ContractListResponse], responses=CONTRACT_LIST_RESPONSES)
 async def list_contracts(db: Session = Depends(get_db)):
     """列出所有已登记契约及其最新版本和元数据信息。"""
     contracts = VersionManager.list_contracts(db)
-    return ContractListResponse(
-        contracts=contracts,
-        total=len(contracts),
-    )
+    response = ContractListResponse(contracts=contracts, total=len(contracts))
+    return create_unified_success_response(data=response, message="契约列表获取成功")
 
 
 # ==================== 契约差异检测 ====================
@@ -480,7 +501,7 @@ async def list_contracts(db: Session = Depends(get_db)):
 
 @router.post(
     "/diff",
-    response_model=ContractDiffResponse,
+    response_model=UnifiedResponse[ContractDiffResponse],
     summary="比较契约版本差异",
     description="比较两个契约版本的差异，输出总变更数、破坏性变更数以及逐项 diff 明细。",
     responses=CONTRACT_DIFF_RESPONSES,
@@ -518,7 +539,7 @@ async def compare_versions(
         to_version=to_version.version,
     )
 
-    return diff_result
+    return create_unified_success_response(data=diff_result, message="契约差异比较完成")
 
 
 # ==================== 契约验证 ====================
@@ -526,7 +547,7 @@ async def compare_versions(
 
 @router.post(
     "/validate",
-    response_model=ContractValidateResponse,
+    response_model=UnifiedResponse[ContractValidateResponse],
     summary="验证契约规范",
     description="验证待检查的 OpenAPI 规范，并在需要时与指定历史版本比较破坏性变更。",
     responses=CONTRACT_VALIDATE_RESPONSES,
@@ -566,8 +587,41 @@ async def validate_contract(request: ContractValidateRequest = Body(..., openapi
         check_breaking_changes=request.check_breaking_changes,
         compare_to_spec=compare_to_spec,
     )
+    alert_service = ContractValidationAlertService()
+    await alert_service.dispatch_alerts(alert_service.build_alerts(validation_result))
 
-    return validation_result
+    return create_unified_success_response(data=validation_result, message="契约验证完成")
+
+
+@router.get(
+    "/drift/incidents",
+    response_model=UnifiedResponse[ContractDriftIncidentListResponse],
+    summary="查询契约漂移事件",
+    description="返回当前进程内由契约验证记录的 drift incident，用于治理看板和后续告警接线。",
+)
+async def list_contract_drift_incidents(limit: int = Query(default=50, ge=1, le=200)):
+    """查询契约验证期间记录的漂移事件。"""
+    incidents = list_tracked_contract_drift_incidents(limit=limit)
+    incident_responses = [
+        ContractDriftIncidentResponse(
+            incident_id=f"contract-drift-{uuid.uuid5(uuid.NAMESPACE_URL, f'{incident.kind}:{incident.path}:{incident.message}:{incident.recorded_at.isoformat()}').hex}",
+            detected_at=incident.recorded_at,
+            kind=incident.kind,
+            severity=incident.severity,
+            path=incident.path,
+            message=incident.message,
+            suggestion=incident.suggestion,
+            status=str(incident.metadata.get("status", "open")),
+            metadata=incident.metadata,
+        )
+        for incident in incidents
+    ]
+    response = ContractDriftIncidentListResponse(
+        incidents=incident_responses,
+        total=len(incident_responses),
+        open_count=sum(1 for incident in incident_responses if incident.status == "open"),
+    )
+    return create_unified_success_response(data=response, message="契约漂移事件获取成功")
 
 
 # ==================== 契约同步 ====================
@@ -575,6 +629,7 @@ async def validate_contract(request: ContractValidateRequest = Body(..., openapi
 
 @router.post(
     "/sync",
+    response_model=UnifiedResponse[SyncResult],
     summary="同步契约",
     description="在代码与契约仓库之间同步指定契约，可选择 code_to_db 或 db_to_code 方向。",
     responses=CONTRACT_SYNC_RESPONSES,
@@ -607,10 +662,14 @@ async def sync_contract(
         description=request.description,
     )
 
-    return result
+    return create_unified_success_response(data=result, message="契约同步完成")
 
 
-@router.get("/sync/report", responses=CONTRACT_SYNC_REPORT_RESPONSES)
+@router.get(
+    "/sync/report",
+    response_model=UnifiedResponse[Dict[str, Any]],
+    responses=CONTRACT_SYNC_REPORT_RESPONSES,
+)
 async def get_sync_report(db: Session = Depends(get_db)):
     """
     获取同步报告
@@ -624,4 +683,4 @@ async def get_sync_report(db: Session = Depends(get_db)):
     generator.scan_app(fastapi_app)
     report = generator.get_sync_report()
 
-    return report
+    return create_unified_success_response(data=report, message="契约同步报告获取成功")

@@ -84,3 +84,27 @@ groups:
         expr: |
           sum(mystocks_cache_hits_total)
           / (sum(mystocks_cache_hits_total) + sum(mystocks_cache_misses_total)) * 100
+
+  - name: mystocks-contract-alerts
+    rules:
+      - alert: ContractValidationFailureDetected
+        expr: |
+          sum(increase(mystocks_contract_validation_total{result="failure"}[10m])) > 0
+        for: 1m
+        labels:
+          severity: warning
+          domain: contract-management
+        annotations:
+          summary: "Contract validation failure detected"
+          description: "At least one API contract validation failed in the last 10 minutes."
+
+      - alert: ContractDriftIncidentDetected
+        expr: |
+          sum(increase(mystocks_contract_drift_incidents_total[10m])) > 0
+        for: 1m
+        labels:
+          severity: critical
+          domain: contract-management
+        annotations:
+          summary: "Contract drift incident detected"
+          description: "A breaking API contract drift incident was recorded in the last 10 minutes."

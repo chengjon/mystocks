@@ -155,9 +155,11 @@
 > `2026-05-17` 补充：已新增 `tests/integration/contract/test_contract_validation_e2e.py`，覆盖 `/api/contracts/validate` → `ContractValidator` → drift incident → contract health，以及 validation failure → realtime alert seam；同时修正 `ContractValidator._validate_openapi_spec()` 的 prance backend 名称为 `openapi-spec-validator`，避免合法 OpenAPI 被误报解析失败。
 > `2026-05-17` 补充：已执行 `.github/workflows/api-contract-validation.yml` 的本地 workflow-equivalent dry-run，并记录到 `reports/governance/2026-05-17-api-contract-ci-cd-local-dry-run.md`。导入与 OpenAPI 生成通过，但文档回归门、success example audit、`backend_api_documentation` collector 仍失败，因此 8.2 不可勾选。
 > `2026-05-17` 补充：已扩展 `tests/unit/api/test_contract_impact_analyzer.py`，覆盖新增端点（non-breaking/medium/low effort）与新增 required schema property（breaking/high/medium effort）边界，并结合 route/notification 用例验证 impact analysis 输出口径。
+> `2026-05-17` 补充：已执行 backend `ContractValidator.validate()` runtime validation 性能 smoke，并记录到 `reports/governance/2026-05-17-contract-runtime-validation-performance.md`；当前前端 `unifiedApiClient.ts` 仍是 legacy wrapper，不具备可测的 schema-enforcing runtime validator。
+> `2026-05-17` 补充：已完成 repository-local security review，并记录到 `reports/governance/2026-05-17-contract-validation-security-review.md`；审查发现 authorization、输入规模/复杂度限制、外部 `$ref` 约束和 drift incident 有界保留仍需后续 remediation。
 
 - [x] 8.1 Perform end-to-end contract validation testing
 - [ ] 8.2 Test CI/CD integration with contract validation
 - [x] 8.3 Validate contract impact analysis accuracy
-- [ ] 8.4 Perform performance testing for runtime validation
-- [ ] 8.5 Conduct security review of contract validation implementation
+- [x] 8.4 Perform performance testing for runtime validation
+- [x] 8.5 Conduct security review of contract validation implementation
