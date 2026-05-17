@@ -1,0 +1,438 @@
+{
+  "generated_at": "2026-05-18T01:08:38.140264",
+  "git_branch": "wip/root-dirty-20260403",
+  "git_head": "25c3cdc27 feat(contract): include drift status in health checks",
+  "summary": {
+    "total_routes": 678,
+    "registered_routes": 510,
+    "orphan_routes": 168,
+    "unique_files": 115,
+    "local_decorator_duplicate_groups": 81,
+    "full_path_duplicate_groups": 26
+  },
+  "full_path_duplicates": [
+    {
+      "method": "GET",
+      "full_path": "/health",
+      "handler_count": 3,
+      "handlers": [
+        {
+          "source": "app/api/risk_v31/system.py",
+          "function": "get_risk_management_health"
+        },
+        {
+          "source": "app/api/stock_ratings_api.py",
+          "function": "health_check"
+        },
+        {
+          "source": "app/api/technical/routes.py",
+          "function": "health_check"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/multi-source/health",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/multi_source/routes.py",
+          "function": "health_check"
+        },
+        {
+          "source": "app/api/multi_source.py",
+          "function": "get_all_data_sources_health"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/v1/strategy/backtest/results/{backtest_id}",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/strategy_management/get_monitoring_db.py",
+          "function": "get_backtest_result"
+        },
+        {
+          "source": "app/api/strategy_management/get_backtest_result.py",
+          "function": "get_backtest_result"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/trading/status",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/trading_runtime.py",
+          "function": "get_status"
+        },
+        {
+          "source": "app/api/trading_monitor.py",
+          "function": "get_trading_status"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/trading/start",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/trading_runtime.py",
+          "function": "start_session"
+        },
+        {
+          "source": "app/api/trading_monitor.py",
+          "function": "start_trading_session"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/trading/stop",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/trading_runtime.py",
+          "function": "stop_session"
+        },
+        {
+          "source": "app/api/trading_monitor.py",
+          "function": "stop_trading_session"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/trading/strategies/performance",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/trading_runtime.py",
+          "function": "get_strategies_performance"
+        },
+        {
+          "source": "app/api/trading_monitor.py",
+          "function": "get_strategies_performance"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/trading/strategies/add",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/trading_runtime.py",
+          "function": "add_strategy"
+        },
+        {
+          "source": "app/api/trading_monitor.py",
+          "function": "add_strategy"
+        }
+      ]
+    },
+    {
+      "method": "DELETE",
+      "full_path": "/api/trading/strategies/{strategy_name}",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/trading_runtime.py",
+          "function": "remove_strategy"
+        },
+        {
+          "source": "app/api/trading_monitor.py",
+          "function": "remove_strategy"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/trading/market/snapshot",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/trading_runtime.py",
+          "function": "get_market_snapshot"
+        },
+        {
+          "source": "app/api/trading_monitor.py",
+          "function": "get_market_snapshot"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/trading/risk/metrics",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/trading_runtime.py",
+          "function": "get_risk_metrics"
+        },
+        {
+          "source": "app/api/trading_monitor.py",
+          "function": "get_risk_metrics"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/status",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/_cache_basic_routes.py",
+          "function": "get_cache_status"
+        },
+        {
+          "source": "app/api/technical/routes.py",
+          "function": "get_status"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/monitoring/health",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/_cache_prewarming_routes.py",
+          "function": "get_cache_health_status"
+        },
+        {
+          "source": "app/api/monitoring_old/routes.py",
+          "function": "health_check"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/v1/advanced-analysis/batch",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/advanced_analysis.py",
+          "function": "batch_analysis"
+        },
+        {
+          "source": "app/api/advanced_analysis_api.py",
+          "function": "analyze_batch"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/v1/advanced-analysis/health",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/advanced_analysis.py",
+          "function": "health_check"
+        },
+        {
+          "source": "app/api/advanced_analysis_api.py",
+          "function": "health_check"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/backup-recovery/backup/tdengine/full",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "backup_tdengine_full"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "backup_tdengine_full"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/backup-recovery/backup/tdengine/incremental",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "backup_tdengine_incremental"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "backup_tdengine_incremental"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/backup-recovery/backup/postgresql/full",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "backup_postgresql_full"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "backup_postgresql_full"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/backup-recovery/backups",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "list_backups"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "list_backups"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/backup-recovery/recovery/tdengine/full",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "restore_tdengine_full"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "restore_tdengine_full"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/backup-recovery/recovery/tdengine/pitr",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "restore_tdengine_pitr"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "restore_tdengine_pitr"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/backup-recovery/recovery/postgresql/full",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "restore_postgresql_full"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "restore_postgresql_full"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/backup-recovery/recovery/objectives",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "get_recovery_objectives"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "get_recovery_objectives"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/backup-recovery/scheduler/jobs",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "get_scheduled_jobs"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "get_scheduled_jobs"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/backup-recovery/integrity/verify/{backup_id}",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "verify_backup_integrity"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/log_security_event.py",
+          "function": "verify_backup_integrity"
+        }
+      ]
+    },
+    {
+      "method": "POST",
+      "full_path": "/api/backup-recovery/cleanup/old-backups",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/backup_recovery.py",
+          "function": "cleanup_old_backups"
+        },
+        {
+          "source": "app/api/backup_recovery_secure/cleanup_old_backups.py",
+          "function": "cleanup_old_backups"
+        }
+      ]
+    }
+  ],
+  "local_decorator_duplicates_count": 81,
+  "orphan_files": [
+    "app/api/_cache_basic_routes.py",
+    "app/api/_cache_eviction_routes.py",
+    "app/api/_cache_prewarming_routes.py",
+    "app/api/_monitoring_portfolio_router.py",
+    "app/api/_technical_patterns_router.py",
+    "app/api/advanced_analysis.py",
+    "app/api/advanced_analysis_api.py",
+    "app/api/algorithms/_naive_bayes_router.py",
+    "app/api/algorithms/get_algorithms_module.py",
+    "app/api/alternative_data.py",
+    "app/api/announcement.py",
+    "app/api/backtest_ws.py",
+    "app/api/backup_recovery.py",
+    "app/api/backup_recovery_secure/cleanup_old_backups.py",
+    "app/api/backup_recovery_secure/log_security_event.py",
+    "app/api/efinance.py",
+    "app/api/monitoring_market_routes.py",
+    "app/api/monitoring_old/routes.py",
+    "app/api/multi_source.py",
+    "app/api/mystocks_api/main.py",
+    "app/api/risk_v31/alerts.py",
+    "app/api/risk_v31/stop_loss.py",
+    "app/api/risk_v31/system.py",
+    "app/api/stock_ratings_api.py",
+    "app/api/technical/routes.py",
+    "app/api/trading_monitor.py"
+  ]
+}
