@@ -1,14 +1,14 @@
 {
-  "generated_at": "2026-05-18T01:51:00.020057",
+  "generated_at": "2026-05-18T01:56:27.712084",
   "git_branch": "wip/root-dirty-20260403",
-  "git_head": "e03279c72 docs(audit): add P3-A2 through P3-A7 decision records",
+  "git_head": "1a46ed4ce feat(contract): add validation failure alerting",
   "summary": {
-    "total_routes": 616,
+    "total_routes": 613,
     "registered_routes": 509,
-    "orphan_routes": 107,
-    "unique_files": 109,
+    "orphan_routes": 104,
+    "unique_files": 108,
     "local_decorator_duplicate_groups": 52,
-    "full_path_duplicate_groups": 7
+    "full_path_duplicate_groups": 6
   },
   "full_path_duplicates": [
     {
@@ -53,21 +53,6 @@
         {
           "source": "app/api/technical/routes.py",
           "function": "get_status"
-        }
-      ]
-    },
-    {
-      "method": "GET",
-      "full_path": "/monitoring/health",
-      "handler_count": 2,
-      "handlers": [
-        {
-          "source": "app/api/_cache_prewarming_routes.py",
-          "function": "get_cache_health_status"
-        },
-        {
-          "source": "app/api/monitoring_old/routes.py",
-          "function": "health_check"
         }
       ]
     },
@@ -132,7 +117,6 @@
     "app/api/backtest_ws.py",
     "app/api/efinance.py",
     "app/api/monitoring_market_routes.py",
-    "app/api/monitoring_old/routes.py",
     "app/api/multi_source.py",
     "app/api/mystocks_api/main.py",
     "app/api/stock_ratings_api.py",
