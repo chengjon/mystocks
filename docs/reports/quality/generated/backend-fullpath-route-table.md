@@ -4,28 +4,24 @@
 > 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
 > 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
 
-> **Generated**: 2026-05-18 02:00
+> **Generated**: 2026-05-18 02:45
 > **Branch**: `wip/root-dirty-20260403`
-> **HEAD**: `cc0e33719 chore(audit): P3-B5 delete monitoring_old orphan + baseline update`
+> **HEAD**: `ba40aa211 fix(audit): P3-B extended — register advanced_analysis API, delete 4 more orphans`
 
 ## Summary
 
 | Metric | Value |
 |--------|-------|
-| Total Routes | 589 |
-| Registered Routes | 523 |
+| Total Routes | 588 |
+| Registered Routes | 522 |
 | Orphan Routes | 66 |
-| Unique Files | 104 |
+| Unique Files | 103 |
 | Local Decorator Duplicate Groups | 50 |
-| Full Path Duplicate Groups | 1 |
+| Full Path Duplicate Groups | 0 |
 
 ## Full-Path Duplicates (same method + final URL)
 
-**1 groups** where multiple handlers serve the same final URL.
-
-| # | Method | Full Path | Handlers |
-|---|--------|-----------|----------|
-| 1 | GET | `/api/v1/strategy/backtest/results/{backtest_id}` | `get_backtest_result` (app/api/strategy_management/get_monitoring_db.py)<br>`get_backtest_result` (app/api/strategy_management/get_backtest_result.py) |
+No full-path duplicates found.
 
 ## Local Decorator Duplicates: 50 groups
 

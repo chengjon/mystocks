@@ -402,12 +402,11 @@ export const dashboardService = {
 
   /**
    * 获取用户活跃策略
-   * 替代缺失的: /api/strategy/{user_id}/active
-   * 使用: /api/strategy-mgmt/strategies
+   * 使用: /api/v1/strategy/strategies
    */
   async getUserActiveStrategies(userId: number): Promise<UnifiedResponse<unknown[]>> {
     try {
-      const response = await apiGet<UnifiedResponse<StrategyItem[]>>('/api/strategy-mgmt/strategies', {
+      const response = await apiGet<UnifiedResponse<StrategyItem[]>>('/api/v1/strategy/strategies', {
         user_id: userId,
         status: 'active'
       });

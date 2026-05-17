@@ -1,32 +1,16 @@
 {
-  "generated_at": "2026-05-18T02:00:30.340711",
+  "generated_at": "2026-05-18T02:45:09.266405",
   "git_branch": "wip/root-dirty-20260403",
-  "git_head": "cc0e33719 chore(audit): P3-B5 delete monitoring_old orphan + baseline update",
+  "git_head": "ba40aa211 fix(audit): P3-B extended — register advanced_analysis API, delete 4 more orphans",
   "summary": {
-    "total_routes": 589,
-    "registered_routes": 523,
+    "total_routes": 588,
+    "registered_routes": 522,
     "orphan_routes": 66,
-    "unique_files": 104,
+    "unique_files": 103,
     "local_decorator_duplicate_groups": 50,
-    "full_path_duplicate_groups": 1
+    "full_path_duplicate_groups": 0
   },
-  "full_path_duplicates": [
-    {
-      "method": "GET",
-      "full_path": "/api/v1/strategy/backtest/results/{backtest_id}",
-      "handler_count": 2,
-      "handlers": [
-        {
-          "source": "app/api/strategy_management/get_monitoring_db.py",
-          "function": "get_backtest_result"
-        },
-        {
-          "source": "app/api/strategy_management/get_backtest_result.py",
-          "function": "get_backtest_result"
-        }
-      ]
-    }
-  ],
+  "full_path_duplicates": [],
   "local_decorator_duplicates_count": 50,
   "orphan_files": [
     "app/api/_cache_basic_routes.py",

@@ -23,6 +23,7 @@ from .api import risk
 from .api import signal_monitoring
 from .api import strategy_list_mock
 from .api import websocket
+from .api import _strategy_mgmt_compat
 from .api import (
     announcement,
     auth,
@@ -43,7 +44,6 @@ from .api import (
     notification,
     sse_endpoints,
     stock_search,
-    strategy,
     strategy_management,
     strategy_mgmt,
     system,
@@ -68,7 +68,6 @@ def register_api_routes(app: FastAPI, *, use_mock_apis: bool, logger: logging.Lo
         "auth": auth.router,
         "market": market.router,
         "market_v2": market_v2.router,
-        "strategy": strategy.router,
         "trade": trade.router,
         "trading_runtime": trading_runtime.router,
         "monitoring": monitoring.router,
@@ -102,6 +101,7 @@ def register_api_routes(app: FastAPI, *, use_mock_apis: bool, logger: logging.Lo
     app.include_router(wencai.router)
     app.include_router(dashboard.router, tags=["dashboard"])
     app.include_router(strategy_mgmt.router, tags=["strategy-mgmt"])
+    app.include_router(_strategy_mgmt_compat.router)
     app.include_router(
         multi_source.router,
         prefix=VERSION_MAPPING["multi_source"]["prefix"],
