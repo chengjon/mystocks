@@ -78,7 +78,7 @@ const loadData = async () => {
   loading.value = true
   try {
     // 加载持仓监控数据
-    const response = await fetch('/api/risk-management/v31/stop-loss/overview')
+    const response = await fetch('/api/v1/risk/v31/stop-loss/overview')
     const data = await response.json()
 
     if (data.status === 'success') {
@@ -101,7 +101,7 @@ const loadData = async () => {
 const loadExecutionHistory = async () => {
   historyLoading.value = true
   try {
-    const response = await fetch(`/api/risk-management/v31/stop-loss/history/performance?days=${historyPeriod.value === '24h' ? 1 : (historyPeriod.value === '7d' ? 7 : 30)}`)
+    const response = await fetch(`/api/v1/risk/v31/stop-loss/history/performance?days=${historyPeriod.value === '24h' ? 1 : (historyPeriod.value === '7d' ? 7 : 30)}`)
     const data = await response.json()
 
     if (data.status === 'success') {
@@ -167,7 +167,7 @@ const removePosition = async (position: Position): Promise<void> => {
       }
     )
 
-    const response = await fetch(`/api/risk-management/v31/stop-loss/remove-position/${position.position_id}`, {
+    const response = await fetch(`/api/v1/risk/v31/stop-loss/remove-position/${position.position_id}`, {
       method: 'DELETE'
     })
 
@@ -190,7 +190,7 @@ const savePosition = async () => {
   try {
     saving.value = true
 
-    const response = await fetch('/api/risk-management/v31/stop-loss/add-position', {
+    const response = await fetch('/api/v1/risk/v31/stop-loss/add-position', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

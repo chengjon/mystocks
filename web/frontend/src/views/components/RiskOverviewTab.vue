@@ -200,7 +200,7 @@ let riskDistributionChartInstance = null
 // 方法
 const loadRiskHistory = async () => {
   try {
-    const response = await fetch(`/api/risk-management/v31/portfolio/risk-history?period=${timeRange.value}`)
+    const response = await fetch(`/api/v1/risk/v31/portfolio/risk-history?period=${timeRange.value}`)
     const data = await response.json()
 
     if (data.status === 'success') {
@@ -308,14 +308,14 @@ const initRiskDistributionChart = () => {
 const loadMonitoringStats = async () => {
   try {
     // 加载持仓监控统计
-    const positionsResponse = await fetch('/api/risk-management/v31/stop-loss/overview')
+    const positionsResponse = await fetch('/api/v1/risk/v31/stop-loss/overview')
     const positionsData = await positionsResponse.json()
     if (positionsData.status === 'success') {
       monitoringStats.positions = positionsData.data.active_positions
     }
 
     // 加载告警统计
-    const alertsResponse = await fetch('/api/risk-management/v31/alert/statistics')
+    const alertsResponse = await fetch('/api/v1/risk/v31/alert/statistics')
     const alertsData = await alertsResponse.json()
     if (alertsData.status === 'success') {
       monitoringStats.alerts = alertsData.data.total_alerts_sent

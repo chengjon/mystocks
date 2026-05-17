@@ -119,10 +119,4 @@ VERSION_MAPPING = {
         "version": "1.0.0",
         "tags": ["tdx-v1"],
     },
-    # Announcement (Upgrading to v1)
-    "announcement": {
-        "prefix": "/api/v1/announcement",
-        "version": "1.0.0",
-        "tags": ["announcement-v1"],
-    },
 }
