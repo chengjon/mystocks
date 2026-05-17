@@ -3,12 +3,17 @@ from __future__ import annotations
 import os
 import sys
 
+from prometheus_client import generate_latest
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "..", "web", "backend"))
 
 from app.api.contract.services.drift_incidents import (
+    ContractDriftIncident,
     clear_contract_drift_incidents,
     list_contract_drift_incidents,
+    record_contract_drift_incident,
 )
+from app.api.prometheus_exporter import prometheus_registry
 from app.api.contract.services.validator import ContractValidator
 
 
@@ -49,3 +54,18 @@ def test_contract_validation_does_not_record_drift_without_baseline_comparison()
     ContractValidator.validate(spec, check_breaking_changes=True, compare_to_spec=None)
 
     assert list_contract_drift_incidents() == []
+
+
+def test_recording_drift_incident_exports_prometheus_counter() -> None:
+    record_contract_drift_incident(
+        ContractDriftIncident(
+            kind="unit_probe",
+            severity="warning",
+            path="/api/contracts",
+            message="Unit probe drift incident",
+        )
+    )
+
+    metrics = generate_latest(prometheus_registry).decode("utf-8")
+
+    assert 'mystocks_contract_drift_incidents_total{kind="unit_probe",severity="warning"}' in metrics

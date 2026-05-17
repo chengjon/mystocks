@@ -6,7 +6,24 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from typing import Any
 
+from prometheus_client import Counter, Gauge
+
 from app.api.contract.schemas import ValidationResult
+from app.api.prometheus_exporter import prometheus_registry
+
+
+contract_drift_incidents_total = Counter(
+    "mystocks_contract_drift_incidents_total",
+    "Total API contract drift incidents recorded",
+    ["kind", "severity"],
+    registry=prometheus_registry,
+)
+
+contract_drift_incidents_open = Gauge(
+    "mystocks_contract_drift_incidents_open",
+    "Open API contract drift incidents tracked in the current process",
+    registry=prometheus_registry,
+)
 
 
 @dataclass(frozen=True)
@@ -28,6 +45,8 @@ _contract_drift_incidents: list[ContractDriftIncident] = []
 def record_contract_drift_incident(incident: ContractDriftIncident) -> None:
     """Append a contract drift incident to the in-process registry."""
     _contract_drift_incidents.append(incident)
+    contract_drift_incidents_total.labels(kind=incident.kind, severity=incident.severity).inc()
+    contract_drift_incidents_open.set(len(_contract_drift_incidents))
 
 
 def list_contract_drift_incidents() -> list[ContractDriftIncident]:
@@ -38,6 +57,7 @@ def list_contract_drift_incidents() -> list[ContractDriftIncident]:
 def clear_contract_drift_incidents() -> None:
     """Clear recorded contract drift incidents."""
     _contract_drift_incidents.clear()
+    contract_drift_incidents_open.set(0)
 
 
 def record_contract_drift_incidents_from_validation_results(

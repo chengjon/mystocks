@@ -96,11 +96,13 @@
 > 因此本节暂不勾选，避免把工作流存在误写成监控体系完成。
 > `2026-05-15` 补充：已在 `web/backend/app/api/prometheus_exporter.py` 接入 `mystocks_contract_validation_total{result=...}` 与 `mystocks_contract_validation_success_rate`，并由 `/api/contracts/validate` 自动记录验证成功/失败结果。
 > `2026-05-17` 补充：已新增 `web/backend/app/api/contract/services/drift_incidents.py`，由 `ContractValidator.validate()` 在 baseline comparison 发现 endpoint/schema 破坏性漂移时记录 in-process drift incident，供后续 health check / alerting 接线复用。
+> `2026-05-17` 补充：已新增 `config/monitoring-stack/provisioning/dashboards/contract-validation-dashboard.json`，覆盖契约验证成功率、成功/失败验证总量、失败率、当前未关闭漂移事件与按 kind/severity 聚合的漂移事件；dashboard JSON 由 `tests/unit/config/test_contract_validation_grafana_dashboard.py` 校验关键 Prometheus 表达式。
+> `2026-05-17` 补充：已在 `web/backend/app/api/health.py` 新增 `check_contract_health()` 并接入 `/health/services` 聚合健康检查；开放 drift incident 会将 contract 服务状态标记为 warning/error 并使整体状态降级。
 
 - [x] 6.1 Add contract validation success rate metrics to Prometheus
 - [x] 6.2 Implement contract drift incident tracking
-- [ ] 6.3 Create contract validation coverage dashboards in Grafana
-- [ ] 6.4 Add contract health monitoring to existing health checks
+- [x] 6.3 Create contract validation coverage dashboards in Grafana
+- [x] 6.4 Add contract health monitoring to existing health checks
 - [ ] 6.5 Implement contract validation failure alerting
 
 ## 7. Documentation and Training
