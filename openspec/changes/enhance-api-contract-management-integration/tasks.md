@@ -98,7 +98,7 @@
 > `2026-05-17` 补充：已新增 `web/backend/app/api/contract/services/drift_incidents.py`，由 `ContractValidator.validate()` 在 baseline comparison 发现 endpoint/schema 破坏性漂移时记录 in-process drift incident，供后续 health check / alerting 接线复用。
 > `2026-05-17` 补充：已新增 `config/monitoring-stack/provisioning/dashboards/contract-validation-dashboard.json`，覆盖契约验证成功率、成功/失败验证总量、失败率、当前未关闭漂移事件与按 kind/severity 聚合的漂移事件；dashboard JSON 由 `tests/unit/config/test_contract_validation_grafana_dashboard.py` 校验关键 Prometheus 表达式。
 > `2026-05-17` 补充：已在 `web/backend/app/api/health.py` 新增 `check_contract_health()` 并接入 `/health/services` 聚合健康检查；开放 drift incident 会将 contract 服务状态标记为 warning/error 并使整体状态降级。
-> `2026-05-17` 补充：已新增 `web/backend/app/api/contract/services/validation_alerts.py`，`/api/contracts/validate` 在验证失败时通过既有 realtime system notification seam 分发 `contract_validation_failure` 告警。
+> `2026-05-17` 补充：已新增 `web/backend/app/api/contract/services/validation_alerts.py`，`/api/contracts/validate` 在验证失败时通过既有 realtime system notification 通道分发 `contract_validation_failure` 告警；同时在 `config/monitoring/rules/mystocks-alerts.yml` 增加 contract validation failure 与 drift incident Prometheus alert rules。
 
 - [x] 6.1 Add contract validation success rate metrics to Prometheus
 - [x] 6.2 Implement contract drift incident tracking
@@ -153,9 +153,11 @@
 > 但当前仓库中尚未形成可直接指向本 change 的
 > end-to-end contract validation、CI 实跑结果、impact analysis accuracy、runtime validation performance、security review 的最新 closeout 证据。
 > `2026-05-17` 补充：已新增 `tests/integration/contract/test_contract_validation_e2e.py`，覆盖 `/api/contracts/validate` → `ContractValidator` → drift incident → contract health，以及 validation failure → realtime alert seam；同时修正 `ContractValidator._validate_openapi_spec()` 的 prance backend 名称为 `openapi-spec-validator`，避免合法 OpenAPI 被误报解析失败。
+> `2026-05-17` 补充：已执行 `.github/workflows/api-contract-validation.yml` 的本地 workflow-equivalent dry-run，并记录到 `reports/governance/2026-05-17-api-contract-ci-cd-local-dry-run.md`。导入与 OpenAPI 生成通过，但文档回归门、success example audit、`backend_api_documentation` collector 仍失败，因此 8.2 不可勾选。
+> `2026-05-17` 补充：已扩展 `tests/unit/api/test_contract_impact_analyzer.py`，覆盖新增端点（non-breaking/medium/low effort）与新增 required schema property（breaking/high/medium effort）边界，并结合 route/notification 用例验证 impact analysis 输出口径。
 
 - [x] 8.1 Perform end-to-end contract validation testing
 - [ ] 8.2 Test CI/CD integration with contract validation
-- [ ] 8.3 Validate contract impact analysis accuracy
+- [x] 8.3 Validate contract impact analysis accuracy
 - [ ] 8.4 Perform performance testing for runtime validation
 - [ ] 8.5 Conduct security review of contract validation implementation
