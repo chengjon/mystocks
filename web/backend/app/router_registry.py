@@ -7,6 +7,7 @@ import logging
 from fastapi import FastAPI
 
 from .api import backup_recovery_secure
+from .api import advanced_analysis_api
 from .api import contract
 from .api import data_lineage
 from .api import data_source_config
@@ -139,6 +140,7 @@ def register_api_routes(app: FastAPI, *, use_mock_apis: bool, logger: logging.Lo
     app.include_router(gpu_monitoring.router)
     app.include_router(prometheus_exporter.router, tags=["prometheus"])
     app.include_router(backup_recovery_secure.router)
+    app.include_router(advanced_analysis_api.router)
 
     if use_mock_apis:
         app.include_router(strategy_list_mock.router)

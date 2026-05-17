@@ -1,31 +1,16 @@
 {
-  "generated_at": "2026-05-18T01:56:27.712084",
+  "generated_at": "2026-05-18T02:00:30.340711",
   "git_branch": "wip/root-dirty-20260403",
-  "git_head": "1a46ed4ce feat(contract): add validation failure alerting",
+  "git_head": "cc0e33719 chore(audit): P3-B5 delete monitoring_old orphan + baseline update",
   "summary": {
-    "total_routes": 613,
-    "registered_routes": 509,
-    "orphan_routes": 104,
-    "unique_files": 108,
-    "local_decorator_duplicate_groups": 52,
-    "full_path_duplicate_groups": 6
+    "total_routes": 589,
+    "registered_routes": 523,
+    "orphan_routes": 66,
+    "unique_files": 104,
+    "local_decorator_duplicate_groups": 50,
+    "full_path_duplicate_groups": 1
   },
   "full_path_duplicates": [
-    {
-      "method": "GET",
-      "full_path": "/api/multi-source/health",
-      "handler_count": 2,
-      "handlers": [
-        {
-          "source": "app/api/multi_source/routes.py",
-          "function": "health_check"
-        },
-        {
-          "source": "app/api/multi_source.py",
-          "function": "get_all_data_sources_health"
-        }
-      ]
-    },
     {
       "method": "GET",
       "full_path": "/api/v1/strategy/backtest/results/{backtest_id}",
@@ -40,86 +25,21 @@
           "function": "get_backtest_result"
         }
       ]
-    },
-    {
-      "method": "GET",
-      "full_path": "/status",
-      "handler_count": 2,
-      "handlers": [
-        {
-          "source": "app/api/_cache_basic_routes.py",
-          "function": "get_cache_status"
-        },
-        {
-          "source": "app/api/technical/routes.py",
-          "function": "get_status"
-        }
-      ]
-    },
-    {
-      "method": "POST",
-      "full_path": "/api/v1/advanced-analysis/batch",
-      "handler_count": 2,
-      "handlers": [
-        {
-          "source": "app/api/advanced_analysis.py",
-          "function": "batch_analysis"
-        },
-        {
-          "source": "app/api/advanced_analysis_api.py",
-          "function": "analyze_batch"
-        }
-      ]
-    },
-    {
-      "method": "GET",
-      "full_path": "/api/v1/advanced-analysis/health",
-      "handler_count": 2,
-      "handlers": [
-        {
-          "source": "app/api/advanced_analysis.py",
-          "function": "health_check"
-        },
-        {
-          "source": "app/api/advanced_analysis_api.py",
-          "function": "health_check"
-        }
-      ]
-    },
-    {
-      "method": "GET",
-      "full_path": "/health",
-      "handler_count": 2,
-      "handlers": [
-        {
-          "source": "app/api/stock_ratings_api.py",
-          "function": "health_check"
-        },
-        {
-          "source": "app/api/technical/routes.py",
-          "function": "health_check"
-        }
-      ]
     }
   ],
-  "local_decorator_duplicates_count": 52,
+  "local_decorator_duplicates_count": 50,
   "orphan_files": [
     "app/api/_cache_basic_routes.py",
     "app/api/_cache_eviction_routes.py",
     "app/api/_cache_prewarming_routes.py",
     "app/api/_monitoring_portfolio_router.py",
     "app/api/_technical_patterns_router.py",
-    "app/api/advanced_analysis.py",
-    "app/api/advanced_analysis_api.py",
     "app/api/algorithms/_naive_bayes_router.py",
     "app/api/algorithms/get_algorithms_module.py",
     "app/api/alternative_data.py",
     "app/api/backtest_ws.py",
     "app/api/efinance.py",
     "app/api/monitoring_market_routes.py",
-    "app/api/multi_source.py",
-    "app/api/mystocks_api/main.py",
-    "app/api/stock_ratings_api.py",
-    "app/api/technical/routes.py"
+    "app/api/mystocks_api/main.py"
   ]
 }
