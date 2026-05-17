@@ -11,7 +11,7 @@ import io
 import sys
 from pathlib import Path
 from types import SimpleNamespace
-from unittest.mock import Mock
+from unittest.mock import AsyncMock, Mock
 
 import pytest
 
@@ -39,7 +39,7 @@ class TestHealthAPIFile:
         route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in health_module.router.routes}
 
         assert health_module.router.tags == ["health"]
-        assert ("/health", ("GET",)) in route_methods
+        assert ("/health/services", ("GET",)) in route_methods
         assert ("/health/detailed", ("GET",)) in route_methods
         assert ("/reports/health/{timestamp}", ("GET",)) in route_methods
 
@@ -47,7 +47,7 @@ class TestHealthAPIFile:
     def test_route_names_remain_stable(self, health_module):
         route_names = {(route.path, tuple(sorted(route.methods or []))): route.name for route in health_module.router.routes}
 
-        assert route_names[("/health", ("GET",))] == "check_system_health"
+        assert route_names[("/health/services", ("GET",))] == "check_system_health"
         assert route_names[("/health/detailed", ("GET",))] == "detailed_health_check"
         assert route_names[("/reports/health/{timestamp}", ("GET",))] == "get_health_report"
 
@@ -102,13 +102,88 @@ class TestHealthAPIFile:
 
     @pytest.mark.file_test
     @pytest.mark.asyncio
+    async def test_check_contract_health_maps_no_open_drift_to_normal(self, health_module):
+        from app.api.contract.services.drift_incidents import clear_contract_drift_incidents
+
+        clear_contract_drift_incidents()
+
+        status = await health_module.check_contract_health()
+
+        assert status.service == "contract"
+        assert status.status == "normal"
+        assert status.details == "contract validation ok; open drift incidents=0"
+
+    @pytest.mark.file_test
+    @pytest.mark.asyncio
+    async def test_check_contract_health_maps_open_drift_to_warning(self, health_module):
+        from app.api.contract.services.drift_incidents import (
+            ContractDriftIncident,
+            clear_contract_drift_incidents,
+            record_contract_drift_incident,
+        )
+
+        clear_contract_drift_incidents()
+        record_contract_drift_incident(
+            ContractDriftIncident(
+                kind="endpoint_removed",
+                severity="warning",
+                path="paths./api/example",
+                message="删除API端点: /api/example",
+            )
+        )
+
+        status = await health_module.check_contract_health()
+
+        assert status.service == "contract"
+        assert status.status == "warning"
+        assert status.details == "contract validation drift incidents open=1"
+
+        clear_contract_drift_incidents()
+
+    @pytest.mark.file_test
+    @pytest.mark.asyncio
+    async def test_system_health_includes_contract_health_status(self, health_module, monkeypatch):
+        normal_services = {
+            "check_postgresql_service": "postgresql",
+            "check_tdengine_service": "tdengine",
+            "check_mongodb_service": "mongodb",
+            "check_disk_space": "disk",
+            "check_system_resources": "system",
+        }
+        for function_name, service_name in normal_services.items():
+            monkeypatch.setattr(
+                health_module,
+                function_name,
+                AsyncMock(return_value=health_module.HealthStatus(service=service_name, status="normal")),
+            )
+        monkeypatch.setattr(
+            health_module,
+            "check_contract_health",
+            AsyncMock(return_value=health_module.HealthStatus(service="contract", status="warning")),
+        )
+
+        response = await health_module.check_system_health(SimpleNamespace(state=SimpleNamespace(request_id="req-1")))
+
+        assert response.data["overall_status"] == "degraded"
+        assert response.data["services"]["contract"].status == "warning"
+        assert response.request_id == "req-1"
+
+    @pytest.mark.file_test
+    def test_system_health_example_lists_contract_service(self, health_module):
+        services = health_module.SYSTEM_SERVICES_HEALTH_RESPONSE_EXAMPLE["data"]["services"]
+
+        assert services["contract"] == {"service": "contract", "status": "normal"}
+
+    @pytest.mark.file_test
+    @pytest.mark.asyncio
     async def test_get_health_report_returns_loaded_json(self, health_module, monkeypatch):
         monkeypatch.setattr(health_module.os.path, "exists", Mock(return_value=True))
         monkeypatch.setattr(health_module, "open", Mock(return_value=io.StringIO('{"status":"ok"}')), raising=False)
 
         payload = await health_module.get_health_report("20260401", current_user=SimpleNamespace(username="tester"))
 
-        assert payload == {"status": "ok"}
+        assert payload.data == {"status": "ok"}
+        assert payload.message == "健康检查报告获取成功"
 
     @pytest.mark.file_test
     @pytest.mark.asyncio

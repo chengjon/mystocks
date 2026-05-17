@@ -98,12 +98,13 @@
 > `2026-05-17` 补充：已新增 `web/backend/app/api/contract/services/drift_incidents.py`，由 `ContractValidator.validate()` 在 baseline comparison 发现 endpoint/schema 破坏性漂移时记录 in-process drift incident，供后续 health check / alerting 接线复用。
 > `2026-05-17` 补充：已新增 `config/monitoring-stack/provisioning/dashboards/contract-validation-dashboard.json`，覆盖契约验证成功率、成功/失败验证总量、失败率、当前未关闭漂移事件与按 kind/severity 聚合的漂移事件；dashboard JSON 由 `tests/unit/config/test_contract_validation_grafana_dashboard.py` 校验关键 Prometheus 表达式。
 > `2026-05-17` 补充：已在 `web/backend/app/api/health.py` 新增 `check_contract_health()` 并接入 `/health/services` 聚合健康检查；开放 drift incident 会将 contract 服务状态标记为 warning/error 并使整体状态降级。
+> `2026-05-17` 补充：已新增 `web/backend/app/api/contract/services/validation_alerts.py`，`/api/contracts/validate` 在验证失败时通过既有 realtime system notification seam 分发 `contract_validation_failure` 告警。
 
 - [x] 6.1 Add contract validation success rate metrics to Prometheus
 - [x] 6.2 Implement contract drift incident tracking
 - [x] 6.3 Create contract validation coverage dashboards in Grafana
 - [x] 6.4 Add contract health monitoring to existing health checks
-- [ ] 6.5 Implement contract validation failure alerting
+- [x] 6.5 Implement contract validation failure alerting
 
 ## 7. Documentation and Training
 > **仓库事实校对（2026-04-27）**:
@@ -151,8 +152,9 @@
 > - `docs/standards/security/SECURITY_BEST_PRACTICES.md` 属于通用安全规范，不等于本专题实现已完成针对 contract validation 的专项 security review / sign-off
 > 但当前仓库中尚未形成可直接指向本 change 的
 > end-to-end contract validation、CI 实跑结果、impact analysis accuracy、runtime validation performance、security review 的最新 closeout 证据。
+> `2026-05-17` 补充：已新增 `tests/integration/contract/test_contract_validation_e2e.py`，覆盖 `/api/contracts/validate` → `ContractValidator` → drift incident → contract health，以及 validation failure → realtime alert seam；同时修正 `ContractValidator._validate_openapi_spec()` 的 prance backend 名称为 `openapi-spec-validator`，避免合法 OpenAPI 被误报解析失败。
 
-- [ ] 8.1 Perform end-to-end contract validation testing
+- [x] 8.1 Perform end-to-end contract validation testing
 - [ ] 8.2 Test CI/CD integration with contract validation
 - [ ] 8.3 Validate contract impact analysis accuracy
 - [ ] 8.4 Perform performance testing for runtime validation

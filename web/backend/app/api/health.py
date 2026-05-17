@@ -7,7 +7,7 @@ import logging
 import os
 import subprocess
 from datetime import datetime, timezone
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import psycopg2
 from fastapi import APIRouter, Depends, Path, Request
@@ -17,6 +17,7 @@ from app.core.readiness import check_mongodb_readiness
 from app.core.exceptions import BusinessException, NotFoundException
 from app.core.responses import (
     ErrorCodes,
+    UnifiedResponse,
     create_error_response,
     create_health_response,
     create_unified_success_response,
@@ -39,6 +40,7 @@ SYSTEM_SERVICES_HEALTH_RESPONSE_EXAMPLE = {
             "postgresql": {"service": "postgresql", "status": "normal"},
             "tdengine": {"service": "tdengine", "status": "normal"},
             "mongodb": {"service": "mongodb", "status": "normal"},
+            "contract": {"service": "contract", "status": "normal"},
             "disk": {"service": "disk", "status": "normal"},
             "system": {"service": "system", "status": "normal"},
         },
@@ -143,6 +145,7 @@ def _resolve_ports(*env_keys: str) -> list[int]:
 
 @router.get(
     "/health/services",
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="系统服务健康检查",
     responses={
         200: {
@@ -176,6 +179,9 @@ async def check_system_health(request: Request):
 
         # 检查MongoDB（默认可选基础设施）
         services["mongodb"] = await check_mongodb_service()
+
+        # 检查API契约治理健康状态
+        services["contract"] = await check_contract_health()
 
         # 检查磁盘空间
         services["disk"] = await check_disk_space()
@@ -374,6 +380,29 @@ async def check_mongodb_service() -> HealthStatus:
     return HealthStatus(service="mongodb", status="error", details=details, response_time=latency)
 
 
+async def check_contract_health() -> HealthStatus:
+    """检查 API 契约治理健康状态。"""
+    try:
+        from app.api.contract.services.drift_incidents import list_contract_drift_incidents
+
+        open_incidents = list_contract_drift_incidents()
+        if not open_incidents:
+            return HealthStatus(
+                service="contract",
+                status="normal",
+                details="contract validation ok; open drift incidents=0",
+            )
+
+        status = "error" if any(incident.severity == "error" for incident in open_incidents) else "warning"
+        return HealthStatus(
+            service="contract",
+            status=status,
+            details=f"contract validation drift incidents open={len(open_incidents)}",
+        )
+    except Exception as e:
+        return HealthStatus(service="contract", status="warning", details=f"contract health check failed: {str(e)}")
+
+
 async def check_disk_space() -> HealthStatus:
     """检查磁盘空间"""
     try:
@@ -463,6 +492,7 @@ async def generate_health_report(services: Dict[str, HealthStatus]) -> Optional[
 
 @router.get(
     "/health/detailed",
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="详细健康检查",
     description="执行详细健康检查脚本并返回组件级输出，用于运维排障、发布验收和环境巡检。",
     responses={
@@ -515,6 +545,7 @@ async def detailed_health_check(current_user: User = Depends(get_current_user)):
 
 @router.get(
     "/reports/health/{timestamp}",
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="获取健康检查报告",
     description="按报告时间戳读取历史健康检查结果，便于排查某次巡检、发布窗口或告警时段的系统状态。",
     responses={
@@ -551,7 +582,7 @@ async def get_health_report(
         with open(report_file, "r", encoding="utf-8") as f:
             report_data = json.load(f)
 
-        return report_data
+        return create_unified_success_response(data=report_data, message="健康检查报告获取成功")
     except NotFoundException:
         raise
     except Exception as e:

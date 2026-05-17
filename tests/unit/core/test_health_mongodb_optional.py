@@ -7,6 +7,8 @@ from types import SimpleNamespace
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
+from pydantic import BaseModel
+
 
 HEALTH_MODULE_PATH = Path("/opt/claude/mystocks_spec/web/backend/app/api/health.py")
 
@@ -14,11 +16,18 @@ HEALTH_MODULE_PATH = Path("/opt/claude/mystocks_spec/web/backend/app/api/health.
 def _load_health_module(module_name: str = "test_web_backend_health_module"):
     sys.modules.pop(module_name, None)
 
+    class _FakeUnifiedResponse(BaseModel):
+        @classmethod
+        def __class_getitem__(cls, _item):
+            return cls
+
     fake_exceptions = SimpleNamespace(BusinessException=Exception, NotFoundException=Exception)
     fake_responses = SimpleNamespace(
         ErrorCodes=SimpleNamespace(INTERNAL_SERVER_ERROR='500'),
+        UnifiedResponse=_FakeUnifiedResponse,
         create_error_response=lambda **kwargs: kwargs,
         create_health_response=lambda **kwargs: kwargs,
+        create_unified_success_response=lambda **kwargs: kwargs,
     )
 
     def _fake_get_current_user():
@@ -29,7 +38,8 @@ def _load_health_module(module_name: str = "test_web_backend_health_module"):
 
     spec = importlib.util.spec_from_file_location(module_name, HEALTH_MODULE_PATH)
     module = importlib.util.module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
 
     with patch.dict(
         sys.modules,
@@ -59,6 +69,10 @@ def test_check_system_health_includes_optional_mongodb_without_degrading() -> No
         module,
         "check_mongodb_service",
         AsyncMock(return_value=module.HealthStatus(service="mongodb", status="normal", details="MongoDB optional and not configured")),
+    ), patch.object(
+        module,
+        "check_contract_health",
+        AsyncMock(return_value=module.HealthStatus(service="contract", status="normal")),
     ):
         response = asyncio.run(module.check_system_health(request))
 
@@ -78,6 +92,10 @@ def test_check_system_health_degrades_when_optional_mongodb_unavailable() -> Non
         module,
         "check_mongodb_service",
         AsyncMock(return_value=module.HealthStatus(service="mongodb", status="warning", details="MongoDB optional but unavailable")),
+    ), patch.object(
+        module,
+        "check_contract_health",
+        AsyncMock(return_value=module.HealthStatus(service="contract", status="normal")),
     ):
         response = asyncio.run(module.check_system_health(request))
 
