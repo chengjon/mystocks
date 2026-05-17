@@ -95,9 +95,10 @@
 > - repo 中存在 `/metrics` 与 Prometheus 基础设施，但未见 contract-specific metrics/alert names 的现行接线
 > 因此本节暂不勾选，避免把工作流存在误写成监控体系完成。
 > `2026-05-15` 补充：已在 `web/backend/app/api/prometheus_exporter.py` 接入 `mystocks_contract_validation_total{result=...}` 与 `mystocks_contract_validation_success_rate`，并由 `/api/contracts/validate` 自动记录验证成功/失败结果。
+> `2026-05-17` 补充：已新增 `web/backend/app/api/contract/services/drift_incidents.py`，由 `ContractValidator.validate()` 在 baseline comparison 发现 endpoint/schema 破坏性漂移时记录 in-process drift incident，供后续 health check / alerting 接线复用。
 
 - [x] 6.1 Add contract validation success rate metrics to Prometheus
-- [ ] 6.2 Implement contract drift incident tracking
+- [x] 6.2 Implement contract drift incident tracking
 - [ ] 6.3 Create contract validation coverage dashboards in Grafana
 - [ ] 6.4 Add contract health monitoring to existing health checks
 - [ ] 6.5 Implement contract validation failure alerting

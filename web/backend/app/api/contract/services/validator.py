@@ -18,6 +18,7 @@ from app.api.contract.schemas import (
     ContractValidateResponse,
     ValidationResult,
 )
+from app.api.contract.services.drift_incidents import record_contract_drift_incidents
 from app.api.contract.services.validation_metrics import record_contract_validation
 
 
@@ -62,6 +63,7 @@ class ContractValidator:
                 breaking_errors = ContractValidator._check_breaking_changes(spec, compare_to_spec)
                 results.extend(breaking_errors)
                 warning_count += sum(1 for e in breaking_errors if e.category == "warning")
+                record_contract_drift_incidents(breaking_errors)
 
             # 4. 最佳实践检查
             practice_warnings = ContractValidator._check_best_practices(spec)
