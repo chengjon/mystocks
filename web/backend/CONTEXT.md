@@ -13,8 +13,8 @@
 - **flat file**: A single `.py` route module directly under `app/api/` (pre-migration form)
 - **package directory**: A route package under `app/api/xxx/` with `__init__.py` and sub-modules (post-migration target)
 - **dual registration**: The same functional domain registered as both flat file and package directory in `router_registry.py` — a migration anti-pattern
-- **singleton service**: A module-level `global _xxx` variable with a `get_xxx()` lazy-init getter function (32 instances found)
-- **Core directory**: `app/core/` — currently 64 files + 4 subdirectories (`cache/`, `logging/`, `middleware/`, plus a private singleton). Needs responsibility-based splitting
+- **singleton service**: A module-level `global _xxx` variable with a `get_xxx()` lazy-init getter function — 118 instances total (Core: 45, Services: 35, Adapters: 5, API: 12, Others: 21). All per-app lifecycle. ADR-0003 proposes migration to FastAPI `Depends()`
+- **Core directory**: `app/core/` — 75 files, 26,429 lines across 11 functional areas (`database`: 10 files, `cache`: 12, `socketio`: 6, `security`: 6, `exception`: 6, `sse`: 2, `logging`: 3, `validation`: 3, `monitoring`: 3, `config`: 1, `event`: 1, `other`: 21). Contains 5 duplicate file groups. ADR-0001 proposes subdirectory restructure
 
 ## Router Registration Truth
 
@@ -64,6 +64,18 @@ Fragmented health endpoints in other modules (18 found):
 - `api/multi_source.py`: `/health`, `/health/{source_type}`
 - `api/signal_monitoring/get_signal_statistics.py`: strategy health
 - `api/backup_recovery_secure/cleanup_old_backups.py`: `/health`
+
+## API Layer Migration State
+
+**[CONFIRMED 2026-05-16]** 64 flat `.py` files + 20 package directories, with 10 overlapping domains.
+
+Key overlap domains (flat + package coexist):
+- **announcement**: dual registration bug — registered twice in `router_registry.py` (line 78 via VERSION_MAPPING + line 96 directly)
+- **strategy_management**: 3 flat files (`strategy.py`, `strategy_management.py`, `strategy_mgmt.py`) + 1 package — highest confusion
+- **risk**: 3 flat files + 2 packages (`risk/`, `risk_v31/`) — second highest
+- 7 low-complexity overlaps: algorithms, indicators, market, multi_source, signal_monitoring, stock_search, system
+
+ADR-0002 defines migration strategy with priority by complexity.
 
 ## Logging Ecosystem
 
