@@ -1,10 +1,11 @@
 """Backtest chart-data route (migrated from deleted get_backtest_result.py)."""
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, HTTPException, Path
+from fastapi import APIRouter, Path
 from src.core import DataClassification
 from unified_manager import MyStocksUnifiedManager
 from app.core.responses import UnifiedResponse, create_success_response
+from app.core.exceptions import BusinessException
 
 router = APIRouter(tags=["策略管理-Week1"])
 
@@ -25,7 +26,7 @@ async def get_backtest_chart_data(backtest_id: int = Path(..., description="回�
             filters={"id": backtest_id},
         )
         if backtests is None or len(backtests) == 0:
-            raise HTTPException(status_code=404, detail="回测不存在")
+            raise BusinessException(detail="回测不存在", status_code=404)
         backtest = backtests.iloc[0].to_dict()
         results = backtest.get("results") or {}
         return create_success_response(data={
@@ -33,7 +34,7 @@ async def get_backtest_chart_data(backtest_id: int = Path(..., description="回�
             "drawdown_curve": results.get("drawdown_curve", []),
             "returns_distribution": results.get("returns_distribution", []),
         }, message="获取图表数据成功")
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取图表数据失败: {str(e)}")
+        raise BusinessException(detail=f"获取图表数据失败: {str(e)}", status_code=500)
