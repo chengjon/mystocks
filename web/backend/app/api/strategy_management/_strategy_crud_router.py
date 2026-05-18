@@ -50,6 +50,7 @@ from ._helpers import (
     responses=STRATEGY_LIST_RESPONSES,
 )
 async def list_strategies(
+    user_id: Optional[int] = Query(None, description="可选的用户ID过滤条件，兼容 dashboard 数据源调用。", ge=1),
     status: Optional[str] = Query(None, description="可选的策略状态过滤条件，如 draft、active、archived。"),
     page: int = Query(1, description="结果页码，从 1 开始。", ge=1),
     page_size: int = Query(20, description="每页返回的策略数量。", ge=1, le=200),
@@ -82,6 +83,10 @@ async def list_strategies(
 
                 if status:
                     strategies = [s for s in strategies if s.get("status") == status]
+                if user_id is not None:
+                    strategies = [
+                        s for s in strategies if s.get("user_id") is None or str(s.get("user_id")) == str(user_id)
+                    ]
 
                 total = len(strategies)
                 start = (page - 1) * page_size
@@ -100,6 +105,8 @@ async def list_strategies(
         filters = {}
         if status:
             filters["status"] = status
+        if user_id is not None:
+            filters["user_id"] = user_id
 
         try:
             manager = MyStocksUnifiedManager()
@@ -125,7 +132,9 @@ async def list_strategies(
             if _runtime_fallback_enabled():
                 from ._helpers import _list_runtime_strategies
 
-                fallback_result = _list_runtime_strategies(status=status, page=page, page_size=page_size)
+                fallback_result = _list_runtime_strategies(
+                    status=status, page=page, page_size=page_size, user_id=user_id
+                )
                 items = fallback_result["items"]
                 total = fallback_result["total"]
                 source = "runtime-fallback"
@@ -137,7 +146,9 @@ async def list_strategies(
             from ._helpers import _list_runtime_strategies, _runtime_strategy_store
 
             if _runtime_strategy_store:
-                fallback_result = _list_runtime_strategies(status=status, page=page, page_size=page_size)
+                fallback_result = _list_runtime_strategies(
+                    status=status, page=page, page_size=page_size, user_id=user_id
+                )
                 items = fallback_result["items"]
                 total = fallback_result["total"]
                 source = "runtime-fallback"
@@ -150,7 +161,7 @@ async def list_strategies(
             rows_affected=len(items),
             operation_time_ms=operation_time,
             success=True,
-            details=f"status={status}, page={page}, page_size={page_size}, source={source}",
+            details=f"user_id={user_id}, status={status}, page={page}, page_size={page_size}, source={source}",
         )
 
         return create_unified_success_response(

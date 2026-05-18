@@ -202,11 +202,19 @@ def _set_runtime_strategy_status(strategy_id: int, status: str) -> Optional[Dict
     return updated
 
 
-def _list_runtime_strategies(status: Optional[str], page: int, page_size: int) -> Dict[str, Any]:
+def _list_runtime_strategies(
+    status: Optional[str], page: int, page_size: int, user_id: Optional[int] = None
+) -> Dict[str, Any]:
     strategies = list(_runtime_strategy_store)
 
     if status:
         strategies = [strategy for strategy in strategies if strategy.get("status") == status]
+    if user_id is not None:
+        strategies = [
+            strategy
+            for strategy in strategies
+            if strategy.get("user_id") is None or str(strategy.get("user_id")) == str(user_id)
+        ]
 
     total = len(strategies)
     start = (page - 1) * page_size
@@ -423,4 +431,3 @@ def get_monitoring_db():
 
             monitoring_db = MonitoringFallback()
     return monitoring_db
-
