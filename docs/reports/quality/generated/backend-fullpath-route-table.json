@@ -1,17 +1,17 @@
 {
-  "generated_at": "2026-05-18T02:45:09.266405",
+  "generated_at": "2026-05-18T09:51:56.807521",
   "git_branch": "wip/root-dirty-20260403",
-  "git_head": "ba40aa211 fix(audit): P3-B extended — register advanced_analysis API, delete 4 more orphans",
+  "git_head": "ecf9224d9 chore(audit): P3-D delete 4 true orphan API files + 7 dead-code tests",
   "summary": {
-    "total_routes": 588,
+    "total_routes": 558,
     "registered_routes": 522,
-    "orphan_routes": 66,
-    "unique_files": 103,
-    "local_decorator_duplicate_groups": 50,
+    "orphan_routes": 36,
+    "unique_files": 100,
+    "local_decorator_duplicate_groups": 49,
     "full_path_duplicate_groups": 0
   },
   "full_path_duplicates": [],
-  "local_decorator_duplicates_count": 50,
+  "local_decorator_duplicates_count": 49,
   "orphan_files": [
     "app/api/_cache_basic_routes.py",
     "app/api/_cache_eviction_routes.py",
@@ -20,10 +20,6 @@
     "app/api/_technical_patterns_router.py",
     "app/api/algorithms/_naive_bayes_router.py",
     "app/api/algorithms/get_algorithms_module.py",
-    "app/api/alternative_data.py",
-    "app/api/backtest_ws.py",
-    "app/api/efinance.py",
-    "app/api/monitoring_market_routes.py",
-    "app/api/mystocks_api/main.py"
+    "app/api/monitoring_market_routes.py"
   ]
 }

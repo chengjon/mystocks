@@ -327,8 +327,79 @@ def main():
                                         "router_prefix": sub_prefix,
                                     })
 
-    # Scan for orphan files (not in any registration)
+    # Scan for orphan files (not in any registration, including include_router chains)
     registered_sources = set(r["_source"] for r in all_routes)
+
+    # Trace include_router chains from registered files to find sub-router files
+    def trace_include_router(source_file):
+        """Find files included via include_router in a source file."""
+        included = set()
+        try:
+            tree = ast.parse(open(source_file).read())
+        except Exception:
+            return included
+        source_dir = os.path.dirname(source_file)
+        for node in ast.walk(tree):
+            # Match: router.include_router(some_router, ...)
+            if not isinstance(node, ast.Call):
+                continue
+            func = node.func
+            if not isinstance(func, ast.Attribute) or func.attr != "include_router":
+                continue
+            # The sub-router is the first positional argument
+            if not node.args or not isinstance(node.args[0], ast.Name):
+                continue
+            import_name = node.args[0].id
+            # Find the import statement for this name and resolve to file
+            for imp_node in ast.walk(tree):
+                if not isinstance(imp_node, ast.ImportFrom):
+                    continue
+                for alias in imp_node.names:
+                    match = alias.asname == import_name or (
+                        alias.asname is None and alias.name == import_name
+                    )
+                    if not match:
+                        continue
+                    mod = imp_node.module or ""
+                    if imp_node.level > 0:
+                        # Relative import: resolve from source_dir
+                        base = source_dir
+                        for _ in range(imp_node.level - 1):
+                            base = os.path.dirname(base)
+                        parts = mod.split(".") if mod else []
+                        rel = os.path.join(base, *parts) if parts else base
+                        if os.path.isfile(rel + ".py"):
+                            included.add(rel + ".py")
+                        elif os.path.isdir(rel):
+                            init = os.path.join(rel, "__init__.py")
+                            if os.path.isfile(init):
+                                included.add(init)
+                            # Also check for alias.name as sub-module
+                            sub = os.path.join(rel, alias.name + ".py")
+                            if os.path.isfile(sub):
+                                included.add(sub)
+                    else:
+                        # Absolute import: convert dotted module to path
+                        mod_path = mod.replace(".", os.sep)
+                        if os.path.isfile(mod_path + ".py"):
+                            included.add(mod_path + ".py")
+                        elif os.path.isdir(mod_path):
+                            init = os.path.join(mod_path, "__init__.py")
+                            if os.path.isfile(init):
+                                included.add(init)
+                    break
+        return included
+
+    # BFS to find all reachable files through include_router chains
+    reachable = set(registered_sources)
+    queue = list(registered_sources)
+    while queue:
+        current = queue.pop(0)
+        for sub in trace_include_router(current):
+            if sub not in reachable:
+                reachable.add(sub)
+                queue.append(sub)
+
     all_api_files = set()
     for root, dirs, files in os.walk(API_DIR):
         dirs[:] = [d for d in dirs if d != "__pycache__"]
@@ -336,7 +407,7 @@ def main():
             if f.endswith(".py") and f not in ("__init__.py", "VERSION_MAPPING.py"):
                 all_api_files.add(os.path.join(root, f))
 
-    orphan_files = sorted(all_api_files - registered_sources)
+    orphan_files = sorted(all_api_files - reachable)
     for filepath in orphan_files:
         rp = get_router_prefix(filepath)
         for method, path, func in extract_routes(filepath):
