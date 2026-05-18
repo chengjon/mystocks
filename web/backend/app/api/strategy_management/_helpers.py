@@ -394,7 +394,7 @@ async def _handle_strategy_lifecycle_action(
 
         return create_unified_success_response(data=updated_strategy, message=success_message)
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000

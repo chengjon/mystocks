@@ -6,7 +6,9 @@ Extracted from get_monitoring_db.py during the P3 split.
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import BackgroundTasks, Body, HTTPException, Path, Query
+from fastapi import BackgroundTasks, Body, Path, Query
+
+from app.core.exceptions import BusinessException
 
 from app.core.responses import UnifiedResponse
 
@@ -16,7 +18,6 @@ from ._helpers import (
     MyStocksUnifiedManager,
     DataClassification,
     router,
-    get_monitoring_db,
     _runtime_fallback_enabled,
     _build_runtime_backtest_record,
     _store_runtime_backtest,
@@ -74,7 +75,7 @@ async def train_model(
         )
 
         if not result:
-            raise HTTPException(status_code=500, detail="创建模型记录失败")
+            raise BusinessException(detail="创建模型记录失败", status_code=500)
 
         models = manager.load_data_by_classification(
             classification=DataClassification.MODEL_OUTPUT,
@@ -89,7 +90,7 @@ async def train_model(
         return {"task_id": task_id, "model_id": model_id}
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"启动模型训练失败: {str(e)}")
+        raise BusinessException(detail=f"启动模型训练失败: {str(e)}", status_code=500)
 
 
 @router.get(
@@ -112,7 +113,7 @@ async def get_training_status(task_id: str = Path(..., description="需要查询
         )
 
         if models is None or len(models) == 0:
-            raise HTTPException(status_code=404, detail="模型不存在")
+            raise BusinessException(detail="模型不存在", status_code=404)
 
         model = models.iloc[0].to_dict()
 
@@ -128,10 +129,10 @@ async def get_training_status(task_id: str = Path(..., description="需要查询
             "metrics": model.get("performance_metrics") or {},
         }
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取训练状态失败: {str(e)}")
+        raise BusinessException(detail=f"获取训练状态失败: {str(e)}", status_code=500)
 
 
 @router.get(
@@ -164,7 +165,7 @@ async def list_models(
         return models.to_dict("records") if models is not None else []
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取模型列表失败: {str(e)}")
+        raise BusinessException(detail=f"获取模型列表失败: {str(e)}", status_code=500)
 
 
 @router.post(
@@ -220,7 +221,7 @@ async def run_backtest(
                 fallback_record = _build_runtime_backtest_record(request, config)
                 _store_runtime_backtest(fallback_record)
                 return {"backtest_id": int(fallback_record["id"])}
-            raise HTTPException(status_code=500, detail="创建回测记录失败")
+            raise BusinessException(detail="创建回测记录失败", status_code=500)
 
         backtests = manager.load_data_by_classification(
             classification=DataClassification.MODEL_OUTPUT,
@@ -238,7 +239,7 @@ async def run_backtest(
             fallback_record = _build_runtime_backtest_record(request, config)
             _store_runtime_backtest(fallback_record)
             return {"backtest_id": int(fallback_record["id"])}
-        raise HTTPException(status_code=500, detail=f"启动回测失败: {str(e)}")
+        raise BusinessException(detail=f"启动回测失败: {str(e)}", status_code=500)
 
 
 @router.get(
@@ -283,7 +284,7 @@ async def list_backtest_results(
     except Exception as e:
         if _runtime_fallback_enabled():
             return _list_runtime_backtests(strategy_id=strategy_id, page=page, page_size=page_size)
-        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
+        raise BusinessException(detail=f"获取回测结果失败: {str(e)}", status_code=500)
 
 
 @router.get(
@@ -308,17 +309,17 @@ async def get_backtest_result(backtest_id: int = Path(..., description="回测ID
             fallback_record = _find_runtime_backtest(backtest_id) if _runtime_fallback_enabled() else None
             if fallback_record is not None:
                 return fallback_record
-            raise HTTPException(status_code=404, detail="回测不存在")
+            raise BusinessException(detail="回测不存在", status_code=404)
 
         return backtests.iloc[0].to_dict()
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         fallback_record = _find_runtime_backtest(backtest_id) if _runtime_fallback_enabled() else None
         if fallback_record is not None:
             return fallback_record
-        raise HTTPException(status_code=500, detail=f"获取回测结果失败: {str(e)}")
+        raise BusinessException(detail=f"获取回测结果失败: {str(e)}", status_code=500)
 
 
 @router.get(
@@ -342,4 +343,4 @@ async def get_backtest_status(backtest_id: int = Path(..., description="回测ID
             "has_results": fallback_record.get("has_results", True),
         }
 
-    raise HTTPException(status_code=404, detail=f"回测不存在: backtest_id={backtest_id}")
+    raise BusinessException(detail=f"回测不存在: backtest_id={backtest_id}", status_code=404)

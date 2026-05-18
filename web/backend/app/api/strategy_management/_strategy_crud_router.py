@@ -6,7 +6,9 @@ Extracted from get_monitoring_db.py during the P3 split.
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from fastapi import Body, HTTPException, Path, Query
+from fastapi import Body, Path, Query
+
+from app.core.exceptions import BusinessException
 
 from app.core.responses import UnifiedResponse
 
@@ -167,7 +169,7 @@ async def list_strategies(
             success=False,
             details=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"获取策略列表失败: {str(e)}")
+        raise BusinessException(detail=f"获取策略列表失败: {str(e)}", status_code=500)
 
 
 @router.post(
@@ -251,7 +253,7 @@ async def create_strategy(
         if result:
             return create_unified_success_response(data=strategy_record, message="策略创建成功")
         else:
-            raise HTTPException(status_code=500, detail="策略创建失败")
+            raise BusinessException(detail="策略创建失败", status_code=500)
 
     except Exception as e:
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
@@ -264,7 +266,7 @@ async def create_strategy(
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"创建策略失败: {str(e)}")
+        raise BusinessException(detail=f"创建策略失败: {str(e)}", status_code=500)
 
 
 @router.get(
@@ -289,20 +291,20 @@ async def get_strategy(strategy_id: int = Path(..., description="需要查询详
             fallback_strategy = _find_runtime_strategy(strategy_id) if _runtime_fallback_enabled() else None
             if fallback_strategy is not None:
                 return create_unified_success_response(data=fallback_strategy, message="获取策略成功")
-            raise HTTPException(status_code=404, detail="策略不存在")
+            raise BusinessException(detail="策略不存在", status_code=404)
 
         return create_unified_success_response(
             data=_normalize_strategy_record(strategies.iloc[0].to_dict()),
             message="获取策略成功",
         )
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         fallback_strategy = _find_runtime_strategy(strategy_id) if _runtime_fallback_enabled() else None
         if fallback_strategy is not None:
             return create_unified_success_response(data=fallback_strategy, message="获取策略成功")
-        raise HTTPException(status_code=500, detail=f"获取策略失败: {str(e)}")
+        raise BusinessException(detail=f"获取策略失败: {str(e)}", status_code=500)
 
 
 @router.put(
@@ -330,7 +332,7 @@ async def update_strategy(
             if strategies is None or len(strategies) == 0:
                 runtime_strategy = _find_runtime_strategy(strategy_id) if _runtime_fallback_enabled() else None
                 if runtime_strategy is None:
-                    raise HTTPException(status_code=404, detail="策略不存在")
+                    raise BusinessException(detail="策略不存在", status_code=404)
                 updated_strategy = _build_runtime_strategy_record(
                     {
                         **runtime_strategy,
@@ -361,7 +363,7 @@ async def update_strategy(
                 raise
             runtime_strategy = _find_runtime_strategy(strategy_id)
             if runtime_strategy is None:
-                raise HTTPException(status_code=500, detail=f"更新策略失败: {str(db_error)}")
+                raise BusinessException(detail=f"更新策略失败: {str(db_error)}", status_code=500)
             updated_strategy = _build_runtime_strategy_record(
                 {**runtime_strategy, **strategy_update, "strategy_id": strategy_id, "id": strategy_id},
                 strategy_id=strategy_id,
@@ -372,7 +374,7 @@ async def update_strategy(
         if not result and _runtime_fallback_enabled():
             runtime_strategy = _find_runtime_strategy(strategy_id)
             if runtime_strategy is None:
-                raise HTTPException(status_code=500, detail="策略更新失败")
+                raise BusinessException(detail="策略更新失败", status_code=500)
             updated_strategy = _build_runtime_strategy_record(
                 {**runtime_strategy, **strategy_update, "strategy_id": strategy_id, "id": strategy_id},
                 strategy_id=strategy_id,
@@ -383,12 +385,12 @@ async def update_strategy(
         if result:
             return create_unified_success_response(message="策略更新成功")
         else:
-            raise HTTPException(status_code=500, detail="策略更新失败")
+            raise BusinessException(detail="策略更新失败", status_code=500)
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"更新策略失败: {str(e)}")
+        raise BusinessException(detail=f"更新策略失败: {str(e)}", status_code=500)
 
 
 @router.delete(
@@ -418,7 +420,7 @@ async def delete_strategy(strategy_id: int = Path(..., description="需要归档
                 raise
             removed = _delete_runtime_strategy(strategy_id)
             if not removed:
-                raise HTTPException(status_code=500, detail=f"删除策略失败: {str(db_error)}")
+                raise BusinessException(detail=f"删除策略失败: {str(db_error)}", status_code=500)
             return create_unified_success_response(message="策略已归档")
 
         if not result and _runtime_fallback_enabled():
@@ -429,10 +431,10 @@ async def delete_strategy(strategy_id: int = Path(..., description="需要归档
         if result:
             return create_unified_success_response(message="策略已归档")
         else:
-            raise HTTPException(status_code=500, detail="策略删除失败")
+            raise BusinessException(detail="策略删除失败", status_code=500)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"删除策略失败: {str(e)}")
+        raise BusinessException(detail=f"删除策略失败: {str(e)}", status_code=500)
 
 
 @router.post(

@@ -8,7 +8,9 @@ import re
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
+
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field, field_validator
 
 from app.openapi_config import COMMON_RESPONSES
@@ -207,9 +209,9 @@ async def get_strategy_definitions():
         result = await strategy_adapter.get_data("definitions")
 
         if "error" in result:
-            raise HTTPException(
-                status_code=500,
+            raise BusinessException(
                 detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
+                status_code=500,
             )
 
         definitions_data = result.get("data", [])
@@ -218,11 +220,11 @@ async def get_strategy_definitions():
             data={"definitions": definitions_data, "total": len(definitions_data)}, message=ResponseMessages.SUCCESS
         )
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         logger.error("获取策略定义失败: %(e)s")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500)
 
 
 # ==================== 策略执行相关 ====================
@@ -263,9 +265,9 @@ async def run_strategy_single(
         result = await strategy_adapter.get_data("run_single", params)
 
         if "error" in result:
-            raise HTTPException(
-                status_code=500,
+            raise BusinessException(
                 detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
+                status_code=500,
             )
 
         return create_success_response(
@@ -278,13 +280,13 @@ async def run_strategy_single(
             message=result.get("message", f"策略{strategy_code}执行完成"),
         )
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         logger.error("运行单只股票策略失败: %(e)s")
-        raise HTTPException(
-            status_code=500,
+        raise BusinessException(
             detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"运行策略失败: {str(e)}").model_dump(),
+            status_code=500,
         )
 
 
@@ -333,9 +335,9 @@ async def run_strategy_batch(
         result = await strategy_adapter.get_data("run_batch", params)
 
         if "error" in result:
-            raise HTTPException(
-                status_code=500,
+            raise BusinessException(
                 detail=create_error_response(ErrorCodes.EXTERNAL_SERVICE_ERROR, result["error"]).model_dump(),
+                status_code=500,
             )
 
         return create_success_response(
@@ -349,13 +351,13 @@ async def run_strategy_batch(
             message=result.get("message", f"批量策略{strategy_code}执行完成"),
         )
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         logger.error("批量运行策略失败: %(e)s")
-        raise HTTPException(
-            status_code=500,
+        raise BusinessException(
             detail=create_error_response(ErrorCodes.INTERNAL_SERVER_ERROR, f"批量运行策略失败: {str(e)}").model_dump(),
+            status_code=500,
         )
 
 
@@ -426,9 +428,9 @@ async def query_strategy_results(
 
     except Exception as e:
         logger.error("查询策略结果失败: %(e)s")
-        raise HTTPException(
-            status_code=500,
+        raise BusinessException(
             detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"查询策略结果失败: {str(e)}").model_dump(),
+            status_code=500,
         )
 
 
@@ -472,7 +474,7 @@ async def get_matched_stocks(
 
     except Exception as e:
         logger.error("获取匹配股票失败: %(e)s")
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(detail=str(e), status_code=500)
 
 
 # ==================== 统计分析相关 ====================
@@ -541,7 +543,7 @@ async def get_strategy_summary(
 
     except Exception as e:
         logger.error("获取策略统计失败: %(e)s")
-        raise HTTPException(
-            status_code=500,
+        raise BusinessException(
             detail=create_error_response(ErrorCodes.DATABASE_ERROR, f"获取策略统计失败: {str(e)}").model_dump(),
+            status_code=500,
         )
