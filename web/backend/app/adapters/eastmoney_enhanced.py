@@ -11,8 +11,9 @@ This adapter enhances the existing EastMoneyAdapter with BaseDataSourceAdapter f
 
 import logging
 import time
-from typing import List, Optional
+from typing import Any, List, Optional, cast
 
+from fastapi import Request
 import pandas as pd
 
 from app.adapters.base import (
@@ -25,6 +26,8 @@ from app.adapters.base import (
 from app.adapters.eastmoney_adapter import EastMoneyAdapter
 
 logger = logging.getLogger(__name__)
+
+EASTMONEY_ENHANCED_ADAPTER_STATE_KEY = "eastmoney_enhanced_adapter"
 
 
 class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
@@ -309,14 +312,50 @@ class EastMoneyEnhancedAdapter(BaseDataSourceAdapter):
 
         return data
 
+    def close(self) -> None:
+        """Close resources owned by the wrapped EastMoney adapter."""
+        session = getattr(getattr(self, "_adapter", None), "session", None)
+        if session is not None and hasattr(session, "close"):
+            session.close()
+
 
 # 全局单例
 _eastmoney_enhanced_adapter = None
 
 
 def get_eastmoney_enhanced_adapter() -> EastMoneyEnhancedAdapter:
-    """获取增强版东方财富适配器单例"""
+    """获取增强版东方财富适配器兼容单例"""
     global _eastmoney_enhanced_adapter
     if _eastmoney_enhanced_adapter is None:
         _eastmoney_enhanced_adapter = EastMoneyEnhancedAdapter()
     return _eastmoney_enhanced_adapter
+
+
+def install_eastmoney_enhanced_adapter(
+    app: Any,
+    adapter: Optional[EastMoneyEnhancedAdapter] = None,
+) -> EastMoneyEnhancedAdapter:
+    """Install the pilot adapter instance on FastAPI app.state."""
+    selected_adapter = adapter if adapter is not None else get_eastmoney_enhanced_adapter()
+    setattr(app.state, EASTMONEY_ENHANCED_ADAPTER_STATE_KEY, selected_adapter)
+    return selected_adapter
+
+
+def get_eastmoney_enhanced_adapter_dependency(request: Request) -> EastMoneyEnhancedAdapter:
+    """FastAPI dependency provider for the EastMoney enhanced adapter pilot."""
+    adapter = getattr(request.app.state, EASTMONEY_ENHANCED_ADAPTER_STATE_KEY, None)
+    if adapter is None:
+        adapter = install_eastmoney_enhanced_adapter(request.app)
+    return cast(EastMoneyEnhancedAdapter, adapter)
+
+
+def close_eastmoney_enhanced_adapter(app: Any) -> None:
+    """Close and remove the pilot adapter instance from FastAPI app.state."""
+    adapter = getattr(app.state, EASTMONEY_ENHANCED_ADAPTER_STATE_KEY, None)
+    if adapter is None:
+        return
+
+    close = getattr(adapter, "close", None)
+    if callable(close):
+        close()
+    delattr(app.state, EASTMONEY_ENHANCED_ADAPTER_STATE_KEY)

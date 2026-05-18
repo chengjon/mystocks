@@ -1,0 +1,502 @@
+web/backend/app/adapters/akshare_extension.py:290:def get_akshare_extension() -> AkshareExtension:
+web/backend/app/adapters/cninfo_adapter.py:369:def get_cninfo_adapter() -> CninfoAdapter:
+web/backend/app/adapters/eastmoney_adapter.py:602:def get_eastmoney_adapter() -> EastMoneyAdapter:
+web/backend/app/adapters/eastmoney_enhanced.py:326:def get_eastmoney_enhanced_adapter() -> EastMoneyEnhancedAdapter:
+web/backend/app/adapters/eastmoney_enhanced.py:344:def get_eastmoney_enhanced_adapter_dependency(request: Request) -> EastMoneyEnhancedAdapter:
+web/backend/app/adapters/tqlex_adapter.py:306:def get_tqlex_adapter() -> TqlexDataSource:
+web/backend/app/adapters/wencai_adapter.py:324:def get_query_text(query_name: str) -> Optional[str]:
+web/backend/app/adapters/wencai_adapter.py:337:def get_all_queries() -> Dict[str, str]:
+web/backend/app/api/_cache_basic_routes.py:149:async def get_cache_status(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+web/backend/app/api/_cache_basic_routes.py:165:async def get_cached_data(
+web/backend/app/api/_cache_eviction_routes.py:102:async def get_eviction_statistics(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+web/backend/app/api/_cache_prewarming_routes.py:143:async def get_prewarming_status(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+web/backend/app/api/_cache_prewarming_routes.py:159:async def get_cache_monitoring_metrics(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+web/backend/app/api/_cache_prewarming_routes.py:187:async def get_cache_health_status(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+web/backend/app/api/_monitoring_portfolio_router.py:148:async def get_portfolio_summary(
+web/backend/app/api/_monitoring_portfolio_router.py:216:async def get_portfolio_alerts(
+web/backend/app/api/_monitoring_portfolio_router.py:288:async def get_rebalance_suggestions(
+web/backend/app/api/akshare_market/analysis.py:184:async def get_chip_distribution(
+web/backend/app/api/akshare_market/analysis.py:230:async def get_profit_forecast_em(
+web/backend/app/api/akshare_market/analysis.py:273:async def get_profit_forecast_ths(
+web/backend/app/api/akshare_market/analysis.py:316:async def get_technical_indicators_em(
+web/backend/app/api/akshare_market/analysis.py:354:async def get_account_statistics_em(
+web/backend/app/api/akshare_market/boards.py:273:async def get_concept_board_constituents(
+web/backend/app/api/akshare_market/boards.py:316:async def get_concept_board_history(
+web/backend/app/api/akshare_market/boards.py:363:async def get_concept_board_minute(
+web/backend/app/api/akshare_market/boards.py:407:async def get_industry_board_constituents(
+web/backend/app/api/akshare_market/boards.py:450:async def get_industry_board_history(
+web/backend/app/api/akshare_market/boards.py:497:async def get_industry_board_minute(
+web/backend/app/api/akshare_market/boards.py:541:async def get_sector_hot_ranking(
+web/backend/app/api/akshare_market/boards.py:582:async def get_sector_fund_flow_ranking(
+web/backend/app/api/akshare_market/fund_flow.py:258:async def get_hsgt_fund_flow_summary(
+web/backend/app/api/akshare_market/fund_flow.py:296:async def get_hsgt_fund_flow_detail(
+web/backend/app/api/akshare_market/fund_flow.py:334:async def get_north_fund_daily(
+web/backend/app/api/akshare_market/fund_flow.py:373:async def get_south_fund_daily(
+web/backend/app/api/akshare_market/fund_flow.py:417:async def get_north_fund_stock(
+web/backend/app/api/akshare_market/fund_flow.py:460:async def get_south_fund_stock(
+web/backend/app/api/akshare_market/fund_flow.py:503:async def get_hsgt_holdings(
+web/backend/app/api/akshare_market/fund_flow.py:545:async def get_fund_flow_big_deal(
+web/backend/app/api/akshare_market/sentiment_monitor.py:249:async def get_stock_hot_follow_xq(
+web/backend/app/api/akshare_market/sentiment_monitor.py:291:async def get_stock_zt_pool_em(
+web/backend/app/api/akshare_market/sentiment_monitor.py:338:async def get_stock_dt_pool_em(
+web/backend/app/api/akshare_market/sentiment_monitor.py:385:async def get_stock_strong_pool_em(
+web/backend/app/api/akshare_market/sentiment_monitor.py:432:async def get_stock_new_em(
+web/backend/app/api/akshare_market/sentiment_monitor.py:479:async def get_stock_changes_em(
+web/backend/app/api/akshare_market/sentiment_monitor.py:521:async def get_board_change_em(
+web/backend/app/api/akshare_market/sse.py:100:async def get_sse_market_overview(current_user: User = Depends(get_current_user)):
+web/backend/app/api/akshare_market/sse.py:118:async def get_sse_daily_deal(
+web/backend/app/api/akshare_market/stock_info.py:281:async def get_stock_individual_info_em(
+web/backend/app/api/akshare_market/stock_info.py:316:async def get_stock_individual_info_xq(
+web/backend/app/api/akshare_market/stock_info.py:351:async def get_stock_business_intro_ths(
+web/backend/app/api/akshare_market/stock_info.py:386:async def get_stock_business_composition_em(
+web/backend/app/api/akshare_market/stock_info.py:423:async def get_stock_comment_em(
+web/backend/app/api/akshare_market/stock_info.py:460:async def get_stock_comment_detail_em(
+web/backend/app/api/akshare_market/stock_info.py:497:async def get_stock_news_em(
+web/backend/app/api/akshare_market/stock_info.py:534:async def get_stock_bid_ask_em(
+web/backend/app/api/akshare_market/szse.py:128:async def get_szse_market_overview(
+web/backend/app/api/akshare_market/szse.py:149:async def get_szse_area_trading(
+web/backend/app/api/akshare_market/szse.py:170:async def get_szse_sector_trading(
+web/backend/app/api/algorithms/algorithm_metadata.py:10:def get_algorithm_description(algorithm: Any) -> str:
+web/backend/app/api/algorithms/algorithm_metadata.py:28:def get_algorithm_parameters(algorithm: Any) -> Dict[str, Any]:
+web/backend/app/api/algorithms/algorithm_metadata.py:68:def get_algorithm_use_cases(algorithm: Any) -> List[str]:
+web/backend/app/api/algorithms/algorithm_metadata.py:84:def get_algorithm_performance(algorithm: Any) -> Dict[str, Any]:
+web/backend/app/api/algorithms/get_algorithms_module.py:53:def get_algorithms_module():
+web/backend/app/api/algorithms/get_algorithms_module.py:140:async def get_algorithm_info(algorithm_type: str, current_user: User = Depends(get_current_user)) -> UnifiedResponse:
+web/backend/app/api/algorithms/get_algorithms_module.py:300:async def get_training_history(
+web/backend/app/api/algorithms/get_algorithms_module.py:347:async def get_prediction_history(
+web/backend/app/api/algorithms/get_algorithms_module.py:394:async def get_model_history(
+web/backend/app/api/algorithms/get_algorithms_module.py:448:async def get_algorithm_statistics(
+web/backend/app/api/algorithms/get_algorithms_module.py:471:async def get_model_details(model_id: str, current_user: User = Depends(get_current_user)) -> UnifiedResponse:
+web/backend/app/api/algorithms/get_algorithms_module.py:596:async def get_decision_tree_feature_importance(
+web/backend/app/api/algorithms/get_naive_bayes_class_probabilities.py:37:async def get_naive_bayes_class_probabilities(
+web/backend/app/api/announcement/routes.py:64:async def get_status():
+web/backend/app/api/auth.py:208:async def get_current_user(
+web/backend/app/api/auth.py:247:async def get_current_active_user(
+web/backend/app/api/auth.py:392:async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+web/backend/app/api/auth.py:455:async def get_csrf_token():
+web/backend/app/api/backup_recovery_secure/log_security_event.py:573:async def get_recovery_objectives():
+web/backend/app/api/backup_recovery_secure/log_security_event.py:644:async def get_scheduled_jobs(current_user: User = Depends(get_current_user)):
+web/backend/app/api/contract/routes.py:404:async def get_version(
+web/backend/app/api/contract/routes.py:420:async def get_active_version(
+web/backend/app/api/contract/routes.py:685:async def get_sync_report(db: Session = Depends(get_db)):
+web/backend/app/api/dashboard.py:194:async def get_cache_manager() -> CacheManager:
+web/backend/app/api/dashboard.py:231:async def get_dashboard_summary(
+web/backend/app/api/dashboard.py:342:async def get_market_overview(
+web/backend/app/api/dashboard_data_source.py:675:def get_business_source():
+web/backend/app/api/dashboard_data_source.py:694:def get_data_source():
+web/backend/app/api/data/financial.py:59:async def get_financial_data(
+web/backend/app/api/data/futures.py:82:async def get_futures_index_daily(
+web/backend/app/api/data/futures.py:107:async def get_futures_index_realtime(
+web/backend/app/api/data/kline.py:135:async def get_daily_kline(
+web/backend/app/api/data/kline.py:169:async def get_kline(
+web/backend/app/api/data/kline.py:185:async def get_kline_data(
+web/backend/app/api/data/kline.py:237:async def get_intraday_data(
+web/backend/app/api/data/lhb.py:81:async def get_dragon_tiger_detail(
+web/backend/app/api/data/lhb.py:107:async def get_dragon_tiger_institution_stats(
+web/backend/app/api/data/margin.py:99:async def get_margin_account_info(current_user: User = Depends(get_current_user)) -> UnifiedResponse:
+web/backend/app/api/data/margin.py:120:async def get_margin_detail_sse(
+web/backend/app/api/data/margin.py:142:async def get_margin_detail_szse(
+web/backend/app/api/data/market.py:94:async def get_market_overview(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+web/backend/app/api/data/market.py:118:async def get_price_distribution(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+web/backend/app/api/data/market.py:146:async def get_hot_industries(
+web/backend/app/api/data/market.py:171:async def get_hot_concepts(
+web/backend/app/api/data/stocks.py:242:async def get_stocks_basic(
+web/backend/app/api/data/stocks.py:316:async def get_stocks_industries(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+web/backend/app/api/data/stocks.py:340:async def get_stocks_concepts(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+web/backend/app/api/data/stocks.py:393:async def get_stock_detail(
+web/backend/app/api/data_lineage.py:480:async def get_lineage_tracker():
+web/backend/app/api/data_lineage.py:592:async def get_upstream_lineage(
+web/backend/app/api/data_lineage.py:702:async def get_downstream_lineage(
+web/backend/app/api/data_lineage.py:789:async def get_lineage_graph(
+web/backend/app/api/data_quality.py:310:async def get_sources_health():
+web/backend/app/api/data_quality.py:362:async def get_data_quality_metrics(source: Optional[str] = Query(None, description="Filter by specific data source")):
+web/backend/app/api/data_quality.py:452:async def get_active_alerts(
+web/backend/app/api/data_quality.py:574:async def get_data_source_mode():
+web/backend/app/api/data_quality.py:614:async def get_system_status_overview():
+web/backend/app/api/data_quality.py:734:async def get_quality_trends(
+web/backend/app/api/data_source_config.py:382:def get_config_manager():
+web/backend/app/api/data_source_config.py:399:def get_current_user(
+web/backend/app/api/data_source_config.py:655:async def get_data_source(
+web/backend/app/api/data_source_config.py:854:async def get_version_history(
+web/backend/app/api/data_source_registry.py:45:def get_db_connection():
+web/backend/app/api/data_source_registry.py:61:def get_manager():
+web/backend/app/api/data_source_registry.py:147:async def get_category_stats() -> UnifiedResponse[List[CategoryStatsResponse]]:
+web/backend/app/api/data_source_registry.py:222:async def get_data_source(
+web/backend/app/api/governance_dashboard.py:326:async def get_postgres_connection():
+web/backend/app/api/governance_dashboard.py:375:async def get_quality_overview(http_request: Request):
+web/backend/app/api/governance_dashboard.py:487:async def get_lineage_stats(
+web/backend/app/api/governance_dashboard.py:608:async def get_assets_catalog(
+web/backend/app/api/governance_dashboard.py:718:async def get_compliance_metrics(
+web/backend/app/api/governance_dashboard.py:835:async def get_dashboard_summary(http_request: Request):
+web/backend/app/api/gpu_monitoring.py:310:async def get_gpu_status(
+web/backend/app/api/gpu_monitoring.py:347:async def get_gpu_performance(
+web/backend/app/api/gpu_monitoring.py:374:async def get_prometheus_metrics(request: Request):
+web/backend/app/api/gpu_monitoring.py:385:async def get_gpu_history(
+web/backend/app/api/health.py:566:async def get_health_report(
+web/backend/app/api/indicator_registry.py:99:def get_factory():
+web/backend/app/api/indicator_registry.py:182:async def get_indicator_details(
+web/backend/app/api/indicators/create_indicator_config.py:175:async def get_indicator_config(config_id: int, current_user: User = Depends(get_current_active_user)):
+web/backend/app/api/indicators/indicator_cache.py:445:async def get_indicator_registry_endpoint(
+web/backend/app/api/indicators/indicator_cache.py:569:async def get_indicators_by_category(category: str = Path(..., description=INDICATOR_CATEGORY_PATH_DESCRIPTION)):
+web/backend/app/api/indicators/indicator_cache.py:1008:async def get_cache_statistics(current_user: User = Depends(get_current_active_user)) -> Dict:
+web/backend/app/api/industry_concept_analysis.py:216:async def get_industry_list():
+web/backend/app/api/industry_concept_analysis.py:269:async def get_concept_list():
+web/backend/app/api/industry_concept_analysis.py:322:async def get_industry_stocks(
+web/backend/app/api/industry_concept_analysis.py:381:async def get_concept_stocks(
+web/backend/app/api/industry_concept_analysis.py:440:async def get_industry_performance(industry_code: str = Query(..., description="行业代码")):
+web/backend/app/api/industry_concept_analysis.py:532:def get_industry_concept_endpoints():
+web/backend/app/api/market/_market_heatmap_router.py:65:async def get_market_heatmap(
+web/backend/app/api/market/market_data_request.py:415:async def get_fund_flow(
+web/backend/app/api/market/market_data_request.py:570:async def get_etf_list(
+web/backend/app/api/market/market_data_request.py:637:async def get_chip_race(
+web/backend/app/api/market/market_data_request.py:696:async def get_lhb_detail(
+web/backend/app/api/market/market_data_request.py:749:async def get_market_quotes(
+web/backend/app/api/market/market_data_request.py:789:async def get_stock_list(
+web/backend/app/api/market/market_data_request.py:884:async def get_kline_data(
+web/backend/app/api/market_v2.py:261:async def get_fund_flow(
+web/backend/app/api/market_v2.py:305:async def get_etf_list(
+web/backend/app/api/market_v2.py:346:async def get_lhb_detail(
+web/backend/app/api/market_v2.py:395:async def get_sector_fund_flow(
+web/backend/app/api/market_v2.py:440:async def get_stock_dividend(
+web/backend/app/api/market_v2.py:480:async def get_stock_blocktrade(
+web/backend/app/api/ml.py:89:async def get_tdx_data(
+web/backend/app/api/ml.py:356:async def get_model_detail(
+web/backend/app/api/monitoring.py:121:async def get_alert_rules(
+web/backend/app/api/monitoring.py:270:async def get_alert_records(
+web/backend/app/api/monitoring.py:406:async def get_monitoring_summary(current_user: User = Depends(get_current_user)):
+web/backend/app/api/monitoring.py:435:async def get_today_statistics(current_user: User = Depends(get_current_user)):
+web/backend/app/api/monitoring.py:515:async def get_monitoring_status():
+web/backend/app/api/monitoring_analysis.py:500:async def get_health_score_history(
+web/backend/app/api/monitoring_analysis.py:735:async def get_engine_status() -> UnifiedResponse[Dict[str, Any]]:
+web/backend/app/api/monitoring_market_routes.py:40:async def get_realtime_monitoring(
+web/backend/app/api/monitoring_market_routes.py:75:async def get_realtime_monitoring_list(
+web/backend/app/api/monitoring_market_routes.py:163:async def get_dragon_tiger_list(
+web/backend/app/api/monitoring_watchlists.py:748:async def get_watchlist(
+web/backend/app/api/multi_source/routes.py:181:async def get_status():
+web/backend/app/api/notification.py:67:async def get_email_service_status(current_user: User = Depends(get_current_user)) -> Dict:
+web/backend/app/api/notification.py:588:async def get_notification_preferences(current_user: User = Depends(get_current_active_user)) -> Dict:
+web/backend/app/api/realtime_market.py:479:async def get_realtime_quote(symbol: str = Path(..., description="待查询的股票代码，例如 600519 或 000001。")):
+web/backend/app/api/realtime_market.py:524:async def get_realtime_quotes(symbols: str = Query(..., description="股票代码列表，逗号分隔")):
+web/backend/app/api/realtime_market.py:563:async def get_portfolio_mtm(portfolio_id: str = Path(..., description="待查询的投资组合 ID。")):
+web/backend/app/api/realtime_market.py:587:async def get_position_mtm(position_id: str = Path(..., description="待查询的持仓 ID。")):
+web/backend/app/api/realtime_market.py:625:async def get_mtm_stats():
+web/backend/app/api/realtime_mtm_adapter.py:362:def get_realtime_mtm_adapter() -> RealtimeMTMAdapter:
+web/backend/app/api/realtime_mtm_adapter.py:402:def get_mtm_engine():
+web/backend/app/api/realtime_mtm_init.py:28:def get_database_session() -> Session:
+web/backend/app/api/realtime_mtm_init.py:81:def get_realtime_mtm_adapter():
+web/backend/app/api/risk/_shared.py:128:def get_monitoring_db():
+web/backend/app/api/risk/alerts.py:495:async def get_alert_statistics() -> Dict[str, Any]:
+web/backend/app/api/risk/alerts.py:619:async def get_rule_statistics() -> Dict[str, Any]:
+web/backend/app/api/risk/alerts.py:641:async def get_realtime_risk_metrics(
+web/backend/app/api/risk/alerts.py:909:async def get_active_alerts_v31() -> Dict[str, Any]:
+web/backend/app/api/risk/metrics.py:439:async def get_risk_dashboard() -> RiskDashboardResponse:
+web/backend/app/api/risk/metrics.py:505:async def get_risk_metrics_history(
+web/backend/app/api/risk/stop_loss.py:412:async def get_stop_loss_status(
+web/backend/app/api/risk/stop_loss.py:439:async def get_stop_loss_overview() -> Dict[str, Any]:
+web/backend/app/api/risk/stop_loss.py:489:async def get_stop_loss_performance(
+web/backend/app/api/risk/stop_loss.py:520:async def get_stop_loss_recommendations(
+web/backend/app/api/risk/v31.py:162:async def get_stock_risk_v31(symbol: str = Path(..., description="需要查询风险画像的股票代码。")) -> Dict[str, Any]:
+web/backend/app/api/risk/v31.py:203:async def get_portfolio_risk_v31(
+web/backend/app/api/risk/v31.py:248:async def get_risk_management_health() -> Dict[str, Any]:
+web/backend/app/api/risk/v31.py:415:async def get_websocket_connections():
+web/backend/app/api/signal_monitoring/get_signal_statistics.py:115:async def get_signal_statistics(
+web/backend/app/api/signal_monitoring/get_signal_statistics.py:232:async def get_active_signals(
+web/backend/app/api/signal_monitoring/get_signal_statistics.py:366:async def get_strategy_detailed_health(
+web/backend/app/api/signal_monitoring/signal_history_response.py:192:async def get_signal_history(
+web/backend/app/api/signal_monitoring/signal_history_response.py:355:async def get_signal_quality_report(
+web/backend/app/api/signal_monitoring/signal_history_response.py:546:async def get_strategy_realtime_monitoring(
+web/backend/app/api/stock_search/get_rate_limits_status.py:28:async def get_rate_limits_status(
+web/backend/app/api/stock_search/stock_search_result.py:216:async def get_stock_quote(
+web/backend/app/api/stock_search/stock_search_result.py:296:async def get_company_profile(
+web/backend/app/api/stock_search/stock_search_result.py:338:async def get_stock_news(
+web/backend/app/api/stock_search/stock_search_result.py:385:async def get_market_news(
+web/backend/app/api/stock_search/stock_search_result.py:428:async def get_recommendation_trends(
+web/backend/app/api/stock_search/stock_search_result.py:512:async def get_search_analytics(
+web/backend/app/api/strategy_management/_chart_data_router.py:19:async def get_backtest_chart_data(backtest_id: int = Path(..., description="回测ID", ge=1)) -> Dict[str, List]:
+web/backend/app/api/strategy_management/_helpers.py:420:def get_monitoring_db():
+web/backend/app/api/strategy_management/_model_backtest_router.py:103:async def get_training_status(task_id: str = Path(..., description="需要查询状态的训练任务ID。")) -> Dict[str, Any]:
+web/backend/app/api/strategy_management/_model_backtest_router.py:297:async def get_backtest_result(backtest_id: int = Path(..., description="回测ID", ge=1)) -> Dict[str, Any]:
+web/backend/app/api/strategy_management/_model_backtest_router.py:332:async def get_backtest_status(backtest_id: int = Path(..., description="回测ID", ge=1)) -> Dict[str, Any]:
+web/backend/app/api/strategy_management/_strategy_crud_router.py:290:async def get_strategy(strategy_id: int = Path(..., description="需要查询详情的策略ID。")) -> Any:
+web/backend/app/api/strategy_management/_strategy_execution_router.py:197:async def get_strategy_definitions():
+web/backend/app/api/strategy_management/_strategy_execution_router.py:444:async def get_matched_stocks(
+web/backend/app/api/strategy_management/_strategy_execution_router.py:490:async def get_strategy_summary(
+web/backend/app/api/strategy_mgmt.py:74:def get_data_source():
+web/backend/app/api/strategy_mgmt.py:83:def get_strategy_repository(db: Session = Depends(get_db)) -> StrategyRepository:
+web/backend/app/api/strategy_mgmt.py:88:def get_backtest_repository(db: Session = Depends(get_db)) -> BacktestRepository:
+web/backend/app/api/strategy_mgmt.py:252:async def get_strategy(
+web/backend/app/api/strategy_mgmt.py:504:async def get_backtest_result(
+web/backend/app/api/strategy_mgmt.py:649:async def get_backtest_status(
+web/backend/app/api/system/get_system_architecture.py:30:async def get_system_architecture():
+web/backend/app/api/system/system_health.py:276:async def get_adapters_health():
+web/backend/app/api/system/system_health.py:330:async def get_datasources():
+web/backend/app/api/system/system_health.py:558:def get_system_logs_from_db(
+web/backend/app/api/system/system_health.py:675:def get_mock_system_logs(filter_errors: bool = False, limit: int = 100) -> List[SystemLog]:
+web/backend/app/api/system/system_health.py:789:async def get_system_logs(
+web/backend/app/api/system/system_health.py:838:async def get_logs_summary():
+web/backend/app/api/tasks.py:229:async def get_task(
+web/backend/app/api/tasks.py:316:async def get_execution(execution_id: str = Path(..., description="需要查询的任务执行记录ID。")):
+web/backend/app/api/tasks.py:337:async def get_task_statistics():
+web/backend/app/api/tasks.py:488:async def get_audit_logs(
+web/backend/app/api/tdx.py:242:async def get_stock_quote(
+web/backend/app/api/tdx.py:295:async def get_stock_kline(
+web/backend/app/api/tdx.py:384:async def get_index_quote(
+web/backend/app/api/tdx.py:440:async def get_index_kline(
+web/backend/app/api/technical_analysis.py:503:async def get_all_indicators(
+web/backend/app/api/technical_analysis.py:608:async def get_trend_indicators(
+web/backend/app/api/technical_analysis.py:684:async def get_momentum_indicators(
+web/backend/app/api/technical_analysis.py:743:async def get_volatility_indicators(
+web/backend/app/api/technical_analysis.py:801:async def get_volume_indicators(
+web/backend/app/api/technical_analysis.py:859:async def get_trading_signals(
+web/backend/app/api/technical_analysis.py:920:async def get_stock_history(
+web/backend/app/api/technical_analysis.py:971:async def get_batch_indicators(
+web/backend/app/api/trade/execution_tracking_routes.py:289:def get_execution_tracking_evidence_service() -> ExecutionTrackingEvidenceService:
+web/backend/app/api/trade/execution_tracking_routes.py:441:async def get_execution_tracking(
+web/backend/app/api/trade/execution_tracking_routes.py:539:async def get_execution_tracking_detail(
+web/backend/app/api/trade/reconciliation_routes.py:343:async def get_reconciliation_accounts() -> UnifiedResponse[ReconciliationAccountsPayload]:
+web/backend/app/api/trade/reconciliation_routes.py:368:async def get_reconciliation_statements(
+web/backend/app/api/trade/reconciliation_routes.py:414:async def get_reconciliation_results(
+web/backend/app/api/trade/routes.py:379:async def get_portfolio() -> UnifiedResponse[Dict[str, Any]]:
+web/backend/app/api/trade/routes.py:396:async def get_positions() -> UnifiedResponse[Dict[str, Any]]:
+web/backend/app/api/trade/routes.py:410:async def get_signals(limit: int = Query(20, ge=1, le=200, description="返回的交易信号数量上限，范围 1-200")) -> UnifiedResponse[Dict[str, Any]]:
+web/backend/app/api/trade/routes.py:427:async def get_trades(
+web/backend/app/api/trade/routes.py:507:async def get_statistics() -> UnifiedResponse[Dict[str, Any]]:
+web/backend/app/api/trading_runtime.py:257:async def get_status():
+web/backend/app/api/trading_runtime.py:335:async def get_strategies_performance():
+web/backend/app/api/trading_runtime.py:412:async def get_market_snapshot():
+web/backend/app/api/trading_runtime.py:428:async def get_risk_metrics():
+web/backend/app/api/tradingview.py:187:async def get_chart_config(
+web/backend/app/api/tradingview.py:245:async def get_mini_chart_config(
+web/backend/app/api/tradingview.py:283:async def get_ticker_tape_config(
+web/backend/app/api/tradingview.py:340:async def get_market_overview_config(
+web/backend/app/api/tradingview.py:373:async def get_screener_config(
+web/backend/app/api/v1/admin/audit.py:310:async def get_audit_log(log_id: str = Path(..., description="审计日志唯一标识。")):
+web/backend/app/api/v1/admin/audit.py:355:async def get_audit_statistics(
+web/backend/app/api/v1/admin/optimization.py:295:async def get_database_status():
+web/backend/app/api/v1/admin/optimization.py:311:async def get_slow_queries(limit: int = Query(10, ge=1, le=100, description="返回的慢查询条数上限。")):
+web/backend/app/api/v1/analysis/backtest.py:586:async def get_equity_curve(
+web/backend/app/api/v1/analysis/backtest.py:651:async def get_backtest_attribution(
+web/backend/app/api/v1/analysis/kronos.py:597:async def get_kronos_status() -> UnifiedResponse[Dict[str, Any]]:
+web/backend/app/api/v1/analysis/sentiment.py:313:async def get_stock_sentiment(
+web/backend/app/api/v1/analysis/sentiment.py:362:async def get_market_sentiment():
+web/backend/app/api/v1/analysis/stress_test.py:306:async def get_predefined_scenarios() -> UnifiedResponse[Dict[str, Any]]:
+web/backend/app/api/v1/analysis/stress_test.py:324:async def get_stress_test_history(
+web/backend/app/api/v1/pool_monitoring.py:167:async def get_postgresql_pool_stats() -> Dict[str, Any]:
+web/backend/app/api/v1/pool_monitoring.py:220:async def get_tdengine_pool_stats() -> Dict[str, Any]:
+web/backend/app/api/v1/strategy/batch_analysis.py:201:async def get_batch_analysis_runtime_status():
+web/backend/app/api/v1/strategy/batch_analysis.py:301:async def get_batch_analysis_task_detail(
+web/backend/app/api/v1/strategy/indicators.py:184:async def get_technical_indicators(
+web/backend/app/api/v1/strategy/ml_workbench.py:197:async def get_ml_runtime_status():
+web/backend/app/api/v1/strategy/ml_workbench.py:386:async def get_ml_workbench_model_detail(
+web/backend/app/api/v1/system/health.py:226:async def get_database_health():
+web/backend/app/api/v1/system/health.py:261:async def get_data_classification_stats():
+web/backend/app/api/v1/system/resources.py:103:async def get_system_resource_metrics(
+web/backend/app/api/v1/system/routing.py:164:async def get_data_route(request: DataRoutingRequest = Body(..., example=DATA_ROUTING_REQUEST_EXAMPLE)):
+web/backend/app/api/v1/system/settings.py:397:def get_system_settings_repository() -> SystemSettingsRepository:
+web/backend/app/api/v1/system/settings.py:412:async def get_general_settings(
+web/backend/app/api/v1/system/settings.py:453:async def get_security_settings(
+web/backend/app/api/v1/trading/positions.py:408:async def get_position_attribution(
+web/backend/app/api/v1/trading/positions.py:432:async def get_position(position_id: str = Path(..., description="需要查询详情的持仓ID。")):
+web/backend/app/api/v1/trading/session.py:234:async def get_trading_session(session_id: str = Path(..., description="需要查询详情的交易会话ID。")):
+web/backend/app/api/watchlist.py:386:async def get_my_watchlist(
+web/backend/app/api/watchlist.py:424:async def get_my_watchlist_symbols(
+web/backend/app/api/watchlist.py:610:async def get_watchlist_count(current_user: User = Depends(get_current_user)) -> Dict:
+web/backend/app/api/watchlist.py:679:async def get_user_groups(current_user: User = Depends(get_current_user)) -> List[Dict]:
+web/backend/app/api/watchlist.py:789:async def get_watchlist_by_group(
+web/backend/app/api/watchlist.py:847:async def get_watchlist_with_groups(
+web/backend/app/api/websocket.py:177:async def get_websocket_stats():
+web/backend/app/api/wencai.py:274:async def get_all_queries(db: Session = Depends(get_db)) -> WencaiQueryListResponse:
+web/backend/app/api/wencai.py:305:async def get_query_by_name(
+web/backend/app/api/wencai.py:392:async def get_query_results(
+web/backend/app/api/wencai.py:482:async def get_query_history(
+web/backend/app/core/_socketio_manager_singleton.py:13:def get_socketio_manager() -> "MySocketIOManager":
+web/backend/app/core/adapter_loader.py:142:def get_akshare_adapter():
+web/backend/app/core/adapter_loader.py:147:def get_tdx_adapter():
+web/backend/app/core/adapter_loader.py:152:def get_financial_adapter():
+web/backend/app/core/adapter_loader.py:157:def get_adapter_health_status(adapter_name: Optional[str] = None) -> Dict:
+web/backend/app/core/api_monitoring.py:289:def get_monitor() -> APIMonitor:
+web/backend/app/core/cache/core.py:20:def get_tdengine_manager():
+web/backend/app/core/cache/decorators.py:158:def get_invalidator() -> CacheInvalidator:
+web/backend/app/core/cache/factory.py:13:def get_cache_manager(
+web/backend/app/core/cache/multi_level.py:402:def get_cache() -> MultiLevelCache:
+web/backend/app/core/cache/stats_health.py:527:async def get_cache_manager_async(
+web/backend/app/core/cache_eviction.py:345:def get_eviction_strategy(
+web/backend/app/core/cache_eviction.py:365:def get_eviction_scheduler() -> EvictionScheduler:
+web/backend/app/core/cache_integration.py:469:def get_cache_integration(
+web/backend/app/core/cache_manager.py:435:def get_cache_manager() -> CacheManager:
+web/backend/app/core/cache_manager.py:452:async def get_cache_manager_async(
+web/backend/app/core/cache_prewarming.py:292:def get_cache_monitor() -> CacheMonitor:
+web/backend/app/core/cache_prewarming.py:307:def get_prewarming_strategy() -> CachePrewarmingStrategy:
+web/backend/app/core/cache_utils.py:209:def get_cache_stats() -> Dict[str, Any]:
+web/backend/app/core/casbin_manager.py:522:def get_casbin_manager() -> CasbinManager:
+web/backend/app/core/casbin_middleware.py:28:def get_current_role(role: str = "user") -> str:
+web/backend/app/core/casbin_middleware.py:138:def get_manager() -> CasbinManager:
+web/backend/app/core/celery_app.py:58:def get_progress_callback(task_id: str):
+web/backend/app/core/celery_app.py:73:def get_backtest_task_id(backtest_id: int | str) -> str | None:
+web/backend/app/core/circuit_breaker_manager.py:162:def get_circuit_breaker_manager() -> CircuitBreakerManager:
+web/backend/app/core/circuit_breaker_manager.py:170:def get_circuit_breaker(service_name: str) -> CircuitBreaker:
+web/backend/app/core/config.py:293:def get_postgresql_connection_string() -> str:
+web/backend/app/core/config.py:298:def get_monitor_db_connection_string() -> str:
+web/backend/app/core/config.py:306:def get_mysql_connection_string() -> str:
+web/backend/app/core/connection_lifecycle.py:235:def get_connection_lifecycle_manager(
+web/backend/app/core/data_formats.py:38:def get_current_iso_timestamp() -> str:
+web/backend/app/core/data_formats.py:43:def get_current_ms_timestamp() -> int:
+web/backend/app/core/data_formats.py:48:def get_current_seconds_timestamp() -> int:
+web/backend/app/core/database.py:96:def get_postgresql_engine():
+web/backend/app/core/database.py:130:def get_postgresql_session() -> Session:
+web/backend/app/core/database.py:139:def get_mysql_engine():
+web/backend/app/core/database.py:145:def get_mysql_session() -> Session:
+web/backend/app/core/database.py:353:def get_db_service() -> DatabaseService:
+web/backend/app/core/database.py:365:def get_db() -> Session:
+web/backend/app/core/database_connection_pool.py:392:def get_pool_optimizer(
+web/backend/app/core/database_factory.py:225:def get_postgresql_engine():
+web/backend/app/core/database_factory.py:235:def get_postgresql_session() -> Session:
+web/backend/app/core/database_metrics.py:345:def get_metrics_collector(database: str = "mystocks") -> DatabaseMetricsCollector:
+web/backend/app/core/database_metrics.py:353:def get_performance_logger(database: str = "mystocks") -> QueryPerformanceLogger:
+web/backend/app/core/database_performance.py:296:def get_database_performance_manager(
+web/backend/app/core/database_performance_monitor.py:391:def get_performance_monitor(
+web/backend/app/core/database_query_batch.py:434:def get_query_batcher(
+web/backend/app/core/encryption.py:599:def get_encryption_manager() -> EncryptionManager:
+web/backend/app/core/encryption.py:607:def get_secret_manager() -> SecretManager:
+web/backend/app/core/error_codes.py:449:def get_http_status(error_code: ErrorCode) -> int:
+web/backend/app/core/error_codes.py:462:def get_error_message(error_code: ErrorCode) -> str:
+web/backend/app/core/error_codes.py:475:def get_error_category(error_code: ErrorCode) -> ErrorCategory:
+web/backend/app/core/event_bus.py:381:def get_event_bus() -> EventBus:
+web/backend/app/core/exception_handlers.py:10:async def get_data():
+web/backend/app/core/exception_handlers.py:26:async def get_data():
+web/backend/app/core/incremental_snapshot.py:347:def get_test_data(snapshot_type: str) -> Optional[Any]:
+web/backend/app/core/logger.py:24:def get_logger(name: str = "MyStocks") -> StructuredLogger:
+web/backend/app/core/logging/structured.py:191:def get_trace_id() -> str:
+web/backend/app/core/logging/structured.py:196:def get_request_id() -> str:
+web/backend/app/core/logging/structured.py:226:def get_logger(name: str = "MyStocks") -> StructuredLogger:
+web/backend/app/core/logging/tracing.py:148:def get_current_trace_id() -> Optional[str]:
+web/backend/app/core/logging/tracing.py:158:def get_current_span_id() -> Optional[str]:
+web/backend/app/core/logging/tracing.py:172:def get_tracer() -> trace.Tracer:
+web/backend/app/core/logging/tracing.py:180:def get_tracing_client() -> TracingClient:
+web/backend/app/core/middleware/performance.py:81:def get_endpoint_name(path: str) -> str:
+web/backend/app/core/password_policy.py:247:def get_password_validator() -> PasswordValidator:
+web/backend/app/core/password_policy.py:265:def get_password_policy() -> Dict[str, any]:
+web/backend/app/core/rate_limit.py:234:def get_rate_limiter() -> InMemoryRateLimiter:
+web/backend/app/core/reconnection_manager.py:353:def get_reconnection_manager() -> ReconnectionManager:
+web/backend/app/core/redis_client.py:130:def get_redis_client() -> redis.Redis:
+web/backend/app/core/response_schemas.py:10:def get_data():
+web/backend/app/core/response_schemas.py:23:def get_data():
+web/backend/app/core/room_manager.py:334:def get_room_manager() -> RoomManager:
+web/backend/app/core/secure_config.py:340:def get_secure_config() -> SecureConfig:
+web/backend/app/core/security.py:72:def get_password_hash(password: str) -> str:
+web/backend/app/core/security.py:272:def get_user_from_database(username: str) -> Optional[UserInDB]:
+web/backend/app/core/security.py:305:def get_user_from_database_by_id(user_id: int) -> Optional[UserInDB]:
+web/backend/app/core/security.py:357:async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
+web/backend/app/core/security.py:406:async def get_current_active_user(
+web/backend/app/core/service_factory.py:11:def get_service():
+web/backend/app/core/socketio_connection_pool.py:441:def get_connection_pool(
+web/backend/app/core/socketio_memory_optimizer.py:328:def get_memory_optimizer(
+web/backend/app/core/socketio_message_batch.py:339:def get_message_batcher(
+web/backend/app/core/socketio_performance.py:287:def get_performance_manager(
+web/backend/app/core/sse_manager.py:374:def get_sse_manager() -> SSEConnectionManager:
+web/backend/app/core/sse_manager.py:382:def get_sse_broadcaster() -> SSEBroadcaster:
+web/backend/app/core/sse_performance_optimizer.py:650:def get_performance_optimizer() -> SSEPerformanceOptimizer:
+web/backend/app/core/strategy_validator.py:343:def get_strategy_validation_summary(
+web/backend/app/core/sync_db_manager.py:532:def get_sync_db_manager() -> SyncDatabaseManager:
+web/backend/app/core/sync_processor.py:587:def get_sync_processor() -> SyncProcessor:
+web/backend/app/core/tdengine_manager.py:530:def get_tdengine_manager() -> Optional[TDengineManager]:
+web/backend/app/core/user_experience_monitor.py:223:def get_user_experience_metrics():
+web/backend/app/core/websocket_stability_manager.py:597:def get_stability_manager() -> WebSocketStabilityManager:
+web/backend/app/main.py:805:async def get_csrf_token(request: Request):
+web/backend/app/mock/mock_data/_watchlist_data.py:9:def get_watchlist_mock_data(manager, **kwargs) -> Dict[str, Any]:
+web/backend/app/mock/mock_data/factory.py:26:def get_mock_data_manager() -> 'UnifiedMockDataManager':
+web/backend/app/mock/mock_data/factory.py:73:def get_dashboard_data() -> Dict[str, Any]:
+web/backend/app/mock/mock_data/factory.py:79:def get_stocks_data(page: int = 1, page_size: int = 20, exchange: str = "all") -> Dict[str, Any]:
+web/backend/app/mock/mock_data/factory.py:85:def get_technical_data(symbol: str = None, symbols: List[str] = None) -> Dict[str, Any]:
+web/backend/app/mock/mock_data/factory.py:91:def get_wencai_data(query_name: str = "all") -> Dict[str, Any]:
+web/backend/app/mock/mock_data/factory.py:97:def get_strategy_data(action: str = "list", **kwargs) -> Dict[str, Any]:
+web/backend/app/mock/mock_data/factory.py:103:def get_monitoring_data(alert_type: str = "all") -> Dict[str, Any]:
+web/backend/app/mock/mock_data/factory.py:109:def get_backtest_data(**kwargs) -> Dict[str, Any]:
+web/backend/app/models/base_example.py:31:async def get_stock_info(symbol: str):
+web/backend/app/openapi_config.py:23:def get_openapi_config() -> Dict[str, Any]:
+web/backend/app/openapi_config.py:49:def get_openapi_schema_extra() -> Dict[str, Any]:
+web/backend/app/routes/sse_monitoring.py:23:async def get_performance_stats():
+web/backend/app/routes/sse_monitoring.py:40:async def get_connection_metrics(
+web/backend/app/routes/sse_monitoring.py:62:async def get_channel_health(channel: str):
+web/backend/app/routes/sse_monitoring.py:86:async def get_system_health():
+web/backend/app/routes/sse_monitoring.py:103:async def get_active_channels():
+web/backend/app/routes/sse_monitoring.py:166:async def get_sse_status():
+web/backend/app/routes/sse_monitoring.py:216:async def get_optimizer_stats():
+web/backend/app/schemas/pagination.py:218:def get_pagination_params(
+web/backend/app/schemas/pagination.py:235:def get_sort_params(
+web/backend/app/services/__init__.py:227:def get_integrated_services() -> IntegratedServices:
+web/backend/app/services/__init__.py:254:def get_risk_calculator() -> RiskCalculator:
+web/backend/app/services/__init__.py:260:def get_market_data_service() -> MarketDataService:
+web/backend/app/services/__init__.py:266:def get_trading_data_service() -> TradingDataService:
+web/backend/app/services/__init__.py:272:def get_analysis_data_service() -> AnalysisDataService:
+web/backend/app/services/__init__.py:278:def get_data_api_service() -> DataApiService:
+web/backend/app/services/__init__.py:284:def get_database_service() -> DatabaseService:
+web/backend/app/services/__init__.py:290:def get_websocket_service() -> WebSocketService:
+web/backend/app/services/__init__.py:296:def get_cache_service() -> CacheService:
+web/backend/app/services/__init__.py:302:def get_risk_monitoring() -> RiskMonitoring:
+web/backend/app/services/__init__.py:308:def get_risk_alerts() -> AlertManager:
+web/backend/app/services/__init__.py:314:def get_risk_settings() -> RiskSettingsManager:
+web/backend/app/services/__init__.py:320:def get_risk_dashboard() -> RiskDashboard:
+web/backend/app/services/_data_quality_monitor_singleton.py:12:def get_data_quality_monitor() -> DataQualityMonitor:
+web/backend/app/services/advanced_analysis_service.py:476:async def get_advanced_analysis_service() -> AdvancedAnalysisService:
+web/backend/app/services/aggregation_streaming_bridge.py:195:def get_aggregation_streaming_bridge() -> AggregationStreamingBridge:
+web/backend/app/services/announcement_service.py:524:def get_announcement_service() -> AnnouncementService:
+web/backend/app/services/backtest_engine.py:275:def get_backtest_engine() -> BacktestEngine:
+web/backend/app/services/data_aggregation_service.py:388:def get_aggregation_engine() -> AggregationEngine:
+web/backend/app/services/data_service.py:466:def get_data_service() -> DataService:
+web/backend/app/services/data_service_enhanced.py:580:def get_enhanced_data_service() -> EnhancedDataService:
+web/backend/app/services/data_source_factory/data_source_factory.py:295:async def get_data_source_factory() -> DataSourceFactory:
+web/backend/app/services/data_source_factory/data_source_factory.py:304:async def get_data_source(source_name: str) -> Optional[IDataSource]:
+web/backend/app/services/data_source_factory/data_source_factory.py:310:async def get_market_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+web/backend/app/services/data_source_factory/data_source_factory.py:316:async def get_dashboard_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+web/backend/app/services/data_source_factory/data_source_factory.py:322:async def get_technical_analysis_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
+web/backend/app/services/data_source_factory/data_source_factory.py:328:def get_data_source_mode() -> DataSourceMode:
+web/backend/app/services/email_notification_service.py:324:def get_email_service() -> EmailNotificationService:
+web/backend/app/services/email_service.py:322:def get_email_service() -> EmailService:
+web/backend/app/services/external/kronos_client.py:205:def get_kronos_client() -> KronosServiceClient:
+web/backend/app/services/filter_service.py:502:def get_filter_evaluator() -> FilterEvaluator:
+web/backend/app/services/filter_service.py:510:def get_alert_dispatcher() -> AlertDispatcher:
+web/backend/app/services/filter_service.py:518:def get_subscription_manager() -> SubscriptionManager:
+web/backend/app/services/indicator_calculator.py:377:def get_indicator_calculator() -> IndicatorCalculator:
+web/backend/app/services/indicator_filter.py:385:def get_indicator_filter() -> IndicatorFilter:
+web/backend/app/services/indicator_registry.py:631:def get_indicator_registry() -> IndicatorRegistry:
+web/backend/app/services/indicators/indicator_registry.py:458:def get_indicator_registry() -> IndicatorRegistry:
+web/backend/app/services/market_data_service/get_market_data_service.py:25:def get_market_data_service() -> MarketDataService:
+web/backend/app/services/market_data_service_v2.py:662:def get_market_data_service_v2() -> MarketDataServiceV2:
+web/backend/app/services/multi_source_manager.py:438:def get_multi_source_manager() -> MultiSourceManager:
+web/backend/app/services/ohlcv_storage.py:454:def get_ohlcv_storage() -> OHLCVStorage:
+web/backend/app/services/realtime_streaming_service.py:424:def get_streaming_service() -> RealtimeStreamingService:
+web/backend/app/services/room_broadcast_service.py:471:def get_broadcaster() -> RoomBroadcaster:
+web/backend/app/services/room_management.py:345:def get_room_manager() -> RoomManager:
+web/backend/app/services/room_permission_service.py:462:def get_permission_manager(use_casbin: bool = False) -> RoomPermissionManager:
+web/backend/app/services/room_permission_service.py:477:def get_access_control() -> RoomAccessControl:
+web/backend/app/services/room_socketio_adapter.py:503:def get_room_socketio_adapter() -> RoomSocketIOAdapter:
+web/backend/app/services/signals/strategies/registry.py:382:def get_strategy_registry() -> StrategyRegistry:
+web/backend/app/services/statement_reconciliation/import_batch_store.py:52:def get_import_batch(import_batch_id: str) -> dict[str, object]:
+web/backend/app/services/stock_search_service/_stock_search_cn.py:63:def get_a_stock_realtime(self, symbol: str) -> Optional[Dict]:
+web/backend/app/services/stock_search_service/_stock_search_cn.py:104:def get_a_stock_news(self, symbol: str = None, days: int = 7) -> List[Dict]:
+web/backend/app/services/stock_search_service/_stock_search_cn.py:202:def get_a_stock_kline(
+web/backend/app/services/stock_search_service/_stock_search_finnhub.py:35:def get_stock_quote(self, symbol: str) -> Optional[Dict]:
+web/backend/app/services/stock_search_service/_stock_search_finnhub.py:57:def get_company_profile(self, symbol: str) -> Optional[Dict]:
+web/backend/app/services/stock_search_service/_stock_search_finnhub.py:83:def get_company_news(self, symbol: str, from_date: str = None, to_date: str = None) -> List[Dict]:
+web/backend/app/services/stock_search_service/_stock_search_finnhub.py:112:def get_market_news(self, category: str = "general") -> List[Dict]:
+web/backend/app/services/stock_search_service/_stock_search_finnhub.py:135:def get_recommendation_trends(self, symbol: str) -> List[Dict]:
+web/backend/app/services/stock_search_service/_stock_search_hk.py:42:def get_hk_stock_realtime(self, symbol: str) -> Optional[Dict]:
+web/backend/app/services/stock_search_service/_stock_search_hk.py:75:def get_hk_stock_news(self, symbol: str = None) -> List[Dict]:
+web/backend/app/services/stock_search_service/stock_search_service.py:169:def get_stock_search_service() -> StockSearchService:
+web/backend/app/services/strategy_service.py:455:def get_strategy_service() -> StrategyService:
+web/backend/app/services/subscription_storage.py:500:def get_subscription_storage() -> SubscriptionStorage:
+web/backend/app/services/tdx_service.py:271:def get_tdx_service() -> TdxService:
+web/backend/app/services/tradingview_widget_service.py:319:def get_tradingview_service() -> TradingViewWidgetService:
+web/backend/app/services/unified_data_service.py:576:async def get_unified_data_service() -> UnifiedDataService:
+web/backend/app/services/unified_data_service.py:585:async def get_stocks_basic(**params) -> Dict[str, Any]:
+web/backend/app/services/unified_data_service.py:591:async def get_stocks_industries() -> Dict[str, Any]:
+web/backend/app/services/unified_data_service.py:597:async def get_stocks_concepts() -> Dict[str, Any]:
+web/backend/app/services/unified_data_service.py:603:async def get_market_overview() -> Dict[str, Any]:
+web/backend/app/services/watchlist_service.py:610:def get_watchlist_service() -> WatchlistService:
+web/backend/app/services/wencai_service.py:419:def get_wencai_service(db: Session = None) -> WencaiService:
+web/backend/app/strategies/stock_strategies.py:693:def get_strategy(strategy_name: str) -> Optional[BaseStrategy]:
+web/backend/app/strategies/stock_strategies.py:698:def get_all_strategies() -> Dict[str, BaseStrategy]:
+web/backend/app/strategies/strategy_base.py:107:def get_strategy_registry() -> StrategyRegistry:
+web/backend/app/tasks/wencai_tasks.py:284:def get_wencai_stats() -> Dict[str, Any]:
+web/backend/app/utils/risk_utils.py:23:def get_monitoring_db():

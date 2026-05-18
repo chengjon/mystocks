@@ -1,3 +1,12 @@
+"""
+Compatibility-retained FastAPI app factory.
+
+Q2 closure note (2026-04):
+- Canonical runtime composition truth is `app.main:app`
+- This module remains available for test/bootstrap compatibility
+- It MUST NOT be treated as a peer production runtime entrypoint
+"""
+
 import os
 import secrets
 import time
@@ -11,6 +20,11 @@ from fastapi.openapi.docs import get_swagger_ui_html
 from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
+
+from .adapters.eastmoney_enhanced import (
+    close_eastmoney_enhanced_adapter,
+    install_eastmoney_enhanced_adapter,
+)
 
 # 导入缓存淘汰调度器
 from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler
@@ -49,6 +63,12 @@ from .middleware.response_format import ResponseFormatMiddleware
 from .openapi_config import get_openapi_config, install_openapi_schema_extra
 
 logger = structlog.get_logger()
+
+CANONICAL_RUNTIME_TRUTH = "app.main:app"
+COMPOSITION_ROLE = "compatibility_test_factory"
+PUBLIC_REALTIME_TRANSPORT_ROLE = "compatibility_retained_non_canonical"
+BOOTSTRAP_SCOPE = "tests_and_legacy_bootstrap_only"
+RUNTIME_DIVERGENCE_POLICY = "must_not_gain_new_runtime_only_behavior"
 
 SOCKETIO_STATUS_RESPONSE_EXAMPLE = {
     "status": "active",
@@ -161,10 +181,24 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("⚠️ Failed to start cache eviction scheduler", error=str(e))
 
+    # 初始化 #78 pilot 适配器生命周期
+    try:
+        install_eastmoney_enhanced_adapter(app)
+        logger.info("✅ EastMoney enhanced adapter installed in app.state")
+    except Exception as e:
+        logger.warning("⚠️ Failed to initialize EastMoney enhanced adapter", error=str(e))
+
     yield  # 应用运行期间
 
     # 关闭时执行
     logger.info("🛑 Shutting down MyStocks Web API")
+
+    # 关闭 #78 pilot 适配器生命周期
+    try:
+        close_eastmoney_enhanced_adapter(app)
+        logger.info("✅ EastMoney enhanced adapter closed")
+    except Exception as e:
+        logger.warning("⚠️ Error closing EastMoney enhanced adapter", error=str(e))
 
     # 停止缓存淘汰调度器
     try:
@@ -179,8 +213,11 @@ async def lifespan(app: FastAPI):
 
 def create_app() -> FastAPI:
     """
-    FastAPI 应用工厂函数
-    封装了 FastAPI 应用的创建、配置和路由挂载逻辑
+    Compatibility-retained FastAPI app factory.
+
+    This factory is currently used by tests and compatibility-oriented callers.
+    It is not the canonical production runtime composition path; deployment and
+    runtime truth remain anchored on `app.main:app`.
     """
     # 获取OpenAPI配置
     openapi_config = get_openapi_config()
@@ -199,6 +236,11 @@ def create_app() -> FastAPI:
         swagger_ui_oauth2_redirect_url=openapi_config.get("swagger_ui_oauth2_redirect_url"),
         lifespan=lifespan,  # 添加生命周期管理
     )
+    app.state.runtime_truth_source = CANONICAL_RUNTIME_TRUTH
+    app.state.composition_role = COMPOSITION_ROLE
+    app.state.public_realtime_transport_role = PUBLIC_REALTIME_TRANSPORT_ROLE
+    app.state.bootstrap_scope = BOOTSTRAP_SCOPE
+    app.state.runtime_divergence_policy = RUNTIME_DIVERGENCE_POLICY
     install_openapi_schema_extra(app)
 
     # 挂载 Swagger UI 静态文件（来自 swagger-ui-py 包）
@@ -384,7 +426,10 @@ def create_app() -> FastAPI:
             request_id=request_id,
         )
 
-    # Socket.IO健康检查端点
+    # Compatibility-retained Socket.IO status endpoint.
+    # Presence here does not upgrade this factory into a canonical realtime
+    # runtime path; current public transport truth remains the main app's
+    # FastAPI WebSocket route family.
     @app.get(
         "/api/socketio-status",
         summary="Socket.IO 服务状态",
@@ -490,8 +535,9 @@ def create_app() -> FastAPI:
         """重定向 /docs 到 /api/docs"""
         return RedirectResponse(url="/api/docs")
 
-    # TODO: Register routers here
-    # 导入 API 路由 - 优化结构: 先导入，后统一挂载
+    # Compatibility-retained router registration path for tests/bootstrap.
+    # This call site is intentionally kept explicit so future cleanup can
+    # narrow or delegate it without implying parity with app.main:app.
     from .api.register_routers import register_all_routers
 
     register_all_routers(app)
