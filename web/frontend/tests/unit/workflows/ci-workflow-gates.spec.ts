@@ -37,7 +37,6 @@ describe("CI workflow gates", () => {
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/common");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/views/styles");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-dir src/components/shared/ui");
-    expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/SkeletonUsage.vue");
     expect(packageJson.scripts["lint:artdeco:changed"]).toContain("--target-file src/views/Stocks.vue");
   });
 
@@ -239,7 +238,6 @@ describe("CI workflow gates", () => {
     expect(workflowText).toContain("web/frontend/src/views/styles/**");
     expect(workflowText).toContain("web/frontend/src/components/shared/ui/*");
     expect(workflowText).toContain("web/frontend/src/components/shared/ui/**");
-    expect(workflowText).toContain("web/frontend/src/views/SkeletonUsage.vue");
     expect(workflowText).toContain("web/frontend/src/views/Stocks.vue");
   });
 

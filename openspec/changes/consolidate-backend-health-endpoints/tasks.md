@@ -64,7 +64,7 @@
 - [x] 4.4 Run status endpoint smoke for approved canonical status paths.
 - [x] 4.5 Run OpenAPI diff and classify changes.
 - [x] 4.6 Run affected backend tests and frontend/API smoke.
-- [ ] 4.7 Confirm PM2 backend status and configured health checks with `pm2 list` and `./scripts/run_pm2_integration_workflow.sh` or a named equivalent approved by the implementation issue.
+- [x] 4.7 Confirm PM2 backend status and configured health checks with `pm2 list` and `./scripts/run_pm2_integration_workflow.sh` or a named equivalent approved by the implementation issue.
 
 > 2026-05-18 verification evidence:
 > `docs/reports/quality/backend-health-status-openapi-stabilization-2026-05-18.md`
@@ -74,19 +74,23 @@
 > (`3 passed`), passing `ruff` on the touched backend files, and confirming
 > OpenAPI smoke with `duplicate_operation_id_warnings=0`.
 
-> 2026-05-18 residual blocker evidence:
-> `docs/reports/quality/backend-health-status-residual-blockers-2026-05-18.md`
+> 2026-05-18 PM2 gate evidence:
+> `docs/reports/quality/backend-health-status-pm2-gate-2026-05-18.md`
 >
-> `4.7` remains open because `./scripts/run_pm2_integration_workflow.sh gate`
-> is stateful and includes `pm2 stop all` / `pm2 delete all`. Only read-only
-> PM2 status and live probes have been recorded so far; the full workflow needs
-> explicit approval or an approved named equivalent.
+> `4.7` is now closed after explicit approval for the stateful workflow, a
+> successful `./scripts/run_pm2_integration_workflow.sh gate` run, and a
+> service restore back to `mystocks-backend` / `mystocks-frontend` online.
 
 ## 5. Closure
 
 - [x] 5.1 Update health/status endpoint documentation with canonical and compatibility paths.
 - [x] 5.2 Record retained domain smoke/status endpoints and owners.
 - [x] 5.3 Record retired endpoints and rollback notes.
+
+> 2026-05-18 closure note:
+> The PM2 gate evidence now closes the final open verification task. The
+> backend health / status consolidation change is execution-complete, but the
+> OpenSpec archive step remains a separate governance action.
 
 > 2026-05-18 smoke evidence:
 > `docs/reports/quality/backend-health-status-smoke-2026-05-18.md`

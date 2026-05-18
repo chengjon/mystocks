@@ -1,19 +1,33 @@
 import { flushPromises, mount } from '@vue/test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-const { getDetailedSystemHealthMock, getSystemHealthMock, getSystemGeneralSettingsMock, updateSystemGeneralSettingsMock } = vi.hoisted(() => ({
+const {
+  getDataSourceConfigMock,
+  getDetailedSystemHealthMock,
+  getSystemHealthMock,
+  getSystemGeneralSettingsMock,
+  getSystemSecuritySettingsMock,
+  updateSystemGeneralSettingsMock,
+  updateSystemSecuritySettingsMock,
+} = vi.hoisted(() => ({
+  getDataSourceConfigMock: vi.fn(),
   getDetailedSystemHealthMock: vi.fn(),
   getSystemHealthMock: vi.fn(),
   getSystemGeneralSettingsMock: vi.fn(),
+  getSystemSecuritySettingsMock: vi.fn(),
   updateSystemGeneralSettingsMock: vi.fn(),
+  updateSystemSecuritySettingsMock: vi.fn(),
 }))
 
 vi.mock('@/api', () => ({
   monitoringApi: {
+    getDataSourceConfig: getDataSourceConfigMock,
     getDetailedSystemHealth: getDetailedSystemHealthMock,
     getSystemHealth: getSystemHealthMock,
     getSystemGeneralSettings: getSystemGeneralSettingsMock,
+    getSystemSecuritySettings: getSystemSecuritySettingsMock,
     updateSystemGeneralSettings: updateSystemGeneralSettingsMock,
+    updateSystemSecuritySettings: updateSystemSecuritySettingsMock,
   },
 }))
 
@@ -22,6 +36,7 @@ vi.mock('@/composables/artdeco/useArtDecoApi', () => ({
     lastRequestId: { value: 'req-system-settings' },
     lastProcessTime: { value: '12.50' },
     loading: { value: false },
+    error: { value: null },
     exec: async (apiCall: () => Promise<unknown>) => {
       const response = await apiCall()
       if (response && typeof response === 'object' && 'success' in response && (response as { success: boolean }).success === false) {
@@ -38,9 +53,11 @@ vi.mock('@/config/runtime-endpoints', () => ({
 
 vi.mock('@/views/artdeco-pages/system-tabs/systemSettingsMonitorData', () => ({
   normalizeSystemSettingsMonitorRows: (data: unknown) => {
-    const d = data as { data?: { metrics?: unknown[] } }
-    if (d?.data?.metrics) {
-      return (d.data.metrics as { endpoint: string; qps: number; p95: number; error_rate: number }[]).map((m) => ({
+    const d = data as { data?: { metrics?: unknown[] }; metrics?: unknown[] }
+    const metrics = d?.data?.metrics ?? d?.metrics
+
+    if (metrics) {
+      return (metrics as { endpoint: string; qps: number; p95: number; error_rate: number }[]).map((m) => ({
         endpoint: m.endpoint,
         qps: m.qps,
         p95: m.p95,
@@ -76,6 +93,20 @@ describe('ArtDecoSystemSettings', () => {
         service: 'mystocks-backend',
       },
     })
+    getDataSourceConfigMock.mockReset().mockResolvedValue({
+      success: true,
+      request_id: 'req-source-config',
+      data: {
+        endpoints: [
+          {
+            endpoint_name: 'akshare.stock_lhb_detail_em',
+            description: 'AKShare龙虎榜详情数据',
+            source_name: 'akshare',
+            status: 'active',
+          },
+        ],
+      },
+    })
     getSystemGeneralSettingsMock.mockReset().mockResolvedValue({
       backend_url: 'http://127.0.0.1:8020',
       max_backtest_jobs: 4,
@@ -87,6 +118,18 @@ describe('ArtDecoSystemSettings', () => {
       max_backtest_jobs: 4,
       default_slippage_percent: 0.05,
       fee_rate_bps: 2.5,
+    })
+    getSystemSecuritySettingsMock.mockReset().mockResolvedValue({
+      session_timeout_minutes: 120,
+      mfa_required: false,
+      ip_allowlist_enabled: false,
+      password_policy_level: 'standard',
+    })
+    updateSystemSecuritySettingsMock.mockReset().mockResolvedValue({
+      session_timeout_minutes: 120,
+      mfa_required: false,
+      ip_allowlist_enabled: false,
+      password_policy_level: 'standard',
     })
   })
 
@@ -126,6 +169,8 @@ describe('ArtDecoSystemSettings', () => {
     expect(sourcesTab).toBeTruthy()
     expect(settingsTab).toBeTruthy()
     expect(monitorTab).toBeTruthy()
+    expect(wrapper.text()).toContain('AKShare龙虎榜详情数据')
+    expect(wrapper.text()).toContain('akshare.stock_lhb_detail_em')
 
     // Verify monitor tab shows API data
     await monitorTab!.trigger('click')

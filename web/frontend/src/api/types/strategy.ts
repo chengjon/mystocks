@@ -1,7 +1,5 @@
 // Auto-generated types for strategy domain
 
-export type NonBlankString = string;
-
 export interface BacktestRequest {
   strategy_id?: string;
   symbol?: string;

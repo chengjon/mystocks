@@ -51,7 +51,8 @@ describe('MarketKLineTab', () => {
     expect(getKlineMock).toHaveBeenCalledWith({
       stock_code: '000001',
       period: '1d',
-      limit: 100
+      limit: 100,
+      refresh_seq: 1
     })
   })
 })

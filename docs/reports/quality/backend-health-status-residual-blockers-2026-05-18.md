@@ -12,12 +12,18 @@ OpenSpec change: `consolidate-backend-health-endpoints`
 
 当前 G 线已完成健康 / 状态端点的 taxonomy、canonical smoke、OpenAPI diff、status owner registry 和 PM2 只读状态确认。
 
-仍不关闭以下任务:
+2026-05-18 update:
+
+- `4.6` 已由 `docs/reports/quality/backend-health-status-openapi-stabilization-2026-05-18.md` 覆盖并关闭。
+- `4.7` 已由 `docs/reports/quality/backend-health-status-pm2-gate-2026-05-18.md` 覆盖并关闭。
+- 本报告保留为执行完整 PM2 gate 前的残留风险快照，不再代表当前最终任务状态。
+
+执行本报告时仍不关闭以下任务:
 
 - `4.6 Run affected backend tests and frontend/API smoke.`
 - `4.7 Confirm PM2 backend status and configured health checks with pm2 list and ./scripts/run_pm2_integration_workflow.sh or a named equivalent approved by the implementation issue.`
 
-不关闭原因不是健康端点 smoke 失败，而是剩余门禁已经跨出本线可安全自主完成边界。
+当时不关闭原因不是健康端点 smoke 失败，而是剩余门禁已经跨出本线可安全自主完成边界。
 
 ## 4.6 残留项
 
@@ -70,6 +76,15 @@ OpenSpec change: `consolidate-backend-health-endpoints`
 - backend health/readiness/status probes: HTTP 200
 - frontend root probe: HTTP 200
 
+当前补充快照:
+
+- `pm2 list` 采样结果显示 `mystocks-backend` 与 `mystocks-frontend` 均为 `online`，且未出现重启抖动。
+- `http://localhost:8020/health` 返回 HTTP 200，`success=true`，`status=healthy`。
+- `http://localhost:8020/health/ready` 返回 HTTP 200，`success=true`，`status=ready`。
+- `http://localhost:8020/api/health/ready` 返回 HTTP 200，`success=true`，`status=ready`。
+- `http://localhost:8020/api/health/services` 返回 HTTP 200，`success=true`，`status=degraded`。
+- `http://localhost:3020/` 返回 HTTP 200，前端壳可访问。
+
 未执行:
 
 - `./scripts/run_pm2_integration_workflow.sh gate`
@@ -78,12 +93,17 @@ OpenSpec change: `consolidate-backend-health-endpoints`
 
 - 该脚本的 gate 流程包含 `pm2 stop all` 与 `pm2 delete all`。
 - 这不是只读验证，会重启 / 重建本地 PM2 进程状态。
-- 当前用户尚未批准执行会变更服务运行态的完整 PM2 gate。
+- 执行本报告时，用户尚未批准执行会变更服务运行态的完整 PM2 gate。
+
+后续状态:
+
+- 用户已批准 stateful PM2 gate。
+- `./scripts/run_pm2_integration_workflow.sh gate` 已通过。
+- 关闭证据见 `docs/reports/quality/backend-health-status-pm2-gate-2026-05-18.md`。
 
 建议后续处理:
 
-- 若要关闭 `4.7`，需明确批准执行完整 PM2 integration workflow。
-- 或在 OpenSpec / 执行 issue 中批准一个不停止 PM2 的 named equivalent。
+- `4.7` 已关闭；无需再批准 named equivalent。
 
 ## 当前可关闭与不可关闭边界
 
@@ -100,7 +120,7 @@ OpenSpec change: `consolidate-backend-health-endpoints`
   - `/api/notification/status`
 - OpenAPI path diff: no added or removed paths in this batch
 
-不可伪造完成:
+执行完整 gate 前不可伪造完成:
 
 - 跨域 OpenAPI 文档测试全绿
 - 会重启 PM2 的完整 integration workflow
@@ -109,6 +129,6 @@ OpenSpec change: `consolidate-backend-health-endpoints`
 ## 下一步建议
 
 1. 保持 `consolidate-backend-health-endpoints` 当前实现边界不扩张。
-2. 将 `4.6` 拆为独立 OpenAPI documentation stabilization 批次。
-3. 将 `4.7` 等待用户批准后再运行完整 PM2 gate，或由 issue 明确批准只读 named equivalent。
+2. 提交 / 归档前引用 `4.6` 与 `4.7` 的新关闭证据。
+3. 后续 endpoint retirement 仍需独立审批，不能借本报告扩大删除范围。
 4. 在上述两项完成前，不 archive 该 OpenSpec change。

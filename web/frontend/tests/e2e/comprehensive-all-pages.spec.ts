@@ -180,13 +180,27 @@ const PAGES: PageContract[] = [
     expectedApiPath: '/api/v1/trade/positions',
   },
 
-  // 5. AI (高级分析与AI - 1 page)
+  // 5. AI (高级分析与AI - 3 pages)
   {
     name: 'AI-Sentiment',
     path: '/ai/sentiment',
     requiresAuth: true,
     expectedSelectors: ['.ai-sentiment-page', '.hero-meta', 'button', 'h1'],
-    expectedApiPath: '/api/v1/analysis/sentiment/market',
+    expectedApiPath: '/api/v1/sentiment/market',
+  },
+  {
+    name: 'AI-ML',
+    path: '/ai/ml',
+    requiresAuth: true,
+    expectedSelectors: ['.ai-ml-workbench', '.workbench-header', 'button'],
+    expectedApiPath: '/api/v1/strategies/ml/runtime-status',
+  },
+  {
+    name: 'AI-Batch',
+    path: '/ai/batch',
+    requiresAuth: true,
+    expectedSelectors: ['.ai-batch-workbench', '.workbench-header', 'button'],
+    expectedApiPath: '/api/v1/strategies/batch-analysis/runtime-status',
   },
 
   // 6. Trade (交易管理 - 6 pages)
@@ -224,6 +238,13 @@ const PAGES: PageContract[] = [
     requiresAuth: true,
     expectedSelectors: ['.section-title', '.el-button', 'button', 'h2'],
     noApiAssertionReason: 'route shell has no stable route meta api contract',
+  },
+  {
+    name: 'Trade-Execution',
+    path: '/trade/execution',
+    requiresAuth: true,
+    expectedSelectors: ['.trade-execution', '.execution-hero', '.stats-strip', 'button'],
+    expectedApiPath: '/api/v1/trade/execution-tracking',
   },
   {
     name: 'Trade-Reconciliation',
