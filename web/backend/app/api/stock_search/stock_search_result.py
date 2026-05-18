@@ -1,5 +1,5 @@
 """
-# pylint: disable=no-member  # TODO: 修复异常类的 to_dict 方法
+# pylint: disable=no-member  # TODO owner=search-platform issue=techdebt-expired-markers ttl=2026-06-30: 修复异常类的 to_dict 方法
 股票搜索 API
 提供统一的股票搜索、报价和新闻接口
 支持 A 股和 H 股（港股）
@@ -12,9 +12,9 @@
 import logging
 import re
 import time
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional  # noqa: F401 — re used inline in search_stocks
 
-from fastapi import APIRouter, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, Depends, Path, Query
 from pydantic import ValidationError
 
 from app.api.auth import User, get_current_user
@@ -31,15 +31,20 @@ from app.api.stock_search.openapi_metadata import (
 )
 from app.api.stock_search.stock_search_schemas import NewsItem, StockQuote, StockSearchResult
 from app.api.stock_search.stock_search_support import (
+    _get_mock_stock_data,
+    _get_mock_stock_search_results,
+    _is_stock_search_mock_enabled,
+    _is_stock_search_mock_fallback_enabled,
     check_admin_privileges,
     check_search_rate_limit,
     log_search_operation,
+    sanitize_query_params,
     search_analytics,
+    validate_stock_symbol,
 )
-from app.core.config import settings
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
-from app.core.responses import APIResponse
+from app.core.responses import UnifiedResponse, create_unified_success_response
 from app.schema import StockListQueryModel  # 导入P0改进的验证模型
 from app.services.stock_search_service import get_stock_search_service
 from src.core.exceptions import (
@@ -53,82 +58,6 @@ from src.core.exceptions import (
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-
-
-def _is_stock_search_mock_enabled() -> bool:
-    """股票搜索 mock 模式由统一配置显式控制。"""
-    return settings.stock_search_mock_enabled or settings.use_mock_apis
-
-
-def _is_stock_search_mock_fallback_enabled() -> bool:
-    """真实搜索失败后的 mock 回退必须显式开启。"""
-    return settings.stock_search_mock_fallback_enabled
-
-
-def _get_mock_stock_search_results(keyword: str, *, market: str, limit: int) -> List[Dict[str, Any]]:
-    from app.mock.unified_mock_data import get_mock_data_manager
-
-    mock_manager = get_mock_data_manager()
-    mock_data = mock_manager.get_data("stock_search", keyword=keyword, market=market, limit=limit)
-    return mock_data.get("data", [])
-
-
-def _get_mock_stock_data(data_type: str, **kwargs: Any) -> Any:
-    from app.mock.unified_mock_data import get_mock_data_manager
-
-    mock_manager = get_mock_data_manager()
-    mock_data = mock_manager.get_data(data_type, **kwargs)
-    return mock_data.get("data")
-
-
-def validate_stock_symbol(symbol: str, market: str) -> str:
-    """
-    验证股票代码格式
-
-    Args:
-        symbol: 股票代码
-        market: 市场类型
-
-    Returns:
-        str: 验证后的股票代码
-    """
-    if not symbol:
-        raise ValueError("股票代码不能为空")
-
-    symbol = symbol.strip().upper()
-
-    if market.lower() == "cn":
-        # A股代码验证 (6位数字)
-        if not re.match(r"^\d{6}$", symbol):
-            raise ValueError("A股代码格式错误，应为6位数字")
-
-    elif market.lower() == "hk":
-        # 港股代码验证 (5位数字或4位数字+字母)
-        if not re.match(r"^\d{4,5}$|^\d{4}[A-Z]$", symbol):
-            raise ValueError("港股代码格式错误，应为4-5位数字或4位数字+字母")
-
-    return symbol
-
-
-def sanitize_query_params(params: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    清理查询参数
-
-    Args:
-        params: 原始查询参数
-
-    Returns:
-        Dict: 清理后的参数
-    """
-    sanitized = {}
-    for key, value in params.items():
-        if isinstance(value, str):
-            # 移除潜在的SQL注入和XSS攻击字符
-            value = re.sub(r'[<>"\'/\\;]', "", value)
-            sanitized[key] = value.strip()
-        else:
-            sanitized[key] = value
-    return sanitized
 
 
 @router.get(
@@ -265,7 +194,7 @@ async def search_stocks(
 
         return results
 
-    except HTTPException:
+    except BusinessException:
         raise
     except (DataFetchError, DataValidationError, ServiceError) as e:
         logger.error("Stock search failed for user {current_user.username}: {e.message}", extra=e.to_dict())
@@ -342,7 +271,7 @@ async def get_stock_quote(
 
         return quote
 
-    except HTTPException:
+    except BusinessException:
         raise
     except ValueError as e:
         raise BusinessException(detail=str(e), status_code=400, error_code="VALIDATION_ERROR")
@@ -434,7 +363,7 @@ async def get_stock_news(
             raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
 
         return news
-    except HTTPException:
+    except BusinessException:
         raise
     except (DataFetchError, ServiceError, NetworkError) as e:
         logger.error("Get stock news failed for symbol {symbol}: {e.message}", extra=e.to_dict())
@@ -476,7 +405,7 @@ async def get_market_news(
             raise ValidationException(detail="不支持的市场类型，仅支持: cn, hk", field="market")
 
         return news
-    except HTTPException:
+    except BusinessException:
         raise
     except (DataFetchError, ServiceError, NetworkError) as e:
         logger.error("Get market news failed for category {category}: {e.message}", extra=e.to_dict())
@@ -515,7 +444,7 @@ async def get_recommendation_trends(
             status_code=501,
             error_code="FEATURE_NOT_SUPPORTED",
         )
-    except HTTPException:
+    except BusinessException:
         raise
     except (DataFetchError, ServiceError) as e:
         logger.error("Get recommendation trends failed for symbol {symbol}: {e.message}", extra=e.to_dict())
@@ -533,12 +462,12 @@ async def get_recommendation_trends(
 
 @router.post(
     "/cache/clear",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="清除股票搜索缓存",
     description="管理员清空股票搜索相关缓存，用于数据源切换、异常恢复和排查缓存脏数据。",
     responses=CACHE_CLEAR_RESPONSES,
 )
-async def clear_search_cache(current_user: User = Depends(get_current_user)) -> APIResponse:
+async def clear_search_cache(current_user: User = Depends(get_current_user)) -> UnifiedResponse:
     """
     清除搜索缓存
 
@@ -561,9 +490,9 @@ async def clear_search_cache(current_user: User = Depends(get_current_user)) -> 
 
         logger.info("Search cache cleared by admin: {current_user.username}")
 
-        return APIResponse(success=True, data={"cleared_by": current_user.username}, message="搜索缓存已清除")
+        return create_unified_success_response(data={"cleared_by": current_user.username}, message="搜索缓存已清除")
 
-    except HTTPException:
+    except BusinessException:
         raise
     except (DatabaseNotFoundError, ServiceError) as e:
         logger.error("Failed to clear search cache for admin {current_user.username}: {e.message}", extra=e.to_dict())
@@ -644,7 +573,7 @@ async def get_search_analytics(
             "returned_count": len(result_analytics),
         }
 
-    except HTTPException:
+    except BusinessException:
         raise
     except (DatabaseNotFoundError, DataValidationError) as e:
         logger.error(
@@ -662,7 +591,7 @@ async def get_search_analytics(
 
 @router.post(
     "/analytics/cleanup",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="清理股票搜索分析数据",
     description="管理员按保留天数清理旧的股票搜索分析记录，控制运营审计数据体积。",
     responses=SEARCH_ANALYTICS_CLEANUP_RESPONSES,
@@ -700,13 +629,12 @@ async def cleanup_search_analytics(
 
         logger.info("Search analytics cleaned by admin {current_user.username}: %(cleaned_count)s records removed")
 
-        return APIResponse(
-            success=True,
+        return create_unified_success_response(
             data={"cleaned_count": cleaned_count, "remaining_count": len(search_analytics), "cutoff_days": days},
             message=f"已清理 {cleaned_count} 条旧搜索分析数据",
         )
 
-    except HTTPException:
+    except BusinessException:
         raise
     except (DatabaseNotFoundError, DatabaseOperationError) as e:
         logger.error(

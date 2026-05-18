@@ -8,250 +8,35 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, Query
 from pydantic import BaseModel
 
-from app.openapi_config import COMMON_RESPONSES
+from app.core.exceptions import BusinessException
 from app.core.responses import (
-    APIResponse,
     ErrorCodes,
     UnifiedResponse,
     create_error_response,
-    create_success_response,
+    create_unified_success_response,
 )
 from app.schemas.trade_schemas import (
     AccountInfo,
     Position,
-    PositionsResponse,
     TradeHistoryItem,
-    TradeHistoryResponse,
 )
 from app.api.v1.trading.runtime_state import PositionState, SessionState, runtime_store
-
-TRADE_ROUTE_RESPONSES = {
-    500: COMMON_RESPONSES[500],
-}
+from app.api.trade._responses import (
+    EXECUTE_TRADE_REQUEST_EXAMPLE,
+    TRADE_EXECUTE_RESPONSES,
+    TRADE_HEALTH_RESPONSE_EXAMPLE,
+    TRADE_HISTORY_RESPONSES,
+    TRADE_PORTFOLIO_RESPONSES,
+    TRADE_POSITIONS_RESPONSES,
+    TRADE_ROUTE_RESPONSES,
+    TRADE_SIGNALS_RESPONSES,
+    TRADE_STATISTICS_RESPONSES,
+)
 
 router = APIRouter(responses=TRADE_ROUTE_RESPONSES)
-
-TRADE_HEALTH_RESPONSE_EXAMPLE = {
-    "success": True,
-    "data": {"status": "ok", "service": "trade"},
-    "message": "服务正常",
-    "request_id": "req-trade-health-001",
-}
-
-TRADE_PORTFOLIO_RESPONSE_EXAMPLE = {
-    "success": True,
-    "code": 200,
-    "message": "Trade portfolio loaded from trading runtime",
-    "request_id": "req-trade-portfolio-001",
-    "timestamp": "2026-04-08T04:20:00Z",
-    "data": {
-        "status": "available",
-        "endpoint": "trade",
-        "resource": "portfolio",
-        "account": {
-            "account_id": "session_demo_001",
-            "account_type": "stock",
-            "total_assets": "100000.00",
-            "cash": "82000.00",
-            "market_value": "18000.00",
-            "frozen_cash": None,
-            "total_profit_loss": "0.00",
-            "profit_loss_percent": 0.0,
-            "risk_level": "low",
-            "last_update": "2026-04-08T04:20:00Z",
-        },
-    },
-}
-
-TRADE_POSITIONS_RESPONSE_EXAMPLE = {
-    "success": True,
-    "code": 200,
-    "message": "Trade positions loaded from trading runtime",
-    "request_id": "req-trade-positions-001",
-    "timestamp": "2026-04-08T04:20:00Z",
-    "data": {
-        "status": "available",
-        "endpoint": "trade",
-        "resource": "positions",
-        "positions": [
-            {
-                "symbol": "600519",
-                "symbol_name": "600519",
-                "quantity": 100,
-                "available_quantity": 100,
-                "cost_price": "1800.0",
-                "current_price": "1800.0",
-                "market_value": "180000.0",
-                "profit_loss": "0.0",
-                "profit_loss_percent": 0.0,
-                "last_update": "2026-04-08T04:20:00Z",
-            }
-        ],
-        "total_count": 1,
-        "total_market_value": "180000.0",
-        "total_profit_loss": "0.0",
-        "total_profit_loss_percent": 0.0,
-    },
-}
-
-TRADE_SIGNALS_RESPONSE_EXAMPLE = {
-    "success": True,
-    "code": 200,
-    "message": "Trade signals derived from trading runtime",
-    "request_id": "req-trade-signals-001",
-    "timestamp": "2026-04-08T04:20:00Z",
-    "data": {
-        "status": "available",
-        "endpoint": "trade",
-        "resource": "signals",
-        "items": [
-            {
-                "symbol": "600519.SH",
-                "name": "600519.SH",
-                "type": "BUY",
-                "price": 1750.0,
-                "time": "2026-04-08T04:20:00Z",
-                "strategy": "svm_momentum_v1",
-            }
-        ],
-        "total": 1,
-        "source": "trading_runtime",
-    },
-}
-
-TRADE_HISTORY_RESPONSE_EXAMPLE = {
-    "success": True,
-    "code": 200,
-    "message": "Trade history loaded from backtest trades",
-    "request_id": "req-trade-history-001",
-    "timestamp": "2026-04-08T04:20:00Z",
-    "data": {
-        "status": "available",
-        "endpoint": "trade",
-        "resource": "trades",
-        "trades": [
-            {
-                "trade_id": "101",
-                "order_id": "backtest-7-101",
-                "symbol": "600519.SH",
-                "direction": "buy",
-                "price": "1750.00",
-                "quantity": 100,
-                "amount": "175000.00",
-                "commission": "52.50",
-                "trade_time": "2026-04-08T00:00:00",
-                "trade_type": "backtest",
-            }
-        ],
-        "total_count": 1,
-        "total_amount": "175000.00",
-        "total_commission": "52.50",
-        "page": 1,
-        "page_size": 20,
-        "source": "backtest_trades",
-    },
-}
-
-TRADE_STATISTICS_RESPONSE_EXAMPLE = {
-    "success": True,
-    "code": 200,
-    "message": "Trade statistics summarized from trading runtime",
-    "request_id": "req-trade-statistics-001",
-    "timestamp": "2026-04-08T04:20:00Z",
-    "data": {
-        "status": "available",
-        "endpoint": "trade",
-        "resource": "statistics",
-        "statistics": {
-            "total_trades": 1,
-            "buy_count": 1,
-            "sell_count": 0,
-            "position_count": 1,
-            "total_buy_amount": 18000.0,
-            "total_sell_amount": 0.0,
-            "total_commission": 0.0,
-            "realized_profit": 0.0,
-        },
-        "source": "trading_runtime",
-    },
-}
-
-EXECUTE_TRADE_REQUEST_EXAMPLE = {
-    "direction": "buy",
-    "symbol": "600519.SH",
-    "quantity": 100,
-    "price": 1750.0,
-}
-
-EXECUTE_TRADE_RESPONSE_EXAMPLE = {
-    "success": True,
-    "code": 200,
-    "message": "Trade order executed in trading runtime",
-    "request_id": "req-trade-execute-001",
-    "timestamp": "2026-04-08T04:20:00Z",
-    "data": {
-        "status": "available",
-        "endpoint": "trade",
-        "resource": "execute",
-        "accepted": True,
-        "execution_mode": "runtime",
-        "session_id": "session_demo_001",
-        "order": EXECUTE_TRADE_REQUEST_EXAMPLE,
-        "result": {
-            "action": "opened",
-            "position_id": "pos_demo_001",
-            "remaining_quantity": 100,
-            "realized_profit": 0.0,
-        },
-    },
-}
-
-
-def _success_response_spec(description: str, example: dict[str, Any]) -> dict[int, dict[str, Any]]:
-    return {
-        200: {
-            "description": description,
-            "content": {
-                "application/json": {
-                    "example": example,
-                }
-            },
-        }
-    }
-
-
-TRADE_PORTFOLIO_RESPONSES = {
-    **TRADE_ROUTE_RESPONSES,
-    **_success_response_spec("账户资产概览查询成功。", TRADE_PORTFOLIO_RESPONSE_EXAMPLE),
-}
-
-TRADE_POSITIONS_RESPONSES = {
-    **TRADE_ROUTE_RESPONSES,
-    **_success_response_spec("当前持仓列表查询成功。", TRADE_POSITIONS_RESPONSE_EXAMPLE),
-}
-
-TRADE_SIGNALS_RESPONSES = {
-    **TRADE_ROUTE_RESPONSES,
-    **_success_response_spec("交易信号列表查询成功。", TRADE_SIGNALS_RESPONSE_EXAMPLE),
-}
-
-TRADE_HISTORY_RESPONSES = {
-    **TRADE_ROUTE_RESPONSES,
-    **_success_response_spec("交易历史分页查询成功。", TRADE_HISTORY_RESPONSE_EXAMPLE),
-}
-
-TRADE_STATISTICS_RESPONSES = {
-    **TRADE_ROUTE_RESPONSES,
-    **_success_response_spec("交易统计指标查询成功。", TRADE_STATISTICS_RESPONSE_EXAMPLE),
-}
-
-TRADE_EXECUTE_RESPONSES = {
-    **TRADE_ROUTE_RESPONSES,
-    **_success_response_spec("交易委托执行成功。", EXECUTE_TRADE_RESPONSE_EXAMPLE),
-}
 
 
 def _placeholder_trade_response(message: str, resource: str, data: dict[str, Any]) -> UnifiedResponse[Dict[str, Any]]:
@@ -413,7 +198,7 @@ def _build_runtime_signals_payload(limit: int) -> dict[str, Any]:
 def _require_active_runtime_session() -> SessionState:
     session = _resolve_active_runtime_session()
     if session is None:
-        raise HTTPException(
+        raise BusinessException(
             status_code=400,
             detail=create_error_response(
                 error_code=ErrorCodes.INVALID_VALUE,
@@ -436,7 +221,7 @@ def _execute_runtime_buy(*, session: SessionState, symbol: str, quantity: int, p
 def _execute_runtime_sell(*, session: SessionState, symbol: str, quantity: int, price: float) -> dict[str, Any]:
     positions = runtime_store.list_positions(session_id=session.session_id, symbol=symbol)
     if not positions:
-        raise HTTPException(
+        raise BusinessException(
             status_code=404,
             detail=create_error_response(
                 error_code=ErrorCodes.NOT_FOUND,
@@ -450,7 +235,7 @@ def _execute_runtime_sell(*, session: SessionState, symbol: str, quantity: int, 
     total_available = sum(item.quantity for item in positions)
 
     if total_available < quantity:
-        raise HTTPException(
+        raise BusinessException(
             status_code=400,
             detail=create_error_response(
                 error_code=ErrorCodes.OUT_OF_RANGE,
@@ -571,7 +356,7 @@ class HealthCheckResponse(BaseModel):
 
 @router.get(
     "/health",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="交易服务健康检查",
     description="检查交易服务接口是否可用，并返回交易模块基础运行状态，用于前端探针和运维巡检。",
     responses={
@@ -584,7 +369,7 @@ class HealthCheckResponse(BaseModel):
 )
 async def health_check():
     """检查交易服务接口健康状态并返回基础服务信息。"""
-    return create_success_response(data={"status": "ok", "service": "trade"}, message="服务正常")
+    return create_unified_success_response(data={"status": "ok", "service": "trade"}, message="服务正常")
 
 
 # ==================== Portfolio (Account Info) ====================
@@ -658,7 +443,7 @@ async def get_trades(
             try:
                 return datetime.strptime(value, "%Y-%m-%d").date()
             except ValueError as exc:
-                raise HTTPException(
+                raise BusinessException(
                     status_code=400,
                     detail=create_error_response(
                         error_code=ErrorCodes.VALIDATION_ERROR,
@@ -670,7 +455,7 @@ async def get_trades(
         end_date_obj = parse_query_date(end_date, "end_date")
 
         if start_date_obj and end_date_obj and start_date_obj > end_date_obj:
-            raise HTTPException(
+            raise BusinessException(
                 status_code=400,
                 detail=create_error_response(
                     error_code=ErrorCodes.VALIDATION_ERROR,
@@ -691,10 +476,10 @@ async def get_trades(
             resource="trades",
             data=trade_history,
         )
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
-        raise HTTPException(
+        raise BusinessException(
             status_code=500,
             detail=create_error_response(
                 error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"获取交易记录失败: {str(e)}"
@@ -752,7 +537,7 @@ async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EX
         # 验证必填字段
         required_fields = ["direction", "symbol", "quantity"]
         if not all(field in order for field in required_fields):
-            raise HTTPException(
+            raise BusinessException(
                 status_code=400,
                 detail=create_error_response(
                     error_code=ErrorCodes.VALIDATION_ERROR, message="缺少必填字段: direction, symbol, quantity"
@@ -761,7 +546,7 @@ async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EX
 
         direction = order.get("direction")
         if direction not in ["buy", "sell"]:
-            raise HTTPException(
+            raise BusinessException(
                 status_code=400,
                 detail=create_error_response(
                     error_code=ErrorCodes.INVALID_VALUE, message="交易方向必须是 buy 或 sell"
@@ -770,7 +555,7 @@ async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EX
 
         quantity = order.get("quantity")
         if quantity <= 0:
-            raise HTTPException(
+            raise BusinessException(
                 status_code=400,
                 detail=create_error_response(
                     error_code=ErrorCodes.OUT_OF_RANGE, message="委托数量必须大于0"
@@ -779,7 +564,7 @@ async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EX
 
         # A股交易数量必须是100的整数倍
         if quantity % 100 != 0:
-            raise HTTPException(
+            raise BusinessException(
                 status_code=400,
                 detail=create_error_response(
                     error_code=ErrorCodes.INVALID_VALUE, message="委托数量必须是100的整数倍"
@@ -788,7 +573,7 @@ async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EX
 
         price = order.get("price")
         if price is None or float(price) <= 0:
-            raise HTTPException(
+            raise BusinessException(
                 status_code=400,
                 detail=create_error_response(
                     error_code=ErrorCodes.OUT_OF_RANGE, message="委托价格必须大于0"
@@ -819,10 +604,10 @@ async def execute_trade(order: dict = Body(..., example=EXECUTE_TRADE_REQUEST_EX
                 "result": execution_result,
             },
         )
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
-        raise HTTPException(
+        raise BusinessException(
             status_code=500,
             detail=create_error_response(
                 error_code=ErrorCodes.INTERNAL_SERVER_ERROR, message=f"交易执行失败: {str(e)}"
