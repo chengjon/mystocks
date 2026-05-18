@@ -56,6 +56,7 @@ class PositionResponse(BaseModel):
     """持仓响应"""
 
     position_id: str = Field(..., description="持仓ID。")
+    session_id: str = Field(..., description="该持仓所属交易会话ID。")
     symbol: str = Field(..., description="股票或交易标的代码。")
     name: str = Field(..., description="持仓名称或标的简称。")
     quantity: int = Field(..., description="当前持仓数量。")
@@ -131,6 +132,7 @@ POSITION_LIST_EXAMPLE = {
         "positions": [
             {
                 "position_id": "pos_demo_001",
+                "session_id": "session_demo_001",
                 "symbol": "600519",
                 "name": "600519",
                 "quantity": 100,
@@ -237,6 +239,7 @@ def _resolve_query_value(value: Any) -> Any:
 def _serialize_position(position: PositionState) -> dict[str, Any]:
     return PositionResponse(
         position_id=position.position_id,
+        session_id=position.session_id,
         symbol=position.symbol,
         name=position.name,
         quantity=position.quantity,

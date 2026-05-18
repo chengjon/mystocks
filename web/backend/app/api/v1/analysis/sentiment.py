@@ -4,7 +4,7 @@
 提供新闻情感分析功能
 """
 
-from collections import Counter, defaultdict
+from collections import Counter
 from datetime import datetime, timedelta, timezone
 from typing import Any, Dict, List, Optional
 
@@ -92,10 +92,12 @@ STOCK_SENTIMENT_SUCCESS_EXAMPLE = {
         "symbol": "600519",
         "days": 7,
         "mentions": 3,
+        "sentiment": "positive",
         "average_sentiment": 0.42,
         "trend": "positive",
         "latest_sentiment": "positive",
         "latest_confidence": 0.68,
+        "key_phrases": ["增长", "恢复"],
         "timeline": [
             {"date": "2026-04-11", "sentiment": "neutral", "score": 0.08, "confidence": 0.54},
             {"date": "2026-04-12", "sentiment": "positive", "score": 0.42, "confidence": 0.68},
@@ -339,10 +341,12 @@ async def get_stock_sentiment(
             "symbol": symbol,
             "days": _resolve_query_value(days),
             "mentions": mentions,
+            "sentiment": trend,
             "average_sentiment": average_sentiment,
             "trend": trend,
             "latest_sentiment": latest["sentiment"] if latest else "neutral",
             "latest_confidence": latest["confidence"] if latest else 0.0,
+            "key_phrases": latest["key_phrases"] if latest else [],
             "timeline": timeline,
         },
     )
