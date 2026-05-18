@@ -26,7 +26,7 @@ from prometheus_client import (
 
 from app.api.auth import User, get_current_user
 from app.core.exceptions import BusinessException, ForbiddenException
-from app.core.responses import APIResponse
+from app.core.responses import UnifiedResponse, create_unified_success_response
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -347,6 +347,7 @@ def update_database_metrics():
 )
 @router.get(
     "/health",
+    response_model=UnifiedResponse,
     summary="公共健康检查",
     responses={
         200: {
@@ -359,12 +360,9 @@ def update_database_metrics():
         },
     },
 )
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> UnifiedResponse:
     """
     公共健康检查端点
-
-    Returns:
-        Dict: 基础健康状态信息
 
     Security:
         - 无需认证
@@ -374,19 +372,22 @@ async def health_check() -> Dict[str, Any]:
         # 更新基础健康状态
         update_database_metrics()
 
-        return {"status": "healthy", "timestamp": time.time(), "version": "1.0.0"}
+        return create_unified_success_response(
+            data={"status": "healthy", "timestamp": time.time(), "version": "1.0.0"},
+            message="健康检查通过",
+        )
     except Exception:
         logger.error("Health check failed: %(e)s")
         raise BusinessException(detail="Service unavailable", status_code=503, error_code="SERVICE_UNAVAILABLE")
 
 
-@router.get("/status", summary="获取基础系统状态", responses=METRICS_STATUS_RESPONSES)
-async def basic_status() -> APIResponse:
+@router.get("/status", response_model=UnifiedResponse, summary="获取基础系统状态", responses=METRICS_STATUS_RESPONSES)
+async def basic_status() -> UnifiedResponse:
     """
     基础系统状态
 
     Returns:
-        APIResponse: 系统状态信息
+        UnifiedResponse: 系统状态信息
 
     Security:
         - 无需认证
@@ -395,8 +396,7 @@ async def basic_status() -> APIResponse:
     try:
         update_database_metrics()
 
-        return APIResponse(
-            success=True,
+        return create_unified_success_response(
             data={"api_status": "running", "database_status": "healthy", "cache_status": "available"},
             message="系统运行正常",
         )
@@ -408,13 +408,13 @@ async def basic_status() -> APIResponse:
 # ==================== 用户级别端点（需要认证）====================
 
 
-@router.get("/basic", summary="获取基础监控指标", responses=METRICS_BASIC_RESPONSES)
-async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
+@router.get("/basic", response_model=UnifiedResponse, summary="获取基础监控指标", responses=METRICS_BASIC_RESPONSES)
+async def basic_metrics(current_user: User = Depends(get_current_user)) -> UnifiedResponse:
     """
     基础监控指标
 
     Returns:
-        APIResponse: 基础监控数据
+        UnifiedResponse: 基础监控数据
 
     Security:
         - 需要用户认证
@@ -441,7 +441,7 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
 
         logger.info("Basic metrics accessed by user: {current_user.username}")
 
-        return APIResponse(success=True, data=basic_data, message="基础监控数据获取成功")
+        return create_unified_success_response(data=basic_data, message="基础监控数据获取成功")
 
     except (BusinessException, ForbiddenException):
         raise
@@ -452,13 +452,13 @@ async def basic_metrics(current_user: User = Depends(get_current_user)) -> APIRe
         )
 
 
-@router.get("/performance", summary="获取性能监控指标", responses=METRICS_PERFORMANCE_RESPONSES)
-async def performance_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
+@router.get("/performance", response_model=UnifiedResponse, summary="获取性能监控指标", responses=METRICS_PERFORMANCE_RESPONSES)
+async def performance_metrics(current_user: User = Depends(get_current_user)) -> UnifiedResponse:
     """
     性能监控指标
 
     Returns:
-        APIResponse: 性能监控数据
+        UnifiedResponse: 性能监控数据
 
     Security:
         - 需要用户认证
@@ -484,7 +484,7 @@ async def performance_metrics(current_user: User = Depends(get_current_user)) ->
 
         logger.info("Performance metrics accessed by user: {current_user.username}")
 
-        return APIResponse(success=True, data=performance_data, message="性能监控数据获取成功")
+        return create_unified_success_response(data=performance_data, message="性能监控数据获取成功")
 
     except (BusinessException, ForbiddenException):
         raise
@@ -539,13 +539,13 @@ async def prometheus_metrics(current_user: User = Depends(get_current_user)) -> 
         raise BusinessException(detail="获取指标数据失败", status_code=500, error_code="METRICS_DATA_RETRIEVAL_FAILED")
 
 
-@router.get("/detailed", summary="获取详细系统指标", responses=METRICS_DETAILED_RESPONSES)
-async def detailed_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
+@router.get("/detailed", response_model=UnifiedResponse, summary="获取详细系统指标", responses=METRICS_DETAILED_RESPONSES)
+async def detailed_metrics(current_user: User = Depends(get_current_user)) -> UnifiedResponse:
     """
     详细系统指标
 
     Returns:
-        APIResponse: 详细的系统监控数据
+        UnifiedResponse: 详细的系统监控数据
 
     Security:
         - 需要管理员权限
@@ -581,7 +581,7 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
 
         logger.info("Detailed metrics accessed by admin: {current_user.username}")
 
-        return APIResponse(success=True, data=detailed_data, message="详细监控数据获取成功")
+        return create_unified_success_response(data=detailed_data, message="详细监控数据获取成功")
 
     except (BusinessException, ForbiddenException):
         raise
@@ -592,13 +592,13 @@ async def detailed_metrics(current_user: User = Depends(get_current_user)) -> AP
         )
 
 
-@router.post("/reset", summary="重置监控指标", responses=METRICS_RESET_RESPONSES)
-async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIResponse:
+@router.post("/reset", response_model=UnifiedResponse, summary="重置监控指标", responses=METRICS_RESET_RESPONSES)
+async def reset_metrics(current_user: User = Depends(get_current_user)) -> UnifiedResponse:
     """
     重置监控指标
 
     Returns:
-        APIResponse: 重置结果
+        UnifiedResponse: 重置结果
 
     Security:
         - 仅管理员可访问
@@ -617,7 +617,7 @@ async def reset_metrics(current_user: User = Depends(get_current_user)) -> APIRe
 
         logger.info("Metrics reset by admin: {current_user.username}")
 
-        return APIResponse(success=True, data={"reset_count": reset_count}, message="监控指标已重置")
+        return create_unified_success_response(data={"reset_count": reset_count}, message="监控指标已重置")
 
     except (BusinessException, ForbiddenException):
         raise
