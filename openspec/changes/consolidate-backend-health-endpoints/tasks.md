@@ -11,7 +11,7 @@
 
 - [x] 1.1 Confirm orchestration artifact: `docs/reports/quality/backend-openspec-change-orchestration-2026-05-18.md`.
 - [x] 1.2 Confirm local route baseline: `docs/reports/quality/backend-route-table-openapi-baseline-2026-05-18.md`.
-- [x] 1.3 Generate prefix-expanded full-path route table with `cd web/backend && python ../../scripts/dev/backend_audit_fullpath_routes.py ../../docs/reports/quality/generated`. Existing artifact records 588 routes and 0 full-path duplicate groups.
+- [x] 1.3 Generate prefix-expanded full-path route table with `cd web/backend && python ../../scripts/dev/backend_audit_fullpath_routes.py ../../docs/reports/quality/generated`. Current post-P3-D artifact records 538 routes, 0 full-path duplicate groups, and 2 remaining orphan route files.
 - [x] 1.4 Confirm full-path artifact: `docs/reports/quality/generated/backend-fullpath-route-table.md`.
 - [x] 1.5 Generate current OpenAPI schema baseline with `python scripts/generate_openapi.py --output docs/reports/quality/generated/openapi-before.json`. Existing baseline is OpenAPI 3.1.0 with 501 paths.
 - [x] 1.6 Classify all health-like and status-like endpoints. Initial classification exists in P3-A5 / 52-route inventory; remaining work is formal OpenSpec reconciliation.
@@ -50,16 +50,26 @@
 
 ## 4. Verification
 
-- [ ] 4.1 Run `/health/ready` smoke.
-- [ ] 4.2 Run `/api/health/ready` smoke.
-- [ ] 4.3 Run `/api/health/services` smoke.
+- [x] 4.1 Run `/health/ready` smoke.
+- [x] 4.2 Run `/api/health/ready` smoke.
+- [x] 4.3 Run `/api/health/services` smoke.
 - [ ] 4.4 Run status endpoint smoke for approved canonical status paths.
-- [ ] 4.5 Run OpenAPI diff and classify changes.
+- [x] 4.5 Run OpenAPI diff and classify changes.
 - [ ] 4.6 Run affected backend tests and frontend/API smoke.
 - [ ] 4.7 Confirm PM2 backend status and configured health checks with `pm2 list` and `./scripts/run_pm2_integration_workflow.sh` or a named equivalent approved by the implementation issue.
 
 ## 5. Closure
 
-- [ ] 5.1 Update health/status endpoint documentation with canonical and compatibility paths.
+- [x] 5.1 Update health/status endpoint documentation with canonical and compatibility paths.
 - [ ] 5.2 Record retained domain smoke/status endpoints and owners.
 - [ ] 5.3 Record retired endpoints and rollback notes.
+
+> 2026-05-18 smoke evidence:
+> `docs/reports/quality/backend-health-status-smoke-2026-05-18.md`
+> records TestClient smoke for `/health`, `/health/ready`,
+> `/api/health/ready`, and `/api/health/services`; confirms
+> `/health/readiness` remains absent; and records an OpenAPI diff with
+> `baseline_path_count=501`, `current_path_count=501`, `added_paths=0`,
+> `removed_paths=0`. Task 4.6 remains open because the broader historical
+> `test_health_route_conflicts.py` suite currently has 5 unrelated OpenAPI
+> documentation failures.
