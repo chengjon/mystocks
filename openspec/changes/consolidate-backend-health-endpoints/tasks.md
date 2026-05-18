@@ -58,6 +58,22 @@
 - [ ] 4.6 Run affected backend tests and frontend/API smoke.
 - [ ] 4.7 Confirm PM2 backend status and configured health checks with `pm2 list` and `./scripts/run_pm2_integration_workflow.sh` or a named equivalent approved by the implementation issue.
 
+> 2026-05-18 residual blocker evidence:
+> `docs/reports/quality/backend-health-status-residual-blockers-2026-05-18.md`
+>
+> `4.6` remains open because `web/backend/tests/test_health_route_conflicts.py`
+> still has 5 unrelated cross-domain OpenAPI documentation failures
+> (`strategy_mgmt_compat` duplicate operationId, announcement stale path
+> expectations, data/kline success example field, sentiment success example
+> field, position success example field). These failures are not health endpoint
+> smoke regressions and should be handled by a separate OpenAPI documentation
+> stabilization batch if closure is required.
+>
+> `4.7` remains open because `./scripts/run_pm2_integration_workflow.sh gate`
+> is stateful and includes `pm2 stop all` / `pm2 delete all`. Only read-only
+> PM2 status and live probes have been recorded so far; the full workflow needs
+> explicit approval or an approved named equivalent.
+
 ## 5. Closure
 
 - [x] 5.1 Update health/status endpoint documentation with canonical and compatibility paths.
