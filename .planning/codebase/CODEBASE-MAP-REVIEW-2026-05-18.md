@@ -386,7 +386,7 @@ User Request → FastAPI Route (web/backend/app/api/)
 | Adapter lifecycle DI | GH #78 | Open, `needs-triage`; OpenSpec lifecycle proposal required before implementation | Issue body: 6 adapter singletons, `app.state` lifecycle + `Depends()` target | Decide proposal/approval path before implementation |
 | Service lifecycle DI | GH #79 | Open, `needs-triage`; depends on #78 pattern validation | Issue body: 12 service singletons, stateful lifecycle risk | Do after #78 and approved lifecycle proposal |
 
-**Artifact freshness guard**: 当前 review 的 dirty-worktree snapshot 曾验证 HEAD 为 `dc21371ba`，而 clean detached HEAD artifact refresh 现在对应 `9f74c8481`。后续引用 route table、HTTPException count、F821 count、GitNexus impact 或 OpenAPI path count 时，必须同时记录 `generated_at`、`git_head`、`current_head_checked_at_review` 与 `stale_if_head_mismatch`，并明确是 dirty snapshot 还是 clean detached HEAD refresh。
+**Artifact freshness guard**: 当前 review 的 dirty-worktree snapshot 曾验证 HEAD 为 `dc21371ba`，而 clean detached HEAD artifact refresh 现在对应 `9f74c8481`。后续引用 route table、HTTPException count、F821 count、GitNexus impact 或 OpenAPI path count 时，必须同时记录 `generated_at`、`git_head`、`current_head_checked_at_review` 与 `stale_if_head_mismatch`，并明确是 dirty snapshot 还是 clean detached HEAD refresh。不要把分支当前 HEAD 当成代码指标真相源；文档或 evidence-only 提交会推进 HEAD，但只有代码承载提交变化才要求重新采集这些 metric。
 
 ### 🟡 P1 — 高优先级
 
@@ -396,6 +396,10 @@ User Request → FastAPI Route (web/backend/app/api/)
 |----------|------|
 | `web/backend/app/services/__init__.py` | `IntegratedServices` 同时承担服务聚合、懒加载、fallback 与 service locator 职责 |
 | `web/backend/app/services/data_api_new.py` | 通过 `spec_from_file_location()` 按路径加载 `api/data/data_api_new.py` |
+| `web/backend/app/services/market_api.py` | 通过 `spec_from_file_location()` 按路径加载 `api/data/market_api.py` |
+| `web/backend/app/services/trading_api.py` | 通过 `spec_from_file_location()` 按路径加载 `api/data/trading_api.py` |
+| `web/backend/app/services/analysis_api.py` | 通过 `spec_from_file_location()` 按路径加载 `api/data/analysis_api.py` |
+| `web/backend/app/services/technical_pattern_detection_service.py` | 通过 `spec_from_file_location()` 按路径加载 `src/advanced_analysis/.../chart_pattern_mvp.py`，属于同一类按路径绕过 canonical import seam 的运行加载模式 |
 | `web/backend/app/api/data/data_api_new.py` | 定义 `DataApiService`，但被 service 层反向加载 |
 | `web/backend/app/services/risk_management_new.py` | 仍通过 `services/__init__.py` 挂入 `IntegratedServices` |
 | `web/backend/app/services/risk_management_2.py` | 存在扩展风险管理实现，但未进入 canonical 挂载路径 |
@@ -568,7 +572,7 @@ Live count artifact at clean HEAD `9f74c8481`:
 | 根级 shim | ❌ 存在 | ✅ `core.py`, `data_access.py`, `monitoring.py` 已删除 | 文件不存在 |
 | 前端多入口 | ❌ 8 个 main | ✅ 仅 `main-standard.ts` | 唯一入口 |
 | `part*.py` in src/ | ❌ | ✅ **0 个 in src/** (全仓库 24 个) | 遍历验证 |
-| `*_new.py` in src/ | ❌ | ✅ **0 个 in src/** (backend 仍有 5 个) | 遍历验证 |
+| `*_new.py` in src/ | ❌ | ✅ **0 个 in src/** (backend 仍有 4 个) | 遍历验证 |
 
 ### ⚠️ v1.2 遗留 + 新发现的问题
 
