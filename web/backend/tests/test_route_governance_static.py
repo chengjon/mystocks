@@ -64,11 +64,15 @@ def test_governed_route_prefixes_are_defined_in_version_mapping():
 
 
 def test_scoped_router_modules_do_not_bake_in_runtime_prefixes():
-    assert _read_router_prefix("web/backend/app/api/technical/routes.py") == ""
     assert _read_router_prefix("web/backend/app/api/monitoring_analysis.py") == ""
     assert _read_router_prefix("web/backend/app/api/monitoring_watchlists.py") == ""
     assert _read_router_prefix("web/backend/app/api/multi_source/routes.py") == ""
     assert _read_router_prefix("web/backend/app/api/market_v2.py") == ""
+
+
+def test_retired_technical_routes_file_stays_deleted() -> None:
+    retired_path = PROJECT_ROOT / "web/backend/app/api/technical/routes.py"
+    assert retired_path.exists() is False
 
 
 def test_register_all_routers_delegates_to_central_registry(monkeypatch):

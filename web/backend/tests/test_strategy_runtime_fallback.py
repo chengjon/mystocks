@@ -14,7 +14,8 @@ os.environ.setdefault("BACKEND_PORT", "8121")
 os.environ.setdefault("BACKEND_BACKUP_PORT", "8122")
 os.environ.setdefault("TESTING", "true")
 
-strategy_api = importlib.import_module("web.backend.app.api.strategy_management.get_monitoring_db")
+strategy_api = importlib.import_module("web.backend.app.api.strategy_management._strategy_crud_router")
+strategy_helpers = importlib.import_module("web.backend.app.api.strategy_management._helpers")
 
 
 class _EmptyFrame:
@@ -54,14 +55,16 @@ class _FalseSavingManager:
 
 @pytest.fixture(autouse=True)
 def reset_runtime_fallback(monkeypatch):
-    monkeypatch.setattr(strategy_api, "_runtime_strategy_store", [], raising=False)
+    monkeypatch.setattr(strategy_helpers, "_runtime_strategy_store", [], raising=False)
+    monkeypatch.setattr(strategy_helpers, "_runtime_backtest_store", [], raising=False)
     monkeypatch.setattr(strategy_api, "get_monitoring_db", lambda: _MonitoringNoop())
+    monkeypatch.setattr(strategy_helpers, "get_monitoring_db", lambda: _MonitoringNoop())
 
 
 def _build_client(monkeypatch, manager_cls):
     monkeypatch.setattr(strategy_api, "MyStocksUnifiedManager", manager_cls)
     app = FastAPI()
-    app.include_router(strategy_api.router)
+    app.include_router(strategy_helpers.router)
     return TestClient(app)
 
 

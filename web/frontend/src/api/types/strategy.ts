@@ -35,14 +35,14 @@ export type MLStrategyType = 'svm' | 'decision_tree' | 'naive_bayes' | 'lstm' | 
 export type MLWorkbenchModelFamily = 'svm' | 'lightgbm';
 
 export interface MLWorkbenchPredictionRequest {
-  model_id?: NonBlankString;
-  symbol?: NonBlankString;
+  model_id?: string;
+  symbol?: string;
   prediction_horizon?: number;
 }
 
 export interface MLWorkbenchTrainingRequest {
   model_family?: MLWorkbenchModelFamily;
-  symbol?: NonBlankString;
+  symbol?: string;
   start_date?: string;
   end_date?: string;
   feature_window?: number;

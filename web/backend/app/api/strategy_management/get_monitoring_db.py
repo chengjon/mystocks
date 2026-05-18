@@ -6,29 +6,54 @@ The original 1,583-line file was split during P3 into:
 - _model_backtest_router.py: model training + backtest routes
 """
 
-from ._helpers import get_monitoring_db, router
+from ._helpers import DataClassification, MyStocksUnifiedManager, get_monitoring_db, router
 
 from ._strategy_crud_router import (
-    list_strategies,
     create_strategy,
-    get_strategy,
-    update_strategy,
     delete_strategy,
-    start_strategy,
+    get_strategy,
+    list_strategies,
     pause_strategy,
     resume_strategy,
+    start_strategy,
     stop_strategy,
+    update_strategy,
 )
 
 from ._model_backtest_router import (
-    train_model,
-    get_training_status,
-    list_models,
-    run_backtest,
-    list_backtest_results,
     get_backtest_result,
     get_backtest_status,
+    get_training_status,
+    list_backtest_results,
+    list_models,
+    run_backtest,
+    train_model,
 )
 
 # Re-export task functions from the task tail module (imported by name in __init__.py)
 from ._strategy_management_task_tail import run_backtest_task, train_model_task
+
+__all__ = [
+    "DataClassification",
+    "MyStocksUnifiedManager",
+    "get_monitoring_db",
+    "router",
+    "list_strategies",
+    "create_strategy",
+    "get_strategy",
+    "update_strategy",
+    "delete_strategy",
+    "start_strategy",
+    "pause_strategy",
+    "resume_strategy",
+    "stop_strategy",
+    "train_model",
+    "get_training_status",
+    "list_models",
+    "run_backtest",
+    "list_backtest_results",
+    "get_backtest_result",
+    "get_backtest_status",
+    "run_backtest_task",
+    "train_model_task",
+]

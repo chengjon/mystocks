@@ -228,6 +228,7 @@ class TypeConverter:
             r"\bfloat\b": "number",
             r"\bbool\b": "boolean",
             r"\bAny\b": "unknown",
+            r"\bNonBlankString\b": "string",
             r"\bdict\b": "Record<string, unknown>",
             r"\blist(?!\[)": "Array<unknown>",  # Only replace 'list' when NOT followed by [
         }
@@ -346,7 +347,7 @@ class PydanticModelExtractor:
             source_file = str(file_path)
         new_info["source_file"] = source_file
         new_info["source_domain"] = domain
-        
+
         if name in self.models:
             existing_info = self.models[name]
             existing_domain = existing_info.get("source_domain", "common")
@@ -706,6 +707,27 @@ class TypeScriptGenerator:
             "  request_id: string;",
             "  process_time?: string;",
             "  errors?: unknown;",
+            "}",
+            "",
+            "export interface ServiceResult<T> {",
+            "  ok: boolean;",
+            "  data: T;",
+            "  error?: string;",
+            "}",
+            "",
+            "export function serviceOk<T>(data: T): ServiceResult<T> {",
+            "  return {",
+            "    ok: true,",
+            "    data,",
+            "  };",
+            "}",
+            "",
+            "export function serviceErr<T>(data: T, error: string): ServiceResult<T> {",
+            "  return {",
+            "    ok: false,",
+            "    data,",
+            "    error,",
+            "  };",
             "}",
             "",
             "// 重定向导出所有业务类型",

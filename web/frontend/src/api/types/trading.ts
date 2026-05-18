@@ -18,6 +18,7 @@ export interface PositionListResponse {
 
 export interface PositionResponse {
   position_id?: string;
+  session_id?: string;
   symbol?: string;
   name?: string;
   quantity?: number;
