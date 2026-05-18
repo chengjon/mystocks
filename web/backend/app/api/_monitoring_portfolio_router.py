@@ -3,7 +3,8 @@
 import logging
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, HTTPException, Path, Query
+from fastapi import APIRouter, Path, Query
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.exception_handlers import handle_exceptions
@@ -162,11 +163,11 @@ async def get_portfolio_summary(
         watchlist = next((watchlist for watchlist in watchlists if watchlist["id"] == watchlist_id), None)
 
         if not watchlist:
-            raise HTTPException(status_code=404, detail="清单不存在")
+            raise BusinessException(status_code=404, detail="清单不存在")
 
         stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
         if not stocks:
-            raise HTTPException(status_code=400, detail="清单为空")
+            raise BusinessException(status_code=400, detail="清单为空")
 
         inputs = [
             {"stock_code": stock["stock_code"], "close": stock.get("entry_price", 100), "market_regime": "choppy"}
@@ -197,11 +198,11 @@ async def get_portfolio_summary(
 
         return UnifiedResponse(data=PortfolioSummaryResponse(**summary), message="获取组合摘要成功")
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as error:
         logger.error("获取组合摘要失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(error)}")
+        raise BusinessException(status_code=500, detail=f"获取失败: {str(error)}")
 
 
 @router.get(
@@ -231,7 +232,7 @@ async def get_portfolio_alerts(
         watchlist = next((watchlist for watchlist in watchlists if watchlist["id"] == watchlist_id), None)
 
         if not watchlist:
-            raise HTTPException(status_code=404, detail="清单不存在")
+            raise BusinessException(status_code=404, detail="清单不存在")
 
         stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
         inputs = [
@@ -269,11 +270,11 @@ async def get_portfolio_alerts(
             message=f"获取预警列表成功 (共{len(alerts)}条)",
         )
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as error:
         logger.error("获取预警列表失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(error)}")
+        raise BusinessException(status_code=500, detail=f"获取失败: {str(error)}")
 
 
 @router.get(
@@ -302,7 +303,7 @@ async def get_rebalance_suggestions(
         watchlist = next((watchlist for watchlist in watchlists if watchlist["id"] == watchlist_id), None)
 
         if not watchlist:
-            raise HTTPException(status_code=404, detail="清单不存在")
+            raise BusinessException(status_code=404, detail="清单不存在")
 
         stocks = await postgres_async.get_watchlist_stocks(watchlist_id)
         inputs = [
@@ -337,8 +338,8 @@ async def get_rebalance_suggestions(
             message=f"获取再平衡建议成功 (共{len(suggestions)}条)",
         )
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as error:
         logger.error("获取再平衡建议失败: %(e)s")
-        raise HTTPException(status_code=500, detail=f"获取失败: {str(error)}")
+        raise BusinessException(status_code=500, detail=f"获取失败: {str(error)}")

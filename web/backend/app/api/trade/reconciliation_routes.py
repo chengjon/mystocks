@@ -4,7 +4,8 @@ from datetime import datetime
 from decimal import Decimal
 from typing import Any, Literal, TypeVar
 
-from fastapi import APIRouter, File, Form, HTTPException, Query, Response, UploadFile
+from fastapi import APIRouter, File, Form, Query, Response, UploadFile
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.responses import ErrorCodes, UnifiedResponse, create_error_response, create_unified_success_response
@@ -196,7 +197,7 @@ def _parse_query_date(value: str | None, field_name: str):
     try:
         return datetime.strptime(value, "%Y-%m-%d").date()
     except ValueError as exc:
-        raise HTTPException(
+        raise BusinessException(
             status_code=400,
             detail=create_error_response(
                 error_code=ErrorCodes.VALIDATION_ERROR,
@@ -210,7 +211,7 @@ def _parse_reconciliation_date_range(start_date: str | None, end_date: str | Non
     end_date_obj = _parse_query_date(end_date, "end_date")
 
     if start_date_obj and end_date_obj and start_date_obj > end_date_obj:
-        raise HTTPException(
+        raise BusinessException(
             status_code=400,
             detail=create_error_response(
                 error_code=ErrorCodes.VALIDATION_ERROR,
@@ -240,7 +241,7 @@ def _query_internal_statement_rows(
             page_size=page_size,
         )
     except ValueError as exc:
-        raise HTTPException(
+        raise BusinessException(
             status_code=400,
             detail=create_error_response(
                 error_code=ErrorCodes.VALIDATION_ERROR,
@@ -291,7 +292,7 @@ def _load_import_batch(import_batch_id: str) -> dict[str, Any]:
     try:
         return get_import_batch(import_batch_id)
     except KeyError as exc:
-        raise HTTPException(
+        raise BusinessException(
             status_code=404,
             detail=create_error_response(
                 error_code=ErrorCodes.NOT_FOUND,
@@ -514,7 +515,7 @@ async def import_reconciliation_csv(
             batch_account_id = None
         elif source_type == "miniqmt":
             if not account_id:
-                raise HTTPException(
+                raise BusinessException(
                     status_code=422,
                     detail=create_error_response(
                         error_code=ErrorCodes.VALIDATION_ERROR,
@@ -524,7 +525,7 @@ async def import_reconciliation_csv(
             rows = parse_miniqmt_csv(csv_bytes, account_id=account_id)
             batch_account_id = account_id
         else:
-            raise HTTPException(
+            raise BusinessException(
                 status_code=422,
                 detail=create_error_response(
                     error_code=ErrorCodes.VALIDATION_ERROR,
@@ -532,7 +533,7 @@ async def import_reconciliation_csv(
                 ).model_dump(mode="json"),
             )
     except ValueError as exc:
-        raise HTTPException(
+        raise BusinessException(
             status_code=422,
             detail=create_error_response(
                 error_code=ErrorCodes.VALIDATION_ERROR,

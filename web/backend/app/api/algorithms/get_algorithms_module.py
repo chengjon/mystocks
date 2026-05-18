@@ -16,7 +16,8 @@ from datetime import datetime, timezone
 from typing import Optional
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, status
+from app.core.exceptions import BusinessException
 
 from app.api.algorithms._naive_bayes_router import router as naive_bayes_router
 from app.api.algorithms.algorithm_metadata import (
@@ -61,7 +62,7 @@ def get_algorithms_module():
             AlgorithmType = AlgType
         except ImportError as e:
             logger.error("Failed to import algorithms module", error=str(e))
-            raise HTTPException(
+            raise BusinessException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
                 detail="算法服务暂不可用",
             )
@@ -205,8 +206,8 @@ async def train_algorithm(
 
         return ok(data=result, message=f"{request.algorithm_type.value.upper()}算法训练成功")
 
-    except HTTPException:
-        # 服务层已抛出HTTPException，直接重新抛出
+    except BusinessException:
+        # 服务层已抛出BusinessException，直接重新抛出
         raise
     except Exception as e:
         logger.error("算法训练失败", algorithm=request.algorithm_type.value, error=str(e))
@@ -236,8 +237,8 @@ async def predict_with_algorithm(
 
         return ok(data=result, message="算法预测成功")
 
-    except HTTPException:
-        # 服务层已抛出HTTPException，直接重新抛出
+    except BusinessException:
+        # 服务层已抛出BusinessException，直接重新抛出
         raise
     except Exception as e:
         logger.error("算法预测失败", model_id=request.model_id, error=str(e))
@@ -287,8 +288,8 @@ async def unload_model(model_id: str, current_user: User = Depends(get_current_u
 
         return ok(data=result, message="模型卸载成功")
 
-    except HTTPException:
-        # 服务层已抛出HTTPException，直接重新抛出
+    except BusinessException:
+        # 服务层已抛出BusinessException，直接重新抛出
         raise
     except Exception as e:
         logger.error("卸载模型失败", model_id=model_id, error=str(e))
@@ -550,7 +551,7 @@ async def train_decision_tree_algorithm(
 
         return ok(data=result, message="决策树算法训练成功")
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         logger.error("决策树算法训练失败", error=str(e))
@@ -585,7 +586,7 @@ async def predict_decision_tree_algorithm(
 
         return ok(data=result, message="决策树预测成功")
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         logger.error("决策树预测失败", model_id=request.model_id, error=str(e))
@@ -612,7 +613,7 @@ async def get_decision_tree_feature_importance(
 
         return ok(data=result, message="获取特征重要性成功")
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         logger.error("获取特征重要性失败", model_id=model_id, error=str(e))

@@ -12,7 +12,8 @@ from typing import Annotated, Any, Dict
 from uuid import uuid4
 
 import pandas as pd
-from fastapi import APIRouter, Body, HTTPException, Path as PathParam
+from fastapi import APIRouter, Body, Path as PathParam
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 from app.core.responses import UnifiedResponse
@@ -129,7 +130,7 @@ def _ensure_model_backend_available(model_family: str | MLWorkbenchModelFamily) 
     dependency = _model_backend_dependency(model_family)
     if dependency and not _dependency_status(dependency)["available"]:
         family = getattr(model_family, "value", model_family)
-        raise HTTPException(
+        raise BusinessException(
             status_code=503,
             detail={
                 "error_code": "ml_backend_unavailable",
@@ -174,7 +175,7 @@ def _serialize_workbench_model(item: TrainedStrategyState) -> dict[str, Any]:
 def _workbench_signal(frame: pd.DataFrame, horizon: int, validation_score: float) -> tuple[dict[str, Any], float]:
     returns = frame["close"].pct_change().dropna()
     if returns.empty:
-        raise HTTPException(status_code=400, detail="Insufficient samples for ML prediction")
+        raise BusinessException(status_code=400, detail="Insufficient samples for ML prediction")
     resolved_horizon = max(1, horizon)
     expected_return = float(returns.tail(min(len(returns), resolved_horizon)).mean()) * resolved_horizon
     signal = "buy" if expected_return > 0.002 else "sell" if expected_return < -0.002 else "hold"
@@ -249,7 +250,7 @@ async def train_ml_workbench_model(
     _ensure_model_backend_available(request.model_family)
     frame = _load_price_frame(request.symbol, request.start_date, request.end_date)
     if len(frame) <= request.feature_window + request.prediction_horizon:
-        raise HTTPException(status_code=400, detail="Insufficient samples for ML training")
+        raise BusinessException(status_code=400, detail="Insufficient samples for ML training")
 
     feature_importance, training_accuracy, validation_score = _feature_snapshot(frame, request.feature_window)
     model_id = f"{request.model_family.value}_{request.symbol.split('.')[0]}_{uuid4().hex[:12]}"
@@ -315,7 +316,7 @@ async def predict_ml_workbench_model(
 ):
     state = runtime_store.get(request.model_id)
     if state is None or not state.trained or state.parameters.get("workbench_model") is not True:
-        raise HTTPException(status_code=404, detail=f"Unknown model_id: {request.model_id}")
+        raise BusinessException(status_code=404, detail=f"Unknown model_id: {request.model_id}")
 
     _ensure_model_backend_available(state.strategy_type)
     feature_context = state.parameters.get("feature_context", {})
@@ -324,15 +325,15 @@ async def predict_ml_workbench_model(
     ) or not _is_positive_int(
         feature_context.get("prediction_horizon")
     ):
-        raise HTTPException(status_code=409, detail=f"Model metadata incompatible: {request.model_id}")
+        raise BusinessException(status_code=409, detail=f"Model metadata incompatible: {request.model_id}")
     if request.symbol != state.symbol:
-        raise HTTPException(
+        raise BusinessException(
             status_code=409,
             detail=f"Model symbol scope mismatch: {request.symbol} is not {state.symbol}",
         )
     trained_horizon = feature_context.get("prediction_horizon")
     if trained_horizon and request.prediction_horizon != trained_horizon:
-        raise HTTPException(
+        raise BusinessException(
             status_code=409,
             detail=f"Model horizon scope mismatch: {request.prediction_horizon} is not {trained_horizon}",
         )
@@ -387,10 +388,10 @@ async def get_ml_workbench_model_detail(
 ):
     resolved_model_id = model_id.strip()
     if not resolved_model_id:
-        raise HTTPException(status_code=400, detail="Model ID is required")
+        raise BusinessException(status_code=400, detail="Model ID is required")
     state = runtime_store.get(resolved_model_id)
     if state is None or not state.trained or state.parameters.get("workbench_model") is not True:
-        raise HTTPException(status_code=404, detail=f"Unknown model_id: {resolved_model_id}")
+        raise BusinessException(status_code=404, detail=f"Unknown model_id: {resolved_model_id}")
     return UnifiedResponse(
         success=True,
         code=200,

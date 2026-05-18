@@ -6,7 +6,8 @@ API契约管理 API路由
 import uuid
 from typing import Any, Dict
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
+from app.core.exceptions import BusinessException
 from sqlalchemy.orm import Session
 
 from app.api.contract.schemas import (
@@ -407,7 +408,7 @@ async def get_version(
     """获取指定契约版本及其当前持久化的 OpenAPI 规范详情。"""
     version = VersionManager.get_version(db, version_id)
     if not version:
-        raise HTTPException(status_code=404, detail="契约版本不存在")
+        raise BusinessException(status_code=404, detail="契约版本不存在")
     return create_unified_success_response(data=version, message="契约版本获取成功")
 
 
@@ -423,7 +424,7 @@ async def get_active_version(
     """获取指定契约名称当前处于激活状态的版本元数据。"""
     version = VersionManager.get_active_version(db, name)
     if not version:
-        raise HTTPException(status_code=404, detail="契约不存在或无激活版本")
+        raise BusinessException(status_code=404, detail="契约不存在或无激活版本")
     return create_unified_success_response(data=version, message="激活契约版本获取成功")
 
 
@@ -457,7 +458,7 @@ async def update_version(
     """更新契约版本的描述、标签和其他补充元数据信息。"""
     version = VersionManager.update_version(db, version_id, update_data)
     if not version:
-        raise HTTPException(status_code=404, detail="契约版本不存在")
+        raise BusinessException(status_code=404, detail="契约版本不存在")
     return create_unified_success_response(data=version, message="契约版本更新成功")
 
 
@@ -473,7 +474,7 @@ async def activate_version(
     """将指定契约版本设置为当前对外生效的激活版本。"""
     success = VersionManager.activate_version(db, version_id)
     if not success:
-        raise HTTPException(status_code=404, detail="契约版本不存在")
+        raise BusinessException(status_code=404, detail="契约版本不存在")
     return create_unified_success_response(data={"success": True, "version_id": version_id}, message="版本已激活")
 
 
@@ -489,7 +490,7 @@ async def delete_version(
     """删除指定的契约版本及其关联的版本记录与元数据。"""
     success = VersionManager.delete_version(db, version_id)
     if not success:
-        raise HTTPException(status_code=404, detail="契约版本不存在")
+        raise BusinessException(status_code=404, detail="契约版本不存在")
     return create_unified_success_response(data={"success": True, "version_id": version_id}, message="版本已删除")
 
 
@@ -535,9 +536,9 @@ async def compare_versions(
     to_version = VersionManager.get_version(db, request.to_version_id)
 
     if not from_version:
-        raise HTTPException(status_code=404, detail="源版本不存在")
+        raise BusinessException(status_code=404, detail="源版本不存在")
     if not to_version:
-        raise HTTPException(status_code=404, detail="目标版本不存在")
+        raise BusinessException(status_code=404, detail="目标版本不存在")
 
     # 对比差异
     diff_result = DiffEngine.compare_versions(

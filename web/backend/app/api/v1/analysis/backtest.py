@@ -7,13 +7,14 @@
 from __future__ import annotations
 
 from dataclasses import asdict
-from datetime import datetime, timezone
+from datetime import datetime
 from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
 from fastapi.encoders import jsonable_encoder
-from fastapi import APIRouter, Body, HTTPException, Path, Query
+from fastapi import APIRouter, Body, Path, Query
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.database import SessionLocal
@@ -324,14 +325,14 @@ def _parse_iso_datetime(value: str, *, field_name: str) -> datetime:
     try:
         return datetime.fromisoformat(value)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=f"Invalid ISO date for {field_name}: {value}") from exc
+        raise BusinessException(status_code=400, detail=f"Invalid ISO date for {field_name}: {value}") from exc
 
 
 def _load_price_frame(symbol: str, start_date: str, end_date: str) -> pd.DataFrame:
     start_dt = _parse_iso_datetime(start_date, field_name="start_date")
     end_dt = _parse_iso_datetime(end_date, field_name="end_date")
     if start_dt >= end_dt:
-        raise HTTPException(status_code=400, detail="start_date must be earlier than end_date")
+        raise BusinessException(status_code=400, detail="start_date must be earlier than end_date")
 
     try:
         frame, _ = _get_backtest_data_service().get_daily_ohlcv(symbol=symbol, start_date=start_dt, end_date=end_dt)
@@ -361,7 +362,7 @@ def _load_price_frame(symbol: str, start_date: str, end_date: str) -> pd.DataFra
 def _build_daily_returns(frame: pd.DataFrame) -> pd.Series:
     returns = frame["close"].pct_change().replace([np.inf, -np.inf], np.nan).dropna()
     if len(returns) < 30:
-        raise HTTPException(status_code=400, detail="At least 30 daily return observations are required")
+        raise BusinessException(status_code=400, detail="At least 30 daily return observations are required")
     return returns.reset_index(drop=True)
 
 
@@ -516,7 +517,7 @@ async def run_monte_carlo_backtest(
     result = simulation.run_simulation(returns, _simulation_func)
     simulations = [item for item in result["simulation_results"] if "result" in item]
     if not simulations:
-        raise HTTPException(status_code=503, detail="Monte Carlo simulation produced no successful results")
+        raise BusinessException(status_code=503, detail="Monte Carlo simulation produced no successful results")
 
     total_returns = [float(item["result"]["metrics"]["total_return"]) for item in simulations]
     max_drawdowns = [float(item["result"]["metrics"]["max_drawdown"]) for item in simulations]
@@ -558,7 +559,7 @@ async def run_stress_test(
 ):
     """运行压力测试。"""
     if not request.scenarios:
-        raise HTTPException(status_code=400, detail="At least one stress scenario is required")
+        raise BusinessException(status_code=400, detail="At least one stress scenario is required")
 
     results = [_run_scenario_analysis(request.portfolio_id, scenario, request.initial_capital) for scenario in request.scenarios]
     response = StressTestResponse(
@@ -652,7 +653,7 @@ async def get_backtest_attribution(
 ):
     backtest_result = _load_backtest_result(backtest_id)
     if backtest_result is None:
-        raise HTTPException(
+        raise BusinessException(
             status_code=404,
             detail=jsonable_encoder(
                 UnifiedResponse(
@@ -667,7 +668,7 @@ async def get_backtest_attribution(
     try:
         result = _run_backtest_attribution(backtest_result)
     except AttributionDependencyError as exc:
-        raise HTTPException(
+        raise BusinessException(
             status_code=503,
             detail=jsonable_encoder(
                 UnifiedResponse(

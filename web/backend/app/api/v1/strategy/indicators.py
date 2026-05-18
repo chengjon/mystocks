@@ -9,7 +9,8 @@ from typing import Any, Dict, List
 
 import math
 import pandas as pd
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Query
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.responses import UnifiedResponse
@@ -82,12 +83,12 @@ def _normalize_indicator_names(indicators: List[str]) -> List[str]:
 
     if unsupported:
         supported = ", ".join(sorted(_SUPPORTED_INDICATORS))
-        raise HTTPException(
+        raise BusinessException(
             status_code=400,
             detail=f"Unsupported indicators: {', '.join(unsupported)}. Supported indicators: {supported}",
         )
     if not normalized:
-        raise HTTPException(status_code=400, detail="At least one supported indicator is required")
+        raise BusinessException(status_code=400, detail="At least one supported indicator is required")
     return normalized
 
 
@@ -199,12 +200,12 @@ async def get_technical_indicators(
     try:
         frame, _ = get_data_service().get_daily_ohlcv(symbol=symbol, start_date=start_dt, end_date=end_dt)
     except StockDataNotFoundError as exc:
-        raise HTTPException(status_code=404, detail=str(exc)) from exc
+        raise BusinessException(status_code=404, detail=str(exc)) from exc
     except Exception as exc:
-        raise HTTPException(status_code=503, detail=f"Unable to load price data for {symbol}: {exc}") from exc
+        raise BusinessException(status_code=503, detail=f"Unable to load price data for {symbol}: {exc}") from exc
 
     if frame.empty or "close" not in frame.columns:
-        raise HTTPException(status_code=503, detail=f"No OHLCV data available for {symbol}")
+        raise BusinessException(status_code=503, detail=f"No OHLCV data available for {symbol}")
 
     indicator_payloads = _calculate_indicator_payloads(frame, normalized_indicators, period)
     response = TechnicalIndicatorResponse(
