@@ -5,7 +5,9 @@ TradingView Widget API
 
 from typing import Any, Dict, List
 
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, Query
+from app.core.exceptions import BusinessException
+from app.core.responses import UnifiedResponse, create_unified_success_response
 from pydantic import BaseModel, Field
 
 from app.api.auth import User, get_current_user
@@ -179,6 +181,7 @@ class TickerTapeConfigRequest(BaseModel):
 @router.post(
     "/chart/config",
     summary="获取 TradingView 图表配置",
+    response_model=UnifiedResponse,
     responses=TRADINGVIEW_CHART_CONFIG_RESPONSES,
 )
 async def get_chart_config(
@@ -216,7 +219,7 @@ async def get_chart_config(
                 locale=request.locale,
                 container_id=request.container_id,
             )
-            return {"success": True, "config": config}
+            return create_unified_success_response(data={"config": config}, message="图表配置获取成功")
 
         service = get_tradingview_service()
         tv_symbol = service.convert_symbol_to_tradingview_format(request.symbol, request.market)
@@ -228,14 +231,15 @@ async def get_chart_config(
             locale=request.locale,
         )
 
-        return {"success": True, "config": config}
+        return create_unified_success_response(data={"config": config}, message="图表配置获取成功")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成图表配置失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"生成图表配置失败: {str(e)}")
 
 
 @router.post(
     "/mini-chart/config",
     summary="获取 TradingView 迷你图配置",
+    response_model=UnifiedResponse,
     responses=TRADINGVIEW_MINI_CHART_RESPONSES,
 )
 async def get_mini_chart_config(
@@ -259,20 +263,21 @@ async def get_mini_chart_config(
                 locale=locale,
                 container_id=container_id,
             )
-            return {"success": True, "config": config}
+            return create_unified_success_response(data={"config": config}, message="迷你图表配置获取成功")
 
         service = get_tradingview_service()
         tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
         config = service.generate_mini_chart_config(symbol=tv_symbol, container_id=container_id, theme=theme, locale=locale)
 
-        return {"success": True, "config": config}
+        return create_unified_success_response(data={"config": config}, message="迷你图表配置获取成功")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成迷你图表配置失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"生成迷你图表配置失败: {str(e)}")
 
 
 @router.post(
     "/ticker-tape/config",
     summary="获取 TradingView Ticker Tape 配置",
+    response_model=UnifiedResponse,
     responses=TRADINGVIEW_TICKER_TAPE_RESPONSES,
 )
 async def get_ticker_tape_config(
@@ -311,7 +316,7 @@ async def get_ticker_tape_config(
                 locale=request.locale,
                 container_id=request.container_id,
             )
-            return {"success": True, "config": config}
+            return create_unified_success_response(data={"config": config}, message="Ticker Tape 配置获取成功")
 
         service = get_tradingview_service()
         config = service.generate_ticker_tape_config(
@@ -321,14 +326,15 @@ async def get_ticker_tape_config(
             locale=request.locale,
         )
 
-        return {"success": True, "config": config}
+        return create_unified_success_response(data={"config": config}, message="Ticker Tape 配置获取成功")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成 Ticker Tape 配置失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"生成 Ticker Tape 配置失败: {str(e)}")
 
 
 @router.get(
     "/market-overview/config",
     summary="获取 TradingView 市场概览配置",
+    response_model=UnifiedResponse,
     responses=TRADINGVIEW_MARKET_OVERVIEW_RESPONSES,
 )
 async def get_market_overview_config(
@@ -346,21 +352,22 @@ async def get_market_overview_config(
             config = _get_mock_tradingview_config(
                 "tradingview_market_overview", market=market, theme=theme, locale=locale, container_id=container_id
             )
-            return {"success": True, "config": config}
+            return create_unified_success_response(data={"config": config}, message="市场概览配置获取成功")
 
         service = get_tradingview_service()
         config = service.generate_market_overview_config(
             container_id=container_id, theme=theme, locale=locale, market=market
         )
 
-        return {"success": True, "config": config}
+        return create_unified_success_response(data={"config": config}, message="市场概览配置获取成功")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成市场概览配置失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"生成市场概览配置失败: {str(e)}")
 
 
 @router.get(
     "/screener/config",
     summary="获取 TradingView 股票筛选器配置",
+    response_model=UnifiedResponse,
     responses=TRADINGVIEW_SCREENER_RESPONSES,
 )
 async def get_screener_config(
@@ -378,21 +385,22 @@ async def get_screener_config(
             config = _get_mock_tradingview_config(
                 "tradingview_screener", market=market, theme=theme, locale=locale, container_id=container_id
             )
-            return {"success": True, "config": config}
+            return create_unified_success_response(data={"config": config}, message="筛选器配置获取成功")
 
         service = get_tradingview_service()
         config = service.generate_screener_config(
             container_id=container_id, theme=theme, locale=locale, market=market
         )
 
-        return {"success": True, "config": config}
+        return create_unified_success_response(data={"config": config}, message="筛选器配置获取成功")
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"生成筛选器配置失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"生成筛选器配置失败: {str(e)}")
 
 
 @router.get(
     "/symbol/convert",
     summary="转换 TradingView 证券代码",
+    response_model=UnifiedResponse,
     responses=TRADINGVIEW_SYMBOL_CONVERT_RESPONSES,
 )
 async def convert_symbol(
@@ -405,21 +413,25 @@ async def convert_symbol(
     """
     try:
         if _is_tradingview_mock_enabled():
-            return {
-                "success": True,
-                "original_symbol": symbol,
-                "tradingview_symbol": _get_mock_tradingview_symbol(symbol=symbol, market=market),
-                "market": market,
-            }
+            return create_unified_success_response(
+                data={
+                    "original_symbol": symbol,
+                    "tradingview_symbol": _get_mock_tradingview_symbol(symbol=symbol, market=market),
+                    "market": market,
+                },
+                message="股票代码转换成功",
+            )
 
         service = get_tradingview_service()
         tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
 
-        return {
-            "success": True,
-            "original_symbol": symbol,
-            "tradingview_symbol": tv_symbol,
-            "market": market,
-        }
+        return create_unified_success_response(
+            data={
+                "original_symbol": symbol,
+                "tradingview_symbol": tv_symbol,
+                "market": market,
+            },
+            message="股票代码转换成功",
+        )
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"转换股票代码失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"转换股票代码失败: {str(e)}")

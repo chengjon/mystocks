@@ -1,7 +1,10 @@
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from fastapi import APIRouter, Body, HTTPException, Path
+from fastapi import APIRouter, Body, Path
+
+from app.core.exceptions import BusinessException
+from app.core.responses import UnifiedResponse, create_unified_success_response
 from pydantic import BaseModel, Field
 
 from app.openapi_config import COMMON_RESPONSES
@@ -146,7 +149,7 @@ class CalculationResponse(BaseModel):
 
 @router.get(
     "/indicators",
-    response_model=List[IndicatorInfo],
+    response_model=UnifiedResponse[List[IndicatorInfo]],
     summary="列出已注册技术指标",
     description="返回指标注册表中的全部指标摘要，供前端配置面板、功能发现和下拉选择器读取。",
     responses=INDICATOR_LIST_RESPONSES,
@@ -166,11 +169,12 @@ async def list_indicators():
                 status=config.get("status", "active"),
             )
         )
-    return results
+    return create_unified_success_response(data=results)
 
 
 @router.get(
     "/indicators/{indicator_id}",
+    response_model=UnifiedResponse,
     summary="查询单个指标注册配置",
     description="根据指标 ID 返回注册表中的详细配置，包括实现类、参数定义和输入输出列说明。",
     responses=INDICATOR_DETAIL_RESPONSES,
@@ -181,13 +185,13 @@ async def get_indicator_details(
     """Get detailed configuration for a specific indicator."""
     factory = get_factory()
     if indicator_id not in factory.registry:
-        raise HTTPException(status_code=404, detail="Indicator not found")
-    return factory.registry[indicator_id]
+        raise BusinessException(status_code=404, detail="Indicator not found")
+    return create_unified_success_response(data=factory.registry[indicator_id])
 
 
 @router.post(
     "/calculate",
-    response_model=CalculationResponse,
+    response_model=UnifiedResponse[CalculationResponse],
     summary="执行指标批量计算",
     description="接收一组 OHLCV 数据和可选参数，执行指定技术指标的批量计算并返回对齐后的结果序列。",
     responses=INDICATOR_CALCULATE_RESPONSES,
@@ -202,7 +206,7 @@ async def calculate_indicator(req: CalculationRequest = Body(..., openapi_exampl
         if df.empty:
             raise ValueError("Input data is empty")
     except Exception as e:
-        raise HTTPException(status_code=400, detail=f"Invalid data format: {e}")
+        raise BusinessException(status_code=400, detail=f"Invalid data format: {e}")
 
     # Calculate
     try:
@@ -220,9 +224,11 @@ async def calculate_indicator(req: CalculationRequest = Body(..., openapi_exampl
         # Replace NaN with None for JSON compliance
         result_list = result_series.where(pd.notnull(result_series), None).tolist()
 
-        return CalculationResponse(indicator_id=req.indicator_id, result=result_list, length=len(result_list))
+        return create_unified_success_response(
+            data=CalculationResponse(indicator_id=req.indicator_id, result=result_list, length=len(result_list))
+        )
 
     except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise BusinessException(status_code=400, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise BusinessException(status_code=500, detail=str(e))

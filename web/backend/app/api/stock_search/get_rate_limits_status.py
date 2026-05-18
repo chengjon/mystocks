@@ -6,13 +6,13 @@ import logging
 import time
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 
 from app.api.auth import User, get_current_user
 from app.api.stock_search.openapi_metadata import RATE_LIMIT_STATUS_RESPONSES
 from app.api.stock_search.stock_search_support import check_admin_privileges, search_operation_count
 from app.core.exceptions import BusinessException, ForbiddenException
-from app.core.responses import APIResponse
+from app.core.responses import UnifiedResponse, create_unified_success_response
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -20,7 +20,7 @@ router = APIRouter()
 
 @router.get(
     "/rate-limits/status",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="查询股票搜索限流状态",
     description="管理员查看股票搜索接口的限流计数，可按用户筛选当前分钟和近几分钟的请求命中情况。",
     responses=RATE_LIMIT_STATUS_RESPONSES,
@@ -28,7 +28,7 @@ router = APIRouter()
 async def get_rate_limits_status(
     user_id: Optional[int] = Query(None, description="指定用户 ID；为空时返回所有用户的限流状态"),
     current_user: User = Depends(get_current_user),
-) -> APIResponse:
+) -> UnifiedResponse:
     """Return stock-search rate-limit counters for one user or all users."""
     try:
         if not check_admin_privileges(current_user):
@@ -39,8 +39,7 @@ async def get_rate_limits_status(
 
         if user_id is not None:
             user_limits = search_operation_count.get(user_id, {})
-            return APIResponse(
-                success=True,
+            return create_unified_success_response(
                 data={
                     "user_id": user_id,
                     "rate_limits": user_limits,
@@ -59,12 +58,11 @@ async def get_rate_limits_status(
             for uid, limits in search_operation_count.items()
         }
 
-        return APIResponse(
-            success=True,
+        return create_unified_success_response(
             data={"total_users": len(all_limits), "user_limits": all_limits},
             message="所有用户的频率限制状态",
         )
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception:
         logger.exception("Failed to get rate limits status for admin %s", current_user.username)

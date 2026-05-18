@@ -7,7 +7,10 @@ import logging
 from datetime import datetime
 from typing import Any
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
+
+from app.core.exceptions import BusinessException
+from app.core.responses import UnifiedResponse, create_unified_success_response
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -23,7 +26,7 @@ def _close_resource_quietly(resource_name: str, resource: Any) -> None:
         logger.debug("Failed to close %s cleanly: %s", resource_name, exc)
 
 
-@router.get("/architecture")
+@router.get("/architecture", response_model=UnifiedResponse)
 async def get_system_architecture():
     """
     获取系统架构信息 (Week 3简化后 - 双数据库架构)
@@ -38,10 +41,9 @@ async def get_system_architecture():
     用于架构可视化页面展示
     """
     try:
-        return {
-            "success": True,
-            "message": "系统架构信息获取成功",
-            "data": {
+        return create_unified_success_response(
+            message="系统架构信息获取成功",
+            data={
                 # 架构简化成果
                 "simplification": {
                     "before": {
@@ -253,15 +255,15 @@ async def get_system_architecture():
                         "简化运维和部署",
                     ],
                 },
+                "timestamp": datetime.now().isoformat(),
             },
-            "timestamp": datetime.now().isoformat(),
-        }
+        )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取系统架构信息失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"获取系统架构信息失败: {str(e)}")
 
 
-@router.get("/database/health")
+@router.get("/database/health", response_model=UnifiedResponse)
 async def database_health():
     """
     数据库健康检查 (US2 - 双数据库架构)
@@ -395,10 +397,10 @@ async def database_health():
     # Add databases array to response for E2E tests
     health_data["databases"] = databases
 
-    return {"success": True, "message": "数据库健康检查完成", "data": health_data}
+    return create_unified_success_response(data=health_data, message="数据库健康检查完成")
 
 
-@router.get("/database/stats")
+@router.get("/database/stats", response_model=UnifiedResponse)
 async def database_stats():
     """
     数据库统计信息 (US2 - 双数据库架构)
@@ -474,4 +476,4 @@ async def database_stats():
         "timestamp": datetime.now().isoformat(),
     }
 
-    return {"success": True, "message": "数据库统计信息获取成功", "data": stats_data}
+    return create_unified_success_response(data=stats_data, message="数据库统计信息获取成功")

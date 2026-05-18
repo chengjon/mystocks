@@ -10,11 +10,13 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Body, Header, HTTPException, Path
+from fastapi import APIRouter, Body, Header, Path
+
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.config import settings
-from app.core.responses import APIResponse, ErrorCodes, create_error_response, create_success_response
+from app.core.responses import UnifiedResponse, ErrorCodes, create_error_response, create_unified_success_response
 from app.core.security import verify_token
 from app.openapi_config import COMMON_RESPONSES
 
@@ -226,7 +228,7 @@ def _require_write_auth(authorization: Optional[str]) -> None:
         return
 
     if not authorization or not authorization.startswith("Bearer "):
-        raise HTTPException(
+        raise BusinessException(
             status_code=401,
             detail=create_error_response(
                 ErrorCodes.UNAUTHORIZED,
@@ -236,7 +238,7 @@ def _require_write_auth(authorization: Optional[str]) -> None:
 
     token = authorization.removeprefix("Bearer ").strip()
     if not token or verify_token(token) is None:
-        raise HTTPException(
+        raise BusinessException(
             status_code=401,
             detail=create_error_response(
                 ErrorCodes.UNAUTHORIZED,
@@ -247,13 +249,13 @@ def _require_write_auth(authorization: Optional[str]) -> None:
 
 @router.get(
     "/status",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="Get trading runtime status",
     description="返回轻量交易运行时当前会话、持仓数量、盈亏和回撤摘要，用于前端运行时面板轮询展示。",
     responses=TRADING_RUNTIME_STATUS_RESPONSE,
 )
 async def get_status():
-    return create_success_response(
+    return create_unified_success_response(
         data={
             "session_id": _RUNTIME_STATE["session_id"],
             "active_positions": _RUNTIME_STATE["active_positions"],
@@ -269,7 +271,7 @@ async def get_status():
 
 @router.post(
     "/start",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="Start trading runtime session",
     description="启动轻量交易运行时会话，返回当前会话标识和运行态，供前端运行时面板刷新状态。",
     responses=TRADING_RUNTIME_START_RESPONSE,
@@ -286,7 +288,7 @@ async def start_session(
         _RUNTIME_STATE["is_running"] = True
         _RUNTIME_STATE["session_id"] = f"runtime-{int(datetime.now(timezone.utc).timestamp())}"
 
-    return create_success_response(
+    return create_unified_success_response(
         data={
             "session_id": _RUNTIME_STATE["session_id"],
             "is_running": _RUNTIME_STATE["is_running"],
@@ -297,7 +299,7 @@ async def start_session(
 
 @router.post(
     "/stop",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="Stop trading runtime session",
     description="停止轻量交易运行时会话，并返回停止后的运行状态与盈亏摘要信息。",
     responses=TRADING_RUNTIME_STOP_RESPONSE,
@@ -313,7 +315,7 @@ async def stop_session(
     _RUNTIME_STATE["is_running"] = False
     _RUNTIME_STATE["session_id"] = None
 
-    return create_success_response(
+    return create_unified_success_response(
         data={
             "is_running": _RUNTIME_STATE["is_running"],
             "total_pnl": _RUNTIME_STATE["total_pnl"],
@@ -325,19 +327,19 @@ async def stop_session(
 
 @router.get(
     "/strategies/performance",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="Get strategy performance list",
     description="返回运行时当前已注册策略的收益、胜率等绩效摘要，供运行时策略列表和绩效面板展示。",
     responses=TRADING_RUNTIME_STRATEGY_PERFORMANCE_RESPONSE,
 )
 async def get_strategies_performance():
     strategies: List[Dict[str, Any]] = _RUNTIME_STATE["strategies"]
-    return create_success_response(data=strategies, message="获取策略绩效成功")
+    return create_unified_success_response(data=strategies, message="获取策略绩效成功")
 
 
 @router.post(
     "/strategies/add",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="Add strategy to runtime list",
     description="向轻量交易运行时注册一个前端可见的策略条目，便于在运行时面板中展示新增策略。",
     responses=TRADING_RUNTIME_ADD_STRATEGY_RESPONSE,
@@ -361,7 +363,7 @@ async def add_strategy(
     _require_write_auth(authorization)
     name = request.strategy_name.strip()
     if any(item["name"] == name for item in _RUNTIME_STATE["strategies"]):
-        return create_success_response(data={"name": name}, message="策略已存在")
+        return create_unified_success_response(data={"name": name}, message="策略已存在")
 
     _RUNTIME_STATE["strategies"].append(
         {
@@ -372,12 +374,12 @@ async def add_strategy(
             "win_rate": 0.0,
         }
     )
-    return create_success_response(data={"name": name}, message="策略添加成功")
+    return create_unified_success_response(data={"name": name}, message="策略添加成功")
 
 
 @router.delete(
     "/strategies/{strategy_name}",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="Remove strategy",
     description="从轻量交易运行时中移除指定策略条目，并返回是否成功删除该策略。",
     responses=TRADING_RUNTIME_REMOVE_STRATEGY_RESPONSE,
@@ -394,7 +396,7 @@ async def remove_strategy(
     before = len(_RUNTIME_STATE["strategies"])
     _RUNTIME_STATE["strategies"] = [item for item in _RUNTIME_STATE["strategies"] if item["name"] != strategy_name]
     removed = len(_RUNTIME_STATE["strategies"]) < before
-    return create_success_response(
+    return create_unified_success_response(
         data={"strategy_name": strategy_name, "removed": removed},
         message="策略移除成功" if removed else "策略不存在",
     )
@@ -402,7 +404,7 @@ async def remove_strategy(
 
 @router.get(
     "/market/snapshot",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="Get market snapshot",
     description="返回交易运行时缓存的市场状态与关键标的快照，供运行时首页刷新行情卡片。",
     responses=TRADING_RUNTIME_MARKET_SNAPSHOT_RESPONSE,
@@ -413,12 +415,12 @@ async def get_market_snapshot():
         "market_status": "open" if _RUNTIME_STATE["is_running"] else "idle",
         "data": _RUNTIME_STATE["market_data"],
     }
-    return create_success_response(data=payload, message="获取市场快照成功")
+    return create_unified_success_response(data=payload, message="获取市场快照成功")
 
 
 @router.get(
     "/risk/metrics",
-    response_model=APIResponse,
+    response_model=UnifiedResponse,
     summary="Get risk metrics",
     description="返回交易运行时当前回撤、日内盈亏和持仓数量等核心风险指标，用于风控面板快速预警。",
     responses=TRADING_RUNTIME_RISK_METRICS_RESPONSE,
@@ -431,4 +433,4 @@ async def get_risk_metrics():
         "active_positions": _RUNTIME_STATE["active_positions"],
         "last_updated": _now_iso(),
     }
-    return create_success_response(data=payload, message="获取风险指标成功")
+    return create_unified_success_response(data=payload, message="获取风险指标成功")
