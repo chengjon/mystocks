@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-05-18T15:27:26.431Z",
+  "measured_git_head": {
+    "short": "9f74c8481",
+    "full": "9f74c84816af9c538d4d733660844f18b1b2f483",
+    "subject": "refactor(api): canonicalize data source registry exceptions"
+  },
+  "current_head_checked_at_review": "9f74c8481",
+  "stale_if_head_mismatch": true,
+  "source_scope": "clean detached HEAD worktree",
+  "artifact_type": "route_openapi_snapshot",
+  "route_table": {
+    "command": "python scripts/dev/backend_audit_fullpath_routes.py <output-dir>",
+    "output_artifact": "backend-fullpath-route-table-2026-05-18.json",
+    "summary": {
+      "total_routes": 547,
+      "registered_routes": 522,
+      "orphan_routes": 25,
+      "unique_files": 96,
+      "local_decorator_duplicate_groups": 54,
+      "full_path_duplicate_groups": 9
+    },
+    "orphan_files": [
+      "app/api/algorithms/_naive_bayes_router.py",
+      "app/api/algorithms/get_algorithms_module.py",
+      "app/api/data_source_config.old.py"
+    ],
+    "full_path_duplicate_groups": 9
+  },
+  "openapi": {
+    "command": "python scripts/generate_openapi.py --output <absolute-output-file> with dummy env for required startup settings",
+    "exit_code": 1,
+    "stdout_tail": [],
+    "stderr_tail": [
+      "启动失败：启动失败：缺少必需的环境变量配置",
+      "缺失项：POSTGRESQL_HOST, POSTGRESQL_USER, POSTGRESQL_PASSWORD, JWT_SECRET_KEY, BACKEND_PORT, BACKEND_BACKUP_PORT",
+      "请检查项目根目录的 .env 文件，或复制 .env.example 并填写正确的值",
+      "生成安全的JWT密钥：openssl rand -hex 32",
+      "请修复配置后重新启动应用"
+    ],
+    "output_artifact": null,
+    "summary": null,
+    "duplicate_operation_id_warnings": 0,
+    "duplicate_operation_ids": []
+  },
+  "notes": [
+    "OpenAPI path count is a snapshot of current router registration and include_in_schema policy.",
+    "If output_artifact is null, import/startup failure blocked schema materialization; stdout_tail/stderr_tail is the evidence."
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "generated_at": "2026-05-18T15:27:26.431Z",
+  "measured_git_head": {
+    "short": "9f74c8481",
+    "full": "9f74c84816af9c538d4d733660844f18b1b2f483",
+    "subject": "refactor(api): canonicalize data source registry exceptions"
+  },
+  "current_head_checked_at_review": "9f74c8481",
+  "stale_if_head_mismatch": true,
+  "source_scope": "clean detached HEAD worktree",
+  "artifact_type": "file_loc_count",
+  "command": "os.walk() file/LOC collector on clean detached HEAD",
+  "exclusions": [
+    "hidden directories/files",
+    "__pycache__",
+    "node_modules",
+    ".venv",
+    ".git",
+    "archive"
+  ],
+  "summary": {
+    "total_files": 8790,
+    "counts": {
+      "python": {
+        "files": 1496,
+        "loc": 368795
+      },
+      "frontend": {
+        "files": 1680,
+        "loc": 345275
+      },
+      "tests": {
+        "files": 1898,
+        "loc": 441438
+      },
+      "docs": {
+        "files": 2504,
+        "loc": 1247222
+      },
+      "config": {
+        "files": 329,
+        "loc": 291588
+      },
+      "scripts": {
+        "files": 718,
+        "loc": 170176
+      },
+      "other": {
+        "files": 165,
+        "loc": 88115
+      }
+    },
+    "top_files": [
+      {
+        "file": "docs/api/openapi.json",
+        "bucket": "docs",
+        "loc": 67784
+      },
+      {
+        "file": "docs/reports/code_quality/flake8_report.txt",
+        "bucket": "docs",
+        "loc": 54467
+      },
+      {
+        "file": "config/monitoring-stack/data/prometheus/01KD8MVEK6MB1Z1VA5MNWDR5YG/chunks/000001",
+        "bucket": "config",
+        "loc": 51574
+      },
+      {
+        "file": "config/monitoring-stack/data/prometheus/01KDAJN171D943VTA4WG6S2K9M/chunks/000001",
+        "bucket": "config",
+        "loc": 39917
+      },
+      {
+        "file": "reports/structure-baseline/directory-structure-report.txt",
+        "bucket": "docs",
+        "loc": 38424
+      },
+      {
+        "file": "docs/api/openapi/market-data-api-full.json",
+        "bucket": "docs",
+        "loc": 20972
+      },
+      {
+        "file": "docs/references/media/mystocks_spec_src.svg",
+        "bucket": "docs",
+        "loc": 19393
+      },
+      {
+        "file": "docs/reports/code_quality/pylint_report.txt",
+        "bucket": "docs",
+        "loc": 18832
+      },
+      {
+        "file": "config/monitoring-stack/data/prometheus/wal/00000020",
+        "bucket": "config",
+        "loc": 18716
+      },
+      {
+        "file": "config/monitoring-stack/data/prometheus/wal/00000019",
+        "bucket": "config",
+        "loc": 18132
+      },
+      {
+        "file": "web/frontend/package-lock.json",
+        "bucket": "frontend",
+        "loc": 18125
+      },
+      {
+        "file": "web/backend/test_timing.csv",
+        "bucket": "other",
+        "loc": 17890
+      },
+      {
+        "file": "config/monitoring-stack/data/prometheus/wal/00000018",
+        "bucket": "config",
+        "loc": 17187
+      },
+      {
+        "file": "docs/reports/code_quality/pylint_report_current.txt",
+        "bucket": "docs",
+        "loc": 16956
+      },
+      {
+        "file": "docs/reports/code_quality/pylint_final_check.txt",
+        "bucket": "docs",
+        "loc": 15391
+      },
+      {
+        "file": "docs/reports/code_quality/pylint-report-src.txt",
+        "bucket": "docs",
+        "loc": 14669
+      },
+      {
+        "file": "reports/structure-baseline/scripts-tree-baseline.txt",
+        "bucket": "docs",
+        "loc": 14521
+      },
+      {
+        "file": "docs/reports/pylint-errors-by-module.txt",
+        "bucket": "docs",
+        "loc": 12633
+      },
+      {
+        "file": "docs/reports/code_quality/pylint_full_report.txt",
+        "bucket": "docs",
+        "loc": 11938
+      },
+      {
+        "file": "docs/reports/code_quality/pylint_summary.txt",
+        "bucket": "docs",
+        "loc": 11720
+      },
+      {
+        "file": "docs/api/swagger.json",
+        "bucket": "docs",
+        "loc": 10932
+      },
+      {
+        "file": "config/monitoring-stack/data/grafana/plugins/grafana-lokiexplore-app/img/fields.png",
+        "bucket": "config",
+        "loc": 9849
+      },
+      {
+        "file": "data/grafana/plugins/grafana-lokiexplore-app/img/fields.png",
+        "bucket": "other",
+        "loc": 9849
+      },
+      {
+        "file": "docs/api/openapi_akshare.yaml",
+        "bucket": "docs",
+        "loc": 8103
+      },
+      {
+        "file": "config/monitoring-stack/data/grafana/plugins/grafana-lokiexplore-app/img/table.png",
+        "bucket": "config",
+        "loc": 7952
+      },
+      {
+        "file": "data/grafana/plugins/grafana-lokiexplore-app/img/table.png",
+        "bucket": "other",
+        "loc": 7952
+      },
+      {
+        "file": "docs/api/openapi/technical-analysis-api.yaml",
+        "bucket": "docs",
+        "loc": 6563
+      },
+      {
+        "file": "docs/api/openapi/strategy-management-api.yaml",
+        "bucket": "docs",
+        "loc": 6374
+      },
+      {
+        "file": "docs/references/function-classification-manual/08-consolidation-guide.md",
+        "bucket": "docs",
+        "loc": 6319
+      },
+      {
+        "file": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/utils/trace-merge/test-responses/service-struct.json",
+        "bucket": "config",
+        "loc": 6144
+      }
+    ]
+  },
+  "per_file_hash": "137c11ca9ac3e9aa2228702aeb06a5d17e10c8acb43a8d37ea33afa7cda0aabd"
+}

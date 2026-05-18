@@ -1,0 +1,725 @@
+{
+  "generated_at": "2026-05-18T15:27:26.431Z",
+  "measured_git_head": {
+    "short": "9f74c8481",
+    "full": "9f74c84816af9c538d4d733660844f18b1b2f483",
+    "subject": "refactor(api): canonicalize data source registry exceptions"
+  },
+  "current_head_checked_at_review": "9f74c8481",
+  "stale_if_head_mismatch": true,
+  "source_scope": "clean detached HEAD worktree",
+  "artifact_type": "http_exception_count",
+  "method": "scan web/backend/app/api/**/*.py for raise HTTPException and HTTPException import lines",
+  "summary": {
+    "raise_http_exception_total": 191,
+    "http_exception_import_line_total": 21,
+    "affected_files": 21
+  },
+  "files": [
+    {
+      "file": "web/backend/app/api/ml.py",
+      "raise_http_exception_count": 20,
+      "raise_http_exception_lines": [
+        421,
+        452,
+        468,
+        490,
+        520,
+        541,
+        573,
+        598,
+        629,
+        635,
+        668,
+        673,
+        695,
+        715,
+        733,
+        764,
+        788,
+        818,
+        824,
+        847
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        9
+      ],
+      "http_exception_mention_lines": [
+        9,
+        421,
+        452,
+        468,
+        490,
+        520,
+        541,
+        573,
+        598,
+        629,
+        635,
+        668,
+        670,
+        673,
+        695,
+        715,
+        730,
+        733,
+        764,
+        788,
+        818,
+        824,
+        844,
+        847
+      ]
+    },
+    {
+      "file": "web/backend/app/api/strategy_mgmt.py",
+      "raise_http_exception_count": 20,
+      "raise_http_exception_lines": [
+        265,
+        284,
+        294,
+        383,
+        386,
+        427,
+        454,
+        463,
+        500,
+        509,
+        541,
+        549,
+        618,
+        676,
+        679,
+        706,
+        715,
+        777,
+        854,
+        862
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        15
+      ],
+      "http_exception_mention_lines": [
+        15,
+        265,
+        284,
+        294,
+        383,
+        386,
+        427,
+        454,
+        459,
+        463,
+        500,
+        505,
+        509,
+        541,
+        545,
+        549,
+        618,
+        672,
+        676,
+        679,
+        706,
+        711,
+        715,
+        777,
+        854,
+        858,
+        862
+      ]
+    },
+    {
+      "file": "web/backend/app/api/announcement/routes.py",
+      "raise_http_exception_count": 19,
+      "raise_http_exception_lines": [
+        461,
+        468,
+        509,
+        516,
+        545,
+        557,
+        589,
+        603,
+        645,
+        677,
+        705,
+        738,
+        763,
+        790,
+        811,
+        822,
+        897,
+        915,
+        922
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        8
+      ],
+      "http_exception_mention_lines": [
+        8,
+        461,
+        465,
+        468,
+        509,
+        513,
+        516,
+        545,
+        554,
+        557,
+        589,
+        600,
+        603,
+        645,
+        677,
+        705,
+        735,
+        738,
+        763,
+        787,
+        790,
+        811,
+        819,
+        822,
+        897,
+        915,
+        919,
+        922
+      ]
+    },
+    {
+      "file": "web/backend/app/api/data_source_config.old.py",
+      "raise_http_exception_count": 16,
+      "raise_http_exception_lines": [
+        329,
+        335,
+        337,
+        346,
+        379,
+        381,
+        390,
+        416,
+        423,
+        461,
+        561,
+        588,
+        606,
+        645,
+        647,
+        656
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        27
+      ],
+      "http_exception_mention_lines": [
+        27,
+        329,
+        335,
+        337,
+        343,
+        346,
+        379,
+        381,
+        387,
+        390,
+        416,
+        420,
+        423,
+        461,
+        561,
+        588,
+        603,
+        606,
+        645,
+        647,
+        653,
+        656
+      ]
+    },
+    {
+      "file": "web/backend/app/api/notification.py",
+      "raise_http_exception_count": 15,
+      "raise_http_exception_lines": [
+        402,
+        430,
+        435,
+        439,
+        519,
+        616,
+        620,
+        672,
+        692,
+        734,
+        845,
+        850,
+        876,
+        914,
+        940
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        20
+      ],
+      "http_exception_mention_lines": [
+        20,
+        402,
+        430,
+        435,
+        439,
+        515,
+        519,
+        616,
+        620,
+        668,
+        672,
+        692,
+        734,
+        845,
+        850,
+        876,
+        914,
+        940
+      ]
+    },
+    {
+      "file": "web/backend/app/api/tdx.py",
+      "raise_http_exception_count": 14,
+      "raise_http_exception_lines": [
+        265,
+        276,
+        278,
+        330,
+        338,
+        365,
+        367,
+        410,
+        421,
+        423,
+        469,
+        477,
+        496,
+        498
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        17
+      ],
+      "http_exception_mention_lines": [
+        17,
+        265,
+        276,
+        278,
+        330,
+        338,
+        365,
+        367,
+        410,
+        421,
+        423,
+        469,
+        477,
+        496,
+        498
+      ]
+    },
+    {
+      "file": "web/backend/app/api/market_v2.py",
+      "raise_http_exception_count": 13,
+      "raise_http_exception_lines": [
+        277,
+        295,
+        317,
+        335,
+        359,
+        377,
+        401,
+        422,
+        444,
+        462,
+        487,
+        507,
+        551
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        17
+      ],
+      "http_exception_mention_lines": [
+        17,
+        277,
+        295,
+        317,
+        335,
+        359,
+        377,
+        401,
+        422,
+        444,
+        462,
+        487,
+        507,
+        551
+      ]
+    },
+    {
+      "file": "web/backend/app/api/trade/routes.py",
+      "raise_http_exception_count": 12,
+      "raise_http_exception_lines": [
+        416,
+        439,
+        453,
+        661,
+        673,
+        697,
+        755,
+        764,
+        773,
+        782,
+        791,
+        825
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        11
+      ],
+      "http_exception_mention_lines": [
+        11,
+        416,
+        439,
+        453,
+        661,
+        673,
+        694,
+        697,
+        755,
+        764,
+        773,
+        782,
+        791,
+        822,
+        825
+      ]
+    },
+    {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "raise_http_exception_count": 11,
+      "raise_http_exception_lines": [
+        387,
+        412,
+        488,
+        512,
+        550,
+        577,
+        583,
+        588,
+        675,
+        723,
+        748
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        20
+      ],
+      "http_exception_mention_lines": [
+        20,
+        387,
+        408,
+        412,
+        484,
+        488,
+        512,
+        546,
+        550,
+        577,
+        583,
+        588,
+        671,
+        675,
+        723,
+        748
+      ]
+    },
+    {
+      "file": "web/backend/app/api/wencai.py",
+      "raise_http_exception_count": 11,
+      "raise_http_exception_lines": [
+        294,
+        322,
+        330,
+        378,
+        381,
+        418,
+        453,
+        471,
+        506,
+        578,
+        581
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        15
+      ],
+      "http_exception_mention_lines": [
+        15,
+        294,
+        322,
+        326,
+        330,
+        378,
+        381,
+        418,
+        453,
+        467,
+        471,
+        506,
+        578,
+        581
+      ]
+    },
+    {
+      "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+      "raise_http_exception_count": 7,
+      "raise_http_exception_lines": [
+        161,
+        227,
+        279,
+        361,
+        414,
+        421,
+        511
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        16
+      ],
+      "http_exception_mention_lines": [
+        16,
+        161,
+        223,
+        227,
+        279,
+        357,
+        361,
+        414,
+        421,
+        507,
+        511
+      ]
+    },
+    {
+      "file": "web/backend/app/api/dashboard.py",
+      "raise_http_exception_count": 6,
+      "raise_http_exception_lines": [
+        328,
+        331,
+        353,
+        356,
+        361,
+        377
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        15
+      ],
+      "http_exception_mention_lines": [
+        15,
+        328,
+        331,
+        353,
+        356,
+        361,
+        373,
+        377
+      ]
+    },
+    {
+      "file": "web/backend/app/api/industry_concept_analysis.py",
+      "raise_http_exception_count": 6,
+      "raise_http_exception_lines": [
+        258,
+        311,
+        370,
+        429,
+        478,
+        527
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        16
+      ],
+      "http_exception_mention_lines": [
+        16,
+        258,
+        311,
+        370,
+        429,
+        478,
+        524,
+        527
+      ]
+    },
+    {
+      "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+      "raise_http_exception_count": 6,
+      "raise_http_exception_lines": [
+        272,
+        346,
+        439,
+        536,
+        619,
+        722
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        16
+      ],
+      "http_exception_mention_lines": [
+        16,
+        272,
+        342,
+        346,
+        439,
+        532,
+        536,
+        619,
+        718,
+        722
+      ]
+    },
+    {
+      "file": "web/backend/app/api/realtime_market.py",
+      "raise_http_exception_count": 5,
+      "raise_http_exception_lines": [
+        514,
+        553,
+        577,
+        615,
+        639
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        19
+      ],
+      "http_exception_mention_lines": [
+        19,
+        514,
+        553,
+        577,
+        615,
+        639
+      ]
+    },
+    {
+      "file": "web/backend/app/api/system/system_health.py",
+      "raise_http_exception_count": 4,
+      "raise_http_exception_lines": [
+        270,
+        324,
+        832,
+        852
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        12
+      ],
+      "http_exception_mention_lines": [
+        12,
+        270,
+        324,
+        832,
+        852
+      ]
+    },
+    {
+      "file": "web/backend/app/api/v1/pool_monitoring.py",
+      "raise_http_exception_count": 3,
+      "raise_http_exception_lines": [
+        211,
+        239,
+        282
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        16
+      ],
+      "http_exception_mention_lines": [
+        16,
+        211,
+        239,
+        278,
+        282,
+        331,
+        449
+      ]
+    },
+    {
+      "file": "web/backend/app/api/data_source_config.py",
+      "raise_http_exception_count": 2,
+      "raise_http_exception_lines": [
+        409,
+        420
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        32
+      ],
+      "http_exception_mention_lines": [
+        32,
+        409,
+        420
+      ]
+    },
+    {
+      "file": "web/backend/app/api/data_lineage.py",
+      "raise_http_exception_count": 1,
+      "raise_http_exception_lines": [
+        503
+      ],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        22
+      ],
+      "http_exception_mention_lines": [
+        22,
+        503
+      ]
+    },
+    {
+      "file": "web/backend/app/api/market/market_data_request.py",
+      "raise_http_exception_count": 0,
+      "raise_http_exception_lines": [],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        20
+      ],
+      "http_exception_mention_lines": [
+        20,
+        978
+      ]
+    },
+    {
+      "file": "web/backend/app/api/stock_search/stock_search_result.py",
+      "raise_http_exception_count": 0,
+      "raise_http_exception_lines": [],
+      "http_exception_import_line_count": 1,
+      "http_exception_import_lines": [
+        17
+      ],
+      "http_exception_mention_lines": [
+        17,
+        268,
+        345,
+        437,
+        479,
+        518,
+        566,
+        647,
+        709
+      ]
+    }
+  ]
+}
