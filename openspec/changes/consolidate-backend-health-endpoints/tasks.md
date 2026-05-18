@@ -43,10 +43,18 @@
 
 ## 3. Implementation
 
-- [ ] 3.1 Update only approved probe paths or aliases.
-- [ ] 3.2 Preserve existing readiness paths until consumers migrate.
-- [ ] 3.3 Retire only endpoints with no active consumers and approved OpenAPI diff.
-- [ ] 3.4 Do not treat 404 on old endpoints as success without approved retirement notes.
+- [x] 3.1 Update only approved probe paths or aliases.
+- [x] 3.2 Preserve existing readiness paths until consumers migrate.
+- [x] 3.3 Retire only endpoints with no active consumers and approved OpenAPI diff.
+- [x] 3.4 Do not treat 404 on old endpoints as success without approved retirement notes.
+
+> 2026-05-18 implementation boundary evidence:
+> `docs/reports/quality/backend-health-status-implementation-boundary-2026-05-18.md`
+>
+> Closed as verified no-op implementation: existing approved probe paths already
+> satisfy the G-line taxonomy, no unapproved alias was added, no readiness
+> compatibility path was removed, no endpoint was retired, and `/health/readiness`
+> remains absent without being counted as a successful retirement.
 
 ## 4. Verification
 
