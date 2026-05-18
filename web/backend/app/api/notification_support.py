@@ -7,7 +7,9 @@ from functools import wraps
 from typing import Dict, List
 
 import structlog
-from fastapi import HTTPException, WebSocket
+from fastapi import WebSocket
+
+from app.core.exceptions import BusinessException
 
 from app.api.notification_models import RealTimeNotification
 
@@ -60,7 +62,7 @@ def rate_limit(limit: int, window: int):
             user_key = f"user_{current_user.id}" if current_user else "anonymous"
 
             if not rate_limiter.is_allowed(user_key, limit, window):
-                raise HTTPException(status_code=429, detail=f"请求过于频繁，请在{window}秒后重试")
+                raise BusinessException(status_code=429, detail=f"请求过于频繁，请在{window}秒后重试")
 
             return await func(*args, **kwargs)
 

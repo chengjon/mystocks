@@ -5,7 +5,9 @@ from decimal import Decimal
 from typing import Any, Literal, TypeVar
 from uuid import uuid4
 
-from fastapi import APIRouter, Body, HTTPException, Path, Query
+from fastapi import APIRouter, Body, Path, Query
+
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.responses import ErrorCodes, UnifiedResponse, create_error_response, create_unified_success_response
@@ -342,7 +344,7 @@ def _load_execution_records(
             page_size=page_size,
         )
     except ValueError as exc:
-        raise HTTPException(
+        raise BusinessException(
             status_code=400,
             detail=create_error_response(
                 error_code=ErrorCodes.VALIDATION_ERROR,
@@ -540,7 +542,7 @@ async def get_execution_tracking_detail(
     evidence_service = get_execution_tracking_evidence_service()
     record = evidence_service.load_record_by_tracking_id(tracking_id) or _EXECUTION_TRIGGERS.get(tracking_id)
     if record is None:
-        raise HTTPException(
+        raise BusinessException(
             status_code=404,
             detail=create_error_response(
                 error_code=ErrorCodes.NOT_FOUND,

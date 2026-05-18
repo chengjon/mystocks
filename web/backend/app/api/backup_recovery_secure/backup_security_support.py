@@ -7,7 +7,9 @@ import time
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
-from fastapi import HTTPException, status
+from fastapi import status
+
+from app.core.exceptions import BusinessException
 
 from app.core.security import User
 from app.models.backup_schemas import require_admin_role, require_backup_permission, require_recovery_permission
@@ -101,7 +103,7 @@ def verify_admin_permission(user: User) -> None:
         {"required_role": "admin", "user_role": user.role},
         success=False,
     )
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行此操作")
+    raise BusinessException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行此操作")
 
 
 def verify_backup_permission(user: User) -> None:
@@ -116,7 +118,7 @@ def verify_backup_permission(user: User) -> None:
         {"required_permission": "backup", "user_role": user.role},
         success=False,
     )
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要备份操作权限")
+    raise BusinessException(status_code=status.HTTP_403_FORBIDDEN, detail="需要备份操作权限")
 
 
 def verify_recovery_permission(user: User) -> None:
@@ -131,4 +133,4 @@ def verify_recovery_permission(user: User) -> None:
         {"required_permission": "recovery", "user_role": user.role},
         success=False,
     )
-    raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行恢复操作")
+    raise BusinessException(status_code=status.HTTP_403_FORBIDDEN, detail="需要管理员权限执行恢复操作")

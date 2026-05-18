@@ -14,7 +14,9 @@
 
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
+
+from app.core.exceptions import BusinessException
 
 from app.core.responses import (
     UnifiedResponse,
@@ -52,7 +54,7 @@ async def get_naive_bayes_class_probabilities(
 
         return ok(data=result, message="获取类别概率成功")
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         logger.error("获取类别概率失败", model_id=model_id, error=str(e))

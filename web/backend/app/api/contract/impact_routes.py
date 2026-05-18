@@ -4,7 +4,9 @@ from __future__ import annotations
 
 from dataclasses import asdict
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends
+
+from app.core.exceptions import BusinessException
 from sqlalchemy.orm import Session
 
 from app.api.contract.schemas import ContractImpactAnalysisResponse, ContractImpactRequest
@@ -114,9 +116,9 @@ async def analyze_contract_impact(
     to_version = VersionManager.get_version(db, request.to_version_id)
 
     if not from_version:
-        raise HTTPException(status_code=404, detail="源版本不存在")
+        raise BusinessException(status_code=404, detail="源版本不存在")
     if not to_version:
-        raise HTTPException(status_code=404, detail="目标版本不存在")
+        raise BusinessException(status_code=404, detail="目标版本不存在")
 
     analysis = ContractImpactAnalyzer().analyze_specs(
         from_spec=from_version.spec,

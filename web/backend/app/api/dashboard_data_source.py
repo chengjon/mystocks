@@ -12,7 +12,7 @@ from typing import Dict, List, Optional
 
 import httpx
 import pandas as pd
-from fastapi import HTTPException
+from app.core.exceptions import BusinessException
 from sqlalchemy import text
 
 from app.services.market_data_service_v2 import get_market_data_service_v2
@@ -591,14 +591,24 @@ class RealBusinessDataSource:
                 strategies_data = strategy_response.json()
 
                 if isinstance(strategies_data, dict):
-                    strategies = strategies_data.get("data", [])
+                    strategies_payload = strategies_data.get("data", [])
+                    if isinstance(strategies_payload, dict):
+                        strategies = strategies_payload.get("items", [])
+                    elif isinstance(strategies_payload, list):
+                        strategies = strategies_payload
+                    else:
+                        strategies = []
                 elif isinstance(strategies_data, list):
                     strategies = strategies_data
                 else:
                     strategies = []
 
                 active_strategies = [
-                    item for item in strategies if item.get("status") == "active" or item.get("is_active") is True
+                    item
+                    for item in strategies
+                    if isinstance(item, dict)
+                    and (item.get("user_id") is None or str(item.get("user_id")) == str(user_id))
+                    and (item.get("status") == "active" or item.get("is_active") is True)
                 ]
                 return active_strategies
 
@@ -687,4 +697,4 @@ def get_data_source():
         return RealBusinessDataSource()
     except Exception as error:
         logger.error("获取数据源失败: %s", error)
-        raise HTTPException(status_code=500, detail=f"数据源初始化失败: {str(error)}")
+        raise BusinessException(status_code=500, detail=f"数据源初始化失败: {str(error)}")

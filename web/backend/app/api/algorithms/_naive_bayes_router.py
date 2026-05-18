@@ -1,7 +1,9 @@
 """Naive Bayes endpoints for algorithm API."""
 
 import structlog
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
+
+from app.core.exceptions import BusinessException
 
 from app.core.responses import UnifiedResponse, bad_request, ok, server_error
 from app.core.security import User, get_current_user
@@ -47,7 +49,7 @@ async def train_naive_bayes_algorithm(
         )
         return ok(data=result, message="朴素贝叶斯算法训练成功")
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as error:
         logger.error("朴素贝叶斯算法训练失败", error=str(error))
@@ -75,7 +77,7 @@ async def predict_naive_bayes_algorithm(
         logger.info("朴素贝叶斯预测完成", model_id=request.model_id)
         return ok(data=result, message="朴素贝叶斯预测成功")
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as error:
         logger.error("朴素贝叶斯预测失败", model_id=request.model_id, error=str(error))

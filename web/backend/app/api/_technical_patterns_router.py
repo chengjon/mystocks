@@ -5,7 +5,9 @@ from __future__ import annotations
 import logging
 from typing import get_args
 
-from fastapi import APIRouter, HTTPException, Path, Query, status
+from fastapi import APIRouter, Path, Query, status
+
+from app.core.exceptions import BusinessException
 
 from app.api._technical_patterns_models import PatternDetection, PatternDetectionData, PatternPeriod
 from app.core.responses import UnifiedResponse
@@ -60,11 +62,11 @@ async def _detect_patterns_for_symbol(symbol: str, period: str) -> list[PatternD
     try:
         service = TechnicalPatternDetectionService()
         return await service.detect_for_symbol(symbol=symbol, period=period)
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as exc:
         logger.warning("Pattern analysis unavailable for %s/%s: %s", symbol, period, exc)
-        raise HTTPException(
+        raise BusinessException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Pattern analysis unavailable",
         ) from exc
@@ -73,7 +75,7 @@ async def _detect_patterns_for_symbol(symbol: str, period: str) -> list[PatternD
 def _normalize_pattern_period(period: str) -> str:
     normalized_period = period.lower()
     if normalized_period not in SUPPORTED_PATTERN_PERIODS:
-        raise HTTPException(
+        raise BusinessException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=f"Unsupported period '{period}'. Expected one of: {', '.join(SUPPORTED_PATTERN_PERIODS)}.",
         )

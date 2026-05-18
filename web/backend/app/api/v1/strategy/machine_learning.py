@@ -13,7 +13,9 @@ from typing import Any, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, Query
+
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.responses import UnifiedResponse
@@ -311,24 +313,10 @@ def _backtest_frame(strategy_id: str, frame: pd.DataFrame, initial_capital: floa
 
 
 from .ml_workbench import (  # noqa: E402
-    MLWorkbenchModelFamily,
-    MLWorkbenchPredictionRequest,
-    MLWorkbenchTrainingRequest,
-    get_ml_runtime_status,
-    get_ml_workbench_model_detail,
-    list_ml_workbench_models,
-    predict_ml_workbench_model,
     router as ml_workbench_router,
-    train_ml_workbench_model,
 )
 from .batch_analysis import (  # noqa: E402
-    BatchAnalysisOperation,
-    BatchAnalysisRequest,
-    get_batch_analysis_runtime_status,
-    get_batch_analysis_task_detail,
-    list_batch_analysis_tasks,
     router as batch_analysis_router,
-    submit_batch_analysis_task,
 )
 
 router.include_router(batch_analysis_router)
@@ -393,7 +381,7 @@ async def generate_strategy_prediction(
     """
     state = runtime_store.get(request.strategy_id)
     if state is None:
-        raise HTTPException(status_code=404, detail=f"Unknown strategy_id: {request.strategy_id}")
+        raise BusinessException(status_code=404, detail=f"Unknown strategy_id: {request.strategy_id}")
     frame = _load_price_frame(request.symbol, "2024-01-01", datetime.now(timezone.utc).date().isoformat())
     returns = frame["close"].pct_change().dropna()
     horizon = max(1, request.prediction_horizon)
@@ -437,7 +425,7 @@ async def backtest_ml_strategy(
     """
     state = runtime_store.get(request.strategy_id)
     if state is None:
-        raise HTTPException(status_code=404, detail=f"Unknown strategy_id: {request.strategy_id}")
+        raise BusinessException(status_code=404, detail=f"Unknown strategy_id: {request.strategy_id}")
     frame = _load_price_frame(request.symbol, request.start_date, request.end_date)
     response = _backtest_frame(request.strategy_id, frame, request.initial_capital, request.position_size)
     state.performance.update(

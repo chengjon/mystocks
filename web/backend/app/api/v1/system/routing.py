@@ -7,7 +7,9 @@
 from datetime import date
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, HTTPException
+from fastapi import APIRouter, Body
+
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.responses import UnifiedResponse
@@ -87,7 +89,7 @@ def _parse_date(value: Optional[str]) -> Optional[date]:
     try:
         return date.fromisoformat(value)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=f"Invalid ISO date: {value}") from exc
+        raise BusinessException(status_code=400, detail=f"Invalid ISO date: {value}") from exc
 
 
 def _resolve_market_classification(request: DataRoutingRequest) -> DataClassification:
@@ -96,7 +98,7 @@ def _resolve_market_classification(request: DataRoutingRequest) -> DataClassific
     end = _parse_date(date_range.get("end"))
 
     if start and end and end < start:
-        raise HTTPException(status_code=400, detail="date_range.end must be on or after date_range.start")
+        raise BusinessException(status_code=400, detail="date_range.end must be on or after date_range.start")
 
     if start and end:
         range_days = (end - start).days + 1
@@ -116,7 +118,7 @@ def _resolve_classification(request: DataRoutingRequest) -> DataClassification:
 
     classification = _CATEGORY_TO_CLASSIFICATION.get(category)
     if classification is None:
-        raise HTTPException(status_code=400, detail=f"Unsupported data_category: {request.data_category}")
+        raise BusinessException(status_code=400, detail=f"Unsupported data_category: {request.data_category}")
     return classification
 
 

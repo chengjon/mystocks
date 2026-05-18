@@ -10,7 +10,9 @@ from __future__ import annotations
 import json
 from typing import Any, Literal, Protocol, cast
 
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends
+
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.responses import UnifiedResponse, create_unified_success_response
@@ -397,7 +399,7 @@ def get_system_settings_repository() -> SystemSettingsRepository:
 
 
 def _raise_unavailable(exc: RuntimeError) -> None:
-    raise HTTPException(status_code=503, detail=str(exc)) from exc
+    raise BusinessException(status_code=503, detail=str(exc)) from exc
 
 
 @router.get(

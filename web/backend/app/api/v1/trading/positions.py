@@ -10,7 +10,9 @@ from datetime import datetime
 from hashlib import sha256
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, HTTPException, Path, Query
+from fastapi import APIRouter, Body, Path, Query
+
+from app.core.exceptions import BusinessException
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel, Field
 
@@ -256,7 +258,7 @@ def _serialize_position(position: PositionState) -> dict[str, Any]:
 
 def _raise_unified_http(status_code: int, message: str, data: dict[str, Any]) -> None:
     response = UnifiedResponse(success=False, code=status_code, message=message, data=data)
-    raise HTTPException(status_code=status_code, detail=jsonable_encoder(response.model_dump()))
+    raise BusinessException(status_code=status_code, detail=jsonable_encoder(response.model_dump()))
 
 
 def _resolve_attribution_date(value: Optional[str]) -> tuple[str, bool]:

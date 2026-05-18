@@ -6,7 +6,8 @@ from datetime import datetime
 
 import numpy as np
 import pandas as pd
-from fastapi import HTTPException
+
+from app.core.exceptions import BusinessException
 
 from app.services.data_service import DataService, StockDataNotFoundError
 
@@ -24,7 +25,7 @@ def _parse_iso_datetime(value: str, field_name: str) -> datetime:
     try:
         return datetime.fromisoformat(value)
     except ValueError as exc:
-        raise HTTPException(status_code=400, detail=f"Invalid ISO date for {field_name}: {value}") from exc
+        raise BusinessException(status_code=400, detail=f"Invalid ISO date for {field_name}: {value}") from exc
 
 
 def _synthetic_frame(symbol: str, start_dt: datetime, end_dt: datetime) -> pd.DataFrame:
@@ -53,7 +54,7 @@ def _load_price_frame(symbol: str, start_date: str, end_date: str) -> pd.DataFra
     start_dt = _parse_iso_datetime(start_date, "start_date")
     end_dt = _parse_iso_datetime(end_date, "end_date")
     if start_dt >= end_dt:
-        raise HTTPException(status_code=400, detail="start_date must be earlier than end_date")
+        raise BusinessException(status_code=400, detail="start_date must be earlier than end_date")
     try:
         frame, _ = _get_data_service().get_daily_ohlcv(symbol=symbol, start_date=start_dt, end_date=end_dt)
     except StockDataNotFoundError:
@@ -82,7 +83,7 @@ def _load_price_frame(symbol: str, start_date: str, end_date: str) -> pd.DataFra
 def _feature_snapshot(frame: pd.DataFrame, lookback_window: int) -> tuple[dict[str, float], float, float]:
     returns = frame["close"].pct_change().dropna()
     if returns.empty:
-        raise HTTPException(status_code=400, detail="Not enough market data for ML strategy training")
+        raise BusinessException(status_code=400, detail="Not enough market data for ML strategy training")
     window = min(max(lookback_window, 5), max(len(returns) - 1, 5))
     momentum_5 = float(frame["close"].pct_change(5).iloc[-1] or 0.0)
     volatility_20 = float(returns.tail(min(20, len(returns))).std() or 0.0)

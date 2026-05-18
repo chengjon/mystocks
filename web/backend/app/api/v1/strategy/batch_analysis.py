@@ -8,7 +8,9 @@ from enum import Enum
 from typing import Any, Dict
 from uuid import uuid4
 
-from fastapi import APIRouter, Body, HTTPException, Path
+from fastapi import APIRouter, Body, Path
+
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.core.responses import UnifiedResponse
@@ -239,7 +241,7 @@ async def submit_batch_analysis_task(
     ),
 ):
     if len(request.symbols) > MAX_BATCH_SYMBOLS:
-        raise HTTPException(status_code=400, detail=f"First-batch analysis supports at most {MAX_BATCH_SYMBOLS} symbols")
+        raise BusinessException(status_code=400, detail=f"First-batch analysis supports at most {MAX_BATCH_SYMBOLS} symbols")
 
     results = _build_results(request)
     candidate_count = len([item for item in results if item["signal"] == "candidate"])
@@ -301,7 +303,7 @@ async def get_batch_analysis_task_detail(
 ):
     task = batch_analysis_store.get(task_id)
     if task is None:
-        raise HTTPException(status_code=404, detail=f"Unknown batch task: {task_id}")
+        raise BusinessException(status_code=404, detail=f"Unknown batch task: {task_id}")
     return UnifiedResponse(
         success=True,
         code=200,
