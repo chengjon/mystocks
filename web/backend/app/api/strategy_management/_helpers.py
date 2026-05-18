@@ -5,7 +5,9 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import structlog
-from fastapi import APIRouter, BackgroundTasks, Body, HTTPException, Path, Query
+from fastapi import APIRouter
+
+from app.core.exceptions import BusinessException
 
 logger = structlog.get_logger(__name__)
 
@@ -15,7 +17,6 @@ if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
 from app.mock.unified_mock_data import get_mock_data_manager
-from app.api.strategy_management._strategy_management_task_tail import run_backtest_task, train_model_task
 from app.openapi_config import COMMON_RESPONSES
 from app.core.config import settings
 from app.core.responses import create_unified_success_response
@@ -335,11 +336,11 @@ async def _handle_strategy_lifecycle_action(
 
             if strategies is None or len(strategies) == 0:
                 if not _runtime_fallback_enabled():
-                    raise HTTPException(status_code=404, detail="策略不存在")
+                    raise BusinessException(detail="策略不存在", status_code=404)
 
                 updated_strategy = _set_runtime_strategy_status(strategy_id, status)
                 if updated_strategy is None:
-                    raise HTTPException(status_code=404, detail="策略不存在")
+                    raise BusinessException(detail="策略不存在", status_code=404)
                 source = "runtime-fallback"
             else:
                 strategy_record = strategies.iloc[0].to_dict()
@@ -360,15 +361,15 @@ async def _handle_strategy_lifecycle_action(
 
                 if not result:
                     if not _runtime_fallback_enabled():
-                        raise HTTPException(status_code=500, detail=f"{success_message}失败")
+                        raise BusinessException(detail=f"{success_message}失败", status_code=500)
 
                     updated_strategy = _set_runtime_strategy_status(strategy_id, status)
                     if updated_strategy is None:
-                        raise HTTPException(status_code=500, detail=f"{success_message}失败")
+                        raise BusinessException(detail=f"{success_message}失败", status_code=500)
                     source = "runtime-fallback"
                 else:
                     updated_strategy = _normalize_strategy_record(strategy_record)
-        except HTTPException:
+        except BusinessException:
             raise
         except Exception as db_error:
             if not _runtime_fallback_enabled():
@@ -376,7 +377,7 @@ async def _handle_strategy_lifecycle_action(
 
             updated_strategy = _set_runtime_strategy_status(strategy_id, status)
             if updated_strategy is None:
-                raise HTTPException(status_code=500, detail=f"{success_message}失败: {str(db_error)}")
+                raise BusinessException(detail=f"{success_message}失败: {str(db_error)}", status_code=500)
             source = "runtime-fallback"
             logger.warning("策略生命周期动作降级到 runtime fallback: %(e)s", e=str(db_error))
 
@@ -406,7 +407,7 @@ async def _handle_strategy_lifecycle_action(
             success=False,
             error_message=str(e),
         )
-        raise HTTPException(status_code=500, detail=f"{success_message}失败: {str(e)}")
+        raise BusinessException(detail=f"{success_message}失败: {str(e)}", status_code=500)
 
 def get_monitoring_db():
     """获取监控数据库实例（延迟初始化）"""
