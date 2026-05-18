@@ -155,12 +155,13 @@
 > `2026-05-17` 补充：已新增 `tests/integration/contract/test_contract_validation_e2e.py`，覆盖 `/api/contracts/validate` → `ContractValidator` → drift incident → contract health，以及 validation failure → realtime alert seam；同时修正 `ContractValidator._validate_openapi_spec()` 的 prance backend 名称为 `openapi-spec-validator`，避免合法 OpenAPI 被误报解析失败。
 > `2026-05-17` 补充：已执行 `.github/workflows/api-contract-validation.yml` 的本地 workflow-equivalent dry-run，并记录到 `reports/governance/2026-05-17-api-contract-ci-cd-local-dry-run.md`。导入与 OpenAPI 生成通过，但文档回归门、success example audit、`backend_api_documentation` collector 仍失败，因此 8.2 不可勾选。
 > `2026-05-17` 补充：已复测 CI/CD 合同验证链路并更新同一报告；standalone success example audit 已收敛为 `JSON_SUCCESS_MISSING_EXAMPLES 0`、`NON_JSON_SUCCESS_RESPONSES 4`，collector 已收敛为 `json_success_missing_examples=0`、`total_issues=1`，但文档 gate 仍因 `strategy-mgmt` 兼容路由 schema/operationId 问题失败为 `9 failed, 120 passed`，因此 8.2 继续保持未勾选。
+> `2026-05-18` 补充：已完成 workflow-equivalent rerun，并记录到 `reports/governance/2026-05-18-api-contract-ci-cd-local-dry-run-rerun.md`。结果：contract imports 通过；`OpenAPIGenerator.scan_app(app)` + `generate_spec()` 通过，`paths=504`；`web/backend/tests/test_api_documentation_validation.py` 为 `16 passed`；success example audit 为 `JSON_SUCCESS_MISSING_EXAMPLES 0` / `NON_JSON_SUCCESS_RESPONSES 4`；collector 为 `total_endpoints=538`、`documented_endpoints=538`、`endpoints_with_errors=538`、`json_success_missing_examples=0`。因此 8.2 在 repository-local 范围内可勾选完成；GitHub Actions 云端实跑仍需后续推送/CI 环境验证。
 > `2026-05-17` 补充：已扩展 `tests/unit/api/test_contract_impact_analyzer.py`，覆盖新增端点（non-breaking/medium/low effort）与新增 required schema property（breaking/high/medium effort）边界，并结合 route/notification 用例验证 impact analysis 输出口径。
 > `2026-05-17` 补充：已执行 backend `ContractValidator.validate()` runtime validation 性能 smoke，并记录到 `reports/governance/2026-05-17-contract-runtime-validation-performance.md`；当前前端 `unifiedApiClient.ts` 仍是 legacy wrapper，不具备可测的 schema-enforcing runtime validator。
 > `2026-05-17` 补充：已完成 repository-local security review，并记录到 `reports/governance/2026-05-17-contract-validation-security-review.md`；审查发现 authorization、输入规模/复杂度限制、外部 `$ref` 约束和 drift incident 有界保留仍需后续 remediation。
 
 - [x] 8.1 Perform end-to-end contract validation testing
-- [ ] 8.2 Test CI/CD integration with contract validation
+- [x] 8.2 Test CI/CD integration with contract validation
 - [x] 8.3 Validate contract impact analysis accuracy
 - [x] 8.4 Perform performance testing for runtime validation
 - [x] 8.5 Conduct security review of contract validation implementation

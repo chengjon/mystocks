@@ -8,7 +8,7 @@ from enum import Enum
 from typing import Any, Dict
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Body, HTTPException, Path
 from pydantic import BaseModel, Field, field_validator, model_validator
 
 from app.core.responses import UnifiedResponse
@@ -16,6 +16,43 @@ from app.core.responses import UnifiedResponse
 router = APIRouter(prefix="/batch-analysis")
 
 MAX_BATCH_SYMBOLS = 20
+
+_BATCH_SUCCESS_EXAMPLE: dict[str, Any] = {
+    "success": True,
+    "code": 200,
+    "message": "Batch analysis task completed",
+    "data": {
+        "task_id": "batch_001",
+        "operation": "batch_screening",
+        "symbols": ["000001", "600000"],
+        "status": "completed",
+        "summary": {"total_symbols": 2, "completed_symbols": 2, "failed_symbols": 0},
+    },
+}
+_BATCH_ERROR_EXAMPLE: dict[str, Any] = {
+    "success": False,
+    "code": 400,
+    "message": "Invalid batch analysis request",
+    "data": None,
+}
+BATCH_ANALYSIS_RESPONSES: dict[int, dict[str, Any]] = {
+    200: {
+        "description": "Batch analysis runtime response",
+        "content": {"application/json": {"example": _BATCH_SUCCESS_EXAMPLE}},
+    },
+    400: {
+        "description": "Invalid batch analysis request",
+        "content": {"application/json": {"example": _BATCH_ERROR_EXAMPLE}},
+    },
+    404: {
+        "description": "Batch analysis task not found",
+        "content": {"application/json": {"example": {**_BATCH_ERROR_EXAMPLE, "code": 404, "message": "Batch task not found"}}},
+    },
+    500: {
+        "description": "Batch analysis runtime failure",
+        "content": {"application/json": {"example": {**_BATCH_ERROR_EXAMPLE, "code": 500, "message": "Batch runtime failure"}}},
+    },
+}
 
 
 class BatchAnalysisOperation(str, Enum):
@@ -157,6 +194,7 @@ def _serialize_task(task: BatchAnalysisTask, *, include_results: bool) -> dict[s
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="Batch analysis runtime status",
     description="返回 7.2 批量分析 canonical runtime 的能力、限制和底层证据模块。",
+    responses=BATCH_ANALYSIS_RESPONSES,
 )
 async def get_batch_analysis_runtime_status():
     data = {
@@ -181,8 +219,25 @@ async def get_batch_analysis_runtime_status():
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="Submit canonical batch analysis task",
     description="提交 7.2 canonical 批量分析任务并返回运行时证据摘要。",
+    responses=BATCH_ANALYSIS_RESPONSES,
 )
-async def submit_batch_analysis_task(request: BatchAnalysisRequest):
+async def submit_batch_analysis_task(
+    request: BatchAnalysisRequest = Body(
+        ...,
+        openapi_examples={
+            "batch_screening": {
+                "summary": "Batch screening request",
+                "value": {
+                    "operation": "batch_screening",
+                    "symbols": ["000001", "600000"],
+                    "start_date": "2026-01-01",
+                    "end_date": "2026-03-31",
+                    "options": {"score_threshold": 0.6},
+                },
+            }
+        },
+    ),
+):
     if len(request.symbols) > MAX_BATCH_SYMBOLS:
         raise HTTPException(status_code=400, detail=f"First-batch analysis supports at most {MAX_BATCH_SYMBOLS} symbols")
 
@@ -222,6 +277,7 @@ async def submit_batch_analysis_task(request: BatchAnalysisRequest):
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="List canonical batch analysis tasks",
     description="列出 7.2 canonical 批量分析运行时任务摘要。",
+    responses=BATCH_ANALYSIS_RESPONSES,
 )
 async def list_batch_analysis_tasks():
     tasks = [_serialize_task(task, include_results=False) for task in batch_analysis_store.list()]
@@ -238,8 +294,11 @@ async def list_batch_analysis_tasks():
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="Get canonical batch analysis task detail",
     description="读取 7.2 canonical 批量分析运行时任务详情。",
+    responses=BATCH_ANALYSIS_RESPONSES,
 )
-async def get_batch_analysis_task_detail(task_id: str):
+async def get_batch_analysis_task_detail(
+    task_id: str = Path(..., description="Canonical batch analysis task identifier"),
+):
     task = batch_analysis_store.get(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail=f"Unknown batch task: {task_id}")

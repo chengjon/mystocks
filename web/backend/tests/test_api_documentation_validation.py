@@ -13,6 +13,7 @@ Date: 2025-12-03
 """
 
 import json
+import re
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -159,6 +160,11 @@ class APIDocumentationValidator:
 
         return endpoint_results
 
+    @staticmethod
+    def _openapi_path_for_route(route_path: str) -> str:
+        """Normalize FastAPI path convertors to the OpenAPI path-template form."""
+        return re.sub(r"\{([^}:]+):[^}]+\}", r"{\1}", route_path)
+
     def find_success_json_response_example_gaps(self) -> List[Dict[str, str]]:
         """Return JSON success responses that still miss an explicit OpenAPI example.
 
@@ -212,7 +218,8 @@ class APIDocumentationValidator:
 
         try:
             # Find endpoint in OpenAPI schema
-            path_item = schema.get("paths", {}).get(route.path, {})
+            openapi_path = self._openapi_path_for_route(route.path)
+            path_item = schema.get("paths", {}).get(openapi_path, {})
             if not path_item:
                 endpoint_result["issues"].append("Endpoint not found in OpenAPI schema")
                 return endpoint_result

@@ -20,8 +20,8 @@ Advanced Quantitative Analysis API Endpoints
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Depends, Query
-from pydantic import BaseModel
+from fastapi import APIRouter, Body, Depends, Query
+from pydantic import BaseModel, Field
 
 from app.core.responses import UnifiedResponse, ok, server_error
 from app.core.security import User, get_current_user
@@ -32,6 +32,19 @@ router = APIRouter(
     prefix="/api/v1/advanced-analysis",
     tags=["advanced-analysis"],
     responses={
+        200: {
+            "description": "高级分析统一响应",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "success": True,
+                        "code": 200,
+                        "message": "高级分析完成",
+                        "data": {"symbol": "000001", "analysis_type": "fundamental", "status": "available"},
+                    }
+                }
+            },
+        },
         401: {"description": "未授权"},
         422: {"description": "参数验证失败"},
         500: {"description": "服务器内部错误"},
@@ -39,27 +52,49 @@ router = APIRouter(
 )
 
 
-# Pydantic请求模型
-class AnalysisRequest(BaseModel):
+class AnalysisRequest:
     """通用分析请求模型"""
 
-    symbol: str = Query(..., description="股票代码", example="000001")
-    include_raw_data: bool = Query(False, description="是否包含原始数据")
+    def __init__(
+        self,
+        symbol: str = Query(..., description="股票代码", example="000001"),
+        include_raw_data: bool = Query(False, description="是否包含原始数据"),
+    ) -> None:
+        self.symbol = symbol
+        self.include_raw_data = include_raw_data
 
 
-class TradingSignalsRequest(BaseModel):
+class TradingSignalsRequest:
     """交易信号分析请求模型"""
 
-    symbol: str = Query(..., description="股票代码", example="000001")
-    signal_types: Optional[list[str]] = Query(None, description="信号类型筛选")
-    min_confidence: float = Query(0.5, description="最小置信度", ge=0.0, le=1.0)
-    include_raw_data: bool = Query(False, description="是否包含原始数据")
+    def __init__(
+        self,
+        symbol: str = Query(..., description="股票代码", example="000001"),
+        signal_types: Optional[list[str]] = Query(None, description="信号类型筛选"),
+        min_confidence: float = Query(0.5, description="最小置信度", ge=0.0, le=1.0),
+        include_raw_data: bool = Query(False, description="是否包含原始数据"),
+    ) -> None:
+        self.symbol = symbol
+        self.signal_types = signal_types
+        self.min_confidence = min_confidence
+        self.include_raw_data = include_raw_data
 
 
-class MarketPanoramaRequest(BaseModel):
+class MarketPanoramaRequest:
     """市场全景分析请求模型"""
 
-    include_raw_data: bool = Query(False, description="是否包含原始数据")
+    def __init__(
+        self,
+        include_raw_data: bool = Query(False, description="是否包含原始数据"),
+    ) -> None:
+        self.include_raw_data = include_raw_data
+
+
+class AdvancedBatchRequest(BaseModel):
+    """Batch request body for advanced analysis operations."""
+
+    symbols: list[str] = Field(..., min_length=1, description="股票代码列表")
+    analysis_types: list[str] = Field(..., min_length=1, description="高级分析类型列表")
 
 
 @router.get("/fundamental", response_model=UnifiedResponse)
@@ -527,8 +562,18 @@ async def analyze_multidimensional_radar(
 # 批量分析接口
 @router.post("/batch", response_model=UnifiedResponse)
 async def analyze_batch(
-    symbols: list[str],
-    analysis_types: list[str],
+    request: AdvancedBatchRequest = Body(
+        ...,
+        openapi_examples={
+            "multi_symbol_batch": {
+                "summary": "多股票批量高级分析",
+                "value": {
+                    "symbols": ["000001", "600000"],
+                    "analysis_types": ["fundamental", "technical", "sentiment"],
+                },
+            }
+        },
+    ),
     current_user: User = Depends(get_current_user),
     service: AdvancedAnalysisService = Depends(),
 ) -> Dict[str, Any]:
@@ -547,13 +592,17 @@ async def analyze_batch(
     - financial_valuation, sentiment, decision_models, multidimensional_radar
     """
     try:
-        result = await service.analyze_batch(symbols=symbols, analysis_types=analysis_types, user_id=current_user.id)
+        result = await service.analyze_batch(
+            symbols=request.symbols,
+            analysis_types=request.analysis_types,
+            user_id=current_user.id,
+        )
 
         return ok(
             data=result,
             message="批量高级分析完成",
-            symbols_count=len(symbols),
-            analysis_types=analysis_types,
+            symbols_count=len(request.symbols),
+            analysis_types=request.analysis_types,
             total_results=len(result),
             timestamp=datetime.now().isoformat(),
         )

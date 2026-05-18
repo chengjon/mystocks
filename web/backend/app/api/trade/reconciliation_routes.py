@@ -32,6 +32,8 @@ MatchStatus = Literal["matched", "mismatched", "missing_broker_record"]
 
 
 class BrokerStatementRow(BaseModel):
+    """Broker-side statement row imported for reconciliation."""
+
     account_id: str = Field(description="Synthetic reconciliation account id")
     trade_id: str = Field(description="Broker trade identifier")
     order_id: str = Field(description="Broker order identifier")
@@ -47,6 +49,8 @@ class BrokerStatementRow(BaseModel):
 
 
 class ReconciliationResultItem(BaseModel):
+    """Single reconciliation match result between internal truth and broker statement rows."""
+
     match_status: MatchStatus = Field(description="Deterministic match status")
     internal_row: InternalStatementRow = Field(description="Internal statement row")
     broker_row: BrokerStatementRow | None = Field(description="Matched broker row if available")
@@ -54,6 +58,8 @@ class ReconciliationResultItem(BaseModel):
 
 
 class ReconciliationResultsPayload(BaseModel):
+    """Paginated reconciliation result payload."""
+
     status: str = Field(description="Availability status")
     endpoint: str = Field(description="Owning endpoint family")
     resource: str = Field(description="Resource identifier")
@@ -72,6 +78,115 @@ def _success_reconciliation_response(
     data_model: ResponsePayloadT,
 ) -> UnifiedResponse[ResponsePayloadT]:
     return create_unified_success_response(data=data_model, message=message)
+
+
+_ERROR_RESPONSE_EXAMPLE: dict[str, Any] = {
+    "success": False,
+    "code": 404,
+    "message": "Reconciliation resource not found",
+    "data": None,
+    "request_id": "contract-example",
+    "errors": [{"field": "account_id", "code": "NOT_FOUND", "message": "Unknown reconciliation account"}],
+}
+
+
+def _json_response_examples(description: str, data: dict[str, Any]) -> dict[int, dict[str, Any]]:
+    success_example = {
+        "success": True,
+        "code": 200,
+        "message": description,
+        "data": data,
+        "request_id": "contract-example",
+        "errors": None,
+    }
+    return {
+        200: {
+            "description": description,
+            "content": {"application/json": {"example": success_example}},
+        },
+        404: {
+            "description": "Reconciliation resource not found",
+            "content": {"application/json": {"example": _ERROR_RESPONSE_EXAMPLE}},
+        },
+        422: {
+            "description": "Invalid reconciliation request",
+            "content": {
+                "application/json": {
+                    "example": {**_ERROR_RESPONSE_EXAMPLE, "code": 422, "message": "Invalid reconciliation request"}
+                }
+            },
+        },
+        500: {
+            "description": "Reconciliation service failure",
+            "content": {
+                "application/json": {
+                    "example": {**_ERROR_RESPONSE_EXAMPLE, "code": 500, "message": "Reconciliation service failure"}
+                }
+            },
+        },
+    }
+
+
+RECONCILIATION_ACCOUNTS_RESPONSES = _json_response_examples(
+    "Reconciliation accounts loaded",
+    {
+        "status": "available",
+        "endpoint": "trade",
+        "resource": "reconciliation_accounts",
+        "items": [{"account_id": "backtest:7", "label": "Backtest account 7", "account_type": "backtest"}],
+        "total_count": 1,
+    },
+)
+RECONCILIATION_STATEMENTS_RESPONSES = _json_response_examples(
+    "Reconciliation statements loaded",
+    {
+        "status": "available",
+        "endpoint": "trade",
+        "resource": "reconciliation_statements",
+        "account_id": "backtest:7",
+        "items": [],
+        "summary": {"total_count": 0, "total_amount": "0", "total_commission": "0"},
+        "total_count": 0,
+        "page": 1,
+        "page_size": 20,
+        "source": "internal_statement_store",
+    },
+)
+RECONCILIATION_RESULTS_RESPONSES = _json_response_examples(
+    "Reconciliation results loaded",
+    {
+        "status": "available",
+        "endpoint": "trade",
+        "resource": "reconciliation_results",
+        "account_id": "backtest:7",
+        "import_batch_id": "batch-001",
+        "items": [],
+        "total_count": 0,
+        "page": 1,
+        "page_size": 20,
+        "source": "internal_statement_store",
+        "match_status": None,
+    },
+)
+RECONCILIATION_IMPORT_RESPONSES = _json_response_examples(
+    "Reconciliation import batch created",
+    {
+        "status": "available",
+        "endpoint": "trade",
+        "resource": "reconciliation_import_batch",
+        "import_batch_id": "batch-001",
+        "account_id": "backtest:7",
+        "source_type": "miniqmt",
+        "row_count": 2,
+    },
+)
+RECONCILIATION_EXPORT_RESPONSES: dict[int, dict[str, Any]] = {
+    200: {
+        "description": "Reconciliation CSV export",
+        "content": {"text/csv": {"example": "match_status,order_id,symbol\nmatched,order-001,000001\n"}},
+    },
+    **{code: spec for code, spec in RECONCILIATION_RESULTS_RESPONSES.items() if code != 200},
+}
 
 
 def _parse_query_date(value: str | None, field_name: str):
@@ -217,7 +332,13 @@ def _load_reconciliation_rows(
     return internal_payload, results
 
 
-@router.get("/accounts", response_model=UnifiedResponse[ReconciliationAccountsPayload])
+@router.get(
+    "/accounts",
+    response_model=UnifiedResponse[ReconciliationAccountsPayload],
+    summary="List reconciliation accounts",
+    description="Return the synthetic accounts available for broker statement reconciliation.",
+    responses=RECONCILIATION_ACCOUNTS_RESPONSES,
+)
 async def get_reconciliation_accounts() -> UnifiedResponse[ReconciliationAccountsPayload]:
     accounts = [
         ReconciliationAccountDescriptor.model_validate(item).model_dump(mode="json")
@@ -236,7 +357,13 @@ async def get_reconciliation_accounts() -> UnifiedResponse[ReconciliationAccount
     )
 
 
-@router.get("/statements", response_model=UnifiedResponse[ReconciliationStatementsPayload])
+@router.get(
+    "/statements",
+    response_model=UnifiedResponse[ReconciliationStatementsPayload],
+    summary="List internal reconciliation statements",
+    description="Return paginated internal statement rows that act as the reconciliation truth source.",
+    responses=RECONCILIATION_STATEMENTS_RESPONSES,
+)
 async def get_reconciliation_statements(
     account_id: str = Query(..., description="Synthetic reconciliation account id"),
     start_date: str | None = Query(None, description="开始日期 YYYY-MM-DD"),
@@ -276,7 +403,13 @@ async def get_reconciliation_statements(
     )
 
 
-@router.get("/results", response_model=UnifiedResponse[ReconciliationResultsPayload])
+@router.get(
+    "/results",
+    response_model=UnifiedResponse[ReconciliationResultsPayload],
+    summary="List reconciliation match results",
+    description="Return deterministic match results between internal statement rows and an imported broker batch.",
+    responses=RECONCILIATION_RESULTS_RESPONSES,
+)
 async def get_reconciliation_results(
     account_id: str = Query(..., description="Synthetic reconciliation account id"),
     import_batch_id: str = Query(..., description="In-memory import batch identifier"),
@@ -316,7 +449,13 @@ async def get_reconciliation_results(
     )
 
 
-@router.get("/export")
+@router.get(
+    "/export",
+    response_class=Response,
+    summary="Export reconciliation match results",
+    description="Export reconciliation match results as a CSV file for audit and offline review.",
+    responses=RECONCILIATION_EXPORT_RESPONSES,
+)
 async def export_reconciliation_results(
     account_id: str = Query(..., description="Synthetic reconciliation account id"),
     import_batch_id: str = Query(..., description="In-memory import batch identifier"),
@@ -341,11 +480,31 @@ async def export_reconciliation_results(
     )
 
 
-@router.post("/import", response_model=UnifiedResponse[ReconciliationImportBatchPayload])
+@router.post(
+    "/import",
+    response_model=UnifiedResponse[ReconciliationImportBatchPayload],
+    summary="Import broker reconciliation CSV",
+    description="Import a broker statement CSV and create an in-memory reconciliation batch for deterministic matching.",
+    responses=RECONCILIATION_IMPORT_RESPONSES,
+    openapi_extra={
+        "requestBody": {
+            "content": {
+                "multipart/form-data": {
+                    "examples": {
+                        "miniqmt_statement": {
+                            "summary": "miniQMT broker statement",
+                            "value": {"file": "statement.csv", "source_type": "miniqmt", "account_id": "backtest:7"},
+                        }
+                    }
+                }
+            }
+        }
+    },
+)
 async def import_reconciliation_csv(
-    file: UploadFile = File(...),
-    source_type: str = Form(...),
-    account_id: str | None = Form(None),
+    file: UploadFile = File(..., description="Broker statement CSV file"),
+    source_type: str = Form(..., description="CSV source type, such as miniqmt or normalized_template"),
+    account_id: str | None = Form(None, description="Synthetic account id required by miniqmt imports"),
 ) -> UnifiedResponse[ReconciliationImportBatchPayload]:
     csv_bytes = await file.read()
 

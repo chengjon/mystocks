@@ -12,7 +12,7 @@ from typing import Annotated, Any, Dict
 from uuid import uuid4
 
 import pandas as pd
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Body, HTTPException, Path as PathParam
 from pydantic import BaseModel, Field, StringConstraints, model_validator
 
 from app.core.responses import UnifiedResponse
@@ -23,6 +23,47 @@ from .runtime_state import TrainedStrategyState, runtime_store
 router = APIRouter(prefix="/ml")
 
 NonBlankString = Annotated[str, StringConstraints(strip_whitespace=True, min_length=1)]
+
+_ML_SUCCESS_EXAMPLE: dict[str, Any] = {
+    "success": True,
+    "code": 200,
+    "message": "ML workbench model detail",
+    "data": {
+        "model_id": "svm_000001_001",
+        "symbol": "000001.SZ",
+        "model_family": "svm",
+        "status": "trained",
+        "performance": {"training_accuracy": 0.72, "validation_score": 0.61},
+    },
+}
+_ML_ERROR_EXAMPLE: dict[str, Any] = {
+    "success": False,
+    "code": 404,
+    "message": "Unknown model_id",
+    "data": None,
+}
+ML_WORKBENCH_RESPONSES: dict[int, dict[str, Any]] = {
+    200: {
+        "description": "ML workbench runtime response",
+        "content": {"application/json": {"example": _ML_SUCCESS_EXAMPLE}},
+    },
+    400: {
+        "description": "Invalid ML workbench request",
+        "content": {"application/json": {"example": {**_ML_ERROR_EXAMPLE, "code": 400, "message": "Invalid request"}}},
+    },
+    404: {
+        "description": "ML workbench model not found",
+        "content": {"application/json": {"example": _ML_ERROR_EXAMPLE}},
+    },
+    409: {
+        "description": "ML model scope mismatch",
+        "content": {"application/json": {"example": {**_ML_ERROR_EXAMPLE, "code": 409, "message": "Model scope mismatch"}}},
+    },
+    500: {
+        "description": "ML workbench runtime failure",
+        "content": {"application/json": {"example": {**_ML_ERROR_EXAMPLE, "code": 500, "message": "ML runtime failure"}}},
+    },
+}
 DATE_ONLY_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 
@@ -150,6 +191,7 @@ def _workbench_signal(frame: pd.DataFrame, horizon: int, validation_score: float
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="ML runtime status",
     description="返回 7.1 模型训练 / 预测推理 canonical runtime 的依赖、模型目录和能力状态。",
+    responses=ML_WORKBENCH_RESPONSES,
 )
 async def get_ml_runtime_status():
     model_dir = Path(os.getenv("ML_MODEL_DIR", "./models"))
@@ -183,8 +225,27 @@ async def get_ml_runtime_status():
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="Train canonical ML workbench model",
     description="训练 7.1 canonical 模型工作台运行时模型，并返回模型指标与特征上下文。",
+    responses=ML_WORKBENCH_RESPONSES,
 )
-async def train_ml_workbench_model(request: MLWorkbenchTrainingRequest):
+async def train_ml_workbench_model(
+    request: MLWorkbenchTrainingRequest = Body(
+        ...,
+        openapi_examples={
+            "svm_training": {
+                "summary": "Train SVM model",
+                "value": {
+                    "model_family": "svm",
+                    "symbol": "000001.SZ",
+                    "start_date": "2025-01-01",
+                    "end_date": "2025-12-31",
+                    "feature_window": 20,
+                    "prediction_horizon": 1,
+                    "parameters": {"kernel": "rbf"},
+                },
+            }
+        },
+    ),
+):
     _ensure_model_backend_available(request.model_family)
     frame = _load_price_frame(request.symbol, request.start_date, request.end_date)
     if len(frame) <= request.feature_window + request.prediction_horizon:
@@ -239,8 +300,19 @@ async def train_ml_workbench_model(request: MLWorkbenchTrainingRequest):
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="Predict with canonical ML workbench model",
     description="使用已注册的 7.1 canonical 运行时模型执行预测推理。",
+    responses=ML_WORKBENCH_RESPONSES,
 )
-async def predict_ml_workbench_model(request: MLWorkbenchPredictionRequest):
+async def predict_ml_workbench_model(
+    request: MLWorkbenchPredictionRequest = Body(
+        ...,
+        openapi_examples={
+            "single_symbol_prediction": {
+                "summary": "Predict one symbol",
+                "value": {"model_id": "svm_000001_001", "symbol": "000001.SZ", "prediction_horizon": 1},
+            }
+        },
+    ),
+):
     state = runtime_store.get(request.model_id)
     if state is None or not state.trained or state.parameters.get("workbench_model") is not True:
         raise HTTPException(status_code=404, detail=f"Unknown model_id: {request.model_id}")
@@ -291,6 +363,7 @@ async def predict_ml_workbench_model(request: MLWorkbenchPredictionRequest):
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="List canonical ML workbench models",
     description="列出 7.1 canonical ML 工作台已注册的运行时模型。",
+    responses=ML_WORKBENCH_RESPONSES,
 )
 async def list_ml_workbench_models():
     models = [_serialize_workbench_model(item) for item in _runtime_model_items()]
@@ -307,8 +380,11 @@ async def list_ml_workbench_models():
     response_model=UnifiedResponse[Dict[str, Any]],
     summary="Get canonical ML workbench model detail",
     description="读取 7.1 canonical ML 工作台运行时模型详情。",
+    responses=ML_WORKBENCH_RESPONSES,
 )
-async def get_ml_workbench_model_detail(model_id: str):
+async def get_ml_workbench_model_detail(
+    model_id: str = PathParam(..., description="Registered ML workbench model identifier"),
+):
     resolved_model_id = model_id.strip()
     if not resolved_model_id:
         raise HTTPException(status_code=400, detail="Model ID is required")

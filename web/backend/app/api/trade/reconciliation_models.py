@@ -7,12 +7,16 @@ from pydantic import BaseModel, Field
 
 
 class ReconciliationAccountDescriptor(BaseModel):
+    """Selectable account descriptor for reconciliation statement views."""
+
     account_id: str = Field(description="Synthetic reconciliation account id")
     label: str = Field(description="Display label")
     account_type: str = Field(description="Account source type")
 
 
 class InternalStatementRow(BaseModel):
+    """Internal trade statement row used as reconciliation truth."""
+
     account_id: str = Field(description="Synthetic reconciliation account id")
     trade_id: str = Field(description="Internal trade identifier")
     order_id: str = Field(description="Synthetic order identifier")
@@ -26,12 +30,16 @@ class InternalStatementRow(BaseModel):
 
 
 class InternalStatementSummary(BaseModel):
+    """Aggregate totals for internal statement rows."""
+
     total_count: int = Field(description="Filtered row count")
     total_amount: Decimal = Field(description="Filtered gross amount")
     total_commission: Decimal = Field(description="Filtered total commission")
 
 
 class ReconciliationAccountsPayload(BaseModel):
+    """Payload listing accounts that can be reconciled."""
+
     status: str = Field(description="Availability status")
     endpoint: str = Field(description="Owning endpoint family")
     resource: str = Field(description="Resource identifier")
@@ -40,6 +48,8 @@ class ReconciliationAccountsPayload(BaseModel):
 
 
 class ReconciliationStatementsPayload(BaseModel):
+    """Payload containing internal statement rows for one account."""
+
     status: str = Field(description="Availability status")
     endpoint: str = Field(description="Owning endpoint family")
     resource: str = Field(description="Resource identifier")
@@ -53,6 +63,8 @@ class ReconciliationStatementsPayload(BaseModel):
 
 
 class ReconciliationImportBatchPayload(BaseModel):
+    """Payload describing an imported broker statement batch."""
+
     status: str = Field(description="Availability status")
     endpoint: str = Field(description="Owning endpoint family")
     resource: str = Field(description="Resource identifier")

@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Any, Literal, TypeVar
 from uuid import uuid4
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Body, HTTPException, Path, Query
 from pydantic import BaseModel, Field
 
 from app.core.responses import ErrorCodes, UnifiedResponse, create_error_response, create_unified_success_response
@@ -14,7 +14,57 @@ from app.services.statement_reconciliation.internal_statement_source import quer
 from src.application.trading.broker_divergence import build_default_trading_broker_divergence_store
 from src.application.trading.broker_submission_attempt import build_default_trading_broker_submission_attempt_store
 
-router = APIRouter(prefix="/execution-tracking", tags=["trade-execution-tracking"])
+_SUCCESS_RESPONSE_EXAMPLE: dict[str, Any] = {
+    "success": True,
+    "code": 200,
+    "message": "Execution tracking loaded",
+    "data": {
+        "status": "available",
+        "endpoint": "trade",
+        "resource": "execution_tracking",
+        "items": [],
+        "summary": {
+            "total_count": 0,
+            "bridge_accepted_count": 0,
+            "broker_acknowledged_count": 0,
+            "review_required_count": 0,
+            "reconciled_count": 0,
+        },
+        "total_count": 0,
+        "page": 1,
+        "page_size": 20,
+    },
+    "request_id": "contract-example",
+    "errors": None,
+}
+_ERROR_RESPONSE_EXAMPLE: dict[str, Any] = {
+    "success": False,
+    "code": 404,
+    "message": "Execution tracking record not found",
+    "data": None,
+    "request_id": "contract-example",
+    "errors": [{"field": "tracking_id", "code": "NOT_FOUND", "message": "Unknown execution tracking id"}],
+}
+_OPENAPI_RESPONSES: dict[int, dict[str, Any]] = {
+    200: {
+        "description": "Execution tracking response",
+        "content": {"application/json": {"example": _SUCCESS_RESPONSE_EXAMPLE}},
+    },
+    404: {
+        "description": "Execution tracking record not found",
+        "content": {"application/json": {"example": _ERROR_RESPONSE_EXAMPLE}},
+    },
+    500: {
+        "description": "Execution tracking service failure",
+        "content": {"application/json": {"example": {**_ERROR_RESPONSE_EXAMPLE, "code": 500, "message": "Execution tracking service failure"}}},
+    },
+}
+
+router = APIRouter(
+    prefix="/execution-tracking",
+    tags=["trade-execution-tracking"],
+    responses=_OPENAPI_RESPONSES,
+)
 ResponsePayloadT = TypeVar("ResponsePayloadT", bound=BaseModel)
 ExecutionChannel = Literal["miniqmt", "tdxquant", "external"]
 SubmissionStatus = Literal["bridge_task_accepted", "broker_acknowledged", "submission_failed"]
@@ -24,6 +74,8 @@ _EXECUTION_TRIGGERS: dict[str, dict[str, Any]] = {}
 
 
 class ExecutionBridgeEvidence(BaseModel):
+    """External bridge evidence attached to an execution tracking record."""
+
     bridge_task_id: str | None = Field(description="External bridge task identity when available")
     receipt_status: str | None = Field(description="Bridge submission receipt status")
     result_status: str | None = Field(description="Bridge task result status, not broker truth by itself")
@@ -31,12 +83,16 @@ class ExecutionBridgeEvidence(BaseModel):
 
 
 class ExecutionBrokerCorrelation(BaseModel):
+    """Broker-side correlation evidence for a tracked execution chain."""
+
     external_order_id: str | None = Field(description="Broker lifecycle identity when available")
     broker_event_type: str | None = Field(description="Broker lifecycle event type when available")
     identity_status: str = Field(description="Correlation identity quality")
 
 
 class ExecutionTrackingItem(BaseModel):
+    """Single execution tracking row combining bridge, broker and reconciliation evidence."""
+
     tracking_id: str = Field(description="Execution tracking identity")
     account_id: str = Field(description="Account scope used by the external trigger")
     order_id: str = Field(description="Internal order or statement order identity")
@@ -54,60 +110,72 @@ class ExecutionTrackingItem(BaseModel):
 
 
 class ExecutionTrackingSummary(BaseModel):
-    total_count: int
-    bridge_accepted_count: int
-    broker_acknowledged_count: int
-    review_required_count: int
-    reconciled_count: int
+    """Aggregate counters for the execution tracking list response."""
+
+    total_count: int = Field(description="Total execution tracking rows in the current response")
+    bridge_accepted_count: int = Field(description="Rows accepted by the external bridge")
+    broker_acknowledged_count: int = Field(description="Rows correlated with broker lifecycle evidence")
+    review_required_count: int = Field(description="Rows that still require manual review")
+    reconciled_count: int = Field(description="Rows reconciled against internal statement truth")
 
 
 class ExecutionTrackingListPayload(BaseModel):
-    status: str
-    endpoint: str
-    resource: str
-    items: list[ExecutionTrackingItem]
-    summary: ExecutionTrackingSummary
-    total_count: int
-    page: int
-    page_size: int
+    """Paginated execution tracking list payload."""
+
+    status: str = Field(description="Availability status for the response payload")
+    endpoint: str = Field(description="Owning endpoint family")
+    resource: str = Field(description="Resource identifier")
+    items: list[ExecutionTrackingItem] = Field(description="Paginated execution tracking rows")
+    summary: ExecutionTrackingSummary = Field(description="Aggregate execution tracking counters")
+    total_count: int = Field(description="Row count in the current response")
+    page: int = Field(description="Current page number")
+    page_size: int = Field(description="Current page size")
 
 
 class ExecutionEvidenceEvent(BaseModel):
-    event_type: str
-    occurred_at: str
-    summary: str
-    evidence: dict[str, Any]
+    """Timeline event explaining one piece of execution tracking evidence."""
+
+    event_type: str = Field(description="Evidence event type")
+    occurred_at: str = Field(description="Event timestamp in ISO-8601 format")
+    summary: str = Field(description="Human-readable event summary")
+    evidence: dict[str, Any] = Field(description="Raw evidence attributes used to build the event")
 
 
 class ExecutionTrackingDetailPayload(BaseModel):
-    status: str
-    endpoint: str
-    resource: str
-    item: ExecutionTrackingItem
-    evidence_timeline: list[ExecutionEvidenceEvent]
+    """Detailed execution tracking payload with evidence timeline."""
+
+    status: str = Field(description="Availability status for the response payload")
+    endpoint: str = Field(description="Owning endpoint family")
+    resource: str = Field(description="Resource identifier")
+    item: ExecutionTrackingItem = Field(description="Execution tracking row")
+    evidence_timeline: list[ExecutionEvidenceEvent] = Field(description="Ordered evidence timeline")
 
 
 class ExecutionTriggerRequest(BaseModel):
-    account_id: str = Field(default="backtest:7")
-    channel: ExecutionChannel = Field(default="miniqmt")
-    symbol: str = Field(min_length=1)
-    direction: Literal["buy", "sell"]
-    quantity: int = Field(gt=0)
-    price: Decimal = Field(gt=Decimal("0"))
-    requested_by: str | None = None
-    client_request_id: str | None = None
+    """Request body used to record an externally-triggered execution."""
+
+    account_id: str = Field(default="backtest:7", description="Synthetic account scope for the execution trigger")
+    channel: ExecutionChannel = Field(default="miniqmt", description="External execution channel")
+    symbol: str = Field(min_length=1, description="Security symbol to submit")
+    direction: Literal["buy", "sell"] = Field(description="Execution direction")
+    quantity: int = Field(gt=0, description="Requested execution quantity")
+    price: Decimal = Field(gt=Decimal("0"), description="Requested execution price")
+    requested_by: str | None = Field(default=None, description="Operator or system that requested the trigger")
+    client_request_id: str | None = Field(default=None, description="Optional client idempotency key")
 
 
 class ExecutionTriggerPayload(BaseModel):
-    status: str
-    endpoint: str
-    resource: str
-    tracking_id: str
-    accepted: bool
-    channel: ExecutionChannel
-    submission_status: SubmissionStatus
-    broker_state: BrokerState
-    bridge_receipt: ExecutionBridgeEvidence
+    """Response payload returned after recording an external execution trigger."""
+
+    status: str = Field(description="Availability status for the response payload")
+    endpoint: str = Field(description="Owning endpoint family")
+    resource: str = Field(description="Resource identifier")
+    tracking_id: str = Field(description="Execution tracking identity assigned to the trigger")
+    accepted: bool = Field(description="Whether the trigger was accepted by the bridge boundary")
+    channel: ExecutionChannel = Field(description="External execution channel")
+    submission_status: SubmissionStatus = Field(description="Bridge or broker submission status")
+    broker_state: BrokerState = Field(description="Current broker truth state")
+    bridge_receipt: ExecutionBridgeEvidence = Field(description="Bridge receipt evidence")
 
 
 def _success_execution_response(
@@ -362,7 +430,12 @@ def _build_timeline(record: dict[str, Any]) -> list[ExecutionEvidenceEvent]:
     return timeline
 
 
-@router.get("", response_model=UnifiedResponse[ExecutionTrackingListPayload])
+@router.get(
+    "",
+    response_model=UnifiedResponse[ExecutionTrackingListPayload],
+    summary="List execution tracking records",
+    description="Return paginated execution tracking records that join bridge receipt, broker lifecycle and reconciliation evidence.",
+)
 async def get_execution_tracking(
     account_id: str = Query("backtest:7", description="Execution tracking account scope"),
     order_id: str | None = Query(None, description="Internal order id filter"),
@@ -391,9 +464,31 @@ async def get_execution_tracking(
     return _success_execution_response("Execution tracking loaded", payload)
 
 
-@router.post("/trigger", response_model=UnifiedResponse[ExecutionTriggerPayload])
+@router.post(
+    "/trigger",
+    response_model=UnifiedResponse[ExecutionTriggerPayload],
+    summary="Record external execution trigger",
+    description="Record an external execution trigger and return the tracking identity used by follow-up reconciliation views.",
+)
 async def trigger_external_execution(
-    request: ExecutionTriggerRequest,
+    request: ExecutionTriggerRequest = Body(
+        ...,
+        openapi_examples={
+            "miniqmt_bridge_trigger": {
+                "summary": "miniQMT bridge trigger",
+                "value": {
+                    "account_id": "backtest:7",
+                    "channel": "miniqmt",
+                    "symbol": "000001",
+                    "direction": "buy",
+                    "quantity": 100,
+                    "price": "12.35",
+                    "requested_by": "contract-smoke",
+                    "client_request_id": "client-req-001",
+                },
+            }
+        },
+    ),
 ) -> UnifiedResponse[ExecutionTriggerPayload]:
     now = _utc_now_iso()
     task_id = f"miniqmt-task-{uuid4().hex[:12]}"
@@ -433,9 +528,14 @@ async def trigger_external_execution(
     return _success_execution_response("External execution trigger recorded", payload)
 
 
-@router.get("/{tracking_id}", response_model=UnifiedResponse[ExecutionTrackingDetailPayload])
+@router.get(
+    "/{tracking_id}",
+    response_model=UnifiedResponse[ExecutionTrackingDetailPayload],
+    summary="Get execution tracking detail",
+    description="Return a single execution tracking record with its bridge, broker and reconciliation evidence timeline.",
+)
 async def get_execution_tracking_detail(
-    tracking_id: str,
+    tracking_id: str = Path(..., description="Execution tracking identity returned by the trigger or list endpoint"),
 ) -> UnifiedResponse[ExecutionTrackingDetailPayload]:
     evidence_service = get_execution_tracking_evidence_service()
     record = evidence_service.load_record_by_tracking_id(tracking_id) or _EXECUTION_TRIGGERS.get(tracking_id)
