@@ -1,5 +1,5 @@
 """
-# pylint: disable=no-member  # TODO: 实现缺失的 GPU/业务方法
+# pylint: disable=no-member  # TODO owner=platform-security issue=techdebt-expired-markers ttl=2026-06-30: 实现缺失的 GPU/业务方法
 备份恢复 API 端点 - 完全安全版本
 
 完整的安全实现，包含所有13个端点的安全保护：
@@ -31,8 +31,9 @@ from app.api.backup_recovery_secure.backup_security_support import (
     log_security_event,
     verify_admin_permission,
     verify_backup_permission,
+    verify_recovery_permission as verify_recovery_permission,
 )
-from app.core.responses import ErrorCode, error_response, success_response
+from app.core.responses import UnifiedResponse, create_error_response as error_response, create_success_response as success_response
 from app.core.security import User, get_current_user
 from app.models.backup_schemas import (
     BackupListQueryParams,
@@ -47,9 +48,18 @@ from app.models.backup_schemas import (
     TDengineIncrementalBackupRequest,
     TDenginePITRRequest,
 )
-from src.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
+from src.infrastructure.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
 
 router = APIRouter(prefix="/api/backup-recovery", tags=["Backup & Recovery (Secure)"])
+
+
+class ErrorCode:
+    """Backward-compatible error codes used by the legacy backup recovery routes."""
+
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+    INVALID_PARAMETER = "INVALID_PARAMETER"
+    OPERATION_FAILED = "OPERATION_FAILED"
+    RATE_LIMIT_EXCEEDED = "RATE_LIMIT_EXCEEDED"
 
 # 初始化管理器
 backup_manager = BackupManager()
@@ -58,7 +68,7 @@ backup_scheduler = BackupScheduler()
 integrity_checker = IntegrityChecker()
 
 
-@router.post("/backup/tdengine/full")
+@router.post("/backup/tdengine/full", response_model=UnifiedResponse[dict])
 async def backup_tdengine_full(
     request: TDengineFullBackupRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
@@ -140,7 +150,7 @@ async def backup_tdengine_full(
         )
 
 
-@router.post("/backup/tdengine/incremental")
+@router.post("/backup/tdengine/incremental", response_model=UnifiedResponse[dict])
 async def backup_tdengine_incremental(
     request: TDengineIncrementalBackupRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
@@ -200,7 +210,7 @@ async def backup_tdengine_incremental(
         return error_response(message="TDengine 增量备份失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
-@router.post("/backup/postgresql/full")
+@router.post("/backup/postgresql/full", response_model=UnifiedResponse[dict])
 async def backup_postgresql_full(
     request: PostgreSQLFullBackupRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
@@ -254,7 +264,7 @@ async def backup_postgresql_full(
         return error_response(message="PostgreSQL 全量备份失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
-@router.get("/backups")
+@router.get("/backups", response_model=UnifiedResponse[dict])
 async def list_backups(
     database: Optional[str] = Query(None, description="数据库类型"),
     backup_type: Optional[str] = Query(None, description="备份类型"),
@@ -323,7 +333,7 @@ async def list_backups(
         return error_response(message="备份列表查询失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
-@router.post("/recovery/tdengine/full")
+@router.post("/recovery/tdengine/full", response_model=UnifiedResponse[dict])
 async def restore_tdengine_full(
     request: TDengineFullRecoveryRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
@@ -402,7 +412,7 @@ async def restore_tdengine_full(
         )
 
 
-@router.post("/recovery/tdengine/pitr")
+@router.post("/recovery/tdengine/pitr", response_model=UnifiedResponse[dict])
 async def restore_tdengine_pitr(
     request: TDenginePITRRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
@@ -487,7 +497,7 @@ async def restore_tdengine_pitr(
         )
 
 
-@router.post("/recovery/postgresql/full")
+@router.post("/recovery/postgresql/full", response_model=UnifiedResponse[dict])
 async def restore_postgresql_full(
     request: PostgreSQLFullRecoveryRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
@@ -559,7 +569,7 @@ async def restore_postgresql_full(
         )
 
 
-@router.get("/recovery/objectives")
+@router.get("/recovery/objectives", response_model=UnifiedResponse[dict])
 async def get_recovery_objectives():
     """获取恢复目标 (RTO/RPO) [LOW - 公开访问]"""
     try:
@@ -569,7 +579,7 @@ async def get_recovery_objectives():
         return error_response(message="恢复目标查询失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
-@router.post("/scheduler/control")
+@router.post("/scheduler/control", response_model=UnifiedResponse[dict])
 async def scheduler_control(
     request: SchedulerControlRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
@@ -630,7 +640,7 @@ async def scheduler_control(
         )
 
 
-@router.get("/scheduler/jobs")
+@router.get("/scheduler/jobs", response_model=UnifiedResponse[dict])
 async def get_scheduled_jobs(current_user: User = Depends(get_current_user)):
     """获取所有计划的备份任务 [MODERATE - 需要认证]"""
     try:
@@ -664,7 +674,7 @@ async def get_scheduled_jobs(current_user: User = Depends(get_current_user)):
         return error_response(message="计划任务查询失败", error_code=ErrorCode.INTERNAL_ERROR)
 
 
-@router.get("/integrity/verify/{backup_id}")
+@router.get("/integrity/verify/{backup_id}", response_model=UnifiedResponse[dict])
 async def verify_backup_integrity(backup_id: str, current_user: User = Depends(get_current_user)):
     """验证备份完整性 [MODERATE - 需要认证]"""
     return await verify_backup_integrity_impl(backup_id, current_user, backup_manager, integrity_checker)

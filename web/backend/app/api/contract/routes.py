@@ -339,6 +339,14 @@ CONTRACT_VALIDATE_RESPONSES = {
     ),
 }
 
+CONTRACT_DRIFT_INCIDENT_RESPONSES = {
+    **CONTRACT_OPERATION_ERROR_RESPONSES,
+    **_success_response_spec(
+        "契约漂移事件列表。",
+        {"success": True, "code": 200, "message": "契约漂移事件获取成功", "data": {"incidents": [], "total": 0, "open_count": 0}},
+    ),
+}
+
 CONTRACT_SYNC_RESPONSES = {
     **CONTRACT_OPERATION_ERROR_RESPONSES,
     **_success_response_spec(
@@ -598,8 +606,11 @@ async def validate_contract(request: ContractValidateRequest = Body(..., openapi
     response_model=UnifiedResponse[ContractDriftIncidentListResponse],
     summary="查询契约漂移事件",
     description="返回当前进程内由契约验证记录的 drift incident，用于治理看板和后续告警接线。",
+    responses=CONTRACT_DRIFT_INCIDENT_RESPONSES,
 )
-async def list_contract_drift_incidents(limit: int = Query(default=50, ge=1, le=200)):
+async def list_contract_drift_incidents(
+    limit: int = Query(default=50, ge=1, le=200, description="Maximum number of drift incidents to return"),
+):
     """查询契约验证期间记录的漂移事件。"""
     incidents = list_tracked_contract_drift_incidents(limit=limit)
     incident_responses = [

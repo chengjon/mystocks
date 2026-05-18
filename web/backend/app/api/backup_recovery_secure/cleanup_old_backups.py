@@ -7,15 +7,24 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, Body, Depends
 
 from app.api.backup_recovery_secure.backup_security_support import log_security_event, verify_admin_permission
-from app.core.responses import ErrorCode, error_response, success_response
+from app.core.responses import UnifiedResponse, create_error_response as error_response, create_success_response as success_response
 from app.core.security import User, get_current_user
 from app.models.backup_schemas import (
     CleanupBackupsRequest,
     CleanupResult,
 )
-from src.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
+from src.infrastructure.backup_recovery import BackupManager, BackupScheduler, IntegrityChecker, RecoveryManager
 
 router = APIRouter(prefix="/api/backup-recovery", tags=["Backup & Recovery (Secure)"])
+
+
+class ErrorCode:
+    """Backward-compatible error codes used by the legacy backup recovery routes."""
+
+    INTERNAL_ERROR = "INTERNAL_ERROR"
+    INVALID_PARAMETER = "INVALID_PARAMETER"
+    SERVICE_UNAVAILABLE = "SERVICE_UNAVAILABLE"
+
 
 # 初始化管理器
 backup_manager = BackupManager()
@@ -23,7 +32,7 @@ recovery_manager = RecoveryManager()
 backup_scheduler = BackupScheduler()
 integrity_checker = IntegrityChecker()
 
-@router.post("/cleanup/old-backups")
+@router.post("/cleanup/old-backups", response_model=UnifiedResponse[dict])
 async def cleanup_old_backups(
     request: CleanupBackupsRequest = Body(...), current_user: User = Depends(get_current_user)
 ):
@@ -131,7 +140,7 @@ async def cleanup_old_backups(
         )
 
 
-@router.get("/health")
+@router.get("/health", response_model=UnifiedResponse[dict])
 async def backup_service_health():
     """备份服务健康检查 [LOW - 公开访问]"""
     try:
@@ -159,4 +168,3 @@ async def backup_service_health():
         return error_response(
             message="健康检查失败", error_code=ErrorCode.SERVICE_UNAVAILABLE, details={"error": str(e)}
         )
-

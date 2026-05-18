@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import uuid
 from dataclasses import dataclass, field
 from typing import Any
 
 from app.api.contract.services.impact_analyzer import ContractImpactAnalysis
+from app.api.notification_models import RealTimeNotification
 
 
 @dataclass(frozen=True)
@@ -58,6 +60,46 @@ class ContractImpactNotificationService:
                 },
             )
         ]
+
+    async def dispatch_notifications(
+        self,
+        notifications: list[ContractImpactNotification],
+        *,
+        connection_manager: Any | None = None,
+    ) -> int:
+        """Broadcast contract impact notifications through the existing realtime notification seam."""
+        if not notifications:
+            return 0
+
+        manager = connection_manager
+        if manager is None:
+            from app.api.notification_support import connection_manager as default_connection_manager
+
+            manager = default_connection_manager
+
+        dispatched = 0
+        for notification in notifications:
+            await manager.broadcast_system_notification(self.to_realtime_notification(notification))
+            dispatched += 1
+        return dispatched
+
+    def to_realtime_notification(self, notification: ContractImpactNotification) -> RealTimeNotification:
+        notification_key = f"{notification.kind}:{notification.title}:{notification.message}"
+        return RealTimeNotification(
+            notification_id=f"contract-impact-{uuid.uuid5(uuid.NAMESPACE_URL, notification_key).hex}",
+            user_id=0,
+            type="system",
+            title=notification.title,
+            message=notification.message,
+            data={
+                "kind": notification.kind,
+                "targets": notification.targets,
+                "metadata": notification.metadata,
+            },
+            priority=notification.priority,
+            action_required=notification.action_required,
+            action_url=notification.action_url,
+        )
 
     def _priority_for(self, analysis: ContractImpactAnalysis) -> str:
         if analysis.risk_level == "critical":
