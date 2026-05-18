@@ -53,7 +53,7 @@
 - [x] 4.1 Run `/health/ready` smoke.
 - [x] 4.2 Run `/api/health/ready` smoke.
 - [x] 4.3 Run `/api/health/services` smoke.
-- [ ] 4.4 Run status endpoint smoke for approved canonical status paths.
+- [x] 4.4 Run status endpoint smoke for approved canonical status paths.
 - [x] 4.5 Run OpenAPI diff and classify changes.
 - [ ] 4.6 Run affected backend tests and frontend/API smoke.
 - [ ] 4.7 Confirm PM2 backend status and configured health checks with `pm2 list` and `./scripts/run_pm2_integration_workflow.sh` or a named equivalent approved by the implementation issue.
@@ -61,8 +61,8 @@
 ## 5. Closure
 
 - [x] 5.1 Update health/status endpoint documentation with canonical and compatibility paths.
-- [ ] 5.2 Record retained domain smoke/status endpoints and owners.
-- [ ] 5.3 Record retired endpoints and rollback notes.
+- [x] 5.2 Record retained domain smoke/status endpoints and owners.
+- [x] 5.3 Record retired endpoints and rollback notes.
 
 > 2026-05-18 smoke evidence:
 > `docs/reports/quality/backend-health-status-smoke-2026-05-18.md`
@@ -73,3 +73,10 @@
 > `removed_paths=0`. Task 4.6 remains open because the broader historical
 > `test_health_route_conflicts.py` suite currently has 5 unrelated OpenAPI
 > documentation failures.
+
+> 2026-05-18 owner registry evidence:
+> `docs/reports/quality/backend-health-status-owner-registry-2026-05-18.md`
+> records status smoke for `/api/status`, `/api/socketio-status`, and
+> `/api/trading/status`; records retained domain smoke/status endpoint owners;
+> confirms no endpoints were retired in this batch; and records PM2 online/live
+> probe evidence without running the stateful PM2 integration workflow.
