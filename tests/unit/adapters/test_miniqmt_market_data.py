@@ -377,6 +377,33 @@ def test_cli_supports_manifest_path_and_artifact_path(tmp_path: Path, capsys: py
     assert evidence["hash_or_size"]["artifact_sha256"] == artifact_hash
 
 
+def test_cli_supports_output_suffix_for_forward_handoff(tmp_path: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    manifest_path, artifact_path, _artifact_hash = _write_published_parquet_dataset(tmp_path)
+    output_dir = tmp_path / "forward-output"
+
+    exit_code = cli_module.main(
+        [
+            "--dataset-version",
+            "kline_daily_20260518_v1",
+            "--manifest-path",
+            str(manifest_path),
+            "--artifact-path",
+            str(artifact_path),
+            "--output-dir",
+            str(output_dir),
+            "--output-suffix",
+            "forward",
+        ]
+    )
+
+    summary = json.loads(capsys.readouterr().out)
+    evidence = json.loads(Path(summary["evidence_path"]).read_text(encoding="utf-8"))
+    assert exit_code == 0
+    assert Path(summary["evidence_path"]).name.endswith("-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json")
+    assert Path(summary["raw_report_path"]).name == "mystocks_dry_run_kline_daily_20260518_v1_forward.json"
+    assert evidence["raw_source_file"] == "logs/mystocks_dry_run_kline_daily_20260518_v1_forward.json"
+
+
 def test_controlled_evidence_service_rejects_empty_artifact_rows(tmp_path: Path) -> None:
     bundle = _write_bundle(tmp_path)
     _replace_artifact_rows(bundle, [])
