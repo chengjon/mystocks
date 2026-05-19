@@ -9,14 +9,12 @@ domains:
         label: "1.1 实时行情监控"
         coverage_paths:
           - "src/adapters/tdx/**"
-          - "web/backend/app/api/market.py"
           - "web/backend/app/api/market/**"
           - "web/frontend/src/views/market/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/market.py"
             - "web/backend/app/api/market/**"
           frontend:
             - "web/frontend/src/views/market/**"
@@ -198,7 +196,8 @@ domains:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/backtest_ws.py"
+            - "web/backend/app/api/strategy_management/_model_backtest_router.py"
+            - "web/backend/app/api/v1/analysis/backtest.py"
           frontend:
             - "web/frontend/src/views/strategy/**"
           core:
@@ -236,13 +235,11 @@ domains:
         coverage_paths:
           - "src/governance/risk_management/**"
           - "web/backend/app/api/risk/**"
-          - "web/backend/app/api/risk_management.py"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
             - "web/backend/app/api/risk/**"
-            - "web/backend/app/api/risk_management.py"
           frontend:
             - "web/frontend/src/views/risk/**"
           core:
@@ -323,12 +320,13 @@ domains:
         coverage_paths:
           - "src/application/trading/**"
           - "src/trading/**"
-          - "web/backend/app/api/trading_monitor.py"
+          - "web/backend/app/api/trade/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/trading_monitor.py"
+            - "web/backend/app/api/trade/routes.py"
+            - "web/backend/app/api/trading_runtime.py"
             - "web/backend/app/api/data/trading_api.py"
           frontend:
             - "web/frontend/src/views/trading/**"
@@ -470,7 +468,7 @@ domains:
         label: "7.2 批量分析"
         coverage_paths:
           - "src/advanced_analysis/**"
-          - "web/backend/app/api/advanced_analysis.py"
+          - "web/backend/app/api/advanced_analysis_api.py"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
@@ -587,13 +585,15 @@ domains:
       - id: "domain-08-node-03"
         label: "8.3 备份恢复"
         coverage_paths:
-          - "web/backend/app/api/backup_recovery.py"
+          - "web/backend/app/api/backup_recovery_secure.py"
+          - "web/backend/app/api/backup_recovery_secure/**"
           - "src/infrastructure/backup_recovery/**"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/backup_recovery.py"
+            - "web/backend/app/api/backup_recovery_secure.py"
+            - "web/backend/app/api/backup_recovery_secure/**"
           frontend:
             - "web/frontend/src/views/system/**"
           core:
@@ -685,7 +685,6 @@ domains:
       - id: "domain-10-node-01"
         label: "10.1 公告管理"
         coverage_paths:
-          - "web/backend/app/api/announcement.py"
           - "web/backend/app/api/announcement/**"
           - "web/backend/app/services/announcement_service.py"
           - "web/backend/app/models/announcement.py"
@@ -693,7 +692,6 @@ domains:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
-            - "web/backend/app/api/announcement.py"
             - "web/backend/app/api/announcement/**"
           frontend:
             - "web/frontend/src/views/announcement/**"
