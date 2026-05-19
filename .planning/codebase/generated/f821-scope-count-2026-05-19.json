@@ -1,0 +1,225 @@
+{
+  "generated_at": "2026-05-19T02:56:45.193Z",
+  "measured_git_head": {
+    "short": "0bc5796ba",
+    "full": "0bc5796baaeb493f7560dc47d9e3044ed1c7cc0f",
+    "subject": "Merge remote-tracking branch 'origin/wip/root-dirty-20260403' into tmp-core-split-matrix-push"
+  },
+  "current_head_checked_at_review": "0bc5796ba",
+  "stale_if_head_mismatch": true,
+  "source_scope": "clean worktree based on origin/wip/root-dirty-20260403 for GH #82 evidence artifact index",
+  "artifact_type": "ruff_f821_scope_count",
+  "command": "ruff check . --select F821 --output-format json",
+  "ruff_exit_code": 1,
+  "parse_error": null,
+  "summary": {
+    "total": 741,
+    "src": 0,
+    "web_backend": 198,
+    "web_frontend": 11,
+    "affected_files": 102
+  },
+  "top_files": [
+    {
+      "file": "tests/unit/data_access/test_i_data_access.py",
+      "count": 127
+    },
+    {
+      "file": "scripts/tests/verify_windows_bridge_connectivity.py",
+      "count": 53
+    },
+    {
+      "file": "web/backend/app/api/_data_lineage_responses.py",
+      "count": 40
+    },
+    {
+      "file": "scripts/test_logging_audit_system.py",
+      "count": 34
+    },
+    {
+      "file": "tests/reporting/test_report_generator/report_format.py",
+      "count": 31
+    },
+    {
+      "file": "web/backend/app/api/data_quality.py",
+      "count": 31
+    },
+    {
+      "file": "tests/unit/monitoring/test_alert_manager_simplified.py",
+      "count": 26
+    },
+    {
+      "file": "web/backend/app/api/data_source_config.py",
+      "count": 26
+    },
+    {
+      "file": "tests/monitoring/test_monitoring_alerts/test_alert_manager.py",
+      "count": 22
+    },
+    {
+      "file": "scripts/test_generator/code_analyzer_tests.py",
+      "count": 20
+    },
+    {
+      "file": "scripts/dev/ci/validators/correctness_validator.py",
+      "count": 17
+    },
+    {
+      "file": "scripts/test_generator/code_analyzer.py",
+      "count": 16
+    },
+    {
+      "file": "tests/unit/utils/test_db_connection_retry.py",
+      "count": 13
+    },
+    {
+      "file": "web/backend/app/services/__init__.py",
+      "count": 13
+    },
+    {
+      "file": "web/backend/app/api/_data_source_config_responses.py",
+      "count": 12
+    },
+    {
+      "file": "web/frontend/core.py",
+      "count": 11
+    },
+    {
+      "file": "scripts/tests/test_memory_simple.py",
+      "count": 10
+    },
+    {
+      "file": "web/backend/app/api/data_lineage.py",
+      "count": 10
+    },
+    {
+      "file": "web/backend/app/api/_technical_analysis_models.py",
+      "count": 9
+    },
+    {
+      "file": "web/backend/app/core/cache/fetch_write.py",
+      "count": 9
+    },
+    {
+      "file": "web/backend/app/core/cache/stats_health.py",
+      "count": 9
+    },
+    {
+      "file": "scripts/tests/test_exceptions_simple.py",
+      "count": 8
+    },
+    {
+      "file": "scripts/tests/test_memory_integration_verification.py",
+      "count": 7
+    },
+    {
+      "file": "web/backend/app/services/technical_analysis.py",
+      "count": 7
+    },
+    {
+      "file": "tests/ai/__init__.py",
+      "count": 6
+    },
+    {
+      "file": "tests/dashboard/test_dashboard/create_dashboard_templates.py",
+      "count": 6
+    },
+    {
+      "file": "tests/smart_ai_tests/test_unified_data_access_manager_smart.py",
+      "count": 6
+    },
+    {
+      "file": "tests/unit/gpu/test_gpu_kernel_layer.py",
+      "count": 6
+    },
+    {
+      "file": "scripts/dev/ai_strategy_analyzer/main.py",
+      "count": 5
+    },
+    {
+      "file": "scripts/test_generator/test_optimizer.py",
+      "count": 5
+    },
+    {
+      "file": "tests/ai/test_data_analyzer/pattern_recognizer.py",
+      "count": 5
+    },
+    {
+      "file": "web/backend/app/api/data/analysis_api.py",
+      "count": 5
+    },
+    {
+      "file": "web/backend/app/api/data/data_api_new.py",
+      "count": 5
+    },
+    {
+      "file": "scripts/ai_test_optimizer/test_optimization_result.py",
+      "count": 4
+    },
+    {
+      "file": "scripts/dev/ai_advanced_features/enhanced_code_quality_predictor/main.py",
+      "count": 4
+    },
+    {
+      "file": "scripts/dev/analysis/usage_feedback_analyzer/usage_feedback_analyzer_methods/part1.py",
+      "count": 4
+    },
+    {
+      "file": "scripts/dev/automation/monitor_and_fix.py",
+      "count": 4
+    },
+    {
+      "file": "scripts/dev/performance/regression_test.py",
+      "count": 4
+    },
+    {
+      "file": "scripts/tests/test_data_quality_validator/test_data_quality_validator_outliers.py",
+      "count": 4
+    },
+    {
+      "file": "tests/smart_ai_tests/test_date_utils_smart.py",
+      "count": 4
+    },
+    {
+      "file": "web/backend/app/api/_technical_analysis_responses.py",
+      "count": 4
+    },
+    {
+      "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+      "count": 4
+    },
+    {
+      "file": "web/backend/app/services/risk_management/risk_alerts.py",
+      "count": 4
+    },
+    {
+      "file": "scripts/analyze_api_data_usage/report_generator.py",
+      "count": 3
+    },
+    {
+      "file": "scripts/dev/debt_analyzer/cli.py",
+      "count": 3
+    },
+    {
+      "file": "scripts/dev/examples/real_project_application/real_project_application_methods/part1.py",
+      "count": 3
+    },
+    {
+      "file": "scripts/runtime/maestro_collab.py",
+      "count": 3
+    },
+    {
+      "file": "scripts/tests/test_db_connection_retry/test_db_retry_decorator.py",
+      "count": 3
+    },
+    {
+      "file": "scripts/tests/test_dual_database_architecture.py",
+      "count": 3
+    },
+    {
+      "file": "tests/smart_ai_tests/test_config_smart.py",
+      "count": 3
+    }
+  ],
+  "stderr_tail": []
+}

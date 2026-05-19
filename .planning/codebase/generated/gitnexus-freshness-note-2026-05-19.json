@@ -1,0 +1,24 @@
+{
+  "generated_at": "2026-05-19T02:56:45.193Z",
+  "measured_git_head": {
+    "short": "0bc5796ba",
+    "full": "0bc5796baaeb493f7560dc47d9e3044ed1c7cc0f",
+    "subject": "Merge remote-tracking branch 'origin/wip/root-dirty-20260403' into tmp-core-split-matrix-push"
+  },
+  "current_head_checked_at_review": "0bc5796ba",
+  "stale_if_head_mismatch": true,
+  "source_scope": "clean worktree based on origin/wip/root-dirty-20260403 for GH #82 evidence artifact index",
+  "artifact_type": "gitnexus_freshness_note",
+  "command": "manual evidence note for #82; GitNexus detect_changes should be run on staged doc/artifact batch before commit",
+  "status": "staged_detect_changes_passed",
+  "note": "This artifact index task changes documentation and generated evidence snapshots only. GitNexus staged detect_changes reported low risk and no affected processes before commit.",
+  "detect_changes": {
+    "scope": "staged",
+    "changed_files": 9,
+    "changed_symbols": 0,
+    "affected_processes": 0,
+    "risk_level": "low",
+    "ran_against_diff_worktree": "/tmp/mystocks-codebase-map-evidence-82",
+    "repo": "/opt/claude/mystocks_spec"
+  }
+}

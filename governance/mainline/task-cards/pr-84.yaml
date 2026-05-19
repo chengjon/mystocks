@@ -1,0 +1,83 @@
+version: "v0.2"
+
+task:
+  id: "pr-84"
+  title: "refresh evidence artifact index for reviewed codebase map baseline"
+  owner: "main"
+  created_at: "2026-05-19"
+
+mainline:
+  id: "L1-codebase-map-evidence-index"
+  objective: "refresh the evidence artifact index and freshness metadata for the reviewed codebase map baseline"
+  milestone_id: "L2-documentation-governance-closeout"
+  slice_id: "L3-codebase-map-evidence-refresh"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "documentation baseline and generated evidence refresh only; no runtime entrypoint change"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/**"
+    - "governance/mainline/task-cards/pr-84.yaml"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+    - "web/backend/app/main.py"
+    - "src/**"
+
+non_goals:
+  - "No runtime feature work or source-code refactor"
+  - "No new dependency beyond the existing documentation governance tooling"
+  - "No changes to the codebase map content beyond evidence index freshness metadata and generated snapshots"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-REVIEW-2026-05-18.md .planning/codebase/CODEBASE-MAP-REVIEW-2026-05-18-review.md"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-84.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/wip/root-dirty-20260403 --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the generated evidence snapshots are not fresh, the adoption record remains blocked"
+    - "If the task card scope drifts from the actual PR diff, the mainline governance gate will remain red"
+  rollback_plan: "git revert <merge-commit-sha> if the documentation evidence refresh causes unexpected gate regressions"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "refresh the evidence artifact index and freshness metadata for the reviewed codebase map baseline"
+    modified_scope: "one markdown governance artifact and eight generated evidence snapshots"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation governance and generated evidence metadata are adjusted"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the PR if governance checks or evidence metadata regress"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-19T00:00:00Z"
+    approval_note: "evidence artifact index refresh is documentation-only and does not require an OpenSpec proposal"
+    secondary_approved: false
