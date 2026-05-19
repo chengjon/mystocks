@@ -21,6 +21,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
+from .adapters.akshare_extension import close_akshare_extension, install_akshare_extension
 from .adapters.cninfo_adapter import close_cninfo_adapter, install_cninfo_adapter
 from .adapters.eastmoney_adapter import close_eastmoney_adapter, install_eastmoney_adapter
 from .adapters.eastmoney_enhanced import (
@@ -209,6 +210,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("⚠️ Failed to initialize TQLEX adapter", error=str(e))
 
+    try:
+        install_akshare_extension(app)
+        logger.info("✅ Akshare extension installed in app.state")
+    except Exception as e:
+        logger.warning("⚠️ Failed to initialize Akshare extension", error=str(e))
+
     yield  # 应用运行期间
 
     # 关闭时执行
@@ -238,6 +245,12 @@ async def lifespan(app: FastAPI):
         logger.info("✅ TQLEX adapter closed")
     except Exception as e:
         logger.warning("⚠️ Error closing TQLEX adapter", error=str(e))
+
+    try:
+        close_akshare_extension(app)
+        logger.info("✅ Akshare extension closed")
+    except Exception as e:
+        logger.warning("⚠️ Error closing Akshare extension", error=str(e))
 
     # 停止缓存淘汰调度器
     try:

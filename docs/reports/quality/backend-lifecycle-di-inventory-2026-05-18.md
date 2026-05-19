@@ -48,6 +48,14 @@
 - compatibility getter: retained; not a retirement candidate until consumers migrate and evidence is complete.
 - teardown: `EastMoneyEnhancedAdapter.close()` closes the wrapped `EastMoneyAdapter.session`; `close_eastmoney_enhanced_adapter(app)` closes and removes app.state.
 
+### 2026-05-19 follow-on status
+
+- `web/backend/app/adapters/cninfo_adapter.py`, `web/backend/app/adapters/eastmoney_adapter.py`, `web/backend/app/adapters/tqlex_adapter.py`, and `web/backend/app/adapters/akshare_extension.py` now each expose an `install_*` / `get_*_dependency` / `close_*` trio and retain the compatibility getter.
+- These follow-on batches are still adapter-only. The remaining live candidates now split into two different classes:
+  - `web/backend/app/api/realtime_mtm_adapter.py` and `web/backend/app/api/realtime_mtm_init.py` are DB/session/event-bus-backed runtime code and need a separate lifecycle proposal before any `app.state` or `Depends()` rewrite.
+  - `web/backend/app/core/adapter_loader.py` stays inside the Core compatibility matrix. Its `akshare` / `tdx` / `financial` singleton helpers are planning evidence only and remain blocked until the Core split implementation proposal is approved.
+- The current GH #78 live set still includes `realtime_mtm` and the Core loader path, but they should no longer be treated as simple adapter follow-on candidates.
+
 ## Lifecycle Classification Summary
 
 ### Getter Providers
