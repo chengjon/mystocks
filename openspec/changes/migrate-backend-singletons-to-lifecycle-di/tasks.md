@@ -25,6 +25,12 @@
 > `web/backend/tests/test_eastmoney_lifecycle_di.py` and the accompanying
 > `web/backend/app/adapters/eastmoney_adapter.py` / `web/backend/app/app_factory.py`
 > wiring extend the same lifecycle pattern to the direct EastMoney adapter.
+>
+> **2026-05-19 third follow-on batch evidence**:
+> `web/backend/tests/test_tqlex_lifecycle_di.py` and the accompanying
+> `web/backend/app/adapters/tqlex_adapter.py` / `web/backend/app/app_factory.py`
+> wiring extend the same lifecycle pattern to the TQLEX adapter while leaving
+> Core `adapter_loader` candidates outside this batch.
 
 - [x] 1.1 Confirm orchestration artifact: `docs/reports/quality/backend-openspec-change-orchestration-2026-05-18.md`.
 - [x] 1.2 Generate current singleton inventory with `python scripts/dev/backend_audit_baseline.py docs/reports/quality/generated` and use `docs/reports/quality/generated/backend-audit-baseline.json`. Existing P3-A4 inventory is recorded in `docs/reports/quality/backend-audit-phase3-decision-records.md`.
@@ -78,3 +84,11 @@
 - [x] 7.3 Add `app.state` install/close wiring for `EastMoneyAdapter` in the FastAPI lifespan.
 - [x] 7.4 Add focused dependency override, compatibility getter fallback, and teardown tests for the provider.
 - [x] 7.5 Verify the batch with targeted pytest, lint, syntax, and OpenSpec checks.
+
+## 8. Follow-on Batch: TqlexDataSource
+
+- [x] 8.1 Reuse the verified lifecycle pattern for the TQLEX adapter.
+- [x] 8.2 Preserve `get_tqlex_adapter()` as a compatibility getter while introducing `install_tqlex_adapter()` and `get_tqlex_adapter_dependency()`.
+- [x] 8.3 Add `app.state` install/close wiring for `TqlexDataSource` in the FastAPI lifespan.
+- [x] 8.4 Add focused dependency override, compatibility getter fallback, and teardown tests for the provider.
+- [x] 8.5 Verify the batch with targeted pytest, lint, syntax, and OpenSpec checks.

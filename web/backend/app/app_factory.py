@@ -27,6 +27,7 @@ from .adapters.eastmoney_enhanced import (
     close_eastmoney_enhanced_adapter,
     install_eastmoney_enhanced_adapter,
 )
+from .adapters.tqlex_adapter import close_tqlex_adapter, install_tqlex_adapter
 
 # 导入缓存淘汰调度器
 from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler
@@ -202,6 +203,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("⚠️ Failed to initialize Cninfo adapter", error=str(e))
 
+    try:
+        install_tqlex_adapter(app)
+        logger.info("✅ TQLEX adapter installed in app.state")
+    except Exception as e:
+        logger.warning("⚠️ Failed to initialize TQLEX adapter", error=str(e))
+
     yield  # 应用运行期间
 
     # 关闭时执行
@@ -225,6 +232,12 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Cninfo adapter closed")
     except Exception as e:
         logger.warning("⚠️ Error closing Cninfo adapter", error=str(e))
+
+    try:
+        close_tqlex_adapter(app)
+        logger.info("✅ TQLEX adapter closed")
+    except Exception as e:
+        logger.warning("⚠️ Error closing TQLEX adapter", error=str(e))
 
     # 停止缓存淘汰调度器
     try:
