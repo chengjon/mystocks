@@ -1,6 +1,9 @@
 """Auto-extracted response constants."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
+
+from app.api._technical_analysis_models import TECHNICAL_ANALYSIS_503_RESPONSE
+from app.openapi_config import COMMON_RESPONSES
 
 ALL_INDICATORS_RESPONSE_EXAMPLE = {
     "symbol": "600519.SH",
@@ -253,5 +256,3 @@ TECHNICAL_BATCH_INDICATORS_RESPONSES = _success_response_spec(
 # ============================================================================
 # API Endpoints
 # ============================================================================
-
-

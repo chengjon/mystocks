@@ -22,7 +22,10 @@ from fastapi import APIRouter, Body, Path, Query
 from app.core.config import settings
 from app.core.exceptions import NotFoundException
 from app.core.responses import create_error_response, create_success_response
-from app.openapi_config import COMMON_RESPONSES
+from app.services.data_source_factory import get_data_source_factory
+from app.services.data_source_factory import get_data_source_mode as get_factory_mode
+from app.services.data_source_factory import is_fallback_enabled
+from app.services._data_quality_monitor_singleton import get_data_quality_monitor, monitor_data_quality
 from app.api._data_quality_responses import (
     DATA_QUALITY_ALERT_ACK_RESPONSES,
     DATA_QUALITY_ALERT_RESOLVE_RESPONSES,
@@ -35,6 +38,9 @@ from app.api._data_quality_responses import (
     DATA_QUALITY_TEST_RESPONSES,
     DATA_QUALITY_TRENDS_RESPONSES,
 )
+
+logger = logging.getLogger(__name__)
+router = APIRouter(tags=["data-quality"])
 
 @router.get(
     "/health",

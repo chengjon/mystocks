@@ -11,7 +11,7 @@ Signal Monitoring API Endpoints
 
 import logging
 from datetime import date, datetime, timedelta
-from typing import Any, List, Optional
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, Path, Query
 from app.core.exceptions import BusinessException
@@ -22,10 +22,8 @@ from app.api.signal_monitoring.signal_history_response_schemas import (
     StrategyRealtimeMonitoringResponse,
 )
 from app.core.security import User, get_current_user
-from app.openapi_config import COMMON_RESPONSES
 from app.api.signal_monitoring._signal_history_responses import (
     SIGNAL_HISTORY_RESPONSES,
-    SIGNAL_MONITORING_ERROR_RESPONSES,
     SIGNAL_MONITORING_HEALTH_ERROR_RESPONSE_EXAMPLE,
     SIGNAL_MONITORING_HEALTH_RESPONSE_EXAMPLE,
     SIGNAL_QUALITY_REPORT_RESPONSES,
@@ -33,6 +31,8 @@ from app.api.signal_monitoring._signal_history_responses import (
 )
 
 logger = logging.getLogger(__name__)
+
+router = APIRouter(tags=["Signal Monitoring"])
 
 
 async def _get_runtime_gpu_utilization() -> Optional[float]:

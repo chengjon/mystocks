@@ -1,6 +1,14 @@
 """Auto-extracted response constants."""
 
-from typing import Any, Dict
+from typing import Any, Dict, Optional
+
+from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
+from fastapi import APIRouter, Header
+
+from app.core.config import settings
+from app.core.exceptions import BusinessException
+from app.core.responses import ErrorCodes, create_error_response
+from app.core.security import verify_token
 
 def _success_response_spec(status_code: int, description: str, example: Any) -> Dict[int, Dict[str, Any]]:
     return {
@@ -18,6 +26,8 @@ router = APIRouter(
     prefix="/api/v1/data-sources/config",
     tags=["数据源配置管理"],
     responses={
+        200: {"description": "成功"},
+        201: {"description": "创建成功"},
         400: {"description": "请求参数错误"},
         404: {"description": "资源未找到"},
         409: {"description": "资源冲突"},
@@ -374,5 +384,3 @@ def get_current_user(
         )
 
     return token_data.username or "system"
-
-

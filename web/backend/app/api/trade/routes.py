@@ -18,6 +18,7 @@ from app.core.responses import (
     create_error_response,
     create_unified_success_response,
 )
+from app.openapi_config import COMMON_RESPONSES
 from app.schemas.trade_schemas import (
     AccountInfo,
     Position,
