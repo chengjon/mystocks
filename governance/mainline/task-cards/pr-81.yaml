@@ -1,0 +1,84 @@
+version: "v0.2"
+
+task:
+  id: "pr-81"
+  title: "publish reviewed codebase map baseline and peer review artifact"
+  owner: "main"
+  created_at: "2026-05-19"
+
+mainline:
+  id: "L1-codebase-map-review-baseline"
+  objective: "land the reviewed codebase map baseline, its peer review artifact, and the clean-head evidence snapshots as a governed documentation package"
+  milestone_id: "L2-documentation-governance-closeout"
+  slice_id: "L3-codebase-map-review-delivery"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "documentation baseline and PR governance metadata only; no runtime entrypoint change"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/directory-compliance.yml"
+    - ".planning/codebase/**"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-81.yaml"
+    - "scripts/compliance/markdown_governance_gate.py"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No runtime feature work or source-code refactor outside the markdown governance gate fix"
+  - "No new dependency beyond the existing documentation governance tooling"
+  - "No changes to the source report content beyond the reviewed baseline already captured in the delivery branch"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-REVIEW-2026-05-18.md .planning/codebase/CODEBASE-MAP-REVIEW-2026-05-18-review.md"
+      required: true
+    - id: "mainline-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-81.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha origin/wip/root-dirty-20260403 --head-sha HEAD --report governance/mainline/reports/mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card scope drifts from the actual PR diff, the mainline governance gate will remain red"
+    - "If the markdown governance helper still imports the heavy src package initializer, CI will fail in the documentation compliance job"
+  rollback_plan: "git revert <merge-commit-sha> if the documentation governance delivery causes unexpected gate regressions"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "publish the reviewed codebase map baseline and keep the governance artifacts independently reviewable"
+    modified_scope: "two markdown governance artifacts, six evidence JSON snapshots, and one small markdown-gate import fix"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime behavior changes; only documentation governance and compliance helper import hygiene are adjusted"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the PR if governance checks or compliance-script imports regress"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-19T00:00:00Z"
+    approval_note: "documentation governance cleanup does not require a separate OpenSpec proposal"
+    secondary_approved: false

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import os
 import subprocess
@@ -12,7 +13,19 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.utils.markdown_governance import BOUNDARY_NOTE_PATTERN, recommend_boundary_note_preset
+
+def load_markdown_governance_helpers():
+    """Load helper constants without importing the heavy src package initializer."""
+    module_path = PROJECT_ROOT / "src" / "utils" / "markdown_governance.py"
+    spec = importlib.util.spec_from_file_location("markdown_governance_helpers", module_path)
+    if spec is None or spec.loader is None:
+        raise ImportError(f"Unable to load markdown governance helpers from {module_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module.BOUNDARY_NOTE_PATTERN, module.recommend_boundary_note_preset
+
+
+BOUNDARY_NOTE_PATTERN, recommend_boundary_note_preset = load_markdown_governance_helpers()
 
 
 RULE_ID = "markdown-governance-gate"
