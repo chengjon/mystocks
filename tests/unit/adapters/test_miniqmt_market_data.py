@@ -482,6 +482,30 @@ def test_controlled_evidence_service_generates_validator_compatible_evidence(tmp
     assert raw_report["dry_run"]["placeholder_count"] == 0
 
 
+def test_controlled_evidence_service_supports_forward_output_suffix(tmp_path: Path) -> None:
+    bundle = _write_bundle(tmp_path)
+    output_dir = tmp_path / "forward-evidence"
+    run_at = datetime(2026, 5, 19, 9, 30, tzinfo=timezone.utc)
+
+    result = MiniQmtControlledEvidenceService().run_bundle(
+        dataset_version="kline_daily_20260518_v1",
+        bundle_path=bundle,
+        output_dir=output_dir,
+        source_command="python scripts/market_data/run_miniqmt_controlled_evidence.py --dataset-version kline_daily_20260518_v1 --output-suffix forward",
+        run_at=run_at,
+        output_suffix="forward",
+    )
+
+    evidence = json.loads(result.evidence_path.read_text(encoding="utf-8"))
+    raw_report = json.loads(result.raw_report_path.read_text(encoding="utf-8"))
+
+    assert result.evidence_path.name == "2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json"
+    assert result.raw_report_path.name == "mystocks_dry_run_kline_daily_20260518_v1_forward.json"
+    assert evidence["raw_source_file"] == "logs/mystocks_dry_run_kline_daily_20260518_v1_forward.json"
+    assert evidence["result_summary"]["evidence_type"] == "promotion_consumer_dry_run"
+    assert raw_report["dataset_version"] == "kline_daily_20260518_v1"
+
+
 def test_controlled_evidence_service_rejects_template_artifact_rows(tmp_path: Path) -> None:
     bundle = _write_bundle(tmp_path)
     artifact = bundle / "artifacts" / "kline_daily.json"
@@ -531,6 +555,8 @@ def test_cli_writes_evidence_and_prints_machine_readable_summary(tmp_path: Path,
             str(bundle),
             "--output-dir",
             str(output_dir),
+            "--output-suffix",
+            "forward",
         ]
     )
 
@@ -543,6 +569,8 @@ def test_cli_writes_evidence_and_prints_machine_readable_summary(tmp_path: Path,
     assert summary["field_mapping_version"] == "miniqmt.kline_daily.v1"
     assert Path(summary["evidence_path"]).exists()
     assert Path(summary["raw_report_path"]).exists()
+    assert Path(summary["evidence_path"]).name.endswith("-mystocks-dry-run-forward.evidence.json")
+    assert Path(summary["raw_report_path"]).name.endswith("_forward.json")
 
 
 def test_cli_can_insert_evidence_ledger_when_postgres_dsn_is_provided(

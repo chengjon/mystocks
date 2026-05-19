@@ -354,6 +354,7 @@ class MiniQmtControlledEvidenceService:
         output_dir: str | Path,
         source_command: str,
         run_at: datetime | None = None,
+        output_suffix: str = "",
     ) -> EvidenceRunResult:
         release = MiniQmtMarketDataReleaseClient(bundle_path).load_bundle(dataset_version)
         return self.run_release(
@@ -361,6 +362,7 @@ class MiniQmtControlledEvidenceService:
             output_dir=output_dir,
             source_command=source_command,
             run_at=run_at,
+            output_suffix=output_suffix,
         )
 
     def run_release(
@@ -370,8 +372,12 @@ class MiniQmtControlledEvidenceService:
         output_dir: str | Path,
         source_command: str,
         run_at: datetime | None = None,
+        output_suffix: str = "",
     ) -> EvidenceRunResult:
         run_at = run_at or datetime.now(timezone.utc)
+        suffix = _normalize_output_suffix(output_suffix)
+        raw_suffix = f"_{suffix}" if suffix else ""
+        evidence_suffix = f"-{suffix}" if suffix else ""
         rows = self._read_artifact_rows(release.artifact)
         mapped_rows = self._map_daily_kline_rows(rows)
         if not mapped_rows:
@@ -381,10 +387,9 @@ class MiniQmtControlledEvidenceService:
             raise MiniQmtBundleError(f"data quality checks failed: {', '.join(failed_checks)}")
 
         output_path = Path(output_dir)
-        logs_path = output_path / "logs"
-        logs_path.mkdir(parents=True, exist_ok=True)
+        (output_path / "logs").mkdir(parents=True, exist_ok=True)
 
-        raw_source_file = f"logs/mystocks_dry_run_{release.dataset_version}.json"
+        raw_source_file = f"logs/mystocks_dry_run_{release.dataset_version}{raw_suffix}.json"
         raw_report_path = output_path / raw_source_file
         raw_report = self._build_raw_report(release, mapped_rows, run_at)
         self._reject_raw_report_placeholders(raw_report)
@@ -402,7 +407,8 @@ class MiniQmtControlledEvidenceService:
             run_at=run_at,
         )
         self._reject_placeholders(evidence)
-        evidence_path = output_path / f"{run_at.date().isoformat()}-{release.dataset_version}-mystocks-dry-run.evidence.json"
+        evidence_name = f"{run_at.date().isoformat()}-{release.dataset_version}-mystocks-dry-run{evidence_suffix}.evidence.json"
+        evidence_path = output_path / evidence_name
         self._write_json(evidence_path, evidence)
         evidence_sha256 = hashlib.sha256(evidence_path.read_bytes()).hexdigest()
 
@@ -495,6 +501,7 @@ class MiniQmtControlledEvidenceService:
         sample_dates = sorted({str(row["trade_date"]) for row in mapped_rows})[:5]
         return {
             "generated_at": _format_datetime(run_at),
+            "dataset_version": release.dataset_version,
             "dataset": _dataset_identity(release),
             "artifact": _artifact_identity(release.artifact),
             "dry_run": {
@@ -639,6 +646,13 @@ def _resolve_local_artifact_path(uri_or_path: str, *, base_dir: Path) -> Path:
         return _path_from_possible_windows_drive(path_text)
 
     return _path_from_possible_windows_drive(uri_or_path, base_dir=base_dir)
+
+
+def _normalize_output_suffix(value: str) -> str:
+    suffix = value.strip().strip("_-")
+    if suffix and not suffix.replace("_", "").replace("-", "").isalnum():
+        raise MiniQmtBundleError("output_suffix may contain only letters, numbers, hyphen, or underscore")
+    return suffix
 
 
 def _path_from_possible_windows_drive(value: str, *, base_dir: Path | None = None) -> Path:

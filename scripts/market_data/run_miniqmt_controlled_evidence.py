@@ -27,6 +27,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--manifest-path", type=Path)
     parser.add_argument("--artifact-path", type=Path)
     parser.add_argument("--output-dir", type=Path, default=Path("docs/reports/evidence/miniqmt"))
+    parser.add_argument("--output-suffix", default="")
     parser.add_argument("--database-target", default="dry-run-only", choices=["dry-run-only"])
     parser.add_argument("--postgres-dsn")
     return parser
@@ -48,6 +49,7 @@ def main(argv: list[str] | None = None) -> int:
             bundle_path=args.bundle_path,
             output_dir=args.output_dir,
             source_command=source_command,
+            output_suffix=args.output_suffix,
         )
     elif args.manifest_url:
         release = MiniQmtMarketDataReleaseClient.load_http(args.dataset_version, args.manifest_url)
@@ -55,6 +57,7 @@ def main(argv: list[str] | None = None) -> int:
             release=release,
             output_dir=args.output_dir,
             source_command=source_command,
+            output_suffix=args.output_suffix,
         )
     elif args.manifest_path:
         release = MiniQmtMarketDataReleaseClient.load_manifest_file(
@@ -66,6 +69,7 @@ def main(argv: list[str] | None = None) -> int:
             release=release,
             output_dir=args.output_dir,
             source_command=source_command,
+            output_suffix=args.output_suffix,
         )
     else:
         raise MiniQmtBundleError("one of --bundle-path, --manifest-url, or --manifest-path is required")
