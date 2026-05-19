@@ -14,6 +14,12 @@
 > and `docs/reports/quality/generated/backend-lifecycle-di-eastmoney-enhanced-pilot-evidence-2026-05-18.md`
 > record the approved single-pilot implementation. Remaining adapter and
 > service singleton candidates are out of scope for this batch.
+>
+> **2026-05-19 follow-on batch evidence**:
+> `web/backend/tests/test_cninfo_lifecycle_di.py` and the accompanying
+> `web/backend/app/adapters/cninfo_adapter.py` / `web/backend/app/app_factory.py`
+> wiring document the next adapter-only lifecycle DI expansion after the
+> verified EastMoney pilot.
 
 - [x] 1.1 Confirm orchestration artifact: `docs/reports/quality/backend-openspec-change-orchestration-2026-05-18.md`.
 - [x] 1.2 Generate current singleton inventory with `python scripts/dev/backend_audit_baseline.py docs/reports/quality/generated` and use `docs/reports/quality/generated/backend-audit-baseline.json`. Existing P3-A4 inventory is recorded in `docs/reports/quality/backend-audit-phase3-decision-records.md`.
@@ -51,3 +57,11 @@
 - [x] 5.1 Update documentation with lifecycle classification.
 - [x] 5.2 Record remaining singleton debt and owner.
 - [x] 5.3 Mark compatibility getter retirement candidates only after evidence is complete.
+
+## 6. Follow-on Batch: CninfoAdapter
+
+- [x] 6.1 Reuse the verified EastMoney lifecycle pattern for one additional adapter-only follow-on batch.
+- [x] 6.2 Preserve `get_cninfo_adapter()` as a compatibility getter while introducing `install_cninfo_adapter()` and `get_cninfo_adapter_dependency()`.
+- [x] 6.3 Add `app.state` install/close wiring for `CninfoAdapter` in the FastAPI lifespan.
+- [x] 6.4 Add focused dependency override, compatibility getter fallback, and teardown tests for the new provider.
+- [x] 6.5 Verify the new batch with targeted pytest, lint, and syntax checks.

@@ -15,8 +15,9 @@ Multi-data Source Support
 import logging
 import time
 from datetime import date, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, cast
 
+from fastapi import Request
 import pandas as pd
 import requests
 
@@ -361,14 +362,51 @@ class CninfoAdapter(BaseDataSourceAdapter):
         logger.warning("Cninfo does not support historical_quote")
         return pd.DataFrame()
 
+    def close(self) -> None:
+        """Close the HTTP session owned by this adapter."""
+        session = getattr(self, "session", None)
+        if session is not None and hasattr(session, "close"):
+            session.close()
+
 
 # 全局单例
+CNINFO_ADAPTER_STATE_KEY = "cninfo_adapter"
 _cninfo_adapter = None
 
 
 def get_cninfo_adapter() -> CninfoAdapter:
-    """获取巨潮资讯适配器单例"""
+    """获取巨潮资讯适配器兼容单例"""
     global _cninfo_adapter
     if _cninfo_adapter is None:
         _cninfo_adapter = CninfoAdapter()
     return _cninfo_adapter
+
+
+def install_cninfo_adapter(
+    app: Any,
+    adapter: Optional[CninfoAdapter] = None,
+) -> CninfoAdapter:
+    """Install the Cninfo adapter instance on FastAPI app.state."""
+    selected_adapter = adapter if adapter is not None else get_cninfo_adapter()
+    setattr(app.state, CNINFO_ADAPTER_STATE_KEY, selected_adapter)
+    return selected_adapter
+
+
+def get_cninfo_adapter_dependency(request: Request) -> CninfoAdapter:
+    """FastAPI dependency provider for the Cninfo adapter."""
+    adapter = getattr(request.app.state, CNINFO_ADAPTER_STATE_KEY, None)
+    if adapter is None:
+        adapter = install_cninfo_adapter(request.app)
+    return cast(CninfoAdapter, adapter)
+
+
+def close_cninfo_adapter(app: Any) -> None:
+    """Close and remove the Cninfo adapter instance from FastAPI app.state."""
+    adapter = getattr(app.state, CNINFO_ADAPTER_STATE_KEY, None)
+    if adapter is None:
+        return
+
+    close = getattr(adapter, "close", None)
+    if callable(close):
+        close()
+    delattr(app.state, CNINFO_ADAPTER_STATE_KEY)

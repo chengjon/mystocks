@@ -21,6 +21,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
+from .adapters.cninfo_adapter import close_cninfo_adapter, install_cninfo_adapter
 from .adapters.eastmoney_enhanced import (
     close_eastmoney_enhanced_adapter,
     install_eastmoney_enhanced_adapter,
@@ -188,6 +189,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("⚠️ Failed to initialize EastMoney enhanced adapter", error=str(e))
 
+    try:
+        install_cninfo_adapter(app)
+        logger.info("✅ Cninfo adapter installed in app.state")
+    except Exception as e:
+        logger.warning("⚠️ Failed to initialize Cninfo adapter", error=str(e))
+
     yield  # 应用运行期间
 
     # 关闭时执行
@@ -199,6 +206,12 @@ async def lifespan(app: FastAPI):
         logger.info("✅ EastMoney enhanced adapter closed")
     except Exception as e:
         logger.warning("⚠️ Error closing EastMoney enhanced adapter", error=str(e))
+
+    try:
+        close_cninfo_adapter(app)
+        logger.info("✅ Cninfo adapter closed")
+    except Exception as e:
+        logger.warning("⚠️ Error closing Cninfo adapter", error=str(e))
 
     # 停止缓存淘汰调度器
     try:
