@@ -38,6 +38,13 @@
 > `web/backend/app/app_factory.py` wiring extend the same lifecycle pattern to
 > the Akshare extension singleton.
 
+> **2026-05-19 service-tier follow-on pilot evidence**:
+> `web/backend/tests/test_tradingview_service_lifecycle_di.py` and the
+> accompanying `web/backend/app/services/tradingview_widget_service.py` /
+> `web/backend/app/api/tradingview.py` / `web/backend/app/app_factory.py`
+> wiring extend the same lifecycle pattern to the stateless TradingView helper
+> service.
+
 - [x] 1.1 Confirm orchestration artifact: `docs/reports/quality/backend-openspec-change-orchestration-2026-05-18.md`.
 - [x] 1.2 Generate current singleton inventory with `python scripts/dev/backend_audit_baseline.py docs/reports/quality/generated` and use `docs/reports/quality/generated/backend-audit-baseline.json`. Existing P3-A4 inventory is recorded in `docs/reports/quality/backend-audit-phase3-decision-records.md`.
 - [x] 1.3 Generate current module-level `get_xxx` inventory with `rg -n "^def get_\\w+\\(" web/backend/app > docs/reports/quality/generated/backend-getter-inventory.txt`.
@@ -106,3 +113,11 @@
 - [x] 9.3 Add `app.state` install/close wiring for `AkshareExtension` in the FastAPI lifespan.
 - [x] 9.4 Add focused dependency override, compatibility getter fallback, and teardown tests for the provider.
 - [x] 9.5 Verify the batch with targeted pytest, lint, syntax, and OpenSpec checks.
+
+## 10. Follow-on Batch: TradingViewWidgetService
+
+- [x] 10.1 Reuse the verified lifecycle pattern for the stateless TradingView helper service.
+- [x] 10.2 Preserve `get_tradingview_service()` as a compatibility getter while introducing `install_tradingview_service()` and `get_tradingview_service_dependency()`.
+- [x] 10.3 Add `app.state` install/close wiring for `TradingViewWidgetService` in the FastAPI lifespan.
+- [x] 10.4 Add focused dependency override, compatibility getter fallback, and teardown tests for the provider.
+- [x] 10.5 Verify the batch with targeted pytest, lint, syntax, and OpenSpec checks.

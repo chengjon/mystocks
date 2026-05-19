@@ -29,6 +29,7 @@ from .adapters.eastmoney_enhanced import (
     install_eastmoney_enhanced_adapter,
 )
 from .adapters.tqlex_adapter import close_tqlex_adapter, install_tqlex_adapter
+from .services.tradingview_widget_service import close_tradingview_service, install_tradingview_service
 
 # 导入缓存淘汰调度器
 from .core.cache_eviction import get_eviction_scheduler, reset_eviction_scheduler
@@ -216,6 +217,12 @@ async def lifespan(app: FastAPI):
     except Exception as e:
         logger.warning("⚠️ Failed to initialize Akshare extension", error=str(e))
 
+    try:
+        install_tradingview_service(app)
+        logger.info("✅ TradingView service installed in app.state")
+    except Exception as e:
+        logger.warning("⚠️ Failed to initialize TradingView service", error=str(e))
+
     yield  # 应用运行期间
 
     # 关闭时执行
@@ -251,6 +258,12 @@ async def lifespan(app: FastAPI):
         logger.info("✅ Akshare extension closed")
     except Exception as e:
         logger.warning("⚠️ Error closing Akshare extension", error=str(e))
+
+    try:
+        close_tradingview_service(app)
+        logger.info("✅ TradingView service closed")
+    except Exception as e:
+        logger.warning("⚠️ Error closing TradingView service", error=str(e))
 
     # 停止缓存淘汰调度器
     try:
