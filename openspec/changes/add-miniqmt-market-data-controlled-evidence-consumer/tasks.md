@@ -74,10 +74,12 @@
   - Evidence and raw report hashes still match the operator snapshot, and the raw report still records `writes_performed=false`, `failed_checks=0`, `row_count=2`, `field_mapping_version=miniqmt.kline_daily.v1`, `artifact_sha256_verified=true`, and `placeholder_count=0`.
 - [x] 7.10 Publish a reviewer handoff checklist in the closeout report, covering consumer-only scope, raw/candidate identity binding, operator snapshot role, separate Quantix / validated-forward tracks, manual authoritative-ready gate, and focused re-run commands.
 - [x] 7.11 Split the consumer audit ledger helpers into `src/adapters/miniqmt_market_data_ledger.py` so the release client/evidence service facade stays below the production Python file-size guardrail while preserving existing public imports.
+- [x] 7.12 Sync post-Quantix follow-up state: Quantix validated forward `quantix_regression` evidence is accepted, while MyStocks validated forward `mystocks_dry_run`, miniQMT manual promote to `validated`, and authoritative-ready approval / rollback readiness remain external follow-up tracks.
 
 ## 8. External Follow-Up, Not MyStocks Implementation Blockers
 
-- Quantix: wait for real `quantix_regression` evidence. Generated capability alignment is not gate-passed evidence.
-- Validated forward identity: track as a separate evidence path if authoritative-ready promotion becomes the target.
+- Quantix: real validated forward `quantix_regression` evidence has been accepted by miniQMT validator / preview / apply and is no longer the blocking follow-up.
+- MyStocks validated forward identity: generate a separate `mystocks_dry_run` evidence path for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e` if authoritative-ready promotion becomes the target.
+- miniQMT manual promote: after required evidence is accepted, promote the dataset to `validated` through the miniQMT owner/operator path.
 - MyStocks ledger backfill: optional operator-supplied consumer audit snapshot only; not miniQMT promotion-state truth.
 - Promotion governance: keep authoritative-ready as an explicit manual gate with rollback/fallback constraints; do not infer source cutover from MyStocks evidence apply.

@@ -145,10 +145,10 @@ Retained external judgment:
 - The accepted MyStocks evidence is bound to the raw/candidate identity with `payload_hash=61eedd9cd029f6c0a3324b3e66be0d9b83402279cbd0aed75885459822ec13d1`; it is not evidence for the validated forward identity `268b...`.
 - `mystocks_dry_run` is now a completed raw/candidate line item. There is no further MyStocks functional implementation on this slot unless a new upstream contract change is opened.
 - MyStocks local file `docs/reports/evidence/miniqmt/operator-supplied-miniqmt-acceptance-status.json` is only an operator-supplied audit snapshot. It is not proof of a PostgreSQL write and not miniQMT business-state truth. Any later `market_dataset_evidence_runs` backfill remains MyStocks consumer audit only.
-- Quantix regression evidence remains a separate pending track. Generated capability alignment is not the same as passed evidence in the miniQMT gate.
-- Validated forward identity is a separate follow-up track from Quantix regression, not a merged backlog item.
+- Quantix validated forward `quantix_regression` evidence has since been accepted by miniQMT validator / preview / apply and is no longer the blocking follow-up.
+- MyStocks validated forward `mystocks_dry_run` evidence remains a separate follow-up track from Quantix regression. Quantix acceptance does not cover MyStocks evidence for the validated forward identity `268b...`.
 - MyStocks evidence apply satisfies only the `mystocks_dry_run` slot. It does not imply source cutover, Quantix ClickHouse writes, or automatic authoritative-ready promotion.
 
 Decision:
 
-This MyStocks-side raw/candidate slice is accepted as boundary-correct, evidence-auditable, contract-aligned, validator-passed, preview-passed, and apply-completed by miniQMT. The MyStocks implementation line for the completed `mystocks_dry_run` slot is closed. Remaining work is external follow-up: optional MyStocks consumer-audit ledger backfill, real Quantix `quantix_regression` evidence, and separate validated forward identity evidence if authoritative-ready promotion becomes the target.
+This MyStocks-side raw/candidate slice is accepted as boundary-correct, evidence-auditable, contract-aligned, validator-passed, preview-passed, and apply-completed by miniQMT. The MyStocks implementation line for the completed raw/candidate `mystocks_dry_run` slot is closed. Remaining work is external follow-up: optional MyStocks consumer-audit ledger backfill, MyStocks validated forward `mystocks_dry_run` evidence for the `268b...` identity if authoritative-ready promotion becomes the target, miniQMT manual promote to `validated`, and authoritative-ready approval / rollback readiness.
