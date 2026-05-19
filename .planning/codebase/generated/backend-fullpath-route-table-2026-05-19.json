@@ -1,0 +1,62 @@
+{
+  "generated_at": "2026-05-19T02:56:45.193Z",
+  "git_branch": "docs/codebase-map-evidence-index-82",
+  "git_head": "0bc5796ba Merge remote-tracking branch 'origin/wip/root-dirty-20260403' into tmp-core-split-matrix-push",
+  "summary": {
+    "total_routes": 547,
+    "registered_routes": 522,
+    "orphan_routes": 25,
+    "unique_files": 96,
+    "local_decorator_duplicate_groups": 54,
+    "full_path_duplicate_groups": 2
+  },
+  "full_path_duplicates": [
+    {
+      "method": "GET",
+      "full_path": "/api/health",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/data_quality.py",
+          "function": "get_sources_health"
+        },
+        {
+          "source": "app/api/metrics.py",
+          "function": "health_check"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "full_path": "/api/metrics",
+      "handler_count": 2,
+      "handlers": [
+        {
+          "source": "app/api/data_quality.py",
+          "function": "get_data_quality_metrics"
+        },
+        {
+          "source": "app/api/metrics.py",
+          "function": "prometheus_metrics"
+        }
+      ]
+    }
+  ],
+  "local_decorator_duplicates_count": 54,
+  "orphan_files": [
+    "app/api/algorithms/_naive_bayes_router.py",
+    "app/api/algorithms/get_algorithms_module.py",
+    "app/api/data_source_config.old.py"
+  ],
+  "measured_git_head": {
+    "short": "0bc5796ba",
+    "full": "0bc5796baaeb493f7560dc47d9e3044ed1c7cc0f",
+    "subject": "Merge remote-tracking branch 'origin/wip/root-dirty-20260403' into tmp-core-split-matrix-push"
+  },
+  "current_head_checked_at_review": "0bc5796ba",
+  "stale_if_head_mismatch": true,
+  "source_scope": "static AST route expansion from scripts/dev/backend_audit_fullpath_routes.py on clean GH #82 worktree",
+  "command": "python scripts/dev/backend_audit_fullpath_routes.py .planning/codebase/generated (script chdirs to web/backend; root artifact copied from web/backend/.planning/codebase/generated/backend-fullpath-route-table.json)",
+  "script_exit_code": 0,
+  "artifact_type": "static_backend_fullpath_route_table"
+}

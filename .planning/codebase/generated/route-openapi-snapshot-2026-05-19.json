@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-05-19T02:56:45.193Z",
+  "measured_git_head": {
+    "short": "0bc5796ba",
+    "full": "0bc5796baaeb493f7560dc47d9e3044ed1c7cc0f",
+    "subject": "Merge remote-tracking branch 'origin/wip/root-dirty-20260403' into tmp-core-split-matrix-push"
+  },
+  "current_head_checked_at_review": "0bc5796ba",
+  "stale_if_head_mismatch": true,
+  "source_scope": "clean worktree based on origin/wip/root-dirty-20260403 for GH #82 evidence artifact index",
+  "artifact_type": "runtime_route_openapi_snapshot",
+  "command": "python -c \"from app.main import app; collect app.routes; app.openapi()\" with dummy CI env",
+  "route_table": {
+    "status": "blocked"
+  },
+  "openapi": {
+    "status": "blocked",
+    "path_count": null,
+    "duplicate_operation_id_warnings": null,
+    "include_in_schema_policy": "not measured because app import/openapi generation failed"
+  },
+  "python_exit_code": 1,
+  "parse_error": null,
+  "stdout_tail": [
+    "2026-05-19 10:56:48 [info     ] MyStocks PostgreSQLDataAccess loaded successfully",
+    "2026-05-19 10:56:48 [info     ] PostgreSQL engine created (Phase 3 optimized pool) database=testdb max_overflow=40 pool_size=20 pool_timeout=30",
+    "2026-05-19 10:56:48 [info     ] DatabaseService initialized (PostgreSQL-only, Week 3 simplified)"
+  ],
+  "stderr_tail": [
+    "INFO:src.monitoring.monitoring_database_methods.core:✅ MonitoringDatabase initialized (enabled=True)",
+    "WARNING:DatabaseTableManager:Monitoring DB unavailable, falling back to SQLite: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused",
+    "\tIs the server running on that host and accepting TCP/IP connections?",
+    "(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "WARNING:DatabaseTableManager:Monitoring DB unavailable, falling back to SQLite: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused",
+    "\tIs the server running on that host and accepting TCP/IP connections?",
+    "(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "WARNING:DatabaseTableManager:Monitoring DB unavailable, falling back to SQLite: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused",
+    "\tIs the server running on that host and accepting TCP/IP connections?",
+    "(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "WARNING:DatabaseTableManager:Monitoring DB unavailable, falling back to SQLite: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused",
+    "\tIs the server running on that host and accepting TCP/IP connections?",
+    "(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "WARNING:DatabaseTableManager:Monitoring DB unavailable, falling back to SQLite: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused",
+    "\tIs the server running on that host and accepting TCP/IP connections?",
+    "(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "WARNING:DatabaseTableManager:Monitoring DB unavailable, falling back to SQLite: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused",
+    "\tIs the server running on that host and accepting TCP/IP connections?",
+    "(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "WARNING:DatabaseTableManager:Monitoring DB unavailable, falling back to SQLite: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused",
+    "\tIs the server running on that host and accepting TCP/IP connections?",
+    "(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "WARNING:DatabaseTableManager:Monitoring DB unavailable, falling back to SQLite: (psycopg2.OperationalError) connection to server at \"localhost\" (127.0.0.1), port 5432 failed: Connection refused",
+    "\tIs the server running on that host and accepting TCP/IP connections?",
+    "(Background on this error at: https://sqlalche.me/e/20/e3q8)",
+    "Traceback (most recent call last):",
+    "  File \"<string>\", line 3, in <module>",
+    "  File \"/tmp/mystocks-codebase-map-evidence-82/web/backend/app/main.py\", line 44, in <module>",
+    "    from .router_registry import register_api_routes",
+    "  File \"/tmp/mystocks-codebase-map-evidence-82/web/backend/app/router_registry.py\", line 11, in <module>",
+    "    from .api import contract",
+    "  File \"/tmp/mystocks-codebase-map-evidence-82/web/backend/app/api/contract/__init__.py\", line 9, in <module>",
+    "    from .routes import router as legacy_router",
+    "  File \"/tmp/mystocks-codebase-map-evidence-82/web/backend/app/api/contract/routes.py\", line 13, in <module>",
+    "    from app.api.contract.schemas import (",
+    "ImportError: cannot import name 'ContractDriftIncidentListResponse' from 'app.api.contract.schemas' (/tmp/mystocks-codebase-map-evidence-82/web/backend/app/api/contract/schemas.py)"
+  ],
+  "notes": [
+    "No runtime code was changed for this artifact. Startup/import failures are recorded as evidence blockers, not fixed in #82."
+  ]
+}
