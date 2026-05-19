@@ -75,11 +75,16 @@
 - [x] 7.10 Publish a reviewer handoff checklist in the closeout report, covering consumer-only scope, raw/candidate identity binding, operator snapshot role, separate Quantix / validated-forward tracks, manual authoritative-ready gate, and focused re-run commands.
 - [x] 7.11 Split the consumer audit ledger helpers into `src/adapters/miniqmt_market_data_ledger.py` so the release client/evidence service facade stays below the production Python file-size guardrail while preserving existing public imports.
 - [x] 7.12 Sync post-Quantix follow-up state: Quantix validated forward `quantix_regression` evidence is accepted, while MyStocks validated forward `mystocks_dry_run`, miniQMT manual promote to `validated`, and authoritative-ready approval / rollback readiness remain external follow-up tracks.
+- [x] 7.13 Generate a separate MyStocks validated-forward `mystocks_dry_run` evidence artifact with `--output-suffix forward`, bound to `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`.
+  - Evidence path: `docs/reports/evidence/miniqmt/2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json`
+  - Evidence SHA-256: `4fe9be93061aeec011c16aeabcbb14eef17a35bf6a5ba578258c2e5388ccb24c`
+  - Raw report SHA-256: `a8cb1053d344223c925e1c6077f52d83a7b0f48abfb63060e8f027a7634589b5`
+  - This is a handoff artifact only; miniQMT validator / preview / apply and any promotion remain external gates.
 
 ## 8. External Follow-Up, Not MyStocks Implementation Blockers
 
 - Quantix: real validated forward `quantix_regression` evidence has been accepted by miniQMT validator / preview / apply and is no longer the blocking follow-up.
-- MyStocks validated forward identity: generate a separate `mystocks_dry_run` evidence path for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e` if authoritative-ready promotion becomes the target.
+- MyStocks validated forward identity: a separate local `mystocks_dry_run` evidence path has been generated for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`; miniQMT validator / preview / apply remains pending before any promotion work.
 - miniQMT manual promote: after required evidence is accepted, promote the dataset to `validated` through the miniQMT owner/operator path.
 - MyStocks ledger backfill: optional operator-supplied consumer audit snapshot only; not miniQMT promotion-state truth.
 - Promotion governance: keep authoritative-ready as an explicit manual gate with rollback/fallback constraints; do not infer source cutover from MyStocks evidence apply.

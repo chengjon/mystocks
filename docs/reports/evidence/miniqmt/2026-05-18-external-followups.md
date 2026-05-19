@@ -24,13 +24,15 @@ miniQMT follow-up reference: `D:\MyCode3\miniQMT\DOCS\xtdata-api\2026-05-19-post
 - Evidence SHA-256: `683314efa9d9b5ac80ac2f13274fd523840f3bf9a42fbfac3663d9522fa11860`
 - Quantix validated forward `quantix_regression`: completed and accepted by miniQMT validator / preview / apply
 - Quantix accepted identity: `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`
+- MyStocks validated forward `mystocks_dry_run`: generated locally, miniQMT validator / preview / apply pending
+- MyStocks validated forward evidence SHA-256: `4fe9be93061aeec011c16aeabcbb14eef17a35bf6a5ba578258c2e5388ccb24c`
 
 ## Follow-Up Tracks
 
 | Track | Owner | Current status | Entry condition | Done condition | Must not imply |
 |---|---|---|---|---|---|
 | Quantix regression evidence | Quantix / miniQMT gate owner | Completed | Quantix provides real `quantix_regression` evidence for the target dataset identity | miniQMT validates, previews, and applies the Quantix evidence; `quantix_regression` is no longer a promotion gap | Quantix acceptance does not cover MyStocks validated forward evidence |
-| Validated forward MyStocks evidence | MyStocks / miniQMT receive | Pending | Authoritative-ready target requires MyStocks dry-run evidence for validated forward identity `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`, not the completed raw/candidate identity | MyStocks generates validated forward `mystocks_dry_run` evidence and miniQMT validates, previews, and applies it | Raw/candidate acceptance does not cover validated forward |
+| Validated forward MyStocks evidence | MyStocks / miniQMT receive | Generated locally; pending miniQMT validator / preview / apply | Authoritative-ready target requires MyStocks dry-run evidence for validated forward identity `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`, not the completed raw/candidate identity | miniQMT validates, previews, and applies the generated validated forward `mystocks_dry_run` evidence | Raw/candidate acceptance does not cover validated forward |
 | Manual promote to `validated` | miniQMT operator / owner | Pending after validated forward MyStocks evidence | Required evidence slots for validated state are accepted | Owner/operator promotes the dataset to `validated` through miniQMT's promotion path | `validated` does not imply `authoritative-ready` or source cutover |
 | Authoritative-ready promotion | miniQMT operator / owner | Manual gate only | Dataset is `validated`, rollback/fallback metadata is available, and owner approval exists | Owner/operator explicitly promotes with rollback/fallback metadata available | No automatic promotion, source cutover, or ClickHouse writes |
 | MyStocks ledger backfill | MyStocks operator | Optional audit backfill | PostgreSQL DSN and operator decision are available | `market_dataset_evidence_runs` receives an operator-supplied MyStocks consumer audit snapshot with `passed` / `passed` / `applied` statuses | Ledger backfill is not miniQMT business-state truth and does not supersede miniQMT records |
@@ -45,13 +47,14 @@ miniQMT follow-up reference: `D:\MyCode3\miniQMT\DOCS\xtdata-api\2026-05-19-post
 
 ## Next Minimal Action
 
-The next MyStocks-owned action is:
+The next cross-project action is:
 
 ```text
-Generate validated forward mystocks_dry_run evidence for:
+Submit generated validated forward mystocks_dry_run evidence to miniQMT validator / preview / apply for:
 dataset_version = kline_daily_20260518_v1
 lineage_id = lin_kline_daily_20260518_v1
 payload_hash = 268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e
+MyStocks evidence path = docs/reports/evidence/miniqmt/2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json
 target miniQMT receive path = DOCS/xtdata-api/evidence/2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json
 ```
 

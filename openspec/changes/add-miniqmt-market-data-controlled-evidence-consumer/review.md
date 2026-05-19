@@ -147,6 +147,7 @@ Retained external judgment:
 - MyStocks local file `docs/reports/evidence/miniqmt/operator-supplied-miniqmt-acceptance-status.json` is only an operator-supplied audit snapshot. It is not proof of a PostgreSQL write and not miniQMT business-state truth. Any later `market_dataset_evidence_runs` backfill remains MyStocks consumer audit only.
 - Quantix validated forward `quantix_regression` evidence has since been accepted by miniQMT validator / preview / apply and is no longer the blocking follow-up.
 - MyStocks validated forward `mystocks_dry_run` evidence remains a separate follow-up track from Quantix regression. Quantix acceptance does not cover MyStocks evidence for the validated forward identity `268b...`.
+- MyStocks has since generated a separate validated-forward `mystocks_dry_run` evidence artifact via the forward-suffix handoff path. miniQMT validator / preview / apply on that artifact remains pending and does not change the raw/candidate acceptance verdict above.
 - MyStocks evidence apply satisfies only the `mystocks_dry_run` slot. It does not imply source cutover, Quantix ClickHouse writes, or automatic authoritative-ready promotion.
 
 Decision:
