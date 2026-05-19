@@ -1,11 +1,10 @@
-"""Compatibility wrapper for validation message constants.
+"""Validation helper package.
 
-Canonical imports should use ``app.core.validation.messages``. This wrapper
-keeps the historical ``app.core.validation_messages`` path stable during the
-Core split migration.
+The package is the canonical home for validation-specific helpers. Legacy
+module imports remain available through thin wrappers under ``app.core``.
 """
 
-from .validation.messages import (
+from .messages import (
     CommonMessages,
     ErrorMessages,
     MarketMessages,
