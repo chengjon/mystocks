@@ -22,6 +22,7 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy import text
 
 from .adapters.cninfo_adapter import close_cninfo_adapter, install_cninfo_adapter
+from .adapters.eastmoney_adapter import close_eastmoney_adapter, install_eastmoney_adapter
 from .adapters.eastmoney_enhanced import (
     close_eastmoney_enhanced_adapter,
     install_eastmoney_enhanced_adapter,
@@ -190,6 +191,12 @@ async def lifespan(app: FastAPI):
         logger.warning("⚠️ Failed to initialize EastMoney enhanced adapter", error=str(e))
 
     try:
+        install_eastmoney_adapter(app)
+        logger.info("✅ EastMoney adapter installed in app.state")
+    except Exception as e:
+        logger.warning("⚠️ Failed to initialize EastMoney adapter", error=str(e))
+
+    try:
         install_cninfo_adapter(app)
         logger.info("✅ Cninfo adapter installed in app.state")
     except Exception as e:
@@ -206,6 +213,12 @@ async def lifespan(app: FastAPI):
         logger.info("✅ EastMoney enhanced adapter closed")
     except Exception as e:
         logger.warning("⚠️ Error closing EastMoney enhanced adapter", error=str(e))
+
+    try:
+        close_eastmoney_adapter(app)
+        logger.info("✅ EastMoney adapter closed")
+    except Exception as e:
+        logger.warning("⚠️ Error closing EastMoney adapter", error=str(e))
 
     try:
         close_cninfo_adapter(app)

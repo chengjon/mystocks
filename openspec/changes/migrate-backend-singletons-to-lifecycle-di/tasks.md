@@ -20,6 +20,11 @@
 > `web/backend/app/adapters/cninfo_adapter.py` / `web/backend/app/app_factory.py`
 > wiring document the next adapter-only lifecycle DI expansion after the
 > verified EastMoney pilot.
+>
+> **2026-05-19 second follow-on batch evidence**:
+> `web/backend/tests/test_eastmoney_lifecycle_di.py` and the accompanying
+> `web/backend/app/adapters/eastmoney_adapter.py` / `web/backend/app/app_factory.py`
+> wiring extend the same lifecycle pattern to the direct EastMoney adapter.
 
 - [x] 1.1 Confirm orchestration artifact: `docs/reports/quality/backend-openspec-change-orchestration-2026-05-18.md`.
 - [x] 1.2 Generate current singleton inventory with `python scripts/dev/backend_audit_baseline.py docs/reports/quality/generated` and use `docs/reports/quality/generated/backend-audit-baseline.json`. Existing P3-A4 inventory is recorded in `docs/reports/quality/backend-audit-phase3-decision-records.md`.
@@ -65,3 +70,11 @@
 - [x] 6.3 Add `app.state` install/close wiring for `CninfoAdapter` in the FastAPI lifespan.
 - [x] 6.4 Add focused dependency override, compatibility getter fallback, and teardown tests for the new provider.
 - [x] 6.5 Verify the new batch with targeted pytest, lint, and syntax checks.
+
+## 7. Follow-on Batch: EastMoneyAdapter
+
+- [x] 7.1 Reuse the verified lifecycle pattern for the direct EastMoney adapter.
+- [x] 7.2 Preserve `get_eastmoney_adapter()` as a compatibility getter while introducing `install_eastmoney_adapter()` and `get_eastmoney_adapter_dependency()`.
+- [x] 7.3 Add `app.state` install/close wiring for `EastMoneyAdapter` in the FastAPI lifespan.
+- [x] 7.4 Add focused dependency override, compatibility getter fallback, and teardown tests for the provider.
+- [x] 7.5 Verify the batch with targeted pytest, lint, syntax, and OpenSpec checks.

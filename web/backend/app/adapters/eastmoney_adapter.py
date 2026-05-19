@@ -7,8 +7,9 @@
 import logging
 import math
 import time
-from typing import Optional
+from typing import Any, Optional, cast
 
+from fastapi import Request
 import pandas as pd
 import requests
 
@@ -28,6 +29,12 @@ class EastMoneyAdapter:
                 "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8",
             }
         )
+
+    def close(self) -> None:
+        """Close the HTTP session owned by this adapter."""
+        session = getattr(self, "session", None)
+        if session is not None and hasattr(session, "close"):
+            session.close()
 
     # ==================== 资金流向数据 ====================
 
@@ -596,12 +603,43 @@ class EastMoneyAdapter:
 
 
 # 全局单例
+EASTMONEY_ADAPTER_STATE_KEY = "eastmoney_adapter"
 _eastmoney_adapter = None
 
 
 def get_eastmoney_adapter() -> EastMoneyAdapter:
-    """获取东方财富适配器单例"""
+    """获取东方财富适配器兼容单例"""
     global _eastmoney_adapter
     if _eastmoney_adapter is None:
         _eastmoney_adapter = EastMoneyAdapter()
     return _eastmoney_adapter
+
+
+def install_eastmoney_adapter(
+    app: Any,
+    adapter: Optional[EastMoneyAdapter] = None,
+) -> EastMoneyAdapter:
+    """Install the EastMoney adapter instance on FastAPI app.state."""
+    selected_adapter = adapter if adapter is not None else get_eastmoney_adapter()
+    setattr(app.state, EASTMONEY_ADAPTER_STATE_KEY, selected_adapter)
+    return selected_adapter
+
+
+def get_eastmoney_adapter_dependency(request: Request) -> EastMoneyAdapter:
+    """FastAPI dependency provider for the EastMoney adapter."""
+    adapter = getattr(request.app.state, EASTMONEY_ADAPTER_STATE_KEY, None)
+    if adapter is None:
+        adapter = install_eastmoney_adapter(request.app)
+    return cast(EastMoneyAdapter, adapter)
+
+
+def close_eastmoney_adapter(app: Any) -> None:
+    """Close and remove the EastMoney adapter instance from FastAPI app.state."""
+    adapter = getattr(app.state, EASTMONEY_ADAPTER_STATE_KEY, None)
+    if adapter is None:
+        return
+
+    close = getattr(adapter, "close", None)
+    if callable(close):
+        close()
+    delattr(app.state, EASTMONEY_ADAPTER_STATE_KEY)
