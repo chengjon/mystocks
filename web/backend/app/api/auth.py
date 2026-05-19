@@ -26,7 +26,6 @@ from app.core.security import (
     verify_token,
 )
 
-
 AUTH_ROUTE_RESPONSES = {
     401: COMMON_RESPONSES[401],
     403: COMMON_RESPONSES[403],
@@ -34,227 +33,26 @@ AUTH_ROUTE_RESPONSES = {
 }
 
 router = APIRouter(responses=AUTH_ROUTE_RESPONSES)
-security = HTTPBearer()
 
-# User database now backed by PostgreSQL via security.py.
-# Mock authentication is only available when explicitly enabled
-# for testing or controlled runtime scenarios.
-
-
-def _success_response_spec(status_code: int, description: str, example: object) -> dict[int, dict]:
-    return {
-        status_code: {
-            "description": description,
-            "content": {
-                "application/json": {
-                    "example": example,
-                }
-            },
-        }
-    }
-
-
-def _error_response_spec(status_code: int, description: str, example: dict) -> dict[int, dict]:
-    return {
-        status_code: {
-            "description": description,
-            "content": {
-                "application/json": {
-                    "example": example,
-                }
-            },
-        }
-    }
-
-
-AUTH_LOGOUT_RESPONSES = {
-    **_success_response_spec(200, "用户登出成功", {"message": "登出成功", "success": True}),
-}
-
-AUTH_LOGIN_RESPONSES = {
-    **_success_response_spec(
-        200,
-        "用户登录成功并返回访问令牌",
-        {
-            "success": True,
-            "data": {
-                "token": "eyJhbGciOiJIUzI1NiIs...",
-                "token_type": "bearer",
-                "expires_in": 7200,
-                "user": {"id": 1, "username": "trader_admin", "email": "admin@example.com", "role": "admin"},
-            },
-            "message": "登录成功",
-            "timestamp": "2026-04-05T12:00:00Z",
-            "request_id": "req-auth-login-001",
-        },
-    ),
-}
-
-AUTH_ME_RESPONSES = {
-    **_success_response_spec(
-        200,
-        "当前登录用户信息",
-        {"id": 1, "username": "trader_admin", "email": "admin@example.com", "role": "admin", "is_active": True},
-    ),
-}
-
-AUTH_REFRESH_RESPONSES = {
-    **_success_response_spec(
-        200,
-        "访问令牌刷新成功",
-        {"access_token": "eyJhbGciOiJIUzI1NiIs...", "token_type": "bearer", "expires_in": 7200},
-    ),
-}
-
-AUTH_REGISTER_RESPONSES = {
-    **_error_response_spec(409, "用户名或邮箱已存在", {"detail": "用户名已存在", "error_code": "USER_ALREADY_EXISTS"}),
-    **_success_response_spec(
-        201,
-        "用户注册成功",
-        {
-            "success": True,
-            "data": {
-                "id": 3,
-                "username": "john_doe",
-                "email": "john@example.com",
-                "role": "user",
-                "is_active": True,
-            },
-            "message": "User registered successfully",
-            "timestamp": "2026-04-05T12:00:00Z",
-            "request_id": "req-auth-register-001",
-        },
-    ),
-}
-
-AUTH_RESET_REQUEST_RESPONSES = {
-    **_success_response_spec(
-        200,
-        "密码重置请求已受理",
-        {
-            "success": True,
-            "data": None,
-            "message": "If the email exists, a password reset link has been sent",
-            "timestamp": "2026-04-05T12:00:00Z",
-            "request_id": "req-auth-reset-001",
-        },
-    ),
-}
-
-AUTH_RESET_CONFIRM_RESPONSES = {
-    **_error_response_spec(
-        400,
-        "密码重置令牌无效或已过期",
-        {"detail": "Invalid or expired reset token", "error_code": "INVALID_RESET_TOKEN"},
-    ),
-    **_success_response_spec(
-        200,
-        "密码重置成功",
-        {
-            "success": True,
-            "data": None,
-            "message": "Password reset successfully",
-            "timestamp": "2026-04-05T12:00:00Z",
-            "request_id": "req-auth-reset-confirm-001",
-        },
-    ),
-}
-
-AUTH_USERS_RESPONSES = {
-    **_success_response_spec(
-        200,
-        "用户列表查询成功",
-        {
-            "users": [
-                {
-                    "id": 1,
-                    "username": "trader_admin",
-                    "email": "admin@example.com",
-                    "role": "admin",
-                    "is_active": True,
-                },
-                {
-                    "id": 2,
-                    "username": "market_viewer",
-                    "email": "viewer@example.com",
-                    "role": "user",
-                    "is_active": True,
-                },
-            ],
-            "total": 2,
-        },
-    ),
-}
-
-AUTH_CSRF_RESPONSES = {
-    **_success_response_spec(
-        200,
-        "CSRF 令牌生成成功",
-        {
-            "success": True,
-            "data": {
-                "token": "csrf-token-example",
-                "token_type": "csrf",
-                "expires_in": 3600,
-            },
-            "message": "CSRF token generated successfully",
-            "timestamp": "2026-04-07T03:45:00Z",
-            "request_id": "req-auth-csrf-001",
-        },
-    ),
-}
-
-
-async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Depends(security),
-) -> User:
-    """
-    获取当前用户 - 恢复认证验证
-    验证 JWT token 并返回授权用户信息
-    """
-    if not credentials:
-        raise UnauthorizedException(detail="Missing authentication credentials")
-
-    try:
-        # 验证 JWT token
-        token_data = verify_token(credentials.credentials)
-        if token_data is None:
-            raise UnauthorizedException(detail="Invalid or expired token")
-
-        username: str = token_data.username
-        if username is None:
-            raise UnauthorizedException(detail="Invalid token claims")
-    except Exception as e:
-        raise UnauthorizedException(detail=f"Invalid credentials: {str(e)}")
-
-    # 从安全模块获取用户信息（数据库或模拟数据）
-    from app.core.security import authenticate_user_by_id
-
-    user_in_db = authenticate_user_by_id(token_data.user_id)
-    if user_in_db is None:
-        raise UnauthorizedException(detail="User not found")
-
-    user = User(
-        id=user_in_db.id,
-        username=user_in_db.username,
-        email=user_in_db.email,
-        role=user_in_db.role,
-        is_active=user_in_db.is_active,
-    )
-    return user
-
-
-async def get_current_active_user(
-    current_user: User = Depends(get_current_user),
-) -> User:
-    """
-    获取当前活跃用户 - 验证用户活跃状态
-    检查用户是否处于活跃状态
-    """
-    if not current_user.is_active:
-        raise UnauthorizedException(detail="User account is inactive")
-    return current_user
-
+from app.api._auth_responses import (
+    _success_response_spec,
+    _error_response_spec,
+    AUTH_LOGOUT_RESPONSES,
+    AUTH_LOGIN_RESPONSES,
+    AUTH_ME_RESPONSES,
+    AUTH_REFRESH_RESPONSES,
+    AUTH_REGISTER_RESPONSES,
+    AUTH_RESET_REQUEST_RESPONSES,
+    AUTH_RESET_CONFIRM_RESPONSES,
+    AUTH_USERS_RESPONSES,
+    AUTH_CSRF_RESPONSES,
+)
+from app.api._auth_helpers import (
+    security,
+    check_permission,
+    get_current_user,
+    get_current_active_user,
+)
 
 @router.post(
     "/login",
@@ -322,7 +120,6 @@ async def login_for_access_token(
         message="登录成功",
     )
 
-
 @router.post(
     "/logout",
     summary="用户登出",
@@ -339,7 +136,6 @@ async def logout(
     revoke_token(credentials.credentials)
     return {"message": "登出成功", "success": True}
 
-
 @router.get(
     "/me",
     response_model=User,
@@ -352,7 +148,6 @@ async def read_users_me(current_user: User = Depends(get_current_user)) -> User:
     获取当前用户信息
     """
     return current_user
-
 
 @router.post(
     "/refresh",
@@ -381,7 +176,6 @@ async def refresh_token(
         "token_type": "bearer",
         "expires_in": settings.access_token_expire_minutes * 60,
     }
-
 
 @router.get(
     "/users",
@@ -434,16 +228,6 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
         raise BusinessException(
             detail=f"Error retrieving users: {str(e)}", status_code=500, error_code="USER_RETRIEVAL_FAILED"
         )
-
-
-def check_permission(user_role: str, required_role: str) -> bool:
-    """
-    检查用户权限
-    """
-    role_hierarchy = {"user": 0, "admin": 1}
-
-    return role_hierarchy.get(user_role, 0) >= role_hierarchy.get(required_role, 0)
-
 
 # SECURITY FIX 1.2: CSRF Token获取端点
 @router.get(
@@ -522,7 +306,6 @@ async def get_csrf_token():
             message=f"Failed to generate CSRF token: {str(e)}",
             code="INTERNAL_SERVER_ERROR",
         )
-
 
 @router.post(
     "/register",
@@ -676,7 +459,6 @@ async def register_user(
         if session:
             session.close()
 
-
 @router.post(
     "/reset-password/request",
     summary="请求密码重置",
@@ -774,7 +556,6 @@ async def request_password_reset(
     finally:
         if session:
             session.close()
-
 
 @router.post(
     "/reset-password/confirm",
