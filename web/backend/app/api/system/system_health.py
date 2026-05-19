@@ -9,7 +9,9 @@ from datetime import datetime, timedelta
 from typing import Any, Dict, List, Optional
 
 import psycopg2
-from fastapi import APIRouter, Body, HTTPException, Query
+from fastapi import APIRouter, Body, Query
+
+from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.api.system._logs_summary_helper import build_logs_summary_payload
@@ -104,7 +106,7 @@ async def system_health():
             "architecture": "dual-database",
         }
     except Exception as e:
-        raise HTTPException(status_code=503, detail=f"系统健康检查失败: {str(e)}")
+        raise BusinessException(message=f"系统健康检查失败: {str(e)}", error_code=503)
 
 
 @router.get("/adapters/health", responses=SYSTEM_ADAPTER_HEALTH_RESPONSES)
@@ -158,7 +160,7 @@ async def get_adapters_health():
         }
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"适配器健康检查失败: {str(e)}")
+        raise BusinessException(message=f"适配器健康检查失败: {str(e)}")
 
 
 @router.get("/datasources", responses=SYSTEM_DATASOURCES_RESPONSES)
@@ -666,7 +668,7 @@ async def get_system_logs(
         )
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取系统日志失败: {str(e)}")
+        raise BusinessException(message=f"获取系统日志失败: {str(e)}")
 
 
 @router.get("/logs/summary", responses=SYSTEM_LOG_SUMMARY_RESPONSES)
@@ -686,4 +688,4 @@ async def get_logs_summary():
         return build_logs_summary_payload(logs, total)
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"获取日志统计失败: {str(e)}")
+        raise BusinessException(message=f"获取日志统计失败: {str(e)}")
