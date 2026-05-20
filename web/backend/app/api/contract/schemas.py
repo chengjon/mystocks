@@ -181,6 +181,28 @@ class ContractValidateResponse(BaseModel):
     results: List[ValidationResult] = Field(default_factory=list, description="验证结果列表")
 
 
+class ContractDriftIncidentResponse(BaseModel):
+    """契约漂移事件响应"""
+
+    incident_id: str = Field(..., description="漂移事件ID")
+    detected_at: datetime = Field(..., description="检测时间")
+    kind: str = Field(..., description="漂移类型")
+    severity: str = Field(..., description="严重程度")
+    path: Optional[str] = Field(None, description="漂移路径")
+    message: str = Field(..., description="事件描述")
+    suggestion: Optional[str] = Field(None, description="治理建议")
+    status: str = Field(..., description="事件状态")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="事件元数据")
+
+
+class ContractDriftIncidentListResponse(BaseModel):
+    """契约漂移事件列表响应"""
+
+    incidents: List[ContractDriftIncidentResponse] = Field(default_factory=list, description="漂移事件列表")
+    total: int = Field(..., description="返回事件数量")
+    open_count: int = Field(..., description="未关闭事件数量")
+
+
 # ==================== 契约同步 ====================
 
 

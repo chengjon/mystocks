@@ -1,7 +1,7 @@
 """Response specs extracted from monitoring_watchlists."""
 
-from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field, field_validator
+from typing import Any, Dict, Optional
+from fastapi import APIRouter
 from app.openapi_config import COMMON_RESPONSES
 
 def _success_response_spec(
@@ -285,4 +285,3 @@ WATCHLIST_STOCK_CREATE_RESPONSES = _success_response_spec(
         "errors": None,
     },
 )
-

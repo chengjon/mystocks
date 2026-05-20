@@ -13,27 +13,27 @@ Phase 4C Enhanced - 企业级技术指标计算服务
 
 import asyncio
 import time
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Union
+from datetime import datetime
+from typing import Dict, List, Optional
 
 import numpy as np
 import structlog
 from fastapi import APIRouter, Body, Depends, Path, Query
-from pydantic import BaseModel, Field, constr, field_validator
 
 from app.api.auth import get_current_active_user
-from app.api.indicators.indicator_runtime_support import IndicatorCache, RateLimiter, indicator_cache, rate_limit
+from app.api.indicators.indicator_runtime_support import (
+    IndicatorCache as _IndicatorCache,
+    RateLimiter as _RateLimiter,
+    indicator_cache,
+    rate_limit,
+)
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
-from app.core.responses import create_success_response
+from app.core.responses import UnifiedResponse, create_success_response
 from app.core.security import User
 from app.schemas.indicator_request import (
     IndicatorCalculateRequest,
-    IndicatorConfigCreateRequest,
-    IndicatorConfigUpdateRequest,
 )
 from app.schemas.indicator_response import (
-    IndicatorConfigListResponse,
-    IndicatorConfigResponse,
     IndicatorMetadata,
     IndicatorRegistryResponse,
 )
@@ -45,27 +45,27 @@ logger = structlog.get_logger()
 router = APIRouter()
 
 
-from app.app.api.indicators._indicator_cache_responses import (
-    _response_spec,
+from app.api.indicators._indicator_cache_responses import (
     INDICATOR_CACHE_STATS_RESPONSES,
-    INDICATOR_METADATA_EXAMPLE,
     INDICATOR_REGISTRY_RESPONSES,
     INDICATOR_CATEGORY_RESPONSES,
     INDICATOR_CACHE_CLEAR_RESPONSES,
     INDICATOR_CATEGORY_PATH_DESCRIPTION,
     INDICATOR_CALCULATE_REQUEST_EXAMPLE,
     INDICATOR_CALCULATE_BATCH_REQUEST_EXAMPLE,
-    INDICATOR_CALCULATE_RESPONSE_EXAMPLE,
-    INDICATOR_CALCULATE_BATCH_RESPONSE_EXAMPLE,
     INDICATOR_CALCULATE_RESPONSES,
     INDICATOR_CALCULATE_BATCH_RESPONSES,
     IndicatorCalculateBatchRequest,
-    IndicatorOptimizationRequest
+    IndicatorOptimizationRequest as _IndicatorOptimizationRequest,
 )
+
+IndicatorCache = _IndicatorCache
+RateLimiter = _RateLimiter
+IndicatorOptimizationRequest = _IndicatorOptimizationRequest
 
 @router.get(
     "/registry",
-    response_model=IndicatorRegistryResponse,
+    response_model=UnifiedResponse[IndicatorRegistryResponse],
     summary="获取指标注册表",
     description="返回技术指标注册中心中的全部可用指标元数据，支持按分类、关键词和高级指标开关筛选，供行情分析、策略编排与指标面板配置统一复用。",
     responses=INDICATOR_REGISTRY_RESPONSES,
@@ -179,7 +179,7 @@ async def get_indicator_registry_endpoint(
             filtered_count=len(all_indicators) - len(filtered_indicators),
         )
 
-        return response_data
+        return create_success_response(data=response_data, message="技术指标注册表查询成功").dict(exclude_unset=True)
 
     except Exception as e:
         logger.error("技术指标注册表查询失败", user_id=current_user.id, error=str(e), exc_info=True)
@@ -190,7 +190,7 @@ async def get_indicator_registry_endpoint(
 
 @router.get(
     "/registry/{category}",
-    response_model=List[IndicatorMetadata],
+    response_model=UnifiedResponse[List[IndicatorMetadata]],
     summary="按分类获取指标列表",
     description="返回指定指标分类下的元数据清单，便于前端按趋势、动量、波动率、成交量或 K 线形态组织指标选择面板。",
     responses=INDICATOR_CATEGORY_RESPONSES,
@@ -237,7 +237,9 @@ async def get_indicators_by_category(category: str = Path(..., description=INDIC
                 )
             )
 
-        return indicators_list
+        return create_success_response(data=indicators_list, message=f"分类 '{category}' 指标获取成功").dict(
+            exclude_unset=True
+        )
 
     except (BusinessException, ValidationException, NotFoundException, ForbiddenException):
         raise
@@ -250,6 +252,7 @@ async def get_indicators_by_category(category: str = Path(..., description=INDIC
 
 @router.post(
     "/calculate",
+    response_model=UnifiedResponse[Dict],
     summary="计算技术指标",
     responses=INDICATOR_CALCULATE_RESPONSES,
 )
@@ -503,6 +506,7 @@ async def calculate_indicators(
 
 @router.post(
     "/calculate/batch",
+    response_model=UnifiedResponse[Dict],
     summary="批量计算技术指标",
     responses=INDICATOR_CALCULATE_BATCH_RESPONSES,
 )
@@ -607,7 +611,6 @@ async def _calculate_single_indicator(request, current_user):
     calculator = get_indicator_calculator()
 
     # 获取数据并计算
-    from datetime import datetime
 
     start_dt = datetime.combine(request.start_date, datetime.min.time())
     end_dt = datetime.combine(request.end_date, datetime.min.time())
@@ -629,6 +632,7 @@ async def _calculate_single_indicator(request, current_user):
 
 @router.get(
     "/cache/stats",
+    response_model=UnifiedResponse[Dict],
     summary="获取指标缓存统计",
     description="返回技术指标计算缓存的容量、TTL 与命中率概览，供容量治理、性能排障和缓存策略调优使用。",
     responses=INDICATOR_CACHE_STATS_RESPONSES,
@@ -654,6 +658,7 @@ async def get_cache_statistics(current_user: User = Depends(get_current_active_u
 
 @router.post(
     "/cache/clear",
+    response_model=UnifiedResponse[Dict],
     summary="清理指标缓存",
     description="按模式清理技术指标计算缓存，仅管理员可执行，支持清空全部缓存、清理过期条目或按 symbol 前缀筛选。",
     responses=INDICATOR_CACHE_CLEAR_RESPONSES,

@@ -1,8 +1,9 @@
 """Auto-extracted Pydantic models for technical analysis."""
 
+from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 
 
 class TechnicalAnalysisRequest(BaseModel):
@@ -216,4 +217,3 @@ TECHNICAL_ANALYSIS_503_RESPONSE = {
         }
     },
 }
-

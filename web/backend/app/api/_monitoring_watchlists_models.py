@@ -1,5 +1,6 @@
 """Extracted from monitoring_watchlists."""
 
+from datetime import datetime
 from typing import Any, Dict, List, Optional
 from pydantic import BaseModel, Field, field_validator
 
@@ -135,4 +136,3 @@ def _build_runtime_watchlist_stocks() -> Dict[int, List[WatchlistStockResponse]]
             )
         ],
     }
-

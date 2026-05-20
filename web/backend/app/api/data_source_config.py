@@ -26,12 +26,10 @@ Contract Version: 1.0
 """
 
 import logging
-from typing import Any, Dict, Optional
+from typing import Optional
 
-from config.data_sources_loader import YAML_DATA_SOURCES_REGISTRY_PATH
-from fastapi import APIRouter, Body, Depends, Header, Path, Query, Request
+from fastapi import Body, Depends, Path, Query, Request
 
-from app.core.exceptions import BusinessException
 
 # 导入统一响应格式
 from app.api.data_source_config_schemas import (
@@ -41,22 +39,18 @@ from app.api.data_source_config_schemas import (
     ReloadRequest,
     RollbackRequest,
 )
-from app.core.config import settings
 from app.core.responses import (
     BusinessCode,
-    ErrorCodes,
     UnifiedResponse,
-    create_error_response,
     create_unified_error_response,
     create_unified_success_response,
     not_found,
 )
-from app.core.security import verify_token
 
 logger = logging.getLogger(__name__)
 
 
-from _data_source_config_responses import (
+from ._data_source_config_responses import (
     BATCH_OPERATION_EXAMPLES,
     DATA_SOURCE_CONFIG_BATCH_RESPONSES,
     DATA_SOURCE_CONFIG_CREATE_RESPONSES,
@@ -71,6 +65,9 @@ from _data_source_config_responses import (
     DATA_SOURCE_UPDATE_EXAMPLES,
     RELOAD_REQUEST_EXAMPLES,
     ROLLBACK_REQUEST_EXAMPLES,
+    get_config_manager,
+    get_current_user,
+    router,
 )
 
 def handle_config_error(error: str, request_id: Optional[str] = None) -> UnifiedResponse:

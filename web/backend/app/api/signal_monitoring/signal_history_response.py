@@ -11,10 +11,11 @@ Signal Monitoring API Endpoints
 
 import logging
 from datetime import date, datetime, timedelta
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Depends, Path, Query
 from app.core.exceptions import BusinessException
+from app.core.responses import UnifiedResponse, create_success_response
 
 from app.api.signal_monitoring.signal_history_response_schemas import (
     SignalHistoryResponse,
@@ -22,7 +23,6 @@ from app.api.signal_monitoring.signal_history_response_schemas import (
     StrategyRealtimeMonitoringResponse,
 )
 from app.core.security import User, get_current_user
-from app.openapi_config import COMMON_RESPONSES
 from app.api.signal_monitoring._signal_history_responses import (
     SIGNAL_HISTORY_RESPONSES,
     SIGNAL_MONITORING_ERROR_RESPONSES,
@@ -33,6 +33,8 @@ from app.api.signal_monitoring._signal_history_responses import (
 )
 
 logger = logging.getLogger(__name__)
+
+router = APIRouter(tags=["signal-monitoring"], responses=SIGNAL_MONITORING_ERROR_RESPONSES)
 
 
 async def _get_runtime_gpu_utilization() -> Optional[float]:
@@ -68,7 +70,7 @@ async def _get_runtime_gpu_utilization() -> Optional[float]:
 
 @router.get(
     "/signals/history",
-    response_model=List[SignalHistoryResponse],
+    response_model=UnifiedResponse[List[SignalHistoryResponse]],
     summary="查询信号历史",
     responses=SIGNAL_HISTORY_RESPONSES,
 )
@@ -221,7 +223,7 @@ async def get_signal_history(
         results = [SignalHistoryResponse(**dict(row)) for row in rows]
 
         logger.info("查询信号历史: 返回 {len(results)} 条记录")
-        return results
+        return create_success_response(data=results, message="信号历史查询成功").dict(exclude_unset=True)
 
     except BusinessException:
         raise
@@ -231,7 +233,7 @@ async def get_signal_history(
 
 @router.get(
     "/signals/quality-report",
-    response_model=SignalQualityReportResponse,
+    response_model=UnifiedResponse[SignalQualityReportResponse],
     summary="生成信号质量报告",
     responses=SIGNAL_QUALITY_REPORT_RESPONSES,
 )
@@ -411,7 +413,7 @@ async def get_signal_quality_report(
         )
 
         logger.info("生成信号质量报告: strategy=%(strategy_id)s, period=%(period_days)s天")
-        return report
+        return create_success_response(data=report, message="信号质量报告生成成功").dict(exclude_unset=True)
 
     except BusinessException:
         raise
@@ -422,7 +424,7 @@ async def get_signal_quality_report(
 
 @router.get(
     "/strategies/{strategy_id}/realtime",
-    response_model=StrategyRealtimeMonitoringResponse,
+    response_model=UnifiedResponse[StrategyRealtimeMonitoringResponse],
     summary="获取策略实时监控数据",
     responses=STRATEGY_REALTIME_RESPONSES,
 )
@@ -597,7 +599,7 @@ async def get_strategy_realtime_monitoring(
         )
 
         logger.info("查询策略实时监控: strategy=%(strategy_id)s")
-        return monitoring_data
+        return create_success_response(data=monitoring_data, message="策略实时监控数据查询成功").dict(exclude_unset=True)
 
     except BusinessException:
         raise
@@ -608,6 +610,7 @@ async def get_strategy_realtime_monitoring(
 
 @router.get(
     "/signals/health",
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="信号监控健康检查",
     responses={
         200: {
@@ -651,19 +654,21 @@ async def health_check():
 
         db_status = "connected" if pg.is_connected() else "disconnected"
 
-        return {
+        health_data = {
             "status": "healthy" if db_status == "connected" else "degraded",
             "service": "signal-monitoring-api",
             "version": "v1.0",
             "database": db_status,
         }
+        return create_success_response(data=health_data, message="信号监控健康检查完成").dict(exclude_unset=True)
 
     except Exception as e:
         logger.error("健康检查失败: %(e)s")
-        return {
+        health_data = {
             "status": "unhealthy",
             "service": "signal-monitoring-api",
             "version": "v1.0",
             "database": "error",
             "error": str(e),
         }
+        return create_success_response(data=health_data, message="信号监控健康检查失败").dict(exclude_unset=True)

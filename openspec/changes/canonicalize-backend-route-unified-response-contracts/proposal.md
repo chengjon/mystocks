@@ -25,6 +25,15 @@ multiple modules.
   - `web/backend/app/api/technical_analysis.py`
 - Replace missing or non-canonical route `response_model` declarations with
   `UnifiedResponse[...]` or `UnifiedPaginatedResponse[...]` declarations.
+- Treat the target modules as different migration shapes rather than one
+  uniform edit:
+  - `data_quality.py` currently has route-contract errors with no route
+    `response_model` declarations.
+  - `indicator_cache.py` and `signal_history_response.py` already expose typed
+    direct Pydantic response models and need canonical wrapper declarations.
+  - `technical_analysis.py` is mixed: some routes already expose direct
+    `response_model` declarations and the remaining route-contract errors still
+    need explicit canonical declarations.
 - Preserve runtime payload shape and caller contract parity unless an explicit
   endpoint-level test and OpenAPI diff records an intentional change.
 - Re-run route/OpenAPI and health route evidence after the contract migration.

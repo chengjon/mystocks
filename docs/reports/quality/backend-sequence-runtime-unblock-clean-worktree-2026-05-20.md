@@ -9,6 +9,8 @@ by route-contract gate
 
 Worktree: `.worktrees/sequence-route-contract-unblock`
 Base HEAD: `93c6f6a05 chore(docs): record sequence backend unblocks`
+Current worktree HEAD at proposal handoff: `f96ff2dc5 chore(docs): record route contract proposal checkpoint`
+Commits since base: `9addc2458 chore(docs): add route contract unblock proposal`; `f96ff2dc5 chore(docs): record route contract proposal checkpoint`
 
 ## Scope
 

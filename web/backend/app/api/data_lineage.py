@@ -16,13 +16,11 @@ Date: 2026-01-09
 
 import logging
 from datetime import datetime
-from contextlib import asynccontextmanager
-from typing import Any, Dict, List, Optional
+from typing import Optional
 
 from fastapi import APIRouter, Body, Path, Query, Request
 
 from app.core.exceptions import BusinessException
-from pydantic import BaseModel, Field
 
 from app.api._data_lineage_impact_helper import build_impacted_nodes
 from app.core.config import settings
@@ -40,22 +38,21 @@ router = APIRouter(
     tags=["Data Lineage"],
 )
 
-from _data_lineage_responses import (
-    LINEAGE_COMMON_ERROR_RESPONSES,
+from ._data_lineage_responses import (
     LINEAGE_DOWNSTREAM_RESPONSES,
-    LINEAGE_DOWNSTREAM_SUCCESS_EXAMPLE,
     LINEAGE_GRAPH_REQUEST_EXAMPLE,
     LINEAGE_GRAPH_RESPONSES,
-    LINEAGE_GRAPH_SUCCESS_EXAMPLE,
     LINEAGE_IMPACT_REQUEST_EXAMPLE,
     LINEAGE_IMPACT_RESPONSES,
-    LINEAGE_IMPACT_SUCCESS_EXAMPLE,
-    LINEAGE_QUERY_ERROR_RESPONSES,
     LINEAGE_RECORD_REQUEST_EXAMPLE,
     LINEAGE_RECORD_RESPONSES,
-    LINEAGE_RECORD_SUCCESS_EXAMPLE,
     LINEAGE_UPSTREAM_RESPONSES,
-    LINEAGE_UPSTREAM_SUCCESS_EXAMPLE,
+    EdgeInfo,
+    ImpactAnalysisRequest,
+    LineageGraphRequest,
+    LineageRecordRequest,
+    NodeInfo,
+    _AsyncpgLineageConnectionAdapter,
 )
 
 def handle_lineage_error(error: str, request_id: Optional[str] = None) -> UnifiedResponse:
