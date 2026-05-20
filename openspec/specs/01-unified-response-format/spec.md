@@ -4,7 +4,6 @@
 > 本文件用于描述某一专题能力的规格边界、变更提案或专题约束，服务于 OpenSpec 的方案管理与差异追踪。
 > 它不自动等同于“当前已上线实现”或仓库共享治理规则的唯一真相源；执行时需同时核对 `architecture/STANDARDS.md`、审批状态、当前代码实现以及相关 `openspec/specs/` 正式规格。
 
-
 ## Purpose
 Define the standard response envelope, wrapper usage, and frontend handling expectations for all
 MyStocks API responses.
@@ -46,41 +45,36 @@ MyStocks API responses.
 
 ### Requirement: Response Wrapper Implementation
 
-**Requirement**: All API endpoints MUST use the APIResponse wrapper.
+The backend API SHALL ensure all FastAPI route handlers that are added or
+modified in backend API modules declare an OpenAPI response model using
+`UnifiedResponse[...]` or
+`UnifiedPaginatedResponse[...]` unless the route is explicitly classified as a
+legacy raw/control-plane exception with documented justification.
 
-#### Scenario: Endpoint Implementation
-**GIVEN** an API endpoint is being implemented
-**WHEN** writing the endpoint handler
-**THEN** it MUST use the APIResponse wrapper:
-```python
-from app.core.responses import APIResponse
+The declared response model MUST match the successful response envelope exposed
+to callers. If the migration requires changing a response payload shape, the
+same change MUST include endpoint-level regression coverage and an OpenAPI diff
+record.
 
-@router.get("/market/overview")
-async def get_market_overview():
-    data = await market_service.get_overview()
-    return APIResponse(data=data)
-```
+#### Scenario: Modified route file enters the commit gate
 
-#### Scenario: Error Handling
-**GIVEN** an API endpoint encounters a validation error
-**WHEN** raising the error
-**THEN** it MUST use the error response format:
-```python
-from fastapi import HTTPException
-from app.core.responses import ErrorResponse
+- **GIVEN** a backend API route file is staged for commit
+- **WHEN** the route contains HTTP decorators such as `@router.get`,
+  `@router.post`, `@router.put`, or `@router.delete`
+- **THEN** each changed route declaration MUST use
+  `response_model=UnifiedResponse[...]` or
+  `response_model=UnifiedPaginatedResponse[...]`
+- **AND** `UnifiedResponse Contract Guard` MUST report `errors=0` for the staged
+  route file set.
 
-@router.post("/trade/order")
-async def create_order(order: OrderRequest):
-    if not order.symbol:
-        raise HTTPException(
-            status_code=422,
-            detail=ErrorResponse(
-                code=422,
-                message="Symbol is required",
-                details={"field": "symbol", "error": "missing"}
-            ).dict()
-        )
-```
+#### Scenario: Runtime unblock touches a route file with historical contract debt
+
+- **GIVEN** a runtime import fix requires editing a route file
+- **AND** that file contains historical route response-model debt
+- **WHEN** the runtime fix is prepared for commit
+- **THEN** the route response-model debt MUST be resolved in a separate
+  route-contract lane or the runtime fix MUST remain uncommitted
+- **AND** the runtime lane MUST NOT bypass the guard with `--no-verify`.
 
 ### Requirement: Frontend Response Interceptor
 

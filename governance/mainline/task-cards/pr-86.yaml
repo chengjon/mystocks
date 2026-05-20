@@ -1,0 +1,97 @@
+version: "v0.2"
+
+task:
+  id: "pr-86"
+  title: "archive route contract OpenSpec changes after PR85 merge"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-route-contract-openspec-archive"
+  objective: "archive the completed route-contract and architecture-unblock OpenSpec changes after PR85 merged cleanly"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-openspec-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "canonicalize-backend-route-unified-response-contracts"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "OpenSpec archive and steward-tree closure only; no runtime entrypoint, route, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-route-contract-pr85-post-merge-openspec-archive-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-86.yaml"
+    - "openspec/changes/archive/2026-05-20-canonicalize-backend-route-unified-response-contracts/**"
+    - "openspec/changes/archive/2026-05-20-sequence-backend-architecture-unblocks/**"
+    - "openspec/changes/canonicalize-backend-route-unified-response-contracts/**"
+    - "openspec/changes/sequence-backend-architecture-unblocks/**"
+    - "openspec/specs/01-unified-response-format/spec.md"
+    - "openspec/specs/architecture-governance/spec.md"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+
+non_goals:
+  - "No backend source, frontend source, test, or runtime behavior changes"
+  - "No new OpenSpec proposal or implementation issue creation"
+  - "No compatibility shim retirement beyond what PR85 already merged"
+  - "No service singleton lifecycle migration"
+
+acceptance:
+  checks:
+    - id: "openspec-specs-strict"
+      command: "openspec validate --specs --strict --concurrency 1"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-route-contract-pr85-post-merge-openspec-archive-2026-05-21.md"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If archive directories are not force-staged, .gitignore will hide the OpenSpec archive evidence"
+    - "If spec deltas are not applied, the completed route-contract requirements remain only in archived proposal text"
+    - "If source paths enter this PR, the archive-only boundary is broken"
+  rollback_plan: "revert the archive commit and restore the active OpenSpec change directories if archive validation fails"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "archive completed route-contract OpenSpec changes after PR85 merge"
+    modified_scope: "OpenSpec archive directories, two canonical spec files, steward task tree, post-merge archive report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance/spec archive only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert commit 55f70d8b1 if OpenSpec archive validation or mainline scope gate fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T00:00:00Z"
+    approval_note: "archive-only follow-up after PR85 merged cleanly"
+    secondary_approved: false
