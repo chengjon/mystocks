@@ -88,4 +88,3 @@ Retirement criteria:
 - rollback path remains documented and tested.
 
 Until those criteria are met, the wrapper must remain.
-

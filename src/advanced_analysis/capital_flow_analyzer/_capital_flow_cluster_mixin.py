@@ -9,9 +9,16 @@ from typing import Dict, List
 
 import numpy as np
 import pandas as pd
-from sklearn.cluster import KMeans
-from sklearn.metrics import silhouette_score
-from sklearn.preprocessing import StandardScaler
+
+try:
+    from sklearn.cluster import KMeans
+    from sklearn.metrics import silhouette_score
+    from sklearn.preprocessing import StandardScaler
+except ImportError:
+    KMeans = None
+    silhouette_score = None
+    StandardScaler = None
+    warnings.warn("CPU ML libraries not available. Capital flow clustering will be limited.")
 
 from src.advanced_analysis import AnalysisResult, AnalysisType
 from src.advanced_analysis.capital_flow_analyzer._capital_flow_cluster_tail import CapitalFlowClusterTailMixin
@@ -228,6 +235,9 @@ class CapitalFlowClusterMixin(CapitalFlowSignalMixin, CapitalFlowClusterTailMixi
         """分析资金流向聚类"""
         if capital_flow_data.empty or len(capital_flow_data) < 10:
             return []
+        if KMeans is None or StandardScaler is None:
+            logger.warning("Capital flow clustering skipped because CPU ML libraries are unavailable.")
+            return []
 
         try:
             # 准备聚类特征
@@ -298,6 +308,8 @@ class CapitalFlowClusterMixin(CapitalFlowSignalMixin, CapitalFlowClusterTailMixi
 
         for n_clusters in self.clustering_params["n_clusters_range"]:
             try:
+                if KMeans is None or silhouette_score is None:
+                    return {}
                 if GPU_AVAILABLE:
                     kmeans = KMeans(n_clusters=n_clusters, random_state=self.clustering_params["random_state"])
                     labels = kmeans.fit_predict(cudf.DataFrame(scaled_features))

@@ -3,6 +3,7 @@ export interface TradePositionItem {
   symbol_name?: unknown
   market_value?: unknown
   profit_loss_percent?: unknown
+  target_weight?: unknown
 }
 
 export interface TradePositionsPayload {
@@ -10,6 +11,7 @@ export interface TradePositionsPayload {
   total_market_value?: unknown
   total_profit_loss?: unknown
   total_profit_loss_percent?: unknown
+  rebalance_policy_ready?: unknown
 }
 
 export interface PortfolioPositionRow {
@@ -17,6 +19,7 @@ export interface PortfolioPositionRow {
   name: string
   market_value: number
   pnl_pct: number
+  target_weight: number | null
 }
 
 export interface PortfolioOverviewData {
@@ -24,6 +27,7 @@ export interface PortfolioOverviewData {
   today_pnl: number
   today_pnl_pct: number
   positions: PortfolioPositionRow[]
+  rebalance_policy_ready: boolean
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -69,7 +73,8 @@ export function toPortfolioOverviewData(payload: TradePositionsPayload | null): 
       total_assets: 0,
       today_pnl: 0,
       today_pnl_pct: 0,
-      positions: []
+      positions: [],
+      rebalance_policy_ready: false
     }
   }
 
@@ -79,7 +84,8 @@ export function toPortfolioOverviewData(payload: TradePositionsPayload | null): 
       symbol,
       name: parseString(item.symbol_name, symbol),
       market_value: parseNumber(item.market_value) ?? 0,
-      pnl_pct: parseNumber(item.profit_loss_percent) ?? 0
+      pnl_pct: parseNumber(item.profit_loss_percent) ?? 0,
+      target_weight: parseNumber(item.target_weight)
     }
   })
 
@@ -89,6 +95,7 @@ export function toPortfolioOverviewData(payload: TradePositionsPayload | null): 
     total_assets: parseNumber(payload.total_market_value) ?? derivedTotalAssets,
     today_pnl: parseNumber(payload.total_profit_loss) ?? 0,
     today_pnl_pct: parseNumber(payload.total_profit_loss_percent) ?? 0,
-    positions
+    positions,
+    rebalance_policy_ready: payload.rebalance_policy_ready === true
   }
 }

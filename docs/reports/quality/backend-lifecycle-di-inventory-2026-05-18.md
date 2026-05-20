@@ -48,6 +48,23 @@
 - compatibility getter: retained; not a retirement candidate until consumers migrate and evidence is complete.
 - teardown: `EastMoneyEnhancedAdapter.close()` closes the wrapped `EastMoneyAdapter.session`; `close_eastmoney_enhanced_adapter(app)` closes and removes app.state.
 
+### 2026-05-19 follow-on status
+
+- `web/backend/app/adapters/cninfo_adapter.py`, `web/backend/app/adapters/eastmoney_adapter.py`, `web/backend/app/adapters/tqlex_adapter.py`, and `web/backend/app/adapters/akshare_extension.py` now each expose an `install_*` / `get_*_dependency` / `close_*` trio and retain the compatibility getter.
+- These follow-on batches are still adapter-only. The remaining live candidates now split into two different classes:
+  - `web/backend/app/api/realtime_mtm_adapter.py` and `web/backend/app/api/realtime_mtm_init.py` are DB/session/event-bus-backed runtime code and need a separate lifecycle proposal before any `app.state` or `Depends()` rewrite.
+  - `web/backend/app/core/adapter_loader.py` stays inside the Core compatibility matrix. Its `akshare` / `tdx` / `financial` singleton helpers are planning evidence only and remain blocked until the Core split implementation proposal is approved.
+- The current GH #78 live set still includes `realtime_mtm` and the Core loader path, but they should no longer be treated as simple adapter follow-on candidates.
+
+### 2026-05-19 service-tier pilot status
+
+- GH #79 service migration has started with one stateless service pilot: `web/backend/app/services/tradingview_widget_service.py`.
+- `TradingViewWidgetService` now exposes `install_tradingview_service()` / `get_tradingview_service_dependency()` / `close_tradingview_service()` while retaining `get_tradingview_service()` as the compatibility getter.
+- `web/backend/app/api/tradingview.py` now injects the service through FastAPI `Depends()` across its six real-service route handlers instead of calling the compatibility getter directly.
+- `web/backend/app/app_factory.py` installs and closes the TradingView service in lifespan, using app.state key `tradingview_service`.
+- Teardown is state cleanup only for the production service because it owns no DB/session/cache/client; the provider still supports an optional `close()` callback for tests and future resource ownership.
+- The current service scan remains broader than the original #79 body: `web/backend/app/services` contains 27 files with getter/global-like patterns, including false positives, factories, manager helpers, WebSocket/process-level services, and heavy connection-backed candidates. The next GH #79 batches must classify those before code mutation rather than treating all as identical low-risk services.
+
 ## Lifecycle Classification Summary
 
 ### Getter Providers
@@ -108,4 +125,4 @@ These candidates remain blocked for lifecycle mutation until the Core split/impo
 
 - Do not expand to another singleton/getter candidate in this batch.
 - Remaining GH #78 adapter candidates need separate batches after this pilot review.
-- GH #79 service singleton migration remains separate and blocked by its own lifecycle/design gate.
+- GH #79 service singleton migration has one stateless service pilot complete; remaining service candidates still need per-candidate lifecycle classification and batch approval.

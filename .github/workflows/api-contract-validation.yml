@@ -114,6 +114,11 @@ jobs:
         if: steps.scope.outputs.changed == 'true'
         run: |
           echo "PYTHONPATH=$PWD:$PWD/web/backend" >> "$GITHUB_ENV"
+          echo "TDENGINE_HOST=localhost" >> "$GITHUB_ENV"
+          echo "TDENGINE_PORT=6030" >> "$GITHUB_ENV"
+          echo "TDENGINE_USER=root" >> "$GITHUB_ENV"
+          echo "TDENGINE_PASSWORD=taosdata" >> "$GITHUB_ENV"
+          echo "TDENGINE_DATABASE=market_data" >> "$GITHUB_ENV"
           echo "POSTGRESQL_HOST=localhost" >> "$GITHUB_ENV"
           echo "POSTGRESQL_PORT=5432" >> "$GITHUB_ENV"
           echo "POSTGRESQL_USER=testuser" >> "$GITHUB_ENV"

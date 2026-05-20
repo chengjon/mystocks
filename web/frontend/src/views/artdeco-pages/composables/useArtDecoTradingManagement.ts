@@ -177,7 +177,7 @@ export function useArtDecoTradingManagement() {
 
     // 实时状态数据
     const connectionStatus = computed(() => '已连接')
-    const connectionStatusType = computed(() => 'success')
+    const connectionStatusType = computed(() => 'success' as const)
     const marketStatus = computed(() => '正常')
     const marketTrend = computed(() => 'up')
     const marketStatusColor = computed(() => 'gold' as const)

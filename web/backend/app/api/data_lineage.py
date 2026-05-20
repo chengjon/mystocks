@@ -39,8 +39,6 @@ router = APIRouter(
 )
 
 from ._data_lineage_responses import (
-    EdgeInfo,
-    ImpactAnalysisRequest,
     LINEAGE_DOWNSTREAM_RESPONSES,
     LINEAGE_GRAPH_REQUEST_EXAMPLE,
     LINEAGE_GRAPH_RESPONSES,
@@ -49,6 +47,8 @@ from ._data_lineage_responses import (
     LINEAGE_RECORD_REQUEST_EXAMPLE,
     LINEAGE_RECORD_RESPONSES,
     LINEAGE_UPSTREAM_RESPONSES,
+    EdgeInfo,
+    ImpactAnalysisRequest,
     LineageGraphRequest,
     LineageRecordRequest,
     NodeInfo,

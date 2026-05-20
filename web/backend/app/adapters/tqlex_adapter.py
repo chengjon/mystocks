@@ -15,8 +15,9 @@ import logging
 import os
 import time
 from functools import wraps
-from typing import Optional
+from typing import Any, Optional, cast
 
+from fastapi import Request
 import pandas as pd
 import requests
 
@@ -53,6 +54,12 @@ class TqlexDataSource:
         self.disabled = False
         self.session = requests.Session()
         self.session.headers.update(self.HEADERS)
+
+    def close(self) -> None:
+        """Close the HTTP session owned by this adapter when it exists."""
+        session = getattr(self, "session", None)
+        if session is not None and hasattr(session, "close"):
+            session.close()
 
     def _retry_api_call(self, func):
         """API调用重试装饰器"""
@@ -301,11 +308,42 @@ class TqlexDataSource:
 
 
 _tqlex_adapter = None
+TQLEX_ADAPTER_STATE_KEY = "tqlex_adapter"
 
 
 def get_tqlex_adapter() -> TqlexDataSource:
-    """获取TQLEX适配器单例"""
+    """获取TQLEX适配器兼容单例"""
     global _tqlex_adapter
     if _tqlex_adapter is None:
         _tqlex_adapter = TqlexDataSource()
     return _tqlex_adapter
+
+
+def install_tqlex_adapter(
+    app: Any,
+    adapter: Optional[TqlexDataSource] = None,
+) -> TqlexDataSource:
+    """Install the TQLEX adapter instance on FastAPI app.state."""
+    selected_adapter = adapter if adapter is not None else get_tqlex_adapter()
+    setattr(app.state, TQLEX_ADAPTER_STATE_KEY, selected_adapter)
+    return selected_adapter
+
+
+def get_tqlex_adapter_dependency(request: Request) -> TqlexDataSource:
+    """FastAPI dependency provider for the TQLEX adapter."""
+    adapter = getattr(request.app.state, TQLEX_ADAPTER_STATE_KEY, None)
+    if adapter is None:
+        adapter = install_tqlex_adapter(request.app)
+    return cast(TqlexDataSource, adapter)
+
+
+def close_tqlex_adapter(app: Any) -> None:
+    """Close and remove the TQLEX adapter instance from FastAPI app.state."""
+    adapter = getattr(app.state, TQLEX_ADAPTER_STATE_KEY, None)
+    if adapter is None:
+        return
+
+    close = getattr(adapter, "close", None)
+    if callable(close):
+        close()
+    delattr(app.state, TQLEX_ADAPTER_STATE_KEY)

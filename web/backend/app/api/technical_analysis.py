@@ -4,7 +4,7 @@ Enhanced Technical Analysis
 """
 
 import logging
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Path, Query
 from pydantic import ValidationError
@@ -12,7 +12,7 @@ from pydantic import ValidationError
 from app.api._technical_patterns_router import router as technical_patterns_router
 from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断器
 from app.core.exceptions import BusinessException, ValidationException
-from app.core.responses import create_error_response, create_success_response
+from app.core.responses import UnifiedResponse, create_error_response, create_success_response
 from app.schema import StockSymbolModel, TechnicalIndicatorQueryModel  # 导入P0改进的验证模型
 from app.services.data_source_factory import DataSourceFactory
 
@@ -45,7 +45,7 @@ from ._technical_analysis_responses import (
 
 @router.get(
     "/{symbol}/indicators",
-    response_model=AllIndicatorsResponse,
+    response_model=UnifiedResponse[AllIndicatorsResponse],
     summary="获取全量技术指标概览",
     responses=ALL_INDICATORS_RESPONSES,
 )
@@ -135,7 +135,7 @@ async def get_all_indicators(
 
         # 转换为AllIndicatorsResponse格式
         response_data = result.get("data", {})
-        return AllIndicatorsResponse(
+        response = AllIndicatorsResponse(
             symbol=response_data.get("symbol", symbol),
             latest_price=response_data.get("latest_price", 0.0),
             latest_date=response_data.get("latest_date", ""),
@@ -146,6 +146,7 @@ async def get_all_indicators(
             volatility=response_data.get("volatility", {}),
             volume=response_data.get("volume", {}),
         )
+        return create_success_response(data=response, message=f"获取{symbol}技术指标成功").dict(exclude_unset=True)
 
     except (BusinessException, ValidationException):
         raise
@@ -153,7 +154,12 @@ async def get_all_indicators(
         raise BusinessException(detail=str(e), status_code=500, error_code="TECHNICAL_ANALYSIS_OPERATION_FAILED")
 
 
-@router.get("/{symbol}/trend", response_model=Dict, summary="获取趋势指标", responses=TREND_INDICATORS_RESPONSES)
+@router.get(
+    "/{symbol}/trend",
+    response_model=UnifiedResponse[Dict[str, Any]],
+    summary="获取趋势指标",
+    responses=TREND_INDICATORS_RESPONSES,
+)
 async def get_trend_indicators(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     period: str = Query("daily", description="数据周期", pattern=r"^(daily|weekly|monthly)$"),
@@ -226,7 +232,7 @@ async def get_trend_indicators(
 
 @router.get(
     "/{symbol}/momentum",
-    response_model=Dict,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="获取动量指标",
     responses=MOMENTUM_INDICATORS_RESPONSES,
 )
@@ -270,12 +276,14 @@ async def get_momentum_indicators(
         if "error" in result:
             raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
-        return {
-            "success": True,
+        return create_success_response(
+            data={
             "symbol": validated_symbol.symbol,
             "indicators": result.get("data", {}).get("indicators", {}),
             "count": result.get("data", {}).get("count", 0),
-        }
+            },
+            message=f"获取{validated_symbol.symbol}动量指标成功",
+        ).dict(exclude_unset=True)
 
     except (BusinessException, ValidationException):
         raise
@@ -285,7 +293,7 @@ async def get_momentum_indicators(
 
 @router.get(
     "/{symbol}/volatility",
-    response_model=Dict,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="获取波动性指标",
     responses=VOLATILITY_INDICATORS_RESPONSES,
 )
@@ -328,12 +336,14 @@ async def get_volatility_indicators(
         if "error" in result:
             raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
-        return {
-            "success": True,
+        return create_success_response(
+            data={
             "symbol": validated_symbol.symbol,
             "indicators": result.get("data", {}).get("indicators", {}),
             "count": result.get("data", {}).get("count", 0),
-        }
+            },
+            message=f"获取{validated_symbol.symbol}波动性指标成功",
+        ).dict(exclude_unset=True)
 
     except (BusinessException, ValidationException):
         raise
@@ -343,7 +353,7 @@ async def get_volatility_indicators(
 
 @router.get(
     "/{symbol}/volume",
-    response_model=Dict,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="获取成交量指标",
     responses=VOLUME_INDICATORS_RESPONSES,
 )
@@ -386,12 +396,14 @@ async def get_volume_indicators(
         if "error" in result:
             raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
-        return {
-            "success": True,
+        return create_success_response(
+            data={
             "symbol": validated_symbol.symbol,
             "indicators": result.get("data", {}).get("indicators", {}),
             "count": result.get("data", {}).get("count", 0),
-        }
+            },
+            message=f"获取{validated_symbol.symbol}成交量指标成功",
+        ).dict(exclude_unset=True)
 
     except (BusinessException, ValidationException):
         raise
@@ -401,7 +413,7 @@ async def get_volume_indicators(
 
 @router.get(
     "/{symbol}/signals",
-    response_model=Dict,
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="获取技术交易信号",
     responses=TRADING_SIGNALS_RESPONSES,
 )
@@ -463,6 +475,7 @@ async def get_trading_signals(
 
 @router.get(
     "/{symbol}/history",
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="获取技术分析历史行情",
     responses=TECHNICAL_HISTORY_RESPONSES,
 )
@@ -504,7 +517,9 @@ async def get_stock_history(
         if "error" in result:
             raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
-        return {"success": True, **result.get("data", {})}
+        return create_success_response(data=result.get("data", {}), message=f"获取{symbol}技术分析历史行情成功").dict(
+            exclude_unset=True
+        )
 
     except (BusinessException, ValidationException):
         raise
@@ -514,6 +529,7 @@ async def get_stock_history(
 
 @router.post(
     "/batch/indicators",
+    response_model=UnifiedResponse[Dict[str, Any]],
     summary="批量获取技术指标",
     responses=TECHNICAL_BATCH_INDICATORS_RESPONSES,
 )
@@ -545,7 +561,9 @@ async def get_batch_indicators(
         if "error" in result:
             raise BusinessException(detail=result["error"], status_code=500, error_code="TECHNICAL_ANALYSIS_ERROR")
 
-        return {"success": True, **result.get("data", {})}
+        return create_success_response(data=result.get("data", {}), message="批量获取技术指标成功").dict(
+            exclude_unset=True
+        )
 
     except (BusinessException, ValidationException):
         raise

@@ -1,0 +1,34 @@
+{
+  "dataset_version": "kline_daily_20260518_v1",
+  "evidence_key": "mystocks_dry_run",
+  "evidence_path": "D:/MyCode3/miniQMT/DOCS/xtdata-api/evidence/2026-05-18-kline_daily_20260518_v1-mystocks-dry-run.evidence.json",
+  "evidence_sha256": "683314efa9d9b5ac80ac2f13274fd523840f3bf9a42fbfac3663d9522fa11860",
+  "is_ledger_truth_source": false,
+  "is_miniqmt_business_state_source": false,
+  "identity_scope": "raw_candidate",
+  "ledger_backfill_role": "operator_supplied_mystocks_consumer_audit_snapshot_only",
+  "lineage_id": "lin_kline_daily_20260518_v1",
+  "hard_rules": [
+    "Closeout and ledger-backfill artifacts record completed facts only and are not miniQMT business state sources.",
+    "Validated forward identity evidence is tracked separately from mystocks_dry_run.",
+    "Authoritative-ready remains an explicit manual gate and must not be inferred from MyStocks evidence apply."
+  ],
+  "miniqmt_apply_status": "applied",
+  "miniqmt_commit": "05c5788",
+  "miniqmt_preview_status": "passed",
+  "miniqmt_receive_attempt_path": "D:/MyCode3/miniQMT/DOCS/xtdata-api/2026-05-18-mystocks-controlled-evidence-receive-attempt.md",
+  "miniqmt_validation_status": "passed",
+  "operator_notes": "miniQMT accepted MyStocks mystocks_dry_run evidence for kline_daily_20260518_v1. This satisfies the raw/candidate mystocks_dry_run slot only; Quantix regression evidence and validated forward identity evidence remain separate follow-up work before any authoritative-ready promotion. Any MyStocks ledger backfill remains an operator-supplied consumer audit snapshot, not miniQMT promotion-state truth.",
+  "payload_hash": "61eedd9cd029f6c0a3324b3e66be0d9b83402279cbd0aed75885459822ec13d1",
+  "record_role": "operator_supplied_audit_snapshot",
+  "remaining_external_work": [
+    "Receive real Quantix quantix_regression evidence",
+    "Do not treat generated Quantix capability alignment as passed evidence",
+    "Generate or confirm MyStocks and Quantix evidence for the validated forward identity if authoritative-ready is the target",
+    "Keep any MyStocks ledger backfill as an operator-supplied consumer audit snapshot",
+    "Do not auto-promote or cut over sources from MyStocks evidence apply alone"
+  ],
+  "raw_report_sha256": "8513b2cb207e963347fec78142083527913718510363bed83a4ebbf543bbfd69",
+  "rows_hash": "0efbcdd407ff0461c8d3f06a4dc6ac315c6b6ec177f783705ce8f57c233c1152",
+  "status_source": "operator_supplied_miniqmt_result"
+}

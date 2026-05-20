@@ -294,6 +294,8 @@ def _build_prometheus_metrics(runtime_snapshot: dict[str, Any]) -> str:
 
 @router.get(
     "/status",
+    summary="获取 GPU 运行状态",
+    description="返回当前 GPU 运行时可用性、设备指标和降级原因，用于控制面状态检查与运维监控。",
     responses={
         200: {
             "description": "GPU 实时状态",
@@ -329,6 +331,8 @@ async def get_gpu_status(
 
 @router.get(
     "/performance",
+    summary="获取 GPU 性能指标",
+    description="返回当前 GPU 利用率、显存利用率和策略分配指标，用于性能面板与监控采集。",
     responses={
         200: {
             "description": "GPU 性能指标",

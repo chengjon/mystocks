@@ -102,7 +102,7 @@ async def search_data_sources(
     keyword: Optional[str] = Query(None, description="模糊搜索关键词"),
     status: str = Query("active", description="数据源状态（active/maintenance/deprecated）"),
 ) -> UnifiedResponse[DataSourceSearchResponse]:
-    """搜索和筛选数据源接口。"""
+    """按分类、类型、健康状态和关键词搜索数据源接口。"""
     try:
         manager = get_manager()
 

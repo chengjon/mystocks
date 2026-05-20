@@ -12,7 +12,7 @@ from pydantic import BaseModel, Field
 
 from app.api.auth import User, get_current_user
 from app.core.config import settings
-from app.services.tradingview_widget_service import get_tradingview_service
+from app.services.tradingview_widget_service import TradingViewWidgetService, get_tradingview_service_dependency
 
 router = APIRouter()
 
@@ -202,6 +202,7 @@ async def get_chart_config(
         },
     ),
     current_user: User = Depends(get_current_user),
+    service: TradingViewWidgetService = Depends(get_tradingview_service_dependency),
 ) -> Dict:
     """
     获取 TradingView 图表配置
@@ -221,7 +222,6 @@ async def get_chart_config(
             )
             return create_unified_success_response(data={"config": config}, message="图表配置获取成功")
 
-        service = get_tradingview_service()
         tv_symbol = service.convert_symbol_to_tradingview_format(request.symbol, request.market)
         config = service.generate_chart_config(
             symbol=tv_symbol,
@@ -249,6 +249,7 @@ async def get_mini_chart_config(
     locale: str = Query("zh_CN", description="语言"),
     container_id: str = Query("tradingview_mini_chart", description="容器ID"),
     current_user: User = Depends(get_current_user),
+    service: TradingViewWidgetService = Depends(get_tradingview_service_dependency),
 ) -> Dict:
     """
     获取 TradingView 迷你图表配置
@@ -265,7 +266,6 @@ async def get_mini_chart_config(
             )
             return create_unified_success_response(data={"config": config}, message="迷你图表配置获取成功")
 
-        service = get_tradingview_service()
         tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
         config = service.generate_mini_chart_config(symbol=tv_symbol, container_id=container_id, theme=theme, locale=locale)
 
@@ -299,6 +299,7 @@ async def get_ticker_tape_config(
         },
     ),
     current_user: User = Depends(get_current_user),
+    service: TradingViewWidgetService = Depends(get_tradingview_service_dependency),
 ) -> Dict:
     """
     获取 TradingView Ticker Tape 配置
@@ -318,7 +319,6 @@ async def get_ticker_tape_config(
             )
             return create_unified_success_response(data={"config": config}, message="Ticker Tape 配置获取成功")
 
-        service = get_tradingview_service()
         config = service.generate_ticker_tape_config(
             symbols=symbols,
             container_id=request.container_id,
@@ -343,6 +343,7 @@ async def get_market_overview_config(
     locale: str = Query("zh_CN", description="语言"),
     container_id: str = Query("tradingview_market_overview", description="容器ID"),
     current_user: User = Depends(get_current_user),
+    service: TradingViewWidgetService = Depends(get_tradingview_service_dependency),
 ) -> Dict:
     """
     获取 TradingView 市场概览配置
@@ -354,7 +355,6 @@ async def get_market_overview_config(
             )
             return create_unified_success_response(data={"config": config}, message="市场概览配置获取成功")
 
-        service = get_tradingview_service()
         config = service.generate_market_overview_config(
             container_id=container_id, theme=theme, locale=locale, market=market
         )
@@ -376,6 +376,7 @@ async def get_screener_config(
     locale: str = Query("zh_CN", description="语言"),
     container_id: str = Query("tradingview_screener", description="容器ID"),
     current_user: User = Depends(get_current_user),
+    service: TradingViewWidgetService = Depends(get_tradingview_service_dependency),
 ) -> Dict:
     """
     获取 TradingView 股票筛选器配置
@@ -387,7 +388,6 @@ async def get_screener_config(
             )
             return create_unified_success_response(data={"config": config}, message="筛选器配置获取成功")
 
-        service = get_tradingview_service()
         config = service.generate_screener_config(
             container_id=container_id, theme=theme, locale=locale, market=market
         )
@@ -407,6 +407,7 @@ async def convert_symbol(
     symbol: str = Query(..., description="股票代码"),
     market: str = Query("CN", description="市场类型"),
     current_user: User = Depends(get_current_user),
+    service: TradingViewWidgetService = Depends(get_tradingview_service_dependency),
 ) -> Dict:
     """
     将股票代码转换为 TradingView 格式
@@ -422,7 +423,6 @@ async def convert_symbol(
                 message="股票代码转换成功",
             )
 
-        service = get_tradingview_service()
         tv_symbol = service.convert_symbol_to_tradingview_format(symbol, market)
 
         return create_unified_success_response(

@@ -1,0 +1,120 @@
+version: "v0.2"
+
+task:
+  id: "pr-85"
+  title: "canonicalize backend route response contracts and reconcile governance publications"
+  owner: "main"
+  created_at: "2026-05-20"
+
+mainline:
+  id: "L1-route-contract-canonicalization"
+  objective: "publish the reviewed backend route response contract canonicalization, reconcile the merged governance publications, and keep the route-contract branch mergeable against the mainline evidence package"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-route-contract-publication"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "canonicalize-backend-route-unified-response-contracts"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "core"
+    - "operations"
+    - "tests"
+  update_status: "required"
+  secondary_domains:
+    - "domain-02"
+    - "domain-03"
+    - "domain-07"
+  exemption_reason: "the branch packages a route-contract publication plus reconciliation records and supporting evidence, not a new product feature"
+
+scope:
+  allowed_paths:
+    - ".github/workflows/api-contract-validation.yml"
+    - ".planning/codebase/**"
+    - "docs/reports/**"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-85.yaml"
+    - "openspec/changes/**"
+    - "scripts/**"
+    - "src/**"
+    - "tests/**"
+    - "web/backend/**"
+    - "web/frontend/src/views/IndicatorLibrary.vue"
+    - "web/frontend/src/views/artdeco-pages/composables/useArtDecoTradingManagement.ts"
+    - "web/frontend/src/views/artdeco-pages/portfolio-tabs/portfolioOverviewData.ts"
+    - "web/frontend/src/views/trade/composables/useTradeReconciliation.ts"
+  forbidden_paths:
+    - "web/frontend/src/App.vue"
+
+non_goals:
+  - "No new product feature work beyond the reviewed route-contract canonicalization and governance reconciliation"
+  - "No new dependency beyond the existing documentation, contract, and CI tooling"
+  - "No rewrite of the base branch; only the branch-specific publication records and merged runtime contract fixes are in scope"
+
+acceptance:
+  checks:
+    - id: "unified-response-contract-guard"
+      command: "python scripts/compliance/unified_response_contract_guard.py --root-dir . --format json web/backend/app/api/data_quality.py web/backend/app/api/indicators/indicator_cache.py web/backend/app/api/signal_monitoring/signal_history_response.py web/backend/app/api/technical_analysis.py"
+      required: true
+    - id: "backend-singleton-none-guard"
+      command: "python scripts/compliance/backend_singleton_none_guard.py --root-dir . --format json web/backend/app/api/_data_lineage_responses.py web/backend/app/api/_data_source_config_responses.py web/backend/app/api/_technical_analysis_responses.py web/backend/app/api/contract/schemas.py web/backend/app/api/data_lineage.py web/backend/app/api/data_quality.py web/backend/app/api/data_source_config.py web/backend/app/api/signal_monitoring/signal_history_response.py web/backend/app/api/technical_analysis.py"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend POSTGRESQL_HOST=localhost POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test JWT_SECRET_KEY=test-secret-key-for-local-import-smoke-only BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "openapi-smoke"
+      command: "PYTHONPATH=web/backend POSTGRESQL_HOST=localhost POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test JWT_SECRET_KEY=test-secret-key-for-local-import-smoke-only BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c \"from app.main import app; schema = app.openapi(); print(len(app.routes), len(schema.get('paths', {})))\""
+      required: true
+    - id: "optional-ml-import-fallback"
+      command: "pytest -q tests/unit/advanced_analysis/test_anomaly_optional_ml_imports.py -n 0 --tb=short --no-cov"
+      required: true
+    - id: "api-documentation-validation"
+      command: "PYTHONPATH=$PWD:$PWD/web/backend TDENGINE_HOST=localhost TDENGINE_PORT=6030 TDENGINE_USER=root TDENGINE_PASSWORD=taosdata TDENGINE_DATABASE=market_data POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=testuser POSTGRESQL_PASSWORD=testpassword POSTGRESQL_DATABASE=testdb JWT_SECRET_KEY=test_secret_key_for_ci_only BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 TESTING=true DEVELOPMENT_MODE=true MOCK_AUTH_ENABLED=true python -m pytest -o addopts='' web/backend/tests/test_health_route_conflicts.py web/backend/tests/test_api_documentation_validation.py -q -rs --no-cov"
+      required: true
+    - id: "openapi-success-example-audit"
+      command: "PYTHONPATH=$PWD:$PWD/web/backend TDENGINE_HOST=localhost TDENGINE_PORT=6030 TDENGINE_USER=root TDENGINE_PASSWORD=taosdata TDENGINE_DATABASE=market_data POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=testuser POSTGRESQL_PASSWORD=testpassword POSTGRESQL_DATABASE=testdb JWT_SECRET_KEY=test_secret_key_for_ci_only BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 TESTING=true DEVELOPMENT_MODE=true MOCK_AUTH_ENABLED=true python scripts/dev/openapi_success_example_audit.py --show-non-json"
+      required: true
+    - id: "frontend-generated-type-check"
+      command: "cd web/frontend && npm run type-check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the task card scope is too narrow, the mainline governance gate will continue to reject the PR"
+    - "If CI import smoke lacks TDengine environment variables, declared backend logging dependencies, or optional ML dependency fallbacks, OpenAPI generation will remain red even though the route-contract logic is valid"
+    - "If documentation validation ignores hidden runtime-only routes or OpenAPI 3.1 metadata-only Any schemas, the API contract gate can fail on non-contract noise"
+    - "If generated OpenAPI types expose stricter frontend contracts, CI type-check can fail in frontend consumers even when backend route generation succeeds"
+  rollback_plan: "revert the PR branch merge reconciliation commit if the publication package must be regenerated from a different base line"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "publish the reviewed route-contract canonicalization as a mergeable branch and reconcile its governance publication artifacts"
+    modified_scope: "route-contract API files, governance records, the PR-specific mainline task card, optional advanced-analysis import fallback coverage, API documentation gate alignment, and frontend generated-type compatibility fixes needed by CI OpenAPI generation"
+    dependency_changes: "CI import smoke now includes both PostgreSQL and TDengine stub variables, backend requirements now declare the existing loguru, scikit-learn, akshare, and baostock runtime imports, and anomaly/capital-flow modules export stable fallbacks when optional ML libraries are unavailable"
+    legacy_logic_impact: "existing route behavior stays intact while canonical `UnifiedResponse` response contracts remain in place"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the merge reconciliation commit if the governance package still fails the mainline gate"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-20T00:00:00Z"
+    approval_note: "route-contract publication and governance reconciliation proceed under the reviewed implementation batch"
+    secondary_approved: false

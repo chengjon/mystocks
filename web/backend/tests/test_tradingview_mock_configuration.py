@@ -25,8 +25,9 @@ async def test_convert_symbol_uses_mock_only_when_config_enabled(monkeypatch):
         current_user=SimpleNamespace(id=1, username="tester"),
     )
 
-    assert result["success"] is True
-    assert result["tradingview_symbol"] == "SSE:600519"
+    payload = result.model_dump()
+    assert payload["success"] is True
+    assert payload["data"]["tradingview_symbol"] == "SSE:600519"
 
 
 @pytest.mark.asyncio
@@ -38,13 +39,13 @@ async def test_convert_symbol_uses_real_service_when_mock_disabled(monkeypatch):
         def convert_symbol_to_tradingview_format(symbol: str, market: str) -> str:
             return f"{market}:{symbol}"
 
-    monkeypatch.setattr(module, "get_tradingview_service", lambda: _ServiceStub())
-
     result = await module.convert_symbol(
         symbol="0700",
         market="HKEX",
         current_user=SimpleNamespace(id=1, username="tester"),
+        service=_ServiceStub(),
     )
 
-    assert result["success"] is True
-    assert result["tradingview_symbol"] == "HKEX:0700"
+    payload = result.model_dump()
+    assert payload["success"] is True
+    assert payload["data"]["tradingview_symbol"] == "HKEX:0700"

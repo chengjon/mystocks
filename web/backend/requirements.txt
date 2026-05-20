@@ -13,6 +13,7 @@ redis==5.1.0
 pandas==2.2.3
 numpy==1.26.4
 scipy==1.15.3
+scikit-learn==1.5.2
 jsonschema>=4.20.0
 
 # Technical Analysis
@@ -31,6 +32,7 @@ xlwings==0.30.0
 # Monitoring and Logging
 prometheus-client==0.20.0
 structlog==24.4.0
+loguru>=0.7.2
 APScheduler>=3.10.4
 aiohttp>=3.13.0
 sse-starlette>=3.0.3
@@ -45,8 +47,9 @@ celery==5.4.0
 psutil>=5.9.0
 
 # Market Data (already in project root)
-# akshare is already in the root project dependencies
-# We rely on it being available in the Python environment
+akshare>=1.11.0
+baostock>=0.8.9
+# Other market data dependencies are still inherited from the root environment
 
 # Development
 pytest==8.3.0

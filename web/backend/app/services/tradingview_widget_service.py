@@ -4,7 +4,9 @@ TradingView Widget 集成服务模块
 迁移自 OpenStock 项目
 """
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, cast
+
+from fastapi import Request
 
 
 class TradingViewWidgetService:
@@ -313,17 +315,43 @@ class TradingViewWidgetService:
 
 
 # 创建全局实例
+TRADINGVIEW_SERVICE_STATE_KEY = "tradingview_service"
 _tradingview_service = None
 
 
 def get_tradingview_service() -> TradingViewWidgetService:
-    """
-    获取 TradingView 服务实例（单例模式）
-
-    Returns:
-        TradingViewWidgetService: TradingView 服务实例
-    """
+    """获取 TradingView 服务兼容单例"""
     global _tradingview_service
     if _tradingview_service is None:
         _tradingview_service = TradingViewWidgetService()
     return _tradingview_service
+
+
+def install_tradingview_service(
+    app: Any,
+    service: Optional[TradingViewWidgetService] = None,
+) -> TradingViewWidgetService:
+    """Install the TradingView service instance on FastAPI app.state."""
+    selected_service = service if service is not None else get_tradingview_service()
+    setattr(app.state, TRADINGVIEW_SERVICE_STATE_KEY, selected_service)
+    return selected_service
+
+
+def get_tradingview_service_dependency(request: Request) -> TradingViewWidgetService:
+    """FastAPI dependency provider for the TradingView service."""
+    service = getattr(request.app.state, TRADINGVIEW_SERVICE_STATE_KEY, None)
+    if service is None:
+        service = install_tradingview_service(request.app)
+    return cast(TradingViewWidgetService, service)
+
+
+def close_tradingview_service(app: Any) -> None:
+    """Close and remove the TradingView service instance from FastAPI app.state."""
+    service = getattr(app.state, TRADINGVIEW_SERVICE_STATE_KEY, None)
+    if service is None:
+        return
+
+    close = getattr(service, "close", None)
+    if callable(close):
+        close()
+    delattr(app.state, TRADINGVIEW_SERVICE_STATE_KEY)

@@ -1,0 +1,57 @@
+{
+  "consumer_build": {
+    "repo": "mystocks_spec",
+    "runtime": "Python 3.12.11"
+  },
+  "consumer_system": "mystocks_spec",
+  "dataset_version": "kline_daily_20260518_v1",
+  "environment": {
+    "consumer_system": "mystocks_spec",
+    "field_mapping_version": "miniqmt.kline_daily.v1",
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.11"
+  },
+  "evidence_key": "mystocks_dry_run",
+  "evidence_type": "promotion_consumer_dry_run",
+  "hash_or_size": {
+    "artifact_sha256": "6b48f4fe167e812926aef7a40bda5bc38b03dc76eb7dc2feadd84b0f75523c65",
+    "logs/mystocks_dry_run_kline_daily_20260518_v1.json": {
+      "byte_count": 1341,
+      "sha256": "8513b2cb207e963347fec78142083527913718510363bed83a4ebbf543bbfd69"
+    },
+    "raw_report_sha256": "8513b2cb207e963347fec78142083527913718510363bed83a4ebbf543bbfd69"
+  },
+  "lineage_id": "lin_kline_daily_20260518_v1",
+  "payload_hash": "61eedd9cd029f6c0a3324b3e66be0d9b83402279cbd0aed75885459822ec13d1",
+  "raw_source_file": "logs/mystocks_dry_run_kline_daily_20260518_v1.json",
+  "redaction_notes": "No credentials, token, account id, full local user path, raw market rows, or database secrets are included.",
+  "related_function_tree_node": "FUNCTION_TREE.md#8.1 Market Data M1 authoritative-ready 缺口",
+  "result_summary": {
+    "artifact": {
+      "byte_count": 4579,
+      "hash": "6b48f4fe167e812926aef7a40bda5bc38b03dc76eb7dc2feadd84b0f75523c65",
+      "type": "parquet",
+      "uri": "file:///D:/MyCode3/miniQMT/logs/mystocks_evidence_dataset_registry_20260518/exports/kline_daily/kline_daily_20260518_v1.parquet"
+    },
+    "consumer_system": "mystocks_spec",
+    "database_target": "dry-run-only",
+    "dataset_version": "kline_daily_20260518_v1",
+    "dry_run": {
+      "artifact_sha256_verified": true,
+      "failed_checks": [],
+      "passed": true,
+      "placeholder_count": 0
+    },
+    "evidence_type": "promotion_consumer_dry_run",
+    "failed_checks": [],
+    "field_mapping_version": "miniqmt.kline_daily.v1",
+    "lineage_id": "lin_kline_daily_20260518_v1",
+    "payload_hash": "61eedd9cd029f6c0a3324b3e66be0d9b83402279cbd0aed75885459822ec13d1",
+    "row_count": 2,
+    "writes_performed": false
+  },
+  "retention_decision": "keep_minimal_evidence",
+  "run_at": "2026-05-18T11:17:16.684047Z",
+  "schema_version": "evidence.v1",
+  "source_command": "python scripts/market_data/run_miniqmt_controlled_evidence.py --dataset-version kline_daily_20260518_v1 --manifest-path /mnt/d/MyCode3/miniQMT/logs/mystocks_evidence_dataset_registry_20260518/manifests/kline_daily_20260518_v1.json --artifact-path /mnt/d/MyCode3/miniQMT/logs/mystocks_evidence_dataset_registry_20260518/exports/kline_daily/kline_daily_20260518_v1.parquet --output-dir docs/reports/evidence/miniqmt"
+}

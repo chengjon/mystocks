@@ -11,8 +11,9 @@ Akshare适配器扩展模块
 """
 
 import logging
-from typing import Dict, Optional
+from typing import Any, Dict, Optional, cast
 
+from fastapi import Request
 import pandas as pd
 
 try:
@@ -284,12 +285,43 @@ class AkshareExtension:
 
 
 # 全局单例
+AKSHARE_EXTENSION_STATE_KEY = "akshare_extension"
 _akshare_extension = None
 
 
 def get_akshare_extension() -> AkshareExtension:
-    """获取Akshare扩展单例"""
+    """获取Akshare扩展兼容单例"""
     global _akshare_extension
     if _akshare_extension is None:
         _akshare_extension = AkshareExtension()
     return _akshare_extension
+
+
+def install_akshare_extension(
+    app: Any,
+    extension: Optional[AkshareExtension] = None,
+) -> AkshareExtension:
+    """Install the Akshare extension instance on FastAPI app.state."""
+    selected_extension = extension if extension is not None else get_akshare_extension()
+    setattr(app.state, AKSHARE_EXTENSION_STATE_KEY, selected_extension)
+    return selected_extension
+
+
+def get_akshare_extension_dependency(request: Request) -> AkshareExtension:
+    """FastAPI dependency provider for the Akshare extension."""
+    extension = getattr(request.app.state, AKSHARE_EXTENSION_STATE_KEY, None)
+    if extension is None:
+        extension = install_akshare_extension(request.app)
+    return cast(AkshareExtension, extension)
+
+
+def close_akshare_extension(app: Any) -> None:
+    """Close and remove the Akshare extension instance from FastAPI app.state."""
+    extension = getattr(app.state, AKSHARE_EXTENSION_STATE_KEY, None)
+    if extension is None:
+        return
+
+    close = getattr(extension, "close", None)
+    if callable(close):
+        close()
+    delattr(app.state, AKSHARE_EXTENSION_STATE_KEY)

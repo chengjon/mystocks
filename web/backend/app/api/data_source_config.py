@@ -53,7 +53,6 @@ logger = logging.getLogger(__name__)
 # Keep legacy module-level exports used by file-level contract tests and callers.
 _COMPAT_EXPORTS = (HTTPException, settings)
 
-
 from ._data_source_config_responses import (
     BATCH_OPERATION_EXAMPLES,
     DATA_SOURCE_CONFIG_BATCH_RESPONSES,

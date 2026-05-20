@@ -157,37 +157,157 @@
 import { ref, computed, onMounted, type Ref, type ComputedRef } from 'vue'
 import { ElMessage } from 'element-plus'
 import { indicatorService } from '@/services/indicatorService'
-import type { IndicatorMetadata, IndicatorRegistryResponse } from '@/api/types/generated-types'
+import type {
+  IndicatorMetadata as ServiceIndicatorMetadata,
+  IndicatorRegistryResponse as ServiceIndicatorRegistryResponse,
+} from '@/types/indicator.ts'
 
 interface IndicatorParameters {
-  name: string
+  name?: string
   display_name?: string
   displayName?: string
-  type: string
-  default: unknown
+  type?: string
+  default?: unknown
   min?: number
   max?: number
   description?: string
 }
 
 interface IndicatorOutput {
-  name: string
-  description: string
+  name?: string
+  description?: string
 }
 
-interface IndicatorData extends Omit<IndicatorMetadata, 'parameters' | 'outputs'> {
-  parameters: IndicatorParameters[]
-  outputs: IndicatorOutput[]
-  // Optional camelCase aliases for snake_case properties
+interface IndicatorData {
+  abbreviation?: string
+  full_name?: string
   fullName?: string
+  chinese_name?: string
   chineseName?: string
+  category?: string
+  description?: string
+  panel_type?: string
   panelType?: string
+  parameters?: IndicatorParameters[]
+  outputs?: IndicatorOutput[]
+  reference_lines?: number[] | null
+  referenceLines?: number[] | null
+  min_data_points_formula?: string
+  minDataPointsFormula?: string
+}
+
+interface IndicatorRegistryViewModel {
+  total_count?: number
+  totalCount?: number
+  categories?: Record<string, number>
+  indicators?: IndicatorData[]
+  last_updated?: string
+  lastUpdated?: string
 }
 
 const loading: Ref<boolean> = ref(false)
-const registry: Ref<IndicatorRegistryResponse | null> = ref(null)
+const registry: Ref<IndicatorRegistryViewModel | null> = ref(null)
 const searchQuery: Ref<string> = ref('')
 const selectedCategory: Ref<string> = ref('')
+
+const asRecord = (value: unknown): Record<string, unknown> => {
+  if (value && typeof value === 'object' && !Array.isArray(value)) {
+    return value as Record<string, unknown>
+  }
+  return {}
+}
+
+const toStringValue = (value: unknown, fallback = ''): string => {
+  return typeof value === 'string' && value.length > 0 ? value : fallback
+}
+
+const toNumberArray = (value: unknown): number[] | null => {
+  if (!Array.isArray(value)) {
+    return null
+  }
+  const numbers = value.filter((item): item is number => typeof item === 'number')
+  return numbers.length > 0 ? numbers : null
+}
+
+const toIndicatorParameters = (value: unknown): IndicatorParameters[] => {
+  if (!Array.isArray(value)) {
+    return []
+  }
+  return value.map((item, index) => {
+    const record = asRecord(item)
+    return {
+      name: toStringValue(record.name, `parameter_${index + 1}`),
+      display_name: toStringValue(record.display_name),
+      displayName: toStringValue(record.displayName),
+      type: toStringValue(record.type, 'unknown'),
+      default: record.default,
+      min: typeof record.min === 'number' ? record.min : undefined,
+      max: typeof record.max === 'number' ? record.max : undefined,
+      description: toStringValue(record.description),
+    }
+  })
+}
+
+const toIndicatorOutputs = (value: unknown): IndicatorOutput[] => {
+  if (!Array.isArray(value)) {
+    return []
+  }
+  return value.map((item, index) => {
+    const record = asRecord(item)
+    return {
+      name: toStringValue(record.name, `output_${index + 1}`),
+      description: toStringValue(record.description),
+    }
+  })
+}
+
+const toIndicatorData = (value: ServiceIndicatorMetadata | Record<string, unknown>): IndicatorData => {
+  const record = asRecord(value)
+  const fullName = toStringValue(record.fullName, toStringValue(record.full_name))
+  const chineseName = toStringValue(record.chineseName, toStringValue(record.chinese_name))
+  const panelType = toStringValue(record.panelType, toStringValue(record.panel_type))
+  const minDataPointsFormula = toStringValue(
+    record.minDataPointsFormula,
+    toStringValue(record.min_data_points_formula),
+  )
+  const referenceLines = toNumberArray(record.referenceLines ?? record.reference_lines)
+
+  return {
+    abbreviation: toStringValue(record.abbreviation),
+    full_name: toStringValue(record.full_name, fullName),
+    fullName,
+    chinese_name: toStringValue(record.chinese_name, chineseName),
+    chineseName,
+    category: toStringValue(record.category),
+    description: toStringValue(record.description),
+    panel_type: toStringValue(record.panel_type, panelType),
+    panelType,
+    parameters: toIndicatorParameters(record.parameters),
+    outputs: toIndicatorOutputs(record.outputs),
+    reference_lines: referenceLines,
+    referenceLines,
+    min_data_points_formula: minDataPointsFormula,
+    minDataPointsFormula,
+  }
+}
+
+const toIndicatorRegistryViewModel = (
+  response: ServiceIndicatorRegistryResponse | Record<string, unknown>,
+): IndicatorRegistryViewModel => {
+  const record = asRecord(response)
+  const indicators = Array.isArray(record.indicators)
+    ? record.indicators.map((indicator) => toIndicatorData(indicator as ServiceIndicatorMetadata | Record<string, unknown>))
+    : []
+
+  return {
+    total_count: typeof record.total_count === 'number' ? record.total_count : typeof record.totalCount === 'number' ? record.totalCount : indicators.length,
+    totalCount: typeof record.totalCount === 'number' ? record.totalCount : typeof record.total_count === 'number' ? record.total_count : indicators.length,
+    categories: asRecord(record.categories) as Record<string, number>,
+    indicators,
+    last_updated: toStringValue(record.last_updated),
+    lastUpdated: toStringValue(record.lastUpdated),
+  }
+}
 
 const _indicatorFilters = [
   {
@@ -248,7 +368,7 @@ onMounted(async (): Promise<void> => {
 const fetchIndicatorRegistry = async (): Promise<void> => {
   loading.value = true
   try {
-    registry.value = await indicatorService.getRegistry()
+    registry.value = toIndicatorRegistryViewModel(await indicatorService.getRegistry())
   } catch (error: unknown) {
     console.error('Failed to fetch indicator registry:', error)
     ElMessage.error('FAILED TO LOAD INDICATOR LIBRARY')

@@ -38,6 +38,11 @@ export function useTradeReconciliation() {
   const resultRows = computed(() => toReconciliationResultRows(resultsPayload.value))
   const statementRows = computed(() => statementsPayload.value?.items ?? [])
   const selectedFileName = computed(() => selectedFile.value?.name || '')
+  const currentSnapshotRequestId = computed(() => resultsPayload.value?.importBatchId || importBatchId.value)
+  const currentSnapshotUpdatedAt = computed(() => (resultsPayload.value ? '已同步' : 'N/A'))
+  const displayMatchedCount = computed(() => resultMetrics.value.matched)
+  const displayMismatchedCount = computed(() => resultMetrics.value.mismatched)
+  const displayMissingBrokerRecordCount = computed(() => resultMetrics.value.missingBrokerRecord)
   const pageStatusText = computed(() => {
     if (importing.value) {
       return '导入中'
@@ -238,6 +243,11 @@ export function useTradeReconciliation() {
     errorMessage,
     exportResults,
     exporting,
+    currentSnapshotRequestId,
+    currentSnapshotUpdatedAt,
+    displayMatchedCount,
+    displayMismatchedCount,
+    displayMissingBrokerRecordCount,
     handleAccountChange,
     hasAccounts,
     hasImportBatch,
