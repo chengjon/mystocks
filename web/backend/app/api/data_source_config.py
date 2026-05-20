@@ -28,7 +28,7 @@ Contract Version: 1.0
 import logging
 from typing import Optional
 
-from fastapi import Body, Depends, Path, Query, Request
+from fastapi import Body, Depends, HTTPException, Path, Query, Request
 
 
 # 导入统一响应格式
@@ -39,6 +39,7 @@ from app.api.data_source_config_schemas import (
     ReloadRequest,
     RollbackRequest,
 )
+from app.core.config import settings
 from app.core.responses import (
     BusinessCode,
     UnifiedResponse,
@@ -49,6 +50,8 @@ from app.core.responses import (
 
 logger = logging.getLogger(__name__)
 
+# Keep legacy module-level exports used by file-level contract tests and callers.
+_COMPAT_EXPORTS = (HTTPException, settings)
 
 from ._data_source_config_responses import (
     BATCH_OPERATION_EXAMPLES,

@@ -407,4 +407,3 @@ class _AsyncpgLineageConnectionAdapter:
 
     async def close(self) -> None:
         await self._connection.close()
-

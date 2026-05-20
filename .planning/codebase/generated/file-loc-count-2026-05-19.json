@@ -1,0 +1,493 @@
+{
+  "generated_at": "2026-05-19T02:56:45.193Z",
+  "measured_git_head": {
+    "short": "0bc5796ba",
+    "full": "0bc5796baaeb493f7560dc47d9e3044ed1c7cc0f",
+    "subject": "Merge remote-tracking branch 'origin/wip/root-dirty-20260403' into tmp-core-split-matrix-push"
+  },
+  "current_head_checked_at_review": "0bc5796ba",
+  "stale_if_head_mismatch": true,
+  "source_scope": "clean worktree based on origin/wip/root-dirty-20260403 for GH #82 evidence artifact index",
+  "artifact_type": "file_loc_count",
+  "command": "node fs walk with documented exclusions",
+  "exclusions": {
+    "exclude_prefixes": [
+      ".git/",
+      "node_modules/",
+      ".venv/",
+      "venv/",
+      "__pycache__/",
+      ".mypy_cache/",
+      ".ruff_cache/",
+      ".pytest_cache/",
+      "htmlcov/",
+      "dist/",
+      "build/",
+      ".worktrees/"
+    ],
+    "archive_path_parts": [
+      "/archive/",
+      "/legacy/",
+      "/converted/"
+    ],
+    "included_extensions": [
+      ".cfg",
+      ".css",
+      ".html",
+      ".ini",
+      ".js",
+      ".json",
+      ".jsx",
+      ".md",
+      ".py",
+      ".scss",
+      ".sh",
+      ".sql",
+      ".toml",
+      ".ts",
+      ".tsx",
+      ".txt",
+      ".vue",
+      ".yaml",
+      ".yml"
+    ]
+  },
+  "summary": {
+    "total_files": 8702,
+    "total_loc": 2647965,
+    "total_bytes": 107267148,
+    "buckets": {
+      ".pre-commit-config.yaml": 1,
+      "TASK-REPORT.md": 1,
+      "governance": 15,
+      ".multi-cli-tasks": 20,
+      ".codex": 1,
+      "AGENTS.md": 1,
+      ".migration": 1,
+      ".specify": 12,
+      "openspec": 177,
+      ".zencoder": 1,
+      ".github": 39,
+      "requirements.txt": 1,
+      ".design": 1,
+      "architecture": 4,
+      "ecosystem.test.config.js": 1,
+      ".roo": 1,
+      "DELETION-CANDIDATES.md": 1,
+      "CHANGELOG.md": 1,
+      "README.md": 1,
+      ".config": 2,
+      "scripts": 896,
+      ".windsurf": 1,
+      ".taskmaster": 20,
+      ".cursor": 1,
+      ".amazonq": 3,
+      "docs": 2006,
+      "DESIGN.md": 1,
+      "docker-compose.test.yml": 1,
+      "src": 970,
+      "unified_manager.py": 1,
+      "tests": 1148,
+      "data": 158,
+      ".pre-commit-hooks.yaml": 1,
+      ".agent": 2,
+      "__init__.py": 1,
+      "docker-compose.prod.yml": 1,
+      "WORKFLOW.md": 1,
+      ".kiro": 1,
+      ".mcp.json": 1,
+      "package-lock.json": 1,
+      ".gemini": 4,
+      "docker": 11,
+      "pyproject.toml": 1,
+      "reports": 189,
+      "CLAUDE.md": 1,
+      ".shared": 2,
+      "web": 2489,
+      "pytest.ini": 1,
+      "TASK.md": 1,
+      ".claude": 62,
+      "IFLOW.md": 1,
+      "playwright.config.ts": 1,
+      "mypy.ini": 1,
+      "monitoring-stack.yml": 1,
+      "PRODUCT.md": 1,
+      ".impeccable": 1,
+      "config": 314,
+      "package.json": 1,
+      ".planning": 122,
+      "conftest.py": 1
+    },
+    "extensions": {
+      ".yaml": 58,
+      ".md": 2883,
+      ".json": 204,
+      ".py": 3152,
+      ".sh": 202,
+      ".yml": 79,
+      ".txt": 95,
+      ".js": 367,
+      ".sql": 30,
+      ".ini": 9,
+      ".html": 56,
+      ".ts": 980,
+      ".scss": 126,
+      ".toml": 3,
+      ".vue": 430,
+      ".css": 27,
+      ".cfg": 1
+    }
+  },
+  "top_files_by_loc": [
+    {
+      "file": "docs/api/openapi.json",
+      "bucket": "docs",
+      "extension": ".json",
+      "loc": 67784,
+      "bytes": 2162728
+    },
+    {
+      "file": "docs/reports/code_quality/flake8_report.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 54467,
+      "bytes": 2330812
+    },
+    {
+      "file": "reports/structure-baseline/directory-structure-report.txt",
+      "bucket": "reports",
+      "extension": ".txt",
+      "loc": 38424,
+      "bytes": 2465526
+    },
+    {
+      "file": "docs/api/openapi/market-data-api-full.json",
+      "bucket": "docs",
+      "extension": ".json",
+      "loc": 20972,
+      "bytes": 615875
+    },
+    {
+      "file": "docs/reports/code_quality/pylint_report.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 18832,
+      "bytes": 1057654
+    },
+    {
+      "file": "web/frontend/package-lock.json",
+      "bucket": "web",
+      "extension": ".json",
+      "loc": 18125,
+      "bytes": 657182
+    },
+    {
+      "file": "docs/reports/code_quality/pylint_report_current.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 16956,
+      "bytes": 930955
+    },
+    {
+      "file": "docs/reports/code_quality/pylint_final_check.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 15391,
+      "bytes": 899509
+    },
+    {
+      "file": "docs/reports/code_quality/pylint-report-src.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 14669,
+      "bytes": 752373
+    },
+    {
+      "file": "reports/structure-baseline/scripts-tree-baseline.txt",
+      "bucket": "reports",
+      "extension": ".txt",
+      "loc": 14521,
+      "bytes": 789914
+    },
+    {
+      "file": "docs/reports/pylint-errors-by-module.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 12633,
+      "bytes": 659622
+    },
+    {
+      "file": "docs/reports/code_quality/pylint_full_report.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 11938,
+      "bytes": 689969
+    },
+    {
+      "file": "docs/reports/code_quality/pylint_summary.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 11720,
+      "bytes": 824065
+    },
+    {
+      "file": "docs/api/swagger.json",
+      "bucket": "docs",
+      "extension": ".json",
+      "loc": 10932,
+      "bytes": 335494
+    },
+    {
+      "file": "docs/reports/quality/generated/backend-lifecycle-di-inventory-2026-05-18.json",
+      "bucket": "docs",
+      "extension": ".json",
+      "loc": 9521,
+      "bytes": 363068
+    },
+    {
+      "file": "docs/api/openapi_akshare.yaml",
+      "bucket": "docs",
+      "extension": ".yaml",
+      "loc": 8103,
+      "bytes": 209804
+    },
+    {
+      "file": ".planning/codebase/generated/probe-consumer-matrix-2026-05-18.json",
+      "bucket": ".planning",
+      "extension": ".json",
+      "loc": 6588,
+      "bytes": 184784
+    },
+    {
+      "file": "docs/api/openapi/technical-analysis-api.yaml",
+      "bucket": "docs",
+      "extension": ".yaml",
+      "loc": 6563,
+      "bytes": 167203
+    },
+    {
+      "file": "docs/api/openapi/strategy-management-api.yaml",
+      "bucket": "docs",
+      "extension": ".yaml",
+      "loc": 6374,
+      "bytes": 167198
+    },
+    {
+      "file": "docs/references/function-classification-manual/08-consolidation-guide.md",
+      "bucket": "docs",
+      "extension": ".md",
+      "loc": 6319,
+      "bytes": 152553
+    },
+    {
+      "file": "data/grafana/plugins/grafana-exploretraces-app/utils/trace-merge/test-responses/service-struct.json",
+      "bucket": "data",
+      "extension": ".json",
+      "loc": 6144,
+      "bytes": 241095
+    },
+    {
+      "file": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/utils/trace-merge/test-responses/service-struct.json",
+      "bucket": "config",
+      "extension": ".json",
+      "loc": 6144,
+      "bytes": 241095
+    },
+    {
+      "file": "docs/api/openapi/trading-api.yaml",
+      "bucket": "docs",
+      "extension": ".yaml",
+      "loc": 6122,
+      "bytes": 156964
+    },
+    {
+      "file": "reports/docs-check-report.md",
+      "bucket": "reports",
+      "extension": ".md",
+      "loc": 5962,
+      "bytes": 293127
+    },
+    {
+      "file": "docs/reports/gpu_debt_analysis.json",
+      "bucket": "docs",
+      "extension": ".json",
+      "loc": 5902,
+      "bytes": 228569
+    },
+    {
+      "file": "config/calendars/day_future.txt",
+      "bucket": "config",
+      "extension": ".txt",
+      "loc": 5102,
+      "bytes": 56111
+    },
+    {
+      "file": "config/calendars/day.txt",
+      "bucket": "config",
+      "extension": ".txt",
+      "loc": 5046,
+      "bytes": 55495
+    },
+    {
+      "file": "reports/debug/cdp_page_html.html",
+      "bucket": "reports",
+      "extension": ".html",
+      "loc": 4979,
+      "bytes": 156534
+    },
+    {
+      "file": "package-lock.json",
+      "bucket": "package-lock.json",
+      "extension": ".json",
+      "loc": 4191,
+      "bytes": 143651
+    },
+    {
+      "file": "docs/architecture/DATASOURCE_ARCHITECTURE_FIRST_PRINCIPLES_ANALYSIS.md",
+      "bucket": "docs",
+      "extension": ".md",
+      "loc": 3998,
+      "bytes": 115536
+    },
+    {
+      "file": "tests/unit/scripts/test_repository_hygiene_paths.py",
+      "bucket": "tests",
+      "extension": ".py",
+      "loc": 3555,
+      "bytes": 196254
+    },
+    {
+      "file": "reports/structure-baseline/docs-tree-baseline.txt",
+      "bucket": "reports",
+      "extension": ".txt",
+      "loc": 3491,
+      "bytes": 197797
+    },
+    {
+      "file": "reports/governance/2026-04-03-root-TASK-REPORT.pre-mongo-cutover.md",
+      "bucket": "reports",
+      "extension": ".md",
+      "loc": 3481,
+      "bytes": 185935
+    },
+    {
+      "file": "docs/guides/typescript/TYPESCRIPT_EXTENSION_SYSTEM_IMPLEMENTATION_PLAN.md",
+      "bucket": "docs",
+      "extension": ".md",
+      "loc": 3341,
+      "bytes": 74835
+    },
+    {
+      "file": "tests/ddd/test_phase_7_application.py",
+      "bucket": "tests",
+      "extension": ".py",
+      "loc": 3227,
+      "bytes": 155509
+    },
+    {
+      "file": "web/backend/tests/test_health_route_conflicts.py",
+      "bucket": "web",
+      "extension": ".py",
+      "loc": 3193,
+      "bytes": 159377
+    },
+    {
+      "file": "web/frontend/test-reports/e2e-report.json",
+      "bucket": "web",
+      "extension": ".json",
+      "loc": 3161,
+      "bytes": 119169
+    },
+    {
+      "file": "docs/references/function-classification-manual/02-auxiliary-functions.md",
+      "bucket": "docs",
+      "extension": ".md",
+      "loc": 3048,
+      "bytes": 106531
+    },
+    {
+      "file": "tests/001-readme-md-md/research.md",
+      "bucket": "tests",
+      "extension": ".md",
+      "loc": 2834,
+      "bytes": 90839
+    },
+    {
+      "file": ".multi-cli-tasks/guides/MULTI_CLI_WORKTREE_MANAGEMENT.md",
+      "bucket": ".multi-cli-tasks",
+      "extension": ".md",
+      "loc": 2798,
+      "bytes": 74212
+    },
+    {
+      "file": "tests/changes/frontend-optimization-six-phase/TECHNICAL_IMPLEMENTATION_REVIEW.md",
+      "bucket": "tests",
+      "extension": ".md",
+      "loc": 2736,
+      "bytes": 64022
+    },
+    {
+      "file": "web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts",
+      "bucket": "web",
+      "extension": ".ts",
+      "loc": 2555,
+      "bytes": 97755
+    },
+    {
+      "file": "docs/architecture/ARCHITECTURE_REVIEW_REPORT_2025-12-04.md",
+      "bucket": "docs",
+      "extension": ".md",
+      "loc": 2532,
+      "bytes": 66853
+    },
+    {
+      "file": "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts",
+      "bucket": "web",
+      "extension": ".ts",
+      "loc": 2521,
+      "bytes": 103669
+    },
+    {
+      "file": "docs/api/ARTDECO_TRADING_CENTER_OPTIMIZED_V3.1.md",
+      "bucket": "docs",
+      "extension": ".md",
+      "loc": 2494,
+      "bytes": 64340
+    },
+    {
+      "file": "docs/api/reports/archives/critical_backups_20260119_125339/NEW_API_SOURCE_INTEGRATION_GUIDE.md",
+      "bucket": "docs",
+      "extension": ".md",
+      "loc": 2453,
+      "bytes": 82864
+    },
+    {
+      "file": "web/frontend/src/api/types/common/all.ts",
+      "bucket": "web",
+      "extension": ".ts",
+      "loc": 2449,
+      "bytes": 55475
+    },
+    {
+      "file": "reports/INDEX.md",
+      "bucket": "reports",
+      "extension": ".md",
+      "loc": 2380,
+      "bytes": 109199
+    },
+    {
+      "file": "docs/api/API_ARCHITECTURE_DATA_2025-11-30.json",
+      "bucket": "docs",
+      "extension": ".json",
+      "loc": 2370,
+      "bytes": 66614
+    },
+    {
+      "file": "docs/reports/code_quality/mypy_report.txt",
+      "bucket": "docs",
+      "extension": ".txt",
+      "loc": 2360,
+      "bytes": 351298
+    }
+  ]
+}

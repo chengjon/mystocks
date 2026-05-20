@@ -22,22 +22,22 @@
 
 ## 3. Implementation Batches
 
-- [ ] 3.1 Move low-risk pure helpers first.
+- [x] 3.1 Move low-risk pure helpers first.
 - [ ] 3.2 Introduce same-name packages with `__init__.py` re-exports.
 - Note: Batch 2 remains blocked until Task 2 reconciliation is accepted; owner is the current review-thread human maintainer and the scope is governance-only, not implementation.
-- [ ] 3.3 Move renamed modules with old-path wrapper modules.
-- [ ] 3.4 Avoid broad database/security/socketio/logger moves until import smoke, monkeypatch evidence, and E lifecycle coordination are ready.
+- [x] 3.3 Move renamed modules with old-path wrapper modules.
+- [x] 3.4 Avoid broad database/security/socketio/logger moves until import smoke, monkeypatch evidence, and E lifecycle coordination are ready.
 
 ## 4. Verification
 
-- [ ] 4.1 Run import smoke for old and new Core paths, including `PYTHONPATH=web/backend python -c "from app.core.logger import logger; import app.core.database; import app.core.cache_manager; import app.core.security; import app.core.socketio_manager"`.
-- [ ] 4.2 Run targeted tests for moved modules.
-- [ ] 4.3 Run PM2 backend startup smoke with `./scripts/run_pm2_integration_workflow.sh` or a named equivalent approved by the implementation issue.
-- [ ] 4.4 Run `/api/health/services`, `/health/ready`, and `/api/health/ready` smoke after runtime-affecting moves.
-- [ ] 4.5 Confirm no unintended route or OpenAPI drift.
+- [x] 4.1 Run import smoke for old and new Core paths, including `PYTHONPATH=web/backend python -c "from app.core.logger import logger; import app.core.database; import app.core.cache_manager; import app.core.security; import app.core.socketio_manager"`.
+- [x] 4.2 Run targeted tests for moved modules.
+- [x] 4.3 Run PM2 backend startup smoke with `./scripts/run_pm2_integration_workflow.sh` or a named equivalent approved by the implementation issue.
+- [x] 4.4 Run `/api/health/services`, `/health/ready`, and `/api/health/ready` smoke after runtime-affecting moves.
+- [x] 4.5 Confirm no unintended route or OpenAPI drift.
 
 ## 5. Closure
 
-- [ ] 5.1 Update docs with canonical Core paths and retained wrappers.
-- [ ] 5.2 Record wrapper retirement candidates.
-- [ ] 5.3 Defer deletion until references are clear and rollback is proven.
+- [x] 5.1 Update docs with canonical Core paths and retained wrappers.
+- [x] 5.2 Record wrapper retirement candidates.
+- [x] 5.3 Defer deletion until references are clear and rollback is proven.

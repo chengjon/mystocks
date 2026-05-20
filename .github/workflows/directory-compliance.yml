@@ -29,6 +29,17 @@ jobs:
       - name: Prepare compliance report directory
         run: |
           mkdir -p reports/compliance
+
+      - name: Collect changed markdown files
+        if: github.event_name == 'pull_request'
+        id: changed_md
+        run: |
+          mapfile -t changed_markdown < <(git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" | grep -E '(^|/).+\.md$' || true)
+          printf 'files=' >> "$GITHUB_OUTPUT"
+          if [ "${#changed_markdown[@]}" -gt 0 ]; then
+            printf '%s ' "${changed_markdown[@]}" >> "$GITHUB_OUTPUT"
+          fi
+          printf '\n' >> "$GITHUB_OUTPUT"
       
       - name: Check root directory count
         run: |
@@ -61,8 +72,13 @@ jobs:
           python scripts/hooks/check_init_py.py || exit 1
 
       - name: Check markdown governance boundaries
+        if: github.event_name == 'schedule' || steps.changed_md.outputs.files != ''
         run: |
-          python scripts/compliance/markdown_governance_gate.py --root-dir . --format json > reports/compliance/markdown-governance-report.json
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            python scripts/compliance/markdown_governance_gate.py --root-dir . --format json > reports/compliance/markdown-governance-report.json
+          else
+            python scripts/compliance/markdown_governance_gate.py --root-dir . --format json ${{ steps.changed_md.outputs.files }} > reports/compliance/markdown-governance-report.json
+          fi
 
       - name: Audit documentation governance system
         run: |

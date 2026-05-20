@@ -26,6 +26,8 @@ router = APIRouter(
     prefix="/api/v1/data-sources/config",
     tags=["数据源配置管理"],
     responses={
+        200: {"description": "成功"},
+        201: {"description": "创建成功"},
         400: {"description": "请求参数错误"},
         404: {"description": "资源未找到"},
         409: {"description": "资源冲突"},
@@ -382,4 +384,3 @@ def get_current_user(
         )
 
     return token_data.username or "system"
-

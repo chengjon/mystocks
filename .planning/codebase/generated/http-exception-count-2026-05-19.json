@@ -1,0 +1,192 @@
+{
+  "generated_at": "2026-05-19T02:56:45.193Z",
+  "measured_git_head": {
+    "short": "0bc5796ba",
+    "full": "0bc5796baaeb493f7560dc47d9e3044ed1c7cc0f",
+    "subject": "Merge remote-tracking branch 'origin/wip/root-dirty-20260403' into tmp-core-split-matrix-push"
+  },
+  "current_head_checked_at_review": "0bc5796ba",
+  "stale_if_head_mismatch": true,
+  "source_scope": "clean worktree based on origin/wip/root-dirty-20260403 for GH #82 evidence artifact index",
+  "artifact_type": "http_exception_live_count",
+  "command": "scan web/backend/app/api/**/*.py for raise HTTPException and HTTPException import lines",
+  "method": "regex line scan; fixed field names for automation guards",
+  "summary": {
+    "raise_HTTPException": 81,
+    "HTTPException_import_lines": 9,
+    "affected_files": 9
+  },
+  "files": [
+    {
+      "file": "web/backend/app/api/data_source_config.old.py",
+      "raise_http_exception": 16,
+      "import_lines": 1,
+      "raise_lines": [
+        329,
+        335,
+        337,
+        346,
+        379,
+        381,
+        390,
+        416,
+        423,
+        461,
+        561,
+        588,
+        606,
+        645,
+        647,
+        656
+      ],
+      "import_line_numbers": [
+        27
+      ]
+    },
+    {
+      "file": "web/backend/app/api/tdx.py",
+      "raise_http_exception": 14,
+      "import_lines": 1,
+      "raise_lines": [
+        265,
+        276,
+        278,
+        330,
+        338,
+        365,
+        367,
+        410,
+        421,
+        423,
+        469,
+        477,
+        496,
+        498
+      ],
+      "import_line_numbers": [
+        17
+      ]
+    },
+    {
+      "file": "web/backend/app/api/market_v2.py",
+      "raise_http_exception": 13,
+      "import_lines": 1,
+      "raise_lines": [
+        277,
+        295,
+        317,
+        335,
+        359,
+        377,
+        401,
+        422,
+        444,
+        462,
+        487,
+        507,
+        551
+      ],
+      "import_line_numbers": [
+        17
+      ]
+    },
+    {
+      "file": "web/backend/app/api/wencai.py",
+      "raise_http_exception": 11,
+      "import_lines": 1,
+      "raise_lines": [
+        294,
+        322,
+        330,
+        378,
+        381,
+        418,
+        453,
+        471,
+        506,
+        578,
+        581
+      ],
+      "import_line_numbers": [
+        15
+      ]
+    },
+    {
+      "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+      "raise_http_exception": 7,
+      "import_lines": 1,
+      "raise_lines": [
+        161,
+        227,
+        279,
+        361,
+        414,
+        421,
+        511
+      ],
+      "import_line_numbers": [
+        16
+      ]
+    },
+    {
+      "file": "web/backend/app/api/dashboard.py",
+      "raise_http_exception": 6,
+      "import_lines": 1,
+      "raise_lines": [
+        328,
+        331,
+        353,
+        356,
+        361,
+        377
+      ],
+      "import_line_numbers": [
+        15
+      ]
+    },
+    {
+      "file": "web/backend/app/api/industry_concept_analysis.py",
+      "raise_http_exception": 6,
+      "import_lines": 1,
+      "raise_lines": [
+        258,
+        311,
+        370,
+        429,
+        478,
+        527
+      ],
+      "import_line_numbers": [
+        16
+      ]
+    },
+    {
+      "file": "web/backend/app/api/realtime_market.py",
+      "raise_http_exception": 5,
+      "import_lines": 1,
+      "raise_lines": [
+        514,
+        553,
+        577,
+        615,
+        639
+      ],
+      "import_line_numbers": [
+        19
+      ]
+    },
+    {
+      "file": "web/backend/app/api/v1/pool_monitoring.py",
+      "raise_http_exception": 3,
+      "import_lines": 1,
+      "raise_lines": [
+        211,
+        239,
+        282
+      ],
+      "import_line_numbers": [
+        16
+      ]
+    }
+  ]
+}
