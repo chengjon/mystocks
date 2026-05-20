@@ -102,10 +102,33 @@ Non-blocking notes:
    route-contract canonicalization. This was accepted for this unblock batch but
    should be treated as an exception, not a micro-commit precedent.
 
+## Pre-Push Compatibility Drift Check
+
+After the approval-with-notes review, the final pre-push health route suite
+exposed local working-tree drift in `auth.py`:
+
+- `indicator_cache.py` imports `get_current_active_user` from
+  `app.api.auth`, matching the pre-existing route dependency contract.
+- The committed branch version of `auth.py` already re-exports
+  `get_current_active_user` from `_auth_helpers`.
+- The dirty worktree had temporarily removed that export, causing the pre-push
+  health route suite and OpenAPI smoke to fail during collection/import.
+
+The worktree drift was reconciled back to the committed branch state. No new
+source change is required for this compatibility contract beyond the already
+reviewed implementation commits.
+
+Fresh follow-up verification:
+
+| Check | Result |
+|---|---|
+| `import app.api.auth as auth; hasattr(auth, "get_current_active_user")` | `True` |
+| `pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short` | `112 passed in 80.73s` |
+
 ## Disposition
 
 The dedicated route-contract blocker is cleared in the isolated worktree. The
 previous singleton-none commit blocker was also rechecked and cleared for the
-changed backend API files. The implementation batch is approved with notes. The
-next gate is deciding whether to push or merge commit `00101699b` through the
-normal branch integration flow.
+changed backend API files. The implementation batch is approved with notes, and
+the pre-push compatibility drift check is recorded here. The next gate is pushing
+or merging the isolated branch through the normal branch integration flow.
