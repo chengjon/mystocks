@@ -1,5 +1,0 @@
-ERROR tests/ddd/test_concurrency_control.py
-ERROR tests/ddd/test_phase12_3_realtime_integration.py
-ERROR tests/ddd/test_phase_8_infrastructure.py
-!!!!!!!!!!!!!!!!!!!!!!!!!! stopping after 5 failures !!!!!!!!!!!!!!!!!!!!!!!!!!!
-=================== 1694 tests collected, 5 errors in 22.70s ===================

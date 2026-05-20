@@ -168,25 +168,60 @@ web/frontend/undefined:
 # ========================================
 # PROJECT-SPECIFIC TEMPORARY FILES
 # ========================================
-# Claude Code Directories
-.claude-trace/
+# ========================================
+# DOT-DIRECTORY GOVERNANCE (2026-05-20)
+# ========================================
+# Rule: ALL dot-directories are ignored by default.
+# Only exceptions listed below with ! prefixes are tracked.
+# To add a new exception, add both the ! line and a comment explaining why.
+
+# --- Ignore ALL dot-directories ---
+.agent/
+.amazonq/
 .claude/
-!.claude/
-!.claude/build-checker-python.json
+.claude-trace/
+.codex/
+.config/
+.cursor/
+.design/
+.gemini/
+.githooks/
+.impeccable/
+.kiro/
+.migration/
+.opencode/
+.roo/
+.shared/
+.specify/
+.taskmaster/
+.windsurf/
+.zencoder/
+
+# --- Exception: .github/ (CI/CD, issue templates) ---
+# No ignore rule — .github/ stays tracked
+
+# --- Exception: .multi-cli-tasks/ (multi-CLI collaboration) ---
+# No ignore rule — .multi-cli-tasks/ stays tracked
+
+# --- Exception: .claude/ (project-shared hooks and config only) ---
 !.claude/hooks/
 !.claude/hooks/*.sh
 !.claude/hooks/*.py
-!.claude/hooks/README.md
+!.claude/hooks/*.md
+!.claude/hooks/*.json
 !.claude/settings.json
 !.claude/skill-rules.json
+!.claude/build-checker-python.json
+!.claude/build-checker.json
 
-# Task Management
-.taskmaster/
-!.taskmaster/config.json
-
-# Code Analysis
-.opencode/
-.specify/
+# --- Exception: .planning/ (index files only) ---
+.planning/*
+!.planning/STATE.md
+!.planning/PROJECT.md
+!.planning/REQUIREMENTS.md
+!.planning/ROADMAP.md
+!.planning/MILESTONES.md
+!.planning/config.json
 
 # ========================================
 # DATA AND CACHE FILES (DEVELOPMENT ONLY)
