@@ -20,27 +20,27 @@ Acceptance state:
 - MyStocks can now consume miniQMT-provided published dataset handoff files directly with `--manifest-path` and `--artifact-path`, including Parquet artifacts.
 - The current generated evidence uses the miniQMT-confirmed published identity `payload_hash=61eedd9cd029f6c0a3324b3e66be0d9b83402279cbd0aed75885459822ec13d1`, `rows_hash=0efbcdd407ff0461c8d3f06a4dc6ac315c6b6ec177f783705ce8f57c233c1152`, `quality_status=raw`, and `maturity=candidate`.
 - miniQMT committed acceptance as `05c5788` and the receive-attempt record now shows `local validator executed: yes`, `server preview executed: yes`, and `server apply executed: yes` for the raw/candidate identity.
-- The accepted evidence is for the raw/candidate identity only. The validated forward identity `268b...` remains a separate follow-up path.
-- MyStocks has now generated a separate validated-forward `mystocks_dry_run` evidence artifact for the `268b...` identity using the forward-suffix handoff path; miniQMT validator / preview / apply and manual promotion remain pending.
+- The accepted evidence is for the raw/candidate identity only.
+- MyStocks has now generated a separate validated-forward `mystocks_dry_run` evidence artifact for the `268b...` identity using the forward-suffix handoff path, and miniQMT validator / preview / apply have now passed for that artifact.
 - The `operator-supplied-miniqmt-acceptance-status.json` file is an operator-supplied audit snapshot, not proof of a PostgreSQL write and not a miniQMT business-state source.
 - The `mystocks_dry_run` line is completed; there is no further MyStocks functional work on that slot unless a new upstream contract change is opened.
-- Remaining work is external follow-up: optional MyStocks consumer-audit ledger backfill, miniQMT validation / preview / apply for the generated validated-forward evidence, miniQMT manual promote to `validated`, and authoritative approval / rollback readiness.
+- Remaining work is external follow-up: optional MyStocks consumer-audit ledger backfill, plus miniQMT owner/operator `authoritative` approval / rollback readiness. The manual promote to `authoritative-ready` has already been completed by miniQMT.
 - Validated forward identity tracking is separate from Quantix regression tracking.
 
 Hard rules:
 
 - Closeout report and operator snapshot record completed facts only; they are not business state sources. PostgreSQL ledger backfill, if performed, remains MyStocks consumer audit and does not replace miniQMT promotion-state truth.
-- Validated forward identity remains a separate evidence path and must not be folded into `mystocks_dry_run`.
-- Authoritative-ready remains an explicit manual gate. MyStocks apply success is not a default promotion signal.
+- Validated forward identity remains distinct from the raw/candidate slot and must not be folded into `mystocks_dry_run`.
+- Authoritative-ready was an explicit miniQMT manual gate and has now been completed. MyStocks apply success was not a default promotion signal and still does not imply final `authoritative` status.
 
 Artifact index:
 
 | Artifact | Path | Role |
 |---|---|---|
 | Closeout report | `2026-05-18-mystocks-dry-run-closeout.md` | Single entry point for final status, hashes, miniQMT commit, and external follow-up |
-| External follow-up tracker | `2026-05-18-external-followups.md` | Tracks Quantix, validated forward identity, authoritative-ready, and optional ledger backfill outside the completed MyStocks slot |
+| External follow-up tracker | `2026-05-18-external-followups.md` | Tracks completed Quantix / validated-forward evidence, remaining miniQMT operator gates, and optional ledger backfill outside the completed MyStocks slot |
 | Evidence JSON | `2026-05-18-kline_daily_20260518_v1-mystocks-dry-run.evidence.json` | Generated MyStocks `mystocks_dry_run` evidence accepted by miniQMT |
-| Validated-forward evidence JSON | `2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json` | Generated MyStocks validated-forward `mystocks_dry_run` evidence for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`; miniQMT validator / preview / apply pending |
+| Validated-forward evidence JSON | `2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json` | Generated MyStocks validated-forward `mystocks_dry_run` evidence for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`; miniQMT validator / preview / apply passed |
 | Raw report | `logs/mystocks_dry_run_kline_daily_20260518_v1.json` | Redacted dry-run report referenced by evidence `raw_source_file` |
 | Operator status snapshot | `operator-supplied-miniqmt-acceptance-status.json` | Operator-supplied miniQMT validation/preview/apply result; not proof of PostgreSQL write and not miniQMT business-state truth |
 
@@ -57,8 +57,8 @@ Downstream live chain:
 3. miniQMT runs server preview on the same evidence payload.
 4. miniQMT applies the promotion evidence after preview clears.
 5. Promotion gaps are reduced once the `mystocks_dry_run` slot is no longer a blocker.
-6. Quantix validated forward `quantix_regression` evidence is now accepted by miniQMT; MyStocks validated forward evidence is generated locally via the forward-suffix handoff and now waits for miniQMT validator / preview / apply before the operator promotion gates.
-7. Manual authoritative-ready promotion is performed only after the upstream and downstream evidence chain is complete.
+6. Quantix validated forward `quantix_regression` evidence is accepted by miniQMT; MyStocks validated forward evidence is also accepted after its own validator / preview / apply pass.
+7. Manual authoritative-ready promotion has been performed by miniQMT owner/operator; final `authoritative` still requires explicit approval and rollback/fallback readiness.
 
 Operator sequence:
 

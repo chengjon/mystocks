@@ -79,12 +79,12 @@
   - Evidence path: `docs/reports/evidence/miniqmt/2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json`
   - Evidence SHA-256: `4fe9be93061aeec011c16aeabcbb14eef17a35bf6a5ba578258c2e5388ccb24c`
   - Raw report SHA-256: `a8cb1053d344223c925e1c6077f52d83a7b0f48abfb63060e8f027a7634589b5`
-  - This is a handoff artifact only; miniQMT validator / preview / apply and any promotion remain external gates.
+  - This is a handoff artifact only; miniQMT validator / preview / apply and any promotion remained external gates at creation time, but are now complete for the `validated` promotion gate.
 
 ## 8. External Follow-Up, Not MyStocks Implementation Blockers
 
 - Quantix: real validated forward `quantix_regression` evidence has been accepted by miniQMT validator / preview / apply and is no longer the blocking follow-up.
-- MyStocks validated forward identity: a separate local `mystocks_dry_run` evidence path has been generated for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`; miniQMT validator / preview / apply remains pending before any promotion work.
-- miniQMT manual promote: after required evidence is accepted, promote the dataset to `validated` through the miniQMT owner/operator path.
+- MyStocks validated forward identity: a separate local `mystocks_dry_run` evidence path has been generated for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`; miniQMT validator / preview / apply passed and the dataset was manually promoted to `validated`.
+- miniQMT manual promote: dataset has already been promoted to `validated` through the miniQMT owner/operator path.
 - MyStocks ledger backfill: optional operator-supplied consumer audit snapshot only; not miniQMT promotion-state truth.
-- Promotion governance: keep authoritative-ready as an explicit manual gate with rollback/fallback constraints; do not infer source cutover from MyStocks evidence apply.
+- Promotion governance: `authoritative-ready` was completed through an explicit miniQMT manual gate; final `authoritative` approval, source cutover, and ClickHouse writes remain outside MyStocks evidence apply.

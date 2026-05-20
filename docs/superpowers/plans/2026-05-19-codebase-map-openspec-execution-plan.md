@@ -32,7 +32,7 @@
 | `docs/reports/quality/backend-openspec-line-summary-and-next-plan-2026-05-19.md` | Backend OpenSpec publication / triage line now records issue `#80` as open with `ready-for-human`, issue `#83` as open with `ready-for-agent`, and issue15 as still unpublished with `BLOCKED_BY_TODO: shared evidence package.` unresolved. The `ready-for-agent` scope for `#83` is evidence-package work only. | Update this plan so `#83` is no longer treated as a needs-triage item. Wait for the `#83` agent evidence result before issue15 publication or placeholder replacement. Do not let `#83` fix `ContractDriftIncidentListResponse` or authorize backend implementation. |
 | `docs/reports/P3-C5-exception-consolidation-completion-report.md` | P3-C5 reports `app/api` static scans at zero for `raise HTTPException`, `except HTTPException`, `response_model=APIResponse`, and `return APIResponse(...)`. It also reports all `web/backend/app/api` route source files at `<=700` lines after companion `_responses.py`, `_models.py`, and `_helpers.py` extraction. | Do not treat `app/api` HTTPException migration as an open primary task. For `#77` / P3-C5, this completion report supersedes the older live-count language in `backend-lifecycle-di-workline-summary-2026-05-19.md`. Error-contract work is now verification of the completion report, out-of-scope retained exceptions, companion-file import style, and separate UnifiedResponse guard follow-up for 266 historical routes. |
 | `docs/reports/quality/backend-lifecycle-di-workline-summary-2026-05-19.md` | #78 adapter lifecycle DI has multiple low-risk adapter batches complete. #79 has a TradingView service pilot complete, but GH #79 is not done. Remaining service candidates require classification; `realtime_mtm` needs separate lifecycle proposal/design gate; `adapter_loader` remains blocked by the Core split compatibility matrix. | Service lifecycle work must use the TradingView pattern for the next stateless service only after candidate classification. `realtime_mtm` and `adapter_loader` must not be folded into generic service/adapter batches, and `#78`/`#79` should stay separated from error-contract evidence. |
-| `docs/reports/evidence/miniqmt/2026-05-19-mystocks-controlled-evidence-summary-for-review.md` | MyStocks raw/candidate `mystocks_dry_run` evidence is complete; validated-forward evidence was generated locally at `docs/reports/evidence/miniqmt/2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json` for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`, evidence SHA-256 `4fe9be93061aeec011c16aeabcbb14eef17a35bf6a5ba578258c2e5388ccb24c`. | Track as external evidence alignment only. Do not block backend codebase-map execution on miniQMT receive-side work, and do not treat MyStocks evidence apply as promotion, source cutover, or ClickHouse write approval. |
+| `docs/reports/evidence/miniqmt/2026-05-19-mystocks-controlled-evidence-summary-for-review.md` | MyStocks raw/candidate `mystocks_dry_run` evidence is complete; validated-forward evidence was generated locally at `docs/reports/evidence/miniqmt/2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json` for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`, evidence SHA-256 `4fe9be93061aeec011c16aeabcbb14eef17a35bf6a5ba578258c2e5388ccb24c`, and has since passed miniQMT validator / preview / apply. miniQMT manual promote to `validated` and `authoritative-ready` is complete; final `authoritative` approval remains a manual owner/operator gate. | Track as external evidence alignment only. Do not block backend codebase-map execution on miniQMT receive-side work, and do not treat MyStocks evidence apply or `authoritative-ready` maturity as backend promotion, source cutover, ClickHouse write approval, or final `authoritative` approval. |
 
 ## OpenSpec Routing Summary
 
@@ -440,7 +440,7 @@ Verification:
 - Modify: `.planning/codebase/CODEBASE-MAP-REVIEW-2026-05-18.md` only for evidence indexing after validation
 - Create or update: `docs/reports/quality/codebase-map-freshness-2026-05-19.md`
 
-- [ ] **Step 8.1: Read the miniQMT evidence handoff as external evidence**
+- [x] **Step 8.1: Read the miniQMT evidence handoff as external evidence**
 
 Read and cite:
 - `docs/reports/evidence/miniqmt/2026-05-19-mystocks-controlled-evidence-summary-for-review.md`
@@ -452,10 +452,11 @@ Record that:
 - MyStocks raw/candidate `mystocks_dry_run` evidence is complete, and miniQMT validator / preview / apply for that raw/candidate identity are complete
 - validated-forward evidence was generated locally for `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e`
 - evidence SHA-256 is `4fe9be93061aeec011c16aeabcbb14eef17a35bf6a5ba578258c2e5388ccb24c`
-- miniQMT validator / preview / apply remain pending for the validated-forward evidence artifact only; authoritative-ready remains a manual gate
+- miniQMT validator / preview / apply have passed for the validated-forward evidence artifact
+- miniQMT manual promote to `validated` and `authoritative-ready` is complete; final `authoritative` approval remains a manual owner/operator gate
 - the evidence does not authorize backend promotion, source cutover, ClickHouse writes, or production application
 
-- [ ] **Step 8.2: Capture provenance and freshness fields**
+- [x] **Step 8.2: Capture provenance and freshness fields**
 
 For provenance, record:
 - `source_summary_path`
@@ -468,13 +469,13 @@ For provenance, record:
 - `stale_if_head_mismatch`
 - manual-gate owner and next gate
 
-- [ ] **Step 8.3: Add the external evidence to the codebase map index**
+- [x] **Step 8.3: Add the external evidence to the codebase map index**
 
 Add both artifacts to the Evidence Artifact Index:
 - `docs/reports/evidence/miniqmt/2026-05-19-mystocks-controlled-evidence-summary-for-review.md` as external review input
 - `docs/reports/evidence/miniqmt/2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json` as external evidence artifact
 
-Keep both marked as non-backend-blocking and non-promotion-authorizing unless a future approved plan explicitly creates a backend dependency on miniQMT receive-side results.
+Keep both marked as non-backend-blocking, non-source-cutover, and non-ClickHouse-write-authorizing unless a future approved plan explicitly creates a backend dependency on miniQMT receive-side results.
 
 Verification:
 - `git diff --check -- docs/reports/quality/backend-external-evidence-alignment-2026-05-19.md .planning/codebase/CODEBASE-MAP-REVIEW-2026-05-18.md docs/reports/quality/codebase-map-freshness-2026-05-19.md`
