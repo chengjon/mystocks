@@ -34,6 +34,7 @@ except ImportError:
     try:
         from sklearn.ensemble import IsolationForest
     except ImportError:
+        IsolationForest = None
         warnings.warn("Neither GPU nor CPU ML libraries available. Some anomaly detection features will be limited.")
 
 
@@ -91,5 +92,4 @@ class AnomalyAlert:
     enabled: bool
     last_triggered: Optional[datetime] = None
     trigger_count: int = 0
-
 

@@ -29,6 +29,16 @@ DOCUMENTATION_BASELINE_KEY = "backend_api_documentation"
 FLOAT_TOLERANCE = 1e-12
 NON_CONTRACT_ROUTE_PATHS = {"/api/docs", "/api/redoc"}
 JSON_SUCCESS_EXAMPLE_MEDIA_TYPE = "application/json"
+OPENAPI_SCHEMA_METADATA_KEYS = {
+    "default",
+    "deprecated",
+    "description",
+    "examples",
+    "nullable",
+    "readOnly",
+    "title",
+    "writeOnly",
+}
 
 
 def load_documentation_baseline() -> Dict[str, Any]:
@@ -71,6 +81,8 @@ class APIDocumentationValidator:
     @staticmethod
     def _has_openapi_type(schema_fragment: Dict[str, Any]) -> bool:
         """OpenAPI 3.1 may express types via type/ref/composition keywords."""
+        if schema_fragment == {} or set(schema_fragment).issubset(OPENAPI_SCHEMA_METADATA_KEYS):
+            return True
         return any(key in schema_fragment for key in ("type", "$ref", "anyOf", "oneOf", "allOf"))
 
     @classmethod
@@ -153,7 +165,7 @@ class APIDocumentationValidator:
 
         for route in app.routes:
             if isinstance(route, APIRoute):
-                if route.path in NON_CONTRACT_ROUTE_PATHS:
+                if route.path in NON_CONTRACT_ROUTE_PATHS or not route.include_in_schema:
                     continue
                 endpoint_result = self._validate_single_endpoint(route, schema)
                 endpoint_results.append(endpoint_result)
