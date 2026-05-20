@@ -31,6 +31,7 @@ xlwings==0.30.0
 # Monitoring and Logging
 prometheus-client==0.20.0
 structlog==24.4.0
+loguru>=0.7.2
 APScheduler>=3.10.4
 aiohttp>=3.13.0
 sse-starlette>=3.0.3

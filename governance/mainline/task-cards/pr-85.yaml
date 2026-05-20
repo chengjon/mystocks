@@ -76,7 +76,7 @@ acceptance:
 risk_and_rollback:
   risks:
     - "If the task card scope is too narrow, the mainline governance gate will continue to reject the PR"
-    - "If CI import smoke lacks TDengine environment variables, OpenAPI generation will remain red even though the route-contract logic is valid"
+    - "If CI import smoke lacks TDengine environment variables or declared backend logging dependencies, OpenAPI generation will remain red even though the route-contract logic is valid"
   rollback_plan: "revert the PR branch merge reconciliation commit if the publication package must be regenerated from a different base line"
 
 delivery:
@@ -84,7 +84,7 @@ delivery:
   six_line_summary:
     change_purpose: "publish the reviewed route-contract canonicalization as a mergeable branch and reconcile its governance publication artifacts"
     modified_scope: "route-contract API files, governance records, and the PR-specific mainline task card"
-    dependency_changes: "CI import smoke now includes both PostgreSQL and TDengine stub variables to satisfy backend startup validation"
+    dependency_changes: "CI import smoke now includes both PostgreSQL and TDengine stub variables, and backend requirements now declare the existing loguru runtime import"
     legacy_logic_impact: "existing route behavior stays intact while canonical `UnifiedResponse` response contracts remain in place"
     rollback_ready: "yes"
     risk_and_rollback_point: "revert the merge reconciliation commit if the governance package still fails the mainline gate"
