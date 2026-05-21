@@ -188,9 +188,12 @@ CODEBASE-MAP Architecture Remediation Program
 │   ├── State: planning-package-prepared
 │   ├── Role: Fold trading route ownership into unified route/OpenAPI governance
 │   ├── Current fact: current smoke at HEAD `c24f43016` reports routes=`548`,
-│   │                 OpenAPI paths=`500`, trading candidate routes=`41`,
+│   │                 OpenAPI paths=`500`, trading candidate routes=`41`
+│   │                 (`40` trading-route candidates plus `1` unclassified
+│   │                 trading-adjacent route),
 │   │                 trading schema-exposed routes=`41`, trading schema paths=`32`,
-│   │                 and duplicate trading operationIds=`0`
+│   │                 and duplicate trading operationIds=`0`; classification
+│   │                 heuristic and consumer scan scope are now recorded
 │   └── Next gate: Human review; if accepted, decide whether to create a
 │                  separate OpenSpec proposal or implementation issue under
 │                  unified route/OpenAPI governance before any route mutation
@@ -201,11 +204,12 @@ CODEBASE-MAP Architecture Remediation Program
 │   ├── Role: Migrate legacy app.schema consumers and decide shim retirement
 │   └── Next gate: Prove canonical app.schemas exports and compatibility tests
 │
-├── F. Candidate Branch: refresh-backend-route-openapi-governance
+├── F. Candidate Governance Track: refresh-backend-route-openapi-governance
 │   ├── Source evidence: backend-api-flat-package-closure-records-2026-05-19.md
 │   ├── State: ready-after-sequence-refresh
 │   ├── Role: Rebuild route table, OpenAPI, operationId, and probe consumer evidence
-│   └── Next gate: Use Task 2.x runtime evidence, then run route/OpenAPI/probe refresh
+│   └── Next gate: Create an explicit OpenSpec change-id, issue, and git branch
+│                  only after the D2.3 planning package is accepted
 │
 ├── G. Candidate Branch: define-backend-service-seams-and-singleton-pilots
 │   ├── Source evidence: backend-singleton-lifecycle-routing-matrix-2026-05-19.md
@@ -304,7 +308,7 @@ review, PR review, or OpenSpec archive review.
 | D2.2a Core validation active source migration | D2.2a | Active source imports in `validators.py` and `error_codes.py` migrated from `app.core.validation_messages` to `app.core.validation`; wrapper retained | TDD red/green completed; boundary test `1 passed`; compatibility test `2 passed`; import smoke passed; app import smoke routes=`548`; collect-only smoke `112 tests collected`; ruff passed; active source legacy imports excluding wrapper=`0` | `docs/reports/quality/backend-core-validation-active-source-migration-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Completed by D2.2b docs/API examples canonicalization; wrapper deletion remains a separate decision |
 | D2.2b Core validation docs/API example canonicalization | D2.2b | `docs/api/` examples now point to canonical `app.core.validation`; wrapper retained | Docs-only batch: pre-change `docs/api/` legacy reference count was `10`; post-change count is `0`; no backend source, tests, OpenSpec, route, PM2, or frontend files changed | `docs/reports/quality/backend-core-validation-docs-api-canonicalization-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | D2.2c wrapper-retirement decision or explicit retention; do not delete `app.core.validation_messages` from this batch |
 | D2.2c Core validation wrapper retirement / retention decision package | D2.2c | Decision package prepared for whether to retain `app.core.validation_messages` long-term or approve a future deletion batch; D2.2 is formally closed as a decision lane | Evidence-only: wrapper exists; active source import consumers excluding wrapper=`0`; docs/API legacy references=`0`; compatibility test `2 passed`; boundary test `1 passed`; canonical and wrapper exports remain identity-equivalent; no backend source, tests, OpenSpec, route, PM2, or frontend files changed | `docs/reports/quality/backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Move to D2.3; wrapper deletion remains locked unless a separate D2.2d deletion implementation batch is approved |
-| D2.3 Trading route/OpenAPI governance planning package | D2.3 | Trading route ownership is folded into unified route/OpenAPI governance, not a standalone implementation lane | Planning/evidence only: current smoke at HEAD `c24f43016` reports routes=`548`, OpenAPI paths=`500`, trading candidate routes=`41`, schema-exposed=`41`, schema paths=`32`, duplicate trading operationIds=`0`; consumer scan records backend, frontend, test, script, docs/governance, and other tracked-file references; no route, OpenAPI, source, frontend, test, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate route/OpenAPI governance proposal or implementation issue before route mutation |
+| D2.3 Trading route/OpenAPI governance planning package | D2.3 | Trading route ownership is folded into unified route/OpenAPI governance, not a standalone implementation lane | Planning/evidence only: current smoke at HEAD `c24f43016` reports routes=`548`, OpenAPI paths=`500`, trading candidate routes=`41` (`40` trading-route candidates plus `1` unclassified trading-adjacent route), schema-exposed=`41`, schema paths=`32`, duplicate trading operationIds=`0`; classification heuristic and consumer scan scope are recorded; no route, OpenAPI, source, frontend, test, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate route/OpenAPI governance proposal or implementation issue before route mutation |
 
 ## OpenSpec Branch Register
 
@@ -317,7 +321,7 @@ review, PR review, or OpenSpec archive review.
 | `select-backend-technical-pattern-di-pilot` | `design-packet-prepared` | Issue `#92` downstream split acceptance | First DI lifecycle pilot design packet | Provider shape, dependency override strategy, teardown, rollback, and verification gates for `TechnicalPatternDetectionService` | Human review before creating any implementation issue or OpenSpec branch |
 | `decide-backend-core-validation-wrapper-retirement` | `active-source-migration-complete` | Issue `#92` downstream split acceptance and validation helper split archive | Core validation compatibility wrapper retirement readiness and staged migration | D2.2a active source migration is complete; docs/API examples and compatibility-test conversion remain separate gates | D2.2b docs/API examples canonicalization or explicit waiver; wrapper deletion remains blocked |
 | `close-backend-schema-dual-directory` | `candidate` | Master execution plan | Schema dual-directory closure | Schema exports, consumer migration, shim retirement decision | Create only after `sequence-backend-architecture-unblocks` schema tasks are accepted |
-| `refresh-backend-route-openapi-governance` | `candidate-unblocked` | Master execution plan | API flat/package closure records | Route table, OpenAPI, operationId, probe matrix | Can be prepared after Task 5.x route/OpenAPI refresh evidence is recorded |
+| `refresh-backend-route-openapi-governance` | `candidate-track-no-git-branch` | Master execution plan and D2.3 planning package | API flat/package closure records plus trading route/OpenAPI governance planning | Route table, OpenAPI, operationId, probe matrix, trading route ownership classification | Create an explicit OpenSpec change-id, issue, and git branch only after D2.3 planning is accepted |
 | `define-backend-service-seams-and-singleton-pilots` | `candidate` | Master execution plan | Singleton lifecycle routing matrix | Service seam definition, interface/test-double pilot strategy | Create as a design proposal after complete classification |
 
 ## Dependency and Freshness Matrix
