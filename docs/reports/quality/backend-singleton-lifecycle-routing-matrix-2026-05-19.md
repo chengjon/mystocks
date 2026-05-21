@@ -4,12 +4,23 @@
 > 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
 > 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
 
-Status: inventory complete; no next `#79` stateless pilot was selected from this pass.
+Status: inventory complete; refreshed against current HEAD on `2026-05-20`;
+no next `#79` stateless pilot was selected from this pass.
+
+## Freshness
+
+| Field | Value |
+|---|---|
+| `generated_at` | `2026-05-20` refresh |
+| `git_head` | `6530c88f3 docs(codebase): record openspec execution evidence` |
+| `current_head_checked_at_review` | `6530c88f3` |
+| `stale_if_head_mismatch` | Yes |
+| `worktree_state` | dirty-worktree evidence |
 
 ## Inventory
 
 - Scanned `152` service `.py` files under `web/backend/app/services`
-- `111` files matched singleton/getter/spec-loading patterns
+- `116` files matched broad singleton/getter/spec-loading candidate patterns
 - `spec_from_file_location` appears in five service files: `analysis_api.py`, `data_api_new.py`, `market_api.py`, `technical_pattern_detection_service.py`, and `trading_api.py`
 
 ## Routing matrix

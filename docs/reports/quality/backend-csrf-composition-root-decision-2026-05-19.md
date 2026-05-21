@@ -4,7 +4,18 @@
 > 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
 > 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
 
-Status: decision captured; no code change was made in this report.
+Status: decision captured; refreshed against current HEAD on `2026-05-20`;
+no code change was made in this report.
+
+## Freshness
+
+| Field | Value |
+|---|---|
+| `generated_at` | `2026-05-20` refresh |
+| `git_head` | `6530c88f3 docs(codebase): record openspec execution evidence` |
+| `current_head_checked_at_review` | `6530c88f3` |
+| `stale_if_head_mismatch` | Yes |
+| `worktree_state` | dirty-worktree evidence |
 
 ## Decision
 

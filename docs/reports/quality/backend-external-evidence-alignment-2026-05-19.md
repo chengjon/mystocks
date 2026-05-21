@@ -10,6 +10,7 @@ Status: review input only; non-backend-blocking, non-source-cutover, and non-Cli
 
 | Field | Value |
 |---|---|
+| `generated_at` | `2026-05-20` refresh |
 | `source_summary_path` | `docs/reports/evidence/miniqmt/2026-05-19-mystocks-controlled-evidence-summary-for-review.md` |
 | `source_summary_status` | `Updated for review` |
 | `forward_evidence_path` | `docs/reports/evidence/miniqmt/2026-05-19-kline_daily_20260518_v1-mystocks-dry-run-forward.evidence.json` |
