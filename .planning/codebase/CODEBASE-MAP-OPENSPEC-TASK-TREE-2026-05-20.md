@@ -101,14 +101,14 @@ CODEBASE-MAP Architecture Remediation Program
 │                  continue new implementation only through a follow-up OpenSpec branch
 │
 ├── D. Existing OpenSpec Branch: split-backend-core-modules-with-compatibility-wrappers
-│   ├── Source: openspec/changes/split-backend-core-modules-with-compatibility-wrappers/
-│   ├── State: complete-pending-archive
+│   ├── Source: openspec/changes/archive/2026-05-21-split-backend-core-modules-with-compatibility-wrappers/
+│   ├── State: archive-prepared
 │   ├── Role: Core helper split line
 │   ├── Current fact: issue #83 shared C/E/F evidence accepted; Task 3.2
 │   │                 explicitly disposed as complete for the current
 │   │                 validation-helper package/wrapper scope
-│   └── Next gate: Archive the completed OpenSpec change; any further Core split
-│                  implementation needs a separate concrete plan and approval
+│   └── Next gate: Archive-only PR review and merge; any further Core split
+│                  implementation still needs a separate concrete plan and approval
 │
 ├── E. Candidate Branch: close-backend-schema-dual-directory
 │   ├── Source evidence: backend-schema-dual-directory-closure-2026-05-19.md
@@ -208,6 +208,7 @@ review, PR review, or OpenSpec archive review.
 | Issue `#83` shared C/E/F evidence package | D, E, F | Evidence package prepared for Core compatibility, singleton lifecycle, and route/OpenAPI governance without backend implementation mutation | Review-ready: current HEAD `5f48cca02`; route/OpenAPI smoke with placeholder required env produced `routes=548`, `openapi_paths=500`, `openapi_operations=536`, duplicate operationIds=`0`; validation message legacy/canonical identity smoke passed for six exports; singleton matrix remains `111` matched patterns and `0` low-risk pilot | `docs/reports/quality/backend-openspec-issue83-shared-evidence-package-2026-05-21.md`; GH issue `#83` | Human acceptance of issue `#83`; then decide issue15 consumption and OpenSpec task `3.2` disposition |
 | PR `#87` issue `#83` evidence package merge | D, E, F | The shared C/E/F evidence package is now merged to `wip/root-dirty-20260403` and linked from issue `#83` for human acceptance | Reviewed/pass in current thread: final PR head `81aaab84e` reached `MERGEABLE` / `CLEAN`; GitHub checks `Mainline Governance Gate` and `check-compliance` succeeded; `weekly-full-scan` skipped; merge commit is `e938bea6b9a82ee8d3b675d342e192d1463bf3a3` | `https://github.com/chengjon/mystocks/pull/87`; `https://github.com/chengjon/mystocks/issues/83#issuecomment-4502586566`; Graphiti episode `9674bb73-9913-4e8e-8b2c-1ba19fe0c0c0` | Wait for human acceptance of issue `#83`; do not start Core Batch 2 or publish issue15 before that acceptance |
 | Issue `#83` acceptance and Core task `3.2` disposition | D | Human acceptance of issue `#83` unblocks explicit Core task `3.2` disposition; the remaining split OpenSpec checklist item is marked complete for the current validation-helper package/wrapper scope | Review-ready: import smoke shows `app.core.validation` resolves to `validation/__init__.py` as a package; package and legacy wrapper exports are identity-equivalent for six validation-message symbols; targeted compat test reports `2 passed`; no backend source edits in this disposition step | `docs/reports/quality/backend-core-split-task3-2-disposition-2026-05-21.md`; `openspec/changes/split-backend-core-modules-with-compatibility-wrappers/tasks.md` | Archive the completed split Core OpenSpec change; keep future Core split work in a separate concrete plan |
+| Post-PR `#89` Core split OpenSpec archive preparation | D | Completed `split-backend-core-modules-with-compatibility-wrappers` OpenSpec change is moved into archive and its deltas are applied to canonical specs | Review-ready: pre-archive strict validation passed; `openspec archive ... --yes` updated `architecture-governance` and `directory-governance`; post-archive `openspec validate --specs --strict --concurrency 1` reports `32 passed, 0 failed`; archive paths require forced staging because `.gitignore` ignores `openspec/changes/archive/` | `docs/reports/quality/backend-core-split-post-acceptance-openspec-archive-2026-05-21.md`; `openspec/changes/archive/2026-05-21-split-backend-core-modules-with-compatibility-wrappers/`; `openspec/specs/architecture-governance/spec.md`; `openspec/specs/directory-governance/spec.md` | Archive-only PR review and merge |
 
 ## OpenSpec Branch Register
 
@@ -215,7 +216,7 @@ review, PR review, or OpenSpec archive review.
 |---|---|---|---|---|---|
 | `sequence-backend-architecture-unblocks` | `archived-merged` | Master execution plan | Runtime triage, schema closure, freshness, singleton matrix, error-contract verification | First gate branch for runtime unblock and evidence refresh | Archived by PR `#86`; future work must use the archived evidence as baseline and open a follow-up branch for new implementation |
 | `canonicalize-backend-route-unified-response-contracts` | `archived-merged` | `sequence-backend-architecture-unblocks` Task 8.8 | UnifiedResponse contract guard blocker: 27 errors across 4 changed route files now reduced to 0 | Dedicated route-contract migration for `data_quality.py`, `indicator_cache.py`, `signal_history_response.py`, and `technical_analysis.py`; implementation merged via PR `#85` | Archived by PR `#86`; keep implementation notes as follow-up candidates, not blockers |
-| `split-backend-core-modules-with-compatibility-wrappers` | `complete-pending-archive` | Existing OpenSpec line | Core split reconciliation | Core helper split continuation | Issue `#83` accepted and Task `3.2` disposed as complete; archive this change before starting any future Core split implementation |
+| `split-backend-core-modules-with-compatibility-wrappers` | `archive-prepared` | Existing OpenSpec line | Core split reconciliation | Core helper split continuation | OpenSpec archive prepared under `openspec/changes/archive/2026-05-21-split-backend-core-modules-with-compatibility-wrappers/`; archive-only PR review is next |
 | `close-backend-schema-dual-directory` | `candidate` | Master execution plan | Schema dual-directory closure | Schema exports, consumer migration, shim retirement decision | Create only after `sequence-backend-architecture-unblocks` schema tasks are accepted |
 | `refresh-backend-route-openapi-governance` | `candidate-unblocked` | Master execution plan | API flat/package closure records | Route table, OpenAPI, operationId, probe matrix | Can be prepared after Task 5.x route/OpenAPI refresh evidence is recorded |
 | `define-backend-service-seams-and-singleton-pilots` | `candidate` | Master execution plan | Singleton lifecycle routing matrix | Service seam definition, interface/test-double pilot strategy | Create as a design proposal after complete classification |
