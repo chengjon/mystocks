@@ -1,0 +1,111 @@
+version: "v0.2"
+
+task:
+  id: "pr-109"
+  title: "prepare D2.1a technical pattern DI pilot implementation authorization"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-1a-di-pilot-implementation-authorization"
+  objective: "prepare a concrete implementation authorization plan for the TechnicalPatternDetectionService DI pilot"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-d2-1a-di-pilot-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-d2-1a-implementation-authorization-plan"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Plan-only D2.1a implementation authorization package; no runtime source, frontend, tests, docs/api, OpenSpec, PM2, route, script, config, or service behavior changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/superpowers/plans/2026-05-21-d2-1a-technical-pattern-detection-di-pilot-implementation-authorization.md"
+    - "governance/mainline/task-cards/pr-109.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "src/**"
+    - "docs/api/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+    - "scripts/**"
+    - "config/**"
+
+non_goals:
+  - "No backend runtime code modification"
+  - "No test or fixture modification"
+  - "No route registration change"
+  - "No OpenAPI schema exposure or operationId change"
+  - "No frontend consumer modification"
+  - "No docs/api modification"
+  - "No scripts or config modification"
+  - "No PM2 workflow execution"
+  - "No OpenSpec change/spec creation or modification"
+  - "No GitHub issue creation"
+  - "No movement of issue #92 or any downstream item to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "implementation-scope-recorded"
+      command: "plan records future write scope and locked files for D2.1a"
+      required: true
+    - id: "tdd-plan-recorded"
+      command: "plan records failing-test, implementation, focused verification, and rollback steps"
+      required: true
+    - id: "implementation-boundary-preserved"
+      command: "plan and task tree state that this PR does not authorize implementation or ready-for-agent movement"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/superpowers/plans/2026-05-21-d2-1a-technical-pattern-detection-di-pilot-implementation-authorization.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-109.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A concrete implementation plan could be misread as implementation approval"
+    - "A future worker could edit service internals instead of the narrow route-level provider seam"
+  rollback_plan: "revert the D2.1a implementation authorization plan, task-tree update, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "prepare D2.1a TechnicalPatternDetectionService DI pilot implementation authorization plan"
+    modified_scope: "one implementation plan, steward task tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, route, docs/api, PM2, or service behavior changes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "decision-only rollback by reverting this PR"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T09:55:00Z"
+    approval_note: "human maintainer asked to continue after issue #92 downstream rollup review alignment; this task prepares a D2.1a implementation authorization plan without implementation authorization"
+    secondary_approved: false
