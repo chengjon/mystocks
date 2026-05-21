@@ -8,7 +8,7 @@
 from enum import IntEnum
 from typing import Dict
 
-from app.core.validation_messages import (
+from app.core.validation import (
     CommonMessages,
     MarketMessages,
     TechnicalMessages,

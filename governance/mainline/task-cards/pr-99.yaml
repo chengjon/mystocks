@@ -1,0 +1,102 @@
+version: "v0.2"
+
+task:
+  id: "pr-99"
+  title: "migrate validation active source imports"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-2a-validation-source-migration"
+  objective: "migrate active source imports from app.core.validation_messages to app.core.validation while retaining the wrapper"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-core-wrapper-active-source-migration"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "split-backend-core-modules-with-compatibility-wrappers"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "core"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow active-source import migration within the accepted D2.2a validation wrapper track; no runtime route, page, or product surface changes are introduced, and the changed core/test files stay inside the recorded validation wrapper lane"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-core-validation-active-source-migration-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-99.yaml"
+    - "tests/unit/core/test_validation_import_boundaries.py"
+    - "web/backend/app/core/error_codes.py"
+    - "web/backend/app/core/validators.py"
+  forbidden_paths:
+    - "web/backend/app/core/validation_messages.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No deletion of web/backend/app/core/validation_messages.py"
+  - "No docs/api canonicalization in this batch"
+  - "No compatibility test conversion or deletion"
+  - "No route, OpenAPI, or PM2 behavior changes"
+  - "No movement of issue #92 or D2.2a to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "boundary-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= tests/unit/core/test_validation_import_boundaries.py -q --no-cov"
+      required: true
+    - id: "compatibility-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= tests/unit/core/test_validation_messages_compat.py -q --no-cov"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/core/validators.py web/backend/app/core/error_codes.py tests/unit/core/test_validation_import_boundaries.py tests/unit/core/test_validation_messages_compat.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-core-validation-active-source-migration-2026-05-21.md"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "error_codes.py has MEDIUM GitNexus impact through exception_handler.py and app.main import flows"
+    - "If validation_messages.py is deleted in this batch, compatibility guarantees are broken"
+  rollback_plan: "revert the two active source imports to app.core.validation_messages and remove or revise the boundary test"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "migrate active validation source consumers to canonical app.core.validation imports"
+    modified_scope: "two active source import lines, one boundary test, steward task tree, implementation report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "legacy wrapper retained; compatibility path remains available"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert import changes and boundary test if import smoke or compatibility tests fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T01:26:00Z"
+    approval_note: "human maintainer formally approved entering D2.2a active-source consumer migration"
+    secondary_approved: false
