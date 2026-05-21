@@ -9,8 +9,12 @@
 - [x] Keep this change proposal-only and explicitly exclude backend source,
   route behavior, OpenAPI schema, docs/API, generated client, probe, PM2, and
   test edits.
-- [ ] Obtain human approval for this OpenSpec change before starting the
+- [x] Obtain human approval for this OpenSpec change before starting the
   execution tasks below.
+  Approval recorded in the current review thread at
+  `2026-05-22T00:32:45+08:00`; scope is governance/evidence tasks only and
+  does not authorize implementation, docs/API edits, route behavior, OpenAPI
+  schema/exposure, generated client, probe URL, PM2, source, or test changes.
 
 ## 1. Evidence Freshness Gate
 

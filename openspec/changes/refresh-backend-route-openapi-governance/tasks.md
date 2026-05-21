@@ -8,8 +8,12 @@
   `#92` next-lane selection evidence, and steward tree context.
 - [x] Keep this change proposal-only and explicitly exclude backend source,
   route behavior, OpenAPI schema, generated client, and test edits.
-- [ ] Obtain human approval for this OpenSpec change before starting any
+- [x] Obtain human approval for this OpenSpec change before starting any
   route/OpenAPI governance execution tasks below.
+  Approval recorded in the current review thread at
+  `2026-05-22T00:32:45+08:00`; scope is governance/evidence tasks only and
+  does not authorize implementation, route behavior, OpenAPI schema,
+  docs/API, generated client, probe URL, PM2, source, or test changes.
 
 ## 1. Evidence Freshness Gate
 

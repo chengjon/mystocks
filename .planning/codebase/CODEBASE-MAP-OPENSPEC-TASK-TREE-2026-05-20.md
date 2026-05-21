@@ -227,7 +227,7 @@ CODEBASE-MAP Architecture Remediation Program
 ├── D2.3. Trading Route/OpenAPI Governance Planning Package
 │   ├── Source evidence:
 │   │   `backend-trading-route-openapi-governance-planning-package-2026-05-21.md`
-│   ├── State: planning-package-prepared
+│   ├── State: openspec-approved-for-governance-execution
 │   ├── Role: Fold trading route ownership into unified route/OpenAPI governance
 │   ├── Current fact: current smoke at HEAD `c24f43016` reports routes=`548`,
 │   │                 OpenAPI paths=`500`, trading candidate routes=`41`
@@ -236,14 +236,16 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 trading schema-exposed routes=`41`, trading schema paths=`32`,
 │   │                 and duplicate trading operationIds=`0`; classification
 │   │                 heuristic and consumer scan scope are now recorded
-│   └── Next gate: Human review; if accepted, decide whether to create a
-│                  separate OpenSpec proposal or implementation issue under
-│                  unified route/OpenAPI governance before any route mutation
+│   └── Next gate: Execute `refresh-backend-route-openapi-governance`
+│                  governance/evidence tasks with current-head freshness; no
+│                  route mutation, OpenAPI schema/exposure change, docs/API
+│                  edit, implementation issue, PM2 action, source edit, or
+│                  test edit is authorized
 │
 ├── D2.4. Backup Route Ownership Planning Package
 │   ├── Source evidence:
 │   │   `backend-backup-route-ownership-planning-package-2026-05-21.md`
-│   ├── State: proposal-prepared-for-review
+│   ├── State: approved-for-governance-execution
 │   ├── Role: Keep backup routes as a dedicated ownership proposal candidate
 │   │         with explicit safety, security, consumer, OpenAPI, and rollback
 │   │         evidence before backup route mutation
@@ -252,15 +254,15 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 backup schema-exposed routes=`13`, backup OpenAPI
 │   │                 operations=`13`, duplicate backup operationIds=`0`, and
 │   │                 `cleanup_old_backups.py` owning cleanup plus health routes
-│   └── Next gate: Review and approve `define-backend-backup-route-ownership`;
-│                  no backup route, module, OpenAPI, docs/API, infrastructure,
+│   └── Next gate: Execute `define-backend-backup-route-ownership`
+│                  governance/evidence tasks with current-head freshness; no
+│                  backup route, module, OpenAPI, docs/API, infrastructure,
 │                  PM2, source, generated client, or test mutation is authorized
-│                  by proposal preparation alone
 │
 ├── D2.5. Control-Plane OpenAPI Docs Planning Package
 │   ├── Source evidence:
 │   │   `backend-control-plane-openapi-docs-planning-package-2026-05-21.md`
-│   ├── State: proposal-prepared-for-review
+│   ├── State: approved-for-governance-execution
 │   ├── Role: Stabilize control-plane OpenAPI docs taxonomy, schema exposure,
 │   │         runtime-only compatibility, and probe evidence before docs/API or
 │   │         route mutation
@@ -270,15 +272,16 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 present, `/health/readiness` absent, duplicate focused
 │   │                 operationIds=`0`, and `/metrics` as the control-plane
 │   │                 duplicate runtime path/method to document
-│   └── Next gate: Review and approve
-│                  `stabilize-backend-control-plane-openapi-docs`; no docs/API,
-│                  route, OpenAPI, probe, PM2, source, generated client, or test
-│                  mutation is authorized by proposal preparation alone
+│   └── Next gate: Execute
+│                  `stabilize-backend-control-plane-openapi-docs`
+│                  governance/evidence tasks with current-head freshness; no
+│                  docs/API, route, OpenAPI, probe, PM2, source, generated
+│                  client, or test mutation is authorized
 │
 ├── D2.6. PM2 Stateful Gate Approval Governance Package
 │   ├── Source evidence:
 │   │   `backend-pm2-stateful-gate-approval-governance-2026-05-21.md`
-│   ├── State: proposal-prepared-for-review
+│   ├── State: approved-for-governance-execution
 │   ├── Role: Define approval strategy and required approval record fields for
 │   │         future stateful PM2 gates, named equivalents, and read-only
 │   │         sampling before any PM2 command is executed
@@ -287,10 +290,11 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `run_pm2_integration_workflow.sh` remains stateful because
 │   │                 it can run `pm2 stop all` and `pm2 delete all`; no PM2
 │   │                 command was executed by D2.6
-│   └── Next gate: Review and approve `approve-backend-pm2-stateful-gate` as a
-│                  policy proposal only; no PM2 command, service restart,
-│                  route, OpenAPI, docs/API, source, generated client, or test
-│                  mutation is authorized by proposal preparation alone
+│   └── Next gate: Execute `approve-backend-pm2-stateful-gate`
+│                  governance/evidence tasks as policy acceptance only; no PM2
+│                  command, service restart/recreation, route, OpenAPI,
+│                  docs/API, source, generated client, or test mutation is
+│                  authorized
 │
 ├── D2 Closeout. Downstream Decision Rollup
 │   ├── Source evidence:
@@ -318,13 +322,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   ├── Source evidence: backend-api-flat-package-closure-records-2026-05-19.md;
 │   │                 backend-route-openapi-probe-refresh-2026-05-20.md;
 │   │                 backend-trading-route-openapi-governance-planning-package-2026-05-21.md
-│   ├── State: proposal-prepared-for-review
+│   ├── State: approved-for-governance-execution
 │   ├── Role: Classify route table, OpenAPI, operationId, probe consumer,
 │   │         trading ownership, control-plane, backup, compatibility-route,
 │   │         and schema-exposure evidence before route mutation
-│   └── Next gate: Review and approve `refresh-backend-route-openapi-governance`;
-│                  no backend source, route, OpenAPI, probe, docs/API, or test
-│                  mutation is authorized by proposal preparation alone
+│   └── Next gate: Execute `refresh-backend-route-openapi-governance`
+│                  governance/evidence tasks with current-head freshness; no
+│                  backend source, route, OpenAPI, probe, docs/API, or test
+│                  mutation is authorized
 │
 ├── G. Candidate Branch: define-backend-service-seams-and-singleton-pilots
 │   ├── Source evidence: backend-singleton-lifecycle-routing-matrix-2026-05-19.md
@@ -428,16 +433,17 @@ review, PR review, or OpenSpec archive review.
 | D2.2b Core validation docs/API example canonicalization | D2.2b | `docs/api/` examples now point to canonical `app.core.validation`; wrapper retained | Docs-only batch: pre-change `docs/api/` legacy reference count was `10`; post-change count is `0`; no backend source, tests, OpenSpec, route, PM2, or frontend files changed | `docs/reports/quality/backend-core-validation-docs-api-canonicalization-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | D2.2c wrapper-retirement decision or explicit retention; do not delete `app.core.validation_messages` from this batch |
 | D2.2c Core validation wrapper retirement / retention decision package | D2.2c | Decision package prepared for whether to retain `app.core.validation_messages` long-term or approve a future deletion batch; D2.2 is formally closed as a decision lane | Evidence-only: wrapper exists; active source import consumers excluding wrapper=`0`; docs/API legacy references=`0`; compatibility test `2 passed`; boundary test `1 passed`; canonical and wrapper exports remain identity-equivalent; no backend source, tests, OpenSpec, route, PM2, or frontend files changed | `docs/reports/quality/backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Move to D2.3; wrapper deletion remains locked unless a separate D2.2d deletion implementation batch is approved |
 | D2.3 Trading route/OpenAPI governance planning package | D2.3 | Trading route ownership is folded into unified route/OpenAPI governance, not a standalone implementation lane | Planning/evidence only: current smoke at HEAD `c24f43016` reports routes=`548`, OpenAPI paths=`500`, trading candidate routes=`41` (`40` trading-route candidates plus `1` unclassified trading-adjacent route), schema-exposed=`41`, schema paths=`32`, duplicate trading operationIds=`0`; classification heuristic and consumer scan scope are recorded; no route, OpenAPI, source, frontend, test, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate route/OpenAPI governance proposal or implementation issue before route mutation |
-| D2.3 Route/OpenAPI governance OpenSpec proposal | D2.3/F | Explicit proposal created for unified backend route/OpenAPI governance after D2.3 planning acceptance | Proposal-only: `refresh-backend-route-openapi-governance` adds an architecture-governance gate requiring current-head route/OpenAPI/probe evidence, route ownership classification, runtime-vs-schema exposure classification, and separate D2.4/D2.5/D2.6 lane handling before mutation; no backend source, frontend source, tests, generated client, docs/API, route behavior, OpenAPI schema, probe URL, or PM2 changes are authorized | `openspec/changes/refresh-backend-route-openapi-governance/`; `docs/reports/quality/backend-route-openapi-governance-openspec-proposal-2026-05-21.md`; `governance/mainline/task-cards/pr-116.yaml` | Review and approve the OpenSpec proposal before executing its task list |
+| D2.3 Route/OpenAPI governance OpenSpec proposal | D2.3/F | Explicit proposal created for unified backend route/OpenAPI governance after D2.3 planning acceptance | Proposal-only: `refresh-backend-route-openapi-governance` adds an architecture-governance gate requiring current-head route/OpenAPI/probe evidence, route ownership classification, runtime-vs-schema exposure classification, and separate D2.4/D2.5/D2.6 lane handling before mutation; no backend source, frontend source, tests, generated client, docs/API, route behavior, OpenAPI schema, probe URL, or PM2 changes are authorized | `openspec/changes/refresh-backend-route-openapi-governance/`; `docs/reports/quality/backend-route-openapi-governance-openspec-proposal-2026-05-21.md`; `governance/mainline/task-cards/pr-116.yaml` | Approved for governance/evidence task-list execution; no implementation or runtime mutation authorized |
 | D2.4 Backup route ownership planning package | D2.4 | Backup route ownership remains a dedicated proposal candidate, not a trading or generic route cleanup lane | Planning/evidence only: current smoke at HEAD `553e71a90` reports routes=`548`, OpenAPI paths=`500`, backup candidate routes=`13`, schema-exposed=`13`, backup OpenAPI paths=`13`, backup operations=`13`, duplicate backup operationIds=`0`; `cleanup_old_backups.py` owns cleanup plus health routes; no route, OpenAPI, source, frontend, test, docs/API, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-backup-route-ownership-planning-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate backup route ownership proposal or implementation issue before backup route mutation |
-| D2.4 Backup route ownership OpenSpec proposal | D2.4/F | Explicit proposal created for dedicated backup route ownership after D2.4 planning acceptance | Proposal-only: `define-backend-backup-route-ownership` adds an architecture-governance gate requiring current-head backup route/OpenAPI evidence, backup ownership class taxonomy, explicit `cleanup_old_backups.py` and `backup_service_health` ownership, security/permission/audit/rollback evidence, and separate D2.3/D2.5/D2.6 lane handling before mutation; no backend source, frontend source, tests, generated client, docs/API, route behavior, OpenAPI schema, infrastructure backup code, probe URL, or PM2 changes are authorized | `openspec/changes/define-backend-backup-route-ownership/`; `docs/reports/quality/backend-backup-route-ownership-openspec-proposal-2026-05-21.md`; `governance/mainline/task-cards/pr-118.yaml` | Review and approve the OpenSpec proposal before executing its task list |
+| D2.4 Backup route ownership OpenSpec proposal | D2.4/F | Explicit proposal created for dedicated backup route ownership after D2.4 planning acceptance | Proposal-only: `define-backend-backup-route-ownership` adds an architecture-governance gate requiring current-head backup route/OpenAPI evidence, backup ownership class taxonomy, explicit `cleanup_old_backups.py` and `backup_service_health` ownership, security/permission/audit/rollback evidence, and separate D2.3/D2.5/D2.6 lane handling before mutation; no backend source, frontend source, tests, generated client, docs/API, route behavior, OpenAPI schema, infrastructure backup code, probe URL, or PM2 changes are authorized | `openspec/changes/define-backend-backup-route-ownership/`; `docs/reports/quality/backend-backup-route-ownership-openspec-proposal-2026-05-21.md`; `governance/mainline/task-cards/pr-118.yaml` | Approved for governance/evidence task-list execution; no implementation or runtime mutation authorized |
 | D2.5 Control-plane OpenAPI docs planning package | D2.5 | Control-plane OpenAPI docs stabilization remains a dedicated documentation/probe governance lane | Planning/evidence only: current smoke at HEAD `b39b7b3ee` reports routes=`548`, OpenAPI paths=`500`, broad control/status candidate routes=`128`, focused duplicate operationIds=`0`, `/health/readiness` absent, `/api/strategy-mgmt/{path:path}` runtime-only hidden, and `/metrics` as the focused duplicate runtime path/method; no route, OpenAPI, docs/API, source, frontend, test, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-control-plane-openapi-docs-planning-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate control-plane OpenAPI docs proposal or documentation issue before docs/API or route mutation |
-| D2.5 Control-plane OpenAPI docs OpenSpec proposal | D2.5/F | Explicit proposal created for control-plane OpenAPI documentation stabilization after D2.5 planning acceptance | Proposal-only: `stabilize-backend-control-plane-openapi-docs` adds an API documentation gate requiring current-head route/OpenAPI/probe evidence, health/readiness taxonomy, metrics/docs/schema surface classification, runtime-vs-schema exposure classification, and separate D2.3/D2.4/D2.6 lane handling before docs/API or route mutation; no backend source, frontend source, tests, generated client, docs/API, route behavior, OpenAPI schema, probe URL, or PM2 changes are authorized | `openspec/changes/stabilize-backend-control-plane-openapi-docs/`; `docs/reports/quality/backend-control-plane-openapi-docs-openspec-proposal-2026-05-21.md`; `governance/mainline/task-cards/pr-117.yaml` | Review and approve the OpenSpec proposal before executing its task list |
+| D2.5 Control-plane OpenAPI docs OpenSpec proposal | D2.5/F | Explicit proposal created for control-plane OpenAPI documentation stabilization after D2.5 planning acceptance | Proposal-only: `stabilize-backend-control-plane-openapi-docs` adds an API documentation gate requiring current-head route/OpenAPI/probe evidence, health/readiness taxonomy, metrics/docs/schema surface classification, runtime-vs-schema exposure classification, and separate D2.3/D2.4/D2.6 lane handling before docs/API or route mutation; no backend source, frontend source, tests, generated client, docs/API, route behavior, OpenAPI schema, probe URL, or PM2 changes are authorized | `openspec/changes/stabilize-backend-control-plane-openapi-docs/`; `docs/reports/quality/backend-control-plane-openapi-docs-openspec-proposal-2026-05-21.md`; `governance/mainline/task-cards/pr-117.yaml` | Approved for governance/evidence task-list execution; no implementation or runtime mutation authorized |
 | D2.6 PM2 stateful gate approval governance package | D2.6 | Future PM2 stateful gate execution requires explicit approval or an approved named equivalent; issue `#92` remains a decision issue, not an execution issue | Governance/evidence only: health/status task `4.7` is already closed by `backend-health-status-pm2-gate-2026-05-18.md`; `run_pm2_integration_workflow.sh` includes stateful `pm2 stop all` / `pm2 delete all`; no PM2 command, runtime code, route, OpenAPI, docs/API, frontend, test, or OpenSpec mutation is authorized | `docs/reports/quality/backend-pm2-stateful-gate-approval-governance-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; create `approve-backend-pm2-stateful-gate` or a named-equivalent approval runbook only when a future workline needs a fresh PM2 run |
 | D2.6 PM2 stateful gate approval OpenSpec proposal | D2.6 | Explicit proposal created for PM2 stateful gate approval policy after D2.6 governance-package acceptance | Proposal-only: `approve-backend-pm2-stateful-gate` adds an architecture-governance gate requiring explicit approval records before `gate`, `regression`, `all`, read-only PM2 sampling, or named-equivalent PM2 validation; no PM2 command, service restart, backend source, frontend source, tests, generated client, docs/API, route behavior, OpenAPI schema, probe URL, or movement of issue `#92` to `ready-for-agent` is authorized | `openspec/changes/approve-backend-pm2-stateful-gate/`; `docs/reports/quality/backend-pm2-stateful-gate-openspec-proposal-2026-05-21.md`; `governance/mainline/task-cards/pr-119.yaml` | Review and approve the OpenSpec policy proposal before treating it as the PM2 approval contract |
 | D2 downstream decision rollup closeout | D2 closeout | D2.1-D2.6 downstream packages are summarized as a complete decision package; issue `#92` remains a parent decision issue | Rollup/evidence only: PRs `#96`-`#113` are merged; issue `#92` is `OPEN` with `ready-for-human` and `ready-for-downstream`; `ready-for-agent` remains absent; first recommended true implementation lane, D2.1a `TechnicalPatternDetectionService` DI pilot, is now closed end-to-end | `docs/reports/quality/backend-openspec-issue92-downstream-rollup-closeout-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92`; PRs `#112` and `#113` | Human decision whether to create the next concrete child issue or OpenSpec branch; this rollup does not authorize implementation |
 | D2.1a TechnicalPatternDetectionService DI implementation | D2.1a.1 | First service-tier route-level DI pilot merged; `_technical_patterns_router.py` now exposes `get_technical_pattern_detection_service()`, `detect_patterns()` receives the service through `Depends`, and focused route tests use `app.dependency_overrides` | Reviewed/pass in current thread: PR `#112` checks passed, merge commit `80582643578d587ead81ccb3d23dcd2a52668dba`; route regression `9 passed`; service+route `19 passed`; ruff passed; placeholder-env `app.main` import passed; OpenSpec strict valid; mainline scope gate passed; GitNexus compare low risk with `0` changed symbols and `0` affected processes | `https://github.com/chengjon/mystocks/pull/112`; `docs/reports/quality/backend-technical-pattern-di-pilot-implementation-2026-05-21.md`; `openspec/changes/inject-technical-pattern-detection-service-di/` | D2.1a final OpenSpec checklist governance closeout |
 | D2.1a final OpenSpec checklist governance closeout | D2.1a.1 | OpenSpec task `5.3` marked complete with issue `#92` closeout comment evidence; D2.1a is closed from implementation plus checklist governance perspectives | Reviewed/pass in current thread: PR `#113` checks passed, merge commit `c7e263b8fcdeea4fc952a86d64ac555ca6dde6ce`; changed files limited to `tasks.md` and `pr-113.yaml`; mainline scope gate changed files=`2`, violations=`0`; GitNexus compare low risk with `0` changed symbols and `0` affected processes | `https://github.com/chengjon/mystocks/pull/113`; `https://github.com/chengjon/mystocks/issues/92#issuecomment-4508297089`; `openspec/changes/inject-technical-pattern-detection-service-di/tasks.md` | No further D2.1a work; select a new approved child lane before any additional implementation |
+| D2.x OpenSpec proposal approvals recorded | D2.3-D2.6 | Human maintainer approval recorded for D2.3/D2.4/D2.5/D2.6 proposal task-list entry into governance/evidence execution | Approval-only: each change may execute its governance/evidence `tasks.md` checklist with current-head freshness; no backend source, frontend source, tests, generated client, docs/API edits, route behavior, OpenAPI schema/exposure, probe URL change, PM2 command execution, service restart/recreation, implementation issue creation, or movement of issue `#92` to `ready-for-agent` is authorized | `docs/reports/quality/backend-openspec-d2-proposal-approval-record-2026-05-22.md`; `governance/mainline/task-cards/pr-120.yaml` | Execute approved governance/evidence tasks and keep every downstream decision tied to refreshed evidence |
 
 ## OpenSpec Branch Register
 
@@ -450,11 +456,11 @@ review, PR review, or OpenSpec archive review.
 | `select-backend-technical-pattern-di-pilot` | `design-packet-prepared` | Issue `#92` downstream split acceptance | First DI lifecycle pilot design packet | Provider shape, dependency override strategy, teardown, rollback, and verification gates for `TechnicalPatternDetectionService` | Human review before creating any implementation issue or OpenSpec branch |
 | `inject-technical-pattern-detection-service-di` | `implementation-ready-for-review` | D2.1 design packet, D2.1a authorization plan, proposal review, and implementation evidence | First implementation child branch for `TechnicalPatternDetectionService` DI pilot | Route-local provider, FastAPI dependency override test seam, rollback, and focused verification for `_technical_patterns_router.py` | PR review / merge decision; do not broaden to a second service DI pilot in this branch |
 | `decide-backend-core-validation-wrapper-retirement` | `active-source-migration-complete` | Issue `#92` downstream split acceptance and validation helper split archive | Core validation compatibility wrapper retirement readiness and staged migration | D2.2a active source migration is complete; docs/API examples and compatibility-test conversion remain separate gates | D2.2b docs/API examples canonicalization or explicit waiver; wrapper deletion remains blocked |
-| `define-backend-backup-route-ownership` | `proposal-prepared-for-review` | Issue `#92` downstream split acceptance, D2.4 planning package, D2.3 route governance proposal, and D2.5 control-plane docs proposal | Explicit OpenSpec proposal plus backup route ownership planning, `cleanup_old_backups.py`, and backup route/OpenAPI evidence | Backup, recovery, scheduler, integrity, cleanup, health, safety, security, consumer, OpenAPI, and rollback ownership gates | Review and approve the OpenSpec change before executing backup ownership tasks or opening implementation lanes |
-| `stabilize-backend-control-plane-openapi-docs` | `proposal-prepared-for-review` | Issue `#92` downstream split acceptance, D2.5 planning package, route/OpenAPI/probe refresh, and D2.3 route governance proposal | Explicit OpenSpec proposal plus control-plane docs/probe planning, health/readiness taxonomy, OpenAPI docs UI/schema routes, metrics/status probes, and runtime-only compat redirects | Documentation/probe governance for liveness, readiness, service health, detailed health, status, metrics, docs UI, OpenAPI schema, runtime-only compat redirects, and intentionally absent aliases | Review and approve the OpenSpec change before executing docs/probe governance tasks or opening implementation lanes |
-| `approve-backend-pm2-stateful-gate` | `proposal-prepared-for-review` | Issue `#92` downstream split acceptance, D2.6 approval-governance package, and historical health/status PM2 evidence | Explicit OpenSpec proposal for PM2 stateful workflow approval strategy and named-equivalent rules | Approval records for `run_pm2_integration_workflow.sh` modes, stateful service mutation, rollback, evidence artifact routing, read-only sampling, and named equivalents | Review and approve the policy proposal; create a small approval issue or approved runbook only when a future workline needs a fresh PM2 run |
+| `define-backend-backup-route-ownership` | `approved-for-governance-execution` | Issue `#92` downstream split acceptance, D2.4 planning package, D2.3 route governance proposal, and D2.5 control-plane docs proposal | Explicit OpenSpec proposal plus backup route ownership planning, `cleanup_old_backups.py`, and backup route/OpenAPI evidence | Backup, recovery, scheduler, integrity, cleanup, health, safety, security, consumer, OpenAPI, and rollback ownership gates | Review and approve the OpenSpec change before executing backup ownership tasks or opening implementation lanes |
+| `stabilize-backend-control-plane-openapi-docs` | `approved-for-governance-execution` | Issue `#92` downstream split acceptance, D2.5 planning package, route/OpenAPI/probe refresh, and D2.3 route governance proposal | Explicit OpenSpec proposal plus control-plane docs/probe planning, health/readiness taxonomy, OpenAPI docs UI/schema routes, metrics/status probes, and runtime-only compat redirects | Documentation/probe governance for liveness, readiness, service health, detailed health, status, metrics, docs UI, OpenAPI schema, runtime-only compat redirects, and intentionally absent aliases | Review and approve the OpenSpec change before executing docs/probe governance tasks or opening implementation lanes |
+| `approve-backend-pm2-stateful-gate` | `approved-for-governance-execution` | Issue `#92` downstream split acceptance, D2.6 approval-governance package, and historical health/status PM2 evidence | Explicit OpenSpec proposal for PM2 stateful workflow approval strategy and named-equivalent rules | Approval records for `run_pm2_integration_workflow.sh` modes, stateful service mutation, rollback, evidence artifact routing, read-only sampling, and named equivalents | Review and approve the policy proposal; create a small approval issue or approved runbook only when a future workline needs a fresh PM2 run |
 | `close-backend-schema-dual-directory` | `candidate` | Master execution plan | Schema dual-directory closure | Schema exports, consumer migration, shim retirement decision | Create only after `sequence-backend-architecture-unblocks` schema tasks are accepted |
-| `refresh-backend-route-openapi-governance` | `proposal-prepared-for-review` | Master execution plan, route/OpenAPI/probe refresh, D2.3 planning package, and next child-lane selection | Explicit OpenSpec proposal plus API flat/package closure records, trading route/OpenAPI governance planning, and probe consumer evidence | Route table, OpenAPI, operationId, probe matrix, trading ownership, control-plane, backup, compatibility, and schema-exposure classification | Review and approve the OpenSpec change before executing governance tasks or opening implementation lanes |
+| `refresh-backend-route-openapi-governance` | `approved-for-governance-execution` | Master execution plan, route/OpenAPI/probe refresh, D2.3 planning package, and next child-lane selection | Explicit OpenSpec proposal plus API flat/package closure records, trading route/OpenAPI governance planning, and probe consumer evidence | Route table, OpenAPI, operationId, probe matrix, trading ownership, control-plane, backup, compatibility, and schema-exposure classification | Review and approve the OpenSpec change before executing governance tasks or opening implementation lanes |
 | `define-backend-service-seams-and-singleton-pilots` | `candidate` | Master execution plan | Singleton lifecycle routing matrix | Service seam definition, interface/test-double pilot strategy | Create as a design proposal after complete classification |
 
 ## Dependency and Freshness Matrix
@@ -466,7 +472,7 @@ review, PR review, or OpenSpec archive review.
 | C. `sequence-backend-architecture-unblocks` | Human approval, current runtime blocker verification | `7b097fffd` | Tasks 1.x through 8.x complete; runtime blocker closed, schema shim closure implemented, route/OpenAPI/probe evidence refreshed, service seam proposal path recorded |
 | D. Core split continuation | Task 3.2 disposition, #83 evidence acceptance, runtime evidence refresh | `7b097fffd` | Batch 2 remains blocked |
 | E. Schema dual-directory closure | `app.schema` consumer scan and `app.schemas` export proof | `7b097fffd` | Task 3.x complete; root checkout now has 0 legacy `app.schema` consumers and canonical exports are live |
-| F. Route/OpenAPI governance | Healthy `app.main` import chain | `dd56ba0a6` | D2.3 route/OpenAPI, D2.4 backup ownership, and D2.5 control-plane docs proposals are merged; D2.6 PM2 approval policy proposal is prepared; next execution must refresh current-head evidence before using artifacts for backup, docs/API, route mutation, or PM2 approval decisions |
+| F. Route/OpenAPI governance | Healthy `app.main` import chain | `1f3298209` | D2.3 route/OpenAPI, D2.4 backup ownership, D2.5 control-plane docs, and D2.6 PM2 approval policy proposals are merged and approved for governance/evidence task-list execution; next execution must refresh current-head evidence before using artifacts for backup, docs/API, route mutation, or PM2 approval decisions |
 | G. Service seams and singleton pilots | Full service classification plus interface/test-double strategy | `7b097fffd` | Task 6.x proposal path complete; service directory is dirty, no implementation batch is scheduled, and future work needs a clean candidate packet plus approved proposal |
 
 ## Update Protocol
