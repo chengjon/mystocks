@@ -4,7 +4,7 @@
 > 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
 > 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
 
-Status: runtime triage plus separate implementation-lane import fix; refreshed against current checkout on `2026-05-21`.
+Status: historical runtime triage plus implementation-lane provenance; superseded for current runtime state by `codebase-map-task-completion-validity-2026-05-21.md`.
 
 ## Inputs
 
@@ -33,6 +33,15 @@ Status: runtime triage plus separate implementation-lane import fix; refreshed a
 - A separate implementation lane would be required if anyone wants to change backend source files for the bare `_data_lineage_responses` import.
 - A separate implementation lane was executed on `2026-05-21` after user continuation approval. It removed the current-checkout runtime import blocker without changing #83's evidence-package scope.
 - This report does not authorize OpenSpec proposal creation or issue publication.
+
+## 2026-05-21 Supersession
+
+This report is now historical triage evidence, not the current runtime state.
+Later sequence-unblock evidence and the current validity review at HEAD
+`f97f2eb57` show that `app.main` import, health collect-only, and minimal
+OpenAPI smoke pass in clean current HEAD. The remaining governance issue is not
+this import blocker; it is evidence adoption plus the separate PM2/backend
+runtime, route/OpenAPI governance, Core Batch 2, and archive gates.
 
 ## Verification
 

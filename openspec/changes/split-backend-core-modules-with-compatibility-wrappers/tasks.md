@@ -35,6 +35,7 @@
 - [ ] 4.3 Run PM2 backend startup smoke with `./scripts/run_pm2_integration_workflow.sh` or a named equivalent approved by the implementation issue.
 - [ ] 4.4 Run `/api/health/services`, `/health/ready`, and `/api/health/ready` smoke after runtime-affecting moves.
 - [ ] 4.5 Confirm no unintended route or OpenAPI drift.
+- Note: commit-scoped implementation-worktree evidence for 4.3 / 4.4 / 4.5 exists in `bbb399071`. Later sequence-unblock evidence also shows current HEAD `f97f2eb57` runtime smoke passing. Do not mark these current-checkout checkboxes complete until the task owner explicitly accepts the runtime evidence as the active OpenSpec task state for this Core split branch.
 
 ## 5. Closure
 

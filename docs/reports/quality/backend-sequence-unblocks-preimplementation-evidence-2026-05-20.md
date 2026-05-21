@@ -10,6 +10,13 @@ Branch: `wip/root-dirty-20260403`
 HEAD: `7b097fffd Record miniQMT authoritative-ready evidence alignment`
 OpenSpec change: `sequence-backend-architecture-unblocks`
 
+2026-05-21 freshness note: runtime blocker details in this pre-implementation
+report are historical. Later runtime-unblock evidence and
+`docs/reports/quality/codebase-map-task-completion-validity-2026-05-21.md`
+show current dirty-worktree import, collect-only, and OpenAPI smoke passing.
+Use this report for Task 1.x provenance, schema consumer history, and singleton
+freshness inputs, not as the current runtime blocker.
+
 ## Scope
 
 This report records OpenSpec Task 1.x pre-implementation evidence for
