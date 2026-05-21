@@ -66,7 +66,7 @@
 - [x] Keep D2.3 route/OpenAPI mutation, D2.5 control-plane docs stabilization,
   and D2.6 PM2 stateful execution separate unless an approved decision narrows a
   specific overlap.
-- [ ] Update the codebase-map task tree after the decision package is reviewed.
+- [x] Update the codebase-map task tree after the decision package is reviewed.
 - [x] Do not create implementation issues or edit source until the accepted
   decision package identifies the lane, owner, write scope, tests, and rollback
   plan.
