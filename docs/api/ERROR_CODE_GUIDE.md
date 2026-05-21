@@ -229,7 +229,7 @@ print(is_server_error(ErrorCode.BAD_REQUEST))  # False
 from fastapi import HTTPException, status
 from app.core.error_codes import ErrorCode, get_http_status, get_error_message
 from app.core.validators import TradingValidator
-from app.core.validation_messages import CommonMessages
+from app.core.validation import CommonMessages
 
 @router.post("/trade/orders")
 async def create_order(order: OrderRequest):
@@ -358,15 +358,15 @@ try {
 
 ---
 
-## 🔄 与validation_messages.py集成
+## 🔄 与 app.core.validation 集成
 
-错误码体系与`validation_messages.py`完全集成:
+错误码体系与 canonical `app.core.validation` 完全集成:
 
 ```python
 from app.core.error_codes import ErrorCode, get_error_message
-from app.core.validation_messages import CommonMessages
+from app.core.validation import CommonMessages
 
-# 错误消息优先从validation_messages获取
+# 错误消息优先从 app.core.validation 获取
 message = get_error_message(ErrorCode.SYMBOL_INVALID_FORMAT)
 # message == CommonMessages.SYMBOL_INVALID_FORMAT
 

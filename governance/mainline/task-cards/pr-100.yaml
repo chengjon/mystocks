@@ -1,0 +1,99 @@
+version: "v0.2"
+
+task:
+  id: "pr-100"
+  title: "canonicalize validation docs api examples"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-2b-validation-docs-api-canonicalization"
+  objective: "canonicalize docs/API examples from app.core.validation_messages to app.core.validation while retaining the wrapper"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-core-wrapper-docs-api-canonicalization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "split-backend-core-modules-with-compatibility-wrappers"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Docs/API example canonicalization only; no runtime route, backend source, test, OpenSpec, PM2, frontend, or product behavior changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/api/EXCEPTION_HANDLER_GUIDE.md"
+    - "docs/api/ERROR_CODE_GUIDE.md"
+    - "docs/api/VALIDATION_GUIDE.md"
+    - "docs/reports/quality/backend-core-validation-docs-api-canonicalization-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-100.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "src/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No deletion of web/backend/app/core/validation_messages.py"
+  - "No backend source modification"
+  - "No test modification"
+  - "No route, OpenAPI runtime, PM2, or frontend behavior changes"
+  - "No movement of issue #92 or D2.2b to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "docs-api-legacy-scan"
+      command: "! rg -n \"validation_messages|app\\.core\\.validation_messages\" docs/api"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-core-validation-docs-api-canonicalization-2026-05-21.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-100.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Docs/API examples could accidentally keep pointing at the compatibility wrapper and extend retirement ambiguity"
+    - "A docs-only batch could accidentally include backend source changes if path scope is not enforced"
+  rollback_plan: "revert the docs/API import wording changes, the D2.2b evidence report, the task-tree D2.2b row, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "canonicalize docs/API validation examples to app.core.validation"
+    modified_scope: "three docs/api files, one evidence report, steward task tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "legacy wrapper retained; compatibility path remains available"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "docs-only rollback by reverting this PR"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T02:15:49Z"
+    approval_note: "human maintainer formally approved immediate D2.2b docs/API example standardization with docs-only and no code deletion boundaries"
+    secondary_approved: false
