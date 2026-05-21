@@ -8,7 +8,7 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, List, Optional
 
-from app.core.validation_messages import (
+from app.core.validation import (
     CommonMessages,
     MarketMessages,
     TechnicalMessages,
