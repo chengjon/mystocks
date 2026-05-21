@@ -8,11 +8,14 @@
 
 ## Status
 
-- Status: `decision-package-prepared-for-review`
+- Status: `decision-package-reviewed-accepted`
 - OpenSpec change: `refresh-backend-route-openapi-governance`
 - Parent issue: <https://github.com/chengjon/mystocks/issues/92>
 - Current HEAD: `c173bbc8d48d5e20ed5905d698ca39001237198a`
 - Evidence generated at: `2026-05-21T17:02:48.078861Z`
+- Review artifact:
+  `docs/reports/quality/backend-route-openapi-governance-decision-package-2026-05-22-review.md`
+- Review verdict: `APPROVE`
 - Execution mode: governance/evidence only
 - Environment mode: placeholder env for `app.main` import and `app.openapi()`;
   no backend service startup, no PM2 command, and no runtime route mutation
@@ -104,6 +107,11 @@ The only duplicate runtime path/method excluding `HEAD` and `OPTIONS` remains:
 | `app.api.v1.trading.session` | `5` |
 | `app.api.v1.trading.positions` | `6` |
 | `app.api.advanced_analysis_api` | `1` |
+
+The `app.api.advanced_analysis_api` row corresponds only to
+`/api/v1/advanced-analysis/trading-signals`. It is included in the 41-route
+D2.3 candidate total but remains `trading-adjacent-unclassified`, so it is not
+part of the 40-route `trading-owned` subtotal.
 
 ### Path Group Counts
 
