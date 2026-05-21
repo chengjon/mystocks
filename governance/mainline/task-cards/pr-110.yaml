@@ -1,0 +1,111 @@
+version: v0.2
+task:
+  id: pr-110
+  title: create D2.1a technical pattern DI OpenSpec child branch
+  owner: main
+  created_at: "2026-05-21"
+
+mainline:
+  id: L1-issue92-d2-1a-di-pilot-openspec-child
+  objective: create a separate OpenSpec child change for the TechnicalPatternDetectionService DI implementation pilot
+  milestone_id: L2-architecture-governance-closeout
+  slice_id: L3-d2-1a-di-pilot-openspec-child
+
+classification:
+  task_type: cleanup
+  secondary_type: none
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: inject-technical-pattern-detection-service-di
+  approval_status: pending
+
+function_tree:
+  domain_id: meta-governance
+  node_id: meta-governance-mainline
+  affected_entrypoints:
+    - governance
+    - api
+  update_status: not-needed
+  secondary_domains: []
+  exemption_reason: "OpenSpec proposal-only D2.1a child branch; no backend source, frontend, tests, docs/api, PM2, route behavior, script, config, or service behavior changes are introduced"
+
+scope:
+  allowed_paths:
+    - .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md
+    - governance/mainline/task-cards/pr-110.yaml
+    - openspec/changes/inject-technical-pattern-detection-service-di/proposal.md
+    - openspec/changes/inject-technical-pattern-detection-service-di/design.md
+    - openspec/changes/inject-technical-pattern-detection-service-di/tasks.md
+    - openspec/changes/inject-technical-pattern-detection-service-di/specs/architecture-governance/spec.md
+  forbidden_paths:
+    - web/backend/app/**
+    - web/frontend/**
+    - tests/**
+    - src/**
+    - docs/api/**
+    - openspec/specs/**
+    - scripts/**
+    - config/**
+
+non_goals:
+  - No backend runtime code modification
+  - No test or fixture modification
+  - No route registration change
+  - No OpenAPI schema exposure or operationId change
+  - No frontend consumer modification
+  - No docs/api modification
+  - No scripts or config modification
+  - No PM2 workflow execution
+  - No issue #92 ready-for-agent movement
+  - No execution of OpenSpec implementation tasks in this PR
+
+acceptance:
+  checks:
+    - id: openspec-change-valid
+      command: openspec validate inject-technical-pattern-detection-service-di --strict
+      required: true
+    - id: task-tree-updated
+      command: task tree records D2.1a.1 proposal-prepared state and next gate
+      required: true
+    - id: implementation-boundary-preserved
+      command: proposal and task tree state that backend implementation remains locked pending human approval
+      required: true
+    - id: markdown-governance
+      command: python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md openspec/changes/inject-technical-pattern-detection-service-di/proposal.md openspec/changes/inject-technical-pattern-detection-service-di/design.md openspec/changes/inject-technical-pattern-detection-service-di/tasks.md openspec/changes/inject-technical-pattern-detection-service-di/specs/architecture-governance/spec.md
+      required: true
+    - id: mainline-scope-gate
+      command: python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-110.yaml
+      required: true
+    - id: cached-diff-check
+      command: git diff --cached --check
+      required: true
+
+risk_and_rollback:
+  risks:
+    - A proposal branch could be mistaken for implementation approval
+    - Future implementation could expand beyond the route-local provider seam
+  rollback_plan: "revert the D2.1a OpenSpec child change, task-tree update, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: create D2.1a TechnicalPatternDetectionService DI OpenSpec child branch
+    modified_scope: one OpenSpec change, steward task tree, and this PR task card
+    dependency_changes: none
+    legacy_logic_impact: no runtime, route, docs/api, PM2, or service behavior changes
+    rollback_ready: "yes"
+    risk_and_rollback_point: proposal-only rollback by reverting this PR
+
+governance:
+  phase: phase_a_pr_hard_gate
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: main
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: main
+    approved_at: "2026-05-21T10:20:00Z"
+    approval_note: "human maintainer asked to continue after PR #109 merged; this task creates the D2.1a OpenSpec child branch without implementation execution"
+    secondary_approved: false
