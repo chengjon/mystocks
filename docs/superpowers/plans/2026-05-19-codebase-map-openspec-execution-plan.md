@@ -20,9 +20,13 @@
 - No new OpenSpec proposal is created by this plan.
 - No GitHub issue label is changed by this plan.
 - No backend implementation is authorized by this plan; any source edit requires a separate approved implementation lane.
+- Proposal-First remains governed by `architecture/STANDARDS.md` and `openspec/AGENTS.md`; if this plan, a report, or an OpenSpec draft appears to permit implementation without approval, treat that as non-authorizing wording and return to the governance gate.
 - Runtime evidence must be refreshed against the current HEAD before it is treated as current truth.
-- Current local smoke finding before cross-line reconciliation: `ContractDriftIncidentListResponse` imports successfully; `app.main` import can fail if the current checkout still has `web/backend/app/api/data_lineage.py` importing `_data_lineage_responses` as a bare module name.
-- Current `_data_lineage_responses` file exists at `web/backend/app/api/_data_lineage_responses.py`; another Core split worktree already reports pushed startup-fix commits and runtime gate evidence. Reconcile branch/worktree state here, but route any remaining source edit through a separate implementation lane.
+- Pre-unblock local smoke finding before cross-line reconciliation: `ContractDriftIncidentListResponse` imported successfully; `app.main` import failed through the `web/backend/app/api/data_lineage.py` import chain because `web/backend/app/api/_data_lineage_responses.py` used `@asynccontextmanager` without importing it.
+- 2026-05-20 update: `sequence-backend-architecture-unblocks` Task 2.x restored the runtime import chain in a separate approved implementation lane. Current verification records `app.main` routes=`548`, `test_health_route_conflicts.py` `112 passed`, OpenAPI paths=`500`, and duplicate operationIds=`0`. Task 3.x then closed the validation-model schema seam by moving the implementation to canonical `app.schemas.validation_models`, retaining `app.schema` as a thin compatibility shim, and proving `LEGACY_CONSUMERS=0`.
+- 2026-05-20 Task 5.x update: route/OpenAPI/probe artifacts were refreshed at HEAD `7b097fffd`: route table routes=`548`; OpenAPI paths=`500`, operations=`536`, duplicate operationIds=`0`, warnings=`0`; probe matrix scanned files=`5782`, hit files=`188`. The only duplicate runtime path/method excluding `HEAD` is `GET /metrics`, split between hidden `app.main.prometheus_metrics` and visible `app.api.prometheus_exporter.metrics`.
+- 2026-05-20 Task 6.x update: service seam work remains proposal-only. The refreshed heuristic inventory scans `152` service Python files and classifies `28` interface/test-double candidates needing review, but the service directory is dirty and no lifecycle implementation batch is scheduled from this evidence.
+- 2026-05-20 Task 7.x / 8.x update: `sequence-backend-architecture-unblocks` tasks are complete and verified. This closes the front-door unblock/evidence branch for review, but it does not authorize route retirement, service lifecycle migration, schema shim retirement, broad refactor, or OpenSpec archive without the next human gate.
 
 ## Cross-Line Progress Inputs (2026-05-19)
 
@@ -40,13 +44,13 @@
 |---|---|---|---|
 | GH #83 evidence-package execution | Existing issue 14 publication flow | OPEN / ready-for-agent | Scope is limited to C/E/F evidence package work; wait for agent output before issue15 publication |
 | Issue15 publication | Existing issue 15 draft | Unpublished / blocked | Keep `BLOCKED_BY_TODO: shared evidence package.` unresolved until #83 evidence is completed or explicitly accepted |
-| `_data_lineage_responses` import blocker | Bug-fix evidence first; code fix only if approved | Open blocker | Import seam bug, not an architecture proposal |
+| `_data_lineage_responses` import blocker | Bug-fix evidence first; code fix only if approved | Closed by `sequence-backend-architecture-unblocks` Task 2.x | Import seam bug, not an architecture proposal; remaining route/OpenAPI work is evidence refresh, not broad refactor approval |
 | Core helper split continuation | `split-backend-core-modules-with-compatibility-wrappers` | Runtime-gate reconciled, not fully closed | Hold Batch 2 until Task 2 governance reconciliation is accepted |
-| API flat→package closure records | Existing router consolidation evidence lane | Evidence-first | Static closure first; runtime diff only after app import works and companion-file imports are accounted for |
-| Service seam and lifecycle DI | `migrate-backend-singletons-to-lifecycle-di` / issue 15 decision input | #78 adapter side mostly done; #79 service side in pilot | Define canonical seams per service before replacing pass-through locators; isolate `realtime_mtm` and `adapter_loader` |
+| API flat→package closure records | Existing router consolidation evidence lane | Evidence-first with Task 5.x runtime artifacts available | Runtime route/OpenAPI/probe evidence now exists; classify control-plane duplicates such as `GET /metrics` separately from business API flat/package closure |
+| Service seam and lifecycle DI | `migrate-backend-singletons-to-lifecycle-di` / issue 15 decision input | #78 adapter side mostly done; #79 service side in pilot; Task 6.x proposal path complete | Define canonical seams per service before replacing pass-through locators; isolate `realtime_mtm` and `adapter_loader`; no new implementation batch until a clean candidate packet and approved proposal exist |
 | CSRF composition root | `05-csrf-protection` / future decision pack | Design decision | Decide test factory role and token manager ownership first |
 | Error contract verification | Task 10 / P3-C5 completion review | Completion report exists | Verify current HEAD against the completion report and handle only the remaining guard / historical-route follow-up; keep it separate from service lifecycle routing |
-| Schema dual directory | API contract proposal candidate | Low-risk decision record first | Can be prepared in Wave 2 without runtime OpenAPI |
+| Schema dual directory | `sequence-backend-architecture-unblocks` Task 3.x plus future shim-retirement decision | Task 3.x complete | `validation_models.py` is canonical under `app.schemas`; `app.schema` remains a thin shim until external/generated-code consumer audit |
 
 ## Execution Waves
 
@@ -145,16 +149,16 @@ Record actual results:
 - `ContractDriftIncidentListResponse` import should pass.
 - `app.main` import result must be recorded exactly.
 - `web/backend/tests/test_health_route_conflicts.py` collection result must be recorded exactly.
-- If `app.main` import or test collection fails specifically on bare `_data_lineage_responses`, do not edit code in this task; route the fix through a separate implementation lane.
+- If `app.main` import or test collection fails in the `data_lineage.py` / `_data_lineage_responses.py` import chain, record the exact exception and failing file; do not edit code in this task, and route any source fix through a separate implementation lane.
 
 - [ ] **Step 1.5: Stop on stale checkout or route a separate implementation-lane fix**
 
-Task 1 must not edit backend source files. If the current checkout still fails on bare `_data_lineage_responses`, record one of these outcomes:
+Task 1 must not edit backend source files. If the current checkout still fails in the `data_lineage.py` / `_data_lineage_responses.py` import chain, record one of these outcomes:
 - stale checkout: current local HEAD does not contain `bbb399071`; reconcile branch/worktree state before treating the failure as current truth
 - separate implementation lane required: open or route a non-#83 implementation fix with its own approval and GitNexus context / impact checks before any source edit
 - unexpected regression: current local HEAD contains `bbb399071` but the import still fails; stop and produce a targeted blocker report
 
-Do not apply the package-relative import fix under #83 evidence-package work.
+Do not apply a runtime import-chain fix under #83 evidence-package work.
 
 - [ ] **Step 1.6: Record the publication/runtime alignment**
 
@@ -237,12 +241,13 @@ Verification:
 - `python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-core-split-governance-reconciliation-2026-05-19.md`
 - `openspec validate split-backend-core-modules-with-compatibility-wrappers --strict`
 
-## Task 3: Draft schema dual-directory closure record
+## Task 3: Draft schema dual-directory closure record (completed by Task 3.x)
 
 **Files:**
 - Create: `docs/reports/quality/backend-schema-dual-directory-closure-2026-05-19.md`
+- Implementation evidence: `docs/reports/quality/backend-schema-shim-closure-implementation-2026-05-20.md`
 
-- [ ] **Step 3.1: Record current directories and imports**
+- [x] **Step 3.1: Record current directories and imports**
 
 Collect current consumers of:
 - `web/backend/app/schema/`
@@ -250,11 +255,11 @@ Collect current consumers of:
 - `from app.schema`
 - `from app.schemas`
 
-- [ ] **Step 3.2: Decide canonical contract direction**
+- [x] **Step 3.2: Decide canonical contract direction**
 
-The closure record must decide whether `schemas/` remains canonical and whether `schema/` becomes a thin re-export shim.
+Decision recorded and implemented: `schemas/` remains canonical for validation models; `schema/` remains a thin compatibility shim. Do not delete the shim until external/generated-code consumers are audited.
 
-- [ ] **Step 3.3: Record migration and rollback criteria**
+- [x] **Step 3.3: Record migration and rollback criteria**
 
 Include:
 - import migration path
@@ -263,6 +268,8 @@ Include:
 - OpenAPI side effects, if any
 - tests to run
 - rollback path
+
+Completion status: `sequence-backend-architecture-unblocks` Task 3.x migrated the three direct legacy consumers, added canonical exports, kept compatibility exports, and verified `test_validation_models.py` `60 passed` plus import smoke for both canonical and compatibility paths.
 
 Verification:
 - `git diff --check -- docs/reports/quality/backend-schema-dual-directory-closure-2026-05-19.md`
@@ -301,7 +308,7 @@ Classify each domain as:
 
 - [ ] **Step 4.3: Defer runtime route/OpenAPI diff until Task 1 is clean**
 
-If `app.main` still cannot import, record route table and OpenAPI diff as pending. Do not invent runtime evidence. If only implementation-worktree evidence is available, cite it as external evidence and mark the closure record as `static-only pending runtime refresh`.
+If `app.main` still cannot import, record route table and OpenAPI diff as pending. Do not invent runtime evidence. If only implementation-worktree evidence is available, cite it as external evidence and mark the closure record as `static-only pending runtime refresh`. As of the 2026-05-20 runtime-unblock report, the import chain is healthy and route/OpenAPI refresh can proceed from the verified checkout.
 
 Verification:
 - `git diff --check -- docs/reports/quality/backend-api-flat-package-closure-records-2026-05-19.md`
@@ -605,7 +612,7 @@ Before approving this plan, verify that:
 Recommended execution after approval:
 
 1. Start Continuous Task C1 immediately as metadata hygiene.
-2. Execute Task 1 first to reconcile runtime smoke with #83 evidence-package scope.
+2. Treat runtime smoke reconciliation as complete via `sequence-backend-architecture-unblocks` Task 2.x, then continue with schema and route/OpenAPI evidence refresh.
 3. Execute Task 2 before any new Core helper split batch.
 4. Execute Tasks 3, 4, 5, 8, and 10 as Wave 2 evidence / decision records.
 5. Execute Tasks 6 and 7 as Wave 3 after Task 1 proves `app.main` imports successfully.
