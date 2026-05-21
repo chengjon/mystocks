@@ -3,9 +3,10 @@
 Date: 2026-05-21
 Parent issue: `#92`
 Track: D2 downstream decision rollup
-Base HEAD: `ae6ffd685cf6c66b51712f157baef5ebcb43c96d`
+Base HEAD: `cc62bb657127b83dffaa06617b3592457b24aabb`
 Prepared at: `2026-05-21T05:03:20Z`
-Status: downstream decision package rollup prepared; implementation remains locked
+Aligned at: `2026-05-21T05:31:00Z`
+Status: downstream decision package rollup prepared; review feedback absorbed; implementation remains locked
 
 > **历史文档说明**:
 > 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
@@ -37,17 +38,57 @@ It does not:
 | `ready-for-agent` | Absent |
 | Role | Parent decision issue for downstream implementation planning |
 
+## Review Alignment
+
+The current review feedback found no factual discrepancies in the rollup's PR
+chain, issue label state, base HEAD, or implementation boundary. It identified
+one low-risk completeness issue: the D2.2 row used narrative labels instead of
+explicit evidence filenames. That gap is addressed below by listing the four
+D2.2 evidence files directly.
+
+Additional cross-line project facts were supplied through
+`docs/reports/quality/five-line-work-summary-2026-05-21.md` as review input.
+At the time of this alignment that file was untracked in the root worktree, so
+the relevant facts are copied into this report as supporting context rather
+than treated as a tracked canonical evidence artifact.
+
 ## D2 Package Status
 
 | Track | State | Evidence | Implementation authority |
 |---|---|---|---|
 | D2 acceptance | Accepted | `docs/reports/quality/backend-openspec-issue92-downstream-split-acceptance-2026-05-21.md`; PR `#96` | No implementation authority |
 | D2.1 DI pilot design | Design packet prepared | `docs/reports/quality/backend-di-pilot-technical-pattern-detection-design-2026-05-21.md`; PR `#97` | No source edits; needs separate implementation approval |
-| D2.2 wrapper readiness | Decision lane closed | D2.2 readiness, D2.2a migration, D2.2b docs/API canonicalization, D2.2c retention/deletion decision package; PRs `#98`-`#101` | Wrapper deletion locked unless D2.2d is separately approved |
+| D2.2 wrapper readiness | Decision lane closed | `docs/reports/quality/backend-core-validation-wrapper-retirement-readiness-2026-05-21.md`; `docs/reports/quality/backend-core-validation-active-source-migration-2026-05-21.md`; `docs/reports/quality/backend-core-validation-docs-api-canonicalization-2026-05-21.md`; `docs/reports/quality/backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md`; PRs `#98`-`#101` | Wrapper deletion locked unless D2.2d is separately approved |
 | D2.3 trading route governance | Planning package prepared | `docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md`; PRs `#102` and `#103` | Route mutation locked |
 | D2.4 backup route ownership | Planning package prepared | `docs/reports/quality/backend-backup-route-ownership-planning-package-2026-05-21.md`; PR `#104` | Backup route mutation locked |
 | D2.5 control-plane OpenAPI docs | Planning package prepared | `docs/reports/quality/backend-control-plane-openapi-docs-planning-package-2026-05-21.md`; PR `#105` | docs/API or route mutation locked |
 | D2.6 PM2 stateful gate approval | Approval governance package prepared | `docs/reports/quality/backend-pm2-stateful-gate-approval-governance-2026-05-21.md`; PR `#106` | PM2 execution locked unless separately approved |
+
+## Cross-Line Support Facts
+
+These facts support the D2 rollup but do not change its authorization boundary:
+
+- `sequence-backend-architecture-unblocks` runtime unblock was reported valid
+  at clean HEAD `f97f2eb57`: `app.main` routes=`548`, health collect-only
+  `112 tests collected`, OpenAPI paths=`500`, operation IDs=`536`, duplicate
+  operation IDs=`0`.
+- That runtime evidence proves import, collect-only, and minimal OpenAPI smoke
+  health only. It does not close PM2/backend runtime gate, Core Batch 2,
+  endpoint retirement, or OpenSpec archive decisions.
+- The stale `data_lineage` import blocker is no longer a reason to block the
+  rollup. It was fixed on a separate implementation lane, outside issue `#83`
+  evidence-only scope.
+- The route/OpenAPI evidence after that unblock reported runtime routes=`548`,
+  runtime unique paths=`511`, schema-visible routes=`536`, hidden runtime
+  routes=`12`, endpoint modules=`98`, OpenAPI paths=`500`, OpenAPI
+  operations=`536`, duplicate operation IDs=`0`, and OpenAPI warnings=`0`.
+- The remaining `GET /metrics` duplicate runtime path/method is already
+  classified as a control-plane taxonomy item, not as an OpenAPI duplicate
+  operationId or deletion authorization.
+- miniQMT external evidence has advanced through raw/candidate acceptance,
+  validated-forward validator/preview/apply, manual promote to validated, and
+  authoritative-ready. It still does not authorize source cutover, Quantix
+  ClickHouse writes, backend promotion, or production application.
 
 ## Merged PR Chain
 

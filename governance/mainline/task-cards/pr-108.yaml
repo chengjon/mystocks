@@ -1,0 +1,112 @@
+version: "v0.2"
+
+task:
+  id: "pr-108"
+  title: "align issue 92 downstream rollup review feedback"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-rollup-review-alignment"
+  objective: "absorb review feedback and supporting cross-line facts into the issue #92 downstream rollup"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-issue92-downstream-rollup-review-alignment"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-issue92-rollup-review-alignment"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Evidence-only review alignment for issue #92 downstream rollup; no runtime source, frontend, tests, docs/api, OpenSpec, PM2, route, script, config, or service behavior changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-openspec-issue92-downstream-rollup-closeout-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-108.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "src/**"
+    - "docs/api/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+    - "scripts/**"
+    - "config/**"
+
+non_goals:
+  - "No backend runtime code modification"
+  - "No route registration change"
+  - "No OpenAPI schema exposure or operationId change"
+  - "No frontend consumer modification"
+  - "No test or fixture modification"
+  - "No docs/api modification"
+  - "No scripts or config modification"
+  - "No PM2 workflow execution"
+  - "No OpenSpec change/spec creation or modification"
+  - "No GitHub issue creation"
+  - "No movement of issue #92 or any downstream item to ready-for-agent"
+  - "No tracking of the untracked five-line summary artifact in this PR"
+
+acceptance:
+  checks:
+    - id: "d2-2-filenames-explicit"
+      command: "rollup report lists all four D2.2 evidence filenames explicitly"
+      required: true
+    - id: "support-facts-recorded"
+      command: "rollup report records review-input support facts without treating the untracked five-line summary as canonical evidence"
+      required: true
+    - id: "implementation-boundary-preserved"
+      command: "rollup report and task tree state that review alignment does not authorize implementation or ready-for-agent movement"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-openspec-issue92-downstream-rollup-closeout-2026-05-21.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-108.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Support facts from an untracked review input could be mistaken for canonical evidence"
+    - "Review alignment could be misread as implementation authorization"
+  rollback_plan: "revert the rollup report alignment, task-tree update, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "align issue #92 downstream rollup with review feedback and support facts"
+    modified_scope: "one evidence report, steward task tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no runtime, route, docs/api, PM2, or service behavior changes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "decision-only rollback by reverting this PR"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T05:31:00Z"
+    approval_note: "human maintainer supplied rollup review feedback and five-line work summary as review input; this task absorbs evidence-only clarifications without implementation authorization"
+    secondary_approved: false
