@@ -1,0 +1,111 @@
+version: "v0.2"
+
+task:
+  id: "pr-101"
+  title: "prepare validation wrapper retirement decision package"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-2c-validation-wrapper-decision"
+  objective: "prepare an evidence-only decision package for retaining or retiring app.core.validation_messages"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-core-wrapper-retirement-decision"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-d2-2c-decision-package"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "core"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Evidence-only wrapper retirement/retention decision package; no backend source, tests, docs/api, OpenSpec, PM2, frontend, route, or product behavior changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-101.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "docs/api/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "src/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No deletion of web/backend/app/core/validation_messages.py"
+  - "No backend source modification"
+  - "No docs/api modification"
+  - "No test modification"
+  - "No OpenSpec change/spec modification"
+  - "No route, OpenAPI runtime, PM2, or frontend behavior changes"
+  - "No movement of issue #92 or D2.2c to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "wrapper-exists"
+      command: "test -f web/backend/app/core/validation_messages.py"
+      required: true
+    - id: "active-source-import-scan"
+      command: "scan web/backend/app for app.core.validation_messages imports excluding the wrapper and require count 0"
+      required: true
+    - id: "docs-api-legacy-scan"
+      command: "! rg -n \"validation_messages|app\\.core\\.validation_messages\" docs/api"
+      required: true
+    - id: "compatibility-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= tests/unit/core/test_validation_messages_compat.py -q --no-cov"
+      required: true
+    - id: "boundary-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= tests/unit/core/test_validation_import_boundaries.py -q --no-cov"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-101.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A decision package could be misread as authorization to delete the wrapper"
+    - "Historical/governance references could be mistaken for active import consumers"
+  rollback_plan: "revert the decision package report, task-tree D2.2c row, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "prepare validation wrapper retirement/retention decision package"
+    modified_scope: "one evidence report, steward task tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "legacy wrapper retained; no runtime behavior changes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "decision-only rollback by reverting this PR"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T02:52:38Z"
+    approval_note: "human maintainer formally approved immediate D2.2c wrapper retirement/retention decision package with evidence-only and no-code-deletion boundaries"
+    secondary_approved: false
