@@ -66,6 +66,12 @@ Focused route tests SHOULD use a small async service double through
 on monkeypatching `TechnicalPatternDetectionService.detect_for_symbol` as the
 primary verification path for this pilot.
 
+The service double SHOULD match the current `detect_for_symbol` async signature
+exactly, including the request-facing `symbol` and `period` parameters. If the
+service interface changes during the pilot, the test double signature MUST be
+updated with the route dependency seam so the red/green test continues to verify
+the same contract that production code calls.
+
 ### Decision: No lifecycle expansion for the pilot
 
 The pilot is route-level DI only. Because the selected service has no approved

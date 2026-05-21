@@ -27,6 +27,9 @@
 ## 2. TDD Red
 
 - [ ] 2.1 Add a route-level test double with async `detect_for_symbol`.
+- [ ] 2.1a Confirm the test double's async `detect_for_symbol` signature
+      exactly matches the production service method signature used by the route
+      seam, including `symbol` and `period`.
 - [ ] 2.2 Add a public-route test that installs the double through
       `app.dependency_overrides`.
 - [ ] 2.3 Run the focused route test and confirm it fails for the expected

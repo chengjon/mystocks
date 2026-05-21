@@ -50,6 +50,8 @@ implementation scope.
   `docs/reports/quality/backend-di-pilot-technical-pattern-detection-design-2026-05-21.md`.
 - D2.1a plan:
   `docs/superpowers/plans/2026-05-21-d2-1a-technical-pattern-detection-di-pilot-implementation-authorization.md`.
+- Proposal review:
+  `openspec/changes/inject-technical-pattern-detection-service-di/proposal-review.md`.
 
 ## Approval Boundary
 
