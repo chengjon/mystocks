@@ -1,0 +1,95 @@
+version: v0.2
+task:
+  id: pr-115
+  title: record issue 92 next child lane selection recommendation
+  owner: main
+  created_at: "2026-05-21"
+
+mainline:
+  id: L1-issue92-next-child-lane-selection
+  objective: record the post-D2.1a recommendation for the next separate child lane without opening implementation authority
+  milestone_id: L2-architecture-governance-closeout
+  slice_id: L3-issue92-next-child-lane-selection
+
+classification:
+  task_type: cleanup
+  secondary_type: none
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: sequence-backend-architecture-unblocks
+  approval_status: approved
+
+function_tree:
+  domain_id: meta-governance
+  node_id: meta-governance-mainline
+  affected_entrypoints:
+    - governance
+  update_status: not-needed
+  secondary_domains: []
+  exemption_reason: "Pure recommendation report for issue #92 next child lane selection; no runtime, route, API, test, function-tree, or taxonomy entrypoint changes are present."
+
+scope:
+  allowed_paths:
+    - docs/reports/quality/backend-openspec-issue92-next-child-lane-selection-2026-05-21.md
+    - governance/mainline/task-cards/pr-115.yaml
+  forbidden_paths:
+    - web/**
+    - src/**
+    - tests/**
+    - docs/api/**
+    - openspec/**
+    - scripts/**
+    - config/**
+    - .planning/**
+
+non_goals:
+  - No source code modification
+  - No test code modification
+  - No OpenSpec proposal, spec, or task mutation
+  - No steward-tree mutation
+  - No route path, tag, operationId, OpenAPI exposure, or response contract change
+  - No function-tree taxonomy or catalog change
+  - No issue #92 ready-for-agent movement
+  - No GitHub issue creation
+  - No second service DI pilot authorization
+
+acceptance:
+  checks:
+    - id: markdown-governance
+      command: python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-openspec-issue92-next-child-lane-selection-2026-05-21.md governance/mainline/task-cards/pr-115.yaml
+      required: true
+    - id: mainline-scope-gate
+      command: python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-115.yaml
+      required: true
+    - id: diff-check
+      command: git diff --check
+      required: true
+
+risk_and_rollback:
+  risks:
+    - PR number drift would require renaming this task card before CI can pass.
+  rollback_plan: "revert the recommendation report and this PR task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: recommend the next issue #92 child lane after D2.1a closure
+    modified_scope: one recommendation report and this governance PR task card only
+    dependency_changes: none
+    legacy_logic_impact: none
+    rollback_ready: "yes"
+    risk_and_rollback_point: revert this governance-only recommendation commit
+
+governance:
+  phase: phase_a_pr_hard_gate
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: main
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: main
+    approved_at: "2026-05-21T21:12:00+08:00"
+    approval_note: "human maintainer requested continuing after D2.1a steward closeout; this report only ranks next child lane candidates and does not authorize implementation"
+    secondary_approved: false
