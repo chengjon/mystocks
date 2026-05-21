@@ -23,8 +23,8 @@
 ## 3. Implementation Batches
 
 - [x] 3.1 Move low-risk pure helpers first.
-- [ ] 3.2 Introduce same-name packages with `__init__.py` re-exports.
-- Note: Batch 2 remains blocked until Task 2 reconciliation is accepted; owner is the current review-thread human maintainer and the scope is governance-only, not implementation.
+- [x] 3.2 Introduce same-name packages with `__init__.py` re-exports.
+- Note: issue #83 shared C/E/F evidence was accepted by the human maintainer in the current review thread. Task 3.2 is complete for the current validation-helper package/wrapper evidence recorded in `docs/reports/quality/backend-core-split-task3-2-disposition-2026-05-21.md`; this does not authorize any additional Core helper Batch 2 implementation.
 - [x] 3.3 Move renamed modules with old-path wrapper modules.
 - [x] 3.4 Avoid broad database/security/socketio/logger moves until import smoke, monkeypatch evidence, and E lifecycle coordination are ready.
 
