@@ -1,0 +1,100 @@
+version: "v0.2"
+
+task:
+  id: "pr-117"
+  title: "draft backend control-plane openapi docs proposal"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-5-control-plane-openapi-docs"
+  objective: "draft D2.5 control-plane OpenAPI docs OpenSpec proposal without implementation authorization"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-control-plane-openapi-docs-proposal"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "stabilize-backend-control-plane-openapi-docs"
+  approval_status: "pending"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "D2.5 control-plane OpenAPI docs proposal only; no runtime entrypoint, route, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-control-plane-openapi-docs-openspec-proposal-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-117.yaml"
+    - "openspec/changes/stabilize-backend-control-plane-openapi-docs/**"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, or runtime behavior changes"
+  - "No route path, router registration, operationId, response contract, probe URL, docs UI route, OpenAPI schema route, or include_in_schema changes"
+  - "No adding /health/readiness, retiring /api/health/ready, or changing /metrics runtime registration"
+  - "No movement of issue #92 to ready-for-agent"
+  - "No downstream implementation issue creation"
+  - "No PM2 stateful workflow execution"
+
+acceptance:
+  checks:
+    - id: "openspec-strict"
+      command: "openspec validate stabilize-backend-control-plane-openapi-docs --strict"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-control-plane-openapi-docs-openspec-proposal-2026-05-21.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-117.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this proposal is read as docs/API or route implementation authorization, issue #92 governance boundaries are broken"
+    - "If /metrics, /health/readiness, /api/health/ready, or include_in_schema changes are treated as allowed here, control-plane route behavior can drift without approval"
+  rollback_plan: "revert this PR and return D2.5 to planning-package-only state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "draft D2.5 control-plane OpenAPI docs OpenSpec proposal"
+    modified_scope: "OpenSpec proposal, steward tree, governance report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is proposal/evidence bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if OpenSpec validation, markdown governance, or mainline scope checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T14:20:00Z"
+    approval_note: "maintainer accepted D2.5 control-plane OpenAPI docs stabilization as a proposal-only lane; this PR drafts governance and does not authorize implementation"
+    secondary_approved: false
