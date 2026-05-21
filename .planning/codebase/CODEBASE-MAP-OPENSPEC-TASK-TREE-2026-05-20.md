@@ -112,13 +112,16 @@ CODEBASE-MAP Architecture Remediation Program
 │
 ├── D2. Published Decision Issue: backend OpenSpec issue15
 │   ├── Source: https://github.com/chengjon/mystocks/issues/92
-│   ├── State: approved-ready-for-downstream
+│   ├── State: downstream-split-draft-prepared
 │   ├── Role: Human decision/design issue for post-approval implementation planning
 │   ├── Current fact: issue #83 accepted and closed; Core split OpenSpec archived;
 │   │                 issue #92 has `ready-for-downstream`, no `ready-for-agent`,
-│   │                 and no implementation authority
-│   └── Next gate: Draft human decision record / downstream issue split before
-│                  any implementation issue is moved to `ready-for-agent`
+│   │                 and no implementation authority; downstream split draft is
+│   │                 recorded in
+│   │                 `backend-openspec-issue92-downstream-decision-split-2026-05-21.md`
+│   └── Next gate: Human review of the downstream split draft before creating
+│                  child decision issues, OpenSpec proposals, or any
+│                  implementation issue marked `ready-for-agent`
 │
 ├── E. Candidate Branch: close-backend-schema-dual-directory
 │   ├── Source evidence: backend-schema-dual-directory-closure-2026-05-19.md
@@ -222,6 +225,7 @@ review, PR review, or OpenSpec archive review.
 | PR `#90` Core split OpenSpec archive merge | D | The completed Core split OpenSpec change is archived and its deltas are reflected in canonical specs on `wip/root-dirty-20260403` | Reviewed/pass in current thread: final PR head `09fefbfcb` reached `MERGEABLE` / `CLEAN`; GitHub checks `Mainline Governance Gate` and `check-compliance` succeeded; `weekly-full-scan` skipped; merge commit is `fcc3949fe7a40052e727cbd608c746f660824b38` | `https://github.com/chengjon/mystocks/pull/90`; `openspec/changes/archive/2026-05-21-split-backend-core-modules-with-compatibility-wrappers/`; Graphiti episode `2da09150-9b02-4c43-b22a-843d643deef5` | Treat this OpenSpec branch as closed; any future Core split implementation needs a new concrete plan |
 | Issue15 publication as GitHub issue `#92` | D2 | The previously blocked issue15 decision/design issue is now published for human decision after issue `#83` acceptance and Core split archive | Reviewed/pass in current thread: issue `#92` is `OPEN`; labels are exactly `enhancement`, `ready-for-human`; body contains `UNBLOCKED_BY`; body does not contain `BLOCKED_BY_TODO`; `ready-for-agent` label is absent | `https://github.com/chengjon/mystocks/issues/92`; `docs/reports/quality/backend-openspec-issue15-publication-status-2026-05-21.md`; Graphiti episode `1d858c24-68b3-4ee0-9f9b-4b870fdc6000` | Await human decision record; do not move issue `#92` to `ready-for-agent` before a concrete downstream implementation scope is approved |
 | Issue `#92` approval for downstream decision work | D2 | Human maintainer approval recorded in the current review thread and commented on issue `#92`; downstream decision splitting may proceed | Reviewed/pass in current thread: issue `#92` remains `OPEN`; labels now include `enhancement`, `ready-for-human`, `ready-for-downstream`; `ready-for-agent` remains absent; approval comment is `https://github.com/chengjon/mystocks/issues/92#issuecomment-4503757722` | `docs/reports/quality/backend-openspec-issue92-approval-record-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Draft decision record / split downstream issues; no implementation issue may be moved to `ready-for-agent` before that decision record |
+| Issue `#92` downstream decision split draft | D2 | Draft split prepared for human review: D2.1 DI pilot candidate, D2.2 Core validation wrapper-retirement readiness, D2.3 route governance, D2.4 backup route ownership, D2.5 control-plane OpenAPI docs, and D2.6 PM2 stateful gate approval | Review-ready draft only: issue `#92` remains `OPEN`; `ready-for-agent` remains absent; no backend, OpenSpec change, route, or test mutation is authorized by the draft | `docs/reports/quality/backend-openspec-issue92-downstream-decision-split-2026-05-21.md` | Human review and explicit acceptance or revision of the split before any child issue/proposal is created |
 
 ## OpenSpec Branch Register
 
@@ -230,7 +234,7 @@ review, PR review, or OpenSpec archive review.
 | `sequence-backend-architecture-unblocks` | `archived-merged` | Master execution plan | Runtime triage, schema closure, freshness, singleton matrix, error-contract verification | First gate branch for runtime unblock and evidence refresh | Archived by PR `#86`; future work must use the archived evidence as baseline and open a follow-up branch for new implementation |
 | `canonicalize-backend-route-unified-response-contracts` | `archived-merged` | `sequence-backend-architecture-unblocks` Task 8.8 | UnifiedResponse contract guard blocker: 27 errors across 4 changed route files now reduced to 0 | Dedicated route-contract migration for `data_quality.py`, `indicator_cache.py`, `signal_history_response.py`, and `technical_analysis.py`; implementation merged via PR `#85` | Archived by PR `#86`; keep implementation notes as follow-up candidates, not blockers |
 | `split-backend-core-modules-with-compatibility-wrappers` | `archived-merged` | Existing OpenSpec line | Core split reconciliation | Core helper split continuation | Archived by PR `#90`; future Core split work requires a new concrete implementation plan and approval |
-| `github-issue-92-backend-openspec-issue15` | `approved-ready-for-downstream` | Current review-thread approval and issue `#83` acceptance | Post-approval implementation decision boundary | Decision/design issue only; no implementation work | Draft human decision record / downstream split before creating or moving any implementation issue |
+| `github-issue-92-backend-openspec-issue15` | `downstream-split-draft-prepared` | Current review-thread approval, issue `#83` acceptance, and downstream split draft | Post-approval implementation decision boundary | Decision/design issue only; no implementation work | Human review of the split draft before creating or moving any child issue/proposal |
 | `close-backend-schema-dual-directory` | `candidate` | Master execution plan | Schema dual-directory closure | Schema exports, consumer migration, shim retirement decision | Create only after `sequence-backend-architecture-unblocks` schema tasks are accepted |
 | `refresh-backend-route-openapi-governance` | `candidate-unblocked` | Master execution plan | API flat/package closure records | Route table, OpenAPI, operationId, probe matrix | Can be prepared after Task 5.x route/OpenAPI refresh evidence is recorded |
 | `define-backend-service-seams-and-singleton-pilots` | `candidate` | Master execution plan | Singleton lifecycle routing matrix | Service seam definition, interface/test-double pilot strategy | Create as a design proposal after complete classification |
