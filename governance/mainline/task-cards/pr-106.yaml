@@ -1,0 +1,115 @@
+version: "v0.2"
+
+task:
+  id: "pr-106"
+  title: "prepare D2.6 PM2 stateful gate approval governance"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-6-pm2-stateful-gate-governance"
+  objective: "prepare an evidence-only approval governance package for future PM2 stateful gates"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-pm2-stateful-gate-approval-governance"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-d2-6-approval-governance-package"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Evidence-only PM2 stateful gate approval governance package; no runtime source, frontend, tests, docs/api, OpenSpec, PM2, route, or service behavior changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-pm2-stateful-gate-approval-governance-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-106.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "src/**"
+    - "docs/api/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+    - "scripts/**"
+    - "config/**"
+
+non_goals:
+  - "No PM2 workflow execution"
+  - "No pm2 stop/delete/start/list command execution as part of this task"
+  - "No backend runtime code modification"
+  - "No route registration change"
+  - "No OpenAPI schema exposure or operationId change"
+  - "No frontend consumer modification"
+  - "No test or fixture modification"
+  - "No docs/api modification"
+  - "No scripts or config modification"
+  - "No OpenSpec change/spec creation or modification"
+  - "No creation of approve-backend-pm2-stateful-gate as a git branch"
+  - "No movement of issue #92 or any downstream item to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "stateful-classification-recorded"
+      command: "report records why run_pm2_integration_workflow.sh gate/regression/all are stateful"
+      required: true
+    - id: "prior-closure-recorded"
+      command: "report records that health/status task 4.7 was already closed by backend-health-status-pm2-gate-2026-05-18.md"
+      required: true
+    - id: "approval-fields-recorded"
+      command: "report records required fields for future explicit approval and named-equivalent approval"
+      required: true
+    - id: "no-pm2-execution-boundary"
+      command: "report and task tree state that this batch does not execute PM2 commands"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-pm2-stateful-gate-approval-governance-2026-05-21.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-106.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A future agent could treat this approval governance package as permission to run a stateful PM2 workflow"
+    - "A named equivalent could be accepted without stating which restart or E2E fidelity it does not prove"
+  rollback_plan: "revert the D2.6 approval governance report, task-tree update, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "prepare D2.6 PM2 stateful gate approval governance"
+    modified_scope: "one evidence report, steward task tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no PM2, runtime, route, docs/api, or service behavior changes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "decision-only rollback by reverting this PR"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T04:50:03Z"
+    approval_note: "human maintainer asked to continue after D2.5; D2.6 is limited to PM2 stateful gate approval strategy and residual runtime gate governance without PM2 execution"
+    secondary_approved: false
