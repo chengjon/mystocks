@@ -139,26 +139,29 @@ CODEBASE-MAP Architecture Remediation Program
 ├── D2.1a. TechnicalPatternDetectionService DI Pilot Implementation Authorization
 │   ├── Source evidence:
 │   │   `docs/superpowers/plans/2026-05-21-d2-1a-technical-pattern-detection-di-pilot-implementation-authorization.md`
-│   ├── State: implementation-authorization-plan-prepared
+│   ├── State: implementation-authorization-consumed
 │   ├── Role: Concrete implementation package for the first DI lifecycle pilot
-│   ├── Current fact: planned write scope is limited to
+│   ├── Current fact: planned write scope was limited to
 │   │                 `web/backend/app/api/_technical_patterns_router.py` and
 │   │                 `web/backend/tests/test_technical_patterns_router_regressions.py`;
 │   │                 `TechnicalPatternDetectionService` internals remain
 │   │                 unchanged; GitNexus impact is LOW for both the service
 │   │                 class and `_detect_patterns_for_symbol`
-│   └── Next gate: Human approval to create a separate D2.1a implementation
-│                  issue or OpenSpec branch; only that child item may later be
-│                  moved to `ready-for-agent`
+│   └── Next gate: Completed by D2.1a.1; no additional D2.1a implementation
+│                  authority remains. Any second DI pilot must start as a
+│                  separate approved proposal or implementation child item
 │
 ├── D2.1a.1. TechnicalPatternDetectionService DI OpenSpec Child Branch
 │   ├── Source evidence:
 │   │   `openspec/changes/inject-technical-pattern-detection-service-di/`
-│   ├── State: implementation-ready-for-review
+│   ├── State: implementation-and-governance-closed
 │   ├── Role: Convert the D2.1a authorization plan into a separately
 │   │         reviewable implementation child branch
-│   ├── Current fact: Route-level DI implementation is complete in the
-│   │                 implementation branch: `_technical_patterns_router.py`
+│   ├── Current fact: Route-level DI implementation merged in PR `#112`
+│   │                 (`80582643578d587ead81ccb3d23dcd2a52668dba`), and final
+│   │                 OpenSpec checklist governance merged in PR `#113`
+│   │                 (`c7e263b8fcdeea4fc952a86d64ac555ca6dde6ce`).
+│   │                 `_technical_patterns_router.py`
 │   │                 now exposes `get_technical_pattern_detection_service()`,
 │   │                 `detect_patterns()` receives the service through
 │   │                 `Depends`, and focused public-route tests use
@@ -168,10 +171,11 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 green suite reports route regression `9 passed`,
 │   │                 service+route `19 passed`, ruff touched files passed,
 │   │                 placeholder-env `app.main` import passed, OpenSpec strict
-│   │                 validate passed
-│   └── Next gate: PR review / merge decision; keep issue `#92` as parent
-│                  decision context and do not use it as the implementation
-│                  vehicle
+│   │                 validate passed; PR `#113` records task `5.3` evidence
+│   │                 back to issue `#92`
+│   └── Next gate: None for D2.1a. Keep issue `#92` as parent decision context;
+│                  future service DI work returns to branch `G` and requires a
+│                  new approved child proposal or implementation issue
 │
 ├── D2.2. Core Validation Wrapper Retirement Readiness
 │   ├── Source evidence:
@@ -282,19 +286,18 @@ CODEBASE-MAP Architecture Remediation Program
 ├── D2 Closeout. Downstream Decision Rollup
 │   ├── Source evidence:
 │   │   `backend-openspec-issue92-downstream-rollup-closeout-2026-05-21.md`
-│   ├── State: downstream-rollup-review-aligned
+│   ├── State: downstream-rollup-review-aligned-with-d2-1a-closed
 │   ├── Role: Summarize D2.1-D2.6 as a complete downstream decision package
-│   ├── Current fact: PRs `#96`-`#106` are merged; issue `#92` remains `OPEN`
+│   ├── Current fact: PRs `#96`-`#113` are merged; issue `#92` remains `OPEN`
 │   │                 with `ready-for-human` and `ready-for-downstream`, but no
 │   │                 `ready-for-agent`; the first recommended true
-│   │                 implementation lane is a separate D2.1a
-│   │                 `TechnicalPatternDetectionService` DI pilot issue; review
-│   │                 feedback has been absorbed by making D2.2 evidence files
-│   │                 explicit and recording cross-line support facts without
-│   │                 expanding implementation authority
-│   └── Next gate: Human approval to create the first concrete implementation
-│                  issue or OpenSpec proposal; do not treat this rollup as
-│                  implementation authorization
+│   │                 implementation lane, D2.1a
+│   │                 `TechnicalPatternDetectionService` DI pilot, is now closed
+│   │                 end-to-end; review feedback was absorbed without expanding
+│   │                 implementation authority
+│   └── Next gate: Human selection of the next separate child lane. Do not treat
+│                  this rollup, D2.1a closure, or issue `#92` itself as
+│                  authorization for additional implementation
 │
 ├── E. Candidate Branch: close-backend-schema-dual-directory
 │   ├── Source evidence: backend-schema-dual-directory-closure-2026-05-19.md
@@ -362,6 +365,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-external-evidence-alignment-2026-05-19.md` | J | External evidence only | Keep non-backend-blocking unless future approved plan changes that boundary |
 | `codebase-map-freshness-2026-05-19.md` | A, B, C | Freshness rule established | Every future evidence entry records current-head, commit-scoped, or stale-aware status |
 | `backend-error-contract-completion-verification-2026-05-19.md` | I | P3-C5 / #77 main migration resolved | Do not reopen old live-count backlog without current-head contradiction |
+| `backend-technical-pattern-di-pilot-implementation-2026-05-21.md` | D2.1a.1 | First DI lifecycle pilot implementation merged in PR `#112`; route-level provider and dependency override test seam are in place | D2.1a implementation closed; do not infer a second DI pilot from this evidence |
+| `inject-technical-pattern-detection-service-di` task `5.3` closeout | D2.1a.1 | Final OpenSpec checklist governance merged in PR `#113`; issue `#92` received implementation and final governance closeout comments | D2.1a is 100% closed; future DI work requires a new approved child lane |
 
 ## Completed And Reviewed Ledger
 
@@ -412,7 +417,9 @@ review, PR review, or OpenSpec archive review.
 | D2.4 Backup route ownership planning package | D2.4 | Backup route ownership remains a dedicated proposal candidate, not a trading or generic route cleanup lane | Planning/evidence only: current smoke at HEAD `553e71a90` reports routes=`548`, OpenAPI paths=`500`, backup candidate routes=`13`, schema-exposed=`13`, backup OpenAPI paths=`13`, backup operations=`13`, duplicate backup operationIds=`0`; `cleanup_old_backups.py` owns cleanup plus health routes; no route, OpenAPI, source, frontend, test, docs/API, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-backup-route-ownership-planning-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate backup route ownership proposal or implementation issue before backup route mutation |
 | D2.5 Control-plane OpenAPI docs planning package | D2.5 | Control-plane OpenAPI docs stabilization remains a dedicated documentation/probe governance lane | Planning/evidence only: current smoke at HEAD `b39b7b3ee` reports routes=`548`, OpenAPI paths=`500`, broad control/status candidate routes=`128`, focused duplicate operationIds=`0`, `/health/readiness` absent, `/api/strategy-mgmt/{path:path}` runtime-only hidden, and `/metrics` as the focused duplicate runtime path/method; no route, OpenAPI, docs/API, source, frontend, test, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-control-plane-openapi-docs-planning-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate control-plane OpenAPI docs proposal or documentation issue before docs/API or route mutation |
 | D2.6 PM2 stateful gate approval governance package | D2.6 | Future PM2 stateful gate execution requires explicit approval or an approved named equivalent; issue `#92` remains a decision issue, not an execution issue | Governance/evidence only: health/status task `4.7` is already closed by `backend-health-status-pm2-gate-2026-05-18.md`; `run_pm2_integration_workflow.sh` includes stateful `pm2 stop all` / `pm2 delete all`; no PM2 command, runtime code, route, OpenAPI, docs/API, frontend, test, or OpenSpec mutation is authorized | `docs/reports/quality/backend-pm2-stateful-gate-approval-governance-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; create `approve-backend-pm2-stateful-gate` or a named-equivalent approval runbook only when a future workline needs a fresh PM2 run |
-| D2 downstream decision rollup closeout | D2 closeout | D2.1-D2.6 downstream packages are summarized as a complete decision package; issue `#92` remains a parent decision issue | Rollup/evidence only: PRs `#96`-`#106` are merged; issue `#92` is `OPEN` with `ready-for-human` and `ready-for-downstream`; `ready-for-agent` remains absent; first recommended true implementation lane is a separate D2.1a `TechnicalPatternDetectionService` DI pilot issue; review alignment made D2.2 evidence filenames explicit and copied current cross-line support facts without expanding authority | `docs/reports/quality/backend-openspec-issue92-downstream-rollup-closeout-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human decision whether to create a concrete D2.1a implementation issue or OpenSpec branch; this rollup does not authorize implementation |
+| D2 downstream decision rollup closeout | D2 closeout | D2.1-D2.6 downstream packages are summarized as a complete decision package; issue `#92` remains a parent decision issue | Rollup/evidence only: PRs `#96`-`#113` are merged; issue `#92` is `OPEN` with `ready-for-human` and `ready-for-downstream`; `ready-for-agent` remains absent; first recommended true implementation lane, D2.1a `TechnicalPatternDetectionService` DI pilot, is now closed end-to-end | `docs/reports/quality/backend-openspec-issue92-downstream-rollup-closeout-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92`; PRs `#112` and `#113` | Human decision whether to create the next concrete child issue or OpenSpec branch; this rollup does not authorize implementation |
+| D2.1a TechnicalPatternDetectionService DI implementation | D2.1a.1 | First service-tier route-level DI pilot merged; `_technical_patterns_router.py` now exposes `get_technical_pattern_detection_service()`, `detect_patterns()` receives the service through `Depends`, and focused route tests use `app.dependency_overrides` | Reviewed/pass in current thread: PR `#112` checks passed, merge commit `80582643578d587ead81ccb3d23dcd2a52668dba`; route regression `9 passed`; service+route `19 passed`; ruff passed; placeholder-env `app.main` import passed; OpenSpec strict valid; mainline scope gate passed; GitNexus compare low risk with `0` changed symbols and `0` affected processes | `https://github.com/chengjon/mystocks/pull/112`; `docs/reports/quality/backend-technical-pattern-di-pilot-implementation-2026-05-21.md`; `openspec/changes/inject-technical-pattern-detection-service-di/` | D2.1a final OpenSpec checklist governance closeout |
+| D2.1a final OpenSpec checklist governance closeout | D2.1a.1 | OpenSpec task `5.3` marked complete with issue `#92` closeout comment evidence; D2.1a is closed from implementation plus checklist governance perspectives | Reviewed/pass in current thread: PR `#113` checks passed, merge commit `c7e263b8fcdeea4fc952a86d64ac555ca6dde6ce`; changed files limited to `tasks.md` and `pr-113.yaml`; mainline scope gate changed files=`2`, violations=`0`; GitNexus compare low risk with `0` changed symbols and `0` affected processes | `https://github.com/chengjon/mystocks/pull/113`; `https://github.com/chengjon/mystocks/issues/92#issuecomment-4508297089`; `openspec/changes/inject-technical-pattern-detection-service-di/tasks.md` | No further D2.1a work; select a new approved child lane before any additional implementation |
 
 ## OpenSpec Branch Register
 
