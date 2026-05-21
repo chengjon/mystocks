@@ -141,17 +141,21 @@ domains:
         label: "2.3 技术形态识别"
         coverage_paths:
           - "src/advanced_analysis/technical_analyzer/**"
+          - "web/backend/app/api/_technical_patterns_router.py"
           - "web/backend/app/api/technical/**"
+          - "web/backend/tests/test_technical_patterns_router_regressions.py"
         entrypoints:
           governance:
             - "docs/FUNCTION_TREE.md"
           api:
+            - "web/backend/app/api/_technical_patterns_router.py"
             - "web/backend/app/api/technical/**"
           frontend:
             - "web/frontend/src/views/technical/**"
           core:
             - "src/advanced_analysis/technical_analyzer/**"
           tests:
+            - "web/backend/tests/test_technical_patterns_router_regressions.py"
             - "tests/e2e/technical-analysis.spec.ts"
           operations:
             - "docs/testing/README.md"

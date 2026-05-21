@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from typing import get_args
 
-from fastapi import APIRouter, Path, Query, status
+from fastapi import APIRouter, Depends, Path, Query, status
 
 from app.core.exceptions import BusinessException
 
@@ -57,10 +57,18 @@ TECHNICAL_PATTERN_RESPONSES = {
 }
 
 
-async def _detect_patterns_for_symbol(symbol: str, period: str) -> list[PatternDetection]:
+def get_technical_pattern_detection_service() -> TechnicalPatternDetectionService:
+    """Return the technical pattern detection service for route-level DI."""
+    return TechnicalPatternDetectionService()
+
+
+async def _detect_patterns_for_symbol(
+    symbol: str,
+    period: str,
+    service: TechnicalPatternDetectionService,
+) -> list[PatternDetection]:
     """Return reviewed pattern detections for the requested symbol and period."""
     try:
-        service = TechnicalPatternDetectionService()
         return await service.detect_for_symbol(symbol=symbol, period=period)
     except BusinessException:
         raise
@@ -96,11 +104,16 @@ async def detect_patterns(
         description="检测周期，仅支持 daily、weekly、monthly；大小写不敏感。",
         json_schema_extra={"enum": list(SUPPORTED_PATTERN_PERIODS)},
     ),
+    service: TechnicalPatternDetectionService = Depends(get_technical_pattern_detection_service),
 ) -> UnifiedResponse[PatternDetectionData]:
     """返回指定标的在给定周期下的 reviewed 技术形态检测结果。"""
     normalized_symbol = symbol.upper()
     normalized_period = _normalize_pattern_period(period)
-    detections = await _detect_patterns_for_symbol(symbol=normalized_symbol, period=normalized_period)
+    detections = await _detect_patterns_for_symbol(
+        symbol=normalized_symbol,
+        period=normalized_period,
+        service=service,
+    )
     payload = PatternDetectionData(
         status="available" if detections else "empty",
         symbol=normalized_symbol,
