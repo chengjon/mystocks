@@ -75,13 +75,13 @@ Recorded MyStocks-side operator-supplied statuses:
 Remaining work is external follow-up:
 
 - Quantix validated forward `quantix_regression` evidence has since been accepted by miniQMT and is no longer the blocking follow-up.
-- MyStocks validated forward `mystocks_dry_run` evidence for the `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e` identity remains a separate track if authoritative-ready promotion becomes the target.
-- miniQMT manual promote to `validated` remains an owner/operator gate after required evidence is accepted.
-- Authoritative-ready remains a manual promotion gate with rollback/fallback constraints.
+- MyStocks validated forward `mystocks_dry_run` evidence for the `payload_hash=268b62bb0fb0891833ef1998d4993d6531cc6a9d84aaecb911da0cd559d2357e` identity has now been generated and accepted by miniQMT.
+- miniQMT manual promote beyond `validated` to `authoritative-ready` has since been completed.
+- Remaining miniQMT owner/operator gates are authoritative approval and rollback/fallback readiness.
 
 See `docs/reports/evidence/miniqmt/2026-05-18-external-followups.md` for the external follow-up tracker. That tracker is not a MyStocks implementation backlog for the completed raw/candidate `mystocks_dry_run` slot.
 
-MyStocks evidence apply does not imply source cutover, Quantix ClickHouse writes, or automatic authoritative-ready promotion.
+MyStocks evidence apply does not imply source cutover, Quantix ClickHouse writes, or automatic final `authoritative` approval.
 
 ## Verification Refresh
 
@@ -105,5 +105,5 @@ Use this checklist for review handoff:
 - Confirm `mystocks_dry_run` evidence is bound only to the raw/candidate identity `payload_hash=61eedd9cd029f6c0a3324b3e66be0d9b83402279cbd0aed75885459822ec13d1`.
 - Confirm `operator-supplied-miniqmt-acceptance-status.json` remains an operator-supplied audit snapshot and not a miniQMT business-state source.
 - Confirm Quantix regression evidence and validated forward identity evidence remain separate external follow-up tracks.
-- Confirm authoritative-ready remains an explicit manual gate with rollback/fallback constraints.
+- Confirm final `authoritative` remains an explicit owner/operator approval gate with rollback/fallback constraints.
 - Re-run focused checks if needed: `pytest tests/unit/adapters/test_miniqmt_market_data.py -q --no-cov`, `ruff check src/adapters/miniqmt_market_data.py scripts/market_data/run_miniqmt_controlled_evidence.py tests/unit/adapters/test_miniqmt_market_data.py`, and `openspec validate add-miniqmt-market-data-controlled-evidence-consumer --strict`.
