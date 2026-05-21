@@ -8,11 +8,14 @@
 
 ## Status
 
-- Status: decision-package-prepared-for-review
+- Status: decision-package-reviewed-accepted
 - OpenSpec change: `define-backend-backup-route-ownership`
 - Parent decision issue: GitHub issue `#92`
 - Current HEAD: `e6d576ccc26f7d2baa89b77f74da6b09bb57c103`
 - Evidence generated at: `2026-05-21T18:46:13.961529Z`
+- Review artifact:
+  `docs/reports/quality/backend-backup-route-ownership-decision-package-2026-05-22-review.md`
+- Review verdict: `APPROVE`
 - Execution mode: governance/evidence only
 
 This package executes the D2.4 evidence tasks for backup route ownership. It
@@ -30,8 +33,9 @@ issue `#92` to `ready-for-agent`.
 | Artifact | Role | Notes |
 |---|---|---|
 | `.planning/codebase/generated/backup-route-ownership-evidence-2026-05-22.json` | Current-head route/OpenAPI/consumer/static evidence | Generated from `app.main` and `app.openapi()` with placeholder governance env; no server or PM2 process was started |
+| `docs/reports/quality/backend-backup-route-ownership-decision-package-2026-05-22-review.md` | Review artifact | Verdict `APPROVE`; no issues found |
 | `openspec/changes/define-backend-backup-route-ownership/tasks.md` | D2.4 task checklist | Updated only for evidence and decision-package tasks that are complete |
-| `.planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md` | Steward tree | Updated to mark D2.4 as decision-package-prepared-for-review |
+| `.planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md` | Steward tree | Updated to mark D2.4 as decision-package-reviewed-accepted |
 
 ## Authorization Boundary
 
@@ -261,8 +265,6 @@ Completed in this package:
 
 Still pending:
 
-- Human review of this D2.4 decision package
-- Steward tree update after review acceptance
 - Any implementation lane, write scope, tests, or rollback plan for future
   backup route changes
 
