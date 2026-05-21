@@ -248,7 +248,7 @@ async def create_order(order: OrderRequest):
 
 ```python
 from app.core.validators import TradingValidator
-from app.core.validation_messages import CommonMessages
+from app.core.validation import CommonMessages
 
 @router.post("/trade/orders")
 async def create_order(order: OrderRequest):

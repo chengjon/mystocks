@@ -11,12 +11,12 @@
 
 ## 📦 模块概览
 
-### 1. `validation_messages.py` - 中文错误消息常量
+### 1. `app.core.validation` - 中文错误消息常量
 
 提供统一的中文错误消息，确保用户友好的错误提示。
 
 ```python
-from app.core.validation_messages import (
+from app.core.validation import (
     CommonMessages,
     MarketMessages,
     TechnicalMessages,
@@ -51,7 +51,7 @@ from app.core.validators import (
 ```python
 from pydantic import BaseModel, Field, field_validator
 from app.core.validators import StockSymbolValidator
-from app.core.validation_messages import CommonMessages
+from app.core.validation import CommonMessages
 
 class StockRequest(BaseModel):
     """股票查询请求"""
@@ -118,7 +118,7 @@ class DateRangeRequest(BaseModel):
 from pydantic import BaseModel, Field, field_validator
 from decimal import Decimal
 from app.core.validators import TradingValidator
-from app.core.validation_messages import CommonMessages
+from app.core.validation import CommonMessages
 
 class OrderRequest(BaseModel):
     """下单请求"""

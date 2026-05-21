@@ -138,14 +138,14 @@ CODEBASE-MAP Architecture Remediation Program
 ├── D2.2. Core Validation Wrapper Retirement Readiness
 │   ├── Source evidence:
 │   │   `backend-core-validation-wrapper-retirement-readiness-2026-05-21.md`
-│   ├── State: active-source-migration-complete
+│   ├── State: docs-api-canonicalization-complete
 │   ├── Role: Decide whether `app.core.validation_messages` can retire
 │   ├── Current fact: D2.2a migrated active source consumers in `validators.py`
 │   │                 and `error_codes.py` to `app.core.validation`; wrapper
-│   │                 remains because docs and compatibility tests still use
-│   │                 the legacy path
-│   └── Next gate: D2.2b documentation canonicalization or explicit waiver;
-│                  wrapper deletion stays locked
+│   │                 remains because compatibility-test coverage and explicit
+│   │                 deletion approval still require a separate decision
+│   └── Next gate: D2.2c wrapper-retirement decision or explicit retention;
+│                  wrapper deletion stays locked until then
 │
 ├── D2.2a. Core Validation Active Source Consumer Migration
 │   ├── Source evidence:
@@ -154,8 +154,19 @@ CODEBASE-MAP Architecture Remediation Program
 │   ├── Role: Move active source consumers to canonical `app.core.validation`
 │   ├── Current fact: active source legacy imports excluding the wrapper are `0`;
 │   │                 compatibility wrapper and compatibility test are retained
-│   └── Next gate: D2.2b docs/API examples canonicalization before wrapper
-│                  deletion can be reconsidered
+│   └── Next gate: Completed by D2.2b docs/API examples canonicalization;
+│                  wrapper deletion remains a separate decision
+│
+├── D2.2b. Core Validation Docs/API Example Canonicalization
+│   ├── Source evidence:
+│   │   `backend-core-validation-docs-api-canonicalization-2026-05-21.md`
+│   ├── State: implementation-complete
+│   ├── Role: Move `docs/api/` examples to canonical `app.core.validation`
+│   ├── Current fact: `docs/api/` legacy `validation_messages` references are
+│   │                 `0`; no backend source, tests, OpenSpec, or wrapper files
+│   │                 changed
+│   └── Next gate: D2.2c wrapper-retirement decision or explicit long-term
+│                  retention of `app.core.validation_messages`
 │
 ├── E. Candidate Branch: close-backend-schema-dual-directory
 │   ├── Source evidence: backend-schema-dual-directory-closure-2026-05-19.md
@@ -262,8 +273,9 @@ review, PR review, or OpenSpec archive review.
 | Issue `#92` downstream decision split draft | D2 | Draft split prepared for human review: D2.1 DI pilot candidate, D2.2 Core validation wrapper-retirement readiness, D2.3 route governance, D2.4 backup route ownership, D2.5 control-plane OpenAPI docs, and D2.6 PM2 stateful gate approval | Review-ready draft only: issue `#92` remains `OPEN`; `ready-for-agent` remains absent; no backend, OpenSpec change, route, or test mutation is authorized by the draft | `docs/reports/quality/backend-openspec-issue92-downstream-decision-split-2026-05-21.md` | Human review and explicit acceptance or revision of the split before any child issue/proposal is created |
 | Issue `#92` downstream split accepted | D2 | Human maintainer accepted the split in full: `TechnicalPatternDetectionService` is the first DI design pilot; trading route ownership folds into unified route/OpenAPI governance; backup route ownership becomes a dedicated proposal candidate with `cleanup_old_backups.py` owned by that lane | Reviewed/pass in current thread: acceptance remains decision/proposal-only and does not authorize backend implementation, route mutation, Core file movement, PM2 execution, or any `ready-for-agent` movement | `docs/reports/quality/backend-openspec-issue92-downstream-split-acceptance-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Draft D2.1 design packet for `TechnicalPatternDetectionService`; keep implementation locked behind separate approval |
 | D2.1 `TechnicalPatternDetectionService` DI design packet | D2.1 | First DI design pilot packet prepared with provider shape, dependency override strategy, teardown artifact, rollback path, and implementation verification gates | Review-ready design only: GitNexus impact for `TechnicalPatternDetectionService` is LOW with 0 affected symbols/processes; no source, route, test, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-di-pilot-technical-pattern-detection-design-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate implementation issue or OpenSpec branch before source edits |
-| D2.2 Core validation wrapper retirement readiness | D2.2 | Readiness packet prepared for `app.core.validation_messages` retirement; deletion is not ready because active source consumers and API docs still reference the legacy path | Review-ready readiness only: compatibility test passed `2 passed`; placeholder-env import smoke passed; active source blockers are `web/backend/app/core/validators.py` and `web/backend/app/core/error_codes.py` | `docs/reports/quality/backend-core-validation-wrapper-retirement-readiness-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate D2.2a active-source consumer migration issue before any wrapper deletion |
-| D2.2a Core validation active source migration | D2.2a | Active source imports in `validators.py` and `error_codes.py` migrated from `app.core.validation_messages` to `app.core.validation`; wrapper retained | TDD red/green completed; boundary test `1 passed`; compatibility test `2 passed`; import smoke passed; app import smoke routes=`548`; collect-only smoke `112 tests collected`; ruff passed; active source legacy imports excluding wrapper=`0` | `docs/reports/quality/backend-core-validation-active-source-migration-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | D2.2b docs/API examples canonicalization or explicit waiver; wrapper deletion remains blocked |
+| D2.2 Core validation wrapper retirement readiness | D2.2 | Readiness packet prepared for `app.core.validation_messages` retirement; deletion remains locked pending a separate wrapper-retirement decision | Review-ready readiness only: compatibility test passed `2 passed`; placeholder-env import smoke passed; active source blockers were later closed by D2.2a and docs/API examples were later closed by D2.2b | `docs/reports/quality/backend-core-validation-wrapper-retirement-readiness-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | D2.2c wrapper-retirement decision or explicit long-term retention; no wrapper deletion before that approval |
+| D2.2a Core validation active source migration | D2.2a | Active source imports in `validators.py` and `error_codes.py` migrated from `app.core.validation_messages` to `app.core.validation`; wrapper retained | TDD red/green completed; boundary test `1 passed`; compatibility test `2 passed`; import smoke passed; app import smoke routes=`548`; collect-only smoke `112 tests collected`; ruff passed; active source legacy imports excluding wrapper=`0` | `docs/reports/quality/backend-core-validation-active-source-migration-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Completed by D2.2b docs/API examples canonicalization; wrapper deletion remains a separate decision |
+| D2.2b Core validation docs/API example canonicalization | D2.2b | `docs/api/` examples now point to canonical `app.core.validation`; wrapper retained | Docs-only batch: pre-change `docs/api/` legacy reference count was `10`; post-change count is `0`; no backend source, tests, OpenSpec, route, PM2, or frontend files changed | `docs/reports/quality/backend-core-validation-docs-api-canonicalization-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | D2.2c wrapper-retirement decision or explicit retention; do not delete `app.core.validation_messages` from this batch |
 
 ## OpenSpec Branch Register
 
