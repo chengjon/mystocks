@@ -1,0 +1,91 @@
+version: "v0.2"
+
+task:
+  id: "pr-95"
+  title: "draft backend OpenSpec issue92 downstream split"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-downstream-split"
+  objective: "draft downstream decision split for backend OpenSpec issue92 without implementation authorization"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-decision-issue-split"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "split-backend-core-modules-with-compatibility-wrappers"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Issue92 downstream decision split draft only; no runtime entrypoint, route, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-openspec-issue92-downstream-decision-split-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-95.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, test, or runtime behavior changes"
+  - "No movement of issue #92 to ready-for-agent"
+  - "No downstream implementation issue creation"
+  - "No new OpenSpec proposal creation"
+  - "No PM2 stateful workflow execution"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-openspec-issue92-downstream-decision-split-2026-05-21.md"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the draft split is interpreted as final human acceptance, downstream gates are weakened"
+    - "If source paths enter this PR, the governance-only boundary is broken"
+  rollback_plan: "revert this PR and keep issue #92 at the approved-ready-for-downstream state from PR #94"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "draft backend OpenSpec issue92 downstream decision split"
+    modified_scope: "steward task tree, issue92 downstream split report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance/evidence planning only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if the draft is misread as implementation authorization or scope gate fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T00:33:52Z"
+    approval_note: "issue #92 is approved for downstream decision work; this PR only drafts the split for human review"
+    secondary_approved: false
+
