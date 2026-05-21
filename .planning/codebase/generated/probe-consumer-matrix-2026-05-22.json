@@ -1,0 +1,4244 @@
+{
+  "generated_at": "2026-05-21T17:05:17.452Z",
+  "git_head": "c173bbc8d48d5e20ed5905d698ca39001237198a",
+  "git_head_short": "c173bbc8d",
+  "stale_if_head_mismatch": true,
+  "scan_roots": [
+    ".github/workflows",
+    "config",
+    "scripts",
+    "docker-compose.yml",
+    "docker-compose.override.yml",
+    "package.json",
+    "ecosystem.config.js",
+    "pm2.config.js"
+  ],
+  "patterns": {
+    "health": "/(?:\\/)(?:api\\/)?health(?:\\/[A-Za-z0-9_{}:-]+)?/g",
+    "status": "/(?:\\/)(?:api\\/)?(?:system\\/)?status(?:\\/[A-Za-z0-9_{}:-]+)?/g",
+    "openapi_docs": "/(?:\\/)(?:openapi\\.json|docs|redoc)\\b/g",
+    "strategy_compat": "/\\/api\\/strategy-mgmt(?:\\/[A-Za-z0-9_{}:-]+)?/g",
+    "trading": "/\\/api\\/(?:v1\\/)?(?:trade|trading|tradingview|positions)(?:\\/[A-Za-z0-9_{}:-]+)?/g",
+    "backup": "/\\/api\\/[A-Za-z0-9_{}:\\/-]*(?:backup|restore|recovery)[A-Za-z0-9_{}:\\/-]*/g",
+    "metrics": "/\\/metrics\\b/g"
+  },
+  "summary": {
+    "scanned_files": 1415,
+    "hit_files": 185,
+    "hit_lines": 600,
+    "category_counts": {
+      "health": 262,
+      "metrics": 140,
+      "openapi_docs": 144,
+      "status": 28,
+      "trading": 26
+    },
+    "consumer_class_counts": {
+      "config": 187,
+      "github_workflows": 40,
+      "scripts": 373
+    }
+  },
+  "hits": [
+    {
+      "path": ".github/workflows/deploy.yml",
+      "line": 119,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "timeout 300 bash -c 'until curl -f http://localhost:8001/health; do sleep 5; done' || {"
+    },
+    {
+      "path": ".github/workflows/deploy.yml",
+      "line": 125,
+      "category": "openapi_docs",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -f http://localhost:8001/api/docs || {"
+    },
+    {
+      "path": ".github/workflows/deploy.yml",
+      "line": 277,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "timeout 300 bash -c 'until curl -f http://localhost/health; do sleep 5; done'"
+    },
+    {
+      "path": ".github/workflows/deploy.yml",
+      "line": 281,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -f http://localhost/api/health || {"
+    },
+    {
+      "path": ".github/workflows/deploy.yml",
+      "line": 321,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "echo \"📊 API Health: https://mystocks.local/api/health\""
+    },
+    {
+      "path": ".github/workflows/deploy.yml",
+      "line": 328,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -f https://mystocks.local/health || {"
+    },
+    {
+      "path": ".github/workflows/deploy.yml",
+      "line": 334,
+      "category": "openapi_docs",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -f https://mystocks.local/api/docs || {"
+    },
+    {
+      "path": ".github/workflows/ai-test-optimization.yml",
+      "line": 496,
+      "category": "openapi_docs",
+      "consumer_class": "github_workflows",
+      "snippet": "comment += `🤖 [AI测试优化器文档](https://github.com/${{ github.repository }}/blob/main/docs/guides/AI_TEST_OPTIMIZER_USER_GUIDE.md)\\n`;"
+    },
+    {
+      "path": ".github/workflows/e2e-test.yml",
+      "line": 89,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "timeout 60 bash -c 'until curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health || curl -fsS http://localhost:${BACKEND_PORT}/health/ready; do sleep 2; done'"
+    },
+    {
+      "path": ".github/workflows/e2e-test.yml",
+      "line": 181,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "timeout 60 bash -c 'until curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health || curl -fsS http://localhost:${BACKEND_PORT}/health/ready; do sleep 2; done'"
+    },
+    {
+      "path": ".github/workflows/e2e-tests-enhanced.yml",
+      "line": 89,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "if curl -s http://localhost:8000/api/announcement/health > /dev/null || \\"
+    },
+    {
+      "path": ".github/workflows/e2e-tests-enhanced.yml",
+      "line": 90,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -s http://localhost:8000/health/ready > /dev/null; then"
+    },
+    {
+      "path": ".github/workflows/e2e-tests-enhanced.yml",
+      "line": 120,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -s http://localhost:8000/api/announcement/health || curl -s http://localhost:8000/health/ready || echo \"Backend health check failed\""
+    },
+    {
+      "path": ".github/workflows/e2e-tests.yml",
+      "line": 66,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -f http://localhost:${BACKEND_PORT}/api/announcement/health || curl -f http://localhost:${BACKEND_PORT}/health/ready"
+    },
+    {
+      "path": ".github/workflows/e2e-testing.yml",
+      "line": 215,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "timeout 30 bash -c 'until curl -f http://localhost:8000/api/announcement/health || curl -f http://localhost:8000/health/ready; do sleep 1; done'"
+    },
+    {
+      "path": ".github/workflows/e2e-testing.yml",
+      "line": 220,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -f http://localhost:8000/api/announcement/health || curl -f http://localhost:8000/health/ready"
+    },
+    {
+      "path": ".github/workflows/e2e-testing.yml",
+      "line": 365,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "timeout 60 bash -c 'until curl -f http://localhost:8000/api/announcement/health || curl -f http://localhost:8000/health/ready; do sleep 2; done'"
+    },
+    {
+      "path": ".github/workflows/e2e-testing.yml",
+      "line": 592,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "timeout 60 bash -c 'until curl -f http://localhost:8000/api/announcement/health || curl -f http://localhost:8000/health/ready; do sleep 2; done'"
+    },
+    {
+      "path": ".github/workflows/contract-testing.yml",
+      "line": 190,
+      "category": "openapi_docs",
+      "consumer_class": "github_workflows",
+      "snippet": "spec_file = Path('docs/api/openapi.json')"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 331,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "jq -r '.[] | \"\\(.file):\\(.line):\\(.code):\\(.message)\"' ruff-results.json > optimization-data/metrics/code_quality_issues.txt || true"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 332,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "echo \"${{ needs.code-quality.outputs.quality_score }}\" > optimization-data/metrics/quality_score.txt"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 336,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "echo \"test_execution_time: $(date +%s)\" > optimization-data/metrics/test_performance.txt"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 337,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "echo \"total_test_count: 3\" >> optimization-data/metrics/test_performance.txt  # basic-tests, frontend-tests, performance-validation"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 338,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "echo \"success_rate: 100%\" >> optimization-data/metrics/test_performance.txt"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 342,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "echo \"commit_count: $(git rev-list --count HEAD)\" > optimization-data/metrics/git_stats.txt"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 343,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "echo \"branch_count: $(git branch -r | wc -l)\" >> optimization-data/metrics/git_stats.txt"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 344,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "echo \"contributor_count: $(git shortlog -sn --no-merges | wc -l)\" >> optimization-data/metrics/git_stats.txt"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 348,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "find . -name \"*.py\" -type f -exec wc -l {} \\; | awk '{sum += $1} END {print \"python_lines:\", sum}' > optimization-data/metrics/file_stats.txt"
+    },
+    {
+      "path": ".github/workflows/ci-cd.yml",
+      "line": 349,
+      "category": "metrics",
+      "consumer_class": "github_workflows",
+      "snippet": "find . -name \"*.js\" -o -name \"*.vue\" -o -name \"*.ts\" | wc -l | xargs echo \"frontend_files:\" >> optimization-data/metrics/file_stats.txt"
+    },
+    {
+      "path": ".github/workflows/ci-cd-with-type-checking.yml",
+      "line": 527,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "timeout 60 bash -c 'until curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health || curl -fsS http://localhost:${BACKEND_PORT}/health/ready; do sleep 2; done'"
+    },
+    {
+      "path": ".github/workflows/ci-cd-with-type-checking.yml",
+      "line": 655,
+      "category": "openapi_docs",
+      "consumer_class": "github_workflows",
+      "snippet": "lighthouse http://localhost:8000/docs \\"
+    },
+    {
+      "path": ".github/workflows/ci-cd-with-type-checking.yml",
+      "line": 744,
+      "category": "openapi_docs",
+      "consumer_class": "github_workflows",
+      "snippet": "if curl -f --max-time 10 http://localhost:8000/docs > /dev/null 2>&1; then"
+    },
+    {
+      "path": ".github/workflows/api-automation-discovery.yml",
+      "line": 101,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "if curl -fsS http://localhost:8000/api/announcement/health > /dev/null 2>&1 || \\"
+    },
+    {
+      "path": ".github/workflows/api-automation-discovery.yml",
+      "line": 102,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -fsS http://localhost:8000/health/ready > /dev/null 2>&1; then"
+    },
+    {
+      "path": ".github/workflows/data-sync-testing.yml",
+      "line": 117,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "if curl -fsS http://localhost:8000/api/announcement/health >/dev/null 2>&1 || \\"
+    },
+    {
+      "path": ".github/workflows/data-sync-testing.yml",
+      "line": 118,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -fsS http://localhost:8000/health/ready >/dev/null 2>&1; then"
+    },
+    {
+      "path": ".github/workflows/data-sync-testing.yml",
+      "line": 200,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "if curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health >/dev/null 2>&1 || \\"
+    },
+    {
+      "path": ".github/workflows/data-sync-testing.yml",
+      "line": 201,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -fsS http://localhost:${BACKEND_PORT}/health/ready >/dev/null 2>&1; then"
+    },
+    {
+      "path": ".github/workflows/data-sync-testing.yml",
+      "line": 239,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -fsS http://localhost:${BACKEND_PORT}/api/announcement/health >/dev/null 2>&1 || \\"
+    },
+    {
+      "path": ".github/workflows/data-sync-testing.yml",
+      "line": 240,
+      "category": "health",
+      "consumer_class": "github_workflows",
+      "snippet": "curl -fsS http://localhost:${BACKEND_PORT}/health/ready >/dev/null 2>&1"
+    },
+    {
+      "path": "config/monitoring-stack/DEPLOYMENT.md",
+      "line": 136,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "curl http://localhost:8000/health"
+    },
+    {
+      "path": "config/monitoring-stack/DEPLOYMENT.md",
+      "line": 138,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "curl http://localhost:8000/api/system/health"
+    },
+    {
+      "path": "config/monitoring-stack/config/prometheus.yml",
+      "line": 39,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "metrics_path: '/metrics'"
+    },
+    {
+      "path": "config/monitoring-stack/config/prometheus.yml",
+      "line": 46,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "# 历史上的 /health 与 /api/*/health 端点返回 JSON，不是 Prometheus exposition。"
+    },
+    {
+      "path": "config/monitoring-stack/config/prometheus.yml",
+      "line": 60,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "metrics_path: '/metrics'"
+    },
+    {
+      "path": "config/monitoring-stack/config/prometheus.yml",
+      "line": 89,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "metrics_path: '/metrics'"
+    },
+    {
+      "path": "config/monitoring-stack/verify_monitoring.sh",
+      "line": 74,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "test_service \"Grafana\" \"${GRAFANA_URL}/api/health\""
+    },
+    {
+      "path": "config/monitoring-stack/verify_monitoring.sh",
+      "line": 77,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "test_service \"Node Exporter\" \"${NODE_EXPORTER_URL}/metrics\""
+    },
+    {
+      "path": "config/monitoring-stack/MONITORING_VERIFICATION_COMPLETE_REPORT.md",
+      "line": 199,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "- 验证 `/metrics` 端点可访问"
+    },
+    {
+      "path": "config/monitoring-stack/MONITORING_VERIFICATION_COMPLETE_REPORT.md",
+      "line": 210,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "- 测试 `/api/gpu/metrics` 端点"
+    },
+    {
+      "path": "config/monitoring-stack/MONITORING_VERIFICATION_COMPLETE_REPORT.md",
+      "line": 254,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "- **后端Metrics**: http://localhost:8000/metrics"
+    },
+    {
+      "path": "config/monitoring-stack/MONITORING_VERIFICATION_COMPLETE_REPORT.md",
+      "line": 255,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "- **GPU监控Metrics**: http://localhost:8000/api/gpu/metrics"
+    },
+    {
+      "path": "config/monitoring-stack/MONITORING_VERIFICATION_COMPLETE_REPORT.md",
+      "line": 256,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "- **健康检查**: http://localhost:8000/health"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDABS3JQ66RBY3F00XKCX232/index",
+      "line": 2,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDABS3JQ66RBY3F00XKCX232/index",
+      "line": 2,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDABS3JQ66RBY3F00XKCX232/index",
+      "line": 2,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDABS3JQ66RBY3F00XKCX232/index",
+      "line": 435,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0005\u0002\u0007handler\u0007/-/quit��\u0005\u0002\u0007handler\b/-/readyЇ\u0005\u0002\u0007handler\t/-/reload��\u0005\u0002\u0007handler\u0017/alertmanager-discovery��\u0005\u0002\u0007handler\u0007/alerts��\u0005\u0002\u0007handler\r/api/v1/*path��\u0005\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0005\u0002\u0007handler /api/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDABS3JQ66RBY3F00XKCX232/index",
+      "line": 435,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0005\u0002\u0007handler\u0007/-/quit��\u0005\u0002\u0007handler\b/-/readyЇ\u0005\u0002\u0007handler\t/-/reload��\u0005\u0002\u0007handler\u0017/alertmanager-discovery��\u0005\u0002\u0007handler\u0007/alerts��\u0005\u0002\u0007handler\r/api/v1/*path��\u0005\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0005\u0002\u0007handler /api/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDABS3JQ66RBY3F00XKCX232/index",
+      "line": 435,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0005\u0002\u0007handler\u0007/-/quit��\u0005\u0002\u0007handler\b/-/readyЇ\u0005\u0002\u0007handler\t/-/reload��\u0005\u0002\u0007handler\u0017/alertmanager-discovery��\u0005\u0002\u0007handler\u0007/alerts��\u0005\u0002\u0007handler\r/api/v1/*path��\u0005\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0005\u0002\u0007handler /api/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD8MVEK6MB1Z1VA5MNWDR5YG/index",
+      "line": 2,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD8MVEK6MB1Z1VA5MNWDR5YG/index",
+      "line": 2,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD8MVEK6MB1Z1VA5MNWDR5YG/index",
+      "line": 2,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD8MVEK6MB1Z1VA5MNWDR5YG/index",
+      "line": 319,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0011\u0002\u0007handler\u0007/-/quit��\u0011\u0002\u0007handler\b/-/readyč\u0011\u0002\u0007handler\t/-/reloadԍ\u0011\u0002\u0007handler\u0017/alertmanager-discovery�\u0011\u0002\u0007handler\u0007/alerts�\u0011\u0002\u0007handler\r/api/v1/*path��\u0011\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0011\u0002\u0007handler /api/v1/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD8MVEK6MB1Z1VA5MNWDR5YG/index",
+      "line": 319,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0011\u0002\u0007handler\u0007/-/quit��\u0011\u0002\u0007handler\b/-/readyč\u0011\u0002\u0007handler\t/-/reloadԍ\u0011\u0002\u0007handler\u0017/alertmanager-discovery�\u0011\u0002\u0007handler\u0007/alerts�\u0011\u0002\u0007handler\r/api/v1/*path��\u0011\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0011\u0002\u0007handler /api/v1/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD8MVEK6MB1Z1VA5MNWDR5YG/index",
+      "line": 319,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0011\u0002\u0007handler\u0007/-/quit��\u0011\u0002\u0007handler\b/-/readyč\u0011\u0002\u0007handler\t/-/reloadԍ\u0011\u0002\u0007handler\u0017/alertmanager-discovery�\u0011\u0002\u0007handler\u0007/alerts�\u0011\u0002\u0007handler\r/api/v1/*path��\u0011\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0011\u0002\u0007handler /api/v1/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJMYREZXD3EAT81N8T5FHV/index",
+      "line": 2,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJMYREZXD3EAT81N8T5FHV/index",
+      "line": 2,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJMYREZXD3EAT81N8T5FHV/index",
+      "line": 2,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJMYREZXD3EAT81N8T5FHV/index",
+      "line": 432,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0005\u0002\u0007handler\u0007/-/quit��\u0005\u0002\u0007handler\b/-/readyЇ\u0005\u0002\u0007handler\t/-/reload��\u0005\u0002\u0007handler\u0017/alertmanager-discovery��\u0005\u0002\u0007handler\u0007/alerts��\u0005\u0002\u0007handler\r/api/v1/*path��\u0005\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0005\u0002\u0007handler /api/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJMYREZXD3EAT81N8T5FHV/index",
+      "line": 432,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0005\u0002\u0007handler\u0007/-/quit��\u0005\u0002\u0007handler\b/-/readyЇ\u0005\u0002\u0007handler\t/-/reload��\u0005\u0002\u0007handler\u0017/alertmanager-discovery��\u0005\u0002\u0007handler\u0007/alerts��\u0005\u0002\u0007handler\r/api/v1/*path��\u0005\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0005\u0002\u0007handler /api/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJMYREZXD3EAT81N8T5FHV/index",
+      "line": 432,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0005\u0002\u0007handler\u0007/-/quit��\u0005\u0002\u0007handler\b/-/readyЇ\u0005\u0002\u0007handler\t/-/reload��\u0005\u0002\u0007handler\u0017/alertmanager-discovery��\u0005\u0002\u0007handler\u0007/alerts��\u0005\u0002\u0007handler\r/api/v1/*path��\u0005\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0005\u0002\u0007handler /api/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/wal/checkpoint.00000017/00000000",
+      "line": 58,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "monitoring\binstance\u0019host.docker.internal:8000\u0003job\u0013mystocks-m\u0015;\u0005d\b\u0000\u0003G\u0019e\\\u0017scrape_duration_seconds�z\u0000Zz\u0000\u0000H\u0019z\u0000\u0016\rz\u001csamples_\t\u000f\u0000d�y\u0000Zy\u0000\u0000I\u0019y\u0000%\tj\u0015yTpost_metric_relabeling��\u0000Z�\u0000\u0000J\u0019�\u0000\u0013\u0011� eries_add��\u0000F�\u0000\t\u0000۶�\u0011ǥ\u0004\u0004\u0001\u0000\u0005\u0001�O\u0003K\u0004\b__name__\u0002up"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJN171D943VTA4WG6S2K9M/index",
+      "line": 2,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJN171D943VTA4WG6S2K9M/index",
+      "line": 2,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJN171D943VTA4WG6S2K9M/index",
+      "line": 2,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJN171D943VTA4WG6S2K9M/index",
+      "line": 321,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0011\u0002\u0007handler\u0007/-/quit��\u0011\u0002\u0007handler\b/-/ready��\u0011\u0002\u0007handler\t/-/reloadČ\u0011\u0002\u0007handler\u0017/alertmanager-discoveryԌ\u0011\u0002\u0007handler\u0007/alerts�\u0011\u0002\u0007handler\r/api/v1/*path�\u0011\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0011\u0002\u0007handler /api/v1/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJN171D943VTA4WG6S2K9M/index",
+      "line": 321,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0011\u0002\u0007handler\u0007/-/quit��\u0011\u0002\u0007handler\b/-/ready��\u0011\u0002\u0007handler\t/-/reloadČ\u0011\u0002\u0007handler\u0017/alertmanager-discoveryԌ\u0011\u0002\u0007handler\u0007/alerts�\u0011\u0002\u0007handler\r/api/v1/*path�\u0011\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0011\u0002\u0007handler /api/v1/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KDAJN171D943VTA4WG6S2K9M/index",
+      "line": 321,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy��\u0011\u0002\u0007handler\u0007/-/quit��\u0011\u0002\u0007handler\b/-/ready��\u0011\u0002\u0007handler\t/-/reloadČ\u0011\u0002\u0007handler\u0017/alertmanager-discoveryԌ\u0011\u0002\u0007handler\u0007/alerts�\u0011\u0002\u0007handler\r/api/v1/*path�\u0011\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones��\u0011\u0002\u0007handler /api/v1/"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD6FKYJTF5YEEJNWM57MVGTQ/index",
+      "line": 2,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD6FKYJTF5YEEJNWM57MVGTQ/index",
+      "line": 2,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD6FKYJTF5YEEJNWM57MVGTQ/index",
+      "line": 2,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy\u0007/-/quit\b/-/ready\t/-/reload\u0017/alertmanager-discovery\u0007/alerts\r/api/v1/*path#/api/v1/admin/tsdb/clean_tombstones /api/v1/admin/tsdb/delete_series\u001b/api/v1/admin/tsdb/snapshot\u0015/api/v1/alertmanagers\u000e/api/v1/alerts\u0014/a"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD6FKYJTF5YEEJNWM57MVGTQ/index",
+      "line": 543,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "/-/healthy�\u0004\u0002\u0007handler\u0007/-/quit��\u0004\u0002\u0007handler\b/-/ready��\u0004\u0002\u0007handler\t/-/reload��\u0004\u0002\u0007handler\u0017/alertmanager-discovery��\u0004\u0002\u0007handler\u0007/alerts��\u0004\u0002\u0007handler\r/api/v1/*path́\u0004\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones܁\u0004\u0002\u0007handler /api/v1"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD6FKYJTF5YEEJNWM57MVGTQ/index",
+      "line": 543,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "/-/healthy�\u0004\u0002\u0007handler\u0007/-/quit��\u0004\u0002\u0007handler\b/-/ready��\u0004\u0002\u0007handler\t/-/reload��\u0004\u0002\u0007handler\u0017/alertmanager-discovery��\u0004\u0002\u0007handler\u0007/alerts��\u0004\u0002\u0007handler\r/api/v1/*path́\u0004\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones܁\u0004\u0002\u0007handler /api/v1"
+    },
+    {
+      "path": "config/monitoring-stack/data/prometheus/01KD6FKYJTF5YEEJNWM57MVGTQ/index",
+      "line": 543,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "/-/healthy�\u0004\u0002\u0007handler\u0007/-/quit��\u0004\u0002\u0007handler\b/-/ready��\u0004\u0002\u0007handler\t/-/reload��\u0004\u0002\u0007handler\u0017/alertmanager-discovery��\u0004\u0002\u0007handler\u0007/alerts��\u0004\u0002\u0007handler\r/api/v1/*path́\u0004\u0002\u0007handler#/api/v1/admin/tsdb/clean_tombstones܁\u0004\u0002\u0007handler /api/v1"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-piechart-panel/README.md",
+      "line": 7,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "[![Build Status](https://drone.grafana.net/api/badges/grafana/piechart-panel/status.svg)](https://drone.grafana.net/grafana/piechart-panel)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-piechart-panel/README.md",
+      "line": 9,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "As of [Grafana 8.0](https://grafana.com/docs/grafana/latest/whatsnew/whats-new-in-v8-0/#whats-new-in-grafana-v80) Pie chart panel is included with Grafana. Please refer to the [Pie chart panel](https://grafana.com/docs/g"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-piechart-panel/README.md",
+      "line": 21,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "More instructions on the Grafana CLI tool can be found in [Grafana CLI](https://grafana.com/docs/grafana/latest/administration/cli/)."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/580.js",
+      "line": 90,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "`});function L(){const e=(0,l.useStyles2)(G),{data:t}=_();return u().createElement(\"div\",{\"data-testid\":\"onboarding-modal\"},u().createElement(\"div\",{className:e.hero,\"data-testid\":\"hero\"},u().createElement(\"div\",{classNa"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/580.js",
+      "line": 152,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "`});function Me({error:e}){var t;let n=\"Error while retrieving recording rules\";return 404===(null===(t=e.response)||void 0===t?void 0:t.status)?n=\"This feature requires Pyroscope with recording_rules flag enabled.\":e.me"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/167.js",
+      "line": 577,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "`});function vc({commit:e}){const t=(0,i.useStyles2)(bc);return m().createElement(\"div\",{className:t.container},m().createElement(\"span\",{className:t.sha},wc(e.sha)),m().createElement(\"div\",{className:t.message},m().crea"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/167.js",
+      "line": 757,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "`})},8629:(e,t,n)=>{n.d(t,{C:()=>k});var r=n(7781),o=n(9318),i=n(2007),a=n(5959),s=n.n(a),l=n(2673),c=n(7907),u=(n(8727),n(2249)),d=n.n(u),p=n(9090);function m(e,t,n,r,o,i,a){try{var s=e[i](a),l=s.value}catch(e){return v"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/README.md",
+      "line": 13,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "![Grafana Profiles Drilldown main screen](https://grafana.com/media/docs/explore-profiles/explore-profiles-homescreen-latest.png)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/README.md",
+      "line": 20,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- A Grafana stack in Grafana Cloud with a configured [Pyroscope data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/pyroscope/) receiving profiling data"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/README.md",
+      "line": 26,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- A configured [Pyroscope data source](https://grafana.com/docs/grafana/latest/datasources/pyroscope/) receiving profiling data"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/README.md",
+      "line": 30,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "Refer to the [Grafana Profiles Drilldown](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/) documentation."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/README.md",
+      "line": 31,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "For instructions installing, refer to the [access and installation instructions](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/)."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/README.md",
+      "line": 35,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- [Documentation](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/profiles/)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/README.md",
+      "line": 49,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "For more information, refer to [Contributing to Grafana Profiles Drilldown](https://github.com/grafana/profiles-drilldown/blob/main/docs/CONTRIBUTING.md)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/plugin.json",
+      "line": 2,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "\"$schema\": \"https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json\","
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/194.js",
+      "line": 2,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "(self.webpackChunkgrafana_pyroscope_app=self.webpackChunkgrafana_pyroscope_app||[]).push([[194],{219:(e,t,n)=>{(()=>{\"use strict\";var t={n:e=>{var n=e&&e.__esModule?()=>e.default:()=>e;return t.d(n,{a:n}),n},d:(e,n)=>{fo"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-pyroscope-app/194.js",
+      "line": 2,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "(self.webpackChunkgrafana_pyroscope_app=self.webpackChunkgrafana_pyroscope_app||[]).push([[194],{219:(e,t,n)=>{(()=>{\"use strict\";var t={n:e=>{var n=e&&e.__esModule?()=>e.default:()=>e;return t.d(n,{a:n}),n},d:(e,n)=>{fo"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-lokiexplore-app/README.md",
+      "line": 12,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "See the [getting started](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/logs/get-started/) for more info using Grafana Logs Drilldown."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-lokiexplore-app/README.md",
+      "line": 13,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "For instructions installing, see the [access and installation instructions](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/logs/access/)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-lokiexplore-app/README.md",
+      "line": 17,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- [DOCS](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/logs/)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-lokiexplore-app/plugin.json",
+      "line": 2,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "\"$schema\": \"https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json\","
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-lokiexplore-app/328.js",
+      "line": 1,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "\"use strict\";(self.webpackChunkgrafana_lokiexplore_app=self.webpackChunkgrafana_lokiexplore_app||[]).push([[328],{7709:(e,t,n)=>{n.d(t,{F:()=>l});var r=n(5959),a=n.n(r),s=n(6089),i=n(2007),o=n(3571);const l=e=>{const{but"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-lokiexplore-app/826.js",
+      "line": 7,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "`,note:(0,i.css)({color:e.colors.text.secondary,marginBottom:e.spacing(1),marginTop:e.spacing(1)})}),y=(e,t)=>g(function*(){try{yield O(e,t),c.locationService.reload()}catch(e){u.v.error(e,{msg:\"Error while updating the "
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/module.js",
+      "line": 3,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "define([\"i18next\",\"react-router\",\"rxjs\",\"module\",\"@grafana/ui\",\"lodash\",\"react\",\"@emotion/css\",\"@grafana/data\",\"react-dom\",\"@grafana/runtime\"],(e,t,i,n,r,s,o,a,l,u,c)=>(()=>{var d,h,f,p,g={211:t=>{\"use strict\";t.exports="
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/MANIFEST.txt",
+      "line": 84,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "\"img/metrics-drilldown.png\": \"eef0ace68ed328773f9dddfd9f8b14c22c3e2f909aeab640263112251afca7f7\","
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/538.js",
+      "line": 49,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "`}}V(q,\"Component\",({model:e})=>{const{body:t,panelConfig:n}=e.useState(),r=(0,o.useStyles2)(U,n.height);return c().createElement(\"div\",{className:r.container,\"data-testid\":\"gmd-vizpanel\"},t&&c().createElement(t.Componen"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/538.js",
+      "line": 53,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "`})},7014:(e,t,n)=>{n.d(t,{q:()=>a});var r=n(8162);const a=new Map([...[\"avg\",\"sum\",\"stddev\",\"quantile\",\"min\",\"max\",\"count\"].map(e=>[e,{name:e,fn:t=>r.GH[e](t)}]),[\"histogram_quantile\",{name:\"histogram_quantile\",fn:({exp"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/538.js",
+      "line": 131,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "`}),Se=ge.t,we=`https://github.com/grafana/metrics-drilldown/commit/${Se}`,{buildInfo:Oe}=r.config;function Ee(){const e=(0,u.useStyles2)(ke),{meta:{info:{version:t,updated:n}}}=(0,s.usePluginContext)()||{meta:{info:{ver"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/538.js",
+      "line": 131,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "`}),Se=ge.t,we=`https://github.com/grafana/metrics-drilldown/commit/${Se}`,{buildInfo:Oe}=r.config;function Ee(){const e=(0,u.useStyles2)(ke),{meta:{info:{version:t,updated:n}}}=(0,s.usePluginContext)()||{meta:{info:{ver"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/README.md",
+      "line": 11,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "See the [docs](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/metrics/) for more info using Grafana Metrics Drilldown."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/README.md",
+      "line": 11,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See the [docs](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/metrics/) for more info using Grafana Metrics Drilldown."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/README.md",
+      "line": 15,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- [DOCS](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/metrics)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/README.md",
+      "line": 15,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "- [DOCS](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/metrics)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/README.md",
+      "line": 16,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "- [CHANGELOG](https://github.com/grafana/metrics-drilldown/releases)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/README.md",
+      "line": 17,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "- [GITHUB](https://github.com/grafana/metrics-drilldown)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/README.md",
+      "line": 25,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "If your issue is a bug, please open one [here](https://github.com/grafana/metrics-drilldown/issues/new)."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/README.md",
+      "line": 29,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "We do not have a formal proposal process for changes or feature requests. If you have a change you would like to see in Grafana Metrics Drilldown, please [file an issue](https://github.com/grafana/metrics-drilldown/issue"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 109,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.20>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 113,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.19>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 117,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.18>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 121,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.17>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 125,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.16>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 129,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.15>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 133,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.14>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 137,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.13>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 141,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.12>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 145,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.11>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 149,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.10>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 153,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.9>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 157,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.8>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 161,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.7>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 165,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.6>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 169,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.5>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 173,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.4>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 177,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.3-corrected>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 181,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.2>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 185,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.2-0>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 189,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.1>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 193,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 197,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-9>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 201,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-8>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 205,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-7>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 209,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-6>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 213,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-5>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 217,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-4>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 221,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-3>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 225,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-2>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 229,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-1>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/CHANGELOG.md",
+      "line": 233,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "See <https://github.com/grafana/metrics-drilldown/releases/tag/v1.0.0-0>"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/plugin.json",
+      "line": 2,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "\"$schema\": \"https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json\","
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/plugin.json",
+      "line": 36,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "\"path\": \"img/metrics-drilldown.png\""
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/plugin.json",
+      "line": 48,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "\"url\": \"https://github.com/grafana/metrics-drilldown\""
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/plugin.json",
+      "line": 52,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "\"url\": \"https://github.com/grafana/metrics-drilldown/issues/new\""
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/plugin.json",
+      "line": 88,
+      "category": "status",
+      "consumer_class": "config",
+      "snippet": "\"grafana/datasources/config/status\""
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/509.js",
+      "line": 1,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "\"use strict\";(self.webpackChunkgrafana_metricsdrilldown_app=self.webpackChunkgrafana_metricsdrilldown_app||[]).push([[509],{2993:(e,t,a)=>{a.d(t,{E:()=>o});var r=a(6089),n=a(2007),l=a(5959),c=a.n(l),s=a(1159),i=a(6503);f"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-metricsdrilldown-app/509.js",
+      "line": 1,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "\"use strict\";(self.webpackChunkgrafana_metricsdrilldown_app=self.webpackChunkgrafana_metricsdrilldown_app||[]).push([[509],{2993:(e,t,a)=>{a.d(t,{E:()=>o});var r=a(6089),n=a(2007),l=a(5959),c=a.n(l),s=a(1159),i=a(6503);f"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/211.js",
+      "line": 1,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "(self.webpackChunkgrafana_exploretraces_app=self.webpackChunkgrafana_exploretraces_app||[]).push([[211],{775:(e,t,n)=>{\"use strict\";n.d(t,{v:()=>u});var a,r,i,s=n(118),o=n(5959),l=n.n(o),c=n(3733);class u extends s.Bs{}i"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/README.md",
+      "line": 19,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "![Root cause latency using Duration metrics](https://grafana.com/media/docs/explore-traces/explore-traces-rate-comparison.png)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/README.md",
+      "line": 26,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- A Grafana stack in Grafana Cloud with a configured [Tempo data source](https://grafana.com/docs/grafana-cloud/connect-externally-hosted/data-sources/tempo/configure-tempo-data-source/) receiving tracing data"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/README.md",
+      "line": 32,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- A configured [Tempo data source](https://grafana.com/docs/grafana/latest/datasources/tempo/configure-tempo-data-source/) receiving tracing data"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/README.md",
+      "line": 36,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "Refer to the [Traces Drilldown](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/) documentation."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/README.md",
+      "line": 37,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "For instructions installing, refer to the [access and installation instructions](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/)."
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/README.md",
+      "line": 41,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- [Documentation](https://grafana.com/docs/grafana-cloud/visualizations/simplified-exploration/traces/)"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/README.md",
+      "line": 103,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "If your project has dedicated documentation available for users, provide links here. For help in following Grafana's style recommendations for technical documentation, refer to our [Writer's Toolkit](https://grafana.com/"
+    },
+    {
+      "path": "config/monitoring-stack/data/grafana/plugins/grafana-exploretraces-app/plugin.json",
+      "line": 2,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "\"$schema\": \"https://raw.githubusercontent.com/grafana/grafana/main/docs/sources/developers/plugins/plugin.schema.json\","
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 23,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "│           │   Pull /metrics endpoint    │                   │"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 30,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "│   │  /api/metrics     - Prometheus 指标导出              │   │"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 31,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "│   │  /api/system/health    - 系统健康检查              │   │"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 32,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "│   │  /api/monitoring/health - 监控服务健康检查         │   │"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 33,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "│   │  /api/trade/health       - 交易服务健康检查         │   │"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 33,
+      "category": "trading",
+      "consumer_class": "config",
+      "snippet": "│   │  /api/trade/health       - 交易服务健康检查         │   │"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 34,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "│   │  /api/*/health           - 各组件健康检查            │   │"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 106,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "metrics_path: '/api/metrics'"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 113,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/system/health` | 系统核心 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 114,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/monitoring/health` | 监控服务 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 115,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/trade/health` | 交易服务 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 115,
+      "category": "trading",
+      "consumer_class": "config",
+      "snippet": "| `/api/trade/health` | 交易服务 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 116,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/technical/health` | 技术分析 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 117,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/announcement/health` | 公告监控 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 118,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/multi_source/health` | 多数据源 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 119,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/market/health` | 市场数据 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 120,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/wencai/health` | 问财API | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 121,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/api/tasks/health` | 任务管理 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 122,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "| `/metrics/health` | Prometheus导出器 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 122,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "| `/metrics/health` | Prometheus导出器 | ✅ |"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 172,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "1. 检查后端是否运行：`curl http://localhost:8000/api/metrics`"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 179,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "1. 检查 Prometheus 是否运行：`curl http://localhost:9090/-/healthy`"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 195,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- [Prometheus 文档](https://prometheus.io/docs/)"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 196,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- [Grafana 文档](https://grafana.com/docs/)"
+    },
+    {
+      "path": "config/monitoring-stack/README.md",
+      "line": 197,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "- [Phase 2.4 实现文档](../docs/)"
+    },
+    {
+      "path": "config/monitoring-stack/MONITORING_STATUS.md",
+      "line": 79,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "curl http://localhost:9090/-/healthy"
+    },
+    {
+      "path": "config/monitoring-stack/MONITORING_STATUS.md",
+      "line": 100,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "curl http://localhost:9100/metrics"
+    },
+    {
+      "path": "config/ecosystem.production.config.js",
+      "line": 45,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "url: 'http://localhost:8000/api/monitoring/health',"
+    },
+    {
+      "path": "config/ecosystem.config.js",
+      "line": 53,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "url: 'http://localhost:8000/health',"
+    },
+    {
+      "path": "config/pm2/ecosystem.production.config.js",
+      "line": 46,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "url: 'http://localhost:8000/api/monitoring/health',"
+    },
+    {
+      "path": "config/pm2/ecosystem.config.js",
+      "line": 83,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "url: 'http://localhost:8000/api/health',"
+    },
+    {
+      "path": "config/pm2/pm2.config.js",
+      "line": 145,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "script: 'curl -f http://localhost:8000/health > /dev/null 2>&1',"
+    },
+    {
+      "path": "config/pm2/ecosystem.enhanced.config.js",
+      "line": 37,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "endpoint: '/api/health',"
+    },
+    {
+      "path": "config/pm2/ecosystem.enhanced.config.js",
+      "line": 85,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "health_endpoint: '/api/metrics',"
+    },
+    {
+      "path": "config/pm2/ecosystem.enhanced.config.js",
+      "line": 131,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "url: 'http://localhost:8000/api/health',"
+    },
+    {
+      "path": "config/pm2/ecosystem.enhanced.config.js",
+      "line": 144,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "{ path: '/api/health', method: 'GET', expected_status: 200 },"
+    },
+    {
+      "path": "config/pm2/ecosystem.enhanced.config.js",
+      "line": 171,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "health_endpoint: '/api/metrics',"
+    },
+    {
+      "path": "config/pm2/ecosystem.enhanced.config.js",
+      "line": 218,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "url: 'http://localhost:8000/api/monitoring/health',"
+    },
+    {
+      "path": "config/pm2/ecosystem.enhanced.config.js",
+      "line": 252,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "url: 'http://localhost:8001/health',"
+    },
+    {
+      "path": "config/pm2/ecosystem.enhanced.config.js",
+      "line": 370,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "metrics_endpoint: 'http://localhost:8000/api/metrics', // 后端指标端点"
+    },
+    {
+      "path": "config/prometheus.yml",
+      "line": 34,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "metrics_path: '/metrics'"
+    },
+    {
+      "path": "config/prometheus.yml",
+      "line": 58,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "metrics_path: '/api/prom/metrics'"
+    },
+    {
+      "path": "config/prometheus.yml",
+      "line": 131,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "#   metrics_path: '/metrics'"
+    },
+    {
+      "path": "config/.readthedocs.yaml",
+      "line": 2,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details"
+    },
+    {
+      "path": "config/.readthedocs.yaml",
+      "line": 19,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "# See https://docs.readthedocs.io/en/stable/guides/reproducible-builds.html"
+    },
+    {
+      "path": "config/pm2.config.js",
+      "line": 211,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "script: `curl -f http://localhost:${backendPort}/health > /dev/null 2>&1`,"
+    },
+    {
+      "path": "config/monitoring/prometheus.yml",
+      "line": 15,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "metrics_path: /metrics"
+    },
+    {
+      "path": "config/ai_automation_analysis_1763426351.json",
+      "line": 177,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "\"docs_path\": \"/opt/claude/mystocks_spec/docs\""
+    },
+    {
+      "path": "config/governance/documentation-taxonomy.yaml",
+      "line": 49,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "retired_docs: archive/docs/"
+    },
+    {
+      "path": "config/governance/documentation-taxonomy.yaml",
+      "line": 50,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "retired_api_docs: archive/docs/api/"
+    },
+    {
+      "path": "config/governance/documentation-taxonomy.yaml",
+      "line": 194,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "archive_target: archive/docs/architecture/"
+    },
+    {
+      "path": "config/governance/documentation-taxonomy.yaml",
+      "line": 371,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "archive_target: archive/docs/api/"
+    },
+    {
+      "path": "config/governance/documentation-taxonomy.yaml",
+      "line": 458,
+      "category": "openapi_docs",
+      "consumer_class": "config",
+      "snippet": "archive_target: archive/docs/testing/"
+    },
+    {
+      "path": "config/deployments/k8s-deployment.yaml",
+      "line": 139,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "prometheus.io/path: \"/metrics\""
+    },
+    {
+      "path": "config/deployments/k8s-deployment.yaml",
+      "line": 199,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "path: /health"
+    },
+    {
+      "path": "config/deployments/k8s-deployment.yaml",
+      "line": 207,
+      "category": "health",
+      "consumer_class": "config",
+      "snippet": "path: /health"
+    },
+    {
+      "path": "config/deployments/k8s-deployment.yaml",
+      "line": 403,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "path: /metrics"
+    },
+    {
+      "path": "config/deployments/k8s-deployment.yaml",
+      "line": 436,
+      "category": "metrics",
+      "consumer_class": "config",
+      "snippet": "- path: /metrics"
+    },
+    {
+      "path": "scripts/run_playwright_cli_tests.sh",
+      "line": 64,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -sf \"http://localhost:${BACKEND_PORT}/health\" > /dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 14,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_BASELINE_RAW_PATH=\"${REPORT_DIR}/metrics.baseline.raw.txt\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 15,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_RAW_PATH=\"${REPORT_DIR}/metrics.raw.txt\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 16,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_HEALTH_PATH=\"${REPORT_DIR}/metrics-health.json\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 17,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_SUMMARY_PATH=\"${REPORT_DIR}/metrics-summary.json\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 49,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_url \"http://localhost:8020/health\" \"Backend\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 50,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_url \"http://localhost:8020/api/health/ready\" \"Backend readiness\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 53,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:8020/metrics\" > \"${METRICS_BASELINE_RAW_PATH}\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 94,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:8020/api/metrics/health\" > \"${METRICS_HEALTH_PATH}\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 94,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:8020/api/metrics/health\" > \"${METRICS_HEALTH_PATH}\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 95,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:8020/metrics\" > \"${METRICS_RAW_PATH}\""
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 142,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `/api/metrics/health`: `{metrics_snapshot['metrics_health'].get('status', 'unknown')}`\","
+    },
+    {
+      "path": "scripts/run_monitoring_auth_performance_baseline.sh",
+      "line": 142,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `/api/metrics/health`: `{metrics_snapshot['metrics_health'].get('status', 'unknown')}`\","
+    },
+    {
+      "path": "scripts/run_runtime_delivery_summary_local.sh",
+      "line": 117,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "--declared-metrics-python-file \"${PROJECT_ROOT}/web/backend/app/api/metrics.py\""
+    },
+    {
+      "path": "scripts/run_runtime_delivery_summary_local.sh",
+      "line": 126,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "if [ -n \"${dir}\" ] && [ -f \"${dir}/metrics.raw.txt\" ]; then"
+    },
+    {
+      "path": "scripts/run_runtime_delivery_summary_local.sh",
+      "line": 127,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "reference_cmd+=(--metrics-file \"${dir}/metrics.raw.txt\")"
+    },
+    {
+      "path": "scripts/switch_data_mode.py",
+      "line": 160,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "(\"健康检查\", f\"{backend_base_url}/health\"),"
+    },
+    {
+      "path": "scripts/switch_data_mode.py",
+      "line": 161,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "(\"API状态\", f\"{backend_base_url}/api/status\"),"
+    },
+    {
+      "path": "scripts/switch_data_mode.py",
+      "line": 240,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "backend_response = requests.get(f\"{backend_base_url}/health\", timeout=3)"
+    },
+    {
+      "path": "scripts/switch_data_mode.py",
+      "line": 261,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "\"--mode\", choices=[\"mock\", \"real\", \"status\"], help=\"切换模式: mock/real/status\""
+    },
+    {
+      "path": "scripts/run_e2e_pm2.sh",
+      "line": 31,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl --noproxy '*' -s \"http://localhost:${TARGET_BACKEND_PORT}/health\" > /dev/null; then"
+    },
+    {
+      "path": "scripts/hooks/deny_list.py",
+      "line": 7,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- Block obviously wrong locations (e.g. duplicated nesting like `docs/docs/`)."
+    },
+    {
+      "path": "scripts/hooks/deny_list.py",
+      "line": 32,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "Rule(prefix=\"docs/docs/\", action=\"禁止创建\", reason=\"文档目录不应重复嵌套\"),"
+    },
+    {
+      "path": "scripts/hooks/check-documentation-placement.sh",
+      "line": 27,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "LOG_DIR=\"var/log/docs-audit\""
+    },
+    {
+      "path": "scripts/dev/task_assigner.py",
+      "line": 130,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "\"reason\": f\"{cli} CLI完成率{status['completed']/status['total_tasks']*100:.0f}%，可以继续分配\","
+    },
+    {
+      "path": "scripts/dev/probe_windows_qmt_service_readiness.py",
+      "line": 104,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "response = await client.get(f\"{base_url.rstrip('/')}/health\")"
+    },
+    {
+      "path": "scripts/dev/probe_windows_qmt_service_readiness.py",
+      "line": 108,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "raise ValueError(\"Windows qmt /health payload must be a JSON object\")"
+    },
+    {
+      "path": "scripts/dev/realtime_streaming_validation.py",
+      "line": 164,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "health_url = f\"{self.base_url}/api/market/health\""
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 103,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "\"trading_status\": endpoint_map.get(\"/api/trading/status\"),"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 103,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "\"trading_status\": endpoint_map.get(\"/api/trading/status\"),"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 104,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "\"trading_market_snapshot\": endpoint_map.get(\"/api/trading/market/snapshot\"),"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 105,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "\"trading_risk_metrics\": endpoint_map.get(\"/api/trading/risk/metrics\"),"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 105,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "\"trading_risk_metrics\": endpoint_map.get(\"/api/trading/risk/metrics\"),"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 156,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"metrics_health\": _require_match(r\"- `/api/metrics/health`: `([^`]+)`\", summary_text, \"docker metrics health\"),"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 156,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "\"metrics_health\": _require_match(r\"- `/api/metrics/health`: `([^`]+)`\", summary_text, \"docker metrics health\"),"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 216,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "current_batch_issues.append(\"Monitoring rule metric references do not match runtime /metrics snapshots\")"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 288,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `GET /api/trading/status`: `p95={trading_status.get('p95_ms', 'n/a')}ms error={trading_status.get('error_rate_percent', 'n/a')}%`\","
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 288,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `GET /api/trading/status`: `p95={trading_status.get('p95_ms', 'n/a')}ms error={trading_status.get('error_rate_percent', 'n/a')}%`\","
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 289,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `GET /api/trading/market/snapshot`: `p95={trading_market_snapshot.get('p95_ms', 'n/a')}ms error={trading_market_snapshot.get('error_rate_percent', 'n/a')}%`\","
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 290,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `GET /api/trading/risk/metrics`: `p95={trading_risk_metrics.get('p95_ms', 'n/a')}ms error={trading_risk_metrics.get('error_rate_percent', 'n/a')}%`\","
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+      "line": 290,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `GET /api/trading/risk/metrics`: `p95={trading_risk_metrics.get('p95_ms', 'n/a')}ms error={trading_risk_metrics.get('error_rate_percent', 'n/a')}%`\","
+    },
+    {
+      "path": "scripts/dev/quality_gate/validate_monitoring_prometheus_references.py",
+      "line": 286,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "parser = argparse.ArgumentParser(description=\"Validate Prometheus rule metric references against runtime /metrics snapshots\")"
+    },
+    {
+      "path": "scripts/dev/quality_gate/summarize_metrics_snapshot.py",
+      "line": 175,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "parser.add_argument(\"--metrics-file\", required=True, help=\"Path to raw /metrics output\")"
+    },
+    {
+      "path": "scripts/dev/quality_gate/summarize_metrics_snapshot.py",
+      "line": 176,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "parser.add_argument(\"--baseline-metrics-file\", help=\"Optional path to raw /metrics output captured before the run\")"
+    },
+    {
+      "path": "scripts/dev/quality_gate/summarize_metrics_snapshot.py",
+      "line": 177,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "parser.add_argument(\"--health-file\", required=True, help=\"Path to /api/metrics/health JSON output\")"
+    },
+    {
+      "path": "scripts/dev/quality_gate/summarize_metrics_snapshot.py",
+      "line": 177,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "parser.add_argument(\"--health-file\", required=True, help=\"Path to /api/metrics/health JSON output\")"
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_ci_bundle.py",
+      "line": 369,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "f\"- Docker metrics health: `{_first_match(r'- `/api/metrics/health`: `([^`]+)`', docker_summary)}`\","
+    },
+    {
+      "path": "scripts/dev/quality_gate/build_runtime_ci_bundle.py",
+      "line": 369,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "f\"- Docker metrics health: `{_first_match(r'- `/api/metrics/health`: `([^`]+)`', docker_summary)}`\","
+    },
+    {
+      "path": "scripts/dev/check_api_health.py",
+      "line": 102,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"url\": \"/api/system/health\","
+    },
+    {
+      "path": "scripts/dev/check_api_health.py",
+      "line": 114,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "resp = requests.get(f\"{BASE_URL}/api/docs\", timeout=2)"
+    },
+    {
+      "path": "scripts/dev/ai_automation_improver.py",
+      "line": 106,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "routes_content = f'\"\"\"\\\\n{description}路由\\\\n\"\"\"\\\\n\\\\nfrom fastapi import APIRouter\\\\n\\\\nrouter = APIRouter(prefix=\"/{endpoint_name}\")\\\\n\\\\n\\\\n@router.get(\"/health\")\\\\nasync def health_check():\\\\n    \"\"\"健康检查\"\"\"\\\\n    retur"
+    },
+    {
+      "path": "scripts/dev/ai_automation_improver.py",
+      "line": 106,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "routes_content = f'\"\"\"\\\\n{description}路由\\\\n\"\"\"\\\\n\\\\nfrom fastapi import APIRouter\\\\n\\\\nrouter = APIRouter(prefix=\"/{endpoint_name}\")\\\\n\\\\n\\\\n@router.get(\"/health\")\\\\nasync def health_check():\\\\n    \"\"\"健康检查\"\"\"\\\\n    retur"
+    },
+    {
+      "path": "scripts/dev/tools/migrate_docs_structure.py",
+      "line": 133,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "docs_root = Path(\"/opt/claude/mystocks_spec/docs\")"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 50,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'trading-signals': { apiEndpoint: '/api/trading/signals', wsChannel: 'trading:signals', description: '交易信号' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 51,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'trading-history': { apiEndpoint: '/api/trading/history', wsChannel: 'trading:history', description: '历史订单' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 52,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'trading-positions': { apiEndpoint: '/api/trading/positions', wsChannel: 'trading:positions', description: '持仓监控' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 53,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'trading-attribution': { apiEndpoint: '/api/trading/attribution', wsChannel: 'trading:attribution', description: '绩效归因' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 59,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'strategy-pos': { apiEndpoint: '/api/v1/trade/positions', description: '仓位管理' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 60,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'trade-positions': { apiEndpoint: '/api/v1/trade/positions', wsChannel: 'trade:positions', description: '头寸管理' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 62,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'trade-signals': { apiEndpoint: '/api/v1/trade/signals', wsChannel: 'trade:signals', description: '信号监控' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 63,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'trade-portfolio': { apiEndpoint: '/api/v1/trade/positions', wsChannel: 'trade:portfolio', description: '持仓透视' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 64,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "'trade-history': { apiEndpoint: '/api/v1/trade/trades', wsChannel: 'trade:history', description: '历史对账' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 71,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "'system-settings': { apiEndpoint: '/health/detailed', description: '系统设置（本地持久化 + 健康监控）' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 72,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "'system-config': { apiEndpoint: '/health/detailed', description: '系统设置（本地持久化 + 健康监控）' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 73,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "'system-health': { apiEndpoint: '/health', description: '健康矩阵' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 74,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "'system-api': { apiEndpoint: '/health', description: 'API 终端' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 94,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "{ id: 'attribution', apiEndpoint: '/api/trading/attribution', wsChannel: 'trading:attribution' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 95,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "{ id: 'history', apiEndpoint: '/api/trading/history', wsChannel: 'trading:history' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 99,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "{ id: 'overview', apiEndpoint: '/api/trading/overview', wsChannel: 'trading:overview' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 100,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "{ id: 'signals', apiEndpoint: '/api/trading/signals', wsChannel: 'trading:signals' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 101,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "{ id: 'positions', apiEndpoint: '/api/trading/positions', wsChannel: 'trading:positions' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 102,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "{ id: 'history', apiEndpoint: '/api/trading/history', wsChannel: 'trading:history' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate-page-config.js",
+      "line": 103,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "{ id: 'attribution', apiEndpoint: '/api/trading/attribution', wsChannel: 'trading:attribution' },"
+    },
+    {
+      "path": "scripts/dev/tools/generate_large_file_splitting_inventory.sh",
+      "line": 44,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "-not -path \"*/.archive/*\" -not -path \"*/archived/*\" -not -path \"*/docs/*\" \\"
+    },
+    {
+      "path": "scripts/dev/tools/analyze_docs_suggestions.py",
+      "line": 30,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "def __init__(self, log_dir: str = \"var/log/docs-audit\"):"
+    },
+    {
+      "path": "scripts/dev/tools/performance_test_suite.py",
+      "line": 387,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "with self.client.get(\"/api/health\","
+    },
+    {
+      "path": "scripts/dev/tools/test-service-startup.sh",
+      "line": 39,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s --max-time 5 \"http://localhost:/api/health\" >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/dev/tools/verify-database-connections.sh",
+      "line": 208,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s --max-time 10 \"http://localhost:/api/health\" >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/dev/tools/verify-database-connections.sh",
+      "line": 296,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "- **后端API**: $(curl -s --max-time 5 \"http://localhost:/api/health\" >/dev/null 2>&1 && echo \"✅ 运行中\" || echo \"❌ 未运行\")"
+    },
+    {
+      "path": "scripts/dev/tools/pm2-integration.sh",
+      "line": 126,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "url: 'http://localhost:/api/health',"
+    },
+    {
+      "path": "scripts/dev/tools/pm2-integration.sh",
+      "line": 228,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s --max-time 10 \"http://localhost:/api/health\" >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/dev/tools/pm2-integration.sh",
+      "line": 278,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "$(curl -s -w \"HTTP状态: %{http_code}\\n响应时间: %{time_total}s\\n\" -o /dev/null \"http://localhost:/api/health\" 2>/dev/null || echo \"❌ 服务无响应\")"
+    },
+    {
+      "path": "scripts/dev/tools/pm2-integration.sh",
+      "line": 409,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -f -s --max-time 30 \"http://localhost:/api/health\" >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/dev/frontend_optimization_audit.py",
+      "line": 440,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "default=\"docs/api/openapi.json\","
+    },
+    {
+      "path": "scripts/dev/verify_data_chain.sh",
+      "line": 16,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s -o /dev/null -w \"%{http_code}\" http://localhost:/health | grep -q \"200\"; then"
+    },
+    {
+      "path": "scripts/dev/verify_web_access.mjs",
+      "line": 139,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "'/system/health',"
+    },
+    {
+      "path": "scripts/dev/verify_web_access.mjs",
+      "line": 154,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "const response = await fetch(`${CONFIG.backendUrl}/health`, {"
+    },
+    {
+      "path": "scripts/dev/validate_documentation_consistency.py",
+      "line": 382,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "report_path = \"/opt/claude/mystocks_spec/docs/DOCUMENTATION_VALIDATION_REPORT.md\""
+    },
+    {
+      "path": "scripts/dev/检查系统状态.py",
+      "line": 48,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "f\"http://localhost:{port}/api/cache/status\", timeout=5"
+    },
+    {
+      "path": "scripts/dev/检查系统状态.py",
+      "line": 154,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print(f\"   - API文档: {BACKEND_URL}/api/docs\")"
+    },
+    {
+      "path": "scripts/dev/检查系统状态.py",
+      "line": 156,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "print(f\"   - 系统监控: {BACKEND_URL}/api/cache/status\")"
+    },
+    {
+      "path": "scripts/dev/improved_realtime_validation.py",
+      "line": 149,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "health_url = f\"{self.base_url}/api/market/health\""
+    },
+    {
+      "path": "scripts/dev/health_check.py",
+      "line": 14,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --cli web"
+    },
+    {
+      "path": "scripts/dev/health_check.py",
+      "line": 17,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --all"
+    },
+    {
+      "path": "scripts/dev/health_check.py",
+      "line": 20,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --generate-report"
+    },
+    {
+      "path": "scripts/dev/health_check.py",
+      "line": 362,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "report_lines.append(\"**脚本**: `scripts/dev/health_check.py`\")"
+    },
+    {
+      "path": "scripts/dev/health_check.py",
+      "line": 375,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --all"
+    },
+    {
+      "path": "scripts/dev/health_check.py",
+      "line": 378,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --cli web"
+    },
+    {
+      "path": "scripts/dev/health_check.py",
+      "line": 381,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --generate-report"
+    },
+    {
+      "path": "scripts/dev/health_check.py",
+      "line": 384,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --all --verbose"
+    },
+    {
+      "path": "scripts/dev/analysis/utils/markdown_writer.py",
+      "line": 35,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "DEFAULT_OUTPUT_DIR = \"/opt/claude/mystocks_spec/docs/references/function-classification-manual\""
+    },
+    {
+      "path": "scripts/dev/test-artdeco-dashboard.js",
+      "line": 55,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "path: '/opt/claude/mystocks_spec/docs/reports/artdeco-dashboard-full-debug.png',"
+    },
+    {
+      "path": "scripts/dev/simplified_realtime_validation.py",
+      "line": 83,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "health_url = f\"{self.base_url}/api/market/health\""
+    },
+    {
+      "path": "scripts/dev/simple_auth_server.py",
+      "line": 89,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "@app.get(\"/health\")"
+    },
+    {
+      "path": "scripts/dev/simple_auth_server.py",
+      "line": 153,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "@app.get(\"/api/system/status\")"
+    },
+    {
+      "path": "scripts/dev/check_api_health_v2.py",
+      "line": 66,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "resp = requests.get(f\"{BASE_URL}/api/docs\", timeout=2)"
+    },
+    {
+      "path": "scripts/dev/check_api_health_v2.py",
+      "line": 211,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"url\": f\"{BASE_URL}/api/system/health\","
+    },
+    {
+      "path": "scripts/dev/automation/monitor_and_fix.py",
+      "line": 307,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"url\": f\"{backend_url}/api/health\","
+    },
+    {
+      "path": "scripts/dev/automation/regression_test.sh",
+      "line": 70,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -s -f \"$API_BASE_URL/api/monitoring/health\" >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/dev/automation/regression_test.sh",
+      "line": 124,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"$API_BASE_URL/api/monitoring/health:健康检查\""
+    },
+    {
+      "path": "scripts/dev/automation/regression_test.sh",
+      "line": 266,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "measure_performance \"健康检查API\" \"$API_BASE_URL/api/monitoring/health\" \"0.5\" || ((failed_count++))"
+    },
+    {
+      "path": "scripts/dev/automation/health_check_simple.sh",
+      "line": 19,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "HEALTH_LOG=\"${LOG_DIR}/health_check.log\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_simple.sh",
+      "line": 71,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "for api_endpoint in \"/api/health\" \"/api/docs\"; do"
+    },
+    {
+      "path": "scripts/dev/automation/health_check_simple.sh",
+      "line": 71,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "for api_endpoint in \"/api/health\" \"/api/docs\"; do"
+    },
+    {
+      "path": "scripts/dev/automation/health_check_simple.sh",
+      "line": 84,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local report_file=\"${LOG_DIR}/health_report_$(date +%Y%m%d_%H%M%S).txt\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_simple.sh",
+      "line": 95,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "echo \"API文档: $(curl -s -o /dev/null -w \"%{http_code}\" \"$API_BASE_URL/api/docs\" 2>/dev/null || echo '不可用')\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_simple.sh",
+      "line": 96,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "echo \"API健康: $(curl -s -o /dev/null -w \"%{http_code}\" \"$API_BASE_URL/api/health\" 2>/dev/null || echo '不可用')\""
+    },
+    {
+      "path": "scripts/dev/automation/monitor.sh",
+      "line": 11,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "HEALTH_SCRIPT=\"${PROJECT_ROOT}/scripts/automation/health_check_simple.sh\""
+    },
+    {
+      "path": "scripts/dev/automation/deploy.sh",
+      "line": 248,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s -f http://localhost:/api/monitoring/health >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/dev/automation/deploy.sh",
+      "line": 458,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "log \"API文档地址: http://localhost:/api/docs\""
+    },
+    {
+      "path": "scripts/dev/automation/deploy.sh",
+      "line": 459,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "log \"API健康检查: http://localhost:/api/monitoring/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 10,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "exec 2>&1 | tee \"${LOG_DIR}/health_error.log\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 22,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "HEALTH_LOG=\"${LOG_DIR}/health_check.log\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 89,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 90,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/system/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 91,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/monitoring/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 92,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/docs\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 106,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if [[ \"$api_url\" == *\"/api/monitoring/health\"* ]]; then"
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 256,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 257,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/system/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 258,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/monitoring/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 259,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/docs\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check_v2.sh",
+      "line": 286,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local report_file=\"${LOG_DIR}/health_report_$(date +%Y%m%d_%H%M%S).txt\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check.sh",
+      "line": 21,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "HEALTH_LOG=\"${LOG_DIR}/health_check.log\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check.sh",
+      "line": 74,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local api_url=\"${API_BASE_URL}/api/monitoring/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check.sh",
+      "line": 245,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"${API_BASE_URL}/api/monitoring/health\""
+    },
+    {
+      "path": "scripts/dev/automation/health_check.sh",
+      "line": 276,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local report_file=\"${LOG_DIR}/health_report_$(date +%Y%m%d_%H%M%S).txt\""
+    },
+    {
+      "path": "scripts/dev/automation/monitor_config.json",
+      "line": 13,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"url\": \"http://localhost:8020/api/health\","
+    },
+    {
+      "path": "scripts/dev/automation/monitor_config.json",
+      "line": 23,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "{ \"path\": \"/api/health\", \"method\": \"GET\", \"expected_status\": 200 },"
+    },
+    {
+      "path": "scripts/dev/start_with_mock.sh",
+      "line": 148,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s http://localhost:/api/cache/status > /dev/null; then"
+    },
+    {
+      "path": "scripts/dev/start_with_mock.sh",
+      "line": 177,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "echo -e \"  API文档: ${BLUE}http://localhost:/api/docs${NC}\""
+    },
+    {
+      "path": "scripts/dev/start_with_mock.sh",
+      "line": 179,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "echo -e \"  系统监控: ${BLUE}http://localhost:/api/cache/status${NC}\""
+    },
+    {
+      "path": "scripts/dev/tmux/mystocks-test.conf",
+      "line": 63,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "send-keys -t 3 'echo \"- PostgreSQL: curl -s http://localhost:${BACKEND_PORT:-8020}/api/system/database/health\"' C-m"
+    },
+    {
+      "path": "scripts/dev/tmux/mystocks-test.conf",
+      "line": 64,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "send-keys -t 3 'echo \"- TDengine: curl -s http://localhost:${BACKEND_PORT:-8020}/api/cache/monitoring/health\"' C-m"
+    },
+    {
+      "path": "scripts/dev/tmux/mystocks-test.conf",
+      "line": 65,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "send-keys -t 3 'echo \"- 缓存状态: curl -s http://localhost:${BACKEND_PORT:-8020}/api/cache/status\"' C-m"
+    },
+    {
+      "path": "scripts/dev/generate_market_api_openapi.sh",
+      "line": 7,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "OUTPUT_DIR=\"$PROJECT_ROOT/docs/api/openapi\""
+    },
+    {
+      "path": "scripts/dev/generate_market_api_openapi.sh",
+      "line": 32,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "output_path = Path(\"../../docs/api/openapi/market-data-api-full.json\")"
+    },
+    {
+      "path": "scripts/dev/verify_windows_qmt_agent_contract.py",
+      "line": 123,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "response = await client.get(f\"{base_url.rstrip('/')}/health\")"
+    },
+    {
+      "path": "scripts/dev/verify_windows_qmt_agent_contract.py",
+      "line": 127,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "raise ValueError(\"Windows qmt /health payload must be a JSON object\")"
+    },
+    {
+      "path": "scripts/dev/start-dev.sh",
+      "line": 184,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "echo \"  后端 API:  http://localhost:/api/docs\""
+    },
+    {
+      "path": "scripts/dev/start-dev.sh",
+      "line": 260,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "echo -e \"  后端 API: ${BLUE}http://localhost:/api/docs${NC}\""
+    },
+    {
+      "path": "scripts/dev/get-docker.sh",
+      "line": 9,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "# at https://docs.docker.com/engine/install/ for alternative installation methods."
+    },
+    {
+      "path": "scripts/dev/get-docker.sh",
+      "line": 304,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "echo \"Visit https://docs.docker.com/go/rootless/ to learn about rootless mode.\""
+    },
+    {
+      "path": "scripts/dev/get-docker.sh",
+      "line": 309,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "echo \"users access, refer to https://docs.docker.com/go/daemon-access/\""
+    },
+    {
+      "path": "scripts/dev/get-docker.sh",
+      "line": 313,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "echo \"         documentation for details: https://docs.docker.com/go/attack-surface/\""
+    },
+    {
+      "path": "scripts/verify_web_access.js",
+      "line": 136,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "const req = http.get(`http://localhost:${CONFIG.backendPort}/health`, (res) => {"
+    },
+    {
+      "path": "scripts/compliance/readiness_contract_gate.py",
+      "line": 15,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "'@app.get(\"/health/ready\")',"
+    },
+    {
+      "path": "scripts/compliance/readiness_contract_gate.py",
+      "line": 16,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"@app.get('/health/ready')\","
+    },
+    {
+      "path": "scripts/compliance/readiness_contract_gate.py",
+      "line": 17,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "'@router.get(\"/health/ready\")',"
+    },
+    {
+      "path": "scripts/compliance/readiness_contract_gate.py",
+      "line": 18,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"@router.get('/health/ready')\","
+    },
+    {
+      "path": "scripts/compliance/readiness_contract_gate.py",
+      "line": 37,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"/api/health/ready\","
+    },
+    {
+      "path": "scripts/compliance/readiness_contract_gate.py",
+      "line": 57,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"detail\": \"Detected /health/ready readiness probe\" if passed else \"Missing /health/ready readiness probe\","
+    },
+    {
+      "path": "scripts/deployment/INDEX.md",
+      "line": 15,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- [SETUP_GRAFANA](../../docs/operations/deployment/SETUP_GRAFANA.md)"
+    },
+    {
+      "path": "scripts/deployment/deploy/deploy.sh",
+      "line": 182,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local health_url=\"http://localhost:8001/health\""
+    },
+    {
+      "path": "scripts/deployment/deploy/deploy.sh",
+      "line": 185,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local health_url=\"http://localhost:/health\""
+    },
+    {
+      "path": "scripts/deployment/deploy/deploy.sh",
+      "line": 230,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -f \"${api_base}/health\" || {"
+    },
+    {
+      "path": "scripts/deployment/deploy/deploy.sh",
+      "line": 236,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -f \"${api_base}/system/health\" || {"
+    },
+    {
+      "path": "scripts/deployment/deploy/deploy.sh",
+      "line": 251,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -f \"${api_base}/health\" || {"
+    },
+    {
+      "path": "scripts/deployment/deploy/deploy.sh",
+      "line": 257,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -f \"${api_base}/system/health\" || {"
+    },
+    {
+      "path": "scripts/deployment/deploy/automation_test_deployment.py",
+      "line": 325,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "\"/api/monitoring/status\","
+    },
+    {
+      "path": "scripts/deployment/deploy/automation_test_deployment.py",
+      "line": 462,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"health_check\": f\"Health check script created at {scripts_dir}/health_check.sh\","
+    },
+    {
+      "path": "scripts/deployment/deploy/automation_test_deployment.py",
+      "line": 544,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"health_check_endpoint\": \"/health\","
+    },
+    {
+      "path": "scripts/deployment/deploy/automation_test_deployment.py",
+      "line": 562,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"api_health\": \"/api/health endpoint configured\","
+    },
+    {
+      "path": "scripts/deployment/deploy/automation_test_deployment.py",
+      "line": 594,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "./scripts/automation/health_check.sh"
+    },
+    {
+      "path": "scripts/deployment/deploy/automation_test_deployment.py",
+      "line": 598,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- 访问 http://localhost:{self.backend_port}/api/docs"
+    },
+    {
+      "path": "scripts/deployment/deploy/automation_test_deployment.py",
+      "line": 626,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "\"swagger_ui\": \"Swagger UI available at /api/docs\","
+    },
+    {
+      "path": "scripts/deployment/deploy/automation_test_deployment.py",
+      "line": 627,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "\"redoc\": \"ReDoc available at /api/redoc\","
+    },
+    {
+      "path": "scripts/deployment/setup-grafana.sh",
+      "line": 22,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -s http://localhost:3000/api/health | grep -q '\"ok\"'; then"
+    },
+    {
+      "path": "scripts/deployment/k8s-deployment.yaml",
+      "line": 139,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "prometheus.io/path: \"/metrics\""
+    },
+    {
+      "path": "scripts/deployment/k8s-deployment.yaml",
+      "line": 199,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "path: /health"
+    },
+    {
+      "path": "scripts/deployment/k8s-deployment.yaml",
+      "line": 207,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "path: /health"
+    },
+    {
+      "path": "scripts/deployment/k8s-deployment.yaml",
+      "line": 403,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "path: /metrics"
+    },
+    {
+      "path": "scripts/deployment/k8s-deployment.yaml",
+      "line": 436,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "- path: /metrics"
+    },
+    {
+      "path": "scripts/deployment/automation_test_deployment.py",
+      "line": 325,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "\"/api/monitoring/status\","
+    },
+    {
+      "path": "scripts/deployment/automation_test_deployment.py",
+      "line": 462,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"health_check\": f\"Health check script created at {scripts_dir}/health_check.sh\","
+    },
+    {
+      "path": "scripts/deployment/automation_test_deployment.py",
+      "line": 544,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"health_check_endpoint\": \"/health\","
+    },
+    {
+      "path": "scripts/deployment/automation_test_deployment.py",
+      "line": 562,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"api_health\": \"/api/health endpoint configured\","
+    },
+    {
+      "path": "scripts/deployment/automation_test_deployment.py",
+      "line": 594,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "./scripts/automation/health_check.sh"
+    },
+    {
+      "path": "scripts/deployment/automation_test_deployment.py",
+      "line": 598,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- 访问 http://localhost:{self.backend_port}/api/docs"
+    },
+    {
+      "path": "scripts/deployment/automation_test_deployment.py",
+      "line": 626,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "\"swagger_ui\": \"Swagger UI available at /api/docs\","
+    },
+    {
+      "path": "scripts/deployment/automation_test_deployment.py",
+      "line": 627,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "\"redoc\": \"ReDoc available at /api/redoc\","
+    },
+    {
+      "path": "scripts/playwright_cli_routes.sh",
+      "line": 26,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"system/health|健康矩阵|P6\""
+    },
+    {
+      "path": "scripts/windows_qmt_agent/app.py",
+      "line": 18,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "@app.get(\"/health\", response_model=HealthResponse)"
+    },
+    {
+      "path": "scripts/port_status.py",
+      "line": 119,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print(f\"   - API文档: http://localhost:{BACKEND_PORT}/docs\")"
+    },
+    {
+      "path": "scripts/port_status.py",
+      "line": 236,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print(f\"   4. 查看API文档 http://localhost:{BACKEND_PORT}/docs\")"
+    },
+    {
+      "path": "scripts/run-e2e-tests.sh",
+      "line": 129,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -s \"http://localhost:${BACKEND_PORT}/health\" > /dev/null; then"
+    },
+    {
+      "path": "scripts/cli/main/CHECKPOINTS.md",
+      "line": 51,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "- `scripts/dev/health_check.py`"
+    },
+    {
+      "path": "scripts/cli/main/CHECKPOINTS.md",
+      "line": 60,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --all"
+    },
+    {
+      "path": "scripts/cli/main/HEALTH.md",
+      "line": 105,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "**脚本**: `scripts/dev/health_check.py`"
+    },
+    {
+      "path": "scripts/cli/SHARED/KNOWLEDGE_BASE.md",
+      "line": 169,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "**健康检查**: `scripts/dev/health_check.py`"
+    },
+    {
+      "path": "scripts/cli/SHARED/KNOWLEDGE_BASE.md",
+      "line": 172,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --all"
+    },
+    {
+      "path": "scripts/cli/SHARED/KNOWLEDGE_BASE.md",
+      "line": 175,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "python scripts/dev/health_check.py --generate-report"
+    },
+    {
+      "path": "scripts/cli/SHARED/KNOWLEDGE_BASE.md",
+      "line": 294,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -X GET http://localhost:8000/api/health"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 10,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "**完整文档**: [docs/guides/multi-cli-tasks/INDEX.md](../docs/guides/multi-cli-tasks/INDEX.md)"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 18,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "| **系统概览** | [系统初始化](#系统初始化) | [V2实施方案](../docs/architecture/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md) |"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 19,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "| **CLI报到** | [CLI报到流程](#cli报到流程) | [报到详细指南](../docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md) |"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 20,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "| **任务池** | [任务池使用](#任务池使用) | [任务池完整指南](../docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md) |"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 21,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "| **实施报告** | - | [实施完成报告](../docs/06-项目管理与报告/MULTI_CLI_IMPLEMENTATION_COMPLETION_REPORT.md) |"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 108,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "**📖 详细文档**: [CLI报到完整指南](../docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md)"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 185,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "**📖 详细文档**: [任务池完整使用指南](../docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md)"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 421,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **[CLI报到详细指南](../docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md)** - 完整的报到流程、API文档、故障排查"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 422,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **[任务池使用指南](../docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md)** - 任务发布、认领、更新的完整说明"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 423,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **[V2实施方案](../docs/architecture/MULTI_CLI_COLLABORATION_V2_IMPLEMENTATION.md)** - 架构设计、实现细节"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 424,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **[实施完成报告](../docs/06-项目管理与报告/MULTI_CLI_IMPLEMENTATION_COMPLETION_REPORT.md)** - 实施总结、验证结果"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 425,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **[V2.1修复总结](../docs/06-项目管理与报告/MULTI_CLI_V2_FIX_SUMMARY.md)** - 7个关键问题修复"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 446,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **[FILE_ORGANIZATION_RULES.md](../docs/standards/FILE_ORGANIZATION_RULES.md)** - 文件组织规范"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 447,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **[MULTI_CLI_COLLABORATION_METHOD.md](../docs/guides/multi-cli-tasks/MULTI_CLI_COLLABORATION_METHOD.md)** - V1方法文档（已归档）"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 457,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "ls ../docs/guides/"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 460,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "cat ../docs/guides/multi-cli-tasks/CLI_REGISTRATION_GUIDE.md"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 461,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "cat ../docs/guides/multi-cli-tasks/TASK_POOL_USAGE_GUIDE.md"
+    },
+    {
+      "path": "scripts/cli/README.md",
+      "line": 487,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "**详细问题**: 请参考 [docs/guides/multi-cli-tasks/INDEX.md](../docs/guides/multi-cli-tasks/INDEX.md) 下的完整文档"
+    },
+    {
+      "path": "scripts/test_api_fixes.sh",
+      "line": 149,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "test_api \"健康检查\" \"/api/monitoring/health\" \"GET\" \"200\""
+    },
+    {
+      "path": "scripts/test_api_fixes.sh",
+      "line": 151,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "test_api \"获取指标记录\" \"/api/monitoring/metrics?limit=10\" \"GET\" \"200\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 17,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_BASELINE_RAW_PATH=\"${REPORT_DIR}/metrics.baseline.raw.txt\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 18,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_RAW_PATH=\"${REPORT_DIR}/metrics.raw.txt\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 19,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_HEALTH_PATH=\"${REPORT_DIR}/metrics-health.json\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 20,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_SUMMARY_PATH=\"${REPORT_DIR}/metrics-summary.json\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 102,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_url \"http://localhost:${BACKEND_PORT}/health\" \"Backend /health\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 103,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_url \"http://localhost:${BACKEND_PORT}/api/health/ready\" \"Backend /api/health/ready\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 106,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:${BACKEND_PORT}/metrics\" > \"${METRICS_BASELINE_RAW_PATH}\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 107,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent --fail \"http://localhost:${BACKEND_PORT}/health\" > \"${BACKEND_HEALTH_PATH}\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 108,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent --fail \"http://localhost:${BACKEND_PORT}/api/health/ready\" > \"${BACKEND_READINESS_PATH}\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 110,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent --fail \"http://localhost:${BACKEND_PORT}/api/metrics/health\" > \"${METRICS_HEALTH_PATH}\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 110,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent --fail \"http://localhost:${BACKEND_PORT}/api/metrics/health\" > \"${METRICS_HEALTH_PATH}\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 111,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent --fail \"http://localhost:${BACKEND_PORT}/metrics\" > \"${METRICS_RAW_PATH}\""
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 168,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' http://localhost:${BACKEND_PORT}/health"
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 169,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' http://localhost:${BACKEND_PORT}/api/health/ready"
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 181,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "- \\`/api/metrics/health\\`: \\`${METRICS_HEALTH_STATUS}\\`"
+    },
+    {
+      "path": "scripts/run_containerized_runtime_smoke.sh",
+      "line": 181,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "- \\`/api/metrics/health\\`: \\`${METRICS_HEALTH_STATUS}\\`"
+    },
+    {
+      "path": "scripts/opencode/update_mydoc_opencode_guides.sh",
+      "line": 4,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "SRC_ROOT=\"/opt/claude/mystocks_spec/docs/guides\""
+    },
+    {
+      "path": "scripts/opencode/migrate_opencode_assets_to_mydoc.sh",
+      "line": 12,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "SRC_GUIDE=\"$SRC_ROOT/docs/guides/ai-tools/OMO_SETUP_GUIDE.md\""
+    },
+    {
+      "path": "scripts/run_test.sh",
+      "line": 199,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local backend_status=$(curl -s -o /dev/null -w \"%{http_code}\" \"${BACKEND_URL}/health\" || echo \"000\")"
+    },
+    {
+      "path": "scripts/run_test.sh",
+      "line": 317,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local frontend_health=$(curl -s \"${FRONTEND_URL}/health\" 2>/dev/null | head -c 100 || echo \"Unreachable\")"
+    },
+    {
+      "path": "scripts/run_test.sh",
+      "line": 318,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "local backend_health=$(curl -s \"${BACKEND_URL}/health\" 2>/dev/null || echo \"Unreachable\")"
+    },
+    {
+      "path": "scripts/run-api-tests.sh",
+      "line": 58,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -fsS \"${BACKEND_BASE_URL}/api/announcement/health\" > /dev/null 2>&1 && \\"
+    },
+    {
+      "path": "scripts/run-api-tests.sh",
+      "line": 59,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "! curl -fsS \"${BACKEND_BASE_URL}/health/ready\" > /dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/test_data_consistency.py",
+      "line": 348,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "f\"{API_BASE_URL}/api/monitoring/health\", headers=HEADERS, timeout=10"
+    },
+    {
+      "path": "scripts/quick_validation.sh",
+      "line": 59,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "check_file \"/opt/claude/mystocks_spec/docs/api/API_FIXES_SUMMARY.md\" \"API修复文档\""
+    },
+    {
+      "path": "scripts/utils/frontend_status.py",
+      "line": 51,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "response = requests.get(f\"http://localhost:{port}/docs\", timeout=2)"
+    },
+    {
+      "path": "scripts/utils/frontend_status.py",
+      "line": 207,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print(f\"   - API文档: http://localhost:{BACKEND_PORT}/docs\")"
+    },
+    {
+      "path": "scripts/utils/frontend_status.py",
+      "line": 209,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "print(f\"   - 健康检查: http://localhost:{BACKEND_PORT}/health\")"
+    },
+    {
+      "path": "scripts/runtime/start_metrics_server.py",
+      "line": 24,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "http://localhost:8001/metrics"
+    },
+    {
+      "path": "scripts/runtime/start_metrics_server.py",
+      "line": 146,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "logger.info(f\"  - Metrics端点: http://localhost:{metrics_port}/metrics\")"
+    },
+    {
+      "path": "scripts/runtime/start_metrics_server.py",
+      "line": 158,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "logger.info(f\"访问 http://localhost:{metrics_port}/metrics 查看指标\")"
+    },
+    {
+      "path": "scripts/runtime/import_to_apifox.py",
+      "line": 287,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print(f\"   curl http://localhost:{backend_port}/openapi.json > {OPENAPI_FILE}\")"
+    },
+    {
+      "path": "scripts/runtime/run_platform.sh",
+      "line": 102,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "log_warn \"Installation guide: https://docs.tdengine.com/\""
+    },
+    {
+      "path": "scripts/runtime/run_platform.sh",
+      "line": 146,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_service \"http://localhost:$BACKEND_PORT/health\" \"FastAPI backend\""
+    },
+    {
+      "path": "scripts/runtime/run_platform.sh",
+      "line": 283,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "- Backend: http://localhost:$BACKEND_PORT/health"
+    },
+    {
+      "path": "scripts/runtime/run_platform.sh",
+      "line": 376,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "log_info \"📖 API Docs: http://localhost:$BACKEND_PORT/docs\""
+    },
+    {
+      "path": "scripts/runtime/run_platform.sh",
+      "line": 379,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "log_info \"📖 API Docs: http://localhost:$BACKEND_PORT/docs\""
+    },
+    {
+      "path": "scripts/tests/run_e2e_tests.sh",
+      "line": 26,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s \"${BACKEND_URL}/api/health\" > /dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/run_e2e_tests.sh",
+      "line": 50,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"/api/system/database/health\""
+    },
+    {
+      "path": "scripts/tests/run_e2e_tests.sh",
+      "line": 54,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "\"/api/system/performance/metrics\""
+    },
+    {
+      "path": "scripts/tests/load_test_scenarios.py",
+      "line": 66,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"/health\","
+    },
+    {
+      "path": "scripts/tests/test_phase3_integration.py",
+      "line": 65,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "(\"GET\", \"/api/v1/data-sources/config/health\", \"批量健康检查\"),"
+    },
+    {
+      "path": "scripts/tests/test_phase3_integration.py",
+      "line": 137,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "(\"GET\", \"/api/v1/governance/compliance/metrics\", \"治理合规指标\"),"
+    },
+    {
+      "path": "scripts/tests/cache_loadtest.py",
+      "line": 26,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "self.client.get(\"/health\")"
+    },
+    {
+      "path": "scripts/tests/cache_loadtest.py",
+      "line": 31,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "self.client.get(\"/metrics\")"
+    },
+    {
+      "path": "scripts/tests/LOAD_TESTING_GUIDE.md",
+      "line": 428,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "1. 检查API服务是否运行: `curl http://localhost:8000/health`"
+    },
+    {
+      "path": "scripts/tests/LOAD_TESTING_GUIDE.md",
+      "line": 435,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -v http://localhost:8000/health"
+    },
+    {
+      "path": "scripts/tests/LOAD_TESTING_GUIDE.md",
+      "line": 501,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **Locust官方文档**: https://docs.locust.io/"
+    },
+    {
+      "path": "scripts/tests/LOAD_TESTING_GUIDE.md",
+      "line": 503,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **MyStocks API文档**: `/docs/api/README.md`"
+    },
+    {
+      "path": "scripts/tests/LOAD_TESTING_GUIDE.md",
+      "line": 504,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **告警升级机制**: `/docs/api/TASK_15_COMPLETION_SUMMARY.md`"
+    },
+    {
+      "path": "scripts/tests/LOAD_TESTING_GUIDE.md",
+      "line": 561,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- 技术文档: `/docs/api/`"
+    },
+    {
+      "path": "scripts/tests/legacy/test_web_services.js",
+      "line": 44,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "testService('Backend API (port 8000)', 'http://localhost:8000/api/health'),"
+    },
+    {
+      "path": "scripts/tests/legacy/test_frontend_comprehensive.py",
+      "line": 280,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "'/api/health',"
+    },
+    {
+      "path": "scripts/tests/legacy/test_frontend_comprehensive.py",
+      "line": 617,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "const response = await fetch('/api/health');"
+    },
+    {
+      "path": "scripts/tests/legacy/test_frontend_deep.py",
+      "line": 220,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "endpoints = [\"/api/health\", \"/api/auth/login\"]"
+    },
+    {
+      "path": "scripts/tests/run_api_tests.sh",
+      "line": 27,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -s http://localhost:/health > /dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/run_api_tests.sh",
+      "line": 37,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s http://localhost:/health > /dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/web-usability-runner.sh",
+      "line": 283,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -s --max-time 10 \"$API_URL/health\" > /dev/null; then"
+    },
+    {
+      "path": "scripts/tests/verify_monitoring_integration.py",
+      "line": 163,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "\"\"\"测试/metrics端点是否可访问\"\"\""
+    },
+    {
+      "path": "scripts/tests/verify_monitoring_integration.py",
+      "line": 172,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "response = requests.get(\"http://localhost:8001/metrics\", timeout=5)"
+    },
+    {
+      "path": "scripts/tests/load_test_locustfile.py",
+      "line": 259,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "self.client.get(\"/health\", name=\"/health\")"
+    },
+    {
+      "path": "scripts/tests/LOAD_TEST_QUICK_REFERENCE.md",
+      "line": 138,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -v http://localhost:8000/health"
+    },
+    {
+      "path": "scripts/tests/LOAD_TEST_QUICK_REFERENCE.md",
+      "line": 218,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -s http://localhost:8000/health > /dev/null && echo \"OK\" || echo \"FAILED\""
+    },
+    {
+      "path": "scripts/tests/LOAD_TEST_QUICK_REFERENCE.md",
+      "line": 251,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **Locust文档**: https://docs.locust.io/"
+    },
+    {
+      "path": "scripts/tests/LOAD_TEST_QUICK_REFERENCE.md",
+      "line": 252,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **API文档**: `/docs/api/README.md`"
+    },
+    {
+      "path": "scripts/tests/LOAD_TEST_QUICK_REFERENCE.md",
+      "line": 253,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "- **Task 15**: `/docs/api/TASK_15_COMPLETION_SUMMARY.md`"
+    },
+    {
+      "path": "scripts/tests/test_check_api_health.py",
+      "line": 85,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "assert health_endpoint[\"url\"] == \"/api/system/health\""
+    },
+    {
+      "path": "scripts/tests/test_check_api_health.py",
+      "line": 103,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "mock_get.assert_called_once_with(f\"{BASE_URL}/api/docs\", timeout=2)"
+    },
+    {
+      "path": "scripts/tests/run-e2e-tests.sh",
+      "line": 181,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -f \"$api_url/health\" &> /dev/null; then"
+    },
+    {
+      "path": "scripts/tests/test-env-checker.py",
+      "line": 238,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "response = requests.get(services[\"backend\"][\"url\"] + \"/docs\", timeout=5)"
+    },
+    {
+      "path": "scripts/tests/run-api-tests.sh",
+      "line": 25,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "REPORT_DIR=\"${PROJECT_ROOT}/docs/reports/test-results\""
+    },
+    {
+      "path": "scripts/tests/run-api-tests.sh",
+      "line": 66,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -fsS \"${BASE_URL}/api/announcement/health\" > /dev/null 2>&1 || \\"
+    },
+    {
+      "path": "scripts/tests/run-api-tests.sh",
+      "line": 67,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -fsS \"${BASE_URL}/health/ready\" > /dev/null 2>&1 || \\"
+    },
+    {
+      "path": "scripts/tests/run-api-tests.sh",
+      "line": 68,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -fsS \"${BASE_URL}/health\" > /dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/run-api-tests.sh",
+      "line": 72,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "print_message \"${RED}\" \"❌ 后端服务未响应或不可用 (${BASE_URL}/api/announcement/health or /health/ready)\""
+    },
+    {
+      "path": "scripts/tests/test-runner/run-schemathesis.sh",
+      "line": 60,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s --max-time 5 \"${BACKEND_URL}/docs\" > /dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/test-runner/run-schemathesis.sh",
+      "line": 85,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "log_info \"执行命令: schemathesis run ${BACKEND_URL}/openapi.json $SCHEMATHESIS_OPTIONS --report ${SCHEMATHESIS_REPORT}\""
+    },
+    {
+      "path": "scripts/tests/test-runner/run-schemathesis.sh",
+      "line": 89,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "\"${BACKEND_URL}/openapi.json\" \\"
+    },
+    {
+      "path": "scripts/tests/test-runner/run-performance-tests.sh",
+      "line": 49,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -s --max-time 5 \"http://localhost:/docs\" >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/test-runner/run-performance-tests.sh",
+      "line": 103,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "self.client.get(\"/api/health\")"
+    },
+    {
+      "path": "scripts/tests/test-runner/start-environment.sh",
+      "line": 181,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s --max-time 5 \"http://localhost:$BACKEND_PORT/api/health\" >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/test-runner/start-environment.sh",
+      "line": 236,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s --max-time 3 \"http://localhost:$BACKEND_PORT/api/health\" >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/test-runner/start-environment.sh",
+      "line": 252,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "echo \"  1. 运行健康检查: ./scripts/test-runner/health-check.sh\""
+    },
+    {
+      "path": "scripts/tests/test-runner/esm-validation.sh",
+      "line": 64,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! check_service \"后端\" \"http://localhost:$BACKEND_PORT/api/health\" 10; then"
+    },
+    {
+      "path": "scripts/tests/test-runner/esm-validation.sh",
+      "line": 157,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! check_service \"后端\" \"http://localhost:$BACKEND_PORT/api/health\" 5 >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/test-runner/health-check.sh",
+      "line": 10,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "BACKEND_URL=\"http://localhost:/api/health\""
+    },
+    {
+      "path": "scripts/tests/test_advanced_analysis_api_integration.py",
+      "line": 84,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "url = f\"{self.base_url}/health\""
+    },
+    {
+      "path": "scripts/tests/buger_integration_test.py",
+      "line": 4,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "按照 /opt/iflow/buger/docs/guides/B项目接入指南.md 执行"
+    },
+    {
+      "path": "scripts/tests/buger_integration_test.py",
+      "line": 64,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "response = requests.get(f\"{base_url}/health\", timeout=5)"
+    },
+    {
+      "path": "scripts/tests/test_security_owasp_top10.py",
+      "line": 185,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "f\"{self.base_url.replace('http', 'https')}/api/health\", timeout=5"
+    },
+    {
+      "path": "scripts/tests/test_security_owasp_top10.py",
+      "line": 325,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "response = self.session.get(f\"{self.base_url}{endpoint}/health\")"
+    },
+    {
+      "path": "scripts/tests/test_security_owasp_top10.py",
+      "line": 382,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "response = self.session.get(f\"{self.base_url}/api/health\")"
+    },
+    {
+      "path": "scripts/tests/test_security_owasp_top10.py",
+      "line": 503,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "response = self.session.get(f\"{self.base_url}/api/health\")"
+    },
+    {
+      "path": "scripts/tests/test_security_owasp_top10.py",
+      "line": 645,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "f\"{self.base_url}/api/trading/order\","
+    },
+    {
+      "path": "scripts/tests/test_check_api_health_v2.py",
+      "line": 137,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "mock_get.assert_called_with(f\"{EXPECTED_BASE_URL}/api/docs\", timeout=2)"
+    },
+    {
+      "path": "scripts/tests/test_tdx_api.py",
+      "line": 21,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "response = client.get(\"/api/tdx/health\")"
+    },
+    {
+      "path": "scripts/tests/manage-test-env.sh",
+      "line": 333,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -f http://localhost:/health &> /dev/null; then"
+    },
+    {
+      "path": "scripts/tests/run-tests-no-docker.sh",
+      "line": 430,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s http://localhost:/docs >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/tests/test_contract_testing.py",
+      "line": 410,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "\"/api/health\": {"
+    },
+    {
+      "path": "scripts/tests/test_contract_testing.py",
+      "line": 438,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "engine.register_test_handler(\"GET /api/health\", handler)"
+    },
+    {
+      "path": "scripts/tests/test_contract_testing.py",
+      "line": 440,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "assert \"GET /api/health\" in engine.test_handlers"
+    },
+    {
+      "path": "scripts/tests/test_contract_testing.py",
+      "line": 449,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "engine.register_test_handler(\"GET /api/health\", handler)"
+    },
+    {
+      "path": "scripts/tests/test-directory-org/check-structure.sh",
+      "line": 202,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "if [[ \"$basename_file\" =~ \\.md$ ]] && [[ \"$file\" != *\"/docs/\"* ]]; then"
+    },
+    {
+      "path": "scripts/tests/run-tests-no-docker.bat",
+      "line": 473,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "curl -s http://localhost:!BACKEND_PORT!/docs >nul 2>&1"
+    },
+    {
+      "path": "scripts/tests/verify_windows_bridge_connectivity.py",
+      "line": 24,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "resp = await client.get(f\"{url}/health\")"
+    },
+    {
+      "path": "scripts/tests/test_security_authentication/authentication_tester_methods/part1.py",
+      "line": 80,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "unprotected_endpoints = [\"/api/health\", \"/api/market/data\", \"/api/public/info\"]"
+    },
+    {
+      "path": "scripts/tests/web-usability/core/environment.js",
+      "line": 18,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "const backendResponse = await axios.get(`${this.config.apiUrl}/health`, { timeout: 5000 });"
+    },
+    {
+      "path": "scripts/tests/web-usability/core/environment.js",
+      "line": 38,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "const response = await axios.get(`${this.config.apiUrl}/api/system/health`, { timeout: 5000 });"
+    },
+    {
+      "path": "scripts/tests/web-usability/core/performance.js",
+      "line": 108,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "const endpoint = `${this.config.apiUrl}/health`;"
+    },
+    {
+      "path": "scripts/tests/test/run-comprehensive-tests.sh",
+      "line": 147,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -s \"http://localhost:${BACKEND_PORT}/health\" > /dev/null 2>&1 || \\"
+    },
+    {
+      "path": "scripts/tests/test/run-comprehensive-tests.sh",
+      "line": 148,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl -s \"http://localhost:${BACKEND_PORT}/api/health\" > /dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/run_pm2_integration_workflow.sh",
+      "line": 189,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_url \"http://localhost:8020/health\" \"Backend\""
+    },
+    {
+      "path": "scripts/run_pm2_integration_workflow.sh",
+      "line": 190,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_url \"http://localhost:8020/api/health/ready\" \"Backend readiness\""
+    },
+    {
+      "path": "scripts/cicd_pipeline.sh",
+      "line": 253,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "lighthouse \"${BACKEND_BASE_URL}/api/docs\" --output json --output html --output-path ./reports/lighthouse-report.html || true"
+    },
+    {
+      "path": "scripts/cicd_pipeline.sh",
+      "line": 254,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "lighthouse \"${BACKEND_BASE_URL}/api/docs\" --output json --output-path ./reports/lighthouse-report.json || true"
+    },
+    {
+      "path": "scripts/verify_phase27_phase28.py",
+      "line": 397,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "report_path = \"/opt/claude/mystocks_spec/docs/reports/api_verification/PHASE_2.7_2.8_VERIFICATION_REPORT.md\""
+    },
+    {
+      "path": "scripts/find_large_files.py",
+      "line": 45,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "if \"/tests/\" in filepath or \"/docs/\" in filepath:"
+    },
+    {
+      "path": "scripts/ci_data_sync_tests.sh",
+      "line": 88,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "check_service_health \"后端\" \"http://localhost:$BACKEND_PORT/health\" 60"
+    },
+    {
+      "path": "scripts/verify_api_integration.py",
+      "line": 94,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "(\"健康检查\", \"/api/health\"),"
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 13,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_HEAD_PATH=\"${REPORT_DIR}/metrics-head.txt\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 14,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_BASELINE_RAW_PATH=\"${REPORT_DIR}/metrics.baseline.raw.txt\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 15,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_RAW_PATH=\"${REPORT_DIR}/metrics.raw.txt\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 16,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_HEALTH_PATH=\"${REPORT_DIR}/metrics-health.json\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 17,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "METRICS_SUMMARY_PATH=\"${REPORT_DIR}/metrics-summary.json\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 49,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_url \"http://localhost:8020/health\" \"Backend\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 50,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "wait_for_url \"http://localhost:8020/api/health/ready\" \"Backend readiness\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 55,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent --fail --max-time 10 \"http://localhost:8020/health\" >/dev/null"
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 56,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent --fail --max-time 10 \"http://localhost:8020/api/health/ready\" >/dev/null"
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 61,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:8020/metrics\" > \"${METRICS_BASELINE_RAW_PATH}\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 72,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:8020/api/metrics/health\" > \"${METRICS_HEALTH_PATH}\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 72,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:8020/api/metrics/health\" > \"${METRICS_HEALTH_PATH}\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 73,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "curl --noproxy '*' --silent \"http://localhost:8020/metrics\" > \"${METRICS_RAW_PATH}\""
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 131,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `/api/metrics/health`: `{metrics_health.get('status', 'unknown')}`\","
+    },
+    {
+      "path": "scripts/run_api_performance_baseline.sh",
+      "line": 131,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "f\"- `/api/metrics/health`: `{metrics_health.get('status', 'unknown')}`\","
+    },
+    {
+      "path": "scripts/verify_api_data.py",
+      "line": 214,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "report_file = \"/opt/claude/mystocks_spec/docs/reports/API_DATA_VERIFICATION_REPORT.json\""
+    },
+    {
+      "path": "scripts/stocks_spec.sh",
+      "line": 166,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if curl -sf http://localhost:$port/health >/dev/null 2>&1; then"
+    },
+    {
+      "path": "scripts/stocks_spec.sh",
+      "line": 173,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print_info \"  Swagger文档: http://localhost:$port/docs\""
+    },
+    {
+      "path": "scripts/stocks_spec.sh",
+      "line": 174,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print_info \"  ReDoc文档: http://localhost:$port/api/redoc\""
+    },
+    {
+      "path": "scripts/stocks_spec.sh",
+      "line": 330,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print_info \"  Swagger文档: http://localhost:$DEFAULT_BACKEND_PORT/docs\""
+    },
+    {
+      "path": "scripts/stocks_spec.sh",
+      "line": 331,
+      "category": "openapi_docs",
+      "consumer_class": "scripts",
+      "snippet": "print_info \"  ReDoc文档: http://localhost:$DEFAULT_BACKEND_PORT/api/redoc\""
+    },
+    {
+      "path": "scripts/database/postgres_indexes.sql",
+      "line": 57,
+      "category": "trading",
+      "consumer_class": "scripts",
+      "snippet": "-- Used by: /api/v1/trade/history"
+    },
+    {
+      "path": "scripts/maintenance/organize-files.sh",
+      "line": 260,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "\"reports/metrics\""
+    },
+    {
+      "path": "scripts/maintenance/monitor_dashboard.py",
+      "line": 25,
+      "category": "status",
+      "consumer_class": "scripts",
+      "snippet": "@monitor_app.get(\"/status\")"
+    },
+    {
+      "path": "scripts/maintenance/monitor_dashboard.py",
+      "line": 56,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "response = requests.get(f\"http://localhost:{BACKEND_PORT}/health\", timeout=2)"
+    },
+    {
+      "path": "scripts/maintenance/monitor_dashboard.py",
+      "line": 64,
+      "category": "metrics",
+      "consumer_class": "scripts",
+      "snippet": "@monitor_app.get(\"/metrics\")"
+    },
+    {
+      "path": "scripts/run_three_level_tests.sh",
+      "line": 90,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -s --connect-timeout 5 $PLAYWRIGHT_TEST_BASE_URL/api/stocks/health > /dev/null; then"
+    },
+    {
+      "path": "scripts/run_three_level_tests.sh",
+      "line": 102,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "if ! curl -s --connect-timeout 5 $PLAYWRIGHT_TEST_BASE_URL/api/stocks/health > /dev/null; then"
+    },
+    {
+      "path": "scripts/test_all_endpoints.sh",
+      "line": 77,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "test_endpoint \"System Health\" \"$BASE_URL/api/system/health\""
+    },
+    {
+      "path": "scripts/test_all_endpoints.sh",
+      "line": 78,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "test_endpoint \"Adapters Health\" \"$BASE_URL/api/system/adapters/health\""
+    },
+    {
+      "path": "scripts/test_all_endpoints.sh",
+      "line": 79,
+      "category": "health",
+      "consumer_class": "scripts",
+      "snippet": "test_endpoint \"Market Health\" \"$BASE_URL/api/market/health\""
+    }
+  ]
+}
