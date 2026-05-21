@@ -1,0 +1,2739 @@
+{
+  "generated_at": "2026-05-21T17:02:48.078861Z",
+  "git_head": "c173bbc8d48d5e20ed5905d698ca39001237198a",
+  "git_head_short": "c173bbc8d",
+  "stale_if_head_mismatch": true,
+  "app_import_error": null,
+  "openapi_error": null,
+  "env_mode": "placeholder env for import/openapi governance; no service startup",
+  "summary": {
+    "path_count": 500,
+    "operation_count": 536,
+    "schema_count": 301,
+    "duplicate_operation_id_count": 0,
+    "warning_count": 0,
+    "trading_schema_path_count": 35,
+    "trading_schema_operation_count": 41
+  },
+  "warnings": [],
+  "duplicate_operation_ids": [],
+  "trading_schema_paths": [
+    "/api/trading/market/snapshot",
+    "/api/trading/risk/metrics",
+    "/api/trading/start",
+    "/api/trading/status",
+    "/api/trading/stop",
+    "/api/trading/strategies/add",
+    "/api/trading/strategies/performance",
+    "/api/trading/strategies/{strategy_name}",
+    "/api/tradingview/chart/config",
+    "/api/tradingview/market-overview/config",
+    "/api/tradingview/mini-chart/config",
+    "/api/tradingview/screener/config",
+    "/api/tradingview/symbol/convert",
+    "/api/tradingview/ticker-tape/config",
+    "/api/v1/advanced-analysis/trading-signals",
+    "/api/v1/positions",
+    "/api/v1/positions/attribution",
+    "/api/v1/positions/{position_id}",
+    "/api/v1/trade/execute",
+    "/api/v1/trade/execution-tracking",
+    "/api/v1/trade/execution-tracking/trigger",
+    "/api/v1/trade/execution-tracking/{tracking_id}",
+    "/api/v1/trade/health",
+    "/api/v1/trade/portfolio",
+    "/api/v1/trade/positions",
+    "/api/v1/trade/reconciliation/accounts",
+    "/api/v1/trade/reconciliation/export",
+    "/api/v1/trade/reconciliation/import",
+    "/api/v1/trade/reconciliation/results",
+    "/api/v1/trade/reconciliation/statements",
+    "/api/v1/trade/signals",
+    "/api/v1/trade/statistics",
+    "/api/v1/trade/trades",
+    "/api/v1/trading/sessions",
+    "/api/v1/trading/sessions/{session_id}"
+  ],
+  "operations": [
+    {
+      "path": "/",
+      "method": "GET",
+      "operationId": "root__get"
+    },
+    {
+      "path": "/api/akshare/market/board/change/em",
+      "method": "GET",
+      "operationId": "get_board_change_em_api_akshare_market_board_change_em_get"
+    },
+    {
+      "path": "/api/akshare/market/board/concept/cons/{symbol}",
+      "method": "GET",
+      "operationId": "get_concept_board_constituents_api_akshare_market_board_concept_cons__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/board/concept/history/{symbol}",
+      "method": "GET",
+      "operationId": "get_concept_board_history_api_akshare_market_board_concept_history__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/board/concept/minute/{symbol}",
+      "method": "GET",
+      "operationId": "get_concept_board_minute_api_akshare_market_board_concept_minute__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/board/industry/cons/{symbol}",
+      "method": "GET",
+      "operationId": "get_industry_board_constituents_api_akshare_market_board_industry_cons__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/board/industry/history/{symbol}",
+      "method": "GET",
+      "operationId": "get_industry_board_history_api_akshare_market_board_industry_history__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/board/industry/minute/{symbol}",
+      "method": "GET",
+      "operationId": "get_industry_board_minute_api_akshare_market_board_industry_minute__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/chip-distribution/{symbol}",
+      "method": "GET",
+      "operationId": "get_chip_distribution_api_akshare_market_chip_distribution__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/forecast/profit/em/{symbol}",
+      "method": "GET",
+      "operationId": "get_profit_forecast_em_api_akshare_market_forecast_profit_em__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/forecast/profit/ths/{symbol}",
+      "method": "GET",
+      "operationId": "get_profit_forecast_ths_api_akshare_market_forecast_profit_ths__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/fund-flow/big-deal",
+      "method": "GET",
+      "operationId": "get_fund_flow_big_deal_api_akshare_market_fund_flow_big_deal_get"
+    },
+    {
+      "path": "/api/akshare/market/fund-flow/hsgt-detail",
+      "method": "GET",
+      "operationId": "get_hsgt_fund_flow_detail_api_akshare_market_fund_flow_hsgt_detail_get"
+    },
+    {
+      "path": "/api/akshare/market/fund-flow/hsgt-holdings/{symbol}",
+      "method": "GET",
+      "operationId": "get_hsgt_holdings_api_akshare_market_fund_flow_hsgt_holdings__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/fund-flow/hsgt-summary",
+      "method": "GET",
+      "operationId": "get_hsgt_fund_flow_summary_api_akshare_market_fund_flow_hsgt_summary_get"
+    },
+    {
+      "path": "/api/akshare/market/fund-flow/north-daily",
+      "method": "GET",
+      "operationId": "get_north_fund_daily_api_akshare_market_fund_flow_north_daily_get"
+    },
+    {
+      "path": "/api/akshare/market/fund-flow/north-stock/{symbol}",
+      "method": "GET",
+      "operationId": "get_north_fund_stock_api_akshare_market_fund_flow_north_stock__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/fund-flow/south-daily",
+      "method": "GET",
+      "operationId": "get_south_fund_daily_api_akshare_market_fund_flow_south_daily_get"
+    },
+    {
+      "path": "/api/akshare/market/fund-flow/south-stock/{symbol}",
+      "method": "GET",
+      "operationId": "get_south_fund_stock_api_akshare_market_fund_flow_south_stock__symbol__get"
+    },
+    {
+      "path": "/api/akshare/market/market/account-statistics",
+      "method": "GET",
+      "operationId": "get_account_statistics_em_api_akshare_market_market_account_statistics_get"
+    },
+    {
+      "path": "/api/akshare/market/sector/fund-flow-ranking",
+      "method": "GET",
+      "operationId": "get_sector_fund_flow_ranking_api_akshare_market_sector_fund_flow_ranking_get"
+    },
+    {
+      "path": "/api/akshare/market/sector/hot-ranking",
+      "method": "GET",
+      "operationId": "get_sector_hot_ranking_api_akshare_market_sector_hot_ranking_get"
+    },
+    {
+      "path": "/api/akshare/market/sse/daily-deal",
+      "method": "GET",
+      "operationId": "get_sse_daily_deal_api_akshare_market_sse_daily_deal_get"
+    },
+    {
+      "path": "/api/akshare/market/sse/overview",
+      "method": "GET",
+      "operationId": "get_sse_market_overview_api_akshare_market_sse_overview_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/bid-ask/em",
+      "method": "GET",
+      "operationId": "get_stock_bid_ask_em_api_akshare_market_stock_bid_ask_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/business-composition/em",
+      "method": "GET",
+      "operationId": "get_stock_business_composition_em_api_akshare_market_stock_business_composition_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/business-intro/ths",
+      "method": "GET",
+      "operationId": "get_stock_business_intro_ths_api_akshare_market_stock_business_intro_ths_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/changes/em",
+      "method": "GET",
+      "operationId": "get_stock_changes_em_api_akshare_market_stock_changes_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/comment-detail/em",
+      "method": "GET",
+      "operationId": "get_stock_comment_detail_em_api_akshare_market_stock_comment_detail_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/comment/em",
+      "method": "GET",
+      "operationId": "get_stock_comment_em_api_akshare_market_stock_comment_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/dt-pool/em",
+      "method": "GET",
+      "operationId": "get_stock_dt_pool_em_api_akshare_market_stock_dt_pool_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/hot-follow/xq",
+      "method": "GET",
+      "operationId": "get_stock_hot_follow_xq_api_akshare_market_stock_hot_follow_xq_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/individual-info/em",
+      "method": "GET",
+      "operationId": "get_stock_individual_info_em_api_akshare_market_stock_individual_info_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/individual-info/xq",
+      "method": "GET",
+      "operationId": "get_stock_individual_info_xq_api_akshare_market_stock_individual_info_xq_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/new/em",
+      "method": "GET",
+      "operationId": "get_stock_new_em_api_akshare_market_stock_new_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/news/em",
+      "method": "GET",
+      "operationId": "get_stock_news_em_api_akshare_market_stock_news_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/strong-pool/em",
+      "method": "GET",
+      "operationId": "get_stock_strong_pool_em_api_akshare_market_stock_strong_pool_em_get"
+    },
+    {
+      "path": "/api/akshare/market/stock/zt-pool/em",
+      "method": "GET",
+      "operationId": "get_stock_zt_pool_em_api_akshare_market_stock_zt_pool_em_get"
+    },
+    {
+      "path": "/api/akshare/market/szse/area-trading",
+      "method": "GET",
+      "operationId": "get_szse_area_trading_api_akshare_market_szse_area_trading_get"
+    },
+    {
+      "path": "/api/akshare/market/szse/overview",
+      "method": "GET",
+      "operationId": "get_szse_market_overview_api_akshare_market_szse_overview_get"
+    },
+    {
+      "path": "/api/akshare/market/szse/sector-trading",
+      "method": "GET",
+      "operationId": "get_szse_sector_trading_api_akshare_market_szse_sector_trading_get"
+    },
+    {
+      "path": "/api/akshare/market/technical/indicators/em/{symbol}",
+      "method": "GET",
+      "operationId": "get_technical_indicators_em_api_akshare_market_technical_indicators_em__symbol__get"
+    },
+    {
+      "path": "/api/analysis/concept/list",
+      "method": "GET",
+      "operationId": "get_concept_list_api_analysis_concept_list_get"
+    },
+    {
+      "path": "/api/analysis/concept/stocks",
+      "method": "GET",
+      "operationId": "get_concept_stocks_api_analysis_concept_stocks_get"
+    },
+    {
+      "path": "/api/analysis/industry/list",
+      "method": "GET",
+      "operationId": "get_industry_list_api_analysis_industry_list_get"
+    },
+    {
+      "path": "/api/analysis/industry/performance",
+      "method": "GET",
+      "operationId": "get_industry_performance_api_analysis_industry_performance_get"
+    },
+    {
+      "path": "/api/analysis/industry/stocks",
+      "method": "GET",
+      "operationId": "get_industry_stocks_api_analysis_industry_stocks_get"
+    },
+    {
+      "path": "/api/announcement/analyze",
+      "method": "POST",
+      "operationId": "analyze_data_api_announcement_analyze_post"
+    },
+    {
+      "path": "/api/announcement/fetch",
+      "method": "POST",
+      "operationId": "fetch_announcements_api_announcement_fetch_post"
+    },
+    {
+      "path": "/api/announcement/health",
+      "method": "GET",
+      "operationId": "health_check_api_announcement_health_get"
+    },
+    {
+      "path": "/api/announcement/important",
+      "method": "GET",
+      "operationId": "get_important_announcements_api_announcement_important_get"
+    },
+    {
+      "path": "/api/announcement/list",
+      "method": "GET",
+      "operationId": "get_announcements_api_announcement_list_get"
+    },
+    {
+      "path": "/api/announcement/monitor-rules",
+      "method": "GET",
+      "operationId": "get_monitor_rules_api_announcement_monitor_rules_get"
+    },
+    {
+      "path": "/api/announcement/monitor-rules",
+      "method": "POST",
+      "operationId": "create_monitor_rule_api_announcement_monitor_rules_post"
+    },
+    {
+      "path": "/api/announcement/monitor-rules/{rule_id}",
+      "method": "DELETE",
+      "operationId": "delete_monitor_rule_api_announcement_monitor_rules__rule_id__delete"
+    },
+    {
+      "path": "/api/announcement/monitor-rules/{rule_id}",
+      "method": "PUT",
+      "operationId": "update_monitor_rule_api_announcement_monitor_rules__rule_id__put"
+    },
+    {
+      "path": "/api/announcement/monitor/evaluate",
+      "method": "POST",
+      "operationId": "evaluate_monitor_rules_api_announcement_monitor_evaluate_post"
+    },
+    {
+      "path": "/api/announcement/stats",
+      "method": "GET",
+      "operationId": "get_announcement_stats_api_announcement_stats_get"
+    },
+    {
+      "path": "/api/announcement/status",
+      "method": "GET",
+      "operationId": "get_status_api_announcement_status_get"
+    },
+    {
+      "path": "/api/announcement/today",
+      "method": "GET",
+      "operationId": "get_today_announcements_api_announcement_today_get"
+    },
+    {
+      "path": "/api/announcement/triggered-records",
+      "method": "GET",
+      "operationId": "get_triggered_records_api_announcement_triggered_records_get"
+    },
+    {
+      "path": "/api/api/mtm/portfolio/{portfolio_id}",
+      "method": "GET",
+      "operationId": "get_portfolio_mtm_api_api_mtm_portfolio__portfolio_id__get"
+    },
+    {
+      "path": "/api/api/mtm/position/{position_id}",
+      "method": "GET",
+      "operationId": "get_position_mtm_api_api_mtm_position__position_id__get"
+    },
+    {
+      "path": "/api/api/mtm/stats",
+      "method": "GET",
+      "operationId": "get_mtm_stats_api_api_mtm_stats_get"
+    },
+    {
+      "path": "/api/api/realtime/quote/{symbol}",
+      "method": "GET",
+      "operationId": "get_realtime_quote_api_api_realtime_quote__symbol__get"
+    },
+    {
+      "path": "/api/api/realtime/quotes",
+      "method": "GET",
+      "operationId": "get_realtime_quotes_api_api_realtime_quotes_get"
+    },
+    {
+      "path": "/api/auth/login",
+      "method": "POST",
+      "operationId": "compat_login_api_auth_login_post"
+    },
+    {
+      "path": "/api/backup-recovery/backup/postgresql/full",
+      "method": "POST",
+      "operationId": "backup_postgresql_full_api_backup_recovery_backup_postgresql_full_post"
+    },
+    {
+      "path": "/api/backup-recovery/backup/tdengine/full",
+      "method": "POST",
+      "operationId": "backup_tdengine_full_api_backup_recovery_backup_tdengine_full_post"
+    },
+    {
+      "path": "/api/backup-recovery/backup/tdengine/incremental",
+      "method": "POST",
+      "operationId": "backup_tdengine_incremental_api_backup_recovery_backup_tdengine_incremental_post"
+    },
+    {
+      "path": "/api/backup-recovery/backups",
+      "method": "GET",
+      "operationId": "list_backups_api_backup_recovery_backups_get"
+    },
+    {
+      "path": "/api/backup-recovery/cleanup/old-backups",
+      "method": "POST",
+      "operationId": "cleanup_old_backups_api_backup_recovery_cleanup_old_backups_post"
+    },
+    {
+      "path": "/api/backup-recovery/health",
+      "method": "GET",
+      "operationId": "backup_service_health_api_backup_recovery_health_get"
+    },
+    {
+      "path": "/api/backup-recovery/integrity/verify/{backup_id}",
+      "method": "GET",
+      "operationId": "verify_backup_integrity_api_backup_recovery_integrity_verify__backup_id__get"
+    },
+    {
+      "path": "/api/backup-recovery/recovery/objectives",
+      "method": "GET",
+      "operationId": "get_recovery_objectives_api_backup_recovery_recovery_objectives_get"
+    },
+    {
+      "path": "/api/backup-recovery/recovery/postgresql/full",
+      "method": "POST",
+      "operationId": "restore_postgresql_full_api_backup_recovery_recovery_postgresql_full_post"
+    },
+    {
+      "path": "/api/backup-recovery/recovery/tdengine/full",
+      "method": "POST",
+      "operationId": "restore_tdengine_full_api_backup_recovery_recovery_tdengine_full_post"
+    },
+    {
+      "path": "/api/backup-recovery/recovery/tdengine/pitr",
+      "method": "POST",
+      "operationId": "restore_tdengine_pitr_api_backup_recovery_recovery_tdengine_pitr_post"
+    },
+    {
+      "path": "/api/backup-recovery/scheduler/control",
+      "method": "POST",
+      "operationId": "scheduler_control_api_backup_recovery_scheduler_control_post"
+    },
+    {
+      "path": "/api/backup-recovery/scheduler/jobs",
+      "method": "GET",
+      "operationId": "get_scheduled_jobs_api_backup_recovery_scheduler_jobs_get"
+    },
+    {
+      "path": "/api/basic",
+      "method": "GET",
+      "operationId": "basic_metrics_api_basic_get"
+    },
+    {
+      "path": "/api/cache",
+      "method": "DELETE",
+      "operationId": "clear_all_cache_api_cache_delete"
+    },
+    {
+      "path": "/api/cache/evict/manual",
+      "method": "POST",
+      "operationId": "manual_cache_eviction_api_cache_evict_manual_post"
+    },
+    {
+      "path": "/api/cache/eviction/stats",
+      "method": "GET",
+      "operationId": "get_eviction_statistics_api_cache_eviction_stats_get"
+    },
+    {
+      "path": "/api/cache/monitoring/health",
+      "method": "GET",
+      "operationId": "get_cache_health_status_api_cache_monitoring_health_get"
+    },
+    {
+      "path": "/api/cache/monitoring/metrics",
+      "method": "GET",
+      "operationId": "get_cache_monitoring_metrics_api_cache_monitoring_metrics_get"
+    },
+    {
+      "path": "/api/cache/prewarming/status",
+      "method": "GET",
+      "operationId": "get_prewarming_status_api_cache_prewarming_status_get"
+    },
+    {
+      "path": "/api/cache/prewarming/trigger",
+      "method": "POST",
+      "operationId": "trigger_cache_prewarming_api_cache_prewarming_trigger_post"
+    },
+    {
+      "path": "/api/cache/status",
+      "method": "GET",
+      "operationId": "get_cache_status_api_cache_status_get"
+    },
+    {
+      "path": "/api/cache/{symbol}",
+      "method": "DELETE",
+      "operationId": "invalidate_symbol_cache_api_cache__symbol__delete"
+    },
+    {
+      "path": "/api/cache/{symbol}/{data_type}",
+      "method": "GET",
+      "operationId": "get_cached_data_api_cache__symbol___data_type__get"
+    },
+    {
+      "path": "/api/cache/{symbol}/{data_type}",
+      "method": "POST",
+      "operationId": "write_cache_data_api_cache__symbol___data_type__post"
+    },
+    {
+      "path": "/api/cache/{symbol}/{data_type}/fresh",
+      "method": "GET",
+      "operationId": "check_cache_freshness_api_cache__symbol___data_type__fresh_get"
+    },
+    {
+      "path": "/api/contracts/contracts",
+      "method": "GET",
+      "operationId": "list_contracts_api_contracts_contracts_get"
+    },
+    {
+      "path": "/api/contracts/diff",
+      "method": "POST",
+      "operationId": "compare_versions_api_contracts_diff_post"
+    },
+    {
+      "path": "/api/contracts/drift/incidents",
+      "method": "GET",
+      "operationId": "list_contract_drift_incidents_api_contracts_drift_incidents_get"
+    },
+    {
+      "path": "/api/contracts/impact",
+      "method": "POST",
+      "operationId": "analyze_contract_impact_api_contracts_impact_post"
+    },
+    {
+      "path": "/api/contracts/sync",
+      "method": "POST",
+      "operationId": "sync_contract_api_contracts_sync_post"
+    },
+    {
+      "path": "/api/contracts/sync/report",
+      "method": "GET",
+      "operationId": "get_sync_report_api_contracts_sync_report_get"
+    },
+    {
+      "path": "/api/contracts/validate",
+      "method": "POST",
+      "operationId": "validate_contract_api_contracts_validate_post"
+    },
+    {
+      "path": "/api/contracts/versions",
+      "method": "GET",
+      "operationId": "list_versions_api_contracts_versions_get"
+    },
+    {
+      "path": "/api/contracts/versions",
+      "method": "POST",
+      "operationId": "create_version_api_contracts_versions_post"
+    },
+    {
+      "path": "/api/contracts/versions/{name}/active",
+      "method": "GET",
+      "operationId": "get_active_version_api_contracts_versions__name__active_get"
+    },
+    {
+      "path": "/api/contracts/versions/{version_id}",
+      "method": "DELETE",
+      "operationId": "delete_version_api_contracts_versions__version_id__delete"
+    },
+    {
+      "path": "/api/contracts/versions/{version_id}",
+      "method": "GET",
+      "operationId": "get_version_api_contracts_versions__version_id__get"
+    },
+    {
+      "path": "/api/contracts/versions/{version_id}",
+      "method": "PUT",
+      "operationId": "update_version_api_contracts_versions__version_id__put"
+    },
+    {
+      "path": "/api/contracts/versions/{version_id}/activate",
+      "method": "POST",
+      "operationId": "activate_version_api_contracts_versions__version_id__activate_post"
+    },
+    {
+      "path": "/api/csrf-token",
+      "method": "GET",
+      "operationId": "get_csrf_token_api_csrf_token_get"
+    },
+    {
+      "path": "/api/dashboard/health",
+      "method": "GET",
+      "operationId": "health_check_api_dashboard_health_get"
+    },
+    {
+      "path": "/api/dashboard/market-overview",
+      "method": "GET",
+      "operationId": "get_market_overview_api_dashboard_market_overview_get"
+    },
+    {
+      "path": "/api/dashboard/summary",
+      "method": "GET",
+      "operationId": "get_dashboard_summary_api_dashboard_summary_get"
+    },
+    {
+      "path": "/api/data-quality/alerts",
+      "method": "GET",
+      "operationId": "get_active_alerts_api_data_quality_alerts_get"
+    },
+    {
+      "path": "/api/data-quality/alerts/{alert_id}/acknowledge",
+      "method": "POST",
+      "operationId": "acknowledge_alert_api_data_quality_alerts__alert_id__acknowledge_post"
+    },
+    {
+      "path": "/api/data-quality/alerts/{alert_id}/resolve",
+      "method": "POST",
+      "operationId": "resolve_alert_api_data_quality_alerts__alert_id__resolve_post"
+    },
+    {
+      "path": "/api/data-quality/config/mode",
+      "method": "GET",
+      "operationId": "get_data_source_mode_api_data_quality_config_mode_get"
+    },
+    {
+      "path": "/api/data-quality/health",
+      "method": "GET",
+      "operationId": "get_sources_health_api_data_quality_health_get"
+    },
+    {
+      "path": "/api/data-quality/metrics",
+      "method": "GET",
+      "operationId": "get_data_quality_metrics_api_data_quality_metrics_get"
+    },
+    {
+      "path": "/api/data-quality/metrics/trends",
+      "method": "GET",
+      "operationId": "get_quality_trends_api_data_quality_metrics_trends_get"
+    },
+    {
+      "path": "/api/data-quality/status/overview",
+      "method": "GET",
+      "operationId": "get_system_status_overview_api_data_quality_status_overview_get"
+    },
+    {
+      "path": "/api/data-quality/test/quality",
+      "method": "POST",
+      "operationId": "test_data_quality_api_data_quality_test_quality_post"
+    },
+    {
+      "path": "/api/detailed",
+      "method": "GET",
+      "operationId": "detailed_metrics_api_detailed_get"
+    },
+    {
+      "path": "/api/gpu/history",
+      "method": "GET",
+      "operationId": "get_gpu_history_api_gpu_history_get"
+    },
+    {
+      "path": "/api/gpu/metrics",
+      "method": "GET",
+      "operationId": "get_prometheus_metrics_api_gpu_metrics_get"
+    },
+    {
+      "path": "/api/gpu/performance",
+      "method": "GET",
+      "operationId": "get_gpu_performance_api_gpu_performance_get"
+    },
+    {
+      "path": "/api/gpu/status",
+      "method": "GET",
+      "operationId": "get_gpu_status_api_gpu_status_get"
+    },
+    {
+      "path": "/api/health",
+      "method": "GET",
+      "operationId": "health_check_api_health_get"
+    },
+    {
+      "path": "/api/health/detailed",
+      "method": "GET",
+      "operationId": "detailed_health_check_api_health_detailed_get"
+    },
+    {
+      "path": "/api/health/ready",
+      "method": "GET",
+      "operationId": "readiness_check_api_health_ready_get"
+    },
+    {
+      "path": "/api/health/services",
+      "method": "GET",
+      "operationId": "check_system_health_api_health_services_get"
+    },
+    {
+      "path": "/api/indicator-registry/calculate",
+      "method": "POST",
+      "operationId": "calculate_indicator_api_indicator_registry_calculate_post"
+    },
+    {
+      "path": "/api/indicator-registry/indicators",
+      "method": "GET",
+      "operationId": "list_indicators_api_indicator_registry_indicators_get"
+    },
+    {
+      "path": "/api/indicator-registry/indicators/{indicator_id}",
+      "method": "GET",
+      "operationId": "get_indicator_details_api_indicator_registry_indicators__indicator_id__get"
+    },
+    {
+      "path": "/api/market/wencai/custom-query",
+      "method": "POST",
+      "operationId": "execute_custom_query_api_market_wencai_custom_query_post"
+    },
+    {
+      "path": "/api/market/wencai/health",
+      "method": "GET",
+      "operationId": "health_check_api_market_wencai_health_get"
+    },
+    {
+      "path": "/api/market/wencai/history/{query_name}",
+      "method": "GET",
+      "operationId": "get_query_history_api_market_wencai_history__query_name__get"
+    },
+    {
+      "path": "/api/market/wencai/queries",
+      "method": "GET",
+      "operationId": "get_all_queries_api_market_wencai_queries_get"
+    },
+    {
+      "path": "/api/market/wencai/queries/{query_name}",
+      "method": "GET",
+      "operationId": "get_query_by_name_api_market_wencai_queries__query_name__get"
+    },
+    {
+      "path": "/api/market/wencai/query",
+      "method": "POST",
+      "operationId": "execute_query_api_market_wencai_query_post"
+    },
+    {
+      "path": "/api/market/wencai/refresh/{query_name}",
+      "method": "POST",
+      "operationId": "refresh_query_api_market_wencai_refresh__query_name__post"
+    },
+    {
+      "path": "/api/market/wencai/results/{query_name}",
+      "method": "GET",
+      "operationId": "get_query_results_api_market_wencai_results__query_name__get"
+    },
+    {
+      "path": "/api/metrics",
+      "method": "GET",
+      "operationId": "prometheus_metrics_api_metrics_get"
+    },
+    {
+      "path": "/api/metrics/health",
+      "method": "GET",
+      "operationId": "health_check_api_metrics_health_get"
+    },
+    {
+      "path": "/api/ml/features/generate",
+      "method": "POST",
+      "operationId": "generate_features_api_ml_features_generate_post"
+    },
+    {
+      "path": "/api/ml/models",
+      "method": "GET",
+      "operationId": "list_models_api_ml_models_get"
+    },
+    {
+      "path": "/api/ml/models/evaluate",
+      "method": "POST",
+      "operationId": "evaluate_model_api_ml_models_evaluate_post"
+    },
+    {
+      "path": "/api/ml/models/hyperparameter-search",
+      "method": "POST",
+      "operationId": "hyperparameter_search_api_ml_models_hyperparameter_search_post"
+    },
+    {
+      "path": "/api/ml/models/predict",
+      "method": "POST",
+      "operationId": "predict_with_model_api_ml_models_predict_post"
+    },
+    {
+      "path": "/api/ml/models/train",
+      "method": "POST",
+      "operationId": "train_model_api_ml_models_train_post"
+    },
+    {
+      "path": "/api/ml/models/{model_name}",
+      "method": "GET",
+      "operationId": "get_model_detail_api_ml_models__model_name__get"
+    },
+    {
+      "path": "/api/ml/tdx/data",
+      "method": "POST",
+      "operationId": "get_tdx_data_api_ml_tdx_data_post"
+    },
+    {
+      "path": "/api/ml/tdx/stocks/{market}",
+      "method": "GET",
+      "operationId": "list_tdx_stocks_api_ml_tdx_stocks__market__get"
+    },
+    {
+      "path": "/api/multi-source/analyze",
+      "method": "POST",
+      "operationId": "analyze_data_api_multi_source_analyze_post"
+    },
+    {
+      "path": "/api/multi-source/health",
+      "method": "GET",
+      "operationId": "health_check_api_multi_source_health_get"
+    },
+    {
+      "path": "/api/multi-source/status",
+      "method": "GET",
+      "operationId": "get_status_api_multi_source_status_get"
+    },
+    {
+      "path": "/api/notification/email/newsletter",
+      "method": "POST",
+      "operationId": "send_daily_newsletter_api_notification_email_newsletter_post"
+    },
+    {
+      "path": "/api/notification/email/price-alert",
+      "method": "POST",
+      "operationId": "send_price_alert_api_notification_email_price_alert_post"
+    },
+    {
+      "path": "/api/notification/email/send",
+      "method": "POST",
+      "operationId": "send_email_api_notification_email_send_post"
+    },
+    {
+      "path": "/api/notification/email/welcome",
+      "method": "POST",
+      "operationId": "send_welcome_email_api_notification_email_welcome_post"
+    },
+    {
+      "path": "/api/notification/preferences",
+      "method": "GET",
+      "operationId": "get_notification_preferences_api_notification_preferences_get"
+    },
+    {
+      "path": "/api/notification/preferences",
+      "method": "POST",
+      "operationId": "update_notification_preferences_api_notification_preferences_post"
+    },
+    {
+      "path": "/api/notification/status",
+      "method": "GET",
+      "operationId": "get_email_service_status_api_notification_status_get"
+    },
+    {
+      "path": "/api/notification/test-email",
+      "method": "POST",
+      "operationId": "send_test_email_api_notification_test_email_post"
+    },
+    {
+      "path": "/api/performance",
+      "method": "GET",
+      "operationId": "performance_metrics_api_performance_get"
+    },
+    {
+      "path": "/api/pool-monitoring/alerts",
+      "method": "GET",
+      "operationId": "check_connection_pool_alerts_api_pool_monitoring_alerts_get"
+    },
+    {
+      "path": "/api/pool-monitoring/health",
+      "method": "GET",
+      "operationId": "connection_pools_health_check_api_pool_monitoring_health_get"
+    },
+    {
+      "path": "/api/pool-monitoring/postgresql/stats",
+      "method": "GET",
+      "operationId": "get_postgresql_pool_stats_api_pool_monitoring_postgresql_stats_get"
+    },
+    {
+      "path": "/api/pool-monitoring/tdengine/stats",
+      "method": "GET",
+      "operationId": "get_tdengine_pool_stats_api_pool_monitoring_tdengine_stats_get"
+    },
+    {
+      "path": "/api/reports/health/{timestamp}",
+      "method": "GET",
+      "operationId": "get_health_report_api_reports_health__timestamp__get"
+    },
+    {
+      "path": "/api/reset",
+      "method": "POST",
+      "operationId": "reset_metrics_api_reset_post"
+    },
+    {
+      "path": "/api/signals/health",
+      "method": "GET",
+      "operationId": "health_check_api_signals_health_get"
+    },
+    {
+      "path": "/api/signals/history",
+      "method": "GET",
+      "operationId": "get_signal_history_api_signals_history_get"
+    },
+    {
+      "path": "/api/signals/quality-report",
+      "method": "GET",
+      "operationId": "get_signal_quality_report_api_signals_quality_report_get"
+    },
+    {
+      "path": "/api/socketio-status",
+      "method": "GET",
+      "operationId": "socketio_status_api_socketio_status_get"
+    },
+    {
+      "path": "/api/status",
+      "method": "GET",
+      "operationId": "basic_status_api_status_get"
+    },
+    {
+      "path": "/api/stock-search/analytics/cleanup",
+      "method": "POST",
+      "operationId": "cleanup_search_analytics_api_stock_search_analytics_cleanup_post"
+    },
+    {
+      "path": "/api/stock-search/analytics/searches",
+      "method": "GET",
+      "operationId": "get_search_analytics_api_stock_search_analytics_searches_get"
+    },
+    {
+      "path": "/api/stock-search/cache/clear",
+      "method": "POST",
+      "operationId": "clear_search_cache_api_stock_search_cache_clear_post"
+    },
+    {
+      "path": "/api/stock-search/news/market/{category}",
+      "method": "GET",
+      "operationId": "get_market_news_api_stock_search_news_market__category__get"
+    },
+    {
+      "path": "/api/stock-search/news/{symbol}",
+      "method": "GET",
+      "operationId": "get_stock_news_api_stock_search_news__symbol__get"
+    },
+    {
+      "path": "/api/stock-search/profile/{symbol}",
+      "method": "GET",
+      "operationId": "get_company_profile_api_stock_search_profile__symbol__get"
+    },
+    {
+      "path": "/api/stock-search/quote/{symbol}",
+      "method": "GET",
+      "operationId": "get_stock_quote_api_stock_search_quote__symbol__get"
+    },
+    {
+      "path": "/api/stock-search/rate-limits/status",
+      "method": "GET",
+      "operationId": "get_rate_limits_status_api_stock_search_rate_limits_status_get"
+    },
+    {
+      "path": "/api/stock-search/recommendation/{symbol}",
+      "method": "GET",
+      "operationId": "get_recommendation_trends_api_stock_search_recommendation__symbol__get"
+    },
+    {
+      "path": "/api/stock-search/search",
+      "method": "GET",
+      "operationId": "search_stocks_api_stock_search_search_get"
+    },
+    {
+      "path": "/api/strategies/{strategy_id}/realtime",
+      "method": "GET",
+      "operationId": "get_strategy_realtime_monitoring_api_strategies__strategy_id__realtime_get"
+    },
+    {
+      "path": "/api/strategy-mgmt/backtest/execute",
+      "method": "POST",
+      "operationId": "execute_backtest_api_strategy_mgmt_backtest_execute_post"
+    },
+    {
+      "path": "/api/strategy-mgmt/backtest/results",
+      "method": "GET",
+      "operationId": "list_backtests_api_strategy_mgmt_backtest_results_get"
+    },
+    {
+      "path": "/api/strategy-mgmt/backtest/results/{backtest_id}",
+      "method": "GET",
+      "operationId": "get_backtest_result_api_strategy_mgmt_backtest_results__backtest_id__get"
+    },
+    {
+      "path": "/api/strategy-mgmt/backtest/status/{backtest_id}",
+      "method": "GET",
+      "operationId": "get_backtest_status_api_strategy_mgmt_backtest_status__backtest_id__get"
+    },
+    {
+      "path": "/api/strategy-mgmt/health",
+      "method": "GET",
+      "operationId": "health_check_api_strategy_mgmt_health_get"
+    },
+    {
+      "path": "/api/strategy-mgmt/strategies",
+      "method": "GET",
+      "operationId": "list_strategies_api_strategy_mgmt_strategies_get"
+    },
+    {
+      "path": "/api/strategy-mgmt/strategies",
+      "method": "POST",
+      "operationId": "create_strategy_api_strategy_mgmt_strategies_post"
+    },
+    {
+      "path": "/api/strategy-mgmt/strategies/{strategy_id}",
+      "method": "DELETE",
+      "operationId": "delete_strategy_api_strategy_mgmt_strategies__strategy_id__delete"
+    },
+    {
+      "path": "/api/strategy-mgmt/strategies/{strategy_id}",
+      "method": "GET",
+      "operationId": "get_strategy_api_strategy_mgmt_strategies__strategy_id__get"
+    },
+    {
+      "path": "/api/strategy-mgmt/strategies/{strategy_id}",
+      "method": "PUT",
+      "operationId": "update_strategy_api_strategy_mgmt_strategies__strategy_id__put"
+    },
+    {
+      "path": "/api/tasks/",
+      "method": "GET",
+      "operationId": "list_tasks_api_tasks__get"
+    },
+    {
+      "path": "/api/tasks/audit/logs",
+      "method": "GET",
+      "operationId": "get_audit_logs_api_tasks_audit_logs_get"
+    },
+    {
+      "path": "/api/tasks/cleanup/audit",
+      "method": "POST",
+      "operationId": "cleanup_audit_logs_api_tasks_cleanup_audit_post"
+    },
+    {
+      "path": "/api/tasks/executions/",
+      "method": "GET",
+      "operationId": "list_task_executions_api_tasks_executions__get"
+    },
+    {
+      "path": "/api/tasks/executions/cleanup",
+      "method": "DELETE",
+      "operationId": "cleanup_executions_api_tasks_executions_cleanup_delete"
+    },
+    {
+      "path": "/api/tasks/executions/{execution_id}",
+      "method": "GET",
+      "operationId": "get_execution_api_tasks_executions__execution_id__get"
+    },
+    {
+      "path": "/api/tasks/export",
+      "method": "POST",
+      "operationId": "export_config_api_tasks_export_post"
+    },
+    {
+      "path": "/api/tasks/health",
+      "method": "GET",
+      "operationId": "tasks_health_api_tasks_health_get"
+    },
+    {
+      "path": "/api/tasks/import",
+      "method": "POST",
+      "operationId": "import_config_api_tasks_import_post"
+    },
+    {
+      "path": "/api/tasks/register",
+      "method": "POST",
+      "operationId": "register_task_api_tasks_register_post"
+    },
+    {
+      "path": "/api/tasks/statistics/",
+      "method": "GET",
+      "operationId": "get_task_statistics_api_tasks_statistics__get"
+    },
+    {
+      "path": "/api/tasks/{task_id}",
+      "method": "DELETE",
+      "operationId": "unregister_task_api_tasks__task_id__delete"
+    },
+    {
+      "path": "/api/tasks/{task_id}",
+      "method": "GET",
+      "operationId": "get_task_api_tasks__task_id__get"
+    },
+    {
+      "path": "/api/tasks/{task_id}/start",
+      "method": "POST",
+      "operationId": "start_task_api_tasks__task_id__start_post"
+    },
+    {
+      "path": "/api/tasks/{task_id}/stop",
+      "method": "POST",
+      "operationId": "stop_task_api_tasks__task_id__stop_post"
+    },
+    {
+      "path": "/api/trading/market/snapshot",
+      "method": "GET",
+      "operationId": "get_market_snapshot_api_trading_market_snapshot_get"
+    },
+    {
+      "path": "/api/trading/risk/metrics",
+      "method": "GET",
+      "operationId": "get_risk_metrics_api_trading_risk_metrics_get"
+    },
+    {
+      "path": "/api/trading/start",
+      "method": "POST",
+      "operationId": "start_session_api_trading_start_post"
+    },
+    {
+      "path": "/api/trading/status",
+      "method": "GET",
+      "operationId": "get_status_api_trading_status_get"
+    },
+    {
+      "path": "/api/trading/stop",
+      "method": "POST",
+      "operationId": "stop_session_api_trading_stop_post"
+    },
+    {
+      "path": "/api/trading/strategies/add",
+      "method": "POST",
+      "operationId": "add_strategy_api_trading_strategies_add_post"
+    },
+    {
+      "path": "/api/trading/strategies/performance",
+      "method": "GET",
+      "operationId": "get_strategies_performance_api_trading_strategies_performance_get"
+    },
+    {
+      "path": "/api/trading/strategies/{strategy_name}",
+      "method": "DELETE",
+      "operationId": "remove_strategy_api_trading_strategies__strategy_name__delete"
+    },
+    {
+      "path": "/api/tradingview/chart/config",
+      "method": "POST",
+      "operationId": "get_chart_config_api_tradingview_chart_config_post"
+    },
+    {
+      "path": "/api/tradingview/market-overview/config",
+      "method": "GET",
+      "operationId": "get_market_overview_config_api_tradingview_market_overview_config_get"
+    },
+    {
+      "path": "/api/tradingview/mini-chart/config",
+      "method": "POST",
+      "operationId": "get_mini_chart_config_api_tradingview_mini_chart_config_post"
+    },
+    {
+      "path": "/api/tradingview/screener/config",
+      "method": "GET",
+      "operationId": "get_screener_config_api_tradingview_screener_config_get"
+    },
+    {
+      "path": "/api/tradingview/symbol/convert",
+      "method": "GET",
+      "operationId": "convert_symbol_api_tradingview_symbol_convert_get"
+    },
+    {
+      "path": "/api/tradingview/ticker-tape/config",
+      "method": "POST",
+      "operationId": "get_ticker_tape_config_api_tradingview_ticker_tape_config_post"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/anomaly-tracking",
+      "method": "GET",
+      "operationId": "analyze_anomaly_tracking_api_v1_advanced_analysis_anomaly_tracking_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/batch",
+      "method": "POST",
+      "operationId": "analyze_batch_api_v1_advanced_analysis_batch_post"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/capital-flow",
+      "method": "GET",
+      "operationId": "analyze_capital_flow_api_v1_advanced_analysis_capital_flow_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/chip-distribution",
+      "method": "GET",
+      "operationId": "analyze_chip_distribution_api_v1_advanced_analysis_chip_distribution_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/decision-models",
+      "method": "GET",
+      "operationId": "analyze_decision_models_api_v1_advanced_analysis_decision_models_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/financial-valuation",
+      "method": "GET",
+      "operationId": "analyze_financial_valuation_api_v1_advanced_analysis_financial_valuation_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/fundamental",
+      "method": "GET",
+      "operationId": "analyze_fundamental_api_v1_advanced_analysis_fundamental_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/health",
+      "method": "GET",
+      "operationId": "health_check_api_v1_advanced_analysis_health_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/market-panorama",
+      "method": "GET",
+      "operationId": "analyze_market_panorama_api_v1_advanced_analysis_market_panorama_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/multidimensional-radar",
+      "method": "GET",
+      "operationId": "analyze_multidimensional_radar_api_v1_advanced_analysis_multidimensional_radar_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/sentiment",
+      "method": "GET",
+      "operationId": "analyze_sentiment_api_v1_advanced_analysis_sentiment_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/technical",
+      "method": "GET",
+      "operationId": "analyze_technical_api_v1_advanced_analysis_technical_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/time-series",
+      "method": "GET",
+      "operationId": "analyze_time_series_api_v1_advanced_analysis_time_series_get"
+    },
+    {
+      "path": "/api/v1/advanced-analysis/trading-signals",
+      "method": "GET",
+      "operationId": "analyze_trading_signals_api_v1_advanced_analysis_trading_signals_get"
+    },
+    {
+      "path": "/api/v1/audit/logs",
+      "method": "GET",
+      "operationId": "list_audit_logs_api_v1_audit_logs_get"
+    },
+    {
+      "path": "/api/v1/audit/logs/{log_id}",
+      "method": "GET",
+      "operationId": "get_audit_log_api_v1_audit_logs__log_id__get"
+    },
+    {
+      "path": "/api/v1/audit/statistics",
+      "method": "GET",
+      "operationId": "get_audit_statistics_api_v1_audit_statistics_get"
+    },
+    {
+      "path": "/api/v1/auth/csrf/token",
+      "method": "GET",
+      "operationId": "get_csrf_token_api_v1_auth_csrf_token_get"
+    },
+    {
+      "path": "/api/v1/auth/login",
+      "method": "POST",
+      "operationId": "login_for_access_token_api_v1_auth_login_post"
+    },
+    {
+      "path": "/api/v1/auth/logout",
+      "method": "POST",
+      "operationId": "logout_api_v1_auth_logout_post"
+    },
+    {
+      "path": "/api/v1/auth/me",
+      "method": "GET",
+      "operationId": "read_users_me_api_v1_auth_me_get"
+    },
+    {
+      "path": "/api/v1/auth/refresh",
+      "method": "POST",
+      "operationId": "refresh_token_api_v1_auth_refresh_post"
+    },
+    {
+      "path": "/api/v1/auth/register",
+      "method": "POST",
+      "operationId": "register_user_api_v1_auth_register_post"
+    },
+    {
+      "path": "/api/v1/auth/reset-password/confirm",
+      "method": "POST",
+      "operationId": "confirm_password_reset_api_v1_auth_reset_password_confirm_post"
+    },
+    {
+      "path": "/api/v1/auth/reset-password/request",
+      "method": "POST",
+      "operationId": "request_password_reset_api_v1_auth_reset_password_request_post"
+    },
+    {
+      "path": "/api/v1/auth/users",
+      "method": "GET",
+      "operationId": "get_users_api_v1_auth_users_get"
+    },
+    {
+      "path": "/api/v1/backtest/equity-curve/{strategy_id}",
+      "method": "GET",
+      "operationId": "get_equity_curve_api_v1_backtest_equity_curve__strategy_id__get"
+    },
+    {
+      "path": "/api/v1/backtest/monte-carlo",
+      "method": "POST",
+      "operationId": "run_monte_carlo_backtest_api_v1_backtest_monte_carlo_post"
+    },
+    {
+      "path": "/api/v1/backtest/stress-test",
+      "method": "POST",
+      "operationId": "run_stress_test_api_v1_backtest_stress_test_post"
+    },
+    {
+      "path": "/api/v1/backtest/{backtest_id}/attribution",
+      "method": "GET",
+      "operationId": "get_backtest_attribution_api_v1_backtest__backtest_id__attribution_get"
+    },
+    {
+      "path": "/api/v1/data-sources/",
+      "method": "GET",
+      "operationId": "search_data_sources_api_v1_data_sources__get"
+    },
+    {
+      "path": "/api/v1/data-sources/categories",
+      "method": "GET",
+      "operationId": "get_category_stats_api_v1_data_sources_categories_get"
+    },
+    {
+      "path": "/api/v1/data-sources/config/",
+      "method": "GET",
+      "operationId": "list_data_sources_api_v1_data_sources_config__get"
+    },
+    {
+      "path": "/api/v1/data-sources/config/",
+      "method": "POST",
+      "operationId": "create_data_source_api_v1_data_sources_config__post"
+    },
+    {
+      "path": "/api/v1/data-sources/config/batch",
+      "method": "POST",
+      "operationId": "batch_operations_api_v1_data_sources_config_batch_post"
+    },
+    {
+      "path": "/api/v1/data-sources/config/reload",
+      "method": "POST",
+      "operationId": "reload_config_api_v1_data_sources_config_reload_post"
+    },
+    {
+      "path": "/api/v1/data-sources/config/{endpoint_name}",
+      "method": "DELETE",
+      "operationId": "delete_data_source_api_v1_data_sources_config__endpoint_name__delete"
+    },
+    {
+      "path": "/api/v1/data-sources/config/{endpoint_name}",
+      "method": "GET",
+      "operationId": "get_data_source_api_v1_data_sources_config__endpoint_name__get"
+    },
+    {
+      "path": "/api/v1/data-sources/config/{endpoint_name}",
+      "method": "PUT",
+      "operationId": "update_data_source_api_v1_data_sources_config__endpoint_name__put"
+    },
+    {
+      "path": "/api/v1/data-sources/config/{endpoint_name}/rollback/{version}",
+      "method": "POST",
+      "operationId": "rollback_to_version_api_v1_data_sources_config__endpoint_name__rollback__version__post"
+    },
+    {
+      "path": "/api/v1/data-sources/config/{endpoint_name}/versions",
+      "method": "GET",
+      "operationId": "get_version_history_api_v1_data_sources_config__endpoint_name__versions_get"
+    },
+    {
+      "path": "/api/v1/data-sources/health-check/all",
+      "method": "POST",
+      "operationId": "health_check_all_data_sources_api_v1_data_sources_health_check_all_post"
+    },
+    {
+      "path": "/api/v1/data-sources/{endpoint_name}",
+      "method": "GET",
+      "operationId": "get_data_source_api_v1_data_sources__endpoint_name__get"
+    },
+    {
+      "path": "/api/v1/data-sources/{endpoint_name}",
+      "method": "PUT",
+      "operationId": "update_data_source_api_v1_data_sources__endpoint_name__put"
+    },
+    {
+      "path": "/api/v1/data-sources/{endpoint_name}/health-check",
+      "method": "POST",
+      "operationId": "health_check_data_source_api_v1_data_sources__endpoint_name__health_check_post"
+    },
+    {
+      "path": "/api/v1/data-sources/{endpoint_name}/test",
+      "method": "POST",
+      "operationId": "test_data_source_api_v1_data_sources__endpoint_name__test_post"
+    },
+    {
+      "path": "/api/v1/data/dragon-tiger/detail",
+      "method": "GET",
+      "operationId": "get_dragon_tiger_detail_api_v1_data_dragon_tiger_detail_get"
+    },
+    {
+      "path": "/api/v1/data/dragon-tiger/institution-stats",
+      "method": "GET",
+      "operationId": "get_dragon_tiger_institution_stats_api_v1_data_dragon_tiger_institution_stats_get"
+    },
+    {
+      "path": "/api/v1/data/financial",
+      "method": "GET",
+      "operationId": "get_financial_data_api_v1_data_financial_get"
+    },
+    {
+      "path": "/api/v1/data/futures/index/daily",
+      "method": "GET",
+      "operationId": "get_futures_index_daily_api_v1_data_futures_index_daily_get"
+    },
+    {
+      "path": "/api/v1/data/futures/index/realtime",
+      "method": "GET",
+      "operationId": "get_futures_index_realtime_api_v1_data_futures_index_realtime_get"
+    },
+    {
+      "path": "/api/v1/data/kline",
+      "method": "GET",
+      "operationId": "get_kline_api_v1_data_kline_get"
+    },
+    {
+      "path": "/api/v1/data/margin/account-info",
+      "method": "GET",
+      "operationId": "get_margin_account_info_api_v1_data_margin_account_info_get"
+    },
+    {
+      "path": "/api/v1/data/margin/detail/sse",
+      "method": "GET",
+      "operationId": "get_margin_detail_sse_api_v1_data_margin_detail_sse_get"
+    },
+    {
+      "path": "/api/v1/data/margin/detail/szse",
+      "method": "GET",
+      "operationId": "get_margin_detail_szse_api_v1_data_margin_detail_szse_get"
+    },
+    {
+      "path": "/api/v1/data/markets/hot-concepts",
+      "method": "GET",
+      "operationId": "get_hot_concepts_api_v1_data_markets_hot_concepts_get"
+    },
+    {
+      "path": "/api/v1/data/markets/hot-industries",
+      "method": "GET",
+      "operationId": "get_hot_industries_api_v1_data_markets_hot_industries_get"
+    },
+    {
+      "path": "/api/v1/data/markets/overview",
+      "method": "GET",
+      "operationId": "get_market_overview_api_v1_data_markets_overview_get"
+    },
+    {
+      "path": "/api/v1/data/markets/price-distribution",
+      "method": "GET",
+      "operationId": "get_price_distribution_api_v1_data_markets_price_distribution_get"
+    },
+    {
+      "path": "/api/v1/data/route",
+      "method": "POST",
+      "operationId": "get_data_route_api_v1_data_route_post"
+    },
+    {
+      "path": "/api/v1/data/stocks/basic",
+      "method": "GET",
+      "operationId": "get_stocks_basic_api_v1_data_stocks_basic_get"
+    },
+    {
+      "path": "/api/v1/data/stocks/concepts",
+      "method": "GET",
+      "operationId": "get_stocks_concepts_api_v1_data_stocks_concepts_get"
+    },
+    {
+      "path": "/api/v1/data/stocks/daily",
+      "method": "GET",
+      "operationId": "get_daily_kline_api_v1_data_stocks_daily_get"
+    },
+    {
+      "path": "/api/v1/data/stocks/industries",
+      "method": "GET",
+      "operationId": "get_stocks_industries_api_v1_data_stocks_industries_get"
+    },
+    {
+      "path": "/api/v1/data/stocks/intraday",
+      "method": "GET",
+      "operationId": "get_intraday_data_api_v1_data_stocks_intraday_get"
+    },
+    {
+      "path": "/api/v1/data/stocks/kline",
+      "method": "GET",
+      "operationId": "get_kline_data_api_v1_data_stocks_kline_get"
+    },
+    {
+      "path": "/api/v1/data/stocks/search",
+      "method": "GET",
+      "operationId": "search_stocks_api_v1_data_stocks_search_get"
+    },
+    {
+      "path": "/api/v1/data/stocks/{symbol}/detail",
+      "method": "GET",
+      "operationId": "get_stock_detail_api_v1_data_stocks__symbol__detail_get"
+    },
+    {
+      "path": "/api/v1/governance/assets/catalog",
+      "method": "GET",
+      "operationId": "get_assets_catalog_api_v1_governance_assets_catalog_get"
+    },
+    {
+      "path": "/api/v1/governance/compliance/metrics",
+      "method": "GET",
+      "operationId": "get_compliance_metrics_api_v1_governance_compliance_metrics_get"
+    },
+    {
+      "path": "/api/v1/governance/dashboard/summary",
+      "method": "GET",
+      "operationId": "get_dashboard_summary_api_v1_governance_dashboard_summary_get"
+    },
+    {
+      "path": "/api/v1/governance/lineage/stats",
+      "method": "GET",
+      "operationId": "get_lineage_stats_api_v1_governance_lineage_stats_get"
+    },
+    {
+      "path": "/api/v1/governance/quality/overview",
+      "method": "GET",
+      "operationId": "get_quality_overview_api_v1_governance_quality_overview_get"
+    },
+    {
+      "path": "/api/v1/health/classification/stats",
+      "method": "GET",
+      "operationId": "get_data_classification_stats_api_v1_health_classification_stats_get"
+    },
+    {
+      "path": "/api/v1/health/database",
+      "method": "GET",
+      "operationId": "get_database_health_api_v1_health_database_get"
+    },
+    {
+      "path": "/api/v1/indicators/cache/clear",
+      "method": "POST",
+      "operationId": "clear_cache_api_v1_indicators_cache_clear_post"
+    },
+    {
+      "path": "/api/v1/indicators/cache/stats",
+      "method": "GET",
+      "operationId": "get_cache_statistics_api_v1_indicators_cache_stats_get"
+    },
+    {
+      "path": "/api/v1/indicators/calculate",
+      "method": "POST",
+      "operationId": "calculate_indicators_api_v1_indicators_calculate_post"
+    },
+    {
+      "path": "/api/v1/indicators/calculate/batch",
+      "method": "POST",
+      "operationId": "calculate_indicators_batch_api_v1_indicators_calculate_batch_post"
+    },
+    {
+      "path": "/api/v1/indicators/registry",
+      "method": "GET",
+      "operationId": "get_indicator_registry_endpoint_api_v1_indicators_registry_get"
+    },
+    {
+      "path": "/api/v1/indicators/registry/{category}",
+      "method": "GET",
+      "operationId": "get_indicators_by_category_api_v1_indicators_registry__category__get"
+    },
+    {
+      "path": "/api/v1/kronos/encode",
+      "method": "POST",
+      "operationId": "encode_with_kronos_api_v1_kronos_encode_post"
+    },
+    {
+      "path": "/api/v1/kronos/predict",
+      "method": "POST",
+      "operationId": "predict_with_kronos_api_v1_kronos_predict_post"
+    },
+    {
+      "path": "/api/v1/kronos/status",
+      "method": "GET",
+      "operationId": "get_kronos_status_api_v1_kronos_status_get"
+    },
+    {
+      "path": "/api/v1/lineage/graph",
+      "method": "POST",
+      "operationId": "get_lineage_graph_api_v1_lineage_graph_post"
+    },
+    {
+      "path": "/api/v1/lineage/impact",
+      "method": "POST",
+      "operationId": "analyze_impact_api_v1_lineage_impact_post"
+    },
+    {
+      "path": "/api/v1/lineage/record",
+      "method": "POST",
+      "operationId": "record_lineage_api_v1_lineage_record_post"
+    },
+    {
+      "path": "/api/v1/lineage/{node_id}/downstream",
+      "method": "GET",
+      "operationId": "get_downstream_lineage_api_v1_lineage__node_id__downstream_get"
+    },
+    {
+      "path": "/api/v1/lineage/{node_id}/upstream",
+      "method": "GET",
+      "operationId": "get_upstream_lineage_api_v1_lineage__node_id__upstream_get"
+    },
+    {
+      "path": "/api/v1/market/chip-race",
+      "method": "GET",
+      "operationId": "get_chip_race_api_v1_market_chip_race_get"
+    },
+    {
+      "path": "/api/v1/market/chip-race/refresh",
+      "method": "POST",
+      "operationId": "refresh_chip_race_api_v1_market_chip_race_refresh_post"
+    },
+    {
+      "path": "/api/v1/market/etf/list",
+      "method": "GET",
+      "operationId": "get_etf_list_api_v1_market_etf_list_get"
+    },
+    {
+      "path": "/api/v1/market/etf/refresh",
+      "method": "POST",
+      "operationId": "refresh_etf_data_api_v1_market_etf_refresh_post"
+    },
+    {
+      "path": "/api/v1/market/fund-flow",
+      "method": "GET",
+      "operationId": "get_fund_flow_api_v1_market_fund_flow_get"
+    },
+    {
+      "path": "/api/v1/market/fund-flow/refresh",
+      "method": "POST",
+      "operationId": "refresh_fund_flow_api_v1_market_fund_flow_refresh_post"
+    },
+    {
+      "path": "/api/v1/market/health",
+      "method": "GET",
+      "operationId": "health_check_api_v1_market_health_get"
+    },
+    {
+      "path": "/api/v1/market/heatmap",
+      "method": "GET",
+      "operationId": "get_market_heatmap_api_v1_market_heatmap_get"
+    },
+    {
+      "path": "/api/v1/market/kline",
+      "method": "GET",
+      "operationId": "get_kline_data_api_v1_market_kline_get"
+    },
+    {
+      "path": "/api/v1/market/lhb",
+      "method": "GET",
+      "operationId": "get_lhb_detail_api_v1_market_lhb_get"
+    },
+    {
+      "path": "/api/v1/market/lhb/refresh",
+      "method": "POST",
+      "operationId": "refresh_lhb_detail_api_v1_market_lhb_refresh_post"
+    },
+    {
+      "path": "/api/v1/market/quotes",
+      "method": "GET",
+      "operationId": "get_market_quotes_api_v1_market_quotes_get"
+    },
+    {
+      "path": "/api/v1/market/stocks",
+      "method": "GET",
+      "operationId": "get_stock_list_api_v1_market_stocks_get"
+    },
+    {
+      "path": "/api/v1/monitoring/alert-rules",
+      "method": "GET",
+      "operationId": "get_alert_rules_api_v1_monitoring_alert_rules_get"
+    },
+    {
+      "path": "/api/v1/monitoring/alert-rules",
+      "method": "POST",
+      "operationId": "create_alert_rule_api_v1_monitoring_alert_rules_post"
+    },
+    {
+      "path": "/api/v1/monitoring/alert-rules/{rule_id}",
+      "method": "DELETE",
+      "operationId": "delete_alert_rule_api_v1_monitoring_alert_rules__rule_id__delete"
+    },
+    {
+      "path": "/api/v1/monitoring/alert-rules/{rule_id}",
+      "method": "PUT",
+      "operationId": "update_alert_rule_api_v1_monitoring_alert_rules__rule_id__put"
+    },
+    {
+      "path": "/api/v1/monitoring/alerts",
+      "method": "GET",
+      "operationId": "get_alert_records_api_v1_monitoring_alerts_get"
+    },
+    {
+      "path": "/api/v1/monitoring/alerts/mark-all-read",
+      "method": "POST",
+      "operationId": "mark_all_alerts_read_api_v1_monitoring_alerts_mark_all_read_post"
+    },
+    {
+      "path": "/api/v1/monitoring/alerts/{alert_id}/mark-read",
+      "method": "POST",
+      "operationId": "mark_alert_read_api_v1_monitoring_alerts__alert_id__mark_read_post"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/calculate",
+      "method": "POST",
+      "operationId": "calculate_health_score_api_v1_monitoring_analysis_calculate_post"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/calculate/batch",
+      "method": "POST",
+      "operationId": "batch_calculate_health_scores_api_v1_monitoring_analysis_calculate_batch_post"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/engine/status",
+      "method": "GET",
+      "operationId": "get_engine_status_api_v1_monitoring_analysis_engine_status_get"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/market-regime",
+      "method": "GET",
+      "operationId": "identify_market_regime_api_v1_monitoring_analysis_market_regime_get"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}",
+      "method": "GET",
+      "operationId": "analyze_portfolio_api_v1_monitoring_analysis_portfolio__watchlist_id__get"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+      "method": "GET",
+      "operationId": "get_portfolio_alerts_api_v1_monitoring_analysis_portfolio__watchlist_id__alerts_get"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance",
+      "method": "GET",
+      "operationId": "get_rebalance_suggestions_api_v1_monitoring_analysis_portfolio__watchlist_id__rebalance_get"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary",
+      "method": "GET",
+      "operationId": "get_portfolio_summary_api_v1_monitoring_analysis_portfolio__watchlist_id__summary_get"
+    },
+    {
+      "path": "/api/v1/monitoring/analysis/results/{stock_code}",
+      "method": "GET",
+      "operationId": "get_health_score_history_api_v1_monitoring_analysis_results__stock_code__get"
+    },
+    {
+      "path": "/api/v1/monitoring/analyze",
+      "method": "GET",
+      "operationId": "analyze_monitoring_api_v1_monitoring_analyze_get"
+    },
+    {
+      "path": "/api/v1/monitoring/control/start",
+      "method": "POST",
+      "operationId": "start_monitoring_api_v1_monitoring_control_start_post"
+    },
+    {
+      "path": "/api/v1/monitoring/control/status",
+      "method": "GET",
+      "operationId": "get_monitoring_status_api_v1_monitoring_control_status_get"
+    },
+    {
+      "path": "/api/v1/monitoring/control/stop",
+      "method": "POST",
+      "operationId": "stop_monitoring_api_v1_monitoring_control_stop_post"
+    },
+    {
+      "path": "/api/v1/monitoring/dragon-tiger",
+      "method": "GET",
+      "operationId": "get_dragon_tiger_list_api_v1_monitoring_dragon_tiger_get"
+    },
+    {
+      "path": "/api/v1/monitoring/dragon-tiger/fetch",
+      "method": "POST",
+      "operationId": "fetch_dragon_tiger_data_api_v1_monitoring_dragon_tiger_fetch_post"
+    },
+    {
+      "path": "/api/v1/monitoring/realtime",
+      "method": "GET",
+      "operationId": "get_realtime_monitoring_list_api_v1_monitoring_realtime_get"
+    },
+    {
+      "path": "/api/v1/monitoring/realtime/fetch",
+      "method": "POST",
+      "operationId": "fetch_realtime_data_api_v1_monitoring_realtime_fetch_post"
+    },
+    {
+      "path": "/api/v1/monitoring/realtime/{symbol}",
+      "method": "GET",
+      "operationId": "get_realtime_monitoring_api_v1_monitoring_realtime__symbol__get"
+    },
+    {
+      "path": "/api/v1/monitoring/stats/today",
+      "method": "GET",
+      "operationId": "get_today_statistics_api_v1_monitoring_stats_today_get"
+    },
+    {
+      "path": "/api/v1/monitoring/summary",
+      "method": "GET",
+      "operationId": "get_monitoring_summary_api_v1_monitoring_summary_get"
+    },
+    {
+      "path": "/api/v1/monitoring/watchlists",
+      "method": "GET",
+      "operationId": "list_watchlists_api_v1_monitoring_watchlists_get"
+    },
+    {
+      "path": "/api/v1/monitoring/watchlists",
+      "method": "POST",
+      "operationId": "create_watchlist_api_v1_monitoring_watchlists_post"
+    },
+    {
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+      "method": "DELETE",
+      "operationId": "delete_watchlist_api_v1_monitoring_watchlists__watchlist_id__delete"
+    },
+    {
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+      "method": "GET",
+      "operationId": "get_watchlist_api_v1_monitoring_watchlists__watchlist_id__get"
+    },
+    {
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+      "method": "PUT",
+      "operationId": "update_watchlist_api_v1_monitoring_watchlists__watchlist_id__put"
+    },
+    {
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks",
+      "method": "GET",
+      "operationId": "list_watchlist_stocks_api_v1_monitoring_watchlists__watchlist_id__stocks_get"
+    },
+    {
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks",
+      "method": "POST",
+      "operationId": "add_stock_to_watchlist_api_v1_monitoring_watchlists__watchlist_id__stocks_post"
+    },
+    {
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks/{stock_code}",
+      "method": "DELETE",
+      "operationId": "remove_stock_from_watchlist_api_v1_monitoring_watchlists__watchlist_id__stocks__stock_code__delete"
+    },
+    {
+      "path": "/api/v1/optimization/analyze",
+      "method": "POST",
+      "operationId": "analyze_database_api_v1_optimization_analyze_post"
+    },
+    {
+      "path": "/api/v1/optimization/reindex",
+      "method": "POST",
+      "operationId": "reindex_database_api_v1_optimization_reindex_post"
+    },
+    {
+      "path": "/api/v1/optimization/slow-queries",
+      "method": "GET",
+      "operationId": "get_slow_queries_api_v1_optimization_slow_queries_get"
+    },
+    {
+      "path": "/api/v1/optimization/status",
+      "method": "GET",
+      "operationId": "get_database_status_api_v1_optimization_status_get"
+    },
+    {
+      "path": "/api/v1/optimization/vacuum",
+      "method": "POST",
+      "operationId": "vacuum_database_api_v1_optimization_vacuum_post"
+    },
+    {
+      "path": "/api/v1/positions",
+      "method": "GET",
+      "operationId": "list_positions_api_v1_positions_get"
+    },
+    {
+      "path": "/api/v1/positions",
+      "method": "POST",
+      "operationId": "create_position_api_v1_positions_post"
+    },
+    {
+      "path": "/api/v1/positions/attribution",
+      "method": "GET",
+      "operationId": "get_position_attribution_api_v1_positions_attribution_get"
+    },
+    {
+      "path": "/api/v1/positions/{position_id}",
+      "method": "DELETE",
+      "operationId": "delete_position_api_v1_positions__position_id__delete"
+    },
+    {
+      "path": "/api/v1/positions/{position_id}",
+      "method": "GET",
+      "operationId": "get_position_api_v1_positions__position_id__get"
+    },
+    {
+      "path": "/api/v1/positions/{position_id}",
+      "method": "PATCH",
+      "operationId": "update_position_api_v1_positions__position_id__patch"
+    },
+    {
+      "path": "/api/v1/risk/alerts",
+      "method": "GET",
+      "operationId": "list_risk_alerts_api_v1_risk_alerts_get"
+    },
+    {
+      "path": "/api/v1/risk/alerts",
+      "method": "POST",
+      "operationId": "create_risk_alert_api_v1_risk_alerts_post"
+    },
+    {
+      "path": "/api/v1/risk/alerts/generate",
+      "method": "POST",
+      "operationId": "generate_risk_alerts_api_v1_risk_alerts_generate_post"
+    },
+    {
+      "path": "/api/v1/risk/alerts/{alert_id}",
+      "method": "DELETE",
+      "operationId": "delete_risk_alert_api_v1_risk_alerts__alert_id__delete"
+    },
+    {
+      "path": "/api/v1/risk/alerts/{alert_id}",
+      "method": "PUT",
+      "operationId": "update_risk_alert_api_v1_risk_alerts__alert_id__put"
+    },
+    {
+      "path": "/api/v1/risk/beta",
+      "method": "POST",
+      "operationId": "calculate_beta_api_v1_risk_beta_post"
+    },
+    {
+      "path": "/api/v1/risk/dashboard",
+      "method": "GET",
+      "operationId": "get_risk_dashboard_api_v1_risk_dashboard_get"
+    },
+    {
+      "path": "/api/v1/risk/metrics/calculate",
+      "method": "POST",
+      "operationId": "calculate_risk_metrics_api_v1_risk_metrics_calculate_post"
+    },
+    {
+      "path": "/api/v1/risk/metrics/history",
+      "method": "GET",
+      "operationId": "get_risk_metrics_history_api_v1_risk_metrics_history_get"
+    },
+    {
+      "path": "/api/v1/risk/notifications/test",
+      "method": "POST",
+      "operationId": "test_notification_api_v1_risk_notifications_test_post"
+    },
+    {
+      "path": "/api/v1/risk/position/assess",
+      "method": "POST",
+      "operationId": "assess_position_risk_api_v1_risk_position_assess_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/alert/send",
+      "method": "POST",
+      "operationId": "send_risk_alert_api_v1_risk_v31_alert_send_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/alert/statistics",
+      "method": "GET",
+      "operationId": "get_alert_statistics_api_v1_risk_v31_alert_statistics_get"
+    },
+    {
+      "path": "/api/v1/risk/v31/alerts/active",
+      "method": "GET",
+      "operationId": "get_active_alerts_v31_api_v1_risk_v31_alerts_active_get"
+    },
+    {
+      "path": "/api/v1/risk/v31/alerts/{alert_id}/acknowledge",
+      "method": "POST",
+      "operationId": "acknowledge_alert_v31_api_v1_risk_v31_alerts__alert_id__acknowledge_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/health",
+      "method": "GET",
+      "operationId": "get_risk_management_health_api_v1_risk_v31_health_get"
+    },
+    {
+      "path": "/api/v1/risk/v31/portfolio/{portfolio_id}",
+      "method": "GET",
+      "operationId": "get_portfolio_risk_v31_api_v1_risk_v31_portfolio__portfolio_id__get"
+    },
+    {
+      "path": "/api/v1/risk/v31/risk/realtime/{symbol}",
+      "method": "GET",
+      "operationId": "get_realtime_risk_metrics_api_v1_risk_v31_risk_realtime__symbol__get"
+    },
+    {
+      "path": "/api/v1/risk/v31/rules/add",
+      "method": "POST",
+      "operationId": "add_alert_rule_api_v1_risk_v31_rules_add_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/rules/evaluate",
+      "method": "POST",
+      "operationId": "evaluate_alert_rules_api_v1_risk_v31_rules_evaluate_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/rules/remove/{rule_id}",
+      "method": "DELETE",
+      "operationId": "remove_alert_rule_api_v1_risk_v31_rules_remove__rule_id__delete"
+    },
+    {
+      "path": "/api/v1/risk/v31/rules/statistics",
+      "method": "GET",
+      "operationId": "get_rule_statistics_api_v1_risk_v31_rules_statistics_get"
+    },
+    {
+      "path": "/api/v1/risk/v31/stock/{symbol}",
+      "method": "GET",
+      "operationId": "get_stock_risk_v31_api_v1_risk_v31_stock__symbol__get"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/add-position",
+      "method": "POST",
+      "operationId": "add_stop_loss_position_api_v1_risk_v31_stop_loss_add_position_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/batch-update",
+      "method": "POST",
+      "operationId": "batch_update_stop_loss_prices_api_v1_risk_v31_stop_loss_batch_update_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/calculate",
+      "method": "POST",
+      "operationId": "calculate_stop_loss_v31_api_v1_risk_v31_stop_loss_calculate_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/history/performance",
+      "method": "GET",
+      "operationId": "get_stop_loss_performance_api_v1_risk_v31_stop_loss_history_performance_get"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/history/recommendations",
+      "method": "GET",
+      "operationId": "get_stop_loss_recommendations_api_v1_risk_v31_stop_loss_history_recommendations_get"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/overview",
+      "method": "GET",
+      "operationId": "get_stop_loss_overview_api_v1_risk_v31_stop_loss_overview_get"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/remove-position/{position_id}",
+      "method": "DELETE",
+      "operationId": "remove_stop_loss_position_api_v1_risk_v31_stop_loss_remove_position__position_id__delete"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/status/{position_id}",
+      "method": "GET",
+      "operationId": "get_stop_loss_status_api_v1_risk_v31_stop_loss_status__position_id__get"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/trigger",
+      "method": "POST",
+      "operationId": "trigger_stop_loss_v31_api_v1_risk_v31_stop_loss_trigger_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/stop-loss/update-price",
+      "method": "POST",
+      "operationId": "update_stop_loss_price_api_v1_risk_v31_stop_loss_update_price_post"
+    },
+    {
+      "path": "/api/v1/risk/v31/ws/broadcast/{topic}",
+      "method": "POST",
+      "operationId": "broadcast_risk_update_api_v1_risk_v31_ws_broadcast__topic__post"
+    },
+    {
+      "path": "/api/v1/risk/v31/ws/connections",
+      "method": "GET",
+      "operationId": "get_websocket_connections_api_v1_risk_v31_ws_connections_get"
+    },
+    {
+      "path": "/api/v1/risk/var-cvar",
+      "method": "POST",
+      "operationId": "calculate_var_cvar_api_v1_risk_var_cvar_post"
+    },
+    {
+      "path": "/api/v1/sentiment/analyze",
+      "method": "POST",
+      "operationId": "analyze_sentiment_api_v1_sentiment_analyze_post"
+    },
+    {
+      "path": "/api/v1/sentiment/market",
+      "method": "GET",
+      "operationId": "get_market_sentiment_api_v1_sentiment_market_get"
+    },
+    {
+      "path": "/api/v1/sentiment/stock/{symbol}",
+      "method": "GET",
+      "operationId": "get_stock_sentiment_api_v1_sentiment_stock__symbol__get"
+    },
+    {
+      "path": "/api/v1/sse/alerts",
+      "method": "GET",
+      "operationId": "sse_alerts_stream_api_v1_sse_alerts_get"
+    },
+    {
+      "path": "/api/v1/sse/backtest",
+      "method": "GET",
+      "operationId": "sse_backtest_stream_api_v1_sse_backtest_get"
+    },
+    {
+      "path": "/api/v1/sse/dashboard",
+      "method": "GET",
+      "operationId": "sse_dashboard_stream_api_v1_sse_dashboard_get"
+    },
+    {
+      "path": "/api/v1/sse/status",
+      "method": "GET",
+      "operationId": "sse_status_api_v1_sse_status_get"
+    },
+    {
+      "path": "/api/v1/sse/training",
+      "method": "GET",
+      "operationId": "sse_training_stream_api_v1_sse_training_get"
+    },
+    {
+      "path": "/api/v1/strategies",
+      "method": "GET",
+      "operationId": "list_strategies_api_v1_strategies_get"
+    },
+    {
+      "path": "/api/v1/strategies/backtest",
+      "method": "POST",
+      "operationId": "backtest_ml_strategy_api_v1_strategies_backtest_post"
+    },
+    {
+      "path": "/api/v1/strategies/batch-analysis/runtime-status",
+      "method": "GET",
+      "operationId": "get_batch_analysis_runtime_status_api_v1_strategies_batch_analysis_runtime_status_get"
+    },
+    {
+      "path": "/api/v1/strategies/batch-analysis/submit",
+      "method": "POST",
+      "operationId": "submit_batch_analysis_task_api_v1_strategies_batch_analysis_submit_post"
+    },
+    {
+      "path": "/api/v1/strategies/batch-analysis/tasks",
+      "method": "GET",
+      "operationId": "list_batch_analysis_tasks_api_v1_strategies_batch_analysis_tasks_get"
+    },
+    {
+      "path": "/api/v1/strategies/batch-analysis/tasks/{task_id}",
+      "method": "GET",
+      "operationId": "get_batch_analysis_task_detail_api_v1_strategies_batch_analysis_tasks__task_id__get"
+    },
+    {
+      "path": "/api/v1/strategies/ml/models",
+      "method": "GET",
+      "operationId": "list_ml_workbench_models_api_v1_strategies_ml_models_get"
+    },
+    {
+      "path": "/api/v1/strategies/ml/models/{model_id}",
+      "method": "GET",
+      "operationId": "get_ml_workbench_model_detail_api_v1_strategies_ml_models__model_id__get"
+    },
+    {
+      "path": "/api/v1/strategies/ml/predict",
+      "method": "POST",
+      "operationId": "predict_ml_workbench_model_api_v1_strategies_ml_predict_post"
+    },
+    {
+      "path": "/api/v1/strategies/ml/runtime-status",
+      "method": "GET",
+      "operationId": "get_ml_runtime_status_api_v1_strategies_ml_runtime_status_get"
+    },
+    {
+      "path": "/api/v1/strategies/ml/train",
+      "method": "POST",
+      "operationId": "train_ml_workbench_model_api_v1_strategies_ml_train_post"
+    },
+    {
+      "path": "/api/v1/strategies/predict",
+      "method": "POST",
+      "operationId": "generate_strategy_prediction_api_v1_strategies_predict_post"
+    },
+    {
+      "path": "/api/v1/strategies/train",
+      "method": "POST",
+      "operationId": "train_ml_strategy_api_v1_strategies_train_post"
+    },
+    {
+      "path": "/api/v1/strategy/backtest/results",
+      "method": "GET",
+      "operationId": "list_backtest_results_api_v1_strategy_backtest_results_get"
+    },
+    {
+      "path": "/api/v1/strategy/backtest/results/{backtest_id}",
+      "method": "GET",
+      "operationId": "get_backtest_result_api_v1_strategy_backtest_results__backtest_id__get"
+    },
+    {
+      "path": "/api/v1/strategy/backtest/results/{backtest_id}/chart-data",
+      "method": "GET",
+      "operationId": "get_backtest_chart_data_api_v1_strategy_backtest_results__backtest_id__chart_data_get"
+    },
+    {
+      "path": "/api/v1/strategy/backtest/run",
+      "method": "POST",
+      "operationId": "run_backtest_api_v1_strategy_backtest_run_post"
+    },
+    {
+      "path": "/api/v1/strategy/backtest/status/{backtest_id}",
+      "method": "GET",
+      "operationId": "get_backtest_status_api_v1_strategy_backtest_status__backtest_id__get"
+    },
+    {
+      "path": "/api/v1/strategy/definitions",
+      "method": "GET",
+      "operationId": "get_strategy_definitions_api_v1_strategy_definitions_get"
+    },
+    {
+      "path": "/api/v1/strategy/matched-stocks",
+      "method": "GET",
+      "operationId": "get_matched_stocks_api_v1_strategy_matched_stocks_get"
+    },
+    {
+      "path": "/api/v1/strategy/models",
+      "method": "GET",
+      "operationId": "list_models_api_v1_strategy_models_get"
+    },
+    {
+      "path": "/api/v1/strategy/models/train",
+      "method": "POST",
+      "operationId": "train_model_api_v1_strategy_models_train_post"
+    },
+    {
+      "path": "/api/v1/strategy/models/training/{task_id}/status",
+      "method": "GET",
+      "operationId": "get_training_status_api_v1_strategy_models_training__task_id__status_get"
+    },
+    {
+      "path": "/api/v1/strategy/results",
+      "method": "GET",
+      "operationId": "query_strategy_results_api_v1_strategy_results_get"
+    },
+    {
+      "path": "/api/v1/strategy/run/batch",
+      "method": "POST",
+      "operationId": "run_strategy_batch_api_v1_strategy_run_batch_post"
+    },
+    {
+      "path": "/api/v1/strategy/run/single",
+      "method": "POST",
+      "operationId": "run_strategy_single_api_v1_strategy_run_single_post"
+    },
+    {
+      "path": "/api/v1/strategy/stats/summary",
+      "method": "GET",
+      "operationId": "get_strategy_summary_api_v1_strategy_stats_summary_get"
+    },
+    {
+      "path": "/api/v1/strategy/strategies",
+      "method": "GET",
+      "operationId": "list_strategies_api_v1_strategy_strategies_get"
+    },
+    {
+      "path": "/api/v1/strategy/strategies",
+      "method": "POST",
+      "operationId": "create_strategy_api_v1_strategy_strategies_post"
+    },
+    {
+      "path": "/api/v1/strategy/strategies/{strategy_id}",
+      "method": "DELETE",
+      "operationId": "delete_strategy_api_v1_strategy_strategies__strategy_id__delete"
+    },
+    {
+      "path": "/api/v1/strategy/strategies/{strategy_id}",
+      "method": "GET",
+      "operationId": "get_strategy_api_v1_strategy_strategies__strategy_id__get"
+    },
+    {
+      "path": "/api/v1/strategy/strategies/{strategy_id}",
+      "method": "PUT",
+      "operationId": "update_strategy_api_v1_strategy_strategies__strategy_id__put"
+    },
+    {
+      "path": "/api/v1/strategy/{strategy_id}/pause",
+      "method": "POST",
+      "operationId": "pause_strategy_api_v1_strategy__strategy_id__pause_post"
+    },
+    {
+      "path": "/api/v1/strategy/{strategy_id}/resume",
+      "method": "POST",
+      "operationId": "resume_strategy_api_v1_strategy__strategy_id__resume_post"
+    },
+    {
+      "path": "/api/v1/strategy/{strategy_id}/start",
+      "method": "POST",
+      "operationId": "start_strategy_api_v1_strategy__strategy_id__start_post"
+    },
+    {
+      "path": "/api/v1/strategy/{strategy_id}/stop",
+      "method": "POST",
+      "operationId": "stop_strategy_api_v1_strategy__strategy_id__stop_post"
+    },
+    {
+      "path": "/api/v1/stress-test/history",
+      "method": "GET",
+      "operationId": "get_stress_test_history_api_v1_stress_test_history_get"
+    },
+    {
+      "path": "/api/v1/stress-test/run",
+      "method": "POST",
+      "operationId": "run_custom_stress_test_api_v1_stress_test_run_post"
+    },
+    {
+      "path": "/api/v1/stress-test/scenarios",
+      "method": "GET",
+      "operationId": "get_predefined_scenarios_api_v1_stress_test_scenarios_get"
+    },
+    {
+      "path": "/api/v1/system/adapters/health",
+      "method": "GET",
+      "operationId": "get_adapters_health_api_v1_system_adapters_health_get"
+    },
+    {
+      "path": "/api/v1/system/datasources",
+      "method": "GET",
+      "operationId": "get_datasources_api_v1_system_datasources_get"
+    },
+    {
+      "path": "/api/v1/system/health",
+      "method": "GET",
+      "operationId": "system_health_api_v1_system_health_get"
+    },
+    {
+      "path": "/api/v1/system/logs",
+      "method": "GET",
+      "operationId": "get_system_logs_api_v1_system_logs_get"
+    },
+    {
+      "path": "/api/v1/system/logs/summary",
+      "method": "GET",
+      "operationId": "get_logs_summary_api_v1_system_logs_summary_get"
+    },
+    {
+      "path": "/api/v1/system/resources",
+      "method": "GET",
+      "operationId": "get_system_resource_metrics_api_v1_system_resources_get"
+    },
+    {
+      "path": "/api/v1/system/settings/general",
+      "method": "GET",
+      "operationId": "get_general_settings_api_v1_system_settings_general_get"
+    },
+    {
+      "path": "/api/v1/system/settings/general",
+      "method": "POST",
+      "operationId": "update_general_settings_api_v1_system_settings_general_post"
+    },
+    {
+      "path": "/api/v1/system/settings/security",
+      "method": "GET",
+      "operationId": "get_security_settings_api_v1_system_settings_security_get"
+    },
+    {
+      "path": "/api/v1/system/settings/security",
+      "method": "POST",
+      "operationId": "update_security_settings_api_v1_system_settings_security_post"
+    },
+    {
+      "path": "/api/v1/system/test-connection",
+      "method": "POST",
+      "operationId": "test_database_connection_api_v1_system_test_connection_post"
+    },
+    {
+      "path": "/api/v1/tdx/health",
+      "method": "GET",
+      "operationId": "health_check_api_v1_tdx_health_get"
+    },
+    {
+      "path": "/api/v1/tdx/index/kline",
+      "method": "GET",
+      "operationId": "get_index_kline_api_v1_tdx_index_kline_get"
+    },
+    {
+      "path": "/api/v1/tdx/index/quote/{symbol}",
+      "method": "GET",
+      "operationId": "get_index_quote_api_v1_tdx_index_quote__symbol__get"
+    },
+    {
+      "path": "/api/v1/tdx/kline",
+      "method": "GET",
+      "operationId": "get_stock_kline_api_v1_tdx_kline_get"
+    },
+    {
+      "path": "/api/v1/tdx/quote/{symbol}",
+      "method": "GET",
+      "operationId": "get_stock_quote_api_v1_tdx_quote__symbol__get"
+    },
+    {
+      "path": "/api/v1/technical-indicators",
+      "method": "GET",
+      "operationId": "get_technical_indicators_api_v1_technical_indicators_get"
+    },
+    {
+      "path": "/api/v1/technical/batch/indicators",
+      "method": "POST",
+      "operationId": "get_batch_indicators_api_v1_technical_batch_indicators_post"
+    },
+    {
+      "path": "/api/v1/technical/patterns/{symbol}",
+      "method": "GET",
+      "operationId": "detect_patterns_api_v1_technical_patterns__symbol__get"
+    },
+    {
+      "path": "/api/v1/technical/{symbol}/history",
+      "method": "GET",
+      "operationId": "get_stock_history_api_v1_technical__symbol__history_get"
+    },
+    {
+      "path": "/api/v1/technical/{symbol}/indicators",
+      "method": "GET",
+      "operationId": "get_all_indicators_api_v1_technical__symbol__indicators_get"
+    },
+    {
+      "path": "/api/v1/technical/{symbol}/momentum",
+      "method": "GET",
+      "operationId": "get_momentum_indicators_api_v1_technical__symbol__momentum_get"
+    },
+    {
+      "path": "/api/v1/technical/{symbol}/signals",
+      "method": "GET",
+      "operationId": "get_trading_signals_api_v1_technical__symbol__signals_get"
+    },
+    {
+      "path": "/api/v1/technical/{symbol}/trend",
+      "method": "GET",
+      "operationId": "get_trend_indicators_api_v1_technical__symbol__trend_get"
+    },
+    {
+      "path": "/api/v1/technical/{symbol}/volatility",
+      "method": "GET",
+      "operationId": "get_volatility_indicators_api_v1_technical__symbol__volatility_get"
+    },
+    {
+      "path": "/api/v1/technical/{symbol}/volume",
+      "method": "GET",
+      "operationId": "get_volume_indicators_api_v1_technical__symbol__volume_get"
+    },
+    {
+      "path": "/api/v1/trade/execute",
+      "method": "POST",
+      "operationId": "execute_trade_api_v1_trade_execute_post"
+    },
+    {
+      "path": "/api/v1/trade/execution-tracking",
+      "method": "GET",
+      "operationId": "get_execution_tracking_api_v1_trade_execution_tracking_get"
+    },
+    {
+      "path": "/api/v1/trade/execution-tracking/trigger",
+      "method": "POST",
+      "operationId": "trigger_external_execution_api_v1_trade_execution_tracking_trigger_post"
+    },
+    {
+      "path": "/api/v1/trade/execution-tracking/{tracking_id}",
+      "method": "GET",
+      "operationId": "get_execution_tracking_detail_api_v1_trade_execution_tracking__tracking_id__get"
+    },
+    {
+      "path": "/api/v1/trade/health",
+      "method": "GET",
+      "operationId": "health_check_api_v1_trade_health_get"
+    },
+    {
+      "path": "/api/v1/trade/portfolio",
+      "method": "GET",
+      "operationId": "get_portfolio_api_v1_trade_portfolio_get"
+    },
+    {
+      "path": "/api/v1/trade/positions",
+      "method": "GET",
+      "operationId": "get_positions_api_v1_trade_positions_get"
+    },
+    {
+      "path": "/api/v1/trade/reconciliation/accounts",
+      "method": "GET",
+      "operationId": "get_reconciliation_accounts_api_v1_trade_reconciliation_accounts_get"
+    },
+    {
+      "path": "/api/v1/trade/reconciliation/export",
+      "method": "GET",
+      "operationId": "export_reconciliation_results_api_v1_trade_reconciliation_export_get"
+    },
+    {
+      "path": "/api/v1/trade/reconciliation/import",
+      "method": "POST",
+      "operationId": "import_reconciliation_csv_api_v1_trade_reconciliation_import_post"
+    },
+    {
+      "path": "/api/v1/trade/reconciliation/results",
+      "method": "GET",
+      "operationId": "get_reconciliation_results_api_v1_trade_reconciliation_results_get"
+    },
+    {
+      "path": "/api/v1/trade/reconciliation/statements",
+      "method": "GET",
+      "operationId": "get_reconciliation_statements_api_v1_trade_reconciliation_statements_get"
+    },
+    {
+      "path": "/api/v1/trade/signals",
+      "method": "GET",
+      "operationId": "get_signals_api_v1_trade_signals_get"
+    },
+    {
+      "path": "/api/v1/trade/statistics",
+      "method": "GET",
+      "operationId": "get_statistics_api_v1_trade_statistics_get"
+    },
+    {
+      "path": "/api/v1/trade/trades",
+      "method": "GET",
+      "operationId": "get_trades_api_v1_trade_trades_get"
+    },
+    {
+      "path": "/api/v1/trading/sessions",
+      "method": "GET",
+      "operationId": "list_trading_sessions_api_v1_trading_sessions_get"
+    },
+    {
+      "path": "/api/v1/trading/sessions",
+      "method": "POST",
+      "operationId": "create_trading_session_api_v1_trading_sessions_post"
+    },
+    {
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "method": "DELETE",
+      "operationId": "delete_trading_session_api_v1_trading_sessions__session_id__delete"
+    },
+    {
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "method": "GET",
+      "operationId": "get_trading_session_api_v1_trading_sessions__session_id__get"
+    },
+    {
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "method": "PATCH",
+      "operationId": "update_trading_session_api_v1_trading_sessions__session_id__patch"
+    },
+    {
+      "path": "/api/v2/market/blocktrade",
+      "method": "GET",
+      "operationId": "get_stock_blocktrade_api_v2_market_blocktrade_get"
+    },
+    {
+      "path": "/api/v2/market/blocktrade/refresh",
+      "method": "POST",
+      "operationId": "refresh_stock_blocktrade_api_v2_market_blocktrade_refresh_post"
+    },
+    {
+      "path": "/api/v2/market/dividend",
+      "method": "GET",
+      "operationId": "get_stock_dividend_api_v2_market_dividend_get"
+    },
+    {
+      "path": "/api/v2/market/dividend/refresh",
+      "method": "POST",
+      "operationId": "refresh_stock_dividend_api_v2_market_dividend_refresh_post"
+    },
+    {
+      "path": "/api/v2/market/etf/list",
+      "method": "GET",
+      "operationId": "get_etf_list_api_v2_market_etf_list_get"
+    },
+    {
+      "path": "/api/v2/market/etf/refresh",
+      "method": "POST",
+      "operationId": "refresh_etf_spot_api_v2_market_etf_refresh_post"
+    },
+    {
+      "path": "/api/v2/market/fund-flow",
+      "method": "GET",
+      "operationId": "get_fund_flow_api_v2_market_fund_flow_get"
+    },
+    {
+      "path": "/api/v2/market/fund-flow/refresh",
+      "method": "POST",
+      "operationId": "refresh_fund_flow_api_v2_market_fund_flow_refresh_post"
+    },
+    {
+      "path": "/api/v2/market/lhb",
+      "method": "GET",
+      "operationId": "get_lhb_detail_api_v2_market_lhb_get"
+    },
+    {
+      "path": "/api/v2/market/lhb/refresh",
+      "method": "POST",
+      "operationId": "refresh_lhb_detail_api_v2_market_lhb_refresh_post"
+    },
+    {
+      "path": "/api/v2/market/refresh-all",
+      "method": "POST",
+      "operationId": "refresh_all_market_data_api_v2_market_refresh_all_post"
+    },
+    {
+      "path": "/api/v2/market/sector/fund-flow",
+      "method": "GET",
+      "operationId": "get_sector_fund_flow_api_v2_market_sector_fund_flow_get"
+    },
+    {
+      "path": "/api/v2/market/sector/fund-flow/refresh",
+      "method": "POST",
+      "operationId": "refresh_sector_fund_flow_api_v2_market_sector_fund_flow_refresh_post"
+    },
+    {
+      "path": "/api/watchlist/",
+      "method": "GET",
+      "operationId": "get_my_watchlist_api_watchlist__get"
+    },
+    {
+      "path": "/api/watchlist/add",
+      "method": "POST",
+      "operationId": "add_to_watchlist_api_watchlist_add_post"
+    },
+    {
+      "path": "/api/watchlist/check/{symbol}",
+      "method": "GET",
+      "operationId": "check_in_watchlist_api_watchlist_check__symbol__get"
+    },
+    {
+      "path": "/api/watchlist/clear",
+      "method": "DELETE",
+      "operationId": "clear_watchlist_api_watchlist_clear_delete"
+    },
+    {
+      "path": "/api/watchlist/count",
+      "method": "GET",
+      "operationId": "get_watchlist_count_api_watchlist_count_get"
+    },
+    {
+      "path": "/api/watchlist/group/{group_id}",
+      "method": "GET",
+      "operationId": "get_watchlist_by_group_api_watchlist_group__group_id__get"
+    },
+    {
+      "path": "/api/watchlist/groups",
+      "method": "GET",
+      "operationId": "get_user_groups_api_watchlist_groups_get"
+    },
+    {
+      "path": "/api/watchlist/groups",
+      "method": "POST",
+      "operationId": "create_group_api_watchlist_groups_post"
+    },
+    {
+      "path": "/api/watchlist/groups/{group_id}",
+      "method": "DELETE",
+      "operationId": "delete_group_api_watchlist_groups__group_id__delete"
+    },
+    {
+      "path": "/api/watchlist/groups/{group_id}",
+      "method": "PUT",
+      "operationId": "update_group_api_watchlist_groups__group_id__put"
+    },
+    {
+      "path": "/api/watchlist/move",
+      "method": "PUT",
+      "operationId": "move_stock_to_group_api_watchlist_move_put"
+    },
+    {
+      "path": "/api/watchlist/notes/{symbol}",
+      "method": "PUT",
+      "operationId": "update_watchlist_notes_api_watchlist_notes__symbol__put"
+    },
+    {
+      "path": "/api/watchlist/remove/{symbol}",
+      "method": "DELETE",
+      "operationId": "remove_from_watchlist_api_watchlist_remove__symbol__delete"
+    },
+    {
+      "path": "/api/watchlist/symbols",
+      "method": "GET",
+      "operationId": "get_my_watchlist_symbols_api_watchlist_symbols_get"
+    },
+    {
+      "path": "/api/watchlist/with-groups",
+      "method": "GET",
+      "operationId": "get_watchlist_with_groups_api_watchlist_with_groups_get"
+    },
+    {
+      "path": "/health",
+      "method": "GET",
+      "operationId": "health_check_health_get"
+    },
+    {
+      "path": "/health/ready",
+      "method": "GET",
+      "operationId": "readiness_check_health_ready_get"
+    },
+    {
+      "path": "/metrics",
+      "method": "GET",
+      "operationId": "metrics_metrics_get"
+    },
+    {
+      "path": "/metrics/health",
+      "method": "GET",
+      "operationId": "metrics_health_metrics_health_get"
+    },
+    {
+      "path": "/metrics/list",
+      "method": "GET",
+      "operationId": "metrics_list_metrics_list_get"
+    },
+    {
+      "path": "/ws/channels",
+      "method": "GET",
+      "operationId": "list_channels_ws_channels_get"
+    },
+    {
+      "path": "/ws/stats",
+      "method": "GET",
+      "operationId": "get_websocket_stats_ws_stats_get"
+    }
+  ]
+}

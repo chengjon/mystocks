@@ -1,0 +1,453 @@
+{
+  "generated_at": "2026-05-21T17:04:36.089Z",
+  "git_head": "c173bbc8d48d5e20ed5905d698ca39001237198a",
+  "git_head_short": "c173bbc8d",
+  "stale_if_head_mismatch": true,
+  "groups": {
+    "/api/v1/trade": {
+      "ownership_class": "trading-owned",
+      "route_count": 15,
+      "schema_exposed_count": 15,
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint_modules": [
+        "app.api.trade.execution_tracking_routes",
+        "app.api.trade.reconciliation_routes",
+        "app.api.trade.routes"
+      ],
+      "openapi_operation_count": 15,
+      "openapi_operation_ids": [
+        "execute_trade_api_v1_trade_execute_post",
+        "export_reconciliation_results_api_v1_trade_reconciliation_export_get",
+        "get_execution_tracking_api_v1_trade_execution_tracking_get",
+        "get_execution_tracking_detail_api_v1_trade_execution_tracking__tracking_id__get",
+        "get_portfolio_api_v1_trade_portfolio_get",
+        "get_positions_api_v1_trade_positions_get",
+        "get_reconciliation_accounts_api_v1_trade_reconciliation_accounts_get",
+        "get_reconciliation_results_api_v1_trade_reconciliation_results_get",
+        "get_reconciliation_statements_api_v1_trade_reconciliation_statements_get",
+        "get_signals_api_v1_trade_signals_get",
+        "get_statistics_api_v1_trade_statistics_get",
+        "get_trades_api_v1_trade_trades_get",
+        "health_check_api_v1_trade_health_get",
+        "import_reconciliation_csv_api_v1_trade_reconciliation_import_post",
+        "trigger_external_execution_api_v1_trade_execution_tracking_trigger_post"
+      ],
+      "openapi_examples_recorded": "not-proven-by-this-scan",
+      "caller_parser": "not-proven-by-string-scan; future implementation lane must inspect active frontend/test parsers before mutation",
+      "response_shape": "schema-visible operations present; exact response models require per-operation implementation-lane review before mutation",
+      "request_contract": "query/path/body details require per-operation OpenAPI diff review before mutation",
+      "consumers": {
+        "counts": {
+          "frontend": 4,
+          "tests": 4,
+          "scripts": 2,
+          "ops_config_ci": 0,
+          "docs_governance": 27,
+          "other": 0
+        },
+        "files": {
+          "frontend": [
+            "web/frontend/src/config/pageConfig.ts",
+            "web/frontend/src/router/index.ts",
+            "web/frontend/src/views/FreqtradeDemo.vue",
+            "web/frontend/src/views/artdeco-pages/system-tabs/__node_tests__/systemSettingsMonitorData.test.ts"
+          ],
+          "tests": [
+            "web/backend/tests/test_health_route_conflicts.py",
+            "web/backend/tests/test_trade_execution_tracking_routes.py",
+            "web/backend/tests/test_trade_reconciliation_routes.py",
+            "web/backend/tests/test_trading_runtime_routes.py"
+          ],
+          "scripts": [
+            "scripts/database/postgres_indexes.sql",
+            "scripts/dev/tools/generate-page-config.js"
+          ],
+          "ops_config_ci": [],
+          "docs_governance": [
+            "docs/FUNCTION_TREE.md",
+            "docs/api/API_ENDPOINTS_STATISTICS_REPORT.md",
+            "docs/api/API_INDEX.md",
+            "docs/api/MyStocks_API_Mapping_Document.md",
+            "docs/api/WEB_PAGES_API_MAPPING.md",
+            "docs/api/guides/integration/API_CONTRACT_VERIFICATION_PLAN.md",
+            "docs/api/openapi.json",
+            "docs/architecture/MENU_ARCHITECTURE_V3.2_ELITE.md",
+            "docs/design/new/07_trade_station.md",
+            "docs/guides/onboarding/USER_GUIDE.md",
+            "docs/plans/2026-03-04-runtime-log-fixes-handover.md",
+            "docs/plans/2026-03-12-api-availability-matrix-draft.md",
+            "docs/plans/2026-03-12-artdeco-p0-p1-batching-implementation-plan.md",
+            "docs/plans/2026-04-02-frontend-mainline-phase-1-execution-matrix.md",
+            "docs/plans/2026-04-03-frontend-mainline-phase-2-execution-matrix.md",
+            "docs/plans/2026-04-03-frontend-mainline-phase-3-execution-matrix.md",
+            "docs/plans/frontend-page-optimization-list.md",
+            "docs/references/artdeco-system-guide.md",
+            "docs/reports/FRONTEND_JS_SYNTAX_FIX_REPORT.md",
+            "docs/reports/api_verification/API_VERIFICATION_COMPREHENSIVE_REPORT.md"
+          ],
+          "other": []
+        }
+      },
+      "minimum_regression_checks": [
+        "app.main import",
+        "FastAPI route table diff",
+        "app.openapi() duplicate operationId check",
+        "targeted frontend/test consumer parser review",
+        "contract parity test for path/query/body/response before route mutation"
+      ]
+    },
+    "/api/trading": {
+      "ownership_class": "trading-owned",
+      "route_count": 8,
+      "schema_exposed_count": 8,
+      "methods": [
+        "DELETE",
+        "GET",
+        "POST"
+      ],
+      "endpoint_modules": [
+        "app.api.trading_runtime"
+      ],
+      "openapi_operation_count": 8,
+      "openapi_operation_ids": [
+        "add_strategy_api_trading_strategies_add_post",
+        "get_market_snapshot_api_trading_market_snapshot_get",
+        "get_risk_metrics_api_trading_risk_metrics_get",
+        "get_status_api_trading_status_get",
+        "get_strategies_performance_api_trading_strategies_performance_get",
+        "remove_strategy_api_trading_strategies__strategy_name__delete",
+        "start_session_api_trading_start_post",
+        "stop_session_api_trading_stop_post"
+      ],
+      "openapi_examples_recorded": "not-proven-by-this-scan",
+      "caller_parser": "not-proven-by-string-scan; future implementation lane must inspect active frontend/test parsers before mutation",
+      "response_shape": "schema-visible operations present; exact response models require per-operation implementation-lane review before mutation",
+      "request_contract": "query/path/body details require per-operation OpenAPI diff review before mutation",
+      "consumers": {
+        "counts": {
+          "frontend": 11,
+          "tests": 11,
+          "scripts": 3,
+          "ops_config_ci": 0,
+          "docs_governance": 40,
+          "other": 0
+        },
+        "files": {
+          "frontend": [
+            "web/frontend/src/config/pageConfigExtended.example.ts",
+            "web/frontend/src/layouts/archive/MenuConfig.ts",
+            "web/frontend/src/stores/__tests__/api-stores.spec.ts",
+            "web/frontend/src/stores/apiStores.ts",
+            "web/frontend/src/types/unified-api.ts",
+            "web/frontend/src/views/composables/__node_tests__/tradingDashboardActions.test.ts",
+            "web/frontend/src/views/composables/tradingDashboardActions.ts",
+            "web/frontend/src/views/composables/useTradingDashboard.ts",
+            "web/frontend/src/views/examples/TradingDashboard.migrated.vue",
+            "web/frontend/src/views/examples/composables/useTradingDashboard.migrated.ts",
+            "web/frontend/src/views/system/API.vue"
+          ],
+          "tests": [
+            "tests/002-arch-optimization/PHASE2_WEB_FOUNDATION_COMPLETION_REPORT.md",
+            "tests/config/api-config.ts",
+            "tests/helpers/api-helpers/functions-2.ts",
+            "tests/openapi.json",
+            "tests/performance/api_smoke_endpoints.json",
+            "tests/performance/test_api_smoke_endpoints_json.py",
+            "tests/performance/test_build_runtime_quality_summary.py",
+            "tests/performance/test_runtime_delivery_summary_local_script.py",
+            "tests/unit/governance/test_mainline_scope_gate_function_tree.py",
+            "web/backend/tests/test_health_route_conflicts.py",
+            "web/backend/tests/test_trading_runtime_routes.py"
+          ],
+          "scripts": [
+            "scripts/dev/quality_gate/build_runtime_quality_summary.py",
+            "scripts/dev/tools/generate-page-config.js",
+            "scripts/tests/test_security_owasp_top10.py"
+          ],
+          "ops_config_ci": [],
+          "docs_governance": [
+            "docs/FUNCTION_TREE.md",
+            "docs/api/API_ENDPOINTS_STATISTICS_REPORT.md",
+            "docs/api/openapi.json",
+            "docs/api/openapi/market-data-api-full.json",
+            "docs/api/reports/archives/merged_readmes/README_PLATFORM.md",
+            "docs/api/swagger.json",
+            "docs/architecture/FRONTEND_OPTIMIZATION_IMPLEMENTATION_PLAN_V2.md",
+            "docs/guides/features/TRADINGVIEW_TROUBLESHOOTING.md",
+            "docs/guides/frontend/frontend-data-capability-registry.md",
+            "docs/guides/frontend/frontend_optimization_next_steps.md",
+            "docs/guides/frontend/pinia-api-standardization-guide.md",
+            "docs/guides/pm2/PM2_INTEGRATION_TEST_WORKFLOW.md",
+            "docs/guides/quant-trading/broker-execution-truth-registry.md",
+            "docs/guides/web/ARTDECO_MENU_API_MAPPING.md",
+            "docs/plans/2026-03-04-runtime-log-fixes-handover.md",
+            "docs/plans/2026-03-12-api-availability-matrix-draft.md",
+            "docs/plans/2026-04-03-frontend-mainline-phase-3-execution-matrix.md",
+            "docs/plans/frontend-page-optimization-list.md",
+            "docs/reports/ARTDECO_MENU_FRONTEND_DESIGN_REVIEW.md",
+            "docs/reports/DAY5_PLUS_COMPLETION_REPORT.md"
+          ],
+          "other": []
+        }
+      },
+      "minimum_regression_checks": [
+        "app.main import",
+        "FastAPI route table diff",
+        "app.openapi() duplicate operationId check",
+        "targeted frontend/test consumer parser review",
+        "contract parity test for path/query/body/response before route mutation"
+      ]
+    },
+    "/api/tradingview": {
+      "ownership_class": "trading-owned",
+      "route_count": 6,
+      "schema_exposed_count": 6,
+      "methods": [
+        "GET",
+        "POST"
+      ],
+      "endpoint_modules": [
+        "app.api.tradingview"
+      ],
+      "openapi_operation_count": 6,
+      "openapi_operation_ids": [
+        "convert_symbol_api_tradingview_symbol_convert_get",
+        "get_chart_config_api_tradingview_chart_config_post",
+        "get_market_overview_config_api_tradingview_market_overview_config_get",
+        "get_mini_chart_config_api_tradingview_mini_chart_config_post",
+        "get_screener_config_api_tradingview_screener_config_get",
+        "get_ticker_tape_config_api_tradingview_ticker_tape_config_post"
+      ],
+      "openapi_examples_recorded": "not-proven-by-this-scan",
+      "caller_parser": "not-proven-by-string-scan; future implementation lane must inspect active frontend/test parsers before mutation",
+      "response_shape": "schema-visible operations present; exact response models require per-operation implementation-lane review before mutation",
+      "request_contract": "query/path/body details require per-operation OpenAPI diff review before mutation",
+      "consumers": {
+        "counts": {
+          "frontend": 0,
+          "tests": 3,
+          "scripts": 0,
+          "ops_config_ci": 0,
+          "docs_governance": 13,
+          "other": 0
+        },
+        "files": {
+          "frontend": [],
+          "tests": [
+            "tests/002-arch-optimization/PHASE2_WEB_FOUNDATION_COMPLETION_REPORT.md",
+            "tests/openapi.json",
+            "web/backend/tests/test_health_route_conflicts.py"
+          ],
+          "scripts": [],
+          "ops_config_ci": [],
+          "docs_governance": [
+            "docs/api/API_ENDPOINTS_STATISTICS_REPORT.md",
+            "docs/api/openapi.json",
+            "docs/api/openapi/market-data-api-full.json",
+            "docs/api/swagger.json",
+            "docs/guides/features/TRADINGVIEW_TROUBLESHOOTING.md",
+            "docs/reports/MENU_API_OPTIMIZATION_PLAN.md",
+            "docs/reports/pylint-errors-by-module.txt",
+            "docs/reports/quality/backend-lifecycle-di-inventory-2026-05-18.md",
+            "docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md",
+            "docs/reports/quality/generated/backend-getter-inventory.txt",
+            "docs/reports/quality/generated/backend-lifecycle-di-inventory-2026-05-18.json",
+            "docs/standards/MODULE_REGISTRY.md",
+            "docs/standards/PROJECT_MODULES.md"
+          ],
+          "other": []
+        }
+      },
+      "minimum_regression_checks": [
+        "app.main import",
+        "FastAPI route table diff",
+        "app.openapi() duplicate operationId check",
+        "targeted frontend/test consumer parser review",
+        "contract parity test for path/query/body/response before route mutation"
+      ]
+    },
+    "/api/v1/trading": {
+      "ownership_class": "trading-owned",
+      "route_count": 5,
+      "schema_exposed_count": 5,
+      "methods": [
+        "DELETE",
+        "GET",
+        "PATCH",
+        "POST"
+      ],
+      "endpoint_modules": [
+        "app.api.v1.trading.session"
+      ],
+      "openapi_operation_count": 5,
+      "openapi_operation_ids": [
+        "create_trading_session_api_v1_trading_sessions_post",
+        "delete_trading_session_api_v1_trading_sessions__session_id__delete",
+        "get_trading_session_api_v1_trading_sessions__session_id__get",
+        "list_trading_sessions_api_v1_trading_sessions_get",
+        "update_trading_session_api_v1_trading_sessions__session_id__patch"
+      ],
+      "openapi_examples_recorded": "not-proven-by-this-scan",
+      "caller_parser": "not-proven-by-string-scan; future implementation lane must inspect active frontend/test parsers before mutation",
+      "response_shape": "schema-visible operations present; exact response models require per-operation implementation-lane review before mutation",
+      "request_contract": "query/path/body details require per-operation OpenAPI diff review before mutation",
+      "consumers": {
+        "counts": {
+          "frontend": 0,
+          "tests": 1,
+          "scripts": 0,
+          "ops_config_ci": 0,
+          "docs_governance": 10,
+          "other": 0
+        },
+        "files": {
+          "frontend": [],
+          "tests": [
+            "web/backend/tests/test_health_route_conflicts.py"
+          ],
+          "scripts": [],
+          "ops_config_ci": [],
+          "docs_governance": [
+            "docs/api/WEB_PAGES_API_MAPPING.md",
+            "docs/api/openapi.json",
+            "docs/reports/API_AUTOMATION_TEST_GUIDE.md",
+            "docs/reports/ARTDECO_MENU_OPTIMIZATION_REVIEW.md",
+            "docs/reports/quality/backend-audit-phase3-decision-records.md",
+            "docs/reports/quality/backend-health-status-openapi-stabilization-2026-05-18.md",
+            "docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md",
+            "docs/reports/quality/generated/backend-getter-inventory.txt",
+            "docs/reports/quality/generated/backend-lifecycle-di-inventory-2026-05-18.json",
+            "docs/superpowers/specs/2026-05-08-attribution-analysis-design.md"
+          ],
+          "other": []
+        }
+      },
+      "minimum_regression_checks": [
+        "app.main import",
+        "FastAPI route table diff",
+        "app.openapi() duplicate operationId check",
+        "targeted frontend/test consumer parser review",
+        "contract parity test for path/query/body/response before route mutation"
+      ]
+    },
+    "/api/v1/positions": {
+      "ownership_class": "trading-owned",
+      "route_count": 6,
+      "schema_exposed_count": 6,
+      "methods": [
+        "DELETE",
+        "GET",
+        "PATCH",
+        "POST"
+      ],
+      "endpoint_modules": [
+        "app.api.v1.trading.positions"
+      ],
+      "openapi_operation_count": 6,
+      "openapi_operation_ids": [
+        "create_position_api_v1_positions_post",
+        "delete_position_api_v1_positions__position_id__delete",
+        "get_position_api_v1_positions__position_id__get",
+        "get_position_attribution_api_v1_positions_attribution_get",
+        "list_positions_api_v1_positions_get",
+        "update_position_api_v1_positions__position_id__patch"
+      ],
+      "openapi_examples_recorded": "not-proven-by-this-scan",
+      "caller_parser": "not-proven-by-string-scan; future implementation lane must inspect active frontend/test parsers before mutation",
+      "response_shape": "schema-visible operations present; exact response models require per-operation implementation-lane review before mutation",
+      "request_contract": "query/path/body details require per-operation OpenAPI diff review before mutation",
+      "consumers": {
+        "counts": {
+          "frontend": 0,
+          "tests": 3,
+          "scripts": 0,
+          "ops_config_ci": 0,
+          "docs_governance": 6,
+          "other": 0
+        },
+        "files": {
+          "frontend": [],
+          "tests": [
+            "tests/unit/test_legacy_attribution_compatibility.py",
+            "web/backend/tests/test_attribution_positions_route.py",
+            "web/backend/tests/test_health_route_conflicts.py"
+          ],
+          "scripts": [],
+          "ops_config_ci": [],
+          "docs_governance": [
+            "docs/FUNCTION_TREE.md",
+            "docs/api/WEB_PAGES_API_MAPPING.md",
+            "docs/api/openapi.json",
+            "docs/reports/quality/backend-health-status-openapi-stabilization-2026-05-18.md",
+            "docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md",
+            "docs/superpowers/specs/2026-05-08-attribution-analysis-design.md"
+          ],
+          "other": []
+        }
+      },
+      "minimum_regression_checks": [
+        "app.main import",
+        "FastAPI route table diff",
+        "app.openapi() duplicate operationId check",
+        "targeted frontend/test consumer parser review",
+        "contract parity test for path/query/body/response before route mutation"
+      ]
+    },
+    "/api/v1/advanced-analysis/trading-signals": {
+      "ownership_class": "trading-adjacent-unclassified",
+      "route_count": 1,
+      "schema_exposed_count": 1,
+      "methods": [
+        "GET"
+      ],
+      "endpoint_modules": [
+        "app.api.advanced_analysis_api"
+      ],
+      "openapi_operation_count": 1,
+      "openapi_operation_ids": [
+        "analyze_trading_signals_api_v1_advanced_analysis_trading_signals_get"
+      ],
+      "openapi_examples_recorded": "not-proven-by-this-scan",
+      "caller_parser": "not-proven-by-string-scan; future implementation lane must inspect active frontend/test parsers before mutation",
+      "response_shape": "schema-visible operations present; exact response models require per-operation implementation-lane review before mutation",
+      "request_contract": "query/path/body details require per-operation OpenAPI diff review before mutation",
+      "consumers": {
+        "counts": {
+          "frontend": 1,
+          "tests": 0,
+          "scripts": 1,
+          "ops_config_ci": 1,
+          "docs_governance": 2,
+          "other": 0
+        },
+        "files": {
+          "frontend": [
+            "web/frontend/src/api/advancedAnalysis.ts"
+          ],
+          "tests": [],
+          "scripts": [
+            "scripts/tests/test_advanced_analysis_api_integration.py"
+          ],
+          "ops_config_ci": [
+            "config/advanced_analysis_contract.json"
+          ],
+          "docs_governance": [
+            "docs/reports/quality/backend-route-openapi-governance-openspec-proposal-2026-05-21.md",
+            "docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md"
+          ],
+          "other": []
+        }
+      },
+      "minimum_regression_checks": [
+        "app.main import",
+        "FastAPI route table diff",
+        "app.openapi() duplicate operationId check",
+        "targeted frontend/test consumer parser review",
+        "contract parity test for path/query/body/response before route mutation"
+      ]
+    }
+  }
+}

@@ -1,0 +1,6580 @@
+{
+  "generated_at": "2026-05-21T17:02:48.078861Z",
+  "git_head": "c173bbc8d48d5e20ed5905d698ca39001237198a",
+  "git_head_short": "c173bbc8d",
+  "stale_if_head_mismatch": true,
+  "app_import_error": null,
+  "env_mode": "placeholder env for import/openapi governance; no service startup",
+  "summary": {
+    "total_routes": 548,
+    "schema_visible_routes": 536,
+    "hidden_runtime_routes": 12,
+    "endpoint_module_count": 99,
+    "duplicate_path_method_count_excluding_head_options": 1,
+    "trading_candidate_routes": 41,
+    "trading_schema_exposed_routes": 41,
+    "trading_schema_hidden_routes": 0
+  },
+  "duplicate_path_methods": [
+    {
+      "path": "/metrics",
+      "method": "GET",
+      "count": 2,
+      "routes": [
+        {
+          "index": 6,
+          "path": "/metrics",
+          "name": "prometheus_metrics",
+          "methods": [
+            "GET"
+          ],
+          "include_in_schema": false,
+          "endpoint_module": "app.main",
+          "endpoint_name": "prometheus_metrics"
+        },
+        {
+          "index": 518,
+          "path": "/metrics",
+          "name": "metrics",
+          "methods": [
+            "GET"
+          ],
+          "include_in_schema": true,
+          "endpoint_module": "app.api.prometheus_exporter",
+          "endpoint_name": "metrics"
+        }
+      ]
+    }
+  ],
+  "trading_candidate_module_counts": {
+    "app.api.advanced_analysis_api": 1,
+    "app.api.trade.execution_tracking_routes": 3,
+    "app.api.trade.reconciliation_routes": 5,
+    "app.api.trade.routes": 7,
+    "app.api.trading_runtime": 8,
+    "app.api.tradingview": 6,
+    "app.api.v1.trading.positions": 6,
+    "app.api.v1.trading.session": 5
+  },
+  "trading_candidate_path_group_counts": {
+    "/api/trading": 14,
+    "/api/v1/advanced-analysis/trading-signals": 1,
+    "/api/v1/positions": 6,
+    "/api/v1/trade": 15,
+    "/api/v1/trading": 5
+  },
+  "trading_candidates": [
+    {
+      "index": 65,
+      "path": "/api/v1/trade/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "health_check",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 66,
+      "path": "/api/v1/trade/portfolio",
+      "name": "get_portfolio",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_portfolio",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 67,
+      "path": "/api/v1/trade/positions",
+      "name": "get_positions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_positions",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 68,
+      "path": "/api/v1/trade/signals",
+      "name": "get_signals",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_signals",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 69,
+      "path": "/api/v1/trade/trades",
+      "name": "get_trades",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_trades",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 70,
+      "path": "/api/v1/trade/statistics",
+      "name": "get_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_statistics",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 71,
+      "path": "/api/v1/trade/execute",
+      "name": "execute_trade",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "execute_trade",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 72,
+      "path": "/api/v1/trade/execution-tracking",
+      "name": "get_execution_tracking",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.execution_tracking_routes",
+      "endpoint_name": "get_execution_tracking",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 73,
+      "path": "/api/v1/trade/execution-tracking/trigger",
+      "name": "trigger_external_execution",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.execution_tracking_routes",
+      "endpoint_name": "trigger_external_execution",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 74,
+      "path": "/api/v1/trade/execution-tracking/{tracking_id}",
+      "name": "get_execution_tracking_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.execution_tracking_routes",
+      "endpoint_name": "get_execution_tracking_detail",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 75,
+      "path": "/api/v1/trade/reconciliation/accounts",
+      "name": "get_reconciliation_accounts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "get_reconciliation_accounts",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 76,
+      "path": "/api/v1/trade/reconciliation/statements",
+      "name": "get_reconciliation_statements",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "get_reconciliation_statements",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 77,
+      "path": "/api/v1/trade/reconciliation/results",
+      "name": "get_reconciliation_results",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "get_reconciliation_results",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 78,
+      "path": "/api/v1/trade/reconciliation/export",
+      "name": "export_reconciliation_results",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "export_reconciliation_results",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 79,
+      "path": "/api/v1/trade/reconciliation/import",
+      "name": "import_reconciliation_csv",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "import_reconciliation_csv",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 80,
+      "path": "/api/trading/status",
+      "name": "get_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "get_status",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 81,
+      "path": "/api/trading/start",
+      "name": "start_session",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "start_session",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 82,
+      "path": "/api/trading/stop",
+      "name": "stop_session",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "stop_session",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 83,
+      "path": "/api/trading/strategies/performance",
+      "name": "get_strategies_performance",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "get_strategies_performance",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 84,
+      "path": "/api/trading/strategies/add",
+      "name": "add_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "add_strategy",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 85,
+      "path": "/api/trading/strategies/{strategy_name}",
+      "name": "remove_strategy",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "remove_strategy",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 86,
+      "path": "/api/trading/market/snapshot",
+      "name": "get_market_snapshot",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "get_market_snapshot",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 87,
+      "path": "/api/trading/risk/metrics",
+      "name": "get_risk_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "get_risk_metrics",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 315,
+      "path": "/api/tradingview/chart/config",
+      "name": "get_chart_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_chart_config",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 316,
+      "path": "/api/tradingview/mini-chart/config",
+      "name": "get_mini_chart_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_mini_chart_config",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 317,
+      "path": "/api/tradingview/ticker-tape/config",
+      "name": "get_ticker_tape_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_ticker_tape_config",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 318,
+      "path": "/api/tradingview/market-overview/config",
+      "name": "get_market_overview_config",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_market_overview_config",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 319,
+      "path": "/api/tradingview/screener/config",
+      "name": "get_screener_config",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_screener_config",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 320,
+      "path": "/api/tradingview/symbol/convert",
+      "name": "convert_symbol",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "convert_symbol",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 439,
+      "path": "/api/v1/trading/sessions",
+      "name": "list_trading_sessions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "list_trading_sessions",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 440,
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "name": "get_trading_session",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "get_trading_session",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 441,
+      "path": "/api/v1/trading/sessions",
+      "name": "create_trading_session",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "create_trading_session",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 442,
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "name": "update_trading_session",
+      "methods": [
+        "PATCH"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "update_trading_session",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 443,
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "name": "delete_trading_session",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "delete_trading_session",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 444,
+      "path": "/api/v1/positions",
+      "name": "list_positions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "list_positions",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 445,
+      "path": "/api/v1/positions/attribution",
+      "name": "get_position_attribution",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "get_position_attribution",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 446,
+      "path": "/api/v1/positions/{position_id}",
+      "name": "get_position",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "get_position",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 447,
+      "path": "/api/v1/positions",
+      "name": "create_position",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "create_position",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 448,
+      "path": "/api/v1/positions/{position_id}",
+      "name": "update_position",
+      "methods": [
+        "PATCH"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "update_position",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 449,
+      "path": "/api/v1/positions/{position_id}",
+      "name": "delete_position",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "delete_position",
+      "ownership_class": "trading-owned"
+    },
+    {
+      "index": 536,
+      "path": "/api/v1/advanced-analysis/trading-signals",
+      "name": "analyze_trading_signals",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_trading_signals",
+      "ownership_class": "trading-adjacent-unclassified"
+    }
+  ],
+  "routes": [
+    {
+      "index": 0,
+      "path": "/openapi.json",
+      "name": "openapi",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": false,
+      "endpoint_module": "fastapi.applications",
+      "endpoint_name": "openapi"
+    },
+    {
+      "index": 1,
+      "path": "/swagger-ui-static",
+      "name": "swagger-ui-static",
+      "methods": [],
+      "include_in_schema": false,
+      "endpoint_module": null,
+      "endpoint_name": null
+    },
+    {
+      "index": 2,
+      "path": "/static",
+      "name": "static",
+      "methods": [],
+      "include_in_schema": false,
+      "endpoint_module": null,
+      "endpoint_name": null
+    },
+    {
+      "index": 3,
+      "path": "/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.main",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 4,
+      "path": "/api/health/ready",
+      "name": "readiness_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.main",
+      "endpoint_name": "readiness_check"
+    },
+    {
+      "index": 5,
+      "path": "/health/ready",
+      "name": "readiness_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.main",
+      "endpoint_name": "readiness_check"
+    },
+    {
+      "index": 6,
+      "path": "/metrics",
+      "name": "prometheus_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": false,
+      "endpoint_module": "app.main",
+      "endpoint_name": "prometheus_metrics"
+    },
+    {
+      "index": 7,
+      "path": "/api/socketio-status",
+      "name": "socketio_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.main",
+      "endpoint_name": "socketio_status"
+    },
+    {
+      "index": 8,
+      "path": "/api/csrf-token",
+      "name": "get_csrf_token",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.main",
+      "endpoint_name": "get_csrf_token"
+    },
+    {
+      "index": 9,
+      "path": "/",
+      "name": "root",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.main",
+      "endpoint_name": "root"
+    },
+    {
+      "index": 10,
+      "path": "/api/docs",
+      "name": "custom_swagger_ui_html",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": false,
+      "endpoint_module": "app.main",
+      "endpoint_name": "custom_swagger_ui_html"
+    },
+    {
+      "index": 11,
+      "path": "/api/redoc",
+      "name": "custom_redoc_html",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": false,
+      "endpoint_module": "app.main",
+      "endpoint_name": "custom_redoc_html"
+    },
+    {
+      "index": 12,
+      "path": "/api/v1/auth/login",
+      "name": "login_for_access_token",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "login_for_access_token"
+    },
+    {
+      "index": 13,
+      "path": "/api/v1/auth/logout",
+      "name": "logout",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "logout"
+    },
+    {
+      "index": 14,
+      "path": "/api/v1/auth/me",
+      "name": "read_users_me",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "read_users_me"
+    },
+    {
+      "index": 15,
+      "path": "/api/v1/auth/refresh",
+      "name": "refresh_token",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "refresh_token"
+    },
+    {
+      "index": 16,
+      "path": "/api/v1/auth/users",
+      "name": "get_users",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "get_users"
+    },
+    {
+      "index": 17,
+      "path": "/api/v1/auth/csrf/token",
+      "name": "get_csrf_token",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "get_csrf_token"
+    },
+    {
+      "index": 18,
+      "path": "/api/v1/auth/register",
+      "name": "register_user",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "register_user"
+    },
+    {
+      "index": 19,
+      "path": "/api/v1/auth/reset-password/request",
+      "name": "request_password_reset",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "request_password_reset"
+    },
+    {
+      "index": 20,
+      "path": "/api/v1/auth/reset-password/confirm",
+      "name": "confirm_password_reset",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth",
+      "endpoint_name": "confirm_password_reset"
+    },
+    {
+      "index": 21,
+      "path": "/api/v1/market/heatmap",
+      "name": "get_market_heatmap",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market._market_heatmap_router",
+      "endpoint_name": "get_market_heatmap"
+    },
+    {
+      "index": 22,
+      "path": "/api/v1/market/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.health_check",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 23,
+      "path": "/api/v1/market/fund-flow",
+      "name": "get_fund_flow",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "get_fund_flow"
+    },
+    {
+      "index": 24,
+      "path": "/api/v1/market/fund-flow/refresh",
+      "name": "refresh_fund_flow",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "refresh_fund_flow"
+    },
+    {
+      "index": 25,
+      "path": "/api/v1/market/etf/list",
+      "name": "get_etf_list",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "get_etf_list"
+    },
+    {
+      "index": 26,
+      "path": "/api/v1/market/etf/refresh",
+      "name": "refresh_etf_data",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "refresh_etf_data"
+    },
+    {
+      "index": 27,
+      "path": "/api/v1/market/chip-race",
+      "name": "get_chip_race",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "get_chip_race"
+    },
+    {
+      "index": 28,
+      "path": "/api/v1/market/chip-race/refresh",
+      "name": "refresh_chip_race",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "refresh_chip_race"
+    },
+    {
+      "index": 29,
+      "path": "/api/v1/market/lhb",
+      "name": "get_lhb_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "get_lhb_detail"
+    },
+    {
+      "index": 30,
+      "path": "/api/v1/market/lhb/refresh",
+      "name": "refresh_lhb_detail",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "refresh_lhb_detail"
+    },
+    {
+      "index": 31,
+      "path": "/api/v1/market/quotes",
+      "name": "get_market_quotes",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "get_market_quotes"
+    },
+    {
+      "index": 32,
+      "path": "/api/v1/market/stocks",
+      "name": "get_stock_list",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "get_stock_list"
+    },
+    {
+      "index": 33,
+      "path": "/api/v1/market/kline",
+      "name": "get_kline_data",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market.market_data_request",
+      "endpoint_name": "get_kline_data"
+    },
+    {
+      "index": 34,
+      "path": "/api/v2/market/fund-flow",
+      "name": "get_fund_flow",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "get_fund_flow"
+    },
+    {
+      "index": 35,
+      "path": "/api/v2/market/fund-flow/refresh",
+      "name": "refresh_fund_flow",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "refresh_fund_flow"
+    },
+    {
+      "index": 36,
+      "path": "/api/v2/market/etf/list",
+      "name": "get_etf_list",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "get_etf_list"
+    },
+    {
+      "index": 37,
+      "path": "/api/v2/market/etf/refresh",
+      "name": "refresh_etf_spot",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "refresh_etf_spot"
+    },
+    {
+      "index": 38,
+      "path": "/api/v2/market/lhb",
+      "name": "get_lhb_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "get_lhb_detail"
+    },
+    {
+      "index": 39,
+      "path": "/api/v2/market/lhb/refresh",
+      "name": "refresh_lhb_detail",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "refresh_lhb_detail"
+    },
+    {
+      "index": 40,
+      "path": "/api/v2/market/sector/fund-flow",
+      "name": "get_sector_fund_flow",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "get_sector_fund_flow"
+    },
+    {
+      "index": 41,
+      "path": "/api/v2/market/sector/fund-flow/refresh",
+      "name": "refresh_sector_fund_flow",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "refresh_sector_fund_flow"
+    },
+    {
+      "index": 42,
+      "path": "/api/v2/market/dividend",
+      "name": "get_stock_dividend",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "get_stock_dividend"
+    },
+    {
+      "index": 43,
+      "path": "/api/v2/market/dividend/refresh",
+      "name": "refresh_stock_dividend",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "refresh_stock_dividend"
+    },
+    {
+      "index": 44,
+      "path": "/api/v2/market/blocktrade",
+      "name": "get_stock_blocktrade",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "get_stock_blocktrade"
+    },
+    {
+      "index": 45,
+      "path": "/api/v2/market/blocktrade/refresh",
+      "name": "refresh_stock_blocktrade",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "refresh_stock_blocktrade"
+    },
+    {
+      "index": 46,
+      "path": "/api/v2/market/refresh-all",
+      "name": "refresh_all_market_data",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.market_v2",
+      "endpoint_name": "refresh_all_market_data"
+    },
+    {
+      "index": 47,
+      "path": "/api/v1/monitoring/realtime/{symbol}",
+      "name": "get_realtime_monitoring",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_market_routes",
+      "endpoint_name": "get_realtime_monitoring"
+    },
+    {
+      "index": 48,
+      "path": "/api/v1/monitoring/realtime",
+      "name": "get_realtime_monitoring_list",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_market_routes",
+      "endpoint_name": "get_realtime_monitoring_list"
+    },
+    {
+      "index": 49,
+      "path": "/api/v1/monitoring/realtime/fetch",
+      "name": "fetch_realtime_data",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_market_routes",
+      "endpoint_name": "fetch_realtime_data"
+    },
+    {
+      "index": 50,
+      "path": "/api/v1/monitoring/dragon-tiger",
+      "name": "get_dragon_tiger_list",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_market_routes",
+      "endpoint_name": "get_dragon_tiger_list"
+    },
+    {
+      "index": 51,
+      "path": "/api/v1/monitoring/dragon-tiger/fetch",
+      "name": "fetch_dragon_tiger_data",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_market_routes",
+      "endpoint_name": "fetch_dragon_tiger_data"
+    },
+    {
+      "index": 52,
+      "path": "/api/v1/monitoring/alert-rules",
+      "name": "get_alert_rules",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "get_alert_rules"
+    },
+    {
+      "index": 53,
+      "path": "/api/v1/monitoring/alert-rules",
+      "name": "create_alert_rule",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "create_alert_rule"
+    },
+    {
+      "index": 54,
+      "path": "/api/v1/monitoring/alert-rules/{rule_id}",
+      "name": "update_alert_rule",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "update_alert_rule"
+    },
+    {
+      "index": 55,
+      "path": "/api/v1/monitoring/alert-rules/{rule_id}",
+      "name": "delete_alert_rule",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "delete_alert_rule"
+    },
+    {
+      "index": 56,
+      "path": "/api/v1/monitoring/alerts",
+      "name": "get_alert_records",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "get_alert_records"
+    },
+    {
+      "index": 57,
+      "path": "/api/v1/monitoring/alerts/{alert_id}/mark-read",
+      "name": "mark_alert_read",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "mark_alert_read"
+    },
+    {
+      "index": 58,
+      "path": "/api/v1/monitoring/alerts/mark-all-read",
+      "name": "mark_all_alerts_read",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "mark_all_alerts_read"
+    },
+    {
+      "index": 59,
+      "path": "/api/v1/monitoring/analyze",
+      "name": "analyze_monitoring",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "analyze_monitoring"
+    },
+    {
+      "index": 60,
+      "path": "/api/v1/monitoring/summary",
+      "name": "get_monitoring_summary",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "get_monitoring_summary"
+    },
+    {
+      "index": 61,
+      "path": "/api/v1/monitoring/stats/today",
+      "name": "get_today_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "get_today_statistics"
+    },
+    {
+      "index": 62,
+      "path": "/api/v1/monitoring/control/start",
+      "name": "start_monitoring",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "start_monitoring"
+    },
+    {
+      "index": 63,
+      "path": "/api/v1/monitoring/control/stop",
+      "name": "stop_monitoring",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "stop_monitoring"
+    },
+    {
+      "index": 64,
+      "path": "/api/v1/monitoring/control/status",
+      "name": "get_monitoring_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring",
+      "endpoint_name": "get_monitoring_status"
+    },
+    {
+      "index": 65,
+      "path": "/api/v1/trade/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 66,
+      "path": "/api/v1/trade/portfolio",
+      "name": "get_portfolio",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_portfolio"
+    },
+    {
+      "index": 67,
+      "path": "/api/v1/trade/positions",
+      "name": "get_positions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_positions"
+    },
+    {
+      "index": 68,
+      "path": "/api/v1/trade/signals",
+      "name": "get_signals",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_signals"
+    },
+    {
+      "index": 69,
+      "path": "/api/v1/trade/trades",
+      "name": "get_trades",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_trades"
+    },
+    {
+      "index": 70,
+      "path": "/api/v1/trade/statistics",
+      "name": "get_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "get_statistics"
+    },
+    {
+      "index": 71,
+      "path": "/api/v1/trade/execute",
+      "name": "execute_trade",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.routes",
+      "endpoint_name": "execute_trade"
+    },
+    {
+      "index": 72,
+      "path": "/api/v1/trade/execution-tracking",
+      "name": "get_execution_tracking",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.execution_tracking_routes",
+      "endpoint_name": "get_execution_tracking"
+    },
+    {
+      "index": 73,
+      "path": "/api/v1/trade/execution-tracking/trigger",
+      "name": "trigger_external_execution",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.execution_tracking_routes",
+      "endpoint_name": "trigger_external_execution"
+    },
+    {
+      "index": 74,
+      "path": "/api/v1/trade/execution-tracking/{tracking_id}",
+      "name": "get_execution_tracking_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.execution_tracking_routes",
+      "endpoint_name": "get_execution_tracking_detail"
+    },
+    {
+      "index": 75,
+      "path": "/api/v1/trade/reconciliation/accounts",
+      "name": "get_reconciliation_accounts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "get_reconciliation_accounts"
+    },
+    {
+      "index": 76,
+      "path": "/api/v1/trade/reconciliation/statements",
+      "name": "get_reconciliation_statements",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "get_reconciliation_statements"
+    },
+    {
+      "index": 77,
+      "path": "/api/v1/trade/reconciliation/results",
+      "name": "get_reconciliation_results",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "get_reconciliation_results"
+    },
+    {
+      "index": 78,
+      "path": "/api/v1/trade/reconciliation/export",
+      "name": "export_reconciliation_results",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "export_reconciliation_results"
+    },
+    {
+      "index": 79,
+      "path": "/api/v1/trade/reconciliation/import",
+      "name": "import_reconciliation_csv",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trade.reconciliation_routes",
+      "endpoint_name": "import_reconciliation_csv"
+    },
+    {
+      "index": 80,
+      "path": "/api/trading/status",
+      "name": "get_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "get_status"
+    },
+    {
+      "index": 81,
+      "path": "/api/trading/start",
+      "name": "start_session",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "start_session"
+    },
+    {
+      "index": 82,
+      "path": "/api/trading/stop",
+      "name": "stop_session",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "stop_session"
+    },
+    {
+      "index": 83,
+      "path": "/api/trading/strategies/performance",
+      "name": "get_strategies_performance",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "get_strategies_performance"
+    },
+    {
+      "index": 84,
+      "path": "/api/trading/strategies/add",
+      "name": "add_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "add_strategy"
+    },
+    {
+      "index": 85,
+      "path": "/api/trading/strategies/{strategy_name}",
+      "name": "remove_strategy",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "remove_strategy"
+    },
+    {
+      "index": 86,
+      "path": "/api/trading/market/snapshot",
+      "name": "get_market_snapshot",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "get_market_snapshot"
+    },
+    {
+      "index": 87,
+      "path": "/api/trading/risk/metrics",
+      "name": "get_risk_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.trading_runtime",
+      "endpoint_name": "get_risk_metrics"
+    },
+    {
+      "index": 88,
+      "path": "/api/v1/technical/patterns/{symbol}",
+      "name": "detect_patterns",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._technical_patterns_router",
+      "endpoint_name": "detect_patterns"
+    },
+    {
+      "index": 89,
+      "path": "/api/v1/technical/{symbol}/indicators",
+      "name": "get_all_indicators",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.technical_analysis",
+      "endpoint_name": "get_all_indicators"
+    },
+    {
+      "index": 90,
+      "path": "/api/v1/technical/{symbol}/trend",
+      "name": "get_trend_indicators",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.technical_analysis",
+      "endpoint_name": "get_trend_indicators"
+    },
+    {
+      "index": 91,
+      "path": "/api/v1/technical/{symbol}/momentum",
+      "name": "get_momentum_indicators",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.technical_analysis",
+      "endpoint_name": "get_momentum_indicators"
+    },
+    {
+      "index": 92,
+      "path": "/api/v1/technical/{symbol}/volatility",
+      "name": "get_volatility_indicators",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.technical_analysis",
+      "endpoint_name": "get_volatility_indicators"
+    },
+    {
+      "index": 93,
+      "path": "/api/v1/technical/{symbol}/volume",
+      "name": "get_volume_indicators",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.technical_analysis",
+      "endpoint_name": "get_volume_indicators"
+    },
+    {
+      "index": 94,
+      "path": "/api/v1/technical/{symbol}/signals",
+      "name": "get_trading_signals",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.technical_analysis",
+      "endpoint_name": "get_trading_signals"
+    },
+    {
+      "index": 95,
+      "path": "/api/v1/technical/{symbol}/history",
+      "name": "get_stock_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.technical_analysis",
+      "endpoint_name": "get_stock_history"
+    },
+    {
+      "index": 96,
+      "path": "/api/v1/technical/batch/indicators",
+      "name": "get_batch_indicators",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.technical_analysis",
+      "endpoint_name": "get_batch_indicators"
+    },
+    {
+      "index": 97,
+      "path": "/api/v1/data/stocks/basic",
+      "name": "get_stocks_basic",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.stocks",
+      "endpoint_name": "get_stocks_basic"
+    },
+    {
+      "index": 98,
+      "path": "/api/v1/data/stocks/industries",
+      "name": "get_stocks_industries",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.stocks",
+      "endpoint_name": "get_stocks_industries"
+    },
+    {
+      "index": 99,
+      "path": "/api/v1/data/stocks/concepts",
+      "name": "get_stocks_concepts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.stocks",
+      "endpoint_name": "get_stocks_concepts"
+    },
+    {
+      "index": 100,
+      "path": "/api/v1/data/stocks/search",
+      "name": "search_stocks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.stocks",
+      "endpoint_name": "search_stocks"
+    },
+    {
+      "index": 101,
+      "path": "/api/v1/data/stocks/{symbol}/detail",
+      "name": "get_stock_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.stocks",
+      "endpoint_name": "get_stock_detail"
+    },
+    {
+      "index": 102,
+      "path": "/api/v1/data/markets/overview",
+      "name": "get_market_overview",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.market",
+      "endpoint_name": "get_market_overview"
+    },
+    {
+      "index": 103,
+      "path": "/api/v1/data/markets/price-distribution",
+      "name": "get_price_distribution",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.market",
+      "endpoint_name": "get_price_distribution"
+    },
+    {
+      "index": 104,
+      "path": "/api/v1/data/markets/hot-industries",
+      "name": "get_hot_industries",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.market",
+      "endpoint_name": "get_hot_industries"
+    },
+    {
+      "index": 105,
+      "path": "/api/v1/data/markets/hot-concepts",
+      "name": "get_hot_concepts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.market",
+      "endpoint_name": "get_hot_concepts"
+    },
+    {
+      "index": 106,
+      "path": "/api/v1/data/stocks/daily",
+      "name": "get_daily_kline",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.kline",
+      "endpoint_name": "get_daily_kline"
+    },
+    {
+      "index": 107,
+      "path": "/api/v1/data/kline",
+      "name": "get_kline",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.kline",
+      "endpoint_name": "get_kline"
+    },
+    {
+      "index": 108,
+      "path": "/api/v1/data/stocks/kline",
+      "name": "get_kline_data",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.kline",
+      "endpoint_name": "get_kline_data"
+    },
+    {
+      "index": 109,
+      "path": "/api/v1/data/stocks/intraday",
+      "name": "get_intraday_data",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.kline",
+      "endpoint_name": "get_intraday_data"
+    },
+    {
+      "index": 110,
+      "path": "/api/v1/data/margin/account-info",
+      "name": "get_margin_account_info",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.margin",
+      "endpoint_name": "get_margin_account_info"
+    },
+    {
+      "index": 111,
+      "path": "/api/v1/data/margin/detail/sse",
+      "name": "get_margin_detail_sse",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.margin",
+      "endpoint_name": "get_margin_detail_sse"
+    },
+    {
+      "index": 112,
+      "path": "/api/v1/data/margin/detail/szse",
+      "name": "get_margin_detail_szse",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.margin",
+      "endpoint_name": "get_margin_detail_szse"
+    },
+    {
+      "index": 113,
+      "path": "/api/v1/data/dragon-tiger/detail",
+      "name": "get_dragon_tiger_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.lhb",
+      "endpoint_name": "get_dragon_tiger_detail"
+    },
+    {
+      "index": 114,
+      "path": "/api/v1/data/dragon-tiger/institution-stats",
+      "name": "get_dragon_tiger_institution_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.lhb",
+      "endpoint_name": "get_dragon_tiger_institution_stats"
+    },
+    {
+      "index": 115,
+      "path": "/api/v1/data/futures/index/daily",
+      "name": "get_futures_index_daily",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.futures",
+      "endpoint_name": "get_futures_index_daily"
+    },
+    {
+      "index": 116,
+      "path": "/api/v1/data/futures/index/realtime",
+      "name": "get_futures_index_realtime",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.futures",
+      "endpoint_name": "get_futures_index_realtime"
+    },
+    {
+      "index": 117,
+      "path": "/api/v1/data/financial",
+      "name": "get_financial_data",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data.financial",
+      "endpoint_name": "get_financial_data"
+    },
+    {
+      "index": 118,
+      "path": "/api/v1/system/health",
+      "name": "system_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.system.system_health",
+      "endpoint_name": "system_health"
+    },
+    {
+      "index": 119,
+      "path": "/api/v1/system/adapters/health",
+      "name": "get_adapters_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.system.system_health",
+      "endpoint_name": "get_adapters_health"
+    },
+    {
+      "index": 120,
+      "path": "/api/v1/system/datasources",
+      "name": "get_datasources",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.system.system_health",
+      "endpoint_name": "get_datasources"
+    },
+    {
+      "index": 121,
+      "path": "/api/v1/system/test-connection",
+      "name": "test_database_connection",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.system.system_health",
+      "endpoint_name": "test_database_connection"
+    },
+    {
+      "index": 122,
+      "path": "/api/v1/system/logs",
+      "name": "get_system_logs",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.system.system_health",
+      "endpoint_name": "get_system_logs"
+    },
+    {
+      "index": 123,
+      "path": "/api/v1/system/logs/summary",
+      "name": "get_logs_summary",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.system.system_health",
+      "endpoint_name": "get_logs_summary"
+    },
+    {
+      "index": 124,
+      "path": "/api/v1/indicators/registry",
+      "name": "get_indicator_registry_endpoint",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicators.indicator_cache",
+      "endpoint_name": "get_indicator_registry_endpoint"
+    },
+    {
+      "index": 125,
+      "path": "/api/v1/indicators/registry/{category}",
+      "name": "get_indicators_by_category",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicators.indicator_cache",
+      "endpoint_name": "get_indicators_by_category"
+    },
+    {
+      "index": 126,
+      "path": "/api/v1/indicators/calculate",
+      "name": "calculate_indicators",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicators.indicator_cache",
+      "endpoint_name": "calculate_indicators"
+    },
+    {
+      "index": 127,
+      "path": "/api/v1/indicators/calculate/batch",
+      "name": "calculate_indicators_batch",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicators.indicator_cache",
+      "endpoint_name": "calculate_indicators_batch"
+    },
+    {
+      "index": 128,
+      "path": "/api/v1/indicators/cache/stats",
+      "name": "get_cache_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicators.indicator_cache",
+      "endpoint_name": "get_cache_statistics"
+    },
+    {
+      "index": 129,
+      "path": "/api/v1/indicators/cache/clear",
+      "name": "clear_cache",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicators.indicator_cache",
+      "endpoint_name": "clear_cache"
+    },
+    {
+      "index": 130,
+      "path": "/api/v1/tdx/quote/{symbol}",
+      "name": "get_stock_quote",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tdx",
+      "endpoint_name": "get_stock_quote"
+    },
+    {
+      "index": 131,
+      "path": "/api/v1/tdx/kline",
+      "name": "get_stock_kline",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tdx",
+      "endpoint_name": "get_stock_kline"
+    },
+    {
+      "index": 132,
+      "path": "/api/v1/tdx/index/quote/{symbol}",
+      "name": "get_index_quote",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tdx",
+      "endpoint_name": "get_index_quote"
+    },
+    {
+      "index": 133,
+      "path": "/api/v1/tdx/index/kline",
+      "name": "get_index_kline",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tdx",
+      "endpoint_name": "get_index_kline"
+    },
+    {
+      "index": 134,
+      "path": "/api/v1/tdx/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tdx",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 135,
+      "path": "/api/auth/login",
+      "name": "compat_login",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.auth_compat",
+      "endpoint_name": "compat_login"
+    },
+    {
+      "index": 136,
+      "path": "/api/akshare/market/sse/overview",
+      "name": "get_sse_market_overview",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sse",
+      "endpoint_name": "get_sse_market_overview"
+    },
+    {
+      "index": 137,
+      "path": "/api/akshare/market/sse/daily-deal",
+      "name": "get_sse_daily_deal",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sse",
+      "endpoint_name": "get_sse_daily_deal"
+    },
+    {
+      "index": 138,
+      "path": "/api/akshare/market/szse/overview",
+      "name": "get_szse_market_overview",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.szse",
+      "endpoint_name": "get_szse_market_overview"
+    },
+    {
+      "index": 139,
+      "path": "/api/akshare/market/szse/area-trading",
+      "name": "get_szse_area_trading",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.szse",
+      "endpoint_name": "get_szse_area_trading"
+    },
+    {
+      "index": 140,
+      "path": "/api/akshare/market/szse/sector-trading",
+      "name": "get_szse_sector_trading",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.szse",
+      "endpoint_name": "get_szse_sector_trading"
+    },
+    {
+      "index": 141,
+      "path": "/api/akshare/market/stock/individual-info/em",
+      "name": "get_stock_individual_info_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.stock_info",
+      "endpoint_name": "get_stock_individual_info_em"
+    },
+    {
+      "index": 142,
+      "path": "/api/akshare/market/stock/individual-info/xq",
+      "name": "get_stock_individual_info_xq",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.stock_info",
+      "endpoint_name": "get_stock_individual_info_xq"
+    },
+    {
+      "index": 143,
+      "path": "/api/akshare/market/stock/business-intro/ths",
+      "name": "get_stock_business_intro_ths",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.stock_info",
+      "endpoint_name": "get_stock_business_intro_ths"
+    },
+    {
+      "index": 144,
+      "path": "/api/akshare/market/stock/business-composition/em",
+      "name": "get_stock_business_composition_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.stock_info",
+      "endpoint_name": "get_stock_business_composition_em"
+    },
+    {
+      "index": 145,
+      "path": "/api/akshare/market/stock/comment/em",
+      "name": "get_stock_comment_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.stock_info",
+      "endpoint_name": "get_stock_comment_em"
+    },
+    {
+      "index": 146,
+      "path": "/api/akshare/market/stock/comment-detail/em",
+      "name": "get_stock_comment_detail_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.stock_info",
+      "endpoint_name": "get_stock_comment_detail_em"
+    },
+    {
+      "index": 147,
+      "path": "/api/akshare/market/stock/news/em",
+      "name": "get_stock_news_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.stock_info",
+      "endpoint_name": "get_stock_news_em"
+    },
+    {
+      "index": 148,
+      "path": "/api/akshare/market/stock/bid-ask/em",
+      "name": "get_stock_bid_ask_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.stock_info",
+      "endpoint_name": "get_stock_bid_ask_em"
+    },
+    {
+      "index": 149,
+      "path": "/api/akshare/market/fund-flow/hsgt-summary",
+      "name": "get_hsgt_fund_flow_summary",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.fund_flow",
+      "endpoint_name": "get_hsgt_fund_flow_summary"
+    },
+    {
+      "index": 150,
+      "path": "/api/akshare/market/fund-flow/hsgt-detail",
+      "name": "get_hsgt_fund_flow_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.fund_flow",
+      "endpoint_name": "get_hsgt_fund_flow_detail"
+    },
+    {
+      "index": 151,
+      "path": "/api/akshare/market/fund-flow/north-daily",
+      "name": "get_north_fund_daily",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.fund_flow",
+      "endpoint_name": "get_north_fund_daily"
+    },
+    {
+      "index": 152,
+      "path": "/api/akshare/market/fund-flow/south-daily",
+      "name": "get_south_fund_daily",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.fund_flow",
+      "endpoint_name": "get_south_fund_daily"
+    },
+    {
+      "index": 153,
+      "path": "/api/akshare/market/fund-flow/north-stock/{symbol}",
+      "name": "get_north_fund_stock",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.fund_flow",
+      "endpoint_name": "get_north_fund_stock"
+    },
+    {
+      "index": 154,
+      "path": "/api/akshare/market/fund-flow/south-stock/{symbol}",
+      "name": "get_south_fund_stock",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.fund_flow",
+      "endpoint_name": "get_south_fund_stock"
+    },
+    {
+      "index": 155,
+      "path": "/api/akshare/market/fund-flow/hsgt-holdings/{symbol}",
+      "name": "get_hsgt_holdings",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.fund_flow",
+      "endpoint_name": "get_hsgt_holdings"
+    },
+    {
+      "index": 156,
+      "path": "/api/akshare/market/fund-flow/big-deal",
+      "name": "get_fund_flow_big_deal",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.fund_flow",
+      "endpoint_name": "get_fund_flow_big_deal"
+    },
+    {
+      "index": 157,
+      "path": "/api/akshare/market/board/concept/cons/{symbol}",
+      "name": "get_concept_board_constituents",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.boards",
+      "endpoint_name": "get_concept_board_constituents"
+    },
+    {
+      "index": 158,
+      "path": "/api/akshare/market/board/concept/history/{symbol}",
+      "name": "get_concept_board_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.boards",
+      "endpoint_name": "get_concept_board_history"
+    },
+    {
+      "index": 159,
+      "path": "/api/akshare/market/board/concept/minute/{symbol}",
+      "name": "get_concept_board_minute",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.boards",
+      "endpoint_name": "get_concept_board_minute"
+    },
+    {
+      "index": 160,
+      "path": "/api/akshare/market/board/industry/cons/{symbol}",
+      "name": "get_industry_board_constituents",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.boards",
+      "endpoint_name": "get_industry_board_constituents"
+    },
+    {
+      "index": 161,
+      "path": "/api/akshare/market/board/industry/history/{symbol}",
+      "name": "get_industry_board_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.boards",
+      "endpoint_name": "get_industry_board_history"
+    },
+    {
+      "index": 162,
+      "path": "/api/akshare/market/board/industry/minute/{symbol}",
+      "name": "get_industry_board_minute",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.boards",
+      "endpoint_name": "get_industry_board_minute"
+    },
+    {
+      "index": 163,
+      "path": "/api/akshare/market/sector/hot-ranking",
+      "name": "get_sector_hot_ranking",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.boards",
+      "endpoint_name": "get_sector_hot_ranking"
+    },
+    {
+      "index": 164,
+      "path": "/api/akshare/market/sector/fund-flow-ranking",
+      "name": "get_sector_fund_flow_ranking",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.boards",
+      "endpoint_name": "get_sector_fund_flow_ranking"
+    },
+    {
+      "index": 165,
+      "path": "/api/akshare/market/chip-distribution/{symbol}",
+      "name": "get_chip_distribution",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.analysis",
+      "endpoint_name": "get_chip_distribution"
+    },
+    {
+      "index": 166,
+      "path": "/api/akshare/market/forecast/profit/em/{symbol}",
+      "name": "get_profit_forecast_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.analysis",
+      "endpoint_name": "get_profit_forecast_em"
+    },
+    {
+      "index": 167,
+      "path": "/api/akshare/market/forecast/profit/ths/{symbol}",
+      "name": "get_profit_forecast_ths",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.analysis",
+      "endpoint_name": "get_profit_forecast_ths"
+    },
+    {
+      "index": 168,
+      "path": "/api/akshare/market/technical/indicators/em/{symbol}",
+      "name": "get_technical_indicators_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.analysis",
+      "endpoint_name": "get_technical_indicators_em"
+    },
+    {
+      "index": 169,
+      "path": "/api/akshare/market/market/account-statistics",
+      "name": "get_account_statistics_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.analysis",
+      "endpoint_name": "get_account_statistics_em"
+    },
+    {
+      "index": 170,
+      "path": "/api/akshare/market/stock/hot-follow/xq",
+      "name": "get_stock_hot_follow_xq",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sentiment_monitor",
+      "endpoint_name": "get_stock_hot_follow_xq"
+    },
+    {
+      "index": 171,
+      "path": "/api/akshare/market/stock/zt-pool/em",
+      "name": "get_stock_zt_pool_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sentiment_monitor",
+      "endpoint_name": "get_stock_zt_pool_em"
+    },
+    {
+      "index": 172,
+      "path": "/api/akshare/market/stock/dt-pool/em",
+      "name": "get_stock_dt_pool_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sentiment_monitor",
+      "endpoint_name": "get_stock_dt_pool_em"
+    },
+    {
+      "index": 173,
+      "path": "/api/akshare/market/stock/strong-pool/em",
+      "name": "get_stock_strong_pool_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sentiment_monitor",
+      "endpoint_name": "get_stock_strong_pool_em"
+    },
+    {
+      "index": 174,
+      "path": "/api/akshare/market/stock/new/em",
+      "name": "get_stock_new_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sentiment_monitor",
+      "endpoint_name": "get_stock_new_em"
+    },
+    {
+      "index": 175,
+      "path": "/api/akshare/market/stock/changes/em",
+      "name": "get_stock_changes_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sentiment_monitor",
+      "endpoint_name": "get_stock_changes_em"
+    },
+    {
+      "index": 176,
+      "path": "/api/akshare/market/board/change/em",
+      "name": "get_board_change_em",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.akshare_market.sentiment_monitor",
+      "endpoint_name": "get_board_change_em"
+    },
+    {
+      "index": 177,
+      "path": "/api/data-quality/health",
+      "name": "get_sources_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "get_sources_health"
+    },
+    {
+      "index": 178,
+      "path": "/api/data-quality/metrics",
+      "name": "get_data_quality_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "get_data_quality_metrics"
+    },
+    {
+      "index": 179,
+      "path": "/api/data-quality/alerts",
+      "name": "get_active_alerts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "get_active_alerts"
+    },
+    {
+      "index": 180,
+      "path": "/api/data-quality/alerts/{alert_id}/acknowledge",
+      "name": "acknowledge_alert",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "acknowledge_alert"
+    },
+    {
+      "index": 181,
+      "path": "/api/data-quality/alerts/{alert_id}/resolve",
+      "name": "resolve_alert",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "resolve_alert"
+    },
+    {
+      "index": 182,
+      "path": "/api/data-quality/config/mode",
+      "name": "get_data_source_mode",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "get_data_source_mode"
+    },
+    {
+      "index": 183,
+      "path": "/api/data-quality/status/overview",
+      "name": "get_system_status_overview",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "get_system_status_overview"
+    },
+    {
+      "index": 184,
+      "path": "/api/data-quality/test/quality",
+      "name": "test_data_quality",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "test_data_quality"
+    },
+    {
+      "index": 185,
+      "path": "/api/data-quality/metrics/trends",
+      "name": "get_quality_trends",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_quality",
+      "endpoint_name": "get_quality_trends"
+    },
+    {
+      "index": 186,
+      "path": "/api/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.metrics",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 187,
+      "path": "/api/metrics/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.metrics",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 188,
+      "path": "/api/status",
+      "name": "basic_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.metrics",
+      "endpoint_name": "basic_status"
+    },
+    {
+      "index": 189,
+      "path": "/api/basic",
+      "name": "basic_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.metrics",
+      "endpoint_name": "basic_metrics"
+    },
+    {
+      "index": 190,
+      "path": "/api/performance",
+      "name": "performance_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.metrics",
+      "endpoint_name": "performance_metrics"
+    },
+    {
+      "index": 191,
+      "path": "/api/metrics",
+      "name": "prometheus_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.metrics",
+      "endpoint_name": "prometheus_metrics"
+    },
+    {
+      "index": 192,
+      "path": "/api/detailed",
+      "name": "detailed_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.metrics",
+      "endpoint_name": "detailed_metrics"
+    },
+    {
+      "index": 193,
+      "path": "/api/reset",
+      "name": "reset_metrics",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.metrics",
+      "endpoint_name": "reset_metrics"
+    },
+    {
+      "index": 194,
+      "path": "/api/pool-monitoring/postgresql/stats",
+      "name": "get_postgresql_pool_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.pool_monitoring",
+      "endpoint_name": "get_postgresql_pool_stats"
+    },
+    {
+      "index": 195,
+      "path": "/api/pool-monitoring/tdengine/stats",
+      "name": "get_tdengine_pool_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.pool_monitoring",
+      "endpoint_name": "get_tdengine_pool_stats"
+    },
+    {
+      "index": 196,
+      "path": "/api/pool-monitoring/health",
+      "name": "connection_pools_health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.pool_monitoring",
+      "endpoint_name": "connection_pools_health_check"
+    },
+    {
+      "index": 197,
+      "path": "/api/pool-monitoring/alerts",
+      "name": "check_connection_pool_alerts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.pool_monitoring",
+      "endpoint_name": "check_connection_pool_alerts"
+    },
+    {
+      "index": 198,
+      "path": "/api/cache",
+      "name": "clear_all_cache",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.cache",
+      "endpoint_name": "clear_all_cache"
+    },
+    {
+      "index": 199,
+      "path": "/api/cache/status",
+      "name": "get_cache_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_basic_routes",
+      "endpoint_name": "get_cache_status"
+    },
+    {
+      "index": 200,
+      "path": "/api/cache/{symbol}/{data_type}",
+      "name": "get_cached_data",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_basic_routes",
+      "endpoint_name": "get_cached_data"
+    },
+    {
+      "index": 201,
+      "path": "/api/cache/{symbol}/{data_type}",
+      "name": "write_cache_data",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_basic_routes",
+      "endpoint_name": "write_cache_data"
+    },
+    {
+      "index": 202,
+      "path": "/api/cache/{symbol}",
+      "name": "invalidate_symbol_cache",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_basic_routes",
+      "endpoint_name": "invalidate_symbol_cache"
+    },
+    {
+      "index": 203,
+      "path": "/api/cache/{symbol}/{data_type}/fresh",
+      "name": "check_cache_freshness",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_basic_routes",
+      "endpoint_name": "check_cache_freshness"
+    },
+    {
+      "index": 204,
+      "path": "/api/cache/evict/manual",
+      "name": "manual_cache_eviction",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_eviction_routes",
+      "endpoint_name": "manual_cache_eviction"
+    },
+    {
+      "index": 205,
+      "path": "/api/cache/eviction/stats",
+      "name": "get_eviction_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_eviction_routes",
+      "endpoint_name": "get_eviction_statistics"
+    },
+    {
+      "index": 206,
+      "path": "/api/cache/prewarming/trigger",
+      "name": "trigger_cache_prewarming",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_prewarming_routes",
+      "endpoint_name": "trigger_cache_prewarming"
+    },
+    {
+      "index": 207,
+      "path": "/api/cache/prewarming/status",
+      "name": "get_prewarming_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_prewarming_routes",
+      "endpoint_name": "get_prewarming_status"
+    },
+    {
+      "index": 208,
+      "path": "/api/cache/monitoring/metrics",
+      "name": "get_cache_monitoring_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_prewarming_routes",
+      "endpoint_name": "get_cache_monitoring_metrics"
+    },
+    {
+      "index": 209,
+      "path": "/api/cache/monitoring/health",
+      "name": "get_cache_health_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._cache_prewarming_routes",
+      "endpoint_name": "get_cache_health_status"
+    },
+    {
+      "index": 210,
+      "path": "/api/ml/tdx/data",
+      "name": "get_tdx_data",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "get_tdx_data"
+    },
+    {
+      "index": 211,
+      "path": "/api/ml/tdx/stocks/{market}",
+      "name": "list_tdx_stocks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "list_tdx_stocks"
+    },
+    {
+      "index": 212,
+      "path": "/api/ml/features/generate",
+      "name": "generate_features",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "generate_features"
+    },
+    {
+      "index": 213,
+      "path": "/api/ml/models/train",
+      "name": "train_model",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "train_model"
+    },
+    {
+      "index": 214,
+      "path": "/api/ml/models/predict",
+      "name": "predict_with_model",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "predict_with_model"
+    },
+    {
+      "index": 215,
+      "path": "/api/ml/models",
+      "name": "list_models",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "list_models"
+    },
+    {
+      "index": 216,
+      "path": "/api/ml/models/{model_name}",
+      "name": "get_model_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "get_model_detail"
+    },
+    {
+      "index": 217,
+      "path": "/api/ml/models/hyperparameter-search",
+      "name": "hyperparameter_search",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "hyperparameter_search"
+    },
+    {
+      "index": 218,
+      "path": "/api/ml/models/evaluate",
+      "name": "evaluate_model",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.ml",
+      "endpoint_name": "evaluate_model"
+    },
+    {
+      "index": 219,
+      "path": "/api/ws/market",
+      "name": "websocket_market",
+      "methods": [],
+      "include_in_schema": false,
+      "endpoint_module": "app.api.realtime_market",
+      "endpoint_name": "websocket_market"
+    },
+    {
+      "index": 220,
+      "path": "/api/ws/portfolio",
+      "name": "websocket_portfolio",
+      "methods": [],
+      "include_in_schema": false,
+      "endpoint_module": "app.api.realtime_market",
+      "endpoint_name": "websocket_portfolio"
+    },
+    {
+      "index": 221,
+      "path": "/api/api/realtime/quote/{symbol}",
+      "name": "get_realtime_quote",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.realtime_market",
+      "endpoint_name": "get_realtime_quote"
+    },
+    {
+      "index": 222,
+      "path": "/api/api/realtime/quotes",
+      "name": "get_realtime_quotes",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.realtime_market",
+      "endpoint_name": "get_realtime_quotes"
+    },
+    {
+      "index": 223,
+      "path": "/api/api/mtm/portfolio/{portfolio_id}",
+      "name": "get_portfolio_mtm",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.realtime_market",
+      "endpoint_name": "get_portfolio_mtm"
+    },
+    {
+      "index": 224,
+      "path": "/api/api/mtm/position/{position_id}",
+      "name": "get_position_mtm",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.realtime_market",
+      "endpoint_name": "get_position_mtm"
+    },
+    {
+      "index": 225,
+      "path": "/api/api/mtm/stats",
+      "name": "get_mtm_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.realtime_market",
+      "endpoint_name": "get_mtm_stats"
+    },
+    {
+      "index": 226,
+      "path": "/api/signals/history",
+      "name": "get_signal_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.signal_monitoring.signal_history_response",
+      "endpoint_name": "get_signal_history"
+    },
+    {
+      "index": 227,
+      "path": "/api/signals/quality-report",
+      "name": "get_signal_quality_report",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.signal_monitoring.signal_history_response",
+      "endpoint_name": "get_signal_quality_report"
+    },
+    {
+      "index": 228,
+      "path": "/api/strategies/{strategy_id}/realtime",
+      "name": "get_strategy_realtime_monitoring",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.signal_monitoring.signal_history_response",
+      "endpoint_name": "get_strategy_realtime_monitoring"
+    },
+    {
+      "index": 229,
+      "path": "/api/signals/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.signal_monitoring.signal_history_response",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 230,
+      "path": "/api/announcement/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 231,
+      "path": "/api/announcement/status",
+      "name": "get_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "get_status"
+    },
+    {
+      "index": 232,
+      "path": "/api/announcement/analyze",
+      "name": "analyze_data",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "analyze_data"
+    },
+    {
+      "index": 233,
+      "path": "/api/announcement/fetch",
+      "name": "fetch_announcements",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "fetch_announcements"
+    },
+    {
+      "index": 234,
+      "path": "/api/announcement/list",
+      "name": "get_announcements",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "get_announcements"
+    },
+    {
+      "index": 235,
+      "path": "/api/announcement/today",
+      "name": "get_today_announcements",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "get_today_announcements"
+    },
+    {
+      "index": 236,
+      "path": "/api/announcement/important",
+      "name": "get_important_announcements",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "get_important_announcements"
+    },
+    {
+      "index": 237,
+      "path": "/api/announcement/stats",
+      "name": "get_announcement_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "get_announcement_stats"
+    },
+    {
+      "index": 238,
+      "path": "/api/announcement/monitor-rules",
+      "name": "get_monitor_rules",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "get_monitor_rules"
+    },
+    {
+      "index": 239,
+      "path": "/api/announcement/monitor-rules",
+      "name": "create_monitor_rule",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "create_monitor_rule"
+    },
+    {
+      "index": 240,
+      "path": "/api/announcement/monitor-rules/{rule_id}",
+      "name": "update_monitor_rule",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "update_monitor_rule"
+    },
+    {
+      "index": 241,
+      "path": "/api/announcement/monitor-rules/{rule_id}",
+      "name": "delete_monitor_rule",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "delete_monitor_rule"
+    },
+    {
+      "index": 242,
+      "path": "/api/announcement/triggered-records",
+      "name": "get_triggered_records",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "get_triggered_records"
+    },
+    {
+      "index": 243,
+      "path": "/api/announcement/monitor/evaluate",
+      "name": "evaluate_monitor_rules",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.announcement.routes",
+      "endpoint_name": "evaluate_monitor_rules"
+    },
+    {
+      "index": 244,
+      "path": "/api/health/services",
+      "name": "check_system_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.health",
+      "endpoint_name": "check_system_health"
+    },
+    {
+      "index": 245,
+      "path": "/api/health/detailed",
+      "name": "detailed_health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.health",
+      "endpoint_name": "detailed_health_check"
+    },
+    {
+      "index": 246,
+      "path": "/api/reports/health/{timestamp}",
+      "name": "get_health_report",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.health",
+      "endpoint_name": "get_health_report"
+    },
+    {
+      "index": 247,
+      "path": "/ws/events",
+      "name": "websocket_events",
+      "methods": [],
+      "include_in_schema": false,
+      "endpoint_module": "app.api.websocket",
+      "endpoint_name": "websocket_events"
+    },
+    {
+      "index": 248,
+      "path": "/ws/stats",
+      "name": "get_websocket_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.websocket",
+      "endpoint_name": "get_websocket_stats"
+    },
+    {
+      "index": 249,
+      "path": "/ws/channels",
+      "name": "list_channels",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.websocket",
+      "endpoint_name": "list_channels"
+    },
+    {
+      "index": 250,
+      "path": "/api/tasks/register",
+      "name": "register_task",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "register_task"
+    },
+    {
+      "index": 251,
+      "path": "/api/tasks/{task_id}",
+      "name": "unregister_task",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "unregister_task"
+    },
+    {
+      "index": 252,
+      "path": "/api/tasks/",
+      "name": "list_tasks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "list_tasks"
+    },
+    {
+      "index": 253,
+      "path": "/api/tasks/{task_id}",
+      "name": "get_task",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "get_task"
+    },
+    {
+      "index": 254,
+      "path": "/api/tasks/{task_id}/start",
+      "name": "start_task",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "start_task"
+    },
+    {
+      "index": 255,
+      "path": "/api/tasks/{task_id}/stop",
+      "name": "stop_task",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "stop_task"
+    },
+    {
+      "index": 256,
+      "path": "/api/tasks/executions/",
+      "name": "list_task_executions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "list_task_executions"
+    },
+    {
+      "index": 257,
+      "path": "/api/tasks/executions/{execution_id}",
+      "name": "get_execution",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "get_execution"
+    },
+    {
+      "index": 258,
+      "path": "/api/tasks/statistics/",
+      "name": "get_task_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "get_task_statistics"
+    },
+    {
+      "index": 259,
+      "path": "/api/tasks/import",
+      "name": "import_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "import_config"
+    },
+    {
+      "index": 260,
+      "path": "/api/tasks/export",
+      "name": "export_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "export_config"
+    },
+    {
+      "index": 261,
+      "path": "/api/tasks/executions/cleanup",
+      "name": "cleanup_executions",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "cleanup_executions"
+    },
+    {
+      "index": 262,
+      "path": "/api/tasks/health",
+      "name": "tasks_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "tasks_health"
+    },
+    {
+      "index": 263,
+      "path": "/api/tasks/audit/logs",
+      "name": "get_audit_logs",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "get_audit_logs"
+    },
+    {
+      "index": 264,
+      "path": "/api/tasks/cleanup/audit",
+      "name": "cleanup_audit_logs",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tasks",
+      "endpoint_name": "cleanup_audit_logs"
+    },
+    {
+      "index": 265,
+      "path": "/api/market/wencai/queries",
+      "name": "get_all_queries",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.wencai",
+      "endpoint_name": "get_all_queries"
+    },
+    {
+      "index": 266,
+      "path": "/api/market/wencai/queries/{query_name}",
+      "name": "get_query_by_name",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.wencai",
+      "endpoint_name": "get_query_by_name"
+    },
+    {
+      "index": 267,
+      "path": "/api/market/wencai/query",
+      "name": "execute_query",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.wencai",
+      "endpoint_name": "execute_query"
+    },
+    {
+      "index": 268,
+      "path": "/api/market/wencai/results/{query_name}",
+      "name": "get_query_results",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.wencai",
+      "endpoint_name": "get_query_results"
+    },
+    {
+      "index": 269,
+      "path": "/api/market/wencai/refresh/{query_name}",
+      "name": "refresh_query",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.wencai",
+      "endpoint_name": "refresh_query"
+    },
+    {
+      "index": 270,
+      "path": "/api/market/wencai/history/{query_name}",
+      "name": "get_query_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.wencai",
+      "endpoint_name": "get_query_history"
+    },
+    {
+      "index": 271,
+      "path": "/api/market/wencai/custom-query",
+      "name": "execute_custom_query",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.wencai",
+      "endpoint_name": "execute_custom_query"
+    },
+    {
+      "index": 272,
+      "path": "/api/market/wencai/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.wencai",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 273,
+      "path": "/api/dashboard/summary",
+      "name": "get_dashboard_summary",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.dashboard",
+      "endpoint_name": "get_dashboard_summary"
+    },
+    {
+      "index": 274,
+      "path": "/api/dashboard/market-overview",
+      "name": "get_market_overview",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.dashboard",
+      "endpoint_name": "get_market_overview"
+    },
+    {
+      "index": 275,
+      "path": "/api/dashboard/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.dashboard",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 276,
+      "path": "/api/strategy-mgmt/strategies",
+      "name": "create_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "create_strategy"
+    },
+    {
+      "index": 277,
+      "path": "/api/strategy-mgmt/strategies",
+      "name": "list_strategies",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "list_strategies"
+    },
+    {
+      "index": 278,
+      "path": "/api/strategy-mgmt/strategies/{strategy_id}",
+      "name": "get_strategy",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "get_strategy"
+    },
+    {
+      "index": 279,
+      "path": "/api/strategy-mgmt/strategies/{strategy_id}",
+      "name": "update_strategy",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "update_strategy"
+    },
+    {
+      "index": 280,
+      "path": "/api/strategy-mgmt/strategies/{strategy_id}",
+      "name": "delete_strategy",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "delete_strategy"
+    },
+    {
+      "index": 281,
+      "path": "/api/strategy-mgmt/backtest/execute",
+      "name": "execute_backtest",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "execute_backtest"
+    },
+    {
+      "index": 282,
+      "path": "/api/strategy-mgmt/backtest/results/{backtest_id}",
+      "name": "get_backtest_result",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "get_backtest_result"
+    },
+    {
+      "index": 283,
+      "path": "/api/strategy-mgmt/backtest/results",
+      "name": "list_backtests",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "list_backtests"
+    },
+    {
+      "index": 284,
+      "path": "/api/strategy-mgmt/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 285,
+      "path": "/api/strategy-mgmt/backtest/status/{backtest_id}",
+      "name": "get_backtest_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_mgmt",
+      "endpoint_name": "get_backtest_status"
+    },
+    {
+      "index": 286,
+      "path": "/api/strategy-mgmt/{path:path}",
+      "name": "redirect_to_canonical",
+      "methods": [
+        "DELETE",
+        "GET",
+        "PATCH",
+        "POST",
+        "PUT"
+      ],
+      "include_in_schema": false,
+      "endpoint_module": "app.api._strategy_mgmt_compat",
+      "endpoint_name": "redirect_to_canonical"
+    },
+    {
+      "index": 287,
+      "path": "/api/multi-source/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.multi_source.routes",
+      "endpoint_name": "health_check"
+    },
+    {
+      "index": 288,
+      "path": "/api/multi-source/status",
+      "name": "get_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.multi_source.routes",
+      "endpoint_name": "get_status"
+    },
+    {
+      "index": 289,
+      "path": "/api/multi-source/analyze",
+      "name": "analyze_data",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.multi_source.routes",
+      "endpoint_name": "analyze_data"
+    },
+    {
+      "index": 290,
+      "path": "/api/stock-search/search",
+      "name": "search_stocks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "search_stocks"
+    },
+    {
+      "index": 291,
+      "path": "/api/stock-search/quote/{symbol}",
+      "name": "get_stock_quote",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "get_stock_quote"
+    },
+    {
+      "index": 292,
+      "path": "/api/stock-search/profile/{symbol}",
+      "name": "get_company_profile",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "get_company_profile"
+    },
+    {
+      "index": 293,
+      "path": "/api/stock-search/news/{symbol}",
+      "name": "get_stock_news",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "get_stock_news"
+    },
+    {
+      "index": 294,
+      "path": "/api/stock-search/news/market/{category}",
+      "name": "get_market_news",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "get_market_news"
+    },
+    {
+      "index": 295,
+      "path": "/api/stock-search/recommendation/{symbol}",
+      "name": "get_recommendation_trends",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "get_recommendation_trends"
+    },
+    {
+      "index": 296,
+      "path": "/api/stock-search/cache/clear",
+      "name": "clear_search_cache",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "clear_search_cache"
+    },
+    {
+      "index": 297,
+      "path": "/api/stock-search/analytics/searches",
+      "name": "get_search_analytics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "get_search_analytics"
+    },
+    {
+      "index": 298,
+      "path": "/api/stock-search/analytics/cleanup",
+      "name": "cleanup_search_analytics",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.stock_search_result",
+      "endpoint_name": "cleanup_search_analytics"
+    },
+    {
+      "index": 299,
+      "path": "/api/stock-search/rate-limits/status",
+      "name": "get_rate_limits_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.stock_search.get_rate_limits_status",
+      "endpoint_name": "get_rate_limits_status"
+    },
+    {
+      "index": 300,
+      "path": "/api/watchlist/",
+      "name": "get_my_watchlist",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "get_my_watchlist"
+    },
+    {
+      "index": 301,
+      "path": "/api/watchlist/symbols",
+      "name": "get_my_watchlist_symbols",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "get_my_watchlist_symbols"
+    },
+    {
+      "index": 302,
+      "path": "/api/watchlist/add",
+      "name": "add_to_watchlist",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "add_to_watchlist"
+    },
+    {
+      "index": 303,
+      "path": "/api/watchlist/remove/{symbol}",
+      "name": "remove_from_watchlist",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "remove_from_watchlist"
+    },
+    {
+      "index": 304,
+      "path": "/api/watchlist/check/{symbol}",
+      "name": "check_in_watchlist",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "check_in_watchlist"
+    },
+    {
+      "index": 305,
+      "path": "/api/watchlist/notes/{symbol}",
+      "name": "update_watchlist_notes",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "update_watchlist_notes"
+    },
+    {
+      "index": 306,
+      "path": "/api/watchlist/count",
+      "name": "get_watchlist_count",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "get_watchlist_count"
+    },
+    {
+      "index": 307,
+      "path": "/api/watchlist/clear",
+      "name": "clear_watchlist",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "clear_watchlist"
+    },
+    {
+      "index": 308,
+      "path": "/api/watchlist/groups",
+      "name": "get_user_groups",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "get_user_groups"
+    },
+    {
+      "index": 309,
+      "path": "/api/watchlist/groups",
+      "name": "create_group",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "create_group"
+    },
+    {
+      "index": 310,
+      "path": "/api/watchlist/groups/{group_id}",
+      "name": "update_group",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "update_group"
+    },
+    {
+      "index": 311,
+      "path": "/api/watchlist/groups/{group_id}",
+      "name": "delete_group",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "delete_group"
+    },
+    {
+      "index": 312,
+      "path": "/api/watchlist/group/{group_id}",
+      "name": "get_watchlist_by_group",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "get_watchlist_by_group"
+    },
+    {
+      "index": 313,
+      "path": "/api/watchlist/move",
+      "name": "move_stock_to_group",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "move_stock_to_group"
+    },
+    {
+      "index": 314,
+      "path": "/api/watchlist/with-groups",
+      "name": "get_watchlist_with_groups",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.watchlist",
+      "endpoint_name": "get_watchlist_with_groups"
+    },
+    {
+      "index": 315,
+      "path": "/api/tradingview/chart/config",
+      "name": "get_chart_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_chart_config"
+    },
+    {
+      "index": 316,
+      "path": "/api/tradingview/mini-chart/config",
+      "name": "get_mini_chart_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_mini_chart_config"
+    },
+    {
+      "index": 317,
+      "path": "/api/tradingview/ticker-tape/config",
+      "name": "get_ticker_tape_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_ticker_tape_config"
+    },
+    {
+      "index": 318,
+      "path": "/api/tradingview/market-overview/config",
+      "name": "get_market_overview_config",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_market_overview_config"
+    },
+    {
+      "index": 319,
+      "path": "/api/tradingview/screener/config",
+      "name": "get_screener_config",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "get_screener_config"
+    },
+    {
+      "index": 320,
+      "path": "/api/tradingview/symbol/convert",
+      "name": "convert_symbol",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.tradingview",
+      "endpoint_name": "convert_symbol"
+    },
+    {
+      "index": 321,
+      "path": "/api/notification/status",
+      "name": "get_email_service_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "get_email_service_status"
+    },
+    {
+      "index": 322,
+      "path": "/api/notification/email/send",
+      "name": "send_email",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "send_email"
+    },
+    {
+      "index": 323,
+      "path": "/api/notification/ws/notifications",
+      "name": "websocket_notifications",
+      "methods": [],
+      "include_in_schema": false,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "websocket_notifications"
+    },
+    {
+      "index": 324,
+      "path": "/api/notification/email/welcome",
+      "name": "send_welcome_email",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "send_welcome_email"
+    },
+    {
+      "index": 325,
+      "path": "/api/notification/email/newsletter",
+      "name": "send_daily_newsletter",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "send_daily_newsletter"
+    },
+    {
+      "index": 326,
+      "path": "/api/notification/email/price-alert",
+      "name": "send_price_alert",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "send_price_alert"
+    },
+    {
+      "index": 327,
+      "path": "/api/notification/test-email",
+      "name": "send_test_email",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "send_test_email"
+    },
+    {
+      "index": 328,
+      "path": "/api/notification/preferences",
+      "name": "get_notification_preferences",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "get_notification_preferences"
+    },
+    {
+      "index": 329,
+      "path": "/api/notification/preferences",
+      "name": "update_notification_preferences",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.notification",
+      "endpoint_name": "update_notification_preferences"
+    },
+    {
+      "index": 330,
+      "path": "/api/v1/monitoring/watchlists",
+      "name": "create_watchlist",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_watchlists",
+      "endpoint_name": "create_watchlist"
+    },
+    {
+      "index": 331,
+      "path": "/api/v1/monitoring/watchlists",
+      "name": "list_watchlists",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_watchlists",
+      "endpoint_name": "list_watchlists"
+    },
+    {
+      "index": 332,
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+      "name": "get_watchlist",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_watchlists",
+      "endpoint_name": "get_watchlist"
+    },
+    {
+      "index": 333,
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+      "name": "update_watchlist",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_watchlists",
+      "endpoint_name": "update_watchlist"
+    },
+    {
+      "index": 334,
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+      "name": "delete_watchlist",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_watchlists",
+      "endpoint_name": "delete_watchlist"
+    },
+    {
+      "index": 335,
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks",
+      "name": "add_stock_to_watchlist",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_watchlists",
+      "endpoint_name": "add_stock_to_watchlist"
+    },
+    {
+      "index": 336,
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks",
+      "name": "list_watchlist_stocks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_watchlists",
+      "endpoint_name": "list_watchlist_stocks"
+    },
+    {
+      "index": 337,
+      "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks/{stock_code}",
+      "name": "remove_stock_from_watchlist",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_watchlists",
+      "endpoint_name": "remove_stock_from_watchlist"
+    },
+    {
+      "index": 338,
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary",
+      "name": "get_portfolio_summary",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._monitoring_portfolio_router",
+      "endpoint_name": "get_portfolio_summary"
+    },
+    {
+      "index": 339,
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+      "name": "get_portfolio_alerts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._monitoring_portfolio_router",
+      "endpoint_name": "get_portfolio_alerts"
+    },
+    {
+      "index": 340,
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance",
+      "name": "get_rebalance_suggestions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api._monitoring_portfolio_router",
+      "endpoint_name": "get_rebalance_suggestions"
+    },
+    {
+      "index": 341,
+      "path": "/api/v1/monitoring/analysis/calculate",
+      "name": "calculate_health_score",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_analysis",
+      "endpoint_name": "calculate_health_score"
+    },
+    {
+      "index": 342,
+      "path": "/api/v1/monitoring/analysis/calculate/batch",
+      "name": "batch_calculate_health_scores",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_analysis",
+      "endpoint_name": "batch_calculate_health_scores"
+    },
+    {
+      "index": 343,
+      "path": "/api/v1/monitoring/analysis/results/{stock_code}",
+      "name": "get_health_score_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_analysis",
+      "endpoint_name": "get_health_score_history"
+    },
+    {
+      "index": 344,
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}",
+      "name": "analyze_portfolio",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_analysis",
+      "endpoint_name": "analyze_portfolio"
+    },
+    {
+      "index": 345,
+      "path": "/api/v1/monitoring/analysis/market-regime",
+      "name": "identify_market_regime",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_analysis",
+      "endpoint_name": "identify_market_regime"
+    },
+    {
+      "index": 346,
+      "path": "/api/v1/monitoring/analysis/engine/status",
+      "name": "get_engine_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.monitoring_analysis",
+      "endpoint_name": "get_engine_status"
+    },
+    {
+      "index": 347,
+      "path": "/api/v1/strategy/strategies",
+      "name": "list_strategies",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "list_strategies"
+    },
+    {
+      "index": 348,
+      "path": "/api/v1/strategy/strategies",
+      "name": "create_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "create_strategy"
+    },
+    {
+      "index": 349,
+      "path": "/api/v1/strategy/strategies/{strategy_id}",
+      "name": "get_strategy",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "get_strategy"
+    },
+    {
+      "index": 350,
+      "path": "/api/v1/strategy/strategies/{strategy_id}",
+      "name": "update_strategy",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "update_strategy"
+    },
+    {
+      "index": 351,
+      "path": "/api/v1/strategy/strategies/{strategy_id}",
+      "name": "delete_strategy",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "delete_strategy"
+    },
+    {
+      "index": 352,
+      "path": "/api/v1/strategy/{strategy_id}/start",
+      "name": "start_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "start_strategy"
+    },
+    {
+      "index": 353,
+      "path": "/api/v1/strategy/{strategy_id}/pause",
+      "name": "pause_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "pause_strategy"
+    },
+    {
+      "index": 354,
+      "path": "/api/v1/strategy/{strategy_id}/resume",
+      "name": "resume_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "resume_strategy"
+    },
+    {
+      "index": 355,
+      "path": "/api/v1/strategy/{strategy_id}/stop",
+      "name": "stop_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_crud_router",
+      "endpoint_name": "stop_strategy"
+    },
+    {
+      "index": 356,
+      "path": "/api/v1/strategy/models/train",
+      "name": "train_model",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._model_backtest_router",
+      "endpoint_name": "train_model"
+    },
+    {
+      "index": 357,
+      "path": "/api/v1/strategy/models/training/{task_id}/status",
+      "name": "get_training_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._model_backtest_router",
+      "endpoint_name": "get_training_status"
+    },
+    {
+      "index": 358,
+      "path": "/api/v1/strategy/models",
+      "name": "list_models",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._model_backtest_router",
+      "endpoint_name": "list_models"
+    },
+    {
+      "index": 359,
+      "path": "/api/v1/strategy/backtest/run",
+      "name": "run_backtest",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._model_backtest_router",
+      "endpoint_name": "run_backtest"
+    },
+    {
+      "index": 360,
+      "path": "/api/v1/strategy/backtest/results",
+      "name": "list_backtest_results",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._model_backtest_router",
+      "endpoint_name": "list_backtest_results"
+    },
+    {
+      "index": 361,
+      "path": "/api/v1/strategy/backtest/results/{backtest_id}",
+      "name": "get_backtest_result",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._model_backtest_router",
+      "endpoint_name": "get_backtest_result"
+    },
+    {
+      "index": 362,
+      "path": "/api/v1/strategy/backtest/status/{backtest_id}",
+      "name": "get_backtest_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._model_backtest_router",
+      "endpoint_name": "get_backtest_status"
+    },
+    {
+      "index": 363,
+      "path": "/api/v1/strategy/definitions",
+      "name": "get_strategy_definitions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_execution_router",
+      "endpoint_name": "get_strategy_definitions"
+    },
+    {
+      "index": 364,
+      "path": "/api/v1/strategy/run/single",
+      "name": "run_strategy_single",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_execution_router",
+      "endpoint_name": "run_strategy_single"
+    },
+    {
+      "index": 365,
+      "path": "/api/v1/strategy/run/batch",
+      "name": "run_strategy_batch",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_execution_router",
+      "endpoint_name": "run_strategy_batch"
+    },
+    {
+      "index": 366,
+      "path": "/api/v1/strategy/results",
+      "name": "query_strategy_results",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_execution_router",
+      "endpoint_name": "query_strategy_results"
+    },
+    {
+      "index": 367,
+      "path": "/api/v1/strategy/matched-stocks",
+      "name": "get_matched_stocks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_execution_router",
+      "endpoint_name": "get_matched_stocks"
+    },
+    {
+      "index": 368,
+      "path": "/api/v1/strategy/stats/summary",
+      "name": "get_strategy_summary",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._strategy_execution_router",
+      "endpoint_name": "get_strategy_summary"
+    },
+    {
+      "index": 369,
+      "path": "/api/v1/strategy/backtest/results/{backtest_id}/chart-data",
+      "name": "get_backtest_chart_data",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.strategy_management._chart_data_router",
+      "endpoint_name": "get_backtest_chart_data"
+    },
+    {
+      "index": 370,
+      "path": "/api/v1/risk/var-cvar",
+      "name": "calculate_var_cvar",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.metrics",
+      "endpoint_name": "calculate_var_cvar"
+    },
+    {
+      "index": 371,
+      "path": "/api/v1/risk/beta",
+      "name": "calculate_beta",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.metrics",
+      "endpoint_name": "calculate_beta"
+    },
+    {
+      "index": 372,
+      "path": "/api/v1/risk/dashboard",
+      "name": "get_risk_dashboard",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.metrics",
+      "endpoint_name": "get_risk_dashboard"
+    },
+    {
+      "index": 373,
+      "path": "/api/v1/risk/metrics/history",
+      "name": "get_risk_metrics_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.metrics",
+      "endpoint_name": "get_risk_metrics_history"
+    },
+    {
+      "index": 374,
+      "path": "/api/v1/risk/metrics/calculate",
+      "name": "calculate_risk_metrics",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.metrics",
+      "endpoint_name": "calculate_risk_metrics"
+    },
+    {
+      "index": 375,
+      "path": "/api/v1/risk/position/assess",
+      "name": "assess_position_risk",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.metrics",
+      "endpoint_name": "assess_position_risk"
+    },
+    {
+      "index": 376,
+      "path": "/api/v1/risk/v31/stop-loss/add-position",
+      "name": "add_stop_loss_position",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "add_stop_loss_position"
+    },
+    {
+      "index": 377,
+      "path": "/api/v1/risk/v31/stop-loss/update-price",
+      "name": "update_stop_loss_price",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "update_stop_loss_price"
+    },
+    {
+      "index": 378,
+      "path": "/api/v1/risk/v31/stop-loss/remove-position/{position_id}",
+      "name": "remove_stop_loss_position",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "remove_stop_loss_position"
+    },
+    {
+      "index": 379,
+      "path": "/api/v1/risk/v31/stop-loss/status/{position_id}",
+      "name": "get_stop_loss_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "get_stop_loss_status"
+    },
+    {
+      "index": 380,
+      "path": "/api/v1/risk/v31/stop-loss/overview",
+      "name": "get_stop_loss_overview",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "get_stop_loss_overview"
+    },
+    {
+      "index": 381,
+      "path": "/api/v1/risk/v31/stop-loss/batch-update",
+      "name": "batch_update_stop_loss_prices",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "batch_update_stop_loss_prices"
+    },
+    {
+      "index": 382,
+      "path": "/api/v1/risk/v31/stop-loss/history/performance",
+      "name": "get_stop_loss_performance",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "get_stop_loss_performance"
+    },
+    {
+      "index": 383,
+      "path": "/api/v1/risk/v31/stop-loss/history/recommendations",
+      "name": "get_stop_loss_recommendations",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "get_stop_loss_recommendations"
+    },
+    {
+      "index": 384,
+      "path": "/api/v1/risk/v31/stop-loss/calculate",
+      "name": "calculate_stop_loss_v31",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "calculate_stop_loss_v31"
+    },
+    {
+      "index": 385,
+      "path": "/api/v1/risk/v31/stop-loss/trigger",
+      "name": "trigger_stop_loss_v31",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.stop_loss",
+      "endpoint_name": "trigger_stop_loss_v31"
+    },
+    {
+      "index": 386,
+      "path": "/api/v1/risk/v31/alert/send",
+      "name": "send_risk_alert",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "send_risk_alert"
+    },
+    {
+      "index": 387,
+      "path": "/api/v1/risk/v31/alert/statistics",
+      "name": "get_alert_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "get_alert_statistics"
+    },
+    {
+      "index": 388,
+      "path": "/api/v1/risk/v31/rules/evaluate",
+      "name": "evaluate_alert_rules",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "evaluate_alert_rules"
+    },
+    {
+      "index": 389,
+      "path": "/api/v1/risk/v31/rules/add",
+      "name": "add_alert_rule",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "add_alert_rule"
+    },
+    {
+      "index": 390,
+      "path": "/api/v1/risk/v31/rules/remove/{rule_id}",
+      "name": "remove_alert_rule",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "remove_alert_rule"
+    },
+    {
+      "index": 391,
+      "path": "/api/v1/risk/v31/rules/statistics",
+      "name": "get_rule_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "get_rule_statistics"
+    },
+    {
+      "index": 392,
+      "path": "/api/v1/risk/v31/risk/realtime/{symbol}",
+      "name": "get_realtime_risk_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "get_realtime_risk_metrics"
+    },
+    {
+      "index": 393,
+      "path": "/api/v1/risk/alerts",
+      "name": "list_risk_alerts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "list_risk_alerts"
+    },
+    {
+      "index": 394,
+      "path": "/api/v1/risk/alerts",
+      "name": "create_risk_alert",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "create_risk_alert"
+    },
+    {
+      "index": 395,
+      "path": "/api/v1/risk/alerts/{alert_id}",
+      "name": "update_risk_alert",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "update_risk_alert"
+    },
+    {
+      "index": 396,
+      "path": "/api/v1/risk/alerts/{alert_id}",
+      "name": "delete_risk_alert",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "delete_risk_alert"
+    },
+    {
+      "index": 397,
+      "path": "/api/v1/risk/notifications/test",
+      "name": "test_notification",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "test_notification"
+    },
+    {
+      "index": 398,
+      "path": "/api/v1/risk/alerts/generate",
+      "name": "generate_risk_alerts",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "generate_risk_alerts"
+    },
+    {
+      "index": 399,
+      "path": "/api/v1/risk/v31/alerts/active",
+      "name": "get_active_alerts_v31",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "get_active_alerts_v31"
+    },
+    {
+      "index": 400,
+      "path": "/api/v1/risk/v31/alerts/{alert_id}/acknowledge",
+      "name": "acknowledge_alert_v31",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.alerts",
+      "endpoint_name": "acknowledge_alert_v31"
+    },
+    {
+      "index": 401,
+      "path": "/api/v1/risk/v31/stock/{symbol}",
+      "name": "get_stock_risk_v31",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.v31",
+      "endpoint_name": "get_stock_risk_v31"
+    },
+    {
+      "index": 402,
+      "path": "/api/v1/risk/v31/portfolio/{portfolio_id}",
+      "name": "get_portfolio_risk_v31",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.v31",
+      "endpoint_name": "get_portfolio_risk_v31"
+    },
+    {
+      "index": 403,
+      "path": "/api/v1/risk/v31/health",
+      "name": "get_risk_management_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.v31",
+      "endpoint_name": "get_risk_management_health"
+    },
+    {
+      "index": 404,
+      "path": "/api/v1/risk/v31/ws/risk-updates",
+      "name": "websocket_risk_updates",
+      "methods": [],
+      "include_in_schema": false,
+      "endpoint_module": "app.api.risk.v31",
+      "endpoint_name": "websocket_risk_updates"
+    },
+    {
+      "index": 405,
+      "path": "/api/v1/risk/v31/ws/broadcast/{topic}",
+      "name": "broadcast_risk_update",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.v31",
+      "endpoint_name": "broadcast_risk_update"
+    },
+    {
+      "index": 406,
+      "path": "/api/v1/risk/v31/ws/connections",
+      "name": "get_websocket_connections",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.risk.v31",
+      "endpoint_name": "get_websocket_connections"
+    },
+    {
+      "index": 407,
+      "path": "/api/v1/sse/training",
+      "name": "sse_training_stream",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.sse_endpoints",
+      "endpoint_name": "sse_training_stream"
+    },
+    {
+      "index": 408,
+      "path": "/api/v1/sse/backtest",
+      "name": "sse_backtest_stream",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.sse_endpoints",
+      "endpoint_name": "sse_backtest_stream"
+    },
+    {
+      "index": 409,
+      "path": "/api/v1/sse/alerts",
+      "name": "sse_alerts_stream",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.sse_endpoints",
+      "endpoint_name": "sse_alerts_stream"
+    },
+    {
+      "index": 410,
+      "path": "/api/v1/sse/dashboard",
+      "name": "sse_dashboard_stream",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.sse_endpoints",
+      "endpoint_name": "sse_dashboard_stream"
+    },
+    {
+      "index": 411,
+      "path": "/api/v1/sse/status",
+      "name": "sse_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.sse_endpoints",
+      "endpoint_name": "sse_status"
+    },
+    {
+      "index": 412,
+      "path": "/api/analysis/industry/list",
+      "name": "get_industry_list",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.industry_concept_analysis",
+      "endpoint_name": "get_industry_list"
+    },
+    {
+      "index": 413,
+      "path": "/api/analysis/concept/list",
+      "name": "get_concept_list",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.industry_concept_analysis",
+      "endpoint_name": "get_concept_list"
+    },
+    {
+      "index": 414,
+      "path": "/api/analysis/industry/stocks",
+      "name": "get_industry_stocks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.industry_concept_analysis",
+      "endpoint_name": "get_industry_stocks"
+    },
+    {
+      "index": 415,
+      "path": "/api/analysis/concept/stocks",
+      "name": "get_concept_stocks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.industry_concept_analysis",
+      "endpoint_name": "get_concept_stocks"
+    },
+    {
+      "index": 416,
+      "path": "/api/analysis/industry/performance",
+      "name": "get_industry_performance",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.industry_concept_analysis",
+      "endpoint_name": "get_industry_performance"
+    },
+    {
+      "index": 417,
+      "path": "/api/v1/health/database",
+      "name": "get_database_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.system.health",
+      "endpoint_name": "get_database_health"
+    },
+    {
+      "index": 418,
+      "path": "/api/v1/health/classification/stats",
+      "name": "get_data_classification_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.system.health",
+      "endpoint_name": "get_data_classification_stats"
+    },
+    {
+      "index": 419,
+      "path": "/api/v1/system/resources",
+      "name": "get_system_resource_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.system.resources",
+      "endpoint_name": "get_system_resource_metrics"
+    },
+    {
+      "index": 420,
+      "path": "/api/v1/data/route",
+      "name": "get_data_route",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.system.routing",
+      "endpoint_name": "get_data_route"
+    },
+    {
+      "index": 421,
+      "path": "/api/v1/system/settings/general",
+      "name": "get_general_settings",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.system.settings",
+      "endpoint_name": "get_general_settings"
+    },
+    {
+      "index": 422,
+      "path": "/api/v1/system/settings/general",
+      "name": "update_general_settings",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.system.settings",
+      "endpoint_name": "update_general_settings"
+    },
+    {
+      "index": 423,
+      "path": "/api/v1/system/settings/security",
+      "name": "get_security_settings",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.system.settings",
+      "endpoint_name": "get_security_settings"
+    },
+    {
+      "index": 424,
+      "path": "/api/v1/system/settings/security",
+      "name": "update_security_settings",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.system.settings",
+      "endpoint_name": "update_security_settings"
+    },
+    {
+      "index": 425,
+      "path": "/api/v1/strategies/batch-analysis/runtime-status",
+      "name": "get_batch_analysis_runtime_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.batch_analysis",
+      "endpoint_name": "get_batch_analysis_runtime_status"
+    },
+    {
+      "index": 426,
+      "path": "/api/v1/strategies/batch-analysis/submit",
+      "name": "submit_batch_analysis_task",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.batch_analysis",
+      "endpoint_name": "submit_batch_analysis_task"
+    },
+    {
+      "index": 427,
+      "path": "/api/v1/strategies/batch-analysis/tasks",
+      "name": "list_batch_analysis_tasks",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.batch_analysis",
+      "endpoint_name": "list_batch_analysis_tasks"
+    },
+    {
+      "index": 428,
+      "path": "/api/v1/strategies/batch-analysis/tasks/{task_id}",
+      "name": "get_batch_analysis_task_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.batch_analysis",
+      "endpoint_name": "get_batch_analysis_task_detail"
+    },
+    {
+      "index": 429,
+      "path": "/api/v1/strategies/ml/runtime-status",
+      "name": "get_ml_runtime_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.ml_workbench",
+      "endpoint_name": "get_ml_runtime_status"
+    },
+    {
+      "index": 430,
+      "path": "/api/v1/strategies/ml/train",
+      "name": "train_ml_workbench_model",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.ml_workbench",
+      "endpoint_name": "train_ml_workbench_model"
+    },
+    {
+      "index": 431,
+      "path": "/api/v1/strategies/ml/predict",
+      "name": "predict_ml_workbench_model",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.ml_workbench",
+      "endpoint_name": "predict_ml_workbench_model"
+    },
+    {
+      "index": 432,
+      "path": "/api/v1/strategies/ml/models",
+      "name": "list_ml_workbench_models",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.ml_workbench",
+      "endpoint_name": "list_ml_workbench_models"
+    },
+    {
+      "index": 433,
+      "path": "/api/v1/strategies/ml/models/{model_id}",
+      "name": "get_ml_workbench_model_detail",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.ml_workbench",
+      "endpoint_name": "get_ml_workbench_model_detail"
+    },
+    {
+      "index": 434,
+      "path": "/api/v1/strategies/train",
+      "name": "train_ml_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.machine_learning",
+      "endpoint_name": "train_ml_strategy"
+    },
+    {
+      "index": 435,
+      "path": "/api/v1/strategies/predict",
+      "name": "generate_strategy_prediction",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.machine_learning",
+      "endpoint_name": "generate_strategy_prediction"
+    },
+    {
+      "index": 436,
+      "path": "/api/v1/strategies/backtest",
+      "name": "backtest_ml_strategy",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.machine_learning",
+      "endpoint_name": "backtest_ml_strategy"
+    },
+    {
+      "index": 437,
+      "path": "/api/v1/strategies",
+      "name": "list_strategies",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.machine_learning",
+      "endpoint_name": "list_strategies"
+    },
+    {
+      "index": 438,
+      "path": "/api/v1/technical-indicators",
+      "name": "get_technical_indicators",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.strategy.indicators",
+      "endpoint_name": "get_technical_indicators"
+    },
+    {
+      "index": 439,
+      "path": "/api/v1/trading/sessions",
+      "name": "list_trading_sessions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "list_trading_sessions"
+    },
+    {
+      "index": 440,
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "name": "get_trading_session",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "get_trading_session"
+    },
+    {
+      "index": 441,
+      "path": "/api/v1/trading/sessions",
+      "name": "create_trading_session",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "create_trading_session"
+    },
+    {
+      "index": 442,
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "name": "update_trading_session",
+      "methods": [
+        "PATCH"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "update_trading_session"
+    },
+    {
+      "index": 443,
+      "path": "/api/v1/trading/sessions/{session_id}",
+      "name": "delete_trading_session",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.session",
+      "endpoint_name": "delete_trading_session"
+    },
+    {
+      "index": 444,
+      "path": "/api/v1/positions",
+      "name": "list_positions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "list_positions"
+    },
+    {
+      "index": 445,
+      "path": "/api/v1/positions/attribution",
+      "name": "get_position_attribution",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "get_position_attribution"
+    },
+    {
+      "index": 446,
+      "path": "/api/v1/positions/{position_id}",
+      "name": "get_position",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "get_position"
+    },
+    {
+      "index": 447,
+      "path": "/api/v1/positions",
+      "name": "create_position",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "create_position"
+    },
+    {
+      "index": 448,
+      "path": "/api/v1/positions/{position_id}",
+      "name": "update_position",
+      "methods": [
+        "PATCH"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "update_position"
+    },
+    {
+      "index": 449,
+      "path": "/api/v1/positions/{position_id}",
+      "name": "delete_position",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.trading.positions",
+      "endpoint_name": "delete_position"
+    },
+    {
+      "index": 450,
+      "path": "/api/v1/audit/logs",
+      "name": "list_audit_logs",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.admin.audit",
+      "endpoint_name": "list_audit_logs"
+    },
+    {
+      "index": 451,
+      "path": "/api/v1/audit/logs/{log_id}",
+      "name": "get_audit_log",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.admin.audit",
+      "endpoint_name": "get_audit_log"
+    },
+    {
+      "index": 452,
+      "path": "/api/v1/audit/statistics",
+      "name": "get_audit_statistics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.admin.audit",
+      "endpoint_name": "get_audit_statistics"
+    },
+    {
+      "index": 453,
+      "path": "/api/v1/optimization/vacuum",
+      "name": "vacuum_database",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.admin.optimization",
+      "endpoint_name": "vacuum_database"
+    },
+    {
+      "index": 454,
+      "path": "/api/v1/optimization/analyze",
+      "name": "analyze_database",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.admin.optimization",
+      "endpoint_name": "analyze_database"
+    },
+    {
+      "index": 455,
+      "path": "/api/v1/optimization/reindex",
+      "name": "reindex_database",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.admin.optimization",
+      "endpoint_name": "reindex_database"
+    },
+    {
+      "index": 456,
+      "path": "/api/v1/optimization/status",
+      "name": "get_database_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.admin.optimization",
+      "endpoint_name": "get_database_status"
+    },
+    {
+      "index": 457,
+      "path": "/api/v1/optimization/slow-queries",
+      "name": "get_slow_queries",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.admin.optimization",
+      "endpoint_name": "get_slow_queries"
+    },
+    {
+      "index": 458,
+      "path": "/api/v1/sentiment/analyze",
+      "name": "analyze_sentiment",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.sentiment",
+      "endpoint_name": "analyze_sentiment"
+    },
+    {
+      "index": 459,
+      "path": "/api/v1/sentiment/stock/{symbol}",
+      "name": "get_stock_sentiment",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.sentiment",
+      "endpoint_name": "get_stock_sentiment"
+    },
+    {
+      "index": 460,
+      "path": "/api/v1/sentiment/market",
+      "name": "get_market_sentiment",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.sentiment",
+      "endpoint_name": "get_market_sentiment"
+    },
+    {
+      "index": 461,
+      "path": "/api/v1/backtest/monte-carlo",
+      "name": "run_monte_carlo_backtest",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.backtest",
+      "endpoint_name": "run_monte_carlo_backtest"
+    },
+    {
+      "index": 462,
+      "path": "/api/v1/backtest/stress-test",
+      "name": "run_stress_test",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.backtest",
+      "endpoint_name": "run_stress_test"
+    },
+    {
+      "index": 463,
+      "path": "/api/v1/backtest/equity-curve/{strategy_id}",
+      "name": "get_equity_curve",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.backtest",
+      "endpoint_name": "get_equity_curve"
+    },
+    {
+      "index": 464,
+      "path": "/api/v1/backtest/{backtest_id}/attribution",
+      "name": "get_backtest_attribution",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.backtest",
+      "endpoint_name": "get_backtest_attribution"
+    },
+    {
+      "index": 465,
+      "path": "/api/v1/stress-test/run",
+      "name": "run_custom_stress_test",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.stress_test",
+      "endpoint_name": "run_custom_stress_test"
+    },
+    {
+      "index": 466,
+      "path": "/api/v1/stress-test/scenarios",
+      "name": "get_predefined_scenarios",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.stress_test",
+      "endpoint_name": "get_predefined_scenarios"
+    },
+    {
+      "index": 467,
+      "path": "/api/v1/stress-test/history",
+      "name": "get_stress_test_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.stress_test",
+      "endpoint_name": "get_stress_test_history"
+    },
+    {
+      "index": 468,
+      "path": "/api/v1/kronos/predict",
+      "name": "predict_with_kronos",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.kronos",
+      "endpoint_name": "predict_with_kronos"
+    },
+    {
+      "index": 469,
+      "path": "/api/v1/kronos/encode",
+      "name": "encode_with_kronos",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.kronos",
+      "endpoint_name": "encode_with_kronos"
+    },
+    {
+      "index": 470,
+      "path": "/api/v1/kronos/status",
+      "name": "get_kronos_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.v1.analysis.kronos",
+      "endpoint_name": "get_kronos_status"
+    },
+    {
+      "index": 471,
+      "path": "/api/contracts/versions",
+      "name": "create_version",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "create_version"
+    },
+    {
+      "index": 472,
+      "path": "/api/contracts/versions/{version_id}",
+      "name": "get_version",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "get_version"
+    },
+    {
+      "index": 473,
+      "path": "/api/contracts/versions/{name}/active",
+      "name": "get_active_version",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "get_active_version"
+    },
+    {
+      "index": 474,
+      "path": "/api/contracts/versions",
+      "name": "list_versions",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "list_versions"
+    },
+    {
+      "index": 475,
+      "path": "/api/contracts/versions/{version_id}",
+      "name": "update_version",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "update_version"
+    },
+    {
+      "index": 476,
+      "path": "/api/contracts/versions/{version_id}/activate",
+      "name": "activate_version",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "activate_version"
+    },
+    {
+      "index": 477,
+      "path": "/api/contracts/versions/{version_id}",
+      "name": "delete_version",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "delete_version"
+    },
+    {
+      "index": 478,
+      "path": "/api/contracts/contracts",
+      "name": "list_contracts",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "list_contracts"
+    },
+    {
+      "index": 479,
+      "path": "/api/contracts/diff",
+      "name": "compare_versions",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "compare_versions"
+    },
+    {
+      "index": 480,
+      "path": "/api/contracts/validate",
+      "name": "validate_contract",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "validate_contract"
+    },
+    {
+      "index": 481,
+      "path": "/api/contracts/drift/incidents",
+      "name": "list_contract_drift_incidents",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "list_contract_drift_incidents"
+    },
+    {
+      "index": 482,
+      "path": "/api/contracts/sync",
+      "name": "sync_contract",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "sync_contract"
+    },
+    {
+      "index": 483,
+      "path": "/api/contracts/sync/report",
+      "name": "get_sync_report",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.routes",
+      "endpoint_name": "get_sync_report"
+    },
+    {
+      "index": 484,
+      "path": "/api/contracts/impact",
+      "name": "analyze_contract_impact",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.contract.impact_routes",
+      "endpoint_name": "analyze_contract_impact"
+    },
+    {
+      "index": 485,
+      "path": "/api/v1/data-sources/",
+      "name": "search_data_sources",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_registry",
+      "endpoint_name": "search_data_sources"
+    },
+    {
+      "index": 486,
+      "path": "/api/v1/data-sources/categories",
+      "name": "get_category_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_registry",
+      "endpoint_name": "get_category_stats"
+    },
+    {
+      "index": 487,
+      "path": "/api/v1/data-sources/{endpoint_name}",
+      "name": "get_data_source",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_registry",
+      "endpoint_name": "get_data_source"
+    },
+    {
+      "index": 488,
+      "path": "/api/v1/data-sources/{endpoint_name}",
+      "name": "update_data_source",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_registry",
+      "endpoint_name": "update_data_source"
+    },
+    {
+      "index": 489,
+      "path": "/api/v1/data-sources/{endpoint_name}/test",
+      "name": "test_data_source",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_registry",
+      "endpoint_name": "test_data_source"
+    },
+    {
+      "index": 490,
+      "path": "/api/v1/data-sources/{endpoint_name}/health-check",
+      "name": "health_check_data_source",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_registry",
+      "endpoint_name": "health_check_data_source"
+    },
+    {
+      "index": 491,
+      "path": "/api/v1/data-sources/health-check/all",
+      "name": "health_check_all_data_sources",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_registry",
+      "endpoint_name": "health_check_all_data_sources"
+    },
+    {
+      "index": 492,
+      "path": "/api/v1/data-sources/config/",
+      "name": "create_data_source",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "create_data_source"
+    },
+    {
+      "index": 493,
+      "path": "/api/v1/data-sources/config/{endpoint_name}",
+      "name": "update_data_source",
+      "methods": [
+        "PUT"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "update_data_source"
+    },
+    {
+      "index": 494,
+      "path": "/api/v1/data-sources/config/{endpoint_name}",
+      "name": "delete_data_source",
+      "methods": [
+        "DELETE"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "delete_data_source"
+    },
+    {
+      "index": 495,
+      "path": "/api/v1/data-sources/config/{endpoint_name}",
+      "name": "get_data_source",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "get_data_source"
+    },
+    {
+      "index": 496,
+      "path": "/api/v1/data-sources/config/",
+      "name": "list_data_sources",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "list_data_sources"
+    },
+    {
+      "index": 497,
+      "path": "/api/v1/data-sources/config/batch",
+      "name": "batch_operations",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "batch_operations"
+    },
+    {
+      "index": 498,
+      "path": "/api/v1/data-sources/config/{endpoint_name}/versions",
+      "name": "get_version_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "get_version_history"
+    },
+    {
+      "index": 499,
+      "path": "/api/v1/data-sources/config/{endpoint_name}/rollback/{version}",
+      "name": "rollback_to_version",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "rollback_to_version"
+    },
+    {
+      "index": 500,
+      "path": "/api/v1/data-sources/config/reload",
+      "name": "reload_config",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_source_config",
+      "endpoint_name": "reload_config"
+    },
+    {
+      "index": 501,
+      "path": "/api/v1/lineage/record",
+      "name": "record_lineage",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_lineage",
+      "endpoint_name": "record_lineage"
+    },
+    {
+      "index": 502,
+      "path": "/api/v1/lineage/{node_id}/upstream",
+      "name": "get_upstream_lineage",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_lineage",
+      "endpoint_name": "get_upstream_lineage"
+    },
+    {
+      "index": 503,
+      "path": "/api/v1/lineage/{node_id}/downstream",
+      "name": "get_downstream_lineage",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_lineage",
+      "endpoint_name": "get_downstream_lineage"
+    },
+    {
+      "index": 504,
+      "path": "/api/v1/lineage/graph",
+      "name": "get_lineage_graph",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_lineage",
+      "endpoint_name": "get_lineage_graph"
+    },
+    {
+      "index": 505,
+      "path": "/api/v1/lineage/impact",
+      "name": "analyze_impact",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.data_lineage",
+      "endpoint_name": "analyze_impact"
+    },
+    {
+      "index": 506,
+      "path": "/api/v1/governance/quality/overview",
+      "name": "get_quality_overview",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.governance_dashboard",
+      "endpoint_name": "get_quality_overview"
+    },
+    {
+      "index": 507,
+      "path": "/api/v1/governance/lineage/stats",
+      "name": "get_lineage_stats",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.governance_dashboard",
+      "endpoint_name": "get_lineage_stats"
+    },
+    {
+      "index": 508,
+      "path": "/api/v1/governance/assets/catalog",
+      "name": "get_assets_catalog",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.governance_dashboard",
+      "endpoint_name": "get_assets_catalog"
+    },
+    {
+      "index": 509,
+      "path": "/api/v1/governance/compliance/metrics",
+      "name": "get_compliance_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.governance_dashboard",
+      "endpoint_name": "get_compliance_metrics"
+    },
+    {
+      "index": 510,
+      "path": "/api/v1/governance/dashboard/summary",
+      "name": "get_dashboard_summary",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.governance_dashboard",
+      "endpoint_name": "get_dashboard_summary"
+    },
+    {
+      "index": 511,
+      "path": "/api/indicator-registry/indicators",
+      "name": "list_indicators",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicator_registry",
+      "endpoint_name": "list_indicators"
+    },
+    {
+      "index": 512,
+      "path": "/api/indicator-registry/indicators/{indicator_id}",
+      "name": "get_indicator_details",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicator_registry",
+      "endpoint_name": "get_indicator_details"
+    },
+    {
+      "index": 513,
+      "path": "/api/indicator-registry/calculate",
+      "name": "calculate_indicator",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.indicator_registry",
+      "endpoint_name": "calculate_indicator"
+    },
+    {
+      "index": 514,
+      "path": "/api/gpu/status",
+      "name": "get_gpu_status",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.gpu_monitoring",
+      "endpoint_name": "get_gpu_status"
+    },
+    {
+      "index": 515,
+      "path": "/api/gpu/performance",
+      "name": "get_gpu_performance",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.gpu_monitoring",
+      "endpoint_name": "get_gpu_performance"
+    },
+    {
+      "index": 516,
+      "path": "/api/gpu/metrics",
+      "name": "get_prometheus_metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.gpu_monitoring",
+      "endpoint_name": "get_prometheus_metrics"
+    },
+    {
+      "index": 517,
+      "path": "/api/gpu/history",
+      "name": "get_gpu_history",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.gpu_monitoring",
+      "endpoint_name": "get_gpu_history"
+    },
+    {
+      "index": 518,
+      "path": "/metrics",
+      "name": "metrics",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.prometheus_exporter",
+      "endpoint_name": "metrics"
+    },
+    {
+      "index": 519,
+      "path": "/metrics/health",
+      "name": "metrics_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.prometheus_exporter",
+      "endpoint_name": "metrics_health"
+    },
+    {
+      "index": 520,
+      "path": "/metrics/list",
+      "name": "metrics_list",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.prometheus_exporter",
+      "endpoint_name": "metrics_list"
+    },
+    {
+      "index": 521,
+      "path": "/api/backup-recovery/backup/tdengine/full",
+      "name": "backup_tdengine_full",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "backup_tdengine_full"
+    },
+    {
+      "index": 522,
+      "path": "/api/backup-recovery/backup/tdengine/incremental",
+      "name": "backup_tdengine_incremental",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "backup_tdengine_incremental"
+    },
+    {
+      "index": 523,
+      "path": "/api/backup-recovery/backup/postgresql/full",
+      "name": "backup_postgresql_full",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "backup_postgresql_full"
+    },
+    {
+      "index": 524,
+      "path": "/api/backup-recovery/backups",
+      "name": "list_backups",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "list_backups"
+    },
+    {
+      "index": 525,
+      "path": "/api/backup-recovery/recovery/tdengine/full",
+      "name": "restore_tdengine_full",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "restore_tdengine_full"
+    },
+    {
+      "index": 526,
+      "path": "/api/backup-recovery/recovery/tdengine/pitr",
+      "name": "restore_tdengine_pitr",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "restore_tdengine_pitr"
+    },
+    {
+      "index": 527,
+      "path": "/api/backup-recovery/recovery/postgresql/full",
+      "name": "restore_postgresql_full",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "restore_postgresql_full"
+    },
+    {
+      "index": 528,
+      "path": "/api/backup-recovery/recovery/objectives",
+      "name": "get_recovery_objectives",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "get_recovery_objectives"
+    },
+    {
+      "index": 529,
+      "path": "/api/backup-recovery/scheduler/control",
+      "name": "scheduler_control",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "scheduler_control"
+    },
+    {
+      "index": 530,
+      "path": "/api/backup-recovery/scheduler/jobs",
+      "name": "get_scheduled_jobs",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "get_scheduled_jobs"
+    },
+    {
+      "index": 531,
+      "path": "/api/backup-recovery/integrity/verify/{backup_id}",
+      "name": "verify_backup_integrity",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.log_security_event",
+      "endpoint_name": "verify_backup_integrity"
+    },
+    {
+      "index": 532,
+      "path": "/api/backup-recovery/cleanup/old-backups",
+      "name": "cleanup_old_backups",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.cleanup_old_backups",
+      "endpoint_name": "cleanup_old_backups"
+    },
+    {
+      "index": 533,
+      "path": "/api/backup-recovery/health",
+      "name": "backup_service_health",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.backup_recovery_secure.cleanup_old_backups",
+      "endpoint_name": "backup_service_health"
+    },
+    {
+      "index": 534,
+      "path": "/api/v1/advanced-analysis/fundamental",
+      "name": "analyze_fundamental",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_fundamental"
+    },
+    {
+      "index": 535,
+      "path": "/api/v1/advanced-analysis/technical",
+      "name": "analyze_technical",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_technical"
+    },
+    {
+      "index": 536,
+      "path": "/api/v1/advanced-analysis/trading-signals",
+      "name": "analyze_trading_signals",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_trading_signals"
+    },
+    {
+      "index": 537,
+      "path": "/api/v1/advanced-analysis/time-series",
+      "name": "analyze_time_series",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_time_series"
+    },
+    {
+      "index": 538,
+      "path": "/api/v1/advanced-analysis/market-panorama",
+      "name": "analyze_market_panorama",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_market_panorama"
+    },
+    {
+      "index": 539,
+      "path": "/api/v1/advanced-analysis/capital-flow",
+      "name": "analyze_capital_flow",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_capital_flow"
+    },
+    {
+      "index": 540,
+      "path": "/api/v1/advanced-analysis/chip-distribution",
+      "name": "analyze_chip_distribution",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_chip_distribution"
+    },
+    {
+      "index": 541,
+      "path": "/api/v1/advanced-analysis/anomaly-tracking",
+      "name": "analyze_anomaly_tracking",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_anomaly_tracking"
+    },
+    {
+      "index": 542,
+      "path": "/api/v1/advanced-analysis/financial-valuation",
+      "name": "analyze_financial_valuation",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_financial_valuation"
+    },
+    {
+      "index": 543,
+      "path": "/api/v1/advanced-analysis/sentiment",
+      "name": "analyze_sentiment",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_sentiment"
+    },
+    {
+      "index": 544,
+      "path": "/api/v1/advanced-analysis/decision-models",
+      "name": "analyze_decision_models",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_decision_models"
+    },
+    {
+      "index": 545,
+      "path": "/api/v1/advanced-analysis/multidimensional-radar",
+      "name": "analyze_multidimensional_radar",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_multidimensional_radar"
+    },
+    {
+      "index": 546,
+      "path": "/api/v1/advanced-analysis/batch",
+      "name": "analyze_batch",
+      "methods": [
+        "POST"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "analyze_batch"
+    },
+    {
+      "index": 547,
+      "path": "/api/v1/advanced-analysis/health",
+      "name": "health_check",
+      "methods": [
+        "GET"
+      ],
+      "include_in_schema": true,
+      "endpoint_module": "app.api.advanced_analysis_api",
+      "endpoint_name": "health_check"
+    }
+  ]
+}
