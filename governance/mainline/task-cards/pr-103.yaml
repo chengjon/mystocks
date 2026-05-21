@@ -1,0 +1,111 @@
+version: "v0.2"
+
+task:
+  id: "pr-103"
+  title: "absorb D2.3 trading governance review notes"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-3-trading-route-governance-review-notes"
+  objective: "absorb review notes into the D2.3 trading route/OpenAPI governance planning package without changing route behavior"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-trading-route-openapi-governance-review-notes"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-d2-3-review-note-absorption"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Evidence-only review note absorption for D2.3 trading route/OpenAPI governance planning; no backend source, frontend, tests, docs/api, OpenSpec, PM2, or route behavior changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-103.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "tests/**"
+    - "src/**"
+    - "docs/api/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend route module modification"
+  - "No route registration change"
+  - "No OpenAPI schema exposure or operationId change"
+  - "No frontend consumer modification"
+  - "No test or fixture modification"
+  - "No docs/api modification"
+  - "No OpenSpec change/spec creation or modification"
+  - "No PM2 or runtime stateful gate execution"
+  - "No creation of refresh-backend-route-openapi-governance as a git branch"
+  - "No movement of issue #92 or any downstream item to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "classification-heuristic-recorded"
+      command: "report records exact module/path heuristic for the 41 trading candidate routes"
+      required: true
+    - id: "candidate-track-not-branch"
+      command: "report and task tree state that refresh-backend-route-openapi-governance is a candidate track or future change-id placeholder, not an existing git branch"
+      required: true
+    - id: "advanced-analysis-footnote"
+      command: "report states 41 includes 40 trading-route candidates plus 1 unclassified trading-adjacent route"
+      required: true
+    - id: "consumer-scan-scope-recorded"
+      command: "report records literal path prefixes and tracked-file scan scope for the consumer matrix"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-103.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A reproducibility note could be misread as approval to start route mutation"
+    - "The candidate governance track could still be mistaken for a created OpenSpec change or git branch"
+  rollback_plan: "revert the D2.3 review-note report edits, task-tree updates, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "absorb D2.3 trading route/OpenAPI governance review notes"
+    modified_scope: "one evidence report, steward task tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "no route behavior changes; planning package remains evidence-only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "decision-only rollback by reverting this PR"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T04:08:36Z"
+    approval_note: "human maintainer asked to review the D2.3 planning-package review; this batch absorbs reproducibility notes only and preserves no-route-mutation boundaries"
+    secondary_approved: false

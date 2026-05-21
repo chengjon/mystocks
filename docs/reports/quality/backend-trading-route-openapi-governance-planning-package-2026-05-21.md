@@ -8,6 +8,7 @@
 
 - Date: 2026-05-21
 - Status: D2.3 planning package prepared; no route implementation authorized
+- Review note status: reproducibility notes absorbed; scope remains planning-only
 - Parent issue: <https://github.com/chengjon/mystocks/issues/92>
 - Track: D2.3 trading route ownership under unified route/OpenAPI governance
 - Base HEAD: `c24f430167bbfc9cf573121f30d817b2c2db875b`
@@ -57,7 +58,7 @@ planning snapshot for this package.
 | App import smoke | `app.main` imported with placeholder local env |
 | Runtime routes | `548` |
 | OpenAPI paths | `500` |
-| Trading candidate routes | `41` |
+| Trading candidate routes | `41` total: `40` trading-route candidates plus `1` unclassified trading-adjacent route |
 | Trading schema-exposed routes | `41` |
 | Trading schema path count | `32` |
 | Trading duplicate operationIds | `0` |
@@ -68,6 +69,28 @@ execution tracking, runtime/status routes, v1 position/session surfaces, and one
 trading-adjacent advanced-analysis route that still needs ownership
 classification.
 
+## Classification Heuristic
+
+The D2.3 trading candidate count is reproducible from the loaded FastAPI route
+table by including route rows whose endpoint module is one of the following:
+
+- `app.api.trade.routes`
+- `app.api.trade.execution_tracking_routes`
+- `app.api.trade.reconciliation_routes`
+- `app.api.trading_runtime`
+- `app.api.tradingview`
+- `app.api.v1.trading.session`
+- `app.api.v1.trading.positions`
+
+One additional trading-adjacent route is included only because its path is
+`/api/v1/advanced-analysis/trading-signals` and its endpoint module is
+`app.api.advanced_analysis_api`.
+
+Do not treat the whole `app.api.advanced_analysis_api` module as trading-owned.
+Only the `trading-signals` route is included in this D2.3 count, and it remains
+unclassified until a future route/OpenAPI governance proposal decides whether it
+belongs to trading ownership or advanced-analysis ownership.
+
 ## Candidate Ownership Classes
 
 | Class | Current endpoint modules | Planning treatment |
@@ -76,7 +99,7 @@ classification.
 | Runtime trading API | `app.api.trading_runtime` | Needs route/OpenAPI taxonomy before route mutation |
 | Chart and widget API | `app.api.tradingview` | Fold into unified route/OpenAPI governance; do not handle as isolated trading cleanup |
 | v1 trading API | `app.api.v1.trading.session`, `app.api.v1.trading.positions` | Needs path and consumer parity review |
-| Trading-adjacent candidate | `app.api.advanced_analysis_api` | Needs explicit classification before being treated as trading-owned |
+| Trading-adjacent candidate | `app.api.advanced_analysis_api` path `/api/v1/advanced-analysis/trading-signals` only | Needs explicit classification before being treated as trading-owned |
 
 ## Current Module And Prefix Snapshot
 
@@ -110,6 +133,11 @@ classification.
 | `/api/v1/positions` | 6 | 6 |
 | `/api/v1/advanced-analysis` | 1 | 1 |
 
+The `/api/v1/advanced-analysis` row above refers only to
+`/api/v1/advanced-analysis/trading-signals`. It is counted in the `41` planning
+total as one unclassified trading-adjacent route, not as settled trading route
+ownership.
+
 ## Consumer Matrix Snapshot
 
 Tracked-file string scans for `/api/v1/trade`, `/api/trading`,
@@ -128,6 +156,20 @@ following planning surface.
 This matrix is intentionally a planning snapshot. It is not enough to authorize
 route edits because it has not yet classified active runtime callers, historical
 references, generated artifacts, or stale snapshots.
+
+The scan scope was tracked files from the checkout at the recorded base HEAD.
+The scan matched literal path-prefix strings only:
+
+- `/api/v1/trade`
+- `/api/trading`
+- `/api/tradingview`
+- `/api/v1/trading`
+- `/api/v1/positions`
+
+The counts are file/hit counts, not active-consumer counts. A future execution
+proposal must rerun the scan, record the command or generated artifact path, and
+split results into active consumers, tests, generated snapshots, historical
+governance references, and stale artifacts before route mutation is considered.
 
 ## Required Future Evidence Before Any Route Mutation
 
@@ -151,8 +193,13 @@ A future trading route implementation proposal or issue must include:
 ## Governance Recommendation
 
 Trading route ownership should stay under the unified route/OpenAPI governance
-parent, currently referred to by the candidate branch name
+parent, currently referred to by the candidate governance track or future
+OpenSpec change-id placeholder
 `refresh-backend-route-openapi-governance`.
+
+No git branch with that name exists or is required by this D2.3 package. If a
+future implementation lane begins, the actual git branch, OpenSpec change-id,
+and issue identifier must be created and recorded at that time.
 
 D2.3 should not create a trading-only implementation lane. The next approved
 unit should be either:
