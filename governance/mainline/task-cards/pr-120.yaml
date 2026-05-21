@@ -1,0 +1,111 @@
+version: "v0.2"
+
+task:
+  id: "pr-120"
+  title: "record backend d2 openspec proposal approvals"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-issue92-d2-proposal-approval-record"
+  objective: "record D2.3-D2.6 OpenSpec proposal approvals for governance/evidence execution only"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-d2-proposal-approval-record"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "multi-change-d2-proposal-approval-record"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "D2.x OpenSpec proposal approval record only; no runtime entrypoint, route, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-openspec-d2-proposal-approval-record-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-120.yaml"
+    - "openspec/changes/refresh-backend-route-openapi-governance/tasks.md"
+    - "openspec/changes/define-backend-backup-route-ownership/tasks.md"
+    - "openspec/changes/stabilize-backend-control-plane-openapi-docs/tasks.md"
+    - "openspec/changes/approve-backend-pm2-stateful-gate/tasks.md"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, or runtime behavior changes"
+  - "No PM2 command execution, service restart, process deletion, or process recreation"
+  - "No downstream implementation issue creation"
+  - "No movement of issue #92 to ready-for-agent"
+  - "No execution of the D2.3-D2.6 evidence task lists in this PR"
+
+acceptance:
+  checks:
+    - id: "openspec-route-governance-strict"
+      command: "openspec validate refresh-backend-route-openapi-governance --strict"
+      required: true
+    - id: "openspec-backup-ownership-strict"
+      command: "openspec validate define-backend-backup-route-ownership --strict"
+      required: true
+    - id: "openspec-control-plane-docs-strict"
+      command: "openspec validate stabilize-backend-control-plane-openapi-docs --strict"
+      required: true
+    - id: "openspec-pm2-stateful-gate-strict"
+      command: "openspec validate approve-backend-pm2-stateful-gate --strict"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-openspec-d2-proposal-approval-record-2026-05-22.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-120.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this record is read as implementation approval, D2.x governance boundaries are broken"
+    - "If this record is read as PM2 approval, stateful service mutation could be executed without a dedicated approval record"
+  rollback_plan: "revert this PR and return D2.3-D2.6 proposal approval gates to review-pending state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record D2.3-D2.6 OpenSpec proposal approvals for governance/evidence execution"
+    modified_scope: "four OpenSpec tasks files, steward tree, approval report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is approval/evidence bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if OpenSpec validation, markdown governance, or mainline scope checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T00:32:45+08:00"
+    approval_note: "maintainer approved D2.3-D2.6 proposal gates for governance/evidence task-list execution only; this PR does not authorize implementation or PM2 execution"
+    secondary_approved: false

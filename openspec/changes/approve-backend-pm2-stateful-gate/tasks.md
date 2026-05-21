@@ -9,8 +9,13 @@
 - [x] Keep this change proposal-only and explicitly exclude PM2 execution,
   backend source, frontend source, tests, docs/API, generated client, route,
   OpenAPI, probe, and runtime edits.
-- [ ] Obtain human approval for this OpenSpec policy before treating it as the
+- [x] Obtain human approval for this OpenSpec policy before treating it as the
   PM2 stateful gate approval contract.
+  Approval recorded in the current review thread at
+  `2026-05-22T00:32:45+08:00`; scope is governance/evidence tasks only and
+  does not authorize PM2 command execution, service restart/recreation, route
+  behavior, OpenAPI schema, docs/API, generated client, source, or test
+  changes.
 
 ## 1. Approval Policy Acceptance
 
