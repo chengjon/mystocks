@@ -138,14 +138,16 @@ CODEBASE-MAP Architecture Remediation Program
 ├── D2.2. Core Validation Wrapper Retirement Readiness
 │   ├── Source evidence:
 │   │   `backend-core-validation-wrapper-retirement-readiness-2026-05-21.md`
-│   ├── State: wrapper-decision-package-complete
+│   ├── State: formally-closed-decision-package
 │   ├── Role: Decide whether `app.core.validation_messages` can retire
 │   ├── Current fact: D2.2a migrated active source consumers in `validators.py`
 │   │                 and `error_codes.py` to `app.core.validation`; wrapper
 │   │                 remains because D2.2c prepared a decision package, not a
-│   │                 deletion implementation
-│   └── Next gate: Human decision: retain wrapper long-term or approve a
-│                  separate D2.2d deletion batch
+│   │                 deletion implementation; D2.2 is closed as a planning /
+│   │                 decision lane
+│   └── Next gate: Move to D2.3 trading route/OpenAPI governance planning;
+│                  wrapper deletion remains locked unless a separate D2.2d
+│                  implementation batch is explicitly approved
 │
 ├── D2.2a. Core Validation Active Source Consumer Migration
 │   ├── Source evidence:
@@ -171,13 +173,27 @@ CODEBASE-MAP Architecture Remediation Program
 ├── D2.2c. Core Validation Wrapper Retirement / Retention Decision Package
 │   ├── Source evidence:
 │   │   `backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md`
-│   ├── State: review-ready
+│   ├── State: closed-decision-package
 │   ├── Role: Present wrapper-retirement vs long-term-retention options
 │   ├── Current fact: active source imports and `docs/api/` legacy references are
 │   │                 `0`; compatibility tests and historical/governance records
 │   │                 still intentionally mention the wrapper path
-│   └── Next gate: Human decision only; wrapper deletion remains locked unless a
-│                  separate D2.2d implementation batch is explicitly approved
+│   └── Next gate: D2.2 is formally closed; wrapper deletion remains locked
+│                  unless a separate D2.2d implementation batch is explicitly
+│                  approved
+│
+├── D2.3. Trading Route/OpenAPI Governance Planning Package
+│   ├── Source evidence:
+│   │   `backend-trading-route-openapi-governance-planning-package-2026-05-21.md`
+│   ├── State: planning-package-prepared
+│   ├── Role: Fold trading route ownership into unified route/OpenAPI governance
+│   ├── Current fact: current smoke at HEAD `c24f43016` reports routes=`548`,
+│   │                 OpenAPI paths=`500`, trading candidate routes=`41`,
+│   │                 trading schema-exposed routes=`41`, trading schema paths=`32`,
+│   │                 and duplicate trading operationIds=`0`
+│   └── Next gate: Human review; if accepted, decide whether to create a
+│                  separate OpenSpec proposal or implementation issue under
+│                  unified route/OpenAPI governance before any route mutation
 │
 ├── E. Candidate Branch: close-backend-schema-dual-directory
 │   ├── Source evidence: backend-schema-dual-directory-closure-2026-05-19.md
@@ -287,7 +303,8 @@ review, PR review, or OpenSpec archive review.
 | D2.2 Core validation wrapper retirement readiness | D2.2 | Readiness packet prepared for `app.core.validation_messages` retirement; deletion remains locked pending a separate wrapper-retirement decision | Review-ready readiness only: compatibility test passed `2 passed`; placeholder-env import smoke passed; active source blockers were later closed by D2.2a and docs/API examples were later closed by D2.2b | `docs/reports/quality/backend-core-validation-wrapper-retirement-readiness-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | D2.2c wrapper-retirement decision or explicit long-term retention; no wrapper deletion before that approval |
 | D2.2a Core validation active source migration | D2.2a | Active source imports in `validators.py` and `error_codes.py` migrated from `app.core.validation_messages` to `app.core.validation`; wrapper retained | TDD red/green completed; boundary test `1 passed`; compatibility test `2 passed`; import smoke passed; app import smoke routes=`548`; collect-only smoke `112 tests collected`; ruff passed; active source legacy imports excluding wrapper=`0` | `docs/reports/quality/backend-core-validation-active-source-migration-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Completed by D2.2b docs/API examples canonicalization; wrapper deletion remains a separate decision |
 | D2.2b Core validation docs/API example canonicalization | D2.2b | `docs/api/` examples now point to canonical `app.core.validation`; wrapper retained | Docs-only batch: pre-change `docs/api/` legacy reference count was `10`; post-change count is `0`; no backend source, tests, OpenSpec, route, PM2, or frontend files changed | `docs/reports/quality/backend-core-validation-docs-api-canonicalization-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | D2.2c wrapper-retirement decision or explicit retention; do not delete `app.core.validation_messages` from this batch |
-| D2.2c Core validation wrapper retirement / retention decision package | D2.2c | Decision package prepared for whether to retain `app.core.validation_messages` long-term or approve a future deletion batch | Evidence-only: wrapper exists; active source import consumers excluding wrapper=`0`; docs/API legacy references=`0`; compatibility test `2 passed`; boundary test `1 passed`; canonical and wrapper exports remain identity-equivalent; no backend source, tests, OpenSpec, route, PM2, or frontend files changed | `docs/reports/quality/backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human decision: retain wrapper or approve a separate D2.2d deletion implementation batch; wrapper deletion remains locked |
+| D2.2c Core validation wrapper retirement / retention decision package | D2.2c | Decision package prepared for whether to retain `app.core.validation_messages` long-term or approve a future deletion batch; D2.2 is formally closed as a decision lane | Evidence-only: wrapper exists; active source import consumers excluding wrapper=`0`; docs/API legacy references=`0`; compatibility test `2 passed`; boundary test `1 passed`; canonical and wrapper exports remain identity-equivalent; no backend source, tests, OpenSpec, route, PM2, or frontend files changed | `docs/reports/quality/backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Move to D2.3; wrapper deletion remains locked unless a separate D2.2d deletion implementation batch is approved |
+| D2.3 Trading route/OpenAPI governance planning package | D2.3 | Trading route ownership is folded into unified route/OpenAPI governance, not a standalone implementation lane | Planning/evidence only: current smoke at HEAD `c24f43016` reports routes=`548`, OpenAPI paths=`500`, trading candidate routes=`41`, schema-exposed=`41`, schema paths=`32`, duplicate trading operationIds=`0`; consumer scan records backend, frontend, test, script, docs/governance, and other tracked-file references; no route, OpenAPI, source, frontend, test, PM2, or OpenSpec mutation is authorized | `docs/reports/quality/backend-trading-route-openapi-governance-planning-package-2026-05-21.md`; `https://github.com/chengjon/mystocks/issues/92` | Human review; if accepted, create a separate route/OpenAPI governance proposal or implementation issue before route mutation |
 
 ## OpenSpec Branch Register
 
