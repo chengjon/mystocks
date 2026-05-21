@@ -1,0 +1,99 @@
+version: "v0.2"
+
+task:
+  id: "pr-116"
+  title: "draft backend route openapi governance proposal"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-issue92-d2-3-route-openapi-governance"
+  objective: "draft D2.3 route/OpenAPI governance OpenSpec proposal without implementation authorization"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-route-openapi-governance-proposal"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "refresh-backend-route-openapi-governance"
+  approval_status: "pending"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "D2.3 route/OpenAPI governance proposal only; no runtime entrypoint, route, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-route-openapi-governance-openspec-proposal-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-116.yaml"
+    - "openspec/changes/refresh-backend-route-openapi-governance/**"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, or runtime behavior changes"
+  - "No route path, router registration, operationId, response contract, probe URL, or include_in_schema changes"
+  - "No movement of issue #92 to ready-for-agent"
+  - "No downstream implementation issue creation"
+  - "No PM2 stateful workflow execution"
+
+acceptance:
+  checks:
+    - id: "openspec-strict"
+      command: "openspec validate refresh-backend-route-openapi-governance --strict"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-route-openapi-governance-openspec-proposal-2026-05-21.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-116.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this proposal is read as route implementation authorization, issue #92 governance boundaries are broken"
+    - "If D2.4 backup or D2.5 control-plane lanes are folded into this change without approval, route ownership boundaries become ambiguous"
+  rollback_plan: "revert this PR and return D2.3 to planning-package-only state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "draft D2.3 route/OpenAPI governance OpenSpec proposal"
+    modified_scope: "OpenSpec proposal, steward tree, governance report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is proposal/evidence bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if OpenSpec validation, markdown governance, or mainline scope checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T13:58:00Z"
+    approval_note: "maintainer accepted D2.3 as the next child lane after D2.1a closeout; this PR drafts proposal-only governance and does not authorize implementation"
+    secondary_approved: false
