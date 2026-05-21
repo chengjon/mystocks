@@ -1,0 +1,101 @@
+version: "v0.2"
+
+task:
+  id: "pr-124"
+  title: "close d2.5 control-plane openapi docs review"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-issue92-d2-5-control-plane-openapi-docs-review-closeout"
+  objective: "record D2.5 control-plane OpenAPI docs review acceptance and close the reviewed evidence gate"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-control-plane-openapi-docs-review-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "stabilize-backend-control-plane-openapi-docs"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "D2.5 control-plane OpenAPI docs review closeout only; no runtime entrypoint, route, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-control-plane-openapi-docs-decision-package-2026-05-22.md"
+    - "docs/reports/quality/backend-control-plane-openapi-docs-decision-package-2026-05-22-review.md"
+    - "governance/mainline/task-cards/pr-124.yaml"
+    - "openspec/changes/stabilize-backend-control-plane-openapi-docs/tasks.md"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, or runtime behavior changes"
+  - "No PM2 command execution, service restart, process deletion, or process recreation"
+  - "No downstream implementation issue creation"
+  - "No movement of issue #92 to ready-for-agent"
+  - "No D2.4 backup route ownership or D2.6 PM2 execution work in this PR"
+
+acceptance:
+  checks:
+    - id: "openspec-control-plane-docs-strict"
+      command: "openspec validate stabilize-backend-control-plane-openapi-docs --strict"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-control-plane-openapi-docs-decision-package-2026-05-22.md docs/reports/quality/backend-control-plane-openapi-docs-decision-package-2026-05-22-review.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-124.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If review acceptance is read as docs/API implementation approval, D2.5 governance boundaries are broken"
+    - "If the probe artifact suggestion is read as a current artifact defect, later agents may incorrectly regenerate accepted evidence"
+  rollback_plan: "revert this PR and return D2.5 to decision-package-prepared-for-review state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record D2.5 control-plane OpenAPI docs review acceptance"
+    modified_scope: "decision report note, review artifact, OpenSpec task status, steward tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is review/governance bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if OpenSpec validation, markdown governance, or mainline scope checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T02:20:00+08:00"
+    approval_note: "review artifact verdict is APPROVE; this PR records D2.5 decision-package acceptance and does not authorize implementation"
+    secondary_approved: false

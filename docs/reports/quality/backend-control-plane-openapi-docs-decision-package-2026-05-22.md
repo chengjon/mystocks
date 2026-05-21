@@ -8,11 +8,14 @@
 
 ## Status
 
-- Status: decision package prepared for review
+- Status: decision-package-reviewed-accepted
 - OpenSpec change: `stabilize-backend-control-plane-openapi-docs`
 - Parent decision issue: GitHub issue `#92`
 - Current HEAD: `15db8ebf5a3d4776a97a1c79d613d644de87cf4c`
 - Evidence generated at: `2026-05-21T17:46:41.562727Z`
+- Review artifact:
+  `docs/reports/quality/backend-control-plane-openapi-docs-decision-package-2026-05-22-review.md`
+- Review verdict: `APPROVE`
 - Execution mode: governance/evidence only
 
 This package executes the D2.5 evidence tasks for control-plane OpenAPI
@@ -30,8 +33,9 @@ implementation issue creation, or movement of issue `#92` to `ready-for-agent`.
 | Artifact | Role | Notes |
 |---|---|---|
 | `.planning/codebase/generated/control-plane-openapi-docs-evidence-2026-05-22.json` | Current-head route/OpenAPI/probe evidence | Generated from `app.main` and `app.openapi()` with placeholder governance env; no server or PM2 process was started |
+| `docs/reports/quality/backend-control-plane-openapi-docs-decision-package-2026-05-22-review.md` | Review artifact | Verdict `APPROVE`; no issues found; suggestion limited to future probe artifact summary stability |
 | `openspec/changes/stabilize-backend-control-plane-openapi-docs/tasks.md` | D2.5 task checklist | Updated only for evidence and decision-package tasks that are complete |
-| `.planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md` | Steward tree | Updated to mark D2.5 as decision-package-prepared-for-review |
+| `.planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md` | Steward tree | Updated to mark D2.5 as decision-package-reviewed-accepted |
 
 ## Authorization Boundary
 
@@ -203,6 +207,9 @@ The future packet should include:
   compatibility surfaces;
 - examples that distinguish runtime presence from OpenAPI exposure;
 - a consumer matrix excerpt for every changed endpoint family;
+- a probe artifact summary that preserves `scanned_files`, hit file count, hit
+  line count, category counts, and consumer class counts in a stable summary
+  object before any large hit list;
 - verification commands for markdown governance and route/OpenAPI freshness;
 - rollback instructions limited to documentation changes;
 - non-goals repeating that no route, OpenAPI schema/exposure, probe URL, PM2,
@@ -213,8 +220,6 @@ not edit those files and does not create the future implementation lane.
 
 ## Remaining Gates
 
-- Human review of this D2.5 decision package.
-- Steward tree update after review acceptance.
 - Separate approved docs/API implementation lane, if the maintainer chooses to
   proceed.
 - Separate D2.4 backup route ownership evidence execution.

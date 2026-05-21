@@ -64,7 +64,7 @@
 
 ## 4. Steward Tree
 
-- [ ] Update the codebase-map task tree after the control-plane docs decision
+- [x] Update the codebase-map task tree after the control-plane docs decision
   package is reviewed.
 - [x] Do not create implementation issues or edit docs/API until the accepted
   decision package identifies the owner, write scope, checks, and rollback plan.
