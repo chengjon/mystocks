@@ -21,15 +21,46 @@ def _import_patterns_router_module():
     return importlib.import_module("app.api._technical_patterns_router")
 
 
-def test_detect_patterns_returns_empty_structured_payload_when_service_finds_nothing(monkeypatch):
+class _PatternServiceDouble:
+    def __init__(self, patterns: list[PatternDetection] | None = None, error: Exception | None = None) -> None:
+        self.patterns = patterns or []
+        self.error = error
+        self.calls: list[tuple[str, str]] = []
+
+    async def detect_for_symbol(self, symbol: str, period: str) -> list[PatternDetection]:
+        self.calls.append((symbol, period))
+        if self.error is not None:
+            raise self.error
+        return self.patterns
+
+
+def _client_with_service(module, service: _PatternServiceDouble) -> tuple[FastAPI, TestClient]:
+    app = FastAPI()
+    app.dependency_overrides[module.get_technical_pattern_detection_service] = lambda: service
+    app.include_router(module.router)
+    return app, TestClient(app)
+
+
+def test_detect_patterns_uses_dependency_override_service():
     module = _import_patterns_router_module()
+    service = _PatternServiceDouble()
 
-    async def _fake_detect(*_args, **_kwargs):
-        return []
+    app, client = _client_with_service(module, service)
 
-    monkeypatch.setattr(module, "_detect_patterns_for_symbol", _fake_detect)
+    try:
+        response = client.get("/patterns/600519.SH", params={"period": "WEEKLY"})
+    finally:
+        app.dependency_overrides.clear()
 
-    response = asyncio.run(module.detect_patterns(symbol="600519.SH", period="weekly"))
+    assert response.status_code == 200
+    assert service.calls == [("600519.SH", "weekly")]
+
+
+def test_detect_patterns_returns_empty_structured_payload_when_service_finds_nothing():
+    module = _import_patterns_router_module()
+    service = _PatternServiceDouble()
+
+    response = asyncio.run(module.detect_patterns(symbol="600519.SH", period="weekly", service=service))
 
     assert response.success is True
     assert response.code == 200
@@ -38,21 +69,19 @@ def test_detect_patterns_returns_empty_structured_payload_when_service_finds_not
     assert response.data.symbol == "600519.SH"
     assert response.data.period == "weekly"
     assert response.data.patterns == []
+    assert service.calls == [("600519.SH", "weekly")]
 
 
-def test_detect_patterns_normalizes_uppercase_period_query(monkeypatch):
+def test_detect_patterns_normalizes_uppercase_period_query():
     module = _import_patterns_router_module()
+    service = _PatternServiceDouble()
 
-    async def _fake_detect(*_args, **_kwargs):
-        return []
+    app, client = _client_with_service(module, service)
 
-    monkeypatch.setattr(module, "_detect_patterns_for_symbol", _fake_detect)
-
-    app = FastAPI()
-    app.include_router(module.router)
-    client = TestClient(app)
-
-    response = client.get("/patterns/600519.SH", params={"period": "WEEKLY"})
+    try:
+        response = client.get("/patterns/600519.SH", params={"period": "WEEKLY"})
+    finally:
+        app.dependency_overrides.clear()
 
     assert response.status_code == 200
     payload = response.json()
@@ -60,6 +89,7 @@ def test_detect_patterns_normalizes_uppercase_period_query(monkeypatch):
     assert payload["data"]["period"] == "weekly"
     assert payload["data"]["status"] == "empty"
     assert payload["data"]["patterns"] == []
+    assert service.calls == [("600519.SH", "weekly")]
 
 
 def test_detect_patterns_openapi_documents_supported_period_values():
@@ -87,29 +117,26 @@ def test_detect_patterns_rejects_unsupported_period_query():
     assert "Unsupported period" in response.json()["detail"]
 
 
-def test_detect_patterns_returns_503_when_detection_service_fails(monkeypatch):
+def test_detect_patterns_returns_503_when_detection_service_fails():
     module = _import_patterns_router_module()
+    service = _PatternServiceDouble(error=RuntimeError("synthetic detector outage"))
 
-    async def _raise_failure(*_args, **_kwargs):
-        raise RuntimeError("synthetic detector outage")
+    app, client = _client_with_service(module, service)
 
-    monkeypatch.setattr(module.TechnicalPatternDetectionService, "detect_for_symbol", _raise_failure)
-
-    app = FastAPI()
-    app.include_router(module.router)
-    client = TestClient(app)
-
-    response = client.get("/patterns/600519.SH", params={"period": "daily"})
+    try:
+        response = client.get("/patterns/600519.SH", params={"period": "daily"})
+    finally:
+        app.dependency_overrides.clear()
 
     assert response.status_code == 503
     assert response.json()["detail"] == "Pattern analysis unavailable"
+    assert service.calls == [("600519.SH", "daily")]
 
 
-def test_detect_patterns_returns_available_structured_payload_when_service_finds_detection(monkeypatch):
+def test_detect_patterns_returns_available_structured_payload_when_service_finds_detection():
     module = _import_patterns_router_module()
-
-    async def _fake_detect(*_args, **_kwargs):
-        return [
+    service = _PatternServiceDouble(
+        patterns=[
             PatternDetection(
                 pattern_name="double_top",
                 direction="bearish",
@@ -121,14 +148,14 @@ def test_detect_patterns_returns_available_structured_payload_when_service_finds
                 ],
             )
         ]
+    )
 
-    monkeypatch.setattr(module, "_detect_patterns_for_symbol", _fake_detect)
+    app, client = _client_with_service(module, service)
 
-    app = FastAPI()
-    app.include_router(module.router)
-    client = TestClient(app)
-
-    response = client.get("/patterns/600519.SH", params={"period": "daily"})
+    try:
+        response = client.get("/patterns/600519.SH", params={"period": "daily"})
+    finally:
+        app.dependency_overrides.clear()
 
     assert response.status_code == 200
     payload = response.json()["data"]
@@ -138,13 +165,13 @@ def test_detect_patterns_returns_available_structured_payload_when_service_finds
     assert payload["patterns"][0]["pattern_name"] == "double_top"
     assert payload["patterns"][0]["direction"] == "bearish"
     assert payload["patterns"][0]["anchor_points"][0]["role"] == "left_peak"
+    assert service.calls == [("600519.SH", "daily")]
 
 
-def test_detect_patterns_returns_reviewed_gap_payload_when_service_finds_breakaway_gap(monkeypatch):
+def test_detect_patterns_returns_reviewed_gap_payload_when_service_finds_breakaway_gap():
     module = _import_patterns_router_module()
-
-    async def _fake_detect(*_args, **_kwargs):
-        return [
+    service = _PatternServiceDouble(
+        patterns=[
             PatternDetection(
                 pattern_name="breakaway_gap",
                 direction="bullish",
@@ -161,14 +188,14 @@ def test_detect_patterns_returns_reviewed_gap_payload_when_service_finds_breakaw
                 ),
             )
         ]
+    )
 
-    monkeypatch.setattr(module, "_detect_patterns_for_symbol", _fake_detect)
+    app, client = _client_with_service(module, service)
 
-    app = FastAPI()
-    app.include_router(module.router)
-    client = TestClient(app)
-
-    response = client.get("/patterns/600519.SH", params={"period": "daily"})
+    try:
+        response = client.get("/patterns/600519.SH", params={"period": "daily"})
+    finally:
+        app.dependency_overrides.clear()
 
     assert response.status_code == 200
     payload = response.json()["data"]["patterns"][0]
@@ -183,6 +210,7 @@ def test_detect_patterns_returns_reviewed_gap_payload_when_service_finds_breakaw
     assert payload["gap_zone"]["upper_value"] == 10.8
     assert payload["gap_zone"]["lower_value"] == 10.25
     assert payload["gap_zone"]["filled_at"] is None
+    assert service.calls == [("600519.SH", "daily")]
 
 
 def test_pattern_detection_accepts_partially_filled_gap_status():

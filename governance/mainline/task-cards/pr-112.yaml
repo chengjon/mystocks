@@ -1,0 +1,124 @@
+version: v0.2
+task:
+  id: pr-112
+  title: implement D2.1a technical pattern DI pilot
+  owner: main
+  created_at: "2026-05-21"
+
+mainline:
+  id: L1-issue92-d2-1a-technical-pattern-di-implementation
+  objective: implement the first service-tier route-level DI pilot for TechnicalPatternDetectionService
+  milestone_id: L2-architecture-governance-closeout
+  slice_id: L3-d2-1a-technical-pattern-di-implementation
+
+classification:
+  task_type: cleanup
+  secondary_type: none
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: inject-technical-pattern-detection-service-di
+  approval_status: approved
+
+function_tree:
+  domain_id: domain-02
+  node_id: domain-02-node-03
+  affected_entrypoints:
+    - api
+    - tests
+    - governance
+  update_status: required
+  secondary_domains: []
+  exemption_reason: "Route path, OpenAPI exposure, operationId, response contract, and user-facing behavior are unchanged; function-tree coverage is updated only to register the existing technical-pattern route companion and focused regression test under domain-02-node-03."
+
+scope:
+  allowed_paths:
+    - .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md
+    - docs/FUNCTION_TREE.md
+    - docs/reports/quality/backend-technical-pattern-di-pilot-implementation-2026-05-21.md
+    - governance/function-tree/catalog.yaml
+    - governance/mainline/task-cards/pr-112.yaml
+    - openspec/changes/inject-technical-pattern-detection-service-di/tasks.md
+    - web/backend/app/api/_technical_patterns_router.py
+    - web/backend/tests/test_technical_patterns_router_regressions.py
+  forbidden_paths:
+    - web/frontend/**
+    - docs/api/**
+    - openspec/specs/**
+    - scripts/**
+    - config/**
+
+non_goals:
+  - No route path, tag, operationId, or OpenAPI exposure change
+  - No function-tree taxonomy change beyond synchronizing the existing technical-pattern route companion and regression test
+  - No response model or UnifiedResponse contract change
+  - No TechnicalPatternDetectionService internals change
+  - No DataSourceFactory, detector loading, service registry, app.state, lifespan, or teardown ownership change
+  - No frontend consumer modification
+  - No docs/api modification
+  - No scripts or config modification
+  - No PM2 workflow execution
+  - No issue #92 ready-for-agent movement
+  - No second service DI pilot in this branch
+
+acceptance:
+  checks:
+    - id: gitnexus-pre-edit-impact
+      command: GitNexus impact/context for TechnicalPatternDetectionService and _detect_patterns_for_symbol reports LOW risk before edits
+      required: true
+    - id: tdd-red
+      command: dependency override route test fails before provider exists
+      required: true
+    - id: focused-route-tests
+      command: PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_technical_patterns_router_regressions.py -q --no-cov
+      required: true
+    - id: focused-service-route-tests
+      command: PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_technical_pattern_detection_service.py web/backend/tests/test_technical_patterns_router_regressions.py -q --no-cov
+      required: true
+    - id: touched-backend-ruff
+      command: PYTHONPATH=web/backend python -m ruff check web/backend/app/api/_technical_patterns_router.py web/backend/tests/test_technical_patterns_router_regressions.py
+      required: true
+    - id: openspec-strict
+      command: openspec validate inject-technical-pattern-detection-service-di --strict
+      required: true
+    - id: placeholder-app-main-import
+      command: placeholder-env PYTHONPATH=web/backend python -c "import app.main; print('app_main_import=ok')"
+      required: true
+    - id: mainline-scope-gate
+      command: python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-112.yaml
+      required: true
+    - id: function-tree-sync
+      command: docs/FUNCTION_TREE.md and governance/function-tree/catalog.yaml both map _technical_patterns_router.py under domain-02-node-03
+      required: true
+    - id: cached-diff-check
+      command: git diff --cached --check
+      required: true
+
+risk_and_rollback:
+  risks:
+    - FastAPI dependency signature could alter OpenAPI if implemented incorrectly
+    - Test double could drift from the production async service contract
+  rollback_plan: "revert the route provider injection, test override conversion, OpenSpec task updates, implementation report, task-tree update, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: implement D2.1a TechnicalPatternDetectionService route-level DI pilot
+    modified_scope: one route module, one focused route regression test file, OpenSpec tasks, implementation report, steward tree, and this PR task card
+    dependency_changes: none
+    legacy_logic_impact: route behavior and response contract unchanged; direct construction moved behind route-local provider
+    rollback_ready: "yes"
+    risk_and_rollback_point: revert route provider injection and focused test override conversion
+
+governance:
+  phase: phase_a_pr_hard_gate
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: main
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: main
+    approved_at: "2026-05-21T11:30:00Z"
+    approval_note: "human maintainer said to continue after the D2.1a proposal review alignment was merged; this branch implements only the approved TechnicalPatternDetectionService route-level DI pilot"
+    secondary_approved: false

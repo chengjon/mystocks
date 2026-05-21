@@ -146,7 +146,7 @@
 
 ## 02-技术分析与指标 {#domain-02}
 
-**模块路径**: `src/indicators/`, `web/backend/app/api/indicators/`, `web/backend/app/api/technical/`, `web/frontend/src/views/data/`, `web/frontend/src/views/technical/`
+**模块路径**: `src/indicators/`, `web/backend/app/api/indicators/`, `web/backend/app/api/technical/`, `web/backend/app/api/_technical_patterns_router.py`, `web/frontend/src/views/data/`, `web/frontend/src/views/technical/`
 **API前缀**: `/api/v1/indicators/*`, `/api/v1/technical/*`
 **完成度**: 90%
 
@@ -155,10 +155,10 @@
 | 入口类型 | 链接/路径 | 用途 |
 |---------|----------|------|
 | 规范入口 | [架构红线与审批门禁](../architecture/STANDARDS.md) | 技术分析治理入口 |
-| API/契约入口 | [指标包路由](../web/backend/app/api/indicators/__init__.py)<br>[技术分析包路由](../web/backend/app/api/technical/routes.py)<br>[技术分析兼容入口](../web/backend/app/api/technical_analysis.py)<br>[指标兼容入口](../web/backend/app/api/indicators.py) | 主接口以拆分包路由为主，根级兼容入口不再作为主真相源；技术分析接口入口 |
+| API/契约入口 | [指标包路由](../web/backend/app/api/indicators/__init__.py)<br>[技术分析包路由](../web/backend/app/api/technical/routes.py)<br>[技术形态 route companion](../web/backend/app/api/_technical_patterns_router.py)<br>[技术分析兼容入口](../web/backend/app/api/technical_analysis.py)<br>[指标兼容入口](../web/backend/app/api/indicators.py) | 主接口以拆分包路由为主，根级兼容入口不再作为主真相源；技术形态 companion 承载 `/patterns/{symbol}` 子路由 |
 | 前端/交互入口 | [指标分析主路由页](../web/frontend/src/views/data/Advanced.vue)<br>[技术分析旧页](../web/frontend/src/views/technical/TechnicalAnalysis.vue)<br>[技术扫描 Tab](../web/frontend/src/views/artdeco-pages/technical-tabs/TechnicalScannerTab.vue) | 技术分析主路由入口；旧技术分析页更接近保留中的专项工作台；技术分析交互入口 |
 | 核心代码入口 | [指标库](../src/indicators/)<br>[技术分析引擎](../src/advanced_analysis/technical_analyzer/) | 技术分析实现入口 |
-| 测试与验证入口 | [技术 API 测试](../tests/api/technical.spec.ts)<br>[技术分析 E2E](../tests/e2e/technical-analysis.spec.ts)<br>[K 线图 E2E](../web/frontend/tests/e2e/kline-chart.spec.ts) | 技术分析验证入口 |
+| 测试与验证入口 | [技术形态路由回归测试](../web/backend/tests/test_technical_patterns_router_regressions.py)<br>[技术 API 测试](../tests/api/technical.spec.ts)<br>[技术分析 E2E](../tests/e2e/technical-analysis.spec.ts)<br>[K 线图 E2E](../web/frontend/tests/e2e/kline-chart.spec.ts) | 技术分析验证入口 |
 | 运行与排障入口 | [运维手册](./operations/OPS_MANUAL.md)<br>[技术分析旧页](../web/frontend/src/views/technical/TechnicalAnalysis.vue) | 技术分析排障入口 |
 
 ### 2.1 技术指标库 {#domain-02-node-01}
@@ -185,7 +185,7 @@
 | 形态类型 | 状态 | 说明 |
 |----------|------|------|
 | K线形态 | ✅ | 吞没、锤子线、十字星等 |
-| 图表形态 | ✅ | `web/backend/app/api/_technical_patterns_router.py`<br>头肩顶底、双顶双底 |
+| 图表形态 | ✅ | `web/backend/app/api/_technical_patterns_router.py`<br>`web/backend/tests/test_technical_patterns_router_regressions.py`<br>头肩顶底、双顶双底 |
 | 缺口识别 | ✅ | `web/backend/app/api/_technical_patterns_router.py`<br>`web/frontend/src/components/technical/KLineChart.vue`<br>reviewed `common / breakaway / runaway / exhaustion` 缺口识别与 K 线区间叠加 |
 
 ---
