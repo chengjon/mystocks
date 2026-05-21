@@ -60,7 +60,7 @@
   candidate route group to one of: no action, docs-only, evidence-only,
   dedicated implementation proposal, D2.4 backup ownership, D2.5 control-plane
   docs stabilization, or D2.6 stateful gate approval.
-- [ ] Update the codebase-map task tree after the decision package is reviewed.
+- [x] Update the codebase-map task tree after the decision package is reviewed.
 - [x] Do not create implementation issues or edit source until the accepted
   decision package identifies the lane, owner, write scope, tests, and rollback
   plan.
