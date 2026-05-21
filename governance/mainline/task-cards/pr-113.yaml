@@ -1,0 +1,95 @@
+version: v0.2
+task:
+  id: pr-113
+  title: close D2.1a OpenSpec issue-comment checkbox
+  owner: main
+  created_at: "2026-05-21"
+
+mainline:
+  id: L1-issue92-d2-1a-technical-pattern-di-closeout-checkbox
+  objective: record the already-posted D2.1a implementation closeout comment in the OpenSpec task checklist
+  milestone_id: L2-architecture-governance-closeout
+  slice_id: L3-d2-1a-closeout-checkbox
+
+classification:
+  task_type: cleanup
+  secondary_type: none
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: inject-technical-pattern-detection-service-di
+  approval_status: approved
+
+function_tree:
+  domain_id: meta-governance
+  node_id: meta-governance-mainline
+  affected_entrypoints:
+    - governance
+  update_status: not-needed
+  secondary_domains: []
+  exemption_reason: "Pure OpenSpec governance closeout checkbox only; function-tree coverage for the D2.1a technical-pattern route was synchronized in PR #112 and no runtime, route, API, test, or taxonomy entrypoint changes are present."
+
+scope:
+  allowed_paths:
+    - governance/mainline/task-cards/pr-113.yaml
+    - openspec/changes/inject-technical-pattern-detection-service-di/tasks.md
+  forbidden_paths:
+    - web/**
+    - src/**
+    - tests/**
+    - docs/api/**
+    - openspec/specs/**
+    - scripts/**
+    - config/**
+
+non_goals:
+  - No source code modification
+  - No test code modification
+  - No route path, tag, operationId, OpenAPI exposure, or response contract change
+  - No function-tree taxonomy or catalog change
+  - No issue #92 ready-for-agent movement
+  - No second service DI pilot authorization
+  - No OpenSpec proposal or spec delta modification
+
+acceptance:
+  checks:
+    - id: openspec-strict
+      command: openspec validate inject-technical-pattern-detection-service-di --strict
+      required: true
+    - id: markdown-governance
+      command: python scripts/compliance/markdown_governance_gate.py --root-dir . --format json openspec/changes/inject-technical-pattern-detection-service-di/tasks.md governance/mainline/task-cards/pr-113.yaml
+      required: true
+    - id: mainline-scope-gate
+      command: python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-113.yaml
+      required: true
+    - id: diff-check
+      command: git diff --check
+      required: true
+
+risk_and_rollback:
+  risks:
+    - PR number drift would require renaming this task card before CI can pass.
+  rollback_plan: "revert the OpenSpec task checkbox evidence line and this PR task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: mark D2.1a OpenSpec closeout item 5.3 complete after #92 implementation closeout comment was posted
+    modified_scope: OpenSpec tasks checklist and this governance PR task card only
+    dependency_changes: none
+    legacy_logic_impact: none
+    rollback_ready: "yes"
+    risk_and_rollback_point: revert this governance-only closeout commit
+
+governance:
+  phase: phase_a_pr_hard_gate
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: main
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: main
+    approved_at: "2026-05-21T20:20:00+08:00"
+    approval_note: "human maintainer requested immediate pure-governance PR to complete D2.1a final closeout after PR #112 and the #92 closeout comment"
+    secondary_approved: false
