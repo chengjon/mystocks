@@ -1,0 +1,96 @@
+version: "v0.2"
+
+task:
+  id: "pr-90"
+  title: "archive completed core split OpenSpec change"
+  owner: "main"
+  created_at: "2026-05-21"
+
+mainline:
+  id: "L1-core-split-openspec-archive"
+  objective: "archive the completed split-backend-core-modules-with-compatibility-wrappers OpenSpec change after issue83 acceptance and task 3.2 disposition"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-openspec-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "split-backend-core-modules-with-compatibility-wrappers"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "OpenSpec archive and steward-tree closure only; no runtime entrypoint, route, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-core-split-post-acceptance-openspec-archive-2026-05-21.md"
+    - "governance/mainline/task-cards/pr-90.yaml"
+    - "openspec/changes/archive/2026-05-21-split-backend-core-modules-with-compatibility-wrappers/**"
+    - "openspec/changes/split-backend-core-modules-with-compatibility-wrappers/**"
+    - "openspec/specs/architecture-governance/spec.md"
+    - "openspec/specs/directory-governance/spec.md"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+
+non_goals:
+  - "No backend source, frontend source, test, or runtime behavior changes"
+  - "No new Core helper implementation batch"
+  - "No compatibility wrapper deletion"
+  - "No issue15 publication"
+  - "No new OpenSpec proposal creation"
+
+acceptance:
+  checks:
+    - id: "openspec-specs-strict"
+      command: "openspec validate --specs --strict --concurrency 1"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-core-split-post-acceptance-openspec-archive-2026-05-21.md"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If archive directories are not force-staged, .gitignore will hide the archive evidence"
+    - "If source paths enter this PR, the archive-only boundary is broken"
+    - "If spec validation is skipped, canonical spec deltas may drift from archived proposal text"
+  rollback_plan: "revert the archive commit and restore the active OpenSpec change directory if archive validation fails"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "archive the completed Core split OpenSpec change"
+    modified_scope: "OpenSpec archive directory, two canonical spec files, steward task tree, archive report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance/spec archive only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if OpenSpec archive validation or mainline scope gate fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-21T00:00:00Z"
+    approval_note: "archive-only follow-up after issue83 acceptance and PR89 task 3.2 disposition"
+    secondary_approved: false
