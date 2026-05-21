@@ -13,27 +13,22 @@ Phase 4C Enhanced - 企业级技术指标计算服务
 
 import asyncio
 import time
-from datetime import datetime, timezone
-from typing import Dict, List, Optional, Union
+from datetime import datetime
+from typing import Dict, List, Optional
 
 import numpy as np
 import structlog
 from fastapi import APIRouter, Body, Depends, Path, Query
-from pydantic import BaseModel, Field, constr, field_validator
 
 from app.api.auth import get_current_active_user
-from app.api.indicators.indicator_runtime_support import IndicatorCache, RateLimiter, indicator_cache, rate_limit
+from app.api.indicators.indicator_runtime_support import indicator_cache, rate_limit
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
 from app.core.responses import create_success_response
 from app.core.security import User
 from app.schemas.indicator_request import (
     IndicatorCalculateRequest,
-    IndicatorConfigCreateRequest,
-    IndicatorConfigUpdateRequest,
 )
 from app.schemas.indicator_response import (
-    IndicatorConfigListResponse,
-    IndicatorConfigResponse,
     IndicatorMetadata,
     IndicatorRegistryResponse,
 )
@@ -45,22 +40,17 @@ logger = structlog.get_logger()
 router = APIRouter()
 
 
-from app.app.api.indicators._indicator_cache_responses import (
-    _response_spec,
+from app.api.indicators._indicator_cache_responses import (
     INDICATOR_CACHE_STATS_RESPONSES,
-    INDICATOR_METADATA_EXAMPLE,
     INDICATOR_REGISTRY_RESPONSES,
     INDICATOR_CATEGORY_RESPONSES,
     INDICATOR_CACHE_CLEAR_RESPONSES,
     INDICATOR_CATEGORY_PATH_DESCRIPTION,
     INDICATOR_CALCULATE_REQUEST_EXAMPLE,
     INDICATOR_CALCULATE_BATCH_REQUEST_EXAMPLE,
-    INDICATOR_CALCULATE_RESPONSE_EXAMPLE,
-    INDICATOR_CALCULATE_BATCH_RESPONSE_EXAMPLE,
     INDICATOR_CALCULATE_RESPONSES,
     INDICATOR_CALCULATE_BATCH_RESPONSES,
-    IndicatorCalculateBatchRequest,
-    IndicatorOptimizationRequest
+    IndicatorCalculateBatchRequest
 )
 
 @router.get(
@@ -607,7 +597,6 @@ async def _calculate_single_indicator(request, current_user):
     calculator = get_indicator_calculator()
 
     # 获取数据并计算
-    from datetime import datetime
 
     start_dt = datetime.combine(request.start_date, datetime.min.time())
     end_dt = datetime.combine(request.end_date, datetime.min.time())

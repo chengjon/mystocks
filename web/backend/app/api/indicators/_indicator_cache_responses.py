@@ -1,7 +1,7 @@
 """Response specs and models extracted from indicator_cache."""
 
-from typing import Any, Dict, List, Optional, Union
-from datetime import datetime, timezone
+from typing import Dict, List, Union
+from datetime import datetime
 
 from pydantic import BaseModel, Field, constr, field_validator
 

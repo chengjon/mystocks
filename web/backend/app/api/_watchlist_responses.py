@@ -1,5 +1,16 @@
 """Response examples and OpenAPI response specs for watchlist."""
 
+from app.openapi_config import COMMON_RESPONSES
+
+WATCHLIST_ROUTE_RESPONSES = {
+    400: COMMON_RESPONSES[400],
+    401: COMMON_RESPONSES[401],
+    404: COMMON_RESPONSES[404],
+    422: COMMON_RESPONSES[422],
+    500: COMMON_RESPONSES[500],
+}
+
+
 def _success_response_spec(description: str, example: object) -> dict[int, dict]:
     return {
         200: {

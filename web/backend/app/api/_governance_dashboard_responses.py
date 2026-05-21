@@ -1,5 +1,7 @@
 """Response examples and OpenAPI response specs for governance_dashboard."""
 
+from typing import Any
+
 GOVERNANCE_INTERNAL_ERROR_RESPONSE = {
     500: {
         "description": "Governance dashboard request failed because the backing service or database is unavailable.",
