@@ -4,7 +4,7 @@
 > 本文件是历史快照、历史方案或历史总结，不代表当前仓库的唯一事实状态。
 > 若需确认当前共享规则、执行口径、目录结构或实现状态，请优先以 `architecture/STANDARDS.md`、根目录 `AGENTS.md`、根目录 `CLAUDE.md`、当前代码与最近一次实际验证结果为准。
 
-Status: evidence-only runtime triage; no backend code changes were made.
+Status: runtime triage plus separate implementation-lane import fix; refreshed against current checkout on `2026-05-21`.
 
 ## Inputs
 
@@ -19,7 +19,7 @@ Status: evidence-only runtime triage; no backend code changes were made.
 |---|---|
 | GH #80 | `OPEN`, labels `enhancement` and `ready-for-human`; approval trail is present |
 | GH #83 | `OPEN`, labels `enhancement` and `ready-for-agent`; evidence-package work only |
-| Current HEAD | `31660d10d docs(plan): tighten codebase map openspec execution plan`; does **not** contain `bbb399071` |
+| Current HEAD | `6530c88f3 docs(codebase): record openspec execution evidence`; does **not** contain `bbb399071` |
 | Remote branch | `origin/wip/root-dirty-20260403` points at `bbb399071df53c2ae6a1001f0b65ebf3e8baddea` |
 | `ContractDriftIncidentListResponse` import | Passed |
 | `app.main` import | Failed on bare `_data_lineage_responses` in `web/backend/app/api/data_lineage.py:43` via `router_registry` |
@@ -29,9 +29,10 @@ Status: evidence-only runtime triage; no backend code changes were made.
 
 ## Conclusion
 
-- The current checkout failure is first a stale-checkout signal, because the local HEAD does not contain `bbb399071`.
+- The current checkout failure is still a stale-checkout / branch-divergence signal, because the local HEAD `6530c88f3` does not contain `bbb399071`.
 - A separate implementation lane would be required if anyone wants to change backend source files for the bare `_data_lineage_responses` import.
-- This report does not authorize backend implementation, OpenSpec proposal creation, or issue publication.
+- A separate implementation lane was executed on `2026-05-21` after user continuation approval. It removed the current-checkout runtime import blocker without changing #83's evidence-package scope.
+- This report does not authorize OpenSpec proposal creation or issue publication.
 
 ## Verification
 
@@ -43,3 +44,78 @@ Status: evidence-only runtime triage; no backend code changes were made.
 - `PYTHONPATH=web/backend python -c "from app.api.contract.schemas import ContractDriftIncidentListResponse; print(ContractDriftIncidentListResponse.__name__)"`
 - `PYTHONPATH=web/backend python -c "from app.main import app; print(len(app.routes))"`
 - `pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov`
+
+## 2026-05-20 Refresh
+
+Fresh command results:
+
+```text
+git log -1 --oneline
+6530c88f3 docs(codebase): record openspec execution evidence
+
+git ls-remote origin refs/heads/wip/root-dirty-20260403
+bbb399071df53c2ae6a1001f0b65ebf3e8baddea refs/heads/wip/root-dirty-20260403
+
+git merge-base --is-ancestor bbb399071 HEAD
+exit=1
+```
+
+```text
+GH #80: OPEN, labels enhancement,ready-for-human
+GH #83: OPEN, labels enhancement,ready-for-agent
+```
+
+```text
+ContractDriftIncidentListResponse import: passed
+app.main import: failed with ModuleNotFoundError: No module named '_data_lineage_responses'
+test_health_route_conflicts.py collection: failed with the same import chain
+```
+
+Current source state:
+
+```text
+HEAD web/backend/app/api/data_lineage.py:43
+from _data_lineage_responses import (
+
+2d6682e81 web/backend/app/api/data_lineage.py:41
+from ._data_lineage_responses import (
+
+bbb399071 web/backend/app/api/data_lineage.py:41
+from ._data_lineage_responses import (
+```
+
+## 2026-05-21 Separate Implementation-Lane Fix
+
+Scope:
+
+- `web/backend/app/api/data_lineage.py`
+- `web/backend/app/api/_data_lineage_responses.py`
+
+Implementation result:
+
+- `data_lineage.py` now imports the companion module via package-relative import: `from ._data_lineage_responses import (...)`.
+- `data_lineage.py` now imports the extracted request/response model names and `_AsyncpgLineageConnectionAdapter` from the companion module instead of relying on local definitions.
+- `_data_lineage_responses.py` now owns the imports required by its extracted models and adapter: `asynccontextmanager`, `datetime`, `List`, `Optional`, `BaseModel`, and `Field`.
+- #83 remains evidence-package work only; this source fix is recorded as a separate implementation-lane fix for the current checkout runtime blocker.
+
+Fresh verification after the fix:
+
+```text
+pytest -o addopts= web/backend/tests/test_data_lineage_regressions.py -q --no-cov
+1 passed
+
+PYTHONPATH=web/backend python -c "from app.main import app; print(len(app.routes))"
+548
+
+pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov
+112 tests collected
+
+pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov
+112 passed
+
+python -m py_compile web/backend/app/api/data_lineage.py web/backend/app/api/_data_lineage_responses.py
+exit=0
+
+ruff check web/backend/app/api/data_lineage.py web/backend/app/api/_data_lineage_responses.py web/backend/tests/test_data_lineage_regressions.py
+All checks passed!
+```
