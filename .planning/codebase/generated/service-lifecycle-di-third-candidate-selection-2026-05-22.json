@@ -1,0 +1,140 @@
+{
+  "artifact": "service-lifecycle-di-third-candidate-selection",
+  "generated_at": "2026-05-22T19:35:12+08:00",
+  "git_branch": "g2-8-third-service-di-candidate-selection",
+  "git_head": "112487d96ad07ad3212c71e729395f2c8accfed1",
+  "status": "for-review",
+  "mode": "candidate-selection-only",
+  "source_code_changed": false,
+  "tests_changed": false,
+  "runtime_behavior_changed": false,
+  "issues": {
+    "service_lifecycle_parent": {
+      "number": 79,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ]
+    },
+    "downstream_decision_parent": {
+      "number": 92,
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ]
+    }
+  },
+  "completed_pilots": [
+    {
+      "candidate": "web/backend/app/services/email_service.py",
+      "implementation_pr": 142,
+      "implementation_merge_commit": "20657e6e86a3423b15c67b6a8d6e165fbaa47b72",
+      "closeout_pr": 143
+    },
+    {
+      "candidate": "web/backend/app/services/announcement_service.py",
+      "implementation_pr": 146,
+      "implementation_merge_commit": "517f47cb86aa32d32514d8588a653b08898f72c7",
+      "closeout_pr": 147,
+      "closeout_merge_commit": "112487d96ad07ad3212c71e729395f2c8accfed1"
+    }
+  ],
+  "candidate_comparison": [
+    {
+      "candidate": "web/backend/app/services/watchlist_service.py",
+      "service_class": "WatchlistService",
+      "getter": "get_watchlist_service",
+      "class_impact": {
+        "risk": "LOW",
+        "direct_callers": 0,
+        "processes_affected": 0
+      },
+      "getter_impact": {
+        "risk": "MEDIUM",
+        "direct_callers": 9,
+        "impacted_count": 15,
+        "processes_affected": 0,
+        "modules_affected": [
+          "Data_adapters",
+          "Adapters"
+        ]
+      },
+      "direct_owner_files": [
+        "web/backend/app/api/watchlist.py",
+        "web/backend/app/services/data_adapters/watchlist.py",
+        "web/backend/app/services/adapters/watchlist_adapter.py"
+      ],
+      "selection_result": "recommended_route_surface_authorization_candidate_only"
+    },
+    {
+      "candidate": "web/backend/app/services/tradingview_widget_service.py",
+      "service_class": "TradingViewWidgetService",
+      "getter": "get_tradingview_service",
+      "class_impact": {
+        "risk": "LOW",
+        "direct_callers": 0,
+        "processes_affected": 0
+      },
+      "getter_impact": {
+        "risk": "LOW",
+        "direct_callers": 1,
+        "impacted_count": 1,
+        "processes_affected": 0
+      },
+      "selection_result": "reference_only_already_has_provider_app_state_pattern"
+    }
+  ],
+  "recommended_next_candidate": "web/backend/app/services/watchlist_service.py",
+  "recommended_scope": "route-surface-only",
+  "future_packet_required": {
+    "workline": "G2.9",
+    "type": "implementation-authorization",
+    "source_edits_authorized_by_this_artifact": false,
+    "minimum_future_scope_to_evaluate": [
+      "web/backend/app/services/watchlist_service.py",
+      "web/backend/app/api/watchlist.py",
+      "focused tests for watchlist route dependency behavior"
+    ],
+    "must_define": [
+      "exact backend source write scope",
+      "exact test write scope",
+      "route functions to convert",
+      "app-state/provider installation pattern",
+      "compatibility getter retention rule",
+      "adapter/data-layer compatibility-retention rule",
+      "GitNexus pre-edit impact commands",
+      "rollback plan",
+      "targeted tests",
+      "lint and import smoke commands",
+      "forbidden scope"
+    ]
+  },
+  "explicitly_out_of_scope_for_future_g2_9_unless_separately_approved": [
+    "web/backend/app/services/data_adapters/watchlist.py",
+    "web/backend/app/services/adapters/watchlist_adapter.py",
+    "web/backend/app/services/email_service.py",
+    "web/backend/app/services/announcement_service.py",
+    "web/backend/app/services/tradingview_widget_service.py",
+    "route/OpenAPI contract rewrites",
+    "docs/API edits",
+    "generated clients",
+    "PM2 commands",
+    "issue label changes",
+    "OpenSpec proposal or spec creation"
+  ],
+  "forbidden_scope": [
+    "backend source edits",
+    "frontend source edits",
+    "test edits",
+    "generated client edits",
+    "docs/API edits",
+    "OpenSpec proposal or spec creation",
+    "issue label changes",
+    "PM2 commands",
+    "runtime rollout",
+    "ready-for-agent movement"
+  ],
+  "next_gate": "Human review of the G2.8 selection package; if accepted, create a separate G2.9 route-surface-only watchlist_service.py implementation authorization packet."
+}

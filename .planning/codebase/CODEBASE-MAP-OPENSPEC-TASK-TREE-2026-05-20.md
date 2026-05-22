@@ -441,8 +441,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-announcement-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
 │   │   `.planning/codebase/generated/announcement-service-lifecycle-di-implementation-authorization-2026-05-22.json`,
 │   │   `backend-announcement-service-lifecycle-di-implementation-2026-05-22.md`,
-│   │   `backend-announcement-service-lifecycle-di-closeout-2026-05-22.md`
-│   ├── State: announcement-service-di-pilot-merged-and-recorded
+│   │   `backend-announcement-service-lifecycle-di-closeout-2026-05-22.md`,
+│   │   `backend-service-lifecycle-di-third-candidate-selection-2026-05-22.md`,
+│   │   `.planning/codebase/generated/service-lifecycle-di-third-candidate-selection-2026-05-22.json`
+│   ├── State: third-candidate-selection-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -480,12 +482,16 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 PR `#146` was approved by the human maintainer and merged
 │   │                 at `517f47cb86aa32d32514d8588a653b08898f72c7`; G2.7
 │   │                 records the merged result and confirms the closeout
-│   │                 boundary
-│   └── Next gate: Human review of the G2.7 closeout record; do not select or
-│                  implement a third service lifecycle DI candidate until this
-│                  closeout is accepted; no OpenSpec proposal, issue-label
-│                  change, PM2 command, or `ready-for-agent` movement is
-│                  authorized by this closeout
+│   │                 boundary; PR `#147` merged at
+│   │                 `112487d96ad07ad3212c71e729395f2c8accfed1`; G2.8
+│   │                 selects a route-surface-only `watchlist_service.py`
+│   │                 authorization candidate while keeping watchlist adapter and
+│   │                 data-layer helper calls as compatibility surfaces
+│   └── Next gate: Human review of the G2.8 third-candidate selection package;
+│                  if accepted, create a separate G2.9 route-surface-only
+│                  `watchlist_service.py` implementation authorization packet;
+│                  no source edits, OpenSpec proposal, issue-label change, PM2
+│                  command, or `ready-for-agent` movement is authorized by G2.8
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -650,7 +656,8 @@ review, PR review, or OpenSpec archive review.
 | G2.4 service lifecycle steward retrospective | First-pilot evidence review and second-candidate selection | `f149534f` | PR `#144` merged; steward-tree operating lessons recorded; `announcement_service.py` selected over `watchlist_service.py` as next authorization candidate, with source edits still locked behind a separate authorization packet |
 | G2.5 announcement service DI authorization | `announcement_service.py` implementation authorization | `e9d674c0` | PR `#145` merged; future source lane was authorized only for `announcement_service.py`, announcement routes, focused tests, implementation report, and task card |
 | G2.6 announcement service DI implementation | Second service lifecycle DI source pilot | `517f47cb` | PR `#146` merged after human approval; `announcement_service.py` now provides app.state dependency provider, 11 announcement route handlers inject `AnnouncementService`, focused tests passed, and watchlist/adapter/data-layer files remain untouched |
-| G2.7 announcement service DI closeout | Merged implementation closeout | `517f47cb` | Closeout prepared: record PR `#146` as merged and reviewed; do not start a third service lifecycle DI candidate until this closeout record is accepted |
+| G2.7 announcement service DI closeout | Merged implementation closeout | `112487d9` | PR `#147` merged; `announcement_service.py` is recorded as merged-and-reviewed, and third-candidate work may only begin as a new selection/authorization packet |
+| G2.8 third service DI candidate selection | Post-closeout candidate split decision | `112487d9` | Selection prepared: recommend only a route-surface `watchlist_service.py` authorization packet; keep watchlist adapter/data-layer helper callers out of scope unless a separate adapter-aware packet is accepted |
 
 ## Update Protocol
 
@@ -685,7 +692,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review `announcement_service.py` lifecycle DI closeout | Future service seam lane | G2.7 closeout record prepared; `announcement_service.py` is merged and recorded, and no third service lifecycle DI candidate is authorized before closeout acceptance |
+| P2 | Review service lifecycle DI third-candidate selection | Future service seam lane | G2.8 selection packet prepared; `watchlist_service.py` is recommended only for a route-surface authorization candidate, with adapter/data-layer helper calls retained as compatibility surfaces |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items
