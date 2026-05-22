@@ -1,0 +1,101 @@
+version: "v0.2"
+
+task:
+  id: "pr-129"
+  title: "refresh issue 92 downstream final closeout"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-issue92-downstream-final-closeout"
+  objective: "record current-head issue #92 downstream final closeout after D2.3-D2.6 reviewed acceptance"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-issue92-downstream-final-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-issue92-downstream-final-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Issue #92 downstream final closeout only; no runtime entrypoint, route, PM2 service, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/issue92-downstream-final-closeout-2026-05-22.json"
+    - "docs/reports/quality/backend-openspec-issue92-downstream-final-closeout-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-129.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, or runtime behavior changes"
+  - "No OpenSpec change/spec modification or archive"
+  - "No PM2 command execution, service restart, process deletion, or process recreation"
+  - "No downstream implementation issue creation"
+  - "No movement of issue #92 to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "issue92-final-closeout-artifact"
+      command: "report and JSON state PR #96-#128 are merged, issue #92 has no ready-for-agent label, and D2.3-D2.6 are reviewed accepted"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-openspec-issue92-downstream-final-closeout-2026-05-22.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-129.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is read as implementation authorization, issue #92 boundaries are broken"
+    - "If completed OpenSpec changes are archived without a separate archive review, governance state can drift"
+  rollback_plan: "revert this PR and return the issue #92 downstream rollup to the previous D2.6 reviewed-accepted state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "refresh issue #92 downstream final closeout"
+    modified_scope: "final closeout report, generated evidence artifact, steward tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance/evidence bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, mainline scope, JSON validity, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T08:37:19+08:00"
+    approval_note: "final closeout refresh after D2.3-D2.6 reviewed acceptance; this PR is evidence-only and does not authorize implementation"
+    secondary_approved: false
