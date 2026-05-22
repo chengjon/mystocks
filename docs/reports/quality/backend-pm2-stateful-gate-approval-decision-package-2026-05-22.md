@@ -7,11 +7,14 @@
 > 当前代码与最近一次实际验证结果为准。
 
 Date: 2026-05-22
-Status: decision-package-prepared-for-review
+Status: decision-package-reviewed-accepted
 Branch: `d2-6-pm2-stateful-gate-approval-evidence`
 HEAD checked: `b35d016f8b89baf0889fb57a090f4a09b698e375`
 OpenSpec change: `approve-backend-pm2-stateful-gate`
 Issue: `#92`
+Review artifact:
+`docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22-review.md`
+Review verdict: `APPROVE`
 
 ## Purpose
 
@@ -48,6 +51,8 @@ approval contract and keeps the execution boundary explicit:
 | Static script SHA-256 | `b638d6a32657922fc161f9c5d473c92d82d2acfa0f74b49d61cd53782679b92c` |
 | Historical PM2 gate report | `docs/reports/quality/backend-health-status-pm2-gate-2026-05-18.md` |
 | Generated evidence artifact | `.planning/codebase/generated/pm2-stateful-gate-approval-evidence-2026-05-22.json` |
+| Review artifact | `docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22-review.md` |
+| Review verdict | `APPROVE` |
 
 The static script scan confirms these stateful markers:
 
@@ -58,6 +63,11 @@ The static script scan confirms these stateful markers:
 - dispatch modes for `gate`, `regression`, and `all`
 
 No PM2 command was executed while preparing this package.
+
+The review noted one non-blocking suggestion: add a PR task card if this package
+is merged through a PR. That condition was satisfied by
+`governance/mainline/task-cards/pr-127.yaml`; PR `#127` passed the mainline
+scope gate and merged as `9ee78edfc68a23a70a8b1b38efcb092732858c4b`.
 
 ## Approval Record Template
 

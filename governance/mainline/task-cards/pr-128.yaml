@@ -1,0 +1,100 @@
+version: "v0.2"
+
+task:
+  id: "pr-128"
+  title: "close D2.6 PM2 stateful gate review"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-issue92-d2-6-pm2-stateful-gate-review-closeout"
+  objective: "record D2.6 PM2 stateful gate review acceptance without executing PM2"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-pm2-stateful-gate-review-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "approve-backend-pm2-stateful-gate"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "D2.6 PM2 approval policy review closeout only; no runtime entrypoint, route, PM2 service, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22.md"
+    - "docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22-review.md"
+    - "governance/mainline/task-cards/pr-128.yaml"
+    - "openspec/changes/approve-backend-pm2-stateful-gate/tasks.md"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+
+non_goals:
+  - "No PM2 command execution, service restart, process deletion, or process recreation"
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, or runtime behavior changes"
+  - "No downstream implementation issue creation"
+  - "No movement of issue #92 to ready-for-agent"
+  - "No reopening of health/status task 4.7 without current-HEAD contradictory evidence"
+
+acceptance:
+  checks:
+    - id: "openspec-pm2-stateful-gate-strict"
+      command: "openspec validate approve-backend-pm2-stateful-gate --strict"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22.md docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22-review.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-128.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is read as PM2 execution approval, D2.6 governance boundaries are broken"
+    - "If D2.6 reviewed evidence is used to run PM2 without a future approval record, service state can be mutated outside an approved gate"
+  rollback_plan: "revert this PR and return D2.6 to decision-package-prepared-for-review state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record D2.6 PM2 stateful gate review acceptance"
+    modified_scope: "decision package note, review artifact, OpenSpec tasks evidence, steward tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is PM2 approval governance bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if OpenSpec validation, markdown governance, or mainline scope checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T08:12:10+08:00"
+    approval_note: "review artifact approves the D2.6 PM2 stateful gate approval package with no issues; this PR records review acceptance and does not authorize PM2 execution"
+    secondary_approved: false

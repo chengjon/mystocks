@@ -51,4 +51,7 @@
 Evidence:
 
 - `docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22.md`
+- `docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22-review.md`
 - `.planning/codebase/generated/pm2-stateful-gate-approval-evidence-2026-05-22.json`
+- PR `#127` task card:
+  `governance/mainline/task-cards/pr-127.yaml`
