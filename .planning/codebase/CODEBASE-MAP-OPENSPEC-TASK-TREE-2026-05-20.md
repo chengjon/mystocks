@@ -432,10 +432,13 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-service-lifecycle-di-candidate-classification-2026-05-22.md`,
 │   │   `.planning/codebase/generated/service-lifecycle-di-candidate-classification-2026-05-22.json`,
 │   │   `backend-email-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
-│   │   `.planning/codebase/generated/email-service-lifecycle-di-implementation-authorization-2026-05-22.json`
-│   ├── State: implementation-authorization-prepared-for-review
-│   ├── Role: Classify issue `#79` service lifecycle DI candidates and select a
-│   │         future pilot candidate while keeping implementation locked
+│   │   `.planning/codebase/generated/email-service-lifecycle-di-implementation-authorization-2026-05-22.json`,
+│   │   `backend-email-service-lifecycle-di-implementation-2026-05-22.md`,
+│   │   `backend-email-service-lifecycle-di-closeout-2026-05-22.md`
+│   ├── State: email-service-di-pilot-merged-and-recorded
+│   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
+│   │         authorization, and first implementation pilot while preventing
+│   │         unapproved expansion to additional services
 │   ├── Current fact: issue `#78` is `CLOSED`; issue `#79` remains `OPEN` with
 │   │                 `needs-triage`; current-head service scan covers 152
 │   │                 service files, with broad singleton/getter heuristic hits
@@ -449,11 +452,13 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 G2.2 now records exact future write scope, six
 │   │                 `notification.py` callers, GitNexus pre-edit gates, test
 │   │                 plan, rollback plan, and forbidden scope for
-│   │                 `email_notification_service.py`
-│   └── Next gate: Human review of the G2.2 implementation authorization
-│                  packet; source edits remain locked until that packet is
-│                  explicitly accepted, and no OpenSpec proposal, issue-label
-│                  change, or `ready-for-agent` movement is authorized here
+│   │                 `email_notification_service.py`; PR `#142` was reviewed,
+│   │                 all checks completed successfully, and merged at
+│   │                 `20657e6e86a3423b15c67b6a8d6e165fbaa47b72`
+│   └── Next gate: Review first-pilot evidence before selecting any second
+│                  service lifecycle DI candidate; no further service source
+│                  edits, OpenSpec proposal, issue-label change, or
+│                  `ready-for-agent` movement is authorized by this closeout
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -613,7 +618,8 @@ review, PR review, or OpenSpec archive review.
 | G1 adapter lifecycle DI closeout acceptance | Human acceptance of `#78` disposition in current review thread | `b71ac809` | Closeout accepted: after record merge, post required closeout comment and close `#78`; begin `#79` service lifecycle DI design/triage only after #78 is closed; no implementation or `ready-for-agent` movement is authorized |
 | G2 service lifecycle DI design/triage | Issue `#78` closed state and current-head service scan | `9be035fd` | #79 can begin design/triage only: scan recorded 152 service files, 104 broad heuristic hits, 4 `_instance = None` files, 16 service getter files, one provider/app-state pattern, and one completed route-level DI pilot; next step is candidate classification/pilot authorization, not implementation |
 | G2.1 service lifecycle DI candidate classification | Corrected module singleton scan and GitNexus impact comparison | `ecc39139` | 21 module-level singleton-variable files classified; `email_service.py` selected as first future pilot candidate with `EmailService` LOW impact and file-disambiguated `get_email_service` MEDIUM impact; source edits remain locked behind separate G2.2 implementation authorization |
-| G. Service seams and singleton pilots | G2.2 `email_service.py` implementation authorization prepared for review | `0b5e393e2` | PR `#140` candidate classification accepted; first future pilot is `email_service.py`, but source edits remain locked until the G2.2 authorization packet is reviewed and explicitly accepted |
+| G2.2 email service DI authorization | `email_service.py` implementation authorization | `35e9b2b3d` | PR `#141` merged; future source lane was authorized only for `email_service.py`, six `notification.py` consumers, focused tests, report, and task card |
+| G2.3 email service DI implementation | First service lifecycle DI source pilot | `20657e6e` | PR `#142` merged after human approval; `email_service.py` now provides app.state dependency provider, six `notification.py` email routes inject `EmailService`, focused tests passed, GitHub contract/mainline checks passed, and `email_notification_service.py` remains untouched |
 
 ## Update Protocol
 
