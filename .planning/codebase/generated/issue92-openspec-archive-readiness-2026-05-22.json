@@ -4,6 +4,8 @@
   "generated_at_utc": "2026-05-22T00:49:13Z",
   "git_branch": "issue92-archive-readiness-evaluation",
   "git_head": "bbefed2aee4176936cd491128bb6a85aed2410d3",
+  "report_commit": "36070d504",
+  "report_merge_commit": "9d0a0a2a3eb6f2bb0e9d3ee6ce10369adc153966",
   "current_head_checked_at_review": "2026-05-22T08:49:13+08:00",
   "stale_if_head_mismatch": true,
   "scope": {
@@ -26,6 +28,10 @@
     "has_ready_for_agent": false
   },
   "archive_readiness_summary": {
+    "review_status": "APPROVE",
+    "review_artifact": "docs/reports/quality/backend-openspec-issue92-archive-readiness-2026-05-22-review.md",
+    "review_issues_found": 0,
+    "review_suggestion_addressed": "Recorded the original pre-report HEAD, report commit, and PR #130 merge commit so future readers can track the commit chain.",
     "ready_for_archive_review_after_final_closeout_review": [
       "inject-technical-pattern-detection-service-di",
       "refresh-backend-route-openapi-governance",
@@ -39,7 +45,7 @@
       "close-backend-schema-dual-directory",
       "define-backend-service-seams-and-singleton-pilots"
     ],
-    "blocking_condition": "Issue #92 final closeout is prepared for review but has no review artifact yet; do not run openspec archive until that human review is accepted or explicitly waived."
+    "blocking_condition": "Archive readiness is reviewed and accepted, but issue #92 final closeout is prepared for review and has no review artifact yet; do not run openspec archive until that human review is accepted or explicitly waived."
   },
   "candidate_changes": [
     {
@@ -47,7 +53,7 @@
       "openspec_list_state": "Complete",
       "task_count": 25,
       "done_count": 25,
-      "archive_readiness": "candidate-after-final-closeout-review",
+      "archive_readiness": "candidate-after-final-closeout-review-or-explicit-waiver",
       "reason": "D2.1a implementation and final checklist governance are closed by PR #112 and PR #113."
     },
     {
@@ -55,7 +61,7 @@
       "openspec_list_state": "Complete",
       "task_count": 19,
       "done_count": 19,
-      "archive_readiness": "candidate-after-final-closeout-review",
+      "archive_readiness": "candidate-after-final-closeout-review-or-explicit-waiver",
       "reason": "D2.3 decision package and review are accepted by PR #121 and PR #122."
     },
     {
@@ -63,7 +69,7 @@
       "openspec_list_state": "Complete",
       "task_count": 23,
       "done_count": 23,
-      "archive_readiness": "candidate-after-final-closeout-review",
+      "archive_readiness": "candidate-after-final-closeout-review-or-explicit-waiver",
       "reason": "D2.4 decision package and review are accepted by PR #125 and PR #126."
     },
     {
@@ -71,7 +77,7 @@
       "openspec_list_state": "Complete",
       "task_count": 24,
       "done_count": 24,
-      "archive_readiness": "candidate-after-final-closeout-review",
+      "archive_readiness": "candidate-after-final-closeout-review-or-explicit-waiver",
       "reason": "D2.5 decision package and review are accepted by PR #123 and PR #124."
     },
     {
@@ -79,7 +85,7 @@
       "openspec_list_state": "Complete",
       "task_count": 15,
       "done_count": 15,
-      "archive_readiness": "candidate-after-final-closeout-review",
+      "archive_readiness": "candidate-after-final-closeout-review-or-explicit-waiver",
       "reason": "D2.6 decision package and review are accepted by PR #127 and PR #128."
     }
   ],
