@@ -1,0 +1,63 @@
+{
+  "artifact": "watchlist-helper-cleanup-next-lane-decision",
+  "generated_at": "2026-05-23T02:01:20+08:00",
+  "git_head": "3caeea24dafb02748c92d58b2809e893ce761d5e",
+  "workline": "G2.12",
+  "status": "decision-packet-prepared-for-review",
+  "boundary": {
+    "source_edits_authorized": false,
+    "test_edits_authorized": false,
+    "openspec_changes_authorized": false,
+    "issue_label_changes_authorized": false,
+    "runtime_behavior_changes_authorized": false
+  },
+  "upstream_evidence": {
+    "g2_11_closeout_pr": 151,
+    "g2_11_merge_commit": "3caeea24dafb02748c92d58b2809e893ce761d5e",
+    "g2_10_implementation_pr": 150,
+    "g2_10_merge_commit": "b14ef8421d8ccd6dfd4a714b2a17d4e1ae971419",
+    "g2_9_authorization_pr": 149,
+    "g2_8_selection_pr": 148
+  },
+  "decision_options": [
+    {
+      "option": "select_fourth_route_surface_service_di_candidate",
+      "decision": "not_selected_now",
+      "reason": "Known accepted candidate evidence does not identify a cleaner fourth route-surface candidate than closing the residual watchlist adapter/data helper seam."
+    },
+    {
+      "option": "adapter_aware_watchlist_helper_cleanup_packet",
+      "decision": "selected_as_next_authorization_candidate",
+      "reason": "G2.9/G2.10 intentionally excluded watchlist adapter/data helper callers; this residual seam should be modeled before widening the service lifecycle DI sequence."
+    },
+    {
+      "option": "pause_service_lifecycle_di_sequence",
+      "decision": "fallback_if_review_rejects_g2_12",
+      "reason": "Available if the maintainer does not want to proceed with adapter-aware cleanup."
+    }
+  ],
+  "future_authorization_candidate": {
+    "suggested_report": "docs/reports/quality/backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md",
+    "candidate_paths": [
+      "web/backend/app/services/watchlist_service.py",
+      "web/backend/app/services/data_adapters/watchlist.py",
+      "web/backend/app/services/adapters/watchlist_adapter.py"
+    ],
+    "default_forbidden_paths_until_authorized": [
+      "web/backend/app/api/watchlist.py",
+      "web/backend/app/services/email_service.py",
+      "web/backend/app/services/announcement_service.py",
+      "web/backend/app/services/tradingview_widget_service.py"
+    ],
+    "required_future_gates": [
+      "exact write scope",
+      "TDD red/green target",
+      "GitNexus pre-edit impact targets",
+      "helper seam strategy",
+      "rollback plan",
+      "route-level G2.10 behavior preservation proof",
+      "unrelated service DI expansion prohibition"
+    ]
+  },
+  "next_gate": "human review; if accepted, prepare G2.13 authorization-only packet"
+}

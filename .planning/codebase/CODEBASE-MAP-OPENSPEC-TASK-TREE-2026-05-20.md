@@ -447,8 +447,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
 │   │   `.planning/codebase/generated/watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.json`,
 │   │   `backend-watchlist-service-lifecycle-di-implementation-2026-05-22.md`,
-│   │   `backend-watchlist-service-lifecycle-di-closeout-2026-05-23.md`
-│   ├── State: watchlist-route-surface-implementation-merged-and-recorded
+│   │   `backend-watchlist-service-lifecycle-di-closeout-2026-05-23.md`,
+│   │   `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md`,
+│   │   `.planning/codebase/generated/watchlist-helper-cleanup-next-lane-decision-2026-05-23.json`
+│   ├── State: watchlist-helper-cleanup-next-lane-decision-prepared
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -507,11 +509,16 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 compatibility callers; PR `#150` was approved by the human
 │   │                 maintainer and merged at
 │   │                 `b14ef8421d8ccd6dfd4a714b2a17d4e1ae971419`; G2.11 records
-│   │                 the merged result and confirms the closeout boundary
-│   └── Next gate: Human review of the G2.11 watchlist closeout packet; if
-│                  accepted, decide in a separate packet whether to select a
-│                  fourth service lifecycle DI candidate, create an adapter-aware
-│                  watchlist helper cleanup packet, or pause this sequence
+│   │                 the merged result and confirms the closeout boundary; PR
+│   │                 `#151` merged at
+│   │                 `3caeea24dafb02748c92d58b2809e893ce761d5e`; G2.12 now
+│   │                 selects an adapter-aware watchlist helper cleanup
+│   │                 authorization packet as the next lane instead of selecting
+│   │                 a fourth route-surface service candidate immediately
+│   └── Next gate: Human review of the G2.12 next-lane decision packet; if
+│                  accepted, prepare a separate G2.13 adapter-aware watchlist
+│                  helper cleanup implementation authorization packet. Source
+│                  edits remain locked until that packet is reviewed and accepted
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -560,6 +567,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-error-contract-completion-verification-2026-05-19.md` | I | P3-C5 / #77 main migration resolved | Do not reopen old live-count backlog without current-head contradiction |
 | `backend-technical-pattern-di-pilot-implementation-2026-05-21.md` | D2.1a.1 | First DI lifecycle pilot implementation merged in PR `#112`; route-level provider and dependency override test seam are in place | D2.1a implementation closed; do not infer a second DI pilot from this evidence |
 | `inject-technical-pattern-detection-service-di` task `5.3` closeout | D2.1a.1 | Final OpenSpec checklist governance merged in PR `#113`; issue `#92` received implementation and final governance closeout comments | D2.1a is 100% closed; future DI work requires a new approved child lane |
+
+| `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet prepared: adapter-aware watchlist helper cleanup is selected as the next authorization candidate; no source edits or OpenSpec changes are authorized | Human review; if accepted, prepare separate G2.13 implementation authorization packet |
 
 ## Completed And Reviewed Ledger
 
@@ -634,6 +643,8 @@ review, PR review, or OpenSpec archive review.
 | D2.1a TechnicalPatternDetectionService DI implementation | D2.1a.1 | First service-tier route-level DI pilot merged; `_technical_patterns_router.py` now exposes `get_technical_pattern_detection_service()`, `detect_patterns()` receives the service through `Depends`, and focused route tests use `app.dependency_overrides` | Reviewed/pass in current thread: PR `#112` checks passed, merge commit `80582643578d587ead81ccb3d23dcd2a52668dba`; route regression `9 passed`; service+route `19 passed`; ruff passed; placeholder-env `app.main` import passed; OpenSpec strict valid; mainline scope gate passed; GitNexus compare low risk with `0` changed symbols and `0` affected processes | `https://github.com/chengjon/mystocks/pull/112`; `docs/reports/quality/backend-technical-pattern-di-pilot-implementation-2026-05-21.md`; `openspec/changes/inject-technical-pattern-detection-service-di/` | D2.1a final OpenSpec checklist governance closeout |
 | D2.1a final OpenSpec checklist governance closeout | D2.1a.1 | OpenSpec task `5.3` marked complete with issue `#92` closeout comment evidence; D2.1a is closed from implementation plus checklist governance perspectives | Reviewed/pass in current thread: PR `#113` checks passed, merge commit `c7e263b8fcdeea4fc952a86d64ac555ca6dde6ce`; changed files limited to `tasks.md` and `pr-113.yaml`; mainline scope gate changed files=`2`, violations=`0`; GitNexus compare low risk with `0` changed symbols and `0` affected processes | `https://github.com/chengjon/mystocks/pull/113`; `https://github.com/chengjon/mystocks/issues/92#issuecomment-4508297089`; `openspec/changes/inject-technical-pattern-detection-service-di/tasks.md` | No further D2.1a work; select a new approved child lane before any additional implementation |
 | D2.x OpenSpec proposal approvals recorded | D2.3-D2.6 | Human maintainer approval recorded for D2.3/D2.4/D2.5/D2.6 proposal task-list entry into governance/evidence execution | Approval-only: each change may execute its governance/evidence `tasks.md` checklist with current-head freshness; no backend source, frontend source, tests, generated client, docs/API edits, route behavior, OpenAPI schema/exposure, probe URL change, PM2 command execution, service restart/recreation, implementation issue creation, or movement of issue `#92` to `ready-for-agent` is authorized | `docs/reports/quality/backend-openspec-d2-proposal-approval-record-2026-05-22.md`; `governance/mainline/task-cards/pr-120.yaml` | Execute approved governance/evidence tasks and keep every downstream decision tied to refreshed evidence |
+
+| G2.12 watchlist helper cleanup next-lane decision | G | Selected adapter-aware watchlist helper cleanup authorization as the next service lifecycle DI lane after G2.11 closeout | Prepared for review; no backend source, test, OpenSpec, issue label, route, OpenAPI, or runtime change authorized | `docs/reports/quality/backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md`; `.planning/codebase/generated/watchlist-helper-cleanup-next-lane-decision-2026-05-23.json` | If accepted, draft G2.13 adapter-aware watchlist helper cleanup implementation authorization packet |
 
 ## OpenSpec Branch Register
 
