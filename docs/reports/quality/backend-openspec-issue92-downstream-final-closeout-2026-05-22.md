@@ -7,9 +7,12 @@
 > 当前代码与最近一次实际验证结果为准。
 
 Date: 2026-05-22
-Status: final-closeout-prepared-for-review
+Status: final-closeout-review-waived-for-archive-gate
 Branch: `issue92-downstream-final-closeout`
 HEAD checked: `4299fdef15c32423db235e0e5db96f8fb2abde80`
+Review waiver:
+`docs/reports/quality/backend-openspec-issue92-downstream-final-closeout-2026-05-22-review-waiver.md`
+Review waiver commit base: `4cdfb5ac6a4f9cf6ee79be95ddd6753a42901581`
 Parent issue: `#92`
 
 ## Purpose
@@ -17,6 +20,11 @@ Parent issue: `#92`
 This report refreshes the issue `#92` downstream rollup after D2.3, D2.4, D2.5,
 and D2.6 reached reviewed evidence acceptance. It is a current-head governance
 closeout packet, not an implementation authorization.
+
+The current review thread records explicit human approval to continue after the
+archive-readiness review closeout. That approval is recorded as a waiver of a
+separate line-by-line final closeout review artifact and only unlocks the next
+OpenSpec archive PR gate.
 
 ## Current Issue State
 
@@ -65,6 +73,14 @@ downstream evidence, not new implementation authority:
 
 Archiving any still-active completed change remains a separate human governance
 decision. This closeout does not archive OpenSpec changes.
+
+## Review Waiver
+
+The final closeout is accepted for archive-gate purposes by
+`backend-openspec-issue92-downstream-final-closeout-2026-05-22-review-waiver.md`.
+The waiver does not authorize implementation, issue `#92` movement to
+`ready-for-agent`, PM2 execution, source/test/docs/API/runtime changes, or
+OpenSpec archive inside this closeout packet.
 
 ## Boundaries
 

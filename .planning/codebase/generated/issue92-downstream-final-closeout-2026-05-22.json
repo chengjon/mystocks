@@ -4,6 +4,14 @@
   "generated_at_utc": "2026-05-22T00:37:19Z",
   "git_branch": "issue92-downstream-final-closeout",
   "git_head": "4299fdef15c32423db235e0e5db96f8fb2abde80",
+  "review_waiver": {
+    "status": "waived-for-archive-gate",
+    "artifact": "docs/reports/quality/backend-openspec-issue92-downstream-final-closeout-2026-05-22-review-waiver.md",
+    "decision_timestamp": "2026-05-22T09:54:09+08:00",
+    "reviewer": "current review thread human maintainer",
+    "current_head_checked": "4cdfb5ac6a4f9cf6ee79be95ddd6753a42901581",
+    "scope": "Allows only the next separate OpenSpec archive PR gate; does not authorize implementation, issue movement, PM2 execution, source/test/docs/API/runtime changes, or archive execution inside the final closeout packet."
+  },
   "current_head_checked_at_review": "2026-05-22T08:37:19+08:00",
   "stale_if_head_mismatch": true,
   "scope": {
@@ -24,7 +32,7 @@
       "ready-for-human"
     ],
     "has_ready_for_agent": false,
-    "disposition": "parent decision issue only; downstream package is prepared for human review and does not authorize implementation"
+    "disposition": "parent decision issue only; downstream final closeout review is waived for archive-gate purposes and does not authorize implementation"
   },
   "pull_request_range": {
     "range": "96-128",
