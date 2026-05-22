@@ -443,8 +443,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-announcement-service-lifecycle-di-implementation-2026-05-22.md`,
 │   │   `backend-announcement-service-lifecycle-di-closeout-2026-05-22.md`,
 │   │   `backend-service-lifecycle-di-third-candidate-selection-2026-05-22.md`,
-│   │   `.planning/codebase/generated/service-lifecycle-di-third-candidate-selection-2026-05-22.json`
-│   ├── State: third-candidate-selection-prepared-for-review
+│   │   `.planning/codebase/generated/service-lifecycle-di-third-candidate-selection-2026-05-22.json`,
+│   │   `backend-watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
+│   │   `.planning/codebase/generated/watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.json`
+│   ├── State: watchlist-route-surface-authorization-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -486,12 +488,19 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `112487d96ad07ad3212c71e729395f2c8accfed1`; G2.8
 │   │                 selects a route-surface-only `watchlist_service.py`
 │   │                 authorization candidate while keeping watchlist adapter and
-│   │                 data-layer helper calls as compatibility surfaces
-│   └── Next gate: Human review of the G2.8 third-candidate selection package;
-│                  if accepted, create a separate G2.9 route-surface-only
-│                  `watchlist_service.py` implementation authorization packet;
-│                  no source edits, OpenSpec proposal, issue-label change, PM2
-│                  command, or `ready-for-agent` movement is authorized by G2.8
+│   │                 data-layer helper calls as compatibility surfaces; PR
+│   │                 `#148` merged at
+│   │                 `ccc4982cd11b47996c6534f087b0c9cb3783877a`; G2.9 now
+│   │                 records the route-surface-only implementation
+│   │                 authorization packet for `watchlist_service.py`, limited to
+│   │                 the service file, seven `watchlist.py` route handlers,
+│   │                 focused tests, an implementation report, and a future task
+│   │                 card while keeping adapter/data helper callers out of scope
+│   └── Next gate: Human review of the G2.9 watchlist implementation
+│                  authorization package; if accepted, create a separate source
+│                  implementation worktree and PR; no source edits, OpenSpec
+│                  proposal, issue-label change, PM2 command, or
+│                  `ready-for-agent` movement is authorized by this G2.9 packet
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -657,7 +666,8 @@ review, PR review, or OpenSpec archive review.
 | G2.5 announcement service DI authorization | `announcement_service.py` implementation authorization | `e9d674c0` | PR `#145` merged; future source lane was authorized only for `announcement_service.py`, announcement routes, focused tests, implementation report, and task card |
 | G2.6 announcement service DI implementation | Second service lifecycle DI source pilot | `517f47cb` | PR `#146` merged after human approval; `announcement_service.py` now provides app.state dependency provider, 11 announcement route handlers inject `AnnouncementService`, focused tests passed, and watchlist/adapter/data-layer files remain untouched |
 | G2.7 announcement service DI closeout | Merged implementation closeout | `112487d9` | PR `#147` merged; `announcement_service.py` is recorded as merged-and-reviewed, and third-candidate work may only begin as a new selection/authorization packet |
-| G2.8 third service DI candidate selection | Post-closeout candidate split decision | `112487d9` | Selection prepared: recommend only a route-surface `watchlist_service.py` authorization packet; keep watchlist adapter/data-layer helper callers out of scope unless a separate adapter-aware packet is accepted |
+| G2.8 third service DI candidate selection | Post-closeout candidate split decision | `ccc4982c` | PR `#148` merged; selection accepted: recommend only a route-surface `watchlist_service.py` authorization packet and keep watchlist adapter/data-layer helper callers out of scope unless a separate adapter-aware packet is accepted |
+| G2.9 watchlist service DI authorization | Route-surface-only `watchlist_service.py` implementation authorization | `ccc4982c` | Authorization packet prepared: future source lane may edit only `watchlist_service.py`, seven `watchlist.py` route handlers, focused tests, implementation report, future task card, and steward-tree evidence; this packet itself changes no source/tests/runtime and does not authorize adapter/data helper migration |
 
 ## Update Protocol
 
@@ -692,7 +702,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review service lifecycle DI third-candidate selection | Future service seam lane | G2.8 selection packet prepared; `watchlist_service.py` is recommended only for a route-surface authorization candidate, with adapter/data-layer helper calls retained as compatibility surfaces |
+| P2 | Review G2.9 watchlist service DI authorization packet | Future service seam lane | G2.9 authorization packet prepared; future implementation remains route-surface-only and may not edit watchlist adapter/data-layer helper callers unless a separate adapter-aware packet is accepted |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items

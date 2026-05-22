@@ -1,0 +1,209 @@
+{
+  "artifact": "watchlist-service-lifecycle-di-implementation-authorization",
+  "generated_at": "2026-05-22T19:52:00+08:00",
+  "status": "for-review",
+  "mode": "governance-authorization-only",
+  "git_branch": "g2-9-watchlist-service-di-authorization",
+  "git_head_checked": "ccc4982cd11b47996c6534f087b0c9cb3783877a",
+  "source_code_changed": false,
+  "tests_changed": false,
+  "runtime_behavior_changed": false,
+  "parent_issues": {
+    "79": {
+      "url": "https://github.com/chengjon/mystocks/issues/79",
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ]
+    },
+    "92": {
+      "url": "https://github.com/chengjon/mystocks/issues/92",
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ]
+    }
+  },
+  "source_evidence": [
+    "docs/reports/quality/backend-service-lifecycle-di-third-candidate-selection-2026-05-22.md",
+    ".planning/codebase/generated/service-lifecycle-di-third-candidate-selection-2026-05-22.json",
+    "https://github.com/chengjon/mystocks/pull/148",
+    "ccc4982cd11b47996c6534f087b0c9cb3783877a"
+  ],
+  "authorization_decision": {
+    "candidate": "web/backend/app/services/watchlist_service.py",
+    "authorized_future_scope_type": "route-surface-only",
+    "adapter_data_helpers_authorized": false,
+    "source_edits_authorized_by_this_packet": false,
+    "next_step_if_accepted": "Create a separate source implementation worktree and PR for the allowed route-surface scope only."
+  },
+  "gitnexus_impact": {
+    "WatchlistService": {
+      "target": "Class:web/backend/app/services/watchlist_service.py:WatchlistService",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct_callers": 0,
+      "processes_affected": 0,
+      "modules_affected": 0
+    },
+    "get_watchlist_service": {
+      "target": "Function:web/backend/app/services/watchlist_service.py:get_watchlist_service",
+      "direction": "upstream",
+      "risk": "MEDIUM",
+      "impacted_count": 15,
+      "direct_callers": 9,
+      "processes_affected": 0,
+      "modules_affected": [
+        "Data_adapters",
+        "Adapters"
+      ],
+      "direct_callers_detail": [
+        {
+          "file": "web/backend/app/api/watchlist.py",
+          "symbol": "get_user_groups",
+          "future_disposition": "route-surface DI candidate"
+        },
+        {
+          "file": "web/backend/app/api/watchlist.py",
+          "symbol": "create_group",
+          "future_disposition": "route-surface DI candidate"
+        },
+        {
+          "file": "web/backend/app/api/watchlist.py",
+          "symbol": "update_group",
+          "future_disposition": "route-surface DI candidate"
+        },
+        {
+          "file": "web/backend/app/api/watchlist.py",
+          "symbol": "delete_group",
+          "future_disposition": "route-surface DI candidate"
+        },
+        {
+          "file": "web/backend/app/api/watchlist.py",
+          "symbol": "get_watchlist_by_group",
+          "future_disposition": "route-surface DI candidate"
+        },
+        {
+          "file": "web/backend/app/api/watchlist.py",
+          "symbol": "move_stock_to_group",
+          "future_disposition": "route-surface DI candidate"
+        },
+        {
+          "file": "web/backend/app/api/watchlist.py",
+          "symbol": "get_watchlist_with_groups",
+          "future_disposition": "route-surface DI candidate"
+        },
+        {
+          "file": "web/backend/app/services/data_adapters/watchlist.py",
+          "symbol": "_get_watchlist_service",
+          "future_disposition": "retain as compatibility caller"
+        },
+        {
+          "file": "web/backend/app/services/adapters/watchlist_adapter.py",
+          "symbol": "_get_watchlist_service",
+          "future_disposition": "retain as compatibility caller"
+        }
+      ],
+      "transitive_adapter_data_symbols_out_of_scope": [
+        "web/backend/app/services/data_adapters/watchlist.py::_fetch_watchlist_data",
+        "web/backend/app/services/data_adapters/watchlist.py::health_check",
+        "web/backend/app/services/adapters/watchlist_adapter.py::_fetch_watchlist_data",
+        "web/backend/app/services/adapters/watchlist_adapter.py::health_check",
+        "web/backend/app/services/data_adapters/watchlist.py::get_data",
+        "web/backend/app/services/adapters/watchlist_adapter.py::get_data"
+      ]
+    }
+  },
+  "current_route_surface": [
+    {
+      "function": "get_user_groups",
+      "method": "GET",
+      "path": "/groups",
+      "current_getter_line": 497
+    },
+    {
+      "function": "create_group",
+      "method": "POST",
+      "path": "/groups",
+      "current_getter_line": 520
+    },
+    {
+      "function": "update_group",
+      "method": "PUT",
+      "path": "/groups/{group_id}",
+      "current_getter_line": 555
+    },
+    {
+      "function": "delete_group",
+      "method": "DELETE",
+      "path": "/groups/{group_id}",
+      "current_getter_line": 584
+    },
+    {
+      "function": "get_watchlist_by_group",
+      "method": "GET",
+      "path": "/group/{group_id}",
+      "current_getter_line": 609
+    },
+    {
+      "function": "move_stock_to_group",
+      "method": "PUT",
+      "path": "/move",
+      "current_getter_line": 632
+    },
+    {
+      "function": "get_watchlist_with_groups",
+      "method": "GET",
+      "path": "/with-groups",
+      "current_getter_line": 667
+    }
+  ],
+  "future_allowed_write_scope": [
+    "web/backend/app/services/watchlist_service.py",
+    "web/backend/app/api/watchlist.py",
+    "web/backend/tests/test_watchlist_service_lifecycle_di.py",
+    "docs/reports/quality/backend-watchlist-service-lifecycle-di-implementation-2026-05-22.md",
+    "governance/mainline/task-cards/pr-<future-implementation-pr>.yaml",
+    ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+  ],
+  "explicitly_forbidden_scope": [
+    "web/backend/app/services/data_adapters/watchlist.py",
+    "web/backend/app/services/adapters/watchlist_adapter.py",
+    "web/backend/app/services/email_service.py",
+    "web/backend/app/services/email_notification_service.py",
+    "web/backend/app/services/announcement_service.py",
+    "web/backend/app/services/tradingview_widget_service.py",
+    "web/backend/app/services/strategy_service.py",
+    "web/backend/app/services/tdx_service.py",
+    "web/backend/app/services/stock_search_service/",
+    "web/backend/app/services/monitoring_service.py",
+    "web/backend/app/services/technical_analysis_service.py",
+    "web/frontend/**",
+    "docs/api/**",
+    "generated clients",
+    "openspec/changes/**",
+    "openspec/specs/**",
+    "PM2/runtime scripts",
+    "route paths/methods/request models/response contracts/OpenAPI exposure"
+  ],
+  "future_required_gates": [
+    "GitNexus impact before source edits for WatchlistService, get_watchlist_service, and modified route functions",
+    "TDD red/green route dependency override test",
+    "ruff check on changed backend files",
+    "focused watchlist lifecycle DI pytest",
+    "compatibility getter regression",
+    "gitnexus_detect_changes(scope=staged) before future commit",
+    "mainline scope gate for future task card"
+  ],
+  "rollback_plan": [
+    "Restore the seven route functions to direct get_watchlist_service() calls.",
+    "Remove the new focused lifecycle DI test if the provider is reverted.",
+    "Remove provider functions as one unit if they are not retained.",
+    "Leave adapter/data-layer helper callers unchanged.",
+    "Leave route paths, request models, response bodies, error contracts, and OpenAPI behavior unchanged."
+  ],
+  "next_gate": "Human review of this G2.9 authorization packet. If accepted, create a separate implementation worktree and PR for the route-surface-only allowed scope."
+}

@@ -1,0 +1,101 @@
+version: "v0.2"
+
+task:
+  id: "pr-149"
+  title: "Prepare G2.9 watchlist service DI implementation authorization"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-watchlist-service-lifecycle-di-implementation-authorization"
+  objective: "prepare the G2.9 watchlist_service.py route-surface-only lifecycle DI implementation authorization packet without source edits"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-watchlist-service-di-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-watchlist-service-di-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Implementation authorization report, generated evidence artifact, and steward-tree update only; no runtime entrypoint, route, page, shim, service behavior, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.json"
+    - "docs/reports/quality/backend-watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-149.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, PM2, or runtime behavior changes in this PR"
+  - "No watchlist_service.py implementation in this PR"
+  - "No watchlist.py route implementation in this PR"
+  - "No adapter/data-layer implementation in this PR"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.md"
+      required: true
+    - id: "json-validity"
+      command: "python -m json.tool .planning/codebase/generated/watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.json >/tmp/watchlist-service-lifecycle-di-implementation-authorization.json"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-149.yaml --base-sha origin/wip/root-dirty-20260403 --head-sha HEAD --report /tmp/pr-149-mainline-governance-report.json"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this authorization packet is misread as source implementation, issue #79 can expand before a future implementation PR exists"
+    - "If watchlist adapter/data-layer helper callers are bundled into the future route-surface pilot, the third service DI batch can exceed the proven email/announcement pattern"
+  rollback_plan: "revert this PR and return the steward tree to the G2.8 third-candidate selection state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "prepare route-surface-only watchlist_service.py lifecycle DI implementation authorization after G2.8 candidate selection"
+    modified_scope: "steward tree, authorization report, generated JSON, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance authorization only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON validity, mainline scope, staged diff, or GitNexus staged checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T19:52:00+08:00"
+    approval_note: "human maintainer requested continuation after G2.8; this PR prepares the G2.9 watchlist route-surface implementation authorization packet only and does not authorize source implementation"
+    secondary_approved: false
