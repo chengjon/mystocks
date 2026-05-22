@@ -1,0 +1,107 @@
+version: "v0.2"
+
+task:
+  id: "pr-141"
+  title: "prepare email service lifecycle DI implementation authorization"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-service-lifecycle-di-email-service-authorization"
+  objective: "prepare a path-limited implementation authorization packet for the email_service.py lifecycle DI pilot"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-email-service-di-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-email-service-di-implementation-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Implementation authorization package only; no runtime entrypoint, route, PM2 service, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/email-service-lifecycle-di-implementation-authorization-2026-05-22.json"
+    - "docs/reports/quality/backend-email-service-lifecycle-di-implementation-authorization-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-141.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, or runtime behavior changes"
+  - "No PM2 command execution, service restart, process deletion, or process recreation"
+  - "No downstream implementation issue creation"
+  - "No issue label changes"
+  - "No movement of issue #79 or #92 to ready-for-agent"
+  - "No service lifecycle implementation"
+
+acceptance:
+  checks:
+    - id: "authorization-recorded"
+      command: "report and JSON define exact future write scope, tests, rollback, and pre-edit GitNexus gates for email_service.py while stating no source edits are authorized"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-email-service-lifecycle-di-implementation-authorization-2026-05-22.md"
+      required: true
+    - id: "json-validity"
+      command: "python -m json.tool .planning/codebase/generated/email-service-lifecycle-di-implementation-authorization-2026-05-22.json"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-141.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this packet is misread as source authorization, issue #79 can move into implementation prematurely"
+    - "If future work ignores file-path disambiguation, email_notification_service.py can be modified accidentally"
+    - "If future work skips the six notification.py callers, dependency injection can be partial and tests can mask runtime fallback to the old singleton"
+  rollback_plan: "revert this PR and keep issue #79 at the implementation-authorization review gate without a source-edit lane"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "prepare exact authorization boundaries for a future email_service.py lifecycle DI pilot"
+    modified_scope: "authorization report, generated JSON artifact, steward tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance/evidence bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, mainline scope, JSON validity, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T15:33:04+08:00"
+    approval_note: "authorization-package-only PR after human acceptance of PR #140; future email_service.py source implementation still requires separate explicit approval"
+    secondary_approved: false

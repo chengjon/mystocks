@@ -430,8 +430,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-service-lifecycle-di-design-triage-2026-05-22.md`,
 │   │   `.planning/codebase/generated/service-lifecycle-di-design-triage-2026-05-22.json`,
 │   │   `backend-service-lifecycle-di-candidate-classification-2026-05-22.md`,
-│   │   `.planning/codebase/generated/service-lifecycle-di-candidate-classification-2026-05-22.json`
-│   ├── State: candidate-classification-prepared-for-review
+│   │   `.planning/codebase/generated/service-lifecycle-di-candidate-classification-2026-05-22.json`,
+│   │   `backend-email-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
+│   │   `.planning/codebase/generated/email-service-lifecycle-di-implementation-authorization-2026-05-22.json`
+│   ├── State: implementation-authorization-prepared-for-review
 │   ├── Role: Classify issue `#79` service lifecycle DI candidates and select a
 │   │         future pilot candidate while keeping implementation locked
 │   ├── Current fact: issue `#78` is `CLOSED`; issue `#79` remains `OPEN` with
@@ -442,12 +444,16 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `tradingview_widget_service.py` is reference evidence,
 │   │                 `technical_pattern_detection_service.py` is completed
 │   │                 pilot evidence, and `email_service.py` is selected as the
-│   │                 recommended first future implementation candidate
-│   └── Next gate: Human review of the candidate classification packet; if
-│                  accepted, prepare a separate G2.2 `email_service.py`
-│                  implementation authorization with exact write scope and
-│                  GitNexus impact before any source edits, OpenSpec proposal,
-│                  issue-label change, or `ready-for-agent` movement
+│   │                 recommended first future implementation candidate; PR
+│   │                 `#140` review was accepted by the human maintainer, and
+│   │                 G2.2 now records exact future write scope, six
+│   │                 `notification.py` callers, GitNexus pre-edit gates, test
+│   │                 plan, rollback plan, and forbidden scope for
+│   │                 `email_notification_service.py`
+│   └── Next gate: Human review of the G2.2 implementation authorization
+│                  packet; source edits remain locked until that packet is
+│                  explicitly accepted, and no OpenSpec proposal, issue-label
+│                  change, or `ready-for-agent` movement is authorized here
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -607,7 +613,7 @@ review, PR review, or OpenSpec archive review.
 | G1 adapter lifecycle DI closeout acceptance | Human acceptance of `#78` disposition in current review thread | `b71ac809` | Closeout accepted: after record merge, post required closeout comment and close `#78`; begin `#79` service lifecycle DI design/triage only after #78 is closed; no implementation or `ready-for-agent` movement is authorized |
 | G2 service lifecycle DI design/triage | Issue `#78` closed state and current-head service scan | `9be035fd` | #79 can begin design/triage only: scan recorded 152 service files, 104 broad heuristic hits, 4 `_instance = None` files, 16 service getter files, one provider/app-state pattern, and one completed route-level DI pilot; next step is candidate classification/pilot authorization, not implementation |
 | G2.1 service lifecycle DI candidate classification | Corrected module singleton scan and GitNexus impact comparison | `ecc39139` | 21 module-level singleton-variable files classified; `email_service.py` selected as first future pilot candidate with `EmailService` LOW impact and file-disambiguated `get_email_service` MEDIUM impact; source edits remain locked behind separate G2.2 implementation authorization |
-| G. Service seams and singleton pilots | Full service classification plus interface/test-double strategy | `7b097fffd` | Task 6.x proposal path complete; service directory is dirty, no implementation batch is scheduled, and future work needs a clean candidate packet plus approved proposal |
+| G. Service seams and singleton pilots | G2.2 `email_service.py` implementation authorization prepared for review | `0b5e393e2` | PR `#140` candidate classification accepted; first future pilot is `email_service.py`, but source edits remain locked until the G2.2 authorization packet is reviewed and explicitly accepted |
 
 ## Update Protocol
 
@@ -642,7 +648,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Prepare singleton/service seam design proposal after full classification | Future service seam lane | Task 6.x proposal path complete; candidate proposal remains uncreated until human approval |
+| P2 | Review `email_service.py` lifecycle DI authorization before implementation | Future service seam lane | G2.2 authorization packet prepared; candidate proposal/source implementation remains uncreated until human approval |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items
