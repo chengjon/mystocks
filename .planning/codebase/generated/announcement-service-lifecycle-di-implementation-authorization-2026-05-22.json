@@ -1,0 +1,126 @@
+{
+  "artifact": "announcement-service-lifecycle-di-implementation-authorization",
+  "generated_at": "2026-05-22T18:47:20+08:00",
+  "git_branch": "g2-5-announcement-service-di-authorization",
+  "git_head": "f149534f8dd01802cf40cbe266223c51e4475a49",
+  "status": "implementation-authorization-prepared-for-review",
+  "source_code_changed": false,
+  "tests_changed": false,
+  "runtime_behavior_changed": false,
+  "issues": {
+    "service_lifecycle_parent": {
+      "number": 79,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ]
+    },
+    "downstream_decision_parent": {
+      "number": 92,
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ]
+    }
+  },
+  "predecessor_prs": {
+    "candidate_classification": {
+      "pr": 140,
+      "merge_commit": "0b5e393e2ff1e5da465d26b338d083a6023faf9b"
+    },
+    "email_authorization": {
+      "pr": 141,
+      "merge_commit": "6e92dd2942057b2763a4074abc102b761c2b2d76"
+    },
+    "email_implementation": {
+      "pr": 142,
+      "merge_commit": "20657e6e86a3423b15c67b6a8d6e165fbaa47b72"
+    },
+    "email_closeout": {
+      "pr": 143,
+      "merge_commit": "68da82084266ca7f9b7be9f5b55da7ac5e64fbd7"
+    },
+    "second_candidate_selection": {
+      "pr": 144,
+      "merge_commit": "f149534f8dd01802cf40cbe266223c51e4475a49"
+    }
+  },
+  "candidate": {
+    "service_file": "web/backend/app/services/announcement_service.py",
+    "route_file": "web/backend/app/api/announcement/routes.py",
+    "service_class": "AnnouncementService",
+    "compatibility_getter": "get_announcement_service",
+    "state_key": "ANNOUNCEMENT_SERVICE_STATE_KEY",
+    "install_helper": "install_announcement_service",
+    "dependency_helper": "get_announcement_service_dependency"
+  },
+  "gitnexus_pre_edit_snapshot": {
+    "AnnouncementService": {
+      "risk": "LOW",
+      "direct_callers": 0,
+      "processes_affected": 0
+    },
+    "get_announcement_service": {
+      "risk": "MEDIUM",
+      "direct_callers": 11,
+      "processes_affected": 0,
+      "modules_affected": [
+        "Announcement"
+      ],
+      "direct_callers_by_file": {
+        "web/backend/app/api/announcement/routes.py": [
+          "fetch_announcements",
+          "get_announcements",
+          "get_today_announcements",
+          "get_important_announcements",
+          "get_announcement_stats",
+          "get_monitor_rules",
+          "create_monitor_rule",
+          "update_monitor_rule",
+          "delete_monitor_rule",
+          "get_triggered_records",
+          "evaluate_monitor_rules"
+        ]
+      }
+    }
+  },
+  "future_allowed_write_scope_if_accepted": [
+    "web/backend/app/services/announcement_service.py",
+    "web/backend/app/api/announcement/routes.py",
+    "web/backend/tests/test_announcement_service_lifecycle_di.py",
+    "web/backend/tests/test_announcement_routes_regressions.py",
+    "docs/reports/quality/backend-announcement-service-lifecycle-di-implementation-*.md",
+    "governance/mainline/task-cards/pr-*.yaml"
+  ],
+  "explicitly_forbidden_scope": [
+    "web/backend/app/services/watchlist_service.py",
+    "web/backend/app/services/data_adapters/watchlist.py",
+    "web/backend/app/services/adapters/watchlist_adapter.py",
+    "web/backend/app/services/email_service.py",
+    "web/backend/app/services/email_notification_service.py",
+    "web/backend/app/services/strategy_service.py",
+    "web/backend/app/services/tdx_service.py",
+    "web/backend/app/services/stock_search_service/",
+    "web/backend/app/api/watchlist.py",
+    "docs/api/",
+    "generated clients",
+    "OpenSpec proposal or spec files",
+    "PM2 scripts or runtime process configuration",
+    "frontend files"
+  ],
+  "future_required_verification": [
+    "GitNexus impact rerun before source edits",
+    "pytest announcement lifecycle DI and route regression tests",
+    "ruff check touched files",
+    "announcement service import smoke",
+    "GitNexus staged detect_changes before commit"
+  ],
+  "approval_semantics": {
+    "this_pr_authorizes_source_edits": false,
+    "human_acceptance_of_this_packet_allows_future_implementation_pr": true,
+    "future_implementation_requires_separate_worktree_and_report": true
+  },
+  "next_gate": "Human review of G2.5 authorization packet; if accepted, create a separate implementation worktree and PR for announcement_service.py only."
+}
