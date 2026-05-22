@@ -1,0 +1,167 @@
+{
+  "artifact": "service-lifecycle-di-candidate-refresh-2026-05-23",
+  "recorded_at": "2026-05-23T03:38:20+08:00",
+  "workline": "G2.17 current-head service lifecycle DI candidate refresh",
+  "status": "candidate-refresh-prepared-for-review",
+  "current_head": "33e75acddf5c7c363a2e33ba4a3d01923b46edde",
+  "stale_if_head_mismatch": true,
+  "refresh_pr": 157,
+  "refresh_pr_url": "https://github.com/chengjon/mystocks/pull/157",
+  "refresh_pr_checks_at_creation": {
+    "mainline_governance_gate": "pass",
+    "check_compliance": "pass",
+    "weekly_full_scan": "skipped"
+  },
+  "parent_issue": {
+    "number": 92,
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-human",
+      "ready-for-downstream"
+    ]
+  },
+  "service_lifecycle_issue": {
+    "number": 79,
+    "state": "OPEN",
+    "labels": [
+      "needs-triage"
+    ]
+  },
+  "merged_input": {
+    "pr_156": {
+      "state": "MERGED",
+      "merge_commit": "33e75acddf5c7c363a2e33ba4a3d01923b46edde"
+    }
+  },
+  "scan_summary": {
+    "service_py_files": 152,
+    "service_getter_files": 15,
+    "route_surface_related_getter_files": 11,
+    "app_state_provider_files": [
+      "web/backend/app/services/email_service.py",
+      "web/backend/app/services/announcement_service.py",
+      "web/backend/app/services/watchlist_service.py",
+      "web/backend/app/services/tradingview_widget_service.py"
+    ]
+  },
+  "route_surface_getters": [
+    {
+      "getter": "get_stock_search_service",
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "loc": 175,
+      "app_state_occurrences": 0,
+      "api_files": 2,
+      "api_hits": 8,
+      "api_refs": [
+        "web/backend/app/api/stock_search/stock_search_result.py",
+        "web/backend/app/api/market/market_data_request.py"
+      ],
+      "classification": "recommended-next-authorization-candidate"
+    },
+    {
+      "getter": "get_tdx_service",
+      "file": "web/backend/app/services/tdx_service.py",
+      "loc": 280,
+      "app_state_occurrences": 0,
+      "api_files": 2,
+      "api_hits": 9,
+      "classification": "defer-external-live-market-surface"
+    },
+    {
+      "getter": "get_data_service",
+      "file": "web/backend/app/services/data_service.py",
+      "loc": 472,
+      "app_state_occurrences": 0,
+      "api_files": 2,
+      "api_hits": 5,
+      "classification": "defer-indicator-strategy-data-surface"
+    },
+    {
+      "getter": "get_market_data_service_v2",
+      "file": "web/backend/app/services/market_data_service_v2.py",
+      "loc": 668,
+      "app_state_occurrences": 0,
+      "api_files": 2,
+      "api_hits": 17,
+      "classification": "defer-broad-market-dashboard-surface"
+    },
+    {
+      "getter": "get_market_data_service",
+      "file": "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "loc": 33,
+      "app_state_occurrences": 0,
+      "api_files": 1,
+      "api_hits": 8,
+      "classification": "defer-graph-name-ambiguity"
+    },
+    {
+      "getter": "get_strategy_service",
+      "file": "web/backend/app/services/strategy_service.py",
+      "loc": 461,
+      "app_state_occurrences": 0,
+      "api_files": 1,
+      "api_hits": 4,
+      "classification": "defer-strategy-adapter-task-surface"
+    }
+  ],
+  "gitnexus_evidence": [
+    {
+      "target": "StockSearchService",
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "risk": "LOW",
+      "direct_impact": 0,
+      "affected_processes": 0
+    },
+    {
+      "target": "get_stock_search_service",
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "risk": "CRITICAL",
+      "direct_impact": 6,
+      "affected_processes": 11
+    },
+    {
+      "target": "get_tdx_service",
+      "file": "web/backend/app/services/tdx_service.py",
+      "risk": "CRITICAL",
+      "direct_impact": 2,
+      "affected_processes": 5
+    },
+    {
+      "target": "get_data_service",
+      "file": "web/backend/app/services/data_service.py",
+      "risk": "CRITICAL",
+      "direct_impact": 3,
+      "affected_processes": 7
+    },
+    {
+      "target": "get_market_data_service_v2",
+      "file": "web/backend/app/services/market_data_service_v2.py",
+      "risk": "CRITICAL",
+      "direct_impact": 15,
+      "affected_processes": 6
+    },
+    {
+      "target": "get_market_data_service",
+      "file": "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "risk": "LOW",
+      "direct_impact": 0,
+      "affected_processes": 0,
+      "note": "Text scan finds active route dependency; treat as graph/name ambiguity, not safe-proof."
+    },
+    {
+      "target": "get_strategy_service",
+      "file": "web/backend/app/services/strategy_service.py",
+      "risk": "CRITICAL",
+      "direct_impact": 6,
+      "affected_processes": 0
+    }
+  ],
+  "recommendation": {
+    "next_gate": "Create G2.18 authorization packet for stock_search_service route-surface DI candidate after human review.",
+    "recommended_candidate": "web/backend/app/services/stock_search_service/stock_search_service.py",
+    "source_edits_authorized": false,
+    "openspec_change_required_now": false,
+    "issue_label_movement_authorized": false
+  }
+}
