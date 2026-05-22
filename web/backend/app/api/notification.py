@@ -50,7 +50,7 @@ from app.api.notification_support import (
     rate_limit,
 )
 from app.core.responses import create_success_response
-from app.services.email_service import get_email_service
+from app.services.email_service import EmailService, get_email_service_dependency
 
 logger = structlog.get_logger()
 router = APIRouter()
@@ -64,14 +64,16 @@ router = APIRouter()
     responses=NOTIFICATION_STATUS_RESPONSES,
 )
 @rate_limit(limit=10, window=60)  # 每分钟最多10次请求
-async def get_email_service_status(current_user: User = Depends(get_current_user)) -> Dict:
+async def get_email_service_status(
+    current_user: User = Depends(get_current_user),
+    email_service: EmailService = Depends(get_email_service_dependency),
+) -> Dict:
     """
     获取邮件服务状态 - Phase 4C Enhanced
 
     返回邮件服务的详细配置状态和统计信息
     """
     try:
-        email_service = get_email_service()
         is_configured = email_service.is_configured()
 
         status_data = {
@@ -116,6 +118,7 @@ async def send_email(
     background_tasks: BackgroundTasks,
     request: SendEmailRequest = Body(..., openapi_examples=SEND_EMAIL_EXAMPLES),
     current_user: User = Depends(get_current_user),
+    email_service: EmailService = Depends(get_email_service_dependency),
 ) -> Dict:
     """
     发送邮件 - Phase 4C Enhanced（需要管理员权限）
@@ -132,8 +135,6 @@ async def send_email(
                 recipients=len(request.to_addresses),
             )
             raise BusinessException(status_code=403, detail="仅管理员可以发送邮件")
-
-        email_service = get_email_service()
 
         if not email_service.is_configured():
             raise BusinessException(status_code=503, detail="邮件服务未配置，无法发送邮件")
@@ -307,6 +308,7 @@ async def send_welcome_email(
     background_tasks: BackgroundTasks,
     request: SendWelcomeEmailRequest = Body(..., openapi_examples=WELCOME_EMAIL_EXAMPLES),
     current_user: User = Depends(get_current_user),
+    email_service: EmailService = Depends(get_email_service_dependency),
 ) -> Dict:
     """
     发送欢迎邮件 - Phase 4C Enhanced
@@ -314,8 +316,6 @@ async def send_welcome_email(
     支持多语言和个性化欢迎信息
     """
     try:
-        email_service = get_email_service()
-
         if not email_service.is_configured():
             raise BusinessException(status_code=503, detail="邮件服务未配置，无法发送欢迎邮件")
 
@@ -386,12 +386,11 @@ async def send_daily_newsletter(
     background_tasks: BackgroundTasks,
     request: SendNewsletterRequest = Body(..., openapi_examples=NEWSLETTER_EXAMPLES),
     current_user: User = Depends(get_current_user),
+    email_service: EmailService = Depends(get_email_service_dependency),
 ) -> Dict:
     """
     发送每日新闻简报
     """
-    email_service = get_email_service()
-
     if not email_service.is_configured():
         raise BusinessException(status_code=503, detail="邮件服务未配置")
 
@@ -428,12 +427,11 @@ async def send_price_alert(
     background_tasks: BackgroundTasks,
     request: SendPriceAlertRequest = Body(..., openapi_examples=PRICE_ALERT_EXAMPLES),
     current_user: User = Depends(get_current_user),
+    email_service: EmailService = Depends(get_email_service_dependency),
 ) -> Dict:
     """
     发送价格提醒邮件
     """
-    email_service = get_email_service()
-
     if not email_service.is_configured():
         raise BusinessException(status_code=503, detail="邮件服务未配置")
 
@@ -468,7 +466,10 @@ async def send_price_alert(
     "/test-email",
     responses=NOTIFICATION_TEST_EMAIL_RESPONSES,
 )
-async def send_test_email(current_user: User = Depends(get_current_user)) -> Dict:
+async def send_test_email(
+    current_user: User = Depends(get_current_user),
+    email_service: EmailService = Depends(get_email_service_dependency),
+) -> Dict:
     """
     发送测试邮件到当前用户邮箱
 
@@ -543,8 +544,6 @@ async def send_test_email(current_user: User = Depends(get_current_user)) -> Dic
     - 某些邮箱服务商可能将测试邮件标记为垃圾邮件
     - 发送前会检查邮件服务配置状态
     """
-    email_service = get_email_service()
-
     if not email_service.is_configured():
         raise BusinessException(status_code=503, detail="邮件服务未配置")
 

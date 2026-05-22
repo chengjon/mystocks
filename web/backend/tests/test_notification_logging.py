@@ -37,7 +37,9 @@ def load_notification_module():
     fake_auth.User = SimpleNamespace
     fake_auth.get_current_user = lambda: None
     fake_auth.get_current_active_user = lambda: None
+    fake_email_service.EmailService = SimpleNamespace
     fake_email_service.get_email_service = lambda: SimpleNamespace(is_configured=lambda: False)
+    fake_email_service.get_email_service_dependency = lambda: SimpleNamespace(is_configured=lambda: False)
 
     previous = {
         "app": sys.modules.get("app"),
@@ -60,13 +62,15 @@ def load_notification_module():
     for dotted_name, module_path in module_paths.items():
         spec = importlib.util.spec_from_file_location(dotted_name, module_path)
         module = importlib.util.module_from_spec(spec)
-        assert spec is not None and spec.loader is not None
+        assert spec is not None
+        assert spec.loader is not None
         sys.modules[dotted_name] = module
         spec.loader.exec_module(module)
 
     spec = importlib.util.spec_from_file_location(module_name, api_root / "notification.py")
     module = importlib.util.module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
 
@@ -99,7 +103,7 @@ async def test_send_daily_newsletter_background_task_logs_success(monkeypatch, c
         def send_daily_newsletter(**_kwargs):
             return {"success": True, "message": "ok"}
 
-    monkeypatch.setattr(module, "get_email_service", lambda: FakeEmailService())
+    email_service = FakeEmailService()
     background_tasks = BackgroundTasks()
     request = module.SendNewsletterRequest(
         user_email="user@example.com",
@@ -108,7 +112,12 @@ async def test_send_daily_newsletter_background_task_logs_success(monkeypatch, c
         news_data=[{"headline": "demo"}],
     )
 
-    response = await module.send_daily_newsletter(request=request, background_tasks=background_tasks, current_user=None)
+    response = await module.send_daily_newsletter(
+        request=request,
+        background_tasks=background_tasks,
+        current_user=None,
+        email_service=email_service,
+    )
     assert response["success"] is True
     assert len(background_tasks.tasks) == 1
 
@@ -133,7 +142,7 @@ async def test_send_price_alert_background_task_logs_failure(monkeypatch, caplog
         def send_price_alert(**_kwargs):
             return {"success": False, "message": "smtp down"}
 
-    monkeypatch.setattr(module, "get_email_service", lambda: FakeEmailService())
+    email_service = FakeEmailService()
     background_tasks = BackgroundTasks()
     request = module.SendPriceAlertRequest(
         user_email="user@example.com",
@@ -145,7 +154,12 @@ async def test_send_price_alert_background_task_logs_failure(monkeypatch, caplog
         alert_price=1550.0,
     )
 
-    response = await module.send_price_alert(request=request, background_tasks=background_tasks, current_user=None)
+    response = await module.send_price_alert(
+        request=request,
+        background_tasks=background_tasks,
+        current_user=None,
+        email_service=email_service,
+    )
     assert response["success"] is True
     assert len(background_tasks.tasks) == 1
 
