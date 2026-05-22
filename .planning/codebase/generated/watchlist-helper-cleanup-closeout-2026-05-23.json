@@ -1,0 +1,70 @@
+{
+  "artifact": "watchlist-helper-cleanup-closeout-2026-05-23",
+  "recorded_at": "2026-05-23T03:05:02+08:00",
+  "workline": "G2.15 adapter-aware watchlist helper cleanup closeout",
+  "status": "completed-and-recorded",
+  "implementation_pr": 154,
+  "implementation_pr_url": "https://github.com/chengjon/mystocks/pull/154",
+  "implementation_commit": "fad638f636060237845ca893dbd16420c4ef92af",
+  "implementation_merge_commit": "1dcb394a49a9d95e939b2119acc431b825954036",
+  "parent_authorization_pr": 153,
+  "parent_authorization_merge_commit": "938682debb90a25392ca208e706d8388d06de786",
+  "closeout_branch": "g2-15-watchlist-helper-cleanup-closeout",
+  "closeout_pr": 155,
+  "closeout_pr_url": "https://github.com/chengjon/mystocks/pull/155",
+  "closeout_pr_checks_at_creation": {
+    "mainline_governance_gate": "pass",
+    "check_compliance": "pass",
+    "weekly_full_scan": "skipped"
+  },
+  "scope": {
+    "completed_runtime_files": [
+      "web/backend/app/services/data_adapters/watchlist.py",
+      "web/backend/app/services/adapters/watchlist_adapter.py"
+    ],
+    "completed_test_files": [
+      "web/backend/tests/test_watchlist_helper_lifecycle_di.py"
+    ],
+    "route_openapi_changed": false,
+    "frontend_changed": false,
+    "openspec_changed": false,
+    "pm2_runtime_changed": false
+  },
+  "github_checks": {
+    "mainline_governance_gate": "pass",
+    "check_compliance": "pass",
+    "weekly_full_scan": "skipped"
+  },
+  "current_head_verification": {
+    "head": "1dcb394a49a9d95e939b2119acc431b825954036",
+    "helper_tests": "6 passed",
+    "route_di_regression_tests": "3 passed",
+    "logging_regression_tests": "3 passed",
+    "ruff_touched": "passed",
+    "openapi_smoke": {
+      "app_import": "ok",
+      "routes": 548,
+      "paths": 500,
+      "operations": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0
+    }
+  },
+  "issue_state_at_closeout": {
+    "issue_79": {
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ]
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ]
+    }
+  },
+  "next_gate": "Human review of G2.15 closeout; if accepted, create a separate G2.16 decision packet before any further service lifecycle DI source edits."
+}
