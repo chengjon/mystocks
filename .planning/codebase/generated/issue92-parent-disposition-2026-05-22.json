@@ -1,0 +1,64 @@
+{
+  "artifact": "issue92-parent-disposition",
+  "generated_at": "2026-05-22T10:19:49+08:00",
+  "generated_at_utc": "2026-05-22T02:19:49Z",
+  "git_branch": "issue92-parent-disposition",
+  "git_head": "c1e3de5515a193fcf52fe2bbec3169e99c3e84bb",
+  "parent_issue": {
+    "number": 92,
+    "url": "https://github.com/chengjon/mystocks/issues/92",
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-downstream",
+      "ready-for-human"
+    ],
+    "has_ready_for_agent": false
+  },
+  "decision": {
+    "disposition": "retain-open-parent-index",
+    "rationale": "D2 downstream closeout, final-closeout waiver, archive readiness, and OpenSpec archive are complete. Issue #92 should remain the parent audit trail unless a human explicitly closes or relabels it.",
+    "implementation_authorized": false,
+    "issue_movement_authorized": false,
+    "future_work_requires_new_child_lane": true
+  },
+  "completed_gates": {
+    "final_closeout": {
+      "state": "accepted-for-archive-gate",
+      "prs": [
+        129,
+        132
+      ]
+    },
+    "archive_readiness": {
+      "state": "reviewed-accepted",
+      "prs": [
+        130,
+        131
+      ]
+    },
+    "openspec_archive": {
+      "state": "merged",
+      "pr": 133,
+      "merge_commit": "c1e3de5515a193fcf52fe2bbec3169e99c3e84bb"
+    }
+  },
+  "boundaries": {
+    "source_code_changed": false,
+    "tests_changed": false,
+    "runtime_behavior_changed": false,
+    "pm2_commands_executed": false,
+    "implementation_issue_created": false,
+    "issue_92_moved_to_ready_for_agent": false,
+    "issue_92_closed_or_relabelled": false
+  },
+  "future_child_lane_requirements": [
+    "owner",
+    "exact write scope",
+    "current-head evidence",
+    "verification gates",
+    "rollback plan",
+    "issue routing",
+    "explicit statement that issue #92 remains parent context only"
+  ]
+}
