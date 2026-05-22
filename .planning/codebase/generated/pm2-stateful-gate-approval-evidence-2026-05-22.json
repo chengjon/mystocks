@@ -1,0 +1,91 @@
+{
+  "artifact": "pm2-stateful-gate-approval-evidence",
+  "generated_at": "2026-05-22T07:56:26+08:00",
+  "generated_at_utc": "2026-05-21T23:56:26Z",
+  "git_branch": "d2-6-pm2-stateful-gate-approval-evidence",
+  "git_head": "b35d016f8b89baf0889fb57a090f4a09b698e375",
+  "current_head_checked_at_review": "2026-05-22T07:56:26+08:00",
+  "stale_if_head_mismatch": true,
+  "scope": {
+    "openspec_change": "approve-backend-pm2-stateful-gate",
+    "lane": "D2.6",
+    "mode": "governance-evidence-only",
+    "pm2_commands_executed": false,
+    "service_restart_or_recreation_executed": false,
+    "runtime_mutation_executed": false,
+    "implementation_issue_created": false,
+    "issue_92_moved_to_ready_for_agent": false
+  },
+  "issue_92": {
+    "url": "https://github.com/chengjon/mystocks/issues/92",
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-downstream",
+      "ready-for-human"
+    ],
+    "has_ready_for_agent": false,
+    "disposition": "decision issue only; does not authorize PM2 execution by implication"
+  },
+  "script_static_classification": {
+    "path": "scripts/run_pm2_integration_workflow.sh",
+    "sha256": "b638d6a32657922fc161f9c5d473c92d82d2acfa0f74b49d61cd53782679b92c",
+    "line_count": 272,
+    "stateful_modes": [
+      "gate",
+      "regression",
+      "all"
+    ],
+    "stateful_command_markers": [
+      "line 23: pm2 stop all >/dev/null 2>&1 || true",
+      "line 24: pm2 delete all >/dev/null 2>&1 || true",
+      "line 187: pm2 start ecosystem.test.config.js",
+      "line 140: bash scripts/run_e2e_pm2.sh"
+    ],
+    "mode_dispatch_markers": [
+      "line 257: gate) run_gate",
+      "line 260: regression) run_regression",
+      "line 263: all) run_gate; run_regression"
+    ],
+    "classification": "gate, regression, and all remain stateful PM2 workflows requiring explicit approval or an approved named equivalent before execution"
+  },
+  "historical_health_status_pm2_evidence": {
+    "path": "docs/reports/quality/backend-health-status-pm2-gate-2026-05-18.md",
+    "sha256": "4ef8484ba60db89da33e2e8a4c350831abbfe1b148ef471034aa4871449e5c30",
+    "scope": "consolidate-backend-health-endpoints task 4.7",
+    "recorded_result": "PASS",
+    "pm2_e2e_result": "14 passed",
+    "post_restore_probes": {
+      "http://localhost:8020/health": "HTTP 200",
+      "http://localhost:8020/api/health/ready": "HTTP 200"
+    },
+    "freshness_limit": "historical evidence may be cited for governance or archive decisions when no current-HEAD contradiction is found; it is not a standing approval to rerun PM2"
+  },
+  "input_artifacts": [
+    {
+      "path": "docs/reports/quality/backend-pm2-stateful-gate-approval-governance-2026-05-21.md",
+      "sha256": "2dd415f7c7f36c591f176eb5e28d78dfa42b0284edc742aee878d28661211f7d",
+      "role": "D2.6 approval strategy and residual gate governance package"
+    },
+    {
+      "path": "docs/reports/quality/backend-pm2-stateful-gate-openspec-proposal-2026-05-21.md",
+      "sha256": "46f65ba43cc8bd3693eca618670b4c1876f5a7273e2b70c99a11db7ca1dffac0",
+      "role": "OpenSpec proposal handoff record"
+    }
+  ],
+  "future_approval_record_required_fields": [
+    "approval source",
+    "approval timestamp",
+    "approving human or owner",
+    "target branch and commit",
+    "exact command mode or named equivalent",
+    "expected state mutation",
+    "service impact and ports",
+    "rollback and restore commands",
+    "evidence destination",
+    "timeout and stop rule",
+    "acceptance owner",
+    "statement of what remains unproven when using a named equivalent"
+  ],
+  "stop_rule": "If scripts/run_pm2_integration_workflow.sh or a named equivalent appears in a future task without an explicit approval record, stop before running any PM2 command and return to human review."
+}
