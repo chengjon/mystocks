@@ -382,8 +382,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-adapter-lifecycle-di-triage-2026-05-22.md`,
 │   │   `.planning/codebase/generated/adapter-lifecycle-di-triage-2026-05-22.json`,
 │   │   `backend-adapter-lifecycle-di-disposition-2026-05-22.md`,
-│   │   `.planning/codebase/generated/adapter-lifecycle-di-disposition-2026-05-22.json`
-│   ├── State: disposition-prepared-for-review
+│   │   `.planning/codebase/generated/adapter-lifecycle-di-disposition-2026-05-22.json`,
+│   │   `backend-adapter-lifecycle-di-closeout-acceptance-2026-05-22.md`,
+│   │   `.planning/codebase/generated/adapter-lifecycle-di-closeout-acceptance-2026-05-22.json`
+│   ├── State: closeout-acceptance-recorded
 │   ├── Role: Reconcile and prepare issue `#78` adapter lifecycle DI
 │   │         disposition without opening implementation authority
 │   ├── Current fact: issue `#78` remains `OPEN` with `needs-triage`; issue
@@ -393,14 +395,15 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `realtime_mtm` has no current adapter file under
 │   │                 `web/backend/app/adapters/`; five service/core files still
 │   │                 require direct getter consumer classification before any
-│   │                 future code migration; recommended disposition is to close
-│   │                 `#78` as reconciled after human review, and route remaining
-│   │                 implementation concerns to separate approved child lanes
-│   └── Next gate: Human review of the G1 disposition packet for `#78`; if
-│                  accepted, post an explicit closeout decision for `#78` before
-│                  starting issue `#79` design/triage; do not create an
-│                  implementation issue, OpenSpec proposal, or `ready-for-agent`
-│                  movement from this packet alone
+│   │                 future code migration; human maintainer accepted closing
+│   │                 `#78` as reconciled governance evidence and routing
+│   │                 remaining implementation concerns to separate approved
+│   │                 child lanes
+│   └── Next gate: After this closeout acceptance record merges, post the
+│                  required issue `#78` closeout comment and close `#78`; then
+│                  start issue `#79` service lifecycle DI design/triage only,
+│                  without implementation authority or `ready-for-agent`
+│                  movement
 │
 ├── E. Candidate Branch: close-backend-schema-dual-directory
 │   ├── Source evidence: backend-schema-dual-directory-closure-2026-05-19.md
@@ -544,6 +547,7 @@ review, PR review, or OpenSpec archive review.
 | G1 adapter lifecycle DI child-lane selection | G1/#78 | Select issue `#78` adapter lifecycle DI triage and evidence reconciliation as the next candidate child lane | Governance-only: issue `#78` is `OPEN` with `needs-triage`; issue `#79` is `OPEN` with `needs-triage` and remains blocked by `#78`; no OpenSpec proposal, implementation issue, label change, source/test/runtime/PM2 change, or `ready-for-agent` movement is authorized | `docs/reports/quality/backend-next-child-lane-selection-2026-05-22.md`; `.planning/codebase/generated/next-child-lane-selection-2026-05-22.json` | Prepare separate G1 evidence/triage packet for `#78` with current-head adapter inventory, pilot reconciliation, exact future write scope, verification gates, and rollback |
 | G1 adapter lifecycle DI triage packet | G1/#78 | Current-head issue `#78` evidence packet prepared for review | Governance/evidence only: issue `#78` remains `OPEN` with `needs-triage`; issue `#79` remains blocked; `eastmoney_adapter`, `eastmoney_enhanced`, `akshare_extension`, `tqlex_adapter`, and `cninfo_adapter` have provider/app-state/test evidence and no `_instance = None`; `realtime_mtm` has no current adapter file under `web/backend/app/adapters`; five service/core files require direct getter consumer classification before any future implementation | `docs/reports/quality/backend-adapter-lifecycle-di-triage-2026-05-22.md`; `.planning/codebase/generated/adapter-lifecycle-di-triage-2026-05-22.json`; PR `#136` | Human review; if accepted, decide whether to close `#78` as reconciled or create a separate implementation authorization with exact write scope |
 | G1 adapter lifecycle DI disposition packet | G1/#78 | Issue `#78` closeout disposition prepared for review | Governance/evidence only: recommends closing `#78` as reconciled after human acceptance; does not close the issue, change labels, create implementation work, or move `#78`/`#79`/`#92` to `ready-for-agent`; remaining direct consumer cleanup, `realtime_mtm` ownership, and composition-root wiring are routed to separate child packets if needed | `docs/reports/quality/backend-adapter-lifecycle-di-disposition-2026-05-22.md`; `.planning/codebase/generated/adapter-lifecycle-di-disposition-2026-05-22.json`; PR `#137` | Human review; if accepted, post closeout/closing comment to `#78`, then begin `#79` service lifecycle design/triage without implementation authority |
+| G1 adapter lifecycle DI closeout acceptance | G1/#78 | Human maintainer accepted issue `#78` disposition | Governance/closeout only: after this record merges, issue `#78` may be closed as reconciled governance evidence; remaining direct consumer cleanup, `realtime_mtm` identity, and composition-root wiring remain separate child-packet concerns; issue `#79` may start design/triage only after #78 closeout, and implementation remains locked | `docs/reports/quality/backend-adapter-lifecycle-di-closeout-acceptance-2026-05-22.md`; `.planning/codebase/generated/adapter-lifecycle-di-closeout-acceptance-2026-05-22.json`; PR `#138` | Post required closeout comment and close `#78`; then prepare issue `#79` service lifecycle DI design/triage packet |
 | D2.1a TechnicalPatternDetectionService DI implementation | D2.1a.1 | First service-tier route-level DI pilot merged; `_technical_patterns_router.py` now exposes `get_technical_pattern_detection_service()`, `detect_patterns()` receives the service through `Depends`, and focused route tests use `app.dependency_overrides` | Reviewed/pass in current thread: PR `#112` checks passed, merge commit `80582643578d587ead81ccb3d23dcd2a52668dba`; route regression `9 passed`; service+route `19 passed`; ruff passed; placeholder-env `app.main` import passed; OpenSpec strict valid; mainline scope gate passed; GitNexus compare low risk with `0` changed symbols and `0` affected processes | `https://github.com/chengjon/mystocks/pull/112`; `docs/reports/quality/backend-technical-pattern-di-pilot-implementation-2026-05-21.md`; `openspec/changes/inject-technical-pattern-detection-service-di/` | D2.1a final OpenSpec checklist governance closeout |
 | D2.1a final OpenSpec checklist governance closeout | D2.1a.1 | OpenSpec task `5.3` marked complete with issue `#92` closeout comment evidence; D2.1a is closed from implementation plus checklist governance perspectives | Reviewed/pass in current thread: PR `#113` checks passed, merge commit `c7e263b8fcdeea4fc952a86d64ac555ca6dde6ce`; changed files limited to `tasks.md` and `pr-113.yaml`; mainline scope gate changed files=`2`, violations=`0`; GitNexus compare low risk with `0` changed symbols and `0` affected processes | `https://github.com/chengjon/mystocks/pull/113`; `https://github.com/chengjon/mystocks/issues/92#issuecomment-4508297089`; `openspec/changes/inject-technical-pattern-detection-service-di/tasks.md` | No further D2.1a work; select a new approved child lane before any additional implementation |
 | D2.x OpenSpec proposal approvals recorded | D2.3-D2.6 | Human maintainer approval recorded for D2.3/D2.4/D2.5/D2.6 proposal task-list entry into governance/evidence execution | Approval-only: each change may execute its governance/evidence `tasks.md` checklist with current-head freshness; no backend source, frontend source, tests, generated client, docs/API edits, route behavior, OpenAPI schema/exposure, probe URL change, PM2 command execution, service restart/recreation, implementation issue creation, or movement of issue `#92` to `ready-for-agent` is authorized | `docs/reports/quality/backend-openspec-d2-proposal-approval-record-2026-05-22.md`; `governance/mainline/task-cards/pr-120.yaml` | Execute approved governance/evidence tasks and keep every downstream decision tied to refreshed evidence |
@@ -581,6 +585,7 @@ review, PR review, or OpenSpec archive review.
 | G1 adapter lifecycle DI selection | Issue `#78` and issue `#79` dependency state | `c45eaa9c` | Select `#78` adapter lifecycle DI triage/reconciliation as next candidate child lane; no implementation or OpenSpec proposal is authorized until a separate G1 evidence packet is accepted |
 | G1 adapter lifecycle DI triage | Current-head adapter provider/app-state/test evidence and direct getter consumer scan | `2dbca6986` | Five adapter targets have provider/app-state/test evidence and no `_instance = None`; `realtime_mtm` is not proven as a current adapter target; five service/core consumers require classification; no implementation, label movement, OpenSpec proposal, source/test/runtime/PM2 mutation, or issue `#78`/`#79`/`#92` `ready-for-agent` movement is authorized |
 | G1 adapter lifecycle DI disposition | Merged triage packet and issue `#78` current state | `299f0aa7` | Recommend closing `#78` as reconciled after human acceptance; keep all remaining implementation concerns in separate approved child packets; `#79` may only start service lifecycle design/triage after the `#78` disposition is accepted |
+| G1 adapter lifecycle DI closeout acceptance | Human acceptance of `#78` disposition in current review thread | `b71ac809` | Closeout accepted: after record merge, post required closeout comment and close `#78`; begin `#79` service lifecycle DI design/triage only after #78 is closed; no implementation or `ready-for-agent` movement is authorized |
 | G. Service seams and singleton pilots | Full service classification plus interface/test-double strategy | `7b097fffd` | Task 6.x proposal path complete; service directory is dirty, no implementation batch is scheduled, and future work needs a clean candidate packet plus approved proposal |
 
 ## Update Protocol

@@ -1,0 +1,81 @@
+{
+  "artifact": "adapter-lifecycle-di-closeout-acceptance",
+  "generated_at": "2026-05-22T11:37:12+08:00",
+  "generated_at_utc": "2026-05-22T03:37:12Z",
+  "git_branch": "g1-issue78-closeout",
+  "git_head": "b71ac80958373815887e737b55846d6b5d00d866",
+  "accepted_by": "human maintainer in current review thread",
+  "accepted_at": "2026-05-22T11:37:12+08:00",
+  "input_evidence": {
+    "triage_pr": {
+      "number": 136,
+      "merge_commit": "299f0aa7672993859b2cdd1f6515981a99d90f1e",
+      "report": "docs/reports/quality/backend-adapter-lifecycle-di-triage-2026-05-22.md",
+      "artifact": ".planning/codebase/generated/adapter-lifecycle-di-triage-2026-05-22.json"
+    },
+    "disposition_pr": {
+      "number": 137,
+      "merge_commit": "b71ac80958373815887e737b55846d6b5d00d866",
+      "report": "docs/reports/quality/backend-adapter-lifecycle-di-disposition-2026-05-22.md",
+      "artifact": ".planning/codebase/generated/adapter-lifecycle-di-disposition-2026-05-22.json"
+    }
+  },
+  "closeout_decision": {
+    "issue_78_closeout_approved": true,
+    "issue_78_close_mode": "close_as_reconciled_governance_evidence_after_this_record_merges",
+    "issue_78_remains_implementation_backlog": false,
+    "remaining_implementation_concerns_require_separate_child_packets": true,
+    "issue_close_executed_by_this_record": false
+  },
+  "issues": {
+    "primary": {
+      "number": 78,
+      "state_at_record_time": "OPEN",
+      "labels_at_record_time": [
+        "needs-triage"
+      ],
+      "url": "https://github.com/chengjon/mystocks/issues/78"
+    },
+    "next": {
+      "number": 79,
+      "state_at_record_time": "OPEN",
+      "labels_at_record_time": [
+        "needs-triage"
+      ],
+      "next_allowed_mode_after_issue_78_close": "service lifecycle DI design/triage only",
+      "implementation_authorized": false,
+      "url": "https://github.com/chengjon/mystocks/issues/79"
+    },
+    "parent": {
+      "number": 92,
+      "state_at_record_time": "OPEN",
+      "labels_at_record_time": [
+        "enhancement",
+        "ready-for-downstream",
+        "ready-for-human"
+      ],
+      "url": "https://github.com/chengjon/mystocks/issues/92"
+    }
+  },
+  "required_issue_78_closing_comment_points": [
+    "five current adapter targets have provider/app-state/test evidence and no _instance = None",
+    "realtime_mtm is not proved as a current adapter target under web/backend/app/adapters",
+    "remaining implementation concerns require separate approved child packets",
+    "closing issue #78 does not authorize issue #79 implementation",
+    "issue #79 may start service lifecycle design/triage only after this closeout is posted"
+  ],
+  "scope": {
+    "mode": "governance-closeout-acceptance-only",
+    "source_code_changed": false,
+    "tests_changed": false,
+    "runtime_behavior_changed": false,
+    "pm2_commands_executed": false,
+    "implementation_issue_created": false,
+    "openspec_proposal_created_or_modified": false,
+    "issue_labels_changed": false,
+    "issue_78_closed_by_this_pr": false,
+    "issue_78_moved_to_ready_for_agent": false,
+    "issue_79_moved_to_ready_for_agent": false,
+    "issue_92_moved_to_ready_for_agent": false
+  }
+}
