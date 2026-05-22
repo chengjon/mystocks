@@ -321,19 +321,20 @@ CODEBASE-MAP Architecture Remediation Program
 │
 ├── D2 Closeout. Downstream Decision Rollup
 │   ├── Source evidence:
-│   │   `backend-openspec-issue92-downstream-rollup-closeout-2026-05-21.md`
-│   ├── State: downstream-rollup-review-aligned-with-d2-1a-closed
+│   │   `backend-openspec-issue92-downstream-rollup-closeout-2026-05-21.md`,
+│   │   `backend-openspec-issue92-downstream-final-closeout-2026-05-22.md`
+│   ├── State: final-closeout-prepared-for-review
 │   ├── Role: Summarize D2.1-D2.6 as a complete downstream decision package
-│   ├── Current fact: PRs `#96`-`#113` are merged; issue `#92` remains `OPEN`
+│   ├── Current fact: PRs `#96`-`#128` are merged; issue `#92` remains `OPEN`
 │   │                 with `ready-for-human` and `ready-for-downstream`, but no
-│   │                 `ready-for-agent`; the first recommended true
-│   │                 implementation lane, D2.1a
-│   │                 `TechnicalPatternDetectionService` DI pilot, is now closed
-│   │                 end-to-end; review feedback was absorbed without expanding
-│   │                 implementation authority
-│   └── Next gate: Human selection of the next separate child lane. Do not treat
-│                  this rollup, D2.1a closure, or issue `#92` itself as
-│                  authorization for additional implementation
+│   │                 `ready-for-agent`; D2.1a is closed end-to-end; D2.2 is
+│   │                 closed as a decision lane; D2.3, D2.4, D2.5, and D2.6 are
+│   │                 reviewed and accepted as governance/evidence packages
+│   └── Next gate: Human review of the final closeout, then decide whether to
+│                  keep `#92` open as the parent index, archive completed
+│                  governance-only OpenSpec changes in a separate archive PR, or
+│                  select a new approved child lane; this rollup does not
+│                  authorize implementation
 │
 ├── E. Candidate Branch: close-backend-schema-dual-directory
 │   ├── Source evidence: backend-schema-dual-directory-closure-2026-05-19.md
@@ -479,13 +480,13 @@ review, PR review, or OpenSpec archive review.
 | `sequence-backend-architecture-unblocks` | `archived-merged` | Master execution plan | Runtime triage, schema closure, freshness, singleton matrix, error-contract verification | First gate branch for runtime unblock and evidence refresh | Archived by PR `#86`; future work must use the archived evidence as baseline and open a follow-up branch for new implementation |
 | `canonicalize-backend-route-unified-response-contracts` | `archived-merged` | `sequence-backend-architecture-unblocks` Task 8.8 | UnifiedResponse contract guard blocker: 27 errors across 4 changed route files now reduced to 0 | Dedicated route-contract migration for `data_quality.py`, `indicator_cache.py`, `signal_history_response.py`, and `technical_analysis.py`; implementation merged via PR `#85` | Archived by PR `#86`; keep implementation notes as follow-up candidates, not blockers |
 | `split-backend-core-modules-with-compatibility-wrappers` | `archived-merged` | Existing OpenSpec line | Core split reconciliation | Core helper split continuation | Archived by PR `#90`; future Core split work requires a new concrete implementation plan and approval |
-| `github-issue-92-backend-openspec-issue15` | `downstream-rollup-review-aligned` | Current review-thread approval, issue `#83` acceptance, downstream split draft, human split acceptance, D2.1-D2.6 rollup, and review-aligned evidence clarification | Post-approval implementation decision boundary | Decision/design issue only; no implementation work | Human decision whether to create a concrete D2.1a implementation issue or OpenSpec branch; keep issue `#92` locked as parent decision issue |
+| `github-issue-92-backend-openspec-issue15` | `downstream-final-closeout-prepared-for-review` | Current review-thread approval, issue `#83` acceptance, downstream split draft, human split acceptance, D2.1-D2.6 rollup, D2.3-D2.6 reviewed evidence packages, and final closeout artifact | Post-approval downstream decision boundary | Decision/design issue only; no implementation work | Human review of the final closeout, then decide whether to keep issue `#92` open as parent index, archive completed governance-only OpenSpec changes, or create the next approved child packet |
 | `select-backend-technical-pattern-di-pilot` | `design-packet-prepared` | Issue `#92` downstream split acceptance | First DI lifecycle pilot design packet | Provider shape, dependency override strategy, teardown, rollback, and verification gates for `TechnicalPatternDetectionService` | Human review before creating any implementation issue or OpenSpec branch |
 | `inject-technical-pattern-detection-service-di` | `implementation-ready-for-review` | D2.1 design packet, D2.1a authorization plan, proposal review, and implementation evidence | First implementation child branch for `TechnicalPatternDetectionService` DI pilot | Route-local provider, FastAPI dependency override test seam, rollback, and focused verification for `_technical_patterns_router.py` | PR review / merge decision; do not broaden to a second service DI pilot in this branch |
 | `decide-backend-core-validation-wrapper-retirement` | `active-source-migration-complete` | Issue `#92` downstream split acceptance and validation helper split archive | Core validation compatibility wrapper retirement readiness and staged migration | D2.2a active source migration is complete; docs/API examples and compatibility-test conversion remain separate gates | D2.2b docs/API examples canonicalization or explicit waiver; wrapper deletion remains blocked |
 | `define-backend-backup-route-ownership` | `decision-package-reviewed-accepted` | Issue `#92` downstream split acceptance, D2.4 planning package, D2.3 route governance proposal, D2.5 control-plane docs proposal, and D2.4 review artifact | Reviewed backup route ownership decision package with current-head backup route/OpenAPI evidence, ownership taxonomy, cleanup and backup-service health ownership, safety/security matrix, consumer matrix, and rollback routing | Backup, recovery, scheduler, integrity, cleanup, health, safety, security, consumer, OpenAPI, and rollback ownership gates | Closed as reviewed evidence; no implementation lane without a later approved child packet |
 | `stabilize-backend-control-plane-openapi-docs` | `decision-package-reviewed-accepted` | Issue `#92` downstream split acceptance, D2.5 planning package, route/OpenAPI/probe refresh, D2.3 route governance proposal, and D2.5 review artifact | Reviewed control-plane docs/probe decision package with current-head route/OpenAPI/probe evidence, health/readiness taxonomy, OpenAPI docs UI/schema routes, metrics/status probes, and runtime-only compat redirects | Documentation/probe governance for liveness, readiness, service health, detailed health, status, metrics, docs UI, OpenAPI schema, runtime-only compat redirects, and intentionally absent aliases | Closed as reviewed evidence; no docs/API or implementation lane without a later approved child packet |
-| `approve-backend-pm2-stateful-gate` | `approved-for-governance-execution` | Issue `#92` downstream split acceptance, D2.6 approval-governance package, and historical health/status PM2 evidence | Explicit OpenSpec proposal for PM2 stateful workflow approval strategy and named-equivalent rules | Approval records for `run_pm2_integration_workflow.sh` modes, stateful service mutation, rollback, evidence artifact routing, read-only sampling, and named equivalents | Review and approve the policy proposal; create a small approval issue or approved runbook only when a future workline needs a fresh PM2 run |
+| `approve-backend-pm2-stateful-gate` | `decision-package-reviewed-accepted` | Issue `#92` downstream split acceptance, D2.6 approval-governance package, historical health/status PM2 evidence, and D2.6 review artifact | Reviewed PM2 stateful workflow approval strategy and named-equivalent rules | Approval records for `run_pm2_integration_workflow.sh` modes, stateful service mutation, rollback, evidence artifact routing, read-only sampling, and named equivalents | Closed as reviewed evidence; future PM2 execution requires a separate narrow approval issue, issue comment, or approved runbook |
 | `close-backend-schema-dual-directory` | `candidate` | Master execution plan | Schema dual-directory closure | Schema exports, consumer migration, shim retirement decision | Create only after `sequence-backend-architecture-unblocks` schema tasks are accepted |
 | `refresh-backend-route-openapi-governance` | `decision-package-reviewed-accepted` | Master execution plan, route/OpenAPI/probe refresh, D2.3 planning package, proposal approval record, and review artifact | Decision package accepted with current-head route table, OpenAPI, probe matrix, trading ownership, runtime-vs-schema, and consumer contract evidence | Route table, OpenAPI, operationId, probe matrix, trading ownership, control-plane, backup, compatibility, and schema-exposure classification; no route/OpenAPI/source/docs/API/PM2 mutation | Closed as reviewed evidence; do not open implementation lanes without a separate accepted child plan |
 | `define-backend-service-seams-and-singleton-pilots` | `candidate` | Master execution plan | Singleton lifecycle routing matrix | Service seam definition, interface/test-double pilot strategy | Create as a design proposal after complete classification |
@@ -500,6 +501,7 @@ review, PR review, or OpenSpec archive review.
 | D. Core split continuation | Task 3.2 disposition, #83 evidence acceptance, runtime evidence refresh | `7b097fffd` | Batch 2 remains blocked |
 | E. Schema dual-directory closure | `app.schema` consumer scan and `app.schemas` export proof | `7b097fffd` | Task 3.x complete; root checkout now has 0 legacy `app.schema` consumers and canonical exports are live |
 | F. Route/OpenAPI governance | Healthy `app.main` import chain, current-head evidence refresh, and accepted D2.3/D2.4/D2.5 reviews | `e6d576ccc` | D2.3 route/OpenAPI decision package, D2.4 backup route ownership decision package, and D2.5 control-plane docs decision package are reviewed and accepted as evidence; D2.6 PM2 lane remains separate; no backup, docs/API, route mutation, OpenAPI exposure change, probe URL change, or PM2 approval decision is authorized by this evidence alone |
+| D2. Issue 92 downstream governance | Issue `#92`, D2.1a-D2.6 evidence, and PR range review | `4299fdef` | PRs `#96`-`#128` are merged; D2.1a implementation/governance is closed, D2.2 decision lane is closed, D2.3-D2.6 are reviewed/accepted as evidence, and issue `#92` remains open without `ready-for-agent`; final closeout is prepared for human review |
 | G. Service seams and singleton pilots | Full service classification plus interface/test-double strategy | `7b097fffd` | Task 6.x proposal path complete; service directory is dirty, no implementation batch is scheduled, and future work needs a clean candidate packet plus approved proposal |
 
 ## Update Protocol

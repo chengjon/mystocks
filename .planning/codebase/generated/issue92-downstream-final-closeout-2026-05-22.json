@@ -1,0 +1,117 @@
+{
+  "artifact": "issue92-downstream-final-closeout",
+  "generated_at": "2026-05-22T08:37:19+08:00",
+  "generated_at_utc": "2026-05-22T00:37:19Z",
+  "git_branch": "issue92-downstream-final-closeout",
+  "git_head": "4299fdef15c32423db235e0e5db96f8fb2abde80",
+  "current_head_checked_at_review": "2026-05-22T08:37:19+08:00",
+  "stale_if_head_mismatch": true,
+  "scope": {
+    "parent_issue": 92,
+    "mode": "governance-evidence-only",
+    "source_code_changed": false,
+    "openspec_change_modified": false,
+    "implementation_issue_created": false,
+    "issue_92_moved_to_ready_for_agent": false,
+    "pm2_commands_executed": false
+  },
+  "issue_92": {
+    "url": "https://github.com/chengjon/mystocks/issues/92",
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-downstream",
+      "ready-for-human"
+    ],
+    "has_ready_for_agent": false,
+    "disposition": "parent decision issue only; downstream package is prepared for human review and does not authorize implementation"
+  },
+  "pull_request_range": {
+    "range": "96-128",
+    "total": 33,
+    "merged": 33,
+    "non_merged": 0,
+    "latest_merge_commit": "4299fdef15c32423db235e0e5db96f8fb2abde80"
+  },
+  "downstream_lanes": [
+    {
+      "lane": "D2.1a",
+      "state": "implementation-and-governance-closed",
+      "evidence": [
+        "docs/reports/quality/backend-technical-pattern-di-pilot-implementation-2026-05-21.md",
+        "openspec/changes/inject-technical-pattern-detection-service-di/tasks.md",
+        "PR #112",
+        "PR #113"
+      ],
+      "next_gate": "no further D2.1a work; future DI work requires a new approved child lane"
+    },
+    {
+      "lane": "D2.2",
+      "state": "decision-lane-closed",
+      "evidence": [
+        "docs/reports/quality/backend-core-validation-wrapper-retirement-readiness-2026-05-21.md",
+        "docs/reports/quality/backend-core-validation-active-source-migration-2026-05-21.md",
+        "docs/reports/quality/backend-core-validation-docs-api-canonicalization-2026-05-21.md",
+        "docs/reports/quality/backend-core-validation-wrapper-retirement-decision-package-2026-05-21.md"
+      ],
+      "next_gate": "wrapper deletion remains locked unless a separate D2.2d deletion implementation batch is approved"
+    },
+    {
+      "lane": "D2.3",
+      "state": "decision-package-reviewed-accepted",
+      "evidence": [
+        "docs/reports/quality/backend-route-openapi-governance-decision-package-2026-05-22.md",
+        "docs/reports/quality/backend-route-openapi-governance-decision-package-2026-05-22-review.md",
+        "PR #121",
+        "PR #122"
+      ],
+      "next_gate": "future route/OpenAPI mutation requires a separate approved child packet"
+    },
+    {
+      "lane": "D2.4",
+      "state": "decision-package-reviewed-accepted",
+      "evidence": [
+        "docs/reports/quality/backend-backup-route-ownership-decision-package-2026-05-22.md",
+        "docs/reports/quality/backend-backup-route-ownership-decision-package-2026-05-22-review.md",
+        "PR #125",
+        "PR #126"
+      ],
+      "next_gate": "future backup route implementation requires a separate approved child packet"
+    },
+    {
+      "lane": "D2.5",
+      "state": "decision-package-reviewed-accepted",
+      "evidence": [
+        "docs/reports/quality/backend-control-plane-openapi-docs-decision-package-2026-05-22.md",
+        "docs/reports/quality/backend-control-plane-openapi-docs-decision-package-2026-05-22-review.md",
+        "PR #123",
+        "PR #124"
+      ],
+      "next_gate": "future docs/API implementation requires a separate approved child packet"
+    },
+    {
+      "lane": "D2.6",
+      "state": "decision-package-reviewed-accepted",
+      "evidence": [
+        "docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22.md",
+        "docs/reports/quality/backend-pm2-stateful-gate-approval-decision-package-2026-05-22-review.md",
+        "PR #127",
+        "PR #128"
+      ],
+      "next_gate": "future PM2 execution requires a separate narrow approval issue, issue comment, or approved runbook"
+    }
+  ],
+  "openspec_completed_downstream_changes": [
+    "inject-technical-pattern-detection-service-di",
+    "refresh-backend-route-openapi-governance",
+    "define-backend-backup-route-ownership",
+    "stabilize-backend-control-plane-openapi-docs",
+    "approve-backend-pm2-stateful-gate"
+  ],
+  "remaining_boundaries": [
+    "Do not move issue #92 to ready-for-agent from this closeout.",
+    "Do not create an implementation issue from this closeout alone.",
+    "Do not run PM2 from this closeout.",
+    "Do not mutate routes, OpenAPI exposure, docs/API, generated clients, source, tests, scripts, or config from this closeout."
+  ]
+}
