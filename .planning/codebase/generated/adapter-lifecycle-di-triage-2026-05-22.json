@@ -1,0 +1,203 @@
+{
+  "artifact": "adapter-lifecycle-di-triage",
+  "generated_at": "2026-05-22T11:08:52+08:00",
+  "generated_at_utc": "2026-05-22T03:08:52Z",
+  "git_branch": "g1-adapter-lifecycle-triage",
+  "git_head": "2dbca698612a420a3ee56b121bac8646d8433f6e",
+  "issues": {
+    "parent": {
+      "number": 92,
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-downstream",
+        "ready-for-human"
+      ],
+      "role": "parent downstream decision index",
+      "has_ready_for_agent": false,
+      "url": "https://github.com/chengjon/mystocks/issues/92"
+    },
+    "primary": {
+      "number": 78,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "adapter lifecycle DI prerequisite lane",
+      "url": "https://github.com/chengjon/mystocks/issues/78"
+    },
+    "blocked_downstream": {
+      "number": 79,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "service lifecycle DI lane blocked by issue #78",
+      "url": "https://github.com/chengjon/mystocks/issues/79"
+    }
+  },
+  "adapter_targets": {
+    "eastmoney_adapter": {
+      "file": "web/backend/app/adapters/eastmoney_adapter.py",
+      "exists": true,
+      "instance_none": false,
+      "provider_symbols_present": [
+        "get_eastmoney_adapter",
+        "get_eastmoney_adapter_dependency"
+      ],
+      "app_state_helpers_present": true,
+      "test_evidence_files": [
+        "web/backend/tests/test_eastmoney_lifecycle_di.py",
+        "web/backend/tests/test_eastmoney_enhanced_lifecycle_di.py"
+      ],
+      "direct_consumer_files": [
+        "web/backend/app/services/market_data_service_v2.py",
+        "web/backend/app/core/unified_market_data_service.py",
+        "web/backend/app/core/adapter_factory.py"
+      ],
+      "triage_disposition": "provider and lifecycle helper evidence present; classify direct consumers before any future implementation"
+    },
+    "eastmoney_enhanced": {
+      "file": "web/backend/app/adapters/eastmoney_enhanced.py",
+      "exists": true,
+      "instance_none": false,
+      "provider_symbols_present": [
+        "get_eastmoney_enhanced_adapter",
+        "get_eastmoney_enhanced_adapter_dependency"
+      ],
+      "app_state_helpers_present": true,
+      "test_evidence_files": [
+        "web/backend/tests/test_eastmoney_enhanced_lifecycle_di.py"
+      ],
+      "direct_consumer_files": [
+        "web/backend/app/services/multi_source_manager.py"
+      ],
+      "triage_disposition": "pilot evidence present; app_factory wiring present; main.py wiring remains a future decision point"
+    },
+    "akshare_extension": {
+      "file": "web/backend/app/adapters/akshare_extension.py",
+      "exists": true,
+      "instance_none": false,
+      "provider_symbols_present": [
+        "get_akshare_extension",
+        "get_akshare_extension_dependency"
+      ],
+      "app_state_helpers_present": true,
+      "test_evidence_files": [
+        "web/backend/tests/test_akshare_extension_lifecycle_di.py"
+      ],
+      "direct_consumer_files": [
+        "web/backend/app/services/market_data_service/market_data_service_methods/part1.py",
+        "web/backend/app/core/unified_market_data_service.py",
+        "web/backend/app/core/adapter_factory.py"
+      ],
+      "triage_disposition": "provider and lifecycle helper evidence present; classify direct consumers before any future implementation"
+    },
+    "tqlex_adapter": {
+      "file": "web/backend/app/adapters/tqlex_adapter.py",
+      "exists": true,
+      "instance_none": false,
+      "provider_symbols_present": [
+        "get_tqlex_adapter",
+        "get_tqlex_adapter_dependency"
+      ],
+      "app_state_helpers_present": true,
+      "test_evidence_files": [
+        "web/backend/tests/test_tqlex_lifecycle_di.py"
+      ],
+      "direct_consumer_files": [
+        "web/backend/app/services/market_data_service/market_data_service_methods/part1.py",
+        "web/backend/app/core/adapter_factory.py"
+      ],
+      "triage_disposition": "provider and lifecycle helper evidence present; classify direct consumers before any future implementation"
+    },
+    "cninfo_adapter": {
+      "file": "web/backend/app/adapters/cninfo_adapter.py",
+      "exists": true,
+      "instance_none": false,
+      "provider_symbols_present": [
+        "get_cninfo_adapter",
+        "get_cninfo_adapter_dependency"
+      ],
+      "app_state_helpers_present": true,
+      "test_evidence_files": [
+        "web/backend/tests/test_cninfo_lifecycle_di.py"
+      ],
+      "direct_consumer_files": [
+        "web/backend/app/services/multi_source_manager.py"
+      ],
+      "triage_disposition": "provider and lifecycle helper evidence present; classify direct consumers before any future implementation"
+    },
+    "realtime_mtm": {
+      "adapter_file_under_web_backend_app_adapters": false,
+      "mention_files": [
+        "web/backend/app/main.py",
+        "web/backend/app/api/realtime_mtm_init.py",
+        "web/backend/app/api/realtime_market.py",
+        "web/backend/app/api/realtime_mtm_adapter.py",
+        "web/backend/tests/test_runtime_logging_wave5.py",
+        "web/backend/tests/test_logging_noise_regressions.py",
+        "web/backend/tests/test_health_route_conflicts.py"
+      ],
+      "triage_disposition": "do not treat as a current adapter singleton target until canonical identity and ownership are proved"
+    }
+  },
+  "app_wiring": {
+    "web/backend/app/app_factory.py": {
+      "mentions_eastmoney_enhanced": true,
+      "mentions_install_eastmoney_enhanced_adapter": true
+    },
+    "web/backend/app/main.py": {
+      "mentions_eastmoney_enhanced": false,
+      "mentions_install_eastmoney_enhanced_adapter": false
+    }
+  },
+  "direct_consumer_summary": {
+    "distinct_files": 5,
+    "files": [
+      "web/backend/app/core/adapter_factory.py",
+      "web/backend/app/core/unified_market_data_service.py",
+      "web/backend/app/services/market_data_service/market_data_service_methods/part1.py",
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/app/services/multi_source_manager.py"
+    ],
+    "route_handler_direct_consumer_files_found": 0,
+    "required_classification": [
+      "acceptable compatibility getter use",
+      "candidate for provider injection in a future approved lane",
+      "factory/core integration point that should remain centralized",
+      "false positive or out-of-scope for issue #78"
+    ]
+  },
+  "recommended_decision": {
+    "accept_current_provider_app_state_test_evidence_for_five_targets": true,
+    "treat_issue_78_as_reconciliation_lane": true,
+    "keep_issue_79_blocked_until_issue_78_reviewed_disposition": true,
+    "implementation_authorized": false,
+    "openspec_created_or_modified": false,
+    "issue_labels_changed": false
+  },
+  "future_implementation_preconditions": [
+    "selected adapter target list and excluded targets",
+    "app main.py versus app_factory.py composition-root decision",
+    "exact files allowed for edits",
+    "classification of direct service/core consumers",
+    "current-head test plan for dependency overrides and import stability",
+    "rollback plan for app-state lifecycle registration",
+    "GitNexus impact before source edits",
+    "gitnexus_detect_changes(scope=staged) before commit"
+  ],
+  "scope": {
+    "mode": "governance-triage-evidence-only",
+    "source_code_changed": false,
+    "tests_changed": false,
+    "runtime_behavior_changed": false,
+    "pm2_commands_executed": false,
+    "implementation_issue_created": false,
+    "openspec_proposal_created_or_modified": false,
+    "issue_labels_changed": false,
+    "issue_78_moved_to_ready_for_agent": false,
+    "issue_79_moved_to_ready_for_agent": false,
+    "issue_92_moved_to_ready_for_agent": false
+  }
+}
