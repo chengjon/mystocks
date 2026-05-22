@@ -1,0 +1,118 @@
+version: "v0.2"
+
+task:
+  id: "pr-154"
+  title: "Implement adapter-aware watchlist helper cleanup"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-service-lifecycle-di-watchlist-helper-cleanup-implementation"
+  objective: "implement the G2.14 adapter-aware watchlist helper cleanup within the exact G2.13 authorized scope"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-watchlist-helper-cleanup-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-watchlist-helper-cleanup-implementation"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow adapter-aware watchlist helper lifecycle DI cleanup authorized by PR #153; route paths, OpenAPI behavior, product surface, route handlers, and runtime process state are unchanged"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "web/backend/app/services/data_adapters/watchlist.py"
+    - "web/backend/app/services/adapters/watchlist_adapter.py"
+    - "web/backend/tests/test_watchlist_helper_lifecycle_di.py"
+    - "docs/reports/quality/backend-watchlist-helper-cleanup-implementation-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-154.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/watchlist.py"
+    - "web/backend/app/services/watchlist_service.py"
+    - "web/backend/app/services/email_service.py"
+    - "web/backend/app/services/announcement_service.py"
+    - "web/backend/app/services/tradingview_widget_service.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No route handler, OpenAPI, frontend, generated client, docs/API, PM2, script, config, or OpenSpec changes in this PR"
+  - "No fourth service lifecycle DI candidate selection or implementation in this PR"
+  - "No deletion of get_watchlist_service compatibility behavior"
+  - "No issue label changes or ready-for-agent movement"
+
+acceptance:
+  checks:
+    - id: "focused-helper-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_watchlist_helper_lifecycle_di.py -q -n 0 --tb=short --no-cov"
+      required: true
+    - id: "route-di-regression-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_watchlist_service_lifecycle_di.py -q -n 0 --tb=short --no-cov"
+      required: true
+    - id: "watchlist-logging-regression-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_watchlist_service_logging.py -q -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/data_adapters/watchlist.py web/backend/app/services/adapters/watchlist_adapter.py web/backend/tests/test_watchlist_helper_lifecycle_di.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/services/data_adapters/watchlist.py web/backend/app/services/adapters/watchlist_adapter.py web/backend/tests/test_watchlist_helper_lifecycle_di.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-watchlist-helper-cleanup-implementation-2026-05-23.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-154.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If provider injection changes default behavior, live watchlist adapter calls could fail"
+    - "If route code is modified, the G2.10 route-surface boundary would be violated"
+  rollback_plan: "revert this PR and rerun focused helper and route DI tests"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "add adapter-aware provider seam to watchlist helper adapters"
+    modified_scope: "two watchlist adapter/helper files, focused tests, implementation report, steward tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "compatibility getter fallback preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused helper tests, route DI regression, ruff, black, mainline scope, or GitNexus staged checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-23T02:26:27+08:00"
+    approval_note: "human maintainer requested continuation after PR #153 authorization; implementation is limited to authorized adapter-aware watchlist helper cleanup scope"
+    secondary_approved: false

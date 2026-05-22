@@ -451,8 +451,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md`,
 │   │   `.planning/codebase/generated/watchlist-helper-cleanup-next-lane-decision-2026-05-23.json`,
 │   │   `backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md`,
-│   │   `.planning/codebase/generated/watchlist-helper-cleanup-implementation-authorization-2026-05-23.json`
-│   ├── State: watchlist-helper-cleanup-implementation-authorization-prepared
+│   │   `.planning/codebase/generated/watchlist-helper-cleanup-implementation-authorization-2026-05-23.json`,
+│   │   `backend-watchlist-helper-cleanup-implementation-2026-05-23.md`
+│   ├── State: watchlist-helper-cleanup-implementation-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -520,12 +521,18 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `#152` merged at
 │   │                 `0ccf1fc58d531cba8f64cc1031d53875e636a766`; G2.13 now
 │   │                 records the future adapter-aware helper cleanup write scope,
-│   │                 TDD gates, GitNexus gates, and rollback boundary
-│   └── Next gate: Human review of the G2.13 implementation authorization
-│                  packet; if accepted, create a separate G2.14 implementation
-│                  branch limited to `data_adapters/watchlist.py`,
-│                  `adapters/watchlist_adapter.py`, optional tiny
-│                  `watchlist_service.py` helper support, and focused tests
+│   │                 TDD gates, GitNexus gates, and rollback boundary; PR `#153`
+│   │                 merged at
+│   │                 `938682debb90a25392ca208e706d8388d06de786`; G2.14 now
+│   │                 implements that scope by adding constructor-configured
+│   │                 `watchlist_service_provider` seams to both watchlist adapter
+│   │                 helper files while preserving default getter fallback and
+│   │                 leaving route code unchanged; PR `#154` is open with
+│   │                 Mainline Governance Gate and check-compliance passed
+│   └── Next gate: Human review of PR `#154`; if accepted and
+│                  merged, create a separate G2.15 closeout packet with merge
+│                  commit, final checks, and the next service lifecycle DI
+│                  decision gate
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -576,7 +583,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `inject-technical-pattern-detection-service-di` task `5.3` closeout | D2.1a.1 | Final OpenSpec checklist governance merged in PR `#113`; issue `#92` received implementation and final governance closeout comments | D2.1a is 100% closed; future DI work requires a new approved child lane |
 
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
-| `backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md` | G | G2.13 implementation authorization packet prepared: future write scope, tests, GitNexus gates, and rollback plan defined for adapter-aware watchlist helper cleanup | Human review; if accepted, create separate G2.14 implementation branch |
+| `backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md` | G | G2.13 implementation authorization packet merged: future write scope, tests, GitNexus gates, and rollback plan defined for adapter-aware watchlist helper cleanup | Superseded by G2.14 implementation evidence |
+| `backend-watchlist-helper-cleanup-implementation-2026-05-23.md` | G | G2.14 implementation prepared for review: both watchlist adapter/helper files now accept constructor-configured provider seams; route code unchanged | Human review; if accepted and merged, create G2.15 closeout packet |
 
 ## Completed And Reviewed Ledger
 
@@ -653,7 +661,8 @@ review, PR review, or OpenSpec archive review.
 | D2.x OpenSpec proposal approvals recorded | D2.3-D2.6 | Human maintainer approval recorded for D2.3/D2.4/D2.5/D2.6 proposal task-list entry into governance/evidence execution | Approval-only: each change may execute its governance/evidence `tasks.md` checklist with current-head freshness; no backend source, frontend source, tests, generated client, docs/API edits, route behavior, OpenAPI schema/exposure, probe URL change, PM2 command execution, service restart/recreation, implementation issue creation, or movement of issue `#92` to `ready-for-agent` is authorized | `docs/reports/quality/backend-openspec-d2-proposal-approval-record-2026-05-22.md`; `governance/mainline/task-cards/pr-120.yaml` | Execute approved governance/evidence tasks and keep every downstream decision tied to refreshed evidence |
 
 | G2.12 watchlist helper cleanup next-lane decision | G | Selected adapter-aware watchlist helper cleanup authorization as the next service lifecycle DI lane after G2.11 closeout | Reviewed and merged by PR `#152` at `0ccf1fc58d531cba8f64cc1031d53875e636a766`; no backend source, test, OpenSpec, issue label, route, OpenAPI, or runtime change authorized | `docs/reports/quality/backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md`; `.planning/codebase/generated/watchlist-helper-cleanup-next-lane-decision-2026-05-23.json` | Superseded by G2.13 authorization packet |
-| G2.13 watchlist helper cleanup implementation authorization | G | Exact future write scope, TDD plan, GitNexus gates, and rollback boundary prepared for adapter-aware watchlist helper cleanup | Prepared for review; no backend source, test, OpenSpec, issue label, route, OpenAPI, or runtime change authorized by this PR | `docs/reports/quality/backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md`; `.planning/codebase/generated/watchlist-helper-cleanup-implementation-authorization-2026-05-23.json` | If accepted, create G2.14 implementation branch limited to the authorized helper scope |
+| G2.13 watchlist helper cleanup implementation authorization | G | Exact future write scope, TDD plan, GitNexus gates, and rollback boundary prepared for adapter-aware watchlist helper cleanup | Reviewed and merged by PR `#153` at `938682debb90a25392ca208e706d8388d06de786`; no backend source, test, OpenSpec, issue label, route, OpenAPI, or runtime change authorized by that PR | `docs/reports/quality/backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md`; `.planning/codebase/generated/watchlist-helper-cleanup-implementation-authorization-2026-05-23.json` | Superseded by G2.14 implementation evidence |
+| G2.14 watchlist helper cleanup implementation | G | Adapter-aware provider seam implemented for both watchlist helper adapter files with focused TDD coverage | PR `#154` open for review: red `4 failed, 2 passed`; green focused helper `6 passed`; route DI regression `3 passed`; logging regression `3 passed`; ruff passed; OpenAPI smoke `routes=548`, `paths=500`, `duplicate_operation_ids=0`; Mainline Governance Gate and check-compliance passed | `docs/reports/quality/backend-watchlist-helper-cleanup-implementation-2026-05-23.md`; `web/backend/tests/test_watchlist_helper_lifecycle_di.py`; https://github.com/chengjon/mystocks/pull/154 | If accepted and merged, create G2.15 closeout packet |
 
 ## OpenSpec Branch Register
 
