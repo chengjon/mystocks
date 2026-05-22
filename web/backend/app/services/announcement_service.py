@@ -13,6 +13,7 @@ import logging
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
+from fastapi import Request
 import pandas as pd
 from sqlalchemy import and_, create_engine, desc
 from sqlalchemy.orm import Session, sessionmaker
@@ -519,6 +520,7 @@ class AnnouncementService:
 
 # 全局单例
 _announcement_service = None
+ANNOUNCEMENT_SERVICE_STATE_KEY = "announcement_service"
 
 
 def get_announcement_service() -> AnnouncementService:
@@ -527,3 +529,18 @@ def get_announcement_service() -> AnnouncementService:
     if _announcement_service is None:
         _announcement_service = AnnouncementService()
     return _announcement_service
+
+
+def install_announcement_service(
+    app: Any, service: AnnouncementService | None = None
+) -> AnnouncementService:
+    selected_service = service if service is not None else get_announcement_service()
+    setattr(app.state, ANNOUNCEMENT_SERVICE_STATE_KEY, selected_service)
+    return selected_service
+
+
+def get_announcement_service_dependency(request: Request) -> AnnouncementService:
+    service = getattr(request.app.state, ANNOUNCEMENT_SERVICE_STATE_KEY, None)
+    if service is None:
+        service = install_announcement_service(request.app)
+    return service

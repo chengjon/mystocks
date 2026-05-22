@@ -439,8 +439,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-service-lifecycle-di-second-candidate-selection-2026-05-22.md`,
 │   │   `.planning/codebase/generated/service-lifecycle-di-second-candidate-selection-2026-05-22.json`,
 │   │   `backend-announcement-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
-│   │   `.planning/codebase/generated/announcement-service-lifecycle-di-implementation-authorization-2026-05-22.json`
-│   ├── State: announcement-service-di-authorization-prepared-for-review
+│   │   `.planning/codebase/generated/announcement-service-lifecycle-di-implementation-authorization-2026-05-22.json`,
+│   │   `backend-announcement-service-lifecycle-di-implementation-2026-05-22.md`
+│   ├── State: announcement-service-di-implementation-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -470,13 +471,16 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 records a future implementation authorization packet for
 │   │                 `announcement_service.py`, limited to the announcement
 │   │                 service, announcement routes, focused tests, and an
-│   │                 implementation report/task card
-│   └── Next gate: Human review of the G2.5 implementation authorization packet;
-│                  if accepted, create a separate implementation worktree and PR
-│                  for `announcement_service.py`; no service source edits,
-│                  OpenSpec proposal, issue-label change, PM2 command, or
-│                  `ready-for-agent` movement is authorized by this G2.5
-│                  governance PR itself
+│   │                 implementation report/task card; PR `#145` merged at
+│   │                 `e9d674c01edc5e701a0b3eca80b05f62dfc4986f`; G2.6 now
+│   │                 implements that approved scope by adding an app-state
+│   │                 provider seam to `announcement_service.py` and injecting
+│   │                 `AnnouncementService` into 11 announcement route handlers
+│   └── Next gate: Human review of the G2.6 implementation PR; if merged, create
+│                  a separate closeout record before selecting any third service
+│                  lifecycle DI candidate; no OpenSpec proposal, issue-label
+│                  change, PM2 command, or `ready-for-agent` movement is
+│                  authorized by this implementation PR
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -672,7 +676,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review `announcement_service.py` lifecycle DI authorization | Future service seam lane | G2.5 authorization packet prepared; future implementation may start only after human acceptance and must stay inside the allowed write scope |
+| P2 | Review `announcement_service.py` lifecycle DI implementation | Future service seam lane | G2.6 implementation PR prepared; if merged, create a closeout record before selecting any third service lifecycle DI candidate |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items

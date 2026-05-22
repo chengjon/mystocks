@@ -1,0 +1,120 @@
+version: "v0.2"
+
+task:
+  id: "pr-146"
+  title: "implement announcement service lifecycle DI"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-service-lifecycle-di-announcement-service-implementation"
+  objective: "migrate announcement_service.py and its announcement route consumers to an app.state-backed FastAPI dependency provider"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-announcement-service-di-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow service lifecycle DI pilot authorized by PR #145; route paths, OpenAPI behavior, product surface, and runtime process state are unchanged"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "web/backend/app/services/announcement_service.py"
+    - "web/backend/app/api/announcement/routes.py"
+    - "web/backend/tests/test_announcement_service_lifecycle_di.py"
+    - "web/backend/tests/test_announcement_routes_regressions.py"
+    - "docs/reports/quality/backend-announcement-service-lifecycle-di-implementation-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-146.yaml"
+  forbidden_paths:
+    - "web/backend/app/services/watchlist_service.py"
+    - "web/backend/app/services/data_adapters/watchlist.py"
+    - "web/backend/app/services/adapters/watchlist_adapter.py"
+    - "web/backend/app/services/email_service.py"
+    - "web/backend/app/services/email_notification_service.py"
+    - "web/backend/app/services/strategy_service.py"
+    - "web/backend/app/services/tdx_service.py"
+    - "web/backend/app/services/stock_search_service/stock_search_service.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No changes to watchlist service, adapter/data-layer services, email service, or any other service singleton"
+  - "No route path, method, OpenAPI exposure, response contract, generated client, frontend, PM2, or runtime process changes"
+  - "No new OpenSpec proposal/spec creation or archive execution"
+  - "No issue label changes"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -q -n 0 --tb=short --no-cov web/backend/tests/test_announcement_service_lifecycle_di.py web/backend/tests/test_announcement_routes_regressions.py"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/announcement_service.py web/backend/app/api/announcement/routes.py web/backend/tests/test_announcement_service_lifecycle_di.py web/backend/tests/test_announcement_routes_regressions.py"
+      required: true
+    - id: "announcement-import-smoke"
+      command: "env PYTHONPATH=web/backend python -c 'from app.services.announcement_service import AnnouncementService, get_announcement_service, get_announcement_service_dependency, install_announcement_service; from app.api.announcement import routes; print(\"announcement service DI import smoke passed\")'"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-announcement-service-lifecycle-di-implementation-2026-05-22.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-146.yaml"
+      required: true
+    - id: "staged-gitnexus"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If only some announcement route callers are migrated, route behavior can silently fall back to the compatibility singleton"
+    - "If watchlist or adapter/data-layer files are edited, the implementation violates the G2.4 candidate boundary"
+    - "If tests only monkeypatch the old getter, dependency injection behavior is not proven"
+  rollback_plan: "Restore direct get_announcement_service route-body calls, remove the app.state provider functions and lifecycle DI test, and leave watchlist/adapter/data-layer files untouched"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement the second announcement_service.py service lifecycle DI pilot"
+    modified_scope: "announcement_service.py, announcement routes, focused tests, implementation report, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "get_announcement_service remains as compatibility getter; announcement routes now use injected AnnouncementService"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, ruff, import smoke, mainline scope, staged GitNexus, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-22T19:00:04+08:00"
+    approval_note: "human maintainer approved continuation after PR #145 and authorized opening the announcement_service.py source implementation lane within its exact scope"
+    secondary_approved: false
