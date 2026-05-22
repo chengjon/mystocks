@@ -11,7 +11,9 @@ from datetime import datetime
 from email.header import Header
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
-from typing import Dict, List
+from typing import Any, Dict, List
+
+from fastapi import Request
 
 logger = logging.getLogger(__name__)
 
@@ -317,6 +319,7 @@ class EmailService:
 
 # 全局邮件服务实例（单例模式）
 _email_service = None
+EMAIL_SERVICE_STATE_KEY = "email_service"
 
 
 def get_email_service() -> EmailService:
@@ -330,3 +333,18 @@ def get_email_service() -> EmailService:
     if _email_service is None:
         _email_service = EmailService()
     return _email_service
+
+
+def install_email_service(app: Any, service: EmailService | None = None) -> EmailService:
+    """Install the email service instance on FastAPI app.state."""
+    selected_service = service if service is not None else get_email_service()
+    setattr(app.state, EMAIL_SERVICE_STATE_KEY, selected_service)
+    return selected_service
+
+
+def get_email_service_dependency(request: Request) -> EmailService:
+    """FastAPI dependency provider for the email service."""
+    service = getattr(request.app.state, EMAIL_SERVICE_STATE_KEY, None)
+    if service is None:
+        service = install_email_service(request.app)
+    return service
