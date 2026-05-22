@@ -1,0 +1,150 @@
+{
+  "artifact": "email-service-lifecycle-di-implementation-authorization",
+  "status": "implementation-authorization-prepared-for-review",
+  "generated_at": "2026-05-22T15:33:04+08:00",
+  "git_branch": "g2-2-email-service-di-authorization",
+  "git_head": "0b5e393e2ff1e5da465d26b338d083a6023faf9b",
+  "source_edits_in_this_package": false,
+  "candidate": {
+    "service_file": "web/backend/app/services/email_service.py",
+    "service_class": "EmailService",
+    "compatibility_getter": "get_email_service",
+    "singleton_variable": "_email_service",
+    "sibling_name_collision": "web/backend/app/services/email_notification_service.py",
+    "selection_source": "docs/reports/quality/backend-service-lifecycle-di-candidate-classification-2026-05-22.md",
+    "selection_review_status": "accepted_by_human_maintainer_before_g2_2_package"
+  },
+  "issues": {
+    "adapter_prerequisite": {
+      "number": 78,
+      "state": "CLOSED",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "adapter lifecycle DI prerequisite"
+    },
+    "service_parent": {
+      "number": 79,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "service lifecycle DI parent lane"
+    },
+    "downstream_parent": {
+      "number": 92,
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-downstream",
+        "ready-for-human"
+      ],
+      "role": "downstream decision audit trail"
+    }
+  },
+  "gitnexus": {
+    "EmailService": {
+      "file": "web/backend/app/services/email_service.py",
+      "risk": "LOW",
+      "direct_callers": 0,
+      "processes_affected": 0
+    },
+    "get_email_service": {
+      "file": "web/backend/app/services/email_service.py",
+      "risk": "MEDIUM",
+      "direct_callers": 6,
+      "processes_affected": 0,
+      "direct_caller_functions": [
+        "web/backend/app/api/notification.py:get_email_service_status",
+        "web/backend/app/api/notification.py:send_email",
+        "web/backend/app/api/notification.py:send_welcome_email",
+        "web/backend/app/api/notification.py:send_daily_newsletter",
+        "web/backend/app/api/notification.py:send_price_alert",
+        "web/backend/app/api/notification.py:send_test_email"
+      ]
+    },
+    "future_pre_edit_gate": "rerun context and upstream impact for EmailService and file-disambiguated get_email_service before editing source; stop if HIGH or CRITICAL"
+  },
+  "future_allowed_write_scope_if_approved": [
+    "web/backend/app/services/email_service.py",
+    "web/backend/app/api/notification.py",
+    "web/backend/tests/test_notification_logging.py",
+    "web/backend/tests/test_email_service_lifecycle_di.py",
+    "docs/reports/quality/backend-email-service-lifecycle-di-implementation-*.md",
+    "governance/mainline/task-cards/pr-*.yaml"
+  ],
+  "future_forbidden_scope": [
+    "web/backend/app/services/email_notification_service.py",
+    "web/backend/app/services/strategy_service.py",
+    "web/backend/app/services/tdx_service.py",
+    "web/backend/app/services/stock_search_service/stock_search_service.py",
+    "web/backend/app/services/monitoring_service.py",
+    "web/backend/app/services/technical_analysis_service.py",
+    "frontend",
+    "docs/api",
+    "generated clients",
+    "OpenAPI schema behavior",
+    "route path/method/response contract changes",
+    "PM2/runtime scripts or process state"
+  ],
+  "future_route_consumer_matrix": [
+    {
+      "method": "GET",
+      "route_local_path": "/status",
+      "function": "get_email_service_status",
+      "future_access": "Depends(get_email_service_dependency)"
+    },
+    {
+      "method": "POST",
+      "route_local_path": "/email/send",
+      "function": "send_email",
+      "future_access": "Depends(get_email_service_dependency)"
+    },
+    {
+      "method": "POST",
+      "route_local_path": "/email/welcome",
+      "function": "send_welcome_email",
+      "future_access": "Depends(get_email_service_dependency)"
+    },
+    {
+      "method": "POST",
+      "route_local_path": "/email/newsletter",
+      "function": "send_daily_newsletter",
+      "future_access": "Depends(get_email_service_dependency)"
+    },
+    {
+      "method": "POST",
+      "route_local_path": "/email/price-alert",
+      "function": "send_price_alert",
+      "future_access": "Depends(get_email_service_dependency)"
+    },
+    {
+      "method": "POST",
+      "route_local_path": "/test-email",
+      "function": "send_test_email",
+      "future_access": "Depends(get_email_service_dependency)"
+    }
+  ],
+  "future_required_tests": [
+    "python -m pytest web/backend/tests/test_notification_logging.py web/backend/tests/test_email_service_lifecycle_di.py -q -n 0 --tb=short --no-cov",
+    "ruff check web/backend/app/services/email_service.py web/backend/app/api/notification.py web/backend/tests/test_notification_logging.py web/backend/tests/test_email_service_lifecycle_di.py"
+  ],
+  "future_required_gates": [
+    "GitNexus context and upstream impact before source edits",
+    "current-head write-scope check",
+    "focused pytest",
+    "ruff on touched backend files",
+    "app.main import smoke if branch policy requires runtime import checks",
+    "staged gitnexus_detect_changes before commit",
+    "mainline scope gate using future task card"
+  ],
+  "rollback": {
+    "this_package": "revert authorization report, JSON artifact, steward tree update, and task card",
+    "future_implementation": [
+      "restore direct get_email_service route-body calls in notification.py",
+      "remove provider functions as a unit if provider wiring is reverted",
+      "remove test_email_service_lifecycle_di.py if provider is reverted",
+      "do not touch email_notification_service.py"
+    ]
+  }
+}
