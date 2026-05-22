@@ -1,0 +1,162 @@
+{
+  "artifact": "service-lifecycle-di-design-triage",
+  "generated_at": "2026-05-22T11:47:21+08:00",
+  "generated_at_utc": "2026-05-22T03:47:21Z",
+  "git_branch": "g2-issue79-service-lifecycle-triage",
+  "git_head": "9be035fd895dac1d28cbb5d3c7195e81da8d87a1",
+  "issues": {
+    "closed_prerequisite": {
+      "number": 78,
+      "state": "CLOSED",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "adapter lifecycle DI prerequisite reconciled and closed",
+      "closeout_comment": "https://github.com/chengjon/mystocks/issues/78#issuecomment-4514804591",
+      "url": "https://github.com/chengjon/mystocks/issues/78"
+    },
+    "primary": {
+      "number": 79,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "service lifecycle DI design/triage lane",
+      "url": "https://github.com/chengjon/mystocks/issues/79"
+    },
+    "parent": {
+      "number": 92,
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-downstream",
+        "ready-for-human"
+      ],
+      "role": "parent downstream decision index",
+      "url": "https://github.com/chengjon/mystocks/issues/92"
+    }
+  },
+  "scan_scope": {
+    "directory": "web/backend/app/services",
+    "service_files_scanned": 152,
+    "broad_singleton_getter_candidate_files": 104,
+    "broad_heuristic_is_implementation_backlog": false,
+    "rejected_broad_signal": "module_service_singleton overmatched every service file and must not drive implementation decisions"
+  },
+  "narrow_signal_counts": {
+    "instance_none": 4,
+    "service_getter": 16,
+    "dependency_provider": 1,
+    "app_state": 1,
+    "lru_cache_or_cache_decorator": 4,
+    "current_route_di_pilot": 1
+  },
+  "instance_none_targets": [
+    {
+      "file": "web/backend/app/services/strategy_service.py",
+      "initial_classification": [
+        "external-client",
+        "db-session-backed",
+        "process-level singleton"
+      ],
+      "disposition": "not first pilot without impact analysis and route/service owner selection"
+    },
+    {
+      "file": "web/backend/app/services/tdx_service.py",
+      "initial_classification": [
+        "external-client",
+        "process-level singleton"
+      ],
+      "disposition": "not first pilot without adapter/client ownership review"
+    },
+    {
+      "file": "web/backend/app/services/monitoring_service.py",
+      "initial_classification": [
+        "db-session-backed",
+        "cache/task-running",
+        "process-level singleton",
+        "large cross-cutting file"
+      ],
+      "disposition": "exclude from first pilot; needs separate monitoring lifecycle design"
+    },
+    {
+      "file": "web/backend/app/services/technical_analysis_service.py",
+      "initial_classification": [
+        "external-client",
+        "cache/task-running",
+        "analytics",
+        "process-level singleton",
+        "large cross-cutting file"
+      ],
+      "disposition": "exclude from first pilot; needs data-source and cache boundary review"
+    }
+  ],
+  "existing_pattern_evidence": {
+    "tradingview_widget_service": {
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "signals": [
+        "get_tradingview_service",
+        "get_tradingview_service_dependency",
+        "app-state signal"
+      ],
+      "disposition": "reference evidence only; not proof that all service lifecycle work is complete"
+    },
+    "technical_pattern_detection_service": {
+      "file": "web/backend/app/services/technical_pattern_detection_service.py",
+      "signals": [
+        "D2.1a route-level DI pilot",
+        "cache decorator"
+      ],
+      "disposition": "completed pilot evidence; do not reopen without current-head contradiction"
+    }
+  },
+  "service_getter_files": [
+    "web/backend/app/services/__init__.py",
+    "web/backend/app/services/advanced_analysis_service.py",
+    "web/backend/app/services/announcement_service.py",
+    "web/backend/app/services/data_service.py",
+    "web/backend/app/services/data_service_enhanced.py",
+    "web/backend/app/services/email_notification_service.py",
+    "web/backend/app/services/email_service.py",
+    "web/backend/app/services/market_data_service/get_market_data_service.py",
+    "web/backend/app/services/realtime_streaming_service.py",
+    "web/backend/app/services/stock_search_service/stock_search_service.py",
+    "web/backend/app/services/strategy_service.py",
+    "web/backend/app/services/tdx_service.py",
+    "web/backend/app/services/tradingview_widget_service.py",
+    "web/backend/app/services/unified_data_service.py",
+    "web/backend/app/services/watchlist_service.py",
+    "web/backend/app/services/wencai_service.py"
+  ],
+  "recommended_decision": {
+    "issue_79_may_begin_design_triage": true,
+    "keep_issue_79_needs_triage": true,
+    "move_issue_79_to_ready_for_agent": false,
+    "implementation_authorized": false,
+    "openspec_created_or_modified": false,
+    "next_packet_required": "service lifecycle candidate classification and pilot authorization"
+  },
+  "required_next_packet": [
+    "selected candidate or explicit no-pilot decision",
+    "exact write scope",
+    "caller and route consumer matrix",
+    "interface/test-double strategy",
+    "dependency override plan",
+    "app-state or route-level lifecycle choice",
+    "rollback plan",
+    "GitNexus impact before source edits",
+    "focused test plan"
+  ],
+  "scope": {
+    "mode": "governance-design-triage-only",
+    "source_code_changed": false,
+    "tests_changed": false,
+    "runtime_behavior_changed": false,
+    "pm2_commands_executed": false,
+    "implementation_issue_created": false,
+    "openspec_proposal_created_or_modified": false,
+    "issue_labels_changed": false,
+    "issue_79_moved_to_ready_for_agent": false,
+    "issue_92_moved_to_ready_for_agent": false
+  }
+}
