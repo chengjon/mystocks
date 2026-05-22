@@ -440,8 +440,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `.planning/codebase/generated/service-lifecycle-di-second-candidate-selection-2026-05-22.json`,
 │   │   `backend-announcement-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
 │   │   `.planning/codebase/generated/announcement-service-lifecycle-di-implementation-authorization-2026-05-22.json`,
-│   │   `backend-announcement-service-lifecycle-di-implementation-2026-05-22.md`
-│   ├── State: announcement-service-di-implementation-prepared-for-review
+│   │   `backend-announcement-service-lifecycle-di-implementation-2026-05-22.md`,
+│   │   `backend-announcement-service-lifecycle-di-closeout-2026-05-22.md`
+│   ├── State: announcement-service-di-pilot-merged-and-recorded
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -475,12 +476,16 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `e9d674c01edc5e701a0b3eca80b05f62dfc4986f`; G2.6 now
 │   │                 implements that approved scope by adding an app-state
 │   │                 provider seam to `announcement_service.py` and injecting
-│   │                 `AnnouncementService` into 11 announcement route handlers
-│   └── Next gate: Human review of the G2.6 implementation PR; if merged, create
-│                  a separate closeout record before selecting any third service
-│                  lifecycle DI candidate; no OpenSpec proposal, issue-label
+│   │                 `AnnouncementService` into 11 announcement route handlers;
+│   │                 PR `#146` was approved by the human maintainer and merged
+│   │                 at `517f47cb86aa32d32514d8588a653b08898f72c7`; G2.7
+│   │                 records the merged result and confirms the closeout
+│   │                 boundary
+│   └── Next gate: Human review of the G2.7 closeout record; do not select or
+│                  implement a third service lifecycle DI candidate until this
+│                  closeout is accepted; no OpenSpec proposal, issue-label
 │                  change, PM2 command, or `ready-for-agent` movement is
-│                  authorized by this implementation PR
+│                  authorized by this closeout
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -642,6 +647,10 @@ review, PR review, or OpenSpec archive review.
 | G2.1 service lifecycle DI candidate classification | Corrected module singleton scan and GitNexus impact comparison | `ecc39139` | 21 module-level singleton-variable files classified; `email_service.py` selected as first future pilot candidate with `EmailService` LOW impact and file-disambiguated `get_email_service` MEDIUM impact; source edits remain locked behind separate G2.2 implementation authorization |
 | G2.2 email service DI authorization | `email_service.py` implementation authorization | `35e9b2b3d` | PR `#141` merged; future source lane was authorized only for `email_service.py`, six `notification.py` consumers, focused tests, report, and task card |
 | G2.3 email service DI implementation | First service lifecycle DI source pilot | `20657e6e` | PR `#142` merged after human approval; `email_service.py` now provides app.state dependency provider, six `notification.py` email routes inject `EmailService`, focused tests passed, GitHub contract/mainline checks passed, and `email_notification_service.py` remains untouched |
+| G2.4 service lifecycle steward retrospective | First-pilot evidence review and second-candidate selection | `f149534f` | PR `#144` merged; steward-tree operating lessons recorded; `announcement_service.py` selected over `watchlist_service.py` as next authorization candidate, with source edits still locked behind a separate authorization packet |
+| G2.5 announcement service DI authorization | `announcement_service.py` implementation authorization | `e9d674c0` | PR `#145` merged; future source lane was authorized only for `announcement_service.py`, announcement routes, focused tests, implementation report, and task card |
+| G2.6 announcement service DI implementation | Second service lifecycle DI source pilot | `517f47cb` | PR `#146` merged after human approval; `announcement_service.py` now provides app.state dependency provider, 11 announcement route handlers inject `AnnouncementService`, focused tests passed, and watchlist/adapter/data-layer files remain untouched |
+| G2.7 announcement service DI closeout | Merged implementation closeout | `517f47cb` | Closeout prepared: record PR `#146` as merged and reviewed; do not start a third service lifecycle DI candidate until this closeout record is accepted |
 
 ## Update Protocol
 
@@ -676,7 +685,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review `announcement_service.py` lifecycle DI implementation | Future service seam lane | G2.6 implementation PR prepared; if merged, create a closeout record before selecting any third service lifecycle DI candidate |
+| P2 | Review `announcement_service.py` lifecycle DI closeout | Future service seam lane | G2.7 closeout record prepared; `announcement_service.py` is merged and recorded, and no third service lifecycle DI candidate is authorized before closeout acceptance |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items
