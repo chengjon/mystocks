@@ -4,7 +4,7 @@
 
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 from app.services.data_source_interface import (
     HealthStatus,
@@ -30,6 +30,7 @@ class WatchlistDataSourceAdapter(IDataSource):
 
         # Lazy initialization of services (only when needed)
         self._watchlist_service = None
+        self._watchlist_service_provider: Callable[[], Any] | None = config.get("watchlist_service_provider")
         self._mock_manager = None
 
         self.metrics = DataSourceMetrics()
@@ -38,11 +39,14 @@ class WatchlistDataSourceAdapter(IDataSource):
 
     def _get_watchlist_service(self):
         """Lazy initialization of watchlist service"""
-        if self._watchlist_service is None and self.mode != "mock":
+        if self._watchlist_service is None:
             try:
-                from app.services.watchlist_service import get_watchlist_service
+                if self._watchlist_service_provider is not None:
+                    self._watchlist_service = self._watchlist_service_provider()
+                elif self.mode != "mock":
+                    from app.services.watchlist_service import get_watchlist_service
 
-                self._watchlist_service = get_watchlist_service()
+                    self._watchlist_service = get_watchlist_service()
             except Exception as e:
                 self._watchlist_service = None
                 raise RuntimeError(f"Failed to initialize watchlist service: {e}")
