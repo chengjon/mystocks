@@ -1,0 +1,74 @@
+{
+  "artifact": "next-child-lane-selection",
+  "generated_at": "2026-05-22T10:54:13+08:00",
+  "generated_at_utc": "2026-05-22T02:54:13Z",
+  "git_branch": "next-child-lane-selection",
+  "git_head": "c45eaa9c6ba12fbe411015877eef68a48f99a7e8",
+  "parent_issue": {
+    "number": 92,
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-downstream",
+      "ready-for-human"
+    ],
+    "role": "parent downstream decision index",
+    "has_ready_for_agent": false
+  },
+  "candidate_issues": [
+    {
+      "number": 78,
+      "title": "Migrate adapter singletons to FastAPI Depends() lifecycle",
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "selected": true,
+      "reason": "Adapter lifecycle DI is the prerequisite for #79 service lifecycle DI and has pilot evidence but no current triage closure."
+    },
+    {
+      "number": 79,
+      "title": "Migrate service singletons to FastAPI Depends() lifecycle",
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "selected": false,
+      "reason": "Blocked by #78 and requires per-candidate classification before further service migration."
+    }
+  ],
+  "selected_child_lane": {
+    "lane": "G1-adapter-lifecycle-di-triage-and-reconciliation",
+    "future_openspec_change_id_if_approved": "reconcile-backend-adapter-lifecycle-di",
+    "implementation_authorized": false,
+    "openspec_created_or_modified": false,
+    "issue_labels_changed": false
+  },
+  "required_evidence_before_implementation": [
+    "remaining original adapter singleton targets",
+    "current-branch presence of the EastMoney enhanced pilot",
+    "canonical app.main lifecycle wiring status",
+    "route handlers still calling adapter getter singletons directly",
+    "test override coverage for each migrated adapter",
+    "adapter statefulness or split-out exclusions",
+    "exact future write scope",
+    "rollback and compatibility getter strategy"
+  ],
+  "non_selected_candidates": {
+    "issue_79_service_lifecycle_di": "not selected until #78 is reconciled",
+    "d2_2d_wrapper_deletion": "locked behind separate explicit implementation batch",
+    "route_openapi_mutation": "requires separate child packet",
+    "pm2_execution": "requires narrow explicit approval issue, issue comment, or approved runbook"
+  },
+  "scope": {
+    "mode": "governance-selection-only",
+    "source_code_changed": false,
+    "tests_changed": false,
+    "runtime_behavior_changed": false,
+    "pm2_commands_executed": false,
+    "implementation_issue_created": false,
+    "openspec_proposal_created_or_modified": false,
+    "issue_labels_changed": false,
+    "issue_92_moved_to_ready_for_agent": false
+  }
+}
