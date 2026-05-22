@@ -1,0 +1,91 @@
+{
+  "artifact": "issue92-openspec-archive-readiness",
+  "generated_at": "2026-05-22T08:49:13+08:00",
+  "generated_at_utc": "2026-05-22T00:49:13Z",
+  "git_branch": "issue92-archive-readiness-evaluation",
+  "git_head": "bbefed2aee4176936cd491128bb6a85aed2410d3",
+  "current_head_checked_at_review": "2026-05-22T08:49:13+08:00",
+  "stale_if_head_mismatch": true,
+  "scope": {
+    "mode": "governance-evidence-only",
+    "openspec_archive_executed": false,
+    "openspec_changes_modified": false,
+    "source_code_changed": false,
+    "implementation_issue_created": false,
+    "issue_92_moved_to_ready_for_agent": false,
+    "pm2_commands_executed": false
+  },
+  "parent_issue": {
+    "number": 92,
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-downstream",
+      "ready-for-human"
+    ],
+    "has_ready_for_agent": false
+  },
+  "archive_readiness_summary": {
+    "ready_for_archive_review_after_final_closeout_review": [
+      "inject-technical-pattern-detection-service-di",
+      "refresh-backend-route-openapi-governance",
+      "define-backend-backup-route-ownership",
+      "stabilize-backend-control-plane-openapi-docs",
+      "approve-backend-pm2-stateful-gate"
+    ],
+    "blocked_or_not_in_this_batch": [
+      "github-issue-92-backend-openspec-issue15",
+      "decide-backend-core-validation-wrapper-retirement",
+      "close-backend-schema-dual-directory",
+      "define-backend-service-seams-and-singleton-pilots"
+    ],
+    "blocking_condition": "Issue #92 final closeout is prepared for review but has no review artifact yet; do not run openspec archive until that human review is accepted or explicitly waived."
+  },
+  "candidate_changes": [
+    {
+      "change": "inject-technical-pattern-detection-service-di",
+      "openspec_list_state": "Complete",
+      "task_count": 25,
+      "done_count": 25,
+      "archive_readiness": "candidate-after-final-closeout-review",
+      "reason": "D2.1a implementation and final checklist governance are closed by PR #112 and PR #113."
+    },
+    {
+      "change": "refresh-backend-route-openapi-governance",
+      "openspec_list_state": "Complete",
+      "task_count": 19,
+      "done_count": 19,
+      "archive_readiness": "candidate-after-final-closeout-review",
+      "reason": "D2.3 decision package and review are accepted by PR #121 and PR #122."
+    },
+    {
+      "change": "define-backend-backup-route-ownership",
+      "openspec_list_state": "Complete",
+      "task_count": 23,
+      "done_count": 23,
+      "archive_readiness": "candidate-after-final-closeout-review",
+      "reason": "D2.4 decision package and review are accepted by PR #125 and PR #126."
+    },
+    {
+      "change": "stabilize-backend-control-plane-openapi-docs",
+      "openspec_list_state": "Complete",
+      "task_count": 24,
+      "done_count": 24,
+      "archive_readiness": "candidate-after-final-closeout-review",
+      "reason": "D2.5 decision package and review are accepted by PR #123 and PR #124."
+    },
+    {
+      "change": "approve-backend-pm2-stateful-gate",
+      "openspec_list_state": "Complete",
+      "task_count": 15,
+      "done_count": 15,
+      "archive_readiness": "candidate-after-final-closeout-review",
+      "reason": "D2.6 decision package and review are accepted by PR #127 and PR #128."
+    }
+  ],
+  "archive_boundary": [
+    "This artifact does not run openspec archive.",
+    "This artifact does not modify openspec/changes or openspec/specs.",
+    "A future archive PR must explicitly name each change ID, run openspec validate, and preserve issue #92 as a decision index unless a human explicitly closes it."
+  ]
+}
