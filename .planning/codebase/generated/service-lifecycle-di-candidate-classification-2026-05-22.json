@@ -1,0 +1,208 @@
+{
+  "artifact": "service-lifecycle-di-candidate-classification",
+  "generated_at": "2026-05-22T12:04:41+08:00",
+  "generated_at_utc": "2026-05-22T04:04:41Z",
+  "git_branch": "g2-issue79-candidate-classification",
+  "git_head": "ecc391393dbbba8b961fb351c94cc4a1ad82be95",
+  "issues": {
+    "closed_prerequisite": {
+      "number": 78,
+      "state": "CLOSED",
+      "role": "adapter lifecycle DI prerequisite reconciled and closed",
+      "closeout_comment": "https://github.com/chengjon/mystocks/issues/78#issuecomment-4514804591",
+      "url": "https://github.com/chengjon/mystocks/issues/78"
+    },
+    "primary": {
+      "number": 79,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "service lifecycle DI candidate classification lane",
+      "url": "https://github.com/chengjon/mystocks/issues/79"
+    },
+    "parent": {
+      "number": 92,
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-downstream",
+        "ready-for-human"
+      ],
+      "role": "parent downstream decision index",
+      "url": "https://github.com/chengjon/mystocks/issues/92"
+    }
+  },
+  "input_evidence": {
+    "design_triage_pr": 139,
+    "design_triage_merge_commit": "ecc391393dbbba8b961fb351c94cc4a1ad82be95",
+    "design_triage_report": "docs/reports/quality/backend-service-lifecycle-di-design-triage-2026-05-22.md",
+    "design_triage_artifact": ".planning/codebase/generated/service-lifecycle-di-design-triage-2026-05-22.json"
+  },
+  "corrected_inventory": {
+    "service_files_scanned": 152,
+    "module_level_singleton_variable_files": 21,
+    "service_getter_files_from_prior_packet": 16,
+    "existing_provider_app_state_pattern": 1,
+    "completed_route_level_di_pilot": 1,
+    "module_level_singleton_pattern": "_[name]_(service|manager|registry|client|provider|instance|adapter)* = None",
+    "is_implementation_backlog": false
+  },
+  "classification": {
+    "already_has_provider_app_state_pattern": [
+      "web/backend/app/services/tradingview_widget_service.py"
+    ],
+    "completed_route_level_di_pilot": [
+      "web/backend/app/services/technical_pattern_detection_service.py"
+    ],
+    "recommended_first_future_pilot": [
+      "web/backend/app/services/email_service.py"
+    ],
+    "name_collision_disambiguation_required": [
+      "web/backend/app/services/email_notification_service.py"
+    ],
+    "critical_or_broad_route_impact_excluded": [
+      "web/backend/app/services/strategy_service.py",
+      "web/backend/app/services/tdx_service.py",
+      "web/backend/app/services/stock_search_service/stock_search_service.py"
+    ],
+    "large_or_cross_cutting_excluded": [
+      "web/backend/app/services/monitoring_service.py",
+      "web/backend/app/services/technical_analysis_service.py"
+    ],
+    "domain_heavy_medium_candidates_deferred": [
+      "web/backend/app/services/announcement_service.py",
+      "web/backend/app/services/watchlist_service.py"
+    ],
+    "real_time_room_streaming_state_requires_separate_design": [
+      "web/backend/app/services/realtime_streaming_service.py",
+      "web/backend/app/services/room_socketio_adapter.py",
+      "web/backend/app/services/room_management.py",
+      "web/backend/app/services/room_permission_service.py"
+    ],
+    "central_data_integration_services_require_separate_design": [
+      "web/backend/app/services/data_service.py",
+      "web/backend/app/services/data_service_enhanced.py",
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/app/services/unified_data_service.py",
+      "web/backend/app/services/multi_source_manager.py"
+    ]
+  },
+  "gitnexus_impact_evidence": {
+    "TradingViewWidgetService": {
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "risk": "LOW",
+      "direct_callers": 0,
+      "processes_affected": 0,
+      "disposition": "reference evidence only"
+    },
+    "get_tradingview_service": {
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "risk": "LOW",
+      "direct_callers": 1,
+      "processes_affected": 0,
+      "disposition": "reference evidence only"
+    },
+    "get_tradingview_service_dependency": {
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "risk": "LOW",
+      "direct_callers": 0,
+      "processes_affected": 0,
+      "disposition": "reference provider pattern"
+    },
+    "EmailService": {
+      "file": "web/backend/app/services/email_service.py",
+      "risk": "LOW",
+      "direct_callers": 0,
+      "processes_affected": 0,
+      "disposition": "candidate service class"
+    },
+    "get_email_service": {
+      "file": "web/backend/app/services/email_service.py",
+      "risk": "MEDIUM",
+      "direct_callers": 6,
+      "processes_affected": 0,
+      "disposition": "recommended first future pilot"
+    },
+    "get_announcement_service": {
+      "file": "web/backend/app/services/announcement_service.py",
+      "risk": "MEDIUM",
+      "direct_callers": 11,
+      "processes_affected": 0,
+      "disposition": "defer"
+    },
+    "get_watchlist_service": {
+      "file": "web/backend/app/services/watchlist_service.py",
+      "risk": "MEDIUM",
+      "direct_callers": 9,
+      "processes_affected": 0,
+      "disposition": "defer"
+    },
+    "get_strategy_service": {
+      "file": "web/backend/app/services/strategy_service.py",
+      "risk": "CRITICAL",
+      "direct_callers": 6,
+      "processes_affected": 0,
+      "disposition": "exclude from first pilot"
+    },
+    "get_tdx_service": {
+      "file": "web/backend/app/services/tdx_service.py",
+      "risk": "CRITICAL",
+      "direct_callers": 2,
+      "processes_affected": 5,
+      "disposition": "exclude from first pilot"
+    },
+    "get_stock_search_service": {
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "risk": "CRITICAL",
+      "direct_callers": 6,
+      "processes_affected": 11,
+      "disposition": "exclude from first pilot"
+    }
+  },
+  "future_implementation_authorization_scope_if_accepted": {
+    "candidate": "web/backend/app/services/email_service.py",
+    "write_scope": [
+      "web/backend/app/services/email_service.py",
+      "web/backend/app/api/notification.py",
+      "web/backend/tests/test_notification_logging.py",
+      "web/backend/tests/test_email_service_lifecycle_di.py",
+      "governance/mainline/task-cards/pr-*.yaml",
+      "docs/reports/quality/backend-email-service-lifecycle-di-implementation-*.md"
+    ],
+    "explicitly_out_of_scope": [
+      "web/backend/app/services/email_notification_service.py",
+      "web/backend/app/services/strategy_service.py",
+      "web/backend/app/services/tdx_service.py",
+      "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "web/backend/app/services/monitoring_service.py",
+      "web/backend/app/services/technical_analysis_service.py",
+      "PM2",
+      "OpenAPI schema behavior",
+      "generated clients",
+      "frontend",
+      "docs/api"
+    ],
+    "source_edits_authorized_by_this_packet": false
+  },
+  "required_future_gates": [
+    "GitNexus impact for EmailService and file-disambiguated get_email_service before source edits",
+    "current-head write scope verification",
+    "notification.py route consumer matrix",
+    "dependency override test plan",
+    "rollback instructions restoring direct get_email_service calls",
+    "staged gitnexus_detect_changes before commit"
+  ],
+  "scope": {
+    "mode": "governance-candidate-classification-only",
+    "source_code_changed": false,
+    "tests_changed": false,
+    "runtime_behavior_changed": false,
+    "pm2_commands_executed": false,
+    "implementation_issue_created": false,
+    "openspec_proposal_created_or_modified": false,
+    "issue_labels_changed": false,
+    "issue_79_moved_to_ready_for_agent": false,
+    "issue_92_moved_to_ready_for_agent": false
+  }
+}
