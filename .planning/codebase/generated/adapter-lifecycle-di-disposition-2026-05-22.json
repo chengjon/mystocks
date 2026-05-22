@@ -1,0 +1,111 @@
+{
+  "artifact": "adapter-lifecycle-di-disposition",
+  "generated_at": "2026-05-22T11:27:03+08:00",
+  "generated_at_utc": "2026-05-22T03:27:03Z",
+  "git_branch": "g1-issue78-disposition",
+  "git_head": "299f0aa7672993859b2cdd1f6515981a99d90f1e",
+  "input_pr": {
+    "number": 136,
+    "state": "MERGED",
+    "merge_commit": "299f0aa7672993859b2cdd1f6515981a99d90f1e",
+    "url": "https://github.com/chengjon/mystocks/pull/136"
+  },
+  "issues": {
+    "primary": {
+      "number": 78,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "adapter lifecycle DI prerequisite lane",
+      "url": "https://github.com/chengjon/mystocks/issues/78"
+    },
+    "blocked_downstream": {
+      "number": 79,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "role": "service lifecycle DI lane blocked by issue #78",
+      "url": "https://github.com/chengjon/mystocks/issues/79"
+    },
+    "parent": {
+      "number": 92,
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-downstream",
+        "ready-for-human"
+      ],
+      "role": "parent downstream decision index",
+      "url": "https://github.com/chengjon/mystocks/issues/92"
+    }
+  },
+  "recommended_disposition": {
+    "issue_78": "close_as_reconciled_after_human_review",
+    "implementation_backlog": false,
+    "openspec_proposal_needed_for_this_disposition": false,
+    "issue_label_change_authorized": false,
+    "issue_close_authorized_by_this_packet": false
+  },
+  "adapter_target_disposition": {
+    "eastmoney_adapter": {
+      "issue_78_reconciled": true,
+      "remaining_work_route": "optional future cleanup or design packet for direct service/core consumers"
+    },
+    "eastmoney_enhanced": {
+      "issue_78_reconciled": true,
+      "remaining_work_route": "separate future composition-root decision if main.py wiring is needed"
+    },
+    "akshare_extension": {
+      "issue_78_reconciled": true,
+      "remaining_work_route": "optional future cleanup or design packet for direct service/core consumers"
+    },
+    "tqlex_adapter": {
+      "issue_78_reconciled": true,
+      "remaining_work_route": "optional future cleanup or design packet for direct service/core consumers"
+    },
+    "cninfo_adapter": {
+      "issue_78_reconciled": true,
+      "remaining_work_route": "optional future cleanup or design packet for direct service/core consumers"
+    },
+    "realtime_mtm": {
+      "issue_78_reconciled": false,
+      "reason": "no current adapter file proved under web/backend/app/adapters",
+      "remaining_work_route": "separate realtime route/service governance packet if needed"
+    }
+  },
+  "remaining_work_routing": {
+    "direct_service_core_adapter_getter_consumers": "optional future cleanup or design packet with exact files and GitNexus impact",
+    "realtime_mtm_identity_and_ownership": "separate realtime route/service governance packet if needed",
+    "main_py_vs_app_factory_composition_root": "separate app composition-root decision or implementation authorization if needed",
+    "service_singleton_lifecycle_di": "issue #79 after issue #78 disposition is human-accepted"
+  },
+  "effect_on_issue_79": {
+    "unblock_condition": "human acceptance of issue #78 disposition",
+    "next_allowed_mode": "design-or-triage-packet-only",
+    "implementation_authorized": false,
+    "required_before_source_edits": [
+      "candidate classification",
+      "interface/test-double strategy",
+      "exact write scope",
+      "verification gates",
+      "rollback plan",
+      "GitNexus impact"
+    ]
+  },
+  "scope": {
+    "mode": "governance-disposition-only",
+    "source_code_changed": false,
+    "tests_changed": false,
+    "runtime_behavior_changed": false,
+    "pm2_commands_executed": false,
+    "implementation_issue_created": false,
+    "openspec_proposal_created_or_modified": false,
+    "issue_labels_changed": false,
+    "issue_closed": false,
+    "issue_78_moved_to_ready_for_agent": false,
+    "issue_79_moved_to_ready_for_agent": false,
+    "issue_92_moved_to_ready_for_agent": false
+  }
+}
