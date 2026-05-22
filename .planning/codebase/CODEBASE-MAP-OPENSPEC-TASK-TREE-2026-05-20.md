@@ -434,8 +434,11 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-email-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
 │   │   `.planning/codebase/generated/email-service-lifecycle-di-implementation-authorization-2026-05-22.json`,
 │   │   `backend-email-service-lifecycle-di-implementation-2026-05-22.md`,
-│   │   `backend-email-service-lifecycle-di-closeout-2026-05-22.md`
-│   ├── State: email-service-di-pilot-merged-and-recorded
+│   │   `backend-email-service-lifecycle-di-closeout-2026-05-22.md`,
+│   │   `CODEBASE-MAP-STEWARD-TREE-RETROSPECTIVE-2026-05-22.md`,
+│   │   `backend-service-lifecycle-di-second-candidate-selection-2026-05-22.md`,
+│   │   `.planning/codebase/generated/service-lifecycle-di-second-candidate-selection-2026-05-22.json`
+│   ├── State: second-candidate-selection-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -454,11 +457,19 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 plan, rollback plan, and forbidden scope for
 │   │                 `email_notification_service.py`; PR `#142` was reviewed,
 │   │                 all checks completed successfully, and merged at
-│   │                 `20657e6e86a3423b15c67b6a8d6e165fbaa47b72`
-│   └── Next gate: Review first-pilot evidence before selecting any second
-│                  service lifecycle DI candidate; no further service source
-│                  edits, OpenSpec proposal, issue-label change, or
-│                  `ready-for-agent` movement is authorized by this closeout
+│   │                 `20657e6e86a3423b15c67b6a8d6e165fbaa47b72`; PR `#143`
+│   │                 recorded closeout at
+│   │                 `68da82084266ca7f9b7be9f5b55da7ac5e64fbd7`; G2.4
+│   │                 retrospective records steward-tree lessons and current-head
+│   │                 second-candidate evidence recommends
+│   │                 `announcement_service.py` as the next authorization
+│   │                 candidate over `watchlist_service.py`
+│   └── Next gate: Human review of the G2.4 retrospective and second-candidate
+│                  selection package; if accepted, create a separate G2.5
+│                  implementation authorization packet for
+│                  `announcement_service.py`; no service source edits,
+│                  OpenSpec proposal, issue-label change, or `ready-for-agent`
+│                  movement is authorized by G2.4
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -654,7 +665,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review `email_service.py` lifecycle DI authorization before implementation | Future service seam lane | G2.2 authorization packet prepared; candidate proposal/source implementation remains uncreated until human approval |
+| P2 | Review service lifecycle DI second-candidate selection | Future service seam lane | G2.4 retrospective and selection packet prepared; `announcement_service.py` is recommended as the next authorization-candidate input, but no second service source edit is authorized |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items

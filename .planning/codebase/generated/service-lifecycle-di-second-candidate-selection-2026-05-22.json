@@ -1,0 +1,107 @@
+{
+  "artifact": "service-lifecycle-di-second-candidate-selection",
+  "generated_at": "2026-05-22T17:02:24+08:00",
+  "git_branch": "g2-4-steward-tree-retrospective-next-candidate",
+  "git_head": "68da82084266ca7f9b7be9f5b55da7ac5e64fbd7",
+  "status": "for-review",
+  "mode": "candidate-selection-only",
+  "source_code_changed": false,
+  "tests_changed": false,
+  "runtime_behavior_changed": false,
+  "issues": {
+    "service_lifecycle_parent": {
+      "number": 79,
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ]
+    },
+    "downstream_decision_parent": {
+      "number": 92,
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ]
+    }
+  },
+  "completed_first_pilot": {
+    "candidate": "web/backend/app/services/email_service.py",
+    "implementation_pr": 142,
+    "implementation_merge_commit": "20657e6e86a3423b15c67b6a8d6e165fbaa47b72",
+    "closeout_pr": 143,
+    "closeout_merge_commit": "68da82084266ca7f9b7be9f5b55da7ac5e64fbd7"
+  },
+  "candidate_comparison": [
+    {
+      "candidate": "web/backend/app/services/announcement_service.py",
+      "getter": "get_announcement_service",
+      "gitnexus_risk": "MEDIUM",
+      "direct_callers": 11,
+      "impacted_count": 11,
+      "processes_affected": 0,
+      "modules_affected": [
+        "Announcement"
+      ],
+      "direct_owner_files": [
+        "web/backend/app/api/announcement/routes.py"
+      ],
+      "selection_result": "recommended_next_authorization_candidate"
+    },
+    {
+      "candidate": "web/backend/app/services/watchlist_service.py",
+      "getter": "get_watchlist_service",
+      "gitnexus_risk": "MEDIUM",
+      "direct_callers": 9,
+      "impacted_count": 15,
+      "processes_affected": 0,
+      "modules_affected": [
+        "Data_adapters",
+        "Adapters"
+      ],
+      "direct_owner_files": [
+        "web/backend/app/api/watchlist.py",
+        "web/backend/app/services/data_adapters/watchlist.py",
+        "web/backend/app/services/adapters/watchlist_adapter.py"
+      ],
+      "selection_result": "defer_due_adapter_data_layer_coupling"
+    }
+  ],
+  "recommended_next_candidate": "web/backend/app/services/announcement_service.py",
+  "future_packet_required": {
+    "workline": "G2.5",
+    "type": "implementation-authorization",
+    "source_edits_authorized_by_this_artifact": false,
+    "minimum_future_scope_to_evaluate": [
+      "web/backend/app/services/announcement_service.py",
+      "web/backend/app/api/announcement/routes.py",
+      "focused tests for announcement service lifecycle dependency behavior"
+    ],
+    "must_define": [
+      "exact backend source write scope",
+      "exact test write scope",
+      "route functions to convert",
+      "app-state/provider installation pattern",
+      "compatibility getter retention rule",
+      "GitNexus pre-edit impact commands",
+      "rollback plan",
+      "targeted tests",
+      "lint and import smoke commands",
+      "forbidden scope"
+    ]
+  },
+  "forbidden_scope": [
+    "backend source edits",
+    "frontend source edits",
+    "test edits",
+    "generated client edits",
+    "docs/API edits",
+    "OpenSpec proposal or spec creation",
+    "issue label changes",
+    "PM2 commands",
+    "runtime rollout",
+    "ready-for-agent movement"
+  ],
+  "next_gate": "Human review of the G2.4 selection package; if accepted, create a separate G2.5 implementation authorization package for announcement_service.py."
+}
