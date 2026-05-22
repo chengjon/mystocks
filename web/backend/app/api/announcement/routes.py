@@ -5,7 +5,7 @@
 from datetime import date, timedelta
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 from app.core.exceptions import BusinessException
 from app.core.responses import UnifiedResponse
 from app.api.announcement._responses import (
@@ -37,7 +37,10 @@ try:
         AnnouncementMonitorRecord,
         AnnouncementMonitorRule,
     )
-    from app.services.announcement_service import get_announcement_service
+    from app.services.announcement_service import (
+        AnnouncementService,
+        get_announcement_service_dependency,
+    )
 
     HAS_ANNOUNCEMENT_SERVICE = True
 except Exception:
@@ -103,6 +106,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         start_date: Optional[date] = Query(None, description="开始日期"),
         end_date: Optional[date] = Query(None, description="结束日期"),
         category: Optional[str] = Query("all", description="公告类别"),
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
     ):
         """
         从数据源获取并保存公告
@@ -117,8 +121,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 获取结果
         """
         try:
-            service = get_announcement_service()
-
             # 默认获取最近7天的公告
             if end_date is None:
                 end_date = date.today()
@@ -148,6 +150,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         min_importance: Optional[int] = Query(None, ge=0, le=5, description="最小重要性级别"),
         page: int = Query(1, ge=1, description="页码"),
         page_size: int = Query(20, ge=1, le=100, description="每页数量"),
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
     ):
         """
         查询公告列表
@@ -165,8 +168,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 公告列表
         """
         try:
-            service = get_announcement_service()
-
             result = service.get_announcements(
                 stock_code=stock_code,
                 start_date=start_date,
@@ -189,7 +190,8 @@ if HAS_ANNOUNCEMENT_SERVICE:
 
     @router.get("/today", responses=ANNOUNCEMENT_TODAY_RESPONSES)
     async def get_today_announcements(
-        min_importance: Optional[int] = Query(0, ge=0, le=5, description="最小重要性级别")
+        min_importance: Optional[int] = Query(0, ge=0, le=5, description="最小重要性级别"),
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
     ):
         """
         获取今日公告
@@ -201,8 +203,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 今日公告列表
         """
         try:
-            service = get_announcement_service()
-
             today = date.today()
 
             result = service.get_announcements(
@@ -232,6 +232,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
     async def get_important_announcements(
         days: int = Query(7, ge=1, le=30, description="查询天数"),
         min_importance: int = Query(3, ge=0, le=5, description="最小重要性级别"),
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
     ):
         """
         获取重要公告
@@ -244,8 +245,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 重要公告列表
         """
         try:
-            service = get_announcement_service()
-
             end_date = date.today()
             start_date = end_date - timedelta(days=days)
 
@@ -275,7 +274,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
             raise BusinessException(status_code=500, detail=str(e))
 
     @router.get("/stats", responses=ANNOUNCEMENT_STATS_RESPONSES)
-    async def get_announcement_stats():
+    async def get_announcement_stats(
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
+    ):
         """
         获取公告统计信息
 
@@ -283,8 +284,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 统计信息
         """
         try:
-            service = get_announcement_service()
-
             # 获取今日公告
             today_result = service.get_announcements(
                 start_date=date.today(), end_date=date.today(), page=1, page_size=1
@@ -317,7 +316,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
             raise BusinessException(status_code=500, detail=str(e))
 
     @router.get("/monitor-rules", responses=ANNOUNCEMENT_MONITOR_RULE_LIST_RESPONSES)
-    async def get_monitor_rules():
+    async def get_monitor_rules(
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
+    ):
         """
         获取监控规则列表
 
@@ -325,7 +326,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             List: 监控规则列表
         """
         try:
-            service = get_announcement_service()
             session = service.SessionLocal()
 
             try:
@@ -350,7 +350,8 @@ if HAS_ANNOUNCEMENT_SERVICE:
 
     @router.post("/monitor-rules", responses=ANNOUNCEMENT_MONITOR_RULE_CREATE_RESPONSES)
     async def create_monitor_rule(
-        rule_data: dict = Body(..., openapi_examples=ANNOUNCEMENT_MONITOR_RULE_CREATE_EXAMPLES)
+        rule_data: dict = Body(..., openapi_examples=ANNOUNCEMENT_MONITOR_RULE_CREATE_EXAMPLES),
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
     ):
         """
         创建监控规则
@@ -362,7 +363,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 创建的规则
         """
         try:
-            service = get_announcement_service()
             session = service.SessionLocal()
 
             try:
@@ -413,6 +413,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
     async def update_monitor_rule(
         rule_id: int = Path(..., description="需要更新的公告监控规则ID。"),
         updates: dict = Body(..., openapi_examples=ANNOUNCEMENT_MONITOR_RULE_UPDATE_EXAMPLES),
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
     ):
         """
         更新监控规则
@@ -425,7 +426,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 更新后的规则
         """
         try:
-            service = get_announcement_service()
             session = service.SessionLocal()
 
             try:
@@ -462,7 +462,10 @@ if HAS_ANNOUNCEMENT_SERVICE:
             raise BusinessException(status_code=500, detail=str(e))
 
     @router.delete("/monitor-rules/{rule_id}", responses=ANNOUNCEMENT_MONITOR_RULE_DELETE_RESPONSES)
-    async def delete_monitor_rule(rule_id: int = Path(..., description="需要删除的公告监控规则ID。")):
+    async def delete_monitor_rule(
+        rule_id: int = Path(..., description="需要删除的公告监控规则ID。"),
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
+    ):
         """
         删除监控规则
 
@@ -473,7 +476,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 操作结果
         """
         try:
-            service = get_announcement_service()
             session = service.SessionLocal()
 
             try:
@@ -499,6 +501,7 @@ if HAS_ANNOUNCEMENT_SERVICE:
         stock_code: Optional[str] = Query(None, description="股票代码"),
         page: int = Query(1, ge=1, description="页码"),
         page_size: int = Query(20, ge=1, le=100, description="每页数量"),
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
     ):
         """
         获取触发记录列表
@@ -513,7 +516,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 触发记录列表
         """
         try:
-            service = get_announcement_service()
             session = service.SessionLocal()
 
             try:
@@ -569,7 +571,9 @@ if HAS_ANNOUNCEMENT_SERVICE:
             raise BusinessException(status_code=500, detail=str(e))
 
     @router.post("/monitor/evaluate", responses=ANNOUNCEMENT_MONITOR_EVALUATE_RESPONSES)
-    async def evaluate_monitor_rules():
+    async def evaluate_monitor_rules(
+        service: AnnouncementService = Depends(get_announcement_service_dependency),
+    ):
         """
         评估所有监控规则
 
@@ -579,8 +583,6 @@ if HAS_ANNOUNCEMENT_SERVICE:
             Dict: 评估结果
         """
         try:
-            service = get_announcement_service()
-
             result = service.evaluate_monitor_rules()
 
             if not result["success"]:
