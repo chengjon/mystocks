@@ -1,0 +1,97 @@
+version: "v0.2"
+
+task:
+  id: "pr-153"
+  title: "Authorize adapter-aware watchlist helper cleanup"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-service-lifecycle-di-watchlist-helper-cleanup-authorization"
+  objective: "record exact future write scope, tests, risk gates, and rollback plan for adapter-aware watchlist helper cleanup after G2.12 selected the lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-watchlist-helper-cleanup-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-watchlist-helper-cleanup-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization packet only; no runtime entrypoint, route, page, shim, service behavior, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/watchlist-helper-cleanup-implementation-authorization-2026-05-23.json"
+    - "docs/reports/quality/backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-153.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, PM2, or runtime behavior changes in this PR"
+  - "No adapter/data-layer watchlist implementation in this PR"
+  - "No fourth service lifecycle DI candidate selection or implementation in this PR"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-153.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this packet is misread as implementation, adapter/helper source edits may start before human acceptance"
+    - "If future implementation expands to route code, it can disturb the already-merged G2.10 route-surface DI seam"
+  rollback_plan: "revert this PR and return the steward tree to the G2.12 next-lane decision state recorded by PR #152"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize, for future review only, the exact scope for adapter-aware watchlist helper cleanup"
+    modified_scope: "steward tree, authorization report, generated authorization JSON, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T02:13:37+08:00"
+    approval_note: "human maintainer requested continuation after PR #152; this PR records future authorization scope only and does not authorize implementation"
+    secondary_approved: false
