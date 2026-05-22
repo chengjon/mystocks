@@ -1,0 +1,102 @@
+version: "v0.2"
+
+task:
+  id: "pr-130"
+  title: "prepare issue92 OpenSpec archive readiness"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-issue92-openspec-archive-readiness"
+  objective: "evaluate completed issue #92 OpenSpec changes for a later archive review"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-issue92-archive-readiness"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-issue92-archive-readiness"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Issue #92 archive readiness evaluation only; no runtime entrypoint, route, PM2 service, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/issue92-openspec-archive-readiness-2026-05-22.json"
+    - "docs/reports/quality/backend-openspec-issue92-archive-readiness-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-130.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No openspec archive execution"
+  - "No OpenSpec change/spec modification"
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, or runtime behavior changes"
+  - "No PM2 command execution, service restart, process deletion, or process recreation"
+  - "No downstream implementation issue creation"
+  - "No movement of issue #92 to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "archive-readiness-artifact"
+      command: "report and JSON list completed issue #92 OpenSpec archive candidates and state that no archive was executed"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-openspec-issue92-archive-readiness-2026-05-22.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-130.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If archive readiness is read as archive approval, OpenSpec history can move without human review"
+    - "If final closeout review is bypassed silently, issue #92 decision governance can drift"
+  rollback_plan: "revert this PR and return issue #92 archive readiness to unprepared state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "prepare issue #92 OpenSpec archive readiness"
+    modified_scope: "archive readiness report, generated evidence artifact, steward tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance/evidence bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, mainline scope, JSON validity, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T08:49:13+08:00"
+    approval_note: "archive readiness evaluation only; this PR does not execute openspec archive or authorize implementation"
+    secondary_approved: false
