@@ -7,8 +7,9 @@
 import logging
 import os
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
+from fastapi import Request
 import psycopg2
 from psycopg2.extras import RealDictCursor
 
@@ -603,8 +604,10 @@ class WatchlistService(WatchlistGroupQueriesMixin):
             self._log_database_error("删除分组时发生错误", e)
             return False
 
+
 # 创建全局实例
 _watchlist_service = None
+WATCHLIST_SERVICE_STATE_KEY = "watchlist_service"
 
 
 def get_watchlist_service() -> WatchlistService:
@@ -618,3 +621,16 @@ def get_watchlist_service() -> WatchlistService:
     if _watchlist_service is None:
         _watchlist_service = WatchlistService()
     return _watchlist_service
+
+
+def install_watchlist_service(app: Any, service: WatchlistService | None = None) -> WatchlistService:
+    selected_service = service if service is not None else get_watchlist_service()
+    setattr(app.state, WATCHLIST_SERVICE_STATE_KEY, selected_service)
+    return selected_service
+
+
+def get_watchlist_service_dependency(request: Request) -> WatchlistService:
+    service = getattr(request.app.state, WATCHLIST_SERVICE_STATE_KEY, None)
+    if service is None:
+        service = install_watchlist_service(request.app)
+    return service

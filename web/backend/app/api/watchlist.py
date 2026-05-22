@@ -13,7 +13,11 @@ from app.api.auth import User, get_current_user
 from app.core.exceptions import BusinessException, NotFoundException
 from app.openapi_config import COMMON_RESPONSES
 from app.services.data_source_factory import DataSourceFactory
-from app.services.watchlist_service import WatchlistError, get_watchlist_service
+from app.services.watchlist_service import (
+    WatchlistError,
+    WatchlistService,
+    get_watchlist_service_dependency,
+)
 
 WATCHLIST_ROUTE_RESPONSES = {
     400: COMMON_RESPONSES[400],
@@ -27,15 +31,11 @@ router = APIRouter(tags=["watchlist"], responses=WATCHLIST_ROUTE_RESPONSES)
 
 
 from web.backend.app.api._watchlist_responses import (
-    _success_response_spec,
     WATCHLIST_ADD_REQUEST_EXAMPLES,
     WATCHLIST_CREATE_GROUP_REQUEST_EXAMPLES,
     WATCHLIST_UPDATE_GROUP_REQUEST_EXAMPLES,
     WATCHLIST_MOVE_REQUEST_EXAMPLES,
     WATCHLIST_NOTES_REQUEST_EXAMPLES,
-    WATCHLIST_ITEM_EXAMPLE,
-    WATCHLIST_GROUP_EXAMPLE,
-    WATCHLIST_GROUP_STOCK_EXAMPLE,
     WATCHLIST_LIST_RESPONSES,
     WATCHLIST_SYMBOLS_RESPONSES,
     WATCHLIST_REMOVE_RESPONSES,
@@ -50,9 +50,8 @@ from web.backend.app.api._watchlist_responses import (
     WATCHLIST_NOTES_RESPONSES,
     WATCHLIST_GROUP_CREATE_RESPONSES,
     WATCHLIST_GROUP_UPDATE_RESPONSES,
-    WATCHLIST_MOVE_RESPONSES
+    WATCHLIST_MOVE_RESPONSES,
 )
-
 
 
 class WatchlistItem(BaseModel):
@@ -489,12 +488,14 @@ async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dic
     description="获取当前用户已创建的全部自选股分组，用于分组筛选、分组迁移和分组视图初始化。",
     responses=WATCHLIST_GROUP_LIST_RESPONSES,
 )
-async def get_user_groups(current_user: User = Depends(get_current_user)) -> List[Dict]:
+async def get_user_groups(
+    current_user: User = Depends(get_current_user),
+    service: WatchlistService = Depends(get_watchlist_service_dependency),
+) -> List[Dict]:
     """
     获取当前用户的所有自选股分组
     """
     try:
-        service = get_watchlist_service()
         groups = service.get_user_groups(current_user.id)
         return groups
     except Exception as e:
@@ -512,12 +513,12 @@ async def get_user_groups(current_user: User = Depends(get_current_user)) -> Lis
 async def create_group(
     request: CreateGroupRequest = Body(..., openapi_examples=WATCHLIST_CREATE_GROUP_REQUEST_EXAMPLES),
     current_user: User = Depends(get_current_user),
+    service: WatchlistService = Depends(get_watchlist_service_dependency),
 ) -> Dict:
     """
     创建新的自选股分组
     """
     try:
-        service = get_watchlist_service()
         group = service.create_group(current_user.id, request.group_name)
 
         if not group:
@@ -547,12 +548,12 @@ async def update_group(
     request: UpdateGroupRequest = Body(..., openapi_examples=WATCHLIST_UPDATE_GROUP_REQUEST_EXAMPLES),
     group_id: int = Path(..., description="分组ID", ge=1),
     current_user: User = Depends(get_current_user),
+    service: WatchlistService = Depends(get_watchlist_service_dependency),
 ) -> Dict:
     """
     修改分组名称
     """
     try:
-        service = get_watchlist_service()
         success = service.update_group(current_user.id, group_id, request.group_name)
 
         if not success:
@@ -575,13 +576,14 @@ async def update_group(
     responses=WATCHLIST_GROUP_DELETE_RESPONSES,
 )
 async def delete_group(
-    group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
+    group_id: int = Path(..., description="分组ID", ge=1),
+    current_user: User = Depends(get_current_user),
+    service: WatchlistService = Depends(get_watchlist_service_dependency),
 ) -> Dict:
     """
     删除分组（会同时删除该分组下的所有自选股）
     """
     try:
-        service = get_watchlist_service()
         success = service.delete_group(current_user.id, group_id)
 
         if not success:
@@ -600,13 +602,14 @@ async def delete_group(
     responses=WATCHLIST_GROUP_DETAIL_RESPONSES,
 )
 async def get_watchlist_by_group(
-    group_id: int = Path(..., description="分组ID", ge=1), current_user: User = Depends(get_current_user)
+    group_id: int = Path(..., description="分组ID", ge=1),
+    current_user: User = Depends(get_current_user),
+    service: WatchlistService = Depends(get_watchlist_service_dependency),
 ) -> List[Dict]:
     """
     获取指定分组的自选股列表
     """
     try:
-        service = get_watchlist_service()
         watchlist = service.get_watchlist_by_group(current_user.id, group_id)
         return watchlist
     except Exception as e:
@@ -624,12 +627,12 @@ async def get_watchlist_by_group(
 async def move_stock_to_group(
     request: MoveStockRequest = Body(..., openapi_examples=WATCHLIST_MOVE_REQUEST_EXAMPLES),
     current_user: User = Depends(get_current_user),
+    service: WatchlistService = Depends(get_watchlist_service_dependency),
 ) -> Dict:
     """
     将股票从一个分组移动到另一个分组
     """
     try:
-        service = get_watchlist_service()
         success = service.move_stock_to_group(
             user_id=current_user.id,
             symbol=request.symbol,
@@ -659,12 +662,12 @@ async def move_stock_to_group(
 )
 async def get_watchlist_with_groups(
     current_user: User = Depends(get_current_user),
+    service: WatchlistService = Depends(get_watchlist_service_dependency),
 ) -> Dict:
     """
     获取所有分组及其包含的自选股（分组视图）
     """
     try:
-        service = get_watchlist_service()
         result = service.get_watchlist_with_groups(current_user.id)
         return result
     except Exception as e:

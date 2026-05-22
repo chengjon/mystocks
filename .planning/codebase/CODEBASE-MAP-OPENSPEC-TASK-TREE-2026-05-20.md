@@ -445,8 +445,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-service-lifecycle-di-third-candidate-selection-2026-05-22.md`,
 │   │   `.planning/codebase/generated/service-lifecycle-di-third-candidate-selection-2026-05-22.json`,
 │   │   `backend-watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
-│   │   `.planning/codebase/generated/watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.json`
-│   ├── State: watchlist-route-surface-authorization-prepared-for-review
+│   │   `.planning/codebase/generated/watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.json`,
+│   │   `backend-watchlist-service-lifecycle-di-implementation-2026-05-22.md`
+│   ├── State: watchlist-route-surface-implementation-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -495,12 +496,18 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 authorization packet for `watchlist_service.py`, limited to
 │   │                 the service file, seven `watchlist.py` route handlers,
 │   │                 focused tests, an implementation report, and a future task
-│   │                 card while keeping adapter/data helper callers out of scope
-│   └── Next gate: Human review of the G2.9 watchlist implementation
-│                  authorization package; if accepted, create a separate source
-│                  implementation worktree and PR; no source edits, OpenSpec
-│                  proposal, issue-label change, PM2 command, or
-│                  `ready-for-agent` movement is authorized by this G2.9 packet
+│   │                 card while keeping adapter/data helper callers out of scope;
+│   │                 PR `#149` merged at
+│   │                 `bddb764c79355e6c0c366fdd9a28d64a685700bf`; G2.10 now
+│   │                 implements that approved route-surface scope by adding an
+│   │                 app-state provider seam to `watchlist_service.py` and
+│   │                 injecting `WatchlistService` into seven `watchlist.py`
+│   │                 group route handlers while preserving adapter/data helper
+│   │                 compatibility callers
+│   └── Next gate: Human review of the G2.10 watchlist implementation PR; if
+│                  accepted, merge and create a separate closeout packet that
+│                  records the merge commit, GitHub checks, and whether a fourth
+│                  service lifecycle DI candidate should be selected
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -667,7 +674,8 @@ review, PR review, or OpenSpec archive review.
 | G2.6 announcement service DI implementation | Second service lifecycle DI source pilot | `517f47cb` | PR `#146` merged after human approval; `announcement_service.py` now provides app.state dependency provider, 11 announcement route handlers inject `AnnouncementService`, focused tests passed, and watchlist/adapter/data-layer files remain untouched |
 | G2.7 announcement service DI closeout | Merged implementation closeout | `112487d9` | PR `#147` merged; `announcement_service.py` is recorded as merged-and-reviewed, and third-candidate work may only begin as a new selection/authorization packet |
 | G2.8 third service DI candidate selection | Post-closeout candidate split decision | `ccc4982c` | PR `#148` merged; selection accepted: recommend only a route-surface `watchlist_service.py` authorization packet and keep watchlist adapter/data-layer helper callers out of scope unless a separate adapter-aware packet is accepted |
-| G2.9 watchlist service DI authorization | Route-surface-only `watchlist_service.py` implementation authorization | `ccc4982c` | Authorization packet prepared: future source lane may edit only `watchlist_service.py`, seven `watchlist.py` route handlers, focused tests, implementation report, future task card, and steward-tree evidence; this packet itself changes no source/tests/runtime and does not authorize adapter/data helper migration |
+| G2.9 watchlist service DI authorization | Route-surface-only `watchlist_service.py` implementation authorization | `bddb764c` | PR `#149` merged; future source lane authorized only `watchlist_service.py`, seven `watchlist.py` route handlers, focused tests, implementation report, future task card, and steward-tree evidence; adapter/data helper migration remains out of scope |
+| G2.10 watchlist service DI implementation | Third route-surface service lifecycle DI source pilot | `bddb764c` | Implementation prepared for review: `watchlist_service.py` now exposes an app-state provider dependency, seven `watchlist.py` group route handlers inject `WatchlistService`, focused tests and compatibility guards passed, and watchlist adapter/data helper files remain untouched |
 
 ## Update Protocol
 
@@ -702,7 +710,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review G2.9 watchlist service DI authorization packet | Future service seam lane | G2.9 authorization packet prepared; future implementation remains route-surface-only and may not edit watchlist adapter/data-layer helper callers unless a separate adapter-aware packet is accepted |
+| P2 | Review G2.10 watchlist service DI implementation PR | Future service seam lane | G2.10 implementation prepared; `watchlist_service.py` route-surface DI is implemented for seven group route handlers, with adapter/data-layer helper callers retained as compatibility surfaces |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items

@@ -1,0 +1,125 @@
+version: "v0.2"
+
+task:
+  id: "pr-150"
+  title: "Implement G2.10 watchlist service route-surface lifecycle DI"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-watchlist-service-lifecycle-di-implementation"
+  objective: "implement the G2.10 route-surface-only watchlist_service.py lifecycle DI pilot"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-watchlist-service-di-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-watchlist-service-di-implementation"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow service lifecycle DI pilot authorized by PR #149; route paths, OpenAPI behavior, product surface, adapter/data helper callers, and runtime process state are unchanged"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "web/backend/app/services/watchlist_service.py"
+    - "web/backend/app/api/watchlist.py"
+    - "web/backend/tests/test_watchlist_service_lifecycle_di.py"
+    - "docs/reports/quality/backend-watchlist-service-lifecycle-di-implementation-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-150.yaml"
+  forbidden_paths:
+    - "web/backend/app/services/data_adapters/watchlist.py"
+    - "web/backend/app/services/adapters/watchlist_adapter.py"
+    - "web/backend/app/services/email_service.py"
+    - "web/backend/app/services/email_notification_service.py"
+    - "web/backend/app/services/announcement_service.py"
+    - "web/backend/app/services/tradingview_widget_service.py"
+    - "web/backend/app/services/strategy_service.py"
+    - "web/backend/app/services/tdx_service.py"
+    - "web/backend/app/services/stock_search_service/stock_search_service.py"
+    - "web/backend/app/services/monitoring_service.py"
+    - "web/backend/app/services/technical_analysis_service.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No watchlist adapter/data-layer implementation in this PR"
+  - "No route path, request model, response shape, OpenAPI exposure, docs/API, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No fourth service DI candidate selection in this PR"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_watchlist_service_lifecycle_di.py web/backend/tests/test_watchlist_service_logging.py tests/api/file_tests/test_watchlist_api.py tests/api/test_watchlist_file.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/watchlist_service.py web/backend/app/api/watchlist.py web/backend/tests/test_watchlist_service_lifecycle_di.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/services/watchlist_service.py web/backend/app/api/watchlist.py web/backend/tests/test_watchlist_service_lifecycle_di.py"
+      required: true
+    - id: "app-main-openapi-smoke"
+      command: "env PYTHONPATH=web/backend POSTGRESQL_HOST=localhost POSTGRESQL_USER=postgres POSTGRESQL_PASSWORD=postgres JWT_SECRET_KEY=test-secret-key-for-watchlist-di-smoke BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c 'from app.main import app; schema=app.openapi(); print(len(app.routes), len(schema.get(\"paths\", {})))'"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-watchlist-service-lifecycle-di-implementation-2026-05-22.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-150.yaml"
+      required: true
+    - id: "staged-gitnexus"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If adapter/data helper callers are edited in the same PR, the route-surface pilot exceeds the G2.9 authorization boundary"
+    - "If route paths or response contracts change, this PR becomes route/OpenAPI governance work instead of lifecycle DI work"
+  rollback_plan: "revert this PR; restore the seven route functions to direct get_watchlist_service() calls; remove the watchlist dependency provider and focused lifecycle DI test as one unit"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement route-surface-only watchlist_service.py lifecycle DI after G2.9 authorization"
+    modified_scope: "watchlist_service.py, watchlist.py, focused tests, implementation report, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "get_watchlist_service remains as compatibility getter for adapter/data helper callers; seven watchlist group routes now use injected WatchlistService"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, ruff, black check, app/OpenAPI smoke, mainline scope, staged GitNexus, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T20:24:00+08:00"
+    approval_note: "human maintainer requested continuation after G2.9 authorization PR #149; this PR implements only the approved route-surface watchlist service DI scope"
+    secondary_approved: false
