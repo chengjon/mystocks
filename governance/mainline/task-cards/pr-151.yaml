@@ -1,0 +1,96 @@
+version: "v0.2"
+
+task:
+  id: "pr-151"
+  title: "Record G2.11 watchlist service DI implementation closeout"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-service-lifecycle-di-watchlist-service-closeout"
+  objective: "record that the watchlist_service.py route-surface lifecycle DI pilot was reviewed, merged, and remains bounded to the approved third candidate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-watchlist-service-di-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-watchlist-service-di-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout bookkeeping only; no runtime entrypoint, route, page, shim, service behavior, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-watchlist-service-lifecycle-di-closeout-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-151.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, PM2, or runtime behavior changes in this PR"
+  - "No fourth service lifecycle DI candidate selection in this PR"
+  - "No adapter/data-layer watchlist cleanup in this PR"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-watchlist-service-lifecycle-di-closeout-2026-05-23.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-151.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is misread as follow-up implementation authorization, issue #79 can expand without a new child packet"
+    - "If adapter/data helper cleanup is folded into this closeout, the G2.10 boundary is obscured"
+  rollback_plan: "revert this PR and return the steward tree to the G2.10 implementation-merged state recorded by PR #150"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record watchlist_service.py route-surface lifecycle DI pilot completion after PR #150 merge"
+    modified_scope: "steward tree, closeout report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T01:50:00+08:00"
+    approval_note: "human maintainer requested continuation after PR #150; this PR records closeout only and does not authorize follow-up implementation"
+    secondary_approved: false

@@ -446,8 +446,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `.planning/codebase/generated/service-lifecycle-di-third-candidate-selection-2026-05-22.json`,
 │   │   `backend-watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.md`,
 │   │   `.planning/codebase/generated/watchlist-service-lifecycle-di-implementation-authorization-2026-05-22.json`,
-│   │   `backend-watchlist-service-lifecycle-di-implementation-2026-05-22.md`
-│   ├── State: watchlist-route-surface-implementation-prepared-for-review
+│   │   `backend-watchlist-service-lifecycle-di-implementation-2026-05-22.md`,
+│   │   `backend-watchlist-service-lifecycle-di-closeout-2026-05-23.md`
+│   ├── State: watchlist-route-surface-implementation-merged-and-recorded
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -503,11 +504,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 app-state provider seam to `watchlist_service.py` and
 │   │                 injecting `WatchlistService` into seven `watchlist.py`
 │   │                 group route handlers while preserving adapter/data helper
-│   │                 compatibility callers
-│   └── Next gate: Human review of the G2.10 watchlist implementation PR; if
-│                  accepted, merge and create a separate closeout packet that
-│                  records the merge commit, GitHub checks, and whether a fourth
-│                  service lifecycle DI candidate should be selected
+│   │                 compatibility callers; PR `#150` was approved by the human
+│   │                 maintainer and merged at
+│   │                 `b14ef8421d8ccd6dfd4a714b2a17d4e1ae971419`; G2.11 records
+│   │                 the merged result and confirms the closeout boundary
+│   └── Next gate: Human review of the G2.11 watchlist closeout packet; if
+│                  accepted, decide in a separate packet whether to select a
+│                  fourth service lifecycle DI candidate, create an adapter-aware
+│                  watchlist helper cleanup packet, or pause this sequence
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -675,7 +679,8 @@ review, PR review, or OpenSpec archive review.
 | G2.7 announcement service DI closeout | Merged implementation closeout | `112487d9` | PR `#147` merged; `announcement_service.py` is recorded as merged-and-reviewed, and third-candidate work may only begin as a new selection/authorization packet |
 | G2.8 third service DI candidate selection | Post-closeout candidate split decision | `ccc4982c` | PR `#148` merged; selection accepted: recommend only a route-surface `watchlist_service.py` authorization packet and keep watchlist adapter/data-layer helper callers out of scope unless a separate adapter-aware packet is accepted |
 | G2.9 watchlist service DI authorization | Route-surface-only `watchlist_service.py` implementation authorization | `bddb764c` | PR `#149` merged; future source lane authorized only `watchlist_service.py`, seven `watchlist.py` route handlers, focused tests, implementation report, future task card, and steward-tree evidence; adapter/data helper migration remains out of scope |
-| G2.10 watchlist service DI implementation | Third route-surface service lifecycle DI source pilot | `bddb764c` | Implementation prepared for review: `watchlist_service.py` now exposes an app-state provider dependency, seven `watchlist.py` group route handlers inject `WatchlistService`, focused tests and compatibility guards passed, and watchlist adapter/data helper files remain untouched |
+| G2.10 watchlist service DI implementation | Third route-surface service lifecycle DI source pilot | `b14ef842` | PR `#150` merged after human approval; `watchlist_service.py` now exposes an app-state provider dependency, seven `watchlist.py` group route handlers inject `WatchlistService`, focused tests and GitHub checks passed, and watchlist adapter/data helper files remain untouched |
+| G2.11 watchlist service DI closeout | Merged implementation closeout | `b14ef842` | Closeout recorded: `watchlist_service.py` is recorded as merged-and-reviewed; next service lifecycle DI movement requires a separate fourth-candidate, adapter-aware cleanup, or pause/resume decision packet |
 
 ## Update Protocol
 
@@ -710,7 +715,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review G2.10 watchlist service DI implementation PR | Future service seam lane | G2.10 implementation prepared; `watchlist_service.py` route-surface DI is implemented for seven group route handlers, with adapter/data-layer helper callers retained as compatibility surfaces |
+| P2 | Review G2.11 watchlist service DI closeout | Future service seam lane | G2.11 closeout packet prepared; `watchlist_service.py` route-surface DI is merged, and any fourth candidate or adapter-aware watchlist cleanup requires a separate packet |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items
