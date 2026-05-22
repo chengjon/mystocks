@@ -1,0 +1,53 @@
+{
+  "artifact": "service-lifecycle-di-next-lane-decision-2026-05-23",
+  "recorded_at": "2026-05-23T03:19:24+08:00",
+  "workline": "G2.16 service lifecycle DI next-lane decision",
+  "status": "decision-packet-prepared-for-review",
+  "current_head": "03c48f74d73f1de505470698966776f6624a0ec7",
+  "decision_pr": 156,
+  "decision_pr_url": "https://github.com/chengjon/mystocks/pull/156",
+  "decision_pr_checks_at_creation": {
+    "mainline_governance_gate": "pass",
+    "check_compliance": "pass",
+    "weekly_full_scan": "skipped"
+  },
+  "decision": "select-g2-17-current-head-candidate-refresh",
+  "not_selected": [
+    "fourth-route-surface-service-implementation-candidate",
+    "another-adapter-aware-cleanup",
+    "issue-label-movement",
+    "openspec-change",
+    "source-implementation"
+  ],
+  "input_state": {
+    "pr_154": {
+      "state": "MERGED",
+      "merge_commit": "1dcb394a49a9d95e939b2119acc431b825954036"
+    },
+    "pr_155": {
+      "state": "MERGED",
+      "merge_commit": "03c48f74d73f1de505470698966776f6624a0ec7"
+    },
+    "issue_79": {
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ]
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ]
+    }
+  },
+  "completed_sequence_inputs": [
+    "email_service.py route-surface DI",
+    "announcement_service.py route-surface DI",
+    "watchlist_service.py route-surface DI",
+    "watchlist helper adapter-aware cleanup"
+  ],
+  "next_gate": "Human review of G2.16 decision; if accepted, create G2.17 current-head service lifecycle DI candidate refresh before any further source edits."
+}
