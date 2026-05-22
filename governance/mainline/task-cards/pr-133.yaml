@@ -1,0 +1,123 @@
+version: "v0.2"
+
+task:
+  id: "pr-133"
+  title: "archive completed issue92 OpenSpec changes"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-issue92-openspec-archive"
+  objective: "archive five completed issue #92 OpenSpec changes after closeout waiver and archive-readiness acceptance"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-issue92-openspec-archive"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "archive-issue92-completed-downstream-changes"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "OpenSpec archive-only PR; no runtime entrypoint, route, PM2 service, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/issue92-openspec-archive-2026-05-22.json"
+    - "docs/reports/quality/backend-openspec-issue92-archive-execution-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-133.yaml"
+    - "openspec/specs/api-documentation/spec.md"
+    - "openspec/specs/architecture-governance/spec.md"
+    - "openspec/changes/inject-technical-pattern-detection-service-di/**"
+    - "openspec/changes/refresh-backend-route-openapi-governance/**"
+    - "openspec/changes/define-backend-backup-route-ownership/**"
+    - "openspec/changes/stabilize-backend-control-plane-openapi-docs/**"
+    - "openspec/changes/approve-backend-pm2-stateful-gate/**"
+    - "openspec/changes/archive/2026-05-22-inject-technical-pattern-detection-service-di/**"
+    - "openspec/changes/archive/2026-05-22-refresh-backend-route-openapi-governance/**"
+    - "openspec/changes/archive/2026-05-22-define-backend-backup-route-ownership/**"
+    - "openspec/changes/archive/2026-05-22-stabilize-backend-control-plane-openapi-docs/**"
+    - "openspec/changes/archive/2026-05-22-approve-backend-pm2-stateful-gate/**"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI runtime behavior, probe, script, config, or runtime behavior changes"
+  - "No PM2 command execution, service restart, process deletion, or process recreation"
+  - "No downstream implementation issue creation"
+  - "No movement of issue #92 to ready-for-agent"
+  - "No child implementation lane approval"
+
+acceptance:
+  checks:
+    - id: "pre-archive-change-validation"
+      command: "openspec validate <each of the five archived change IDs> --strict before archive"
+      required: true
+    - id: "post-archive-specs"
+      command: "openspec validate --specs --strict"
+      required: true
+    - id: "post-archive-changes"
+      command: "openspec validate --changes --strict"
+      required: true
+    - id: "candidate-active-list-absence"
+      command: "openspec list does not include the five archived change IDs as active changes"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-openspec-issue92-archive-execution-2026-05-22.md"
+      required: true
+    - id: "json-validity"
+      command: "python -m json.tool .planning/codebase/generated/issue92-openspec-archive-2026-05-22.json"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-133.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If archive directories are not force-staged, the PR can delete active change directories without preserving archive history"
+    - "If canonical spec deltas are unexpected, architecture-governance or api-documentation requirements can drift"
+  rollback_plan: "revert this PR to move the five changes back out of archive and remove the canonical spec deltas"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "archive five completed issue #92 OpenSpec changes"
+    modified_scope: "OpenSpec archive directories, canonical specs, archive evidence report, generated evidence artifact, steward tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is OpenSpec governance archival only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if OpenSpec validation, markdown governance, mainline scope, JSON validity, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T10:20:00+08:00"
+    approval_note: "archive-only PR after final closeout waiver and archive-readiness acceptance; no implementation or issue #92 ready-for-agent movement authorized"
+    secondary_approved: false

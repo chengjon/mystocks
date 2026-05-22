@@ -1,0 +1,94 @@
+{
+  "artifact": "issue92-openspec-archive",
+  "generated_at": "2026-05-22T10:20:00+08:00",
+  "generated_at_utc": "2026-05-22T02:20:00Z",
+  "git_branch": "issue92-openspec-archive",
+  "base_head": "fdedf35c22eecc79199847511fcb4434d0a398d4",
+  "parent_issue": {
+    "number": 92,
+    "state": "OPEN",
+    "labels_expected": [
+      "enhancement",
+      "ready-for-downstream",
+      "ready-for-human"
+    ],
+    "has_ready_for_agent": false
+  },
+  "preconditions": {
+    "final_closeout_waiver_pr": 132,
+    "archive_readiness_review_pr": 131,
+    "archive_readiness_pr": 130
+  },
+  "archived_changes": [
+    {
+      "change": "inject-technical-pattern-detection-service-di",
+      "archive_dir": "openspec/changes/archive/2026-05-22-inject-technical-pattern-detection-service-di",
+      "spec_updated": "openspec/specs/architecture-governance/spec.md"
+    },
+    {
+      "change": "refresh-backend-route-openapi-governance",
+      "archive_dir": "openspec/changes/archive/2026-05-22-refresh-backend-route-openapi-governance",
+      "spec_updated": "openspec/specs/architecture-governance/spec.md"
+    },
+    {
+      "change": "define-backend-backup-route-ownership",
+      "archive_dir": "openspec/changes/archive/2026-05-22-define-backend-backup-route-ownership",
+      "spec_updated": "openspec/specs/architecture-governance/spec.md"
+    },
+    {
+      "change": "stabilize-backend-control-plane-openapi-docs",
+      "archive_dir": "openspec/changes/archive/2026-05-22-stabilize-backend-control-plane-openapi-docs",
+      "spec_updated": "openspec/specs/api-documentation/spec.md"
+    },
+    {
+      "change": "approve-backend-pm2-stateful-gate",
+      "archive_dir": "openspec/changes/archive/2026-05-22-approve-backend-pm2-stateful-gate",
+      "spec_updated": "openspec/specs/architecture-governance/spec.md"
+    }
+  ],
+  "validation": {
+    "pre_archive_change_validation": "all 5 change IDs valid with --strict",
+    "post_archive_specs": {
+      "command": "openspec validate --specs --strict",
+      "passed": 32,
+      "failed": 0
+    },
+    "post_archive_changes": {
+      "command": "openspec validate --changes --strict",
+      "passed": 28,
+      "failed": 0
+    },
+    "candidate_changes_still_active": []
+  },
+  "canonical_requirements_added": [
+    {
+      "spec": "api-documentation",
+      "requirement": "Control-Plane OpenAPI Documentation Must Be Stabilized Through Evidence"
+    },
+    {
+      "spec": "architecture-governance",
+      "requirement": "Backend Service DI Pilot Governance"
+    },
+    {
+      "spec": "architecture-governance",
+      "requirement": "Route OpenAPI Governance Must Precede Route Mutation"
+    },
+    {
+      "spec": "architecture-governance",
+      "requirement": "Backup Route Ownership Must Be Explicit Before Mutation"
+    },
+    {
+      "spec": "architecture-governance",
+      "requirement": "Stateful PM2 Workflow Execution Requires Explicit Approval"
+    }
+  ],
+  "scope": {
+    "mode": "openspec-archive-only",
+    "source_code_changed": false,
+    "tests_changed": false,
+    "runtime_behavior_changed": false,
+    "pm2_commands_executed": false,
+    "implementation_issue_created": false,
+    "issue_92_moved_to_ready_for_agent": false
+  }
+}

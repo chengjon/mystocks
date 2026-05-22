@@ -185,3 +185,179 @@ The project SHALL split Core modules in small independently verifiable batches.
 - **WHEN** the batch is prepared for implementation
 - **THEN** it SHALL include import inventory, compatibility strategy, import smoke, runtime smoke, and rollback notes
 - **AND** broad database, cache, security, socketio, or logger moves SHALL be blocked until lifecycle ownership and monkeypatch paths are classified
+
+### Requirement: Backend Service DI Pilot Governance
+
+The backend SHALL introduce service-tier dependency injection pilots only through
+a named OpenSpec change or explicitly approved child implementation issue that
+defines scope, test override strategy, rollback, and verification gates before
+source edits begin.
+
+#### Scenario: Pilot scope is approved before implementation
+
+- **WHEN** a service singleton or direct-construction pilot is selected for
+  implementation
+- **THEN** the pilot SHALL identify the exact route, service, and test files
+  allowed to change
+- **AND** the parent decision issue SHALL NOT be treated as implementation
+  authorization
+
+#### Scenario: Route service dependency is overrideable in tests
+
+- **WHEN** a route depends on a selected service DI pilot
+- **THEN** the route SHALL obtain that service through a FastAPI dependency
+  provider or an equivalent injectable seam
+- **AND** focused route tests SHALL use dependency overrides or a documented
+  service test-double mechanism instead of relying on module-level service
+  construction as the only test seam
+
+#### Scenario: Stateless pilot does not expand lifecycle ownership
+
+- **WHEN** a selected pilot has no approved stateful initialization or teardown
+  scope
+- **THEN** the implementation SHALL NOT introduce `app.state`, lifespan
+  ownership, singleton registries, or service-internal refactors
+- **AND** closeout evidence SHALL record that route behavior, response contract,
+  and rollback scope remained bounded to the approved pilot
+
+### Requirement: Route OpenAPI Governance Must Precede Route Mutation
+
+Backend route, OpenAPI, and probe-facing endpoint changes SHALL pass through a
+current-head governance and ownership classification gate before any runtime
+route mutation, schema exposure change, probe rewrite, or route-contract
+implementation is authorized.
+
+#### Scenario: Governance proposal is prepared from current evidence
+
+- **WHEN** a route/OpenAPI governance lane is proposed after route table,
+  OpenAPI, and probe consumer evidence has been collected
+- **THEN** the proposal SHALL record the route table head, runtime route count,
+  OpenAPI path count, operation count, duplicate operationId count, warning
+  count, probe matrix scope, generated artifact paths, captured git head, and
+  stale-if-head-mismatch policy.
+
+#### Scenario: Trading route ownership is classified
+
+- **WHEN** trading, TradingView, v1 trading, runtime trading, or
+  trading-adjacent route candidates are included in route/OpenAPI governance
+- **THEN** each route group SHALL be classified as trading-owned,
+  trading-adjacent, non-trading, or unknown before any trading route
+  implementation lane is opened.
+
+#### Scenario: Runtime compatibility is separated from schema exposure
+
+- **WHEN** a compatibility route, wildcard shim, legacy path, hidden runtime
+  route, or duplicate runtime path/method is reviewed
+- **THEN** the governance packet SHALL distinguish runtime route existence from
+  OpenAPI schema exposure and SHALL classify the route as active documented,
+  runtime-only hidden from schema, intentionally absent, or retired by a later
+  approved change.
+
+#### Scenario: Control-plane and backup lanes stay explicit
+
+- **WHEN** route/OpenAPI governance identifies health, readiness, status,
+  metrics, OpenAPI docs, probe-facing, backup, or recovery endpoints
+- **THEN** the governance packet SHALL route those findings to D2.5
+  control-plane docs/probe stabilization, D2.4 backup ownership, or an
+  explicitly approved narrow inclusion before implementation work begins.
+
+#### Scenario: Proposal-only route governance remains locked
+
+- **WHEN** a route/OpenAPI governance change is in proposal or evidence-only
+  state
+- **THEN** it SHALL NOT authorize backend source edits, frontend source edits,
+  tests, generated client changes, route path changes, router registration
+  changes, operationId changes, response contract changes, probe URL changes, or
+  `include_in_schema` changes.
+
+### Requirement: Backup Route Ownership Must Be Explicit Before Mutation
+
+Backup and recovery route changes SHALL pass through a dedicated ownership,
+safety, and evidence gate before any route module move, route path change,
+schema exposure change, docs/API edit, consumer rewrite, or implementation issue
+is authorized.
+
+#### Scenario: Backup ownership proposal records current evidence
+
+- **WHEN** a backup route ownership lane is proposed
+- **THEN** the proposal SHALL record runtime route count, OpenAPI path count,
+  backup candidate route count, backup schema-exposed route count, backup
+  OpenAPI path and operation counts, duplicate operationId count, generated
+  artifact paths, captured git head, and stale-if-head-mismatch policy.
+
+#### Scenario: Backup route classes are classified
+
+- **WHEN** backup route ownership is evaluated
+- **THEN** the ownership packet SHALL classify backup execution, backup listing,
+  recovery execution, scheduler control, integrity verification, cleanup, and
+  health routes before implementation work begins.
+
+#### Scenario: Cleanup and backup health ownership is explicit
+
+- **WHEN** `cleanup_old_backups.py`, `cleanup_old_backups`, or
+  `backup_service_health` is included in backup route ownership
+- **THEN** the ownership packet SHALL record whether each item belongs to backup
+  ownership, service-health/control-plane documentation, or another approved
+  lane before any route movement or deletion is proposed.
+
+#### Scenario: Backup safety matrix is required
+
+- **WHEN** a backup or recovery route mutation is considered
+- **THEN** the decision packet SHALL record auth dependency, admin permission,
+  audit/logging behavior, destructive/stateful risk, consumer contracts,
+  OpenAPI examples, minimum regression checks, and rollback or restore-safety
+  expectations.
+
+#### Scenario: Proposal-only backup ownership remains locked
+
+- **WHEN** a backup route ownership change is in proposal or evidence-only state
+- **THEN** it SHALL NOT authorize backend source edits, frontend source edits,
+  tests, generated client changes, docs/API edits, route path changes, module
+  moves, operationId changes, response contract changes, probe URL changes, PM2
+  workflow execution, `include_in_schema` changes, or infrastructure backup
+  implementation changes.
+
+### Requirement: Stateful PM2 Workflow Execution Requires Explicit Approval
+
+Stateful PM2 validation SHALL require an explicit approval record before any
+workflow can stop, delete, recreate, or restart services.
+
+#### Scenario: PM2 workflow mode is classified
+
+- **WHEN** `scripts/run_pm2_integration_workflow.sh` is referenced by a task
+  list, proposal, runbook, or issue
+- **THEN** the work item SHALL classify the intended mode as no execution,
+  read-only sampling, named equivalent, full `gate`, full `regression`, or full
+  `all` before any PM2 command is run.
+
+#### Scenario: Stateful PM2 gate requires an approval record
+
+- **WHEN** a future work item requests full `gate`, `regression`, or `all`
+  execution
+- **THEN** the approval record SHALL name the approving source, approval
+  timestamp, approving human or owner, target branch, target commit, exact
+  command mode, expected state mutation, service impact, rollback and restore
+  commands, evidence destination, timeout, stop rule, and acceptance owner.
+
+#### Scenario: Named equivalent is not full PM2 evidence
+
+- **WHEN** a named equivalent is approved instead of a full PM2 workflow
+- **THEN** the approval record SHALL name the exact command set, explain why it
+  substitutes for the stateful workflow, and state which full PM2 workflow
+  evidence remains unproven.
+
+#### Scenario: Existing PM2 evidence is cited without rerun
+
+- **WHEN** existing PM2 gate evidence is used for a later governance or archive
+  decision
+- **THEN** the decision packet SHALL record the evidence path, captured branch or
+  commit if known, freshness limits, and why no new PM2 execution is required.
+
+#### Scenario: Proposal-only PM2 approval work remains locked
+
+- **WHEN** a PM2 approval-policy change is in proposal or evidence-only state
+- **THEN** it SHALL NOT authorize PM2 command execution, `pm2 stop all`,
+  `pm2 delete all`, service restart, process recreation, backend source edits,
+  frontend source edits, tests, generated client changes, docs/API edits, route
+  changes, OpenAPI schema changes, probe URL changes, or movement of a decision
+  issue to implementation-ready state.
