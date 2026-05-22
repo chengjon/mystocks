@@ -1,0 +1,107 @@
+version: "v0.2"
+
+task:
+  id: "pr-132"
+  title: "record issue92 final closeout review waiver"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-issue92-final-closeout-review-waiver"
+  objective: "record explicit final closeout review waiver for the issue #92 archive gate"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-issue92-final-closeout-waiver"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-issue92-final-closeout-review-waiver"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Issue #92 final closeout review waiver only; no runtime entrypoint, route, PM2 service, page, shim, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/issue92-downstream-final-closeout-2026-05-22.json"
+    - "docs/reports/quality/backend-openspec-issue92-downstream-final-closeout-2026-05-22.md"
+    - "docs/reports/quality/backend-openspec-issue92-downstream-final-closeout-2026-05-22-review-waiver.md"
+    - "governance/mainline/task-cards/pr-132.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No openspec archive execution"
+  - "No OpenSpec change/spec modification"
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, or runtime behavior changes"
+  - "No PM2 command execution, service restart, process deletion, or process recreation"
+  - "No downstream implementation issue creation"
+  - "No movement of issue #92 to ready-for-agent"
+  - "No child implementation lane approval"
+
+acceptance:
+  checks:
+    - id: "review-waiver-recorded"
+      command: "review waiver artifact exists and final closeout report records waiver status"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-openspec-issue92-downstream-final-closeout-2026-05-22.md docs/reports/quality/backend-openspec-issue92-downstream-final-closeout-2026-05-22-review-waiver.md"
+      required: true
+    - id: "json-validity"
+      command: "python -m json.tool .planning/codebase/generated/issue92-downstream-final-closeout-2026-05-22.json"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-132.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the waiver is misread as implementation approval, issue #92 can be moved into an execution state incorrectly"
+    - "If the waiver is misread as archive execution, OpenSpec history can move outside the separate archive PR gate"
+  rollback_plan: "revert this PR and return issue #92 final closeout to prepared-for-review state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record explicit review-thread waiver for issue #92 final closeout"
+    modified_scope: "final closeout report, review waiver artifact, generated evidence artifact, steward tree, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance/evidence bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, mainline scope, JSON validity, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T09:54:09+08:00"
+    approval_note: "final closeout review waiver only; this PR does not execute openspec archive, authorize implementation, or move issue #92 to ready-for-agent"
+    secondary_approved: false
