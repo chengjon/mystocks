@@ -1,0 +1,102 @@
+version: "v0.2"
+
+task:
+  id: "pr-145"
+  title: "prepare announcement service DI implementation authorization"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-service-lifecycle-di-announcement-service-authorization"
+  objective: "prepare the G2.5 announcement_service.py lifecycle DI implementation authorization packet without source edits"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-announcement-service-di-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-announcement-service-di-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Implementation authorization report, generated evidence artifact, and steward-tree update only; no runtime entrypoint, route, page, shim, service behavior, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/announcement-service-lifecycle-di-implementation-authorization-2026-05-22.json"
+    - "docs/reports/quality/backend-announcement-service-lifecycle-di-implementation-authorization-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-145.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, PM2, or runtime behavior changes in this PR"
+  - "No announcement_service.py implementation in this PR"
+  - "No watchlist_service.py work"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes"
+  - "No movement of issue #79 or #92 to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-announcement-service-lifecycle-di-implementation-authorization-2026-05-22.md"
+      required: true
+    - id: "json-validity"
+      command: "python -m json.tool .planning/codebase/generated/announcement-service-lifecycle-di-implementation-authorization-2026-05-22.json >/tmp/announcement-service-lifecycle-di-implementation-authorization.json"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-145.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this authorization packet is misread as an implementation PR, source edits could happen before human acceptance"
+    - "If future implementation expands into watchlist or adapter/data-layer files, it will violate the G2.4 selection boundary"
+  rollback_plan: "revert this PR and return the steward tree to the G2.4 second-candidate selection state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "prepare announcement_service.py lifecycle DI implementation authorization after G2.4 selection"
+    modified_scope: "steward tree, authorization report, generated JSON, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance authorization only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON validity, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T18:47:20+08:00"
+    approval_note: "human maintainer requested continuation after G2.4; this PR prepares implementation authorization only and does not itself modify source"
+    secondary_approved: false
