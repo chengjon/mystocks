@@ -1,0 +1,97 @@
+version: "v0.2"
+
+task:
+  id: "pr-147"
+  title: "record announcement service DI implementation closeout"
+  owner: "main"
+  created_at: "2026-05-22"
+
+mainline:
+  id: "L1-service-lifecycle-di-announcement-service-closeout"
+  objective: "record that the announcement_service.py lifecycle DI pilot was reviewed, merged, and remains bounded to the approved second candidate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-announcement-service-di-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-announcement-service-di-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout record and steward-tree update only; no runtime entrypoint, route, page, shim, service behavior, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "docs/reports/quality/backend-announcement-service-lifecycle-di-closeout-2026-05-22.md"
+    - "governance/mainline/task-cards/pr-147.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, PM2, or runtime behavior changes"
+  - "No additional service lifecycle DI implementation"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes"
+  - "No movement of issue #79 or #92 to ready-for-agent"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-announcement-service-lifecycle-di-closeout-2026-05-22.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-147.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is misread as approval for a third service migration, issue #79 can expand beyond reviewed scope"
+    - "If issue state is changed here, the governance record diverges from the parent decision trail"
+  rollback_plan: "revert this PR and return the steward tree to the PR #146 merged-but-unrecorded state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record announcement_service.py lifecycle DI pilot completion after PR #146 merge"
+    modified_scope: "steward tree, closeout report, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance bookkeeping only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-22T19:23:37+08:00"
+    approval_note: "human maintainer approved PR #146 merge; this PR records completion only and does not authorize a third service migration"
+    secondary_approved: false
