@@ -736,16 +736,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 dependency counts are legacy=`0` and provider=`5`, and
 │   │                 OpenAPI remains paths=`500` with duplicate operation
 │   │                 IDs=`0`; G2.41 merged by PR `#181` at
-│   │                 `41b0d4db7f2c644cea9abf1ddd4112e695325dcc`; G2.42 now
+│   │                 `41b0d4db7f2c644cea9abf1ddd4112e695325dcc`; G2.42
 │   │                 records the current-head candidate refresh: service files
 │   │                 scanned=`152`, narrow candidate/signal files=`21`,
 │   │                 completed route-provider seams=`7`, TDX legacy route
 │   │                 dependency sites=`0`, TDX provider sites=`5`, OpenAPI
-│   │                 paths=`500`, and duplicate operation IDs=`0`
-│   └── Next gate: Human review of the G2.42 candidate refresh PR; if accepted,
-│                  create a separate G2.43 service candidate usefulness and
-│                  ownership triage packet before selecting an implementation
-│                  lane
+│   │                 paths=`500`, and duplicate operation IDs=`0`; PR `#182`
+│   │                 merged at
+│   │                 `f7c6fdf5fd57cff14ef6d11f1d18fd6591a22dc5`; G2.43 now
+│   │                 records candidate usefulness and ownership triage:
+│   │                 `AdvancedAnalysisService` is an active route class
+│   │                 dependency with a definition-only compatibility getter,
+│   │                 `WencaiService` is an active DB/session-backed direct
+│   │                 constructor service, `get_market_data_service` remains an
+│   │                 active route dependency, and `UnifiedDataService` remains
+│   │                 a broad data seam; no implementation target is authorized
+│   └── Next gate: Human review of the G2.43 triage PR; if accepted, create a
+│                  separate G2.44 `AdvancedAnalysisService` route-provider
+│                  migration authorization packet before source edits
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -827,6 +835,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-tdx-route-provider-migration-implementation-2026-05-24.md` | G | G2.40 implementation prepared from G2.39 authorization at base `e4dc9088cabfb4dba756beb109294980c047c327`: adds `TDX_SERVICE_STATE_KEY` and `get_tdx_service_dependency(request)`, keeps `get_tdx_service()` as public fallback, converts exactly five `/api/v1/tdx` `Depends(get_tdx_service)` sites to `Depends(get_tdx_service_dependency)`, focused TDD ended at `4 passed`, ruff/black passed, `app.main` routes=`548`, OpenAPI paths=`500`, duplicate operation IDs=`0`, and TDX paths=`7` | Human review / PR merge decision; if accepted, run G2.41 closeout or current-head candidate refresh before selecting the next service lifecycle DI lane |
 | `backend-tdx-route-provider-migration-closeout-2026-05-24.md` | G | G2.41 closeout prepared at current HEAD `86b0ec43c037729b28df51c40484196175c96c6e`: records PR `#180` as `MERGED`, confirms focused TDX lifecycle DI tests `4 passed`, ruff/black passed, `tdx.py` legacy route dependency sites=`0`, provider sites=`5`, `get_tdx_service()` remains public fallback, `app.main` routes=`548`, OpenAPI paths=`500`, duplicate operation IDs=`0`, and no next service lifecycle DI candidate is selected | Human review / PR merge decision; if accepted, create G2.42 current-head candidate refresh before selecting the next service lifecycle DI lane |
 | `backend-service-lifecycle-di-candidate-refresh-after-tdx-route-provider-2026-05-24.md` | G | G2.42 candidate refresh prepared at current HEAD `41b0d4db7f2c644cea9abf1ddd4112e695325dcc`: scans `152` service files and `21` narrow candidate/signal files, records completed route-provider seams=`7`, confirms TDX route dependency surface closed with legacy sites=`0` and provider sites=`5`, keeps `get_tdx_service()` as public fallback, records OpenAPI paths=`500` and duplicate operation IDs=`0`, and does not select a new implementation target | Human review / PR merge decision; if accepted, create G2.43 service candidate usefulness and ownership triage packet before any source edits |
+| `backend-service-candidate-usefulness-ownership-triage-2026-05-24.md` | G | G2.43 triage prepared at current HEAD `f7c6fdf5fd57cff14ef6d11f1d18fd6591a22dc5`: records PR `#182` as `MERGED`, confirms `AdvancedAnalysisService` is an active route class dependency with `14` class `Depends()` sites and no external getter reference, classifies `WencaiService` as active DB/session-backed direct construction, keeps `get_market_data_service` as active route dependency with `7` route dependency sites, classifies `UnifiedDataService` as a broad data seam, and authorizes no implementation | Human review / PR merge decision; if accepted, create G2.44 `AdvancedAnalysisService` route-provider migration authorization before any source edits |
 
 ## Completed And Reviewed Ledger
 

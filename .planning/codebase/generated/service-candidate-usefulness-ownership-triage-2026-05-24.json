@@ -1,0 +1,102 @@
+{
+  "artifact": "service-candidate-usefulness-ownership-triage",
+  "workline": "G2.43",
+  "generated_at": "2026-05-24T01:47:32+08:00",
+  "git_head": "f7c6fdf5fd57cff14ef6d11f1d18fd6591a22dc5",
+  "source_scope": "governance-only",
+  "parent_pr": {
+    "number": 182,
+    "state": "MERGED",
+    "merge_commit": "f7c6fdf5fd57cff14ef6d11f1d18fd6591a22dc5"
+  },
+  "github_state": {
+    "issue_79": {
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ]
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ]
+    }
+  },
+  "candidate_disposition": [
+    {
+      "candidate": "AdvancedAnalysisService",
+      "service_file": "web/backend/app/services/advanced_analysis_service.py",
+      "service_file_lines": 480,
+      "route_file": "web/backend/app/api/advanced_analysis_api.py",
+      "route_count": 14,
+      "class_depends_count": 14,
+      "getter": "get_advanced_analysis_service",
+      "getter_external_active_references": 0,
+      "class_active_reference_files": [
+        "web/backend/app/api/advanced_analysis_api.py",
+        "web/backend/app/services/advanced_analysis_service.py"
+      ],
+      "disposition": "active-route-service-next-authorization-candidate",
+      "implementation_authorized": false,
+      "recommended_next_gate": "G2.44 AdvancedAnalysisService route-provider migration authorization"
+    },
+    {
+      "candidate": "WencaiService",
+      "service_file": "web/backend/app/services/wencai_service.py",
+      "service_file_lines": 430,
+      "route_file": "web/backend/app/api/wencai.py",
+      "route_count": 8,
+      "direct_constructor_count": 8,
+      "getter": "get_wencai_service",
+      "getter_external_active_references": 0,
+      "class_active_reference_files": [
+        "src/database/services/database_service.py",
+        "web/backend/app/api/wencai.py",
+        "web/backend/app/services/wencai_service.py",
+        "web/backend/app/tasks/wencai_tasks.py",
+        "web/backend/scripts/deploy_wencai.sh"
+      ],
+      "disposition": "active-db-session-backed-service-not-immediate-pilot",
+      "implementation_authorized": false
+    },
+    {
+      "candidate": "MarketDataService",
+      "service_file": "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "service_file_lines": 33,
+      "route_file": "web/backend/app/api/market/market_data_request.py",
+      "route_count": 11,
+      "route_dependency_count": 7,
+      "getter": "get_market_data_service",
+      "disposition": "active-broad-market-data-route-dependency",
+      "implementation_authorized": false
+    },
+    {
+      "candidate": "UnifiedDataService",
+      "service_file": "web/backend/app/services/unified_data_service.py",
+      "service_file_lines": 613,
+      "route_file": "web/backend/app/api/industry_concept_analysis.py",
+      "route_count": 5,
+      "direct_constructor_count": 2,
+      "getter": "get_unified_data_service",
+      "disposition": "broad-data-seam-needs-separate-ownership-review",
+      "implementation_authorized": false
+    }
+  ],
+  "explicit_exclusions": [
+    "DataService",
+    "StrategyService",
+    "TechnicalAnalysisService"
+  ],
+  "non_goals": [
+    "no backend source changes",
+    "no backend test changes",
+    "no OpenSpec change or archive operation",
+    "no GitHub issue label changes",
+    "no compatibility getter cleanup",
+    "no implementation target authorization"
+  ],
+  "next_gate": "human review of G2.43; if accepted, create G2.44 AdvancedAnalysisService route-provider migration authorization before source edits"
+}
