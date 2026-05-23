@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-172"
+  title: "Implement MarketDataServiceV2 dashboard helper provider migration"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-market-data-service-v2-dashboard-helper-provider-migration"
+  objective: "implement the approved dashboard helper provider migration while preserving MarketDataServiceV2 compatibility getter fallback"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-market-data-service-v2-dashboard-helper-provider-migration"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-market-data-service-v2-dashboard-helper-provider-migration"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Dashboard helper provider migration only; route paths, response contracts, OpenAPI exposure, frontend, docs/API, PM2, and OpenSpec remain unchanged"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "web/backend/app/api/dashboard_data_source.py"
+    - "web/backend/app/api/dashboard.py"
+    - "web/backend/app/main.py"
+    - "web/backend/tests/test_dashboard_data_source.py"
+    - "docs/reports/quality/backend-market-data-service-v2-dashboard-helper-provider-migration-implementation-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-172.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/market_v2.py"
+    - "web/backend/app/services/market_data_service_v2.py"
+    - "web/backend/app/services/market_data_adapter.py"
+    - "web/backend/app/services/market_data_service/**"
+    - "web/backend/app/services/__init__.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No market_v2.py route-provider changes"
+  - "No MarketDataService and MarketDataServiceV2 consolidation"
+  - "No route path, HTTP method, response model, response envelope, or OpenAPI schema exposure change"
+  - "No docs/API, generated client, frontend, PM2, runtime config, OpenSpec, or issue-label change"
+  - "No deletion, rename, privatization, or semantic change of get_market_data_service_v2"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_dashboard_data_source.py web/backend/tests/test_market_data_service_v2_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/api/dashboard_data_source.py web/backend/app/api/dashboard.py web/backend/app/main.py web/backend/tests/test_dashboard_data_source.py web/backend/tests/test_market_data_service_v2_lifecycle_di.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/api/dashboard_data_source.py web/backend/app/api/dashboard.py web/backend/app/main.py web/backend/tests/test_dashboard_data_source.py web/backend/tests/test_market_data_service_v2_lifecycle_di.py"
+      required: true
+    - id: "app-main-import"
+      command: "env PYTHONPATH=web/backend TESTING=true DEVELOPMENT_MODE=true POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test POSTGRESQL_DATABASE=test JWT_SECRET_KEY=0123456789abcdef0123456789abcdef BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c 'import app.main; print(\"app-main-import-ok\")'"
+      required: true
+    - id: "openapi-smoke"
+      command: "env PYTHONPATH=web/backend TESTING=true DEVELOPMENT_MODE=true POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test POSTGRESQL_DATABASE=test JWT_SECRET_KEY=0123456789abcdef0123456789abcdef BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c 'from app.main import app; schema=app.openapi(); print(len(schema.get(\"paths\", {})))'"
+      required: true
+    - id: "text-guards"
+      command: "verify market_v2.py and dashboard_data_source.py direct get_market_data_service_v2() calls are 0 and market_data_service_v2.py still defines get_market_data_service_v2"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-market-data-service-v2-dashboard-helper-provider-migration-implementation-2026-05-23.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-172.yaml"
+      required: true
+    - id: "staged-gitnexus"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If market_v2.py or market_data_service_v2.py are edited, the PR exceeds the G2.31 authorization boundary"
+    - "If get_market_data_service_v2 is removed or privatized, installer fallback compatibility can break"
+    - "If route paths or response contracts change, this PR becomes route/OpenAPI governance work instead of lifecycle DI work"
+  rollback_plan: "revert this PR; restore dashboard helper direct getter calls, route-body dashboard data source construction, startup prewarm without explicit service passing, and the focused tests/report/task-card as one unit"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement approved MarketDataServiceV2 dashboard helper provider migration"
+    modified_scope: "dashboard_data_source.py, dashboard.py, main.py, focused tests, implementation report, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "get_market_data_service_v2 remains public fallback; dashboard helper direct getter calls become 0"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, ruff, black check, app/OpenAPI smoke, text guards, mainline scope, staged GitNexus, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T18:06:07+08:00"
+    approval_note: "human maintainer approved continuing after G2.31 authorization; this PR implements only the approved dashboard helper provider migration scope"
+    secondary_approved: false

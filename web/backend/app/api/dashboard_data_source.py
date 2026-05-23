@@ -8,14 +8,19 @@ import logging
 import os
 import re
 from datetime import date, datetime
-from typing import Dict, List, Optional
+from typing import Callable, Dict, List, Optional
 
 import httpx
 import pandas as pd
 from app.core.exceptions import BusinessException
+from fastapi import Depends
 from sqlalchemy import text
 
-from app.services.market_data_service_v2 import get_market_data_service_v2
+from app.services.market_data_service_v2 import (
+    MarketDataServiceV2,
+    get_market_data_service_v2,
+    get_market_data_service_v2_dependency,
+)
 from app.services.tdx_service import get_tdx_service
 
 logger = logging.getLogger(__name__)
@@ -38,14 +43,25 @@ class RealBusinessDataSource:
     实现方案与前端dashboardService.ts保持一致。
     """
 
-    def __init__(self):
+    def __init__(
+        self,
+        market_service: MarketDataServiceV2 | None = None,
+        market_service_provider: Callable[[], MarketDataServiceV2] | None = None,
+    ):
         """初始化真实数据源"""
         backend_port = os.getenv("BACKEND_PORT", "").strip()
         if not backend_port:
             raise RuntimeError("Missing BACKEND_PORT in .env")
         self.base_url = os.getenv("BACKEND_BASE_URL", f"http://localhost:{backend_port}")
         self.timeout = 10.0
+        self._market_service = market_service
+        self._market_service_provider = market_service_provider or get_market_data_service_v2
         logger.info("✅ RealBusinessDataSource initialized")
+
+    def _get_market_data_service(self) -> MarketDataServiceV2:
+        if self._market_service is None:
+            self._market_service = self._market_service_provider()
+        return self._market_service
 
     async def _make_request(self, method: str, endpoint: str, params: Dict = None, json_data: Dict = None) -> Dict:
         """发送HTTP请求到后端API"""
@@ -109,7 +125,7 @@ class RealBusinessDataSource:
     def _get_market_overview_data(self) -> Dict:
         """获取市场概览数据"""
         try:
-            market_service = get_market_data_service_v2()
+            market_service = self._get_market_data_service()
             market_snapshot = (
                 self._get_live_market_snapshot()
                 or self._get_tdx_live_market_snapshot(market_service)
@@ -161,7 +177,9 @@ class RealBusinessDataSource:
             ranking_source = ranking_indices or indices
             market_stats = market_snapshot if market_snapshot else None
             fallback_total_turnover = sum(idx.get("turnover", 0) for idx in ranking_source)
-            fallback_top_gainers = sorted(ranking_source, key=lambda item: item.get("change_percent", 0), reverse=True)[:3]
+            fallback_top_gainers = sorted(ranking_source, key=lambda item: item.get("change_percent", 0), reverse=True)[
+                :3
+            ]
             fallback_top_losers = sorted(ranking_source, key=lambda item: item.get("change_percent", 0))[:3]
             fallback_most_active = sorted(ranking_source, key=lambda item: item.get("volume", 0), reverse=True)[:3]
 
@@ -171,18 +189,26 @@ class RealBusinessDataSource:
                 "down_count": market_stats.get("down_count", down_count) if market_stats else down_count,
                 "flat_count": market_stats.get("flat_count", 0) if market_stats else 0,
                 "total_volume": market_stats.get("total_volume", total_volume) if market_stats else total_volume,
-                "total_turnover": market_stats["total_turnover"]
-                if market_stats and market_stats.get("total_turnover") is not None
-                else fallback_total_turnover,
-                "top_gainers": market_stats["top_gainers"]
-                if market_stats and market_stats.get("top_gainers") is not None
-                else fallback_top_gainers,
-                "top_losers": market_stats["top_losers"]
-                if market_stats and market_stats.get("top_losers") is not None
-                else fallback_top_losers,
-                "most_active": market_stats["most_active"]
-                if market_stats and market_stats.get("most_active") is not None
-                else fallback_most_active,
+                "total_turnover": (
+                    market_stats["total_turnover"]
+                    if market_stats and market_stats.get("total_turnover") is not None
+                    else fallback_total_turnover
+                ),
+                "top_gainers": (
+                    market_stats["top_gainers"]
+                    if market_stats and market_stats.get("top_gainers") is not None
+                    else fallback_top_gainers
+                ),
+                "top_losers": (
+                    market_stats["top_losers"]
+                    if market_stats and market_stats.get("top_losers") is not None
+                    else fallback_top_losers
+                ),
+                "most_active": (
+                    market_stats["most_active"]
+                    if market_stats and market_stats.get("most_active") is not None
+                    else fallback_most_active
+                ),
             }
 
         except Exception as error:
@@ -376,7 +402,9 @@ class RealBusinessDataSource:
 
             snapshot_df = FinancialDataSource().get_real_time_data()
             if not isinstance(snapshot_df, pd.DataFrame) or snapshot_df.empty:
-                _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS)
+                _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(
+                    seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS
+                )
                 return None
 
             normalized = pd.DataFrame(
@@ -393,7 +421,9 @@ class RealBusinessDataSource:
 
             normalized = normalized.dropna(subset=["symbol", "current_price", "change_percent", "turnover"])
             if normalized.empty:
-                _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS)
+                _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(
+                    seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS
+                )
                 return None
 
             _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = None
@@ -425,7 +455,9 @@ class RealBusinessDataSource:
             }
 
         except Exception as error:
-            _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS)
+            _LIVE_MARKET_SNAPSHOT_DISABLED_UNTIL = now + pd.Timedelta(
+                seconds=_LIVE_MARKET_SNAPSHOT_FAILURE_COOLDOWN_SECONDS
+            )
             logger.warning("获取实时全市场快照失败: %s", error)
             return None
 
@@ -482,7 +514,9 @@ class RealBusinessDataSource:
             if not symbol_rows:
                 return None
 
-            symbol_name_map = {row._mapping["symbol"]: row._mapping.get("name") or row._mapping["symbol"] for row in symbol_rows}
+            symbol_name_map = {
+                row._mapping["symbol"]: row._mapping.get("name") or row._mapping["symbol"] for row in symbol_rows
+            }
             symbol_pairs = [(_infer_market_code(symbol), symbol) for symbol in symbol_name_map]
 
             api = TdxHq_API()
@@ -677,13 +711,13 @@ def get_business_source():
     return RealBusinessDataSource()
 
 
-def prewarm_dashboard_market_overview_cache() -> bool:
+def prewarm_dashboard_market_overview_cache(market_service: MarketDataServiceV2 | None = None) -> bool:
     """后台预热 dashboard market-overview 的 TDX 缓存"""
     try:
-        source = RealBusinessDataSource()
-        market_service = get_market_data_service_v2()
+        source = RealBusinessDataSource(market_service=market_service)
+        selected_market_service = source._get_market_data_service()
         source._get_major_index_quotes()
-        source._get_tdx_live_market_snapshot(market_service)
+        source._get_tdx_live_market_snapshot(selected_market_service)
         logger.info("✅ dashboard market-overview cache prewarmed")
         return True
     except Exception as error:
@@ -691,10 +725,17 @@ def prewarm_dashboard_market_overview_cache() -> bool:
         return False
 
 
-def get_data_source():
+def get_data_source(market_service: MarketDataServiceV2 | None = None):
     """获取业务数据源"""
     try:
-        return RealBusinessDataSource()
+        return RealBusinessDataSource(market_service=market_service)
     except Exception as error:
         logger.error("获取数据源失败: %s", error)
         raise BusinessException(status_code=500, detail=f"数据源初始化失败: {str(error)}")
+
+
+def get_data_source_dependency(
+    market_service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
+):
+    """FastAPI dependency provider for dashboard data source."""
+    return get_data_source(market_service)
