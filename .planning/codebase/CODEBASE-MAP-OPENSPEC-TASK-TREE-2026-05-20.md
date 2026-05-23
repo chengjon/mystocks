@@ -472,8 +472,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `.planning/codebase/generated/market-data-provider-design-2026-05-23.json`,
 │   │   `backend-market-data-service-v2-route-provider-implementation-authorization-2026-05-23.md`,
 │   │   `.planning/codebase/generated/market-data-service-v2-route-provider-implementation-authorization-2026-05-23.json`,
-│   │   `backend-market-data-service-v2-route-provider-implementation-2026-05-23.md`
-│   ├── State: market-data-service-v2-route-provider-implementation-prepared-for-review
+│   │   `backend-market-data-service-v2-route-provider-implementation-2026-05-23.md`,
+│   │   `backend-market-data-service-v2-route-provider-closeout-2026-05-23.md`,
+│   │   `.planning/codebase/generated/market-data-service-v2-route-provider-closeout-2026-05-23.json`
+│   ├── State: market-data-service-v2-route-provider-closeout-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -635,10 +637,17 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 injecting `MarketDataServiceV2` into the 13 authorized
 │   │                 `market_v2.py` route handlers while preserving the
 │   │                 compatibility getter and leaving the 2
-│   │                 `dashboard_data_source.py` helper callers unchanged
-│   └── Next gate: Human review of the G2.27 implementation; if accepted and
-│                  merged, record a post-merge closeout packet before selecting
-│                  another service lifecycle DI lane
+│   │                 `dashboard_data_source.py` helper callers unchanged; PR
+│   │                 `#167` merged at
+│   │                 `8120f01a7022472b604f525ac9af2a517150c39b`; G2.28 now
+│   │                 records the post-merge closeout, confirms `market_v2.py`
+│   │                 route direct getter calls remain `0`, 13 route handlers
+│   │                 use the provider dependency, dashboard helper callers
+│   │                 remain `2`, and OpenAPI stays at paths=`500`,
+│   │                 `/api/v2/market` paths=`13`, duplicate operationIds=`0`
+│   └── Next gate: Human review of the G2.28 closeout packet; if accepted,
+│                  select any next service lifecycle DI lane only through a
+│                  separate evidence or authorization packet
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -704,7 +713,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-broad-service-seam-design-2026-05-23.md` | G | G2.24 design packet prepared at `18f5b43275bb`: broad market/data/strategy seams are split into separate future design lanes; market/data/strategy/tdx representative getters show CRITICAL impact except `get_market_data_service`, which has a graph/text mismatch; no source implementation is authorized | Human review; if accepted, create G2.25 market-data provider design packet before any market data service source edits |
 | `backend-market-data-provider-design-2026-05-23.md` | G | G2.25 design packet prepared at `f97ca070853`: `MarketDataService` and `MarketDataServiceV2` stay separate; `market_v2.py` is the recommended future route-provider authorization candidate; dashboard, adapter, and market-data package provider work stay in separate lanes | Human review; if accepted, create G2.26 `MarketDataServiceV2` route-provider implementation authorization before source edits |
 | `backend-market-data-service-v2-route-provider-implementation-authorization-2026-05-23.md` | G | G2.26 authorization packet prepared at `46507955f`: future source scope is limited to `market_data_service_v2.py`, `market_v2.py`, focused lifecycle tests, implementation evidence, and a future task card; dashboard, adapter, market-data package, service consolidation, route/OpenAPI, frontend, PM2, and OpenSpec work remain excluded | Human review; if accepted, create a separate implementation branch before source edits |
-| `backend-market-data-service-v2-route-provider-implementation-2026-05-23.md` | G | G2.27 implementation prepared at `76a1e271f`: app-state provider seam added to `market_data_service_v2.py`, 13 `market_v2.py` route-local getter calls converted to injected `MarketDataServiceV2`, compatibility getter retained, and 2 dashboard helper callers intentionally left unchanged | Human review; if accepted and merged, record post-merge closeout before selecting another service lifecycle DI lane |
+| `backend-market-data-service-v2-route-provider-implementation-2026-05-23.md` | G | G2.27 implementation merged by PR `#167` at `8120f01a7022472b604f525ac9af2a517150c39b`: app-state provider seam added to `market_data_service_v2.py`, 13 `market_v2.py` route-local getter calls converted to injected `MarketDataServiceV2`, compatibility getter retained, and 2 dashboard helper callers intentionally left unchanged | Superseded by G2.28 closeout packet |
+| `backend-market-data-service-v2-route-provider-closeout-2026-05-23.md` | G | G2.28 closeout prepared at `8120f01a7022472b604f525ac9af2a517150c39b`: PR `#167` merge recorded, focused lifecycle DI test `4 passed`, ruff and black passed, `app.main` import passed, OpenAPI smoke reports paths=`500`, `/api/v2/market` paths=`13`, duplicate operationIds=`0`, `market_v2.py` direct route getter calls=`0`, and `dashboard_data_source.py` helper calls remain `2` | Human review; if accepted, select the next service lifecycle DI lane only through a separate evidence or authorization packet |
 
 ## Completed And Reviewed Ledger
 
@@ -795,7 +805,8 @@ review, PR review, or OpenSpec archive review.
 | G2.24 broad service seam design | G/#79 | Decompose broad market/data/strategy service seams before selecting another implementation lane | Review-ready: PR `#163` merged at `18f5b43275bbd1fc7f53c739063da37c6a753b11`; current-head text scan covers `market_data_service_v2`, `market_data_service`, `data_service`, `strategy_service`, `tdx_service`, `enhanced_data_service`, and `technical_analysis_service`; GitNexus spot checks classify most broad seams as CRITICAL and select no mixed implementation batch | `docs/reports/quality/backend-broad-service-seam-design-2026-05-23.md`; `.planning/codebase/generated/broad-service-seam-design-2026-05-23.json` | Human review; if accepted, create G2.25 market-data provider design packet before source edits |
 | G2.25 market-data provider design | G/#79 | Decide the market-data provider seam before selecting an implementation authorization | Review-ready: PR `#164` merged at `f97ca070853a77afc80c226d53948e805ba33c8e`; `market_v2.py` has 13 direct `get_market_data_service_v2()` route calls, `dashboard_data_source.py` has 2 non-route helper calls, `market/market_data_request.py` already uses `Depends(get_market_data_service)` in 7 route handlers, and service consolidation is rejected | `docs/reports/quality/backend-market-data-provider-design-2026-05-23.md`; `.planning/codebase/generated/market-data-provider-design-2026-05-23.json` | Human review; if accepted, create G2.26 `MarketDataServiceV2` route-provider implementation authorization before source edits |
 | G2.26 MarketDataServiceV2 route-provider implementation authorization | G/#79 | Authorize exact future implementation boundary for `MarketDataServiceV2` route-provider DI | Review-ready: PR `#165` merged at `46507955f77a3166491bd4510c56ef034b6ff1cb`; GitNexus rates `get_market_data_service_v2` CRITICAL with 18 impacted symbols and 15 direct callers; future write scope is limited to `market_data_service_v2.py`, `market_v2.py`, focused lifecycle tests, implementation evidence, and a future task card; this packet performs no source edits | `docs/reports/quality/backend-market-data-service-v2-route-provider-implementation-authorization-2026-05-23.md`; `.planning/codebase/generated/market-data-service-v2-route-provider-implementation-authorization-2026-05-23.json` | Human review; if accepted, create a separate implementation branch before source edits |
-| G2.27 MarketDataServiceV2 route-provider lifecycle DI | G/#79 | Implement the approved route-provider DI seam for `MarketDataServiceV2` | Review-ready: PR `#166` merged at `76a1e271fa602e692553acf2760f100ca88030aa`; `market_v2.py` route-local getter calls are now `0`, 13 route handlers accept injected `MarketDataServiceV2`, `get_market_data_service_v2()` remains as compatibility getter, and `dashboard_data_source.py` helper callers remain unchanged | `docs/reports/quality/backend-market-data-service-v2-route-provider-implementation-2026-05-23.md`; focused lifecycle DI test file | Human review; if accepted and merged, record G2.28 post-merge closeout before selecting another service lifecycle DI lane |
+| G2.27 MarketDataServiceV2 route-provider lifecycle DI | G/#79 | Implement the approved route-provider DI seam for `MarketDataServiceV2` | Merged by PR `#167` at `8120f01a7022472b604f525ac9af2a517150c39b`: `market_v2.py` route-local getter calls are now `0`, 13 route handlers accept injected `MarketDataServiceV2`, `get_market_data_service_v2()` remains as compatibility getter, and `dashboard_data_source.py` helper callers remain unchanged | `docs/reports/quality/backend-market-data-service-v2-route-provider-implementation-2026-05-23.md`; focused lifecycle DI test file | Superseded by G2.28 closeout packet |
+| G2.28 MarketDataServiceV2 route-provider closeout | G/#79 | Record the PR `#167` merge result and post-merge route/OpenAPI stability | Review-ready: no backend source/test/runtime/OpenSpec/issue-label changes; post-merge scan shows `0` direct route getter calls in `market_v2.py`, 13 injected route params, and 2 dashboard helper compatibility calls unchanged; focused lifecycle DI test `4 passed`; ruff/black passed; `app.main` import passed; OpenAPI paths=`500`, `/api/v2/market` paths=`13`, duplicate operationIds=`0` | `docs/reports/quality/backend-market-data-service-v2-route-provider-closeout-2026-05-23.md`; `.planning/codebase/generated/market-data-service-v2-route-provider-closeout-2026-05-23.json`; https://github.com/chengjon/mystocks/pull/167 | Human review of closeout; any next service lifecycle DI lane requires a separate evidence or authorization packet |
 
 ## OpenSpec Branch Register
 
@@ -877,7 +888,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review G2.27 `MarketDataServiceV2` route-provider implementation | Future service seam lane | PR `#166` merged; G2.27 is review-ready with 13 `market_v2.py` route handlers injected and compatibility getter retained |
+| P2 | Review G2.28 `MarketDataServiceV2` route-provider closeout | Future service seam lane | PR `#167` merged; G2.28 closeout is review-ready with route direct getter calls `0`, 13 provider-injected `market_v2.py` handlers, compatibility getter retained, and dashboard helper callers unchanged |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items
