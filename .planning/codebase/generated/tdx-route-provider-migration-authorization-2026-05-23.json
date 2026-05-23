@@ -1,0 +1,136 @@
+{
+  "artifact": "tdx-route-provider-migration-authorization-2026-05-23",
+  "generated_at": "2026-05-23T23:07:19+08:00",
+  "workline": "G2.39",
+  "parent_issue": 79,
+  "parent_issue_state": "OPEN",
+  "parent_issue_labels": [
+    "needs-triage"
+  ],
+  "parent_pr": 178,
+  "parent_pr_merge_commit": "30c78a22dce5879396dfd5c7760cc61161377528",
+  "current_head": "30c78a22dce5879396dfd5c7760cc61161377528",
+  "scope": {
+    "mode": "authorization-only",
+    "source_edits_in_this_pr": false,
+    "test_edits_in_this_pr": false,
+    "runtime_changes_in_this_pr": false,
+    "openspec_changes_in_this_pr": false,
+    "issue_label_changes_in_this_pr": false,
+    "future_implementation_authorized_if_human_review_accepts": true
+  },
+  "current_snapshot": {
+    "openapi": {
+      "paths_total": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "tdx_paths_count": 7
+    },
+    "symbols": {
+      "web/backend/app/services/tdx_service.py": {
+        "get_tdx_service": 2,
+        "install_tdx_service": 1,
+        "get_tdx_service_dependency": 0,
+        "TDX_SERVICE_STATE_KEY": 0,
+        "app.state.tdx_service": 1
+      },
+      "web/backend/app/api/tdx.py": {
+        "get_tdx_service": 6,
+        "Depends(get_tdx_service)": 5,
+        "get_tdx_service_dependency": 0,
+        "Depends(get_tdx_service_dependency)": 0
+      },
+      "web/backend/app/main.py": {
+        "install_tdx_service": 2,
+        "get_tdx_service": 0
+      },
+      "web/backend/app/api/dashboard_data_source.py": {
+        "get_tdx_service": 5,
+        "direct_body_get_tdx_service_calls": 0
+      }
+    }
+  },
+  "future_allowed_write_scope": [
+    {
+      "path": "web/backend/app/services/tdx_service.py",
+      "allowed_change": "Add TDX_SERVICE_STATE_KEY and get_tdx_service_dependency(request: Request); update installer internals to use the named state key; preserve get_tdx_service fallback."
+    },
+    {
+      "path": "web/backend/app/api/tdx.py",
+      "allowed_change": "Convert exactly five /api/v1/tdx route dependencies from Depends(get_tdx_service) to Depends(get_tdx_service_dependency), preserving route behavior and OpenAPI."
+    },
+    {
+      "path": "web/backend/tests/test_tdx_service_lifecycle_di.py",
+      "allowed_change": "Add focused provider install, app-state override, fallback, and route dependency override coverage."
+    },
+    {
+      "path": "docs/reports/quality/backend-tdx-route-provider-migration-implementation-2026-05-23.md",
+      "allowed_change": "Record future implementation evidence and verification results."
+    },
+    {
+      "path": "future PR task card",
+      "allowed_change": "Bind the implementation PR to the authorized source/test/report paths."
+    }
+  ],
+  "forbidden_future_scope": [
+    "remove get_tdx_service",
+    "change TdxService construction behavior",
+    "change real TDX adapter connection behavior",
+    "modify web/backend/app/api/dashboard_data_source.py",
+    "modify web/backend/app/api/ml.py",
+    "modify web/backend/app/main.py",
+    "modify src/adapters/**",
+    "modify web/backend/app/services/__init__.py",
+    "change /api/ml/tdx behavior",
+    "change route paths, HTTP methods, response models, response envelopes, auth, exception behavior, or OpenAPI exposure",
+    "change docs/API, generated clients, frontend, PM2 scripts, runtime config, OpenSpec changes/specs, or GitHub issue labels"
+  ],
+  "future_required_gates": [
+    "GitNexus context/impact for get_tdx_service, install_tdx_service, and file-path-qualified tdx.py route symbols",
+    "TDD failing focused tests for provider install/app-state override/fallback and at least one route dependency override path",
+    "focused pytest for web/backend/tests/test_tdx_service_lifecycle_di.py",
+    "text guard: tdx.py route body direct get_tdx_service calls remain 0 and Depends(get_tdx_service) becomes 0",
+    "ruff check and black --check on touched backend source/test files",
+    "app.main import and targeted OpenAPI smoke: paths=500, duplicate operation IDs=0, seven TDX paths remain present",
+    "staged GitNexus detect_changes before future commit"
+  ],
+  "gitnexus_spot_checks": [
+    {
+      "target": "get_tdx_service",
+      "risk": "LOW",
+      "direct": 1,
+      "processes": 0,
+      "modules": 0,
+      "note": "Graph sees installer fallback; route Depends edges require source/OpenAPI matrix."
+    },
+    {
+      "target": "install_tdx_service",
+      "risk": "LOW",
+      "direct": 0,
+      "processes": 0,
+      "modules": 0
+    },
+    {
+      "target": "get_stock_quote in web/backend/app/api/tdx.py",
+      "risk": "LOW via file-path-qualified context",
+      "direct": 0,
+      "processes": 0,
+      "modules": 0,
+      "note": "Name is ambiguous in impact lookup; context resolved the tdx.py route symbol."
+    },
+    {
+      "target": "health_check in web/backend/app/api/tdx.py",
+      "risk": "LOW via file-path-qualified context",
+      "direct": 0,
+      "processes": 0,
+      "modules": 0,
+      "note": "Name is ambiguous in impact lookup; context resolved the tdx.py route symbol."
+    }
+  ],
+  "decision": {
+    "authorization_packet_review_ready": true,
+    "future_implementation_lane": "G2.40 TDX route provider migration",
+    "retire_get_tdx_service": false,
+    "reason": "A future dedicated provider can align /api/v1/tdx with the established app-state dependency pattern while preserving get_tdx_service as compatibility fallback for installer/dashboard consumers."
+  }
+}
