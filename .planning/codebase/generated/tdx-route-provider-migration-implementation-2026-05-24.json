@@ -1,0 +1,92 @@
+{
+  "artifact": "tdx-route-provider-migration-implementation",
+  "generated_at": "2026-05-24T00:34:22+08:00",
+  "workline": "G2.40",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "e4dc9088cabfb4dba756beb109294980c047c327",
+  "parent_authorization": {
+    "workline": "G2.39",
+    "pull_request": 179,
+    "merge_commit": "e4dc9088cabfb4dba756beb109294980c047c327"
+  },
+  "scope": {
+    "modified_source_files": [
+      "web/backend/app/services/tdx_service.py",
+      "web/backend/app/api/tdx.py"
+    ],
+    "modified_test_files": [
+      "web/backend/tests/test_tdx_service_lifecycle_di.py"
+    ],
+    "modified_governance_files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      "docs/reports/quality/backend-tdx-route-provider-migration-implementation-2026-05-24.md",
+      "governance/mainline/task-cards/pr-180.yaml"
+    ],
+    "forbidden_paths_touched": []
+  },
+  "implementation": {
+    "state_key": "TDX_SERVICE_STATE_KEY",
+    "dependency_provider": "get_tdx_service_dependency",
+    "legacy_getter_retained": true,
+    "route_dependencies_converted": 5,
+    "route_paths_changed": false,
+    "response_models_changed": false,
+    "openapi_exposure_changed": false
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_tdx_service_lifecycle_di.py -q -n 0 --tb=short --no-cov",
+      "result": "3 failed, 1 passed",
+      "expected_failure_reason": "missing provider/state-key and old route dependency wiring"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_tdx_service_lifecycle_di.py -q -n 0 --tb=short --no-cov",
+      "result": "4 passed in 1.02s"
+    }
+  },
+  "guards": {
+    "dependency_counts": {
+      "api_depends_legacy": 0,
+      "api_depends_provider": 5,
+      "api_legacy_identifier_excluding_provider": 0,
+      "service_provider_def": 1,
+      "service_legacy_getter_def": 1,
+      "service_installer_def": 1,
+      "service_state_key_mentions": 4
+    },
+    "openapi_smoke": {
+      "routes_total": 548,
+      "openapi_paths_total": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "tdx_paths_count": 7,
+      "tdx_paths": [
+        "/api/ml/tdx/data",
+        "/api/ml/tdx/stocks/{market}",
+        "/api/v1/tdx/health",
+        "/api/v1/tdx/index/kline",
+        "/api/v1/tdx/index/quote/{symbol}",
+        "/api/v1/tdx/kline",
+        "/api/v1/tdx/quote/{symbol}"
+      ]
+    }
+  },
+  "verification": {
+    "focused_pytest": "passed",
+    "ruff_touched": "passed",
+    "black_check_touched": "passed",
+    "app_main_openapi_smoke": "passed",
+    "duplicate_operation_ids": 0,
+    "staged_gitnexus": {
+      "changed_files": 7,
+      "changed_symbols": 18,
+      "affected_count": 1,
+      "risk_level": "medium",
+      "affected_processes": [
+        "Prewarm_dashboard_market_overview_cache -> Warning"
+      ],
+      "high_or_critical": false
+    }
+  },
+  "next_gate": "human_review_then_merge_decision"
+}

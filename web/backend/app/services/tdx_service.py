@@ -9,6 +9,8 @@ import sys
 from datetime import datetime
 from typing import Any, Dict
 
+from fastapi import Request
+
 # 添加项目根目录到路径(web/backend -> mystocks_spec)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
 sys.path.insert(0, project_root)
@@ -265,6 +267,8 @@ class TdxService:
 
 
 # 单例模式
+TDX_SERVICE_STATE_KEY = "tdx_service"
+
 _tdx_service_instance = None
 
 
@@ -281,8 +285,16 @@ def get_tdx_service() -> TdxService:
 
 def install_tdx_service(app: Any, service: TdxService | None = None) -> TdxService:
     """Install the TDX service on app.state while preserving the legacy fallback."""
-    selected_service = service or getattr(app.state, "tdx_service", None)
+    selected_service = service or getattr(app.state, TDX_SERVICE_STATE_KEY, None)
     if selected_service is None:
         selected_service = get_tdx_service()
-    app.state.tdx_service = selected_service
+    setattr(app.state, TDX_SERVICE_STATE_KEY, selected_service)
     return selected_service
+
+
+def get_tdx_service_dependency(request: Request) -> TdxService:
+    """FastAPI dependency provider backed by app.state."""
+    service = getattr(request.app.state, TDX_SERVICE_STATE_KEY, None)
+    if service is None:
+        service = install_tdx_service(request.app)
+    return service
