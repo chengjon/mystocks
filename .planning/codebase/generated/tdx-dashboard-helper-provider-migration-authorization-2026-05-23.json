@@ -1,0 +1,144 @@
+{
+  "artifact": "tdx-dashboard-helper-provider-migration-authorization-2026-05-23",
+  "recorded_at": "2026-05-23 19:38:16 CST",
+  "workline": "G2.34 TDX dashboard helper provider migration authorization",
+  "status": "review-ready",
+  "current_head": "78dafc38546ca9d45a1ed4bb3e5c2db24b9978b1",
+  "remote_base": "origin/wip/root-dirty-20260403",
+  "parent_pr": {
+    "number": 173,
+    "state": "MERGED",
+    "merge_commit": "78dafc38546ca9d45a1ed4bb3e5c2db24b9978b1",
+    "url": "https://github.com/chengjon/mystocks/pull/173"
+  },
+  "parent_issue": "#92",
+  "service_lifecycle_issue": "#79",
+  "scope": {
+    "type": "decision-and-authorization-only",
+    "source_edits_in_this_packet": false,
+    "implementation_lane_selected": "proposed-pending-human-review",
+    "notes": [
+      "This packet records the exact future implementation boundary for the TDX dashboard helper provider seam.",
+      "It does not modify backend source code, tests, routes, OpenAPI specs, frontend files, PM2/runtime state, OpenSpec changes, or issue labels."
+    ]
+  },
+  "current_source_facts": {
+    "dashboard_data_source_get_tdx_service_direct_calls": 2,
+    "dashboard_data_source_imports_get_tdx_service": true,
+    "tdx_api_depends_get_tdx_service_count": 5,
+    "tdx_service_getter_definitions": 1,
+    "tdx_service_instance_definitions": 1,
+    "dashboard_call_sites": [
+      {
+        "file": "web/backend/app/api/dashboard_data_source.py",
+        "line": 238,
+        "function": "_get_major_index_quotes",
+        "statement": "tdx_service = get_tdx_service()"
+      },
+      {
+        "file": "web/backend/app/api/dashboard_data_source.py",
+        "line": 490,
+        "function": "_get_tdx_live_market_snapshot",
+        "statement": "tdx_service = get_tdx_service()"
+      }
+    ],
+    "tdx_api_dependency_sites": [
+      "web/backend/app/api/tdx.py:244",
+      "web/backend/app/api/tdx.py:300",
+      "web/backend/app/api/tdx.py:386",
+      "web/backend/app/api/tdx.py:445",
+      "web/backend/app/api/tdx.py:514"
+    ],
+    "interpretation": "TDX API route dependency usage is already FastAPI dependency-shaped. The remaining seam is dashboard helper/provider wiring, not TDX route governance."
+  },
+  "gitnexus_impact": [
+    {
+      "target": "get_tdx_service",
+      "risk": "CRITICAL",
+      "direct_impact": 2,
+      "processes_affected": 9,
+      "modules_affected": 2,
+      "direct_callers": [
+        "web/backend/app/api/dashboard_data_source.py:_get_major_index_quotes",
+        "web/backend/app/api/dashboard_data_source.py:_get_tdx_live_market_snapshot"
+      ],
+      "interpretation": "Future implementation must be TDD-scoped and preserve dashboard summary/prewarm behavior."
+    },
+    {
+      "target": "_get_major_index_quotes",
+      "risk": "CRITICAL",
+      "direct_impact": 2,
+      "processes_affected": 9,
+      "modules_affected": 2,
+      "interpretation": "Caller chain reaches _get_market_overview_data, prewarm_dashboard_market_overview_cache, get_dashboard_summary, and dashboard market overview route."
+    },
+    {
+      "target": "_get_tdx_live_market_snapshot",
+      "risk": "CRITICAL",
+      "direct_impact": 2,
+      "processes_affected": 9,
+      "modules_affected": 2,
+      "interpretation": "Caller chain reaches _get_market_overview_data, prewarm_dashboard_market_overview_cache, get_dashboard_summary, and dashboard market overview route."
+    },
+    {
+      "target": "web/backend/app/services/tdx_service.py",
+      "risk": "LOW",
+      "direct_impact": 3,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "interpretation": "File-level import surface is limited, but getter-level dashboard impact is critical."
+    }
+  ],
+  "future_implementation_authorization_if_approved": {
+    "allowed_source_paths": [
+      "web/backend/app/services/tdx_service.py",
+      "web/backend/app/api/dashboard_data_source.py",
+      "web/backend/app/main.py"
+    ],
+    "allowed_test_paths": [
+      "web/backend/tests/test_dashboard_data_source.py",
+      "web/backend/tests/test_logging_noise_regressions.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "allowed_governance_paths": [
+      "docs/reports/quality/backend-tdx-dashboard-helper-provider-migration-implementation-2026-05-23.md",
+      "governance/mainline/task-cards/pr-<future>.yaml",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    ],
+    "conditional_main_py_note": "main.py is allowed only for startup/prewarm app-state TdxService passing, matching the G2.32 prewarm pattern. It is not allowed for unrelated startup or route registration edits.",
+    "forbidden_paths": [
+      "web/backend/app/api/tdx.py",
+      "web/backend/app/api/market_v2.py",
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/app/services/market_data_service/**",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "openspec/changes/**",
+      "openspec/specs/**",
+      "config/**",
+      "scripts/**"
+    ],
+    "required_future_behavior": [
+      "Preserve public get_tdx_service() fallback compatibility.",
+      "Add a narrow provider/dependency seam for app-state or explicitly injected TdxService use.",
+      "Make RealBusinessDataSource use injected/provider TdxService for _get_major_index_quotes and _get_tdx_live_market_snapshot.",
+      "Keep /api/tdx route paths, response models, OpenAPI exposure, and examples unchanged.",
+      "Do not delete or privatize get_tdx_service()."
+    ],
+    "required_future_verification": [
+      "TDD red/green tests proving injected TdxService is used by dashboard helper paths.",
+      "Static guard that dashboard_data_source.py has zero get_tdx_service() direct calls after implementation.",
+      "Focused pytest for web/backend/tests/test_dashboard_data_source.py.",
+      "Import stability smoke for app.main.",
+      "OpenAPI smoke with expected path count and duplicate operation IDs unchanged.",
+      "ruff and black --check on touched files.",
+      "GitNexus impact before source edits and staged detect_changes before commit."
+    ]
+  },
+  "decision": {
+    "summary": "Authorize, after human approval only, a future narrow implementation branch for the TDX dashboard helper provider seam.",
+    "next_gate": "Human review of G2.34. If accepted, create G2.35 implementation branch; do not edit source in G2.34.",
+    "rollback": "Revert this governance PR; no runtime behavior changes are made by this packet."
+  }
+}
