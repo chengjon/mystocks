@@ -1,0 +1,103 @@
+version: "v0.2"
+
+task:
+  id: "pr-174"
+  title: "Authorize TDX dashboard helper provider migration"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-tdx-dashboard-helper-provider-migration-authorization"
+  objective: "record the exact future implementation boundary for the TDX dashboard helper provider seam without source edits"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-tdx-dashboard-helper-provider-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-tdx-dashboard-helper-provider-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Decision-only authorization packet; no canonical entrypoints, route paths, response contracts, OpenAPI exposure, or compatibility wrappers change"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/tdx-dashboard-helper-provider-migration-authorization-2026-05-23.json"
+    - "docs/reports/quality/backend-tdx-dashboard-helper-provider-migration-authorization-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-174.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "web/backend/tests/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, frontend, PM2, or runtime change in this PR"
+  - "No compatibility getter deletion or privatization"
+  - "No OpenSpec change/spec creation, archive, or issue label movement"
+  - "No G2.35 implementation branch without human review of this authorization packet"
+
+acceptance:
+  checks:
+    - id: "json-artifact-valid"
+      command: "python -m json.tool .planning/codebase/generated/tdx-dashboard-helper-provider-migration-authorization-2026-05-23.json >/dev/null"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-tdx-dashboard-helper-provider-migration-authorization-2026-05-23.md .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-174.yaml"
+      required: true
+    - id: "staged-gitnexus"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the G2.34 authorization-only boundary"
+    - "If /api/tdx route edits are included, this becomes route governance instead of dashboard helper provider authorization"
+    - "If get_tdx_service is removed or privatized, this becomes runtime compatibility work instead of an authorization packet"
+  rollback_plan: "revert this PR; it contains only governance evidence, the steward tree update, generated JSON, and this task card"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize the next TDX dashboard helper provider migration boundary"
+    modified_scope: "steward tree, authorization report, generated JSON evidence, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this packet does not edit source or compatibility getter behavior"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if JSON, markdown governance, mainline scope, staged GitNexus, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T19:38:16+08:00"
+    approval_note: "human maintainer approved continuing after G2.33 merge; this PR records authorization only and does not authorize source edits until reviewed"
+    secondary_approved: false
