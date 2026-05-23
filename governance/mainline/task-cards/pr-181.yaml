@@ -1,0 +1,101 @@
+version: "v0.2"
+
+task:
+  id: "pr-181"
+  title: "Close out TDX route provider migration"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-tdx-route-provider-migration-closeout"
+  objective: "record the G2.40 TDX route provider merge result and closeout boundary"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-tdx-route-provider-migration-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-tdx-route-provider-migration-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout records already-merged PR #180 and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/tdx-route-provider-migration-closeout-2026-05-24.json"
+    - "docs/reports/quality/backend-tdx-route-provider-migration-closeout-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-181.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No next service DI candidate selection in this PR"
+  - "No get_tdx_service retirement, adapter refactor, service consolidation, or compatibility cleanup in this PR"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-tdx-route-provider-migration-closeout-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/tdx-route-provider-migration-closeout-2026-05-24.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-181.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the closeout boundary"
+    - "If this PR selects or authorizes the next service candidate, it bypasses the separate refresh gate"
+    - "If get_tdx_service is treated as removable here, compatibility fallback can break"
+  rollback_plan: "revert this governance-only PR; PR #180 implementation remains merged unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record the merged G2.40 TDX route provider migration"
+    modified_scope: "closeout report, generated closeout artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; get_tdx_service remains public fallback and no runtime source changes are made"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only closeout PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T01:11:51+08:00"
+    approval_note: "human maintainer approved continuing after PR #180; this closeout only records the merged implementation and next-gate boundary"
+    secondary_approved: false

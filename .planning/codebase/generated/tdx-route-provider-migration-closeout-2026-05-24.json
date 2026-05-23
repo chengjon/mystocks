@@ -1,0 +1,60 @@
+{
+  "artifact": "tdx-route-provider-migration-closeout",
+  "generated_at": "2026-05-24T01:11:51+08:00",
+  "workline": "G2.41",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "86b0ec43c037729b28df51c40484196175c96c6e",
+  "closed_implementation": {
+    "workline": "G2.40",
+    "pull_request": 180,
+    "state": "MERGED",
+    "merged_at": "2026-05-23T17:08:53Z",
+    "merge_commit": "86b0ec43c037729b28df51c40484196175c96c6e",
+    "url": "https://github.com/chengjon/mystocks/pull/180"
+  },
+  "scope": {
+    "governance_only": true,
+    "backend_source_changed": false,
+    "tests_changed": false,
+    "openapi_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false
+  },
+  "post_merge_verification": {
+    "focused_pytest": "4 passed in 1.09s",
+    "ruff_touched": "All checks passed!",
+    "black_check_touched": "3 files would be left unchanged",
+    "dependency_guard": {
+      "api_depends_legacy": 0,
+      "api_depends_provider": 5,
+      "api_legacy_identifier_excluding_provider": 0,
+      "service_provider_def": 1,
+      "service_legacy_getter_def": 1,
+      "service_installer_def": 1,
+      "service_state_key_mentions": 4
+    },
+    "openapi_smoke": {
+      "routes_total": 548,
+      "openapi_paths_total": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "tdx_paths_count": 7,
+      "tdx_paths": [
+        "/api/ml/tdx/data",
+        "/api/ml/tdx/stocks/{market}",
+        "/api/v1/tdx/health",
+        "/api/v1/tdx/index/kline",
+        "/api/v1/tdx/index/quote/{symbol}",
+        "/api/v1/tdx/kline",
+        "/api/v1/tdx/quote/{symbol}"
+      ]
+    }
+  },
+  "current_state": {
+    "tdx_route_provider_migrated": true,
+    "legacy_get_tdx_service_retained": true,
+    "legacy_getter_retirement_authorized": false,
+    "next_service_lifecycle_candidate_selected": false
+  },
+  "next_gate": "human_review_then_g2_42_current_head_candidate_refresh"
+}
