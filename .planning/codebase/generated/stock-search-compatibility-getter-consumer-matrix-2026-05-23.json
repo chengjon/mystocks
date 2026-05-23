@@ -1,0 +1,165 @@
+{
+  "artifact": "stock-search-compatibility-getter-consumer-matrix-2026-05-23",
+  "recorded_at": "2026-05-23T11:40:44+08:00",
+  "workline": "G2.23 stock-search compatibility getter cleanup authorization / consumer matrix",
+  "status": "consumer-matrix-prepared-for-review",
+  "current_head": "d186ce78ee0a",
+  "stale_if_head_mismatch": true,
+  "target_pr": 163,
+  "target_pr_url": "pending until created",
+  "input_merge": {
+    "pr_162": {
+      "state": "MERGED",
+      "merge_commit": "d186ce78ee0ad4017b36e3788a54533ce3a972df"
+    }
+  },
+  "scan_tokens": [
+    "get_stock_search_service",
+    "get_stock_search_service_dependency",
+    "install_stock_search_service",
+    "STOCK_SEARCH_SERVICE_STATE_KEY",
+    "StockSearchService"
+  ],
+  "consumer_summary": {
+    "route_files": 2,
+    "service_package_files": 2,
+    "test_files": 5,
+    "governance_doc_files": 17,
+    "runtime_and_test_token_totals": {
+      "get_stock_search_service": 10,
+      "get_stock_search_service_dependency": 12,
+      "install_stock_search_service": 5,
+      "STOCK_SEARCH_SERVICE_STATE_KEY": 7,
+      "StockSearchService": 28
+    }
+  },
+  "route_consumer_matrix": [
+    {
+      "file": "web/backend/app/api/stock_search/stock_search_result.py",
+      "handlers": [
+        "search_stocks",
+        "get_stock_quote",
+        "get_stock_news",
+        "get_market_news",
+        "clear_search_cache"
+      ],
+      "direct_get_stock_search_service_calls": 0,
+      "get_stock_search_service_dependency_refs": 6,
+      "decision": "keep-provider-refs-route-surface-di-complete"
+    },
+    {
+      "file": "web/backend/app/api/market/market_data_request.py",
+      "handlers": [
+        "get_kline_data"
+      ],
+      "direct_get_stock_search_service_calls": 0,
+      "get_stock_search_service_dependency_refs": 2,
+      "decision": "keep-provider-refs-approved-fallback-route-consumer"
+    }
+  ],
+  "service_package_matrix": [
+    {
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "roles": [
+        "defines StockSearchService",
+        "defines get_stock_search_service compatibility getter",
+        "defines install_stock_search_service app-state installer",
+        "defines get_stock_search_service_dependency provider",
+        "defines STOCK_SEARCH_SERVICE_STATE_KEY"
+      ],
+      "decision": "retain-active-compatibility-and-provider-surface"
+    },
+    {
+      "file": "web/backend/app/services/stock_search_service/__init__.py",
+      "roles": [
+        "package re-export for class",
+        "package re-export for compatibility getter",
+        "package re-export for dependency provider",
+        "package re-export for installer",
+        "package re-export for state key"
+      ],
+      "decision": "retain-package-level-exports"
+    }
+  ],
+  "test_consumer_matrix": [
+    {
+      "file": "web/backend/tests/test_runtime_regressions_p0.py",
+      "direct_getter_calls": 3,
+      "dependency_provider_refs": 0,
+      "installer_refs": 0,
+      "state_key_refs": 0,
+      "decision": "keep-compatibility-getter-regression-guard"
+    },
+    {
+      "file": "web/backend/tests/test_stock_search_service_lifecycle_di.py",
+      "direct_getter_calls": 0,
+      "dependency_provider_refs": 1,
+      "installer_refs": 1,
+      "state_key_refs": 2,
+      "decision": "keep-lifecycle-provider-and-installer-guard"
+    },
+    {
+      "file": "web/backend/tests/test_large_file_split_regressions.py",
+      "direct_getter_calls": 0,
+      "dependency_provider_refs": 0,
+      "installer_refs": 0,
+      "state_key_refs": 0,
+      "decision": "keep-package-export-regression-guard"
+    },
+    {
+      "file": "web/backend/tests/test_stock_search_service_logging.py",
+      "direct_getter_calls": 0,
+      "dependency_provider_refs": 0,
+      "installer_refs": 0,
+      "state_key_refs": 0,
+      "decision": "keep-package-export-and-service-construction-guard"
+    },
+    {
+      "file": "tests/001-fix-5-critical/plan.md",
+      "direct_getter_calls": 0,
+      "dependency_provider_refs": 0,
+      "installer_refs": 0,
+      "state_key_refs": 0,
+      "decision": "historical-reference-not-runtime-consumer"
+    }
+  ],
+  "gitnexus_evidence": [
+    {
+      "target": "get_stock_search_service",
+      "risk": "CRITICAL",
+      "direct_impact": 6,
+      "processes_affected": 11,
+      "modules_affected": 2,
+      "route_caller_confidence": 0.5,
+      "interpretation": "Graph still reports pre-DI route callers while text guard shows route direct calls are 0; treat as graph/text divergence before any deletion proposal."
+    },
+    {
+      "target": "get_stock_search_service_dependency",
+      "result": "not-found",
+      "interpretation": "GitNexus index does not expose this post-DI provider symbol yet; use text matrix until index refresh validates it."
+    },
+    {
+      "target": "install_stock_search_service",
+      "result": "not-found",
+      "interpretation": "GitNexus index does not expose this post-DI installer symbol yet; use text matrix until index refresh validates it."
+    },
+    {
+      "target": "StockSearchService",
+      "risk": "LOW",
+      "direct_impact": 0,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "interpretation": "Class-level graph impact is not enough to justify deleting module-level compatibility functions."
+    }
+  ],
+  "decision": {
+    "get_stock_search_service_status": "retain-active-public-compatibility-surface",
+    "route_surface_direct_getter_calls_remaining": 0,
+    "route_dependency_provider_refs": 8,
+    "stock_search_cleanup_implementation_authorized": false,
+    "source_edits_authorized": false,
+    "openspec_change_required_now": false,
+    "issue_label_movement_authorized": false,
+    "next_gate": "Human review; if accepted, do not open stock-search cleanup implementation. Use a separate future governance lane for broad market/data/strategy service seam design before further service DI source edits."
+  }
+}

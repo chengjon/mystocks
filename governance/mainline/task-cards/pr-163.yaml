@@ -1,0 +1,100 @@
+version: "v0.2"
+
+task:
+  id: "pr-163"
+  title: "Record stock search compatibility getter consumer matrix"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-stock-search-compatibility-getter-consumer-matrix"
+  objective: "decide whether stock_search_service compatibility getter cleanup is authorized after route-surface DI"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-stock-search-compat-getter-matrix"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-stock-search-compatibility-getter-matrix"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Consumer-matrix decision packet only; records stock-search compatibility getter retention and does not change runtime code, tests, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/stock-search-compatibility-getter-consumer-matrix-2026-05-23.json"
+    - "docs/reports/quality/backend-stock-search-compatibility-getter-consumer-matrix-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-163.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, validation archive, or issue publication"
+  - "No issue label changes or ready-for-agent movement"
+  - "No stock-search compatibility getter cleanup, deletion, rename, privatization, or source edit in this PR"
+  - "No next service DI implementation candidate selection in this PR"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-stock-search-compatibility-getter-consumer-matrix-2026-05-23.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/stock-search-compatibility-getter-consumer-matrix-2026-05-23.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-163.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the consumer-matrix boundary"
+    - "If this PR deletes or privatizes get_stock_search_service, it bypasses the decision that the getter remains active compatibility surface"
+    - "If route files are edited, it bypasses the conclusion that route-surface DI is already complete"
+  rollback_plan: "revert this governance-only PR; prior stock_search_service DI implementation remains merged unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record stock-search compatibility getter consumers and decide cleanup is not authorized now"
+    modified_scope: "consumer matrix report, generated matrix artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; compatibility getter and provider surfaces remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only matrix PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T11:40:44+08:00"
+    approval_note: "human maintainer approved continuing after PR #162; this packet records consumer-matrix evidence only and does not authorize source edits"
+    secondary_approved: false
