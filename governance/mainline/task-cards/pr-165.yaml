@@ -1,0 +1,102 @@
+version: "v0.2"
+
+task:
+  id: "pr-165"
+  title: "Record market data provider design"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-market-data-provider-design"
+  objective: "decide the market-data provider seam before any market data service source edits"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-market-data-provider-design"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-market-data-provider-design"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Design packet only; records current-head market-data provider evidence and future lane ordering without changing runtime code, tests, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/market-data-provider-design-2026-05-23.json"
+    - "docs/reports/quality/backend-market-data-provider-design-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-165.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, validation archive, or issue publication"
+  - "No issue label changes or ready-for-agent movement"
+  - "No service consolidation between MarketDataService and MarketDataServiceV2"
+  - "No dashboard_data_source.py, market_data_adapter.py, or market_data_service package mutation in this PR"
+  - "No immediate G2.26 source implementation authorization in this PR"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-market-data-provider-design-2026-05-23.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/market-data-provider-design-2026-05-23.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-165.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the design-packet boundary"
+    - "If this PR authorizes source implementation, it bypasses the future G2.26 authorization gate"
+    - "If this PR treats MarketDataService and MarketDataServiceV2 as one class, it contradicts the provider-design evidence"
+  rollback_plan: "revert this governance-only PR; previously merged service DI work remains unchanged unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record market-data provider evidence and next-lane decomposition"
+    modified_scope: "design report, generated JSON artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; all service provider, route, and compatibility surfaces remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only design PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T13:18:48+08:00"
+    approval_note: "human maintainer approved continuing after PR #164; this packet records market-data provider design evidence only and does not authorize source edits"
+    secondary_approved: false
