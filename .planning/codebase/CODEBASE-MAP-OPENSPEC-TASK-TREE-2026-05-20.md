@@ -728,10 +728,17 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `get_tdx_service_dependency`, converting the five
 │   │                 `/api/v1/tdx` dependencies to the provider, keeping
 │   │                 OpenAPI paths at `500`, duplicate operation IDs at `0`,
-│   │                 and focused lifecycle DI tests at `4 passed`
-│   └── Next gate: Human review of the G2.40 implementation PR; if accepted,
-│                  merge and run a G2.41 closeout or current-head candidate
-│                  refresh before selecting the next service lifecycle DI lane
+│   │                 and focused lifecycle DI tests at `4 passed`; G2.40
+│   │                 merged by PR `#180` at
+│   │                 `86b0ec43c037729b28df51c40484196175c96c6e`; G2.41 now
+│   │                 records the post-merge closeout: PR `#180` is `MERGED`,
+│   │                 focused TDX lifecycle DI tests are `4 passed`, route
+│   │                 dependency counts are legacy=`0` and provider=`5`, and
+│   │                 OpenAPI remains paths=`500` with duplicate operation
+│   │                 IDs=`0`
+│   └── Next gate: Human review of the G2.41 closeout PR; if accepted, create a
+│                  separate G2.42 current-head candidate refresh before
+│                  selecting the next service lifecycle DI lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -811,6 +818,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-tdx-route-dependency-consumer-matrix-2026-05-23.md` | G | G2.38 consumer matrix reviewed and merged by PR `#178` at `30c78a22dce5879396dfd5c7760cc61161377528`: OpenAPI paths=`500`, duplicate operation IDs=`0`, TDX paths=`7`; `/api/v1/tdx` has five active `Depends(get_tdx_service)` route consumers, `/api/ml/tdx` is unrelated local `TdxDataService()` usage, dashboard helper keeps `get_tdx_service` as default provider fallback, and `get_tdx_service()` must not be retired by this line | Superseded by G2.39 TDX route provider migration authorization |
 | `backend-tdx-route-provider-migration-authorization-2026-05-23.md` | G | G2.39 authorization prepared at current HEAD `30c78a22dce5879396dfd5c7760cc61161377528`: future implementation scope is limited to `tdx_service.py`, `api/tdx.py`, `web/backend/tests/test_tdx_service_lifecycle_di.py`, implementation evidence, and a future task card; it may add `TDX_SERVICE_STATE_KEY` and `get_tdx_service_dependency`, convert five `/api/v1/tdx` route dependencies, and must preserve `get_tdx_service()` compatibility fallback | Human review; if accepted, create G2.40 TDX route provider migration implementation branch before source edits |
 | `backend-tdx-route-provider-migration-implementation-2026-05-24.md` | G | G2.40 implementation prepared from G2.39 authorization at base `e4dc9088cabfb4dba756beb109294980c047c327`: adds `TDX_SERVICE_STATE_KEY` and `get_tdx_service_dependency(request)`, keeps `get_tdx_service()` as public fallback, converts exactly five `/api/v1/tdx` `Depends(get_tdx_service)` sites to `Depends(get_tdx_service_dependency)`, focused TDD ended at `4 passed`, ruff/black passed, `app.main` routes=`548`, OpenAPI paths=`500`, duplicate operation IDs=`0`, and TDX paths=`7` | Human review / PR merge decision; if accepted, run G2.41 closeout or current-head candidate refresh before selecting the next service lifecycle DI lane |
+| `backend-tdx-route-provider-migration-closeout-2026-05-24.md` | G | G2.41 closeout prepared at current HEAD `86b0ec43c037729b28df51c40484196175c96c6e`: records PR `#180` as `MERGED`, confirms focused TDX lifecycle DI tests `4 passed`, ruff/black passed, `tdx.py` legacy route dependency sites=`0`, provider sites=`5`, `get_tdx_service()` remains public fallback, `app.main` routes=`548`, OpenAPI paths=`500`, duplicate operation IDs=`0`, and no next service lifecycle DI candidate is selected | Human review / PR merge decision; if accepted, create G2.42 current-head candidate refresh before selecting the next service lifecycle DI lane |
 
 ## Completed And Reviewed Ledger
 
