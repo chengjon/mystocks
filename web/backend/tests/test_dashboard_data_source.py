@@ -1,8 +1,12 @@
+import ast
+import sys
+import types
 from pathlib import Path
 
 import pytest
 
 from app.api import dashboard as dashboard_routes
+from app.api import dashboard_data_source as dashboard_data_source_module
 from app.api.dashboard_data_source import RealBusinessDataSource, prewarm_dashboard_market_overview_cache
 
 
@@ -17,6 +21,7 @@ class _FakeResponse:
 
 class _FakeMarketDataServiceV2:
     def __init__(self):
+        self.engine = _FakeEngine()
         self.query_etf_spot_calls = []
 
     def query_etf_spot(self, limit: int):
@@ -31,6 +36,146 @@ class _FakeMarketDataServiceV2:
                 "amount": 4250,
             }
         ]
+
+
+class _FakeRow:
+    def __init__(self, mapping: dict):
+        self._mapping = mapping
+
+
+class _FakeResult:
+    def fetchall(self):
+        return [
+            _FakeRow({"symbol": "600000", "name": "浦发银行"}),
+            _FakeRow({"symbol": "000001", "name": "平安银行"}),
+        ]
+
+
+class _FakeConnection:
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, traceback):
+        return False
+
+    def execute(self, statement):
+        return _FakeResult()
+
+
+class _FakeEngine:
+    def connect(self):
+        return _FakeConnection()
+
+
+class _FakeTdxAdapter:
+    tdx_host = "injected-tdx-host"
+    tdx_port = 17709
+
+
+class _FakeTdxService:
+    def __init__(self):
+        self.tdx_adapter = _FakeTdxAdapter()
+        self.index_quote_calls = []
+
+    def get_index_quote(self, symbol: str) -> dict:
+        self.index_quote_calls.append(symbol)
+        return {
+            "symbol": symbol,
+            "name": f"index-{symbol}",
+            "price": 100.0,
+            "change_pct": 1.25,
+            "volume": 1000,
+            "amount": 2500,
+            "timestamp": "2026-05-23T00:00:00",
+        }
+
+
+def _clear_dashboard_tdx_caches(monkeypatch):
+    monkeypatch.setattr(dashboard_data_source_module, "_MAJOR_INDEX_QUOTES_CACHE", None)
+    monkeypatch.setattr(dashboard_data_source_module, "_MAJOR_INDEX_QUOTES_CACHE_AT", None)
+    monkeypatch.setattr(dashboard_data_source_module, "_TDX_MARKET_SNAPSHOT_CACHE", None)
+    monkeypatch.setattr(dashboard_data_source_module, "_TDX_MARKET_SNAPSHOT_CACHE_AT", None)
+
+
+def test_dashboard_source_uses_injected_tdx_service_for_major_index_quotes(monkeypatch):
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    _clear_dashboard_tdx_caches(monkeypatch)
+
+    fake_tdx_service = _FakeTdxService()
+    source = RealBusinessDataSource(tdx_service=fake_tdx_service)
+
+    result = source._get_major_index_quotes()
+
+    assert fake_tdx_service.index_quote_calls == ["000001", "399001", "399006"]
+    assert [item["symbol"] for item in result] == ["000001", "399001", "399006"]
+
+
+def test_dashboard_source_uses_injected_tdx_service_for_tdx_snapshot(monkeypatch):
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+    _clear_dashboard_tdx_caches(monkeypatch)
+
+    class FakeTdxHqAPI:
+        connections = []
+
+        def connect(self, host, port):
+            self.connections.append((host, port))
+            return self
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, exc_type, exc, traceback):
+            return False
+
+        def get_security_quotes(self, batch):
+            quotes_by_symbol = {
+                "600000": {"price": 10.0, "last_close": 8.0, "amount": 100000.0, "vol": 1000},
+                "000001": {"price": 5.0, "last_close": 6.0, "amount": 50000.0, "vol": 500},
+            }
+            return [quotes_by_symbol[pair[1]] for pair in batch]
+
+    pytdx_module = types.ModuleType("pytdx")
+    hq_module = types.ModuleType("pytdx.hq")
+    hq_module.TdxHq_API = FakeTdxHqAPI
+    monkeypatch.setitem(sys.modules, "pytdx", pytdx_module)
+    monkeypatch.setitem(sys.modules, "pytdx.hq", hq_module)
+
+    fake_tdx_service = _FakeTdxService()
+    source = RealBusinessDataSource(tdx_service=fake_tdx_service)
+
+    result = source._get_tdx_live_market_snapshot(_FakeMarketDataServiceV2())
+
+    assert FakeTdxHqAPI.connections == [("injected-tdx-host", 17709)]
+    assert result["up_count"] == 1
+    assert result["down_count"] == 1
+    assert result["top_gainers"][0]["symbol"] == "600000"
+
+
+def test_prewarm_dashboard_market_overview_cache_uses_injected_tdx_service(monkeypatch):
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+
+    fake_market_service = _FakeMarketDataServiceV2()
+    fake_tdx_service = _FakeTdxService()
+    observed = {}
+
+    def fake_major_index_quotes(self):
+        observed["major_tdx_service"] = self._get_tdx_service()
+        return []
+
+    def fake_tdx_live_market_snapshot(self, market_service):
+        observed["snapshot_market_service"] = market_service
+        observed["snapshot_tdx_service"] = self._get_tdx_service()
+        return None
+
+    monkeypatch.setattr(RealBusinessDataSource, "_get_major_index_quotes", fake_major_index_quotes)
+    monkeypatch.setattr(RealBusinessDataSource, "_get_tdx_live_market_snapshot", fake_tdx_live_market_snapshot)
+
+    assert prewarm_dashboard_market_overview_cache(fake_market_service, fake_tdx_service) is True
+    assert observed == {
+        "major_tdx_service": fake_tdx_service,
+        "snapshot_market_service": fake_market_service,
+        "snapshot_tdx_service": fake_tdx_service,
+    }
 
 
 def test_dashboard_source_uses_injected_market_data_service_v2(monkeypatch):
@@ -114,6 +259,18 @@ def test_dashboard_data_source_has_no_direct_market_data_service_v2_getter_calls
     source_path = Path(__file__).parents[1] / "app/api/dashboard_data_source.py"
 
     assert "get_market_data_service_v2()" not in source_path.read_text(encoding="utf-8")
+
+
+def test_dashboard_data_source_has_no_direct_tdx_service_getter_calls():
+    source_path = Path(__file__).parents[1] / "app/api/dashboard_data_source.py"
+    tree = ast.parse(source_path.read_text(encoding="utf-8"))
+    direct_calls = [
+        node.lineno
+        for node in ast.walk(tree)
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == "get_tdx_service"
+    ]
+
+    assert direct_calls == []
 
 
 def test_get_user_active_strategies_reads_canonical_items(monkeypatch):
