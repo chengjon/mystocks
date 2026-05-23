@@ -1,0 +1,104 @@
+{
+  "artifact": "advanced-analysis-route-provider-migration-implementation",
+  "workline": "G2.45",
+  "generated_at": "2026-05-24T02:22:28+08:00",
+  "base_head": "22b617733e29c9a441e88cb1da2ce0a5d8be98cc",
+  "parent_pr": {
+    "number": 184,
+    "state": "MERGED",
+    "merge_commit": "22b617733e29c9a441e88cb1da2ce0a5d8be98cc",
+    "merged_at": "2026-05-23T18:15:19Z"
+  },
+  "changed_runtime_files": [
+    "web/backend/app/services/advanced_analysis_service.py",
+    "web/backend/app/api/advanced_analysis_api.py",
+    "web/backend/tests/test_advanced_analysis_service_lifecycle_di.py"
+  ],
+  "implementation": {
+    "state_key": "ADVANCED_ANALYSIS_SERVICE_STATE_KEY",
+    "installer": "install_advanced_analysis_service",
+    "provider": "get_advanced_analysis_service_dependency",
+    "compatibility_getter_preserved": true,
+    "module_singleton_preserved": true,
+    "route_paths_changed": false,
+    "response_contract_changed": false,
+    "openapi_exposure_changed": false
+  },
+  "metrics": {
+    "service_lines": 505,
+    "api_lines": 637,
+    "test_lines": 83,
+    "advanced_routes": 14,
+    "class_depends_after": 0,
+    "provider_depends_after": 14,
+    "direct_getter_calls_after": 0
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q -n 0 --tb=short --no-cov",
+      "result": "4 failed",
+      "expected_missing_symbols": [
+        "get_advanced_analysis_service_dependency",
+        "ADVANCED_ANALYSIS_SERVICE_STATE_KEY",
+        "install_advanced_analysis_service"
+      ]
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q -n 0 --tb=short --no-cov",
+      "result": "4 passed in 4.25s"
+    }
+  },
+  "static_verification": {
+    "ruff": "All checks passed",
+    "black_check": "3 files would be left unchanged"
+  },
+  "route_guard": {
+    "class_depends": 0,
+    "provider_depends": 14,
+    "direct_getter_calls": 0,
+    "state_key": true,
+    "install": true,
+    "provider": true,
+    "compat_getter": true
+  },
+  "app_openapi_smoke": {
+    "status": "passed",
+    "routes": 548,
+    "paths": 500,
+    "operation_ids": 536,
+    "duplicate_operation_ids": 0,
+    "advanced_paths": 14,
+    "warnings": 0,
+    "pythonpath": "web/backend plus repository root",
+    "required_env_vars_supplied": [
+      "POSTGRESQL_HOST",
+      "POSTGRESQL_USER",
+      "POSTGRESQL_PASSWORD",
+      "JWT_SECRET_KEY",
+      "BACKEND_PORT",
+      "BACKEND_BACKUP_PORT"
+    ]
+  },
+  "gitnexus_pre_edit": {
+    "AdvancedAnalysisService": {
+      "risk": "LOW",
+      "impacted_count": 0
+    },
+    "get_advanced_analysis_service": {
+      "risk": "LOW",
+      "impacted_count": 0
+    },
+    "web/backend/app/api/advanced_analysis_api.py": {
+      "risk": "LOW",
+      "impacted_count": 0
+    }
+  },
+  "gitnexus_staged_scope": {
+    "changed_files": 7,
+    "changed_symbols": 40,
+    "affected_count": 0,
+    "affected_processes": 0,
+    "risk_level": "low"
+  },
+  "next_gate": "human review of G2.45 implementation PR; if accepted, run G2.46 closeout/current-head candidate refresh"
+}

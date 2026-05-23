@@ -9,6 +9,8 @@ import asyncio
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from fastapi import Request
+
 # from app.core.monitoring import PerformanceMonitor  # TODO: Add monitoring module
 from app.core.logging import get_logger
 
@@ -470,10 +472,33 @@ class AdvancedAnalysisService:
 
 
 # 创建服务实例
+ADVANCED_ANALYSIS_SERVICE_STATE_KEY = "advanced_analysis_service"
+
 advanced_analysis_service = AdvancedAnalysisService()
+
+
+def install_advanced_analysis_service(
+    app: Any,
+    service: AdvancedAnalysisService | None = None,
+) -> AdvancedAnalysisService:
+    """Install the advanced analysis service on app.state while preserving the legacy fallback."""
+    selected_service = service or getattr(app.state, ADVANCED_ANALYSIS_SERVICE_STATE_KEY, None)
+    if selected_service is None:
+        selected_service = advanced_analysis_service
+    setattr(app.state, ADVANCED_ANALYSIS_SERVICE_STATE_KEY, selected_service)
+    return selected_service
 
 
 async def get_advanced_analysis_service() -> AdvancedAnalysisService:
     """获取高级分析服务实例（依赖注入用）"""
     await advanced_analysis_service.initialize()
     return advanced_analysis_service
+
+
+async def get_advanced_analysis_service_dependency(request: Request) -> AdvancedAnalysisService:
+    """FastAPI dependency provider backed by app.state."""
+    service = getattr(request.app.state, ADVANCED_ANALYSIS_SERVICE_STATE_KEY, None)
+    if service is None:
+        service = await get_advanced_analysis_service()
+        setattr(request.app.state, ADVANCED_ANALYSIS_SERVICE_STATE_KEY, service)
+    return service
