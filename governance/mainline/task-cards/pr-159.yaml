@@ -1,0 +1,128 @@
+version: "v0.2"
+
+task:
+  id: "pr-159"
+  title: "Implement stock search service lifecycle DI"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-stock-search-service-lifecycle-di-implementation"
+  objective: "implement the G2.19 route-surface-only stock_search_service lifecycle DI lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-stock-search-service-di-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-stock-search-service-di-implementation"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow service lifecycle DI implementation authorized by PR #158; route paths, OpenAPI behavior, product surface, broader services, and runtime process state are unchanged"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "web/backend/app/services/stock_search_service/stock_search_service.py"
+    - "web/backend/app/services/stock_search_service/__init__.py"
+    - "web/backend/app/api/stock_search/stock_search_result.py"
+    - "web/backend/app/api/market/market_data_request.py"
+    - "web/backend/tests/test_stock_search_service_lifecycle_di.py"
+    - "docs/reports/quality/backend-stock-search-service-lifecycle-di-implementation-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-159.yaml"
+  forbidden_paths:
+    - "web/backend/app/services/email_service.py"
+    - "web/backend/app/services/email_notification_service.py"
+    - "web/backend/app/services/announcement_service.py"
+    - "web/backend/app/services/watchlist_service.py"
+    - "web/backend/app/services/tradingview_widget_service.py"
+    - "web/backend/app/services/strategy_service.py"
+    - "web/backend/app/services/tdx_service.py"
+    - "web/backend/app/services/data_service.py"
+    - "web/backend/app/services/market_data_service.py"
+    - "web/backend/app/services/market_data_service_v2.py"
+    - "web/backend/app/services/data_adapters/**"
+    - "web/backend/app/services/adapters/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No service lifecycle DI work outside stock_search_service"
+  - "No route path, request model, response shape, OpenAPI exposure, docs/API, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No next service DI candidate selection in this PR"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_lifecycle_di.py web/backend/tests/test_stock_search_service_logging.py tests/api/test_stock_search_file.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/stock_search_service/stock_search_service.py web/backend/app/services/stock_search_service/__init__.py web/backend/app/api/stock_search/stock_search_result.py web/backend/app/api/market/market_data_request.py web/backend/tests/test_stock_search_service_lifecycle_di.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/services/stock_search_service/stock_search_service.py web/backend/app/services/stock_search_service/__init__.py web/backend/app/api/stock_search/stock_search_result.py web/backend/app/api/market/market_data_request.py web/backend/tests/test_stock_search_service_lifecycle_di.py"
+      required: true
+    - id: "app-main-openapi-smoke"
+      command: "env PYTHONPATH=web/backend POSTGRESQL_HOST=localhost POSTGRESQL_USER=postgres POSTGRESQL_PASSWORD=postgres JWT_SECRET_KEY=test-secret-key-for-stock-search-di-smoke BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c 'from app.main import app; schema=app.openapi(); print(len(app.routes), len(schema.get(\"paths\", {})))'"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-stock-search-service-lifecycle-di-implementation-2026-05-23.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-159.yaml"
+      required: true
+    - id: "staged-gitnexus"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If any broader market/data/strategy service is edited, the PR exceeds the G2.18 authorization boundary"
+    - "If route paths or response contracts change, this PR becomes route/OpenAPI governance work instead of lifecycle DI work"
+  rollback_plan: "revert this PR; restore the six route functions to direct get_stock_search_service() calls; remove the stock-search dependency provider and focused lifecycle DI test as one unit"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement route-surface-only stock_search_service lifecycle DI after G2.18 authorization"
+    modified_scope: "stock_search_service package, two approved route files, focused tests, implementation report, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "get_stock_search_service remains as compatibility getter; six route-local callers now use injected StockSearchService"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, ruff, black check, app/OpenAPI smoke, mainline scope, staged GitNexus, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T09:43:31+08:00"
+    approval_note: "human maintainer approved continuation after G2.18 authorization PR #158; this PR implements only the approved stock_search_service route-surface DI scope"
+    secondary_approved: false

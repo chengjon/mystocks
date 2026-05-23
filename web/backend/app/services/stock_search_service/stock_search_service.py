@@ -12,8 +12,9 @@ from __future__ import annotations
 import json
 import logging
 import os
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
+from fastapi import Request
 import requests
 
 try:
@@ -71,6 +72,7 @@ if not AKSHARE_AVAILABLE:
 
 
 _stock_search_service = None
+STOCK_SEARCH_SERVICE_STATE_KEY = "stock_search_service"
 
 
 class StockSearchService:
@@ -172,3 +174,16 @@ def get_stock_search_service() -> StockSearchService:
     if _stock_search_service is None:
         _stock_search_service = StockSearchService()
     return _stock_search_service
+
+
+def install_stock_search_service(app: Any, service: StockSearchService | None = None) -> StockSearchService:
+    selected_service = service if service is not None else get_stock_search_service()
+    setattr(app.state, STOCK_SEARCH_SERVICE_STATE_KEY, selected_service)
+    return selected_service
+
+
+def get_stock_search_service_dependency(request: Request) -> StockSearchService:
+    service = getattr(request.app.state, STOCK_SEARCH_SERVICE_STATE_KEY, None)
+    if service is None:
+        service = install_stock_search_service(request.app)
+    return service

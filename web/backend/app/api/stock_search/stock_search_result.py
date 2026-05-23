@@ -46,7 +46,7 @@ from app.core.circuit_breaker_manager import get_circuit_breaker  # 导入熔断
 from app.core.exceptions import BusinessException, ForbiddenException, NotFoundException, ValidationException
 from app.core.responses import UnifiedResponse, create_unified_success_response
 from app.schema import StockListQueryModel  # 导入P0改进的验证模型
-from app.services.stock_search_service import get_stock_search_service
+from app.services.stock_search_service import StockSearchService, get_stock_search_service_dependency
 from src.core.exceptions import (
     DatabaseNotFoundError,
     DatabaseOperationError,
@@ -75,6 +75,7 @@ async def search_stocks(
     sort_by: str = Query("relevance", description="排序字段"),
     sort_order: str = Query("desc", description="排序顺序: asc, desc"),
     current_user: User = Depends(get_current_user),
+    service: StockSearchService = Depends(get_stock_search_service_dependency),
 ) -> List[Dict]:
     """
     搜索股票
@@ -162,7 +163,6 @@ async def search_stocks(
                 error_code="SERVICE_UNAVAILABLE",
             )
 
-        service = get_stock_search_service()
         try:
             results = service.unified_search(
                 clean_query,
@@ -217,6 +217,7 @@ async def get_stock_quote(
     symbol: str = Path(..., description="股票代码，例如 A股 `600519`、港股 `00700`"),
     market: str = Query("cn", description="市场类型: cn, hk", pattern=r"^(cn|hk)$"),
     current_user: User = Depends(get_current_user),
+    service: StockSearchService = Depends(get_stock_search_service_dependency),
 ) -> Dict:
     """
     获取股票实时报价
@@ -256,8 +257,6 @@ async def get_stock_quote(
                 raise NotFoundException(resource="股票报价", identifier="查询条件")
 
             return quote_data
-
-        service = get_stock_search_service()
 
         if market.lower() == "cn":
             quote = service.get_a_stock_realtime(validated_symbol)
@@ -340,6 +339,7 @@ async def get_stock_news(
     market: str = Query("cn", description="市场类型: cn, hk", pattern=r"^(cn|hk)$"),
     days: int = Query(7, description="获取最近几天的新闻", ge=1, le=30),
     current_user: User = Depends(get_current_user),
+    service: StockSearchService = Depends(get_stock_search_service_dependency),
 ) -> List[Dict]:
     """
     获取股票新闻
@@ -352,8 +352,6 @@ async def get_stock_news(
     try:
         if _is_stock_search_mock_enabled():
             return _get_mock_stock_data("stock_news", symbol=symbol, market=market, days=days) or []
-
-        service = get_stock_search_service()
 
         if market.lower() == "cn":
             news = service.get_a_stock_news(symbol, days=days)
@@ -386,6 +384,7 @@ async def get_market_news(
     category: str = Path(..., description="市场新闻分类，例如 `general`、`macro`、`industry`"),
     market: str = Query("cn", description="市场类型: cn, hk", pattern=r"^(cn|hk)$"),
     current_user: User = Depends(get_current_user),
+    service: StockSearchService = Depends(get_stock_search_service_dependency),
 ) -> List[Dict]:
     """
     获取市场新闻
@@ -395,8 +394,6 @@ async def get_market_news(
         market: 市场类型（cn=A股, hk=港股）
     """
     try:
-        service = get_stock_search_service()
-
         if market.lower() == "cn":
             news = service.get_a_stock_news(days=7)
         elif market.lower() == "hk":
@@ -467,7 +464,10 @@ async def get_recommendation_trends(
     description="管理员清空股票搜索相关缓存，用于数据源切换、异常恢复和排查缓存脏数据。",
     responses=CACHE_CLEAR_RESPONSES,
 )
-async def clear_search_cache(current_user: User = Depends(get_current_user)) -> UnifiedResponse:
+async def clear_search_cache(
+    current_user: User = Depends(get_current_user),
+    service: StockSearchService = Depends(get_stock_search_service_dependency),
+) -> UnifiedResponse:
     """
     清除搜索缓存
 
@@ -485,7 +485,6 @@ async def clear_search_cache(current_user: User = Depends(get_current_user)) -> 
         # 记录操作分析
         log_search_operation(user=current_user, operation="clear_search_cache", details={"admin_action": True})
 
-        service = get_stock_search_service()
         service.clear_cache()
 
         logger.info("Search cache cleared by admin: {current_user.username}")
