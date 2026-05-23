@@ -1,0 +1,161 @@
+{
+  "artifact": "market-data-service-v2-compatibility-getter-consumer-matrix",
+  "recorded_at": "2026-05-23T17:25:26+08:00",
+  "workline": "G2.30 MarketDataServiceV2 compatibility getter / dashboard helper consumer matrix",
+  "status": "consumer-matrix-prepared-for-review",
+  "current_head": "04e2f7038386dbea1b8fc8bdcb24dd91dc7e9bb1",
+  "parent_issue": {
+    "number": 92,
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-human",
+      "ready-for-downstream"
+    ],
+    "url": "https://github.com/chengjon/mystocks/issues/92"
+  },
+  "service_lifecycle_issue": {
+    "number": 79,
+    "state": "OPEN",
+    "labels": [
+      "needs-triage"
+    ],
+    "url": "https://github.com/chengjon/mystocks/issues/79"
+  },
+  "merged_input": {
+    "pr_169": {
+      "state": "MERGED",
+      "merge_commit": "04e2f7038386dbea1b8fc8bdcb24dd91dc7e9bb1",
+      "merged_at": "2026-05-23T09:21:50Z"
+    }
+  },
+  "scan_tokens": [
+    "get_market_data_service_v2",
+    "get_market_data_service_v2_dependency",
+    "install_market_data_service_v2",
+    "MARKET_DATA_SERVICE_V2_STATE_KEY",
+    "MarketDataServiceV2"
+  ],
+  "consumer_summary": {
+    "route_files": {
+      "files_with_matches": 2,
+      "interpretation": "market_v2.py uses provider refs; dashboard_data_source.py still uses compatibility getter"
+    },
+    "service_files": {
+      "files_with_matches": 1,
+      "interpretation": "definition, installer, provider, state key, and compatibility getter surface"
+    },
+    "test_files": {
+      "files_with_matches": 3,
+      "interpretation": "provider lifecycle, runtime fallback, and file-level API integration references"
+    },
+    "governance_docs": {
+      "files_with_matches": 23,
+      "interpretation": "historical/planning evidence only; not runtime consumers"
+    }
+  },
+  "runtime_and_test_token_totals_excluding_governance": {
+    "get_market_data_service_v2": 6,
+    "get_market_data_service_v2_dependency": 16,
+    "install_market_data_service_v2": 3,
+    "MARKET_DATA_SERVICE_V2_STATE_KEY": 5,
+    "MarketDataServiceV2": 25
+  },
+  "route_and_api_consumers": [
+    {
+      "file": "web/backend/app/api/market_v2.py",
+      "consumers": [
+        "get_fund_flow",
+        "refresh_fund_flow",
+        "get_etf_list",
+        "refresh_etf_spot",
+        "get_lhb_detail",
+        "refresh_lhb_detail",
+        "get_sector_fund_flow",
+        "refresh_sector_fund_flow",
+        "get_stock_dividend",
+        "refresh_stock_dividend",
+        "get_stock_blocktrade",
+        "refresh_stock_blocktrade",
+        "refresh_all_market_data"
+      ],
+      "direct_compatibility_getter_calls": 0,
+      "dependency_provider_refs": 14,
+      "injected_route_params": 13,
+      "decision": "Keep provider refs; route-surface DI is complete"
+    },
+    {
+      "file": "web/backend/app/api/dashboard_data_source.py",
+      "consumers": [
+        "module import",
+        "_get_market_overview_data",
+        "prewarm_dashboard_market_overview_cache"
+      ],
+      "direct_compatibility_getter_calls": 2,
+      "direct_compatibility_getter_refs_including_import": 3,
+      "dependency_provider_refs": 0,
+      "decision": "Keep as active dashboard-helper compatibility surface until a separate provider-migration packet is approved"
+    }
+  ],
+  "service_surface": {
+    "file": "web/backend/app/services/market_data_service_v2.py",
+    "defines_class": true,
+    "defines_compatibility_getter": true,
+    "defines_dependency_provider": true,
+    "defines_installer": true,
+    "defines_state_key": true,
+    "installer_fallback_uses_getter": true,
+    "decision": "Keep all current symbols as active compatibility/provider surface"
+  },
+  "test_consumers": [
+    {
+      "file": "web/backend/tests/test_market_data_service_v2_lifecycle_di.py",
+      "role": "provider/installer lifecycle test; monkeypatches compatibility getter",
+      "direct_getter_calls": 1,
+      "decision": "Keep"
+    },
+    {
+      "file": "web/backend/tests/services/test_market_data_service_v2_runtime_fallback.py",
+      "role": "runtime fallback tests instantiate MarketDataServiceV2 directly",
+      "direct_getter_calls": 0,
+      "decision": "Keep"
+    },
+    {
+      "file": "tests/api/file_tests/test_market_v2_api.py",
+      "role": "file-level API integration test mention",
+      "direct_getter_calls": 0,
+      "decision": "Keep as historical/file-level test reference"
+    }
+  ],
+  "gitnexus_evidence": [
+    {
+      "target": "get_market_data_service_v2",
+      "result": "CRITICAL; direct impact 15; processes affected 6; modules affected 2",
+      "interpretation": "partly graph/text divergence for market_v2.py route callers, while dashboard helper calls remain real active compatibility consumers"
+    },
+    {
+      "target": "get_market_data_service_v2_dependency",
+      "result": "Target not found",
+      "interpretation": "post-DI provider symbol not exposed in current GitNexus index"
+    },
+    {
+      "target": "install_market_data_service_v2",
+      "result": "Target not found",
+      "interpretation": "post-DI installer symbol not exposed in current GitNexus index"
+    },
+    {
+      "target": "MarketDataServiceV2",
+      "result": "LOW; direct impact 0",
+      "interpretation": "class-level graph impact is not enough to justify deleting module-level compatibility functions"
+    }
+  ],
+  "decision": {
+    "compatibility_getter_status": "active dashboard-helper compatibility surface",
+    "cleanup_implementation_authorized": false,
+    "dashboard_helper_migration_authorized": false,
+    "selected_next_lane": "G2.31 MarketDataServiceV2 dashboard helper provider migration authorization packet",
+    "selected_next_lane_type": "future authorization packet",
+    "source_edits_authorized": false
+  },
+  "next_gate": "Human review of this G2.30 matrix; if accepted, prepare a separate G2.31 dashboard helper provider migration authorization packet before any source edits."
+}
