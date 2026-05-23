@@ -1,0 +1,422 @@
+{
+  "artifact": "service-lifecycle-di-candidate-refresh-after-dashboard-helper-2026-05-23",
+  "recorded_at": "2026-05-23 19:12:37 CST",
+  "workline": "G2.33 service lifecycle DI candidate refresh after dashboard helper provider migration",
+  "status": "review-ready",
+  "current_head": "40a396fabcbafcc527d4d15af1eb81034a645d87",
+  "remote_base": "origin/wip/root-dirty-20260403",
+  "parent_pr": {
+    "number": 172,
+    "state": "MERGED",
+    "merge_commit": "40a396fabcbafcc527d4d15af1eb81034a645d87",
+    "url": "https://github.com/chengjon/mystocks/pull/172"
+  },
+  "parent_issue": "#92",
+  "service_lifecycle_issue": "#79",
+  "scope": {
+    "type": "governance-and-evidence-only",
+    "source_edits_authorized": false,
+    "implementation_lane_selected": false,
+    "notes": [
+      "This artifact refreshes service lifecycle DI candidate facts after G2.32 merged.",
+      "It does not authorize backend source edits, route changes, OpenAPI changes, compatibility getter deletion, or OpenSpec archive actions."
+    ]
+  },
+  "scan_summary": {
+    "service_files_scanned": 152,
+    "candidate_files": 20,
+    "scan_criteria": [
+      "Python files under web/backend/app/services with get_*service* functions, install_*service* functions, *_instance = None, or app.state.*service references.",
+      "api_hits count textual signal references under web/backend/app/api.",
+      "test_hits count textual signal references under web/backend/tests.",
+      "non_route_service_hits count textual signal references from other service files."
+    ],
+    "bucket_counts": {
+      "registry-integrated-seam": 1,
+      "ownership-usefulness-decision-needed": 2,
+      "route-surface-candidate": 6,
+      "broad-data-or-strategy-seam": 5,
+      "service-internal-or-test-surface": 3,
+      "active-public-fallback-after-dashboard-migration": 1,
+      "process-runtime-singleton-or-streaming": 2
+    }
+  },
+  "direct_getter_matrix": {
+    "dashboard_data_source_get_market_data_service_v2_calls": 0,
+    "dashboard_route_body_get_data_source_calls": 0,
+    "market_v2_get_market_data_service_v2_calls": 0,
+    "dashboard_data_source_get_tdx_service_calls": 2
+  },
+  "route_usage_matrix": [
+    {
+      "label": "announcement",
+      "getter": "get_announcement_service",
+      "api_files_with_name": [
+        "web/backend/app/api/announcement/routes.py"
+      ],
+      "route_direct_call_files": [],
+      "dependency_provider_files": [
+        "web/backend/app/api/announcement/routes.py"
+      ],
+      "interpretation": "completed route-surface DI seam"
+    },
+    {
+      "label": "email",
+      "getter": "get_email_service",
+      "api_files_with_name": [
+        "web/backend/app/api/notification.py"
+      ],
+      "route_direct_call_files": [],
+      "dependency_provider_files": [
+        "web/backend/app/api/notification.py"
+      ],
+      "interpretation": "completed route-surface DI seam"
+    },
+    {
+      "label": "stock_search",
+      "getter": "get_stock_search_service",
+      "api_files_with_name": [
+        "web/backend/app/api/stock_search/stock_search_result.py",
+        "web/backend/app/api/market/market_data_request.py"
+      ],
+      "route_direct_call_files": [],
+      "dependency_provider_files": [
+        "web/backend/app/api/stock_search/stock_search_result.py",
+        "web/backend/app/api/market/market_data_request.py"
+      ],
+      "interpretation": "completed route-surface DI seam"
+    },
+    {
+      "label": "watchlist",
+      "getter": "get_watchlist_service",
+      "api_files_with_name": [
+        "web/backend/app/api/watchlist.py"
+      ],
+      "route_direct_call_files": [],
+      "dependency_provider_files": [
+        "web/backend/app/api/watchlist.py"
+      ],
+      "interpretation": "route provider seam exists; adapter-side callers make the next change high-risk"
+    },
+    {
+      "label": "tdx",
+      "getter": "get_tdx_service",
+      "api_files_with_name": [
+        "web/backend/app/api/dashboard_data_source.py",
+        "web/backend/app/api/tdx.py"
+      ],
+      "route_direct_call_files": [
+        {
+          "file": "web/backend/app/api/dashboard_data_source.py",
+          "calls": 2
+        }
+      ],
+      "dependency_provider_files": [],
+      "interpretation": "next narrow decision candidate, but requires authorization because it touches dashboard helper flows"
+    },
+    {
+      "label": "market_data_v2",
+      "getter": "get_market_data_service_v2",
+      "api_files_with_name": [
+        "web/backend/app/api/market_v2.py",
+        "web/backend/app/api/dashboard_data_source.py"
+      ],
+      "route_direct_call_files": [],
+      "dependency_provider_files": [
+        "web/backend/app/api/market_v2.py",
+        "web/backend/app/api/dashboard_data_source.py"
+      ],
+      "interpretation": "route and dashboard helper direct calls are closed; public fallback remains intentional"
+    }
+  ],
+  "candidate_inventory": [
+    {
+      "file": "web/backend/app/services/__init__.py",
+      "getters_or_signals": [
+        "get_integrated_services",
+        "get_market_data_service",
+        "get_trading_data_service",
+        "get_analysis_data_service",
+        "get_data_api_service",
+        "get_database_service",
+        "get_websocket_service",
+        "get_cache_service"
+      ],
+      "api_hits": 8,
+      "test_hits": 11,
+      "non_route_service_hits": 6,
+      "bucket": "registry-integrated-seam"
+    },
+    {
+      "file": "web/backend/app/services/advanced_analysis_service.py",
+      "getters_or_signals": [
+        "get_advanced_analysis_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "ownership-usefulness-decision-needed"
+    },
+    {
+      "file": "web/backend/app/services/announcement_service.py",
+      "getters_or_signals": [
+        "get_announcement_service",
+        "get_announcement_service_dependency",
+        "install_announcement_service"
+      ],
+      "api_hits": 12,
+      "test_hits": 2,
+      "non_route_service_hits": 0,
+      "bucket": "route-surface-candidate"
+    },
+    {
+      "file": "web/backend/app/services/data_service_enhanced.py",
+      "getters_or_signals": [
+        "get_service_health",
+        "get_enhanced_data_service"
+      ],
+      "api_hits": 1,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "route-surface-candidate"
+    },
+    {
+      "file": "web/backend/app/services/data_service.py",
+      "getters_or_signals": [
+        "get_data_service"
+      ],
+      "api_hits": 5,
+      "test_hits": 6,
+      "non_route_service_hits": 0,
+      "bucket": "broad-data-or-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/email_notification_service.py",
+      "getters_or_signals": [
+        "get_email_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 3,
+      "non_route_service_hits": 2,
+      "bucket": "service-internal-or-test-surface"
+    },
+    {
+      "file": "web/backend/app/services/email_service.py",
+      "getters_or_signals": [
+        "get_email_service",
+        "get_email_service_dependency",
+        "install_email_service"
+      ],
+      "api_hits": 7,
+      "test_hits": 6,
+      "non_route_service_hits": 1,
+      "bucket": "route-surface-candidate"
+    },
+    {
+      "file": "web/backend/app/services/market_data_service_v2.py",
+      "getters_or_signals": [
+        "get_market_data_service_v2",
+        "get_market_data_service_v2_dependency",
+        "install_market_data_service_v2"
+      ],
+      "api_hits": 18,
+      "test_hits": 4,
+      "non_route_service_hits": 0,
+      "bucket": "active-public-fallback-after-dashboard-migration"
+    },
+    {
+      "file": "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "getters_or_signals": [
+        "get_market_data_service"
+      ],
+      "api_hits": 8,
+      "test_hits": 11,
+      "non_route_service_hits": 6,
+      "bucket": "broad-data-or-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/monitoring_service.py",
+      "getters_or_signals": [
+        "_instance"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 12,
+      "bucket": "service-internal-or-test-surface"
+    },
+    {
+      "file": "web/backend/app/services/realtime_streaming_service.py",
+      "getters_or_signals": [
+        "get_streaming_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 19,
+      "non_route_service_hits": 2,
+      "bucket": "process-runtime-singleton-or-streaming"
+    },
+    {
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "getters_or_signals": [
+        "get_stock_search_service",
+        "get_stock_search_service_dependency",
+        "install_stock_search_service"
+      ],
+      "api_hits": 8,
+      "test_hits": 8,
+      "non_route_service_hits": 6,
+      "bucket": "route-surface-candidate"
+    },
+    {
+      "file": "web/backend/app/services/strategy_service.py",
+      "getters_or_signals": [
+        "get_strategy_service",
+        "_strategy_service_instance"
+      ],
+      "api_hits": 4,
+      "test_hits": 1,
+      "non_route_service_hits": 4,
+      "bucket": "broad-data-or-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/tdx_service.py",
+      "getters_or_signals": [
+        "get_tdx_service",
+        "_tdx_service_instance"
+      ],
+      "api_hits": 9,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "route-surface-candidate"
+    },
+    {
+      "file": "web/backend/app/services/technical_analysis_service.py",
+      "getters_or_signals": [
+        "_instance"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 12,
+      "bucket": "service-internal-or-test-surface"
+    },
+    {
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "getters_or_signals": [
+        "get_tradingview_service",
+        "get_tradingview_service_dependency",
+        "install_tradingview_service"
+      ],
+      "api_hits": 7,
+      "test_hits": 9,
+      "non_route_service_hits": 0,
+      "bucket": "broad-data-or-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/unified_data_service.py",
+      "getters_or_signals": [
+        "get_unified_data_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "broad-data-or-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/watchlist_service.py",
+      "getters_or_signals": [
+        "get_watchlist_service",
+        "get_watchlist_service_dependency",
+        "install_watchlist_service"
+      ],
+      "api_hits": 8,
+      "test_hits": 3,
+      "non_route_service_hits": 4,
+      "bucket": "route-surface-candidate"
+    },
+    {
+      "file": "web/backend/app/services/websocket_service.py",
+      "getters_or_signals": [
+        "get_service_stats"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "process-runtime-singleton-or-streaming"
+    },
+    {
+      "file": "web/backend/app/services/wencai_service.py",
+      "getters_or_signals": [
+        "get_wencai_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "ownership-usefulness-decision-needed"
+    }
+  ],
+  "gitnexus_spot_checks": [
+    {
+      "target": "get_market_data_service_v2",
+      "risk": "LOW",
+      "direct_impact": 1,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "interpretation": "G2.32 removed route/dashboard direct calls; compatibility getter remains public fallback for installer/fallback semantics"
+    },
+    {
+      "target": "get_tdx_service",
+      "risk": "CRITICAL",
+      "direct_impact": 2,
+      "processes_affected": 8,
+      "modules_affected": 2,
+      "interpretation": "narrowest remaining route/helper direct getter, but dashboard helper flows make it authorization-only before implementation"
+    },
+    {
+      "target": "get_watchlist_service",
+      "risk": "HIGH",
+      "direct_impact": 3,
+      "processes_affected": 0,
+      "modules_affected": 3,
+      "interpretation": "route provider seam exists; adapter-side callers require separate adapter/service design before edits"
+    },
+    {
+      "target": "get_enhanced_data_service",
+      "risk": "LOW",
+      "direct_impact": 1,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "interpretation": "health/control-plane adjacent surface; defer to control-plane governance rather than using as generic service DI pilot"
+    },
+    {
+      "target": "get_stock_search_service",
+      "risk": "LOW",
+      "direct_impact": 1,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "interpretation": "completed route-provider DI seam; no cleanup authorized from this refresh"
+    }
+  ],
+  "gitnexus_index": {
+    "repo": "g2-33-service-lifecycle-di-candidate-refresh-after-dashboard-helper",
+    "indexed_at": "2026-05-23T11:04:11.111Z",
+    "last_commit": "40a396fabcbafcc527d4d15af1eb81034a645d87",
+    "notes": [
+      "Initial gitnexus analyze in linked worktree failed while trying to mutate .git/info because worktree .git is a file.",
+      "Retry with gitnexus analyze --no-gitignore succeeded and registered a current-head worktree index."
+    ]
+  },
+  "decision": {
+    "summary": "After G2.32, MarketDataServiceV2 route and dashboard-helper direct getter cleanup is complete enough for the current lane. Do not delete or privatize get_market_data_service_v2. The next useful service lifecycle DI step is a decision-only authorization packet for the TDX dashboard helper provider seam.",
+    "rationale": [
+      "Candidate file counts remain stable at 152 service files and 20 lifecycle candidate files.",
+      "MarketDataServiceV2 direct route/helper calls are 0, and GitNexus current-head impact dropped to LOW for the getter.",
+      "TDX has 2 remaining direct helper calls in dashboard_data_source.py and a CRITICAL dashboard impact profile, so it needs an authorization packet before any source edit.",
+      "Watchlist, stock-search, announcement, and email route seams already expose dependency providers; broad/data/strategy seams remain separate design-lane work."
+    ],
+    "selected_next_gate": "G2.34 TDX dashboard helper provider migration authorization packet",
+    "selected_next_gate_scope": [
+      "decision and evidence only",
+      "candidate future source paths may include web/backend/app/services/tdx_service.py, web/backend/app/api/dashboard_data_source.py, focused dashboard/TDX tests, implementation evidence, and a future task card",
+      "no source edit, route change, OpenAPI change, compatibility getter deletion, or PM2/runtime gate execution is authorized by G2.33"
+    ]
+  }
+}
