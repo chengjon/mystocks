@@ -1,0 +1,82 @@
+{
+  "artifact": "advanced-analysis-route-provider-migration-authorization",
+  "workline": "G2.44",
+  "generated_at": "2026-05-24T02:05:47+08:00",
+  "git_head": "1e137abb2a32b795c403a8a168a174ad86b7f693",
+  "source_scope": "governance-only-authorization",
+  "parent_pr": {
+    "number": 183,
+    "state": "MERGED",
+    "merge_commit": "1e137abb2a32b795c403a8a168a174ad86b7f693",
+    "merged_at": "2026-05-23T18:02:47Z"
+  },
+  "github_state": {
+    "issue_79": {
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ]
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ]
+    }
+  },
+  "candidate": {
+    "service": "AdvancedAnalysisService",
+    "service_file": "web/backend/app/services/advanced_analysis_service.py",
+    "service_file_lines": 480,
+    "route_file": "web/backend/app/api/advanced_analysis_api.py",
+    "route_file_lines": 635,
+    "route_count": 14,
+    "class_depends_count": 14,
+    "getter": "get_advanced_analysis_service",
+    "getter_external_active_references": 0,
+    "module_singleton": "advanced_analysis_service",
+    "gitnexus_impact": {
+      "target": "AdvancedAnalysisService",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0,
+      "modules_affected": 0
+    }
+  },
+  "future_allowed_write_scope": [
+    "web/backend/app/services/advanced_analysis_service.py",
+    "web/backend/app/api/advanced_analysis_api.py",
+    "web/backend/tests/test_advanced_analysis_service_lifecycle_di.py",
+    "docs/reports/quality/backend-advanced-analysis-route-provider-migration-implementation-2026-05-24.md",
+    ".planning/codebase/generated/advanced-analysis-route-provider-migration-implementation-2026-05-24.json",
+    ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+    "governance/mainline/task-cards/pr-185.yaml"
+  ],
+  "future_required_gates": [
+    "pre-edit GitNexus context/impact",
+    "focused pytest for test_advanced_analysis_service_lifecycle_di.py",
+    "route dependency count guard",
+    "ruff check on touched source/test files",
+    "black --check on touched source/test files",
+    "configured app.main and OpenAPI smoke",
+    "staged GitNexus detect_changes"
+  ],
+  "environment_precondition": {
+    "isolated_worktree_app_smoke": "not-conclusive",
+    "missing_env_vars": [
+      "POSTGRESQL_HOST",
+      "POSTGRESQL_USER",
+      "POSTGRESQL_PASSWORD",
+      "JWT_SECRET_KEY",
+      "BACKEND_PORT",
+      "BACKEND_BACKUP_PORT"
+    ]
+  },
+  "implementation_authorized_by_this_pr": false,
+  "future_implementation_authorizable_after_human_review": true,
+  "next_gate": "human review of G2.44; if accepted, create G2.45 AdvancedAnalysisService route-provider migration implementation branch"
+}
