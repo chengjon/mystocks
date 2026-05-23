@@ -1,0 +1,131 @@
+{
+  "artifact": "market-data-service-v2-dashboard-helper-provider-migration-authorization",
+  "workline": "G2.31 MarketDataServiceV2 dashboard helper provider migration authorization",
+  "generated_at": "2026-05-23T17:43:37+08:00",
+  "git_head": "f87cb60afd399e16db0142c3eaaa7ab24c3a1ab1",
+  "base_branch": "wip/root-dirty-20260403",
+  "scope": "authorization-only",
+  "parent_evidence": {
+    "g2_30_report": "docs/reports/quality/backend-market-data-service-v2-compatibility-getter-consumer-matrix-2026-05-23.md",
+    "g2_30_artifact": ".planning/codebase/generated/market-data-service-v2-compatibility-getter-consumer-matrix-2026-05-23.json",
+    "parent_pr": 170,
+    "parent_merge_commit": "f87cb60afd399e16db0142c3eaaa7ab24c3a1ab1"
+  },
+  "github": {
+    "issue_79": {
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "url": "https://github.com/chengjon/mystocks/issues/79"
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ],
+      "url": "https://github.com/chengjon/mystocks/issues/92"
+    }
+  },
+  "current_consumer_snapshot": {
+    "web/backend/app/api/market_v2.py": {
+      "route_handlers_using_provider_dependency": 13,
+      "provider_reference_count_including_import": 14,
+      "direct_getter_calls": 0,
+      "decision": "do_not_include_in_dashboard_helper_implementation_batch"
+    },
+    "web/backend/app/api/dashboard_data_source.py": {
+      "compatibility_getter_imports": 1,
+      "direct_getter_calls": 2,
+      "call_sites": [
+        "_get_market_overview_data",
+        "prewarm_dashboard_market_overview_cache"
+      ],
+      "decision": "primary_future_implementation_target"
+    },
+    "web/backend/app/api/dashboard.py": {
+      "depends_get_data_source_routes": [
+        "get_market_overview",
+        "health_check"
+      ],
+      "direct_get_data_source_route_calls": [
+        "get_dashboard_summary"
+      ],
+      "decision": "secondary_future_implementation_target"
+    },
+    "web/backend/app/main.py": {
+      "prewarm_scheduling": "asyncio.to_thread(prewarm_dashboard_market_overview_cache)",
+      "decision": "secondary_future_implementation_target_if_service_instance_is_passed_to_prewarm"
+    },
+    "web/backend/app/services/market_data_service_v2.py": {
+      "public_symbols_to_keep": [
+        "get_market_data_service_v2",
+        "install_market_data_service_v2",
+        "get_market_data_service_v2_dependency",
+        "MARKET_DATA_SERVICE_V2_STATE_KEY",
+        "MarketDataServiceV2"
+      ],
+      "decision": "provider_and_fallback_symbols_remain_active"
+    }
+  },
+  "gitnexus": {
+    "get_market_data_service_v2": {
+      "risk": "CRITICAL",
+      "direct": 15,
+      "processes_affected": 6,
+      "modules_affected": 2,
+      "interpretation": "do not remove or rename; use text guards because route direct calls are already zero"
+    },
+    "prewarm_dashboard_market_overview_cache": {
+      "risk": "LOW",
+      "direct": 0,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "interpretation": "narrow helper but startup scheduling still requires app.main import smoke"
+    },
+    "RealBusinessDataSource": {
+      "status": "found",
+      "incoming": 0,
+      "outgoing": 0,
+      "interpretation": "text and focused tests are required because graph process coverage is sparse"
+    }
+  },
+  "authorized_future_implementation": {
+    "status": "authorized_after_human_acceptance_of_this_packet",
+    "allowed_paths": [
+      "web/backend/app/api/dashboard_data_source.py",
+      "web/backend/app/api/dashboard.py",
+      "web/backend/app/main.py",
+      "web/backend/tests/test_dashboard_data_source.py",
+      "web/backend/tests/test_market_data_service_v2_lifecycle_di.py",
+      "docs/reports/quality/backend-market-data-service-v2-dashboard-helper-provider-migration-implementation-*.md",
+      "governance/mainline/task-cards/pr-*.yaml"
+    ],
+    "required_shape": [
+      "RealBusinessDataSource receives an explicit MarketDataServiceV2 or narrow provider callable",
+      "get_data_source can be resolved by FastAPI with get_market_data_service_v2_dependency",
+      "get_dashboard_summary uses dependency-provided data source rather than calling get_data_source() inside the route body",
+      "prewarm_dashboard_market_overview_cache can receive a service instance from the caller",
+      "main.py startup prewarm passes an explicitly installed or app-state service when needed",
+      "focused tests cover injected service usage and fallback compatibility"
+    ]
+  },
+  "not_authorized": [
+    "backend source edits in this authorization PR",
+    "delete_or_privatize_get_market_data_service_v2",
+    "modify_market_v2.py",
+    "merge_MarketDataService_and_MarketDataServiceV2",
+    "route_path_or_operation_id_changes",
+    "OpenAPI_response_contract_changes",
+    "frontend_or_PM2_changes",
+    "OpenSpec_change_creation",
+    "issue_label_changes"
+  ],
+  "next_gate": {
+    "current_gate": "human review of G2.31 authorization packet",
+    "if_accepted": "create G2.32 implementation branch with exact allowed source/test scope",
+    "if_rejected": "keep dashboard helper compatibility getter calls active and return to service seam design"
+  }
+}
