@@ -1,0 +1,125 @@
+version: "v0.2"
+
+task:
+  id: "pr-180"
+  title: "Implement TDX route provider migration"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-tdx-route-provider-migration-implementation"
+  objective: "implement the approved G2.40 TDX route dependency provider migration"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-tdx-route-provider-migration-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-tdx-route-provider-migration"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Route paths, response models, OpenAPI exposure, and product behavior remain unchanged; only the FastAPI service dependency provider is migrated"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/tdx-route-provider-migration-implementation-2026-05-24.json"
+    - "web/backend/app/services/tdx_service.py"
+    - "web/backend/app/api/tdx.py"
+    - "web/backend/tests/test_tdx_service_lifecycle_di.py"
+    - "docs/reports/quality/backend-tdx-route-provider-migration-implementation-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-180.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/dashboard_data_source.py"
+    - "web/backend/app/api/ml.py"
+    - "web/backend/app/main.py"
+    - "web/backend/app/adapters/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No deletion, retirement, or behavior change for get_tdx_service()"
+  - "No dashboard_data_source.py, api/ml.py, main.py, adapter, frontend, PM2, OpenSpec, issue-label, route path, response model, or OpenAPI exposure changes"
+  - "No compatibility wrapper cleanup"
+  - "No broad service lifecycle DI candidate selection in this PR"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_tdx_service_lifecycle_di.py -q -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/tdx_service.py web/backend/app/api/tdx.py web/backend/tests/test_tdx_service_lifecycle_di.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/services/tdx_service.py web/backend/app/api/tdx.py web/backend/tests/test_tdx_service_lifecycle_di.py"
+      required: true
+    - id: "app-main-openapi-smoke"
+      command: "env POSTGRESQL_HOST=localhost POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test JWT_SECRET_KEY=0123456789abcdef0123456789abcdef BACKEND_PORT=8888 BACKEND_BACKUP_PORT=8889 PYTHONPATH=web/backend python -c 'from collections import Counter; from app.main import app; schema=app.openapi(); ids=[spec.get(\"operationId\") for methods in schema.get(\"paths\", {}).values() for spec in methods.values() if isinstance(spec, dict) and spec.get(\"operationId\")]; counts=Counter(ids); print({\"routes_total\": len(app.routes), \"openapi_paths_total\": len(schema.get(\"paths\", {})), \"duplicate_operation_ids\": sum(1 for v in counts.values() if v > 1)})'"
+      required: true
+    - id: "dependency-count-guard"
+      command: "python - <<'PY'\nfrom pathlib import Path\napi = Path('web/backend/app/api/tdx.py').read_text()\nsvc = Path('web/backend/app/services/tdx_service.py').read_text()\nassert api.count('Depends(get_tdx_service)') == 0\nassert api.count('Depends(get_tdx_service_dependency)') == 5\nassert 'def get_tdx_service(' in svc\nassert 'def get_tdx_service_dependency(' in svc\nassert 'TDX_SERVICE_STATE_KEY' in svc\nprint('dependency-count-guard passed')\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-tdx-route-provider-migration-implementation-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/tdx-route-provider-migration-implementation-2026-05-24.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-180.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "gitnexus detect-changes --scope staged"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If a route dependency remains on get_tdx_service(), the public TDX routes are not migrated to app-state provider injection"
+    - "If get_tdx_service() is removed, dashboard helper fallback and external imports can break"
+    - "If dashboard_data_source.py, api/ml.py, main.py, adapters, OpenSpec, or frontend are edited, this PR exceeds the G2.39 authorization"
+  rollback_plan: "revert this PR to restore the five /api/v1/tdx route dependencies to get_tdx_service() and remove the new provider"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement approved TDX route provider migration"
+    modified_scope: "tdx_service.py, api/tdx.py, focused lifecycle DI tests, implementation report, JSON artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "get_tdx_service remains public fallback; five /api/v1/tdx dependencies now use get_tdx_service_dependency"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused pytest, ruff, black, app/OpenAPI smoke, dependency guard, mainline scope, staged GitNexus, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T00:34:22+08:00"
+    approval_note: "human maintainer approved continuing after G2.39 authorization; this PR implements only the approved TDX route provider migration scope"
+    secondary_approved: false

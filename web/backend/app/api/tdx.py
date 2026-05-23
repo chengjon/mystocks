@@ -23,7 +23,7 @@ from app.schemas.tdx_schemas import (
     RealTimeQuoteResponse,
     TdxHealthResponse,
 )
-from app.services.tdx_service import TdxService, get_tdx_service
+from app.services.tdx_service import TdxService, get_tdx_service_dependency
 
 router = APIRouter()
 
@@ -241,7 +241,7 @@ TDX_INDEX_KLINE_RESPONSES = {
 async def get_stock_quote(
     symbol: str = Path(..., description="6 位数字股票代码，例如 600519。"),
     current_user: User = Depends(get_current_active_user),
-    service: TdxService = Depends(get_tdx_service),
+    service: TdxService = Depends(get_tdx_service_dependency),
 ):
     """
     获取股票实时行情
@@ -297,7 +297,7 @@ async def get_stock_kline(
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
     period: str = Query(default="1d", description="K线周期: 1m/5m/15m/30m/1h/1d"),
     current_user: User = Depends(get_current_active_user),
-    service: TdxService = Depends(get_tdx_service),
+    service: TdxService = Depends(get_tdx_service_dependency),
 ):
     """
     获取股票K线数据
@@ -383,7 +383,7 @@ async def get_stock_kline(
 async def get_index_quote(
     symbol: str = Path(..., description="6 位数字指数代码，例如 000001 或 399001。"),
     current_user: User = Depends(get_current_active_user),
-    service: TdxService = Depends(get_tdx_service),
+    service: TdxService = Depends(get_tdx_service_dependency),
 ):
     """
     获取指数实时行情
@@ -442,7 +442,7 @@ async def get_index_kline(
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
     period: str = Query(default="1d", description="K线周期: 1m/5m/15m/30m/1h/1d"),
     current_user: User = Depends(get_current_active_user),
-    service: TdxService = Depends(get_tdx_service),
+    service: TdxService = Depends(get_tdx_service_dependency),
 ):
     """
     获取指数K线数据
@@ -511,7 +511,7 @@ async def get_index_kline(
     description="检查 TDX 服务的连接状态和服务端信息，用于后端运行状态探活与排障。",
     responses=TDX_HEALTH_RESPONSES,
 )
-async def health_check(service: TdxService = Depends(get_tdx_service)):
+async def health_check(service: TdxService = Depends(get_tdx_service_dependency)):
     """
     TDX服务健康检查
 
