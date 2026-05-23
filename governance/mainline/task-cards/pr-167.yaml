@@ -1,0 +1,129 @@
+version: "v0.2"
+
+task:
+  id: "pr-167"
+  title: "Implement market data service v2 route provider DI"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-market-data-service-v2-route-provider-implementation"
+  objective: "implement the approved MarketDataServiceV2 route-provider DI seam without changing route behavior"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-market-data-service-v2-route-provider-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-market-data-service-v2-route-provider-implementation"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Route-provider DI only; route paths, response contracts, OpenAPI exposure, frontend, docs/API, PM2, and OpenSpec remain unchanged"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - "web/backend/app/services/market_data_service_v2.py"
+    - "web/backend/app/api/market_v2.py"
+    - "web/backend/tests/test_market_data_service_v2_lifecycle_di.py"
+    - "docs/reports/quality/backend-market-data-service-v2-route-provider-implementation-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-167.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/dashboard_data_source.py"
+    - "web/backend/app/services/market_data_adapter.py"
+    - "web/backend/app/services/market_data_service/**"
+    - "web/backend/app/services/__init__.py"
+    - "web/backend/app/services/email_service.py"
+    - "web/backend/app/services/announcement_service.py"
+    - "web/backend/app/services/watchlist_service.py"
+    - "web/backend/app/services/stock_search_service/**"
+    - "web/backend/app/services/strategy_service.py"
+    - "web/backend/app/services/tdx_service.py"
+    - "web/backend/app/services/data_service.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No dashboard_data_source.py, market_data_adapter.py, market_data_service package, or services __init__ changes"
+  - "No service consolidation between MarketDataService and MarketDataServiceV2"
+  - "No route path, HTTP method, response model, response envelope, or OpenAPI schema exposure change"
+  - "No docs/API, generated client, frontend, PM2, runtime config, OpenSpec, or issue-label change"
+  - "No removal of get_market_data_service_v2 compatibility getter"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -q -o addopts= web/backend/tests/test_market_data_service_v2_lifecycle_di.py --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/market_data_service_v2.py web/backend/app/api/market_v2.py web/backend/tests/test_market_data_service_v2_lifecycle_di.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/services/market_data_service_v2.py web/backend/app/api/market_v2.py web/backend/tests/test_market_data_service_v2_lifecycle_di.py"
+      required: true
+    - id: "app-main-import"
+      command: "env PYTHONPATH=web/backend TESTING=true DEVELOPMENT_MODE=true POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test POSTGRESQL_DATABASE=test JWT_SECRET_KEY=0123456789abcdef0123456789abcdef BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c 'import app.main; print(\"app-main-import-ok\")'"
+      required: true
+    - id: "openapi-smoke"
+      command: "env PYTHONPATH=web/backend TESTING=true DEVELOPMENT_MODE=true POSTGRESQL_HOST=localhost POSTGRESQL_PORT=5432 POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test POSTGRESQL_DATABASE=test JWT_SECRET_KEY=0123456789abcdef0123456789abcdef BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c 'from app.main import app; schema=app.openapi(); print(len(schema.get(\"paths\", {})))'"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-market-data-service-v2-route-provider-implementation-2026-05-23.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-167.yaml"
+      required: true
+    - id: "staged-gitnexus"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If dashboard, adapter, market-data package, route/OpenAPI, or frontend paths are edited, the PR exceeds the G2.26 authorization boundary"
+    - "If get_market_data_service_v2 is removed, compatibility callers outside market_v2.py can break"
+    - "If route paths or response contracts change, this PR becomes route/OpenAPI governance work instead of lifecycle DI work"
+  rollback_plan: "revert this PR; restore the 13 market_v2.py route functions to direct get_market_data_service_v2() calls; remove the MarketDataServiceV2 dependency provider and focused lifecycle DI test as one unit"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement approved MarketDataServiceV2 route-provider lifecycle DI"
+    modified_scope: "market_data_service_v2.py, market_v2.py, focused tests, implementation report, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "get_market_data_service_v2 remains as compatibility getter; 13 market_v2 route-local callers now use injected MarketDataServiceV2"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, ruff, black check, app/OpenAPI smoke, mainline scope, staged GitNexus, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T14:53:05+08:00"
+    approval_note: "human maintainer approved continuing after G2.26 authorization; this PR implements only the approved MarketDataServiceV2 route-provider DI scope"
+    secondary_approved: false

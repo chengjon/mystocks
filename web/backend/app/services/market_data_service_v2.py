@@ -14,6 +14,7 @@ import os
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
+from fastapi import Request
 import pandas as pd
 from sqlalchemy import and_, create_engine, or_
 from sqlalchemy.orm import sessionmaker
@@ -55,8 +56,7 @@ class MarketDataServiceV2:
 
     def _runtime_fallback_enabled(self) -> bool:
         return (
-            os.getenv("TESTING", "false").lower() == "true"
-            or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
+            os.getenv("TESTING", "false").lower() == "true" or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
         )
 
     def _build_sector_fund_flow_runtime_rows(
@@ -657,6 +657,7 @@ class MarketDataServiceV2:
 
 # 全局单例
 _market_data_service_v2 = None
+MARKET_DATA_SERVICE_V2_STATE_KEY = "market_data_service_v2"
 
 
 def get_market_data_service_v2() -> MarketDataServiceV2:
@@ -665,3 +666,18 @@ def get_market_data_service_v2() -> MarketDataServiceV2:
     if _market_data_service_v2 is None:
         _market_data_service_v2 = MarketDataServiceV2()
     return _market_data_service_v2
+
+
+def install_market_data_service_v2(app: Any, service: MarketDataServiceV2 | None = None) -> MarketDataServiceV2:
+    """Install the market data service V2 instance on FastAPI app.state."""
+    selected_service = service if service is not None else get_market_data_service_v2()
+    setattr(app.state, MARKET_DATA_SERVICE_V2_STATE_KEY, selected_service)
+    return selected_service
+
+
+def get_market_data_service_v2_dependency(request: Request) -> MarketDataServiceV2:
+    """FastAPI dependency provider for the market data service V2."""
+    service = getattr(request.app.state, MARKET_DATA_SERVICE_V2_STATE_KEY, None)
+    if service is None:
+        service = install_market_data_service_v2(request.app)
+    return service
