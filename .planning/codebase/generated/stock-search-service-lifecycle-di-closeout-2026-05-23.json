@@ -1,0 +1,68 @@
+{
+  "artifact": "stock-search-service-lifecycle-di-closeout",
+  "date": "2026-05-23",
+  "status": "closeout-prepared-for-review",
+  "workline": "G2.20 service lifecycle DI implementation closeout",
+  "parent_issue": 79,
+  "implementation_pr": {
+    "number": 159,
+    "url": "https://github.com/chengjon/mystocks/pull/159",
+    "state": "MERGED",
+    "implementation_commit": "3fc46c0d8ae17db4c4e911e303023dea7648b7af",
+    "merge_commit": "25db762ae6484ad4638baf0f8ab42b94a978a403",
+    "merged_at": "2026-05-23T02:10:26Z"
+  },
+  "authorization_pr": {
+    "number": 158,
+    "url": "https://github.com/chengjon/mystocks/pull/158",
+    "merge_commit": "d63b18ab98417d9051dfbf177a975ac7470c96d3"
+  },
+  "completed_scope": {
+    "service": "web/backend/app/services/stock_search_service/stock_search_service.py",
+    "route_files": [
+      "web/backend/app/api/stock_search/stock_search_result.py",
+      "web/backend/app/api/market/market_data_request.py"
+    ],
+    "focused_test": "web/backend/tests/test_stock_search_service_lifecycle_di.py",
+    "compatibility_getter_preserved": "get_stock_search_service"
+  },
+  "post_merge_route_surface_scan": {
+    "web/backend/app/api/stock_search/stock_search_result.py": {
+      "direct_get_stock_search_service_calls": 0,
+      "injected_route_params": 5
+    },
+    "web/backend/app/api/market/market_data_request.py": {
+      "direct_get_stock_search_service_calls": 0,
+      "injected_route_params": 1
+    }
+  },
+  "verification": {
+    "focused_pytest": "31 passed",
+    "ruff": "passed",
+    "black_check": "passed",
+    "markdown_governance": "checked_files=2, errors=0",
+    "mainline_scope_gate": "passed",
+    "app_openapi_smoke": {
+      "routes": 548,
+      "paths": 500
+    },
+    "gitnexus": "HIGH expected and authorized for get_stock_quote/get_kline_data route surface"
+  },
+  "github_checks": {
+    "check_compliance": "SUCCESS",
+    "mainline_governance_gate": "SUCCESS",
+    "validate_api_contracts": "SUCCESS",
+    "generate_typescript_types": "SUCCESS",
+    "generate_contract_validation_report": "SUCCESS",
+    "detect_breaking_changes": "SUCCESS_OR_SKIPPED",
+    "weekly_full_scan": "SKIPPED"
+  },
+  "authorization_boundary": {
+    "no_source_edits_in_closeout": true,
+    "no_next_candidate_selected": true,
+    "no_issue_label_changes": true,
+    "no_openspec_changes": true,
+    "no_runtime_or_pm2_changes": true
+  },
+  "next_gate": "Human review of closeout packet; any next candidate or cleanup lane requires a separate packet."
+}
