@@ -7,7 +7,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Dict
+from typing import Any, Dict
 
 # 添加项目根目录到路径(web/backend -> mystocks_spec)
 project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../.."))
@@ -277,3 +277,12 @@ def get_tdx_service() -> TdxService:
     if _tdx_service_instance is None:
         _tdx_service_instance = TdxService()
     return _tdx_service_instance
+
+
+def install_tdx_service(app: Any, service: TdxService | None = None) -> TdxService:
+    """Install the TDX service on app.state while preserving the legacy fallback."""
+    selected_service = service or getattr(app.state, "tdx_service", None)
+    if selected_service is None:
+        selected_service = get_tdx_service()
+    app.state.tdx_service = selected_service
+    return selected_service

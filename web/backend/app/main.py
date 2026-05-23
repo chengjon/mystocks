@@ -269,9 +269,13 @@ async def lifespan(app: FastAPI):
     try:
         from .api.dashboard_data_source import prewarm_dashboard_market_overview_cache
         from .services.market_data_service_v2 import install_market_data_service_v2
+        from .services.tdx_service import install_tdx_service
 
         market_data_service_v2 = install_market_data_service_v2(app)
-        asyncio.create_task(asyncio.to_thread(prewarm_dashboard_market_overview_cache, market_data_service_v2))
+        tdx_service = install_tdx_service(app)
+        asyncio.create_task(
+            asyncio.to_thread(prewarm_dashboard_market_overview_cache, market_data_service_v2, tdx_service)
+        )
         logger.info("✅ Scheduled dashboard market-overview prewarm")
     except Exception as e:
         logger.warning(f"⚠️ Failed to schedule dashboard market-overview prewarm: {e}")
