@@ -465,8 +465,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23.md`,
 │   │   `.planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23.json`,
 │   │   `backend-stock-search-compatibility-getter-consumer-matrix-2026-05-23.md`,
-│   │   `.planning/codebase/generated/stock-search-compatibility-getter-consumer-matrix-2026-05-23.json`
-│   ├── State: stock-search-compatibility-getter-consumer-matrix-prepared-for-review
+│   │   `.planning/codebase/generated/stock-search-compatibility-getter-consumer-matrix-2026-05-23.json`,
+│   │   `backend-broad-service-seam-design-2026-05-23.md`,
+│   │   `.planning/codebase/generated/broad-service-seam-design-2026-05-23.json`
+│   ├── State: broad-service-seam-design-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -590,11 +592,19 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 package exports and tests still intentionally cover
 │   │                 `get_stock_search_service()`, and the getter is retained
 │   │                 as active compatibility surface with no cleanup
-│   │                 implementation authorized
-│   └── Next gate: Human review of the G2.23 consumer matrix; if accepted, do
-│                  not open a stock-search getter cleanup implementation and
-│                  create a separate broad market/data/strategy service seam
-│                  design packet before any further service DI source edit
+│   │                 implementation authorized; PR `#163` merged at
+│   │                 `18f5b43275bbd1fc7f53c739063da37c6a753b11`; G2.24 now
+│   │                 records broad market/data/strategy service seam evidence at
+│   │                 that HEAD, finds CRITICAL impact for
+│   │                 `get_market_data_service_v2`, `get_data_service`,
+│   │                 `get_strategy_service`, and `get_tdx_service`, records the
+│   │                 `get_market_data_service` graph/text mismatch, rejects a
+│   │                 mixed implementation batch, and selects a future G2.25
+│   │                 market-data provider design packet before any source edit
+│   └── Next gate: Human review of the G2.24 design packet; if accepted, create
+│                  a separate G2.25 market-data provider design packet before
+│                  any `market_data_service` or `market_data_service_v2`
+│                  source edits
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -657,6 +667,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-service-lifecycle-di-next-lane-after-stock-search-2026-05-23.md` | G | G2.21 decision merged by PR `#161` at `d2e799cd2c1cbeb00b70d5cf64897b7c8a8a3b11`: select G2.22 current-head candidate refresh before implementation or compatibility-getter cleanup | Superseded by G2.22 candidate refresh packet |
 | `backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23.md` | G | G2.22 current-head refresh merged by PR `#162` at `d186ce78ee0ad4017b36e3788a54533ce3a972df`: scanned 152 service Python files, recorded 42 broad heuristic hit files and 17 narrow service-lifecycle candidate files, found no safe direct next route-surface implementation candidate, and selected future G2.23 `stock_search_service` compatibility getter cleanup authorization / consumer-matrix packet | Superseded by G2.23 consumer matrix |
 | `backend-stock-search-compatibility-getter-consumer-matrix-2026-05-23.md` | G | G2.23 consumer matrix prepared at `d186ce78ee0a`: route direct `get_stock_search_service()` calls remain `0`, route provider refs are `8`, package exports/tests still intentionally cover the compatibility getter, and cleanup implementation is not authorized | Human review; if accepted, retain the getter and create a separate broad market/data/strategy service seam design packet before source edits |
+| `backend-broad-service-seam-design-2026-05-23.md` | G | G2.24 design packet prepared at `18f5b43275bb`: broad market/data/strategy seams are split into separate future design lanes; market/data/strategy/tdx representative getters show CRITICAL impact except `get_market_data_service`, which has a graph/text mismatch; no source implementation is authorized | Human review; if accepted, create G2.25 market-data provider design packet before any market data service source edits |
 
 ## Completed And Reviewed Ledger
 
@@ -744,6 +755,7 @@ review, PR review, or OpenSpec archive review.
 | G2.21 service lifecycle DI next-lane after stock-search | G/#79 | Select current-head candidate refresh as the next service lifecycle DI governance lane | Reviewed and merged by PR `#161` at `d2e799cd2c1cbeb00b70d5cf64897b7c8a8a3b11`: current-head quick scan at `f8063b512fb7` shows remaining getter/singleton/provider signal files require classification; no source, test, route, OpenAPI, OpenSpec, issue-label, runtime, PM2, compatibility getter cleanup, or next implementation candidate is authorized | `docs/reports/quality/backend-service-lifecycle-di-next-lane-after-stock-search-2026-05-23.md`; `.planning/codebase/generated/service-lifecycle-di-next-lane-after-stock-search-2026-05-23.json`; https://github.com/chengjon/mystocks/pull/161 | Superseded by G2.22 current-head candidate refresh |
 | G2.22 service lifecycle DI candidate refresh after stock-search | G/#79 | Refresh current-head service lifecycle candidates after stock-search route-surface DI | Reviewed and merged by PR `#162` at `d186ce78ee0ad4017b36e3788a54533ce3a972df`: scanned 152 service files, recorded 42 broad heuristic hit files and 17 narrow candidate files, selected G2.23 stock-search compatibility getter consumer matrix, and kept source edits locked | `docs/reports/quality/backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23.md`; `.planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23.json`; https://github.com/chengjon/mystocks/pull/162 | Superseded by G2.23 consumer matrix |
 | G2.23 stock-search compatibility getter consumer matrix | G/#79 | Decide whether `get_stock_search_service()` cleanup is authorized after route-surface DI | Review-ready: route direct getter calls remain `0`; route provider refs are `8`; tests and package exports still intentionally cover compatibility getter, installer, state key, and provider behavior; no source/test/route cleanup implementation is authorized | `docs/reports/quality/backend-stock-search-compatibility-getter-consumer-matrix-2026-05-23.md`; `.planning/codebase/generated/stock-search-compatibility-getter-consumer-matrix-2026-05-23.json` | Human review; if accepted, retain the getter and open a separate broad service seam design packet before source edits |
+| G2.24 broad service seam design | G/#79 | Decompose broad market/data/strategy service seams before selecting another implementation lane | Review-ready: PR `#163` merged at `18f5b43275bbd1fc7f53c739063da37c6a753b11`; current-head text scan covers `market_data_service_v2`, `market_data_service`, `data_service`, `strategy_service`, `tdx_service`, `enhanced_data_service`, and `technical_analysis_service`; GitNexus spot checks classify most broad seams as CRITICAL and select no mixed implementation batch | `docs/reports/quality/backend-broad-service-seam-design-2026-05-23.md`; `.planning/codebase/generated/broad-service-seam-design-2026-05-23.json` | Human review; if accepted, create G2.25 market-data provider design packet before source edits |
 
 ## OpenSpec Branch Register
 
@@ -825,7 +837,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Reconcile schema shim closure after runtime unblock | `sequence-backend-architecture-unblocks` then future schema branch | Complete; next gate is route/OpenAPI evidence refresh and later shim-retirement decision |
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
-| P2 | Review PR `#156` G2.16 service lifecycle DI next-lane decision | Future service seam lane | PR `#155` merged; PR `#156` is open with checks passed; G2.16 selects G2.17 current-head candidate refresh before any further service lifecycle DI source edits |
+| P2 | Review G2.24 broad service seam design packet | Future service seam lane | PR `#163` merged; G2.24 is review-ready and selects a future G2.25 market-data provider design packet before any market/data/strategy source edits |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items
