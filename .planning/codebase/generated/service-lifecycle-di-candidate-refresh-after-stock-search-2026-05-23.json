@@ -1,0 +1,338 @@
+{
+  "artifact": "service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23",
+  "recorded_at": "2026-05-23T11:05:16+08:00",
+  "workline": "G2.22 current-head service lifecycle DI candidate refresh after stock-search",
+  "status": "candidate-refresh-prepared-for-review",
+  "current_head": "d2e799cd2c1c",
+  "remote_base": {
+    "branch": "origin/wip/root-dirty-20260403",
+    "head": "d2e799cd2c1cbeb00b70d5cf64897b7c8a8a3b11"
+  },
+  "stale_if_head_mismatch": true,
+  "target_pr": 162,
+  "target_pr_url": "https://github.com/chengjon/mystocks/pull/162",
+  "parent_issue": {
+    "number": 92,
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-human",
+      "ready-for-downstream"
+    ],
+    "url": "https://github.com/chengjon/mystocks/issues/92"
+  },
+  "service_lifecycle_issue": {
+    "number": 79,
+    "state": "OPEN",
+    "labels": [
+      "needs-triage"
+    ],
+    "url": "https://github.com/chengjon/mystocks/issues/79"
+  },
+  "merged_input": {
+    "pr_161": {
+      "state": "MERGED",
+      "merge_commit": "d2e799cd2c1cbeb00b70d5cf64897b7c8a8a3b11"
+    }
+  },
+  "scan_summary": {
+    "service_py_files": 152,
+    "broad_heuristic_hit_files": 42,
+    "narrow_service_lifecycle_candidate_files": 17,
+    "bucket_counts": {
+      "completed-route-surface-di": 4,
+      "broad-market-data-strategy-seam": 7,
+      "hold-no-clear-active-route-surface": 2,
+      "process-runtime-singleton-or-streaming": 2,
+      "registry-integrated-seam": 1,
+      "reference-provider-pattern": 1
+    },
+    "scan_criteria": [
+      "Broad heuristic counts files with getter/singleton/provider signals and is not used as a backlog count by itself.",
+      "Narrow inventory includes service files with get_*service* functions, _instance = None, or service app-state provider/dependency patterns."
+    ]
+  },
+  "candidate_inventory": [
+    {
+      "file": "web/backend/app/services/__init__.py",
+      "getters_or_signals": [
+        "get_integrated_services",
+        "get_market_data_service",
+        "get_trading_data_service",
+        "get_analysis_data_service",
+        "get_data_api_service",
+        "get_database_service",
+        "get_websocket_service",
+        "get_cache_service"
+      ],
+      "api_hits": 8,
+      "test_hits": 11,
+      "non_route_service_hits": 6,
+      "bucket": "registry-integrated-seam"
+    },
+    {
+      "file": "web/backend/app/services/announcement_service.py",
+      "getters_or_signals": [
+        "get_announcement_service",
+        "get_announcement_service_dependency"
+      ],
+      "api_hits": 12,
+      "test_hits": 2,
+      "non_route_service_hits": 0,
+      "bucket": "completed-route-surface-di"
+    },
+    {
+      "file": "web/backend/app/services/data_service.py",
+      "getters_or_signals": [
+        "get_data_service"
+      ],
+      "api_hits": 5,
+      "test_hits": 6,
+      "non_route_service_hits": 0,
+      "bucket": "broad-market-data-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/data_service_enhanced.py",
+      "getters_or_signals": [
+        "get_enhanced_data_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "broad-market-data-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/email_notification_service.py",
+      "getters_or_signals": [
+        "get_email_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 3,
+      "non_route_service_hits": 2,
+      "bucket": "hold-no-clear-active-route-surface"
+    },
+    {
+      "file": "web/backend/app/services/email_service.py",
+      "getters_or_signals": [
+        "get_email_service",
+        "get_email_service_dependency"
+      ],
+      "api_hits": 7,
+      "test_hits": 6,
+      "non_route_service_hits": 1,
+      "bucket": "completed-route-surface-di"
+    },
+    {
+      "file": "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "getters_or_signals": [
+        "get_market_data_service"
+      ],
+      "api_hits": 8,
+      "test_hits": 11,
+      "non_route_service_hits": 6,
+      "bucket": "broad-market-data-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/market_data_service_v2.py",
+      "getters_or_signals": [
+        "get_market_data_service_v2"
+      ],
+      "api_hits": 17,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "broad-market-data-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/monitoring_service.py",
+      "getters_or_signals": [
+        "_instance = None"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "process-runtime-singleton-or-streaming"
+    },
+    {
+      "file": "web/backend/app/services/realtime_streaming_service.py",
+      "getters_or_signals": [
+        "get_streaming_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 19,
+      "non_route_service_hits": 2,
+      "bucket": "process-runtime-singleton-or-streaming"
+    },
+    {
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "getters_or_signals": [
+        "get_stock_search_service",
+        "get_stock_search_service_dependency"
+      ],
+      "api_hits": 8,
+      "test_hits": 7,
+      "non_route_service_hits": 4,
+      "bucket": "completed-route-surface-di"
+    },
+    {
+      "file": "web/backend/app/services/strategy_service.py",
+      "getters_or_signals": [
+        "get_strategy_service"
+      ],
+      "api_hits": 4,
+      "test_hits": 1,
+      "non_route_service_hits": 4,
+      "bucket": "broad-market-data-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/tdx_service.py",
+      "getters_or_signals": [
+        "get_tdx_service"
+      ],
+      "api_hits": 9,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "broad-market-data-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/technical_analysis_service.py",
+      "getters_or_signals": [
+        "_instance = None"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "broad-market-data-strategy-seam"
+    },
+    {
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "getters_or_signals": [
+        "get_tradingview_service",
+        "get_tradingview_service_dependency"
+      ],
+      "api_hits": 7,
+      "test_hits": 5,
+      "non_route_service_hits": 0,
+      "bucket": "reference-provider-pattern"
+    },
+    {
+      "file": "web/backend/app/services/watchlist_service.py",
+      "getters_or_signals": [
+        "get_watchlist_service",
+        "get_watchlist_service_dependency"
+      ],
+      "api_hits": 8,
+      "test_hits": 3,
+      "non_route_service_hits": 4,
+      "bucket": "completed-route-surface-di"
+    },
+    {
+      "file": "web/backend/app/services/wencai_service.py",
+      "getters_or_signals": [
+        "get_wencai_service"
+      ],
+      "api_hits": 0,
+      "test_hits": 0,
+      "non_route_service_hits": 0,
+      "bucket": "hold-no-clear-active-route-surface"
+    }
+  ],
+  "gitnexus_spot_checks": [
+    {
+      "target": "get_market_data_service_v2",
+      "risk": "CRITICAL",
+      "direct_impact": 15,
+      "processes_affected": 6,
+      "modules_affected": 2,
+      "interpretation": "Active market_v2 and dashboard surface; not a direct next pilot."
+    },
+    {
+      "target": "get_data_service",
+      "risk": "CRITICAL",
+      "direct_impact": 3,
+      "processes_affected": 7,
+      "modules_affected": 2,
+      "interpretation": "Indicator/strategy data seam; needs design packet before edits."
+    },
+    {
+      "target": "get_stock_search_service",
+      "risk": "CRITICAL",
+      "direct_impact": 6,
+      "processes_affected": 11,
+      "modules_affected": 2,
+      "confidence": 0.5,
+      "interpretation": "Graph still reports old route callers at confidence 0.5; text guard shows route direct calls are 0, so cleanup requires a separate consumer-matrix packet."
+    },
+    {
+      "target": "get_strategy_service",
+      "risk": "HIGH",
+      "direct_impact": 6,
+      "processes_affected": 0,
+      "modules_affected": 4,
+      "interpretation": "Strategy route/adapter/task surface; not a direct next pilot."
+    },
+    {
+      "target": "get_tdx_service",
+      "risk": "HIGH",
+      "direct_impact": 2,
+      "processes_affected": 3,
+      "modules_affected": 1,
+      "interpretation": "Dashboard live-market surface; not a direct next pilot."
+    },
+    {
+      "target": "get_market_data_service",
+      "risk": "LOW",
+      "direct_impact": 0,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "interpretation": "Text scan still finds API/test/non-route refs; treat as graph-name ambiguity, not safe-proof."
+    },
+    {
+      "target": "get_email_service",
+      "risk": "MEDIUM",
+      "direct_impact": 6,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "interpretation": "Completed route DI lane; remaining evidence is graph/compatibility cleanup, not a new candidate."
+    }
+  ],
+  "stock_search_text_guard": {
+    "route_files": [
+      {
+        "file": "web/backend/app/api/stock_search/stock_search_result.py",
+        "direct_get_stock_search_service_calls": 0,
+        "dependency_provider_refs": 6
+      },
+      {
+        "file": "web/backend/app/api/market/market_data_request.py",
+        "direct_get_stock_search_service_calls": 0,
+        "dependency_provider_refs": 2
+      }
+    ],
+    "test_files": [
+      {
+        "file": "web/backend/tests/test_runtime_regressions_p0.py",
+        "direct_get_stock_search_service_calls": 3,
+        "dependency_provider_refs": 0
+      },
+      {
+        "file": "web/backend/tests/test_stock_search_service_lifecycle_di.py",
+        "direct_get_stock_search_service_calls": 0,
+        "dependency_provider_refs": 1
+      }
+    ]
+  },
+  "decision": {
+    "next_route_surface_implementation_candidate_selected": false,
+    "selected_next_lane": "G2.23 stock-search compatibility getter cleanup authorization / consumer matrix packet",
+    "source_edits_authorized": false,
+    "openspec_change_required_now": false,
+    "issue_label_movement_authorized": false
+  },
+  "required_g2_23_scope": [
+    "Enumerate all stock_search_service getter, dependency-provider, installer, package re-export, route, and test references at current HEAD.",
+    "Separate route dependency-provider references from direct compatibility getter calls.",
+    "Record GitNexus graph freshness or graph/text divergence for get_stock_search_service.",
+    "Define any future allowed write scope, tests, rollback plan, and forbidden paths if cleanup is later approved.",
+    "Keep source deletion and source edits locked until the G2.23 decision packet is reviewed and a separate implementation authorization is approved."
+  ]
+}

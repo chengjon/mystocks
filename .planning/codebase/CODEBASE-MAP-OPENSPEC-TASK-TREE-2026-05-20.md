@@ -461,8 +461,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-stock-search-service-lifecycle-di-closeout-2026-05-23.md`,
 │   │   `.planning/codebase/generated/stock-search-service-lifecycle-di-closeout-2026-05-23.json`,
 │   │   `backend-service-lifecycle-di-next-lane-after-stock-search-2026-05-23.md`,
-│   │   `.planning/codebase/generated/service-lifecycle-di-next-lane-after-stock-search-2026-05-23.json`
-│   ├── State: service-lifecycle-di-next-lane-after-stock-search-prepared-for-review
+│   │   `.planning/codebase/generated/service-lifecycle-di-next-lane-after-stock-search-2026-05-23.json`,
+│   │   `backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23.md`,
+│   │   `.planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23.json`
+│   ├── State: service-lifecycle-di-candidate-refresh-after-stock-search-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -570,10 +572,20 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `f8063b512fb7c3aabfabef9d80d05d1d682569b5`; G2.21 now
 │   │                 selects a future G2.22 current-head candidate refresh
 │   │                 before any further service DI source edit or
-│   │                 compatibility getter cleanup
-│   └── Next gate: Human review of the G2.21 decision packet; if accepted,
-│                  create G2.22 current-head candidate refresh before selecting
-│                  any next service lifecycle DI implementation candidate
+│   │                 compatibility getter cleanup; PR `#161` merged at
+│   │                 `d2e799cd2c1cbeb00b70d5cf64897b7c8a8a3b11`; G2.22 now
+│   │                 refreshes current-head service lifecycle candidates,
+│   │                 records 152 service Python files, 42 broad heuristic hit
+│   │                 files, 17 narrow candidate files, no direct next
+│   │                 route-surface implementation candidate, and selects a
+│   │                 future G2.23 stock-search compatibility getter cleanup
+│   │                 authorization / consumer-matrix packet before any source
+│   │                 edit
+│   └── Next gate: Human review of the G2.22 candidate refresh packet; if
+│                  accepted, create G2.23 stock-search compatibility getter
+│                  cleanup authorization / consumer-matrix packet before any
+│                  stock-search getter source edit or broader service DI
+│                  implementation selection
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -623,6 +635,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-technical-pattern-di-pilot-implementation-2026-05-21.md` | D2.1a.1 | First DI lifecycle pilot implementation merged in PR `#112`; route-level provider and dependency override test seam are in place | D2.1a implementation closed; do not infer a second DI pilot from this evidence |
 | `inject-technical-pattern-detection-service-di` task `5.3` closeout | D2.1a.1 | Final OpenSpec checklist governance merged in PR `#113`; issue `#92` received implementation and final governance closeout comments | D2.1a is 100% closed; future DI work requires a new approved child lane |
 
+| G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
 | `backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md` | G | G2.13 implementation authorization packet merged: future write scope, tests, GitNexus gates, and rollback plan defined for adapter-aware watchlist helper cleanup | Superseded by G2.14 implementation evidence |
 | `backend-watchlist-helper-cleanup-implementation-2026-05-23.md` | G | G2.14 implementation merged by PR `#154`: both watchlist adapter/helper files now accept constructor-configured provider seams; route code unchanged | Superseded by G2.15 closeout packet |
@@ -632,7 +645,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.md` | G | G2.18 authorization merged by PR `#158` at `d63b18ab98417d9051dfbf177a975ac7470c96d3`: future write scope limited to `stock_search_service`, five stock-search route handlers, market `get_kline_data`, focused tests, implementation report, and task card | Superseded by G2.19 implementation evidence |
 | `backend-stock-search-service-lifecycle-di-implementation-2026-05-23.md` | G | G2.19 implementation merged by PR `#159` at `25db762ae6484ad4638baf0f8ab42b94a978a403`: app-state provider seam added, compatibility getter preserved, six route-local stock-search service consumers injected, and focused stock-search tests passed | Superseded by G2.20 closeout packet |
 | `backend-stock-search-service-lifecycle-di-closeout-2026-05-23.md` | G | G2.20 closeout merged by PR `#160` at `f8063b512fb7c3aabfabef9d80d05d1d682569b5`: PR `#159` merge recorded, post-merge route-surface scan shows `0` direct getter calls in the approved route files, and no follow-up implementation or next service candidate is authorized | Superseded by G2.21 next-lane decision packet |
-| `backend-service-lifecycle-di-next-lane-after-stock-search-2026-05-23.md` | G | G2.21 decision prepared: current-head quick scan at `f8063b512fb7` shows 152 service files, 20 getter/singleton/provider hit files, 5 completed/reference provider-pattern files, and 15 remaining files needing classification; select G2.22 current-head candidate refresh before implementation or compatibility-getter cleanup | Human review; if accepted, create G2.22 current-head candidate refresh packet |
+| `backend-service-lifecycle-di-next-lane-after-stock-search-2026-05-23.md` | G | G2.21 decision merged by PR `#161` at `d2e799cd2c1cbeb00b70d5cf64897b7c8a8a3b11`: select G2.22 current-head candidate refresh before implementation or compatibility-getter cleanup | Superseded by G2.22 candidate refresh packet |
+| `backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-23.md` | G | G2.22 current-head refresh prepared at `d2e799cd2c1c`: scanned 152 service Python files, recorded 42 broad heuristic hit files and 17 narrow service-lifecycle candidate files, found no safe direct next route-surface implementation candidate, and selects future G2.23 `stock_search_service` compatibility getter cleanup authorization / consumer-matrix packet | Human review; if accepted, create G2.23 decision packet before any getter cleanup or broader service DI implementation |
 
 ## Completed And Reviewed Ledger
 
