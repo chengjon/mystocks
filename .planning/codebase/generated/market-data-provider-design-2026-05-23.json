@@ -1,0 +1,167 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-05-23T13:18:48+08:00",
+  "workline": "G2.25 market-data provider design",
+  "status": "design-packet-prepared-for-review",
+  "base_head": "f97ca070853a77afc80c226d53948e805ba33c8e",
+  "branch": "g2-25-market-data-provider-design",
+  "parent_pr": 164,
+  "parent_pr_merge_commit": "f97ca070853a77afc80c226d53948e805ba33c8e",
+  "governance_boundary": {
+    "source_edits_authorized": false,
+    "test_edits_authorized": false,
+    "route_edits_authorized": false,
+    "openapi_edits_authorized": false,
+    "openspec_edits_authorized": false,
+    "issue_label_changes_authorized": false,
+    "service_consolidation_authorized": false,
+    "implementation_batch_authorized": false
+  },
+  "provider_surfaces": [
+    {
+      "id": "market_data_service_v2",
+      "service_file": "web/backend/app/services/market_data_service_v2.py",
+      "service_loc": 668,
+      "class": "MarketDataServiceV2",
+      "getter": "get_market_data_service_v2",
+      "state": "_market_data_service_v2",
+      "constructor_dependencies": [
+        "database engine/sessionmaker",
+        "eastmoney adapter via get_eastmoney_adapter"
+      ],
+      "route_consumers": [
+        {
+          "file": "web/backend/app/api/market_v2.py",
+          "direct_getter_calls": 13,
+          "functions": [
+            "get_fund_flow",
+            "refresh_fund_flow",
+            "get_etf_list",
+            "refresh_etf_spot",
+            "get_lhb_detail",
+            "refresh_lhb_detail",
+            "get_sector_fund_flow",
+            "refresh_sector_fund_flow",
+            "get_stock_dividend",
+            "refresh_stock_dividend",
+            "get_stock_blocktrade",
+            "refresh_stock_blocktrade",
+            "refresh_all_market_data"
+          ]
+        }
+      ],
+      "non_route_consumers": [
+        {
+          "file": "web/backend/app/api/dashboard_data_source.py",
+          "functions": [
+            "RealBusinessDataSource._get_market_overview_data",
+            "prewarm_dashboard_market_overview_cache"
+          ]
+        }
+      ],
+      "gitnexus": {
+        "risk": "CRITICAL",
+        "impacted_count": 18,
+        "direct": 15,
+        "processes_affected": 6,
+        "modules_affected": 2
+      },
+      "decision": "future route-provider candidate, not immediate source edit"
+    },
+    {
+      "id": "market_data_service_package",
+      "service_file": "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "service_loc": 33,
+      "class": "MarketDataService",
+      "getter": "get_market_data_service",
+      "state": "_market_data_service",
+      "implementation_files": [
+        {
+          "file": "web/backend/app/services/market_data_service/market_data_service_methods/part1.py",
+          "loc": 669,
+          "class": "MarketDataServiceCoreMixin"
+        },
+        {
+          "file": "web/backend/app/services/market_data_service/market_data_service_methods/part2.py",
+          "loc": 135,
+          "class": "MarketDataServiceFetchAndSaveMixin"
+        },
+        {
+          "file": "web/backend/app/services/market_data_service/market_data_service_methods/part3.py",
+          "loc": 43,
+          "class": "MarketDataServiceChipRaceQueryMixin"
+        }
+      ],
+      "constructor_dependencies": [
+        "database engine/sessionmaker",
+        "akshare extension adapter",
+        "tqlex adapter",
+        "cache integration"
+      ],
+      "route_consumers": [
+        {
+          "file": "web/backend/app/api/market/market_data_request.py",
+          "pattern": "Depends(get_market_data_service)",
+          "functions": [
+            "refresh_fund_flow",
+            "get_etf_list",
+            "refresh_etf_data",
+            "get_chip_race",
+            "refresh_chip_race",
+            "get_lhb_detail",
+            "refresh_lhb_detail"
+          ]
+        }
+      ],
+      "service_layer_consumers": [
+        "web/backend/app/services/market_data_adapter.py::_get_market_service"
+      ],
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "note": "Graph impact undercounts FastAPI dependency-parameter references; text scan records active route usage."
+      },
+      "decision": "keep as separate provider normalization candidate, not the next implementation target"
+    },
+    {
+      "id": "integrated_services_market_data_accessor",
+      "file": "web/backend/app/services/__init__.py",
+      "function": "get_market_data_service",
+      "consumer_scan_result": "no direct text import consumers found in web/backend/app",
+      "decision": "do not conflate with package getter"
+    }
+  ],
+  "design_decision": {
+    "consolidate_market_data_service_classes": false,
+    "standardize_access_shape_only": true,
+    "recommended_next_lane": "G2.26 MarketDataServiceV2 route-provider implementation authorization",
+    "recommended_future_candidate_scope": [
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/app/api/market_v2.py",
+      "focused market-v2 route dependency override tests",
+      "implementation evidence report",
+      "PR task card"
+    ],
+    "first_authorization_exclusions": [
+      "web/backend/app/api/dashboard_data_source.py",
+      "web/backend/app/services/market_data_adapter.py",
+      "web/backend/app/services/market_data_service/**",
+      "route path changes",
+      "OpenAPI schema exposure changes",
+      "service consolidation",
+      "docs/API changes",
+      "generated client changes",
+      "frontend changes",
+      "PM2/runtime changes"
+    ]
+  },
+  "future_lanes": [
+    "dashboard market overview/source-factory provider design",
+    "MarketDataService package provider/app-state normalization",
+    "market_data_adapter.py helper seam",
+    "legacy route/API ownership reconciliation between market v1 and v2"
+  ]
+}
