@@ -456,8 +456,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `backend-service-lifecycle-di-candidate-refresh-2026-05-23.md`,
 │   │   `.planning/codebase/generated/service-lifecycle-di-candidate-refresh-2026-05-23.json`,
 │   │   `backend-stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.md`,
-│   │   `.planning/codebase/generated/stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.json`
-│   ├── State: stock-search-service-di-implementation-authorization-prepared
+│   │   `.planning/codebase/generated/stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.json`,
+│   │   `backend-stock-search-service-lifecycle-di-implementation-2026-05-23.md`
+│   ├── State: stock-search-service-di-implementation-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -549,12 +550,18 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 records the future `stock_search_service` route-surface DI
 │   │                 write scope, six route-local getter callers, GitNexus
 │   │                 pre-edit gates, TDD requirements, rollback plan, and
-│   │                 forbidden scope; source edits remain locked pending human
-│   │                 review of this authorization packet
-│   └── Next gate: Human review of the G2.18 authorization packet; if accepted,
-│                  create a separate implementation lane for
-│                  `stock_search_service` route-surface DI before any source
-│                  edits
+│   │                 forbidden scope; PR `#158` merged at
+│   │                 `d63b18ab98417d9051dfbf177a975ac7470c96d3`; G2.19 now
+│   │                 implements the approved route-surface DI scope by adding an
+│   │                 app-state provider seam to `stock_search_service`, keeping
+│   │                 `get_stock_search_service()` as compatibility fallback, and
+│   │                 injecting `StockSearchService` into five stock-search route
+│   │                 handlers plus the market `get_kline_data` fallback route;
+│   │                 focused stock-search suite is green and no next service
+│   │                 candidate is selected by this step
+│   └── Next gate: Human review of the G2.19 implementation PR; if accepted,
+│                  merge it and create a separate closeout packet before
+│                  selecting any next service lifecycle DI candidate
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

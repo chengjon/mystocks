@@ -35,6 +35,7 @@ from app.schemas.market_schemas import (
     MessageResponse,
 )
 from app.services.market_data_service import MarketDataService, get_market_data_service
+from app.services.stock_search_service import StockSearchService, get_stock_search_service_dependency
 
 router = APIRouter()
 router.include_router(market_heatmap_router)
@@ -67,9 +68,8 @@ from app.api.market._market_data_request_responses import (
     LHB_RESPONSES,
     MARKET_QUOTES_RESPONSES,
     STOCK_LIST_RESPONSES,
-    _error_response_spec,
-    _success_response_spec,
 )
+
 
 @router.get("/fund-flow", summary="查询资金流向", responses=FUND_FLOW_RESPONSES)
 @cache_response("fund_flow", ttl=300)  # 🚀 添加5分钟缓存
@@ -550,6 +550,7 @@ async def get_kline_data(
     adjust: str = Query(default="qfq", description="复权类型: qfq/hfq/空字符串", pattern=r"^(qfq|hfq|)$"),
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
+    service: StockSearchService = Depends(get_stock_search_service_dependency),
 ):
     """
     获取股票K线（蜡烛图）历史数据
@@ -572,8 +573,6 @@ async def get_kline_data(
     """
     try:
         from datetime import datetime as dt_convert
-
-        from app.services.stock_search_service import get_stock_search_service
 
         # 参数验证：日期格式验证（但不转换为datetime对象，因为service层期望字符串）
         if start_date:
@@ -600,7 +599,6 @@ async def get_kline_data(
                 detail="市场数据服务暂不可用，请稍后重试", status_code=503, error_code="MARKET_SERVICE_UNAVAILABLE"
             )
 
-        service = get_stock_search_service()
         try:
             # FIX: 直接传递字符串参数给service层
             result = service.get_a_stock_kline(
