@@ -1,0 +1,102 @@
+version: "v0.2"
+
+task:
+  id: "pr-171"
+  title: "Authorize MarketDataServiceV2 dashboard helper provider migration"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-market-data-service-v2-dashboard-helper-provider-authorization"
+  objective: "authorize the future dashboard helper provider migration after G2.30 confirmed active compatibility getter consumers"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-market-data-service-v2-dashboard-helper-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-market-data-service-v2-dashboard-helper-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization packet records future implementation boundaries only; no runtime entrypoint, route, OpenAPI behavior, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/market-data-service-v2-dashboard-helper-provider-migration-authorization-2026-05-23.json"
+    - "docs/reports/quality/backend-market-data-service-v2-dashboard-helper-provider-migration-authorization-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-171.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No dashboard helper migration implementation in this PR"
+  - "No compatibility getter deletion, rename, privatization, or cleanup implementation in this PR"
+  - "No market_v2.py route-provider changes; that surface is already complete for this lane"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-market-data-service-v2-dashboard-helper-provider-migration-authorization-2026-05-23.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/market-data-service-v2-dashboard-helper-provider-migration-authorization-2026-05-23.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-171.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the authorization-only boundary"
+    - "If this PR is treated as implementation authorization plus implementation, it bypasses the separate G2.32 source-edit gate"
+    - "If get_market_data_service_v2 is deleted or privatized, dashboard helper and fallback behavior can break"
+  rollback_plan: "revert this governance-only PR; G2.30 consumer matrix and earlier MarketDataServiceV2 route-provider work remain merged unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize future MarketDataServiceV2 dashboard helper provider migration"
+    modified_scope: "authorization report, generated evidence artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none in this PR; future implementation must preserve get_market_data_service_v2 fallback compatibility"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only authorization PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T17:39:16+08:00"
+    approval_note: "human maintainer approved continuing after PR #170; this packet authorizes only a future dashboard helper provider migration branch"
+    secondary_approved: false
