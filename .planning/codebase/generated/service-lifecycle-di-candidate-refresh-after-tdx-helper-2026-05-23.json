@@ -1,0 +1,319 @@
+{
+  "artifact": "service-lifecycle-di-candidate-refresh-after-tdx-helper-2026-05-23",
+  "generated_at": "2026-05-23T22:23:17+08:00",
+  "workline": "G2.37",
+  "parent_issue": 79,
+  "parent_pr": 176,
+  "parent_pr_merge_commit": "6e940a7a5596b4256f63fec888c589777456d36a",
+  "current_head": "6e940a7a5596b4256f63fec888c589777456d36a",
+  "remote_head_short": "6e940a7a5",
+  "scope": {
+    "mode": "governance-evidence-only",
+    "source_edits_authorized": false,
+    "test_edits_authorized": false,
+    "runtime_changes_authorized": false,
+    "openspec_changes_authorized": false,
+    "issue_label_changes_authorized": false
+  },
+  "scan_summary": {
+    "service_files_scanned": 152,
+    "candidate_or_signal_files": 18,
+    "bucket_counts": {
+      "completed-route-provider-seam": 5,
+      "tdx-route-dependency-surface": 1,
+      "route-surface-or-control-plane-review": 2,
+      "broad-data-or-strategy-seam": 3,
+      "process-runtime-singleton-or-streaming": 2,
+      "service-internal-or-test-surface": 2,
+      "registry-integrated-seam": 1,
+      "ownership-usefulness-decision-needed": 2
+    }
+  },
+  "direct_getter_matrix": {
+    "dashboard_data_source_get_tdx_service_calls": 0,
+    "dashboard_data_source_private_get_tdx_service_calls": 3,
+    "api_tdx_depends_get_tdx_service_sites": 5,
+    "api_tdx_direct_get_tdx_service_calls": 0,
+    "tdx_service_get_tdx_service_definitions": 1,
+    "tdx_service_install_tdx_service_definitions": 1,
+    "market_v2_get_market_data_service_v2_calls": 0,
+    "dashboard_data_source_get_market_data_service_v2_calls": 0
+  },
+  "candidate_inventory": [
+    {
+      "path": "web/backend/app/services/__init__.py",
+      "bucket": "registry-integrated-seam",
+      "api_refs": 3,
+      "test_refs": 6,
+      "service_refs": 4,
+      "signals": [
+        "get_integrated_services",
+        "get_market_data_service",
+        "get_trading_data_service",
+        "get_analysis_data_service",
+        "get_data_api_service",
+        "get_database_service",
+        "get_websocket_service",
+        "get_cache_service"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/announcement_service.py",
+      "bucket": "completed-route-provider-seam",
+      "api_refs": 1,
+      "test_refs": 1,
+      "service_refs": 0,
+      "signals": [
+        "get_announcement_service",
+        "install_announcement_service",
+        "get_announcement_service_dependency"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/data_service_enhanced.py",
+      "bucket": "route-surface-or-control-plane-review",
+      "api_refs": 1,
+      "test_refs": 0,
+      "service_refs": 0,
+      "signals": [
+        "get_service_health",
+        "get_enhanced_data_service"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/data_service.py",
+      "bucket": "broad-data-or-strategy-seam",
+      "api_refs": 4,
+      "test_refs": 2,
+      "service_refs": 0,
+      "signals": [
+        "get_data_service"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/email_notification_service.py",
+      "bucket": "service-internal-or-test-surface",
+      "api_refs": 1,
+      "test_refs": 2,
+      "service_refs": 1,
+      "signals": [
+        "get_email_service"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/email_service.py",
+      "bucket": "completed-route-provider-seam",
+      "api_refs": 1,
+      "test_refs": 2,
+      "service_refs": 1,
+      "signals": [
+        "get_email_service",
+        "install_email_service",
+        "get_email_service_dependency"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/market_data_service_v2.py",
+      "bucket": "completed-route-provider-seam",
+      "api_refs": 2,
+      "test_refs": 2,
+      "service_refs": 0,
+      "signals": [
+        "get_market_data_service_v2",
+        "install_market_data_service_v2",
+        "get_market_data_service_v2_dependency"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "bucket": "ownership-usefulness-decision-needed",
+      "api_refs": 3,
+      "test_refs": 6,
+      "service_refs": 4,
+      "signals": [
+        "get_market_data_service"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/monitoring_service.py",
+      "bucket": "service-internal-or-test-surface",
+      "api_refs": 0,
+      "test_refs": 0,
+      "service_refs": 0,
+      "signals": [
+        "_instance"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/realtime_streaming_service.py",
+      "bucket": "process-runtime-singleton-or-streaming",
+      "api_refs": 0,
+      "test_refs": 2,
+      "service_refs": 1,
+      "signals": [
+        "get_streaming_service"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "bucket": "completed-route-provider-seam",
+      "api_refs": 2,
+      "test_refs": 4,
+      "service_refs": 1,
+      "signals": [
+        "get_stock_search_service",
+        "install_stock_search_service",
+        "get_stock_search_service_dependency"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/strategy_service.py",
+      "bucket": "broad-data-or-strategy-seam",
+      "api_refs": 1,
+      "test_refs": 3,
+      "service_refs": 2,
+      "signals": [
+        "get_strategy_service",
+        "_strategy_service_instance"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/tdx_service.py",
+      "bucket": "tdx-route-dependency-surface",
+      "api_refs": 3,
+      "test_refs": 2,
+      "service_refs": 0,
+      "signals": [
+        "get_tdx_service",
+        "install_tdx_service",
+        "_tdx_service_instance",
+        "tdx_service"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/technical_analysis_service.py",
+      "bucket": "broad-data-or-strategy-seam",
+      "api_refs": 0,
+      "test_refs": 0,
+      "service_refs": 0,
+      "signals": [
+        "_instance"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/tradingview_widget_service.py",
+      "bucket": "route-surface-or-control-plane-review",
+      "api_refs": 1,
+      "test_refs": 1,
+      "service_refs": 0,
+      "signals": [
+        "get_tradingview_service",
+        "install_tradingview_service",
+        "get_tradingview_service_dependency"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/watchlist_service.py",
+      "bucket": "completed-route-provider-seam",
+      "api_refs": 1,
+      "test_refs": 4,
+      "service_refs": 2,
+      "signals": [
+        "get_watchlist_service",
+        "install_watchlist_service",
+        "get_watchlist_service_dependency"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/websocket_service.py",
+      "bucket": "process-runtime-singleton-or-streaming",
+      "api_refs": 0,
+      "test_refs": 0,
+      "service_refs": 0,
+      "signals": [
+        "get_service_stats"
+      ]
+    },
+    {
+      "path": "web/backend/app/services/wencai_service.py",
+      "bucket": "ownership-usefulness-decision-needed",
+      "api_refs": 0,
+      "test_refs": 0,
+      "service_refs": 0,
+      "signals": [
+        "get_wencai_service"
+      ]
+    }
+  ],
+  "gitnexus_spot_checks": [
+    {
+      "target": "get_tdx_service",
+      "risk": "LOW",
+      "direct": 1,
+      "processes": 0,
+      "modules": 0,
+      "interpretation": "Dashboard helper direct getter callers are closed; text scan still shows the live /api/tdx dependency surface."
+    },
+    {
+      "target": "get_market_data_service_v2",
+      "risk": "LOW",
+      "direct": 1,
+      "processes": 0,
+      "modules": 0
+    },
+    {
+      "target": "get_stock_search_service",
+      "risk": "LOW",
+      "direct": 1,
+      "processes": 0,
+      "modules": 0
+    },
+    {
+      "target": "get_watchlist_service",
+      "risk": "LOW",
+      "direct": 3,
+      "processes": 0,
+      "modules": 2
+    },
+    {
+      "target": "get_strategy_service",
+      "risk": "HIGH",
+      "direct": 6,
+      "processes": 2,
+      "modules": 4
+    },
+    {
+      "target": "get_tradingview_service",
+      "risk": "LOW",
+      "direct": 1,
+      "processes": 0,
+      "modules": 0
+    },
+    {
+      "target": "get_integrated_services",
+      "risk": "MEDIUM",
+      "direct": 13,
+      "processes": 0,
+      "modules": 0
+    },
+    {
+      "target": "get_enhanced_data_service",
+      "risk": "LOW",
+      "direct": 1,
+      "processes": 0,
+      "modules": 0
+    },
+    {
+      "target": "get_wencai_service",
+      "risk": "LOW",
+      "direct": 0,
+      "processes": 0,
+      "modules": 0
+    }
+  ],
+  "decision": {
+    "implementation_lane_selected": false,
+    "recommended_next_gate": "G2.38 TDX route dependency consumer matrix",
+    "reason": "The dashboard helper TDX seam is closed, but /api/tdx still has five intentional Depends(get_tdx_service) sites and must be reviewed as a consumer-matrix decision before any compatibility getter cleanup."
+  }
+}
