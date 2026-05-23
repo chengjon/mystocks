@@ -764,10 +764,21 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 getter and module singleton, converts `14`
 │   │                 `advanced_analysis_api.py` service dependencies to
 │   │                 `get_advanced_analysis_service_dependency`, and keeps
-│   │                 OpenAPI paths=`500` with duplicate operation IDs=`0`
-│   └── Next gate: Human review of the G2.45 implementation PR; if accepted,
-│                  run a separate G2.46 closeout/current-head candidate refresh
-│                  before selecting another service lifecycle DI lane
+│   │                 OpenAPI paths=`500` with duplicate operation IDs=`0`;
+│   │                 PR `#185` merged at
+│   │                 `059638b573c6f2586537973e2a4b396f0ce156d7`; G2.46 now
+│   │                 records current-head closeout and candidate refresh:
+│   │                 `AdvancedAnalysisService` route class dependency sites=`0`,
+│   │                 provider sites=`14`, direct compatibility getter route
+│   │                 calls=`0`, focused test result=`4 passed`, OpenAPI
+│   │                 paths=`500`, duplicate operation IDs=`0`, completed
+│   │                 provider modules=`8`, route provider dependency
+│   │                 files=`11`, and route provider dependency sites=`72`;
+│   │                 no next implementation target is authorized
+│   └── Next gate: Human review of the G2.46 closeout/candidate refresh PR;
+│                  if accepted, create a separate G2.47 candidate selection and
+│                  usefulness/ownership triage packet before selecting another
+│                  service lifecycle DI lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -852,6 +863,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-service-candidate-usefulness-ownership-triage-2026-05-24.md` | G | G2.43 triage prepared at current HEAD `f7c6fdf5fd57cff14ef6d11f1d18fd6591a22dc5`: records PR `#182` as `MERGED`, confirms `AdvancedAnalysisService` is an active route class dependency with `14` class `Depends()` sites and no external getter reference, classifies `WencaiService` as active DB/session-backed direct construction, keeps `get_market_data_service` as active route dependency with `7` route dependency sites, classifies `UnifiedDataService` as a broad data seam, and authorizes no implementation | Human review / PR merge decision; if accepted, create G2.44 `AdvancedAnalysisService` route-provider migration authorization before any source edits |
 | `backend-advanced-analysis-route-provider-migration-authorization-2026-05-24.md` | G | G2.44 authorization prepared at current HEAD `1e137abb2a32b795c403a8a168a174ad86b7f693`: records PR `#183` as `MERGED`, confirms `advanced_analysis_api.py` has `14` class `Depends()` sites, preserves `get_advanced_analysis_service()` and module singleton compatibility, records GitNexus `AdvancedAnalysisService` upstream impact as LOW / `0`, and limits any future implementation to a separate G2.45 branch after human review | Human review / PR merge decision; if accepted, create G2.45 `AdvancedAnalysisService` route-provider implementation branch before source edits |
 | `backend-advanced-analysis-route-provider-migration-implementation-2026-05-24.md` | G | G2.45 implementation prepared from G2.44 authorization at base `22b617733e29c9a441e88cb1da2ce0a5d8be98cc`: adds `ADVANCED_ANALYSIS_SERVICE_STATE_KEY`, `install_advanced_analysis_service`, and `get_advanced_analysis_service_dependency`, preserves `get_advanced_analysis_service()` and module singleton compatibility, converts all `14` `advanced_analysis_api.py` service dependencies to the provider, focused TDD ended at `4 passed`, ruff/black passed, configured OpenAPI smoke reports routes=`548`, paths=`500`, duplicate operation IDs=`0`, and advanced paths=`14` | Human review / PR merge decision; if accepted, run G2.46 closeout/current-head candidate refresh before selecting the next service lifecycle DI lane |
+| `backend-advanced-analysis-route-provider-closeout-and-candidate-refresh-2026-05-24.md` | G | G2.46 closeout prepared at current HEAD `059638b573c6f2586537973e2a4b396f0ce156d7`: records PR `#185` as `MERGED`, confirms `AdvancedAnalysisService` route class dependency sites=`0`, provider sites=`14`, direct compatibility getter route calls=`0`, focused test result=`4 passed`, configured OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, advanced paths=`14`, completed provider modules=`8`, route provider dependency files=`11`, and route provider dependency sites=`72`; no next implementation target or compatibility getter retirement is authorized | Human review / PR merge decision; if accepted, create G2.47 candidate selection and usefulness/ownership triage packet before any source edits |
 
 ## Completed And Reviewed Ledger
 
