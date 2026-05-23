@@ -459,8 +459,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `.planning/codebase/generated/stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.json`,
 │   │   `backend-stock-search-service-lifecycle-di-implementation-2026-05-23.md`,
 │   │   `backend-stock-search-service-lifecycle-di-closeout-2026-05-23.md`,
-│   │   `.planning/codebase/generated/stock-search-service-lifecycle-di-closeout-2026-05-23.json`
-│   ├── State: stock-search-service-di-closeout-prepared-for-review
+│   │   `.planning/codebase/generated/stock-search-service-lifecycle-di-closeout-2026-05-23.json`,
+│   │   `backend-service-lifecycle-di-next-lane-after-stock-search-2026-05-23.md`,
+│   │   `.planning/codebase/generated/service-lifecycle-di-next-lane-after-stock-search-2026-05-23.json`
+│   ├── State: service-lifecycle-di-next-lane-after-stock-search-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -564,10 +566,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 `25db762ae6484ad4638baf0f8ab42b94a978a403`; G2.20 now
 │   │                 records that merged result, preserves the compatibility
 │   │                 getter boundary, and confirms no next service candidate is
-│   │                 selected by this closeout
-│   └── Next gate: Human review of the G2.20 closeout packet; if accepted,
-│                  decide a separate next-lane packet before selecting any next
-│                  service lifecycle DI candidate
+│   │                 selected by this closeout; PR `#160` merged at
+│   │                 `f8063b512fb7c3aabfabef9d80d05d1d682569b5`; G2.21 now
+│   │                 selects a future G2.22 current-head candidate refresh
+│   │                 before any further service DI source edit or
+│   │                 compatibility getter cleanup
+│   └── Next gate: Human review of the G2.21 decision packet; if accepted,
+│                  create G2.22 current-head candidate refresh before selecting
+│                  any next service lifecycle DI implementation candidate
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -625,7 +631,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-service-lifecycle-di-candidate-refresh-2026-05-23.md` | G | G2.17 current-head refresh merged by PR `#157` at `0285d1cbc29b4622b3e39c9a171ba3b02691ed1b`: scanned 152 service Python files, identified 15 service getter files and 11 route-surface related getter files, recorded GitNexus risk, and recommends only a future G2.18 `stock_search_service` authorization packet | Superseded by G2.18 authorization packet |
 | `backend-stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.md` | G | G2.18 authorization merged by PR `#158` at `d63b18ab98417d9051dfbf177a975ac7470c96d3`: future write scope limited to `stock_search_service`, five stock-search route handlers, market `get_kline_data`, focused tests, implementation report, and task card | Superseded by G2.19 implementation evidence |
 | `backend-stock-search-service-lifecycle-di-implementation-2026-05-23.md` | G | G2.19 implementation merged by PR `#159` at `25db762ae6484ad4638baf0f8ab42b94a978a403`: app-state provider seam added, compatibility getter preserved, six route-local stock-search service consumers injected, and focused stock-search tests passed | Superseded by G2.20 closeout packet |
-| `backend-stock-search-service-lifecycle-di-closeout-2026-05-23.md` | G | G2.20 closeout prepared: PR `#159` merge recorded, post-merge route-surface scan shows `0` direct getter calls in the approved route files, and no follow-up implementation or next service candidate is authorized | Human review of the closeout packet; next candidate requires a separate packet |
+| `backend-stock-search-service-lifecycle-di-closeout-2026-05-23.md` | G | G2.20 closeout merged by PR `#160` at `f8063b512fb7c3aabfabef9d80d05d1d682569b5`: PR `#159` merge recorded, post-merge route-surface scan shows `0` direct getter calls in the approved route files, and no follow-up implementation or next service candidate is authorized | Superseded by G2.21 next-lane decision packet |
+| `backend-service-lifecycle-di-next-lane-after-stock-search-2026-05-23.md` | G | G2.21 decision prepared: current-head quick scan at `f8063b512fb7` shows 152 service files, 20 getter/singleton/provider hit files, 5 completed/reference provider-pattern files, and 15 remaining files needing classification; select G2.22 current-head candidate refresh before implementation or compatibility-getter cleanup | Human review; if accepted, create G2.22 current-head candidate refresh packet |
 
 ## Completed And Reviewed Ledger
 
@@ -709,7 +716,8 @@ review, PR review, or OpenSpec archive review.
 | G2.17 service lifecycle DI candidate refresh | G/#79 | Refresh current-head service lifecycle DI candidate inventory before selecting another implementation lane | Reviewed and merged by PR `#157` at `0285d1cbc29b4622b3e39c9a171ba3b02691ed1b`: `stock_search_service` is the only recommended future authorization candidate, and source edits remain locked until G2.18 | `docs/reports/quality/backend-service-lifecycle-di-candidate-refresh-2026-05-23.md`; `.planning/codebase/generated/service-lifecycle-di-candidate-refresh-2026-05-23.json`; https://github.com/chengjon/mystocks/pull/157 | Superseded by G2.18 authorization packet |
 | G2.18 stock search service lifecycle DI authorization | G/#79 | Exact future write scope, TDD plan, GitNexus gates, and rollback boundary prepared for route-surface-only `stock_search_service` DI | Reviewed and merged by PR `#158` at `d63b18ab98417d9051dfbf177a975ac7470c96d3`: scope limited to the service package, five stock-search route handlers, market `get_kline_data`, focused tests, implementation report, and task card | `docs/reports/quality/backend-stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.md`; `.planning/codebase/generated/stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.json`; https://github.com/chengjon/mystocks/pull/158 | Superseded by G2.19 implementation evidence |
 | G2.19 stock search service lifecycle DI implementation | G/#79 | Route-surface-only `stock_search_service` DI implemented and merged | Reviewed and merged by PR `#159` at `25db762ae6484ad4638baf0f8ab42b94a978a403`: focused pytest `31 passed`, ruff and black passed, app/OpenAPI smoke `routes=548`, `paths=500`, GitNexus HIGH was expected for the authorized route surface, and GitHub contract/governance checks passed | `docs/reports/quality/backend-stock-search-service-lifecycle-di-implementation-2026-05-23.md`; `web/backend/tests/test_stock_search_service_lifecycle_di.py`; https://github.com/chengjon/mystocks/pull/159 | Superseded by G2.20 closeout packet |
-| G2.20 stock search service lifecycle DI closeout | G/#79 | Closeout records PR `#159` merge result and route-surface scan | Review-ready: no backend source/test/runtime/OpenSpec/issue-label changes; post-merge scan shows `0` direct `get_stock_search_service()` calls in approved route files and preserves the compatibility getter boundary; no next service candidate selected | `docs/reports/quality/backend-stock-search-service-lifecycle-di-closeout-2026-05-23.md`; `.planning/codebase/generated/stock-search-service-lifecycle-di-closeout-2026-05-23.json` | Human review; if accepted, create a separate next-lane packet before more service lifecycle DI work |
+| G2.20 stock search service lifecycle DI closeout | G/#79 | Closeout records PR `#159` merge result and route-surface scan | Reviewed and merged by PR `#160` at `f8063b512fb7c3aabfabef9d80d05d1d682569b5`: no backend source/test/runtime/OpenSpec/issue-label changes; post-merge scan shows `0` direct `get_stock_search_service()` calls in approved route files and preserves the compatibility getter boundary; no next service candidate selected | `docs/reports/quality/backend-stock-search-service-lifecycle-di-closeout-2026-05-23.md`; `.planning/codebase/generated/stock-search-service-lifecycle-di-closeout-2026-05-23.json`; https://github.com/chengjon/mystocks/pull/160 | Superseded by G2.21 next-lane decision packet |
+| G2.21 service lifecycle DI next-lane after stock-search | G/#79 | Select current-head candidate refresh as the next service lifecycle DI governance lane | Review-ready: current-head quick scan at `f8063b512fb7` shows remaining getter/singleton/provider signal files require classification; no source, test, route, OpenAPI, OpenSpec, issue-label, runtime, PM2, compatibility getter cleanup, or next implementation candidate is authorized | `docs/reports/quality/backend-service-lifecycle-di-next-lane-after-stock-search-2026-05-23.md`; `.planning/codebase/generated/service-lifecycle-di-next-lane-after-stock-search-2026-05-23.json` | Human review; if accepted, create G2.22 current-head candidate refresh packet |
 
 ## OpenSpec Branch Register
 
