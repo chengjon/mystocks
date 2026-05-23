@@ -1,0 +1,86 @@
+{
+  "artifact": "service-lifecycle-di-next-lane-after-stock-search",
+  "date": "2026-05-23",
+  "status": "decision-packet-prepared-for-review",
+  "workline": "G2.21 service lifecycle DI next-lane decision after stock-search closeout",
+  "base_head": "f8063b512fb7",
+  "parent_issue": {
+    "number": 79,
+    "state": "OPEN",
+    "labels": [
+      "needs-triage"
+    ],
+    "url": "https://github.com/chengjon/mystocks/issues/79"
+  },
+  "parent_decision_issue": {
+    "number": 92,
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-human",
+      "ready-for-downstream"
+    ],
+    "url": "https://github.com/chengjon/mystocks/issues/92"
+  },
+  "input_prs": {
+    "implementation_pr_159": {
+      "state": "MERGED",
+      "merge_commit": "25db762ae6484ad4638baf0f8ab42b94a978a403"
+    },
+    "closeout_pr_160": {
+      "state": "MERGED",
+      "merge_commit": "f8063b512fb7c3aabfabef9d80d05d1d682569b5"
+    }
+  },
+  "current_head_quick_scan": {
+    "service_python_files_scanned": 152,
+    "getter_singleton_provider_hit_files": 20,
+    "completed_or_reference_provider_pattern_files": [
+      "web/backend/app/services/email_service.py",
+      "web/backend/app/services/announcement_service.py",
+      "web/backend/app/services/watchlist_service.py",
+      "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "web/backend/app/services/tradingview_widget_service.py"
+    ],
+    "remaining_files_requiring_classification": [
+      "web/backend/app/services/market_data_service_v2.py",
+      "web/backend/app/services/email_notification_service.py",
+      "web/backend/app/services/unified_data_service.py",
+      "web/backend/app/services/websocket_service.py",
+      "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "web/backend/app/services/technical_analysis_service.py",
+      "web/backend/app/services/realtime_streaming_service.py",
+      "web/backend/app/services/tdx_service.py",
+      "web/backend/app/services/data_service_enhanced.py",
+      "web/backend/app/services/__init__.py",
+      "web/backend/app/services/advanced_analysis_service.py",
+      "web/backend/app/services/data_service.py",
+      "web/backend/app/services/monitoring_service.py",
+      "web/backend/app/services/wencai_service.py",
+      "web/backend/app/services/strategy_service.py"
+    ]
+  },
+  "decision": {
+    "selected_next_lane": "G2.22 current-head service lifecycle DI candidate refresh",
+    "direct_implementation_candidate_selected": false,
+    "compatibility_getter_cleanup_selected": false,
+    "reason": "G2.17 candidate pool was consumed by stock_search_service; remaining getter/singleton/provider signals require current-head classification before source authorization."
+  },
+  "g2_22_required_scope": [
+    "regenerate current service getter/singleton/provider inventory",
+    "classify all remaining hits",
+    "scan route/API, test, and non-route consumers",
+    "run GitNexus impact/context for recommended candidates",
+    "recommend exactly one next action without editing source"
+  ],
+  "authorization_boundary": {
+    "no_backend_source_or_test_edits": true,
+    "no_compatibility_getter_deletion": true,
+    "no_route_or_openapi_changes": true,
+    "no_issue_label_changes": true,
+    "no_openspec_changes": true,
+    "no_runtime_or_pm2_changes": true,
+    "no_next_implementation_candidate_selected": true
+  },
+  "next_gate": "Human review of G2.21; if accepted, create a separate G2.22 current-head candidate refresh packet."
+}
