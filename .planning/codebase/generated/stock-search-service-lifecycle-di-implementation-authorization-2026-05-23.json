@@ -1,0 +1,124 @@
+{
+  "recorded_at": "2026-05-23T09:20:07+08:00",
+  "workline": "G2.18 stock-search route-surface service lifecycle DI",
+  "status": "implementation-authorization-prepared-for-review",
+  "current_head": "0285d1cbc29b",
+  "stale_if_head_mismatch": true,
+  "parent_issue": {
+    "number": 79,
+    "url": "https://github.com/chengjon/mystocks/issues/79",
+    "state": "OPEN",
+    "labels": [
+      "needs-triage"
+    ]
+  },
+  "decision_issue": {
+    "number": 92,
+    "url": "https://github.com/chengjon/mystocks/issues/92",
+    "state": "OPEN",
+    "labels": [
+      "enhancement",
+      "ready-for-human",
+      "ready-for-downstream"
+    ]
+  },
+  "input_evidence": {
+    "g2_17_pr": 157,
+    "g2_17_merge_commit": "0285d1cbc29b4622b3e39c9a171ba3b02691ed1b",
+    "candidate_refresh_report": "docs/reports/quality/backend-service-lifecycle-di-candidate-refresh-2026-05-23.md",
+    "candidate_refresh_artifact": ".planning/codebase/generated/service-lifecycle-di-candidate-refresh-2026-05-23.json"
+  },
+  "candidate": {
+    "service_file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+    "service_class": "StockSearchService",
+    "compatibility_getter": "get_stock_search_service",
+    "service_file_loc": 175,
+    "source_edits_authorized_by_this_packet": false
+  },
+  "gitnexus_pre_edit_snapshot": [
+    {
+      "symbol": "StockSearchService",
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "risk": "LOW",
+      "direct_callers": 0,
+      "processes_affected": 0,
+      "disposition": "class-level provider seam is suitable for a focused future implementation"
+    },
+    {
+      "symbol": "get_stock_search_service",
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "risk": "CRITICAL",
+      "direct_callers": 6,
+      "processes_affected": 11,
+      "disposition": "compatibility getter must remain; approved route call sites must migrate deliberately"
+    }
+  ],
+  "direct_route_consumer_matrix": [
+    {
+      "file": "web/backend/app/api/stock_search/stock_search_result.py",
+      "function": "search_stocks",
+      "getter_line": 165,
+      "future_target": "FastAPI Depends(get_stock_search_service_dependency)"
+    },
+    {
+      "file": "web/backend/app/api/stock_search/stock_search_result.py",
+      "function": "get_stock_quote",
+      "getter_line": 260,
+      "future_target": "FastAPI Depends(get_stock_search_service_dependency)"
+    },
+    {
+      "file": "web/backend/app/api/stock_search/stock_search_result.py",
+      "function": "get_stock_news",
+      "getter_line": 356,
+      "future_target": "FastAPI Depends(get_stock_search_service_dependency)"
+    },
+    {
+      "file": "web/backend/app/api/stock_search/stock_search_result.py",
+      "function": "get_market_news",
+      "getter_line": 398,
+      "future_target": "FastAPI Depends(get_stock_search_service_dependency)"
+    },
+    {
+      "file": "web/backend/app/api/stock_search/stock_search_result.py",
+      "function": "clear_search_cache",
+      "getter_line": 488,
+      "future_target": "FastAPI Depends(get_stock_search_service_dependency)"
+    },
+    {
+      "file": "web/backend/app/api/market/market_data_request.py",
+      "function": "get_kline_data",
+      "getter_line": 603,
+      "future_target": "FastAPI Depends(get_stock_search_service_dependency)"
+    }
+  ],
+  "future_allowed_write_scope": [
+    "web/backend/app/services/stock_search_service/stock_search_service.py",
+    "web/backend/app/services/stock_search_service/__init__.py",
+    "web/backend/app/api/stock_search/stock_search_result.py",
+    "web/backend/app/api/market/market_data_request.py",
+    "web/backend/tests/test_stock_search_service_lifecycle_di.py",
+    "web/backend/tests/test_stock_search_service_logging.py",
+    "tests/api/test_stock_search_file.py",
+    "docs/reports/quality/backend-stock-search-service-lifecycle-di-implementation-2026-05-23.md",
+    "governance/mainline/task-cards/pr-<future>.yaml"
+  ],
+  "future_required_gates": [
+    "GitNexus impact for StockSearchService before editing",
+    "GitNexus impact for get_stock_search_service before editing",
+    "TDD red/green provider and route dependency tests",
+    "focused pytest for stock-search lifecycle DI and existing stock-search tests",
+    "ruff check on touched backend files",
+    "git diff --check",
+    "staged gitnexus_detect_changes",
+    "Mainline Governance Gate"
+  ],
+  "explicit_non_goals": [
+    "no source edits in this authorization PR",
+    "no services outside stock_search_service",
+    "no route paths or OpenAPI exposure changes",
+    "no removal of get_stock_search_service",
+    "no PM2 or stateful gates",
+    "no issue label movement"
+  ],
+  "next_gate": "Human review of this G2.18 authorization packet. If approved, create a separate implementation lane for stock_search_service route-surface DI."
+}
