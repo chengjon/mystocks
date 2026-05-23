@@ -452,8 +452,12 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `.planning/codebase/generated/watchlist-helper-cleanup-next-lane-decision-2026-05-23.json`,
 │   │   `backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md`,
 │   │   `.planning/codebase/generated/watchlist-helper-cleanup-implementation-authorization-2026-05-23.json`,
-│   │   `backend-watchlist-helper-cleanup-implementation-2026-05-23.md`
-│   ├── State: watchlist-helper-cleanup-implementation-prepared-for-review
+│   │   `backend-watchlist-helper-cleanup-implementation-2026-05-23.md`,
+│   │   `backend-service-lifecycle-di-candidate-refresh-2026-05-23.md`,
+│   │   `.planning/codebase/generated/service-lifecycle-di-candidate-refresh-2026-05-23.json`,
+│   │   `backend-stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.md`,
+│   │   `.planning/codebase/generated/stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.json`
+│   ├── State: stock-search-service-di-implementation-authorization-prepared
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -540,11 +544,17 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 refreshes the current-head service getter inventory and
 │   │                 recommends only a future G2.18 `stock_search_service`
 │   │                 authorization packet, with source edits still locked; PR
-│   │                 `#157` is open with Mainline Governance Gate and
-│   │                 check-compliance passed
-│   └── Next gate: Human review of PR `#157`; if accepted,
-│                  create a separate G2.18 authorization packet for
-│                  `stock_search_service` before any source edits
+│   │                 `#157` merged at
+│   │                 `0285d1cbc29b4622b3e39c9a171ba3b02691ed1b`; G2.18 now
+│   │                 records the future `stock_search_service` route-surface DI
+│   │                 write scope, six route-local getter callers, GitNexus
+│   │                 pre-edit gates, TDD requirements, rollback plan, and
+│   │                 forbidden scope; source edits remain locked pending human
+│   │                 review of this authorization packet
+│   └── Next gate: Human review of the G2.18 authorization packet; if accepted,
+│                  create a separate implementation lane for
+│                  `stock_search_service` route-surface DI before any source
+│                  edits
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

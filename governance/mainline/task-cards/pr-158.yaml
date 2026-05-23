@@ -1,0 +1,100 @@
+version: "v0.2"
+
+task:
+  id: "pr-158"
+  title: "Authorize stock search service DI lane"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-stock-search-service-di-authorization"
+  objective: "prepare the G2.18 stock_search_service route-surface lifecycle DI implementation authorization packet"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-stock-search-service-di-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-stock-search-service-di-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization packet only; no runtime entrypoint, route, page, shim, service behavior, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.json"
+    - "docs/reports/quality/backend-stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-158.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, test, generated client, docs/API, route, OpenAPI, probe, script, config, PM2, or runtime behavior changes in this PR"
+  - "No stock_search_service source edit in this PR"
+  - "No route injection implementation in this PR"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.json >/tmp/stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.json"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-stock-search-service-lifecycle-di-implementation-authorization-2026-05-23.md"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-158.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If the authorization packet is misread as implementation approval, stock_search_service can be edited without the required TDD and GitNexus gates"
+    - "If GitNexus CRITICAL risk on get_stock_search_service is ignored, a later route-surface implementation can affect multiple stock-search and market-data endpoints"
+  rollback_plan: "revert this PR to remove the authorization report, JSON artifact, PR task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize the next stock_search_service route-surface DI implementation lane for review"
+    modified_scope: "steward tree, authorization report, generated evidence artifact, and this PR task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this is governance authorization only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T09:20:07+08:00"
+    approval_note: "human maintainer approved merging PR #157 and starting G2.18 authorization packet creation; this PR is governance-only and does not authorize source implementation"
+    secondary_approved: false
