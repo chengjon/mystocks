@@ -758,10 +758,16 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 files, pre-edit GitNexus gates, route dependency count
 │   │                 guards, configured app/OpenAPI smoke requirement, and
 │   │                 compatibility preservation for
-│   │                 `get_advanced_analysis_service()`
-│   └── Next gate: Human review of the G2.44 authorization PR; if accepted,
-│                  create a separate G2.45 `AdvancedAnalysisService`
-│                  route-provider implementation branch before source edits
+│   │                 `get_advanced_analysis_service()`; PR `#184` merged at
+│   │                 `22b617733e29c9a441e88cb1da2ce0a5d8be98cc`; G2.45 now
+│   │                 implements the provider seam, preserves the compatibility
+│   │                 getter and module singleton, converts `14`
+│   │                 `advanced_analysis_api.py` service dependencies to
+│   │                 `get_advanced_analysis_service_dependency`, and keeps
+│   │                 OpenAPI paths=`500` with duplicate operation IDs=`0`
+│   └── Next gate: Human review of the G2.45 implementation PR; if accepted,
+│                  run a separate G2.46 closeout/current-head candidate refresh
+│                  before selecting another service lifecycle DI lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -845,6 +851,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-service-lifecycle-di-candidate-refresh-after-tdx-route-provider-2026-05-24.md` | G | G2.42 candidate refresh prepared at current HEAD `41b0d4db7f2c644cea9abf1ddd4112e695325dcc`: scans `152` service files and `21` narrow candidate/signal files, records completed route-provider seams=`7`, confirms TDX route dependency surface closed with legacy sites=`0` and provider sites=`5`, keeps `get_tdx_service()` as public fallback, records OpenAPI paths=`500` and duplicate operation IDs=`0`, and does not select a new implementation target | Human review / PR merge decision; if accepted, create G2.43 service candidate usefulness and ownership triage packet before any source edits |
 | `backend-service-candidate-usefulness-ownership-triage-2026-05-24.md` | G | G2.43 triage prepared at current HEAD `f7c6fdf5fd57cff14ef6d11f1d18fd6591a22dc5`: records PR `#182` as `MERGED`, confirms `AdvancedAnalysisService` is an active route class dependency with `14` class `Depends()` sites and no external getter reference, classifies `WencaiService` as active DB/session-backed direct construction, keeps `get_market_data_service` as active route dependency with `7` route dependency sites, classifies `UnifiedDataService` as a broad data seam, and authorizes no implementation | Human review / PR merge decision; if accepted, create G2.44 `AdvancedAnalysisService` route-provider migration authorization before any source edits |
 | `backend-advanced-analysis-route-provider-migration-authorization-2026-05-24.md` | G | G2.44 authorization prepared at current HEAD `1e137abb2a32b795c403a8a168a174ad86b7f693`: records PR `#183` as `MERGED`, confirms `advanced_analysis_api.py` has `14` class `Depends()` sites, preserves `get_advanced_analysis_service()` and module singleton compatibility, records GitNexus `AdvancedAnalysisService` upstream impact as LOW / `0`, and limits any future implementation to a separate G2.45 branch after human review | Human review / PR merge decision; if accepted, create G2.45 `AdvancedAnalysisService` route-provider implementation branch before source edits |
+| `backend-advanced-analysis-route-provider-migration-implementation-2026-05-24.md` | G | G2.45 implementation prepared from G2.44 authorization at base `22b617733e29c9a441e88cb1da2ce0a5d8be98cc`: adds `ADVANCED_ANALYSIS_SERVICE_STATE_KEY`, `install_advanced_analysis_service`, and `get_advanced_analysis_service_dependency`, preserves `get_advanced_analysis_service()` and module singleton compatibility, converts all `14` `advanced_analysis_api.py` service dependencies to the provider, focused TDD ended at `4 passed`, ruff/black passed, configured OpenAPI smoke reports routes=`548`, paths=`500`, duplicate operation IDs=`0`, and advanced paths=`14` | Human review / PR merge decision; if accepted, run G2.46 closeout/current-head candidate refresh before selecting the next service lifecycle DI lane |
 
 ## Completed And Reviewed Ledger
 

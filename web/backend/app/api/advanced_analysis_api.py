@@ -25,7 +25,7 @@ from pydantic import BaseModel, Field
 
 from app.core.responses import UnifiedResponse, ok, server_error
 from app.core.security import User, get_current_user
-from app.services.advanced_analysis_service import AdvancedAnalysisService
+from app.services.advanced_analysis_service import AdvancedAnalysisService, get_advanced_analysis_service_dependency
 
 # 创建路由器
 router = APIRouter(
@@ -101,7 +101,7 @@ class AdvancedBatchRequest(BaseModel):
 async def analyze_fundamental(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     基本面分析API
@@ -137,7 +137,7 @@ async def analyze_fundamental(
 async def analyze_technical(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     技术面分析API
@@ -175,7 +175,7 @@ async def analyze_technical(
 async def analyze_trading_signals(
     request: TradingSignalsRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     交易信号分析API
@@ -217,7 +217,7 @@ async def analyze_trading_signals(
 async def analyze_time_series(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     时序分析API
@@ -255,7 +255,7 @@ async def analyze_time_series(
 async def analyze_market_panorama(
     request: MarketPanoramaRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     市场全景分析API
@@ -289,7 +289,7 @@ async def analyze_market_panorama(
 async def analyze_capital_flow(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     资金流向分析API
@@ -327,7 +327,7 @@ async def analyze_capital_flow(
 async def analyze_chip_distribution(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     筹码分布分析API
@@ -365,7 +365,7 @@ async def analyze_chip_distribution(
 async def analyze_anomaly_tracking(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     异常追踪分析API
@@ -403,7 +403,7 @@ async def analyze_anomaly_tracking(
 async def analyze_financial_valuation(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     财务估值分析API
@@ -441,7 +441,7 @@ async def analyze_financial_valuation(
 async def analyze_sentiment(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     情绪分析API
@@ -479,7 +479,7 @@ async def analyze_sentiment(
 async def analyze_decision_models(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     决策模型分析API
@@ -517,7 +517,7 @@ async def analyze_decision_models(
 async def analyze_multidimensional_radar(
     request: AnalysisRequest = Depends(),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     多维度雷达分析API
@@ -575,7 +575,7 @@ async def analyze_batch(
         },
     ),
     current_user: User = Depends(get_current_user),
-    service: AdvancedAnalysisService = Depends(),
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
 ) -> Dict[str, Any]:
     """
     批量高级分析API
@@ -613,7 +613,9 @@ async def analyze_batch(
 
 # 健康检查接口
 @router.get("/health", response_model=UnifiedResponse)
-async def health_check(service: AdvancedAnalysisService = Depends()) -> Dict[str, Any]:
+async def health_check(
+    service: AdvancedAnalysisService = Depends(get_advanced_analysis_service_dependency),
+) -> Dict[str, Any]:
     """
     高级分析模块健康检查
 

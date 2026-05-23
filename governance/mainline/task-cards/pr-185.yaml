@@ -1,0 +1,118 @@
+version: "v0.2"
+
+task:
+  id: "pr-185"
+  title: "Implement AdvancedAnalysis route provider migration"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-advanced-analysis-route-provider-migration-implementation"
+  objective: "implement the G2.45 AdvancedAnalysisService route provider migration authorized by PR #184"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-advanced-analysis-route-provider-migration-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-advanced-analysis-route-provider-migration-implementation"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Route-provider migration preserves existing route paths, OpenAPI exposure, and product surface while moving the AdvancedAnalysis service dependency to an app-state provider"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/advanced-analysis-route-provider-migration-implementation-2026-05-24.json"
+    - "docs/reports/quality/backend-advanced-analysis-route-provider-migration-implementation-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-185.yaml"
+    - "web/backend/app/services/advanced_analysis_service.py"
+    - "web/backend/app/api/advanced_analysis_api.py"
+    - "web/backend/tests/test_advanced_analysis_service_lifecycle_di.py"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No route path, response model, OpenAPI exposure, docs/API, generated client, frontend, PM2, database, task, adapter, or external service behavior change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No get_advanced_analysis_service cleanup or module singleton retirement"
+  - "No modification of WencaiService, MarketDataService, UnifiedDataService, DataService, StrategyService, or TechnicalAnalysisService"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q -n 0 --tb=short --no-cov"
+      required: true
+    - id: "route-dependency-guard"
+      command: "node -e \"const fs=require('fs'); const api=fs.readFileSync('web/backend/app/api/advanced_analysis_api.py','utf8'); const service=fs.readFileSync('web/backend/app/services/advanced_analysis_service.py','utf8'); const result={class_depends:(api.match(/AdvancedAnalysisService\\\\s*=\\\\s*Depends\\\\(\\\\)/g)||[]).length,provider_depends:(api.match(/Depends\\\\(get_advanced_analysis_service_dependency\\\\)/g)||[]).length,direct_getter_calls:(api.match(/get_advanced_analysis_service\\\\(/g)||[]).length,state_key:service.includes('ADVANCED_ANALYSIS_SERVICE_STATE_KEY'),install:service.includes('def install_advanced_analysis_service'),provider:service.includes('async def get_advanced_analysis_service_dependency'),compat_getter:service.includes('async def get_advanced_analysis_service')}; console.log(JSON.stringify(result)); if(result.class_depends!==0||result.provider_depends!==14||result.direct_getter_calls!==0||!result.state_key||!result.install||!result.provider||!result.compat_getter) process.exit(1);\""
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/services/advanced_analysis_service.py web/backend/app/api/advanced_analysis_api.py web/backend/tests/test_advanced_analysis_service_lifecycle_di.py"
+      required: true
+    - id: "black-check"
+      command: "black --check web/backend/app/services/advanced_analysis_service.py web/backend/app/api/advanced_analysis_api.py web/backend/tests/test_advanced_analysis_service_lifecycle_di.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-advanced-analysis-route-provider-migration-implementation-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/advanced-analysis-route-provider-migration-implementation-2026-05-24.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-185.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "python -c \"print('staged-gitnexus-scope: verify with MCP detect_changes(scope=staged); expected no high/critical risk')\""
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If route paths or response models change, the PR exceeds the route-provider migration boundary"
+    - "If get_advanced_analysis_service is retired, compatibility fallback is broken"
+    - "If provider dependency count is not exactly 14, one route may remain on class-based Depends() or an unrelated dependency may be changed"
+  rollback_plan: "revert this implementation PR; prior G2.44 authorization remains historical evidence unless superseded"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "migrate AdvancedAnalysis route service dependency to an app-state provider"
+    modified_scope: "AdvancedAnalysis service module, advanced analysis route module, focused test, implementation report, generated artifact, steward tree, and this task card"
+    dependency_changes: "adds get_advanced_analysis_service_dependency while preserving get_advanced_analysis_service"
+    legacy_logic_impact: "compatibility getter and module singleton preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this route-provider migration PR if verification fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T02:22:28+08:00"
+    approval_note: "human maintainer approved continuing after PR #184; implementation follows the G2.44 AdvancedAnalysis route-provider authorization boundary"
+    secondary_approved: false
