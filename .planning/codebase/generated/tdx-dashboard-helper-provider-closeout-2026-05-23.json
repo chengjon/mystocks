@@ -1,0 +1,59 @@
+{
+  "artifact": "tdx-dashboard-helper-provider-closeout-2026-05-23",
+  "workline": "G2.36 TDX dashboard helper provider closeout",
+  "status": "closeout-prepared-for-review",
+  "recorded_at": "2026-05-23T21:37:00+08:00",
+  "parent_issue": 79,
+  "implementation_pr": {
+    "number": 175,
+    "url": "https://github.com/chengjon/mystocks/pull/175",
+    "state": "MERGED",
+    "merged_at": "2026-05-23T13:26:49Z",
+    "merge_commit": "efbc02db5100a4927476a4c8eb2c4cd4533a352f"
+  },
+  "closeout_head": "efbc02db5100a4927476a4c8eb2c4cd4533a352f",
+  "scope": {
+    "source_edits": false,
+    "test_edits": false,
+    "route_contract_edits": false,
+    "openapi_exposure_edits": false,
+    "frontend_edits": false,
+    "pm2_runtime_edits": false,
+    "openspec_edits": false,
+    "issue_label_edits": false
+  },
+  "verification": {
+    "focused_authorized_pytest": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_dashboard_data_source.py web/backend/tests/test_logging_noise_regressions.py web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "133 passed in 65.37s"
+    },
+    "ruff_touched_files": {
+      "command": "env PYTHONPATH=web/backend ruff check web/backend/app/services/tdx_service.py web/backend/app/api/dashboard_data_source.py web/backend/app/main.py web/backend/tests/test_dashboard_data_source.py web/backend/tests/test_logging_noise_regressions.py web/backend/tests/test_health_route_conflicts.py",
+      "result": "All checks passed!"
+    },
+    "black_check_touched_files": {
+      "command": "black --check web/backend/app/services/tdx_service.py web/backend/app/api/dashboard_data_source.py web/backend/app/main.py web/backend/tests/test_dashboard_data_source.py",
+      "result": "All checks passed!"
+    },
+    "app_main_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "warnings": 0,
+      "known_warning": "GPU backtest dependency warning: Numba needs NumPy 2.2 or less. Got NumPy 2.4."
+    }
+  },
+  "counts": {
+    "dashboard_data_source_direct_get_tdx_service_calls": 0,
+    "dashboard_data_source_private_get_tdx_service_calls": 3,
+    "tdx_service_get_tdx_service_definitions": 1,
+    "tdx_service_install_tdx_service_definitions": 1,
+    "api_tdx_depends_get_tdx_service_sites": 5
+  },
+  "decision": {
+    "get_tdx_service_public_fallback_preserved": true,
+    "api_tdx_route_file_unchanged_by_g2_35": true,
+    "next_candidate_selected": false,
+    "next_gate": "human review of closeout; if accepted, run fresh current-head service lifecycle DI candidate refresh before selecting another source lane"
+  }
+}
