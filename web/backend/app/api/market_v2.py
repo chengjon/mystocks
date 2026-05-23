@@ -14,10 +14,10 @@
 from datetime import date, datetime
 from typing import Optional
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 
 from app.openapi_config import COMMON_RESPONSES
-from app.services.market_data_service_v2 import get_market_data_service_v2
+from app.services.market_data_service_v2 import MarketDataServiceV2, get_market_data_service_v2_dependency
 
 MARKET_V2_ROUTE_RESPONSES = {
     500: COMMON_RESPONSES[500],
@@ -63,7 +63,13 @@ SECTOR_FLOW_REFRESH_RESPONSES = {
     **MARKET_V2_REFRESH_BASE_RESPONSES,
     **_success_response_spec(
         "行业/概念资金流向刷新结果",
-        {"success": True, "message": "板块资金流向刷新完成", "sector_type": "行业", "timeframe": "今日", "updated_count": 128},
+        {
+            "success": True,
+            "message": "板块资金流向刷新完成",
+            "sector_type": "行业",
+            "timeframe": "今日",
+            "updated_count": 128,
+        },
     ),
 }
 
@@ -260,6 +266,7 @@ async def get_fund_flow(
     timeframe: str = Query(default="1", description="时间维度: 1/3/5/10天"),
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     查询个股资金流向历史数据
@@ -270,7 +277,6 @@ async def get_fund_flow(
         start_date/end_date: 时间范围筛选
     """
     try:
-        service = get_market_data_service_v2()
         results = service.query_fund_flow(symbol, timeframe, start_date, end_date)
         return {"success": True, "data": results, "count": len(results)}
     except Exception as e:
@@ -281,6 +287,7 @@ async def get_fund_flow(
 async def refresh_fund_flow(
     symbol: Optional[str] = Query(None, description="股票代码，不传则刷新全市场"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     从东方财富刷新资金流向数据
@@ -288,7 +295,6 @@ async def refresh_fund_flow(
     不传symbol则刷新全市场数据（约4000+只股票）
     """
     try:
-        service = get_market_data_service_v2()
         result = service.fetch_and_save_fund_flow(symbol, timeframe)
         return result
     except Exception as e:
@@ -303,6 +309,7 @@ async def get_etf_list(
     symbol: Optional[str] = Query(None, description="ETF代码"),
     keyword: Optional[str] = Query(None, description="关键词搜索"),
     limit: int = Query(default=50, ge=1, le=500, description="返回数量"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     查询ETF实时行情数据
@@ -310,7 +317,6 @@ async def get_etf_list(
     支持按代码精确查询或按关键词模糊搜索
     """
     try:
-        service = get_market_data_service_v2()
         results = service.query_etf_spot(symbol, keyword, limit)
         return {"success": True, "data": results, "count": len(results)}
     except Exception as e:
@@ -323,12 +329,11 @@ async def get_etf_list(
     description="从东方财富拉取并落库全市场 ETF 行情数据，适用于定时同步任务或手工补数场景。",
     responses=ETF_REFRESH_RESPONSES,
 )
-async def refresh_etf_spot():
+async def refresh_etf_spot(service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency)):
     """
     从东方财富刷新全市场ETF数据
     """
     try:
-        service = get_market_data_service_v2()
         result = service.fetch_and_save_etf_spot()
         return result
     except Exception as e:
@@ -345,6 +350,7 @@ async def get_lhb_detail(
     end_date: Optional[date] = Query(None, description="结束日期"),
     min_net_amount: Optional[float] = Query(None, description="最小净买入额(元)"),
     limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     查询龙虎榜详细数据
@@ -352,7 +358,6 @@ async def get_lhb_detail(
     支持按股票代码、日期范围、净买入额筛选
     """
     try:
-        service = get_market_data_service_v2()
         results = service.query_lhb_detail(symbol, start_date, end_date, min_net_amount, limit)
         return {"success": True, "data": results, "count": len(results)}
     except Exception as e:
@@ -365,12 +370,14 @@ async def get_lhb_detail(
     description="按指定交易日从东方财富同步龙虎榜明细数据，适用于 A 股盘后榜单补齐和复盘分析。",
     responses=LHB_REFRESH_RESPONSES,
 )
-async def refresh_lhb_detail(trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)")):
+async def refresh_lhb_detail(
+    trade_date: str = Query(..., description="交易日期 (YYYY-MM-DD)"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
+):
     """
     从东方财富刷新指定日期的龙虎榜数据
     """
     try:
-        service = get_market_data_service_v2()
         result = service.fetch_and_save_lhb_detail(trade_date)
         return result
     except Exception as e:
@@ -385,6 +392,7 @@ async def get_sector_fund_flow(
     sector_type: str = Query(default="行业", description="板块类型: 行业/概念/地域"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
     limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     查询行业/概念板块资金流向
@@ -394,7 +402,6 @@ async def get_sector_fund_flow(
         timeframe: 今日、3日、5日或10日
     """
     try:
-        service = get_market_data_service_v2()
         results = service.query_sector_fund_flow(sector_type, timeframe, limit)
         return {"success": True, "data": results, "count": len(results)}
     except Exception as e:
@@ -410,12 +417,12 @@ async def get_sector_fund_flow(
 async def refresh_sector_fund_flow(
     sector_type: str = Query(default="行业", description="板块类型: 行业/概念/地域"),
     timeframe: str = Query(default="今日", description="时间维度: 今日/3日/5日/10日"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     从东方财富刷新行业/概念资金流向数据
     """
     try:
-        service = get_market_data_service_v2()
         result = service.fetch_and_save_sector_fund_flow(sector_type, timeframe)
         return result
     except Exception as e:
@@ -429,6 +436,7 @@ async def refresh_sector_fund_flow(
 async def get_stock_dividend(
     symbol: str = Query(..., description="股票代码"),
     limit: int = Query(default=50, ge=1, le=200, description="返回数量"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     查询股票分红配送历史记录
@@ -437,7 +445,6 @@ async def get_stock_dividend(
         symbol: 股票代码 (如: 600519)
     """
     try:
-        service = get_market_data_service_v2()
         results = service.query_stock_dividend(symbol, limit)
         return {"success": True, "data": results, "count": len(results)}
     except Exception as e:
@@ -450,12 +457,14 @@ async def get_stock_dividend(
     description="按股票代码从东方财富同步分红配送历史记录，适用于个股权益事件校准和补录。",
     responses=DIVIDEND_REFRESH_RESPONSES,
 )
-async def refresh_stock_dividend(symbol: str = Query(..., description="股票代码")):
+async def refresh_stock_dividend(
+    symbol: str = Query(..., description="股票代码"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
+):
     """
     从东方财富刷新股票分红配送数据
     """
     try:
-        service = get_market_data_service_v2()
         result = service.fetch_and_save_stock_dividend(symbol)
         return result
     except Exception as e:
@@ -471,6 +480,7 @@ async def get_stock_blocktrade(
     start_date: Optional[date] = Query(None, description="开始日期"),
     end_date: Optional[date] = Query(None, description="结束日期"),
     limit: int = Query(default=100, ge=1, le=500, description="返回数量"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     查询股票大宗交易记录
@@ -480,7 +490,6 @@ async def get_stock_blocktrade(
         start_date/end_date: 日期范围 (可选)
     """
     try:
-        service = get_market_data_service_v2()
         results = service.query_blocktrade(symbol, start_date, end_date, limit)
         return {"success": True, "data": results, "count": len(results)}
     except Exception as e:
@@ -494,13 +503,13 @@ async def get_stock_blocktrade(
     responses=BLOCKTRADE_REFRESH_RESPONSES,
 )
 async def refresh_stock_blocktrade(
-    trade_date: Optional[str] = Query(None, description="交易日期 (YYYY-MM-DD)，不传则获取最新")
+    trade_date: Optional[str] = Query(None, description="交易日期 (YYYY-MM-DD)，不传则获取最新"),
+    service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency),
 ):
     """
     从东方财富刷新大宗交易数据
     """
     try:
-        service = get_market_data_service_v2()
         result = service.fetch_and_save_blocktrade(trade_date)
         return result
     except Exception as e:
@@ -511,7 +520,7 @@ async def refresh_stock_blocktrade(
 
 
 @router.post("/refresh-all", summary="批量刷新所有市场数据", responses=REFRESH_ALL_RESPONSES)
-async def refresh_all_market_data():
+async def refresh_all_market_data(service: MarketDataServiceV2 = Depends(get_market_data_service_v2_dependency)):
     """
     一键刷新所有市场数据（用于定时任务）
 
@@ -524,7 +533,6 @@ async def refresh_all_market_data():
     - 当日大宗交易
     """
     try:
-        service = get_market_data_service_v2()
         results = {}
 
         # 1. 刷新资金流向
