@@ -532,14 +532,19 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 records the closeout, current-head verification, and
 │   │                 confirms no follow-up implementation is authorized; PR
 │   │                 `#155` merged at
-│   │                 `03c48f74d73f1de505470698966776f6624a0ec7`; G2.16 now
-│   │                 selects current-head candidate refresh as the next service
+│   │                 `03c48f74d73f1de505470698966776f6624a0ec7`; G2.16
+│   │                 selected current-head candidate refresh as the next service
 │   │                 lifecycle DI governance lane, not source implementation; PR
-│   │                 `#156` is open with Mainline Governance Gate and
+│   │                 `#156` merged at
+│   │                 `33e75acddf5c7c363a2e33ba4a3d01923b46edde`; G2.17 now
+│   │                 refreshes the current-head service getter inventory and
+│   │                 recommends only a future G2.18 `stock_search_service`
+│   │                 authorization packet, with source edits still locked; PR
+│   │                 `#157` is open with Mainline Governance Gate and
 │   │                 check-compliance passed
-│   └── Next gate: Human review of PR `#156`; if accepted,
-│                  create a separate G2.17 current-head candidate refresh before
-│                  any further service lifecycle DI source edits
+│   └── Next gate: Human review of PR `#157`; if accepted,
+│                  create a separate G2.18 authorization packet for
+│                  `stock_search_service` before any source edits
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -593,7 +598,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-watchlist-helper-cleanup-implementation-authorization-2026-05-23.md` | G | G2.13 implementation authorization packet merged: future write scope, tests, GitNexus gates, and rollback plan defined for adapter-aware watchlist helper cleanup | Superseded by G2.14 implementation evidence |
 | `backend-watchlist-helper-cleanup-implementation-2026-05-23.md` | G | G2.14 implementation merged by PR `#154`: both watchlist adapter/helper files now accept constructor-configured provider seams; route code unchanged | Superseded by G2.15 closeout packet |
 | `backend-watchlist-helper-cleanup-closeout-2026-05-23.md` | G | G2.15 closeout merged by PR `#155` at `03c48f74d73f1de505470698966776f6624a0ec7`: PR `#154` merge recorded, current-head verification rerun, and no follow-up implementation authorized | Superseded by G2.16 next-lane decision packet |
-| `backend-service-lifecycle-di-next-lane-decision-2026-05-23.md` | G | G2.16 decision prepared: select G2.17 current-head candidate refresh before any further service lifecycle DI source edits; PR `#156` is open with Mainline Governance Gate and check-compliance passed | Human review of PR `#156`; if accepted, create a separate G2.17 current-head service lifecycle DI candidate refresh packet |
+| `backend-service-lifecycle-di-next-lane-decision-2026-05-23.md` | G | G2.16 decision merged by PR `#156` at `33e75acddf5c7c363a2e33ba4a3d01923b46edde`: select G2.17 current-head candidate refresh before any further service lifecycle DI source edits | Superseded by G2.17 candidate refresh packet |
+| `backend-service-lifecycle-di-candidate-refresh-2026-05-23.md` | G | G2.17 current-head refresh prepared: scanned 152 service Python files, identified 15 service getter files and 11 route-surface related getter files, recorded GitNexus risk, and recommends only a future G2.18 `stock_search_service` authorization packet; PR `#157` is open with Mainline Governance Gate and check-compliance passed; no source edits are authorized | Human review of PR `#157`; if accepted, create G2.18 authorization packet before editing source |
 
 ## Completed And Reviewed Ledger
 
