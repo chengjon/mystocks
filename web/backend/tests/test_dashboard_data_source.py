@@ -1,4 +1,9 @@
-from app.api.dashboard_data_source import RealBusinessDataSource
+from pathlib import Path
+
+import pytest
+
+from app.api import dashboard as dashboard_routes
+from app.api.dashboard_data_source import RealBusinessDataSource, prewarm_dashboard_market_overview_cache
 
 
 class _FakeResponse:
@@ -8,6 +13,107 @@ class _FakeResponse:
 
     def json(self) -> dict:
         return self._payload
+
+
+class _FakeMarketDataServiceV2:
+    def __init__(self):
+        self.query_etf_spot_calls = []
+
+    def query_etf_spot(self, limit: int):
+        self.query_etf_spot_calls.append(limit)
+        return [
+            {
+                "symbol": "510300",
+                "name": "沪深300ETF",
+                "latest_price": 4.25,
+                "change_percent": 1.2,
+                "volume": 1000,
+                "amount": 4250,
+            }
+        ]
+
+
+def test_dashboard_source_uses_injected_market_data_service_v2(monkeypatch):
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+
+    fake_service = _FakeMarketDataServiceV2()
+    source = RealBusinessDataSource(market_service=fake_service)
+
+    monkeypatch.setattr(source, "_get_live_market_snapshot", lambda: None)
+    monkeypatch.setattr(source, "_get_tdx_live_market_snapshot", lambda market_service: None)
+    monkeypatch.setattr(source, "_get_realtime_market_snapshot", lambda market_service: None)
+    monkeypatch.setattr(source, "_get_major_index_quotes", lambda: [])
+
+    result = source.get_market_overview_data()
+
+    assert fake_service.query_etf_spot_calls == [100]
+    assert result["indices"][0]["symbol"] == "510300"
+
+
+def test_prewarm_dashboard_market_overview_cache_uses_injected_market_data_service_v2(monkeypatch):
+    monkeypatch.setenv("BACKEND_PORT", "8020")
+
+    fake_service = _FakeMarketDataServiceV2()
+    tdx_calls = []
+
+    monkeypatch.setattr(RealBusinessDataSource, "_get_major_index_quotes", lambda self: [])
+    monkeypatch.setattr(
+        RealBusinessDataSource,
+        "_get_tdx_live_market_snapshot",
+        lambda self, market_service: tdx_calls.append(market_service) or None,
+    )
+
+    assert prewarm_dashboard_market_overview_cache(fake_service) is True
+    assert tdx_calls == [fake_service]
+
+
+@pytest.mark.asyncio
+async def test_dashboard_summary_uses_injected_data_source(monkeypatch):
+    class FakeCacheManager:
+        def get_cache_stats(self):
+            return {"hit_rate": "test"}
+
+    class FakeDashboardSource:
+        def __init__(self):
+            self.calls = []
+
+        def get_dashboard_summary(self, user_id, trade_date):
+            self.calls.append((user_id, trade_date))
+            return {
+                "data_source": "injected-test",
+                "generated_at": "2026-05-23T00:00:00",
+            }
+
+    async def fake_cache_dashboard_data(*args, **kwargs):
+        return None
+
+    async def fake_get_cache_manager():
+        return FakeCacheManager()
+
+    fake_source = FakeDashboardSource()
+
+    monkeypatch.setattr(dashboard_routes, "get_cache_manager", fake_get_cache_manager)
+    monkeypatch.setattr(dashboard_routes, "cache_dashboard_data", fake_cache_dashboard_data)
+
+    result = await dashboard_routes.get_dashboard_summary(
+        user_id=42,
+        trade_date=None,
+        include_market=False,
+        include_watchlist=False,
+        include_portfolio=False,
+        include_alerts=False,
+        bypass_cache=True,
+        data_source=fake_source,
+    )
+
+    assert fake_source.calls == [(42, None)]
+    assert result.data_source == "injected-test"
+
+
+def test_dashboard_data_source_has_no_direct_market_data_service_v2_getter_calls():
+    source_path = Path(__file__).parents[1] / "app/api/dashboard_data_source.py"
+
+    assert "get_market_data_service_v2()" not in source_path.read_text(encoding="utf-8")
 
 
 def test_get_user_active_strategies_reads_canonical_items(monkeypatch):

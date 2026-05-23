@@ -21,7 +21,7 @@ from app.api.dashboard_builders import (
     build_watchlist_summary,
 )
 from app.api.dashboard_cache import cache_dashboard_data, try_get_cached_dashboard
-from app.api.dashboard_data_source import get_data_source
+from app.api.dashboard_data_source import get_data_source_dependency
 from app.core.cache_manager import CacheManager, get_cache_manager_async
 from app.core.responses import (
     ErrorCodes,
@@ -235,6 +235,7 @@ async def get_dashboard_summary(
     include_portfolio: bool = Query(True, description="是否包含持仓"),
     include_alerts: bool = Query(True, description="是否包含风险预警"),
     bypass_cache: bool = Query(False, description="是否跳过缓存直接获取新数据"),
+    data_source=Depends(get_data_source_dependency),
 ):
     """
     获取仪表盘汇总数据
@@ -280,8 +281,6 @@ async def get_dashboard_summary(
         if not cache_hit or raw_dashboard is None:
             logger.info("从真实数据源获取用户%s的仪表盘数据", user_id)
 
-            # 使用真实业务数据源
-            data_source = get_data_source()
             raw_dashboard = data_source.get_dashboard_summary(user_id, trade_date)
 
             # 第3阶段：将新数据写入三级缓存
@@ -341,7 +340,7 @@ async def get_dashboard_summary(
 async def get_market_overview(
     request: Request,
     limit: int = Query(10, description="榜单数量限制", ge=1, le=100),
-    data_source=Depends(get_data_source),
+    data_source=Depends(get_data_source_dependency),
 ):
     """获取市场概览数据（使用真实API）"""
     try:
@@ -389,7 +388,7 @@ async def get_market_overview(
         }
     },
 )
-async def health_check(request: Request, data_source=Depends(get_data_source)):
+async def health_check(request: Request, data_source=Depends(get_data_source_dependency)):
     """
     检查仪表盘服务及其依赖组件的健康状态
 
