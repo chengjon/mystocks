@@ -1,0 +1,112 @@
+{
+  "artifact": "market-data-service-v2-route-provider-implementation-authorization",
+  "version": 1,
+  "recorded_at": "2026-05-23T13:59:20+08:00",
+  "status": "implementation-authorization-prepared-for-review",
+  "workline": "G2.26 MarketDataServiceV2 route-provider implementation authorization",
+  "current_head": "46507955f77a3166491bd4510c56ef034b6ff1cb",
+  "base_branch": "origin/wip/root-dirty-20260403",
+  "parent_pr": {
+    "number": 165,
+    "merged_at_commit": "46507955f77a3166491bd4510c56ef034b6ff1cb"
+  },
+  "parent_issues": {
+    "service_lifecycle_di": 79,
+    "downstream_decision": 92
+  },
+  "source_implementation_authorized_by_this_document": false,
+  "governance_boundary": {
+    "packet_type": "future implementation authorization request",
+    "this_pr_allows_source_edits": false,
+    "this_pr_allows_test_edits": false,
+    "this_pr_allows_openspec_edits": false,
+    "this_pr_allows_runtime_config_edits": false,
+    "this_pr_allows_issue_label_changes": false
+  },
+  "evidence_inputs": [
+    {
+      "type": "report",
+      "path": "docs/reports/quality/backend-broad-service-seam-design-2026-05-23.md",
+      "role": "decomposes broad service seam work before selecting implementation lanes"
+    },
+    {
+      "type": "report",
+      "path": "docs/reports/quality/backend-market-data-provider-design-2026-05-23.md",
+      "role": "selects MarketDataServiceV2 route-provider authorization as the next market-data lane"
+    },
+    {
+      "type": "json",
+      "path": ".planning/codebase/generated/market-data-provider-design-2026-05-23.json",
+      "role": "machine-readable G2.25 consumer and lane-ordering evidence"
+    },
+    {
+      "type": "code-pattern",
+      "path": "web/backend/app/services/email_service.py",
+      "role": "reference app-state installer plus dependency provider shape"
+    }
+  ],
+  "candidate_decision": {
+    "decision": "authorize a future MarketDataServiceV2 route-provider implementation lane after human approval",
+    "service_file": "web/backend/app/services/market_data_service_v2.py",
+    "route_file": "web/backend/app/api/market_v2.py",
+    "compatibility_getter_to_retain": "get_market_data_service_v2",
+    "service_consolidation_authorized": false
+  },
+  "gitnexus_snapshot": {
+    "target": "get_market_data_service_v2",
+    "file": "web/backend/app/services/market_data_service_v2.py",
+    "risk": "CRITICAL",
+    "impacted_count": 18,
+    "direct_callers": 15,
+    "processes_affected": 6,
+    "modules_affected": 2
+  },
+  "current_text_scan": {
+    "market_data_service_v2_loc": 668,
+    "singleton_variable_present": true,
+    "compatibility_getter_present": true,
+    "market_v2_route_local_getter_calls": 13,
+    "dashboard_data_source_getter_calls": 2
+  },
+  "future_allowed_write_scope": [
+    {
+      "path": "web/backend/app/services/market_data_service_v2.py",
+      "allowed_change": "add state key, installer, and FastAPI dependency provider while preserving compatibility getter fallback"
+    },
+    {
+      "path": "web/backend/app/api/market_v2.py",
+      "allowed_change": "convert only the 13 route-local get_market_data_service_v2 calls to injected MarketDataServiceV2 parameters"
+    },
+    {
+      "path": "web/backend/tests/test_market_data_service_v2_lifecycle_di.py",
+      "allowed_change": "focused lifecycle DI and route dependency override tests"
+    },
+    {
+      "path": "docs/reports/quality/backend-market-data-service-v2-route-provider-implementation-2026-05-23.md",
+      "allowed_change": "future implementation evidence report"
+    },
+    {
+      "path": "governance/mainline/task-cards/pr-next.yaml",
+      "allowed_change": "future implementation task card with exact source/test/report paths"
+    }
+  ],
+  "explicit_exclusions": [
+    "web/backend/app/api/dashboard_data_source.py",
+    "web/backend/app/services/market_data_adapter.py",
+    "web/backend/app/services/market_data_service/**",
+    "web/backend/app/services/__init__.py",
+    "service consolidation between MarketDataService and MarketDataServiceV2",
+    "removing get_market_data_service_v2",
+    "route path, HTTP method, response model, response envelope, or OpenAPI schema exposure changes",
+    "docs/API, generated clients, frontend, PM2, runtime config, OpenSpec changes/specs, or GitHub issue labels"
+  ],
+  "future_required_gates": [
+    "GitNexus impact/context before editing symbols",
+    "failing focused lifecycle DI tests before implementation",
+    "focused pytest for lifecycle and representative route dependency behavior",
+    "ruff check on touched backend files",
+    "app.main import or targeted OpenAPI smoke if route signatures change",
+    "staged GitNexus detect_changes before commit"
+  ],
+  "next_gate": "Human review of this G2.26 authorization packet; if accepted, create a separate implementation branch before source edits"
+}
