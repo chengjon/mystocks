@@ -1,0 +1,102 @@
+version: "v0.2"
+
+task:
+  id: "pr-183"
+  title: "Triage service candidate usefulness and ownership"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-service-candidate-usefulness-ownership-triage"
+  objective: "record the G2.43 current-head service candidate usefulness and ownership triage after PR #182"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-candidate-usefulness-ownership-triage"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-service-candidate-usefulness-ownership-triage"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Candidate usefulness and ownership triage records current-head evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/service-candidate-usefulness-ownership-triage-2026-05-24.json"
+    - "docs/reports/quality/backend-service-candidate-usefulness-ownership-triage-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-183.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No implementation target selection or source-edit authorization in this PR"
+  - "No compatibility getter cleanup, getter retirement, route provider implementation, or service consolidation in this PR"
+  - "No migration of WencaiService, MarketDataService, UnifiedDataService, DataService, StrategyService, or TechnicalAnalysisService"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-service-candidate-usefulness-ownership-triage-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/service-candidate-usefulness-ownership-triage-2026-05-24.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-183.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the triage boundary"
+    - "If this PR authorizes G2.44 implementation directly, it bypasses the separate authorization packet gate"
+    - "If definition-only getters are treated as deletion candidates here, active services can be misclassified"
+  rollback_plan: "revert this governance-only PR; PR #182 remains merged unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record current-head service candidate usefulness and ownership triage after PR #182"
+    modified_scope: "triage report, generated triage artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; no compatibility getter is changed or retired"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only triage PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T01:47:32+08:00"
+    approval_note: "human maintainer approved continuing after PR #182; this triage only records candidate usefulness, ownership, and next-gate boundary"
+    secondary_approved: false
