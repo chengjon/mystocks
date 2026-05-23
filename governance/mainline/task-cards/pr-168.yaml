@@ -1,0 +1,101 @@
+version: "v0.2"
+
+task:
+  id: "pr-168"
+  title: "Close out MarketDataServiceV2 route-provider lifecycle DI"
+  owner: "main"
+  created_at: "2026-05-23"
+
+mainline:
+  id: "L1-market-data-service-v2-route-provider-closeout"
+  objective: "record the G2.27 MarketDataServiceV2 route-provider merge result and closeout boundary"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-market-data-service-v2-route-provider-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-market-data-service-v2-route-provider-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout records already-merged PR #167 and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/market-data-service-v2-route-provider-closeout-2026-05-23.json"
+    - "docs/reports/quality/backend-market-data-service-v2-route-provider-closeout-2026-05-23.md"
+    - "governance/mainline/task-cards/pr-168.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No next service DI candidate selection in this PR"
+  - "No dashboard helper migration, adapter migration, service consolidation, or compatibility getter cleanup in this PR"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-market-data-service-v2-route-provider-closeout-2026-05-23.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/market-data-service-v2-route-provider-closeout-2026-05-23.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-168.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the closeout boundary"
+    - "If this PR selects or authorizes the next service candidate, it bypasses the separate-packet gate"
+    - "If dashboard helper calls are treated as route-surface leftovers, future cleanup could exceed the approved G2.27 boundary"
+  rollback_plan: "revert this governance-only PR; PR #167 implementation remains merged unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record the merged G2.27 MarketDataServiceV2 route-provider lifecycle DI implementation"
+    modified_scope: "closeout report, generated closeout artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; get_market_data_service_v2 remains compatibility getter and dashboard helper callers remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only closeout PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-23T15:38:42+08:00"
+    approval_note: "human maintainer approved continuing after PR #167 review; this closeout only records the merged implementation and next-gate boundary"
+    secondary_approved: false

@@ -1,0 +1,81 @@
+{
+  "artifact": "market-data-service-v2-route-provider-closeout",
+  "date": "2026-05-23",
+  "status": "closeout-prepared-for-review",
+  "workline": "G2.28 MarketDataServiceV2 route-provider closeout",
+  "parent_issue": 79,
+  "current_head": "8120f01a7022472b604f525ac9af2a517150c39b",
+  "recorded_at": "2026-05-23T15:38:42+08:00",
+  "implementation_pr": {
+    "number": 167,
+    "url": "https://github.com/chengjon/mystocks/pull/167",
+    "state": "MERGED",
+    "merge_commit": "8120f01a7022472b604f525ac9af2a517150c39b",
+    "merged_at": "2026-05-23T07:26:57Z"
+  },
+  "authorization_pr": {
+    "number": 166,
+    "url": "https://github.com/chengjon/mystocks/pull/166",
+    "merge_commit": "76a1e271fa602e692553acf2760f100ca88030aa"
+  },
+  "completed_scope": {
+    "service": "web/backend/app/services/market_data_service_v2.py",
+    "route_files": [
+      "web/backend/app/api/market_v2.py"
+    ],
+    "focused_test": "web/backend/tests/test_market_data_service_v2_lifecycle_di.py",
+    "compatibility_getter_preserved": "get_market_data_service_v2",
+    "excluded_compatibility_consumers": [
+      "web/backend/app/api/dashboard_data_source.py"
+    ]
+  },
+  "post_merge_route_surface_scan": {
+    "web/backend/app/api/market_v2.py": {
+      "direct_get_market_data_service_v2_calls": 0,
+      "injected_route_params": 13,
+      "dependency_references": 14
+    },
+    "web/backend/app/api/dashboard_data_source.py": {
+      "direct_get_market_data_service_v2_calls": 2,
+      "injected_route_params": 0,
+      "status": "intentionally_unchanged_non_route_helper_consumers"
+    }
+  },
+  "provider_seam_scan": {
+    "MARKET_DATA_SERVICE_V2_STATE_KEY": true,
+    "install_market_data_service_v2": true,
+    "get_market_data_service_v2_dependency": true,
+    "get_market_data_service_v2_compatibility_getter": true
+  },
+  "verification": {
+    "focused_pytest": "4 passed in 1.23s",
+    "ruff": "passed",
+    "black_check": "passed",
+    "app_main_import": "status=0, app-main-import-ok",
+    "openapi_smoke": {
+      "paths": 500,
+      "market_v2_prefix": "/api/v2/market",
+      "market_v2_paths": 13,
+      "duplicate_operation_ids": 0
+    }
+  },
+  "github_checks": {
+    "check_compliance": "SUCCESS",
+    "mainline_governance_gate": "SUCCESS",
+    "validate_api_contracts": "SUCCESS",
+    "generate_typescript_types": "SUCCESS",
+    "generate_contract_validation_report": "SUCCESS",
+    "detect_breaking_changes": "SUCCESS_OR_SKIPPED",
+    "weekly_full_scan": "SKIPPED"
+  },
+  "authorization_boundary": {
+    "no_source_edits_in_closeout": true,
+    "no_test_edits_in_closeout": true,
+    "no_next_candidate_selected": true,
+    "no_issue_label_changes": true,
+    "no_openspec_changes": true,
+    "no_runtime_or_pm2_changes": true,
+    "no_route_or_openapi_contract_changes": true
+  },
+  "next_gate": "Human review of closeout packet; any next service lifecycle DI lane requires a separate evidence or authorization packet."
+}
