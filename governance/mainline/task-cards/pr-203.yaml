@@ -1,0 +1,108 @@
+version: "v0.2"
+
+task:
+  id: "pr-203"
+  title: "Close out data source factory provider seam"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-data-source-factory-provider-seam-closeout"
+  objective: "record current-head closeout evidence after the G2.61a DataSourceFactory provider-seam implementation"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-provider-seam-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-provider-seam-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout records current-head evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-provider-seam-closeout-2026-05-24.json"
+    - "docs/reports/quality/backend-data-source-factory-provider-seam-closeout-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-203.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change in this PR"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No route migration or API consumer rewrite in this PR"
+  - "No package __init__.py export update in this PR"
+  - "No compatibility getter cleanup in this PR"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-provider-seam-closeout-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-provider-seam-closeout-2026-05-24.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-203.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-203.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "gitnexus detect-changes --scope staged"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the closeout boundary"
+    - "If this PR authorizes route migration, it bypasses the next packet gate"
+    - "If package exports are changed, this PR exceeds the closeout boundary"
+  rollback_plan: "revert this governance-only closeout PR; PR #202 remains the accepted implementation unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record post-merge closeout evidence for the DataSourceFactory provider seam"
+    modified_scope: "closeout report, generated artifact, steward tree, and this task card"
+    dependency_changes: "none in this PR"
+    legacy_logic_impact: "none; route consumers and compatibility getter remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only closeout PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T21:02:45+08:00"
+    approval_note: "human maintainer approved continuing after PR #202; this packet records closeout evidence only"
+    secondary_approved: false
