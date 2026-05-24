@@ -805,10 +805,18 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 records focused lifecycle tests=`5 passed`,
 │   │                 market integration tests=`18 passed`, route guard
 │   │                 old=`0` / new=`7`, OpenAPI paths=`500`, duplicate
-│   │                 operation IDs=`0`
-│   └── Next gate: Human review of the G2.49 implementation PR; if accepted,
-│                  run G2.50 closeout / current-head candidate refresh before
-│                  selecting another service lifecycle implementation lane
+│   │                 operation IDs=`0`; PR `#190` merged at
+│   │                 `33163197b59893372d5d1d68af53acbfbbb0f613`; G2.50
+│   │                 now records current-head closeout: legacy market route
+│   │                 dependency sites=`0`, provider sites=`7`, provider
+│   │                 import present=`true`, focused lifecycle tests=`5
+│   │                 passed`, market integration tests=`18 passed`, OpenAPI
+│   │                 paths=`500`, duplicate operation IDs=`0`, route
+│   │                 provider dependency files=`11`, and route provider
+│   │                 dependency sites=`79`
+│   └── Next gate: Human review of the G2.50 closeout PR; if accepted,
+│                  create a current-head candidate refresh before selecting
+│                  another service lifecycle implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -897,6 +905,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-service-lifecycle-di-candidate-selection-after-advanced-analysis-2026-05-24.md` | G | G2.47 candidate selection prepared at current HEAD `e09e6db4a6a85dc392c20a737e729bb6f123804d`: records PR `#186` as `MERGED`, scans `152` service files and `219` API files, confirms provider modules=`8`, route provider dependency sites=`72`, route class dependency sites=`0`, and classifies `get_market_data_service` as the next consumer matrix / authorization candidate packet while excluding `get_data_service`, `get_strategy_service`, and `get_kronos_client` from direct implementation | Human review / PR merge decision; if accepted, create G2.48 `get_market_data_service` route dependency consumer matrix / route-provider authorization candidate before any source edits |
 | `backend-market-data-service-route-dependency-consumer-matrix-2026-05-24.md` | G | G2.48 consumer matrix prepared at current HEAD `0dce9ca97cd043f898039176394eb5076c353cf5`: records PR `#188` as `MERGED`, confirms `get_market_data_service` GitNexus risk=`LOW` / impacted count=`0`, identifies exactly seven active `/api/v1/market` route handlers using `Depends(get_market_data_service)`, keeps the package compatibility getter and `market_data_adapter.py` fallback surface active, excludes `services/__init__.py` IntegratedServices accessor and `MarketDataServiceV2` consolidation, configured app/OpenAPI smoke reports routes=`548`, paths=`500`, duplicate operation IDs=`0`, and focused `test_market_api_integration.py` result=`18 passed` | Human review / PR merge decision; if accepted, create G2.49 `get_market_data_service` route-provider implementation branch before source edits |
 | `backend-market-data-service-route-provider-implementation-2026-05-24.md` | G | G2.49 implementation prepared from G2.48 authorization at base `7daf74ce0c3210defc2ad283583a335037daa500`: adds `MARKET_DATA_SERVICE_STATE_KEY`, `install_market_data_service`, and `get_market_data_service_dependency`, preserves `get_market_data_service()` and package compatibility, converts exactly seven `/api/v1/market` route dependencies to the provider, keeps `market_data_adapter.py`, `services/__init__.py`, and `MarketDataServiceV2` unchanged, TDD red=`4 failed, 1 passed`, green=`5 passed`, market integration tests=`18 passed`, ruff/black passed, configured OpenAPI smoke reports routes=`548`, paths=`500`, duplicate operation IDs=`0`, selected market routes=`7` | Human review / PR merge decision; if accepted, run G2.50 closeout/current-head candidate refresh before selecting the next service lifecycle DI lane |
+| `backend-market-data-service-route-provider-closeout-2026-05-24.md` | G | G2.50 closeout prepared at current HEAD `33163197b59893372d5d1d68af53acbfbbb0f613`: records PR `#190` as `MERGED`, confirms `market_data_request.py` legacy dependency sites=`0`, provider dependency sites=`7`, provider import present=`true`, focused lifecycle tests=`5 passed`, market integration tests=`18 passed`, configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, provider functions=`8`, route provider dependency files=`11`, and route provider dependency sites=`79`; residual `get_market_data_service()` references remain compatibility or separate helper/fallback surfaces and are not deletion candidates | Human review / PR merge decision; if accepted, create a current-head candidate refresh before selecting the next service lifecycle DI implementation lane |
 
 ## Completed And Reviewed Ledger
 

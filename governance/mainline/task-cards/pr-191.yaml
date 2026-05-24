@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-191"
+  title: "Close out MarketDataService route provider migration"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-market-data-service-route-provider-closeout"
+  objective: "record post-merge closeout for the G2.49 MarketDataService route-provider implementation"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-market-data-service-route-provider-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-market-data-service-route-provider-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout packet records post-merge governance evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/market-data-service-route-provider-closeout-2026-05-24.json"
+    - "docs/reports/quality/backend-market-data-service-route-provider-closeout-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-191.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "web/backend/tests/**"
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, tests, generated clients, docs/API, OpenSpec, PM2, route, OpenAPI, or runtime behavior changes"
+  - "No GitHub issue state, label, or ready-for-agent movement"
+  - "No source implementation in this PR"
+  - "No compatibility getter cleanup authorization"
+  - "No MarketDataService and MarketDataServiceV2 consolidation"
+  - "No next service lifecycle DI implementation target selection"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-market-data-service-route-provider-closeout-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/market-data-service-route-provider-closeout-2026-05-24.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nfrom pathlib import Path\nwith Path('governance/mainline/task-cards/pr-191.yaml').open() as fh:\n    yaml.safe_load(fh)\nprint('yaml-ok')\nPY"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-191.yaml"
+      required: true
+    - id: "no-source-diff"
+      command: "python - <<'PY'\nimport subprocess, sys\nchanged = subprocess.check_output(['git', 'diff', '--cached', '--name-only'], text=True).splitlines()\nblocked = [p for p in changed if p.startswith(('web/backend/app/', 'web/backend/tests/', 'web/frontend/', 'src/', 'tests/', 'openspec/'))]\nprint({'changed': changed, 'blocked': blocked})\nsys.exit(1 if blocked else 0)\nPY"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record post-merge closeout for the MarketDataService route-provider migration"
+    modified_scope: "steward tree, closeout report, generated closeout artifact, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; compatibility surfaces remain documented as preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this governance closeout PR if the recorded merge or evidence state is incorrect"
+
+risk_and_rollback:
+  risks:
+    - "If source files change, the closeout exceeds its governance-only boundary"
+    - "If residual compatibility references are treated as deletion candidates, the next lane may collapse separate surfaces"
+    - "If the next implementation target is selected here, this packet bypasses the required candidate-refresh gate"
+  rollback_plan: "revert this closeout PR; PR #190 remains the source implementation merge record"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T12:13:57+08:00"
+    approval_note: "human maintainer approved continuing after PR #190 merge; this packet records G2.50 closeout evidence only"
+    secondary_approved: false
