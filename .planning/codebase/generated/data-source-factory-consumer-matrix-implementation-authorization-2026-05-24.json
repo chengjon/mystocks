@@ -1,0 +1,225 @@
+{
+  "artifact": "data-source-factory-consumer-matrix-implementation-authorization",
+  "workline": "G2.60",
+  "generated_at": "2026-05-24T20:10:13+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_branch": "g2-60-data-source-factory-consumer-matrix-authorization",
+  "current_head": "265f38e53bddfa3a925f14cfbc5080b00dce26e6",
+  "status": "ready_for_review",
+  "scope": {
+    "kind": "consumer_matrix_and_implementation_authorization_packet",
+    "source_edits_in_this_packet": false,
+    "route_or_openapi_edits_in_this_packet": false,
+    "test_edits_in_this_packet": false,
+    "openspec_edits_in_this_packet": false,
+    "future_provider_seam_implementation_authorized_if_accepted": true,
+    "future_route_migration_authorized_if_accepted": false
+  },
+  "upstream_merge_evidence": {
+    "previous_workline": "G2.59",
+    "previous_pr": 200,
+    "previous_merge_commit": "265f38e53bddfa3a925f14cfbc5080b00dce26e6",
+    "selected_seam": "get_data_source_factory",
+    "source_implementation_status": "locked_until_G2.60_review"
+  },
+  "static_scan": {
+    "api_files_scanned": 219,
+    "direct_get_data_source_factory_call_count": 17,
+    "api_file_count": 9,
+    "consumer_matrix": [
+      {
+        "file": "web/backend/app/api/data/financial.py",
+        "calls": 1,
+        "call_lines": [
+          69
+        ],
+        "proposed_disposition": "later_domain_route_batch"
+      },
+      {
+        "file": "web/backend/app/api/data/futures.py",
+        "calls": 2,
+        "call_lines": [
+          91,
+          114
+        ],
+        "proposed_disposition": "later_domain_route_batch"
+      },
+      {
+        "file": "web/backend/app/api/data/kline.py",
+        "calls": 2,
+        "call_lines": [
+          145,
+          245
+        ],
+        "proposed_disposition": "later_domain_route_batch"
+      },
+      {
+        "file": "web/backend/app/api/data/lhb.py",
+        "calls": 2,
+        "call_lines": [
+          90,
+          115
+        ],
+        "proposed_disposition": "later_domain_route_batch"
+      },
+      {
+        "file": "web/backend/app/api/data/margin.py",
+        "calls": 3,
+        "call_lines": [
+          104,
+          128,
+          150
+        ],
+        "proposed_disposition": "later_domain_route_batch"
+      },
+      {
+        "file": "web/backend/app/api/data/market.py",
+        "calls": 1,
+        "call_lines": [
+          98
+        ],
+        "proposed_disposition": "later_domain_route_batch"
+      },
+      {
+        "file": "web/backend/app/api/data/stocks.py",
+        "calls": 2,
+        "call_lines": [
+          269,
+          371
+        ],
+        "proposed_disposition": "later_domain_route_batch"
+      },
+      {
+        "file": "web/backend/app/api/data_quality.py",
+        "calls": 2,
+        "call_lines": [
+          58,
+          369
+        ],
+        "proposed_disposition": "first_route_migration_candidate_after_provider_closeout"
+      },
+      {
+        "file": "web/backend/app/api/market/market_data_request.py",
+        "calls": 2,
+        "call_lines": [
+          134,
+          427
+        ],
+        "proposed_disposition": "later_market_route_batch"
+      }
+    ]
+  },
+  "gitnexus_refresh": {
+    "checkout": ".worktrees/g2-60-gitnexus-index-checkout",
+    "git_dot_kind": "directory",
+    "head": "265f38e53bdd",
+    "analyze_exit": 0,
+    "nodes": 62628,
+    "edges": 145797,
+    "clusters": 3291,
+    "flows": 300,
+    "embeddings": "off"
+  },
+  "gitnexus_selected_seam": {
+    "symbol": "get_data_source_factory",
+    "uid": "Function:web/backend/app/services/data_source_factory/data_source_factory.py:get_data_source_factory",
+    "file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+    "start_line": 294,
+    "end_line": 300,
+    "risk": "CRITICAL",
+    "impacted_count": 22,
+    "direct": 21,
+    "processes_affected": 15,
+    "modules_affected": 3,
+    "affected_modules": [
+      "Data",
+      "Data_source_factory",
+      "Api"
+    ]
+  },
+  "existing_test_surface": [
+    "web/backend/tests/test_data_source_factory.py",
+    "web/backend/tests/_test_data_source_factory_convenience.py",
+    "web/backend/tests/_test_data_source_factory_management.py",
+    "web/backend/tests/_test_data_source_factory_sources.py",
+    "web/backend/tests/_test_data_source_factory_support.py",
+    "web/backend/tests/test_data_source_manager_regressions.py",
+    "web/backend/tests/test_data_stocks_runtime_fallback.py",
+    "tests/backend/test_data_api_regression.py",
+    "web/backend/tests/test_market_api_integration.py"
+  ],
+  "batch_decision": {
+    "selected_next_batch": "G2.61a",
+    "selected_kind": "provider_seam_only",
+    "route_calls_migrated": 0,
+    "reason": "lowest behavioral disturbance; proves app-state provider plus compatibility getter fallback before touching 17 route call sites",
+    "future_route_candidate": "G2.61b data_quality.py after G2.61a closeout"
+  },
+  "authorized_future_g2_61a_scope": {
+    "implementation_authorized_if_this_packet_is_accepted": true,
+    "allowed_paths": [
+      "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py",
+      "docs/reports/quality/backend-data-source-factory-provider-seam-implementation-2026-05-24.md",
+      "governance/mainline/task-cards/pr-202.yaml"
+    ],
+    "allowed_changes": [
+      "add stable DataSourceFactory app-state key",
+      "add installer accepting provided or initialized factory",
+      "add FastAPI dependency provider reading app state with fallback",
+      "preserve get_data_source_factory compatibility getter",
+      "preserve _global_factory",
+      "preserve convenience functions"
+    ],
+    "explicit_non_goals": [
+      "no web/backend/app/api edits",
+      "no route dependency rewiring",
+      "no route path changes",
+      "no response shape changes",
+      "no OpenAPI exposure changes",
+      "no compatibility getter cleanup",
+      "no get_postgres_async migration",
+      "no get_config_manager migration",
+      "no issue label changes",
+      "no runtime or PM2 changes"
+    ]
+  },
+  "future_route_migration_order": [
+    {
+      "workline": "G2.61b_or_later",
+      "files": [
+        "web/backend/app/api/data_quality.py"
+      ],
+      "calls": 2,
+      "condition": "only after provider-seam closeout"
+    },
+    {
+      "workline": "later_domain_batches",
+      "files": [
+        "web/backend/app/api/data/financial.py",
+        "web/backend/app/api/data/futures.py",
+        "web/backend/app/api/data/kline.py",
+        "web/backend/app/api/data/lhb.py",
+        "web/backend/app/api/data/margin.py",
+        "web/backend/app/api/data/market.py",
+        "web/backend/app/api/data/stocks.py"
+      ],
+      "calls": 13,
+      "condition": "separate reviewed packet"
+    },
+    {
+      "workline": "later_market_route_batch",
+      "files": [
+        "web/backend/app/api/market/market_data_request.py"
+      ],
+      "calls": 2,
+      "condition": "separate reviewed packet"
+    }
+  ],
+  "decision": {
+    "source_implementation_in_this_packet": false,
+    "next_source_branch": "G2.61a provider seam only",
+    "route_migration_locked": true,
+    "compatibility_getter_cleanup_locked": true
+  }
+}
