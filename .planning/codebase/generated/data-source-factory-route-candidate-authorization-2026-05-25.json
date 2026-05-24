@@ -1,0 +1,135 @@
+{
+  "artifact": "data-source-factory-route-candidate-authorization-2026-05-25",
+  "workline": "G2.66",
+  "status": "ready_for_review",
+  "generated_at": "2026-05-25T01:40:08+08:00",
+  "current_head": "d30f2c12d642fbc613689d85b39697999805bbb8",
+  "source_boundary": "authorization-only; no backend source edits in this packet",
+  "previous_gate": {
+    "workline": "G2.65",
+    "merged_pr": 212,
+    "merge_commit": "d30f2c12d642fbc613689d85b39697999805bbb8",
+    "result": "market.py closeout recorded; market.py direct factory refs remain 0"
+  },
+  "remaining_direct_factory_calls": {
+    "total": 13,
+    "files": [
+      {
+        "file": "web/backend/app/api/data/kline.py",
+        "direct_calls": 2,
+        "direct_call_lines": [145, 245],
+        "route_count": 4,
+        "loc": 252,
+        "ruff_status": "fails_E701",
+        "black_status": "would_reformat",
+        "gitnexus_upstream_impact": "LOW/1"
+      },
+      {
+        "file": "web/backend/app/api/data/futures.py",
+        "direct_calls": 2,
+        "direct_call_lines": [91, 114],
+        "route_count": 2,
+        "loc": 123,
+        "ruff_status": "passed",
+        "black_status": "would_reformat",
+        "gitnexus_upstream_impact": "CRITICAL/91_file_level_anomaly",
+        "note": "defer until a narrower symbol-level impact pass explains or clears the file-level GitNexus result"
+      },
+      {
+        "file": "web/backend/app/api/data/lhb.py",
+        "direct_calls": 2,
+        "direct_call_lines": [90, 115],
+        "route_count": 2,
+        "loc": 128,
+        "ruff_status": "passed",
+        "black_status": "would_reformat",
+        "gitnexus_upstream_impact": "LOW/1"
+      },
+      {
+        "file": "web/backend/app/api/data/stocks.py",
+        "direct_calls": 2,
+        "direct_call_lines": [269, 371],
+        "route_count": 5,
+        "loc": 417,
+        "ruff_status": "fails_E701",
+        "black_status": "would_reformat",
+        "gitnexus_upstream_impact": "LOW/1"
+      },
+      {
+        "file": "web/backend/app/api/data/margin.py",
+        "direct_calls": 3,
+        "direct_call_lines": [104, 128, 150],
+        "route_count": 3,
+        "loc": 155,
+        "ruff_status": "passed",
+        "black_status": "unchanged",
+        "gitnexus_upstream_impact": "LOW/1"
+      },
+      {
+        "file": "web/backend/app/api/market/market_data_request.py",
+        "direct_calls": 2,
+        "direct_call_lines": [134, 427],
+        "route_count": 11,
+        "loc": 645,
+        "ruff_status": "passed",
+        "black_status": "unchanged",
+        "gitnexus_upstream_impact": "LOW/1"
+      }
+    ]
+  },
+  "selected_next_candidate": {
+    "workline": "G2.67",
+    "file": "web/backend/app/api/data/margin.py",
+    "reason": "LOW GitNexus impact, ruff clean, black clean, three route handlers, and clears three remaining direct factory calls without extra formatting debt.",
+    "allowed_future_source_scope": [
+      "web/backend/app/api/data/margin.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "locked_out_of_scope": [
+      "web/backend/app/api/data/kline.py",
+      "web/backend/app/api/data/futures.py",
+      "web/backend/app/api/data/lhb.py",
+      "web/backend/app/api/data/stocks.py",
+      "web/backend/app/api/market/market_data_request.py",
+      "web/frontend/**",
+      "src/**",
+      "openspec/changes/**",
+      "docs/api/**"
+    ],
+    "required_pre_edit_gate": [
+      "read architecture/STANDARDS.md",
+      "run GitNexus impact/context for margin.py or its route handlers",
+      "add failing dependency-injection wiring tests for get_margin_account_info, get_margin_detail_sse, and get_margin_detail_szse",
+      "stop if any HIGH or CRITICAL risk appears"
+    ],
+    "required_verification": [
+      "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short",
+      "ruff check web/backend/app/api/data/margin.py web/backend/tests/test_health_route_conflicts.py web/backend/app/services/data_source_factory/__init__.py",
+      "black --check web/backend/app/api/data/margin.py web/backend/tests/test_health_route_conflicts.py web/backend/app/services/data_source_factory/__init__.py",
+      "OpenAPI smoke: routes, paths, operation IDs, duplicate operation IDs",
+      "route guard direct-call count: margin.py direct refs must move from 3 to 0 and total must move from 13 to 10",
+      "gitnexus.detect_changes(scope=staged)"
+    ]
+  },
+  "verification": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "114 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 121,
+      "env_note": "OpenAPI smoke used explicit non-secret test environment placeholders because this isolated worktree has no .env file."
+    },
+    "candidate_lint": {
+      "ruff": "7 E701 findings in kline.py and stocks.py; margin.py is clean",
+      "black": "would reformat kline.py, futures.py, lhb.py, and stocks.py; margin.py and market_data_request.py are unchanged"
+    }
+  },
+  "next_gate": "Human review / PR merge decision; if accepted, create G2.67 path-limited margin.py implementation branch. This packet itself authorizes no source edit."
+}
