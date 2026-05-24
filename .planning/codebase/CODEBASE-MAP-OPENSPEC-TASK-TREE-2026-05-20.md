@@ -835,15 +835,21 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 consumers=`2`, service constructor consumer=`1`,
 │   │                 OpenAPI paths=`500`, duplicate operation IDs=`0`, and
 │   │                 collect-only checks=`16+112+29`; PR `#194` merged at
-│   │                 `71510bb02a845ec529c8c04f3a7288ca86b87b9c`; G2.54 now
+│   │                 `71510bb02a845ec529c8c04f3a7288ca86b87b9c`; G2.54
 │   │                 implements the flat API registry route provider:
 │   │                 provider surface=`3`, converted route handlers=`2`,
 │   │                 compatibility getter preserved, package registry and
 │   │                 `IndicatorCalculator` excluded, focused TDD=`2 passed`,
-│   │                 OpenAPI paths=`500`, duplicate operation IDs=`0`
-│   └── Next gate: Human review of the G2.54 implementation PR; if accepted,
-│                  run G2.55 closeout/current-head refresh before selecting
-│                  another service lifecycle DI lane
+│   │                 OpenAPI paths=`500`, duplicate operation IDs=`0`; PR
+│   │                 `#195` merged at
+│   │                 `5b12a3c08cac3558c56af615ff14c05913d96f72`; G2.55 now
+│   │                 records closeout evidence: route direct getter refs=`0`,
+│   │                 provider dependency route sites=`2`, focused tests=`2+1`
+│   │                 passed, OpenAPI paths=`500`, duplicate operation IDs=`0`,
+│   │                 GitNexus index stale for new provider symbols
+│   └── Next gate: Human review of the G2.55 closeout PR; if accepted, refresh
+│                  GitNexus or explicitly discount stale graph output before
+│                  selecting another service lifecycle DI lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -937,6 +943,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-indicator-registry-provider-design-2026-05-24.md` | G | G2.52 design packet prepared at current HEAD `363324bf31a89b797789403c55dbe3ca854bc7d6`: records PR `#192` as `MERGED`, confirms two same-name `get_indicator_registry()` surfaces, separates flat API registry `web/backend/app/services/indicator_registry.py` from package registry `web/backend/app/services/indicators/indicator_registry.py`, records flat API direct callers=`3`, package registry production callers=`3`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, and selects no source implementation target; recommended next gate is G2.53 flat API registry consumer matrix / authorization candidate | Human review / PR merge decision; if accepted, create G2.53 flat API registry consumer matrix / authorization candidate before source edits |
 | `backend-flat-api-indicator-registry-consumer-matrix-2026-05-24.md` | G | G2.53 consumer matrix prepared at current HEAD `ec3dc2920886eb24e963a33488bd2e945e98e6c9`: records PR `#193` as `MERGED`, confirms the flat API registry singleton at `web/backend/app/services/indicator_registry.py`, identifies exactly two direct registry route consumers in `indicator_cache.py`, excludes `IndicatorCalculator.__init__` from the route-provider batch, keeps the package registry startup/jobs surface separate, records configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, selected indicator cache routes=`6`, and collect-only checks=`16+112+29` | Human review / PR merge decision; if accepted, create G2.54 flat API registry route-provider implementation branch before source edits |
 | `backend-flat-api-indicator-registry-route-provider-implementation-2026-05-24.md` | G | G2.54 implementation prepared at current HEAD `71510bb02a845ec529c8c04f3a7288ca86b87b9c`: records PR `#194` as `MERGED`, adds `INDICATOR_REGISTRY_STATE_KEY`, `install_indicator_registry`, and `get_indicator_registry_dependency`, preserves `get_indicator_registry()`, converts exactly two registry read handlers in `indicator_cache.py`, keeps `IndicatorCalculator.__init__` and package registry startup/jobs surfaces unchanged, verifies TDD red=`2 failed`, green=`2 passed`, touched ruff/black passed, v1 indicator OpenAPI doc test=`1 passed`, configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, and records legacy `/api/indicators/*` path assertions in `test_indicators.py` as residual test debt | Human review / PR merge decision; if accepted, run G2.55 closeout/current-head refresh before selecting another service lifecycle DI lane |
+| `backend-flat-api-indicator-registry-route-provider-closeout-2026-05-24.md` | G | G2.55 closeout prepared at current HEAD `5b12a3c08cac3558c56af615ff14c05913d96f72`: records PR `#195` as `MERGED`, confirms flat API registry provider surface remains present, route direct `get_indicator_registry()` references under `web/backend/app/api`=`0`, provider dependency route sites=`2`, selected indicator cache routes=`6`, configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, focused tests=`2+1 passed`, and GitNexus graph output is stale for the new provider symbols until index refresh | Human review / PR merge decision; if accepted, refresh GitNexus or explicitly discount stale graph output before selecting another service lifecycle DI lane |
 
 ## Completed And Reviewed Ledger
 

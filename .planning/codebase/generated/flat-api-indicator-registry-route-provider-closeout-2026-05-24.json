@@ -1,0 +1,110 @@
+{
+  "artifact": "flat-api-indicator-registry-route-provider-closeout",
+  "workline": "G2.55",
+  "generated_at": "2026-05-24T17:38:30+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "5b12a3c08cac",
+  "status": "ready_for_review",
+  "merge_evidence": {
+    "pr": 195,
+    "state": "MERGED",
+    "merged_at": "2026-05-24T09:34:02Z",
+    "merge_commit": "5b12a3c08cac3558c56af615ff14c05913d96f72",
+    "remote_checks_before_merge": {
+      "Validate API Contracts": "pass",
+      "Mainline Governance Gate": "pass",
+      "check-compliance": "pass",
+      "weekly-full-scan": "skipping"
+    }
+  },
+  "provider_surface": {
+    "file": "web/backend/app/services/indicator_registry.py",
+    "state_key": {
+      "name": "INDICATOR_REGISTRY_STATE_KEY",
+      "line": 631
+    },
+    "install_function": {
+      "name": "install_indicator_registry",
+      "line": 642
+    },
+    "dependency_function": {
+      "name": "get_indicator_registry_dependency",
+      "line": 649
+    },
+    "compatibility_getter": {
+      "name": "get_indicator_registry",
+      "line": 634,
+      "preserved": true
+    }
+  },
+  "route_dependency_usage": [
+    {
+      "file": "web/backend/app/api/indicators/indicator_cache.py",
+      "line": 80,
+      "handler": "get_indicator_registry_endpoint",
+      "dependency": "get_indicator_registry_dependency"
+    },
+    {
+      "file": "web/backend/app/api/indicators/indicator_cache.py",
+      "line": 201,
+      "handler": "get_indicators_by_category",
+      "dependency": "get_indicator_registry_dependency"
+    }
+  ],
+  "direct_getter_references": {
+    "web_backend_app_api_count": 0,
+    "web_backend_app_services_count": 7,
+    "web_backend_tests_count": 14,
+    "total": 21,
+    "remaining_non_route_surfaces": [
+      "web/backend/app/services/indicator_calculator.py",
+      "web/backend/app/services/indicator_registry.py",
+      "web/backend/app/services/indicators/defaults.py",
+      "web/backend/app/services/indicators/talib_adapter.py",
+      "web/backend/tests/unit/services/indicators/test_indicator_registry.py"
+    ]
+  },
+  "runtime_contract_evidence": {
+    "routes_total": 548,
+    "openapi_paths_total": 500,
+    "duplicate_operation_ids": 0,
+    "warnings": 0,
+    "selected_indicator_cache_routes": 6
+  },
+  "focused_checks": [
+    {
+      "command": "pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --tb=short --no-cov",
+      "status": "passed",
+      "summary": "2 passed in 1.68s"
+    },
+    {
+      "command": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_v1_indicator_endpoints_have_examples_parameter_docs_and_descriptions -q --tb=short --no-cov",
+      "status": "passed",
+      "summary": "1 passed in 11.87s"
+    }
+  ],
+  "provider_inventory_refresh": {
+    "service_provider_state_key_records": 29,
+    "indicator_registry_provider_records": [
+      "INDICATOR_REGISTRY_STATE_KEY",
+      "install_indicator_registry",
+      "get_indicator_registry_dependency"
+    ]
+  },
+  "gitnexus_note": {
+    "state": "stale_for_new_provider_symbols",
+    "details": "GitNexus context did not yet resolve get_indicator_registry_dependency/install_indicator_registry after PR #195 and still reported stale direct route callers for get_indicator_registry. Refresh GitNexus before using graph impact to choose the next lane."
+  },
+  "known_residual_debt": [
+    {
+      "file": "web/backend/tests/test_indicators.py",
+      "status": "separate_test_path_debt",
+      "details": "legacy /api/indicators/* path assertions receive 404 while active routes are /api/v1/indicators/*"
+    }
+  ],
+  "decision": {
+    "g2_54_closed": true,
+    "additional_indicator_registry_route_provider_work_authorized": false,
+    "next_gate": "current-head candidate refresh after GitNexus index refresh or explicit stale-output discount"
+  }
+}
