@@ -1,0 +1,118 @@
+{
+  "artifact": "service-lifecycle-di-candidate-refresh-after-market-data-provider-2026-05-24",
+  "created_at": "2026-05-24T12:55:00+08:00",
+  "workline": "G2.51",
+  "status": "candidate_refresh_prepared",
+  "source_changes_authorized": false,
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "047f483dd70a5234ca3a128342511a56779194d3",
+  "head_subject": "Merge pull request #191 from chengjon/g2-50-market-data-service-closeout",
+  "parent_pr": {
+    "number": 191,
+    "state": "MERGED",
+    "merge_commit": "047f483dd70a5234ca3a128342511a56779194d3",
+    "merged_at": "2026-05-24T04:46:28Z"
+  },
+  "scan_summary": {
+    "service_files_scanned": 152,
+    "api_files_scanned": 219,
+    "provider_modules_detected": 8,
+    "provider_functions": 8,
+    "route_provider_dependency_files": 11,
+    "route_provider_dependency_sites": 79,
+    "route_getter_dependency_files": 51,
+    "route_getter_dependency_sites": 270,
+    "raw_direct_getter_files": 236,
+    "raw_direct_getter_sites": 1664,
+    "service_getter_definitions": 68
+  },
+  "provider_function_names": [
+    "get_announcement_service_dependency",
+    "get_email_service_dependency",
+    "get_market_data_service_dependency",
+    "get_market_data_service_v2_dependency",
+    "get_stock_search_service_dependency",
+    "get_tdx_service_dependency",
+    "get_tradingview_service_dependency",
+    "get_watchlist_service_dependency"
+  ],
+  "openapi_smoke": {
+    "app_import": "ok",
+    "routes": 548,
+    "paths": 500,
+    "duplicate_operation_ids": 0,
+    "warnings": 121,
+    "environment": "non_sensitive_placeholder"
+  },
+  "market_data_service_closure": {
+    "legacy_route_depends": 0,
+    "provider_route_depends": 7,
+    "raw_getter_calls": 4,
+    "residual_files": [
+      "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "web/backend/app/services/__init__.py",
+      "web/backend/app/services/market_data_adapter.py"
+    ],
+    "disposition": "compatibility_fallback_internal_surfaces_not_deletion_candidates"
+  },
+  "candidate_classification": [
+    {
+      "candidate": "ordinary_route_provider_candidate",
+      "classification": "none_selected",
+      "disposition": "do_not_start_source_implementation_from_g2_51"
+    },
+    {
+      "candidate": "get_technical_pattern_detection_service",
+      "legacy_depends": 1,
+      "raw_calls": 1,
+      "files": [
+        "web/backend/app/api/_technical_patterns_router.py"
+      ],
+      "gitnexus_risk": "not_indexed",
+      "classification": "route_local_historical_provider_surface",
+      "disposition": "separate_route_local_provider_modernization_decision_packet_if_desired"
+    },
+    {
+      "candidate": "get_indicator_registry",
+      "legacy_depends": 0,
+      "raw_calls": 8,
+      "gitnexus_risk": "LOW",
+      "gitnexus_impacted_count": 4,
+      "classification": "indicator_internal_registry_jobs_seam",
+      "disposition": "dedicated_indicator_registry_provider_design_packet_candidate"
+    },
+    {
+      "candidate": "get_data_service",
+      "legacy_depends": 0,
+      "raw_calls": 4,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 5,
+      "classification": "broad_data_seam",
+      "disposition": "exclude_from_immediate_service_lifecycle_di_implementation"
+    },
+    {
+      "candidate": "get_strategy_service",
+      "legacy_depends": 0,
+      "raw_calls": 6,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 13,
+      "classification": "broad_strategy_seam",
+      "disposition": "exclude_from_immediate_service_lifecycle_di_implementation"
+    },
+    {
+      "candidate": "get_kronos_client",
+      "legacy_depends": 0,
+      "raw_calls": 4,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 3,
+      "classification": "external_client_route_seam",
+      "disposition": "exclude_from_ordinary_provider_conveyor"
+    }
+  ],
+  "decision": "no_next_source_implementation_target_selected",
+  "recommended_next_gate": [
+    "indicator_registry_provider_design_packet",
+    "technical_pattern_route_local_provider_modernization_packet",
+    "broad_data_strategy_seam_design_packet"
+  ]
+}
