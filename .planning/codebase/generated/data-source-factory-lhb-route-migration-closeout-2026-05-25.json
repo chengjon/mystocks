@@ -1,0 +1,78 @@
+{
+  "artifact": "data-source-factory-lhb-route-migration-closeout-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-69-lhb-route-migration-closeout",
+  "current_head": "d25803e93494b7115795a1922a84386b9daffb27",
+  "source_pr": {
+    "number": 217,
+    "merge_commit": "d25803e93494b7115795a1922a84386b9daffb27",
+    "title": "refactor(api): inject data source factory into lhb routes"
+  },
+  "scope": {
+    "files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/data-source-factory-lhb-route-migration-closeout-2026-05-25.json",
+      "docs/reports/quality/backend-data-source-factory-lhb-route-migration-closeout-2026-05-25.md",
+      "governance/mainline/task-cards/pr-218.yaml"
+    ],
+    "excluded": [
+      "backend source edits",
+      "backend test edits",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "next DataSourceFactory consumer migration"
+    ]
+  },
+  "verification": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "116 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "style": {
+      "ruff_lhb_and_health_test": "passed",
+      "black_lhb_and_health_test": "passed"
+    },
+    "route_api_factory_refs": {
+      "total_direct_refs": 8,
+      "lhb_py_direct_refs": 0,
+      "remaining_data_route_consumers": [
+        {
+          "file": "web/backend/app/api/data/kline.py",
+          "direct_refs": 2
+        },
+        {
+          "file": "web/backend/app/api/data/futures.py",
+          "direct_refs": 2
+        },
+        {
+          "file": "web/backend/app/api/data/stocks.py",
+          "direct_refs": 2
+        }
+      ]
+    },
+    "openapi_smoke": {
+      "command_context": "PYTHONPATH=web/backend with root .env loaded",
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 0
+    },
+    "gitnexus": {
+      "lhb_py": {
+        "risk": "LOW",
+        "direct_impacted": 1,
+        "processes_affected": 0
+      },
+      "provider_package_lookup": "target web/backend/app/services/data_source_factory was not indexed as a package target in this check"
+    }
+  },
+  "decision": "G2.69 implementation evidence remains valid at current HEAD. No additional source change is authorized by this closeout.",
+  "next_gate": "Human review / PR merge decision for this closeout, then a separate G2.70 candidate authorization packet before any further DataSourceFactory route migration."
+}
