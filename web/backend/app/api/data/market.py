@@ -1,6 +1,7 @@
 """
 市场概览与热度路由 (Market Overview)
 """
+
 from datetime import datetime
 from typing import Any, Dict
 from fastapi import APIRouter, Depends, Query
@@ -9,6 +10,7 @@ from app.core.database import db_service
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
 from app.openapi_config import COMMON_RESPONSES
+from app.services.data_source_factory import DataSourceFactory, get_data_source_factory_dependency
 
 router = APIRouter()
 
@@ -91,11 +93,12 @@ HOT_CONCEPTS_RESPONSES = {
     description="返回当前全市场的涨跌家数、市场状态等概览统计，适用于 A 股盘面总览和首页概况卡片。",
     responses=MARKET_OVERVIEW_RESPONSES,
 )
-async def get_market_overview(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+async def get_market_overview(
+    current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
+) -> Dict[str, Any]:
     """获取市场概览数据"""
     try:
-        from app.services.data_source_factory import get_data_source_factory
-        factory = await get_data_source_factory()
         result = await factory.get_data("data", "markets/overview", {})
         if result.get("status") == "success":
             return {
@@ -120,9 +123,11 @@ async def get_price_distribution(current_user: User = Depends(get_current_user))
     try:
         cache_key = "market:price-distribution"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
         import random
+
         random.seed(42)
         distribution = {
             "上涨>5%": random.randint(50, 200),
@@ -137,6 +142,7 @@ async def get_price_distribution(current_user: User = Depends(get_current_user))
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
+
 @router.get(
     "/markets/hot-industries",
     summary="查询热门行业表现",
@@ -145,13 +151,14 @@ async def get_price_distribution(current_user: User = Depends(get_current_user))
 )
 async def get_hot_industries(
     limit: int = Query(5, description="返回行业条数，范围 1 到 20", ge=1, le=20),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """获取热门行业表现数据"""
     try:
         cache_key = f"market:hot-industries:{limit}"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
         # Simplified logic
         data = [{"industry_name": "半导体", "avg_change": 2.5, "stock_count": 150}]
@@ -170,13 +177,14 @@ async def get_hot_industries(
 )
 async def get_hot_concepts(
     limit: int = Query(5, description="返回概念条数，范围 1 到 20", ge=1, le=20),
-    current_user: User = Depends(get_current_user)
+    current_user: User = Depends(get_current_user),
 ) -> Dict[str, Any]:
     """获取热门概念表现数据"""
     try:
         cache_key = f"market:hot-concepts:{limit}"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
         data = [{"concept_name": "人工智能", "avg_change": 3.2, "stock_count": 45}]
         result = {"success": True, "data": data, "total": len(data), "timestamp": datetime.now().isoformat()}
