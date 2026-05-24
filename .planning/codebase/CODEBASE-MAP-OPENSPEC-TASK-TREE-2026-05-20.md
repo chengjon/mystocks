@@ -1068,7 +1068,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                frontend, runtime/PM2, OpenSpec, issue-label, compatibility
 │   │                getter deletion, or other DataSourceFactory consumer change
 │   ├── G2.69 Closeout / current-head refresh
-│   │   ├── State: ready for review; PR `#218` closeout packet
+│   │   ├── State: accepted; PR `#218` merged at
+│   │   │          `2670dba0661d9744372e834035027ac4de106fd0`
 │   │   ├── Evidence: `backend-data-source-factory-lhb-route-migration-closeout-2026-05-25.md`
 │   │   ├── Current HEAD: `d25803e93494b7115795a1922a84386b9daffb27`
 │   │   ├── Result: confirms PR `#217` merged, health route conflict tests
@@ -1077,11 +1078,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   │          `0`, OpenAPI paths remain `500`, duplicate operation IDs
 │   │   │          remain `0`, and GitNexus reports `lhb.py` LOW/1
 │   │   └── Boundary: closeout-only; no source edit or next consumer selection
-│   └── Next gate: Human review / PR merge decision for G2.69 closeout; if
-│                  accepted, create a separate G2.70 candidate authorization
-│                  packet before any further DataSourceFactory route migration.
-│                  Remaining candidates (`kline.py`, `futures.py`, `stocks.py`,
-│                  and `market/market_data_request.py`) stay locked
+│   ├── G2.70 DataSourceFactory route candidate authorization
+│   │   ├── State: ready for review; PR `#219` candidate packet
+│   │   ├── Evidence: `backend-data-source-factory-market-data-request-route-migration-authorization-2026-05-25.md`
+│   │   ├── Current HEAD: `2670dba0661d9744372e834035027ac4de106fd0`
+│   │   ├── Result: compares the remaining four route/API consumers and selects
+│   │   │          `web/backend/app/api/market/market_data_request.py` for future
+│   │   │          G2.71 because it is the only remaining candidate with ruff
+│   │   │          pass, black pass, GitNexus LOW/1, and exactly two direct refs
+│   │   │          that can move from `2` to `0`; expected total direct refs move
+│   │   │          `8 -> 6`
+│   │   └── Boundary: authorization-only; no source edit, route contract edit,
+│   │                compatibility getter removal, frontend edit, PM2/runtime
+│   │                gate, OpenSpec change, or issue-label change is authorized
+│   └── Next gate: Human review / PR merge decision for G2.70; if accepted,
+│                  create a separate G2.71 path-limited
+│                  `market_data_request.py` implementation branch. Remaining
+│                  candidates (`kline.py`, `futures.py`, and `stocks.py`) stay
+│                  locked
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1132,6 +1146,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `inject-technical-pattern-detection-service-di` task `5.3` closeout | D2.1a.1 | Final OpenSpec checklist governance merged in PR `#113`; issue `#92` received implementation and final governance closeout comments | D2.1a is 100% closed; future DI work requires a new approved child lane |
 | `backend-data-source-factory-lhb-route-migration-implementation-2026-05-25.md` | G | G2.69 implementation packet prepared at `a76f6dbdc`: LHB route handlers now use `get_data_source_factory_dependency`, total route/API factory refs move `10 -> 8`, and `lhb.py` refs move `2 -> 0` | Human review / PR merge decision; if accepted, create closeout/current-head refresh before selecting another DataSourceFactory route consumer |
 | `backend-data-source-factory-lhb-route-migration-closeout-2026-05-25.md` | G | G2.69 closeout packet prepared at `d25803e93`: PR `#217` merge recorded, health tests remain `116 passed`, provider tests remain `4 passed`, total refs remain `8`, and `lhb.py` remains `0` | Human review / PR merge decision; if accepted, create G2.70 candidate authorization before further route migration |
+| `backend-data-source-factory-market-data-request-route-migration-authorization-2026-05-25.md` | G | G2.70 candidate packet prepared at `2670dba06`: selects `market_data_request.py` as the next route/API factory migration candidate; it is the only remaining ruff/black/GitNexus LOW candidate and can move total refs `8 -> 6` | Human review / PR merge decision; if accepted, create G2.71 path-limited implementation branch |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
@@ -1365,6 +1380,8 @@ review, PR review, or OpenSpec archive review.
 | G2.69 LHB DataSourceFactory route migration | Ready for review | `a76f6dbd` | Path-limited implementation migrates two LHB route handlers to `get_data_source_factory_dependency`, adds focused dependency wiring coverage, moves total direct route/API factory refs `10 -> 8`, and keeps all other remaining consumers locked pending closeout |
 
 | G2.69 LHB DataSourceFactory route migration closeout | Ready for review | `d25803e9` | Current-head closeout records PR `#217` merged, keeps total direct route/API factory refs at `8`, keeps `lhb.py` at `0`, and requires G2.70 authorization-only candidate comparison before any further route migration |
+
+| G2.70 DataSourceFactory route candidate authorization | Ready for review | `2670dba0` | Candidate comparison recorded after PR `#218`: selects `market_data_request.py` for future G2.71 because it is ruff clean, black unchanged, GitNexus LOW/1, and has two direct refs; this row authorizes no source edit until human review accepts the packet |
 
 ## Update Protocol
 
