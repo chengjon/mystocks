@@ -1,6 +1,7 @@
 """
 龙虎榜数据路由 (Dragon Tiger)
 """
+
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, Query
@@ -9,6 +10,7 @@ from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
 from app.core.responses import UnifiedResponse, ok
 from app.openapi_config import COMMON_RESPONSES
+from app.services.data_source_factory import DataSourceFactory, get_data_source_factory_dependency
 
 router = APIRouter()
 
@@ -62,9 +64,7 @@ DRAGON_TIGER_INSTITUTION_RESPONSES = {
         "龙虎榜机构统计结果",
         {
             "success": True,
-            "data": [
-                {"trade_date": "2026-04-03", "buy_count": 12, "sell_count": 7, "net_amount": 486000000.0}
-            ],
+            "data": [{"trade_date": "2026-04-03", "buy_count": 12, "sell_count": 7, "net_amount": 486000000.0}],
             "period": "近一月",
         },
     ),
@@ -83,11 +83,9 @@ async def get_dragon_tiger_detail(
     end_date: str = Query(..., description="查询结束日期，格式为 YYYY-MM-DD。"),
     limit: int = Query(100, description="单次请求返回的最大龙虎榜记录数。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> UnifiedResponse:
     try:
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
         result = await factory.get_data(
             "data",
             "dragon-tiger/detail",
@@ -95,7 +93,9 @@ async def get_dragon_tiger_detail(
         )
         return ok(data=result.get("data", []))
     except Exception as e:
-        raise BusinessException(detail=f"获取龙虎榜明细失败: {str(e)}", status_code=500, error_code="DATA_RETRIEVAL_FAILED")
+        raise BusinessException(
+            detail=f"获取龙虎榜明细失败: {str(e)}", status_code=500, error_code="DATA_RETRIEVAL_FAILED"
+        )
 
 
 @router.get(
@@ -108,11 +108,9 @@ async def get_dragon_tiger_institution_stats(
     period: str = Query("近一月", description="统计周期，例如近一周、近一月或近三月。"),
     limit: int = Query(50, description="返回的最大统计记录数。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> Dict[str, Any]:
     try:
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
         result = await factory.get_data(
             "data",
             "dragon-tiger/institution-stats",
