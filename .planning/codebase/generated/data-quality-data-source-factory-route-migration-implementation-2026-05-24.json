@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "artifact": "data-quality-data-source-factory-route-migration-implementation",
+  "generated_at": "2026-05-24T22:01:08+08:00",
+  "workline": "G2.61c",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "52a2aaa57150db834bcef3a526a4b78e37ac438a",
+  "status": "ready_for_review",
+  "authorization": {
+    "source_report": "docs/reports/quality/backend-data-quality-data-source-factory-route-migration-authorization-2026-05-24.md",
+    "source_pr": 204,
+    "source_merge": "52a2aaa57150db834bcef3a526a4b78e37ac438a"
+  },
+  "scope_boundary": {
+    "backend_source_modified": true,
+    "allowed_source_paths": [
+      "web/backend/app/services/data_source_factory/__init__.py",
+      "web/backend/app/api/data_quality.py"
+    ],
+    "allowed_test_paths": [
+      "web/backend/tests/test_data_quality_mock_configuration.py"
+    ],
+    "route_paths_modified": false,
+    "response_contracts_modified": false,
+    "openapi_exposure_modified": false,
+    "compatibility_getter_removed": false,
+    "openspec_modified": false,
+    "issue_labels_modified": false,
+    "runtime_or_pm2_modified": false
+  },
+  "gitnexus_pre_edit": {
+    "index_repo": "g2-61c-gitnexus-index-checkout",
+    "index_head": "52a2aaa57",
+    "index_git_kind": "directory",
+    "analyze_exit": 0,
+    "nodes": 62644,
+    "edges": 145830,
+    "flows": 300,
+    "impacts": {
+      "get_sources_health": {
+        "risk": "LOW",
+        "impacted_count": 0
+      },
+      "get_system_status_overview": {
+        "risk": "LOW",
+        "impacted_count": 0
+      },
+      "get_data_source_factory_dependency": {
+        "risk": "LOW",
+        "impacted_count": 0
+      },
+      "install_data_source_factory": {
+        "risk": "LOW",
+        "impacted_count": 0
+      }
+    }
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_mock_configuration.py -q --no-cov --tb=short",
+      "result": "2 failed, 2 passed",
+      "expected_failures": [
+        "package get_data_source_factory_dependency export missing",
+        "data_quality route handlers missing factory dependency parameter"
+      ]
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_mock_configuration.py -q --no-cov --tb=short",
+      "result": "4 passed"
+    }
+  },
+  "implementation": {
+    "package_exports_added": [
+      "get_data_source_factory_dependency"
+    ],
+    "route_handlers_migrated": [
+      "get_sources_health",
+      "get_system_status_overview"
+    ],
+    "direct_getter_calls_removed_from_data_quality": 2,
+    "compatibility_getter_preserved": true,
+    "global_factory_preserved": true
+  },
+  "route_guard": {
+    "api_files_scanned": 219,
+    "before_total_direct_get_data_source_factory_calls": 17,
+    "after_total_direct_get_data_source_factory_calls": 15,
+    "before_data_quality_direct_calls": 2,
+    "after_data_quality_direct_calls": 0,
+    "get_data_source_factory_dependency_api_refs": 3,
+    "remaining_direct_call_files": {
+      "web/backend/app/api/data/financial.py": 1,
+      "web/backend/app/api/data/futures.py": 2,
+      "web/backend/app/api/data/kline.py": 2,
+      "web/backend/app/api/data/lhb.py": 2,
+      "web/backend/app/api/data/margin.py": 3,
+      "web/backend/app/api/data/market.py": 1,
+      "web/backend/app/api/data/stocks.py": 2,
+      "web/backend/app/api/market/market_data_request.py": 2
+    }
+  },
+  "verification": {
+    "data_quality_mock_configuration_tests": "4 passed",
+    "provider_lifecycle_tests": "4 passed",
+    "data_source_factory_tests": "38 passed",
+    "ruff_touched_files": "passed",
+    "black_check_touched_files": "4 files would be left unchanged",
+    "direct_handler_call_refs": 0,
+    "app_openapi_smoke": {
+      "app_import": "passed",
+      "routes": 548,
+      "openapi_paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 121
+    },
+    "staged_gitinex_root_scope": {
+      "repo": "mystocks_spec",
+      "result": "HIGH",
+      "note": "root staged detect_changes used the older project index and over-approximated the modified route file; authoritative current-head non-linked impact remained LOW/0 for the edited route symbols"
+    }
+  },
+  "next_gate": {
+    "recommended": "G2.61c closeout/current-head refresh before selecting the next DataSourceFactory route consumer packet",
+    "remaining_direct_route_calls": 15,
+    "remaining_consumers_locked": true
+  }
+}
