@@ -1,0 +1,208 @@
+{
+  "artifact": "service-lifecycle-di-candidate-refresh-after-indicator-registry-provider",
+  "workline": "G2.56",
+  "generated_at": "2026-05-24T18:10:53+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_branch": "g2-56-service-lifecycle-candidate-refresh-after-indicator-registry",
+  "current_head": "1fc4a4c7a86c",
+  "status": "ready_for_review",
+  "scope": {
+    "kind": "governance_only_candidate_refresh",
+    "source_edits_authorized": false,
+    "route_or_openapi_edits_authorized": false,
+    "compatibility_getter_cleanup_authorized": false
+  },
+  "upstream_merge_evidence": [
+    {
+      "workline": "G2.54",
+      "pr": 195,
+      "state": "MERGED",
+      "merge_commit": "5b12a3c08cac3558c56af615ff14c05913d96f72",
+      "notes": "flat API IndicatorRegistry route-provider implementation"
+    },
+    {
+      "workline": "G2.55",
+      "pr": 196,
+      "state": "MERGED",
+      "merge_commit": "1fc4a4c7a86cf464dedb742612c052b911d4ef5f",
+      "notes": "closeout and current-head refresh for the IndicatorRegistry route provider"
+    }
+  ],
+  "scan_summary": {
+    "api_files_scanned": 219,
+    "service_files_scanned": 152,
+    "backend_test_files_scanned": 195,
+    "service_provider_state_keys": 10,
+    "service_provider_functions": 20,
+    "service_provider_records": 30,
+    "route_depends_sites": 353,
+    "provider_style_route_dependency_sites": 81,
+    "getter_style_route_dependency_sites": 272
+  },
+  "indicator_registry_closeout": {
+    "api_direct_get_indicator_registry_route_calls": 0,
+    "provider_dependency_route_sites": 2,
+    "converted_route_file": "web/backend/app/api/indicators/indicator_cache.py",
+    "provider_surface": [
+      "INDICATOR_REGISTRY_STATE_KEY",
+      "install_indicator_registry",
+      "get_indicator_registry_dependency"
+    ],
+    "compatibility_getter_preserved": true,
+    "package_registry_and_indicator_calculator_excluded": true
+  },
+  "provider_dependency_groups": [
+    {
+      "name": "get_advanced_analysis_service_dependency",
+      "sites": 14,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/advanced_analysis_api.py"
+      ]
+    },
+    {
+      "name": "get_market_data_service_v2_dependency",
+      "sites": 14,
+      "files": 2,
+      "route_files": [
+        "web/backend/app/api/dashboard_data_source.py",
+        "web/backend/app/api/market_v2.py"
+      ]
+    },
+    {
+      "name": "get_announcement_service_dependency",
+      "sites": 11,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/announcement/routes.py"
+      ]
+    },
+    {
+      "name": "get_market_data_service_dependency",
+      "sites": 7,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/market/market_data_request.py"
+      ]
+    },
+    {
+      "name": "get_watchlist_service_dependency",
+      "sites": 7,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/watchlist.py"
+      ]
+    },
+    {
+      "name": "get_email_service_dependency",
+      "sites": 6,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/notification.py"
+      ]
+    },
+    {
+      "name": "get_stock_search_service_dependency",
+      "sites": 6,
+      "files": 2,
+      "route_files": [
+        "web/backend/app/api/market/market_data_request.py",
+        "web/backend/app/api/stock_search/stock_search_result.py"
+      ]
+    },
+    {
+      "name": "get_tradingview_service_dependency",
+      "sites": 6,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/tradingview.py"
+      ]
+    },
+    {
+      "name": "get_tdx_service_dependency",
+      "sites": 5,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/tdx.py"
+      ]
+    },
+    {
+      "name": "get_data_source_dependency",
+      "sites": 3,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/dashboard.py"
+      ]
+    },
+    {
+      "name": "get_indicator_registry_dependency",
+      "sites": 2,
+      "files": 1,
+      "route_files": [
+        "web/backend/app/api/indicators/indicator_cache.py"
+      ]
+    }
+  ],
+  "remaining_surfaces": [
+    {
+      "surface": "authentication dependencies",
+      "evidence": "get_current_user appears in 215 route dependency sites",
+      "disposition": "out_of_scope_for_service_lifecycle_candidate_selection"
+    },
+    {
+      "surface": "database/session dependencies",
+      "evidence": "get_db and repository getters remain route/persistence boundaries",
+      "disposition": "requires_separate_route_or_repository_governance"
+    },
+    {
+      "surface": "get_postgres_async",
+      "evidence": "22 direct-call sites across 8 API files",
+      "disposition": "infrastructure_data_access_seam_not_selected"
+    },
+    {
+      "surface": "get_config_manager",
+      "evidence": "17 direct-call sites across 2 active API files plus historical evidence",
+      "disposition": "requires_separate_config_ownership_decision"
+    },
+    {
+      "surface": "get_data_source_factory",
+      "evidence": "17 direct-call sites across 9 API files",
+      "disposition": "broad_factory_seam_not_selected_without_design_packet"
+    }
+  ],
+  "runtime_contract_evidence": {
+    "routes_total": 548,
+    "openapi_paths_total": 500,
+    "duplicate_operation_ids": 0,
+    "warnings": 0
+  },
+  "focused_checks": [
+    {
+      "command": "pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --tb=short --no-cov",
+      "status": "passed",
+      "summary": "2 passed in 1.62s"
+    },
+    {
+      "command": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_v1_indicator_endpoints_have_examples_parameter_docs_and_descriptions -q --tb=short --no-cov",
+      "status": "passed",
+      "summary": "1 passed"
+    },
+    {
+      "command": "configured app/OpenAPI smoke",
+      "status": "passed",
+      "summary": "routes=548, paths=500, duplicate_operation_ids=0, warnings=0"
+    }
+  ],
+  "gitnexus_refresh": {
+    "attempted": true,
+    "result": "failed_in_linked_worktree",
+    "error": "ENOTDIR .git/info when running gitnexus analyze in linked worktree",
+    "root_checkout_state": "dirty_or_stale_relative_to_remote_and_not_rebased_for_indexing",
+    "disposition": "current_head_static_scans_and_runtime_smoke_are_authoritative_for_this_packet"
+  },
+  "decision": {
+    "candidate_refresh_complete": true,
+    "new_source_implementation_target_selected": false,
+    "next_gate": "human review, then separate authorization packet before any next lifecycle implementation"
+  }
+}

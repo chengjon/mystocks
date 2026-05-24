@@ -479,7 +479,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `.planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-market-data-v2-2026-05-23.json`,
 │   │   `backend-market-data-service-v2-compatibility-getter-consumer-matrix-2026-05-23.md`,
 │   │   `.planning/codebase/generated/market-data-service-v2-compatibility-getter-consumer-matrix-2026-05-23.json`
-│   ├── State: market-data-service-v2-consumer-matrix-prepared-for-review
+│   ├── State: service-lifecycle-candidate-refresh-after-indicator-registry-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -846,10 +846,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 records closeout evidence: route direct getter refs=`0`,
 │   │                 provider dependency route sites=`2`, focused tests=`2+1`
 │   │                 passed, OpenAPI paths=`500`, duplicate operation IDs=`0`,
-│   │                 GitNexus index stale for new provider symbols
-│   └── Next gate: Human review of the G2.55 closeout PR; if accepted, refresh
-│                  GitNexus or explicitly discount stale graph output before
-│                  selecting another service lifecycle DI lane
+│   │                 GitNexus index stale for new provider symbols; PR `#196`
+│   │                 merged at
+│   │                 `1fc4a4c7a86cf464dedb742612c052b911d4ef5f`; G2.56 now
+│   │                 records current-head candidate refresh after the
+│   │                 `IndicatorRegistry` provider: service files scanned=`152`,
+│   │                 API files scanned=`219`, provider state keys=`10`,
+│   │                 provider functions=`20`, provider dependency sites=`81`,
+│   │                 route getter dependency sites=`272`, route direct
+│   │                 `get_indicator_registry()` refs=`0`, provider dependency
+│   │                 route sites=`2`, OpenAPI paths=`500`, duplicate operation
+│   │                 IDs=`0`, and no source implementation target is authorized;
+│   │                 GitNexus refresh failed in the linked worktree with
+│   │                 `ENOTDIR .git/info`, so static current-head scans and
+│   │                 runtime/OpenAPI smoke are authoritative for this packet
+│   └── Next gate: Human review of the G2.56 candidate-refresh PR; if accepted,
+│                  refresh GitNexus from a non-linked checkout or explicitly
+│                  record a stale-graph waiver before creating a separate
+│                  authorization packet for any next service lifecycle DI lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -944,6 +958,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-flat-api-indicator-registry-consumer-matrix-2026-05-24.md` | G | G2.53 consumer matrix prepared at current HEAD `ec3dc2920886eb24e963a33488bd2e945e98e6c9`: records PR `#193` as `MERGED`, confirms the flat API registry singleton at `web/backend/app/services/indicator_registry.py`, identifies exactly two direct registry route consumers in `indicator_cache.py`, excludes `IndicatorCalculator.__init__` from the route-provider batch, keeps the package registry startup/jobs surface separate, records configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, selected indicator cache routes=`6`, and collect-only checks=`16+112+29` | Human review / PR merge decision; if accepted, create G2.54 flat API registry route-provider implementation branch before source edits |
 | `backend-flat-api-indicator-registry-route-provider-implementation-2026-05-24.md` | G | G2.54 implementation prepared at current HEAD `71510bb02a845ec529c8c04f3a7288ca86b87b9c`: records PR `#194` as `MERGED`, adds `INDICATOR_REGISTRY_STATE_KEY`, `install_indicator_registry`, and `get_indicator_registry_dependency`, preserves `get_indicator_registry()`, converts exactly two registry read handlers in `indicator_cache.py`, keeps `IndicatorCalculator.__init__` and package registry startup/jobs surfaces unchanged, verifies TDD red=`2 failed`, green=`2 passed`, touched ruff/black passed, v1 indicator OpenAPI doc test=`1 passed`, configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, and records legacy `/api/indicators/*` path assertions in `test_indicators.py` as residual test debt | Human review / PR merge decision; if accepted, run G2.55 closeout/current-head refresh before selecting another service lifecycle DI lane |
 | `backend-flat-api-indicator-registry-route-provider-closeout-2026-05-24.md` | G | G2.55 closeout prepared at current HEAD `5b12a3c08cac3558c56af615ff14c05913d96f72`: records PR `#195` as `MERGED`, confirms flat API registry provider surface remains present, route direct `get_indicator_registry()` references under `web/backend/app/api`=`0`, provider dependency route sites=`2`, selected indicator cache routes=`6`, configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, focused tests=`2+1 passed`, and GitNexus graph output is stale for the new provider symbols until index refresh | Human review / PR merge decision; if accepted, refresh GitNexus or explicitly discount stale graph output before selecting another service lifecycle DI lane |
+| `backend-service-lifecycle-di-candidate-refresh-after-indicator-registry-provider-2026-05-24.md` | G | G2.56 candidate refresh prepared at current HEAD `1fc4a4c7a86cf464dedb742612c052b911d4ef5f`: records PR `#196` as `MERGED`, scans API files=`219`, service files=`152`, backend tests=`195`, provider state keys=`10`, provider functions=`20`, provider records=`30`, route dependency sites=`353`, provider-style route dependency sites=`81`, getter-style route dependency sites=`272`, confirms route direct `get_indicator_registry()` refs=`0`, provider dependency route sites=`2`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, and records GitNexus refresh blocked in the linked worktree by `ENOTDIR .git/info`; no source implementation target is authorized | Human review / PR merge decision; if accepted, refresh GitNexus from a non-linked checkout or explicitly record a stale-graph waiver before creating any next service lifecycle DI authorization packet |
 
 ## Completed And Reviewed Ledger
 
