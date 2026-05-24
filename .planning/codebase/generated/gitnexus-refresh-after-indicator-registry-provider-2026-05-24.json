@@ -1,0 +1,97 @@
+{
+  "artifact": "gitnexus-refresh-after-indicator-registry-provider",
+  "workline": "G2.57",
+  "generated_at": "2026-05-24T19:11:51+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_branch": "g2-57-gitnexus-refresh-waiver",
+  "current_head": "3469a43855ef",
+  "status": "ready_for_review",
+  "scope": {
+    "kind": "governance_only_gitnexus_refresh_evidence",
+    "source_edits_authorized": false,
+    "route_or_openapi_edits_authorized": false,
+    "compatibility_getter_cleanup_authorized": false,
+    "next_lifecycle_implementation_authorized": false
+  },
+  "upstream_merge_evidence": {
+    "workline": "G2.56",
+    "pr": 197,
+    "state": "MERGED",
+    "merge_commit": "3469a43855ef81d238e1a92745126fcb321b1af7",
+    "notes": "service lifecycle DI candidate refresh after IndicatorRegistry provider closeout"
+  },
+  "refresh_method": {
+    "root_checkout_rebased": false,
+    "linked_worktree_problem": "gitnexus analyze fails in linked worktree with ENOTDIR .git/info because linked worktrees use a .git file",
+    "non_linked_checkout_kind": "temporary ignored local clone",
+    "checkout_head": "3469a43855ef",
+    "git_dot_kind": "directory",
+    "gitnexus_analyze_exit": 0
+  },
+  "gitnexus_analyze_result": {
+    "status": "success",
+    "duration_seconds": 69.7,
+    "nodes": 62623,
+    "edges": 145799,
+    "clusters": 3291,
+    "flows": 300,
+    "kuzu_seconds": 18.8,
+    "fts_seconds": 24.8,
+    "embeddings": 0
+  },
+  "gitnexus_repo_record": {
+    "repo": "g2-57-gitnexus-index-checkout",
+    "indexState": "ready",
+    "lastCommit": "3469a43855ef81d238e1a92745126fcb321b1af7",
+    "files": 9129,
+    "nodes": 62623,
+    "edges": 145799,
+    "processes": 300,
+    "embeddings": 0
+  },
+  "symbol_resolution": [
+    {
+      "symbol": "get_indicator_registry_dependency",
+      "status": "found",
+      "file": "web/backend/app/services/indicator_registry.py",
+      "startLine": 648,
+      "endLine": 653
+    },
+    {
+      "symbol": "install_indicator_registry",
+      "status": "found",
+      "file": "web/backend/app/services/indicator_registry.py",
+      "startLine": 641,
+      "endLine": 645
+    }
+  ],
+  "gitnexus_impact": {
+    "target": "get_indicator_registry_dependency",
+    "repo": "g2-57-gitnexus-index-checkout",
+    "direction": "upstream",
+    "risk": "LOW",
+    "impactedCount": 0,
+    "direct": 0,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "static_route_scan": {
+    "api_files_scanned": 219,
+    "service_files_scanned": 152,
+    "backend_test_files_scanned": 195,
+    "service_provider_state_keys": 10,
+    "service_provider_functions": 20,
+    "service_provider_records": 30,
+    "route_depends_sites": 353,
+    "provider_style_route_dependency_sites": 81,
+    "getter_style_route_dependency_sites": 272,
+    "direct_route_get_indicator_registry_refs": 0,
+    "get_indicator_registry_dependency_route_sites": 2
+  },
+  "decision": {
+    "stale_graph_waiver_required": false,
+    "stale_graph_blocker_closed_for_indicator_registry_provider_symbols": true,
+    "static_fastapi_depends_scan_still_required": true,
+    "next_gate": "human review, then separate G2.58 candidate-selection or implementation-authorization packet before any source edit"
+  }
+}
