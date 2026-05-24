@@ -1,0 +1,125 @@
+{
+  "artifact": "data-source-factory-margin-route-migration-implementation-2026-05-25",
+  "workline": "G2.67",
+  "status": "ready_for_review",
+  "generated_at": "2026-05-25T01:57:47+08:00",
+  "current_head": "7b817debccfba1c82efc5a9c71f23f0b775434c0",
+  "authorization_source": {
+    "workline": "G2.66",
+    "merged_pr": 213,
+    "merge_commit": "7b817debccfba1c82efc5a9c71f23f0b775434c0",
+    "selected_candidate": "web/backend/app/api/data/margin.py"
+  },
+  "scope": {
+    "source_files": [
+      "web/backend/app/api/data/margin.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "governance_files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/data-source-factory-margin-route-migration-implementation-2026-05-25.json",
+      "docs/reports/quality/backend-data-source-factory-margin-route-migration-implementation-2026-05-25.md",
+      "governance/mainline/task-cards/pr-214.yaml"
+    ],
+    "out_of_scope": [
+      "web/backend/app/api/data/kline.py",
+      "web/backend/app/api/data/futures.py",
+      "web/backend/app/api/data/lhb.py",
+      "web/backend/app/api/data/stocks.py",
+      "web/backend/app/api/market/market_data_request.py",
+      "web/frontend/**",
+      "src/**",
+      "openspec/changes/**",
+      "docs/api/**"
+    ]
+  },
+  "pre_edit_gate": {
+    "standards_read": "architecture/STANDARDS.md relevant governance and migration sections reviewed",
+    "gitnexus_impact": {
+      "target": "web/backend/app/api/data/margin.py",
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct": 1,
+      "processes_affected": 0
+    },
+    "gitnexus_context": [
+      {
+        "symbol": "get_margin_account_info",
+        "outgoing_before": ["get_data_source_factory", "server_error"],
+        "incoming": 0
+      },
+      {
+        "symbol": "get_margin_detail_sse",
+        "outgoing_before": ["get_data_source_factory", "server_error"],
+        "incoming": 0
+      },
+      {
+        "symbol": "get_margin_detail_szse",
+        "outgoing_before": ["get_data_source_factory", "server_error"],
+        "incoming": 0
+      }
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_margin_routes_use_data_source_factory_dependency -q --no-cov --tb=short",
+      "result": "1 failed",
+      "failure": "KeyError: 'factory'"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_margin_routes_use_data_source_factory_dependency -q --no-cov --tb=short",
+      "result": "1 passed"
+    }
+  },
+  "implementation": {
+    "margin_py": {
+      "import_added": "DataSourceFactory, get_data_source_factory_dependency",
+      "handlers_migrated": [
+        "get_margin_account_info",
+        "get_margin_detail_sse",
+        "get_margin_detail_szse"
+      ],
+      "inline_getter_imports_removed": 3,
+      "direct_factory_calls_before": 3,
+      "direct_factory_calls_after": 0
+    },
+    "test_health_route_conflicts_py": {
+      "import_added": "margin_module",
+      "test_added": "test_margin_routes_use_data_source_factory_dependency"
+    }
+  },
+  "verification": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "115 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "lint_format": {
+      "ruff_touched_files": "passed",
+      "black_check_touched_files": "3 files would be left unchanged"
+    },
+    "route_guard": {
+      "total_direct_before": 13,
+      "total_direct_after": 10,
+      "margin_direct_before": 3,
+      "margin_direct_after": 0,
+      "provider_dependency_refs_after": 8
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 121,
+      "env_note": "OpenAPI smoke used explicit non-secret test environment placeholders because this isolated worktree has no .env file."
+    },
+    "gitnexus_detect_changes_staged": {
+      "risk_level": "low",
+      "changed_count": 26,
+      "affected_count": 0,
+      "changed_files": 6,
+      "affected_processes": 0
+    }
+  },
+  "next_gate": "Human review / PR merge decision; if accepted, run G2.67 closeout/current-head refresh before selecting another DataSourceFactory route consumer."
+}
