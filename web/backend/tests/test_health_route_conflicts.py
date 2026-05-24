@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import warnings
+import inspect
 
 from fastapi.routing import APIRoute
 
+from app.api.data import financial as financial_module
 from app.main import app
 
 
@@ -12,9 +14,7 @@ def _matching_routes(path: str, method: str = "GET") -> list[APIRoute]:
     return [
         route
         for route in app.routes
-        if isinstance(route, APIRoute)
-        and route.path == path
-        and normalized_method in (route.methods or set())
+        if isinstance(route, APIRoute) and route.path == path and normalized_method in (route.methods or set())
     ]
 
 
@@ -32,16 +32,18 @@ def test_health_routes_are_unique_and_domain_scoped() -> None:
         warnings.simplefilter("always")
         schema = app.openapi()
 
-    duplicate_warnings = [
-        str(item.message)
-        for item in captured
-        if "Duplicate Operation ID" in str(item.message)
-    ]
+    duplicate_warnings = [str(item.message) for item in captured if "Duplicate Operation ID" in str(item.message)]
 
     assert not duplicate_warnings
     assert "/api/health" in schema["paths"]
     assert "/api/signals/health" in schema["paths"]
     assert "/api/metrics/health" in schema["paths"]
+
+
+def test_financial_route_uses_data_source_factory_dependency() -> None:
+    factory_param = inspect.signature(financial_module.get_financial_data).parameters["factory"]
+
+    assert getattr(factory_param.default, "dependency", None) is financial_module.get_data_source_factory_dependency
 
 
 def test_root_and_socketio_status_have_documented_examples_and_errors() -> None:
@@ -310,7 +312,14 @@ def test_v1_strategy_runtime_endpoints_have_success_examples_and_parameter_docs(
         ("/api/v1/strategy/definitions", "get"): set(),
         ("/api/v1/strategy/run/single", "post"): {"strategy_code", "symbol", "stock_name", "check_date"},
         ("/api/v1/strategy/run/batch", "post"): {"strategy_code", "symbols", "market", "limit", "check_date"},
-        ("/api/v1/strategy/results", "get"): {"strategy_code", "symbol", "check_date", "match_result", "limit", "offset"},
+        ("/api/v1/strategy/results", "get"): {
+            "strategy_code",
+            "symbol",
+            "check_date",
+            "match_result",
+            "limit",
+            "offset",
+        },
         ("/api/v1/strategy/matched-stocks", "get"): {"strategy_code", "check_date", "limit"},
         ("/api/v1/strategy/stats/summary", "get"): {"check_date"},
     }
@@ -323,7 +332,8 @@ def test_v1_strategy_runtime_endpoints_have_success_examples_and_parameter_docs(
         assert len(operation.get("description", "")) >= 20
         for parameter_name in expected_params:
             assert any(
-                param["name"] == parameter_name and param.get("description") for param in operation.get("parameters", [])
+                param["name"] == parameter_name and param.get("description")
+                for param in operation.get("parameters", [])
             )
         assert "example" in success_json or "examples" in success_json
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
@@ -486,7 +496,9 @@ def test_public_announcement_endpoints_have_success_examples_and_error_responses
     assert len(analyze_operation.get("description", "")) >= 20
     assert "example" in analyze_json or "examples" in analyze_json
     assert "example" in analyze_success_json or "examples" in analyze_success_json
-    analyze_example = analyze_success_json.get("example") or next(iter(analyze_success_json["examples"].values()))["value"]
+    analyze_example = (
+        analyze_success_json.get("example") or next(iter(analyze_success_json["examples"].values()))["value"]
+    )
     assert analyze_example["success"] is True
     assert analyze_example["code"] == 200
     assert analyze_example["data"]["status"] == "available"
@@ -518,6 +530,7 @@ def test_public_announcement_endpoints_have_success_examples_and_error_responses
     evaluate_success_json = evaluate_operation["responses"]["200"]["content"]["application/json"]
     assert "example" in evaluate_success_json or "examples" in evaluate_success_json
     assert any(code.startswith(("4", "5")) for code in evaluate_operation["responses"])
+
 
 def test_signal_history_endpoint_has_query_parameter_descriptions() -> None:
     app.openapi_schema = None
@@ -836,8 +849,7 @@ def test_tdx_and_metrics_endpoints_have_parameter_docs_and_error_responses() -> 
     assert quote_operation.get("summary")
     assert len(quote_operation.get("description", "")) >= 20
     assert any(
-        param["name"] == "symbol" and param["in"] == "path" and param.get("description")
-        for param in quote_parameters
+        param["name"] == "symbol" and param["in"] == "path" and param.get("description") for param in quote_parameters
     )
     assert any(code.startswith(("4", "5")) for code in quote_operation["responses"])
 
@@ -864,8 +876,7 @@ def test_ml_endpoints_have_request_response_examples_and_parameter_docs() -> Non
     assert market_operation.get("summary")
     assert len(market_operation.get("description", "")) >= 20
     assert any(
-        param["name"] == "market" and param["in"] == "path" and param.get("description")
-        for param in market_parameters
+        param["name"] == "market" and param["in"] == "path" and param.get("description") for param in market_parameters
     )
     assert "example" in market_success_json or "examples" in market_success_json
     assert any(code.startswith(("4", "5")) for code in market_operation["responses"])
@@ -910,7 +921,9 @@ def test_multi_source_endpoints_have_descriptions_examples_and_error_responses()
     assert len(analyze_operation.get("description", "")) >= 20
     assert "example" in analyze_json or "examples" in analyze_json
     assert "example" in analyze_success_json or "examples" in analyze_success_json
-    analyze_example = analyze_success_json.get("example") or next(iter(analyze_success_json["examples"].values()))["value"]
+    analyze_example = (
+        analyze_success_json.get("example") or next(iter(analyze_success_json["examples"].values()))["value"]
+    )
     assert analyze_example["success"] is True
     assert analyze_example["code"] == 200
     assert analyze_example["data"]["status"] == "available"
@@ -1019,7 +1032,9 @@ def test_sentiment_endpoint_has_docs_examples_and_parameter_descriptions() -> No
     for parameter_name in ["symbol", "days"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in sentiment_parameters)
     assert "example" in sentiment_success_json or "examples" in sentiment_success_json
-    sentiment_example = sentiment_success_json.get("example") or next(iter(sentiment_success_json["examples"].values()))["value"]
+    sentiment_example = (
+        sentiment_success_json.get("example") or next(iter(sentiment_success_json["examples"].values()))["value"]
+    )
     assert sentiment_example["success"] is True
     assert sentiment_example["code"] == 200
     assert sentiment_example["data"]["latest_sentiment"] in {"positive", "negative", "neutral"}
@@ -1040,7 +1055,9 @@ def test_technical_patterns_endpoint_has_docs_examples_and_parameter_description
     for parameter_name in ["symbol", "period"]:
         assert any(param["name"] == parameter_name and param.get("description") for param in patterns_parameters)
     assert "example" in patterns_success_json or "examples" in patterns_success_json
-    patterns_example = patterns_success_json.get("example") or next(iter(patterns_success_json["examples"].values()))["value"]
+    patterns_example = (
+        patterns_success_json.get("example") or next(iter(patterns_success_json["examples"].values()))["value"]
+    )
     assert patterns_example["success"] is True
     assert patterns_example["code"] == 200
     assert patterns_example["data"]["symbol"]
@@ -1075,11 +1092,12 @@ def test_audit_endpoints_have_parameter_descriptions() -> None:
     assert log_detail_operation.get("summary")
     assert len(log_detail_operation.get("description", "")) >= 20
     assert any(
-        param["name"] == "log_id" and param.get("description")
-        for param in log_detail_operation.get("parameters", [])
+        param["name"] == "log_id" and param.get("description") for param in log_detail_operation.get("parameters", [])
     )
     assert "example" in log_detail_success_json or "examples" in log_detail_success_json
-    log_detail_example = log_detail_success_json.get("example") or next(iter(log_detail_success_json["examples"].values()))["value"]
+    log_detail_example = (
+        log_detail_success_json.get("example") or next(iter(log_detail_success_json["examples"].values()))["value"]
+    )
     assert log_detail_example["success"] is True
     assert log_detail_example["code"] == 200
     assert log_detail_example["data"]
@@ -1095,7 +1113,9 @@ def test_audit_endpoints_have_parameter_descriptions() -> None:
             for param in statistics_operation.get("parameters", [])
         )
     assert "example" in statistics_success_json or "examples" in statistics_success_json
-    statistics_example = statistics_success_json.get("example") or next(iter(statistics_success_json["examples"].values()))["value"]
+    statistics_example = (
+        statistics_success_json.get("example") or next(iter(statistics_success_json["examples"].values()))["value"]
+    )
     assert statistics_example["success"] is True
     assert statistics_example["code"] == 200
     assert statistics_example["data"]
@@ -1440,7 +1460,14 @@ def test_data_source_registry_read_endpoints_have_examples_and_error_responses()
     schema = app.openapi()
 
     endpoint_expectations = {
-        "/api/v1/data-sources/": {"data_category", "classification_level", "source_type", "only_healthy", "keyword", "status"},
+        "/api/v1/data-sources/": {
+            "data_category",
+            "classification_level",
+            "source_type",
+            "only_healthy",
+            "keyword",
+            "status",
+        },
         "/api/v1/data-sources/categories": set(),
         "/api/v1/data-sources/{endpoint_name}": {"endpoint_name"},
         "/api/v1/data-sources/{endpoint_name}/health-check": {"endpoint_name", "Authorization"},
@@ -1798,9 +1825,9 @@ def test_strategy_mgmt_legacy_endpoints_have_success_examples_and_error_docs() -
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
 
         if expects_success_example:
-            success_json = operation["responses"][next(code for code in operation["responses"] if code.startswith("2"))][
-                "content"
-            ]["application/json"]
+            success_json = operation["responses"][
+                next(code for code in operation["responses"] if code.startswith("2"))
+            ]["content"]["application/json"]
             assert "example" in success_json or "examples" in success_json
 
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
@@ -2348,7 +2375,9 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert portfolio_operation.get("summary")
     assert len(portfolio_operation.get("description", "")) >= 20
     assert "example" in portfolio_success_json or "examples" in portfolio_success_json
-    portfolio_example = portfolio_success_json.get("example") or next(iter(portfolio_success_json["examples"].values()))["value"]
+    portfolio_example = (
+        portfolio_success_json.get("example") or next(iter(portfolio_success_json["examples"].values()))["value"]
+    )
     assert portfolio_example["success"] is True
     assert portfolio_example["code"] == 200
     assert portfolio_example["data"]["status"] == "available"
@@ -2359,7 +2388,9 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert positions_operation.get("summary")
     assert len(positions_operation.get("description", "")) >= 20
     assert "example" in positions_success_json or "examples" in positions_success_json
-    positions_example = positions_success_json.get("example") or next(iter(positions_success_json["examples"].values()))["value"]
+    positions_example = (
+        positions_success_json.get("example") or next(iter(positions_success_json["examples"].values()))["value"]
+    )
     assert positions_example["success"] is True
     assert positions_example["code"] == 200
     assert positions_example["data"]["status"] == "available"
@@ -2367,12 +2398,13 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert any(code.startswith("5") for code in positions_operation["responses"])
 
     assert any(
-        param["name"] == "limit" and param.get("description")
-        for param in signals_operation.get("parameters", [])
+        param["name"] == "limit" and param.get("description") for param in signals_operation.get("parameters", [])
     )
     signals_success_json = signals_operation["responses"]["200"]["content"]["application/json"]
     assert "example" in signals_success_json or "examples" in signals_success_json
-    signals_example = signals_success_json.get("example") or next(iter(signals_success_json["examples"].values()))["value"]
+    signals_example = (
+        signals_success_json.get("example") or next(iter(signals_success_json["examples"].values()))["value"]
+    )
     assert signals_example["success"] is True
     assert signals_example["code"] == 200
     assert signals_example["data"]["status"] == "available"
@@ -2399,7 +2431,9 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     assert statistics_operation.get("summary")
     assert len(statistics_operation.get("description", "")) >= 20
     assert "example" in statistics_success_json or "examples" in statistics_success_json
-    statistics_example = statistics_success_json.get("example") or next(iter(statistics_success_json["examples"].values()))["value"]
+    statistics_example = (
+        statistics_success_json.get("example") or next(iter(statistics_success_json["examples"].values()))["value"]
+    )
     assert statistics_example["success"] is True
     assert statistics_example["code"] == 200
     assert statistics_example["data"]["status"] == "available"
@@ -2410,7 +2444,9 @@ def test_trade_endpoints_have_examples_parameter_docs_and_error_responses() -> N
     execute_success_json = execute_operation["responses"]["200"]["content"]["application/json"]
     assert "example" in execute_json or "examples" in execute_json
     assert "example" in execute_success_json or "examples" in execute_success_json
-    execute_example = execute_success_json.get("example") or next(iter(execute_success_json["examples"].values()))["value"]
+    execute_example = (
+        execute_success_json.get("example") or next(iter(execute_success_json["examples"].values()))["value"]
+    )
     assert execute_example["success"] is True
     assert execute_example["code"] == 200
     assert execute_example["data"]["status"] == "available"
@@ -2457,7 +2493,8 @@ def test_technical_analysis_endpoints_have_examples_parameter_docs_and_error_res
         assert len(operation.get("description", "")) >= 20
         for parameter_name in expectations["parameters"]:
             assert any(
-                param["name"] == parameter_name and param.get("description") for param in operation.get("parameters", [])
+                param["name"] == parameter_name and param.get("description")
+                for param in operation.get("parameters", [])
             )
         assert "example" in success_json or "examples" in success_json
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
@@ -3002,7 +3039,8 @@ def test_v1_strategy_management_endpoints_have_success_examples_and_parameter_do
         assert len(operation.get("description", "")) >= 20
         for parameter_name in expected_params:
             assert any(
-                param["name"] == parameter_name and param.get("description") for param in operation.get("parameters", [])
+                param["name"] == parameter_name and param.get("description")
+                for param in operation.get("parameters", [])
             )
         if "requestBody" in operation:
             request_json = operation["requestBody"]["content"]["application/json"]
@@ -3050,7 +3088,9 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
     assert len(data_route_operation.get("description", "")) >= 20
     assert "example" in data_route_request_json or "examples" in data_route_request_json
     assert "example" in data_route_success_json or "examples" in data_route_success_json
-    data_route_example = data_route_success_json.get("example") or next(iter(data_route_success_json["examples"].values()))["value"]
+    data_route_example = (
+        data_route_success_json.get("example") or next(iter(data_route_success_json["examples"].values()))["value"]
+    )
     assert data_route_example["success"] is True
     assert data_route_example["code"] == 200
     assert data_route_example["data"]["route_selected"] in {"tdengine", "postgresql"}
@@ -3063,7 +3103,9 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
     assert len(sentiment_operation.get("description", "")) >= 20
     assert "example" in sentiment_request_json or "examples" in sentiment_request_json
     assert "example" in sentiment_success_json or "examples" in sentiment_success_json
-    sentiment_example = sentiment_success_json.get("example") or next(iter(sentiment_success_json["examples"].values()))["value"]
+    sentiment_example = (
+        sentiment_success_json.get("example") or next(iter(sentiment_success_json["examples"].values()))["value"]
+    )
     assert sentiment_example["success"] is True
     assert sentiment_example["code"] == 200
     assert sentiment_example["data"]["sentiment"] in {"positive", "negative", "neutral"}
@@ -3074,7 +3116,10 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
     assert market_sentiment_operation.get("summary")
     assert len(market_sentiment_operation.get("description", "")) >= 20
     assert "example" in market_sentiment_success_json or "examples" in market_sentiment_success_json
-    market_sentiment_example = market_sentiment_success_json.get("example") or next(iter(market_sentiment_success_json["examples"].values()))["value"]
+    market_sentiment_example = (
+        market_sentiment_success_json.get("example")
+        or next(iter(market_sentiment_success_json["examples"].values()))["value"]
+    )
     assert market_sentiment_example["success"] is True
     assert market_sentiment_example["code"] == 200
     assert market_sentiment_example["data"]["sentiment"] in {"positive", "negative", "neutral"}
@@ -3082,16 +3127,20 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
 
     technical_indicators_operation = schema["paths"]["/api/v1/technical-indicators"]["get"]
     technical_indicators_parameters = technical_indicators_operation.get("parameters", [])
-    technical_indicators_success_json = technical_indicators_operation["responses"]["200"]["content"]["application/json"]
+    technical_indicators_success_json = technical_indicators_operation["responses"]["200"]["content"][
+        "application/json"
+    ]
     assert technical_indicators_operation.get("summary")
     assert len(technical_indicators_operation.get("description", "")) >= 20
     for parameter_name in ["symbol", "indicators", "period"]:
         assert any(
-            param["name"] == parameter_name and param.get("description")
-            for param in technical_indicators_parameters
+            param["name"] == parameter_name and param.get("description") for param in technical_indicators_parameters
         )
     assert "example" in technical_indicators_success_json or "examples" in technical_indicators_success_json
-    technical_indicators_example = technical_indicators_success_json.get("example") or next(iter(technical_indicators_success_json["examples"].values()))["value"]
+    technical_indicators_example = (
+        technical_indicators_success_json.get("example")
+        or next(iter(technical_indicators_success_json["examples"].values()))["value"]
+    )
     assert technical_indicators_example["success"] is True
     assert technical_indicators_example["code"] == 200
     assert technical_indicators_example["data"]["symbol"]
@@ -3104,14 +3153,13 @@ def test_v1_data_route_sentiment_strategy_and_optimization_endpoints_have_docs()
     assert strategies_operation.get("summary")
     assert len(strategies_operation.get("description", "")) >= 20
     assert "example" in strategies_success_json or "examples" in strategies_success_json
-    strategies_example = strategies_success_json.get("example") or next(iter(strategies_success_json["examples"].values()))["value"]
+    strategies_example = (
+        strategies_success_json.get("example") or next(iter(strategies_success_json["examples"].values()))["value"]
+    )
     assert strategies_example["success"] is True
     assert strategies_example["code"] == 200
     assert strategies_example["data"]
-    assert any(
-        param["name"] == "strategy_type" and param.get("description")
-        for param in strategies_parameters
-    )
+    assert any(param["name"] == "strategy_type" and param.get("description") for param in strategies_parameters)
     assert any(code.startswith(("4", "5")) for code in strategies_operation["responses"])
 
     optimization_expectations = {
@@ -3165,10 +3213,7 @@ def test_remaining_signal_health_and_task_endpoints_have_parameter_docs_and_desc
     signal_quality_parameters = signal_quality_operation.get("parameters", [])
     assert signal_quality_operation.get("summary")
     assert len(signal_quality_operation.get("description", "")) >= 20
-    assert any(
-        param["name"] == "strategy_id" and param.get("description")
-        for param in signal_quality_parameters
-    )
+    assert any(param["name"] == "strategy_id" and param.get("description") for param in signal_quality_parameters)
 
     realtime_operation = schema["paths"]["/api/strategies/{strategy_id}/realtime"]["get"]
     realtime_parameters = realtime_operation.get("parameters", [])
@@ -3187,6 +3232,5 @@ def test_remaining_signal_health_and_task_endpoints_have_parameter_docs_and_desc
     assert task_operation.get("summary")
     assert len(task_operation.get("description", "")) >= 20
     assert any(
-        param["name"] == "task_id" and param["in"] == "path" and param.get("description")
-        for param in task_parameters
+        param["name"] == "task_id" and param["in"] == "path" and param.get("description") for param in task_parameters
     )

@@ -954,10 +954,17 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 direct call at line `69` in one route function, while
 │   │                 `market.py` has one direct call but a broader four-route
 │   │                 file surface; no source edit is included
-│   └── Next gate: Human review of the G2.62 authorization PR; if accepted,
-│                  create G2.63 path-limited implementation branch for
-│                  `financial.py` only; remaining route/API consumers stay
-│                  locked
+│   │                 PR `#207` merged at
+│   │                 `7c1b8fce44b3931c44ac5398e12f5715a28833e3`; G2.63 now
+│   │                 implements the approved `financial.py` migration:
+│   │                 `financial.py` direct calls move from `1` to `0`, total
+│   │                 API direct calls move from `15` to `14`, focused health
+│   │                 route conflict tests pass `113`, provider tests pass `4`,
+│   │                 and app/OpenAPI smoke remains routes=`548`, paths=`500`,
+│   │                 duplicate operation IDs=`0`
+│   └── Next gate: Human review of the G2.63 implementation PR; if accepted,
+│                  run a separate G2.63 closeout/current-head refresh before
+│                  selecting the next DataSourceFactory route consumer packet
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1063,6 +1070,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-quality-data-source-factory-route-migration-implementation-2026-05-24.md` | G | G2.61c implementation prepared at current HEAD `52a2aaa57150db834bcef3a526a4b78e37ac438a`: records PR `#204` as `MERGED`, refreshes non-linked GitNexus at the same HEAD with analyze exit=`0`, nodes=`62644`, edges=`145830`, flows=`300`, records LOW/0 upstream impact for `get_sources_health`, `get_system_status_overview`, `get_data_source_factory_dependency`, and `install_data_source_factory`, follows TDD red=`2 failed, 2 passed` then green=`4 passed`, re-exports `get_data_source_factory_dependency`, migrates `data_quality.py` direct calls from `2` to `0`, reduces total API direct calls from `17` to `15`, preserves `get_data_source_factory()` plus `_global_factory`, verifies provider tests=`4 passed`, existing factory tests=`38 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`; remaining `15` route/API consumers stay locked | Human review / PR merge decision; if accepted, run G2.61c closeout/current-head refresh before selecting another DataSourceFactory route consumer packet |
 | `backend-data-quality-data-source-factory-route-migration-closeout-2026-05-24.md` | G | G2.61c closeout prepared at current HEAD `b9d0bb31a72d362dc67a38dcd719578de56af739`: records PR `#205` as `MERGED`, confirms current-head route guard direct API calls=`15`, `data_quality.py` direct refs=`0`, provider dependency API refs=`3`, focused data-quality tests=`4 passed`, provider lifecycle tests=`4 passed`, factory tests=`38 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, and refreshed non-linked GitNexus at `b9d0bb31a` with analyze exit=`0`, nodes=`62656`, edges=`145815`, flows=`300`, LOW/0 upstream impact for `get_sources_health`, `get_system_status_overview`, and `get_data_source_factory_dependency`; recommends G2.62 authorization-only packet for the next one-call consumer candidate (`data/financial.py` or `data/market.py`) | Human review / PR merge decision; if accepted, create G2.62 consumer-selection authorization packet before any further route edit |
 | `backend-data-source-factory-next-route-consumer-authorization-2026-05-24.md` | G | G2.62 authorization prepared at current HEAD `fcc438de0965f80af7d485525fb494511976595b`: records PR `#206` as `MERGED`, compares the remaining one-call candidates and selects `web/backend/app/api/data/financial.py` for future G2.63 because it has one direct factory call at line `69` inside one route function, while `web/backend/app/api/data/market.py` has one direct call at line `98` but a broader four-route file surface; this PR authorizes only a future `financial.py` implementation branch and does not edit source, tests, routes, OpenAPI, OpenSpec, issue labels, runtime, or PM2 state | Human review / PR merge decision; if accepted, create G2.63 path-limited `financial.py` implementation branch; all other remaining consumers stay locked |
+| `backend-data-source-factory-financial-route-migration-implementation-2026-05-24.md` | G | G2.63 implementation prepared at current HEAD `7c1b8fce44b3931c44ac5398e12f5715a28833e3`: records PR `#207` as `MERGED`, refreshes non-linked GitNexus at the same HEAD with analyze exit=`0`, nodes=`62644`, edges=`145819`, flows=`300`, records file-level `financial.py` upstream impact LOW/2 and provider dependency LOW/0, follows TDD red=`1 failed, 112 passed` then green=`113 passed`, migrates `financial.py` direct calls from `1` to `0`, reduces total API direct calls from `15` to `14`, preserves `get_data_source_factory()` plus `_global_factory`, verifies provider lifecycle tests=`4 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`; remaining `14` route/API consumers stay locked | Human review / PR merge decision; if accepted, run G2.63 closeout/current-head refresh before selecting another DataSourceFactory route consumer packet |
 
 ## Completed And Reviewed Ledger
 
