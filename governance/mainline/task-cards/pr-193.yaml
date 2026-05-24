@@ -1,0 +1,108 @@
+version: "v0.2"
+
+task:
+  id: "pr-193"
+  title: "Design IndicatorRegistry provider boundary"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-indicator-registry-provider-design"
+  objective: "record IndicatorRegistry provider design boundary after G2.51 candidate refresh"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-indicator-registry-provider-design"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-indicator-registry-provider-design"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Design packet records governance evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/indicator-registry-provider-design-2026-05-24.json"
+    - "docs/reports/quality/backend-indicator-registry-provider-design-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-193.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, tests, generated clients, docs/API, OpenSpec, PM2, route, OpenAPI, or runtime behavior changes"
+  - "No GitHub issue state, label, or ready-for-agent movement"
+  - "No source implementation in this PR"
+  - "No next service lifecycle DI implementation target authorization"
+  - "No compatibility getter cleanup authorization"
+  - "No merge between flat API registry and package indicator registry"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-indicator-registry-provider-design-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/indicator-registry-provider-design-2026-05-24.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-193.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-193.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "python -c \"print('staged-gitnexus-scope: docs-only IndicatorRegistry design packet; no source symbols changed')\""
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the design-only boundary"
+    - "If flat API registry and package registry are collapsed into one implementation lane, startup/jobs and route API behavior may be mixed"
+    - "If this packet authorizes source implementation, it bypasses the required separate consumer matrix and authorization gate"
+  rollback_plan: "revert this governance-only PR; PR #192 remains the current-head candidate refresh record unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record IndicatorRegistry provider design boundary and next evidence gate"
+    modified_scope: "design report, generated artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only design PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T14:01:41+08:00"
+    approval_note: "human maintainer approved continuing after PR #192 merge; this packet records G2.52 IndicatorRegistry provider design only"
+    secondary_approved: false

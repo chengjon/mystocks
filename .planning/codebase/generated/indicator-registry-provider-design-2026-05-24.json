@@ -1,0 +1,93 @@
+{
+  "artifact": "indicator-registry-provider-design-2026-05-24",
+  "created_at": "2026-05-24T14:10:00+08:00",
+  "workline": "G2.52",
+  "status": "design_packet_prepared",
+  "source_changes_authorized": false,
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "363324bf31a89b797789403c55dbe3ca854bc7d6",
+  "head_subject": "Merge pull request #192 from chengjon/g2-51-service-lifecycle-candidate-refresh",
+  "parent_pr": {
+    "number": 192,
+    "state": "MERGED",
+    "merge_commit": "363324bf31a89b797789403c55dbe3ca854bc7d6",
+    "merged_at": "2026-05-24T06:01:41Z"
+  },
+  "design_finding": "two_same_name_indicator_registry_getters_with_different_ownership",
+  "surfaces": {
+    "flat_api_registry": {
+      "getter_file": "web/backend/app/services/indicator_registry.py",
+      "lines": 637,
+      "direct_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py:get_indicator_registry_endpoint",
+        "web/backend/app/api/indicators/indicator_cache.py:get_indicators_by_category",
+        "web/backend/app/services/indicator_calculator.py:__init__"
+      ],
+      "recommended_next_gate": "flat_api_registry_consumer_matrix_authorization_candidate"
+    },
+    "package_registry": {
+      "getter_file": "web/backend/app/services/indicators/indicator_registry.py",
+      "lines": 471,
+      "direct_callers": [
+        "web/backend/app/services/indicators/defaults.py:load_default_indicators",
+        "web/backend/app/services/indicators/talib_adapter.py:TalibGenericIndicator.__init__",
+        "web/backend/app/services/indicators/talib_adapter.py:register_all_talib_indicators"
+      ],
+      "classification": "indicator_internal_startup_jobs_surface",
+      "recommended_next_gate": "separate_startup_jobs_design_packet"
+    }
+  },
+  "relevant_file_counts": {
+    "web/backend/app/services/indicator_registry.py": {
+      "lines": 637,
+      "get_indicator_registry": 1,
+      "IndicatorRegistry": 3
+    },
+    "web/backend/app/services/indicators/indicator_registry.py": {
+      "lines": 471,
+      "get_indicator_registry": 1,
+      "IndicatorRegistry": 10
+    },
+    "web/backend/app/api/indicators/indicator_cache.py": {
+      "lines": 703,
+      "get_indicator_registry": 4,
+      "IndicatorRegistry": 3
+    },
+    "web/backend/app/services/indicator_calculator.py": {
+      "lines": 383,
+      "get_indicator_registry": 2
+    },
+    "web/backend/app/services/indicators/talib_adapter.py": {
+      "lines": 279,
+      "get_indicator_registry": 3,
+      "register_all_talib_indicators": 1
+    },
+    "web/backend/app/services/indicators/defaults.py": {
+      "lines": 121,
+      "get_indicator_registry": 2,
+      "load_default_indicators": 1,
+      "register_all_talib_indicators": 2
+    },
+    "web/backend/app/main.py": {
+      "lines": 901,
+      "load_default_indicators": 2
+    }
+  },
+  "openapi_smoke": {
+    "app_import": "ok",
+    "routes": 548,
+    "paths": 500,
+    "duplicate_operation_ids": 0,
+    "warnings": 121,
+    "environment": "non_sensitive_placeholder"
+  },
+  "gitnexus": {
+    "flat_api_registry_direct_callers": 3,
+    "package_registry_direct_production_callers": 3,
+    "package_registry_previous_risk": "LOW",
+    "package_registry_previous_impacted_count": 4,
+    "disambiguation_required": true
+  },
+  "decision": "no_source_implementation_target_selected",
+  "recommended_next_gate": "g2_53_flat_api_registry_consumer_matrix_authorization_candidate"
+}
