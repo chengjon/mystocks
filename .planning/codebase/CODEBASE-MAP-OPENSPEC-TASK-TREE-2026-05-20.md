@@ -990,9 +990,20 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 tests pass `114`, provider tests pass `4`, touched-file
 │   │                 ruff/black pass, and app/OpenAPI smoke remains routes=`548`,
 │   │                 paths=`500`, duplicate operation IDs=`0`
-│   └── Next gate: Human review of the G2.65 implementation PR; if accepted,
-│                  run a separate G2.65 closeout/current-head refresh before
-│                  selecting another DataSourceFactory route consumer packet
+│   │                 PR `#211` merged at
+│   │                 `277fdd412b2bbf68b64c5186fee943dc50080480`; G2.65
+│   │                 closeout confirms current-head stability: health route
+│   │                 conflict tests=`114 passed`, provider tests=`4 passed`,
+│   │                 route direct calls remain `13`, `market.py` direct refs
+│   │                 remain `0`, OpenAPI paths remain `500`, duplicate
+│   │                 operation IDs remain `0`, and refreshed GitNexus at
+│   │                 `277fdd412` reports `market.py` LOW/1 and provider
+│   │                 dependency LOW/0
+│   └── Next gate: Create a separate G2.66 authorization-only packet before
+│                  any next DataSourceFactory route consumer edit; remaining
+│                  candidates are `kline.py`, `futures.py`, `lhb.py`,
+│                  `stocks.py`, `margin.py`, and
+│                  `market/market_data_request.py`
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1102,6 +1113,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-financial-route-migration-closeout-2026-05-24.md` | G | G2.63 closeout prepared at current HEAD `229cd7fe0a21cb9bf7b9079d07e9551baaf0a4c7`: records PR `#208` as `MERGED`, confirms current-head route guard direct API calls=`14`, `financial.py` direct refs=`0`, provider dependency API refs=`5`, health route conflict tests=`113 passed`, provider lifecycle tests=`4 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, operation IDs=`536`, duplicate operation IDs=`0`, and refreshed non-linked GitNexus at `229cd7fe0` with analyze exit=`0`, nodes=`62659`, edges=`145822`, flows=`300`, file-level `financial.py` LOW/1 upstream impact and provider dependency LOW/0; recommends a separate G2.64 authorization-only packet before any next route consumer edit | Human review / PR merge decision; if accepted, create G2.64 authorization-only packet for the next DataSourceFactory route consumer; recommended candidate is `web/backend/app/api/data/market.py`, and all other remaining consumers stay locked |
 | `backend-data-source-factory-market-route-migration-authorization-2026-05-24.md` | G | G2.64 authorization prepared at current HEAD `cfb98f079c488c7e33c270e44342408a0e10db44`: records PR `#209` as `MERGED`, selects `web/backend/app/api/data/market.py` for future G2.65 because it has one direct factory call at line `98` inside `get_market_overview`, records the four-route file surface, confirms direct API calls=`14`, provider dependency refs=`5`, health route conflict tests=`113 passed`, provider lifecycle tests=`4 passed`, app/OpenAPI smoke routes=`548`, paths=`500`, operation IDs=`536`, duplicate operation IDs=`0`, and refreshed non-linked GitNexus at `cfb98f079` with analyze exit=`0`, nodes=`62656`, edges=`145824`, flows=`300`, file-level `market.py` LOW/1 upstream impact and provider dependency LOW/0; candidate style baseline notes existing `market.py` E701/black debt to fix inside a future same-file implementation | Human review / PR merge decision; if accepted, create G2.65 path-limited `market.py` implementation branch; all other remaining consumers stay locked |
 | `backend-data-source-factory-market-route-migration-implementation-2026-05-24.md` | G | G2.65 implementation prepared at current HEAD `20a7b67f1898506586e7858840d0ae058461fe93`: records PR `#210` as `MERGED`, refreshes non-linked GitNexus before source edits with analyze exit=`0`, nodes=`62665`, edges=`145822`, flows=`300`, records file-level `market.py` upstream impact LOW/1 and provider dependency LOW/0, follows TDD red=`1 failed: KeyError factory` then green=`1 passed`, migrates `market.py` direct calls from `1` to `0`, reduces total API direct calls from `14` to `13`, clears same-file `market.py` E701/black debt inside the authorized file, preserves `get_data_source_factory()` plus `_global_factory`, verifies health route conflict tests=`114 passed`, provider lifecycle tests=`4 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, operation IDs=`536`, duplicate operation IDs=`0`; remaining `13` route/API consumers stay locked | Human review / PR merge decision; if accepted, run G2.65 closeout/current-head refresh before selecting another DataSourceFactory route consumer packet |
+| `backend-data-source-factory-market-route-migration-closeout-2026-05-24.md` | G | G2.65 closeout prepared at current HEAD `277fdd412b2bbf68b64c5186fee943dc50080480`: records PR `#211` as `MERGED`, confirms current-head route guard direct API calls=`13`, `market.py` direct refs=`0`, provider dependency API refs=`7`, health route conflict tests=`114 passed`, provider lifecycle tests=`4 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, operation IDs=`536`, duplicate operation IDs=`0`, and refreshed non-linked GitNexus at `277fdd412` with analyze exit=`0`, nodes=`62667`, edges=`145820`, flows=`300`, file-level `market.py` LOW/1 upstream impact and provider dependency LOW/0; recommends G2.66 authorization-only candidate comparison before any next route consumer edit | Human review / PR merge decision; if accepted, create G2.66 consumer-selection authorization packet; all remaining `13` route/API consumers stay locked |
 
 ## Completed And Reviewed Ledger
 
