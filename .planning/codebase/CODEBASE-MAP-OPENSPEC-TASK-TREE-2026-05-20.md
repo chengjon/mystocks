@@ -479,7 +479,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   `.planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-market-data-v2-2026-05-23.json`,
 │   │   `backend-market-data-service-v2-compatibility-getter-consumer-matrix-2026-05-23.md`,
 │   │   `.planning/codebase/generated/market-data-service-v2-compatibility-getter-consumer-matrix-2026-05-23.json`
-│   ├── State: gitnexus-refresh-after-indicator-registry-prepared-for-review
+│   ├── State: service-lifecycle-next-lane-selection-prepared-for-review
 │   ├── Role: Track issue `#79` service lifecycle DI candidate classification,
 │   │         authorization, and first implementation pilot while preventing
 │   │         unapproved expansion to additional services
@@ -872,11 +872,20 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 is `LOW` with impacted count=`0`; route dependency counts
 │   │                 still require static FastAPI `Depends(...)` scans because
 │   │                 the refreshed graph does not model those route sites as
-│   │                 incoming call edges
-│   └── Next gate: Human review of the G2.57 GitNexus refresh PR; if accepted,
-│                  create a separate G2.58 candidate-selection or
-│                  implementation-authorization packet before any next service
-│                  lifecycle DI source edit
+│   │                 incoming call edges; PR `#198` merged at
+│   │                 `5dbb0ca0c387dafb313e9b5f2674f3023da65962`; G2.58 now
+│   │                 records next-lane selection at the same HEAD: ordinary
+│   │                 provider dependency rows are implemented/closed except
+│   │                 `get_data_source_dependency`, which is already
+│   │                 provider-shaped with `3` dashboard route sites; the next
+│   │                 design-only seam is `get_data_source_factory`, with `17`
+│   │                 direct API call sites across `9` files and refreshed
+│   │                 GitNexus upstream impact `CRITICAL` (`22` impacted, `21`
+│   │                 direct, `15` processes, `3` modules)
+│   └── Next gate: Human review of the G2.58 next-lane selection PR; if
+│                  accepted, create a separate G2.59 design/authorization packet
+│                  for `get_data_source_factory`; no source edit is authorized
+│                  until that later packet is reviewed and approved
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -973,6 +982,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-flat-api-indicator-registry-route-provider-closeout-2026-05-24.md` | G | G2.55 closeout prepared at current HEAD `5b12a3c08cac3558c56af615ff14c05913d96f72`: records PR `#195` as `MERGED`, confirms flat API registry provider surface remains present, route direct `get_indicator_registry()` references under `web/backend/app/api`=`0`, provider dependency route sites=`2`, selected indicator cache routes=`6`, configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, focused tests=`2+1 passed`, and GitNexus graph output is stale for the new provider symbols until index refresh | Human review / PR merge decision; if accepted, refresh GitNexus or explicitly discount stale graph output before selecting another service lifecycle DI lane |
 | `backend-service-lifecycle-di-candidate-refresh-after-indicator-registry-provider-2026-05-24.md` | G | G2.56 candidate refresh prepared at current HEAD `1fc4a4c7a86cf464dedb742612c052b911d4ef5f`: records PR `#196` as `MERGED`, scans API files=`219`, service files=`152`, backend tests=`195`, provider state keys=`10`, provider functions=`20`, provider records=`30`, route dependency sites=`353`, provider-style route dependency sites=`81`, getter-style route dependency sites=`272`, confirms route direct `get_indicator_registry()` refs=`0`, provider dependency route sites=`2`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, and records GitNexus refresh blocked in the linked worktree by `ENOTDIR .git/info`; no source implementation target is authorized | Human review / PR merge decision; if accepted, refresh GitNexus from a non-linked checkout or explicitly record a stale-graph waiver before creating any next service lifecycle DI authorization packet |
 | `backend-gitnexus-refresh-after-indicator-registry-provider-2026-05-24.md` | G | G2.57 GitNexus refresh evidence prepared at current HEAD `3469a43855ef81d238e1a92745126fcb321b1af7`: records PR `#197` as `MERGED`, confirms a temporary non-linked clone with `.git` kind=`directory`, `gitnexus analyze` exit=`0`, nodes=`62623`, edges=`145799`, clusters=`3291`, flows=`300`, GitNexus repo `g2-57-gitnexus-index-checkout` state=`ready`, `get_indicator_registry_dependency` and `install_indicator_registry` resolve in the refreshed graph, upstream impact for `get_indicator_registry_dependency` is `LOW` with impacted count=`0`, and static route scan still reports route direct `get_indicator_registry()` refs=`0` plus provider route sites=`2`; no source implementation target is authorized | Human review / PR merge decision; if accepted, create a separate G2.58 candidate-selection or implementation-authorization packet before any next service lifecycle DI source edit |
+| `backend-service-lifecycle-di-next-lane-selection-after-gitnexus-refresh-2026-05-24.md` | G | G2.58 next-lane selection prepared at current HEAD `5dbb0ca0c387dafb313e9b5f2674f3023da65962`: records PR `#198` as `MERGED`, confirms fresh non-linked GitNexus analyze exit=`0`, nodes=`62621`, edges=`145801`, flows=`300`, current static scan route dependency sites=`353`, provider-style route dependency sites=`81`, getter-style route dependency sites=`272`, classifies all ordinary provider rows as implemented/closed except `get_data_source_dependency`, which is already provider-shaped with `3` dashboard route sites, and selects `get_data_source_factory` as the next design-only seam because it has `17` direct API call sites across `9` files and refreshed GitNexus upstream impact `CRITICAL` (`22` impacted, `21` direct, `15` processes, `3` modules); no source implementation target is authorized | Human review / PR merge decision; if accepted, create G2.59 `get_data_source_factory` design/authorization packet before any backend source edit |
 
 ## Completed And Reviewed Ledger
 
