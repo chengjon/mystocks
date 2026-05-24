@@ -1,0 +1,109 @@
+version: "v0.2"
+
+task:
+  id: "pr-204"
+  title: "Authorize first DataSourceFactory route migration candidate"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-data-quality-data-source-factory-route-migration-authorization"
+  objective: "authorize a future path-limited data_quality.py migration from DataSourceFactory compatibility getter calls to the app-state provider dependency"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-quality-data-source-factory-route-migration-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-quality-data-source-factory-route-migration-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization packet records route consumer evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-quality-data-source-factory-route-migration-authorization-2026-05-24.json"
+    - "docs/reports/quality/backend-data-quality-data-source-factory-route-migration-authorization-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-204.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change in this PR"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No data_quality.py source migration in this PR"
+  - "No package __init__.py export update in this PR"
+  - "No compatibility getter cleanup in this PR"
+  - "No migration of the remaining non-data_quality route consumers in this PR"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-quality-data-source-factory-route-migration-authorization-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-quality-data-source-factory-route-migration-authorization-2026-05-24.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-204.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-204.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "gitnexus detect-changes --scope staged"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the authorization-only boundary"
+    - "If this PR performs the data_quality.py route migration, it bypasses the implementation review gate"
+    - "If package exports are changed, this PR exceeds the authorization-only boundary"
+  rollback_plan: "revert this governance-only authorization PR; the G2.61a provider seam and closeout remain accepted unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize a future data_quality.py DataSourceFactory route migration candidate"
+    modified_scope: "authorization report, generated artifact, steward tree, and this task card"
+    dependency_changes: "none in this PR"
+    legacy_logic_impact: "none; route consumers and compatibility getter remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only authorization PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T21:18:36+08:00"
+    approval_note: "human maintainer approved continuing after G2.61a closeout; this packet authorizes only a future reviewed data_quality.py route migration branch"
+    secondary_approved: false
