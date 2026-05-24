@@ -6,6 +6,8 @@ Indicator Registry Service
 from enum import Enum
 from typing import Any, Dict, Optional
 
+from fastapi import Request
+
 
 class IndicatorCategory(str, Enum):
     """指标分类"""
@@ -625,7 +627,8 @@ class IndicatorRegistry:
 
 
 # 全局单例
-_indicator_registry = None
+_indicator_registry: Optional[IndicatorRegistry] = None
+INDICATOR_REGISTRY_STATE_KEY = "indicator_registry"
 
 
 def get_indicator_registry() -> IndicatorRegistry:
@@ -634,3 +637,18 @@ def get_indicator_registry() -> IndicatorRegistry:
     if _indicator_registry is None:
         _indicator_registry = IndicatorRegistry()
     return _indicator_registry
+
+
+def install_indicator_registry(app: Any, registry: IndicatorRegistry | None = None) -> IndicatorRegistry:
+    """Install the flat API indicator registry instance on FastAPI app.state."""
+    selected_registry = registry if registry is not None else get_indicator_registry()
+    setattr(app.state, INDICATOR_REGISTRY_STATE_KEY, selected_registry)
+    return selected_registry
+
+
+def get_indicator_registry_dependency(request: Request) -> IndicatorRegistry:
+    """FastAPI dependency provider for the flat API indicator registry."""
+    registry = getattr(request.app.state, INDICATOR_REGISTRY_STATE_KEY, None)
+    if registry is None:
+        registry = install_indicator_registry(request.app)
+    return registry

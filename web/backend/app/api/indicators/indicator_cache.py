@@ -39,7 +39,7 @@ from app.schemas.indicator_response import (
 )
 from app.services.data_service import InvalidDateRangeError, StockDataNotFoundError, get_data_service
 from app.services.indicator_calculator import IndicatorCalculationError, InsufficientDataError, get_indicator_calculator
-from app.services.indicator_registry import IndicatorCategory, get_indicator_registry
+from app.services.indicator_registry import IndicatorCategory, IndicatorRegistry, get_indicator_registry_dependency
 
 logger = structlog.get_logger()
 router = APIRouter()
@@ -63,6 +63,7 @@ IndicatorCache = _IndicatorCache
 RateLimiter = _RateLimiter
 IndicatorOptimizationRequest = _IndicatorOptimizationRequest
 
+
 @router.get(
     "/registry",
     response_model=UnifiedResponse[IndicatorRegistryResponse],
@@ -76,6 +77,7 @@ async def get_indicator_registry_endpoint(
     search: Optional[str] = Query(None, description="搜索指标名称或描述"),
     include_advanced: bool = Query(True, description="是否包含高级指标"),
     current_user: User = Depends(get_current_active_user),
+    registry: IndicatorRegistry = Depends(get_indicator_registry_dependency),
 ):
     """
     获取指标注册表 - Phase 4C Enhanced
@@ -83,7 +85,6 @@ async def get_indicator_registry_endpoint(
     返回所有可用的技术指标及其元数据，支持分类筛选和搜索
     """
     try:
-        registry = get_indicator_registry()
         all_indicators = registry.get_all_indicators()
 
         # 记录请求
@@ -195,7 +196,10 @@ async def get_indicator_registry_endpoint(
     description="返回指定指标分类下的元数据清单，便于前端按趋势、动量、波动率、成交量或 K 线形态组织指标选择面板。",
     responses=INDICATOR_CATEGORY_RESPONSES,
 )
-async def get_indicators_by_category(category: str = Path(..., description=INDICATOR_CATEGORY_PATH_DESCRIPTION)):
+async def get_indicators_by_category(
+    category: str = Path(..., description=INDICATOR_CATEGORY_PATH_DESCRIPTION),
+    registry: IndicatorRegistry = Depends(get_indicator_registry_dependency),
+):
     """
     获取指定分类的指标
 
@@ -210,7 +214,6 @@ async def get_indicators_by_category(category: str = Path(..., description=INDIC
                 detail=f"无效的指标分类: {category}. 有效分类: {[c.value for c in IndicatorCategory]}", field="category"
             )
 
-        registry = get_indicator_registry()
         indicators = registry.get_indicators_by_category(indicator_category)
 
         # 转换为响应格式
