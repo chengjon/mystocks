@@ -1093,7 +1093,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                compatibility getter removal, frontend edit, PM2/runtime
 │   │                gate, OpenSpec change, or issue-label change is authorized
 │   ├── G2.71 Market data request DataSourceFactory route migration
-│   │   ├── State: ready for review; PR `#220` implementation packet
+│   │   ├── State: accepted; PR `#220` merged at
+│   │   │          `7f10db172b99b0d9d85fc740ffb00fa535bd4071`
 │   │   ├── Evidence: `backend-data-source-factory-market-data-request-route-migration-implementation-2026-05-25.md`
 │   │   ├── Current HEAD: `9060b455b7559ce21bc6f27975cce058be52cb96`
 │   │   ├── Result: migrates `get_fund_flow` and `get_market_quotes` from
@@ -1107,11 +1108,22 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: no route path, response model, response shape, OpenAPI,
 │   │                frontend, runtime/PM2, OpenSpec, issue-label, compatibility
 │   │                getter deletion, or other DataSourceFactory consumer change
-│   └── Next gate: Human review / PR merge decision for G2.71; if accepted,
-│                  create a separate closeout/current-head refresh before any
-│                  further DataSourceFactory route migration. Remaining
-│                  candidates (`kline.py`, `futures.py`, and `stocks.py`) stay
-│                  locked
+│   ├── G2.71 Closeout / current-head refresh
+│   │   ├── State: ready for review; PR `#221` closeout packet
+│   │   ├── Evidence: `backend-data-source-factory-market-data-request-route-migration-closeout-2026-05-25.md`
+│   │   ├── Current HEAD: `7f10db172b99b0d9d85fc740ffb00fa535bd4071`
+│   │   ├── Result: confirms PR `#220` merged, health route conflict tests
+│   │   │          remain `117 passed`, provider tests remain `4 passed`,
+│   │   │          route direct refs remain `6`, `market_data_request.py`
+│   │   │          direct refs remain `0`, OpenAPI paths remain `500`,
+│   │   │          duplicate operation IDs remain `0`, and GitNexus reports
+│   │   │          `market_data_request.py` LOW/1
+│   │   └── Boundary: closeout-only; no source edit or next consumer selection
+│   └── Next gate: Human review / PR merge decision for G2.71 closeout; if
+│                  accepted, create a separate candidate authorization packet
+│                  before any further DataSourceFactory route migration.
+│                  Remaining candidates (`kline.py`, `futures.py`, and
+│                  `stocks.py`) stay locked
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1164,6 +1176,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-lhb-route-migration-closeout-2026-05-25.md` | G | G2.69 closeout packet prepared at `d25803e93`: PR `#217` merge recorded, health tests remain `116 passed`, provider tests remain `4 passed`, total refs remain `8`, and `lhb.py` remains `0` | Human review / PR merge decision; if accepted, create G2.70 candidate authorization before further route migration |
 | `backend-data-source-factory-market-data-request-route-migration-authorization-2026-05-25.md` | G | G2.70 candidate packet prepared at `2670dba06`: selects `market_data_request.py` as the next route/API factory migration candidate; it is the only remaining ruff/black/GitNexus LOW candidate and can move total refs `8 -> 6` | Human review / PR merge decision; if accepted, create G2.71 path-limited implementation branch |
 | `backend-data-source-factory-market-data-request-route-migration-implementation-2026-05-25.md` | G | G2.71 implementation packet prepared at `9060b455`: market data request route handlers now use `get_data_source_factory_dependency`, total route/API factory refs move `8 -> 6`, and `market_data_request.py` refs move `2 -> 0` | Human review / PR merge decision; if accepted, create closeout/current-head refresh before selecting another DataSourceFactory route consumer |
+| `backend-data-source-factory-market-data-request-route-migration-closeout-2026-05-25.md` | G | G2.71 closeout packet prepared at `7f10db17`: PR `#220` merge recorded, health tests remain `117 passed`, provider tests remain `4 passed`, total refs remain `6`, and `market_data_request.py` remains `0` | Human review / PR merge decision; if accepted, create the next candidate authorization packet |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
@@ -1401,6 +1414,8 @@ review, PR review, or OpenSpec archive review.
 | G2.70 DataSourceFactory route candidate authorization | Ready for review | `2670dba0` | Candidate comparison recorded after PR `#218`: selects `market_data_request.py` for future G2.71 because it is ruff clean, black unchanged, GitNexus LOW/1, and has two direct refs; this row authorizes no source edit until human review accepts the packet |
 
 | G2.71 market data request DataSourceFactory route migration | Ready for review | `9060b455` | Path-limited implementation migrates `get_fund_flow` and `get_market_quotes` to `get_data_source_factory_dependency`, adds focused dependency wiring coverage, moves total direct route/API factory refs `8 -> 6`, and keeps all other remaining consumers locked pending closeout |
+
+| G2.71 market data request DataSourceFactory route migration closeout | Ready for review | `7f10db17` | Current-head closeout records PR `#220` merged, keeps total direct route/API factory refs at `6`, keeps `market_data_request.py` at `0`, and requires a new authorization-only candidate comparison before any further route migration |
 
 ## Update Protocol
 

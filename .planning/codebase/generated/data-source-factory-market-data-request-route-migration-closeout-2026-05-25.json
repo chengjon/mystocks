@@ -1,0 +1,76 @@
+{
+  "artifact": "data-source-factory-market-data-request-route-migration-closeout-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-71-market-data-request-route-migration-closeout",
+  "current_head": "7f10db172b99b0d9d85fc740ffb00fa535bd4071",
+  "source_pr": {
+    "number": 220,
+    "merge_commit": "7f10db172b99b0d9d85fc740ffb00fa535bd4071",
+    "title": "refactor(api): inject data source factory into market request routes"
+  },
+  "scope": {
+    "files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/data-source-factory-market-data-request-route-migration-closeout-2026-05-25.json",
+      "docs/reports/quality/backend-data-source-factory-market-data-request-route-migration-closeout-2026-05-25.md",
+      "governance/mainline/task-cards/pr-221.yaml"
+    ],
+    "excluded": [
+      "backend source edits",
+      "backend test edits",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "next DataSourceFactory consumer migration"
+    ]
+  },
+  "verification": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "117 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "style": {
+      "ruff_market_request_and_health_test": "passed",
+      "black_market_request_and_health_test": "passed"
+    },
+    "route_api_factory_refs": {
+      "total_direct_refs": 6,
+      "market_data_request_py_direct_refs": 0,
+      "remaining_consumers": [
+        {
+          "file": "web/backend/app/api/data/kline.py",
+          "direct_refs": 2
+        },
+        {
+          "file": "web/backend/app/api/data/futures.py",
+          "direct_refs": 2
+        },
+        {
+          "file": "web/backend/app/api/data/stocks.py",
+          "direct_refs": 2
+        }
+      ]
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 0
+    },
+    "gitnexus": {
+      "market_data_request_py": {
+        "risk": "LOW",
+        "direct_impacted": 1,
+        "processes_affected": 0
+      }
+    }
+  },
+  "decision": "G2.71 implementation evidence remains valid at current HEAD. No additional source change is authorized by this closeout.",
+  "next_gate": "Human review / PR merge decision for this closeout, then a separate candidate authorization packet before any further DataSourceFactory route migration."
+}
