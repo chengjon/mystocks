@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "artifact": "data-source-factory-financial-route-migration-closeout",
+  "generated_at": "2026-05-25T00:09:26+08:00",
+  "workline": "G2.63-closeout",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "229cd7fe0a21cb9bf7b9079d07e9551baaf0a4c7",
+  "status": "ready_for_review",
+  "merged_implementation": {
+    "pr": 208,
+    "merge_commit": "229cd7fe0a21cb9bf7b9079d07e9551baaf0a4c7",
+    "implementation_report": "docs/reports/quality/backend-data-source-factory-financial-route-migration-implementation-2026-05-24.md"
+  },
+  "scope_boundary": {
+    "kind": "closeout_current_head_refresh",
+    "backend_source_modified": false,
+    "tests_modified": false,
+    "route_paths_modified": false,
+    "openapi_modified": false,
+    "openspec_modified": false,
+    "issue_labels_modified": false,
+    "runtime_or_pm2_modified": false
+  },
+  "current_head_route_guard": {
+    "api_files_scanned": 219,
+    "direct_get_data_source_factory_calls": 14,
+    "get_data_source_factory_dependency_api_refs": 5,
+    "financial_py_direct_refs": 0,
+    "remaining_direct_call_files": {
+      "web/backend/app/api/data/kline.py": 2,
+      "web/backend/app/api/data/market.py": 1,
+      "web/backend/app/api/data/margin.py": 3,
+      "web/backend/app/api/data/futures.py": 2,
+      "web/backend/app/api/data/stocks.py": 2,
+      "web/backend/app/api/data/lhb.py": 2,
+      "web/backend/app/api/market/market_data_request.py": 2
+    }
+  },
+  "verification": {
+    "health_route_conflicts_tests": "113 passed",
+    "provider_lifecycle_tests": "4 passed",
+    "ruff_touched_files": "passed",
+    "black_touched_files": "3 files unchanged",
+    "app_openapi_smoke": {
+      "app_import": "passed",
+      "routes": 548,
+      "openapi_paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 121
+    }
+  },
+  "gitnexus_refresh": {
+    "repo": "g2-63-closeout-gitnexus-index-checkout",
+    "head": "229cd7fe0",
+    "git_kind": "directory",
+    "analyze_exit": 0,
+    "nodes": 62659,
+    "edges": 145822,
+    "flows": 300,
+    "impacts": {
+      "web/backend/app/api/data/financial.py": {
+        "risk": "LOW",
+        "impacted_count": 1,
+        "direct": 1,
+        "processes_affected": 0
+      },
+      "get_data_source_factory_dependency": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0
+      }
+    }
+  },
+  "next_gate": {
+    "recommended_workline": "G2.64",
+    "recommended_scope": "authorization-only packet for the next remaining DataSourceFactory route consumer",
+    "recommended_candidate": "web/backend/app/api/data/market.py",
+    "reason": "market.py is the remaining one-call candidate, but it has a broader four-route file surface and needs a separate authorization packet before source edits",
+    "remaining_direct_route_calls": 14,
+    "remaining_consumers_locked_until_authorized": true
+  }
+}
