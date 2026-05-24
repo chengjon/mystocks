@@ -28,7 +28,7 @@ from unittest.mock import Mock
 # 导入应用
 from app.main import app
 from app.core.security import User, get_current_user
-from app.services.market_data_service import get_market_data_service
+from app.services.market_data_service import get_market_data_service_dependency
 
 
 class _MockOverviewDataSourceFactory:
@@ -70,10 +70,11 @@ def mock_market_service():
 @pytest.fixture
 def client(mock_market_service, monkeypatch: pytest.MonkeyPatch):
     """提供测试客户端，使用dependency_overrides注入mock服务"""
+
     async def _get_data_source_factory():
         return _MockOverviewDataSourceFactory()
 
-    app.dependency_overrides[get_market_data_service] = lambda: mock_market_service
+    app.dependency_overrides[get_market_data_service_dependency] = lambda: mock_market_service
     app.dependency_overrides[get_current_user] = lambda: User(
         id=1,
         username="test-user",
@@ -163,9 +164,7 @@ class TestMarketOverview:
         assert "source" in data
         assert data["success"] is True
 
-    def test_overview_contains_required_fields(
-        self, client, mock_etf_data, mock_chip_race_data, mock_lhb_data
-    ):
+    def test_overview_contains_required_fields(self, client, mock_etf_data, mock_chip_race_data, mock_lhb_data):
         """测试市场概览包含必需字段"""
         response = client.get("/api/v1/data/markets/overview")
         data = response.json()

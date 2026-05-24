@@ -34,7 +34,7 @@ from app.schemas.market_schemas import (
     LongHuBangResponse,
     MessageResponse,
 )
-from app.services.market_data_service import MarketDataService, get_market_data_service
+from app.services.market_data_service import MarketDataService, get_market_data_service_dependency
 from app.services.stock_search_service import StockSearchService, get_stock_search_service_dependency
 
 router = APIRouter()
@@ -198,7 +198,7 @@ async def get_fund_flow(
 async def refresh_fund_flow(
     symbol: str = Query(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     timeframe: str = Query(default="1", description="时间维度", pattern=r"^[13510]$"),
-    service: MarketDataService = Depends(get_market_data_service),
+    service: MarketDataService = Depends(get_market_data_service_dependency),
 ):
     """
     从数据源刷新资金流向数据并保存到数据库
@@ -235,7 +235,7 @@ async def get_etf_list(
     category: Optional[str] = Query(None, description="ETF类型", pattern=r"^(股票|债券|商品|货币|QDII)$"),
     limit: int = Query(default=100, description="返回数量", ge=1, le=500),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
-    service: MarketDataService = Depends(get_market_data_service),
+    service: MarketDataService = Depends(get_market_data_service_dependency),
 ):
     """
     查询ETF实时行情数据（带缓存优化）
@@ -271,7 +271,7 @@ async def get_etf_list(
     responses=ETF_REFRESH_RESPONSES,
 )
 async def refresh_etf_data(
-    service: MarketDataService = Depends(get_market_data_service),
+    service: MarketDataService = Depends(get_market_data_service_dependency),
 ):
     """
     刷新全市场ETF实时数据
@@ -300,7 +300,7 @@ async def get_chip_race(
     trade_date: Optional[date] = Query(None, description="交易日期"),
     min_race_amount: Optional[float] = Query(None, ge=0, description="最小抢筹金额"),
     limit: int = Query(default=100, ge=1, le=500, description="返回记录数限制"),
-    service: MarketDataService = Depends(get_market_data_service),
+    service: MarketDataService = Depends(get_market_data_service_dependency),
 ):
     """
     查询竞价抢筹数据（带缓存优化）
@@ -328,7 +328,7 @@ async def get_chip_race(
 async def refresh_chip_race(
     race_type: str = Query(default="open", description="抢筹类型"),
     trade_date: Optional[str] = Query(None, description="交易日期 YYYY-MM-DD"),
-    service: MarketDataService = Depends(get_market_data_service),
+    service: MarketDataService = Depends(get_market_data_service_dependency),
 ):
     """
     刷新竞价抢筹数据
@@ -360,7 +360,7 @@ async def get_lhb_detail(
     end_date: Optional[date] = Query(None, description="结束日期"),
     min_net_amount: Optional[float] = Query(None, description="最小净买入额"),
     limit: int = Query(default=100, ge=1, le=500, description="返回记录数限制"),
-    service: MarketDataService = Depends(get_market_data_service),
+    service: MarketDataService = Depends(get_market_data_service_dependency),
 ):
     """
     查询龙虎榜详细数据（带缓存优化）
@@ -388,7 +388,7 @@ async def get_lhb_detail(
 )
 async def refresh_lhb_detail(
     trade_date: str = Query(..., description="交易日期 YYYY-MM-DD"),
-    service: MarketDataService = Depends(get_market_data_service),
+    service: MarketDataService = Depends(get_market_data_service_dependency),
 ):
     """
     刷新指定日期的龙虎榜数据

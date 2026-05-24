@@ -1,0 +1,126 @@
+version: "v0.2"
+
+task:
+  id: "pr-190"
+  title: "Implement MarketDataService route provider migration"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-market-data-service-route-provider-implementation"
+  objective: "implement the G2.49 MarketDataService route provider migration authorized by PR #189"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-market-data-service-route-provider-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-market-data-service-route-provider-implementation"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Route-provider migration preserves existing route paths, OpenAPI exposure, and product surface while moving MarketDataService route dependencies to an app-state provider"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/market-data-service-route-provider-implementation-2026-05-24.json"
+    - "docs/reports/quality/backend-market-data-service-route-provider-implementation-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-190.yaml"
+    - "web/backend/app/services/market_data_service/get_market_data_service.py"
+    - "web/backend/app/services/market_data_service/__init__.py"
+    - "web/backend/app/api/market/market_data_request.py"
+    - "web/backend/tests/test_market_data_service_lifecycle_di.py"
+    - "web/backend/tests/test_market_api_integration.py"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No route path, response model, OpenAPI exposure, docs/API, generated client, frontend, PM2, database, task, adapter, or external service behavior change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No get_market_data_service cleanup or compatibility getter retirement"
+  - "No MarketDataService and MarketDataServiceV2 consolidation"
+  - "No changes to market_data_adapter.py or web/backend/app/services/__init__.py"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_service_lifecycle_di.py -q --tb=short --no-cov"
+      required: true
+    - id: "integration-pytest"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_api_integration.py -q --tb=short --no-cov"
+      required: true
+    - id: "route-dependency-guard"
+      command: "python -c \"from pathlib import Path; route=Path('web/backend/app/api/market/market_data_request.py').read_text(); old=route.count('Depends(get_market_data_service)'); new=route.count('Depends(get_market_data_service_dependency)'); print({'old_depends': old, 'new_depends': new}); raise SystemExit(0 if old == 0 and new == 7 else 1)\""
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/services/market_data_service/get_market_data_service.py web/backend/app/services/market_data_service/__init__.py web/backend/app/api/market/market_data_request.py web/backend/tests/test_market_data_service_lifecycle_di.py web/backend/tests/test_market_api_integration.py"
+      required: true
+    - id: "black-check"
+      command: "black --check web/backend/app/services/market_data_service/get_market_data_service.py web/backend/app/services/market_data_service/__init__.py web/backend/app/api/market/market_data_request.py web/backend/tests/test_market_data_service_lifecycle_di.py web/backend/tests/test_market_api_integration.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-market-data-service-route-provider-implementation-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/market-data-service-route-provider-implementation-2026-05-24.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-190.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "python -c \"print('staged-gitnexus-scope: verify with MCP detect_changes(scope=staged); high verdict must be reviewed against authorized route-provider diff and recorded in implementation evidence')\""
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If route paths or response models change, the PR exceeds the route-provider migration boundary"
+    - "If get_market_data_service is retired, compatibility fallback is broken"
+    - "If provider dependency count is not exactly 7, one route may remain on the compatibility getter or an unrelated dependency may be changed"
+    - "If market_data_adapter.py or services/__init__.py changes, the PR exceeds the authorized scope"
+    - "GitNexus staged detect_changes reports high risk through market_data_request.py file-level mapping; reviewers must confirm the diff remains limited to the authorized provider import and seven route dependency parameters"
+  rollback_plan: "revert this implementation PR; prior G2.48 consumer matrix remains historical evidence unless superseded"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "migrate MarketDataService route dependencies to an app-state provider"
+    modified_scope: "MarketDataService getter package, market_data_request routes, focused tests, implementation report, generated artifact, steward tree, and this task card"
+    dependency_changes: "adds get_market_data_service_dependency while preserving get_market_data_service"
+    legacy_logic_impact: "compatibility getter and market_data_adapter fallback preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this route-provider migration PR if verification fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T11:41:28+08:00"
+    approval_note: "human maintainer approved continuing after PR #189 merge; PR #189 authorized this exact route-provider implementation branch"
+    secondary_approved: false

@@ -1,0 +1,88 @@
+{
+  "schema_version": "1.0",
+  "workline": "G2.49",
+  "title": "MarketDataService route provider implementation",
+  "recorded_at": "2026-05-24T11:41:28+08:00",
+  "base_head": "7daf74ce0c3210defc2ad283583a335037daa500",
+  "base_branch": "origin/wip/root-dirty-20260403",
+  "parent_pr": {
+    "number": 189,
+    "state": "MERGED",
+    "merge_commit": "7daf74ce0c3210defc2ad283583a335037daa500"
+  },
+  "implementation": {
+    "state_key": "MARKET_DATA_SERVICE_STATE_KEY",
+    "installer": "install_market_data_service",
+    "provider": "get_market_data_service_dependency",
+    "compatibility_getter": "get_market_data_service",
+    "compatibility_getter_preserved": true,
+    "market_data_adapter_unchanged": true,
+    "services_init_integrated_accessor_unchanged": true,
+    "market_data_service_v2_unchanged": true
+  },
+  "changed_source_files": [
+    "web/backend/app/services/market_data_service/get_market_data_service.py",
+    "web/backend/app/services/market_data_service/__init__.py",
+    "web/backend/app/api/market/market_data_request.py"
+  ],
+  "changed_test_files": [
+    "web/backend/tests/test_market_data_service_lifecycle_di.py",
+    "web/backend/tests/test_market_api_integration.py"
+  ],
+  "route_dependency_surface": {
+    "old_dependency": "Depends(get_market_data_service)",
+    "new_dependency": "Depends(get_market_data_service_dependency)",
+    "old_depends_count": 0,
+    "new_depends_count": 7,
+    "routes": [
+      "POST /api/v1/market/fund-flow/refresh",
+      "GET /api/v1/market/etf/list",
+      "POST /api/v1/market/etf/refresh",
+      "GET /api/v1/market/chip-race",
+      "POST /api/v1/market/chip-race/refresh",
+      "GET /api/v1/market/lhb",
+      "POST /api/v1/market/lhb/refresh"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_service_lifecycle_di.py -q --tb=short --no-cov",
+      "result": "4 failed, 1 passed in 2.16s"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_service_lifecycle_di.py -q --tb=short --no-cov",
+      "result": "5 passed in 2.97s"
+    }
+  },
+  "verification": {
+    "market_api_integration": "18 passed in 15.41s",
+    "ruff": "All checks passed!",
+    "black_check": "5 files would be left unchanged",
+    "configured_openapi_smoke": {
+      "status": 0,
+      "app_import": "ok",
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "selected_market_routes": 7
+    }
+  },
+  "gitnexus_pre_edit": {
+    "get_market_data_service": {
+      "risk": "LOW",
+      "impacted_count": 0
+    },
+    "market_data_request_file": {
+      "risk": "LOW",
+      "impacted_count": 3
+    }
+  },
+  "gitnexus_staged_detect_changes": {
+    "risk_level": "high",
+    "changed_files": 9,
+    "changed_count": 39,
+    "affected_count": 6,
+    "note": "High staged verdict is retained as review signal. Affected processes are reported through market_data_request.py file-level symbol mapping and get_kline_data flows, while the diff is limited to authorized provider import and seven route dependency parameters."
+  },
+  "next_gate": "G2.50 closeout / current-head candidate refresh before selecting another service lifecycle implementation lane"
+}
