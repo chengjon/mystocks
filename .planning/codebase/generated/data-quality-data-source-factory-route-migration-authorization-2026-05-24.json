@@ -1,0 +1,123 @@
+{
+  "schema_version": "1.0",
+  "artifact": "data-quality-data-source-factory-route-migration-authorization",
+  "generated_at": "2026-05-24T21:18:36+08:00",
+  "workline": "G2.61b",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "ee2c74f3c8e1c4f690d2a1737db29c97c39a54d2",
+  "status": "ready_for_review",
+  "scope_boundary": {
+    "kind": "governance_authorization_only",
+    "backend_source_modified": false,
+    "tests_modified": false,
+    "route_paths_modified": false,
+    "openapi_modified": false,
+    "openspec_modified": false,
+    "issue_labels_modified": false,
+    "runtime_or_pm2_modified": false
+  },
+  "upstream_state": {
+    "provider_seam_implementation_pr": 202,
+    "provider_seam_implementation_merge": "0aadb27801c86e97e65ffdb4426276e1bd14c352",
+    "provider_seam_closeout_pr": 203,
+    "provider_seam_closeout_merge": "ee2c74f3c8e1c4f690d2a1737db29c97c39a54d2",
+    "provider_symbols_present": [
+      "DATA_SOURCE_FACTORY_STATE_KEY",
+      "install_data_source_factory",
+      "get_data_source_factory_dependency",
+      "get_data_source_factory"
+    ]
+  },
+  "static_scan": {
+    "api_files_scanned": 219,
+    "direct_get_data_source_factory_calls": 17,
+    "get_data_source_factory_dependency_api_refs": 0,
+    "direct_call_files": {
+      "web/backend/app/api/data_quality.py": 2,
+      "web/backend/app/api/data/financial.py": 1,
+      "web/backend/app/api/data/futures.py": 2,
+      "web/backend/app/api/data/kline.py": 2,
+      "web/backend/app/api/data/lhb.py": 2,
+      "web/backend/app/api/data/margin.py": 3,
+      "web/backend/app/api/data/market.py": 1,
+      "web/backend/app/api/data/stocks.py": 2,
+      "web/backend/app/api/market/market_data_request.py": 2
+    }
+  },
+  "data_quality_candidate": {
+    "file": "web/backend/app/api/data_quality.py",
+    "direct_calls": [
+      {
+        "line": 58,
+        "function": "get_sources_health",
+        "statement": "factory = await get_data_source_factory()"
+      },
+      {
+        "line": 369,
+        "function": "get_system_status_overview",
+        "statement": "factory = await get_data_source_factory()"
+      }
+    ],
+    "existing_import": "from app.services.data_source_factory import get_data_source_factory",
+    "current_response_contract": "UnifiedResponse[Dict[str, Any]]",
+    "reason_selected": "Smallest mixed data-quality/status API surface with exactly two direct factory calls and existing focused mock-configuration test coverage."
+  },
+  "package_export_state": {
+    "file": "web/backend/app/services/data_source_factory/__init__.py",
+    "exports_get_data_source_factory": true,
+    "exports_get_data_source_factory_dependency": false,
+    "exports_install_data_source_factory": false,
+    "recommended_disposition": "Authorize a package re-export update together with the first route migration so route modules can keep package-level imports."
+  },
+  "verification": {
+    "provider_seam_focused_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "4 passed"
+    },
+    "existing_factory_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory.py -q --no-cov --tb=short",
+      "result": "38 passed"
+    },
+    "data_quality_mock_configuration_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_mock_configuration.py -q --no-cov --tb=short",
+      "result": "2 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/services/data_source_factory/data_source_factory.py web/backend/app/services/data_source_factory/__init__.py web/backend/app/api/data_quality.py web/backend/tests/test_data_source_factory_lifecycle_di.py web/backend/tests/test_data_quality_mock_configuration.py",
+      "result": "passed"
+    },
+    "app_openapi_smoke": {
+      "result": "passed",
+      "routes": 548,
+      "openapi_paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 121,
+      "notes": "Smoke used non-secret test environment defaults and project root plus web/backend on sys.path."
+    }
+  },
+  "authorized_future_batch": {
+    "id": "G2.61c",
+    "kind": "first_route_migration_implementation",
+    "allowed_paths": [
+      "web/backend/app/services/data_source_factory/__init__.py",
+      "web/backend/app/api/data_quality.py",
+      "web/backend/tests/test_data_quality_mock_configuration.py",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/data-quality-data-source-factory-route-migration-implementation-*.json",
+      "docs/reports/quality/backend-data-quality-data-source-factory-route-migration-implementation-*.md",
+      "governance/mainline/task-cards/pr-*.yaml"
+    ],
+    "acceptance_criteria": [
+      "data_quality.py direct get_data_source_factory() calls reduce from 2 to 0",
+      "total API direct get_data_source_factory() calls reduce from 17 to 15",
+      "data_quality.py uses FastAPI Depends(get_data_source_factory_dependency) or an explicitly documented equivalent",
+      "package __init__.py re-exports get_data_source_factory_dependency if route imports remain package-level",
+      "route paths, response_model declarations, OpenAPI path count, and duplicate operation ID count remain unchanged",
+      "compatibility getter get_data_source_factory() and _global_factory remain preserved"
+    ],
+    "blocked_until_reviewed": true
+  }
+}
