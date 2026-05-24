@@ -1,0 +1,215 @@
+{
+  "artifact": "data-source-factory-lifecycle-di-authorization",
+  "workline": "G2.59",
+  "generated_at": "2026-05-24T19:53:23+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_branch": "g2-59-data-source-factory-authorization",
+  "current_head": "1880f0d1395e7c5594b70f3ba40478cff24f2d3a",
+  "status": "ready_for_review",
+  "scope": {
+    "kind": "governance_authorization_packet",
+    "source_edits_authorized": false,
+    "route_or_openapi_edits_authorized": false,
+    "test_edits_authorized": false,
+    "openspec_edits_authorized": false,
+    "issue_label_changes_authorized": false,
+    "runtime_or_pm2_changes_authorized": false
+  },
+  "upstream_merge_evidence": {
+    "previous_workline": "G2.58",
+    "previous_pr": 199,
+    "previous_merge_commit": "1880f0d1395e7c5594b70f3ba40478cff24f2d3a",
+    "selected_seam": "get_data_source_factory",
+    "selected_reason": "17 direct API call sites across 9 files and refreshed GitNexus CRITICAL impact"
+  },
+  "static_scan": {
+    "api_files_scanned": 219,
+    "direct_get_data_source_factory_call_count": 17,
+    "api_file_count": 9,
+    "consumer_matrix": [
+      {
+        "file": "web/backend/app/api/data/financial.py",
+        "calls": 1,
+        "call_lines": [
+          69
+        ],
+        "import_lines": [
+          67
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data/futures.py",
+        "calls": 2,
+        "call_lines": [
+          91,
+          114
+        ],
+        "import_lines": [
+          89,
+          112
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data/kline.py",
+        "calls": 2,
+        "call_lines": [
+          145,
+          245
+        ],
+        "import_lines": [
+          144,
+          244
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data/lhb.py",
+        "calls": 2,
+        "call_lines": [
+          90,
+          115
+        ],
+        "import_lines": [
+          88,
+          113
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data/margin.py",
+        "calls": 3,
+        "call_lines": [
+          104,
+          128,
+          150
+        ],
+        "import_lines": [
+          102,
+          126,
+          148
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data/market.py",
+        "calls": 1,
+        "call_lines": [
+          98
+        ],
+        "import_lines": [
+          97
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data/stocks.py",
+        "calls": 2,
+        "call_lines": [
+          269,
+          371
+        ],
+        "import_lines": [
+          267,
+          370
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data_quality.py",
+        "calls": 2,
+        "call_lines": [
+          58,
+          369
+        ],
+        "import_lines": [
+          27
+        ]
+      },
+      {
+        "file": "web/backend/app/api/market/market_data_request.py",
+        "calls": 2,
+        "call_lines": [
+          134,
+          427
+        ],
+        "import_lines": [
+          132,
+          425
+        ]
+      }
+    ]
+  },
+  "service_surface": {
+    "file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+    "global_singleton": "_global_factory",
+    "getter": "get_data_source_factory",
+    "getter_lines": "294-300",
+    "behavior": "creates DataSourceFactory, awaits initialize, and returns the module-level singleton",
+    "compatibility_functions_to_preserve": [
+      "get_data_source",
+      "get_market_data",
+      "get_dashboard_data",
+      "get_technical_analysis_data"
+    ]
+  },
+  "gitnexus_refresh": {
+    "checkout": ".worktrees/g2-59-gitnexus-index-checkout",
+    "git_dot_kind": "directory",
+    "head": "1880f0d1395e",
+    "analyze_exit": 0,
+    "nodes": 62624,
+    "edges": 145803,
+    "clusters": 3288,
+    "flows": 300,
+    "embeddings": "off"
+  },
+  "gitnexus_selected_seam": {
+    "symbol": "get_data_source_factory",
+    "uid": "Function:web/backend/app/services/data_source_factory/data_source_factory.py:get_data_source_factory",
+    "file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+    "start_line": 294,
+    "end_line": 300,
+    "risk": "CRITICAL",
+    "impacted_count": 22,
+    "direct": 21,
+    "processes_affected": 15,
+    "modules_affected": 3,
+    "affected_modules": [
+      "Data",
+      "Data_source_factory",
+      "Api"
+    ]
+  },
+  "future_candidate_scope": {
+    "next_gate": "G2.60 consumer-matrix and implementation-authorization packet",
+    "implementation_authorized_by_this_packet": false,
+    "likely_future_write_scope": [
+      "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "focused lifecycle DI tests",
+      "future implementation evidence report",
+      "future mainline task card"
+    ],
+    "possible_provider_design": [
+      "add app-state key",
+      "add installer",
+      "add FastAPI dependency provider",
+      "preserve get_data_source_factory compatibility getter",
+      "preserve convenience functions"
+    ]
+  },
+  "explicit_exclusions": [
+    "no web/backend/app/api edits",
+    "no backend source edits",
+    "no backend test edits",
+    "no route path or response contract changes",
+    "no OpenAPI exposure changes",
+    "no get_data_source_factory removal or rename",
+    "no _global_factory removal",
+    "no ambiguous get_data_source broad rewrite",
+    "no get_postgres_async migration",
+    "no get_config_manager migration",
+    "no OpenSpec edits",
+    "no issue label changes"
+  ],
+  "decision": {
+    "selected_as_next_planning_target": true,
+    "source_implementation_status": "locked",
+    "reason": "CRITICAL blast radius requires a separate reviewed decomposition gate before source edits",
+    "recommended_next_step": "create G2.60 source-free consumer-matrix / implementation-authorization packet"
+  }
+}
