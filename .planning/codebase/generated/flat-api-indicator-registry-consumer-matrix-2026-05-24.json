@@ -1,0 +1,136 @@
+{
+  "artifact": "flat-api-indicator-registry-consumer-matrix",
+  "workline": "G2.53",
+  "generated_at": "2026-05-24T15:40:41+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "git_head": "ec3dc2920886",
+  "source_prerequisite": {
+    "g2_52_pr": 193,
+    "g2_52_state": "MERGED",
+    "g2_52_merge_commit": "ec3dc2920886eb24e963a33488bd2e945e98e6c9"
+  },
+  "status": "approve_with_guards_pending_human_review",
+  "runtime_scope": "governance_only_no_source_edits",
+  "flat_registry": {
+    "file": "web/backend/app/services/indicator_registry.py",
+    "getter": "get_indicator_registry",
+    "singleton_global_line": 628,
+    "getter_line": 631
+  },
+  "consumer_matrix": [
+    {
+      "consumer": "get_indicator_registry_endpoint",
+      "file": "web/backend/app/api/indicators/indicator_cache.py",
+      "line": 86,
+      "current_access": "get_indicator_registry()",
+      "route": "GET /api/v1/indicators/registry",
+      "future_migration": "candidate_route_dependency"
+    },
+    {
+      "consumer": "get_indicators_by_category",
+      "file": "web/backend/app/api/indicators/indicator_cache.py",
+      "line": 213,
+      "current_access": "get_indicator_registry()",
+      "route": "GET /api/v1/indicators/registry/{category}",
+      "future_migration": "candidate_route_dependency"
+    },
+    {
+      "consumer": "IndicatorCalculator.__init__",
+      "file": "web/backend/app/services/indicator_calculator.py",
+      "line": 43,
+      "current_access": "get_indicator_registry()",
+      "route": null,
+      "future_migration": "excluded_from_flat_api_route_provider_batch"
+    }
+  ],
+  "selected_indicator_cache_routes": [
+    {
+      "method": "GET",
+      "path": "/api/v1/indicators/registry",
+      "handler": "get_indicator_registry_endpoint",
+      "include_in_schema": true,
+      "direct_registry_consumer": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/indicators/registry/{category}",
+      "handler": "get_indicators_by_category",
+      "include_in_schema": true,
+      "direct_registry_consumer": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/indicators/calculate",
+      "handler": "calculate_indicators",
+      "include_in_schema": true,
+      "direct_registry_consumer": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/indicators/calculate/batch",
+      "handler": "calculate_indicators_batch",
+      "include_in_schema": true,
+      "direct_registry_consumer": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/indicators/cache/stats",
+      "handler": "get_cache_statistics",
+      "include_in_schema": true,
+      "direct_registry_consumer": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/indicators/cache/clear",
+      "handler": "clear_cache",
+      "include_in_schema": true,
+      "direct_registry_consumer": false
+    }
+  ],
+  "app_openapi_smoke": {
+    "routes_total": 548,
+    "openapi_paths_total": 500,
+    "duplicate_operation_ids": 0,
+    "selected_indicator_cache_routes": 6,
+    "selected_registry_route_consumers": 2,
+    "environment": "non_sensitive_placeholder_env"
+  },
+  "collection_checks": [
+    {
+      "command": "pytest -o addopts= web/backend/tests/test_indicators.py --collect-only -q --no-cov",
+      "status": "passed",
+      "collected": 16,
+      "duration_seconds": 11.2
+    },
+    {
+      "command": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov",
+      "status": "passed",
+      "collected": 112,
+      "duration_seconds": 11.96
+    },
+    {
+      "command": "pytest -o addopts= web/backend/tests/unit/services/indicators/test_indicator_registry.py --collect-only -q --no-cov",
+      "status": "passed",
+      "collected": 29,
+      "duration_seconds": 1.31
+    }
+  ],
+  "future_implementation_allowed_paths": [
+    "web/backend/app/services/indicator_registry.py",
+    "web/backend/app/api/indicators/indicator_cache.py",
+    "focused indicator registry route and OpenAPI stability tests"
+  ],
+  "future_implementation_forbidden_paths": [
+    "web/backend/app/services/indicator_calculator.py",
+    "web/backend/app/services/indicators/indicator_registry.py",
+    "web/backend/app/services/indicators/defaults.py",
+    "web/backend/app/services/indicators/talib_adapter.py",
+    "web/backend/app/services/indicators/jobs/**"
+  ],
+  "decision": {
+    "g2_53_source_edits_authorized": false,
+    "future_g2_54_candidate_authorized_if_human_accepts_packet": true,
+    "future_candidate": "flat API registry route-provider implementation",
+    "required_next_gate": "human review then G2.54 implementation branch with TDD and pre-edit GitNexus checks"
+  }
+}
