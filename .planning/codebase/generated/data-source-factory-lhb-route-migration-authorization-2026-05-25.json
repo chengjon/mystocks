@@ -1,0 +1,99 @@
+{
+  "artifact": "data-source-factory-lhb-route-migration-authorization-2026-05-25",
+  "workline": "G2.68",
+  "status": "ready_for_review",
+  "generated_at": "2026-05-25T02:27:06+08:00",
+  "current_head": "d5a0ef78718a070180be0428573530081945c943",
+  "previous_gate": {
+    "workline": "G2.67-closeout",
+    "merged_pr": 215,
+    "merge_commit": "d5a0ef78718a070180be0428573530081945c943",
+    "remaining_direct_factory_refs": 10
+  },
+  "candidate_matrix": [
+    {
+      "file": "web/backend/app/api/data/lhb.py",
+      "direct_calls": 2,
+      "direct_call_lines": [90, 115],
+      "route_count": 2,
+      "loc": 128,
+      "ruff_status": "passed",
+      "black_status": "would_reformat",
+      "gitnexus_upstream": "LOW/1",
+      "decision": "selected_for_G2.69",
+      "note": "smallest low-risk route surface; future implementation may include same-file black normalization only"
+    },
+    {
+      "file": "web/backend/app/api/market/market_data_request.py",
+      "direct_calls": 2,
+      "direct_call_lines": [134, 427],
+      "route_count": 11,
+      "loc": 645,
+      "ruff_status": "passed",
+      "black_status": "unchanged",
+      "gitnexus_upstream": "LOW/1",
+      "decision": "defer_broad_route_surface"
+    },
+    {
+      "file": "web/backend/app/api/data/kline.py",
+      "direct_calls": 2,
+      "direct_call_lines": [145, 245],
+      "route_count": 4,
+      "loc": 252,
+      "ruff_status": "fails_E701",
+      "black_status": "would_reformat",
+      "gitnexus_upstream": "LOW/1",
+      "decision": "defer_style_debt"
+    },
+    {
+      "file": "web/backend/app/api/data/stocks.py",
+      "direct_calls": 2,
+      "direct_call_lines": [269, 371],
+      "route_count": 5,
+      "loc": 417,
+      "ruff_status": "fails_E701",
+      "black_status": "would_reformat",
+      "gitnexus_upstream": "LOW/1",
+      "decision": "defer_style_debt"
+    },
+    {
+      "file": "web/backend/app/api/data/futures.py",
+      "direct_calls": 2,
+      "direct_call_lines": [91, 114],
+      "route_count": 2,
+      "loc": 123,
+      "ruff_status": "passed",
+      "black_status": "would_reformat",
+      "gitnexus_upstream": "CRITICAL/91_file_level_anomaly",
+      "decision": "defer_until_narrower_impact_analysis"
+    }
+  ],
+  "selected_next_candidate": {
+    "workline": "G2.69",
+    "file": "web/backend/app/api/data/lhb.py",
+    "allowed_future_source_scope": [
+      "web/backend/app/api/data/lhb.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "expected_route_guard": {
+      "lhb_direct_refs": "2 -> 0",
+      "total_direct_refs": "10 -> 8"
+    },
+    "formatting_boundary": "same-file black normalization in lhb.py is allowed only if black reformats the authorized file during implementation"
+  },
+  "verification": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "115 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 121
+    }
+  },
+  "next_gate": "Human review / PR merge decision; if accepted, create G2.69 path-limited lhb.py implementation branch. This packet itself authorizes no source edit."
+}
