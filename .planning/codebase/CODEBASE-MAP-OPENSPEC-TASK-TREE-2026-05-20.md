@@ -1011,9 +1011,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no source edit, route contract edit,
 │   │                compatibility getter removal, frontend edit, PM2/runtime
 │   │                gate, or issue-label change is authorized
-│   └── Next gate: Human review / PR merge decision for G2.66; if accepted,
-│                  create a separate G2.67 path-limited `margin.py`
-│                  implementation branch. Other remaining candidates
+│   ├── G2.67 Margin DataSourceFactory route migration
+│   │   ├── State: ready for review; PR `#214` implementation packet
+│   │   ├── Evidence: `backend-data-source-factory-margin-route-migration-implementation-2026-05-25.md`
+│   │   ├── Current HEAD: `7b817debccfba1c82efc5a9c71f23f0b775434c0`
+│   │   ├── Result: migrates `get_margin_account_info`,
+│   │   │          `get_margin_detail_sse`, and `get_margin_detail_szse` from
+│   │   │          direct `get_data_source_factory()` calls to
+│   │   │          `Depends(get_data_source_factory_dependency)`; total route/API
+│   │   │          direct refs move `13 -> 10`, `margin.py` direct refs move
+│   │   │          `3 -> 0`, health route conflict tests move to `115 passed`,
+│   │   │          provider tests remain `4 passed`, OpenAPI paths remain `500`,
+│   │   │          and duplicate operation IDs remain `0`
+│   │   └── Boundary: no route path, response model, response shape, OpenAPI,
+│   │                frontend, runtime/PM2, OpenSpec, issue-label, or other
+│   │                DataSourceFactory consumer change
+│   └── Next gate: Human review / PR merge decision for G2.67; if accepted,
+│                  run G2.67 closeout/current-head refresh before selecting
+│                  another route consumer. Remaining candidates
 │                  (`kline.py`, `futures.py`, `lhb.py`, `stocks.py`, and
 │                  `market/market_data_request.py`) stay locked
 │
@@ -1128,6 +1143,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-market-route-migration-closeout-2026-05-24.md` | G | G2.65 closeout prepared at current HEAD `277fdd412b2bbf68b64c5186fee943dc50080480`: records PR `#211` as `MERGED`, confirms current-head route guard direct API calls=`13`, `market.py` direct refs=`0`, provider dependency API refs=`7`, health route conflict tests=`114 passed`, provider lifecycle tests=`4 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, operation IDs=`536`, duplicate operation IDs=`0`, and refreshed non-linked GitNexus at `277fdd412` with analyze exit=`0`, nodes=`62667`, edges=`145820`, flows=`300`, file-level `market.py` LOW/1 upstream impact and provider dependency LOW/0; recommends G2.66 authorization-only candidate comparison before any next route consumer edit | Human review / PR merge decision; if accepted, create G2.66 consumer-selection authorization packet; all remaining `13` route/API consumers stay locked |
 
 | `backend-data-source-factory-route-candidate-authorization-2026-05-25.md` | G | G2.66 authorization prepared at current HEAD `d30f2c12d642fbc613689d85b39697999805bbb8`: records PR `#212` as `MERGED`, confirms remaining route/API direct factory calls=`13`, compares six candidates, selects `web/backend/app/api/data/margin.py` for future G2.67 because it has direct refs=`3`, route handlers=`3`, LOC=`155`, ruff=`pass`, black=`unchanged`, GitNexus=`LOW/1`, and expected post-implementation direct refs `3 -> 0` / total direct refs `13 -> 10`; defers `lhb.py` due black reformat debt, `market_data_request.py` due broad 11-route surface, `kline.py` and `stocks.py` due E701/black debt, and `futures.py` due a CRITICAL/91 file-level GitNexus anomaly requiring narrower impact analysis | Human review / PR merge decision; if accepted, create G2.67 path-limited `margin.py` implementation branch; all other remaining consumers stay locked |
+
+| `backend-data-source-factory-margin-route-migration-implementation-2026-05-25.md` | G | G2.67 implementation prepared at current HEAD `7b817debccfba1c82efc5a9c71f23f0b775434c0`: records PR `#213` as `MERGED`, verifies pre-edit GitNexus `margin.py` LOW/1 and three route-handler contexts, follows TDD red=`1 failed: KeyError factory` then green=`1 passed`, migrates `get_margin_account_info`, `get_margin_detail_sse`, and `get_margin_detail_szse` to `get_data_source_factory_dependency`, removes three inline compatibility getter calls, moves `margin.py` direct refs `3 -> 0`, total direct refs `13 -> 10`, verifies health route conflict tests=`115 passed`, provider lifecycle tests=`4 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, operation IDs=`536`, duplicate operation IDs=`0`, and staged GitNexus detect changes risk=`low`, affected count=`0`; remaining `10` route/API consumers stay locked | Human review / PR merge decision; if accepted, run G2.67 closeout/current-head refresh before selecting another DataSourceFactory route consumer packet |
 
 ## Completed And Reviewed Ledger
 
@@ -1281,6 +1298,8 @@ review, PR review, or OpenSpec archive review.
 | G2.63 financial DataSourceFactory route migration closeout | Merged implementation closeout | `229cd7fe0` | PR `#208` merged and closeout evidence is recorded: `financial.py` direct factory refs remain `0`, total API direct factory calls remain `14`, health route conflict tests pass `113`, provider lifecycle tests pass `4`, OpenAPI stays paths=`500` with duplicate operation IDs=`0`, and next movement requires a separate G2.64 authorization packet for `market.py` or another selected remaining consumer |
 
 | G2.66 DataSourceFactory route candidate authorization | Ready for review | `d30f2c12` | Candidate comparison recorded after PR `#212`: selects `margin.py` for future G2.67 because it is ruff clean, black unchanged, GitNexus LOW/1, three routes, and three direct refs; this row authorizes no source edit until human review accepts the packet |
+
+| G2.67 margin DataSourceFactory route migration | Ready for review | `7b817deb` | Path-limited implementation migrates three margin route handlers to `get_data_source_factory_dependency`, adds focused dependency wiring coverage, moves total direct route/API factory refs `13 -> 10`, and keeps all other remaining consumers locked pending closeout |
 
 ## Update Protocol
 

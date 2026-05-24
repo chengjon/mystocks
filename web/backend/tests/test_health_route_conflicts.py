@@ -6,6 +6,7 @@ import inspect
 from fastapi.routing import APIRoute
 
 from app.api.data import financial as financial_module
+from app.api.data import margin as margin_module
 from app.api.data import market as market_module
 from app.main import app
 
@@ -51,6 +52,17 @@ def test_market_overview_route_uses_data_source_factory_dependency() -> None:
     factory_param = inspect.signature(market_module.get_market_overview).parameters["factory"]
 
     assert getattr(factory_param.default, "dependency", None) is market_module.get_data_source_factory_dependency
+
+
+def test_margin_routes_use_data_source_factory_dependency() -> None:
+    for route_handler in [
+        margin_module.get_margin_account_info,
+        margin_module.get_margin_detail_sse,
+        margin_module.get_margin_detail_szse,
+    ]:
+        factory_param = inspect.signature(route_handler).parameters["factory"]
+
+        assert getattr(factory_param.default, "dependency", None) is margin_module.get_data_source_factory_dependency
 
 
 def test_root_and_socketio_status_have_documented_examples_and_errors() -> None:
