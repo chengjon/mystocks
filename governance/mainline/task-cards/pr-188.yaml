@@ -1,0 +1,107 @@
+version: "v0.2"
+
+task:
+  id: "pr-188"
+  title: "Select next service lifecycle DI decision packet after AdvancedAnalysis"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-service-lifecycle-candidate-selection-after-advanced-analysis"
+  objective: "record the G2.47 current-head service lifecycle DI candidate selection after AdvancedAnalysis closeout"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-candidate-selection-after-advanced-analysis"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-service-lifecycle-candidate-selection-after-advanced-analysis"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Candidate-selection packet records governance evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/service-lifecycle-di-candidate-selection-after-advanced-analysis-2026-05-24.json"
+    - "docs/reports/quality/backend-service-lifecycle-di-candidate-selection-after-advanced-analysis-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-188.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, frontend source, tests, generated clients, docs/API, OpenSpec, PM2, route, OpenAPI, or runtime behavior changes"
+  - "No GitHub issue state, label, or ready-for-agent movement"
+  - "No service lifecycle DI source implementation target authorization"
+  - "No compatibility getter, wrapper, or route cleanup authorization"
+  - "No MarketDataService and MarketDataServiceV2 consolidation"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-service-lifecycle-di-candidate-selection-after-advanced-analysis-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/service-lifecycle-di-candidate-selection-after-advanced-analysis-2026-05-24.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-188.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-188.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "python -c \"print('staged-gitnexus-scope: docs-only candidate-selection packet; no source symbols changed')\""
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the candidate-selection-only boundary"
+    - "If this packet authorizes get_market_data_service source rewiring, it bypasses the required G2.48 consumer matrix / authorization gate"
+    - "If broad seams are selected for direct implementation, it contradicts this packet's candidate classification"
+  rollback_plan: "revert this governance-only PR; G2.46 closeout remains merged unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "select the next decision packet after AdvancedAnalysis route-provider closeout"
+    modified_scope: "candidate-selection report, generated artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only candidate-selection PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T10:34:00+08:00"
+    approval_note: "human maintainer approved continuing after PR #186 merge; this packet only records G2.47 candidate selection and next decision gate"
+    secondary_approved: false

@@ -774,11 +774,21 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 paths=`500`, duplicate operation IDs=`0`, completed
 │   │                 provider modules=`8`, route provider dependency
 │   │                 files=`11`, and route provider dependency sites=`72`;
-│   │                 no next implementation target is authorized
-│   └── Next gate: Human review of the G2.46 closeout/candidate refresh PR;
-│                  if accepted, create a separate G2.47 candidate selection and
-│                  usefulness/ownership triage packet before selecting another
-│                  service lifecycle DI lane
+│   │                 no next implementation target is authorized; PR `#186`
+│   │                 merged at
+│   │                 `e09e6db4a6a85dc392c20a737e729bb6f123804d`; G2.47 now
+│   │                 records current-head candidate selection: service files
+│   │                 scanned=`152`, API files scanned=`219`, provider
+│   │                 modules=`8`, route provider dependency sites=`72`,
+│   │                 route class dependency sites=`0`, route getter
+│   │                 dependency sites=`277`, and selected
+│   │                 `get_market_data_service` only as the next consumer
+│   │                 matrix / authorization candidate packet; broad or
+│   │                 external-client seams remain excluded
+│   └── Next gate: Human review of the G2.47 candidate-selection PR; if
+│                  accepted, create a separate G2.48
+│                  `get_market_data_service` route dependency consumer matrix /
+│                  route-provider authorization candidate before source edits
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -864,6 +874,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-advanced-analysis-route-provider-migration-authorization-2026-05-24.md` | G | G2.44 authorization prepared at current HEAD `1e137abb2a32b795c403a8a168a174ad86b7f693`: records PR `#183` as `MERGED`, confirms `advanced_analysis_api.py` has `14` class `Depends()` sites, preserves `get_advanced_analysis_service()` and module singleton compatibility, records GitNexus `AdvancedAnalysisService` upstream impact as LOW / `0`, and limits any future implementation to a separate G2.45 branch after human review | Human review / PR merge decision; if accepted, create G2.45 `AdvancedAnalysisService` route-provider implementation branch before source edits |
 | `backend-advanced-analysis-route-provider-migration-implementation-2026-05-24.md` | G | G2.45 implementation prepared from G2.44 authorization at base `22b617733e29c9a441e88cb1da2ce0a5d8be98cc`: adds `ADVANCED_ANALYSIS_SERVICE_STATE_KEY`, `install_advanced_analysis_service`, and `get_advanced_analysis_service_dependency`, preserves `get_advanced_analysis_service()` and module singleton compatibility, converts all `14` `advanced_analysis_api.py` service dependencies to the provider, focused TDD ended at `4 passed`, ruff/black passed, configured OpenAPI smoke reports routes=`548`, paths=`500`, duplicate operation IDs=`0`, and advanced paths=`14` | Human review / PR merge decision; if accepted, run G2.46 closeout/current-head candidate refresh before selecting the next service lifecycle DI lane |
 | `backend-advanced-analysis-route-provider-closeout-and-candidate-refresh-2026-05-24.md` | G | G2.46 closeout prepared at current HEAD `059638b573c6f2586537973e2a4b396f0ce156d7`: records PR `#185` as `MERGED`, confirms `AdvancedAnalysisService` route class dependency sites=`0`, provider sites=`14`, direct compatibility getter route calls=`0`, focused test result=`4 passed`, configured OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, advanced paths=`14`, completed provider modules=`8`, route provider dependency files=`11`, and route provider dependency sites=`72`; no next implementation target or compatibility getter retirement is authorized | Human review / PR merge decision; if accepted, create G2.47 candidate selection and usefulness/ownership triage packet before any source edits |
+| `backend-service-lifecycle-di-candidate-selection-after-advanced-analysis-2026-05-24.md` | G | G2.47 candidate selection prepared at current HEAD `e09e6db4a6a85dc392c20a737e729bb6f123804d`: records PR `#186` as `MERGED`, scans `152` service files and `219` API files, confirms provider modules=`8`, route provider dependency sites=`72`, route class dependency sites=`0`, and classifies `get_market_data_service` as the next consumer matrix / authorization candidate packet while excluding `get_data_service`, `get_strategy_service`, and `get_kronos_client` from direct implementation | Human review / PR merge decision; if accepted, create G2.48 `get_market_data_service` route dependency consumer matrix / route-provider authorization candidate before any source edits |
 
 ## Completed And Reviewed Ledger
 

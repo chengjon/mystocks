@@ -1,0 +1,117 @@
+{
+  "artifact": "service-lifecycle-di-candidate-selection-after-advanced-analysis",
+  "status": "review-ready",
+  "created_at": "2026-05-24T10:34:00+08:00",
+  "worktree": ".worktrees/g2-47-service-lifecycle-candidate-selection",
+  "branch": "g2-47-service-lifecycle-candidate-selection",
+  "current_head": "e09e6db4a6a85dc392c20a737e729bb6f123804d",
+  "head_subject": "Merge pull request #186 from chengjon/g2-46-advanced-analysis-closeout-candidate-refresh",
+  "stale_if_head_mismatch": true,
+  "source_edits_authorized": false,
+  "implementation_target_selected": false,
+  "decision_packet_target_selected": true,
+  "openspec_changes_authorized": false,
+  "issue_label_changes_authorized": false,
+  "compatibility_retirement_authorized": false,
+  "pm2_execution_authorized": false,
+  "github_state": {
+    "pr_186": {
+      "state": "MERGED",
+      "url": "https://github.com/chengjon/mystocks/pull/186",
+      "merge_commit": "e09e6db4a6a85dc392c20a737e729bb6f123804d",
+      "merged_at": "2026-05-24T02:21:26Z"
+    },
+    "pr_187": {
+      "state": "MERGED",
+      "url": "https://github.com/chengjon/mystocks/pull/187",
+      "merge_commit": "02a4148c2b6edbb45dea6115a4ac9e57c4ba9b3e",
+      "merged_at": "2026-05-24T02:16:05Z"
+    },
+    "issue_79": {
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "url": "https://github.com/chengjon/mystocks/issues/79"
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ],
+      "url": "https://github.com/chengjon/mystocks/issues/92"
+    }
+  },
+  "scan_summary": {
+    "service_files_scanned": 152,
+    "api_files_scanned": 219,
+    "provider_modules_count": 8,
+    "route_provider_dependency_files": 11,
+    "route_provider_dependency_sites": 72,
+    "route_getter_dependency_files": 51,
+    "route_getter_dependency_sites": 277,
+    "route_class_dependency_files": 0,
+    "route_class_dependency_sites": 0,
+    "raw_direct_getter_call_files": 112,
+    "raw_direct_getter_call_sites": 707,
+    "getter_defs_count": 44
+  },
+  "completed_provider_modules": [
+    "web/backend/app/services/advanced_analysis_service.py",
+    "web/backend/app/services/announcement_service.py",
+    "web/backend/app/services/email_service.py",
+    "web/backend/app/services/market_data_service_v2.py",
+    "web/backend/app/services/stock_search_service/stock_search_service.py",
+    "web/backend/app/services/tdx_service.py",
+    "web/backend/app/services/tradingview_widget_service.py",
+    "web/backend/app/services/watchlist_service.py"
+  ],
+  "selected_next_decision_packet": {
+    "target": "get_market_data_service",
+    "target_file": "web/backend/app/services/market_data_service/get_market_data_service.py",
+    "consumer_surface": "web/backend/app/api/market/market_data_request.py",
+    "route_depends_sites": 7,
+    "source_implementation_authorized": false,
+    "recommended_next_gate": "G2.48 get_market_data_service route dependency consumer matrix / route-provider authorization candidate"
+  },
+  "candidate_classification": [
+    {
+      "candidate": "get_market_data_service",
+      "classification": "active-route-dependency-with-compatibility-surface",
+      "gitnexus_risk": "LOW",
+      "impacted_count": 0,
+      "disposition": "selected for next decision packet, not source implementation"
+    },
+    {
+      "candidate": "get_data_service",
+      "classification": "broad-data-seam",
+      "gitnexus_risk": "CRITICAL",
+      "impacted_count": 4,
+      "disposition": "excluded from immediate route-provider batch"
+    },
+    {
+      "candidate": "get_strategy_service",
+      "classification": "broad-strategy-seam",
+      "gitnexus_risk": "CRITICAL",
+      "impacted_count": 11,
+      "disposition": "excluded from immediate route-provider batch"
+    },
+    {
+      "candidate": "get_kronos_client",
+      "classification": "external-client-seam",
+      "gitnexus_risk": "CRITICAL",
+      "impacted_count": 3,
+      "disposition": "requires external-client provider gate"
+    },
+    {
+      "candidate": "get_indicator_registry",
+      "classification": "indicator-internal-registry-seam",
+      "gitnexus_risk": "LOW",
+      "impacted_count": 4,
+      "disposition": "requires dedicated indicator registry design before source edits"
+    }
+  ],
+  "next_gate": "Human review / PR merge decision; if accepted, create G2.48 get_market_data_service consumer matrix and route-provider authorization candidate before any source edits."
+}
