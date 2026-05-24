@@ -1,6 +1,7 @@
 """
 财务数据路由 (Financial Data)
 """
+
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, Query
@@ -8,6 +9,7 @@ from fastapi import APIRouter, Depends, Query
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
 from app.openapi_config import COMMON_RESPONSES
+from app.services.data_source_factory import DataSourceFactory, get_data_source_factory_dependency
 
 router = APIRouter()
 
@@ -62,11 +64,9 @@ async def get_financial_data(
     period: str = Query("all", description="报告期间筛选，例如 annual、quarterly 或 all。"),
     limit: int = Query(20, description="单次请求返回的最大财务记录数。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> Dict[str, Any]:
     try:
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
         params = {"symbol": symbol, "report_type": report_type, "period": period, "limit": limit}
         result = await factory.get_data("data", "financial", params)
         if result.get("status") != "success":
