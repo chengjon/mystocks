@@ -1,0 +1,83 @@
+{
+  "artifact": "service-lifecycle-di-next-lane-selection-after-gitnexus-refresh",
+  "workline": "G2.58",
+  "generated_at": "2026-05-24T19:22:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_branch": "g2-58-service-lifecycle-next-lane-selection",
+  "current_head": "5dbb0ca0c387",
+  "status": "ready_for_review",
+  "scope": {
+    "kind": "decision_only_next_lane_selection",
+    "source_edits_authorized": false,
+    "route_or_openapi_edits_authorized": false,
+    "compatibility_getter_cleanup_authorized": false,
+    "next_lifecycle_implementation_authorized": false
+  },
+  "upstream_merge_evidence": {
+    "workline": "G2.57",
+    "pr": 198,
+    "state": "MERGED",
+    "merge_commit": "5dbb0ca0c387dafb313e9b5f2674f3023da65962"
+  },
+  "gitnexus_refresh": {
+    "checkout_head": "5dbb0ca0c387",
+    "git_dot_kind": "directory",
+    "gitnexus_analyze_exit": 0,
+    "nodes": 62621,
+    "edges": 145801,
+    "clusters": 3287,
+    "flows": 300,
+    "duration_seconds": 65.4
+  },
+  "static_scan": {
+    "api_files_scanned": 219,
+    "service_files_scanned": 152,
+    "route_depends_sites": 353,
+    "provider_style_route_dependency_sites": 81,
+    "getter_style_route_dependency_sites": 272
+  },
+  "provider_group_classification": [
+    {"name": "get_advanced_analysis_service_dependency", "sites": 14, "files": 1, "classification": "implemented_or_closed"},
+    {"name": "get_market_data_service_v2_dependency", "sites": 14, "files": 2, "classification": "implemented_or_closed"},
+    {"name": "get_announcement_service_dependency", "sites": 11, "files": 1, "classification": "implemented_or_closed"},
+    {"name": "get_market_data_service_dependency", "sites": 7, "files": 1, "classification": "implemented_or_closed"},
+    {"name": "get_watchlist_service_dependency", "sites": 7, "files": 1, "classification": "implemented_or_closed"},
+    {"name": "get_email_service_dependency", "sites": 6, "files": 1, "classification": "implemented_or_closed"},
+    {"name": "get_stock_search_service_dependency", "sites": 6, "files": 2, "classification": "implemented_or_closed"},
+    {"name": "get_tradingview_service_dependency", "sites": 6, "files": 1, "classification": "implemented_or_closed"},
+    {"name": "get_tdx_service_dependency", "sites": 5, "files": 1, "classification": "implemented_or_closed"},
+    {"name": "get_indicator_registry_dependency", "sites": 2, "files": 1, "classification": "implemented_or_closed"},
+    {"name": "get_data_source_dependency", "sites": 3, "files": 1, "classification": "already_provider_shaped_needs_closeout_or_design_review"}
+  ],
+  "remaining_service_like_seams": [
+    {"surface": "get_data_source_factory", "evidence": "17 direct API call sites across 9 files", "gitnexus_risk": "CRITICAL", "disposition": "selected_for_next_design_only_packet"},
+    {"surface": "get_postgres_async", "evidence": "22 direct call sites across 8 API files", "disposition": "infrastructure_data_access_seam_not_ordinary_service_di"},
+    {"surface": "get_data_source", "evidence": "20 direct call sites across 4 API files", "disposition": "ambiguous_same_name_surface_requires_domain_separation"},
+    {"surface": "get_config_manager", "evidence": "17 direct call sites across active and historical API files", "disposition": "ambiguous_config_ownership_seam"}
+  ],
+  "selected_next_lane": {
+    "surface": "get_data_source_factory",
+    "next_workline": "G2.59",
+    "packet_type": "design_or_implementation_authorization_candidate",
+    "source_implementation_authorized_now": false,
+    "rationale": "largest remaining service-like direct-call seam with refreshed GitNexus CRITICAL impact"
+  },
+  "gitnexus_selected_seam": {
+    "symbol": "get_data_source_factory",
+    "file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+    "startLine": 294,
+    "endLine": 300,
+    "risk": "CRITICAL",
+    "impactedCount": 22,
+    "direct": 21,
+    "processes_affected": 15,
+    "modules_affected": 3,
+    "affected_modules": ["Data", "Data_source_factory", "Api"]
+  },
+  "decision": {
+    "candidate_selection_complete": true,
+    "new_source_implementation_target_selected": false,
+    "next_design_candidate": "get_data_source_factory",
+    "next_gate": "human review, then separate G2.59 design or authorization packet before source edit"
+  }
+}
