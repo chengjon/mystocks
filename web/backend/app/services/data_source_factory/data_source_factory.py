@@ -10,6 +10,8 @@ from contextlib import asynccontextmanager
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+from fastapi import Request
+
 from config.data_sources_loader import JSON_DATA_SOURCES_CONFIG_PATH
 
 from app.core.config import settings
@@ -43,6 +45,7 @@ logger = logging.getLogger(__name__)
 
 def _log_unhealthy_data_source(source_name: str, health: HealthStatus) -> None:
     logger.warning("Data source '%s' is %s: %s", source_name, health.status.value, health.message)
+
 
 class DataSourceFactory:
     """数据源工厂 - 核心工厂类"""
@@ -290,7 +293,9 @@ class DataSourceFactory:
             yield data_source
 
 
+DATA_SOURCE_FACTORY_STATE_KEY = "data_source_factory"
 _global_factory: Optional[DataSourceFactory] = None
+
 
 async def get_data_source_factory() -> DataSourceFactory:
     """获取全局数据源工厂实例"""
@@ -299,6 +304,19 @@ async def get_data_source_factory() -> DataSourceFactory:
         _global_factory = DataSourceFactory()
         await _global_factory.initialize()
     return _global_factory
+
+
+async def install_data_source_factory(app: Any, factory: Optional[DataSourceFactory] = None) -> DataSourceFactory:
+    selected_factory = factory if factory is not None else await get_data_source_factory()
+    setattr(app.state, DATA_SOURCE_FACTORY_STATE_KEY, selected_factory)
+    return selected_factory
+
+
+async def get_data_source_factory_dependency(request: Request) -> DataSourceFactory:
+    factory = getattr(request.app.state, DATA_SOURCE_FACTORY_STATE_KEY, None)
+    if factory is None:
+        factory = await install_data_source_factory(request.app)
+    return factory
 
 
 async def get_data_source(source_name: str) -> Optional[IDataSource]:
