@@ -1,0 +1,87 @@
+{
+  "artifact": "data-source-factory-provider-seam-closeout",
+  "workline": "G2.61a-closeout",
+  "generated_at": "2026-05-24T21:02:45+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_branch": "g2-61a-data-source-factory-provider-closeout",
+  "current_head": "0aadb27801c86e97e65ffdb4426276e1bd14c352",
+  "status": "ready_for_review",
+  "scope": {
+    "kind": "closeout_current_head_refresh",
+    "source_edits": false,
+    "test_edits": false,
+    "route_or_openapi_edits": false,
+    "openspec_edits": false,
+    "runtime_or_pm2_changes": false,
+    "issue_label_changes": false
+  },
+  "merge_evidence": {
+    "implementation_pr": 202,
+    "implementation_merge_commit": "0aadb27801c86e97e65ffdb4426276e1bd14c352",
+    "provider_symbols": [
+      "DATA_SOURCE_FACTORY_STATE_KEY",
+      "install_data_source_factory",
+      "get_data_source_factory_dependency"
+    ],
+    "preserved_symbols": [
+      "get_data_source_factory",
+      "_global_factory"
+    ]
+  },
+  "route_guard": {
+    "api_files_scanned": 219,
+    "direct_get_data_source_factory_calls": 17,
+    "get_data_source_factory_dependency_api_refs": 0,
+    "route_migration_performed": false
+  },
+  "gitnexus_refresh": {
+    "checkout": ".worktrees/g2-61a-closeout-gitnexus-index-checkout",
+    "git_dot_kind": "directory",
+    "head": "0aadb27801c8",
+    "analyze_exit": 0,
+    "nodes": 62642,
+    "edges": 145826,
+    "clusters": 3288,
+    "flows": 300
+  },
+  "gitnexus_symbols": [
+    {
+      "symbol": "get_data_source_factory_dependency",
+      "file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "lines": "314-318",
+      "incoming_callers": 0,
+      "upstream_risk": "LOW",
+      "impacted_count": 0
+    },
+    {
+      "symbol": "install_data_source_factory",
+      "file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "lines": "308-311",
+      "incoming_callers": 0,
+      "upstream_risk": "LOW",
+      "impacted_count": 0
+    }
+  ],
+  "verification": {
+    "focused_lifecycle_di_test": "4 passed",
+    "existing_data_source_factory_test": "38 passed",
+    "data_stocks_runtime_fallback": "1 passed",
+    "ruff_touched": "passed",
+    "black_check_touched": "passed",
+    "app_import_with_test_env": "passed",
+    "routes": 548,
+    "openapi_paths": 500,
+    "operation_ids": 536,
+    "duplicate_operation_ids": 0
+  },
+  "residuals": [
+    "data_source_factory package __init__.py does not re-export provider symbols",
+    "17 direct API route calls remain unchanged",
+    "tests/backend/test_data_api_regression.py still has baseline 404 expectations"
+  ],
+  "decision": {
+    "provider_seam_closed": true,
+    "route_migration_status": "locked_until_next_packet",
+    "recommended_next_packet": "G2.61b data_quality.py route migration authorization / consumer matrix"
+  }
+}
