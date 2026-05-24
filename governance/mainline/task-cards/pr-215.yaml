@@ -1,0 +1,124 @@
+version: "v0.2"
+
+task:
+  id: "pr-215"
+  title: "Close out margin DataSourceFactory route migration"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-margin-route-migration-closeout"
+  objective: "record current-head closeout evidence for the merged margin.py DataSourceFactory route migration"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-margin-route-migration-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-margin-route-migration-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout records merged route migration evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-margin-route-migration-closeout-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-margin-route-migration-closeout-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-215.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change in this PR"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No next route consumer migration in this PR"
+  - "No compatibility getter cleanup in this PR"
+
+acceptance:
+  checks:
+    - id: "health-route-conflicts-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "provider-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched-files"
+      command: "ruff check web/backend/app/api/data/margin.py web/backend/tests/test_health_route_conflicts.py web/backend/app/services/data_source_factory/__init__.py"
+      required: true
+    - id: "black-touched-files"
+      command: "black --check web/backend/app/api/data/margin.py web/backend/tests/test_health_route_conflicts.py web/backend/app/services/data_source_factory/__init__.py"
+      required: true
+    - id: "route-guard"
+      command: "confirm total direct route/API factory refs=10 and margin.py direct refs=0"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.openapi() smoke with routes, paths, operation IDs, and duplicate operation IDs"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-margin-route-migration-closeout-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-margin-route-migration-closeout-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-215.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-215.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "MCP gitnexus.detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the closeout-only boundary"
+    - "If this PR selects or migrates the next consumer, it bypasses the next authorization review gate"
+  rollback_plan: "revert this governance-only closeout PR; PR #214 remains the implementation source of truth unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out the merged margin.py DataSourceFactory route migration"
+    modified_scope: "closeout report, generated artifact, steward tree, and this task card"
+    dependency_changes: "none in this PR"
+    legacy_logic_impact: "none; remaining route consumers and compatibility getter remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only closeout PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T02:16:55+08:00"
+    approval_note: "human maintainer approved continuing after G2.67 implementation; this packet records closeout evidence only and authorizes no backend source edit"
+    secondary_approved: false

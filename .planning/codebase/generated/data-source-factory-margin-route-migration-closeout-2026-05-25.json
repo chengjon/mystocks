@@ -1,0 +1,61 @@
+{
+  "artifact": "data-source-factory-margin-route-migration-closeout-2026-05-25",
+  "workline": "G2.67-closeout",
+  "status": "ready_for_review",
+  "generated_at": "2026-05-25T02:16:55+08:00",
+  "current_head": "3f1a737a5cc62f0424951931581e410d1dd14975",
+  "merged_implementation": {
+    "workline": "G2.67",
+    "merged_pr": 214,
+    "merge_commit": "3f1a737a5cc62f0424951931581e410d1dd14975",
+    "summary": "margin.py DataSourceFactory route migration merged"
+  },
+  "current_head_verification": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "115 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "lint_format": {
+      "ruff_touched_files": "passed",
+      "black_check_touched_files": "3 files would be left unchanged"
+    },
+    "route_guard": {
+      "total_direct_factory_refs": 10,
+      "margin_direct_factory_refs": 0,
+      "provider_dependency_refs": 8,
+      "remaining_files": [
+        "web/backend/app/api/data/kline.py",
+        "web/backend/app/api/data/futures.py",
+        "web/backend/app/api/data/lhb.py",
+        "web/backend/app/api/data/stocks.py",
+        "web/backend/app/api/market/market_data_request.py"
+      ]
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 121,
+      "env_note": "OpenAPI smoke used explicit non-secret test environment placeholders because this isolated worktree has no .env file."
+    },
+    "gitnexus": {
+      "margin_py_upstream": "LOW/1",
+      "data_source_factory_package_upstream": "LOW/0",
+      "provider_symbol_note": "get_data_source_factory_dependency was not directly addressable by current GitNexus symbol lookup; package file impact was used for closeout."
+    }
+  },
+  "next_gate": {
+    "workline": "G2.68",
+    "type": "authorization-only candidate comparison",
+    "boundary": "no source edit before a separate accepted G2.68 packet",
+    "candidate_pool": [
+      "web/backend/app/api/data/kline.py",
+      "web/backend/app/api/data/futures.py",
+      "web/backend/app/api/data/lhb.py",
+      "web/backend/app/api/data/stocks.py",
+      "web/backend/app/api/market/market_data_request.py"
+    ]
+  }
+}
