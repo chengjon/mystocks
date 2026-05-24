@@ -1,0 +1,105 @@
+version: "v0.2"
+
+task:
+  id: "pr-186"
+  title: "Close out AdvancedAnalysis route provider migration and refresh current-head candidates"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-advanced-analysis-route-provider-closeout-candidate-refresh"
+  objective: "record the G2.46 closeout evidence for PR #185 and refresh current-head service lifecycle DI candidate signals"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-advanced-analysis-route-provider-closeout-candidate-refresh"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-advanced-analysis-route-provider-closeout-candidate-refresh"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout and candidate refresh records governance evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/advanced-analysis-route-provider-closeout-and-candidate-refresh-2026-05-24.json"
+    - "docs/reports/quality/backend-advanced-analysis-route-provider-closeout-and-candidate-refresh-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-186.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source, test, route, OpenAPI, response contract, docs/API, generated client, frontend, PM2, or runtime process change in this PR"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No get_advanced_analysis_service cleanup or compatibility getter retirement"
+  - "No selection of a new service lifecycle DI implementation target"
+  - "No modification of WencaiService, MarketDataService, UnifiedDataService, DataService, StrategyService, or TechnicalAnalysisService"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-advanced-analysis-route-provider-closeout-and-candidate-refresh-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/advanced-analysis-route-provider-closeout-and-candidate-refresh-2026-05-24.json >/dev/null"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-186.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "python -c \"print('staged-gitnexus-scope: docs-only governance packet; no source symbols changed')\""
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If backend source or tests are edited, the PR exceeds the closeout-only boundary"
+    - "If this packet selects a next implementation target, it bypasses the required G2.47 candidate triage gate"
+    - "If this packet authorizes compatibility getter removal, it contradicts the G2.45 compatibility preservation boundary"
+  rollback_plan: "revert this governance-only PR; PR #185 remains merged unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record PR #185 closeout evidence and current-head service lifecycle DI candidate signals"
+    modified_scope: "closeout report, generated artifact, steward tree, and this task card"
+    dependency_changes: "none in this PR"
+    legacy_logic_impact: "none; get_advanced_analysis_service remains preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this docs-only closeout PR if governance validation fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T03:02:17+08:00"
+    approval_note: "human maintainer approved continuing after PR #185 merge; this packet only records closeout and current-head candidate refresh evidence"
+    secondary_approved: false

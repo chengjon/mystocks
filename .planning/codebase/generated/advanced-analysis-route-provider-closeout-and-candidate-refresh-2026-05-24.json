@@ -1,0 +1,204 @@
+{
+  "artifact": "advanced-analysis-route-provider-closeout-and-candidate-refresh",
+  "status": "review-ready",
+  "created_at": "2026-05-24T03:02:17+08:00",
+  "worktree": ".worktrees/g2-46-advanced-analysis-closeout-candidate-refresh",
+  "branch": "g2-46-advanced-analysis-closeout-candidate-refresh",
+  "current_head": "059638b573c6f2586537973e2a4b396f0ce156d7",
+  "head_subject": "Merge pull request #185 from chengjon/g2-45-advanced-analysis-route-provider-migration",
+  "stale_if_head_mismatch": true,
+  "source_edits_authorized": false,
+  "openspec_changes_authorized": false,
+  "issue_label_changes_authorized": false,
+  "parent_pr": {
+    "number": 185,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/185",
+    "merge_commit": "059638b573c6f2586537973e2a4b396f0ce156d7"
+  },
+  "github_state": {
+    "issue_79": {
+      "state": "OPEN",
+      "labels": [
+        "needs-triage"
+      ],
+      "title": "Migrate service singletons to FastAPI Depends() lifecycle"
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": [
+        "enhancement",
+        "ready-for-human",
+        "ready-for-downstream"
+      ],
+      "title": "[Backend OpenSpec] Decide post-approval implementation plan"
+    }
+  },
+  "advanced_analysis_closeout": {
+    "focused_pytest": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q -n 0 --tb=short --no-cov",
+      "result": "4 passed in 4.04s"
+    },
+    "route_guard": {
+      "class_depends": 0,
+      "provider_depends": 14,
+      "direct_getter_calls": 0,
+      "state_key": true,
+      "install": true,
+      "provider": true,
+      "compat_getter": true
+    },
+    "configured_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "advanced_paths": 14,
+      "warnings": 0
+    }
+  },
+  "current_head_refresh": {
+    "service_files_scanned": 152,
+    "provider_signal_files": 8,
+    "getter_signal_files": 24,
+    "route_provider_dependency_files": 11,
+    "route_provider_dependency_sites": 72,
+    "completed_provider_modules": [
+      {
+        "path": "web/backend/app/services/advanced_analysis_service.py",
+        "providers": [
+          "install_advanced_analysis_service",
+          "get_advanced_analysis_service_dependency"
+        ],
+        "state_key": "ADVANCED_ANALYSIS_SERVICE_STATE_KEY"
+      },
+      {
+        "path": "web/backend/app/services/announcement_service.py",
+        "providers": [
+          "install_announcement_service",
+          "get_announcement_service_dependency"
+        ],
+        "state_key": "ANNOUNCEMENT_SERVICE_STATE_KEY"
+      },
+      {
+        "path": "web/backend/app/services/email_service.py",
+        "providers": [
+          "install_email_service",
+          "get_email_service_dependency"
+        ],
+        "state_key": "EMAIL_SERVICE_STATE_KEY"
+      },
+      {
+        "path": "web/backend/app/services/market_data_service_v2.py",
+        "providers": [
+          "get_market_data_service_v2_dependency"
+        ],
+        "state_key": null
+      },
+      {
+        "path": "web/backend/app/services/stock_search_service/stock_search_service.py",
+        "providers": [
+          "install_stock_search_service",
+          "get_stock_search_service_dependency"
+        ],
+        "state_key": "STOCK_SEARCH_SERVICE_STATE_KEY"
+      },
+      {
+        "path": "web/backend/app/services/tdx_service.py",
+        "providers": [
+          "install_tdx_service",
+          "get_tdx_service_dependency"
+        ],
+        "state_key": "TDX_SERVICE_STATE_KEY"
+      },
+      {
+        "path": "web/backend/app/services/tradingview_widget_service.py",
+        "providers": [
+          "install_tradingview_service",
+          "get_tradingview_service_dependency"
+        ],
+        "state_key": "TRADINGVIEW_SERVICE_STATE_KEY"
+      },
+      {
+        "path": "web/backend/app/services/watchlist_service.py",
+        "providers": [
+          "install_watchlist_service",
+          "get_watchlist_service_dependency"
+        ],
+        "state_key": "WATCHLIST_SERVICE_STATE_KEY"
+      }
+    ],
+    "route_provider_dependency_usage": [
+      {
+        "route": "web/backend/app/api/advanced_analysis_api.py",
+        "sites": 14,
+        "provider": "get_advanced_analysis_service_dependency"
+      },
+      {
+        "route": "web/backend/app/api/announcement/routes.py",
+        "sites": 11,
+        "provider": "get_announcement_service_dependency"
+      },
+      {
+        "route": "web/backend/app/api/dashboard_data_source.py",
+        "sites": 1,
+        "provider": "get_market_data_service_v2_dependency"
+      },
+      {
+        "route": "web/backend/app/api/dashboard.py",
+        "sites": 3,
+        "provider": "get_data_source_dependency"
+      },
+      {
+        "route": "web/backend/app/api/market_v2.py",
+        "sites": 13,
+        "provider": "get_market_data_service_v2_dependency"
+      },
+      {
+        "route": "web/backend/app/api/market/market_data_request.py",
+        "sites": 1,
+        "provider": "get_stock_search_service_dependency"
+      },
+      {
+        "route": "web/backend/app/api/notification.py",
+        "sites": 6,
+        "provider": "get_email_service_dependency"
+      },
+      {
+        "route": "web/backend/app/api/stock_search/stock_search_result.py",
+        "sites": 5,
+        "provider": "get_stock_search_service_dependency"
+      },
+      {
+        "route": "web/backend/app/api/tdx.py",
+        "sites": 5,
+        "provider": "get_tdx_service_dependency"
+      },
+      {
+        "route": "web/backend/app/api/tradingview.py",
+        "sites": 6,
+        "provider": "get_tradingview_service_dependency"
+      },
+      {
+        "route": "web/backend/app/api/watchlist.py",
+        "sites": 7,
+        "provider": "get_watchlist_service_dependency"
+      }
+    ],
+    "broad_exclusions": [
+      "WencaiService",
+      "MarketDataService",
+      "UnifiedDataService",
+      "DataService",
+      "StrategyService",
+      "TechnicalAnalysisService"
+    ],
+    "getter_scan_caveat": "Getter external-reference scan is heuristic planning input only; governance/report references and compatibility re-exports must be filtered before retirement decisions."
+  },
+  "decision": {
+    "advanced_analysis_route_provider_closed": true,
+    "next_implementation_target_selected": false,
+    "compatibility_getter_retirement_authorized": false,
+    "recommended_next_gate": "G2.47 candidate selection and usefulness/ownership triage before any new service lifecycle DI source branch."
+  }
+}
