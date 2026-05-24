@@ -1,0 +1,129 @@
+{
+  "schema_version": "1.0",
+  "artifact": "data-source-factory-market-route-migration-implementation",
+  "generated_at": "2026-05-25T00:54:13+08:00",
+  "workline": "G2.65-implementation",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head_before_commit": "20a7b67f1898506586e7858840d0ae058461fe93",
+  "status": "ready_for_review",
+  "authorization": {
+    "workline": "G2.64-authorization",
+    "pr": 210,
+    "merge_commit": "20a7b67f1898506586e7858840d0ae058461fe93",
+    "report": "docs/reports/quality/backend-data-source-factory-market-route-migration-authorization-2026-05-24.md"
+  },
+  "scope_boundary": {
+    "kind": "path_limited_source_implementation",
+    "backend_source_modified": true,
+    "tests_modified": true,
+    "route_paths_modified": false,
+    "openapi_modified": false,
+    "openspec_modified": false,
+    "issue_labels_modified": false,
+    "runtime_or_pm2_modified": false
+  },
+  "modified_files": [
+    "web/backend/app/api/data/market.py",
+    "web/backend/tests/test_health_route_conflicts.py",
+    ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+    ".planning/codebase/generated/data-source-factory-market-route-migration-implementation-2026-05-24.json",
+    "docs/reports/quality/backend-data-source-factory-market-route-migration-implementation-2026-05-24.md",
+    "governance/mainline/task-cards/pr-211.yaml"
+  ],
+  "implementation": {
+    "route_file": "web/backend/app/api/data/market.py",
+    "handler": "get_market_overview",
+    "change": "Injected DataSourceFactory through Depends(get_data_source_factory_dependency) and removed inline await get_data_source_factory()",
+    "same_file_style_debt_fixed": [
+      {
+        "line_before": 123,
+        "code": "E701",
+        "disposition": "expanded to two-line if/return"
+      },
+      {
+        "line_before": 154,
+        "code": "E701",
+        "disposition": "expanded to two-line if/return"
+      },
+      {
+        "line_before": 179,
+        "code": "E701",
+        "disposition": "expanded to two-line if/return"
+      }
+    ],
+    "compatibility_surfaces_preserved": [
+      "get_data_source_factory()",
+      "_global_factory"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_market_overview_route_uses_data_source_factory_dependency -q --no-cov --tb=short",
+      "result": "1 failed",
+      "failure": "KeyError: 'factory'"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_market_overview_route_uses_data_source_factory_dependency -q --no-cov --tb=short",
+      "result": "1 passed"
+    }
+  },
+  "route_guard": {
+    "api_files_scanned": 219,
+    "direct_get_data_source_factory_calls": 13,
+    "get_data_source_factory_dependency_api_refs": 7,
+    "market_py_direct_refs": 0,
+    "market_py_dependency_refs": 2,
+    "remaining_direct_call_files": {
+      "web/backend/app/api/data/kline.py": 2,
+      "web/backend/app/api/data/margin.py": 3,
+      "web/backend/app/api/data/futures.py": 2,
+      "web/backend/app/api/data/stocks.py": 2,
+      "web/backend/app/api/data/lhb.py": 2,
+      "web/backend/app/api/market/market_data_request.py": 2
+    }
+  },
+  "verification": {
+    "health_route_conflicts_tests": "114 passed",
+    "provider_lifecycle_tests": "4 passed",
+    "ruff_touched_files": "passed",
+    "black_touched_files": "3 files unchanged",
+    "app_openapi_smoke": {
+      "app_import": "passed",
+      "routes": 548,
+      "openapi_paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 121
+    }
+  },
+  "gitnexus_pre_edit": {
+    "repo": "g2-65-gitnexus-index-checkout",
+    "head": "20a7b67f1",
+    "git_kind": "directory",
+    "analyze_exit": 0,
+    "nodes": 62665,
+    "edges": 145822,
+    "flows": 300,
+    "impacts": {
+      "web/backend/app/api/data/market.py": {
+        "risk": "LOW",
+        "impacted_count": 1,
+        "direct": 1,
+        "processes_affected": 0
+      },
+      "get_data_source_factory_dependency": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0
+      }
+    }
+  },
+  "next_gate": {
+    "recommended_workline": "G2.65-closeout",
+    "recommended_scope": "current-head closeout refresh before selecting another DataSourceFactory route consumer",
+    "remaining_direct_route_calls": 13,
+    "remaining_consumers_locked_until_authorized": true
+  }
+}
