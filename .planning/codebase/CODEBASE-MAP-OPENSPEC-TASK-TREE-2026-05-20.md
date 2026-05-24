@@ -1037,10 +1037,23 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   │          `0`, and GitNexus reports `margin.py` LOW/1 plus provider
 │   │   │          package LOW/0
 │   │   └── Boundary: closeout-only; no source edit or next consumer selection
-│   └── Next gate: Create a separate G2.68 authorization-only candidate
-│                  comparison packet before any next DataSourceFactory route
-│                  consumer edit. Remaining candidates (`kline.py`,
-│                  `futures.py`, `lhb.py`, `stocks.py`, and
+│   ├── G2.68 DataSourceFactory route candidate authorization
+│   │   ├── State: ready for review; PR `#216` candidate packet
+│   │   ├── Evidence: `backend-data-source-factory-lhb-route-migration-authorization-2026-05-25.md`
+│   │   ├── Current HEAD: `d5a0ef78718a070180be0428573530081945c943`
+│   │   ├── Result: compares the remaining five route/API consumers and selects
+│   │   │          `web/backend/app/api/data/lhb.py` for future G2.69 because it
+│   │   │          has LOW/1 GitNexus impact, ruff clean, two route handlers, and
+│   │   │          two direct refs that can move from `2` to `0`; same-file black
+│   │   │          normalization is allowed only inside the future authorized
+│   │   │          implementation if black reformats `lhb.py`
+│   │   └── Boundary: authorization-only; no source edit, route contract edit,
+│   │                compatibility getter removal, frontend edit, PM2/runtime
+│   │                gate, or issue-label change is authorized
+│   └── Next gate: Human review / PR merge decision for G2.68; if accepted,
+│                  create a separate G2.69 path-limited `lhb.py`
+│                  implementation branch. Other remaining candidates
+│                  (`kline.py`, `futures.py`, `stocks.py`, and
 │                  `market/market_data_request.py`) stay locked
 │
 ├── H. Decision-Only Track: CSRF composition root
@@ -1158,6 +1171,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-margin-route-migration-implementation-2026-05-25.md` | G | G2.67 implementation prepared at current HEAD `7b817debccfba1c82efc5a9c71f23f0b775434c0`: records PR `#213` as `MERGED`, verifies pre-edit GitNexus `margin.py` LOW/1 and three route-handler contexts, follows TDD red=`1 failed: KeyError factory` then green=`1 passed`, migrates `get_margin_account_info`, `get_margin_detail_sse`, and `get_margin_detail_szse` to `get_data_source_factory_dependency`, removes three inline compatibility getter calls, moves `margin.py` direct refs `3 -> 0`, total direct refs `13 -> 10`, verifies health route conflict tests=`115 passed`, provider lifecycle tests=`4 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, operation IDs=`536`, duplicate operation IDs=`0`, and staged GitNexus detect changes risk=`low`, affected count=`0`; remaining `10` route/API consumers stay locked | Human review / PR merge decision; if accepted, run G2.67 closeout/current-head refresh before selecting another DataSourceFactory route consumer packet |
 
 | `backend-data-source-factory-margin-route-migration-closeout-2026-05-25.md` | G | G2.67 closeout prepared at current HEAD `3f1a737a5cc62f0424951931581e410d1dd14975`: records PR `#214` as `MERGED`, confirms current-head route guard direct API calls=`10`, `margin.py` direct refs=`0`, provider dependency API refs=`8`, health route conflict tests=`115 passed`, provider lifecycle tests=`4 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, operation IDs=`536`, duplicate operation IDs=`0`, file-level `margin.py` LOW/1 upstream impact and provider package LOW/0; recommends G2.68 authorization-only candidate comparison before any next route consumer edit | Human review / PR merge decision; if accepted, create G2.68 consumer-selection authorization packet; all remaining `10` route/API consumers stay locked |
+
+| `backend-data-source-factory-lhb-route-migration-authorization-2026-05-25.md` | G | G2.68 authorization prepared at current HEAD `d5a0ef78718a070180be0428573530081945c943`: records PR `#215` as `MERGED`, confirms remaining route/API direct factory calls=`10`, compares five candidates, selects `web/backend/app/api/data/lhb.py` for future G2.69 because it has direct refs=`2`, route handlers=`2`, LOC=`128`, ruff=`pass`, black=`would_reformat`, GitNexus=`LOW/1`, and expected post-implementation direct refs `2 -> 0` / total direct refs `10 -> 8`; defers `market_data_request.py` due broad 11-route surface, `kline.py` and `stocks.py` due E701/black debt, and `futures.py` due a CRITICAL/91 file-level GitNexus anomaly requiring narrower impact analysis | Human review / PR merge decision; if accepted, create G2.69 path-limited `lhb.py` implementation branch; all other remaining consumers stay locked |
 
 ## Completed And Reviewed Ledger
 
@@ -1315,6 +1330,8 @@ review, PR review, or OpenSpec archive review.
 | G2.67 margin DataSourceFactory route migration | Ready for review | `7b817deb` | Path-limited implementation migrates three margin route handlers to `get_data_source_factory_dependency`, adds focused dependency wiring coverage, moves total direct route/API factory refs `13 -> 10`, and keeps all other remaining consumers locked pending closeout |
 
 | G2.67 margin DataSourceFactory route migration closeout | Ready for review | `3f1a737a` | Current-head closeout records PR `#214` merged, keeps total direct route/API factory refs at `10`, keeps `margin.py` at `0`, and requires G2.68 authorization-only candidate comparison before any further route migration |
+
+| G2.68 DataSourceFactory route candidate authorization | Ready for review | `d5a0ef78` | Candidate comparison recorded after PR `#215`: selects `lhb.py` for future G2.69 because it has the smallest low-risk route surface; this row authorizes no source edit until human review accepts the packet |
 
 ## Update Protocol
 
