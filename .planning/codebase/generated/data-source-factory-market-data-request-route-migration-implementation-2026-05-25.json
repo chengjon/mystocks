@@ -1,0 +1,137 @@
+{
+  "artifact": "data-source-factory-market-data-request-route-migration-implementation-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-71-market-data-request-route-factory-migration",
+  "base_head": "9060b455b7559ce21bc6f27975cce058be52cb96",
+  "scope": {
+    "source_files": [
+      "web/backend/app/api/market/market_data_request.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "governance_files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/data-source-factory-market-data-request-route-migration-implementation-2026-05-25.json",
+      "docs/reports/quality/backend-data-source-factory-market-data-request-route-migration-implementation-2026-05-25.md",
+      "governance/mainline/task-cards/pr-220.yaml"
+    ],
+    "excluded": [
+      "route paths",
+      "response models",
+      "response shape",
+      "OpenAPI exposure policy",
+      "frontend",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue labels",
+      "other DataSourceFactory consumers",
+      "DataSourceFactory compatibility getter removal"
+    ]
+  },
+  "pre_edit_evidence": {
+    "gitnexus": {
+      "file": {
+        "target": "web/backend/app/api/market/market_data_request.py",
+        "risk": "LOW",
+        "direct_impacted": 1,
+        "processes_affected": 0
+      },
+      "functions": [
+        {
+          "target": "get_market_quotes",
+          "risk": "LOW",
+          "direct_impacted": 0,
+          "processes_affected": 0
+        },
+        {
+          "target": "get_fund_flow",
+          "note": "Function name is ambiguous in GitNexus impact; path-specific context for web/backend/app/api/market/market_data_request.py:get_fund_flow reported no incoming references and the outgoing get_data_source_factory call."
+        }
+      ]
+    },
+    "baseline_tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "116 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "baseline_style": {
+      "ruff_market_data_request": "passed",
+      "black_market_data_request": "passed"
+    },
+    "baseline_route_api_factory_refs": {
+      "total_direct_refs": 8,
+      "market_data_request_py_direct_refs": 2
+    }
+  },
+  "tdd": {
+    "red": {
+      "command": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_market_data_request_routes_use_data_source_factory_dependency -q --no-cov --tb=short",
+      "result": "failed as expected",
+      "failure": "KeyError: 'factory'"
+    },
+    "green": {
+      "command": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_market_data_request_routes_use_data_source_factory_dependency -q --no-cov --tb=short",
+      "result": "1 passed"
+    }
+  },
+  "implementation": {
+    "migrated_route_handlers": [
+      "get_fund_flow",
+      "get_market_quotes"
+    ],
+    "dependency": "Depends(get_data_source_factory_dependency)",
+    "factory_type": "DataSourceFactory",
+    "removed_inline_calls": [
+      "await get_data_source_factory() in get_fund_flow",
+      "await get_data_source_factory() in get_market_quotes"
+    ],
+    "compatibility_surfaces_retained": [
+      "get_data_source_factory()",
+      "_global_factory",
+      "get_data_source_factory_dependency"
+    ]
+  },
+  "post_change_evidence": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "117 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "style": {
+      "ruff_touched_files": "passed",
+      "black_touched_files": "passed"
+    },
+    "route_api_factory_refs": {
+      "total_direct_refs": 6,
+      "market_data_request_py_direct_refs": 0,
+      "remaining_data_route_consumers": [
+        {
+          "file": "web/backend/app/api/data/kline.py",
+          "direct_refs": 2
+        },
+        {
+          "file": "web/backend/app/api/data/futures.py",
+          "direct_refs": 2
+        },
+        {
+          "file": "web/backend/app/api/data/stocks.py",
+          "direct_refs": 2
+        }
+      ]
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 0
+    },
+    "staged_gitnexus": {
+      "risk_level": "high",
+      "changed_files": 6,
+      "changed_symbols": 36,
+      "affected_processes": 6,
+      "interpretation": "The staged diff itself is limited to import wiring, get_fund_flow, get_market_quotes, and one focused test. GitNexus marked same-file functions and get_kline_data flows as changed because the parser attributed the file edit broadly; no get_kline_data hunk is present in git diff."
+    }
+  },
+  "next_gate": "Human review / PR merge decision for G2.71, then a separate closeout/current-head refresh before any further DataSourceFactory route migration."
+}

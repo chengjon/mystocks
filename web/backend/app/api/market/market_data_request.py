@@ -34,6 +34,7 @@ from app.schemas.market_schemas import (
     LongHuBangResponse,
     MessageResponse,
 )
+from app.services.data_source_factory import DataSourceFactory, get_data_source_factory_dependency
 from app.services.market_data_service import MarketDataService, get_market_data_service_dependency
 from app.services.stock_search_service import StockSearchService, get_stock_search_service_dependency
 
@@ -79,6 +80,7 @@ async def get_fund_flow(
     start_date: Optional[str] = Query(None, description="开始日期 YYYY-MM-DD"),
     end_date: Optional[str] = Query(None, description="结束日期 YYYY-MM-DD"),
     # current_user: User = Depends(get_current_user),  # Temporarily disable auth for debugging
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ):
     """
     查询个股资金流向历史数据（使用数据源工厂）
@@ -127,11 +129,6 @@ async def get_fund_flow(
             return create_success_response(
                 data={"fund_flow": [], "total": 0}, message="市场数据服务暂不可用，请稍后重试"
             )
-
-        # 使用数据源工厂获取市场数据
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
 
         # 调用数据源工厂获取fund-flow数据
         try:
@@ -409,6 +406,7 @@ async def refresh_lhb_detail(
 @cache_response("real_time_quotes", ttl=10)  # 🚀 添加10秒缓存（平衡实时性）
 async def get_market_quotes(
     symbols: Optional[str] = Query(None, description="股票代码列表，逗号分隔，如: 000001,600519"),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ):
     """
     获取实时市场行情数据（使用数据源工厂）
@@ -421,11 +419,6 @@ async def get_market_quotes(
     **返回**: 实时行情列表
     """
     try:
-        # 使用数据源工厂获取市场数据
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
-
         # 如果未指定股票代码，返回热门股票
         if not symbols:
             symbols = "000001,600519,000858,601318,600036"  # 平安、茅台、五粮液、平安保险、招商银行
