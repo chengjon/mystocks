@@ -784,11 +784,21 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 dependency sites=`277`, and selected
 │   │                 `get_market_data_service` only as the next consumer
 │   │                 matrix / authorization candidate packet; broad or
-│   │                 external-client seams remain excluded
-│   └── Next gate: Human review of the G2.47 candidate-selection PR; if
-│                  accepted, create a separate G2.48
-│                  `get_market_data_service` route dependency consumer matrix /
-│                  route-provider authorization candidate before source edits
+│   │                 external-client seams remain excluded; PR `#188` merged
+│   │                 at
+│   │                 `0dce9ca97cd043f898039176394eb5076c353cf5`; G2.48 now
+│   │                 records the exact `get_market_data_service` route
+│   │                 dependency consumer matrix: seven `/api/v1/market`
+│   │                 route handlers in `market/market_data_request.py`,
+│   │                 package-level compatibility getter retained,
+│   │                 `market_data_adapter.py` excluded, configured OpenAPI
+│   │                 smoke routes=`548`, paths=`500`, duplicate operation
+│   │                 IDs=`0`, and `test_market_api_integration.py`
+│   │                 result=`18 passed`
+│   └── Next gate: Human review of the G2.48 consumer-matrix /
+│                  authorization-candidate PR; if accepted, create a separate
+│                  G2.49 `get_market_data_service` route-provider
+│                  implementation branch before source edits
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -875,6 +885,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-advanced-analysis-route-provider-migration-implementation-2026-05-24.md` | G | G2.45 implementation prepared from G2.44 authorization at base `22b617733e29c9a441e88cb1da2ce0a5d8be98cc`: adds `ADVANCED_ANALYSIS_SERVICE_STATE_KEY`, `install_advanced_analysis_service`, and `get_advanced_analysis_service_dependency`, preserves `get_advanced_analysis_service()` and module singleton compatibility, converts all `14` `advanced_analysis_api.py` service dependencies to the provider, focused TDD ended at `4 passed`, ruff/black passed, configured OpenAPI smoke reports routes=`548`, paths=`500`, duplicate operation IDs=`0`, and advanced paths=`14` | Human review / PR merge decision; if accepted, run G2.46 closeout/current-head candidate refresh before selecting the next service lifecycle DI lane |
 | `backend-advanced-analysis-route-provider-closeout-and-candidate-refresh-2026-05-24.md` | G | G2.46 closeout prepared at current HEAD `059638b573c6f2586537973e2a4b396f0ce156d7`: records PR `#185` as `MERGED`, confirms `AdvancedAnalysisService` route class dependency sites=`0`, provider sites=`14`, direct compatibility getter route calls=`0`, focused test result=`4 passed`, configured OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, advanced paths=`14`, completed provider modules=`8`, route provider dependency files=`11`, and route provider dependency sites=`72`; no next implementation target or compatibility getter retirement is authorized | Human review / PR merge decision; if accepted, create G2.47 candidate selection and usefulness/ownership triage packet before any source edits |
 | `backend-service-lifecycle-di-candidate-selection-after-advanced-analysis-2026-05-24.md` | G | G2.47 candidate selection prepared at current HEAD `e09e6db4a6a85dc392c20a737e729bb6f123804d`: records PR `#186` as `MERGED`, scans `152` service files and `219` API files, confirms provider modules=`8`, route provider dependency sites=`72`, route class dependency sites=`0`, and classifies `get_market_data_service` as the next consumer matrix / authorization candidate packet while excluding `get_data_service`, `get_strategy_service`, and `get_kronos_client` from direct implementation | Human review / PR merge decision; if accepted, create G2.48 `get_market_data_service` route dependency consumer matrix / route-provider authorization candidate before any source edits |
+| `backend-market-data-service-route-dependency-consumer-matrix-2026-05-24.md` | G | G2.48 consumer matrix prepared at current HEAD `0dce9ca97cd043f898039176394eb5076c353cf5`: records PR `#188` as `MERGED`, confirms `get_market_data_service` GitNexus risk=`LOW` / impacted count=`0`, identifies exactly seven active `/api/v1/market` route handlers using `Depends(get_market_data_service)`, keeps the package compatibility getter and `market_data_adapter.py` fallback surface active, excludes `services/__init__.py` IntegratedServices accessor and `MarketDataServiceV2` consolidation, configured app/OpenAPI smoke reports routes=`548`, paths=`500`, duplicate operation IDs=`0`, and focused `test_market_api_integration.py` result=`18 passed` | Human review / PR merge decision; if accepted, create G2.49 `get_market_data_service` route-provider implementation branch before source edits |
 
 ## Completed And Reviewed Ledger
 

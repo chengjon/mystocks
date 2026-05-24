@@ -1,0 +1,164 @@
+{
+  "schema_version": "1.0",
+  "workline": "G2.48",
+  "title": "MarketDataService route dependency consumer matrix",
+  "recorded_at": "2026-05-24T10:47:51+08:00",
+  "current_head": "0dce9ca97cd043f898039176394eb5076c353cf5",
+  "base_branch": "origin/wip/root-dirty-20260403",
+  "parent_pr": {
+    "number": 188,
+    "state": "MERGED",
+    "merge_commit": "0dce9ca97cd043f898039176394eb5076c353cf5"
+  },
+  "candidate": {
+    "symbol": "get_market_data_service",
+    "file": "web/backend/app/services/market_data_service/get_market_data_service.py",
+    "classification": "active-route-dependency-with-compatibility-fallback",
+    "source_implementation_authorized_by_this_packet_alone": false
+  },
+  "gitnexus": {
+    "target": "Function:web/backend/app/services/market_data_service/get_market_data_service.py:get_market_data_service",
+    "risk": "LOW",
+    "impacted_count": 0,
+    "direct": 0,
+    "processes_affected": 0,
+    "modules_affected": 0,
+    "note": "Graph impact is low, but current-head text and route scans show active FastAPI dependency consumers."
+  },
+  "route_dependency_surface": {
+    "route_file": "web/backend/app/api/market/market_data_request.py",
+    "mount_prefix": "/api/v1/market",
+    "dependency": "Depends(get_market_data_service)",
+    "site_count": 7,
+    "routes": [
+      {
+        "method": "POST",
+        "full_path": "/api/v1/market/fund-flow/refresh",
+        "handler": "refresh_fund_flow",
+        "handler_line": 198,
+        "dependency_line": 201
+      },
+      {
+        "method": "GET",
+        "full_path": "/api/v1/market/etf/list",
+        "handler": "get_etf_list",
+        "handler_line": 231,
+        "dependency_line": 238
+      },
+      {
+        "method": "POST",
+        "full_path": "/api/v1/market/etf/refresh",
+        "handler": "refresh_etf_data",
+        "handler_line": 273,
+        "dependency_line": 274
+      },
+      {
+        "method": "GET",
+        "full_path": "/api/v1/market/chip-race",
+        "handler": "get_chip_race",
+        "handler_line": 298,
+        "dependency_line": 303
+      },
+      {
+        "method": "POST",
+        "full_path": "/api/v1/market/chip-race/refresh",
+        "handler": "refresh_chip_race",
+        "handler_line": 328,
+        "dependency_line": 331
+      },
+      {
+        "method": "GET",
+        "full_path": "/api/v1/market/lhb",
+        "handler": "get_lhb_detail",
+        "handler_line": 357,
+        "dependency_line": 363
+      },
+      {
+        "method": "POST",
+        "full_path": "/api/v1/market/lhb/refresh",
+        "handler": "refresh_lhb_detail",
+        "handler_line": 389,
+        "dependency_line": 391
+      }
+    ]
+  },
+  "compatibility_surfaces": [
+    {
+      "path": "web/backend/app/services/market_data_service/get_market_data_service.py",
+      "role": "package-level compatibility getter",
+      "future_disposition": "preserve getter and add app-state provider only after approval"
+    },
+    {
+      "path": "web/backend/app/services/market_data_service/__init__.py",
+      "role": "package re-export",
+      "future_disposition": "re-export future provider symbols if approved"
+    },
+    {
+      "path": "web/backend/app/services/__init__.py",
+      "role": "separate IntegratedServices accessor with same function name",
+      "future_disposition": "exclude from this lane"
+    },
+    {
+      "path": "web/backend/app/services/market_data_adapter.py",
+      "role": "non-route fallback import of package getter",
+      "future_disposition": "exclude from this route-provider lane; compatibility getter remains public"
+    },
+    {
+      "path": "web/backend/tests/test_market_api_integration.py",
+      "role": "existing dependency override test base",
+      "future_disposition": "use or extend for route dependency override coverage"
+    }
+  ],
+  "reference_scan": {
+    "python_reference_files": 14,
+    "python_reference_count": 52,
+    "import_sites": [
+      "web/backend/app/services/market_data_service/__init__.py:3",
+      "web/backend/app/services/market_data_adapter.py:64",
+      "web/backend/app/api/market/market_data_request.py:37",
+      "web/backend/tests/test_market_api_integration.py:31"
+    ],
+    "override_sites": [
+      "web/backend/tests/test_market_api_integration.py:76"
+    ]
+  },
+  "configured_smoke": {
+    "environment": "non-sensitive placeholder env for route/OpenAPI smoke only",
+    "app_import": "ok",
+    "route_count": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "selected_market_routes": 7
+  },
+  "focused_tests": {
+    "collect_only": {
+      "command": "pytest -o addopts= web/backend/tests/test_market_api_integration.py --collect-only -q --no-cov",
+      "result": "18 tests collected"
+    },
+    "test_run": {
+      "command": "pytest -o addopts= web/backend/tests/test_market_api_integration.py -q --tb=short --no-cov",
+      "result": "18 passed in 13.95s"
+    }
+  },
+  "future_allowed_write_scope_if_approved": [
+    "web/backend/app/services/market_data_service/get_market_data_service.py",
+    "web/backend/app/services/market_data_service/__init__.py",
+    "web/backend/app/api/market/market_data_request.py",
+    "web/backend/tests/test_market_data_service_lifecycle_di.py",
+    "web/backend/tests/test_market_api_integration.py",
+    "docs/reports/quality/backend-market-data-service-route-provider-implementation-2026-05-24.md",
+    "governance/mainline/task-cards/pr-190.yaml"
+  ],
+  "explicit_non_goals": [
+    "No source edits in this packet",
+    "No MarketDataService and MarketDataServiceV2 consolidation",
+    "No changes to market_data_adapter.py",
+    "No changes to web/backend/app/services/__init__.py",
+    "No compatibility getter cleanup",
+    "No route path, OpenAPI exposure, frontend, docs/API, PM2, OpenSpec, or GitHub issue label changes"
+  ],
+  "decision": {
+    "recommendation": "approve a separate implementation branch that converts exactly seven market_data_request.py route dependency parameters to a future get_market_data_service_dependency provider while preserving get_market_data_service compatibility fallback",
+    "next_gate": "human review of G2.48; if accepted, create G2.49 source implementation branch"
+  }
+}
