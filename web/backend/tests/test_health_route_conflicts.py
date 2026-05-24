@@ -6,6 +6,7 @@ import inspect
 from fastapi.routing import APIRoute
 
 from app.api.data import financial as financial_module
+from app.api.data import lhb as lhb_module
 from app.api.data import margin as margin_module
 from app.api.data import market as market_module
 from app.main import app
@@ -63,6 +64,16 @@ def test_margin_routes_use_data_source_factory_dependency() -> None:
         factory_param = inspect.signature(route_handler).parameters["factory"]
 
         assert getattr(factory_param.default, "dependency", None) is margin_module.get_data_source_factory_dependency
+
+
+def test_lhb_routes_use_data_source_factory_dependency() -> None:
+    for route_handler in [
+        lhb_module.get_dragon_tiger_detail,
+        lhb_module.get_dragon_tiger_institution_stats,
+    ]:
+        factory_param = inspect.signature(route_handler).parameters["factory"]
+
+        assert getattr(factory_param.default, "dependency", None) is lhb_module.get_data_source_factory_dependency
 
 
 def test_root_and_socketio_status_have_documented_examples_and_errors() -> None:
