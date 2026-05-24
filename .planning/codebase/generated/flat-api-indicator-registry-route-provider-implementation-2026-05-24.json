@@ -1,0 +1,117 @@
+{
+  "artifact": "flat-api-indicator-registry-route-provider-implementation",
+  "workline": "G2.54",
+  "generated_at": "2026-05-24T16:49:54+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "71510bb02a84",
+  "status": "ready_for_review",
+  "approval_chain": {
+    "g2_52_pr": 193,
+    "g2_52_merge_commit": "ec3dc2920886eb24e963a33488bd2e945e98e6c9",
+    "g2_53_pr": 194,
+    "g2_53_merge_commit": "71510bb02a845ec529c8c04f3a7288ca86b87b9c"
+  },
+  "pre_edit_gitnexus": {
+    "flat_registry_context": {
+      "symbol": "Function:web/backend/app/services/indicator_registry.py:get_indicator_registry",
+      "direct_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py:get_indicator_registry_endpoint",
+        "web/backend/app/api/indicators/indicator_cache.py:get_indicators_by_category",
+        "web/backend/app/services/indicator_calculator.py:__init__"
+      ]
+    },
+    "route_handler_impacts": [
+      {
+        "target": "get_indicator_registry_endpoint",
+        "file": "web/backend/app/api/indicators/indicator_cache.py",
+        "risk": "LOW",
+        "impacted_count": 0,
+        "processes_affected": 0
+      },
+      {
+        "target": "get_indicators_by_category",
+        "file": "web/backend/app/api/indicators/indicator_cache.py",
+        "risk": "LOW",
+        "impacted_count": 0,
+        "processes_affected": 0
+      }
+    ]
+  },
+  "implementation": {
+    "source_files": [
+      "web/backend/app/services/indicator_registry.py",
+      "web/backend/app/api/indicators/indicator_cache.py"
+    ],
+    "test_files": [
+      "web/backend/tests/test_indicator_registry_route_provider.py"
+    ],
+    "provider_surface": [
+      "INDICATOR_REGISTRY_STATE_KEY",
+      "install_indicator_registry",
+      "get_indicator_registry_dependency"
+    ],
+    "compatibility_preserved": [
+      "get_indicator_registry"
+    ],
+    "converted_route_handlers": [
+      "get_indicator_registry_endpoint",
+      "get_indicators_by_category"
+    ],
+    "excluded_surfaces": [
+      "IndicatorCalculator.__init__",
+      "web/backend/app/services/indicators/indicator_registry.py",
+      "web/backend/app/services/indicators/defaults.py",
+      "web/backend/app/services/indicators/talib_adapter.py",
+      "web/backend/app/services/indicators/jobs/**"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --tb=short --no-cov",
+      "status": "failed_as_expected",
+      "failures": [
+        "assert dependency is not None",
+        "TypeError: get_indicator_registry_endpoint() got an unexpected keyword argument 'registry'"
+      ],
+      "summary": "2 failed in 1.77s"
+    },
+    "green": {
+      "command": "pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --tb=short --no-cov",
+      "status": "passed",
+      "summary": "2 passed in 1.60s"
+    }
+  },
+  "validation": {
+    "black_touched_files": "passed",
+    "ruff_touched_files": "passed",
+    "focused_route_provider_test": "2 passed in 1.68s",
+    "v1_indicator_openapi_doc_test": "1 passed in 10.62s",
+    "configured_app_openapi_smoke": {
+      "routes_total": 548,
+      "openapi_paths_total": 500,
+      "duplicate_operation_ids": 0,
+      "selected_indicator_cache_routes": 6
+    },
+    "staged_gitnexus_scope": {
+      "risk": "MEDIUM",
+      "changed_files": 7,
+      "changed_count": 22,
+      "affected_count": 2,
+      "affected_processes": [
+        "Calculate_indicators -> Warning",
+        "Calculate_indicators -> _dataframe_to_ohlcv_arrays"
+      ],
+      "manual_diff_review": "source hunks are bounded to indicator_cache import/signature/call-site changes, indicator_registry provider addition, and focused regression test; calculate handler body was not intentionally changed"
+    },
+    "known_existing_test_debt": {
+      "command": "pytest -o addopts= web/backend/tests/test_indicators.py -q --tb=short --no-cov",
+      "summary": "8 failed, 8 passed in 11.96s",
+      "reason": "legacy /api/indicators/* path assertions receive 404 while active routes are /api/v1/indicators/*"
+    }
+  },
+  "decision": {
+    "source_implementation_done": true,
+    "runtime_promotion_authorized": false,
+    "next_gate": "G2.55 closeout/current-head refresh after PR merge"
+  }
+}

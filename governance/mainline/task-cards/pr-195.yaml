@@ -1,0 +1,119 @@
+version: "v0.2"
+
+task:
+  id: "pr-195"
+  title: "Implement flat API IndicatorRegistry route provider"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-flat-api-indicator-registry-route-provider"
+  objective: "migrate selected flat API IndicatorRegistry read routes to an app-state-backed FastAPI dependency provider"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-flat-api-indicator-registry-route-provider"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-flat-api-indicator-registry-route-provider"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Route-provider migration preserves existing route paths, OpenAPI exposure, response models, operation IDs, and product surface while moving selected flat API IndicatorRegistry route dependencies to an app-state provider"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/flat-api-indicator-registry-route-provider-implementation-2026-05-24.json"
+    - "docs/reports/quality/backend-flat-api-indicator-registry-route-provider-implementation-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-195.yaml"
+    - "web/backend/app/services/indicator_registry.py"
+    - "web/backend/app/api/indicators/indicator_cache.py"
+    - "web/backend/tests/test_indicator_registry_route_provider.py"
+  forbidden_paths:
+    - "web/backend/app/services/indicator_calculator.py"
+    - "web/backend/app/services/indicators/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No package indicator registry startup/jobs migration"
+  - "No IndicatorCalculator migration"
+  - "No compatibility getter deletion"
+  - "No route path, OpenAPI visibility, response model, operation ID, generated client, or frontend change"
+  - "No PM2, runtime promotion, GitHub issue state, label, or OpenSpec state movement"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-flat-api-indicator-registry-route-provider-implementation-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/flat-api-indicator-registry-route-provider-implementation-2026-05-24.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-195.yaml').read_text())\""
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/indicator_registry.py web/backend/app/api/indicators/indicator_cache.py web/backend/tests/test_indicator_registry_route_provider.py"
+      required: true
+    - id: "focused-route-provider-test"
+      command: "pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --tb=short --no-cov"
+      required: true
+    - id: "v1-indicator-openapi-doc-test"
+      command: "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_v1_indicator_endpoints_have_examples_parameter_docs_and_descriptions -q --tb=short --no-cov"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-195.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "gitnexus_detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If indicator_calculator.py or package registry files are changed, the PR exceeds the G2.54 authorization boundary"
+    - "If compatibility get_indicator_registry() is removed, service construction and legacy callers may break"
+    - "If route paths or response contracts change, frontend and OpenAPI consumers may regress"
+  rollback_plan: "revert this implementation PR; PR #194 remains the accepted consumer matrix unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "migrate selected flat API IndicatorRegistry read routes to an app-state-backed provider"
+    modified_scope: "flat registry service, indicator cache read routes, focused test, report, generated artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "compatibility getter preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused route-provider or OpenAPI checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T16:38:58+08:00"
+    approval_note: "human maintainer approved continuing after PR #194 merge; this packet implements the bounded G2.54 flat API IndicatorRegistry route-provider scope"
+    secondary_approved: false
