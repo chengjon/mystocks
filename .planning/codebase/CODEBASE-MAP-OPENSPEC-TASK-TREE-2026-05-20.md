@@ -820,11 +820,17 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 functions=`8`, route provider dependency sites=`79`,
 │   │                 route getter dependency sites=`270`, OpenAPI paths=`500`,
 │   │                 duplicate operation IDs=`0`, and no ordinary
-│   │                 route-provider implementation target is selected
-│   └── Next gate: Human review of the G2.51 candidate refresh PR; if accepted,
-│                  choose a separate decision packet for indicator registry,
-│                  technical-pattern route-local provider modernization, or
-│                  broad data/strategy seam design before source edits
+│   │                 route-provider implementation target is selected; PR
+│   │                 `#192` merged at
+│   │                 `363324bf31a89b797789403c55dbe3ca854bc7d6`; G2.52 now
+│   │                 records `IndicatorRegistry` provider design: two
+│   │                 same-name registry getters exist, flat API registry direct
+│   │                 callers=`3`, package registry production callers=`3`,
+│   │                 OpenAPI paths=`500`, duplicate operation IDs=`0`, and no
+│   │                 source implementation target is authorized
+│   └── Next gate: Human review of the G2.52 design PR; if accepted, create
+│                  G2.53 flat API registry consumer matrix / authorization
+│                  candidate before any source edits
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -915,6 +921,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-market-data-service-route-provider-implementation-2026-05-24.md` | G | G2.49 implementation prepared from G2.48 authorization at base `7daf74ce0c3210defc2ad283583a335037daa500`: adds `MARKET_DATA_SERVICE_STATE_KEY`, `install_market_data_service`, and `get_market_data_service_dependency`, preserves `get_market_data_service()` and package compatibility, converts exactly seven `/api/v1/market` route dependencies to the provider, keeps `market_data_adapter.py`, `services/__init__.py`, and `MarketDataServiceV2` unchanged, TDD red=`4 failed, 1 passed`, green=`5 passed`, market integration tests=`18 passed`, ruff/black passed, configured OpenAPI smoke reports routes=`548`, paths=`500`, duplicate operation IDs=`0`, selected market routes=`7` | Human review / PR merge decision; if accepted, run G2.50 closeout/current-head candidate refresh before selecting the next service lifecycle DI lane |
 | `backend-market-data-service-route-provider-closeout-2026-05-24.md` | G | G2.50 closeout prepared at current HEAD `33163197b59893372d5d1d68af53acbfbbb0f613`: records PR `#190` as `MERGED`, confirms `market_data_request.py` legacy dependency sites=`0`, provider dependency sites=`7`, provider import present=`true`, focused lifecycle tests=`5 passed`, market integration tests=`18 passed`, configured app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, provider functions=`8`, route provider dependency files=`11`, and route provider dependency sites=`79`; residual `get_market_data_service()` references remain compatibility or separate helper/fallback surfaces and are not deletion candidates | Human review / PR merge decision; if accepted, create a current-head candidate refresh before selecting the next service lifecycle DI implementation lane |
 | `backend-service-lifecycle-di-candidate-refresh-after-market-data-provider-2026-05-24.md` | G | G2.51 candidate refresh prepared at current HEAD `047f483dd70a5234ca3a128342511a56779194d3`: records PR `#191` as `MERGED`, scans `152` service files and `219` API files, confirms provider functions=`8`, route provider dependency files=`11`, route provider dependency sites=`79`, route getter dependency sites=`270`, OpenAPI paths=`500`, duplicate operation IDs=`0`, `get_market_data_service` legacy route dependency sites=`0`, and classifies the remaining interesting seams: `get_indicator_registry` LOW/`4` as indicator-internal design, `get_data_service` CRITICAL/`5`, `get_strategy_service` CRITICAL/`13`, `get_kronos_client` CRITICAL/`3`, and route-local `get_technical_pattern_detection_service` as D2.1a historical provider surface; no next source implementation target is selected | Human review / PR merge decision; if accepted, choose a separate decision packet before any source edits |
+| `backend-indicator-registry-provider-design-2026-05-24.md` | G | G2.52 design packet prepared at current HEAD `363324bf31a89b797789403c55dbe3ca854bc7d6`: records PR `#192` as `MERGED`, confirms two same-name `get_indicator_registry()` surfaces, separates flat API registry `web/backend/app/services/indicator_registry.py` from package registry `web/backend/app/services/indicators/indicator_registry.py`, records flat API direct callers=`3`, package registry production callers=`3`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, and selects no source implementation target; recommended next gate is G2.53 flat API registry consumer matrix / authorization candidate | Human review / PR merge decision; if accepted, create G2.53 flat API registry consumer matrix / authorization candidate before source edits |
 
 ## Completed And Reviewed Ledger
 
