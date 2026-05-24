@@ -17,14 +17,15 @@ import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 
 from app.core.config import settings
 from app.core.exceptions import NotFoundException
 from app.core.responses import UnifiedResponse, create_error_response, create_success_response
 from app.services.data_quality_monitor import get_data_quality_monitor, monitor_data_quality
 from app.services.data_source_factory import (
-    get_data_source_factory,
+    DataSourceFactory,
+    get_data_source_factory_dependency,
     get_data_source_mode as get_factory_mode,
     is_fallback_enabled,
 )
@@ -45,6 +46,7 @@ from app.api._data_quality_responses import (
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/data-quality", tags=["data-quality"], responses=DATA_QUALITY_ERROR_RESPONSES)
 
+
 @router.get(
     "/health",
     response_model=UnifiedResponse[Dict[str, Any]],
@@ -52,10 +54,9 @@ router = APIRouter(prefix="/data-quality", tags=["data-quality"], responses=DATA
     description="汇总所有数据源的健康状态、响应时间和可用性指标，供运维与数据质量监控面板使用。",
     responses=DATA_QUALITY_HEALTH_RESPONSES,
 )
-async def get_sources_health():
+async def get_sources_health(factory: DataSourceFactory = Depends(get_data_source_factory_dependency)):
     """获取所有数据源健康状态"""
     try:
-        factory = await get_data_source_factory()
         health_results = await factory.health_check_all()
 
         # 格式化健康状态
@@ -362,11 +363,10 @@ async def get_data_source_mode():
     description="汇总数据源健康分、告警数量、运行模式和近期性能指标，用于数据质量总览面板展示。",
     responses=DATA_QUALITY_OVERVIEW_RESPONSES,
 )
-async def get_system_status_overview():
+async def get_system_status_overview(factory: DataSourceFactory = Depends(get_data_source_factory_dependency)):
     """获取系统状态概览"""
     try:
         # 获取数据源工厂状态
-        factory = await get_data_source_factory()
         health_results = await factory.health_check_all()
         available_sources = factory.get_available_sources()
 

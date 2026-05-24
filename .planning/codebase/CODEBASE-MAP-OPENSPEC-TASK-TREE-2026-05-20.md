@@ -929,11 +929,20 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 data-quality mock configuration tests pass `2`, and
 │   │                 app/OpenAPI smoke remains routes=`548`, paths=`500`,
 │   │                 duplicate operation IDs=`0`
-│   └── Next gate: Human review of the G2.61b authorization PR; if accepted,
-│                  create a separate G2.61c implementation branch limited to
-│                  `data_quality.py`, the data-source-factory package export,
-│                  focused tests, implementation evidence, and a task card; the
-│                  remaining `15` route/API consumers remain locked
+│   │                 PR `#204` merged at
+│   │                 `52a2aaa57150db834bcef3a526a4b78e37ac438a`; G2.61c now
+│   │                 implements the approved first route migration:
+│   │                 `data_quality.py` direct calls move from `2` to `0`,
+│   │                 total API direct calls move from `17` to `15`, package
+│   │                 `__init__.py` re-exports
+│   │                 `get_data_source_factory_dependency`, focused route tests
+│   │                 pass `4`, provider tests pass `4`, existing factory tests
+│   │                 pass `38`, and app/OpenAPI smoke remains routes=`548`,
+│   │                 paths=`500`, duplicate operation IDs=`0`
+│   └── Next gate: Human review of the G2.61c implementation PR; if accepted,
+│                  run a separate G2.61c closeout/current-head refresh before
+│                  selecting the next DataSourceFactory route consumer packet;
+│                  the remaining `15` route/API consumers remain locked
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1036,6 +1045,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-provider-seam-implementation-2026-05-24.md` | G | G2.61a provider-seam implementation prepared at current HEAD `ae6ba4e43b1470b524110fe506929df675bd8b93`: records PR `#201` as `MERGED`, confirms pre-edit non-linked GitNexus analyze exit=`0`, nodes=`62636`, edges=`145807`, flows=`300`, and CRITICAL impact remains expected; adds `DATA_SOURCE_FACTORY_STATE_KEY`, `install_data_source_factory`, and `get_data_source_factory_dependency` in `data_source_factory.py`, adds focused lifecycle DI tests, preserves `get_data_source_factory()` and `_global_factory`, keeps route direct calls=`17` and provider dependency API refs=`0`, TDD red=`3 failed, 1 passed`, green=`4 passed`, existing factory tests=`38 passed`, route-adjacent fallback test=`1 passed`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`; `tests/backend/test_data_api_regression.py` still has baseline 404 failures in both modified and unmodified checkouts and is not part of this batch | Human review / PR merge decision; if accepted, run G2.61a closeout/current-head refresh before selecting any route migration packet |
 | `backend-data-source-factory-provider-seam-closeout-2026-05-24.md` | G | G2.61a closeout prepared at current HEAD `0aadb27801c86e97e65ffdb4426276e1bd14c352`: records PR `#202` as `MERGED`, confirms provider symbols remain present, route direct calls remain `17`, provider dependency API refs remain `0`, focused lifecycle DI test=`4 passed`, existing factory test=`38 passed`, route-adjacent runtime fallback=`1 passed`, ruff/black passed, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`, and refreshed non-linked GitNexus resolves `get_data_source_factory_dependency` plus `install_data_source_factory` with LOW upstream impact and `0` callers; no source, test, route, OpenAPI, OpenSpec, issue-label, runtime, PM2, package export, or compatibility cleanup change is authorized | Human review / PR merge decision; if accepted, create G2.61b `data_quality.py` route migration authorization / consumer-matrix packet before any route edit |
 | `backend-data-quality-data-source-factory-route-migration-authorization-2026-05-24.md` | G | G2.61b route migration authorization prepared at current HEAD `ee2c74f3c8e1c4f690d2a1737db29c97c39a54d2`: records PR `#203` as `MERGED`, confirms `data_quality.py` has two DataSourceFactory compatibility getter calls at lines `58` and `369`, keeps total API direct calls=`17` across `9` files and provider dependency API refs=`0`, records package export gap for `get_data_source_factory_dependency`, verifies provider lifecycle tests=`4 passed`, existing factory tests=`38 passed`, data-quality mock configuration tests=`2 passed`, ruff candidate files=`passed`, and app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`; authorizes only a future G2.61c path-limited implementation packet for `data_quality.py` plus data-source-factory package export and focused tests | Human review / PR merge decision; if accepted, create G2.61c path-limited route migration implementation branch; remaining `15` route/API consumers stay locked |
+| `backend-data-quality-data-source-factory-route-migration-implementation-2026-05-24.md` | G | G2.61c implementation prepared at current HEAD `52a2aaa57150db834bcef3a526a4b78e37ac438a`: records PR `#204` as `MERGED`, refreshes non-linked GitNexus at the same HEAD with analyze exit=`0`, nodes=`62644`, edges=`145830`, flows=`300`, records LOW/0 upstream impact for `get_sources_health`, `get_system_status_overview`, `get_data_source_factory_dependency`, and `install_data_source_factory`, follows TDD red=`2 failed, 2 passed` then green=`4 passed`, re-exports `get_data_source_factory_dependency`, migrates `data_quality.py` direct calls from `2` to `0`, reduces total API direct calls from `17` to `15`, preserves `get_data_source_factory()` plus `_global_factory`, verifies provider tests=`4 passed`, existing factory tests=`38 passed`, ruff/black touched files=`passed`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`; remaining `15` route/API consumers stay locked | Human review / PR merge decision; if accepted, run G2.61c closeout/current-head refresh before selecting another DataSourceFactory route consumer packet |
 
 ## Completed And Reviewed Ledger
 
