@@ -1,0 +1,67 @@
+{
+  "schema_version": "1.0",
+  "artifact": "data-source-factory-next-route-consumer-authorization",
+  "generated_at": "2026-05-24T22:40:56+08:00",
+  "workline": "G2.62",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "fcc438de0965f80af7d485525fb494511976595b",
+  "status": "ready_for_review",
+  "scope_boundary": {
+    "kind": "governance_authorization_only",
+    "backend_source_modified": false,
+    "tests_modified": false,
+    "route_paths_modified": false,
+    "openapi_modified": false,
+    "openspec_modified": false,
+    "issue_labels_modified": false,
+    "runtime_or_pm2_modified": false
+  },
+  "upstream_state": {
+    "previous_closeout_pr": 206,
+    "previous_closeout_merge": "fcc438de0965f80af7d485525fb494511976595b",
+    "remaining_direct_get_data_source_factory_calls": 15
+  },
+  "candidate_comparison": {
+    "web/backend/app/api/data/financial.py": {
+      "direct_calls": 1,
+      "line": 69,
+      "handler": "get_financial_data",
+      "route_functions_in_file": 1,
+      "existing_auth_dependency": "current_user: User = Depends(get_current_user)",
+      "test_surface": "small",
+      "disposition": "selected_for_future_G2.63"
+    },
+    "web/backend/app/api/data/market.py": {
+      "direct_calls": 1,
+      "line": 98,
+      "handler": "get_market_overview",
+      "route_functions_in_file": 4,
+      "existing_auth_dependency": "current_user: User = Depends(get_current_user)",
+      "test_surface": "broader market route/test surface",
+      "disposition": "locked_for_later_packet"
+    }
+  },
+  "authorized_future_batch": {
+    "id": "G2.63",
+    "kind": "financial_route_consumer_migration",
+    "selected_file": "web/backend/app/api/data/financial.py",
+    "selected_handler": "get_financial_data",
+    "allowed_paths": [
+      "web/backend/app/api/data/financial.py",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py",
+      "web/backend/tests/test_health_route_conflicts.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/data-source-factory-financial-route-migration-implementation-*.json",
+      "docs/reports/quality/backend-data-source-factory-financial-route-migration-implementation-*.md",
+      "governance/mainline/task-cards/pr-*.yaml"
+    ],
+    "acceptance_criteria": [
+      "financial.py direct get_data_source_factory() calls reduce from 1 to 0",
+      "total API direct get_data_source_factory() calls reduce from 15 to 14",
+      "get_financial_data uses Depends(get_data_source_factory_dependency) or an explicitly documented equivalent",
+      "route path, query parameters, response shape, and OpenAPI path count remain unchanged",
+      "compatibility getter get_data_source_factory() and _global_factory remain preserved"
+    ],
+    "blocked_until_reviewed": true
+  }
+}
