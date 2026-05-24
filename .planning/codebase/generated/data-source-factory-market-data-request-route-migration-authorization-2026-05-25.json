@@ -1,0 +1,99 @@
+{
+  "artifact": "data-source-factory-market-data-request-route-migration-authorization-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-70-data-source-factory-route-candidate-authorization",
+  "current_head": "2670dba0661d9744372e834035027ac4de106fd0",
+  "scope": {
+    "type": "authorization_only",
+    "source_edits": false,
+    "allowed_future_candidate": "web/backend/app/api/market/market_data_request.py",
+    "excluded": [
+      "backend source edits in G2.70",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "compatibility getter deletion"
+    ]
+  },
+  "baseline": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "116 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "route_api_factory_refs": {
+      "total_direct_refs": 8,
+      "rows": [
+        {
+          "file": "web/backend/app/api/data/kline.py",
+          "direct_refs": 2,
+          "route_count": 4,
+          "ruff": "fails E701",
+          "black": "would reformat",
+          "gitnexus": "LOW/1"
+        },
+        {
+          "file": "web/backend/app/api/data/futures.py",
+          "direct_refs": 2,
+          "route_count": 2,
+          "ruff": "passed",
+          "black": "would reformat",
+          "gitnexus": "CRITICAL/151"
+        },
+        {
+          "file": "web/backend/app/api/data/stocks.py",
+          "direct_refs": 2,
+          "route_count": 5,
+          "ruff": "fails E701",
+          "black": "would reformat",
+          "gitnexus": "LOW/1"
+        },
+        {
+          "file": "web/backend/app/api/market/market_data_request.py",
+          "direct_refs": 2,
+          "route_count": 11,
+          "ruff": "passed",
+          "black": "passed",
+          "gitnexus": "LOW/1"
+        }
+      ]
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "warning_count": 0
+    }
+  },
+  "decision": {
+    "selected_next_candidate": {
+      "file": "web/backend/app/api/market/market_data_request.py",
+      "future_branch": "G2.71",
+      "reason": "Only remaining candidate with ruff pass, black pass, GitNexus LOW/1, and exactly two direct DataSourceFactory getter refs. Although it has 11 route handlers, the direct migration surface is two refs and no formatting debt is expected.",
+      "expected_direct_ref_change": {
+        "total": "8 -> 6",
+        "market_data_request_py": "2 -> 0"
+      }
+    },
+    "deferred_candidates": [
+      {
+        "file": "web/backend/app/api/data/kline.py",
+        "reason": "LOW/1 but current ruff fails E701 and black would reformat; requires separate style-debt handling or explicit same-file normalization authorization."
+      },
+      {
+        "file": "web/backend/app/api/data/futures.py",
+        "reason": "ruff passes, but black would reformat and GitNexus file-level impact remains CRITICAL/151; requires narrower symbol impact or separate risk review."
+      },
+      {
+        "file": "web/backend/app/api/data/stocks.py",
+        "reason": "LOW/1 but current ruff fails E701 and black would reformat; larger file and route surface should remain deferred."
+      }
+    ]
+  },
+  "next_gate": "Human review / PR merge decision for G2.70; if accepted, create a separate G2.71 path-limited implementation branch for web/backend/app/api/market/market_data_request.py."
+}
