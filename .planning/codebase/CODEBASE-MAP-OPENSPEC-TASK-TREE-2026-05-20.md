@@ -899,13 +899,22 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                 impact remains `CRITICAL`; the selected next source batch
 │   │                 is G2.61a provider-seam-only with `0` route calls migrated
 │   │                 and all route/API consumer rewrites locked for later
-│   │                 packets
-│   └── Next gate: Human review of the G2.60 consumer-matrix / implementation
-│                  authorization PR; if accepted, create G2.61a provider-seam
-│                  implementation with write scope limited to
-│                  `data_source_factory.py`, a focused lifecycle DI test,
-│                  implementation evidence, and a future task card; route
-│                  migration remains locked
+│   │                 packets; PR `#201` merged at
+│   │                 `ae6ba4e43b1470b524110fe506929df675bd8b93`; G2.61a now
+│   │                 implements that provider seam only: adds
+│   │                 `DATA_SOURCE_FACTORY_STATE_KEY`,
+│   │                 `install_data_source_factory`, and
+│   │                 `get_data_source_factory_dependency`, preserves
+│   │                 `get_data_source_factory()` plus `_global_factory`, keeps
+│   │                 route direct calls=`17`, route dependency refs=`0`, TDD
+│   │                 red=`3 failed, 1 passed`, focused green=`4 passed`,
+│   │                 existing factory tests=`38 passed`, app/OpenAPI smoke
+│   │                 routes=`548`, paths=`500`, duplicate operation IDs=`0`
+│   └── Next gate: Human review of the G2.61a implementation PR; if accepted,
+│                  create G2.61a closeout / current-head refresh before any
+│                  first route migration packet; `data_quality.py` remains the
+│                  recommended first route migration candidate but is not
+│                  authorized by G2.61a
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1005,6 +1014,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-service-lifecycle-di-next-lane-selection-after-gitnexus-refresh-2026-05-24.md` | G | G2.58 next-lane selection prepared at current HEAD `5dbb0ca0c387dafb313e9b5f2674f3023da65962`: records PR `#198` as `MERGED`, confirms fresh non-linked GitNexus analyze exit=`0`, nodes=`62621`, edges=`145801`, flows=`300`, current static scan route dependency sites=`353`, provider-style route dependency sites=`81`, getter-style route dependency sites=`272`, classifies all ordinary provider rows as implemented/closed except `get_data_source_dependency`, which is already provider-shaped with `3` dashboard route sites, and selects `get_data_source_factory` as the next design-only seam because it has `17` direct API call sites across `9` files and refreshed GitNexus upstream impact `CRITICAL` (`22` impacted, `21` direct, `15` processes, `3` modules); no source implementation target is authorized | Human review / PR merge decision; if accepted, create G2.59 `get_data_source_factory` design/authorization packet before any backend source edit |
 | `backend-data-source-factory-lifecycle-di-authorization-2026-05-24.md` | G | G2.59 authorization packet prepared at current HEAD `1880f0d1395e7c5594b70f3ba40478cff24f2d3a`: records PR `#199` as `MERGED`, confirms fresh non-linked GitNexus analyze exit=`0`, nodes=`62624`, edges=`145803`, flows=`300`, resolves `get_data_source_factory` at `web/backend/app/services/data_source_factory/data_source_factory.py:294-300`, static scan keeps direct API calls=`17` across `9` files, and refreshed GitNexus upstream impact remains `CRITICAL` (`22` impacted, `21` direct, `15` processes, `3` modules); no source, test, route, OpenAPI, OpenSpec, runtime, issue-label, or compatibility cleanup change is authorized | Human review / PR merge decision; if accepted, create G2.60 consumer-matrix / implementation-authorization packet before any backend source edit |
 | `backend-data-source-factory-consumer-matrix-implementation-authorization-2026-05-24.md` | G | G2.60 consumer matrix / implementation authorization prepared at current HEAD `265f38e53bddfa3a925f14cfbc5080b00dce26e6`: records PR `#200` as `MERGED`, confirms fresh non-linked GitNexus analyze exit=`0`, nodes=`62628`, edges=`145797`, flows=`300`, keeps direct API calls=`17` across `9` files, and selects G2.61a provider-seam-only as the next possible source batch with allowed future scope limited to `data_source_factory.py`, a focused lifecycle DI test, implementation evidence, and a future task card; route migration, compatibility getter cleanup, OpenAPI changes, issue-label changes, and runtime/PM2 changes remain locked | Human review / PR merge decision; if accepted, create G2.61a provider-seam-only implementation branch before any route migration |
+| `backend-data-source-factory-provider-seam-implementation-2026-05-24.md` | G | G2.61a provider-seam implementation prepared at current HEAD `ae6ba4e43b1470b524110fe506929df675bd8b93`: records PR `#201` as `MERGED`, confirms pre-edit non-linked GitNexus analyze exit=`0`, nodes=`62636`, edges=`145807`, flows=`300`, and CRITICAL impact remains expected; adds `DATA_SOURCE_FACTORY_STATE_KEY`, `install_data_source_factory`, and `get_data_source_factory_dependency` in `data_source_factory.py`, adds focused lifecycle DI tests, preserves `get_data_source_factory()` and `_global_factory`, keeps route direct calls=`17` and provider dependency API refs=`0`, TDD red=`3 failed, 1 passed`, green=`4 passed`, existing factory tests=`38 passed`, route-adjacent fallback test=`1 passed`, app/OpenAPI smoke routes=`548`, paths=`500`, duplicate operation IDs=`0`; `tests/backend/test_data_api_regression.py` still has baseline 404 failures in both modified and unmodified checkouts and is not part of this batch | Human review / PR merge decision; if accepted, run G2.61a closeout/current-head refresh before selecting any route migration packet |
 
 ## Completed And Reviewed Ledger
 

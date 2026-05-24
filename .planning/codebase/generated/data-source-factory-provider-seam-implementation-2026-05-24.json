@@ -1,0 +1,100 @@
+{
+  "artifact": "data-source-factory-provider-seam-implementation",
+  "workline": "G2.61a",
+  "generated_at": "2026-05-24T20:32:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_branch": "g2-61a-data-source-factory-provider-seam",
+  "base_head": "ae6ba4e43b1470b524110fe506929df675bd8b93",
+  "status": "ready_for_review",
+  "scope": {
+    "kind": "provider_seam_only_implementation",
+    "route_calls_migrated": 0,
+    "route_or_openapi_edits": false,
+    "openspec_edits": false,
+    "issue_label_changes": false,
+    "runtime_or_pm2_changes": false,
+    "compatibility_getter_cleanup": false
+  },
+  "modified_runtime_files": [
+    "web/backend/app/services/data_source_factory/data_source_factory.py"
+  ],
+  "modified_test_files": [
+    "web/backend/tests/test_data_source_factory_lifecycle_di.py"
+  ],
+  "added_provider_symbols": [
+    "DATA_SOURCE_FACTORY_STATE_KEY",
+    "install_data_source_factory",
+    "get_data_source_factory_dependency"
+  ],
+  "preserved_symbols": [
+    "_global_factory",
+    "get_data_source_factory",
+    "get_data_source",
+    "get_market_data",
+    "get_dashboard_data",
+    "get_technical_analysis_data"
+  ],
+  "gitnexus_pre_edit": {
+    "checkout": ".worktrees/g2-61a-gitnexus-index-checkout",
+    "git_dot_kind": "directory",
+    "head": "ae6ba4e43b14",
+    "analyze_exit": 0,
+    "nodes": 62636,
+    "edges": 145807,
+    "clusters": 3296,
+    "flows": 300,
+    "target": "get_data_source_factory",
+    "risk": "CRITICAL",
+    "impacted_count": 22,
+    "direct": 21,
+    "processes_affected": 15,
+    "modules_affected": 3
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "3 failed, 1 passed",
+      "expected_failures": [
+        "missing install_data_source_factory",
+        "missing DATA_SOURCE_FACTORY_STATE_KEY",
+        "missing get_data_source_factory_dependency"
+      ]
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "4 passed"
+    }
+  },
+  "verification": {
+    "focused_lifecycle_test": "4 passed",
+    "existing_data_source_factory_test": "38 passed",
+    "data_stocks_runtime_fallback": "1 passed",
+    "ruff_touched": "passed",
+    "black_check_touched": "passed",
+    "app_import_with_test_env": "passed",
+    "routes": 548,
+    "openapi_paths": 500,
+    "operation_ids": 536,
+    "duplicate_operation_ids": 0,
+    "static_api_files_scanned": 219,
+    "direct_get_data_source_factory_api_calls": 17,
+    "get_data_source_factory_dependency_api_refs": 0
+  },
+  "known_existing_test_debt": {
+    "test_file": "tests/backend/test_data_api_regression.py",
+    "result_in_modified_worktree": "3 failed",
+    "result_in_unmodified_checkout": "3 failed",
+    "failure_type": "404 route expectations",
+    "not_caused_by_this_batch": true
+  },
+  "residuals": [
+    "data_source_factory package __init__.py does not re-export new provider symbols in this batch",
+    "17 API direct calls remain for later route migration packets",
+    "data_quality.py remains the recommended first route migration candidate after closeout"
+  ],
+  "decision": {
+    "provider_seam_implemented": true,
+    "route_migration_status": "locked",
+    "next_gate": "G2.61a closeout / current-head refresh before selecting first route migration"
+  }
+}

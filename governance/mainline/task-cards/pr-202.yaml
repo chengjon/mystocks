@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-202"
+  title: "Implement data source factory provider seam"
+  owner: "main"
+  created_at: "2026-05-24"
+
+mainline:
+  id: "L1-data-source-factory-provider-seam-implementation"
+  objective: "implement the G2.61a provider-seam-only lifecycle DI batch for get_data_source_factory"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-provider-seam"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-provider-seam-implementation"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Provider seam preserves existing route behavior and does not change product navigation, route paths, OpenAPI exposure, or frontend entrypoints"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-provider-seam-implementation-2026-05-24.json"
+    - "docs/reports/quality/backend-data-source-factory-provider-seam-implementation-2026-05-24.md"
+    - "governance/mainline/task-cards/pr-202.yaml"
+    - "web/backend/app/services/data_source_factory/data_source_factory.py"
+    - "web/backend/tests/test_data_source_factory_lifecycle_di.py"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/backend/app/services/data_source_factory/__init__.py"
+    - "web/backend/app/services/data_source_factory/data_source_mode.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No route migration or API consumer rewrite in this PR"
+  - "No route path, query parameter, response contract, OpenAPI exposure, generated client, frontend, PM2, or runtime process change"
+  - "No OpenSpec change/spec creation, modification, or archive execution"
+  - "No issue label changes or ready-for-agent movement"
+  - "No compatibility getter cleanup or _global_factory removal"
+  - "No package __init__.py export update in this PR"
+
+acceptance:
+  checks:
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-provider-seam-implementation-2026-05-24.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-provider-seam-implementation-2026-05-24.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-202.yaml').read_text())\""
+      required: true
+    - id: "focused-provider-seam-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "existing-data-source-factory-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory.py -q --no-cov --tb=short"
+      required: true
+    - id: "data-stocks-runtime-fallback-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_stocks_runtime_fallback.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/data_source_factory/data_source_factory.py web/backend/tests/test_data_source_factory_lifecycle_di.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/services/data_source_factory/data_source_factory.py web/backend/tests/test_data_source_factory_lifecycle_di.py"
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-202.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "gitnexus detect-changes --scope staged"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If web/backend/app/api/** is changed, the PR exceeds the provider-seam-only boundary"
+    - "If compatibility get_data_source_factory() or _global_factory is removed, existing route and service callers may break"
+    - "If package __init__.py is changed, this PR exceeds the G2.60 authorized path scope"
+  rollback_plan: "revert this implementation PR; PR #201 remains the accepted consumer matrix and implementation authorization unless separately reverted"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "add app-state provider seam for DataSourceFactory while preserving compatibility getter fallback"
+    modified_scope: "data_source_factory implementation module, focused lifecycle DI test, implementation evidence, generated artifact, steward tree, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "compatibility getter and _global_factory preserved; route consumers unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused provider-seam tests, route static guard, or OpenAPI smoke fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-24T20:32:00+08:00"
+    approval_note: "human maintainer approved continuing after PR #201; this implementation stays within the G2.60 provider-seam-only boundary"
+    secondary_approved: false
