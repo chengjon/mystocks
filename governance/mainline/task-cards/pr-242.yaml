@@ -1,0 +1,112 @@
+version: "v0.2"
+
+task:
+  id: "pr-242"
+  title: "Close out AdvancedAnalysis getter phase 1"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-advanced-analysis-compat-getter-phase1-closeout"
+  objective: "record G2.88 merge evidence and select the next AdvancedAnalysis getter governance gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-advanced-analysis-compat-getter-phase1"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-advanced-analysis-compat-getter-phase1-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/advanced-analysis-compat-getter-phase1-closeout-2026-05-25.json"
+    - "docs/reports/quality/backend-advanced-analysis-compat-getter-phase1-closeout-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-242.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not delete, rename, or privatize get_advanced_analysis_service"
+  - "Do not change routes, response models, response shapes, or OpenAPI exposure"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 241 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "focused-lifecycle-pytest"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-advanced-analysis-compat-getter-phase1-closeout-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/advanced-analysis-compat-getter-phase1-closeout-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-242.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-242.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this packet is treated as source authorization, future deletion could bypass the required G2.90 gate"
+    - "If current-head scan data is stale, the final-retirement candidate could be over-authorized"
+  rollback_plan: "revert this governance-only closeout PR and keep G2.88 as the latest accepted implementation evidence"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out G2.88 AdvancedAnalysisService Phase 1 getter decoupling"
+    modified_scope: "steward tree, closeout report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; public compatibility getter remains present"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this closeout PR if parent PR evidence, reference matrix, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T17:34:02+08:00"
+    approval_note: "G2.88 implementation PR #241 was merged; this packet records closeout and the next authorization candidate only"
+    secondary_approved: false

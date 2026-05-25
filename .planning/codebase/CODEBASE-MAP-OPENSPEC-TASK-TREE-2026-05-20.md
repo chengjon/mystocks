@@ -1405,9 +1405,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                frontend, runtime/PM2, OpenSpec, public getter deletion,
 │   │                dependency provider removal, or issue-label change is made
 │   ├── G2.88 AdvancedAnalysis compatibility getter Phase 1 implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#241` merged at
+│   │   │          `33c3d34dc00caa8b347e90d66084c1d001559186`
 │   │   ├── Evidence: `backend-advanced-analysis-compat-getter-phase1-implementation-2026-05-25.md`
-│   │   ├── Current HEAD: `55861bb10d19dfafe9ff5e100f583069dcdbc2a9`
+│   │   ├── Current HEAD: `33c3d34dc00caa8b347e90d66084c1d001559186`
 │   │   ├── Result: adds private `_get_or_create_advanced_analysis_service()`,
 │   │   │          keeps public `get_advanced_analysis_service()` as a Phase 1
 │   │   │          compatibility wrapper, retargets
@@ -1423,9 +1424,23 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                task card, and steward-tree update; no public getter
 │   │                deletion, route/API, OpenAPI exposure, frontend, PM2,
 │   │                OpenSpec, or issue-label change is made here
-│   └── Next gate: Human review / PR merge decision for G2.88 implementation; if
-│                  accepted, prepare a closeout / candidate-refresh packet before
-│                  any further AdvancedAnalysis getter retirement decision
+│   ├── G2.89 AdvancedAnalysis compatibility getter Phase 1 closeout / candidate refresh
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-advanced-analysis-compat-getter-phase1-closeout-2026-05-25.md`
+│   │   ├── Current HEAD: `33c3d34dc00caa8b347e90d66084c1d001559186`
+│   │   ├── Result: records PR `#241` merge, confirms exact public getter
+│   │   │          production hits are definition-only, route/API public getter
+│   │   │          hits=`0`, package export hits=`0`, private initializer hits=`3`,
+│   │   │          dependency-provider refs=`19`, lifecycle tests `4 passed`,
+│   │   │          health route conflicts `120 passed`, and OpenAPI remains
+│   │   │          paths=`500` with duplicate operation IDs=`0`
+│   │   └── Boundary: closeout / candidate-refresh only; no source, test,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                public getter deletion, or issue-label change is made here
+│   └── Next gate: Human review / PR merge decision for G2.89 closeout; if
+│                  accepted, prepare a separate G2.90 final-retirement
+│                  authorization packet before any `get_advanced_analysis_service`
+│                  deletion or test update
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

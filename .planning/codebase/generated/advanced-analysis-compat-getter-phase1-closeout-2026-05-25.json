@@ -1,0 +1,50 @@
+{
+  "workline": "G2.89 AdvancedAnalysis compatibility getter Phase 1 closeout / candidate refresh",
+  "status": "ready_for_review",
+  "prepared_at": "2026-05-25T17:34:02+08:00",
+  "worktree": ".worktrees/g2-89-advanced-analysis-compat-getter-phase1-closeout",
+  "branch": "g2-89-advanced-analysis-compat-getter-phase1-closeout",
+  "current_head": "33c3d34dc00caa8b347e90d66084c1d001559186",
+  "parent_implementation_pr": {
+    "number": 241,
+    "state": "MERGED",
+    "merge_commit": "33c3d34dc00caa8b347e90d66084c1d001559186",
+    "merged_at": "2026-05-25T09:28:29Z"
+  },
+  "reference_matrix": {
+    "public_getter_hits": 1,
+    "public_getter_scope": "definition only",
+    "route_api_public_getter_hits": 0,
+    "service_public_getter_hits": 1,
+    "test_public_mentions": 5,
+    "private_initializer_hits": 3,
+    "dependency_provider_refs": 19,
+    "package_export_hits": 0
+  },
+  "verification": {
+    "focused_lifecycle_tests": "4 passed in 3.60s",
+    "health_route_conflicts": "120 passed in 67.35s",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "warnings": 0
+    }
+  },
+  "decision": {
+    "phase1_state": "closed_pending_review",
+    "next_candidate": "G2.90 AdvancedAnalysis public compatibility getter final-retirement authorization",
+    "authorization_required_before_source_edit": true,
+    "source_changes_in_this_packet": false
+  },
+  "boundaries": [
+    "No source or test edits",
+    "No route/API edits",
+    "No OpenAPI exposure change",
+    "No frontend or generated client edits",
+    "No OpenSpec changes",
+    "No GitHub issue label changes",
+    "No public getter deletion in this packet"
+  ]
+}
