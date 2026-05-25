@@ -1884,7 +1884,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, service migration, or issue-label change
 │   │                is made here
 │   ├── G2.115 Service lifecycle strategy re-triage
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#268` merged at
+│   │   │          `dabe473f5d2616cfeda6c41ceeecee1bc5c57fb6`
 │   │   ├── Evidence: `backend-service-lifecycle-strategy-retriage-2026-05-26.md`
 │   │   ├── Current HEAD: `3d0b72b68114effc9ba76aa3bea2d64edca15216`
 │   │   ├── Decision: split the remaining 8 candidates into strategy lanes:
@@ -1899,9 +1900,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: strategy-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation authorization, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.115; if accepted,
-│                  create G2.116 medium route-backed exact consumer matrix before
-│                  selecting another service getter implementation candidate
+│   ├── G2.116 Medium route-backed exact consumer matrix
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-medium-route-backed-service-consumer-matrix-2026-05-26.md`
+│   │   ├── Current HEAD: `dabe473f5d2616cfeda6c41ceeecee1bc5c57fb6`
+│   │   ├── Result: `get_announcement_service` has no direct API/adapter
+│   │   │          getter consumers; routes use `get_announcement_service_dependency`
+│   │   │          in 11 handlers; `get_email_service` is also route-dependency
+│   │   │          backed but remains behind announcement; `get_watchlist_service`
+│   │   │          still has 2 adapter files directly importing/calling the getter
+│   │   ├── Decision: select `get_announcement_service` only as the next
+│   │   │          authorization-candidate packet; do not authorize implementation
+│   │   │          or source edits in this matrix
+│   │   └── Boundary: evidence-matrix-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                implementation authorization, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.116; if accepted,
+│                  create G2.117 AnnouncementService getter-retirement
+│                  authorization before any announcement service source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

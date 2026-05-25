@@ -1,0 +1,94 @@
+{
+  "artifact": "medium-route-backed-service-consumer-matrix-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T03:34:00+08:00",
+  "branch": "g2-116-medium-route-backed-consumer-matrix",
+  "base_head": "dabe473f5d2616cfeda6c41ceeecee1bc5c57fb6",
+  "current_head_checked_at_review": "2026-05-26T03:34:00+08:00",
+  "parent_strategy": {
+    "node": "G2.115",
+    "pr": 268,
+    "merge_commit": "dabe473f5d2616cfeda6c41ceeecee1bc5c57fb6"
+  },
+  "governance_node": {
+    "id": "G2.116",
+    "lane": "service_lifecycle_di",
+    "type": "consumer_matrix",
+    "state": "ready_for_review"
+  },
+  "candidates": [
+    {
+      "name": "get_announcement_service",
+      "file": "web/backend/app/services/announcement_service.py",
+      "direct_getter_refs": {
+        "total": 3,
+        "files": 2,
+        "api_refs": 0,
+        "adapter_refs": 0,
+        "test_refs": 1
+      },
+      "dependency_refs": {
+        "name": "get_announcement_service_dependency",
+        "total": 14,
+        "files": 3,
+        "api_route_dependency_refs": 11
+      },
+      "decision": "select_next_authorization_candidate"
+    },
+    {
+      "name": "get_email_service",
+      "file": "web/backend/app/services/email_service.py",
+      "direct_getter_refs": {
+        "total": 6,
+        "files": 4,
+        "api_refs": 0,
+        "adapter_refs": 0,
+        "test_refs": 4
+      },
+      "dependency_refs": {
+        "name": "get_email_service_dependency",
+        "total": 11,
+        "files": 4,
+        "api_route_dependency_refs": 6
+      },
+      "decision": "hold_behind_announcement"
+    },
+    {
+      "name": "get_watchlist_service",
+      "file": "web/backend/app/services/watchlist_service.py",
+      "direct_getter_refs": {
+        "total": 8,
+        "files": 5,
+        "api_refs": 0,
+        "adapter_refs": 4,
+        "adapter_files": 2,
+        "test_refs": 2
+      },
+      "dependency_refs": {
+        "name": "get_watchlist_service_dependency",
+        "total": 10,
+        "files": 3,
+        "api_route_dependency_refs": 7
+      },
+      "decision": "hold_until_adapter_consumer_ownership"
+    }
+  ],
+  "selected_next_authorization_candidate": {
+    "name": "get_announcement_service",
+    "file": "web/backend/app/services/announcement_service.py",
+    "source_edit_authorized": false,
+    "implementation_authorized": false,
+    "next_packet": "G2.117 AnnouncementService getter-retirement authorization"
+  },
+  "boundary": {
+    "source_changed": false,
+    "tests_changed": false,
+    "routes_changed": false,
+    "openapi_changed": false,
+    "frontend_changed": false,
+    "pm2_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false,
+    "implementation_authorized": false
+  }
+}
