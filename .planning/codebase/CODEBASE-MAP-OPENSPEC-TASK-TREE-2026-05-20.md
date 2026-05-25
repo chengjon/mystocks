@@ -1425,9 +1425,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                deletion, route/API, OpenAPI exposure, frontend, PM2,
 │   │                OpenSpec, or issue-label change is made here
 │   ├── G2.89 AdvancedAnalysis compatibility getter Phase 1 closeout / candidate refresh
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#242` merged at
+│   │   │          `7b6d81aaad7af8279cbb7304903a88987682e579`
 │   │   ├── Evidence: `backend-advanced-analysis-compat-getter-phase1-closeout-2026-05-25.md`
-│   │   ├── Current HEAD: `33c3d34dc00caa8b347e90d66084c1d001559186`
+│   │   ├── Current HEAD: `7b6d81aaad7af8279cbb7304903a88987682e579`
 │   │   ├── Result: records PR `#241` merge, confirms exact public getter
 │   │   │          production hits are definition-only, route/API public getter
 │   │   │          hits=`0`, package export hits=`0`, private initializer hits=`3`,
@@ -1437,10 +1438,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: closeout / candidate-refresh only; no source, test,
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                public getter deletion, or issue-label change is made here
-│   └── Next gate: Human review / PR merge decision for G2.89 closeout; if
-│                  accepted, prepare a separate G2.90 final-retirement
-│                  authorization packet before any `get_advanced_analysis_service`
-│                  deletion or test update
+│   ├── G2.90 AdvancedAnalysis public compatibility getter final-retirement authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-advanced-analysis-compat-getter-final-retirement-authorization-2026-05-25.md`
+│   │   ├── Current HEAD: `7b6d81aaad7af8279cbb7304903a88987682e579`
+│   │   ├── Result: authorizes only a future G2.91 source branch to remove
+│   │   │          public `get_advanced_analysis_service()` after TDD red/green;
+│   │   │          current-head evidence shows GitNexus impact LOW / `0`,
+│   │   │          exact public getter production hits are definition-only,
+│   │   │          route/API public getter hits=`0`, package export hits=`0`,
+│   │   │          lifecycle tests `4 passed`, health route conflicts
+│   │   │          `120 passed`, and OpenAPI remains paths=`500` with duplicate
+│   │   │          operation IDs=`0`
+│   │   └── Boundary: authorization-only; no source, test, route/API, OpenAPI
+│   │                exposure, frontend, PM2, OpenSpec, public getter deletion,
+│   │                or issue-label change is made here
+│   └── Next gate: Human review / PR merge decision for G2.90 authorization; if
+│                  accepted, create G2.91 implementation branch before any
+│                  `get_advanced_analysis_service()` deletion or test update
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
