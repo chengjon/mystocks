@@ -1540,9 +1540,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenSpec, `WencaiService` deletion, or issue-label change
 │   │                is made here
 │   ├── G2.96 Wencai getter-retirement closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#249` merged at
+│   │   │          `c0aa9731503f3f8d8c9017ed787745ddaf6a5aab`
 │   │   ├── Evidence: `backend-wencai-compat-getter-retirement-closeout-2026-05-25.md`
-│   │   ├── Current HEAD: `689d619c715ec521a3f5c1d967b0fc8eeb798293`
+│   │   ├── Current HEAD: `c0aa9731503f3f8d8c9017ed787745ddaf6a5aab`
 │   │   ├── Result: records PR `#248` merge and closes the Wencai public
 │   │   │          compatibility getter lane; current-head scan shows
 │   │   │          `get_wencai_service` refs app=`0`, route/API=`0`,
@@ -1553,8 +1554,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: closeout-only; no source, test, route/API, OpenAPI
 │   │                exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                `WencaiService` deletion, or issue-label change is made here
-│   └── Next gate: run a fresh service lifecycle candidate refresh before
-│                  selecting another getter-retirement lane
+│   ├── G2.97 Service lifecycle candidate refresh after Wencai
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-wencai-2026-05-25.md`
+│   │   ├── Current HEAD: `c0aa9731503f3f8d8c9017ed787745ddaf6a5aab`
+│   │   ├── Result: records PR `#249` merge, refreshes service getter
+│   │   │          candidates at current HEAD, scans `152` service files,
+│   │   │          `575` app files, `219` API files, and `1007` test files,
+│   │   │          finds `22` getter definitions and `5` candidate-like
+│   │   │          definitions, confirms `get_wencai_service` is no longer a
+│   │   │          service getter definition, and selects
+│   │   │          `get_enhanced_data_service` as a future G2.98 authorization
+│   │   │          candidate only; GitNexus impact is LOW / `3`, with no
+│   │   │          affected processes
+│   │   └── Boundary: candidate-refresh only; no source, test, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter
+│   │                deletion, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.97; if accepted,
+│                  create G2.98 EnhancedDataService getter-retirement
+│                  authorization packet before any source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1636,7 +1654,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-service-lifecycle-candidate-refresh-after-advanced-analysis-2026-05-25.md` | G | G2.93 candidate refresh accepted in PR `#246` at `d8e1d14`: records PR `#245` merge, scans `152` service files / `575` app files / `219` API files, finds `23` getter definitions in this packet's scanner, selects `get_wencai_service` as a future G2.94 authorization candidate only, and records GitNexus impact LOW / `0` | Superseded by G2.94 Wencai getter-retirement authorization |
 | `backend-wencai-compat-getter-retirement-authorization-2026-05-25.md` | G | G2.94 authorization accepted in PR `#247` at `228a94d`: authorizes only future G2.95 removal of `get_wencai_service` after TDD red/green; current scan shows app refs=`1`, route/API refs=`0`, test refs=`0`, package export refs=`0`; GitNexus impact LOW / `0`; `WencaiService` class usage remains active and outside deletion scope | Superseded by G2.95 implementation |
 | `backend-wencai-compat-getter-retirement-implementation-2026-05-25.md` | G | G2.95 implementation accepted in PR `#248` at `689d619`: removes only `get_wencai_service`, adds focused absence/import regression test, records TDD red `1 failed, 1 passed`, green `2 passed`, health route conflicts `120 passed`, ruff/black passed, OpenAPI routes=`548`, paths=`500`, duplicate operation IDs=`0`, and post-change app/API/package getter refs=`0` | Superseded by G2.96 closeout |
-| `backend-wencai-compat-getter-retirement-closeout-2026-05-25.md` | G | G2.96 closeout prepared at `689d619`: records PR `#248` merge, confirms `get_wencai_service` app/API/package refs remain `0`, test refs are the focused absence assertion only, `WencaiService` remains active with app refs=`16` and route/API refs=`9`, focused test `2 passed`, and health route conflicts `120 passed` | Human review / PR merge decision; if accepted, run a fresh service lifecycle candidate refresh before selecting another getter-retirement lane |
+| `backend-wencai-compat-getter-retirement-closeout-2026-05-25.md` | G | G2.96 closeout accepted in PR `#249` at `c0aa973`: records PR `#248` merge, confirms `get_wencai_service` app/API/package refs remain `0`, test refs are the focused absence assertion only, `WencaiService` remains active with app refs=`16` and route/API refs=`9`, focused test `2 passed`, and health route conflicts `120 passed` | Superseded by G2.97 service lifecycle candidate refresh |
+| `backend-service-lifecycle-candidate-refresh-after-wencai-2026-05-25.md` | G | G2.97 candidate refresh prepared at `c0aa973`: records PR `#249` merge, scans `152` service files / `575` app files / `219` API files / `1007` test files, finds `22` getter definitions and `5` candidate-like definitions, confirms `get_wencai_service` is no longer present as a service getter definition, selects `get_enhanced_data_service` as a future G2.98 authorization candidate only, and records GitNexus impact LOW / `3` with no affected processes | Human review / PR merge decision; if accepted, create G2.98 EnhancedDataService getter-retirement authorization before any source edit |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |

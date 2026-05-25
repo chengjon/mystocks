@@ -1,0 +1,108 @@
+{
+  "artifact": "service-lifecycle-candidate-refresh-after-wencai-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T20:06:36+08:00",
+  "branch": "g2-97-service-lifecycle-candidate-refresh-after-wencai",
+  "current_head": "c0aa9731503f3f8d8c9017ed787745ddaf6a5aab",
+  "parent_pr": {
+    "number": 249,
+    "state": "MERGED",
+    "merge_commit": "c0aa9731503f3f8d8c9017ed787745ddaf6a5aab",
+    "url": "https://github.com/chengjon/mystocks/pull/249"
+  },
+  "scan_summary": {
+    "service_files": 152,
+    "app_files": 575,
+    "api_files": 219,
+    "test_files": 1007,
+    "getter_definitions": 22,
+    "candidate_like_definitions": 5,
+    "hold_definitions": 17,
+    "wencai_getter_definition_present": false
+  },
+  "candidate_rows": [
+    {
+      "symbol": "get_enhanced_data_service",
+      "file": "web/backend/app/services/data_service_enhanced.py",
+      "line": 580,
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 0,
+      "package_export_refs": 0,
+      "disposition": "select_future_authorization_candidate_only"
+    },
+    {
+      "symbol": "get_announcement_service",
+      "file": "web/backend/app/services/announcement_service.py",
+      "line": 526,
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 1,
+      "package_export_refs": 0,
+      "disposition": "hold_completed_announcement_di_lane_not_reopened_here"
+    },
+    {
+      "symbol": "get_tradingview_service",
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "line": 322,
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 2,
+      "package_export_refs": 0,
+      "disposition": "hold_for_dedicated_tradingview_follow_up_if_needed"
+    },
+    {
+      "symbol": "get_email_service",
+      "file": "web/backend/app/services/email_notification_service.py",
+      "line": 324,
+      "app_refs": 3,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "package_export_refs": 0,
+      "disposition": "hold_duplicate_logical_getter_name_prior_email_lane_requires_separate_decision"
+    },
+    {
+      "symbol": "get_email_service",
+      "file": "web/backend/app/services/email_service.py",
+      "line": 325,
+      "app_refs": 3,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "package_export_refs": 0,
+      "disposition": "hold_duplicate_logical_getter_name_prior_email_lane_requires_separate_decision"
+    }
+  ],
+  "selected_next_lane": {
+    "workline": "G2.98",
+    "candidate": "EnhancedDataService",
+    "symbol": "get_enhanced_data_service",
+    "decision": "prepare a future EnhancedDataService getter-retirement authorization packet only",
+    "source_edit_authorized_by_this_packet": false,
+    "service_deletion_authorized": false,
+    "future_authorization_required": true
+  },
+  "gitnexus": {
+    "index_refresh": "gitnexus analyze --with-gitignore completed before packet creation",
+    "nodes": 62762,
+    "edges": 145902,
+    "clusters": 3299,
+    "flows": 300,
+    "selected_symbol_impact": {
+      "target": "get_enhanced_data_service",
+      "risk": "LOW",
+      "impacted_count": 3,
+      "affected_processes": 0
+    }
+  },
+  "boundary": {
+    "governance_only": true,
+    "backend_source_edits": false,
+    "backend_test_edits": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "human review / PR merge decision for G2.97; if accepted, create G2.98 EnhancedDataService getter-retirement authorization packet before source edits"
+}
