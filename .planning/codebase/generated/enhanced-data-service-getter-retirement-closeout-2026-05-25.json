@@ -1,0 +1,57 @@
+{
+  "artifact": "enhanced-data-service-getter-retirement-closeout-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T20:56:14+08:00",
+  "branch": "g2-100-enhanced-data-service-getter-retirement-closeout",
+  "current_head": "e3bb781d8a92bc8e59a31a6d99d3d9a54f3d14b6",
+  "parent_pr": {
+    "number": 252,
+    "title": "refactor(services): retire enhanced data service getter",
+    "merge_commit": "e3bb781d8a92bc8e59a31a6d99d3d9a54f3d14b6",
+    "state": "MERGED",
+    "merged_at": "2026-05-25T12:52:13Z"
+  },
+  "post_merge_reference_scan": {
+    "get_enhanced_data_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 2,
+      "package_export_refs": 0,
+      "notes": "Remaining references are focused absence assertions only."
+    },
+    "_enhanced_data_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 1,
+      "package_export_refs": 0,
+      "notes": "Remaining reference is the focused absence assertion only."
+    },
+    "EnhancedDataService": {
+      "app_refs": 8,
+      "route_api_refs": 4,
+      "test_refs": 1,
+      "active_usage": [
+        "web/backend/app/services/data_service_enhanced.py",
+        "web/backend/app/api/v1/system/health.py"
+      ],
+      "deletion_authorized": false
+    }
+  },
+  "verification": {
+    "focused_pytest": "3 passed in 1.82s",
+    "health_route_conflicts": "120 passed in 75.34s",
+    "parent_pr_state": "MERGED"
+  },
+  "boundary": {
+    "closeout_only": true,
+    "source_changes": false,
+    "test_changes": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "frontend_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.100; if accepted, refresh service lifecycle getter candidates before selecting another implementation lane."
+}
