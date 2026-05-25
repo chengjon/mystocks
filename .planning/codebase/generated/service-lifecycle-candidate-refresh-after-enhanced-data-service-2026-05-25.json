@@ -1,0 +1,109 @@
+{
+  "artifact": "service-lifecycle-candidate-refresh-after-enhanced-data-service-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T21:09:40+08:00",
+  "branch": "g2-101-service-lifecycle-candidate-refresh-after-enhanced-data-service",
+  "current_head": "d7be7e6e8bb0ad3bcf62b9420bc5da5d7941054e",
+  "parent_pr": {
+    "number": 253,
+    "title": "docs(governance): close out enhanced data service getter retirement",
+    "merge_commit": "d7be7e6e8bb0ad3bcf62b9420bc5da5d7941054e",
+    "disposition": "accepted"
+  },
+  "scan_summary": {
+    "service_files": 152,
+    "app_files": 575,
+    "api_files": 219,
+    "test_files": 1008,
+    "getter_definitions": 18,
+    "candidate_like_definitions": 4,
+    "holds": 14
+  },
+  "candidate_rows": [
+    {
+      "symbol": "get_email_service",
+      "file": "web/backend/app/services/email_notification_service.py",
+      "line": 324,
+      "app_refs": 3,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "package_export_refs": 0,
+      "disposition": "hold_duplicate_logical_getter_name_prior_email_lane_requires_separate_decision"
+    },
+    {
+      "symbol": "get_announcement_service",
+      "file": "web/backend/app/services/announcement_service.py",
+      "line": 526,
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 1,
+      "package_export_refs": 0,
+      "disposition": "hold_completed_announcement_di_lane_not_reopened_here"
+    },
+    {
+      "symbol": "get_email_service",
+      "file": "web/backend/app/services/email_service.py",
+      "line": 325,
+      "app_refs": 3,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "package_export_refs": 0,
+      "disposition": "hold_duplicate_logical_getter_name_prior_email_lane_requires_separate_decision"
+    },
+    {
+      "symbol": "get_tradingview_service",
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "line": 322,
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 2,
+      "package_export_refs": 0,
+      "disposition": "select_future_authorization_candidate_only"
+    }
+  ],
+  "selected_next_lane": {
+    "workline": "G2.102",
+    "candidate": "TradingViewWidgetService",
+    "symbol": "get_tradingview_service",
+    "decision": "prepare a future TradingView getter-retirement authorization packet only",
+    "source_edit_authorized_by_this_packet": false,
+    "service_deletion_authorized": false,
+    "future_authorization_required": true
+  },
+  "gitnexus": {
+    "analyze": {
+      "command": "gitnexus analyze --with-gitignore",
+      "result": "repository indexed successfully",
+      "nodes": 62761,
+      "edges": 145913,
+      "clusters": 3287,
+      "flows": 300
+    },
+    "impact": {
+      "target": "get_tradingview_service",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct": 1,
+      "processes_affected": 0,
+      "affected_processes": []
+    },
+    "context": {
+      "incoming": "install_tradingview_service calls get_tradingview_service",
+      "outgoing": "none",
+      "processes": []
+    }
+  },
+  "boundary": {
+    "candidate_refresh_only": true,
+    "source_changes": false,
+    "test_changes": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "frontend_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.101; if accepted, create G2.102 TradingView getter-retirement authorization before any source edit."
+}
