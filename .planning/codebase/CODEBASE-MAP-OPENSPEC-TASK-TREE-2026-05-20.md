@@ -1730,7 +1730,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                service migration, or issue-label change is made here
 │   ├── G2.107 EmailNotificationService getter-retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#260` merged at
+│   │   │          `d120d6d28d391daeb9e3d6accbd2b9ee0acfe931`
 │   │   ├── Evidence: `backend-email-notification-getter-retirement-authorization-2026-05-26.md`
 │   │   ├── Current HEAD: `6e10c496a4e3c68c21b93a2ddfec09ef74f1aa30`
 │   │   ├── Decision: authorize only a future G2.108 implementation branch to
@@ -1749,9 +1750,28 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                service migration, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.107; if accepted,
-│                  create G2.108 EmailNotificationService getter-retirement
-│                  implementation before any email notification source edit
+│   ├── G2.108 EmailNotificationService getter-retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-email-notification-getter-retirement-implementation-2026-05-26.md`
+│   │   ├── Current HEAD: `d120d6d28d391daeb9e3d6accbd2b9ee0acfe931`
+│   │   ├── Result: removes only
+│   │   │          `email_notification_service.py:_email_service` and
+│   │   │          `email_notification_service.py:get_email_service`; preserves
+│   │   │          `EmailNotificationService`, keeps route-backed
+│   │   │          `email_service.py:get_email_service_dependency` untouched,
+│   │   │          and leaves notification routes with `0` direct
+│   │   │          `email_notification_service` refs
+│   │   ├── Verification: TDD red `1 failed`, focused green `5 passed`,
+│   │   │          health route conflicts `120 passed`, touched-file ruff passed,
+│   │   │          black check passed, exact post-change scan shows target getter
+│   │   │          refs=`0` and target singleton refs=`0`
+│   │   └── Boundary: source-capable but narrow; no `email_service.py`,
+│   │                `notification.py`, route/API, OpenAPI exposure, frontend,
+│   │                PM2, OpenSpec, service consolidation, class deletion, or
+│   │                issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.108; if accepted,
+│                  create G2.109 closeout/current-head refresh before selecting
+│                  another service getter candidate
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1844,7 +1864,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-tradingview-getter-retirement-closeout-2026-05-26.md` | G | G2.104 closeout accepted in PR `#257` at `750fa31`: records PR `#256` merge, confirms `get_tradingview_service` app refs=`0`, route/API refs=`0`, tests=`3`, package exports=`0`, confirms `_tradingview_service` app refs=`0`, route/API refs=`0`, tests=`2`, package exports=`0`, and preserves `TradingViewWidgetService`, install/close helpers, and dependency provider as active surfaces | Superseded by G2.105 service lifecycle candidate refresh after TradingView |
 | `backend-service-lifecycle-candidate-refresh-after-tradingview-2026-05-26.md` | G | G2.105 candidate refresh accepted in PR `#258` at `9ac90c1`: current scan has service files=`152`, app files=`575`, API files=`219`, test files=`1008`, getter definitions=`17`, candidate-like definitions=`3`, holds=`14`; no direct implementation lane is selected because remaining candidate-like rows are the completed announcement hold and duplicate logical `get_email_service` rows | Superseded by G2.106 email duplicate getter ownership decision |
 | `backend-email-duplicate-getter-ownership-decision-2026-05-26.md` | G | G2.106 decision accepted in PR `#259` at `6e10c49`: separates route-backed `email_service.py` ownership from legacy/helper `email_notification_service.py` ownership, records combined `get_email_service` app refs=`3`, route/API refs=`0`, tests=`3`, records active `get_email_service_dependency` route/API refs=`7`, and selects only a future G2.107 EmailNotificationService getter-retirement authorization packet | Superseded by G2.107 EmailNotificationService getter-retirement authorization |
-| `backend-email-notification-getter-retirement-authorization-2026-05-26.md` | G | G2.107 authorization prepared at `6e10c49`: authorizes only a future G2.108 implementation branch to retire `email_notification_service.py` module-level `_email_service` and `get_email_service`, preserves `EmailNotificationService`, keeps route-backed `email_service.py`, `get_email_service_dependency`, notification routes, OpenAPI, PM2, and OpenSpec out of scope, and records that file-path GitNexus context for `email_notification_service.py:get_email_service` has no incoming graph callers while bare `get_email_service` impact resolves to the separate route-backed `email_service.py` symbol | Human review / PR merge decision; if accepted, create G2.108 implementation before any email notification source edit |
+| `backend-email-notification-getter-retirement-authorization-2026-05-26.md` | G | G2.107 authorization accepted in PR `#260` at `d120d6d`: authorizes only a future G2.108 implementation branch to retire `email_notification_service.py` module-level `_email_service` and `get_email_service`, preserves `EmailNotificationService`, keeps route-backed `email_service.py`, `get_email_service_dependency`, notification routes, OpenAPI, PM2, and OpenSpec out of scope, and records that file-path GitNexus context for `email_notification_service.py:get_email_service` has no incoming graph callers while bare `get_email_service` impact resolves to the separate route-backed `email_service.py` symbol | Superseded by G2.108 EmailNotificationService getter-retirement implementation |
+| `backend-email-notification-getter-retirement-implementation-2026-05-26.md` | G | G2.108 implementation prepared at `d120d6d`: removes only `email_notification_service.py:_email_service` and `email_notification_service.py:get_email_service`, preserves `EmailNotificationService`, leaves route-backed `email_service.py`, `get_email_service_dependency`, and notification routes untouched, records TDD red `1 failed`, focused green `5 passed`, health route conflicts `120 passed`, touched-file ruff and black checks passed, and exact post-change scan shows target getter refs=`0` and target singleton refs=`0` | Human review / PR merge decision; if accepted, create G2.109 closeout/current-head refresh before selecting another service getter candidate |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
