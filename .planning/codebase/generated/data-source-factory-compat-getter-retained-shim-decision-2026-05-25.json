@@ -1,0 +1,72 @@
+{
+  "artifact": "data-source-factory-compat-getter-retained-shim-decision-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-79-data-source-factory-compat-getter-decision",
+  "current_head": "b3aefed2648a3ec19dede187e4ca04a096dd0a7c",
+  "scope": {
+    "type": "decision_only_retained_shim",
+    "source_edits": false,
+    "closed_prerequisite_pr": 231,
+    "excluded": [
+      "backend source edits",
+      "test source edits",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "response model or response shape changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "compatibility getter deletion",
+      "package export removal",
+      "retained-shim retirement"
+    ]
+  },
+  "decision": "Retain get_data_source_factory() as a compatibility shim for now. Route/API direct consumers are closed, but service-internal helper and package export dependencies remain.",
+  "inventory": {
+    "route_api_direct_get_data_source_factory_refs": 0,
+    "exact_parenthesized_refs": 10,
+    "definition": "web/backend/app/services/data_source_factory/data_source_factory.py:300",
+    "service_internal_parenthesized_refs": [
+      "web/backend/app/services/data_source_factory/data_source_factory.py:300",
+      "web/backend/app/services/data_source_factory/data_source_factory.py:310",
+      "web/backend/app/services/data_source_factory/data_source_factory.py:324",
+      "web/backend/app/services/data_source_factory/data_source_factory.py:330",
+      "web/backend/app/services/data_source_factory/data_source_factory.py:336",
+      "web/backend/app/services/data_source_factory/data_source_factory.py:342"
+    ],
+    "package_export_refs": [
+      "web/backend/app/services/data_source_factory/__init__.py:12",
+      "web/backend/app/services/data_source_factory/__init__.py:31"
+    ],
+    "compatibility_test_ref": "web/backend/tests/test_data_source_factory_lifecycle_di.py:70"
+  },
+  "verification": {
+    "tests": {
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed",
+      "web/backend/tests/test_health_route_conflicts.py": "120 passed"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "generic_python_warning_count": 121
+    },
+    "gitnexus": {
+      "impact": "CRITICAL, 22 impacted symbols, 21 direct dependents, 12 affected processes",
+      "note": "index still lists historical route handlers that textual current-head scans show as migrated; treat as stale-index/high-risk warning, not deletion authorization"
+    }
+  },
+  "required_preconditions_before_retirement": [
+    "fresh GitNexus reanalysis or explicit stale-index waiver",
+    "current textual scan confirming route/API direct calls remain 0",
+    "service-internal helper migration plan",
+    "package export compatibility decision",
+    "TDD red/green compatibility coverage",
+    "OpenAPI smoke and route-conflict regression checks"
+  ],
+  "next_gate": "Human review / PR merge decision for G2.79 retained-shim decision. If accepted, create a separate retirement authorization packet before any source-capable removal."
+}
