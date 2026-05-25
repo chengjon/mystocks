@@ -1,0 +1,81 @@
+{
+  "artifact": "service-lifecycle-di-next-lane-after-data-source-factory",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T16:18:43+08:00",
+  "branch": "g2-86-service-lifecycle-next-lane-decision",
+  "current_head": "ed033a45552a22b6ce4027a04029ea0764d191cf",
+  "input_state": {
+    "pr_238": {
+      "state": "MERGED",
+      "merge_commit": "ed033a45552a22b6ce4027a04029ea0764d191cf"
+    },
+    "issue_79": {
+      "state": "OPEN",
+      "labels": ["needs-triage"]
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": ["enhancement", "ready-for-human", "ready-for-downstream"]
+    }
+  },
+  "selected_next_lane": {
+    "candidate": "AdvancedAnalysisService",
+    "symbol": "get_advanced_analysis_service",
+    "decision": "prepare G2.87 source-capable authorization for Phase 1 service-internal decoupling only",
+    "future_source_authorization_required": true,
+    "public_getter_deletion_authorized": false
+  },
+  "candidate_scan": {
+    "get_advanced_analysis_service": {
+      "python_hits": 4,
+      "production_hits": 2,
+      "route_api_hits": 0,
+      "test_hits": 2,
+      "provider_refs": 19,
+      "route_provider_refs": 15,
+      "gitnexus_risk": "LOW",
+      "gitnexus_impacted_count": 0,
+      "disposition": "selected_next_authorization_candidate"
+    },
+    "get_stock_search_service": {
+      "production_exact_hits": 4,
+      "route_api_direct_hits": 0,
+      "package_export_lines": 2,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 6,
+      "disposition": "hold; prior matrix keeps compatibility surface active"
+    },
+    "get_data_service": {
+      "production_hits": 6,
+      "route_api_hits": 5,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 4,
+      "disposition": "broad data seam hold"
+    },
+    "get_strategy_service": {
+      "production_hits": 11,
+      "route_api_hits": 4,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 11,
+      "disposition": "broad strategy seam hold"
+    }
+  },
+  "verification": {
+    "advanced_analysis_lifecycle_tests": "4 passed in 4.20s",
+    "health_route_conflicts": "120 passed in 78.00s",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "root_env_loaded": true
+    },
+    "gitnexus_staged_detect_changes": {
+      "changed_files": 4,
+      "changed_symbols": 0,
+      "affected_processes": 0,
+      "risk": "LOW"
+    }
+  },
+  "next_gate": "human review / PR merge decision for G2.86; if accepted create G2.87 authorization packet before source edits"
+}

@@ -1360,9 +1360,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                issue-label, dependency provider removal, private initializer
 │   │                removal, or unrelated historical-route test-debt fix is made
 │   ├── G2.85 DataSourceFactory compatibility getter final retirement closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#238` merged at
+│   │   │          `ed033a45552a22b6ce4027a04029ea0764d191cf`
 │   │   ├── Evidence: `backend-data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.md`
-│   │   ├── Current HEAD: `f31720ec3a891607eec3ce29b27ad1bc80be0a43`
+│   │   ├── Current HEAD: `ed033a45552a22b6ce4027a04029ea0764d191cf`
 │   │   ├── Result: confirms PR `#237` merged, production exact public getter
 │   │   │          hits remain `0`, package export lines remain `0`, route/API
 │   │   │          public getter hits remain `0`, lifecycle tests pass `5`,
@@ -1371,10 +1372,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: closeout-only; no source, test, route/API, OpenAPI,
 │   │                frontend, runtime/PM2, OpenSpec, dependency provider,
 │   │                private initializer, or issue-label change is made here
-│   └── Next gate: Human review / PR merge decision for G2.85 closeout; if
-│                  accepted, DataSourceFactory public compatibility getter
-│                  retirement is closed and the next service lifecycle lane can
-│                  be selected by a separate authorization packet
+│   ├── G2.86 Service lifecycle next-lane decision after DataSourceFactory
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-di-next-lane-after-data-source-factory-2026-05-25.md`
+│   │   ├── Current HEAD: `ed033a45552a22b6ce4027a04029ea0764d191cf`
+│   │   ├── Result: selects `AdvancedAnalysisService` compatibility getter
+│   │   │          Phase 1 service-internal decoupling as the next authorization
+│   │   │          candidate only; current-head exact production getter hits are
+│   │   │          definition plus provider fallback only, route/API direct hits
+│   │   │          are `0`, GitNexus impact is LOW / `0`, lifecycle tests pass
+│   │   │          `4`, health route conflicts pass `120`, and OpenAPI remains
+│   │   │          paths=`500` with duplicate operation IDs=`0`
+│   │   └── Boundary: decision-only; no source, test, route/API, OpenAPI,
+│   │                frontend, runtime/PM2, OpenSpec, public getter deletion,
+│   │                dependency provider removal, private initializer addition,
+│   │                or issue-label change is made here
+│   └── Next gate: Human review / PR merge decision for G2.86 decision packet; if
+│                  accepted, create G2.87 source-capable authorization for
+│                  `AdvancedAnalysisService` Phase 1 service-internal decoupling
+│                  before any source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1444,6 +1460,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-compat-getter-retirement-phase1-closeout-2026-05-25.md` | G | G2.82 closeout packet accepted in PR `#235` at `075768a`: records PR `#234` merge, reconfirms lifecycle tests `5 passed`, health route conflicts `120 passed`, OpenAPI routes=`548` paths=`500` duplicate operation IDs=`0`, route/API direct public getter calls=`0`, service helper public getter calls=`0`, and package export mentions=`4` | Separate source-capable authorization packet required before any public getter or package export retirement decision |
 | `backend-data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.md` | G | G2.83 authorization packet accepted in PR `#236` at `5de71a8`: precise scan shows production public getter hits are definition plus package exports only, route/API production consumers=`0`, package export lines=`2`, lifecycle tests `5 passed`, stocks runtime fallback `1 passed`, GitNexus impact remains CRITICAL/stale-aware, and market/data regression public getter patch points have existing unrelated failures recorded | G2.84 source implementation may remove the public getter and package exports only inside the authorized file scope |
 | `backend-data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.md` | G | G2.84 implementation packet prepared at `5de71a8`: removes public `get_data_source_factory()` and package exports, keeps `get_data_source_factory_dependency` plus `_get_or_create_data_source_factory`, moves production public getter hits=`0`, package export lines=`0`, patch points=`0`, lifecycle tests `5 passed`, stocks runtime fallback `1 passed`, market API integration `18 passed`, health route conflicts `120 passed`, OpenAPI paths=`500`, duplicate operation IDs=`0`, and leaves known `test_data_api_regression.py` historical-route 404 failures unresolved | Human review / PR merge decision; if accepted, create closeout/current-head refresh before further DataSourceFactory compatibility-surface cleanup |
+| `backend-data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.md` | G | G2.85 closeout accepted in PR `#238` at `ed033a4`: records PR `#237` merge, confirms production exact public getter hits=`0`, package export lines=`0`, route/API public getter hits=`0`, lifecycle tests `5 passed`, health route conflicts `120 passed`, touched-path ruff passed, and OpenAPI paths=`500` with duplicate operation IDs=`0` | DataSourceFactory public compatibility getter retirement lane closed; next service lifecycle lane must start from a separate authorization packet |
+| `backend-service-lifecycle-di-next-lane-after-data-source-factory-2026-05-25.md` | G | G2.86 next-lane decision prepared at `ed033a4`: selects `AdvancedAnalysisService` compatibility getter Phase 1 service-internal decoupling as the next authorization candidate only; exact production getter hits are definition plus provider fallback only, route/API direct hits=`0`, GitNexus impact LOW / `0`, lifecycle tests `4 passed`, health route conflicts `120 passed`, OpenAPI paths=`500`, duplicate operation IDs=`0`; broad `get_data_service` and `get_strategy_service` seams remain CRITICAL holds, and StockSearch compatibility cleanup remains blocked by prior retain decision plus stale-aware GitNexus route-process noise | Human review / PR merge decision; if accepted, create G2.87 source-capable authorization before any AdvancedAnalysis source edit |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
