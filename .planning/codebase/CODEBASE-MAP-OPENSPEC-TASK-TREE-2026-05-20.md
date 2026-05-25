@@ -1238,9 +1238,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                runtime/PM2 action, compatibility getter deletion, or
 │   │                formatting outside `futures.py`
 │   ├── G2.78 Futures DataSourceFactory route migration
-│   │   ├── State: ready for review; implementation packet for PR `#230`
+│   │   ├── State: accepted; PR `#230` merged at
+│   │   │          `e7a2a436b157dc32d5675e89e4f8c16505b07629`
 │   │   ├── Evidence: `backend-data-source-factory-futures-route-migration-implementation-2026-05-25.md`
-│   │   ├── Current HEAD: `5169da563b883fe0d883b25a09ed0d599952df0d`
+│   │   ├── Current HEAD: `e7a2a436b157dc32d5675e89e4f8c16505b07629`
 │   │   ├── Result: migrates `get_futures_index_daily` and
 │   │   │          `get_futures_index_realtime` to
 │   │   │          `Depends(get_data_source_factory_dependency)`, removes the
@@ -1252,9 +1253,23 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                frontend, runtime/PM2, OpenSpec, issue-label,
 │   │                compatibility getter deletion, other route consumer, or
 │   │                formatting outside `futures.py`
-│   └── Next gate: Human review / PR merge decision for G2.78 implementation; if
-│                  accepted, create closeout/current-head refresh before any
-│                  compatibility getter retirement or retained-shim decision
+│   ├── G2.78 Closeout / current-head refresh
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-data-source-factory-futures-route-migration-closeout-2026-05-25.md`
+│   │   ├── Current HEAD: `e7a2a436b157dc32d5675e89e4f8c16505b07629`
+│   │   ├── Result: records PR `#230` merge, confirms health route conflict tests
+│   │   │          pass `120`, provider lifecycle tests pass `4`, ruff and black
+│   │   │          pass for `futures.py` plus the health test, OpenAPI remains
+│   │   │          routes=`548`, paths=`500`, duplicate operation IDs=`0`, and
+│   │   │          total route/API direct factory refs remain `0`
+│   │   └── Boundary: no source, test, route path, response model, response
+│   │                shape, OpenAPI exposure, frontend, runtime/PM2, OpenSpec,
+│   │                issue-label, compatibility getter deletion, or retained-shim
+│   │                retirement change is authorized
+│   └── Next gate: Human review / PR merge decision for G2.78 closeout; if
+│                  accepted, prepare a separate compatibility getter retirement
+│                  / retained-shim decision packet before any
+│                  `get_data_source_factory()` compatibility API removal
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1317,6 +1332,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-futures-route-migration-risk-packet-2026-05-25.md` | G | G2.76 risk packet prepared at `53f365b55`: confirms `futures.py` owns the final two direct route/API factory refs, records file-level GitNexus HIGH risk with exact endpoint caller count 0, and recommends a separate G2.77 path-limited implementation authorization before any source edit | Human review / PR merge decision; if accepted, create G2.77 implementation authorization for `futures.py` only |
 | `backend-data-source-factory-futures-route-migration-implementation-authorization-2026-05-25.md` | G | G2.77 authorization packet prepared at `5fab3e8f`: future G2.78 may edit only `futures.py` and `test_health_route_conflicts.py`, must run TDD red/green, must keep route/OpenAPI/response/frontend/runtime/OpenSpec/issue-label/compatibility-getter scope locked, and is expected to move final route/API factory refs `2 -> 0` | Human review / PR merge decision; if accepted, create G2.78 path-limited implementation branch |
 | `backend-data-source-factory-futures-route-migration-implementation-2026-05-25.md` | G | G2.78 implementation packet prepared at `5169da56`: futures route handlers now use `get_data_source_factory_dependency`, direct route/API factory refs move `2 -> 0`, health route conflicts pass `120`, provider tests pass `4`, OpenAPI paths remain `500`, and compatibility getter remains unchanged | Human review / PR merge decision; if accepted, create closeout/current-head refresh before compatibility getter retirement or retained-shim decision |
+| `backend-data-source-factory-futures-route-migration-closeout-2026-05-25.md` | G | G2.78 closeout packet prepared at `e7a2a436`: PR `#230` merge recorded, health tests remain `120 passed`, provider tests remain `4 passed`, total route/API direct factory refs remain `0`, OpenAPI paths remain `500`, and compatibility getter remains unchanged | Human review / PR merge decision; if accepted, prepare a separate compatibility getter retirement / retained-shim decision packet |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |

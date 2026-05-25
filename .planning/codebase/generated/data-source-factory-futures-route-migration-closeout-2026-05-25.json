@@ -1,0 +1,60 @@
+{
+  "artifact": "data-source-factory-futures-route-migration-closeout-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-78-data-source-factory-futures-route-migration-closeout",
+  "current_head": "e7a2a436b157dc32d5675e89e4f8c16505b07629",
+  "scope": {
+    "type": "closeout_current_head_refresh",
+    "source_edits": false,
+    "closed_pr": 230,
+    "closed_merge_commit": "e7a2a436b157dc32d5675e89e4f8c16505b07629",
+    "excluded": [
+      "backend source edits",
+      "test source edits",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "response model or response shape changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "compatibility getter deletion",
+      "retained-shim retirement"
+    ]
+  },
+  "current_head_verification": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "120 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "style": {
+      "ruff_futures_and_health_route_conflicts": "passed",
+      "black_check_futures_and_health_route_conflicts": "passed"
+    },
+    "route_api_factory_refs": {
+      "total_direct_refs": 0,
+      "futures_py_direct_refs": 0,
+      "remaining_locations": []
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "generic_python_warning_count": 121,
+      "warning_note": "generic warnings are existing app import warnings captured during OpenAPI generation; duplicate operation ID warnings remain 0"
+    },
+    "github": {
+      "pr": 230,
+      "checks": "9 success, 4 skipped",
+      "merge_state": "MERGED"
+    },
+    "gitnexus": {
+      "staged_pr_230": "LOW, 0 changed symbols, 0 affected processes after documentation artifacts were staged"
+    }
+  },
+  "decision": "G2.78 implementation evidence remains valid at current HEAD. Route/API direct get_data_source_factory() consumer migration is closed for the scanned web/backend/app/api scope. No additional source change is authorized by this closeout.",
+  "next_gate": "Human review / PR merge decision for G2.78 closeout. If accepted, prepare a separate compatibility getter retirement / retained-shim decision packet before any get_data_source_factory() compatibility API removal."
+}
