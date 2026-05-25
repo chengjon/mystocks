@@ -1439,9 +1439,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                public getter deletion, or issue-label change is made here
 │   ├── G2.90 AdvancedAnalysis public compatibility getter final-retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#243` merged at
+│   │   │          `db5ebd408f0d89c012e8c3e0ea23361e7836a53f`
 │   │   ├── Evidence: `backend-advanced-analysis-compat-getter-final-retirement-authorization-2026-05-25.md`
-│   │   ├── Current HEAD: `7b6d81aaad7af8279cbb7304903a88987682e579`
+│   │   ├── Current HEAD: `db5ebd408f0d89c012e8c3e0ea23361e7836a53f`
 │   │   ├── Result: authorizes only a future G2.91 source branch to remove
 │   │   │          public `get_advanced_analysis_service()` after TDD red/green;
 │   │   │          current-head evidence shows GitNexus impact LOW / `0`,
@@ -1453,9 +1454,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no source, test, route/API, OpenAPI
 │   │                exposure, frontend, PM2, OpenSpec, public getter deletion,
 │   │                or issue-label change is made here
-│   └── Next gate: Human review / PR merge decision for G2.90 authorization; if
-│                  accepted, create G2.91 implementation branch before any
-│                  `get_advanced_analysis_service()` deletion or test update
+│   ├── G2.91 AdvancedAnalysis public compatibility getter final-retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-advanced-analysis-compat-getter-final-retirement-implementation-2026-05-25.md`
+│   │   ├── Current HEAD: `db5ebd408f0d89c012e8c3e0ea23361e7836a53f`
+│   │   ├── Result: removes public `get_advanced_analysis_service()`, keeps
+│   │   │          `_get_or_create_advanced_analysis_service()` and
+│   │   │          `get_advanced_analysis_service_dependency()`, updates focused
+│   │   │          lifecycle tests via TDD red/green, leaves route/API public
+│   │   │          getter hits=`0`, package export hits=`0`, exact public getter
+│   │   │          call hits=`0`, lifecycle tests `5 passed`, health route
+│   │   │          conflicts `120 passed`, and OpenAPI remains paths=`500` with
+│   │   │          duplicate operation IDs=`0`
+│   │   └── Boundary: source-capable but limited to the service module, focused
+│   │                lifecycle test, governance report, generated artifact,
+│   │                task card, and steward-tree update; no route/API, OpenAPI
+│   │                exposure, frontend, PM2, OpenSpec, or issue-label change is
+│   │                made here
+│   └── Next gate: Human review / PR merge decision for G2.91 implementation; if
+│                  accepted, prepare final closeout / next-candidate refresh
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
