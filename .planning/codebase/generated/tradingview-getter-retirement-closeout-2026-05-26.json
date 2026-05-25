@@ -1,0 +1,103 @@
+{
+  "artifact": "tradingview-getter-retirement-closeout-2026-05-26",
+  "status": "ready_for_review",
+  "branch": "g2-104-tradingview-getter-retirement-closeout",
+  "created_at": "2026-05-26T00:33:00+08:00",
+  "current_head": "81cd6191c178f8a443e8f3b303e47c2583fc4402",
+  "parent_implementation_pr": {
+    "number": 256,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/256",
+    "base_ref": "wip/root-dirty-20260403",
+    "head_ref": "g2-103-tradingview-getter-retirement-implementation",
+    "merged_at": "2026-05-25T16:26:07Z",
+    "merge_commit": "81cd6191c178f8a443e8f3b303e47c2583fc4402",
+    "implementation_commit": "cbfeec1ef3f40499c5d12be7bbc4f44e655027db"
+  },
+  "current_head_reference_scan": {
+    "get_tradingview_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "service_package_export_refs": 0,
+      "remaining_files": [
+        "web/backend/tests/test_tradingview_service_lifecycle_di.py"
+      ]
+    },
+    "_tradingview_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 2,
+      "service_package_export_refs": 0,
+      "remaining_files": [
+        "web/backend/tests/test_tradingview_service_lifecycle_di.py"
+      ]
+    },
+    "TradingViewWidgetService": {
+      "app_refs": 13,
+      "route_api_refs": 7,
+      "test_refs": 1,
+      "service_package_export_refs": 0,
+      "app_files": [
+        "web/backend/app/services/tradingview_widget_service.py",
+        "web/backend/app/api/tradingview.py"
+      ],
+      "route_api_files": [
+        "web/backend/app/api/tradingview.py"
+      ]
+    },
+    "install_tradingview_service": {
+      "app_refs": 4,
+      "route_api_refs": 0,
+      "test_refs": 4,
+      "service_package_export_refs": 0,
+      "app_files": [
+        "web/backend/app/app_factory.py",
+        "web/backend/app/services/tradingview_widget_service.py"
+      ]
+    },
+    "close_tradingview_service": {
+      "app_refs": 3,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "service_package_export_refs": 0,
+      "app_files": [
+        "web/backend/app/app_factory.py",
+        "web/backend/app/services/tradingview_widget_service.py"
+      ]
+    },
+    "get_tradingview_service_dependency": {
+      "app_refs": 8,
+      "route_api_refs": 7,
+      "test_refs": 3,
+      "service_package_export_refs": 0,
+      "app_files": [
+        "web/backend/app/services/tradingview_widget_service.py",
+        "web/backend/app/api/tradingview.py"
+      ],
+      "route_api_files": [
+        "web/backend/app/api/tradingview.py"
+      ]
+    }
+  },
+  "verification": {
+    "parent_pr_state": "MERGED",
+    "focused_pytest": "8 passed in 0.87s",
+    "health_route_conflicts": "120 passed in 72.53s"
+  },
+  "boundary": {
+    "backend_source_changes": false,
+    "backend_test_changes": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "frontend_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false,
+    "service_class_deleted": false,
+    "install_helper_deleted": false,
+    "close_helper_deleted": false,
+    "dependency_provider_deleted": false
+  },
+  "next_gate": "Human review and PR merge decision for G2.104; if accepted, create the next service lifecycle candidate refresh before another implementation lane."
+}
