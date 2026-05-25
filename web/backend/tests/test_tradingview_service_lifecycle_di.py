@@ -55,17 +55,17 @@ def test_tradingview_dependency_can_be_overridden():
     assert response.json() == {"marker": "override"}
 
 
-def test_tradingview_dependency_falls_back_to_compatibility_getter(monkeypatch):
+def test_tradingview_dependency_falls_back_to_default_service_factory(monkeypatch):
     app = _build_probe_app()
     fallback = DummyTradingViewService("fallback")
     calls = 0
 
-    def get_fallback():
+    def build_default_service():
         nonlocal calls
         calls += 1
         return fallback
 
-    monkeypatch.setattr(tradingview_widget_service, "get_tradingview_service", get_fallback)
+    monkeypatch.setattr(tradingview_widget_service, "TradingViewWidgetService", build_default_service)
 
     client = TestClient(app)
     first_response = client.get("/probe")
@@ -77,6 +77,15 @@ def test_tradingview_dependency_falls_back_to_compatibility_getter(monkeypatch):
     assert second_response.json() == {"marker": "fallback"}
     assert calls == 1
     assert getattr(app.state, TRADINGVIEW_SERVICE_STATE_KEY) is fallback
+
+
+def test_public_tradingview_service_getter_is_retired():
+    content = Path(tradingview_widget_service.__file__).read_text(encoding="utf-8")
+
+    assert not hasattr(tradingview_widget_service, "get_tradingview_service")
+    assert "_tradingview_service =" not in content
+    assert "global _tradingview_service" not in content
+    assert "get_tradingview_service()" not in content
 
 
 def test_close_installed_tradingview_service_calls_optional_close():
@@ -130,16 +139,12 @@ def test_app_factory_lifespan_calls_service_lifecycle_outside_exception_handlers
     }
 
     call_names = {
-        call.func.id
-        for call in ast.walk(lifespan)
-        if isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+        call.func.id for call in ast.walk(lifespan) if isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
     }
     assert required_calls <= call_names
 
     for handler in (node for node in ast.walk(lifespan) if isinstance(node, ast.ExceptHandler)):
         handler_call_names = {
-            call.func.id
-            for call in ast.walk(handler)
-            if isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
+            call.func.id for call in ast.walk(handler) if isinstance(call, ast.Call) and isinstance(call.func, ast.Name)
         }
         assert required_calls.isdisjoint(handler_call_names)
