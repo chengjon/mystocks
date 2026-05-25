@@ -1196,7 +1196,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, `futures.py`, or broad formatting cleanup
 │   │                outside `stocks.py` and the focused test
 │   ├── G2.75 Closeout / current-head refresh
-│   │   ├── State: ready for review; closeout packet for PR `#227`
+│   │   ├── State: accepted; PR `#227` merged at
+│   │   │          `53f365b55b37a03334ea25f083c8ef453fbb2db8`
 │   │   ├── Evidence: `backend-data-source-factory-stocks-route-migration-closeout-2026-05-25.md`
 │   │   ├── Current HEAD: `02518742fb1169ced7f2aa34daaff0dc9dc8b47b`
 │   │   ├── Result: records PR `#226` merge, confirms health route conflict tests
@@ -1208,9 +1209,23 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: closeout-only; no source edit, compatibility getter
 │   │                deletion, `futures.py` migration, or implementation
 │   │                authorization
-│   └── Next gate: Human review / PR merge decision for G2.75 closeout; if
-│                  accepted, prepare a `futures.py` risk packet before any
-│                  remaining DataSourceFactory route/API migration
+│   ├── G2.76 Futures DataSourceFactory route migration risk packet
+│   │   ├── State: ready for review; risk packet for PR `#228`
+│   │   ├── Evidence: `backend-data-source-factory-futures-route-migration-risk-packet-2026-05-25.md`
+│   │   ├── Current HEAD: `53f365b55b37a03334ea25f083c8ef453fbb2db8`
+│   │   ├── Result: confirms `futures.py` owns the final two direct route/API
+│   │   │          `get_data_source_factory()` refs at lines `91` and `114`;
+│   │   │          records two OpenAPI-visible futures endpoints, ruff pass,
+│   │   │          black reformat debt, focused futures docs guard `1 passed`,
+│   │   │          provider tests `4 passed`, file-level GitNexus HIGH risk,
+│   │   │          and exact route-handler caller count `0`
+│   │   └── Boundary: decision-only; no source edit, route contract edit,
+│   │                compatibility getter deletion, OpenSpec change, or issue
+│   │                label change; recommends a future G2.77 path-limited
+│   │                implementation authorization packet if accepted
+│   └── Next gate: Human review / PR merge decision for G2.76 risk packet; if
+│                  accepted, create G2.77 path-limited implementation
+│                  authorization for `futures.py`
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1270,6 +1285,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-stocks-route-migration-authorization-2026-05-25.md` | G | G2.74 candidate packet prepared at `f7d370cd`: selects `stocks.py` as the next route/API factory migration candidate; it is the only remaining LOW-risk candidate and can move total refs `4 -> 2` | Human review / PR merge decision; if accepted, create G2.75 path-limited implementation branch for `stocks.py` only |
 | `backend-data-source-factory-stocks-route-migration-implementation-2026-05-25.md` | G | G2.75 implementation packet prepared at `2a04b019`: stocks route handlers now use `get_data_source_factory_dependency`, total route/API factory refs move `4 -> 2`, and `stocks.py` refs move `2 -> 0` | Human review / PR merge decision; if accepted, create closeout/current-head refresh before preparing the futures.py risk packet |
 | `backend-data-source-factory-stocks-route-migration-closeout-2026-05-25.md` | G | G2.75 closeout packet prepared at `02518742f`: PR `#226` merge recorded, health tests remain `119 passed`, provider tests remain `4 passed`, total refs remain `2`, `stocks.py` remains `0`, and remaining direct refs are only `futures.py:91` and `futures.py:114` | Human review / PR merge decision; if accepted, prepare a `futures.py` risk packet before any remaining DataSourceFactory route/API migration |
+| `backend-data-source-factory-futures-route-migration-risk-packet-2026-05-25.md` | G | G2.76 risk packet prepared at `53f365b55`: confirms `futures.py` owns the final two direct route/API factory refs, records file-level GitNexus HIGH risk with exact endpoint caller count 0, and recommends a separate G2.77 path-limited implementation authorization before any source edit | Human review / PR merge decision; if accepted, create G2.77 implementation authorization for `futures.py` only |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |

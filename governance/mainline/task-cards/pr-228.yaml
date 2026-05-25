@@ -1,0 +1,119 @@
+version: "v0.2"
+
+task:
+  id: "pr-228"
+  title: "Prepare futures DataSourceFactory route migration risk packet"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-futures-route-migration-risk-packet"
+  objective: "record current-head risk evidence and next-gate constraints for the final futures.py DataSourceFactory route consumer"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-futures-risk-packet"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-futures-risk-packet"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Risk packet records evidence and does not alter runtime behavior"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-futures-route-migration-risk-packet-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-futures-route-migration-risk-packet-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-228.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source or test edit"
+  - "No route path, response model, response shape, OpenAPI exposure, frontend, PM2, runtime process, OpenSpec, or issue-label change"
+  - "No DataSourceFactory consumer migration or compatibility getter cleanup"
+  - "No futures.py implementation authorization beyond recommending the next packet"
+
+acceptance:
+  checks:
+    - id: "current-head-futures-docs-guard"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_futures_index_endpoints_have_docs_examples_and_error_responses -q --no-cov --tb=short"
+      required: true
+    - id: "current-head-provider-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "current-head-futures-ruff"
+      command: "ruff check web/backend/app/api/data/futures.py"
+      required: true
+    - id: "current-head-futures-black-diff"
+      command: "black --diff web/backend/app/api/data/futures.py"
+      required: true
+    - id: "current-head-openapi-futures-smoke"
+      command: "PYTHONPATH=web/backend python -c 'from app.main import app; app.openapi()'"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-futures-route-migration-risk-packet-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-futures-route-migration-risk-packet-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-228.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-228.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "MCP gitnexus.detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If source files are edited, this risk packet exceeds its evidence-only boundary"
+  rollback_plan: "revert this docs/governance-only risk packet PR; no runtime code is affected"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "prepare the futures.py DataSourceFactory route migration risk packet"
+    modified_scope: "risk report, generated artifact, steward tree, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; compatibility getter and futures.py runtime code are unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this risk packet PR if current-head evidence is superseded or incorrect"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T10:37:41+08:00"
+    approval_note: "human maintainer accepted G2.75 closeout by merging PR #227; this packet records futures.py risk evidence only"
+    secondary_approved: false

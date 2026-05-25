@@ -1,0 +1,84 @@
+{
+  "artifact": "data-source-factory-futures-route-migration-risk-packet-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-76-data-source-factory-futures-risk-packet",
+  "current_head": "53f365b55b37a03334ea25f083c8ef453fbb2db8",
+  "scope": {
+    "type": "risk_packet",
+    "source_edits": false,
+    "purpose": "decide whether the final futures.py DataSourceFactory direct route/API refs can enter a future path-limited implementation lane",
+    "excluded": [
+      "backend source edits",
+      "test source edits",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "response model or response shape changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "compatibility getter deletion",
+      "futures.py implementation"
+    ]
+  },
+  "current_head_evidence": {
+    "route_api_factory_refs": {
+      "total_direct_refs": 2,
+      "futures_py_direct_refs": 2,
+      "remaining_locations": [
+        "web/backend/app/api/data/futures.py:91",
+        "web/backend/app/api/data/futures.py:114"
+      ]
+    },
+    "futures_py": {
+      "loc": 123,
+      "route_handlers": [
+        "get_futures_index_daily",
+        "get_futures_index_realtime"
+      ],
+      "routes": [
+        "GET /api/v1/data/futures/index/daily",
+        "GET /api/v1/data/futures/index/realtime"
+      ],
+      "include_in_schema": true,
+      "direct_factory_pattern": "function-local import plus await get_data_source_factory()",
+      "ruff": "passed",
+      "black_check": "would reformat",
+      "black_diff": "2 hunks, 6 added diff lines, 2 removed diff lines"
+    },
+    "tests_and_openapi": {
+      "futures_docs_guard": "1 passed",
+      "data_source_factory_lifecycle_di": "4 passed",
+      "openapi_routes": 548,
+      "openapi_paths": 500,
+      "futures_openapi_operations": [
+        "get_futures_index_daily_api_v1_data_futures_index_daily_get",
+        "get_futures_index_realtime_api_v1_data_futures_index_realtime_get"
+      ],
+      "duplicate_operation_id_warnings": 0
+    },
+    "gitnexus": {
+      "analyze_default": "failed in git worktree with ENOTDIR on .git/info because .git is a worktree pointer file",
+      "analyze_no_gitignore_no_register": "status 0, Already up to date",
+      "file_level_impact": "HIGH, impactedCount=141, direct=27, processes_affected=0",
+      "endpoint_cypher_incoming_callers": 0,
+      "endpoint_cypher_outgoing_calls": [
+        "get_futures_index_daily -> get_data_source_factory",
+        "get_futures_index_realtime -> get_data_source_factory"
+      ],
+      "interpretation": "file-level impact is treated as a risk signal and not as implementation approval; endpoint-specific evidence shows the migration surface is two FastAPI route handlers"
+    }
+  },
+  "decision": {
+    "recommendation": "approve a future G2.77 path-limited implementation authorization packet for futures.py only",
+    "implementation_preconditions": [
+      "do not edit source code in this G2.76 packet",
+      "future implementation must run TDD red on a futures dependency-injection guard before source edits",
+      "future implementation may normalize same-file futures.py black formatting only if included in the authorized diff",
+      "future implementation must keep route paths, OpenAPI operation IDs, response shape, frontend consumers, PM2/runtime, OpenSpec, issue labels, and compatibility getter unchanged",
+      "future implementation must rerun health route conflicts, DataSourceFactory lifecycle tests, ruff/black, OpenAPI smoke, direct-ref scan, staged GitNexus, and post-commit mainline scope gate"
+    ]
+  },
+  "next_gate": "Human review / PR merge decision for G2.76 risk packet. If accepted, create G2.77 path-limited implementation authorization for futures.py."
+}
