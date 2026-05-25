@@ -1473,9 +1473,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                exposure, frontend, PM2, OpenSpec, or issue-label change is
 │   │                made here
 │   ├── G2.92 AdvancedAnalysis public compatibility getter final-retirement closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#245` merged at
+│   │   │          `0d98e77257372ba9a92dfda40b2c42343b89e92f`
 │   │   ├── Evidence: `backend-advanced-analysis-compat-getter-final-retirement-closeout-2026-05-25.md`
-│   │   ├── Current HEAD: `1ebd0aeaf3f21fbaefd570955ca89b571207c18a`
+│   │   ├── Current HEAD: `0d98e77257372ba9a92dfda40b2c42343b89e92f`
 │   │   ├── Result: records PR `#244` merge and closes the AdvancedAnalysis
 │   │   │          public compatibility getter lane; current-head evidence shows
 │   │   │          exact public getter symbol mentions are test assertion only,
@@ -1487,8 +1488,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: closeout-only; no source, test, route/API, OpenAPI
 │   │                exposure, frontend, PM2, OpenSpec, getter deletion, or
 │   │                issue-label change is made here
-│   └── Next gate: run a fresh service lifecycle candidate refresh before
-│                  selecting another getter-retirement lane
+│   ├── G2.93 Service lifecycle candidate refresh after AdvancedAnalysis
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-advanced-analysis-2026-05-25.md`
+│   │   ├── Current HEAD: `0d98e77257372ba9a92dfda40b2c42343b89e92f`
+│   │   ├── Result: records PR `#245` merge, refreshes service getter
+│   │   │          candidates at current HEAD, scans `152` service files,
+│   │   │          `575` app files, and `219` API files, finds `23` getter
+│   │   │          definitions under this packet's scanner, and selects
+│   │   │          `get_wencai_service` as the next future authorization
+│   │   │          candidate only; its current references are definition-only
+│   │   │          in app code with route/API hits=`0`, test hits=`0`,
+│   │   │          package export hits=`0`, and GitNexus impact LOW / `0`
+│   │   └── Boundary: candidate-refresh only; no source, test, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter
+│   │                deletion, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.93; if accepted,
+│                  create G2.94 Wencai getter-retirement authorization
+│                  packet before any source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1561,6 +1578,13 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.md` | G | G2.85 closeout accepted in PR `#238` at `ed033a4`: records PR `#237` merge, confirms production exact public getter hits=`0`, package export lines=`0`, route/API public getter hits=`0`, lifecycle tests `5 passed`, health route conflicts `120 passed`, touched-path ruff passed, and OpenAPI paths=`500` with duplicate operation IDs=`0` | DataSourceFactory public compatibility getter retirement lane closed; next service lifecycle lane must start from a separate authorization packet |
 | `backend-service-lifecycle-di-next-lane-after-data-source-factory-2026-05-25.md` | G | G2.86 next-lane decision prepared at `ed033a4`: selects `AdvancedAnalysisService` compatibility getter Phase 1 service-internal decoupling as the next authorization candidate only; exact production getter hits are definition plus provider fallback only, route/API direct hits=`0`, GitNexus impact LOW / `0`, lifecycle tests `4 passed`, health route conflicts `120 passed`, OpenAPI paths=`500`, duplicate operation IDs=`0`; broad `get_data_service` and `get_strategy_service` seams remain CRITICAL holds, and StockSearch compatibility cleanup remains blocked by prior retain decision plus stale-aware GitNexus route-process noise | Human review / PR merge decision; if accepted, create G2.87 source-capable authorization before any AdvancedAnalysis source edit |
 | `backend-advanced-analysis-compat-getter-phase1-authorization-2026-05-25.md` | G | G2.87 authorization packet prepared at `a20c92e`: authorizes only a future G2.88 Phase 1 service-internal decoupling for `AdvancedAnalysisService`; allowed future source scope is `advanced_analysis_service.py` plus focused lifecycle tests, public `get_advanced_analysis_service()` must remain, dependency provider and installer must remain, route/API direct getter hits remain `0`, GitNexus impact LOW / `0`, lifecycle tests `4 passed`, health route conflicts `120 passed`, and OpenAPI paths=`500`, duplicate operation IDs=`0` | Human review / PR merge decision; if accepted, create G2.88 implementation branch before any AdvancedAnalysis source edit |
+
+| `backend-advanced-analysis-compat-getter-phase1-implementation-2026-05-25.md` | G | G2.88 implementation accepted in PR `#241` at `33c3d34`: private `_get_or_create_advanced_analysis_service()` added, dependency fallback retargeted away from the public getter, public getter retained, lifecycle tests `4 passed`, health route conflicts `120 passed`, and OpenAPI duplicate operation IDs=`0` | Superseded by G2.89 closeout / candidate refresh |
+| `backend-advanced-analysis-compat-getter-phase1-closeout-2026-05-25.md` | G | G2.89 closeout accepted in PR `#242` at `7b6d81a`: records PR `#241` merge, confirms route/API public getter hits=`0`, package export hits=`0`, private initializer hits=`3`, dependency-provider refs=`19`, lifecycle tests `4 passed`, health route conflicts `120 passed`, and OpenAPI duplicate operation IDs=`0` | Superseded by G2.90 final-retirement authorization |
+| `backend-advanced-analysis-compat-getter-final-retirement-authorization-2026-05-25.md` | G | G2.90 authorization accepted in PR `#243` at `db5ebd4`: authorizes only future G2.91 removal of public `get_advanced_analysis_service()` after TDD red/green, with private initializer, dependency provider, installer, app.state key, route/API, OpenAPI, frontend, PM2, and issue labels locked outside scope | Superseded by G2.91 implementation |
+| `backend-advanced-analysis-compat-getter-final-retirement-implementation-2026-05-25.md` | G | G2.91 implementation accepted in PR `#244` at `1ebd0ae`: public `get_advanced_analysis_service()` removed, dependency provider and installer retained, focused lifecycle tests updated to `5 passed`, health route conflicts `120 passed`, and OpenAPI duplicate operation IDs=`0` | Superseded by G2.92 closeout |
+| `backend-advanced-analysis-compat-getter-final-retirement-closeout-2026-05-25.md` | G | G2.92 closeout accepted in PR `#245` at `0d98e77`: records PR `#244` merge, confirms the AdvancedAnalysis public getter lane is closed, route/API public mentions=`0`, package export mentions=`0`, private initializer hits=`2`, dependency-provider refs=`19`, lifecycle tests `5 passed`, health route conflicts `120 passed`, and OpenAPI duplicate operation IDs=`0` | Superseded by G2.93 service lifecycle candidate refresh |
+| `backend-service-lifecycle-candidate-refresh-after-advanced-analysis-2026-05-25.md` | G | G2.93 candidate refresh prepared at `0d98e77`: records PR `#245` merge, scans `152` service files / `575` app files / `219` API files, finds `23` getter definitions in this packet's scanner, selects `get_wencai_service` as a future G2.94 authorization candidate only, and records GitNexus impact LOW / `0` | Human review / PR merge decision; if accepted, create G2.94 Wencai getter-retirement authorization before any source edit |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |

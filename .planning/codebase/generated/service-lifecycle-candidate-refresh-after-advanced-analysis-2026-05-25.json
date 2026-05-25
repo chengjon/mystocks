@@ -1,0 +1,115 @@
+{
+  "artifact": "service-lifecycle-candidate-refresh-after-advanced-analysis-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T19:15:45+08:00",
+  "branch": "g2-93-service-lifecycle-candidate-refresh-after-advanced-analysis",
+  "current_head": "0d98e77257372ba9a92dfda40b2c42343b89e92f",
+  "parent_pr": {
+    "number": 245,
+    "state": "MERGED",
+    "merge_commit": "0d98e77257372ba9a92dfda40b2c42343b89e92f",
+    "url": "https://github.com/chengjon/mystocks/pull/245"
+  },
+  "scan_summary": {
+    "service_files": 152,
+    "app_files": 575,
+    "api_files": 219,
+    "getter_definitions": 23,
+    "candidate_like_definitions": 6,
+    "hold_definitions": 17,
+    "scanner_note": "This packet includes service package exporter definitions in the getter-definition count; earlier narrower summaries may count fewer definitions."
+  },
+  "candidate_rows": [
+    {
+      "symbol": "get_wencai_service",
+      "file": "web/backend/app/services/wencai_service.py",
+      "line": 419,
+      "app_refs": 1,
+      "route_api_refs": 0,
+      "test_refs": 0,
+      "package_export_refs": 0,
+      "disposition": "select_future_authorization_candidate_only"
+    },
+    {
+      "symbol": "get_enhanced_data_service",
+      "file": "web/backend/app/services/data_service_enhanced.py",
+      "line": 580,
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 0,
+      "package_export_refs": 0,
+      "disposition": "hold_for_separate_enhanced_data_ownership_review"
+    },
+    {
+      "symbol": "get_announcement_service",
+      "file": "web/backend/app/services/announcement_service.py",
+      "line": 526,
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 1,
+      "package_export_refs": 0,
+      "disposition": "hold_completed_announcement_di_lane_not_reopened_here"
+    },
+    {
+      "symbol": "get_tradingview_service",
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "line": 322,
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 2,
+      "package_export_refs": 0,
+      "disposition": "hold_for_dedicated_tradingview_follow_up_if_needed"
+    },
+    {
+      "symbol": "get_email_service",
+      "file": "web/backend/app/services/email_notification_service.py",
+      "line": 324,
+      "app_refs": 3,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "package_export_refs": 0,
+      "disposition": "hold_duplicate_logical_getter_name_prior_email_lane_requires_separate_decision"
+    },
+    {
+      "symbol": "get_email_service",
+      "file": "web/backend/app/services/email_service.py",
+      "line": 325,
+      "app_refs": 3,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "package_export_refs": 0,
+      "disposition": "hold_duplicate_logical_getter_name_prior_email_lane_requires_separate_decision"
+    }
+  ],
+  "selected_next_lane": {
+    "workline": "G2.94",
+    "candidate": "WencaiService",
+    "symbol": "get_wencai_service",
+    "decision": "prepare a future Wencai getter-retirement authorization packet only",
+    "source_edit_authorized_by_this_packet": false,
+    "service_deletion_authorized": false,
+    "future_authorization_required": true
+  },
+  "gitnexus": {
+    "index_refresh": "gitnexus analyze --with-gitignore completed before packet creation",
+    "selected_symbol_impact": {
+      "target": "get_wencai_service",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct_callers": 0,
+      "affected_processes": 0,
+      "affected_modules": 0
+    }
+  },
+  "boundary": {
+    "governance_only": true,
+    "backend_source_edits": false,
+    "backend_test_edits": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "human review / PR merge decision for G2.93; if accepted, create G2.94 Wencai getter-retirement authorization packet before source edits"
+}
