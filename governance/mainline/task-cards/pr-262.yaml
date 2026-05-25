@@ -1,0 +1,123 @@
+version: "v0.2"
+
+task:
+  id: "pr-262"
+  title: "Close out EmailNotificationService getter retirement"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-email-notification-getter-retirement-closeout"
+  objective: "record current-head closeout for EmailNotificationService legacy getter retirement before selecting another service getter candidate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-email-notification-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-email-notification-getter-retirement-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/email-notification-getter-retirement-closeout-2026-05-26.json"
+    - "docs/reports/quality/backend-email-notification-getter-retirement-closeout-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-262.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not modify route-backed email_service.py"
+  - "Do not modify notification.py or notification route contracts"
+  - "Do not delete or rename EmailNotificationService"
+  - "Do not change OpenAPI exposure"
+  - "Do not change frontend code"
+  - "Do not change PM2 workflows"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not select the next service getter candidate in this PR"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 261 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "focused-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_email_notification_service_getter_retirement.py web/backend/tests/test_email_notification_service_logging.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-target-files"
+      command: "ruff check web/backend/app/services/email_notification_service.py web/backend/tests/test_email_notification_service_getter_retirement.py"
+      required: true
+    - id: "black-target-files"
+      command: "black --check web/backend/app/services/email_notification_service.py web/backend/tests/test_email_notification_service_getter_retirement.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-email-notification-getter-retirement-closeout-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/email-notification-getter-retirement-closeout-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-262.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-262.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is skipped, the next service getter candidate could be selected from stale pre-#261 evidence"
+    - "If this packet edits source, it would exceed closeout scope"
+  rollback_plan: "revert this governance-only PR and keep G2.108 implementation as the latest accepted lane state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out EmailNotificationService legacy getter retirement at current head"
+    modified_scope: "steward tree, closeout report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; closeout-only, no source or test edits"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this governance-only PR if parent PR state, current-head scan, verification evidence, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T02:05:00+08:00"
+    approval_note: "G2.108 PR #261 was merged; this packet closes the EmailNotificationService getter-retirement lane and requires a fresh candidate refresh before selecting the next service getter candidate"
+    secondary_approved: false
