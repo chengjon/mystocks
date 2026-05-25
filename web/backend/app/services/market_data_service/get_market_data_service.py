@@ -13,7 +13,7 @@
 """
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import Request
 
@@ -21,21 +21,12 @@ from .market_data_service import MarketDataService
 
 logger = logging.getLogger(__name__)
 
-_market_data_service: Optional[MarketDataService] = None
 MARKET_DATA_SERVICE_STATE_KEY = "market_data_service"
-
-
-def get_market_data_service() -> MarketDataService:
-    """获取市场数据服务单例"""
-    global _market_data_service
-    if _market_data_service is None:
-        _market_data_service = MarketDataService()
-    return _market_data_service
 
 
 def install_market_data_service(app: Any, service: MarketDataService | None = None) -> MarketDataService:
     """Install the market data service instance on FastAPI app.state."""
-    selected_service = service if service is not None else get_market_data_service()
+    selected_service = service if service is not None else MarketDataService()
     setattr(app.state, MARKET_DATA_SERVICE_STATE_KEY, selected_service)
     return selected_service
 

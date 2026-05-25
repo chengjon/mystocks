@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-265"
+  title: "Retire MarketDataService package-level getter"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-market-data-service-getter-retirement-implementation"
+  objective: "remove the package-level MarketDataService lazy getter while preserving app-state dependency injection and route/API contracts"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-market-data-service-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-market-data-service-getter-retirement-implementation"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow package-level service getter retirement; no route, public API surface, OpenAPI exposure, frontend behavior, or OpenSpec capability is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/market-data-service-getter-retirement-implementation-2026-05-26.json"
+    - "docs/reports/quality/backend-market-data-service-getter-retirement-implementation-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-265.yaml"
+    - "web/backend/app/services/market_data_service/get_market_data_service.py"
+    - "web/backend/app/services/market_data_service/__init__.py"
+    - "web/backend/app/services/market_data_adapter.py"
+    - "web/backend/tests/test_market_data_service_lifecycle_di.py"
+    - "web/backend/tests/test_market_data_service_getter_retirement.py"
+  forbidden_paths:
+    - "web/backend/app/services/__init__.py"
+    - "web/backend/app/api/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not modify market route handlers or route contracts"
+  - "Do not modify OpenAPI exposure"
+  - "Do not modify root-level web/backend/app/services/__init__.py:get_market_data_service"
+  - "Do not delete or rename MarketDataService"
+  - "Do not delete or alter install_market_data_service"
+  - "Do not delete or alter get_market_data_service_dependency"
+  - "Do not change frontend code"
+  - "Do not change PM2 workflows"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not select the next service getter candidate in this PR"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 264 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "focused-green-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_service_getter_retirement.py web/backend/tests/test_market_data_service_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched-files"
+      command: "ruff check web/backend/app/services/market_data_service/get_market_data_service.py web/backend/app/services/market_data_service/__init__.py web/backend/app/services/market_data_adapter.py web/backend/tests/test_market_data_service_lifecycle_di.py web/backend/tests/test_market_data_service_getter_retirement.py"
+      required: true
+    - id: "black-touched-files"
+      command: "black --check web/backend/app/services/market_data_service/get_market_data_service.py web/backend/app/services/market_data_service/__init__.py web/backend/app/services/market_data_adapter.py web/backend/tests/test_market_data_service_lifecycle_di.py web/backend/tests/test_market_data_service_getter_retirement.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-market-data-service-getter-retirement-implementation-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/market-data-service-getter-retirement-implementation-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-265.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-265.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If route/API files are edited, market route contracts or OpenAPI exposure could drift outside the authorization"
+    - "If root-level services/__init__.py:get_market_data_service is confused with the package target, an unrelated surface could be changed"
+    - "If install_market_data_service or get_market_data_service_dependency are removed, route dependency injection could regress"
+  rollback_plan: "revert this narrow implementation PR and keep G2.111 authorization as the latest accepted market-data getter gate"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "retire package-level MarketDataService getter and module singleton"
+    modified_scope: "three service files, two focused tests, steward tree, implementation report, generated artifact, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "package-level getter removed; app-state installer/dependency and root-level services getter preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, health route conflicts, touched-file lint/format, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T02:45:00+08:00"
+    approval_note: "G2.111 PR #264 authorized only this narrow package-level MarketDataService getter retirement implementation"
+    secondary_approved: false
