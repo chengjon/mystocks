@@ -1864,7 +1864,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                service consolidation, candidate selection, or issue-label
 │   │                change is made here
 │   ├── G2.114 Service lifecycle candidate refresh after MarketDataService
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#267` merged at
+│   │   │          `3d0b72b68114effc9ba76aa3bea2d64edca15216`
 │   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-market-data-2026-05-26.md`
 │   │   ├── Current HEAD: `18af895af5fd09c1dff832b6f8bc968227711a28`
 │   │   ├── Result: current scan covers service files=`152`, backend app
@@ -1882,8 +1883,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, service migration, or issue-label change
 │   │                is made here
-│   └── Next gate: human review / PR merge decision for G2.114; if accepted,
-│                  create a service lifecycle strategy re-triage packet before
+│   ├── G2.115 Service lifecycle strategy re-triage
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-strategy-retriage-2026-05-26.md`
+│   │   ├── Current HEAD: `3d0b72b68114effc9ba76aa3bea2d64edca15216`
+│   │   ├── Decision: split the remaining 8 candidates into strategy lanes:
+│   │   │          medium route-backed candidates need an exact consumer matrix,
+│   │   │          adapter-backed candidates need adapter/route ownership evidence,
+│   │   │          Socket.IO/dashboard/task/process candidates stay on hold until
+│   │   │          dedicated runtime or process evidence exists
+│   │   ├── Next packet: create G2.116 exact consumer matrix for the medium
+│   │   │          route-backed candidates
+│   │   │          `get_announcement_service`, `get_email_service`, and
+│   │   │          `get_watchlist_service`; do not authorize implementation yet
+│   │   └── Boundary: strategy-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                implementation authorization, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.115; if accepted,
+│                  create G2.116 medium route-backed exact consumer matrix before
 │                  selecting another service getter implementation candidate
 │
 ├── H. Decision-Only Track: CSRF composition root
