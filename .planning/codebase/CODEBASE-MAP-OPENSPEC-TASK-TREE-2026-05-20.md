@@ -1694,7 +1694,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                deletion, lifecycle helper deletion, or issue-label change
 │   │                is made here
 │   ├── G2.105 Service lifecycle candidate refresh after TradingView
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#258` merged at
+│   │   │          `9ac90c14acd14b851bf49271f48fba30c8b10e41`
 │   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-tradingview-2026-05-26.md`
 │   │   ├── Current HEAD: `750fa311eb716ff54c577748e5658329736632b4`
 │   │   ├── Result: scan covers service files=`152`, backend app files=`575`,
@@ -1708,9 +1709,28 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, service migration, or issue-label change
 │   │                is made here
-│   └── Next gate: human review / PR merge decision for G2.105; if accepted,
-│                  create a G2.106 email duplicate getter ownership decision
-│                  packet before any email getter source edit
+│   ├── G2.106 Email duplicate getter ownership decision
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-email-duplicate-getter-ownership-decision-2026-05-26.md`
+│   │   ├── Current HEAD: `9ac90c14acd14b851bf49271f48fba30c8b10e41`
+│   │   ├── Decision: treat `web/backend/app/services/email_service.py` as the
+│   │   │          route-backed `EmailService` lifecycle owner and
+│   │   │          `web/backend/app/services/email_notification_service.py` as a
+│   │   │          separate legacy/helper notification owner; do not collapse the
+│   │   │          duplicate `get_email_service` rows into one source edit
+│   │   ├── Result: current text scan shows combined `get_email_service` app
+│   │   │          refs=`3`, route/API refs=`0`, tests=`3`, while
+│   │   │          `get_email_service_dependency` remains active with app refs=`8`,
+│   │   │          route/API refs=`7`, tests=`3`; GitNexus impact for
+│   │   │          `email_service.py:get_email_service` is MEDIUM / `6`, and
+│   │   │          `email_notification_service.py:get_email_service` has no
+│   │   │          incoming graph callers
+│   │   └── Boundary: decision-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                service migration, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.106; if accepted,
+│                  create G2.107 EmailNotificationService getter-retirement
+│                  authorization before any email source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1801,7 +1821,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-tradingview-getter-retirement-authorization-2026-05-25.md` | G | G2.102 authorization accepted in PR `#255` at `a0cfa4f`: authorizes only future G2.103 removal of `get_tradingview_service` after TDD red/green; current scan shows getter refs app=`2` / route/API=`0` / tests=`2` / package exports=`0`, direct caller `install_tradingview_service`, GitNexus impact LOW / `1`, and `TradingViewWidgetService` class plus dependency provider remain active and outside deletion scope | Superseded by G2.103 TradingView getter-retirement implementation |
 | `backend-tradingview-getter-retirement-implementation-2026-05-26.md` | G | G2.103 implementation accepted in PR `#256` at `81cd619`: removed only `get_tradingview_service` and `_tradingview_service`, preserved `TradingViewWidgetService`, install/close helpers, and dependency provider, changed install fallback to direct `TradingViewWidgetService()` construction, recorded TDD red `1 failed, 7 passed`, green `8 passed`, health route conflicts `120 passed`, ruff/black passed, and schema-only OpenAPI routes=`548`, paths=`500`, duplicate operation IDs=`0` | Superseded by G2.104 TradingView getter-retirement closeout |
 | `backend-tradingview-getter-retirement-closeout-2026-05-26.md` | G | G2.104 closeout accepted in PR `#257` at `750fa31`: records PR `#256` merge, confirms `get_tradingview_service` app refs=`0`, route/API refs=`0`, tests=`3`, package exports=`0`, confirms `_tradingview_service` app refs=`0`, route/API refs=`0`, tests=`2`, package exports=`0`, and preserves `TradingViewWidgetService`, install/close helpers, and dependency provider as active surfaces | Superseded by G2.105 service lifecycle candidate refresh after TradingView |
-| `backend-service-lifecycle-candidate-refresh-after-tradingview-2026-05-26.md` | G | G2.105 candidate refresh prepared at `750fa31`: current scan has service files=`152`, app files=`575`, API files=`219`, test files=`1008`, getter definitions=`17`, candidate-like definitions=`3`, holds=`14`; no direct implementation lane is selected because remaining candidate-like rows are the completed announcement hold and duplicate logical `get_email_service` rows | Human review / PR merge decision; if accepted, create G2.106 email duplicate getter ownership decision before any email getter source edit |
+| `backend-service-lifecycle-candidate-refresh-after-tradingview-2026-05-26.md` | G | G2.105 candidate refresh accepted in PR `#258` at `9ac90c1`: current scan has service files=`152`, app files=`575`, API files=`219`, test files=`1008`, getter definitions=`17`, candidate-like definitions=`3`, holds=`14`; no direct implementation lane is selected because remaining candidate-like rows are the completed announcement hold and duplicate logical `get_email_service` rows | Superseded by G2.106 email duplicate getter ownership decision |
+| `backend-email-duplicate-getter-ownership-decision-2026-05-26.md` | G | G2.106 decision prepared at `9ac90c1`: separates route-backed `email_service.py` ownership from legacy/helper `email_notification_service.py` ownership, records combined `get_email_service` app refs=`3`, route/API refs=`0`, tests=`3`, records active `get_email_service_dependency` route/API refs=`7`, and selects only a future G2.107 EmailNotificationService getter-retirement authorization packet | Human review / PR merge decision; if accepted, create G2.107 authorization before any email source edit |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
