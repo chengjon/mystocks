@@ -1,6 +1,7 @@
 """
 K线与行情数据路由 (KLine Data)
 """
+
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
@@ -11,6 +12,7 @@ from app.core.database import db_service
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
 from app.openapi_config import COMMON_RESPONSES
+from app.services.data_source_factory import DataSourceFactory, get_data_source_factory_dependency
 
 router = APIRouter()
 
@@ -138,27 +140,30 @@ async def get_daily_kline(
     end_date: Optional[str] = Query(None, description="返回结果的结束日期，格式为 YYYY-MM-DD。"),
     limit: int = Query(100, description="单次请求返回的最大日线记录数。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> Dict[str, Any]:
     """获取股票日线数据"""
     try:
-        from app.services.data_source_factory import get_data_source_factory
-        factory = await get_data_source_factory()
-
-        if not end_date: end_date = datetime.now().strftime("%Y-%m-%d")
-        if not start_date: start_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
+        if not end_date:
+            end_date = datetime.now().strftime("%Y-%m-%d")
+        if not start_date:
+            start_date = (datetime.now() - timedelta(days=90)).strftime("%Y-%m-%d")
 
         params = {"symbol": symbol, "start_date": start_date, "end_date": end_date, "limit": limit}
         result = await factory.get_data("data", "stocks/daily", params)
 
         if result.get("status") == "success":
             return {
-                "success": True, "data": result.get("data", []),
-                "symbol": symbol, "total": result.get("total", 0),
+                "success": True,
+                "data": result.get("data", []),
+                "symbol": symbol,
+                "total": result.get("total", 0),
                 "timestamp": datetime.now().isoformat(),
             }
         raise BusinessException(detail="获取失败", status_code=500)
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
+
 
 @router.get(
     "/kline",
@@ -172,9 +177,11 @@ async def get_kline(
     end_date: Optional[str] = Query(None, description="返回结果的结束日期，格式为 YYYY-MM-DD。"),
     limit: int = Query(100, description="单次请求返回的最大 K 线记录数。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> Dict[str, Any]:
     """获取股票K线数据（日线别名）"""
-    return await get_daily_kline(symbol, start_date, end_date, limit, current_user)
+    return await get_daily_kline(symbol, start_date, end_date, limit, current_user, factory)
+
 
 @router.get(
     "/stocks/kline",
@@ -228,6 +235,7 @@ async def get_kline_data(
     except Exception as e:
         raise BusinessException(detail=f"获取标准化K线数据失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
 
+
 @router.get(
     "/stocks/intraday",
     summary="查询股票分时行情",
@@ -238,14 +246,15 @@ async def get_intraday_data(
     symbol: str = Query(..., description="股票代码。"),
     date: Optional[str] = Query(None, description="交易日期，格式为 YYYY-MM-DD；不传时默认取当天。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> Dict[str, Any]:
     """获取股票分时数据"""
     try:
-        from app.services.data_source_factory import get_data_source_factory
-        factory = await get_data_source_factory()
         if not date:
             date = datetime.now().strftime("%Y-%m-%d")
         result = await factory.get_data("data", "stocks/intraday", {"symbol": symbol, "date": date})
         return {"success": True, "data": result.get("data", []), "symbol": symbol, "date": date}
     except Exception as e:
-        raise BusinessException(detail=f"获取分时行情失败: {str(e)}", status_code=500, error_code="DATA_RETRIEVAL_FAILED")
+        raise BusinessException(
+            detail=f"获取分时行情失败: {str(e)}", status_code=500, error_code="DATA_RETRIEVAL_FAILED"
+        )
