@@ -13,6 +13,7 @@ from app.services.data_source_interface import (
     HealthStatusEnum,
     IDataSource,
 )
+from app.services.market_data_service import MarketDataService
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -61,9 +62,7 @@ class MarketDataSourceAdapter(IDataSource):
         """Lazy initialization of market service"""
         if self._market_service is None and self.mode != "mock":
             try:
-                from app.services.market_data_service import get_market_data_service
-
-                self._market_service = get_market_data_service()
+                self._market_service = MarketDataService()
             except Exception as e:
                 self._market_service = None
                 raise RuntimeError(f"Failed to initialize market service: {e}")

@@ -1807,7 +1807,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, service migration, or issue-label change
 │   │                is made here
 │   ├── G2.111 MarketDataService getter-retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#264` merged at
+│   │   │          `88a8ae4e50ca29c21580db2e0c3f33c0a303ad2d`
 │   │   ├── Evidence: `backend-market-data-service-getter-retirement-authorization-2026-05-26.md`
 │   │   ├── Current HEAD: `c4abd4e8c4705f07a7d86e13c2090d30575e95e9`
 │   │   ├── Decision: authorize only a future G2.112 implementation branch to
@@ -1823,9 +1824,31 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                service migration, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.111; if accepted,
-│                  create G2.112 MarketDataService getter-retirement
-│                  implementation before any market-data service source edit
+│   ├── G2.112 MarketDataService getter-retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-market-data-service-getter-retirement-implementation-2026-05-26.md`
+│   │   ├── Current HEAD: `88a8ae4e50ca29c21580db2e0c3f33c0a303ad2d`
+│   │   ├── Change: retired package-level
+│   │   │          `market_data_service/get_market_data_service.py`
+│   │   │          `_market_data_service` and `get_market_data_service`, removed
+│   │   │          the package export, and retargeted `market_data_adapter.py`
+│   │   │          to an adapter-local `MarketDataService` lazy instance
+│   │   ├── Preservation: `MarketDataService`, `install_market_data_service`,
+│   │   │          `get_market_data_service_dependency`, route/API contracts,
+│   │   │          OpenAPI exposure, PM2, OpenSpec, frontend, and root-level
+│   │   │          `web/backend/app/services/__init__.py:get_market_data_service`
+│   │   │          remain unchanged
+│   │   ├── Verification: TDD red produced `2 failed`; focused tests
+│   │   │          `7 passed`; health route conflicts `120 passed`; touched-file
+│   │   │          ruff and black passed; `app.main` import passes when required
+│   │   │          environment variables are supplied
+│   │   └── Boundary: implementation-only for the authorized package getter;
+│   │                no route/API, OpenAPI, frontend, PM2, OpenSpec,
+│   │                root-level services getter, service consolidation, or
+│   │                issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.112; if accepted,
+│                  create G2.113 closeout/current-head refresh before selecting
+│                  another service getter candidate
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

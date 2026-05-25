@@ -31,15 +31,15 @@ def test_market_data_service_package_reexports_provider_symbols():
 
 
 def test_market_data_service_dependency_installs_app_state_when_missing(monkeypatch):
-    getter_module = importlib.import_module("app.services.market_data_service.get_market_data_service")
+    provider_module = importlib.import_module("app.services.market_data_service.get_market_data_service")
     fake_service = object()
     fake_app = SimpleNamespace(state=SimpleNamespace())
     request = SimpleNamespace(app=fake_app)
 
-    monkeypatch.setattr(getter_module, "get_market_data_service", lambda: fake_service)
+    monkeypatch.setattr(provider_module, "MarketDataService", lambda: fake_service)
 
-    assert getter_module.get_market_data_service_dependency(request) is fake_service
-    assert getattr(fake_app.state, getter_module.MARKET_DATA_SERVICE_STATE_KEY) is fake_service
+    assert provider_module.get_market_data_service_dependency(request) is fake_service
+    assert getattr(fake_app.state, provider_module.MARKET_DATA_SERVICE_STATE_KEY) is fake_service
 
 
 def test_install_market_data_service_accepts_explicit_service():
