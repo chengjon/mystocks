@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-234"
+  title: "Implement DataSourceFactory compatibility getter phase 1 decoupling"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-compat-getter-phase1-decoupling"
+  objective: "decouple DataSourceFactory service-internal helpers from the public compatibility getter while keeping the public compatibility API intact"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-compat-getter-phase1-decoupling"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-compat-getter-retirement-phase1-implementation-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-compat-getter-retirement-phase1-implementation-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-234.yaml"
+    - "web/backend/app/services/data_source_factory/data_source_factory.py"
+    - "web/backend/tests/test_data_source_factory_lifecycle_di.py"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/backend/app/services/data_source_factory/__init__.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-compat-getter-phase1-decoupling"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Implementation changes service-internal fallback acquisition only and preserves route paths, OpenAPI exposure, response shape, public compatibility getter, and package exports"
+
+non_goals:
+  - "No deletion of public get_data_source_factory()"
+  - "No package export removal from web/backend/app/services/data_source_factory/__init__.py"
+  - "No route path, response model, response shape, OpenAPI exposure, docs/API, generated client, frontend, PM2, runtime process, OpenSpec, or issue-label change"
+  - "No DataSourceFactory route/API consumer migration"
+  - "No broad formatting cleanup outside the allowed service and lifecycle test files"
+
+acceptance:
+  checks:
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short before implementation"
+      required: true
+    - id: "focused-green"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "style"
+      command: "ruff check web/backend/app/services/data_source_factory/data_source_factory.py web/backend/tests/test_data_source_factory_lifecycle_di.py && black --check web/backend/app/services/data_source_factory/data_source_factory.py web/backend/tests/test_data_source_factory_lifecycle_di.py"
+      required: true
+    - id: "openapi-smoke"
+      command: "PYTHONPATH=web/backend python -c \"from dotenv import load_dotenv; load_dotenv('/opt/claude/mystocks_spec/.env'); from app.main import app; app.openapi()\""
+      required: true
+    - id: "direct-ref-scan"
+      command: "scan route/API direct get_data_source_factory() refs, service helper calls, package export mentions, and private initializer refs"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-compat-getter-retirement-phase1-implementation-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-compat-getter-retirement-phase1-implementation-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-234.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-234.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "MCP gitnexus.detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If public get_data_source_factory() is deleted, the PR exceeds the G2.80 authorization boundary"
+    - "If package exports are removed, downstream compatibility consumers may break outside this Phase 1 scope"
+    - "If route/API or OpenAPI surfaces change, the PR turns an internal compatibility cleanup into a contract change"
+  rollback_plan: "revert this path-limited PR; the public compatibility getter and package exports remain available and no route contract changes are introduced"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "decouple DataSourceFactory service-internal helpers from the public compatibility getter"
+    modified_scope: "one service module, one lifecycle test module, implementation report, generated artifact, steward tree, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "public get_data_source_factory() and package exports remain intact; service helpers use a private initializer internally"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this implementation PR to restore helper calls through the public compatibility getter"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T12:48:57+08:00"
+    approval_note: "human maintainer accepted continuing after G2.80; G2.80 PR #233 authorizes this Phase 1 service-internal decoupling only"
+    secondary_approved: false

@@ -1,0 +1,94 @@
+{
+  "artifact": "data-source-factory-compat-getter-retirement-phase1-implementation-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T12:48:57+08:00",
+  "branch": "g2-81-data-source-factory-compat-getter-phase1-implementation",
+  "baseline_head": "b922db6b672f1084dcefb9ecba953b780ac8dbe3",
+  "authorization": {
+    "source": "backend-data-source-factory-compat-getter-retirement-authorization-2026-05-25.md",
+    "merged_pr": 233,
+    "merged_head": "b922db6b672f1084dcefb9ecba953b780ac8dbe3",
+    "allowed_stage": "G2.81 Phase 1 service-internal decoupling only"
+  },
+  "scope": {
+    "type": "source_implementation_packet",
+    "allowed_source_files": [
+      "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py"
+    ],
+    "forbidden_changes": [
+      "delete get_data_source_factory()",
+      "remove package exports from web/backend/app/services/data_source_factory/__init__.py",
+      "edit route modules under web/backend/app/api/**",
+      "edit frontend files",
+      "edit route paths, response models, response shapes, or OpenAPI exposure",
+      "change DATA_SOURCE_FACTORY_STATE_KEY",
+      "runtime or PM2 script changes",
+      "OpenSpec changes",
+      "GitHub issue label changes"
+    ]
+  },
+  "implementation": {
+    "private_initializer_added": "_get_or_create_data_source_factory",
+    "public_getter_kept": true,
+    "public_getter_role": "compatibility wrapper around _get_or_create_data_source_factory()",
+    "package_exports_kept": true,
+    "service_internal_helpers_decoupled_from_public_getter": [
+      "install_data_source_factory",
+      "get_data_source",
+      "get_market_data",
+      "get_dashboard_data",
+      "get_technical_analysis_data"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "2 failed, 3 passed",
+      "expected_failure": "AttributeError for missing _get_or_create_data_source_factory"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "5 passed in 1.69s"
+    }
+  },
+  "verification": {
+    "lifecycle_tests": "5 passed",
+    "health_route_conflicts": "120 passed",
+    "ruff": "passed",
+    "black_check": "passed",
+    "openapi_smoke": {
+      "env_source": "/opt/claude/mystocks_spec/.env",
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "generic_python_warning_count": 121
+    },
+    "reference_scan": {
+      "route_api_direct_get_data_source_factory_calls": 0,
+      "exact_parenthesized_refs": 4,
+      "service_module_exact_refs": 1,
+      "service_helper_public_getter_calls": 0,
+      "package_export_mentions": 4,
+      "private_initializer_refs": 11
+    }
+  },
+  "gitnexus": {
+    "pre_edit_get_data_source_factory_impact": "CRITICAL, 22 impacted symbols, 21 direct dependents, 12 affected processes",
+    "waiver": "G2.80 scoped stale-index waiver for Phase 1 service-internal decoupling only",
+    "staged_detect_changes": {
+      "changed_files": 6,
+      "changed_symbols": 20,
+      "affected_symbols": 12,
+      "risk_level": "high",
+      "affected_process_families": [
+        "Get_system_status_overview",
+        "Get_sources_health"
+      ],
+      "interpretation": "Expected DataSourceFactory initialization blast radius; no public getter deletion or package export removal."
+    }
+  },
+  "next_gate": "Human review / PR merge decision for G2.81. If accepted, create closeout/current-head refresh before any public getter or package export retirement decision."
+}
