@@ -1,0 +1,53 @@
+{
+  "artifact": "wencai-compat-getter-retirement-closeout-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T20:00:00+08:00",
+  "branch": "g2-96-wencai-getter-retirement-closeout",
+  "current_head": "689d619c715ec521a3f5c1d967b0fc8eeb798293",
+  "parent_pr": {
+    "number": 248,
+    "state": "MERGED",
+    "merge_commit": "689d619c715ec521a3f5c1d967b0fc8eeb798293",
+    "merged_at": "2026-05-25T11:54:51Z",
+    "url": "https://github.com/chengjon/mystocks/pull/248"
+  },
+  "current_reference_scan": {
+    "get_wencai_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 1,
+      "package_export_refs": 0,
+      "remaining_test_reference": "focused absence assertion only"
+    },
+    "WencaiService": {
+      "app_refs": 16,
+      "route_api_refs": 9,
+      "test_refs": 1
+    }
+  },
+  "verification": {
+    "focused_wencai_retirement_test": "2 passed in 1.55s",
+    "health_route_conflicts": "120 passed in 71.43s",
+    "parent_pr_checks": {
+      "mainline_governance_gate": "pass",
+      "check_compliance": "pass",
+      "weekly_full_scan": "skipped"
+    }
+  },
+  "closed_scope": [
+    "get_wencai_service public compatibility getter retirement",
+    "focused absence/import regression coverage",
+    "G2.95 steward-tree implementation evidence"
+  ],
+  "boundary": {
+    "closeout_only": true,
+    "backend_source_edits": false,
+    "backend_test_edits": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "fresh service lifecycle candidate refresh before selecting another getter-retirement lane"
+}
