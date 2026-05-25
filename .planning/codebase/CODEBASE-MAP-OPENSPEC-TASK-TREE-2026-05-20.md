@@ -1658,7 +1658,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                `TradingViewWidgetService` deletion, or issue-label change
 │   │                is made here
 │   ├── G2.103 TradingView getter-retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#256` merged at
+│   │   │          `81cd6191c178f8a443e8f3b303e47c2583fc4402`
 │   │   ├── Evidence: `backend-tradingview-getter-retirement-implementation-2026-05-26.md`
 │   │   ├── Base HEAD: `a0cfa4f35125bb0475b1d98c4225a4321c18de1c`
 │   │   ├── Result: removes only `get_tradingview_service` and the private
@@ -1675,9 +1676,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                `TradingViewWidgetService` deletion, lifecycle helper
 │   │                deletion, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.103; if accepted,
-│                  create G2.104 closeout before selecting another service
-│                  lifecycle lane
+│   ├── G2.104 TradingView getter-retirement closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-tradingview-getter-retirement-closeout-2026-05-26.md`
+│   │   ├── Current HEAD: `81cd6191c178f8a443e8f3b303e47c2583fc4402`
+│   │   ├── Result: records PR `#256` merge and closes the
+│   │   │          TradingView public compatibility getter lane; current-head
+│   │   │          scan shows `get_tradingview_service` app refs=`0`,
+│   │   │          route/API refs=`0`, test refs=`3`, package export refs=`0`,
+│   │   │          and `_tradingview_service` app refs=`0`, route/API refs=`0`,
+│   │   │          test refs=`2`, package export refs=`0`; focused lifecycle
+│   │   │          tests are `8 passed` and health route conflicts are
+│   │   │          `120 passed`
+│   │   └── Boundary: closeout-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, service class
+│   │                deletion, lifecycle helper deletion, or issue-label change
+│   │                is made here
+│   └── Next gate: human review / PR merge decision for G2.104; if accepted,
+│                  create the next service lifecycle candidate refresh before
+│                  selecting another implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1766,7 +1783,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-enhanced-data-service-getter-retirement-closeout-2026-05-25.md` | G | G2.100 closeout accepted in PR `#253` at `d7be7e6`: records PR `#252` merge, confirms `get_enhanced_data_service` app/API/package refs remain `0`, test refs are focused absence assertions only, `_enhanced_data_service` app/API refs are `0`, `EnhancedDataService` remains active with app refs=`8` and route/API refs=`4`, focused test `3 passed`, and health route conflicts `120 passed` | Superseded by G2.101 service lifecycle candidate refresh |
 | `backend-service-lifecycle-candidate-refresh-after-enhanced-data-service-2026-05-25.md` | G | G2.101 candidate refresh accepted in PR `#254` at `c8eae46`: records PR `#253` merge, scans `152` service files / `575` app files / `219` API files / `1008` test files, finds `18` getter definitions and `4` candidate-like definitions, confirms `get_enhanced_data_service` is no longer present as a service getter definition, selects `get_tradingview_service` as a future G2.102 authorization candidate only, and records GitNexus impact LOW / `1` with no affected processes | Superseded by G2.102 TradingView getter-retirement authorization |
 | `backend-tradingview-getter-retirement-authorization-2026-05-25.md` | G | G2.102 authorization accepted in PR `#255` at `a0cfa4f`: authorizes only future G2.103 removal of `get_tradingview_service` after TDD red/green; current scan shows getter refs app=`2` / route/API=`0` / tests=`2` / package exports=`0`, direct caller `install_tradingview_service`, GitNexus impact LOW / `1`, and `TradingViewWidgetService` class plus dependency provider remain active and outside deletion scope | Superseded by G2.103 TradingView getter-retirement implementation |
-| `backend-tradingview-getter-retirement-implementation-2026-05-26.md` | G | G2.103 implementation prepared from base `a0cfa4f`: removes only `get_tradingview_service` and `_tradingview_service`, preserves `TradingViewWidgetService`, install/close helpers, and dependency provider, changes install fallback to direct `TradingViewWidgetService()` construction, records TDD red `1 failed, 7 passed`, green `8 passed`, health route conflicts `120 passed`, ruff/black passed, and OpenAPI routes=`548`, paths=`500`, duplicate operation IDs=`0` | Human review / PR merge decision; if accepted, create G2.104 closeout before next candidate refresh |
+| `backend-tradingview-getter-retirement-implementation-2026-05-26.md` | G | G2.103 implementation accepted in PR `#256` at `81cd619`: removed only `get_tradingview_service` and `_tradingview_service`, preserved `TradingViewWidgetService`, install/close helpers, and dependency provider, changed install fallback to direct `TradingViewWidgetService()` construction, recorded TDD red `1 failed, 7 passed`, green `8 passed`, health route conflicts `120 passed`, ruff/black passed, and schema-only OpenAPI routes=`548`, paths=`500`, duplicate operation IDs=`0` | Superseded by G2.104 TradingView getter-retirement closeout |
+| `backend-tradingview-getter-retirement-closeout-2026-05-26.md` | G | G2.104 closeout prepared at `81cd619`: records PR `#256` merge, confirms `get_tradingview_service` app refs=`0`, route/API refs=`0`, tests=`3`, package exports=`0`, confirms `_tradingview_service` app refs=`0`, route/API refs=`0`, tests=`2`, package exports=`0`, and preserves `TradingViewWidgetService`, install/close helpers, and dependency provider as active surfaces | Human review / PR merge decision; if accepted, create the next service lifecycle candidate refresh before another implementation lane |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
