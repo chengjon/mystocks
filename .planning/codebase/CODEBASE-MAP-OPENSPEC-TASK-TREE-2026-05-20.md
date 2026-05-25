@@ -1917,7 +1917,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation authorization, or issue-label change is made here
 │   ├── G2.117 AnnouncementService getter-retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#270` merged at
+│   │   │          `ca1ad8da694f0174b5a80d414cc624d05865ec8f`
 │   │   ├── Evidence: `backend-announcement-service-getter-retirement-authorization-2026-05-26.md`
 │   │   ├── Current HEAD: `618820c89888887a7352999e32ec4285ccad836a`
 │   │   ├── Decision: authorize only a future G2.118 implementation branch to
@@ -1933,9 +1934,32 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                service migration, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.117; if accepted,
-│                  create G2.118 AnnouncementService getter-retirement
-│                  implementation before any announcement service source edit
+│   ├── G2.118 AnnouncementService getter-retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-announcement-service-getter-retirement-implementation-2026-05-26.md`
+│   │   ├── Current HEAD: `ca1ad8da694f0174b5a80d414cc624d05865ec8f`
+│   │   ├── Result: removes only `announcement_service.py`
+│   │   │          `_announcement_service` and `get_announcement_service`,
+│   │   │          changes the installer fallback to construct
+│   │   │          `AnnouncementService()` directly, and updates focused
+│   │   │          lifecycle coverage to patch the class seam instead of the
+│   │   │          retired getter
+│   │   ├── Verification: TDD red `1 failed`, focused green `4 passed`,
+│   │   │          health route conflicts `120 passed`, touched-file ruff and
+│   │   │          black checks passed; exact scan reports target getter
+│   │   │          definitions=`0`, target singleton tokens=`0`, API direct
+│   │   │          getter refs=`0`, route dependency handlers preserved=`11`
+│   │   └── Boundary: source-capable but limited to `announcement_service.py`,
+│   │                `test_announcement_service_lifecycle_di.py`,
+│   │                `test_announcement_service_getter_retirement.py`,
+│   │                governance report, generated artifact, task card, and
+│   │                steward-tree update; no route/API, OpenAPI exposure,
+│   │                frontend, PM2, OpenSpec, `AnnouncementService` deletion,
+│   │                dependency deletion, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.118; if accepted,
+│                  create G2.119 AnnouncementService getter-retirement
+│                  closeout before selecting the next medium route-backed
+│                  getter lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

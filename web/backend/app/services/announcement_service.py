@@ -518,23 +518,11 @@ class AnnouncementService:
         }
 
 
-# 全局单例
-_announcement_service = None
 ANNOUNCEMENT_SERVICE_STATE_KEY = "announcement_service"
 
 
-def get_announcement_service() -> AnnouncementService:
-    """获取公告服务单例"""
-    global _announcement_service
-    if _announcement_service is None:
-        _announcement_service = AnnouncementService()
-    return _announcement_service
-
-
-def install_announcement_service(
-    app: Any, service: AnnouncementService | None = None
-) -> AnnouncementService:
-    selected_service = service if service is not None else get_announcement_service()
+def install_announcement_service(app: Any, service: AnnouncementService | None = None) -> AnnouncementService:
+    selected_service = service if service is not None else AnnouncementService()
     setattr(app.state, ANNOUNCEMENT_SERVICE_STATE_KEY, selected_service)
     return selected_service
 

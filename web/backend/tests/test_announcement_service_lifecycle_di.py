@@ -15,7 +15,7 @@ def test_announcement_service_dependency_installs_app_state_when_missing(monkeyp
     fake_app = SimpleNamespace(state=SimpleNamespace())
     request = SimpleNamespace(app=fake_app)
 
-    monkeypatch.setattr(announcement_service, "get_announcement_service", lambda: fake_service)
+    monkeypatch.setattr(announcement_service, "AnnouncementService", lambda: fake_service)
 
     assert announcement_service.get_announcement_service_dependency(request) is fake_service
     assert getattr(fake_app.state, announcement_service.ANNOUNCEMENT_SERVICE_STATE_KEY) is fake_service
