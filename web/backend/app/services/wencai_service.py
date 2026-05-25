@@ -413,17 +413,3 @@ class WencaiService:
         if hasattr(self, "adapter"):
             self.adapter.close()
         logger.info("WencaiService closed")
-
-
-# 工厂函数
-def get_wencai_service(db: Session = None) -> WencaiService:
-    """
-    获取WencaiService实例
-
-    Args:
-        db: 数据库会话
-
-    Returns:
-        WencaiService实例
-    """
-    return WencaiService(db=db)

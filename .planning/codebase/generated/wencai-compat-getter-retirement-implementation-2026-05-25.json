@@ -1,0 +1,93 @@
+{
+  "artifact": "wencai-compat-getter-retirement-implementation-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T19:46:32+08:00",
+  "branch": "g2-95-wencai-getter-retirement-implementation",
+  "base_head": "228a94d3ac0d77d421379ea37a4a328bd6975389",
+  "parent_pr": {
+    "number": 247,
+    "state": "MERGED",
+    "merge_commit": "228a94d3ac0d77d421379ea37a4a328bd6975389",
+    "url": "https://github.com/chengjon/mystocks/pull/247"
+  },
+  "changes": {
+    "removed_symbols": [
+      {
+        "symbol": "get_wencai_service",
+        "file": "web/backend/app/services/wencai_service.py",
+        "previous_line": 419
+      }
+    ],
+    "retained_symbols": [
+      {
+        "symbol": "WencaiService",
+        "file": "web/backend/app/services/wencai_service.py"
+      }
+    ],
+    "added_tests": [
+      "web/backend/tests/test_wencai_service_getter_retirement.py"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_wencai_service_getter_retirement.py -q --no-cov --tb=short",
+      "result": "1 failed, 1 passed",
+      "expected_failure": "test_public_wencai_service_getter_is_retired failed because get_wencai_service still existed"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_wencai_service_getter_retirement.py -q --no-cov --tb=short",
+      "result": "2 passed"
+    }
+  },
+  "post_change_reference_scan": {
+    "get_wencai_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 1,
+      "package_export_refs": 0
+    },
+    "WencaiService": {
+      "app_refs": 16,
+      "route_api_refs": 9,
+      "test_refs": 1
+    }
+  },
+  "verification": {
+    "gitnexus_pre_edit_impact": {
+      "target": "get_wencai_service",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct_callers": 0,
+      "affected_processes": 0,
+      "affected_modules": 0
+    },
+    "focused_pytest": "2 passed",
+    "health_route_conflicts": "120 passed in 73.74s",
+    "ruff_touched_paths": "All checks passed!",
+    "black_check_touched_paths": "2 files would be left unchanged",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0
+    },
+    "gitnexus_staged_detect": {
+      "risk_level": "low",
+      "changed_files": 6,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "boundary": {
+    "wencai_service_class_deleted": false,
+    "wencai_routes_changed": false,
+    "wencai_tasks_changed": false,
+    "database_service_changed": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "human review / PR merge decision for G2.95; if accepted, create G2.96 closeout before selecting another service lifecycle lane"
+}
