@@ -1,0 +1,62 @@
+{
+  "artifact": "email-notification-getter-retirement-closeout-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T02:05:00+08:00",
+  "branch": "g2-109-email-notification-getter-retirement-closeout",
+  "current_head": "9cb643dbcd78bae76afc8201dad65b6f431a801c",
+  "current_head_checked_at_review": "2026-05-26T02:05:00+08:00",
+  "parent": {
+    "node": "G2.108",
+    "pr": 261,
+    "state": "MERGED",
+    "merged_at": "2026-05-25T17:56:05Z",
+    "merge_commit": "9cb643dbcd78bae76afc8201dad65b6f431a801c"
+  },
+  "governance_node": {
+    "id": "G2.109",
+    "lane": "service_lifecycle_di",
+    "type": "closeout_current_head_refresh",
+    "state": "ready_for_review"
+  },
+  "current_head_scan": {
+    "email_notification_service_getter_refs": 0,
+    "email_notification_service_singleton_refs": 0,
+    "route_email_notification_refs": 0,
+    "notification_route_get_email_service_dependency_refs": 7,
+    "email_service_get_email_service_dependency_refs": 1,
+    "email_notification_class_preserved": true,
+    "email_service_route_backed_seam_preserved": true
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_email_notification_service_getter_retirement.py web/backend/tests/test_email_notification_service_logging.py -q --no-cov --tb=short",
+      "result": "5 passed"
+    },
+    "health_route_conflicts": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "120 passed"
+    },
+    "ruff_target_files": {
+      "command": "ruff check web/backend/app/services/email_notification_service.py web/backend/tests/test_email_notification_service_getter_retirement.py",
+      "result": "passed"
+    },
+    "black_target_files": {
+      "command": "black --check web/backend/app/services/email_notification_service.py web/backend/tests/test_email_notification_service_getter_retirement.py",
+      "result": "passed"
+    }
+  },
+  "boundary": {
+    "backend_source_changed": false,
+    "backend_tests_changed": false,
+    "email_service_py_changed": false,
+    "notification_route_changed": false,
+    "openapi_changed": false,
+    "frontend_changed": false,
+    "pm2_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false,
+    "email_notification_service_class_deleted": false
+  },
+  "decision": "EmailNotificationService legacy/helper getter-retirement lane is closed after human review and merge of this closeout packet.",
+  "next_gate": "After G2.109 is accepted, create a fresh service lifecycle candidate refresh before selecting another service getter candidate."
+}
