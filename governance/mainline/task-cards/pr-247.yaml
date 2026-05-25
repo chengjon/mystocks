@@ -1,0 +1,107 @@
+version: "v0.2"
+
+task:
+  id: "pr-247"
+  title: "Authorize Wencai getter retirement"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-wencai-compat-getter-retirement-authorization"
+  objective: "authorize exact future scope for retiring get_wencai_service"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-wencai-compat-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-wencai-compat-getter-retirement-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/wencai-compat-getter-retirement-authorization-2026-05-25.json"
+    - "docs/reports/quality/backend-wencai-compat-getter-retirement-authorization-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-247.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not delete get_wencai_service in this packet"
+  - "Do not delete or migrate WencaiService"
+  - "Do not change routes, response models, response shapes, or OpenAPI exposure"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 246 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-wencai-compat-getter-retirement-authorization-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/wencai-compat-getter-retirement-authorization-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-247.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-247.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this authorization is misread as implementation permission, source could be edited without the required G2.95 TDD branch"
+    - "If WencaiService class usage is confused with get_wencai_service usage, an active service class could be over-scoped"
+  rollback_plan: "revert this governance-only authorization PR and keep G2.93 as the latest accepted candidate-refresh evidence"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize exact future retirement scope for get_wencai_service"
+    modified_scope: "steward tree, authorization report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source retirement is only authorized for a future branch"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this authorization PR if parent PR evidence, Wencai reference scan, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T19:36:00+08:00"
+    approval_note: "G2.93 candidate refresh PR #246 was merged; this packet authorizes only a future G2.95 Wencai getter-retirement implementation scope"
+    secondary_approved: false

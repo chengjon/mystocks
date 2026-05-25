@@ -1,0 +1,93 @@
+{
+  "artifact": "wencai-compat-getter-retirement-authorization-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T19:36:00+08:00",
+  "branch": "g2-94-wencai-getter-retirement-authorization",
+  "current_head": "d8e1d14440d4db21a43b8dd50586f0deef383081",
+  "parent_pr": {
+    "number": 246,
+    "state": "MERGED",
+    "merge_commit": "d8e1d14440d4db21a43b8dd50586f0deef383081",
+    "url": "https://github.com/chengjon/mystocks/pull/246"
+  },
+  "target": {
+    "symbol": "get_wencai_service",
+    "file": "web/backend/app/services/wencai_service.py",
+    "line": 419,
+    "current_body_summary": "returns WencaiService(db=db)",
+    "future_action_authorized_if_accepted": "remove public compatibility getter only"
+  },
+  "current_reference_scan": {
+    "app_files": 575,
+    "api_files": 219,
+    "test_files": 1006,
+    "get_wencai_service": {
+      "app_refs": 1,
+      "route_api_refs": 0,
+      "test_refs": 0,
+      "package_export_refs": 0
+    },
+    "WencaiService": {
+      "app_refs": 20,
+      "route_api_refs": 9,
+      "test_refs": 0
+    }
+  },
+  "gitnexus": {
+    "index_refresh": "gitnexus analyze --with-gitignore completed in G2.94 worktree",
+    "nodes": 62750,
+    "edges": 145902,
+    "clusters": 3294,
+    "flows": 300,
+    "impact": {
+      "target": "get_wencai_service",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct_callers": 0,
+      "affected_processes": 0,
+      "affected_modules": 0
+    },
+    "context": {
+      "incoming": 0,
+      "outgoing": 0,
+      "processes": 0
+    }
+  },
+  "future_g2_95_authorized_scope_if_accepted": {
+    "source_paths": [
+      "web/backend/app/services/wencai_service.py"
+    ],
+    "test_paths": [
+      "web/backend/tests/test_wencai_service_getter_retirement.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/wencai-compat-getter-retirement-implementation-2026-05-25.json",
+      "docs/reports/quality/backend-wencai-compat-getter-retirement-implementation-2026-05-25.md",
+      "governance/mainline/task-cards/pr-248.yaml"
+    ],
+    "allowed_action": "remove get_wencai_service only after TDD red/green",
+    "forbidden_actions": [
+      "delete WencaiService",
+      "change wencai routes",
+      "change wencai tasks",
+      "change database_service WencaiService usage",
+      "change OpenAPI exposure",
+      "change frontend files",
+      "change PM2 state",
+      "change OpenSpec files",
+      "change GitHub issue labels"
+    ]
+  },
+  "boundary": {
+    "authorization_only": true,
+    "backend_source_edits": false,
+    "backend_test_edits": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "human review / PR merge decision for G2.94; if accepted, create G2.95 Wencai getter-retirement implementation branch before source edits"
+}
