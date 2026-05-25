@@ -10,6 +10,7 @@ from app.api.data import kline as kline_module
 from app.api.data import lhb as lhb_module
 from app.api.data import margin as margin_module
 from app.api.data import market as market_module
+from app.api.data import stocks as stocks_module
 from app.api.market import market_data_request as market_data_request_module
 from app.main import app
 
@@ -100,6 +101,16 @@ def test_kline_routes_use_data_source_factory_dependency() -> None:
         factory_param = inspect.signature(route_handler).parameters["factory"]
 
         assert getattr(factory_param.default, "dependency", None) is kline_module.get_data_source_factory_dependency
+
+
+def test_stocks_routes_use_data_source_factory_dependency() -> None:
+    for route_handler in [
+        stocks_module.get_stocks_basic,
+        stocks_module.search_stocks,
+    ]:
+        factory_param = inspect.signature(route_handler).parameters["factory"]
+
+        assert getattr(factory_param.default, "dependency", None) is stocks_module.get_data_source_factory_dependency
 
 
 def test_root_and_socketio_status_have_documented_examples_and_errors() -> None:

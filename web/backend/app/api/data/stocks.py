@@ -1,6 +1,7 @@
 """
 股票基础信息路由 (Stocks Basic Info)
 """
+
 import os
 from datetime import datetime
 from typing import Any, Dict, Optional
@@ -10,6 +11,7 @@ from app.core.database import db_service
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
 from app.openapi_config import COMMON_RESPONSES
+from app.services.data_source_factory import DataSourceFactory, get_data_source_factory_dependency
 
 router = APIRouter()
 
@@ -142,10 +144,7 @@ STOCK_DETAIL_RESPONSES = {
 
 
 def _runtime_fallback_enabled() -> bool:
-    return (
-        os.getenv("TESTING", "false").lower() == "true"
-        or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
-    )
+    return os.getenv("TESTING", "false").lower() == "true" or os.getenv("DEVELOPMENT_MODE", "false").lower() == "true"
 
 
 def _normalize_market_code(symbol: str, raw_market: str) -> str:
@@ -208,10 +207,7 @@ def _build_runtime_stocks_basic_result(params: Dict[str, Any]) -> Dict[str, Any]
         rows.append(normalized)
 
     if search:
-        rows = [
-            row for row in rows
-            if search in str(row["symbol"]).lower() or search in str(row["name"]).lower()
-        ]
+        rows = [row for row in rows if search in str(row["symbol"]).lower() or search in str(row["name"]).lower()]
 
     if industry:
         rows = [row for row in rows if str(row.get("industry", "")) == industry]
@@ -233,6 +229,7 @@ def _build_runtime_stocks_basic_result(params: Dict[str, Any]) -> Dict[str, Any]
         "source": "runtime_fallback",
     }
 
+
 @router.get(
     "/stocks/basic",
     summary="查询股票基础信息",
@@ -251,6 +248,7 @@ async def get_stocks_basic(
     ),
     sort_order: Optional[str] = Query(None, description="排序方向: asc,desc"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ):
     """获取股票基本信息列表"""
     params = {
@@ -264,9 +262,6 @@ async def get_stocks_basic(
         "sort_order": sort_order,
     }
     try:
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
         result = await factory.get_data("data", "stocks/basic", params)
         if result.get("status") == "success":
             return {
@@ -307,6 +302,7 @@ async def get_stocks_basic(
             }
         raise BusinessException(detail=f"查询失败: {str(e)}", status_code=500)
 
+
 @router.get(
     "/stocks/industries",
     summary="查询股票行业分类",
@@ -318,18 +314,26 @@ async def get_stocks_industries(current_user: User = Depends(get_current_user)) 
     try:
         cache_key = "stocks:industries:list"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
         df = db_service.query_stocks_basic(limit=10000)
-        if df.empty: return {"success": True, "data": [], "total": 0}
+        if df.empty:
+            return {"success": True, "data": [], "total": 0}
 
         industries = sorted(df["industry"].dropna().unique().tolist())
         industry_list = [{"industry_name": ind, "industry_code": f"IND_{i+1:03d}"} for i, ind in enumerate(industries)]
-        result = {"success": True, "data": industry_list, "total": len(industry_list), "timestamp": datetime.now().isoformat()}
+        result = {
+            "success": True,
+            "data": industry_list,
+            "total": len(industry_list),
+            "timestamp": datetime.now().isoformat(),
+        }
         db_service.set_cache_data(cache_key, result, ttl=3600)
         return result
     except Exception as e:
         raise BusinessException(detail=f"获取行业分类失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
+
 
 @router.get(
     "/stocks/concepts",
@@ -342,17 +346,25 @@ async def get_stocks_concepts(current_user: User = Depends(get_current_user)) ->
     try:
         cache_key = "stocks:concepts:list"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
         df = db_service.query_concepts(limit=10000)
-        if df.empty: return {"success": True, "data": [], "total": 0}
+        if df.empty:
+            return {"success": True, "data": [], "total": 0}
 
         concept_list = [{"concept_name": row["name"], "concept_code": row["code"]} for _, row in df.iterrows()]
-        result = {"success": True, "data": concept_list, "total": len(concept_list), "timestamp": datetime.now().isoformat()}
+        result = {
+            "success": True,
+            "data": concept_list,
+            "total": len(concept_list),
+            "timestamp": datetime.now().isoformat(),
+        }
         db_service.set_cache_data(cache_key, result, ttl=3600)
         return result
     except Exception as e:
         raise BusinessException(detail=f"获取概念分类失败: {str(e)}", status_code=500, error_code="DATABASE_ERROR")
+
 
 @router.get(
     "/stocks/search",
@@ -364,11 +376,10 @@ async def search_stocks(
     keyword: str = Query(..., description="搜索关键词"),
     limit: int = Query(20, ge=1, le=100, description="单次返回的最大匹配结果数。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> Dict[str, Any]:
     """股票搜索接口"""
     try:
-        from app.services.data_source_factory import get_data_source_factory
-        factory = await get_data_source_factory()
         result = await factory.get_data("data", "stocks/search", {"keyword": keyword, "limit": limit})
         if result.get("status") == "success":
             return {
@@ -384,6 +395,7 @@ async def search_stocks(
     except Exception as e:
         raise BusinessException(detail=str(e), status_code=500)
 
+
 @router.get(
     "/stocks/{symbol}/detail",
     summary="查询股票详情",
@@ -398,15 +410,20 @@ async def get_stock_detail(
     try:
         cache_key = f"stock:detail:{symbol}"
         cached_data = db_service.get_cache_data(cache_key)
-        if cached_data: return cached_data
+        if cached_data:
+            return cached_data
 
         # Simplified for refactoring, usually queries DB
         import random
+
         random.seed(hash(symbol))
         market = "SH" if symbol.startswith("6") else "SZ"
         stock_detail = {
-            "symbol": symbol, "name": f"股票{symbol[-3:]}", "market": market,
-            "industry": "银行", "price": round(random.uniform(5, 100), 2),
+            "symbol": symbol,
+            "name": f"股票{symbol[-3:]}",
+            "market": market,
+            "industry": "银行",
+            "price": round(random.uniform(5, 100), 2),
             "change_pct": round(random.uniform(-10, 10), 2),
         }
         result = {"success": True, "data": stock_detail, "timestamp": datetime.now().isoformat()}
