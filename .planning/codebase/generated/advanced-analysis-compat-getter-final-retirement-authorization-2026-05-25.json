@@ -1,0 +1,74 @@
+{
+  "workline": "G2.90 AdvancedAnalysis public compatibility getter final-retirement authorization",
+  "status": "ready_for_review",
+  "prepared_at": "2026-05-25T17:47:35+08:00",
+  "worktree": ".worktrees/g2-90-advanced-analysis-compat-getter-final-retirement-authorization",
+  "branch": "g2-90-advanced-analysis-compat-getter-final-retirement-authorization",
+  "current_head": "7b6d81aaad7af8279cbb7304903a88987682e579",
+  "parent_closeout_pr": {
+    "number": 242,
+    "state": "MERGED",
+    "merge_commit": "7b6d81aaad7af8279cbb7304903a88987682e579",
+    "merged_at": "2026-05-25T09:41:31Z"
+  },
+  "authorization": {
+    "future_branch": "G2.91 AdvancedAnalysis public compatibility getter final-retirement implementation",
+    "source_edit_authorized_in_this_packet": false,
+    "future_allowed_files": [
+      "web/backend/app/services/advanced_analysis_service.py",
+      "web/backend/tests/test_advanced_analysis_service_lifecycle_di.py"
+    ],
+    "future_allowed_actions": [
+      "delete public get_advanced_analysis_service()",
+      "update focused lifecycle tests to remove public getter monkeypatch references",
+      "prove dependency provider still uses _get_or_create_advanced_analysis_service()"
+    ],
+    "future_forbidden_actions": [
+      "route/API edits",
+      "OpenAPI exposure changes",
+      "frontend or generated client edits",
+      "OpenSpec changes",
+      "PM2/runtime state changes",
+      "GitHub issue label changes"
+    ]
+  },
+  "current_head_evidence": {
+    "gitnexus_impact": {
+      "target": "get_advanced_analysis_service",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "processes_affected": 0
+    },
+    "reference_matrix": {
+      "public_getter_hits": 1,
+      "public_getter_scope": "definition only",
+      "route_api_public_getter_hits": 0,
+      "service_public_getter_hits": 1,
+      "test_public_mentions": 5,
+      "private_initializer_hits": 3,
+      "dependency_provider_refs": 19,
+      "package_export_hits": 0
+    },
+    "verification": {
+      "focused_lifecycle_tests": "4 passed in 4.27s",
+      "health_route_conflicts": "120 passed in 71.72s",
+      "openapi_smoke": {
+        "routes": 548,
+        "paths": 500,
+        "operation_ids": 536,
+        "duplicate_operation_ids": 0,
+        "warnings": 0
+      }
+    }
+  },
+  "future_g2_91_required_gates": [
+    "Run GitNexus impact/context before source edits",
+    "Add a failing focused test proving public getter removal or absence",
+    "Run focused lifecycle tests",
+    "Run test_health_route_conflicts.py",
+    "Run ruff and black check on touched backend files",
+    "Run OpenAPI smoke",
+    "Run staged GitNexus detect_changes",
+    "Run post-commit mainline gate"
+  ]
+}

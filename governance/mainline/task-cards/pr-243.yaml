@@ -1,0 +1,112 @@
+version: "v0.2"
+
+task:
+  id: "pr-243"
+  title: "Authorize AdvancedAnalysis getter final retirement"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-advanced-analysis-compat-getter-final-retirement-authorization"
+  objective: "authorize a future G2.91 source branch to retire the remaining AdvancedAnalysis public compatibility getter"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-advanced-analysis-compat-getter-final-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-advanced-analysis-compat-getter-final-retirement-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/advanced-analysis-compat-getter-final-retirement-authorization-2026-05-25.json"
+    - "docs/reports/quality/backend-advanced-analysis-compat-getter-final-retirement-authorization-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-243.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests in this authorization PR"
+  - "Do not delete, rename, or privatize get_advanced_analysis_service in this PR"
+  - "Do not change routes, response models, response shapes, or OpenAPI exposure"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 242 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "focused-lifecycle-pytest"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-advanced-analysis-compat-getter-final-retirement-authorization-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/advanced-analysis-compat-getter-final-retirement-authorization-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-243.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-243.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this packet is treated as implementation, public getter deletion could bypass G2.91 TDD and staged GitNexus gates"
+    - "If hidden consumers appear before G2.91, final retirement must stop and return to review"
+  rollback_plan: "revert this governance-only authorization PR and keep G2.89 as the latest accepted closeout"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize future AdvancedAnalysis public compatibility getter final retirement"
+    modified_scope: "steward tree, authorization report, generated artifact, and this task card only"
+    dependency_changes: "none in this PR; future G2.91 may remove the public wrapper after TDD"
+    legacy_logic_impact: "none; public compatibility getter remains present in this PR"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this authorization PR if the G2.91 scope boundary or current-head evidence is rejected"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T17:47:35+08:00"
+    approval_note: "G2.89 closeout PR #242 was merged; this packet is authorization-only for a future G2.91 source branch"
+    secondary_approved: false
