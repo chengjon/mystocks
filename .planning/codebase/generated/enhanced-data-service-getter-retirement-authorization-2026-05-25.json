@@ -1,0 +1,125 @@
+{
+  "artifact": "enhanced-data-service-getter-retirement-authorization-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T20:20:06+08:00",
+  "branch": "g2-98-enhanced-data-service-getter-authorization",
+  "current_head": "dfb1dce27c0501b7eb855e478e68b82db4959d9d",
+  "parent_pr": {
+    "number": 250,
+    "title": "docs(governance): refresh service candidates after wencai",
+    "merge_commit": "dfb1dce27c0501b7eb855e478e68b82db4959d9d",
+    "disposition": "accepted"
+  },
+  "workline": {
+    "id": "G2.98",
+    "name": "EnhancedDataService getter-retirement authorization",
+    "next_authorized_workline": "G2.99",
+    "source_edit_authorized_by_this_packet": false
+  },
+  "target": {
+    "getter_symbol": "get_enhanced_data_service",
+    "service_class": "EnhancedDataService",
+    "service_file": "web/backend/app/services/data_service_enhanced.py",
+    "getter_lines": "580-585",
+    "module_local_smoke_call_line": 592,
+    "active_class_usage_file": "web/backend/app/api/v1/system/health.py"
+  },
+  "current_head_reference_scan": {
+    "get_enhanced_data_service": {
+      "files": 1,
+      "total_refs": 2,
+      "route_api_refs": 0,
+      "focused_test_refs": 0,
+      "package_export_refs": 0,
+      "notes": [
+        "Refs are limited to the getter definition and a module-local __main__ smoke call in web/backend/app/services/data_service_enhanced.py."
+      ]
+    },
+    "EnhancedDataService": {
+      "files": 2,
+      "total_refs": 9,
+      "active_direct_class_usage": [
+        "web/backend/app/api/v1/system/health.py"
+      ],
+      "deletion_authorized": false
+    },
+    "_enhanced_data_service": {
+      "files": 1,
+      "total_refs": 5,
+      "notes": [
+        "Private module singleton state is tied to the public getter and may be removed only by the future G2.99 implementation if TDD red/green proves the retirement boundary."
+      ]
+    }
+  },
+  "gitnexus": {
+    "analyze": {
+      "command": "gitnexus analyze --with-gitignore",
+      "result": "repository indexed successfully",
+      "nodes": 62748,
+      "edges": 145908,
+      "clusters": 3283,
+      "flows": 300
+    },
+    "impact": {
+      "target": "get_enhanced_data_service",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 1,
+      "processes_affected": 0,
+      "affected_processes": []
+    },
+    "context": {
+      "incoming": "module-local file reference only",
+      "outgoing": "none",
+      "processes": []
+    }
+  },
+  "authorized_future_scope": {
+    "if_this_packet_is_accepted": {
+      "may_create": "G2.99 EnhancedDataService getter-retirement implementation",
+      "allowed_paths": [
+        "web/backend/app/services/data_service_enhanced.py",
+        "web/backend/tests/test_enhanced_data_service_getter_retirement.py",
+        ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+        ".planning/codebase/generated/enhanced-data-service-getter-retirement-implementation-2026-05-25.json",
+        "docs/reports/quality/backend-enhanced-data-service-getter-retirement-implementation-2026-05-25.md",
+        "governance/mainline/task-cards/pr-252.yaml"
+      ],
+      "allowed_actions": [
+        "Remove only get_enhanced_data_service from web/backend/app/services/data_service_enhanced.py.",
+        "Remove the private _enhanced_data_service singleton state only if it becomes unused after getter retirement.",
+        "Replace the module-local __main__ smoke call with direct EnhancedDataService construction or remove only that obsolete smoke dependency.",
+        "Add focused static/import regression coverage proving the getter is absent while EnhancedDataService remains importable."
+      ]
+    }
+  },
+  "forbidden_scope": [
+    "Do not delete EnhancedDataService.",
+    "Do not change web/backend/app/api/v1/system/health.py in this authorization packet.",
+    "Do not change routes, response models, response shapes, or OpenAPI exposure.",
+    "Do not change frontend, PM2, OpenSpec changes/specs, GitHub issue labels, or readiness state.",
+    "Do not broaden future G2.99 beyond the getter-retirement seam without a separate authorization packet."
+  ],
+  "required_future_g2_99_verification": [
+    "Read architecture/STANDARDS.md before source edits.",
+    "Run GitNexus impact/context for get_enhanced_data_service before editing.",
+    "Add the focused regression test first and verify red state.",
+    "Apply the minimal source edit.",
+    "Verify green focused test.",
+    "Run ruff and black --check on touched backend files.",
+    "Run the route/OpenAPI smoke if the import path changes or if app.main import could be affected.",
+    "Stage only the authorized paths and run gitnexus detect_changes with scope=staged before commit.",
+    "Run the mainline scope gate and markdown governance gate for updated governance artifacts."
+  ],
+  "boundary": {
+    "this_packet_changes_source": false,
+    "this_packet_changes_tests": false,
+    "this_packet_changes_routes": false,
+    "this_packet_changes_openapi": false,
+    "this_packet_changes_pm2": false,
+    "this_packet_changes_openspec": false,
+    "this_packet_changes_issue_labels": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.98; if accepted, create G2.99 source-capable implementation with TDD red/green."
+}
