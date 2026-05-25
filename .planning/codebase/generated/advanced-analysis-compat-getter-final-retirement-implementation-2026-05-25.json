@@ -1,0 +1,64 @@
+{
+  "workline": "G2.91 AdvancedAnalysis public compatibility getter final-retirement implementation",
+  "status": "ready_for_review",
+  "prepared_at": "2026-05-25T18:03:29+08:00",
+  "worktree": ".worktrees/g2-91-advanced-analysis-compat-getter-final-retirement-implementation",
+  "branch": "g2-91-advanced-analysis-compat-getter-final-retirement-implementation",
+  "base_head": "db5ebd408f0d89c012e8c3e0ea23361e7836a53f",
+  "parent_authorization_pr": {
+    "number": 243,
+    "state": "MERGED",
+    "merge_commit": "db5ebd408f0d89c012e8c3e0ea23361e7836a53f"
+  },
+  "implementation_summary": {
+    "public_getter_removed": "get_advanced_analysis_service",
+    "private_initializer_kept": "_get_or_create_advanced_analysis_service",
+    "dependency_provider_kept": "get_advanced_analysis_service_dependency",
+    "installer_kept": "install_advanced_analysis_service",
+    "state_key_kept": "ADVANCED_ANALYSIS_SERVICE_STATE_KEY",
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "frontend_changes": false,
+    "openspec_changes": false,
+    "issue_label_changes": false
+  },
+  "tdd": {
+    "red_command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py::test_public_advanced_analysis_service_getter_is_retired -q --no-cov --tb=short",
+    "red_result": "1 failed; public compatibility getter still existed",
+    "green_command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q --no-cov --tb=short",
+    "green_result": "5 passed in 3.78s"
+  },
+  "gitnexus_pre_edit": {
+    "repo": "g2-91-advanced-analysis-compat-getter-final-retirement-implementation",
+    "get_advanced_analysis_service": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "processes_affected": 0
+    }
+  },
+  "post_change_reference_scan": {
+    "exact_public_getter_call_hits": 0,
+    "route_api_public_getter_call_hits": 0,
+    "package_export_hits": 0,
+    "private_initializer_hits": 2,
+    "dependency_provider_refs": 19,
+    "remaining_public_getter_mentions": "test assertion string only"
+  },
+  "verification": {
+    "focused_lifecycle_tests": "5 passed in 3.78s",
+    "health_route_conflicts": "120 passed in 76.54s",
+    "ruff_touched_backend_files": "passed",
+    "black_check_touched_backend_files": "passed",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "warnings": 0
+    }
+  },
+  "rollback": {
+    "strategy": "revert this PR as one unit",
+    "restores": "public get_advanced_analysis_service compatibility wrapper and prior focused tests"
+  }
+}

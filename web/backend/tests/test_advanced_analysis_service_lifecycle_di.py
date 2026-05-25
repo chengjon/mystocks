@@ -9,6 +9,10 @@ from app.api import advanced_analysis_api as advanced_analysis_routes
 from app.services import advanced_analysis_service as advanced_analysis_service_module
 
 
+def test_public_advanced_analysis_service_getter_is_retired():
+    assert not hasattr(advanced_analysis_service_module, "get_advanced_analysis_service")
+
+
 @pytest.mark.asyncio
 async def test_advanced_analysis_service_dependency_fallback_uses_private_initializer(monkeypatch):
     class FakeAdvancedAnalysisService:
@@ -21,15 +25,7 @@ async def test_advanced_analysis_service_dependency_fallback_uses_private_initia
     fake_app = SimpleNamespace(state=SimpleNamespace())
     request = SimpleNamespace(app=fake_app)
 
-    async def fail_if_public_getter_called():
-        raise AssertionError("provider fallback must not call the public compatibility getter")
-
     monkeypatch.setattr(advanced_analysis_service_module, "advanced_analysis_service", fake_service)
-    monkeypatch.setattr(
-        advanced_analysis_service_module,
-        "get_advanced_analysis_service",
-        fail_if_public_getter_called,
-    )
 
     result = await advanced_analysis_service_module.get_advanced_analysis_service_dependency(request)
 
@@ -50,7 +46,7 @@ async def test_advanced_analysis_service_dependency_prefers_installed_app_state(
 
     monkeypatch.setattr(
         advanced_analysis_service_module,
-        "get_advanced_analysis_service",
+        "_get_or_create_advanced_analysis_service",
         fail_if_fallback_called,
     )
 
