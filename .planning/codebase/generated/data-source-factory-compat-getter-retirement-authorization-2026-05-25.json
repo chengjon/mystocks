@@ -1,0 +1,77 @@
+{
+  "artifact": "data-source-factory-compat-getter-retirement-authorization-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-80-data-source-factory-compat-getter-retirement-authorization",
+  "current_head": "ac0fa318aa30262092d00219de18bd670bab26b2",
+  "scope": {
+    "type": "source_capable_authorization_packet",
+    "source_edits_in_this_packet": false,
+    "future_authorized_stage": "G2.81 Phase 1 service-internal decoupling only",
+    "excluded_from_this_packet": [
+      "backend source edits",
+      "test source edits",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "response model or response shape changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "compatibility getter deletion",
+      "package export removal"
+    ]
+  },
+  "decision": "Authorize a future G2.81 implementation to decouple service-internal helper fallback paths from the public get_data_source_factory() compatibility getter. Do not delete the public getter or remove package exports in G2.81.",
+  "current_evidence": {
+    "route_api_direct_get_data_source_factory_refs": 0,
+    "python_mentions": 61,
+    "exact_parenthesized_refs": 10,
+    "service_module_exact_refs": 6,
+    "package_export_mentions": 4,
+    "tests": {
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed",
+      "web/backend/tests/test_health_route_conflicts.py": "120 passed"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "generic_python_warning_count": 121
+    },
+    "gitnexus": {
+      "impact": "CRITICAL, 22 impacted symbols, 21 direct dependents, 12 affected processes",
+      "waiver": "scoped stale-index waiver for Phase 1 service-internal decoupling only; no full getter or package export deletion waiver"
+    }
+  },
+  "future_g2_81_allowed_source_files": [
+    "web/backend/app/services/data_source_factory/data_source_factory.py",
+    "web/backend/tests/test_data_source_factory_lifecycle_di.py"
+  ],
+  "future_g2_81_forbidden": [
+    "delete get_data_source_factory()",
+    "remove package exports from web/backend/app/services/data_source_factory/__init__.py",
+    "edit route modules under web/backend/app/api/**",
+    "edit frontend files",
+    "edit route paths, response models, response shapes, or OpenAPI exposure",
+    "change DATA_SOURCE_FACTORY_STATE_KEY",
+    "runtime or PM2 script changes",
+    "OpenSpec changes",
+    "GitHub issue label changes"
+  ],
+  "future_g2_81_required_gates": [
+    "read architecture/STANDARDS.md before source edits",
+    "GitNexus impact/context for get_data_source_factory, install_data_source_factory, get_data_source, get_market_data, get_dashboard_data, get_technical_analysis_data",
+    "TDD red test for internal helper fallback not depending on public getter",
+    "focused lifecycle test",
+    "health route conflicts test",
+    "ruff and black on allowed source/test files",
+    "OpenAPI smoke",
+    "route/API direct get_data_source_factory() refs remain 0",
+    "service-module helper direct calls to public getter are removed while public getter definition remains",
+    "staged GitNexus detect_changes"
+  ],
+  "next_gate": "Human review / PR merge decision for G2.80 authorization. If accepted, create G2.81 implementation branch for Phase 1 service-internal decoupling only."
+}
