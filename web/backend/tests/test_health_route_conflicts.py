@@ -6,6 +6,7 @@ import inspect
 from fastapi.routing import APIRoute
 
 from app.api.data import financial as financial_module
+from app.api.data import kline as kline_module
 from app.api.data import lhb as lhb_module
 from app.api.data import margin as margin_module
 from app.api.data import market as market_module
@@ -88,6 +89,17 @@ def test_market_data_request_routes_use_data_source_factory_dependency() -> None
             getattr(factory_param.default, "dependency", None)
             is market_data_request_module.get_data_source_factory_dependency
         )
+
+
+def test_kline_routes_use_data_source_factory_dependency() -> None:
+    for route_handler in [
+        kline_module.get_daily_kline,
+        kline_module.get_kline,
+        kline_module.get_intraday_data,
+    ]:
+        factory_param = inspect.signature(route_handler).parameters["factory"]
+
+        assert getattr(factory_param.default, "dependency", None) is kline_module.get_data_source_factory_dependency
 
 
 def test_root_and_socketio_status_have_documented_examples_and_errors() -> None:

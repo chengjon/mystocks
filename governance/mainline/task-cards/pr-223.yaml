@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-223"
+  title: "Migrate kline routes to DataSourceFactory dependency injection"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-kline-route-migration"
+  objective: "move kline route DataSourceFactory access from compatibility getter calls to FastAPI dependency injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-kline-route-migration"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-kline-route-migration"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Implementation changes dependency acquisition only and preserves route paths, OpenAPI exposure, response shape, and runtime semantics"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/data/kline.py"
+    - "web/backend/tests/test_health_route_conflicts.py"
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-kline-route-migration-implementation-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-kline-route-migration-implementation-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-223.yaml"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+    - "web/backend/app/api/data/futures.py"
+    - "web/backend/app/api/data/stocks.py"
+
+non_goals:
+  - "No route path, response model, response shape, OpenAPI exposure, docs/API, generated client, frontend, PM2, runtime process, OpenSpec, or issue-label change"
+  - "No non-kline.py DataSourceFactory route consumer migration"
+  - "No deletion of get_data_source_factory() or _global_factory compatibility surfaces"
+  - "No broad formatting cleanup outside web/backend/app/api/data/kline.py and the focused test file"
+
+acceptance:
+  checks:
+    - id: "pre-edit-gitnexus-impact"
+      command: "MCP gitnexus.impact(target=web/backend/app/api/data/kline.py,direction=upstream)"
+      required: true
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_kline_routes_use_data_source_factory_dependency -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "provider-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched-files"
+      command: "ruff check web/backend/app/api/data/kline.py web/backend/tests/test_health_route_conflicts.py"
+      required: true
+    - id: "black-touched-files"
+      command: "black --check web/backend/app/api/data/kline.py web/backend/tests/test_health_route_conflicts.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-kline-route-migration-implementation-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-kline-route-migration-implementation-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-223.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-223.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "MCP gitnexus.detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If response shape or route paths change, the PR exceeds the approved G2.73 boundary"
+    - "If another route consumer is edited, the PR bypasses G2.72 candidate sequencing"
+    - "If formatting cleanup escapes kline.py and the focused test file, the scoped style authorization is exceeded"
+  rollback_plan: "revert this path-limited PR; compatibility getter surfaces remain available and no route contract changes are introduced"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "migrate kline route DataSourceFactory access to dependency injection"
+    modified_scope: "kline route file, focused route-conflict test, implementation report, generated artifact, steward tree, and task card"
+    dependency_changes: "uses existing get_data_source_factory_dependency provider"
+    legacy_logic_impact: "compatibility getter and _global_factory remain unchanged for remaining consumers"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if dependency wiring or route guard verification fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T08:25:37+08:00"
+    approval_note: "human maintainer accepted G2.72 candidate selection by merging PR #222; this packet implements only the approved kline.py route migration"
+    secondary_approved: false

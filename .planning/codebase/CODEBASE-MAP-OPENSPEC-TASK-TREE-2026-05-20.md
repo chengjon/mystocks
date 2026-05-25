@@ -1121,7 +1121,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   │          `market_data_request.py` LOW/1
 │   │   └── Boundary: closeout-only; no source edit or next consumer selection
 │   ├── G2.72 DataSourceFactory route candidate authorization
-│   │   ├── State: ready for review; PR `#222` candidate packet
+│   │   ├── State: accepted; PR `#222` merged at
+│   │   │          `68ff82a9257fb7bee7bbb7aefe4c7a82c4cb76af`
 │   │   ├── Evidence: `backend-data-source-factory-kline-route-migration-authorization-2026-05-25.md`
 │   │   ├── Current HEAD: `f4e3db66effa63ce37c94ad0f2b687a606ff8396`
 │   │   ├── Result: compares the remaining three route/API consumers and selects
@@ -1134,10 +1135,26 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                gate, OpenSpec change, or issue-label change is authorized;
 │   │                a future G2.73 may normalize same-file E701/black style in
 │   │                `kline.py` only if the implementation diff requires it
-│   └── Next gate: Human review / PR merge decision for G2.72 authorization; if
-│                  accepted, create a separate G2.73 path-limited implementation
-│                  branch for `kline.py`. Remaining candidates (`futures.py`
-│                  and `stocks.py`) stay locked
+│   ├── G2.73 Kline DataSourceFactory route migration
+│   │   ├── State: ready for review; PR `#223` implementation packet
+│   │   ├── Evidence: `backend-data-source-factory-kline-route-migration-implementation-2026-05-25.md`
+│   │   ├── Current HEAD: `68ff82a9257fb7bee7bbb7aefe4c7a82c4cb76af`
+│   │   ├── Result: migrates `get_daily_kline`, `get_kline`, and
+│   │   │          `get_intraday_data` from direct `get_data_source_factory()`
+│   │   │          calls to `Depends(get_data_source_factory_dependency)`;
+│   │   │          total route/API direct refs move `6 -> 4`, `kline.py` direct
+│   │   │          refs move `2 -> 0`, health route conflict tests move to
+│   │   │          `118 passed`, provider tests remain `4 passed`, OpenAPI paths
+│   │   │          remain `500`, duplicate operation IDs remain `0`, and staged
+│   │   │          GitNexus reports low risk / 0 affected processes
+│   │   └── Boundary: no route path, response model, response shape, OpenAPI,
+│   │                frontend, runtime/PM2, OpenSpec, issue-label, compatibility
+│   │                getter deletion, `stocks.py`, `futures.py`, or broad
+│   │                formatting cleanup outside `kline.py` and the focused test
+│   └── Next gate: Human review / PR merge decision for G2.73 implementation; if
+│                  accepted, create closeout/current-head refresh before another
+│                  DataSourceFactory route consumer selection. Remaining
+│                  candidates (`futures.py` and `stocks.py`) stay locked
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1192,6 +1209,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-market-data-request-route-migration-implementation-2026-05-25.md` | G | G2.71 implementation packet prepared at `9060b455`: market data request route handlers now use `get_data_source_factory_dependency`, total route/API factory refs move `8 -> 6`, and `market_data_request.py` refs move `2 -> 0` | Human review / PR merge decision; if accepted, create closeout/current-head refresh before selecting another DataSourceFactory route consumer |
 | `backend-data-source-factory-market-data-request-route-migration-closeout-2026-05-25.md` | G | G2.71 closeout packet prepared at `7f10db17`: PR `#220` merge recorded, health tests remain `117 passed`, provider tests remain `4 passed`, total refs remain `6`, and `market_data_request.py` remains `0` | Human review / PR merge decision; if accepted, create the next candidate authorization packet |
 | `backend-data-source-factory-kline-route-migration-authorization-2026-05-25.md` | G | G2.72 candidate packet prepared at `f4e3db66`: selects `kline.py` as the next route/API factory migration candidate; it has GitNexus LOW/1, four routes, two direct refs, and scoped same-file E701/black debt, and can move total refs `6 -> 4` | Human review / PR merge decision; if accepted, create G2.73 path-limited implementation branch for `kline.py` only |
+| `backend-data-source-factory-kline-route-migration-implementation-2026-05-25.md` | G | G2.73 implementation packet prepared at `68ff82a9`: kline route handlers now use `get_data_source_factory_dependency`, total route/API factory refs move `6 -> 4`, and `kline.py` refs move `2 -> 0` | Human review / PR merge decision; if accepted, create closeout/current-head refresh before selecting another DataSourceFactory route consumer |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
