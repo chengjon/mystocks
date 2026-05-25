@@ -1,0 +1,82 @@
+{
+  "artifact": "advanced-analysis-compat-getter-phase1-authorization",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T16:39:45+08:00",
+  "branch": "g2-87-advanced-analysis-compat-getter-phase1-authorization",
+  "current_head": "a20c92eef786ee816d0a8c171641c292ba2455f8",
+  "input_state": {
+    "pr_239": {
+      "state": "MERGED",
+      "merge_commit": "a20c92eef786ee816d0a8c171641c292ba2455f8"
+    },
+    "issue_79": {
+      "state": "OPEN",
+      "labels": ["needs-triage"]
+    },
+    "issue_92": {
+      "state": "OPEN",
+      "labels": ["enhancement", "ready-for-human", "ready-for-downstream"]
+    }
+  },
+  "authorized_future_scope": {
+    "future_branch": "G2.88",
+    "source_files": [
+      "web/backend/app/services/advanced_analysis_service.py",
+      "web/backend/tests/test_advanced_analysis_service_lifecycle_di.py"
+    ],
+    "public_getter_deletion_authorized": false,
+    "route_api_edits_authorized": false,
+    "openspec_edits_authorized": false,
+    "issue_label_changes_authorized": false
+  },
+  "current_head_scan": {
+    "get_advanced_analysis_service": {
+      "total": 4,
+      "production": 2,
+      "route_api": 0,
+      "tests": 2
+    },
+    "get_advanced_analysis_service_dependency": {
+      "total": 19,
+      "production": 16,
+      "route_api": 15,
+      "tests": 3
+    },
+    "install_advanced_analysis_service": {
+      "total": 2,
+      "production": 1,
+      "route_api": 0,
+      "tests": 1
+    },
+    "ADVANCED_ANALYSIS_SERVICE_STATE_KEY": {
+      "total": 8,
+      "production": 5,
+      "route_api": 0,
+      "tests": 3
+    }
+  },
+  "gitnexus": {
+    "target": "get_advanced_analysis_service",
+    "risk": "LOW",
+    "impacted_count": 0,
+    "processes_affected": 0
+  },
+  "verification": {
+    "advanced_analysis_lifecycle_tests": "4 passed in 3.61s",
+    "health_route_conflicts": "120 passed in 74.50s",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "root_env_loaded": true
+    },
+    "gitnexus_staged_detect_changes": {
+      "changed_files": 4,
+      "changed_symbols": 0,
+      "affected_processes": 0,
+      "risk": "LOW"
+    }
+  },
+  "next_gate": "human review / PR merge decision for G2.87; if accepted create G2.88 implementation branch before source edits"
+}

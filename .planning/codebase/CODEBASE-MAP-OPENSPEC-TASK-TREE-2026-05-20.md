@@ -1373,9 +1373,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                frontend, runtime/PM2, OpenSpec, dependency provider,
 │   │                private initializer, or issue-label change is made here
 │   ├── G2.86 Service lifecycle next-lane decision after DataSourceFactory
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#239` merged at
+│   │   │          `a20c92eef786ee816d0a8c171641c292ba2455f8`
 │   │   ├── Evidence: `backend-service-lifecycle-di-next-lane-after-data-source-factory-2026-05-25.md`
-│   │   ├── Current HEAD: `ed033a45552a22b6ce4027a04029ea0764d191cf`
+│   │   ├── Current HEAD: `a20c92eef786ee816d0a8c171641c292ba2455f8`
 │   │   ├── Result: selects `AdvancedAnalysisService` compatibility getter
 │   │   │          Phase 1 service-internal decoupling as the next authorization
 │   │   │          candidate only; current-head exact production getter hits are
@@ -1387,10 +1388,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                frontend, runtime/PM2, OpenSpec, public getter deletion,
 │   │                dependency provider removal, private initializer addition,
 │   │                or issue-label change is made here
-│   └── Next gate: Human review / PR merge decision for G2.86 decision packet; if
-│                  accepted, create G2.87 source-capable authorization for
-│                  `AdvancedAnalysisService` Phase 1 service-internal decoupling
-│                  before any source edit
+│   ├── G2.87 AdvancedAnalysis compatibility getter Phase 1 authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-advanced-analysis-compat-getter-phase1-authorization-2026-05-25.md`
+│   │   ├── Current HEAD: `a20c92eef786ee816d0a8c171641c292ba2455f8`
+│   │   ├── Result: authorizes only a future G2.88 Phase 1 implementation that
+│   │   │          may add a private async initializer, retarget
+│   │   │          `get_advanced_analysis_service_dependency()` fallback away
+│   │   │          from public `get_advanced_analysis_service()`, and update
+│   │   │          focused lifecycle tests; current-head evidence remains route/API
+│   │   │          direct public getter hits=`0`, GitNexus impact LOW / `0`,
+│   │   │          lifecycle tests `4 passed`, health route conflicts `120 passed`,
+│   │   │          and OpenAPI paths=`500`, duplicate operation IDs=`0`
+│   │   └── Boundary: authorization-only; no source, test, route/API, OpenAPI,
+│   │                frontend, runtime/PM2, OpenSpec, public getter deletion,
+│   │                dependency provider removal, or issue-label change is made
+│   └── Next gate: Human review / PR merge decision for G2.87 authorization; if
+│                  accepted, create G2.88 implementation branch before any
+│                  AdvancedAnalysis source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1462,6 +1477,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.md` | G | G2.84 implementation packet prepared at `5de71a8`: removes public `get_data_source_factory()` and package exports, keeps `get_data_source_factory_dependency` plus `_get_or_create_data_source_factory`, moves production public getter hits=`0`, package export lines=`0`, patch points=`0`, lifecycle tests `5 passed`, stocks runtime fallback `1 passed`, market API integration `18 passed`, health route conflicts `120 passed`, OpenAPI paths=`500`, duplicate operation IDs=`0`, and leaves known `test_data_api_regression.py` historical-route 404 failures unresolved | Human review / PR merge decision; if accepted, create closeout/current-head refresh before further DataSourceFactory compatibility-surface cleanup |
 | `backend-data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.md` | G | G2.85 closeout accepted in PR `#238` at `ed033a4`: records PR `#237` merge, confirms production exact public getter hits=`0`, package export lines=`0`, route/API public getter hits=`0`, lifecycle tests `5 passed`, health route conflicts `120 passed`, touched-path ruff passed, and OpenAPI paths=`500` with duplicate operation IDs=`0` | DataSourceFactory public compatibility getter retirement lane closed; next service lifecycle lane must start from a separate authorization packet |
 | `backend-service-lifecycle-di-next-lane-after-data-source-factory-2026-05-25.md` | G | G2.86 next-lane decision prepared at `ed033a4`: selects `AdvancedAnalysisService` compatibility getter Phase 1 service-internal decoupling as the next authorization candidate only; exact production getter hits are definition plus provider fallback only, route/API direct hits=`0`, GitNexus impact LOW / `0`, lifecycle tests `4 passed`, health route conflicts `120 passed`, OpenAPI paths=`500`, duplicate operation IDs=`0`; broad `get_data_service` and `get_strategy_service` seams remain CRITICAL holds, and StockSearch compatibility cleanup remains blocked by prior retain decision plus stale-aware GitNexus route-process noise | Human review / PR merge decision; if accepted, create G2.87 source-capable authorization before any AdvancedAnalysis source edit |
+| `backend-advanced-analysis-compat-getter-phase1-authorization-2026-05-25.md` | G | G2.87 authorization packet prepared at `a20c92e`: authorizes only a future G2.88 Phase 1 service-internal decoupling for `AdvancedAnalysisService`; allowed future source scope is `advanced_analysis_service.py` plus focused lifecycle tests, public `get_advanced_analysis_service()` must remain, dependency provider and installer must remain, route/API direct getter hits remain `0`, GitNexus impact LOW / `0`, lifecycle tests `4 passed`, health route conflicts `120 passed`, and OpenAPI paths=`500`, duplicate operation IDs=`0` | Human review / PR merge decision; if accepted, create G2.88 implementation branch before any AdvancedAnalysis source edit |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
