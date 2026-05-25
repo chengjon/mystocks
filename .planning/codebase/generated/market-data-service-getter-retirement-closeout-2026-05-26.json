@@ -1,0 +1,52 @@
+{
+  "artifact": "market-data-service-getter-retirement-closeout-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T02:58:00+08:00",
+  "branch": "g2-113-market-data-service-getter-retirement-closeout",
+  "base_head": "b5ca0c5fcf65de77e7bf336091c4ae3f220019ef",
+  "current_head_checked_at_review": "2026-05-26T02:58:00+08:00",
+  "parent_implementation": {
+    "node": "G2.112",
+    "pr": 265,
+    "merge_commit": "b5ca0c5fcf65de77e7bf336091c4ae3f220019ef"
+  },
+  "governance_node": {
+    "id": "G2.113",
+    "lane": "service_lifecycle_di",
+    "type": "closeout_current_head_refresh",
+    "state": "ready_for_review"
+  },
+  "changed_runtime_files": [],
+  "changed_test_files": [],
+  "current_head_scan": {
+    "scanned_backend_app_and_test_python_files": 775,
+    "target_getter_definitions": 0,
+    "target_singleton_tokens": 0,
+    "package_getter_imports": 0,
+    "adapter_getter_calls": 0,
+    "root_level_services_getter_preserved": true,
+    "test_assertion_singleton_mentions": 1
+  },
+  "verification": {
+    "focused_market_data_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_service_getter_retirement.py web/backend/tests/test_market_data_service_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "7 passed"
+    },
+    "health_route_conflicts": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "120 passed"
+    }
+  },
+  "boundary": {
+    "source_changed": false,
+    "tests_changed": false,
+    "routes_changed": false,
+    "openapi_changed": false,
+    "frontend_changed": false,
+    "pm2_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false,
+    "candidate_selected": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.113; if accepted, run a fresh service lifecycle candidate refresh before selecting another service getter candidate."
+}

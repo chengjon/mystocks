@@ -1825,7 +1825,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                service migration, or issue-label change is made here
 │   ├── G2.112 MarketDataService getter-retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#265` merged at
+│   │   │          `b5ca0c5fcf65de77e7bf336091c4ae3f220019ef`
 │   │   ├── Evidence: `backend-market-data-service-getter-retirement-implementation-2026-05-26.md`
 │   │   ├── Current HEAD: `88a8ae4e50ca29c21580db2e0c3f33c0a303ad2d`
 │   │   ├── Change: retired package-level
@@ -1846,9 +1847,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                no route/API, OpenAPI, frontend, PM2, OpenSpec,
 │   │                root-level services getter, service consolidation, or
 │   │                issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.112; if accepted,
-│                  create G2.113 closeout/current-head refresh before selecting
-│                  another service getter candidate
+│   ├── G2.113 MarketDataService getter-retirement closeout/current-head refresh
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-market-data-service-getter-retirement-closeout-2026-05-26.md`
+│   │   ├── Current HEAD: `b5ca0c5fcf65de77e7bf336091c4ae3f220019ef`
+│   │   ├── Result: current scan covers backend app/test Python files=`775`;
+│   │   │          package-level getter definitions=`0`, target singleton tokens=`0`,
+│   │   │          package getter imports=`0`, adapter getter calls=`0`, and
+│   │   │          root-level `web/backend/app/services/__init__.py:get_market_data_service`
+│   │   │          remains preserved
+│   │   ├── Verification: focused market-data tests `7 passed`; health route
+│   │   │          conflicts `120 passed`
+│   │   └── Boundary: closeout-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                service consolidation, candidate selection, or issue-label
+│   │                change is made here
+│   └── Next gate: human review / PR merge decision for G2.113; if accepted,
+│                  run a fresh service lifecycle candidate refresh before
+│                  selecting another service getter candidate
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
