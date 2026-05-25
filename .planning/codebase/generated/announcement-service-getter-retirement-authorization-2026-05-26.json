@@ -1,0 +1,67 @@
+{
+  "artifact": "announcement-service-getter-retirement-authorization-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T03:45:00+08:00",
+  "branch": "g2-117-announcement-service-getter-retirement-authorization",
+  "base_head": "618820c89888887a7352999e32ec4285ccad836a",
+  "current_head_checked_at_review": "2026-05-26T03:45:00+08:00",
+  "parent_matrix": {
+    "node": "G2.116",
+    "pr": 269,
+    "merge_commit": "618820c89888887a7352999e32ec4285ccad836a"
+  },
+  "governance_node": {
+    "id": "G2.117",
+    "lane": "service_lifecycle_di",
+    "type": "authorization",
+    "state": "ready_for_review"
+  },
+  "authorized_future_scope": {
+    "may_remove": [
+      "web/backend/app/services/announcement_service.py:_announcement_service",
+      "web/backend/app/services/announcement_service.py:get_announcement_service"
+    ],
+    "must_preserve": [
+      "web/backend/app/services/announcement_service.py:AnnouncementService",
+      "web/backend/app/services/announcement_service.py:install_announcement_service",
+      "web/backend/app/services/announcement_service.py:get_announcement_service_dependency",
+      "announcement route contracts",
+      "OpenAPI exposure"
+    ],
+    "implementation_authorized_now": false,
+    "future_node": "G2.118"
+  },
+  "evidence": {
+    "exact_direct_getter_refs": {
+      "total": 3,
+      "files": 2,
+      "api_refs": 0,
+      "adapter_refs": 0,
+      "test_refs": 1
+    },
+    "dependency_refs": {
+      "name": "get_announcement_service_dependency",
+      "total": 14,
+      "files": 3,
+      "api_route_dependency_refs": 11
+    },
+    "gitnexus": {
+      "context_route_callers": 11,
+      "impact_risk": "MEDIUM",
+      "impacted_count": 11,
+      "affected_processes": 0,
+      "interpretation": "graph-level dependency-injection signal, not direct text consumers"
+    }
+  },
+  "boundary": {
+    "source_changed": false,
+    "tests_changed": false,
+    "routes_changed": false,
+    "openapi_changed": false,
+    "frontend_changed": false,
+    "pm2_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false,
+    "getter_deleted": false
+  }
+}

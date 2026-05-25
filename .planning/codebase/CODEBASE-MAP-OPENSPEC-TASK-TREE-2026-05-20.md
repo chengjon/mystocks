@@ -1901,7 +1901,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation authorization, or issue-label change is made here
 │   ├── G2.116 Medium route-backed exact consumer matrix
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#269` merged at
+│   │   │          `618820c89888887a7352999e32ec4285ccad836a`
 │   │   ├── Evidence: `backend-medium-route-backed-service-consumer-matrix-2026-05-26.md`
 │   │   ├── Current HEAD: `dabe473f5d2616cfeda6c41ceeecee1bc5c57fb6`
 │   │   ├── Result: `get_announcement_service` has no direct API/adapter
@@ -1915,9 +1916,26 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: evidence-matrix-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation authorization, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.116; if accepted,
-│                  create G2.117 AnnouncementService getter-retirement
-│                  authorization before any announcement service source edit
+│   ├── G2.117 AnnouncementService getter-retirement authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-announcement-service-getter-retirement-authorization-2026-05-26.md`
+│   │   ├── Current HEAD: `618820c89888887a7352999e32ec4285ccad836a`
+│   │   ├── Decision: authorize only a future G2.118 implementation branch to
+│   │   │          retire `announcement_service.py` `_announcement_service` and
+│   │   │          `get_announcement_service`, while preserving
+│   │   │          `AnnouncementService`, `install_announcement_service`,
+│   │   │          `get_announcement_service_dependency`, announcement routes,
+│   │   │          and OpenAPI exposure
+│   │   ├── Evidence note: exact text scan has no API/adapter direct getter
+│   │   │          consumers, but GitNexus graph still reports 11 route callers;
+│   │   │          future implementation must verify route dependency behavior with
+│   │   │          focused tests and exact post-change scans
+│   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                service migration, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.117; if accepted,
+│                  create G2.118 AnnouncementService getter-retirement
+│                  implementation before any announcement service source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
