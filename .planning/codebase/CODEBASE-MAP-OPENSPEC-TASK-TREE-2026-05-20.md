@@ -1164,7 +1164,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   │          remain `0`, and GitNexus reports `kline.py` LOW/1
 │   │   └── Boundary: closeout-only; no source edit or next consumer selection
 │   ├── G2.74 DataSourceFactory route candidate authorization
-│   │   ├── State: ready for review; PR `#225` candidate packet
+│   │   ├── State: accepted; PR `#225` merged at
+│   │   │          `2a04b019965801084822e132c99690f97f8299b5`
 │   │   ├── Evidence: `backend-data-source-factory-stocks-route-migration-authorization-2026-05-25.md`
 │   │   ├── Current HEAD: `f7d370cd91f3c28a6f11fdbcb42b8241cfd43be6`
 │   │   ├── Result: compares the remaining two route/API consumers and selects
@@ -1177,9 +1178,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                gate, OpenSpec change, or issue-label change is authorized;
 │   │                a future G2.75 may normalize same-file E701/black style in
 │   │                `stocks.py` only if the implementation diff requires it
-│   └── Next gate: Human review / PR merge decision for G2.74 authorization; if
-│                  accepted, create a separate G2.75 path-limited implementation
-│                  branch for `stocks.py`. Remaining candidate `futures.py`
+│   ├── G2.75 Stocks DataSourceFactory route migration
+│   │   ├── State: ready for review; PR `#226` implementation packet
+│   │   ├── Evidence: `backend-data-source-factory-stocks-route-migration-implementation-2026-05-25.md`
+│   │   ├── Current HEAD: `2a04b019965801084822e132c99690f97f8299b5`
+│   │   ├── Result: migrates `get_stocks_basic` and `search_stocks` from direct
+│   │   │          `get_data_source_factory()` calls to
+│   │   │          `Depends(get_data_source_factory_dependency)`; total route/API
+│   │   │          direct refs move `4 -> 2`, `stocks.py` direct refs move
+│   │   │          `2 -> 0`, health route conflict tests move to `119 passed`,
+│   │   │          provider tests remain `4 passed`, OpenAPI paths remain `500`,
+│   │   │          duplicate operation IDs remain `0`, and staged GitNexus
+│   │   │          reports low risk / 0 affected processes
+│   │   └── Boundary: no route path, response model, response shape, OpenAPI,
+│   │                frontend, runtime/PM2, OpenSpec, issue-label, compatibility
+│   │                getter deletion, `futures.py`, or broad formatting cleanup
+│   │                outside `stocks.py` and the focused test
+│   └── Next gate: Human review / PR merge decision for G2.75 implementation; if
+│                  accepted, create closeout/current-head refresh before the
+│                  `futures.py` risk packet. Remaining candidate `futures.py`
 │                  stays locked
 │
 ├── H. Decision-Only Track: CSRF composition root
@@ -1238,6 +1255,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-kline-route-migration-implementation-2026-05-25.md` | G | G2.73 implementation packet prepared at `68ff82a9`: kline route handlers now use `get_data_source_factory_dependency`, total route/API factory refs move `6 -> 4`, and `kline.py` refs move `2 -> 0` | Human review / PR merge decision; if accepted, create closeout/current-head refresh before selecting another DataSourceFactory route consumer |
 | `backend-data-source-factory-kline-route-migration-closeout-2026-05-25.md` | G | G2.73 closeout packet prepared at `6ece7f13`: PR `#223` merge recorded, health tests remain `118 passed`, provider tests remain `4 passed`, total refs remain `4`, and `kline.py` remains `0` | Human review / PR merge decision; if accepted, create the next candidate authorization packet |
 | `backend-data-source-factory-stocks-route-migration-authorization-2026-05-25.md` | G | G2.74 candidate packet prepared at `f7d370cd`: selects `stocks.py` as the next route/API factory migration candidate; it is the only remaining LOW-risk candidate and can move total refs `4 -> 2` | Human review / PR merge decision; if accepted, create G2.75 path-limited implementation branch for `stocks.py` only |
+| `backend-data-source-factory-stocks-route-migration-implementation-2026-05-25.md` | G | G2.75 implementation packet prepared at `2a04b019`: stocks route handlers now use `get_data_source_factory_dependency`, total route/API factory refs move `4 -> 2`, and `stocks.py` refs move `2 -> 0` | Human review / PR merge decision; if accepted, create closeout/current-head refresh before preparing the futures.py risk packet |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
