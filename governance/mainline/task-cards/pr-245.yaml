@@ -1,0 +1,112 @@
+version: "v0.2"
+
+task:
+  id: "pr-245"
+  title: "Close out AdvancedAnalysis getter final retirement"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-advanced-analysis-compat-getter-final-retirement-closeout"
+  objective: "record G2.91 merge evidence and close the AdvancedAnalysis public getter retirement lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-advanced-analysis-compat-getter-final-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-advanced-analysis-compat-getter-final-retirement-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/advanced-analysis-compat-getter-final-retirement-closeout-2026-05-25.json"
+    - "docs/reports/quality/backend-advanced-analysis-compat-getter-final-retirement-closeout-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-245.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not change routes, response models, response shapes, or OpenAPI exposure"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not select another service getter implementation lane from stale candidate data"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 244 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "focused-lifecycle-pytest"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-advanced-analysis-compat-getter-final-retirement-closeout-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/advanced-analysis-compat-getter-final-retirement-closeout-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-245.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-245.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this packet is treated as source authorization, another service getter lane could start from stale data"
+    - "If parent PR evidence is stale, the steward tree could falsely close the AdvancedAnalysis lane"
+  rollback_plan: "revert this governance-only closeout PR and keep G2.91 as the latest accepted implementation evidence"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out AdvancedAnalysis public compatibility getter final retirement"
+    modified_scope: "steward tree, closeout report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source retirement already landed in PR #244"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this closeout PR if parent PR evidence, reference matrix, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T18:15:12+08:00"
+    approval_note: "G2.91 implementation PR #244 was merged; this packet records closeout and requires a fresh candidate refresh before the next getter lane"
+    secondary_approved: false

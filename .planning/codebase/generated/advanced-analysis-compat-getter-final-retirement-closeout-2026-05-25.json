@@ -1,0 +1,46 @@
+{
+  "workline": "G2.92 AdvancedAnalysis public compatibility getter final-retirement closeout",
+  "status": "ready_for_review",
+  "prepared_at": "2026-05-25T18:15:12+08:00",
+  "worktree": ".worktrees/g2-92-advanced-analysis-compat-getter-final-retirement-closeout",
+  "branch": "g2-92-advanced-analysis-compat-getter-final-retirement-closeout",
+  "current_head": "1ebd0aeaf3f21fbaefd570955ca89b571207c18a",
+  "parent_implementation_pr": {
+    "number": 244,
+    "state": "MERGED",
+    "merge_commit": "1ebd0aeaf3f21fbaefd570955ca89b571207c18a",
+    "merged_at": "2026-05-25T10:10:32Z"
+  },
+  "reference_matrix": {
+    "exact_public_symbol_mentions": 1,
+    "remaining_public_symbol_scope": "focused absence assertion string only",
+    "route_public_mentions": 0,
+    "package_export_mentions": 0,
+    "private_initializer_hits": 2,
+    "dependency_provider_refs": 19
+  },
+  "verification": {
+    "focused_lifecycle_tests": "5 passed in 4.79s",
+    "health_route_conflicts": "120 passed in 77.16s",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "warnings": 0
+    }
+  },
+  "decision": {
+    "advanced_analysis_public_getter_lane": "closed_pending_review",
+    "next_gate": "fresh service lifecycle candidate refresh",
+    "source_changes_in_this_packet": false
+  },
+  "boundaries": [
+    "No source or test edits",
+    "No route/API edits",
+    "No OpenAPI exposure change",
+    "No frontend or generated client edits",
+    "No OpenSpec changes",
+    "No GitHub issue label changes"
+  ]
+}
