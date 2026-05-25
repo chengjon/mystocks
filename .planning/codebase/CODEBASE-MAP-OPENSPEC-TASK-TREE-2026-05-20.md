@@ -1254,9 +1254,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                compatibility getter deletion, other route consumer, or
 │   │                formatting outside `futures.py`
 │   ├── G2.78 Closeout / current-head refresh
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#231` merged at
+│   │   │          `b3aefed2648a3ec19dede187e4ca04a096dd0a7c`
 │   │   ├── Evidence: `backend-data-source-factory-futures-route-migration-closeout-2026-05-25.md`
-│   │   ├── Current HEAD: `e7a2a436b157dc32d5675e89e4f8c16505b07629`
+│   │   ├── Current HEAD: `b3aefed2648a3ec19dede187e4ca04a096dd0a7c`
 │   │   ├── Result: records PR `#230` merge, confirms health route conflict tests
 │   │   │          pass `120`, provider lifecycle tests pass `4`, ruff and black
 │   │   │          pass for `futures.py` plus the health test, OpenAPI remains
@@ -1266,9 +1267,23 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                shape, OpenAPI exposure, frontend, runtime/PM2, OpenSpec,
 │   │                issue-label, compatibility getter deletion, or retained-shim
 │   │                retirement change is authorized
-│   └── Next gate: Human review / PR merge decision for G2.78 closeout; if
-│                  accepted, prepare a separate compatibility getter retirement
-│                  / retained-shim decision packet before any
+│   ├── G2.79 DataSourceFactory compatibility getter retained-shim decision
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-data-source-factory-compat-getter-retained-shim-decision-2026-05-25.md`
+│   │   ├── Current HEAD: `b3aefed2648a3ec19dede187e4ca04a096dd0a7c`
+│   │   ├── Result: decides to retain `get_data_source_factory()` for now:
+│   │   │          route/API direct calls are `0`, but the compatibility getter
+│   │   │          remains package-exported, is covered by lifecycle tests, and
+│   │   │          is still used by service-internal helper fallback paths;
+│   │   │          current GitNexus impact reports CRITICAL and must be treated
+│   │   │          as a high-risk/stale-index warning, not deletion approval
+│   │   └── Boundary: no source, test, route path, response model, response
+│   │                shape, OpenAPI exposure, frontend, runtime/PM2, OpenSpec,
+│   │                issue-label, compatibility getter deletion, package export
+│   │                removal, or retained-shim retirement change is authorized
+│   └── Next gate: Human review / PR merge decision for G2.79 decision; if
+│                  accepted, create a separate source-capable retirement
+│                  authorization packet before any
 │                  `get_data_source_factory()` compatibility API removal
 │
 ├── H. Decision-Only Track: CSRF composition root
@@ -1333,6 +1348,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-futures-route-migration-implementation-authorization-2026-05-25.md` | G | G2.77 authorization packet prepared at `5fab3e8f`: future G2.78 may edit only `futures.py` and `test_health_route_conflicts.py`, must run TDD red/green, must keep route/OpenAPI/response/frontend/runtime/OpenSpec/issue-label/compatibility-getter scope locked, and is expected to move final route/API factory refs `2 -> 0` | Human review / PR merge decision; if accepted, create G2.78 path-limited implementation branch |
 | `backend-data-source-factory-futures-route-migration-implementation-2026-05-25.md` | G | G2.78 implementation packet prepared at `5169da56`: futures route handlers now use `get_data_source_factory_dependency`, direct route/API factory refs move `2 -> 0`, health route conflicts pass `120`, provider tests pass `4`, OpenAPI paths remain `500`, and compatibility getter remains unchanged | Human review / PR merge decision; if accepted, create closeout/current-head refresh before compatibility getter retirement or retained-shim decision |
 | `backend-data-source-factory-futures-route-migration-closeout-2026-05-25.md` | G | G2.78 closeout packet prepared at `e7a2a436`: PR `#230` merge recorded, health tests remain `120 passed`, provider tests remain `4 passed`, total route/API direct factory refs remain `0`, OpenAPI paths remain `500`, and compatibility getter remains unchanged | Human review / PR merge decision; if accepted, prepare a separate compatibility getter retirement / retained-shim decision packet |
+| `backend-data-source-factory-compat-getter-retained-shim-decision-2026-05-25.md` | G | G2.79 decision packet prepared at `b3aefed2`: route/API direct `get_data_source_factory()` calls are `0`, but the compatibility getter remains package-exported, lifecycle-tested, and used by service-internal helper fallback paths; decision is retain shim for now | Human review / PR merge decision; if accepted, create a separate source-capable retirement authorization packet before any compatibility API removal |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
