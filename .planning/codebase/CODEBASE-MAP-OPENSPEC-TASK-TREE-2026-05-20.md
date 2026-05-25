@@ -1136,7 +1136,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                a future G2.73 may normalize same-file E701/black style in
 │   │                `kline.py` only if the implementation diff requires it
 │   ├── G2.73 Kline DataSourceFactory route migration
-│   │   ├── State: ready for review; PR `#223` implementation packet
+│   │   ├── State: accepted; PR `#223` merged at
+│   │   │          `6ece7f1367d3e4c1fcd881bc5596ec37942c79e4`
 │   │   ├── Evidence: `backend-data-source-factory-kline-route-migration-implementation-2026-05-25.md`
 │   │   ├── Current HEAD: `68ff82a9257fb7bee7bbb7aefe4c7a82c4cb76af`
 │   │   ├── Result: migrates `get_daily_kline`, `get_kline`, and
@@ -1151,10 +1152,21 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                frontend, runtime/PM2, OpenSpec, issue-label, compatibility
 │   │                getter deletion, `stocks.py`, `futures.py`, or broad
 │   │                formatting cleanup outside `kline.py` and the focused test
-│   └── Next gate: Human review / PR merge decision for G2.73 implementation; if
-│                  accepted, create closeout/current-head refresh before another
-│                  DataSourceFactory route consumer selection. Remaining
-│                  candidates (`futures.py` and `stocks.py`) stay locked
+│   ├── G2.73 Closeout / current-head refresh
+│   │   ├── State: ready for review; PR `#224` closeout packet
+│   │   ├── Evidence: `backend-data-source-factory-kline-route-migration-closeout-2026-05-25.md`
+│   │   ├── Current HEAD: `6ece7f1367d3e4c1fcd881bc5596ec37942c79e4`
+│   │   ├── Result: confirms PR `#223` merged, health route conflict tests
+│   │   │          remain `118 passed`, provider tests remain `4 passed`,
+│   │   │          route direct refs remain `4`, `kline.py` direct refs remain
+│   │   │          `0`, OpenAPI paths remain `500`, duplicate operation IDs
+│   │   │          remain `0`, and GitNexus reports `kline.py` LOW/1
+│   │   └── Boundary: closeout-only; no source edit or next consumer selection
+│   └── Next gate: Human review / PR merge decision for G2.73 closeout; if
+│                  accepted, create the next candidate authorization packet
+│                  before any further DataSourceFactory route migration.
+│                  Remaining candidates (`futures.py` and `stocks.py`) stay
+│                  locked
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1210,6 +1222,7 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-market-data-request-route-migration-closeout-2026-05-25.md` | G | G2.71 closeout packet prepared at `7f10db17`: PR `#220` merge recorded, health tests remain `117 passed`, provider tests remain `4 passed`, total refs remain `6`, and `market_data_request.py` remains `0` | Human review / PR merge decision; if accepted, create the next candidate authorization packet |
 | `backend-data-source-factory-kline-route-migration-authorization-2026-05-25.md` | G | G2.72 candidate packet prepared at `f4e3db66`: selects `kline.py` as the next route/API factory migration candidate; it has GitNexus LOW/1, four routes, two direct refs, and scoped same-file E701/black debt, and can move total refs `6 -> 4` | Human review / PR merge decision; if accepted, create G2.73 path-limited implementation branch for `kline.py` only |
 | `backend-data-source-factory-kline-route-migration-implementation-2026-05-25.md` | G | G2.73 implementation packet prepared at `68ff82a9`: kline route handlers now use `get_data_source_factory_dependency`, total route/API factory refs move `6 -> 4`, and `kline.py` refs move `2 -> 0` | Human review / PR merge decision; if accepted, create closeout/current-head refresh before selecting another DataSourceFactory route consumer |
+| `backend-data-source-factory-kline-route-migration-closeout-2026-05-25.md` | G | G2.73 closeout packet prepared at `6ece7f13`: PR `#223` merge recorded, health tests remain `118 passed`, provider tests remain `4 passed`, total refs remain `4`, and `kline.py` remains `0` | Human review / PR merge decision; if accepted, create the next candidate authorization packet |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
