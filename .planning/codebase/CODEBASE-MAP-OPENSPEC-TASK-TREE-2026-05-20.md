@@ -1572,9 +1572,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter
 │   │                deletion, or issue-label change is made here
 │   ├── G2.98 EnhancedDataService getter-retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#251` merged at
+│   │   │          `8fb6db0e13018d83eef7e0deca02106104c06160`
 │   │   ├── Evidence: `backend-enhanced-data-service-getter-retirement-authorization-2026-05-25.md`
-│   │   ├── Current HEAD: `dfb1dce27c0501b7eb855e478e68b82db4959d9d`
+│   │   ├── Current HEAD: `8fb6db0e13018d83eef7e0deca02106104c06160`
 │   │   ├── Result: authorizes only a future G2.99 implementation branch to
 │   │   │          retire `get_enhanced_data_service` from
 │   │   │          `web/backend/app/services/data_service_enhanced.py` after
@@ -1588,9 +1589,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                `EnhancedDataService` deletion, or issue-label change is
 │   │                made here
-│   └── Next gate: human review / PR merge decision for G2.98; if accepted,
-│                  create G2.99 EnhancedDataService getter-retirement
-│                  implementation with TDD red/green before source edit
+│   ├── G2.99 EnhancedDataService getter-retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-enhanced-data-service-getter-retirement-implementation-2026-05-25.md`
+│   │   ├── Base HEAD: `8fb6db0e13018d83eef7e0deca02106104c06160`
+│   │   ├── Result: removes only `get_enhanced_data_service` and its private
+│   │   │          `_enhanced_data_service` singleton state, updates the
+│   │   │          module-local `__main__` smoke call to construct
+│   │   │          `EnhancedDataService()` directly, and adds focused regression
+│   │   │          coverage; TDD red was `2 failed, 1 passed`, green is
+│   │   │          `3 passed`, health route conflicts are `120 passed`, and
+│   │   │          OpenAPI smoke remains routes=`548`, paths=`500`,
+│   │   │          operation IDs=`536`, duplicate operation IDs=`0`
+│   │   └── Boundary: source-capable but getter-retirement-only; no route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                `EnhancedDataService` deletion, or issue-label change is
+│   │                made here
+│   └── Next gate: human review / PR merge decision for G2.99; if accepted,
+│                  create G2.100 closeout before selecting another service
+│                  lifecycle lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1674,7 +1691,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-wencai-compat-getter-retirement-implementation-2026-05-25.md` | G | G2.95 implementation accepted in PR `#248` at `689d619`: removes only `get_wencai_service`, adds focused absence/import regression test, records TDD red `1 failed, 1 passed`, green `2 passed`, health route conflicts `120 passed`, ruff/black passed, OpenAPI routes=`548`, paths=`500`, duplicate operation IDs=`0`, and post-change app/API/package getter refs=`0` | Superseded by G2.96 closeout |
 | `backend-wencai-compat-getter-retirement-closeout-2026-05-25.md` | G | G2.96 closeout accepted in PR `#249` at `c0aa973`: records PR `#248` merge, confirms `get_wencai_service` app/API/package refs remain `0`, test refs are the focused absence assertion only, `WencaiService` remains active with app refs=`16` and route/API refs=`9`, focused test `2 passed`, and health route conflicts `120 passed` | Superseded by G2.97 service lifecycle candidate refresh |
 | `backend-service-lifecycle-candidate-refresh-after-wencai-2026-05-25.md` | G | G2.97 candidate refresh accepted in PR `#250` at `dfb1dce`: records PR `#249` merge, scans `152` service files / `575` app files / `219` API files / `1007` test files, finds `22` getter definitions and `5` candidate-like definitions, confirms `get_wencai_service` is no longer present as a service getter definition, selects `get_enhanced_data_service` as a future G2.98 authorization candidate only, and records GitNexus impact LOW / `3` with no affected processes | Superseded by G2.98 EnhancedDataService getter-retirement authorization |
-| `backend-enhanced-data-service-getter-retirement-authorization-2026-05-25.md` | G | G2.98 authorization prepared at `dfb1dce`: authorizes only future G2.99 removal of `get_enhanced_data_service` after TDD red/green; current scan shows getter refs app=`1` file / route/API=`0` / focused tests=`0` / package exports=`0`, one module-local `__main__` smoke call, GitNexus impact LOW / `3`, and `EnhancedDataService` class usage remains active in system health route | Human review / PR merge decision; if accepted, create G2.99 source-capable implementation with TDD red/green |
+| `backend-enhanced-data-service-getter-retirement-authorization-2026-05-25.md` | G | G2.98 authorization accepted in PR `#251` at `8fb6db0`: authorizes only future G2.99 removal of `get_enhanced_data_service` after TDD red/green; current scan shows getter refs app=`1` file / route/API=`0` / focused tests=`0` / package exports=`0`, one module-local `__main__` smoke call, GitNexus impact LOW / `3`, and `EnhancedDataService` class usage remains active in system health route | Superseded by G2.99 EnhancedDataService getter-retirement implementation |
+| `backend-enhanced-data-service-getter-retirement-implementation-2026-05-25.md` | G | G2.99 implementation prepared from base `8fb6db0`: removes only `get_enhanced_data_service` and `_enhanced_data_service`, preserves `EnhancedDataService`, updates the module-local `__main__` smoke call to direct construction, adds focused regression coverage, records TDD red `2 failed, 1 passed`, green `3 passed`, health route conflicts `120 passed`, ruff/black passed, and OpenAPI routes=`548`, paths=`500`, duplicate operation IDs=`0` | Human review / PR merge decision; if accepted, create G2.100 closeout before next candidate refresh |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
