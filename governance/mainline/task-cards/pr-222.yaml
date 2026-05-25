@@ -1,0 +1,118 @@
+version: "v0.2"
+
+task:
+  id: "pr-222"
+  title: "Authorize kline DataSourceFactory route candidate"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-kline-route-authorization"
+  objective: "select the next DataSourceFactory route migration candidate after market data request closeout"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-kline-route-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-kline-route-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization packet records evidence and future scope only; no runtime behavior changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-kline-route-migration-authorization-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-kline-route-migration-authorization-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-222.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source or test edit"
+  - "No route path, response model, response shape, OpenAPI exposure, frontend, PM2, runtime process, OpenSpec, or issue-label change"
+  - "No DataSourceFactory consumer migration or compatibility getter cleanup"
+  - "No implementation work for kline.py until a separate G2.73 branch is created after review"
+  - "No formatting or lint cleanup outside kline.py in the future implementation branch"
+
+acceptance:
+  checks:
+    - id: "baseline-health-route-conflicts-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "baseline-provider-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "baseline-openapi-smoke"
+      command: "PYTHONPATH=web/backend python -c 'from app.main import app; app.openapi()'"
+      required: true
+    - id: "candidate-style-and-risk-scan"
+      command: "ruff/black/GitNexus candidate scan across remaining direct DataSourceFactory route consumers"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-kline-route-migration-authorization-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-kline-route-migration-authorization-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-222.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-222.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "MCP gitnexus.detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If source files are edited, this authorization packet exceeds its approved evidence-only boundary"
+    - "If future G2.73 normalizes style outside kline.py, the scoped authorization is exceeded"
+  rollback_plan: "revert this docs/governance-only authorization PR; no runtime code is affected"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize the next DataSourceFactory route migration candidate"
+    modified_scope: "authorization report, generated artifact, steward tree, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; compatibility getter and all source files are unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this authorization PR if candidate evidence is superseded or incorrect"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T08:11:46+08:00"
+    approval_note: "human maintainer accepted G2.71 closeout by merging PR #221; this packet selects the next candidate only"
+    secondary_approved: false
