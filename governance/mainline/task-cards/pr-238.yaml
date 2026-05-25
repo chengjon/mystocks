@@ -1,0 +1,108 @@
+version: "v0.2"
+task:
+  id: "pr-238"
+  title: "Close out DataSourceFactory compatibility getter final retirement"
+  owner: "main"
+  created_at: "2026-05-25"
+mainline:
+  id: "L1-data-source-factory-compat-getter-final-retirement-closeout"
+  objective: "record PR #237 as accepted and close the DataSourceFactory public compatibility getter retirement lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-compat-getter-final-retirement"
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+openspec:
+  change_id: "not-required-data-source-factory-compat-getter-final-retirement-closeout"
+  approval_status: "not_required"
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only closeout records PR #237 acceptance; no runtime entrypoint, route, service symbol, or public API surface is changed"
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-238.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not change route paths, response models, response shapes, or OpenAPI exposure"
+  - "Do not remove get_data_source_factory_dependency"
+  - "Do not remove _get_or_create_data_source_factory"
+  - "Do not fix unrelated historical-route data API regression debt"
+  - "Do not change frontend, runtime, PM2, OpenSpec, or GitHub issue state"
+acceptance:
+  checks:
+    - id: "pr-237-merged"
+      command: "gh pr view 237 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "current-head-provider-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "current-head-health-route-conflicts-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "current-head-openapi-smoke"
+      command: "PYTHONPATH=web/backend python -c \"from dotenv import load_dotenv; load_dotenv('/opt/claude/mystocks_spec/.env'); from app.main import app; app.openapi()\""
+      required: true
+    - id: "reference-scan"
+      command: "scan production public getter hits, route/API public getter hits, package export lines, dependency provider refs, and private initializer refs"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-238.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-238.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+risk_and_rollback:
+  risks:
+    - "If this closeout is treated as new implementation authorization, later work could bypass the required separate source-capable packet"
+    - "If current-head evidence is stale, the steward tree could incorrectly close the compatibility getter lane"
+  rollback_plan: "revert this governance-only closeout PR and keep G2.84 recorded as accepted but awaiting closeout until fresh evidence is prepared"
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out DataSourceFactory public compatibility getter final retirement after PR #237 merge"
+    modified_scope: "steward tree, closeout report, generated artifact, and task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; accepted implementation already removed the public compatibility getter and package export"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this governance-only closeout PR if current-head evidence is found stale"
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T15:41:45+08:00"
+    approval_note: "human maintainer asked to continue after G2.84 merge; this closeout is governance-only"
+    secondary_approved: false

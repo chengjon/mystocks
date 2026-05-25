@@ -1344,9 +1344,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                package export removal, route/API, OpenAPI, frontend,
 │   │                runtime/PM2, OpenSpec, or issue-label change is made here
 │   ├── G2.84 DataSourceFactory compatibility getter final retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#237` merged at
+│   │   │          `f31720ec3a891607eec3ce29b27ad1bc80be0a43`
 │   │   ├── Evidence: `backend-data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.md`
-│   │   ├── Current HEAD: `5de71a8847a45efd0628b184baff985a9dd3b180`
+│   │   ├── Current HEAD: `f31720ec3a891607eec3ce29b27ad1bc80be0a43`
 │   │   ├── Result: removes public `get_data_source_factory()` and its package
 │   │   │          export, keeps `get_data_source_factory_dependency` and
 │   │   │          `_get_or_create_data_source_factory`, moves production exact
@@ -1358,9 +1359,22 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: no route/API, OpenAPI, frontend, runtime/PM2, OpenSpec,
 │   │                issue-label, dependency provider removal, private initializer
 │   │                removal, or unrelated historical-route test-debt fix is made
-│   └── Next gate: Human review / PR merge decision for G2.84 implementation; if
-│                  accepted, create closeout/current-head refresh before any
-│                  further DataSourceFactory compatibility-surface cleanup
+│   ├── G2.85 DataSourceFactory compatibility getter final retirement closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-data-source-factory-compat-getter-final-retirement-closeout-2026-05-25.md`
+│   │   ├── Current HEAD: `f31720ec3a891607eec3ce29b27ad1bc80be0a43`
+│   │   ├── Result: confirms PR `#237` merged, production exact public getter
+│   │   │          hits remain `0`, package export lines remain `0`, route/API
+│   │   │          public getter hits remain `0`, lifecycle tests pass `5`,
+│   │   │          health route conflicts pass `120`, touched-path ruff passes,
+│   │   │          and OpenAPI remains paths=`500` with duplicate operation IDs=`0`
+│   │   └── Boundary: closeout-only; no source, test, route/API, OpenAPI,
+│   │                frontend, runtime/PM2, OpenSpec, dependency provider,
+│   │                private initializer, or issue-label change is made here
+│   └── Next gate: Human review / PR merge decision for G2.85 closeout; if
+│                  accepted, DataSourceFactory public compatibility getter
+│                  retirement is closed and the next service lifecycle lane can
+│                  be selected by a separate authorization packet
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

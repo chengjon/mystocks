@@ -1,0 +1,50 @@
+{
+  "artifact": "data-source-factory-compat-getter-final-retirement-closeout",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T15:41:45+08:00",
+  "branch": "g2-85-data-source-factory-compat-getter-final-retirement-closeout",
+  "current_head": "f31720ec3a891607eec3ce29b27ad1bc80be0a43",
+  "merged_pr": {
+    "number": 237,
+    "url": "https://github.com/chengjon/mystocks/pull/237",
+    "state": "MERGED",
+    "merged_at": "2026-05-25T05:55:18Z",
+    "merge_commit": "f31720ec3a891607eec3ce29b27ad1bc80be0a43",
+    "implementation_commit": "cf3085e54"
+  },
+  "current_head_scan": {
+    "exact_public_symbol_hits": 3,
+    "production_exact_public_symbol_hits": 0,
+    "package_export_lines": 0,
+    "route_api_public_symbol_hits": 0,
+    "get_data_source_factory_dependency_token_count": 51,
+    "private_initializer_token_count": 13,
+    "remaining_public_symbol_hits": [
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py:63",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py:64",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py:65"
+    ]
+  },
+  "verification": {
+    "lifecycle_tests": "5 passed in 2.07s",
+    "health_route_conflicts": "120 passed in 83.93s",
+    "ruff_touched_paths": "passed",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "root_env_loaded": true
+    },
+    "gitnexus_staged_detect_changes": {
+      "changed_files": 4,
+      "changed_symbols": 0,
+      "affected_processes": 0,
+      "risk": "LOW"
+    }
+  },
+  "known_baseline": {
+    "tests/backend/test_data_api_regression.py": "existing historical-route 404 debt remains out of scope"
+  },
+  "next_gate": "human review / PR merge decision for G2.85 closeout"
+}
