@@ -1,0 +1,69 @@
+{
+  "artifact": "data-source-factory-futures-route-migration-implementation-authorization-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-77-data-source-factory-futures-implementation-authorization",
+  "current_head": "5fab3e8f6b0ebfb660f0cae1010cd59dfb30f039",
+  "parent_risk_packet": {
+    "workline": "G2.76",
+    "report": "docs/reports/quality/backend-data-source-factory-futures-route-migration-risk-packet-2026-05-25.md",
+    "merged_pr": 228,
+    "merge_commit": "5fab3e8f6b0ebfb660f0cae1010cd59dfb30f039"
+  },
+  "scope": {
+    "type": "implementation_authorization",
+    "source_edits_in_this_packet": false,
+    "future_implementation_workline": "G2.78",
+    "future_allowed_source_paths": [
+      "web/backend/app/api/data/futures.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "future_allowed_governance_paths": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/data-source-factory-futures-route-migration-implementation-2026-05-25.json",
+      "docs/reports/quality/backend-data-source-factory-futures-route-migration-implementation-2026-05-25.md",
+      "governance/mainline/task-cards/pr-230.yaml"
+    ],
+    "excluded": [
+      "route path changes",
+      "response model or response shape changes",
+      "OpenAPI exposure changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "compatibility getter deletion",
+      "other DataSourceFactory consumers",
+      "broad formatting outside futures.py"
+    ]
+  },
+  "future_implementation_steps": [
+    "run GitNexus context/impact for futures.py, get_futures_index_daily, get_futures_index_realtime, and get_data_source_factory_dependency before editing",
+    "write TDD guard test_futures_routes_use_data_source_factory_dependency in web/backend/tests/test_health_route_conflicts.py",
+    "verify the TDD guard fails before source edits because factory is absent",
+    "add DataSourceFactory and get_data_source_factory_dependency import in futures.py",
+    "add factory: DataSourceFactory = Depends(get_data_source_factory_dependency) to get_futures_index_daily and get_futures_index_realtime",
+    "remove the two function-local get_data_source_factory imports and awaits",
+    "normalize same-file futures.py black formatting if required by the implementation diff",
+    "verify direct route/API get_data_source_factory() refs move 2 -> 0"
+  ],
+  "required_future_verification": [
+    "focused TDD guard green",
+    "full web/backend/tests/test_health_route_conflicts.py",
+    "web/backend/tests/test_data_source_factory_lifecycle_di.py",
+    "ruff check web/backend/app/api/data/futures.py web/backend/tests/test_health_route_conflicts.py",
+    "black --check web/backend/app/api/data/futures.py web/backend/tests/test_health_route_conflicts.py",
+    "OpenAPI smoke with routes, paths, operation IDs, and duplicate operation ID warnings",
+    "direct route/API factory ref scan",
+    "staged GitNexus detect_changes",
+    "post-commit mainline scope gate"
+  ],
+  "known_risk": {
+    "file_level_gitnexus": "HIGH at G2.76, impactedCount=141, direct=27, processes_affected=0",
+    "route_handler_cypher_callers": 0,
+    "black_debt": "futures.py would reformat before implementation",
+    "risk_handling": "Future G2.78 must restate the known HIGH file-level risk before editing and stop if new HIGH/CRITICAL findings appear outside the accepted futures.py file-level import fan-out."
+  },
+  "decision": "If this authorization packet is accepted, G2.78 may implement the path-limited futures.py DataSourceFactory route migration under the constraints above.",
+  "next_gate": "Human review / PR merge decision for G2.77 authorization. If accepted, create G2.78 path-limited implementation branch."
+}
