@@ -1,0 +1,62 @@
+{
+  "artifact": "data-source-factory-compat-getter-final-retirement-implementation-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T13:45:00+08:00",
+  "branch": "g2-84-data-source-factory-compat-getter-final-retirement-implementation",
+  "baseline_head": "5de71a8847a45efd0628b184baff985a9dd3b180",
+  "authorization": {
+    "source": "backend-data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.md",
+    "merged_pr": 236,
+    "merged_head": "5de71a8847a45efd0628b184baff985a9dd3b180",
+    "allowed_stage": "G2.84 final public getter and package export retirement"
+  },
+  "implementation": {
+    "public_get_data_source_factory_removed": true,
+    "package_reexport_removed": true,
+    "package_all_entry_removed": true,
+    "get_data_source_factory_dependency_kept": true,
+    "_get_or_create_data_source_factory_kept": true,
+    "route_api_edits": false,
+    "openapi_exposure_edits": false
+  },
+  "tdd": {
+    "red": "1 failed, 4 passed; public getter still existed",
+    "green": "5 passed in lifecycle DI tests"
+  },
+  "verification": {
+    "lifecycle_tests": "5 passed in 1.97s",
+    "stocks_runtime_fallback": "1 passed in 14.48s",
+    "market_api_integration": "18 passed in 17.89s",
+    "data_api_regression": "3 failed; existing historical-route 404 failures remain",
+    "health_route_conflicts": "120 passed in 77.72s",
+    "ruff": "passed",
+    "black_check": "passed",
+    "openapi_smoke": {
+      "env_source": "/opt/claude/mystocks_spec/.env",
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0
+    },
+    "public_getter_scan": {
+      "exact_public_hits": 3,
+      "production_exact_public_hits": 0,
+      "package_export_lines": 0,
+      "public_getter_patch_points": 0,
+      "remaining_hits": "negative assertions in lifecycle DI test only"
+    }
+  },
+  "gitnexus": {
+    "pre_edit_get_data_source_factory_impact": "CRITICAL, 22 impacted symbols, 21 direct dependents, 12 affected processes",
+    "_get_or_create_data_source_factory": "not found after gitnexus analyze",
+    "get_data_source_factory_dependency": "not found after gitnexus analyze",
+    "staged_detect_changes": {
+      "changed_files": 10,
+      "changed_symbols": 0,
+      "affected_processes": 0,
+      "risk": "LOW"
+    },
+    "interpretation": "precise current-head text scan and tests are authoritative for this scoped retirement; GitNexus route/API callers remain stale-aware"
+  },
+  "next_gate": "Human review / PR merge decision for G2.84. If accepted, create closeout/current-head refresh before further DataSourceFactory compatibility cleanup."
+}

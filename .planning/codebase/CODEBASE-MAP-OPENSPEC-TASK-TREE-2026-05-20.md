@@ -1329,9 +1329,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                frontend, runtime/PM2, OpenSpec, or issue-label change is
 │   │                authorized
 │   ├── G2.83 DataSourceFactory compatibility getter final retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#236` merged at
+│   │   │          `5de71a8847a45efd0628b184baff985a9dd3b180`
 │   │   ├── Evidence: `backend-data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.md`
-│   │   ├── Current HEAD: `075768a56ea78f11796387d25fe33eed04668c6f`
+│   │   ├── Current HEAD: `5de71a8847a45efd0628b184baff985a9dd3b180`
 │   │   ├── Result: precise scan shows production exact public getter hits are
 │   │   │          limited to the definition and package exports, route/API
 │   │   │          production consumers are `0`, package export lines are `2`,
@@ -1342,9 +1343,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no source, test, public getter deletion,
 │   │                package export removal, route/API, OpenAPI, frontend,
 │   │                runtime/PM2, OpenSpec, or issue-label change is made here
-│   └── Next gate: Human review / PR merge decision for G2.83 authorization; if
-│                  accepted, create a G2.84 source implementation branch for
-│                  final public getter and package export retirement only
+│   ├── G2.84 DataSourceFactory compatibility getter final retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.md`
+│   │   ├── Current HEAD: `5de71a8847a45efd0628b184baff985a9dd3b180`
+│   │   ├── Result: removes public `get_data_source_factory()` and its package
+│   │   │          export, keeps `get_data_source_factory_dependency` and
+│   │   │          `_get_or_create_data_source_factory`, moves production exact
+│   │   │          public getter hits to `0`, package export lines to `0`, patch
+│   │   │          points to `0`, keeps lifecycle tests at `5 passed`, stocks
+│   │   │          runtime fallback at `1 passed`, market API integration at
+│   │   │          `18 passed`, health route conflicts at `120 passed`, and
+│   │   │          OpenAPI paths=`500` with duplicate operation IDs=`0`
+│   │   └── Boundary: no route/API, OpenAPI, frontend, runtime/PM2, OpenSpec,
+│   │                issue-label, dependency provider removal, private initializer
+│   │                removal, or unrelated historical-route test-debt fix is made
+│   └── Next gate: Human review / PR merge decision for G2.84 implementation; if
+│                  accepted, create closeout/current-head refresh before any
+│                  further DataSourceFactory compatibility-surface cleanup
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1412,7 +1428,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-data-source-factory-compat-getter-retirement-authorization-2026-05-25.md` | G | G2.80 authorization packet accepted in PR `#233` at `b922db6b`: authorizes only a future G2.81 Phase 1 service-internal decoupling step; public getter and package exports must remain, route/API direct calls stay `0`, lifecycle tests pass `4`, health route conflicts pass `120`, and OpenAPI paths remain `500` | G2.81 implementation branch may perform Phase 1 service-internal decoupling only |
 | `backend-data-source-factory-compat-getter-retirement-phase1-implementation-2026-05-25.md` | G | G2.81 implementation packet accepted in PR `#234` at `c176b9e`: adds private `_get_or_create_data_source_factory()`, keeps public `get_data_source_factory()` and package exports, removes service helper public getter calls, expands lifecycle tests to `5 passed`, keeps health route conflicts at `120 passed`, and keeps OpenAPI paths=`500` with duplicate operation IDs=`0` | Create closeout/current-head refresh before any public getter or package export retirement decision |
 | `backend-data-source-factory-compat-getter-retirement-phase1-closeout-2026-05-25.md` | G | G2.82 closeout packet accepted in PR `#235` at `075768a`: records PR `#234` merge, reconfirms lifecycle tests `5 passed`, health route conflicts `120 passed`, OpenAPI routes=`548` paths=`500` duplicate operation IDs=`0`, route/API direct public getter calls=`0`, service helper public getter calls=`0`, and package export mentions=`4` | Separate source-capable authorization packet required before any public getter or package export retirement decision |
-| `backend-data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.md` | G | G2.83 authorization packet prepared at `075768a`: precise scan shows production public getter hits are definition plus package exports only, route/API production consumers=`0`, package export lines=`2`, lifecycle tests `5 passed`, stocks runtime fallback `1 passed`, GitNexus impact remains CRITICAL/stale-aware, and market/data regression public getter patch points have existing unrelated failures recorded | Human review / PR merge decision; if accepted, create G2.84 source implementation branch for final public getter and package export retirement only |
+| `backend-data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.md` | G | G2.83 authorization packet accepted in PR `#236` at `5de71a8`: precise scan shows production public getter hits are definition plus package exports only, route/API production consumers=`0`, package export lines=`2`, lifecycle tests `5 passed`, stocks runtime fallback `1 passed`, GitNexus impact remains CRITICAL/stale-aware, and market/data regression public getter patch points have existing unrelated failures recorded | G2.84 source implementation may remove the public getter and package exports only inside the authorized file scope |
+| `backend-data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.md` | G | G2.84 implementation packet prepared at `5de71a8`: removes public `get_data_source_factory()` and package exports, keeps `get_data_source_factory_dependency` plus `_get_or_create_data_source_factory`, moves production public getter hits=`0`, package export lines=`0`, patch points=`0`, lifecycle tests `5 passed`, stocks runtime fallback `1 passed`, market API integration `18 passed`, health route conflicts `120 passed`, OpenAPI paths=`500`, duplicate operation IDs=`0`, and leaves known `test_data_api_regression.py` historical-route 404 failures unresolved | Human review / PR merge decision; if accepted, create closeout/current-head refresh before further DataSourceFactory compatibility-surface cleanup |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |

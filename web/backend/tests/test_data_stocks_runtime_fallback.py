@@ -18,6 +18,7 @@ os.environ.setdefault("ADMIN_INITIAL_PASSWORD", "admin123")
 
 from app.core.security import User, get_current_user
 from app.main import app
+from app.services.data_source_factory import get_data_source_factory_dependency
 
 
 class _MissingDataSourceFactory:
@@ -40,8 +41,8 @@ def auth_client(monkeypatch: pytest.MonkeyPatch):
 
     monkeypatch.setenv("TESTING", "true")
     monkeypatch.setenv("DEVELOPMENT_MODE", "true")
-    monkeypatch.setattr("app.services.data_source_factory.get_data_source_factory", _get_data_source_factory)
     app.dependency_overrides[get_current_user] = lambda: user
+    app.dependency_overrides[get_data_source_factory_dependency] = _get_data_source_factory
 
     client = TestClient(app)
     yield client
