@@ -315,20 +315,3 @@ class EmailNotificationService:
         """
 
         return self.send_email([user_email], subject, content, "html")
-
-
-# 创建全局实例
-_email_service = None
-
-
-def get_email_service() -> EmailNotificationService:
-    """
-    获取邮件服务实例（单例模式）
-
-    Returns:
-        EmailNotificationService: 邮件服务实例
-    """
-    global _email_service
-    if _email_service is None:
-        _email_service = EmailNotificationService()
-    return _email_service

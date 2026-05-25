@@ -1,0 +1,103 @@
+{
+  "artifact": "email-notification-getter-retirement-implementation-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T01:55:00+08:00",
+  "branch": "g2-108-email-notification-getter-retirement-implementation",
+  "base_head": "d120d6d28d391daeb9e3d6accbd2b9ee0acfe931",
+  "current_head_checked_at_review": "2026-05-26T01:55:00+08:00",
+  "parent_authorization": {
+    "node": "G2.107",
+    "pr": 260,
+    "merge_commit": "d120d6d28d391daeb9e3d6accbd2b9ee0acfe931",
+    "authorized_scope": "retire email_notification_service.py _email_service and get_email_service only"
+  },
+  "governance_node": {
+    "id": "G2.108",
+    "lane": "service_lifecycle_di",
+    "type": "implementation",
+    "state": "ready_for_review"
+  },
+  "changed_runtime_files": [
+    "web/backend/app/services/email_notification_service.py"
+  ],
+  "changed_test_files": [
+    "web/backend/tests/test_email_notification_service_getter_retirement.py"
+  ],
+  "removed_symbols": [
+    "web/backend/app/services/email_notification_service.py:_email_service",
+    "web/backend/app/services/email_notification_service.py:get_email_service"
+  ],
+  "preserved_surfaces": [
+    "web/backend/app/services/email_notification_service.py:EmailNotificationService",
+    "web/backend/app/services/email_service.py",
+    "web/backend/app/services/email_service.py:get_email_service_dependency",
+    "web/backend/app/api/notification.py",
+    "notification route contracts",
+    "OpenAPI exposure"
+  ],
+  "pre_edit_evidence": {
+    "standards_read": true,
+    "gitnexus_analyze_before_edit": "success",
+    "file_path_context": {
+      "target": "web/backend/app/services/email_notification_service.py:get_email_service",
+      "incoming_callers": 0,
+      "outgoing_calls": 0,
+      "processes": 0
+    },
+    "bare_impact_disambiguation": {
+      "bare_target": "get_email_service",
+      "resolved_to": "web/backend/app/services/email_service.py:get_email_service",
+      "risk": "MEDIUM",
+      "impacted_count": 6,
+      "used_as_target_gate": false
+    },
+    "exact_pre_change_scan": {
+      "email_notification_service_getter_refs": 1,
+      "route_email_notification_refs": 0,
+      "notification_route_get_email_service_dependency_refs": 7,
+      "email_service_get_email_service_dependency_refs": 1
+    }
+  },
+  "post_change_scan": {
+    "email_notification_service_getter_refs": 0,
+    "email_notification_service_singleton_refs": 0,
+    "route_email_notification_refs": 0,
+    "notification_route_get_email_service_dependency_refs": 7,
+    "email_service_get_email_service_dependency_refs": 1,
+    "email_notification_class_preserved": true
+  },
+  "verification": {
+    "tdd_red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_email_notification_service_getter_retirement.py -q --no-cov --tb=short",
+      "result": "1 failed",
+      "expected_failure": "hasattr(module, \"get_email_service\") was True"
+    },
+    "focused_green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_email_notification_service_getter_retirement.py web/backend/tests/test_email_notification_service_logging.py -q --no-cov --tb=short",
+      "result": "5 passed"
+    },
+    "health_route_conflicts": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "120 passed"
+    },
+    "ruff_touched_files": {
+      "command": "ruff check web/backend/app/services/email_notification_service.py web/backend/tests/test_email_notification_service_getter_retirement.py",
+      "result": "passed"
+    },
+    "black_touched_files": {
+      "command": "black --check web/backend/app/services/email_notification_service.py web/backend/tests/test_email_notification_service_getter_retirement.py",
+      "result": "passed"
+    }
+  },
+  "boundary": {
+    "email_service_py_changed": false,
+    "notification_route_changed": false,
+    "openapi_changed": false,
+    "frontend_changed": false,
+    "pm2_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false,
+    "email_notification_service_class_deleted": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.108; if accepted, create G2.109 closeout/current-head refresh before selecting another service getter candidate."
+}
