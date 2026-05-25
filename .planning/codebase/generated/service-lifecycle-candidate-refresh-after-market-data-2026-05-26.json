@@ -1,0 +1,172 @@
+{
+  "artifact": "service-lifecycle-candidate-refresh-after-market-data-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T03:12:00+08:00",
+  "branch": "g2-114-service-lifecycle-candidate-refresh-after-market-data",
+  "base_head": "18af895af5fd09c1dff832b6f8bc968227711a28",
+  "current_head_checked_at_review": "2026-05-26T03:12:00+08:00",
+  "parent_closeout": {
+    "node": "G2.113",
+    "pr": 266,
+    "merge_commit": "18af895af5fd09c1dff832b6f8bc968227711a28"
+  },
+  "governance_node": {
+    "id": "G2.114",
+    "lane": "service_lifecycle_di",
+    "type": "candidate_refresh",
+    "state": "ready_for_review"
+  },
+  "counts": {
+    "service_files": 152,
+    "backend_app_files": 575,
+    "api_files": 219,
+    "backend_test_files": 200,
+    "service_getter_definitions": 15,
+    "candidate_like_definitions": 8
+  },
+  "candidate_pool_delta": {
+    "market_data_service_package_getter_present": false,
+    "market_data_service_package_getter_status": "retired_by_g2_112_and_closed_out_by_g2_113"
+  },
+  "candidates": [
+    {
+      "name": "get_streaming_service",
+      "file": "web/backend/app/services/realtime_streaming_service.py",
+      "line": 424,
+      "kind": "module-lazy",
+      "app_refs": 12,
+      "app_ref_files": 3,
+      "api_refs": 0,
+      "api_ref_files": 0,
+      "backend_test_refs": 19,
+      "backend_test_ref_files": 2,
+      "gitnexus_risk": "HIGH",
+      "gitnexus_impacted_count": 9,
+      "disposition": "hold_streaming_socketio_seam"
+    },
+    {
+      "name": "get_tdx_service",
+      "file": "web/backend/app/services/tdx_service.py",
+      "line": 275,
+      "kind": "module-lazy",
+      "app_refs": 4,
+      "app_ref_files": 2,
+      "api_refs": 2,
+      "api_ref_files": 1,
+      "backend_test_refs": 2,
+      "backend_test_ref_files": 2,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 6,
+      "affected_processes": 5,
+      "disposition": "hold_dashboard_route_process_seam"
+    },
+    {
+      "name": "get_announcement_service",
+      "file": "web/backend/app/services/announcement_service.py",
+      "line": 526,
+      "kind": "module-lazy",
+      "app_refs": 2,
+      "app_ref_files": 1,
+      "api_refs": 0,
+      "api_ref_files": 0,
+      "backend_test_refs": 1,
+      "backend_test_ref_files": 1,
+      "gitnexus_risk": "MEDIUM",
+      "gitnexus_impacted_count": 11,
+      "disposition": "hold_completed_route_backed_seam"
+    },
+    {
+      "name": "get_email_service",
+      "file": "web/backend/app/services/email_service.py",
+      "line": 325,
+      "kind": "module-lazy",
+      "app_refs": 2,
+      "app_ref_files": 1,
+      "api_refs": 0,
+      "api_ref_files": 0,
+      "backend_test_refs": 4,
+      "backend_test_ref_files": 3,
+      "gitnexus_risk": "MEDIUM",
+      "gitnexus_impacted_count": 6,
+      "disposition": "hold_route_backed_email_service_seam"
+    },
+    {
+      "name": "get_watchlist_service",
+      "file": "web/backend/app/services/watchlist_service.py",
+      "line": 613,
+      "kind": "module-lazy",
+      "app_refs": 6,
+      "app_ref_files": 3,
+      "api_refs": 0,
+      "api_ref_files": 0,
+      "backend_test_refs": 2,
+      "backend_test_ref_files": 2,
+      "gitnexus_risk": "MEDIUM",
+      "gitnexus_impacted_count": 15,
+      "disposition": "hold_route_adapter_seam"
+    },
+    {
+      "name": "get_data_service",
+      "file": "web/backend/app/services/data_service.py",
+      "line": 466,
+      "kind": "module-lazy",
+      "app_refs": 6,
+      "app_ref_files": 3,
+      "api_refs": 5,
+      "api_ref_files": 2,
+      "backend_test_refs": 6,
+      "backend_test_ref_files": 2,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 5,
+      "affected_processes": 7,
+      "disposition": "hold_indicator_strategy_route_process_seam"
+    },
+    {
+      "name": "get_strategy_service",
+      "file": "web/backend/app/services/strategy_service.py",
+      "line": 455,
+      "kind": "module-lazy",
+      "app_refs": 11,
+      "app_ref_files": 5,
+      "api_refs": 4,
+      "api_ref_files": 1,
+      "backend_test_refs": 1,
+      "backend_test_ref_files": 1,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 13,
+      "disposition": "hold_strategy_task_adapter_seam"
+    },
+    {
+      "name": "get_stock_search_service",
+      "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "line": 171,
+      "kind": "module-lazy",
+      "app_refs": 4,
+      "app_ref_files": 2,
+      "api_refs": 0,
+      "api_ref_files": 0,
+      "backend_test_refs": 6,
+      "backend_test_ref_files": 4,
+      "gitnexus_risk": "CRITICAL",
+      "gitnexus_impacted_count": 6,
+      "affected_processes": 11,
+      "disposition": "hold_stock_search_route_process_seam"
+    }
+  ],
+  "decision": {
+    "selected_next_implementation_candidate": null,
+    "reason": "No LOW-risk direct implementation candidate remains after MarketDataService package getter retirement.",
+    "next_gate": "service lifecycle strategy re-triage packet before selecting another service getter implementation candidate"
+  },
+  "boundary": {
+    "source_changed": false,
+    "tests_changed": false,
+    "routes_changed": false,
+    "openapi_changed": false,
+    "frontend_changed": false,
+    "pm2_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false,
+    "candidate_selected": false
+  }
+}

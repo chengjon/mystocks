@@ -1848,7 +1848,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                root-level services getter, service consolidation, or
 │   │                issue-label change is made here
 │   ├── G2.113 MarketDataService getter-retirement closeout/current-head refresh
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#266` merged at
+│   │   │          `18af895af5fd09c1dff832b6f8bc968227711a28`
 │   │   ├── Evidence: `backend-market-data-service-getter-retirement-closeout-2026-05-26.md`
 │   │   ├── Current HEAD: `b5ca0c5fcf65de77e7bf336091c4ae3f220019ef`
 │   │   ├── Result: current scan covers backend app/test Python files=`775`;
@@ -1862,9 +1863,28 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                service consolidation, candidate selection, or issue-label
 │   │                change is made here
-│   └── Next gate: human review / PR merge decision for G2.113; if accepted,
-│                  run a fresh service lifecycle candidate refresh before
-│                  selecting another service getter candidate
+│   ├── G2.114 Service lifecycle candidate refresh after MarketDataService
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-market-data-2026-05-26.md`
+│   │   ├── Current HEAD: `18af895af5fd09c1dff832b6f8bc968227711a28`
+│   │   ├── Result: current scan covers service files=`152`, backend app
+│   │   │          files=`575`, API files=`219`, backend test files=`200`,
+│   │   │          service getter definitions=`15`, and candidate-like
+│   │   │          definitions=`8`; the retired package-level
+│   │   │          `market_data_service:get_market_data_service` no longer
+│   │   │          appears as a candidate
+│   │   ├── Decision: no LOW-risk direct implementation candidate is selected
+│   │   │          from this refresh; remaining candidates are route-backed,
+│   │   │          adapter-backed, Socket.IO-backed, dashboard-backed, task-backed,
+│   │   │          or process-affected and require strategy/authorization before
+│   │   │          source edits
+│   │   └── Boundary: candidate-refresh-only; no backend source/test edit,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                getter deletion, service migration, or issue-label change
+│   │                is made here
+│   └── Next gate: human review / PR merge decision for G2.114; if accepted,
+│                  create a service lifecycle strategy re-triage packet before
+│                  selecting another service getter implementation candidate
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

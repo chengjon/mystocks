@@ -1,0 +1,109 @@
+version: "v0.2"
+
+task:
+  id: "pr-267"
+  title: "Refresh service lifecycle candidates after MarketDataService"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-service-lifecycle-candidate-refresh-after-market-data"
+  objective: "refresh service lifecycle getter candidates after MarketDataService package getter retirement closeout"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-candidate-refresh"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-service-lifecycle-candidate-refresh-after-market-data"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Candidate-refresh-only evidence packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/service-lifecycle-candidate-refresh-after-market-data-2026-05-26.json"
+    - "docs/reports/quality/backend-service-lifecycle-candidate-refresh-after-market-data-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-267.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not select or authorize the next service getter implementation candidate"
+  - "Do not delete any getter"
+  - "Do not modify route/API behavior or OpenAPI exposure"
+  - "Do not change frontend code"
+  - "Do not change PM2 workflows"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 266 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-service-lifecycle-candidate-refresh-after-market-data-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/service-lifecycle-candidate-refresh-after-market-data-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-267.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-267.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this packet selects a source candidate, it would exceed candidate-refresh scope"
+    - "If backend source or tests are edited, it would exceed governance-only scope"
+  rollback_plan: "revert this governance-only candidate refresh PR and keep G2.113 as the latest accepted service lifecycle state"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "refresh service lifecycle candidates after MarketDataService package getter retirement"
+    modified_scope: "steward tree, candidate refresh report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; candidate-refresh-only, no source or test edits"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent PR state, candidate evidence, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T03:12:00+08:00"
+    approval_note: "G2.113 PR #266 was merged; this packet records candidate refresh only and intentionally selects no implementation candidate"
+    secondary_approved: false
