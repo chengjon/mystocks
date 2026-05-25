@@ -316,15 +316,6 @@ class TradingViewWidgetService:
 
 # 创建全局实例
 TRADINGVIEW_SERVICE_STATE_KEY = "tradingview_service"
-_tradingview_service = None
-
-
-def get_tradingview_service() -> TradingViewWidgetService:
-    """获取 TradingView 服务兼容单例"""
-    global _tradingview_service
-    if _tradingview_service is None:
-        _tradingview_service = TradingViewWidgetService()
-    return _tradingview_service
 
 
 def install_tradingview_service(
@@ -332,7 +323,7 @@ def install_tradingview_service(
     service: Optional[TradingViewWidgetService] = None,
 ) -> TradingViewWidgetService:
     """Install the TradingView service instance on FastAPI app.state."""
-    selected_service = service if service is not None else get_tradingview_service()
+    selected_service = service if service is not None else TradingViewWidgetService()
     setattr(app.state, TRADINGVIEW_SERVICE_STATE_KEY, selected_service)
     return selected_service
 

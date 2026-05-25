@@ -1,0 +1,113 @@
+{
+  "artifact": "tradingview-getter-retirement-implementation-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T00:08:36+08:00",
+  "branch": "g2-103-tradingview-getter-retirement-implementation",
+  "base_head": "a0cfa4f35125bb0475b1d98c4225a4321c18de1c",
+  "parent_pr": {
+    "number": 255,
+    "title": "docs(governance): authorize tradingview getter retirement",
+    "merge_commit": "a0cfa4f35125bb0475b1d98c4225a4321c18de1c",
+    "disposition": "accepted"
+  },
+  "changes": [
+    {
+      "path": "web/backend/app/services/tradingview_widget_service.py",
+      "change": "Removed only get_tradingview_service and private _tradingview_service singleton state; changed install_tradingview_service fallback to direct TradingViewWidgetService construction; preserved TradingViewWidgetService, install/close helpers, and dependency provider."
+    },
+    {
+      "path": "web/backend/tests/test_tradingview_service_lifecycle_di.py",
+      "change": "Updated lifecycle DI fallback coverage to prove default service construction without the public getter; added focused absence assertions for the retired getter/private singleton while preserving import/export checks."
+    },
+    {
+      "path": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      "change": "Recorded G2.102 acceptance and G2.103 implementation state."
+    },
+    {
+      "path": "docs/reports/quality/backend-tradingview-getter-retirement-implementation-2026-05-26.md",
+      "change": "Recorded implementation evidence."
+    },
+    {
+      "path": "governance/mainline/task-cards/pr-256.yaml",
+      "change": "Recorded implementation task-card gate."
+    }
+  ],
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_tradingview_service_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "1 failed, 7 passed",
+      "expected_failure": "hasattr(tradingview_widget_service, \"get_tradingview_service\") was True"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_tradingview_service_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "8 passed in 1.43s"
+    }
+  },
+  "post_change_reference_scan": {
+    "get_tradingview_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 3,
+      "package_export_refs": 0,
+      "notes": "Remaining references are focused absence assertions only."
+    },
+    "_tradingview_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 2,
+      "package_export_refs": 0,
+      "notes": "Remaining references are focused absence assertions only."
+    },
+    "TradingViewWidgetService": {
+      "app_refs": 13,
+      "route_api_refs": 7,
+      "test_refs": 1,
+      "notes": "Class remains defined in tradingview_widget_service.py and actively used by web/backend/app/api/tradingview.py."
+    },
+    "install_tradingview_service": {
+      "app_refs": 4,
+      "route_api_refs": 0,
+      "test_refs": 4,
+      "notes": "Lifecycle install helper remains active."
+    },
+    "get_tradingview_service_dependency": {
+      "app_refs": 8,
+      "route_api_refs": 7,
+      "test_refs": 3,
+      "notes": "FastAPI dependency provider remains active in TradingView routes."
+    }
+  },
+  "verification": {
+    "pre_edit_gitnexus_impact": {
+      "target": "get_tradingview_service",
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct": 1,
+      "affected_processes": 0
+    },
+    "focused_pytest": "8 passed in 1.08s",
+    "health_route_conflicts": "120 passed in 93.05s",
+    "ruff_touched_paths": "All checks passed!",
+    "black_check_touched_paths": "2 files would be left unchanged after formatting",
+    "openapi_smoke": {
+      "mode": "schema_only_with_non_sensitive_placeholder_env",
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0
+    }
+  },
+  "boundary": {
+    "tradingview_service_class_deleted": false,
+    "install_helper_deleted": false,
+    "close_helper_deleted": false,
+    "dependency_provider_deleted": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "frontend_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.103; if accepted, create G2.104 closeout before selecting another service lifecycle lane."
+}
