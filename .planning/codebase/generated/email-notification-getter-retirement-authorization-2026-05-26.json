@@ -1,0 +1,143 @@
+{
+  "artifact": "email-notification-getter-retirement-authorization-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T01:29:37+08:00",
+  "branch": "g2-107-email-notification-getter-retirement-authorization",
+  "current_head": "6e10c496a4e3c68c21b93a2ddfec09ef74f1aa30",
+  "current_head_checked_at_review": "2026-05-26T01:29:37+08:00",
+  "parent": {
+    "node": "G2.106",
+    "pr": 259,
+    "merge_commit": "6e10c496a4e3c68c21b93a2ddfec09ef74f1aa30",
+    "decision": "separate route-backed email_service.py ownership from legacy/helper email_notification_service.py ownership"
+  },
+  "governance_node": {
+    "id": "G2.107",
+    "lane": "service_lifecycle_di",
+    "type": "authorization_only",
+    "state": "ready_for_review"
+  },
+  "target": {
+    "file": "web/backend/app/services/email_notification_service.py",
+    "getter": {
+      "name": "get_email_service",
+      "line": 324,
+      "gitnexus_uid": "Function:web/backend/app/services/email_notification_service.py:get_email_service"
+    },
+    "singleton": {
+      "name": "_email_service",
+      "line": 321
+    },
+    "preserved_class": {
+      "name": "EmailNotificationService",
+      "line": 23
+    }
+  },
+  "evidence": {
+    "gitnexus_context": {
+      "target": "web/backend/app/services/email_notification_service.py:get_email_service",
+      "incoming_callers": 0,
+      "outgoing_calls": 0,
+      "processes": 0
+    },
+    "gitnexus_disambiguation": {
+      "bare_impact_target": "get_email_service",
+      "bare_impact_resolves_to": "web/backend/app/services/email_service.py:get_email_service",
+      "bare_impact_risk": "MEDIUM",
+      "bare_impact_impacted_count": 6,
+      "required_future_rule": "future G2.108 must use file-path context plus exact text scan, not bare impact alone"
+    },
+    "exact_text_scan": {
+      "email_notification_service_getter_refs_in_app": [
+        {
+          "file": "web/backend/app/services/email_notification_service.py",
+          "count": 1
+        }
+      ],
+      "email_service_getter_refs_in_app": [
+        {
+          "file": "web/backend/app/services/email_service.py",
+          "count": 2
+        }
+      ],
+      "email_service_getter_refs_in_tests": [
+        {
+          "file": "web/backend/tests/test_email_service_lifecycle_di.py",
+          "count": 2
+        },
+        {
+          "file": "web/backend/tests/test_notification_logging.py",
+          "count": 1
+        }
+      ],
+      "email_notification_service_imports_in_app": [
+        {
+          "file": "web/backend/app/core/unified_email_service.py",
+          "count": 1
+        }
+      ],
+      "email_notification_service_imports_in_tests": [],
+      "route_email_notification_refs": [],
+      "email_service_dependency_refs": [
+        {
+          "file": "web/backend/app/api/notification.py",
+          "count": 7
+        },
+        {
+          "file": "web/backend/app/services/email_service.py",
+          "count": 1
+        }
+      ]
+    }
+  },
+  "authorized_future_g2_108_scope": {
+    "allowed_source_paths": [
+      "web/backend/app/services/email_notification_service.py"
+    ],
+    "allowed_test_paths": [
+      "web/backend/tests/test_email_notification_service_getter_retirement.py",
+      "web/backend/tests/test_email_notification_service_logging.py"
+    ],
+    "allowed_governance_paths": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/email-notification-getter-retirement-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-email-notification-getter-retirement-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-261.yaml"
+    ],
+    "may_remove": [
+      "email_notification_service.py:_email_service",
+      "email_notification_service.py:get_email_service"
+    ],
+    "must_preserve": [
+      "EmailNotificationService",
+      "EmailNotificationService constructor behavior",
+      "email_service.py route-backed lifecycle seam",
+      "get_email_service_dependency",
+      "install_email_service",
+      "notification route contracts"
+    ]
+  },
+  "forbidden_scope": [
+    "web/backend/app/services/email_service.py",
+    "web/backend/app/api/notification.py",
+    "frontend code",
+    "PM2 workflows",
+    "OpenSpec proposals or specs",
+    "GitHub issue labels or readiness states",
+    "EmailNotificationService deletion or rename",
+    "broader email service consolidation"
+  ],
+  "verification_required_for_future_g2_108": [
+    "fresh architecture/STANDARDS.md read",
+    "GitNexus file-path context for email_notification_service.py:get_email_service",
+    "exact text scan for target getter, route/API refs, and preserved class refs",
+    "TDD red focused absence test",
+    "focused green tests",
+    "test_email_notification_service_logging.py",
+    "ruff/black on touched backend files",
+    "staged GitNexus detect_changes",
+    "mainline scope gate",
+    "markdown, JSON, YAML, and diff checks"
+  ],
+  "next_gate": "Human review / PR merge decision for G2.107; if accepted, create G2.108 EmailNotificationService getter-retirement implementation before any email notification source edit."
+}

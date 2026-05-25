@@ -1,0 +1,111 @@
+version: "v0.2"
+
+task:
+  id: "pr-260"
+  title: "Authorize EmailNotificationService getter retirement"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-email-notification-getter-retirement-authorization"
+  objective: "authorize a future implementation branch for retiring the legacy/helper EmailNotificationService getter without touching route-backed EmailService"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-email-notification-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-email-notification-getter-retirement-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/email-notification-getter-retirement-authorization-2026-05-26.json"
+    - "docs/reports/quality/backend-email-notification-getter-retirement-authorization-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-260.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not delete get_email_service in this PR"
+  - "Do not delete or rename _email_service in this PR"
+  - "Do not migrate EmailNotificationService in this PR"
+  - "Do not touch web/backend/app/services/email_service.py"
+  - "Do not touch web/backend/app/api/notification.py"
+  - "Do not change notification routes, response models, response shapes, or OpenAPI exposure"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not authorize implementation beyond future G2.108"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 259 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-email-notification-getter-retirement-authorization-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/email-notification-getter-retirement-authorization-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-260.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-260.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If future G2.108 treats bare get_email_service impact as sufficient, it can accidentally edit the route-backed EmailService seam"
+    - "If this packet is treated as implementation approval for this PR, backend source could be changed before the focused TDD gate exists"
+  rollback_plan: "revert this governance-only PR and keep G2.106 as the latest accepted email getter ownership decision"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize future EmailNotificationService getter retirement before any email notification source edit"
+    modified_scope: "steward tree, authorization report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; authorization-only, no source or test edits"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this governance-only PR if parent PR evidence, disambiguation evidence, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T01:29:37+08:00"
+    approval_note: "G2.106 PR #259 was merged; this packet authorizes only a future G2.108 implementation branch for email_notification_service.py getter retirement and keeps route-backed email_service.py out of scope"
+    secondary_approved: false
