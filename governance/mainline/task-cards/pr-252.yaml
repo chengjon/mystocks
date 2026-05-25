@@ -1,0 +1,121 @@
+version: "v0.2"
+
+task:
+  id: "pr-252"
+  title: "Retire EnhancedDataService compatibility getter"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-enhanced-data-service-getter-retirement-implementation"
+  objective: "remove the unused get_enhanced_data_service compatibility getter while preserving EnhancedDataService"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-enhanced-data-service-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-enhanced-data-service-getter-retirement-implementation"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "Narrow compatibility getter retirement; active system health route and EnhancedDataService class remain unchanged"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/services/data_service_enhanced.py"
+    - "web/backend/tests/test_enhanced_data_service_getter_retirement.py"
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/enhanced-data-service-getter-retirement-implementation-2026-05-25.json"
+    - "docs/reports/quality/backend-enhanced-data-service-getter-retirement-implementation-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-252.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/frontend/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not delete or rename EnhancedDataService"
+  - "Do not change system health routes or route registration"
+  - "Do not change routes, response models, response shapes, or OpenAPI exposure"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_enhanced_data_service_getter_retirement.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/data_service_enhanced.py web/backend/tests/test_enhanced_data_service_getter_retirement.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/services/data_service_enhanced.py web/backend/tests/test_enhanced_data_service_getter_retirement.py"
+      required: true
+    - id: "app-main-openapi-smoke"
+      command: "env PYTHONPATH=web/backend POSTGRESQL_HOST=localhost POSTGRESQL_USER=postgres POSTGRESQL_PASSWORD=postgres JWT_SECRET_KEY=test-secret-key-for-enhanced-data-service-getter-smoke BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c 'from collections import Counter; from app.main import app; schema=app.openapi(); ops=[operation.get(\"operationId\") for path_item in schema.get(\"paths\", {}).values() for operation in path_item.values() if isinstance(operation, dict) and operation.get(\"operationId\")]; dups=[op for op, count in Counter(ops).items() if count > 1]; print(len(app.routes), len(schema.get(\"paths\", {})), len(ops), len(dups))'"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-enhanced-data-service-getter-retirement-implementation-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/enhanced-data-service-getter-retirement-implementation-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-252.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-252.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If EnhancedDataService class usage is confused with the retired getter, the active system health route could be over-scoped"
+    - "If new consumers reintroduce get_enhanced_data_service before merge, the branch must stop and refresh references"
+  rollback_plan: "revert this implementation PR to restore get_enhanced_data_service and _enhanced_data_service, and remove the focused absence test"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "retire unused get_enhanced_data_service compatibility getter"
+    modified_scope: "data_service_enhanced.py, focused regression test, steward tree, implementation report, generated artifact, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; EnhancedDataService remains active and system health route is unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this implementation PR if focused pytest, health-route conflicts, ruff, black, OpenAPI smoke, governance validation, mainline scope, or staged GitNexus checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T20:41:10+08:00"
+    approval_note: "G2.98 authorization PR #251 was merged; this implementation removes only get_enhanced_data_service and preserves EnhancedDataService"
+    secondary_approved: false

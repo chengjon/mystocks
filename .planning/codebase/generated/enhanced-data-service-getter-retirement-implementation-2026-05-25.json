@@ -1,0 +1,108 @@
+{
+  "artifact": "enhanced-data-service-getter-retirement-implementation-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T20:41:10+08:00",
+  "branch": "g2-99-enhanced-data-service-getter-retirement-implementation",
+  "base_head": "8fb6db0e13018d83eef7e0deca02106104c06160",
+  "parent_pr": {
+    "number": 251,
+    "title": "docs(governance): authorize enhanced data service getter retirement",
+    "merge_commit": "8fb6db0e13018d83eef7e0deca02106104c06160",
+    "disposition": "accepted"
+  },
+  "changes": [
+    {
+      "path": "web/backend/app/services/data_service_enhanced.py",
+      "change": "Removed only get_enhanced_data_service and the private _enhanced_data_service singleton state; preserved EnhancedDataService and changed the module-local __main__ smoke call to direct EnhancedDataService construction."
+    },
+    {
+      "path": "web/backend/tests/test_enhanced_data_service_getter_retirement.py",
+      "change": "Added focused regression coverage for getter absence, class availability, and removal of the private singleton state from the service source."
+    },
+    {
+      "path": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      "change": "Recorded G2.98 acceptance and G2.99 implementation state."
+    },
+    {
+      "path": "docs/reports/quality/backend-enhanced-data-service-getter-retirement-implementation-2026-05-25.md",
+      "change": "Recorded implementation evidence."
+    },
+    {
+      "path": "governance/mainline/task-cards/pr-252.yaml",
+      "change": "Recorded implementation task-card gate."
+    }
+  ],
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_enhanced_data_service_getter_retirement.py -q --no-cov --tb=short",
+      "result": "2 failed, 1 passed",
+      "expected_failures": [
+        "hasattr(enhanced_data_service_module, \"get_enhanced_data_service\") was True",
+        "_enhanced_data_service remained in web/backend/app/services/data_service_enhanced.py"
+      ]
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_enhanced_data_service_getter_retirement.py -q --no-cov --tb=short",
+      "result": "3 passed in 1.82s"
+    }
+  },
+  "post_change_reference_scan": {
+    "get_enhanced_data_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 2,
+      "package_export_refs": 0,
+      "notes": "Remaining refs are the focused absence assertions only."
+    },
+    "_enhanced_data_service": {
+      "app_refs": 0,
+      "route_api_refs": 0,
+      "test_refs": 1,
+      "package_export_refs": 0,
+      "notes": "Remaining ref is the focused absence assertion only."
+    },
+    "EnhancedDataService": {
+      "app_refs": 8,
+      "route_api_refs": 4,
+      "test_refs": 1,
+      "notes": "Class remains defined in data_service_enhanced.py and actively used by web/backend/app/api/v1/system/health.py."
+    }
+  },
+  "verification": {
+    "pre_edit_gitnexus_impact": {
+      "target": "get_enhanced_data_service",
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 1,
+      "affected_processes": 0
+    },
+    "focused_pytest": "3 passed",
+    "health_route_conflicts": "120 passed in 72.40s",
+    "ruff_touched_paths": "All checks passed!",
+    "black_check_touched_paths": "2 files would be left unchanged",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0
+    },
+    "gitnexus_staged_detect": {
+      "risk_level": "low",
+      "changed_files": 6,
+      "affected_count": 0,
+      "affected_processes": 0,
+      "note": "GitNexus marked multiple data_service_enhanced.py symbols as modified due to structured diff around the retired tail getter; no affected processes were detected."
+    }
+  },
+  "boundary": {
+    "enhanced_data_service_class_deleted": false,
+    "system_health_route_changed": false,
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "frontend_changes": false,
+    "pm2_execution": false,
+    "openspec_changes": false,
+    "github_issue_label_changes": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.99; if accepted, create G2.100 closeout before selecting another service lifecycle lane."
+}

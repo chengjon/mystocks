@@ -573,23 +573,11 @@ class EnhancedDataService:
             return None
 
 
-# Enhanced singleton
-_enhanced_data_service = None
-
-
-def get_enhanced_data_service() -> EnhancedDataService:
-    """获取增强数据服务单例"""
-    global _enhanced_data_service
-    if _enhanced_data_service is None:
-        _enhanced_data_service = EnhancedDataService()
-    return _enhanced_data_service
-
-
 if __name__ == "__main__":
     logger.info("Testing Enhanced Data Service...")
 
     # Test enhanced data service
-    service = get_enhanced_data_service()
+    service = EnhancedDataService()
 
     # Test health check
     health = service.get_service_health()
