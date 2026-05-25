@@ -1,0 +1,140 @@
+version: "v0.2"
+
+task:
+  id: "pr-237"
+  title: "Retire DataSourceFactory public compatibility getter"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-compat-getter-final-retirement"
+  objective: "remove the public DataSourceFactory compatibility getter and package exports after phase 1 decoupling"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-compat-getter-final-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-compat-getter-final-retirement"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Retires a backend service compatibility export after the steward tree authorization sequence; route/OpenAPI/function tree surfaces are unchanged"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-237.yaml"
+    - "web/backend/app/services/data_source_factory/data_source_factory.py"
+    - "web/backend/app/services/data_source_factory/__init__.py"
+    - "web/backend/tests/test_data_source_factory_lifecycle_di.py"
+    - "web/backend/tests/test_market_api_integration.py"
+    - "web/backend/tests/test_data_stocks_runtime_fallback.py"
+    - "tests/backend/test_data_api_regression.py"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No route/API module edits"
+  - "No route path, response model, response shape, OpenAPI exposure, docs/API, generated client, frontend, PM2, runtime process, OpenSpec, or issue-label change"
+  - "No removal of get_data_source_factory_dependency"
+  - "No removal of _get_or_create_data_source_factory"
+  - "No unrelated historical-route test-debt fix"
+
+acceptance:
+  checks:
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short before implementation"
+      required: true
+    - id: "focused-green"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "stocks-runtime-fallback"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_stocks_runtime_fallback.py -q --no-cov --tb=short"
+      required: true
+    - id: "market-api-integration"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_api_integration.py -q --no-cov --tb=short"
+      required: true
+    - id: "data-api-regression-baseline"
+      command: "PYTHONPATH=web/backend pytest -o addopts= tests/backend/test_data_api_regression.py -q --no-cov --tb=short || true"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "style"
+      command: "ruff check <touched files> && black --check <touched files>"
+      required: true
+    - id: "openapi-smoke"
+      command: "PYTHONPATH=web/backend python -c \"from dotenv import load_dotenv; load_dotenv('/opt/claude/mystocks_spec/.env'); from app.main import app; app.openapi()\""
+      required: true
+    - id: "public-getter-scan"
+      command: "scan exact get_data_source_factory refs excluding get_data_source_factory_dependency"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-compat-getter-final-retirement-implementation-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-237.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-237.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "MCP gitnexus.detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If any production public getter consumer remains, deleting the compatibility API can break imports"
+    - "GitNexus still reports stale CRITICAL route/API callers and must be interpreted with current-head scans"
+    - "Historical data_api_regression failures remain and must not be misreported as fixed"
+  rollback_plan: "revert this path-limited PR to restore the public getter and package export; route/OpenAPI surfaces remain unchanged"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "retire the DataSourceFactory public compatibility getter and package exports"
+    modified_scope: "two service package files, four focused tests, implementation report, generated artifact, steward tree, and task card"
+    dependency_changes: "tests retarget package-level monkeypatches to get_data_source_factory_dependency overrides"
+    legacy_logic_impact: "public compatibility getter is removed; supported dependency provider and private initializer remain"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if any production public getter consumer or package export dependency is found"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T13:45:00+08:00"
+    approval_note: "human maintainer accepted continuing after G2.83; PR #236 authorizes this final retirement implementation only"
+    secondary_approved: false

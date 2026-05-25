@@ -305,11 +305,6 @@ async def _get_or_create_data_source_factory() -> DataSourceFactory:
     return _global_factory
 
 
-async def get_data_source_factory() -> DataSourceFactory:
-    """获取全局数据源工厂实例"""
-    return await _get_or_create_data_source_factory()
-
-
 async def install_data_source_factory(app: Any, factory: Optional[DataSourceFactory] = None) -> DataSourceFactory:
     selected_factory = factory if factory is not None else await _get_or_create_data_source_factory()
     setattr(app.state, DATA_SOURCE_FACTORY_STATE_KEY, selected_factory)

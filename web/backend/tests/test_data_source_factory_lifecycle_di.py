@@ -4,6 +4,7 @@ from types import SimpleNamespace
 
 import pytest
 
+import app.services.data_source_factory as data_source_factory_package
 from app.services.data_source_factory import data_source_factory as data_source_factory_module
 
 
@@ -28,7 +29,7 @@ async def test_data_source_factory_dependency_returns_installed_factory(monkeypa
     async def unexpected_fallback():
         raise AssertionError("fallback getter should not run when app-state factory is installed")
 
-    monkeypatch.setattr(data_source_factory_module, "get_data_source_factory", unexpected_fallback)
+    monkeypatch.setattr(data_source_factory_module, "_get_or_create_data_source_factory", unexpected_fallback)
 
     result = await data_source_factory_module.get_data_source_factory_dependency(request)
 
@@ -58,22 +59,10 @@ async def test_data_source_factory_dependency_installs_fallback_factory(monkeypa
 
 
 @pytest.mark.asyncio
-async def test_get_data_source_factory_compatibility_getter_still_initializes(monkeypatch):
-    class FakeDataSourceFactory:
-        def __init__(self):
-            self.initialized = False
-
-        async def initialize(self):
-            self.initialized = True
-
-    monkeypatch.setattr(data_source_factory_module, "DataSourceFactory", FakeDataSourceFactory)
-    monkeypatch.setattr(data_source_factory_module, "_global_factory", None)
-
-    result = await data_source_factory_module.get_data_source_factory()
-
-    assert isinstance(result, FakeDataSourceFactory)
-    assert result.initialized is True
-    assert data_source_factory_module._global_factory is result
+def test_package_no_longer_exports_public_compatibility_getter():
+    assert not hasattr(data_source_factory_module, "get_data_source_factory")
+    assert not hasattr(data_source_factory_package, "get_data_source_factory")
+    assert "get_data_source_factory" not in data_source_factory_package.__all__
 
 
 @pytest.mark.asyncio
@@ -92,13 +81,9 @@ async def test_convenience_helpers_use_internal_factory_initializer(monkeypatch)
         calls.append("internal")
         return fake_factory
 
-    async def unexpected_public_getter():
-        raise AssertionError("service-internal helpers must not call the public compatibility getter")
-
     monkeypatch.setattr(
         data_source_factory_module, "_get_or_create_data_source_factory", fake_get_or_create_data_source_factory
     )
-    monkeypatch.setattr(data_source_factory_module, "get_data_source_factory", unexpected_public_getter)
 
     assert await data_source_factory_module.get_data_source("akshare") == {"source": "akshare"}
     assert await data_source_factory_module.get_market_data("quotes", {"symbol": "000001"}) == {

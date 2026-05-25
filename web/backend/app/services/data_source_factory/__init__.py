@@ -9,7 +9,6 @@ from .data_source_mode import RealDataSource  # noqa: F401
 from .data_source_mode import HybridDataSource  # noqa: F401
 from .data_source_mode import DynamicConfigManager  # noqa: F401
 from .data_source_factory import DataSourceFactory  # noqa: F401
-from .data_source_factory import get_data_source_factory  # noqa: F401
 from .data_source_factory import get_data_source_factory_dependency  # noqa: F401
 from .data_source_factory import get_data_source  # noqa: F401
 from .data_source_factory import get_market_data  # noqa: F401
@@ -28,7 +27,6 @@ __all__ = [
     "HybridDataSource",
     "DynamicConfigManager",
     "DataSourceFactory",
-    "get_data_source_factory",
     "get_data_source_factory_dependency",
     "get_data_source",
     "get_market_data",

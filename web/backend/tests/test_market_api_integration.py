@@ -28,6 +28,7 @@ from unittest.mock import Mock
 # 导入应用
 from app.main import app
 from app.core.security import User, get_current_user
+from app.services.data_source_factory import get_data_source_factory_dependency
 from app.services.market_data_service import get_market_data_service_dependency
 
 
@@ -68,7 +69,7 @@ def mock_market_service():
 
 
 @pytest.fixture
-def client(mock_market_service, monkeypatch: pytest.MonkeyPatch):
+def client(mock_market_service):
     """提供测试客户端，使用dependency_overrides注入mock服务"""
 
     async def _get_data_source_factory():
@@ -82,7 +83,7 @@ def client(mock_market_service, monkeypatch: pytest.MonkeyPatch):
         role="admin",
         is_active=True,
     )
-    monkeypatch.setattr("app.services.data_source_factory.get_data_source_factory", _get_data_source_factory)
+    app.dependency_overrides[get_data_source_factory_dependency] = _get_data_source_factory
     yield TestClient(app)
     app.dependency_overrides.clear()
 
