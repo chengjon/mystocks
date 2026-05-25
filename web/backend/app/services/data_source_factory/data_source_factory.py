@@ -297,8 +297,7 @@ DATA_SOURCE_FACTORY_STATE_KEY = "data_source_factory"
 _global_factory: Optional[DataSourceFactory] = None
 
 
-async def get_data_source_factory() -> DataSourceFactory:
-    """获取全局数据源工厂实例"""
+async def _get_or_create_data_source_factory() -> DataSourceFactory:
     global _global_factory
     if _global_factory is None:
         _global_factory = DataSourceFactory()
@@ -306,8 +305,13 @@ async def get_data_source_factory() -> DataSourceFactory:
     return _global_factory
 
 
+async def get_data_source_factory() -> DataSourceFactory:
+    """获取全局数据源工厂实例"""
+    return await _get_or_create_data_source_factory()
+
+
 async def install_data_source_factory(app: Any, factory: Optional[DataSourceFactory] = None) -> DataSourceFactory:
-    selected_factory = factory if factory is not None else await get_data_source_factory()
+    selected_factory = factory if factory is not None else await _get_or_create_data_source_factory()
     setattr(app.state, DATA_SOURCE_FACTORY_STATE_KEY, selected_factory)
     return selected_factory
 
@@ -321,25 +325,25 @@ async def get_data_source_factory_dependency(request: Request) -> DataSourceFact
 
 async def get_data_source(source_name: str) -> Optional[IDataSource]:
     """便捷函数：获取数据源"""
-    factory = await get_data_source_factory()
+    factory = await _get_or_create_data_source_factory()
     return await factory.get_data_source(source_name)
 
 
 async def get_market_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
     """便捷函数：获取市场数据"""
-    factory = await get_data_source_factory()
+    factory = await _get_or_create_data_source_factory()
     return await factory.get_data("market", endpoint, params)
 
 
 async def get_dashboard_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
     """便捷函数：获取仪表盘数据"""
-    factory = await get_data_source_factory()
+    factory = await _get_or_create_data_source_factory()
     return await factory.get_data("dashboard", endpoint, params)
 
 
 async def get_technical_analysis_data(endpoint: str, params: Dict[str, Any] = None) -> Dict[str, Any]:
     """便捷函数：获取技术分析数据"""
-    factory = await get_data_source_factory()
+    factory = await _get_or_create_data_source_factory()
     return await factory.get_data("technical_analysis", endpoint, params)
 
 
