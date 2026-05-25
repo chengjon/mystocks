@@ -1,0 +1,108 @@
+version: "v0.2"
+
+task:
+  id: "pr-251"
+  title: "Authorize EnhancedDataService getter retirement"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-enhanced-data-service-getter-retirement-authorization"
+  objective: "authorize only a future EnhancedDataService getter-retirement implementation branch"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-enhanced-data-service-getter-retirement-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/enhanced-data-service-getter-retirement-authorization-2026-05-25.json"
+    - "docs/reports/quality/backend-enhanced-data-service-getter-retirement-authorization-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-251.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not delete get_enhanced_data_service in this packet"
+  - "Do not delete or migrate EnhancedDataService"
+  - "Do not edit web/backend/app/api/v1/system/health.py"
+  - "Do not change routes, response models, response shapes, or OpenAPI exposure"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 250 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-enhanced-data-service-getter-retirement-authorization-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/enhanced-data-service-getter-retirement-authorization-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-251.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-251.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this packet is treated as implementation authority, get_enhanced_data_service could be deleted without the required G2.99 TDD gate"
+    - "If EnhancedDataService class usage is confused with getter usage, an active system-health service class could be over-scoped"
+  rollback_plan: "revert this governance-only PR and keep G2.97 as the latest accepted service lifecycle candidate-refresh evidence"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize only a future EnhancedDataService getter-retirement implementation branch"
+    modified_scope: "steward tree, authorization report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; get_enhanced_data_service is not deleted in this packet and EnhancedDataService remains active"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this governance-only PR if parent PR evidence, authorization boundary, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T20:20:06+08:00"
+    approval_note: "G2.97 candidate refresh PR #250 was merged; this packet authorizes only a future G2.99 EnhancedDataService getter-retirement implementation branch"
+    secondary_approved: false
