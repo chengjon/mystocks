@@ -1,0 +1,111 @@
+version: "v0.2"
+task:
+  id: "pr-240"
+  title: "Authorize AdvancedAnalysis compatibility getter phase 1"
+  owner: "main"
+  created_at: "2026-05-25"
+mainline:
+  id: "L1-advanced-analysis-compat-getter-phase1-authorization"
+  objective: "authorize a future AdvancedAnalysisService Phase 1 service-internal decoupling branch"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-advanced-analysis-compat-getter-phase1"
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+openspec:
+  change_id: "not-required-advanced-analysis-compat-getter-phase1-authorization"
+  approval_status: "not_required"
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only packet; no runtime entrypoint, route, service symbol, or public API surface is changed"
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/advanced-analysis-compat-getter-phase1-authorization-2026-05-25.json"
+    - "docs/reports/quality/backend-advanced-analysis-compat-getter-phase1-authorization-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-240.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+non_goals:
+  - "Do not edit backend source or tests in this authorization PR"
+  - "Do not delete, rename, or privatize get_advanced_analysis_service"
+  - "Do not remove get_advanced_analysis_service_dependency"
+  - "Do not remove install_advanced_analysis_service"
+  - "Do not change routes, response models, response shapes, or OpenAPI exposure"
+  - "Do not create or modify OpenSpec changes or GitHub issue labels"
+acceptance:
+  checks:
+    - id: "current-head-input"
+      command: "gh pr view 239 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url"
+      required: true
+    - id: "advanced-analysis-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "openapi-smoke"
+      command: "PYTHONPATH=web/backend python -c \"from dotenv import load_dotenv; load_dotenv('/opt/claude/mystocks_spec/.env'); from app.main import app; app.openapi()\""
+      required: true
+    - id: "candidate-scan"
+      command: "scan AdvancedAnalysisService getter, dependency, installer, and state-key current-head surfaces"
+      required: true
+    - id: "gitnexus-impact"
+      command: "run GitNexus impact for get_advanced_analysis_service"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-advanced-analysis-compat-getter-phase1-authorization-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/advanced-analysis-compat-getter-phase1-authorization-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-240.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-240.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+risk_and_rollback:
+  risks:
+    - "If this authorization is treated as implementation, source edits could bypass G2.88 TDD and staged GitNexus gates"
+    - "If future G2.88 deletes the public getter, it will exceed this Phase 1 authorization"
+  rollback_plan: "revert this governance-only authorization PR and keep G2.86 as the latest accepted next-lane decision until fresh authorization is prepared"
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize future AdvancedAnalysisService Phase 1 service-internal decoupling"
+    modified_scope: "steward tree, authorization report, generated artifact, and task card only"
+    dependency_changes: "none in this PR; future branch may retarget provider fallback internally"
+    legacy_logic_impact: "none; public compatibility getter remains required in Phase 1"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this authorization PR if the G2.88 scope boundary is rejected"
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T16:39:45+08:00"
+    approval_note: "human maintainer asked to continue after G2.86; this packet is authorization-only"
+    secondary_approved: false
