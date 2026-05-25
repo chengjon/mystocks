@@ -10,23 +10,31 @@ from app.services import advanced_analysis_service as advanced_analysis_service_
 
 
 @pytest.mark.asyncio
-async def test_advanced_analysis_service_dependency_installs_app_state_when_missing(monkeypatch):
-    fake_service = object()
+async def test_advanced_analysis_service_dependency_fallback_uses_private_initializer(monkeypatch):
+    class FakeAdvancedAnalysisService:
+        initialized = False
+
+        async def initialize(self):
+            self.initialized = True
+
+    fake_service = FakeAdvancedAnalysisService()
     fake_app = SimpleNamespace(state=SimpleNamespace())
     request = SimpleNamespace(app=fake_app)
 
-    async def fake_get_advanced_analysis_service():
-        return fake_service
+    async def fail_if_public_getter_called():
+        raise AssertionError("provider fallback must not call the public compatibility getter")
 
+    monkeypatch.setattr(advanced_analysis_service_module, "advanced_analysis_service", fake_service)
     monkeypatch.setattr(
         advanced_analysis_service_module,
         "get_advanced_analysis_service",
-        fake_get_advanced_analysis_service,
+        fail_if_public_getter_called,
     )
 
     result = await advanced_analysis_service_module.get_advanced_analysis_service_dependency(request)
 
     assert result is fake_service
+    assert fake_service.initialized is True
     assert getattr(fake_app.state, advanced_analysis_service_module.ADVANCED_ANALYSIS_SERVICE_STATE_KEY) is fake_service
 
 

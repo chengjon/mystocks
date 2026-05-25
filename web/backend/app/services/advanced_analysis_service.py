@@ -489,16 +489,20 @@ def install_advanced_analysis_service(
     return selected_service
 
 
-async def get_advanced_analysis_service() -> AdvancedAnalysisService:
-    """获取高级分析服务实例（依赖注入用）"""
+async def _get_or_create_advanced_analysis_service() -> AdvancedAnalysisService:
     await advanced_analysis_service.initialize()
     return advanced_analysis_service
+
+
+async def get_advanced_analysis_service() -> AdvancedAnalysisService:
+    """获取高级分析服务实例（依赖注入用）"""
+    return await _get_or_create_advanced_analysis_service()
 
 
 async def get_advanced_analysis_service_dependency(request: Request) -> AdvancedAnalysisService:
     """FastAPI dependency provider backed by app.state."""
     service = getattr(request.app.state, ADVANCED_ANALYSIS_SERVICE_STATE_KEY, None)
     if service is None:
-        service = await get_advanced_analysis_service()
+        service = await _get_or_create_advanced_analysis_service()
         setattr(request.app.state, ADVANCED_ANALYSIS_SERVICE_STATE_KEY, service)
     return service

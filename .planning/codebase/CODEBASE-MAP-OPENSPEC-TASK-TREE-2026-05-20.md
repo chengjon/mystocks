@@ -1389,9 +1389,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                dependency provider removal, private initializer addition,
 │   │                or issue-label change is made here
 │   ├── G2.87 AdvancedAnalysis compatibility getter Phase 1 authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#240` merged at
+│   │   │          `55861bb10d19dfafe9ff5e100f583069dcdbc2a9`
 │   │   ├── Evidence: `backend-advanced-analysis-compat-getter-phase1-authorization-2026-05-25.md`
-│   │   ├── Current HEAD: `a20c92eef786ee816d0a8c171641c292ba2455f8`
+│   │   ├── Current HEAD: `55861bb10d19dfafe9ff5e100f583069dcdbc2a9`
 │   │   ├── Result: authorizes only a future G2.88 Phase 1 implementation that
 │   │   │          may add a private async initializer, retarget
 │   │   │          `get_advanced_analysis_service_dependency()` fallback away
@@ -1403,9 +1404,28 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no source, test, route/API, OpenAPI,
 │   │                frontend, runtime/PM2, OpenSpec, public getter deletion,
 │   │                dependency provider removal, or issue-label change is made
-│   └── Next gate: Human review / PR merge decision for G2.87 authorization; if
-│                  accepted, create G2.88 implementation branch before any
-│                  AdvancedAnalysis source edit
+│   ├── G2.88 AdvancedAnalysis compatibility getter Phase 1 implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-advanced-analysis-compat-getter-phase1-implementation-2026-05-25.md`
+│   │   ├── Current HEAD: `55861bb10d19dfafe9ff5e100f583069dcdbc2a9`
+│   │   ├── Result: adds private `_get_or_create_advanced_analysis_service()`,
+│   │   │          keeps public `get_advanced_analysis_service()` as a Phase 1
+│   │   │          compatibility wrapper, retargets
+│   │   │          `get_advanced_analysis_service_dependency()` fallback away
+│   │   │          from the public getter, and proves the fallback via TDD red /
+│   │   │          green lifecycle coverage; post-change scan shows route/API
+│   │   │          public getter hits=`0`, exact public getter production hits are
+│   │   │          definition-only, lifecycle tests `4 passed`, health route
+│   │   │          conflicts `120 passed`, and OpenAPI remains paths=`500` with
+│   │   │          duplicate operation IDs=`0`
+│   │   └── Boundary: source-capable but limited to the service module, focused
+│   │                lifecycle test, governance report, generated artifact,
+│   │                task card, and steward-tree update; no public getter
+│   │                deletion, route/API, OpenAPI exposure, frontend, PM2,
+│   │                OpenSpec, or issue-label change is made here
+│   └── Next gate: Human review / PR merge decision for G2.88 implementation; if
+│                  accepted, prepare a closeout / candidate-refresh packet before
+│                  any further AdvancedAnalysis getter retirement decision
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

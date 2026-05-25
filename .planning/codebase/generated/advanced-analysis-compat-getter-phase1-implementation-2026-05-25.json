@@ -1,0 +1,70 @@
+{
+  "workline": "G2.88 AdvancedAnalysis compatibility getter Phase 1 implementation",
+  "status": "ready_for_review",
+  "prepared_at": "2026-05-25T17:08:32+08:00",
+  "worktree": ".worktrees/g2-88-advanced-analysis-compat-getter-phase1-implementation",
+  "branch": "g2-88-advanced-analysis-compat-getter-phase1-implementation",
+  "base_head": "55861bb10d19dfafe9ff5e100f583069dcdbc2a9",
+  "parent_authorization_pr": {
+    "number": 240,
+    "state": "MERGED",
+    "merge_commit": "55861bb10d19dfafe9ff5e100f583069dcdbc2a9"
+  },
+  "allowed_source_scope": [
+    "web/backend/app/services/advanced_analysis_service.py",
+    "web/backend/tests/test_advanced_analysis_service_lifecycle_di.py"
+  ],
+  "implementation_summary": {
+    "private_initializer_added": "_get_or_create_advanced_analysis_service",
+    "public_compatibility_getter_kept": "get_advanced_analysis_service",
+    "dependency_provider_kept": "get_advanced_analysis_service_dependency",
+    "dependency_provider_fallback": "retargeted from public compatibility getter to private initializer",
+    "route_api_changes": false,
+    "openapi_exposure_changes": false,
+    "frontend_changes": false,
+    "openspec_changes": false,
+    "issue_label_changes": false
+  },
+  "tdd": {
+    "red_command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py::test_advanced_analysis_service_dependency_fallback_uses_private_initializer -q --no-cov --tb=short",
+    "red_result": "1 failed; provider fallback called patched public compatibility getter",
+    "green_command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_advanced_analysis_service_lifecycle_di.py -q --no-cov --tb=short",
+    "green_result": "4 passed in 3.90s"
+  },
+  "gitnexus_pre_edit": {
+    "repo": "g2-88-advanced-analysis-compat-getter-phase1-implementation",
+    "get_advanced_analysis_service": {
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct_impacted_symbol": "get_advanced_analysis_service_dependency"
+    },
+    "get_advanced_analysis_service_dependency": {
+      "risk": "LOW",
+      "impacted_count": 0
+    }
+  },
+  "post_change_reference_scan": {
+    "public_getter_hits": 1,
+    "public_getter_hit_scope": "definition only",
+    "route_api_public_getter_hits": 0,
+    "private_initializer_hits": 3,
+    "dependency_provider_refs": 19
+  },
+  "verification": {
+    "focused_lifecycle_tests": "4 passed in 3.90s",
+    "health_route_conflicts": "120 passed in 76.56s",
+    "ruff_touched_backend_files": "passed",
+    "black_check_touched_backend_files": "passed",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "warnings": 0
+    }
+  },
+  "rollback": {
+    "strategy": "revert this PR as one unit",
+    "restores": "provider fallback direct call to public get_advanced_analysis_service and removes the private initializer plus focused test expectation"
+  }
+}
