@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-230"
+  title: "Migrate futures DataSourceFactory route dependency"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-futures-route-migration-implementation"
+  objective: "migrate final futures route DataSourceFactory direct calls to FastAPI dependency injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-futures-route-migration"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-futures-route-migration"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "Route entrypoints and behavior are unchanged; only provider acquisition changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-futures-route-migration-implementation-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-futures-route-migration-implementation-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-230.yaml"
+    - "web/backend/app/api/data/futures.py"
+    - "web/backend/tests/test_health_route_conflicts.py"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No route path, response model, response shape, OpenAPI exposure, frontend, PM2, runtime process, OpenSpec, or issue-label change"
+  - "No compatibility getter cleanup"
+  - "No edits to route/API consumers other than futures.py"
+  - "No formatting outside futures.py"
+
+acceptance:
+  checks:
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_futures_routes_use_data_source_factory_dependency -q --no-cov --tb=short before implementation"
+      required: true
+    - id: "focused-green"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_futures_routes_use_data_source_factory_dependency -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "provider-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "style"
+      command: "ruff check web/backend/app/api/data/futures.py web/backend/tests/test_health_route_conflicts.py && black --check web/backend/app/api/data/futures.py web/backend/tests/test_health_route_conflicts.py"
+      required: true
+    - id: "openapi-smoke"
+      command: "PYTHONPATH=web/backend python -c 'from app.main import app; app.openapi()'"
+      required: true
+    - id: "direct-ref-scan"
+      command: "scan web/backend/app/api for get_data_source_factory() excluding get_data_source_factory_dependency"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-futures-route-migration-implementation-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-futures-route-migration-implementation-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-230.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-230.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "staged-gitnexus-scope"
+      command: "MCP gitnexus.detect_changes(scope=staged)"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "File-level GitNexus impact is CRITICAL due accepted futures.py import fan-out"
+    - "If route paths, response shape, OpenAPI exposure, compatibility getter, or other route consumers change, this PR exceeds authorization"
+  rollback_plan: "revert this implementation PR; direct factory calls would return only in futures.py"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "migrate final futures route direct DataSourceFactory calls to dependency injection"
+    modified_scope: "futures.py, health route conflict dependency guard, implementation report, generated artifact, steward tree, and task card"
+    dependency_changes: "route handlers now receive DataSourceFactory through get_data_source_factory_dependency"
+    legacy_logic_impact: "compatibility getter remains unchanged; direct route/API calls move 2 -> 0"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if route/OpenAPI/response or provider behavior regresses"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T11:08:57+08:00"
+    approval_note: "human maintainer accepted G2.77 implementation authorization by merging PR #229"
+    secondary_approved: false

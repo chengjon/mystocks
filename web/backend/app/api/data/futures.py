@@ -1,6 +1,7 @@
 """
 股指期货数据路由 (Futures)
 """
+
 from typing import Any, Dict
 
 from fastapi import APIRouter, Depends, Query
@@ -8,6 +9,7 @@ from fastapi import APIRouter, Depends, Query
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
 from app.openapi_config import COMMON_RESPONSES
+from app.services.data_source_factory import DataSourceFactory, get_data_source_factory_dependency
 
 router = APIRouter()
 
@@ -84,11 +86,9 @@ async def get_futures_index_daily(
     start_date: str = Query(..., description="查询开始日期，格式为 YYYY-MM-DD。"),
     end_date: str = Query(..., description="查询结束日期，格式为 YYYY-MM-DD。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> Dict[str, Any]:
     try:
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
         result = await factory.get_data(
             "data",
             "futures/index/daily",
@@ -96,7 +96,10 @@ async def get_futures_index_daily(
         )
         return {"success": True, "data": result.get("data", []), "symbol": symbol}
     except Exception as e:
-        raise BusinessException(detail=f"获取股指期货日线失败: {str(e)}", status_code=500, error_code="DATA_RETRIEVAL_FAILED")
+        raise BusinessException(
+            detail=f"获取股指期货日线失败: {str(e)}", status_code=500, error_code="DATA_RETRIEVAL_FAILED"
+        )
+
 
 @router.get(
     "/futures/index/realtime",
@@ -107,11 +110,9 @@ async def get_futures_index_daily(
 async def get_futures_index_realtime(
     symbol: str = Query(..., description="股指期货合约代码，例如 IF2404、IH2404 或 IC2404。"),
     current_user: User = Depends(get_current_user),
+    factory: DataSourceFactory = Depends(get_data_source_factory_dependency),
 ) -> Dict[str, Any]:
     try:
-        from app.services.data_source_factory import get_data_source_factory
-
-        factory = await get_data_source_factory()
         result = await factory.get_data("data", "futures/index/realtime", {"symbol": symbol})
         return {"success": True, "data": result.get("data", []), "symbol": symbol}
     except Exception as e:
