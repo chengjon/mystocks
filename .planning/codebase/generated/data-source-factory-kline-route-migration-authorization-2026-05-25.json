@@ -1,0 +1,118 @@
+{
+  "artifact": "data-source-factory-kline-route-migration-authorization-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25",
+  "branch": "g2-72-data-source-factory-route-candidate-authorization",
+  "current_head": "f4e3db66effa63ce37c94ad0f2b687a606ff8396",
+  "scope": {
+    "type": "authorization_only",
+    "source_edits": false,
+    "allowed_future_candidate": "web/backend/app/api/data/kline.py",
+    "allowed_future_style_normalization": [
+      "same-file E701 cleanup in web/backend/app/api/data/kline.py",
+      "same-file black normalization in web/backend/app/api/data/kline.py if required by the future implementation diff"
+    ],
+    "excluded": [
+      "backend source edits in G2.72",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "response model or response shape changes",
+      "frontend changes",
+      "runtime or PM2 gates",
+      "OpenSpec changes",
+      "issue label changes",
+      "compatibility getter deletion",
+      "formatting or lint cleanup outside web/backend/app/api/data/kline.py in the future implementation branch"
+    ]
+  },
+  "baseline": {
+    "tests": {
+      "web/backend/tests/test_health_route_conflicts.py": "117 passed",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py": "4 passed"
+    },
+    "direct_route_api_factory_refs": {
+      "total": 6,
+      "locations": [
+        "web/backend/app/api/data/stocks.py:269",
+        "web/backend/app/api/data/stocks.py:371",
+        "web/backend/app/api/data/kline.py:145",
+        "web/backend/app/api/data/kline.py:245",
+        "web/backend/app/api/data/futures.py:91",
+        "web/backend/app/api/data/futures.py:114"
+      ]
+    },
+    "candidate_matrix": {
+      "rows": [
+        {
+          "file": "web/backend/app/api/data/kline.py",
+          "loc": 252,
+          "route_count": 4,
+          "direct_refs": 2,
+          "direct_ref_lines": [
+            145,
+            245
+          ],
+          "ruff": "fails E701 x2 at lines 147 and 148",
+          "black": "would reformat",
+          "gitnexus": "LOW/1"
+        },
+        {
+          "file": "web/backend/app/api/data/stocks.py",
+          "loc": 417,
+          "route_count": 5,
+          "direct_refs": 2,
+          "direct_ref_lines": [
+            269,
+            371
+          ],
+          "ruff": "fails E701 x5 at lines 321, 324, 345, 348, and 401",
+          "black": "would reformat",
+          "gitnexus": "LOW/1"
+        },
+        {
+          "file": "web/backend/app/api/data/futures.py",
+          "loc": 123,
+          "route_count": 2,
+          "direct_refs": 2,
+          "direct_ref_lines": [
+            91,
+            114
+          ],
+          "ruff": "passed",
+          "black": "would reformat",
+          "gitnexus": "CRITICAL/31 at maxDepth=1"
+        }
+      ]
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0,
+      "warning_count": 0,
+      "env_note": "OpenAPI smoke loaded the root .env into the isolated worktree without recording secret values."
+    }
+  },
+  "decision": {
+    "selected_next_candidate": {
+      "file": "web/backend/app/api/data/kline.py",
+      "future_branch": "G2.73",
+      "reason": "Among the remaining three direct route/API DataSourceFactory consumers, kline.py has GitNexus LOW/1 impact, four routes, two direct factory refs, and only two same-file E701 style findings. It is lower risk than futures.py, which is CRITICAL/31, and smaller with less style debt than stocks.py.",
+      "expected_direct_ref_change": {
+        "total": "6 -> 4",
+        "kline_py": "2 -> 0"
+      }
+    },
+    "deferred_candidates": [
+      {
+        "file": "web/backend/app/api/data/stocks.py",
+        "reason": "LOW/1 but larger route/source surface and five E701 findings; defer until kline.py proves the same-file style-normalization pattern."
+      },
+      {
+        "file": "web/backend/app/api/data/futures.py",
+        "reason": "ruff passes, but black would reformat and GitNexus file-level impact is CRITICAL/31; requires a narrower risk packet before source migration."
+      }
+    ]
+  },
+  "next_gate": "Human review / PR merge decision for G2.72. If accepted, create a separate G2.73 path-limited implementation branch for kline.py only."
+}
