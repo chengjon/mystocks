@@ -1,0 +1,118 @@
+version: "v0.2"
+
+task:
+  id: "pr-236"
+  title: "Authorize DataSourceFactory compatibility getter final retirement"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-compat-getter-final-retirement-authorization"
+  objective: "authorize a future source implementation to remove the public DataSourceFactory compatibility getter and package exports after phase 1 decoupling"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-compat-getter-final-retirement-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-compat-getter-final-retirement-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only authorization packet that records future source scope and does not change runtime behavior"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-236.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source or test edits in this authorization packet"
+  - "No public get_data_source_factory() deletion in this authorization packet"
+  - "No package export removal in this authorization packet"
+  - "No route path, response model, response shape, OpenAPI exposure, docs/API, generated client, frontend, PM2, runtime process, OpenSpec, or issue-label change"
+
+acceptance:
+  checks:
+    - id: "precise-consumer-scan"
+      command: "scan exact public get_data_source_factory refs excluding get_data_source_factory_dependency"
+      required: true
+    - id: "gitnexus-impact"
+      command: "MCP gitnexus.impact(target=get_data_source_factory, direction=upstream, includeTests=true)"
+      required: true
+    - id: "focused-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "stocks-runtime-fallback-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_stocks_runtime_fallback.py -q --no-cov --tb=short"
+      required: true
+    - id: "known-test-consumer-baseline"
+      command: "record current market_api_integration and data_api_regression failures without treating them as G2.84 success criteria"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-compat-getter-final-retirement-authorization-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-236.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-236.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If future implementation deletes the public getter while live production consumers remain, runtime imports can break"
+    - "If future implementation treats existing unrelated test failures as fixed, the verification record becomes misleading"
+    - "GitNexus still reports stale CRITICAL route/API callers and must not be ignored without precise current-head scans"
+  rollback_plan: "revert this authorization PR; G2.82 remains the accepted state with public getter and package exports retained"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize future final retirement of the DataSourceFactory compatibility getter"
+    modified_scope: "authorization report, generated artifact, steward tree, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none in this packet; future G2.84 may remove the public getter only under this packet's scope"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this authorization PR if the future source scope or evidence is incorrect"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T13:21:46+08:00"
+    approval_note: "human maintainer accepted continuing after G2.82; this packet authorizes a future implementation branch only"
+    secondary_approved: false

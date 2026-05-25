@@ -1,0 +1,71 @@
+{
+  "artifact": "data-source-factory-compat-getter-final-retirement-authorization-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T13:21:46+08:00",
+  "branch": "g2-83-data-source-factory-compat-getter-final-retirement-authorization",
+  "current_head": "075768a56ea78f11796387d25fe33eed04668c6f",
+  "current_state": {
+    "exact_public_getter_hits": 9,
+    "production_exact_public_getter_hits": 3,
+    "exact_public_getter_imports": 1,
+    "exact_public_getter_calls": 2,
+    "exact_public_getter_definitions": 1,
+    "package_export_lines": 2,
+    "production_hits_are_definition_and_package_exports_only": true,
+    "route_api_production_consumers": 0
+  },
+  "remaining_test_consumers": [
+    "web/backend/tests/test_data_source_factory_lifecycle_di.py",
+    "web/backend/tests/test_market_api_integration.py",
+    "web/backend/tests/test_data_stocks_runtime_fallback.py",
+    "tests/backend/test_data_api_regression.py"
+  ],
+  "verification": {
+    "lifecycle_tests": "5 passed",
+    "stocks_runtime_fallback": "1 passed",
+    "market_api_integration": "3 failed, 15 passed; existing DB-dependent localhost:5438 failures",
+    "data_api_regression": "3 failed; existing historical-route 404 failures"
+  },
+  "gitnexus": {
+    "get_data_source_factory_impact": {
+      "risk": "CRITICAL",
+      "impacted_count": 22,
+      "direct_dependents": 21,
+      "processes_affected": 12,
+      "process_families": [
+        "Get_sources_health",
+        "Get_system_status_overview"
+      ]
+    },
+    "interpretation": "Treat GitNexus route/API callers as stale-index/high-risk warning because precise current-head scan shows no live route/API production consumer remains."
+  },
+  "authorization": {
+    "future_stage": "G2.84 final public getter and package export retirement",
+    "authorized": true,
+    "source_edits_in_this_packet": false,
+    "allowed_future_files": [
+      "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "web/backend/app/services/data_source_factory/__init__.py",
+      "web/backend/tests/test_data_source_factory_lifecycle_di.py",
+      "web/backend/tests/test_market_api_integration.py",
+      "web/backend/tests/test_data_stocks_runtime_fallback.py",
+      "tests/backend/test_data_api_regression.py"
+    ],
+    "forbidden_future_scope": [
+      "web/backend/app/api/**",
+      "route paths",
+      "response models",
+      "response shapes",
+      "OpenAPI exposure",
+      "frontend files",
+      "runtime or PM2 scripts",
+      "OpenSpec changes",
+      "GitHub issue labels",
+      "DATA_SOURCE_FACTORY_STATE_KEY",
+      "get_data_source_factory_dependency removal",
+      "_get_or_create_data_source_factory removal",
+      "unrelated DB-dependent or historical-route test fixes"
+    ]
+  },
+  "next_gate": "Human review / PR merge decision for G2.83 authorization. If accepted, create G2.84 source implementation branch."
+}
