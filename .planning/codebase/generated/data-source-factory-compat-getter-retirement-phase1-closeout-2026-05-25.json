@@ -1,0 +1,43 @@
+{
+  "artifact": "data-source-factory-compat-getter-retirement-phase1-closeout-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T13:10:00+08:00",
+  "branch": "g2-82-data-source-factory-compat-getter-phase1-closeout",
+  "current_head": "c176b9e71dd0fe4fb9df65c1f2c82631a45cfc3d",
+  "merge_evidence": {
+    "g2_81_pr": 234,
+    "pr_state": "MERGED",
+    "merged_at": "2026-05-25T05:06:06Z",
+    "merge_commit": "c176b9e71dd0fe4fb9df65c1f2c82631a45cfc3d",
+    "implementation_commit": "3e2888c4ff89788d512d2dbde64f1e605ae66225",
+    "base_branch": "wip/root-dirty-20260403"
+  },
+  "current_head_evidence": {
+    "lifecycle_tests": "5 passed in 1.77s",
+    "health_route_conflicts": "120 passed in 69.72s",
+    "openapi_smoke": {
+      "env_source": "/opt/claude/mystocks_spec/.env",
+      "routes": 548,
+      "paths": 500,
+      "operation_ids": 536,
+      "duplicate_operation_ids": 0
+    },
+    "reference_scan": {
+      "route_api_direct_get_data_source_factory_calls": 0,
+      "service_module_exact_refs": 1,
+      "service_helper_public_getter_calls": 0,
+      "package_export_mentions": 4,
+      "service_private_initializer_refs": 7
+    }
+  },
+  "accepted_state": {
+    "g2_81_phase_1_service_internal_decoupling": true,
+    "private_initializer_exists": "_get_or_create_data_source_factory",
+    "public_getter_kept": true,
+    "public_getter_role": "compatibility wrapper",
+    "package_exports_kept": true,
+    "public_getter_deletion_authorized": false,
+    "package_export_removal_authorized": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.82 closeout. Further public getter or package export retirement requires a separate authorization packet."
+}

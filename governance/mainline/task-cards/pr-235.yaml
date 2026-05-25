@@ -1,0 +1,114 @@
+version: "v0.2"
+
+task:
+  id: "pr-235"
+  title: "Close out DataSourceFactory compatibility getter phase 1 decoupling"
+  owner: "main"
+  created_at: "2026-05-25"
+
+mainline:
+  id: "L1-data-source-factory-compat-getter-phase1-closeout"
+  objective: "record the merged G2.81 phase 1 decoupling as accepted and refresh current-head evidence"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-data-source-factory-compat-getter-phase1-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-data-source-factory-compat-getter-phase1-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only closeout that records current-head evidence and does not change runtime behavior"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/data-source-factory-compat-getter-retirement-phase1-closeout-2026-05-25.json"
+    - "docs/reports/quality/backend-data-source-factory-compat-getter-retirement-phase1-closeout-2026-05-25.md"
+    - "governance/mainline/task-cards/pr-235.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source or test edits"
+  - "No public get_data_source_factory() deletion"
+  - "No package export removal from web/backend/app/services/data_source_factory/__init__.py"
+  - "No route path, response model, response shape, OpenAPI exposure, docs/API, generated client, frontend, PM2, runtime process, OpenSpec, or issue-label change"
+
+acceptance:
+  checks:
+    - id: "current-head-provider-lifecycle-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_source_factory_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "current-head-health-route-conflicts-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "current-head-openapi-smoke"
+      command: "PYTHONPATH=web/backend python -c \"from dotenv import load_dotenv; load_dotenv('/opt/claude/mystocks_spec/.env'); from app.main import app; app.openapi()\""
+      required: true
+    - id: "reference-scan"
+      command: "scan route/API direct calls, service helper public getter calls, package export mentions, and private initializer refs"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-data-source-factory-compat-getter-retirement-phase1-closeout-2026-05-25.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/data-source-factory-compat-getter-retirement-phase1-closeout-2026-05-25.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-235.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-235.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is treated as deletion authorization, later work could bypass the required source-capable decision packet"
+    - "If current-head evidence is stale, steward tree sequencing could mislead the next retained-shim decision"
+  rollback_plan: "revert this governance-only closeout PR and keep G2.81 recorded as pending review until fresh evidence is prepared"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out merged G2.81 phase 1 service-internal decoupling"
+    modified_scope: "closeout report, generated artifact, steward tree, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; public compatibility getter and package exports remain intact"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this closeout PR if current-head evidence or steward-tree state is incorrect"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-25T13:10:00+08:00"
+    approval_note: "human maintainer accepted continuing after PR #234 merge; this packet records closeout evidence only"
+    secondary_approved: false
