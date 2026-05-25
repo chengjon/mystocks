@@ -1,0 +1,118 @@
+{
+  "artifact": "tradingview-getter-retirement-authorization-2026-05-25",
+  "status": "ready_for_review",
+  "created_at": "2026-05-25T21:23:23+08:00",
+  "branch": "g2-102-tradingview-getter-retirement-authorization",
+  "current_head": "c8eae46c738fff199100cf4e02015a9ade887eee",
+  "parent_pr": {
+    "number": 254,
+    "title": "docs(governance): refresh service candidates after enhanced data service",
+    "merge_commit": "c8eae46c738fff199100cf4e02015a9ade887eee",
+    "disposition": "accepted"
+  },
+  "target": {
+    "getter_symbol": "get_tradingview_service",
+    "service_class": "TradingViewWidgetService",
+    "service_file": "web/backend/app/services/tradingview_widget_service.py",
+    "getter_lines": "322-327",
+    "direct_caller": "install_tradingview_service",
+    "dependency_provider": "get_tradingview_service_dependency"
+  },
+  "current_head_reference_scan": {
+    "get_tradingview_service": {
+      "app_refs": 2,
+      "route_api_refs": 0,
+      "test_refs": 2,
+      "package_export_refs": 0,
+      "notes": [
+        "App refs are the getter definition plus install_tradingview_service fallback call.",
+        "Test refs are in web/backend/tests/test_tradingview_service_lifecycle_di.py."
+      ]
+    },
+    "_tradingview_service": {
+      "app_refs": 5,
+      "route_api_refs": 0,
+      "test_refs": 0,
+      "package_export_refs": 0
+    },
+    "TradingViewWidgetService": {
+      "app_refs": 14,
+      "route_api_refs": 7,
+      "test_refs": 0,
+      "deletion_authorized": false
+    },
+    "install_tradingview_service": {
+      "app_refs": 4,
+      "route_api_refs": 0,
+      "test_refs": 4,
+      "deletion_authorized": false
+    },
+    "get_tradingview_service_dependency": {
+      "app_refs": 8,
+      "route_api_refs": 7,
+      "test_refs": 3,
+      "deletion_authorized": false
+    }
+  },
+  "gitnexus": {
+    "analyze": {
+      "command": "gitnexus analyze --with-gitignore",
+      "result": "repository indexed successfully",
+      "nodes": 62770,
+      "edges": 145915,
+      "clusters": 3294,
+      "flows": 300
+    },
+    "impact": {
+      "target": "get_tradingview_service",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct": 1,
+      "processes_affected": 0,
+      "affected_processes": []
+    },
+    "context": {
+      "incoming": "install_tradingview_service calls get_tradingview_service",
+      "outgoing": "none",
+      "processes": []
+    }
+  },
+  "authorized_future_scope": {
+    "if_this_packet_is_accepted": {
+      "may_create": "G2.103 TradingView getter-retirement implementation",
+      "allowed_paths": [
+        "web/backend/app/services/tradingview_widget_service.py",
+        "web/backend/tests/test_tradingview_service_lifecycle_di.py",
+        ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+        ".planning/codebase/generated/tradingview-getter-retirement-implementation-2026-05-25.json",
+        "docs/reports/quality/backend-tradingview-getter-retirement-implementation-2026-05-25.md",
+        "governance/mainline/task-cards/pr-256.yaml"
+      ],
+      "allowed_actions": [
+        "Remove only get_tradingview_service from web/backend/app/services/tradingview_widget_service.py.",
+        "Remove the private _tradingview_service singleton state only if it becomes unused after getter retirement.",
+        "Change install_tradingview_service fallback from the retired getter to direct TradingViewWidgetService construction or an equivalent module-local factory that does not preserve a public compatibility getter.",
+        "Update the existing lifecycle DI test so it proves app.state fallback installation still works without the public getter.",
+        "Add or update focused absence assertions proving the public getter and private singleton state are retired while TradingViewWidgetService, install_tradingview_service, close_tradingview_service, and get_tradingview_service_dependency remain importable."
+      ]
+    }
+  },
+  "forbidden_scope": [
+    "Do not delete TradingViewWidgetService.",
+    "Do not delete install_tradingview_service, close_tradingview_service, or get_tradingview_service_dependency.",
+    "Do not edit TradingView route modules in this authorization packet.",
+    "Do not change routes, response models, response shapes, or OpenAPI exposure.",
+    "Do not change frontend, PM2, OpenSpec changes/specs, GitHub issue labels, or readiness state."
+  ],
+  "boundary": {
+    "this_packet_changes_source": false,
+    "this_packet_changes_tests": false,
+    "this_packet_changes_routes": false,
+    "this_packet_changes_openapi": false,
+    "this_packet_changes_pm2": false,
+    "this_packet_changes_openspec": false,
+    "this_packet_changes_issue_labels": false
+  },
+  "next_gate": "Human review / PR merge decision for G2.102; if accepted, create G2.103 source-capable implementation with TDD red/green."
+}
