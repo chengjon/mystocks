@@ -1788,7 +1788,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                consolidation, class deletion, getter deletion, or
 │   │                issue-label change is made here
 │   ├── G2.110 Service lifecycle candidate refresh after EmailNotificationService
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#263` merged at
+│   │   │          `c4abd4e8c4705f07a7d86e13c2090d30575e95e9`
 │   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-email-notification-2026-05-26.md`
 │   │   ├── Current HEAD: `ae6d2f287ddb8d71119ce52ef4ebaf00d64dc7b5`
 │   │   ├── Result: current scan covers service files=`152`, backend app files=`575`,
@@ -1805,9 +1806,26 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, service migration, or issue-label change
 │   │                is made here
-│   └── Next gate: human review / PR merge decision for G2.110; if accepted,
-│                  create G2.111 MarketDataService getter-retirement
-│                  authorization before any market-data service source edit
+│   ├── G2.111 MarketDataService getter-retirement authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-market-data-service-getter-retirement-authorization-2026-05-26.md`
+│   │   ├── Current HEAD: `c4abd4e8c4705f07a7d86e13c2090d30575e95e9`
+│   │   ├── Decision: authorize only a future G2.112 implementation branch to
+│   │   │          retire the package-level
+│   │   │          `market_data_service/get_market_data_service.py`
+│   │   │          `_market_data_service` and `get_market_data_service` surface,
+│   │   │          while preserving `MarketDataService`, `install_market_data_service`,
+│   │   │          and `get_market_data_service_dependency`
+│   │   ├── Result: GitNexus impact is LOW / `0`; direct API refs=`0`, but
+│   │   │          app refs exist in `market_data_adapter.py` and package exports,
+│   │   │          so the future implementation must include adapter/package
+│   │   │          cleanup and focused tests rather than deleting the getter alone
+│   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                service migration, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.111; if accepted,
+│                  create G2.112 MarketDataService getter-retirement
+│                  implementation before any market-data service source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -1903,7 +1921,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-email-notification-getter-retirement-authorization-2026-05-26.md` | G | G2.107 authorization accepted in PR `#260` at `d120d6d`: authorizes only a future G2.108 implementation branch to retire `email_notification_service.py` module-level `_email_service` and `get_email_service`, preserves `EmailNotificationService`, keeps route-backed `email_service.py`, `get_email_service_dependency`, notification routes, OpenAPI, PM2, and OpenSpec out of scope, and records that file-path GitNexus context for `email_notification_service.py:get_email_service` has no incoming graph callers while bare `get_email_service` impact resolves to the separate route-backed `email_service.py` symbol | Superseded by G2.108 EmailNotificationService getter-retirement implementation |
 | `backend-email-notification-getter-retirement-implementation-2026-05-26.md` | G | G2.108 implementation accepted in PR `#261` at `9cb643d`: removes only `email_notification_service.py:_email_service` and `email_notification_service.py:get_email_service`, preserves `EmailNotificationService`, leaves route-backed `email_service.py`, `get_email_service_dependency`, and notification routes untouched, records TDD red `1 failed`, focused green `5 passed`, health route conflicts `120 passed`, touched-file ruff and black checks passed, and exact post-change scan shows target getter refs=`0` and target singleton refs=`0` | Superseded by G2.109 EmailNotificationService getter-retirement closeout |
 | `backend-email-notification-getter-retirement-closeout-2026-05-26.md` | G | G2.109 closeout accepted in PR `#262` at `ae6d2f2`: records PR `#261` merge, confirms current-head `email_notification_service.py:get_email_service` refs=`0`, `_email_service` refs=`0`, route/API direct `email_notification_service` refs=`0`, preserves `EmailNotificationService` and route-backed `get_email_service_dependency`, and re-runs focused tests `5 passed`, health route conflicts `120 passed`, ruff, and black checks | Superseded by G2.110 service lifecycle candidate refresh after EmailNotificationService |
-| `backend-service-lifecycle-candidate-refresh-after-email-notification-2026-05-26.md` | G | G2.110 candidate refresh prepared at `ae6d2f2`: scans service files=`152`, backend app files=`575`, API files=`219`, backend test files=`199`, all test files=`1211`, getter definitions=`16`, candidate-like definitions=`9`; confirms retired `email_notification_service.py:get_email_service` is gone, records `get_market_data_service` as the only LOW / `0` next authorization candidate with route/API direct refs=`0`, and keeps streaming HIGH, TDX/data/strategy/stock search CRITICAL, and email/watchlist/announcement holds out of source scope | Human review / PR merge decision; if accepted, create G2.111 MarketDataService getter-retirement authorization before any market-data service source edit |
+| `backend-service-lifecycle-candidate-refresh-after-email-notification-2026-05-26.md` | G | G2.110 candidate refresh accepted in PR `#263` at `c4abd4e`: scans service files=`152`, backend app files=`575`, API files=`219`, backend test files=`199`, all test files=`1211`, getter definitions=`16`, candidate-like definitions=`9`; confirms retired `email_notification_service.py:get_email_service` is gone, records `get_market_data_service` as the only LOW / `0` next authorization candidate with route/API direct refs=`0`, and keeps streaming HIGH, TDX/data/strategy/stock search CRITICAL, and email/watchlist/announcement holds out of source scope | Superseded by G2.111 MarketDataService getter-retirement authorization |
+| `backend-market-data-service-getter-retirement-authorization-2026-05-26.md` | G | G2.111 authorization prepared at `c4abd4e`: authorizes only a future G2.112 implementation branch for the package-level `market_data_service/get_market_data_service.py` `_market_data_service` and `get_market_data_service` retirement; preserves `MarketDataService`, `install_market_data_service`, and `get_market_data_service_dependency`, records GitNexus impact LOW / `0`, direct API refs=`0`, and requires future adapter/package export cleanup because `market_data_adapter.py` and package `__init__.py` still reference the getter | Human review / PR merge decision; if accepted, create G2.112 MarketDataService getter-retirement implementation before any market-data service source edit |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
