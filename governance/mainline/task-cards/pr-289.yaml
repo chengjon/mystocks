@@ -1,0 +1,119 @@
+version: "v0.2"
+
+task:
+  id: "pr-289"
+  title: "Retire unused IntegratedServices facade getters"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-unused-integrated-services-facade-getter-retirement-implementation"
+  objective: "remove six unused IntegratedServices service-facade getters under the accepted G2.135 authorization boundary"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-unused-integrated-services-facade-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-unused-integrated-services-facade-getter-retirement-implementation"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow backend service facade cleanup; no route, OpenAPI, frontend, runtime endpoint, or product surface changes are introduced"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/services/__init__.py"
+    - "web/backend/tests/test_integrated_services_facade_getter_retirement.py"
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.json"
+    - "docs/reports/quality/backend-unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-289.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/backend/app/services/market_data_service/**"
+    - "web/backend/app/services/tdx_service.py"
+    - "web/backend/app/services/data_service.py"
+    - "web/backend/app/services/strategy_service.py"
+    - "web/backend/app/services/realtime_streaming_service.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "pre-edit-gitnexus-impact"
+      command: "GitNexus impact for get_trading_data_service, get_analysis_data_service, get_data_api_service, get_database_service, get_websocket_service, and get_cache_service"
+      required: true
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_integrated_services_facade_getter_retirement.py -q --no-cov --tb=short before implementation"
+      required: true
+    - id: "focused-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_integrated_services_facade_getter_retirement.py -q --no-cov --tb=short"
+      required: true
+    - id: "import-smoke"
+      command: "PYTHONPATH=web/backend python -c \"import app.services ...\""
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/services/__init__.py web/backend/tests/test_integrated_services_facade_getter_retirement.py"
+      required: true
+    - id: "black"
+      command: "black --check web/backend/app/services/__init__.py web/backend/tests/test_integrated_services_facade_getter_retirement.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-289.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not change route/API files, OpenAPI exposure, PM2 workflow, frontend files, OpenSpec content, or issue labels."
+  - "Do not remove get_integrated_services, get_market_data_service, risk helper facades, or HIGH/CRITICAL service getters."
+  - "Do not edit files outside the accepted G2.135 implementation boundary."
+
+risk_and_rollback:
+  risks:
+    - "If locked facade getters are removed, downstream compatibility can break despite the narrow source change"
+    - "If services/__init__.py annotations are not kept lint-clean, repository F821/F401 quality gates can regress"
+  rollback_plan: "revert this implementation PR to restore the six unused facade getter definitions and remove the focused test/report/artifact/task-card updates"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "retire six unused IntegratedServices service-facade getters"
+    modified_scope: "services/__init__.py, one focused test, steward tree, implementation report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "six unused facade accessors removed; composition root and locked compatibility facades preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, import smoke, exact scan, Ruff, Black, staged GitNexus scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T12:42:07+08:00"
+    approval_note: "Implementation follows merged G2.135 authorization PR #288"
+    secondary_approved: false

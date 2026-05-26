@@ -8,9 +8,18 @@ from __future__ import annotations
 
 from datetime import datetime
 import logging
-from typing import Any, Dict, List, Optional
+from typing import TYPE_CHECKING, Dict, List, Optional
 
 logger = __import__("logging").getLogger(__name__)
+
+if TYPE_CHECKING:
+    from .market_api import MarketDataService
+    from .risk_management.risk_alerts import AlertManager
+    from .risk_management.risk_base import RiskProfile
+    from .risk_management.risk_calculator import RiskCalculator
+    from .risk_management.risk_dashboard import RiskDashboard
+    from .risk_management.risk_monitoring import RiskMonitoring
+    from .risk_management.risk_settings import RiskSettingsManager
 
 
 class IntegratedServices:
@@ -25,7 +34,7 @@ class IntegratedServices:
         from .data_api_new import DataApiService
         from .market_api import MarketDataService
         from .risk_management.risk_alerts import AlertManager
-        from .risk_management.risk_base import RiskBase, RiskProfile
+        from .risk_management.risk_base import RiskBase
         from .risk_management.risk_calculator import RiskCalculator
         from .risk_management.risk_dashboard import RiskDashboard
         from .risk_management.risk_monitoring import RiskMonitoring
@@ -146,12 +155,12 @@ class IntegratedServices:
                 "trading_data_status": await self._get_trading_data_status(),
                 "analysis_data_status": await self._get_analysis_data_status(),
                 "service_health": {
-                    "database_service": self.database_service.check_health()
-                    if self.database_service
-                    else "unavailable",
-                    "websocket_service": self.websocket_service.check_health()
-                    if self.websocket_service
-                    else "unavailable",
+                    "database_service": (
+                        self.database_service.check_health() if self.database_service else "unavailable"
+                    ),
+                    "websocket_service": (
+                        self.websocket_service.check_health() if self.websocket_service else "unavailable"
+                    ),
                     "cache_service": self.cache_service.get_health() if self.cache_service else "unavailable",
                 },
                 "generated_at": datetime.now().isoformat(),
@@ -261,42 +270,6 @@ def get_market_data_service() -> MarketDataService:
     """获取市场数据服务实例"""
     integrated_services = get_integrated_services()
     return integrated_services.market_data_service
-
-
-def get_trading_data_service() -> TradingDataService:
-    """获取交易数据服务实例"""
-    integrated_services = get_integrated_services()
-    return integrated_services.trading_data_service
-
-
-def get_analysis_data_service() -> AnalysisDataService:
-    """获取分析数据服务实例"""
-    integrated_services = get_integrated_services()
-    return integrated_services.analysis_data_service
-
-
-def get_data_api_service() -> DataApiService:
-    """获取数据API服务实例"""
-    integrated_services = get_integrated_services()
-    return integrated_services.data_api_service
-
-
-def get_database_service() -> DatabaseService:
-    """获取数据库服务实例"""
-    integrated_services = get_integrated_services()
-    return integrated_services.database_service
-
-
-def get_websocket_service() -> WebSocketService:
-    """获取WebSocket服务实例"""
-    integrated_services = get_integrated_services()
-    return integrated_services.websocket_service
-
-
-def get_cache_service() -> CacheService:
-    """获取缓存服务实例"""
-    integrated_services = get_integrated_services()
-    return integrated_services.cache_service
 
 
 def get_risk_monitoring() -> RiskMonitoring:
