@@ -1958,7 +1958,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                frontend, PM2, OpenSpec, `AnnouncementService` deletion,
 │   │                dependency deletion, or issue-label change is made here
 │   ├── G2.119 AnnouncementService getter-retirement closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#272` merged at
+│   │   │          `550ce654219385afa65fc4fbfaf6129b2d2a4ca3`
 │   │   ├── Evidence: `backend-announcement-service-getter-retirement-closeout-2026-05-26.md`
 │   │   ├── Current HEAD: `4a2a21272deff876bc9fb5f1058c0682a7f4b5de`
 │   │   ├── Result: records PR `#271` merge and closes the AnnouncementService
@@ -1972,9 +1973,31 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: closeout-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation authorization, or issue-label change is made here
-│   └── Next gate: create G2.120 service lifecycle candidate refresh after
-│                  AnnouncementService before selecting the next medium
-│                  route-backed getter lane
+│   ├── G2.120 Service lifecycle candidate refresh after AnnouncementService
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-announcement-2026-05-26.md`
+│   │   ├── Current HEAD: `550ce654219385afa65fc4fbfaf6129b2d2a4ca3`
+│   │   ├── Result: current text scan confirms service files=`152`,
+│   │   │          backend app files=`575`, API files=`219`, backend test
+│   │   │          files=`201`, getter definitions=`14`, and module-lazy
+│   │   │          candidates=`7`; `get_announcement_service` remains retired
+│   │   │          in text scan and is removed from the active candidate pool
+│   │   ├── Decision: select `get_email_service` as the next authorization
+│   │   │          candidate because exact text scan shows no API or adapter
+│   │   │          direct getter refs and notification routes use
+│   │   │          `get_email_service_dependency`; hold `get_watchlist_service`
+│   │   │          because two adapter files still import/call the getter
+│   │   ├── Evidence note: GitNexus MCP still resolves retired
+│   │   │          `get_announcement_service` graph callers after analyze, so
+│   │   │          this packet treats exact current-head text scan as the
+│   │   │          retirement truth and does not reopen the announcement lane
+│   │   └── Boundary: candidate-refresh-only; no backend source/test edit,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                getter deletion, implementation authorization, or
+│   │                issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.120; if accepted,
+│                  create G2.121 EmailService getter-retirement authorization
+│                  before any email service source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
