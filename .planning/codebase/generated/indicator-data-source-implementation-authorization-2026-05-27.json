@@ -1,0 +1,143 @@
+{
+  "artifact": "indicator-data-source-implementation-authorization-2026-05-27",
+  "task_id": "G2.161",
+  "status": "ready_for_review",
+  "scope": "authorization_package_only",
+  "created_at": "2026-05-27T01:13:49+08:00",
+  "parent": {
+    "task_id": "G2.160",
+    "pr": 313,
+    "merge_commit": "296957a12a6d1ce30919925e4637bd63bed5cc18"
+  },
+  "current_head": "296957a12a6d1ce30919925e4637bd63bed5cc18",
+  "decision": {
+    "next_gate": "G2.162",
+    "summary": "Authorize a future narrow Indicator/Data source implementation lane after G2.161 review and merge.",
+    "no_source_edits_in_this_package": true,
+    "implementation_start_requires_review_merge": true
+  },
+  "gitnexus": {
+    "get_data_service": {
+      "risk": "CRITICAL",
+      "impacted": 5,
+      "direct_callers": 3,
+      "processes": 7,
+      "d1_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators",
+        "web/backend/app/api/indicators/indicator_cache.py::_calculate_single_indicator",
+        "web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators"
+      ]
+    },
+    "calculate_indicators": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct_callers": 0,
+      "processes": 0
+    },
+    "_calculate_single_indicator": {
+      "risk": "LOW",
+      "impacted": 3,
+      "direct_callers": 1,
+      "processes": 0
+    },
+    "calculate_single_request": {
+      "risk": "LOW",
+      "impacted": 2,
+      "direct_callers": 1,
+      "processes": 0
+    },
+    "limited_calculate": {
+      "risk": "LOW",
+      "impacted": 1,
+      "direct_callers": 1,
+      "processes": 0
+    }
+  },
+  "current_head_hit_classification": {
+    "service_definition": [
+      "web/backend/app/services/data_service.py:466"
+    ],
+    "application_import_sites": [
+      "web/backend/app/api/indicators/indicator_cache.py:40",
+      "web/backend/app/api/v1/strategy/indicators.py:17"
+    ],
+    "application_body_calls": [
+      "web/backend/app/api/indicators/indicator_cache.py:343",
+      "web/backend/app/api/indicators/indicator_cache.py:613",
+      "web/backend/app/api/v1/strategy/indicators.py:201"
+    ],
+    "focused_regression_test_monkeypatches": [
+      "web/backend/tests/test_v1_indicators_regressions.py:42",
+      "web/backend/tests/test_v1_indicators_regressions.py:59"
+    ],
+    "integration_test_direct_smoke_calls": [
+      "web/backend/tests/test_integration_e2e.py:201",
+      "web/backend/tests/test_integration_e2e.py:235"
+    ]
+  },
+  "target_g2_162_closure_metric": {
+    "application_body_get_data_service_calls_before": 3,
+    "application_body_get_data_service_calls_after": 0,
+    "preserve_public_get_data_service": true,
+    "integration_test_direct_smoke_calls_may_remain_without_explicit_review": true
+  },
+  "baseline_verification": [
+    {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short",
+      "result": "2 passed in 1.94s"
+    },
+    {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --no-cov --tb=short",
+      "result": "2 passed in 2.08s"
+    },
+    {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov",
+      "result": "120 tests collected in 17.21s"
+    }
+  ],
+  "authorized_future_paths": {
+    "application_source": [
+      "web/backend/app/api/indicators/indicator_cache.py",
+      "web/backend/app/api/v1/strategy/indicators.py"
+    ],
+    "focused_tests": [
+      "web/backend/tests/test_v1_indicators_regressions.py",
+      "web/backend/tests/test_indicator_registry_route_provider.py",
+      "web/backend/tests/test_integration_e2e.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "governance": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/*indicator-data*2026-05-27*.json",
+      "docs/reports/quality/*indicator-data*2026-05-27*.md",
+      "governance/mainline/task-cards/pr-*.yaml"
+    ]
+  },
+  "forbidden_future_paths_or_actions": [
+    "web/backend/app/services/data_service.py",
+    "delete_privativize_rename_or_change_get_data_service",
+    "strategy_adapter_internals",
+    "root_facade_compatibility_surfaces",
+    "route_path_or_openapi_exposure_changes_without_explicit_scope_expansion",
+    "frontend_pm2_config_scripts_issue_labels",
+    "dashboard_tdx_realtime_backup_or_route_provider_governance_scope_mix"
+  ],
+  "required_g2_162_gates": {
+    "before_source_edits": [
+      "confirm implementation worktree contains PR #313",
+      "run GitNexus impact for get_data_service and each direct caller to be edited",
+      "stop if new HIGH or CRITICAL dependency appears outside recorded Indicator/Data scope"
+    ],
+    "before_commit": [
+      "focused v1 indicator regression tests",
+      "indicator registry route provider guard",
+      "health route collect-only import smoke",
+      "ruff check touched backend source/tests",
+      "json/yaml parse",
+      "markdown governance",
+      "git diff --check",
+      "staged GitNexus detect-changes",
+      "mainline scope gate"
+    ]
+  }
+}

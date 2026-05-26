@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-314"
+  title: "Authorize Indicator/Data source implementation lane"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-indicator-data-source-implementation-authorization"
+  objective: "record the narrow source implementation boundary for removing direct application-body get_data_service calls from Indicator/Data consumers after G2.160 aligned the v1 indicator test contract"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-indicator-data-source-implementation-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Source implementation authorization governance package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/indicator-data-source-implementation-authorization-2026-05-27.json"
+    - "docs/reports/quality/backend-indicator-data-source-implementation-authorization-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-314.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 313 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus impact/context for get_data_service and Indicator/Data direct callers"
+      required: true
+    - id: "static-classification"
+      command: "classify current get_data_service textual hits as definition, import, application body call, test monkeypatch, or integration-test smoke call"
+      required: true
+    - id: "focused-baseline-tests"
+      command: "run focused indicator tests and health route collect-only import smoke after PR #313"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-indicator-data-source-implementation-authorization-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/indicator-data-source-implementation-authorization-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-314.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this authorization package."
+  - "Do not start Indicator/Data source implementation from this package."
+  - "Do not delete, privatize, rename, or change get_data_service()."
+  - "Do not edit web/backend/app/services/data_service.py."
+  - "Do not edit Strategy adapter, root facade compatibility, or route dependency/provider governance surfaces."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this package is treated as source implementation, a critical get_data_service seam could be edited without the separate G2.162 review gate."
+    - "If G2.162 scope is widened beyond the two authorized consumers, route/API or Strategy-adapter behavior could change under a narrow Indicator/Data lane."
+  rollback_plan: "revert this decision PR to remove only the authorization report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize the future narrow Indicator/Data source implementation lane"
+    modified_scope: "steward tree, authorization report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, GitNexus evidence, static classification, baseline test evidence, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T01:13:49+08:00"
+    approval_note: "Authorization package after PR #313 removed the v1 indicator BusinessException/HTTPException test-contract blocker."
+    secondary_approved: false
