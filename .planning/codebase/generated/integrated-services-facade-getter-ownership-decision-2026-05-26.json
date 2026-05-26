@@ -1,0 +1,135 @@
+{
+  "artifact": "integrated-services-facade-getter-ownership-decision-2026-05-26",
+  "recorded_at": "2026-05-26T12:06:42+08:00",
+  "workline": "G2.134 IntegratedServices facade getter ownership decision",
+  "status": "decision-prepared-for-review",
+  "current_head": "bc2d2a891787484b7fc65dd8fec61e19d66345bf",
+  "stale_if_head_mismatch": true,
+  "parent_pr": {
+    "number": 286,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T04:02:08Z",
+    "merge_commit": "bc2d2a891787484b7fc65dd8fec61e19d66345bf",
+    "title": "G2.133 Refresh service lifecycle candidates after WatchlistService",
+    "url": "https://github.com/chengjon/mystocks/pull/286"
+  },
+  "scope_boundary": {
+    "source_edits_authorized": false,
+    "test_edits_authorized": false,
+    "implementation_authorized": false,
+    "openspec_change_required_now": false,
+    "issue_label_movement_authorized": false
+  },
+  "ownership_decision": {
+    "owner_group": "IntegratedServices facade getters in web/backend/app/services/__init__.py",
+    "decision": "Treat these functions as a shared compatibility facade owned by the IntegratedServices composition root, not as independent route-surface singleton getters.",
+    "retain_now": [
+      "get_integrated_services",
+      "get_market_data_service"
+    ],
+    "eligible_for_future_authorization_packet": [
+      "get_trading_data_service",
+      "get_analysis_data_service",
+      "get_data_api_service",
+      "get_database_service",
+      "get_websocket_service",
+      "get_cache_service"
+    ],
+    "out_of_current_service_getter_queue": [
+      "get_risk_calculator",
+      "get_risk_monitoring",
+      "get_risk_alerts",
+      "get_risk_settings",
+      "get_risk_dashboard"
+    ],
+    "next_gate": "Prepare a narrow authorization packet for unused IntegratedServices service-facade getter retirement, excluding get_integrated_services, get_market_data_service, and risk helper facades."
+  },
+  "facade_scan": {
+    "service_init_path": "web/backend/app/services/__init__.py",
+    "get_integrated_services": {
+      "definition_line": 227,
+      "gitnexus": {
+        "risk": "MEDIUM",
+        "impacted": 13,
+        "direct": 13,
+        "processes": 0
+      },
+      "decision": "retain as composition root accessor"
+    },
+    "service_facade_getters": [
+      {
+        "symbol": "get_market_data_service",
+        "definition_line": 260,
+        "returns": "integrated_services.market_data_service",
+        "active_app_calls_excluding_definition": 0,
+        "test_calls": 1,
+        "app_token_files": [
+          "web/backend/app/services/market_data_service/__init__.py"
+        ],
+        "decision": "retain for now; package-level symbol collision and test consumers require separate disambiguation"
+      },
+      {
+        "symbol": "get_trading_data_service",
+        "definition_line": 266,
+        "returns": "integrated_services.trading_data_service",
+        "active_app_calls_excluding_definition": 0,
+        "test_calls": 0,
+        "decision": "eligible for future unused-facade retirement authorization"
+      },
+      {
+        "symbol": "get_analysis_data_service",
+        "definition_line": 272,
+        "returns": "integrated_services.analysis_data_service",
+        "active_app_calls_excluding_definition": 0,
+        "test_calls": 0,
+        "decision": "eligible for future unused-facade retirement authorization"
+      },
+      {
+        "symbol": "get_data_api_service",
+        "definition_line": 278,
+        "returns": "integrated_services.data_api_service",
+        "active_app_calls_excluding_definition": 0,
+        "test_calls": 0,
+        "decision": "eligible for future unused-facade retirement authorization"
+      },
+      {
+        "symbol": "get_database_service",
+        "definition_line": 284,
+        "returns": "integrated_services.database_service",
+        "active_app_calls_excluding_definition": 0,
+        "test_calls": 0,
+        "decision": "eligible for future unused-facade retirement authorization"
+      },
+      {
+        "symbol": "get_websocket_service",
+        "definition_line": 290,
+        "returns": "integrated_services.websocket_service",
+        "active_app_calls_excluding_definition": 0,
+        "test_calls": 0,
+        "decision": "eligible for future unused-facade retirement authorization"
+      },
+      {
+        "symbol": "get_cache_service",
+        "definition_line": 296,
+        "returns": "integrated_services.cache_service",
+        "active_app_calls_excluding_definition": 0,
+        "test_calls": 0,
+        "decision": "eligible for future unused-facade retirement authorization"
+      }
+    ],
+    "risk_helper_facades": [
+      "get_risk_calculator",
+      "get_risk_monitoring",
+      "get_risk_alerts",
+      "get_risk_settings",
+      "get_risk_dashboard"
+    ]
+  },
+  "future_authorization_requirements": [
+    "Do not edit web/backend/app/services/__init__.py under this decision packet.",
+    "Future source authorization must list exact removable facade getter names.",
+    "Future source authorization must exclude get_integrated_services and get_market_data_service.",
+    "Future implementation must run pre-edit GitNexus impact for every edited symbol.",
+    "Future implementation must include import smoke for app.services and focused tests covering the removed names."
+  ]
+}

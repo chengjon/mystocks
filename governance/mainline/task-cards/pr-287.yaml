@@ -1,0 +1,104 @@
+version: "v0.2"
+
+task:
+  id: "pr-287"
+  title: "Decide IntegratedServices facade getter ownership"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-integrated-services-facade-getter-ownership-decision"
+  objective: "record the G2.134 ownership decision for IntegratedServices facade getters after PR #286"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-integrated-services-facade-getter-ownership"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-integrated-services-facade-getter-ownership-decision"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Decision packet records facade getter ownership only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/integrated-services-facade-getter-ownership-decision-2026-05-26.json"
+    - "docs/reports/quality/backend-integrated-services-facade-getter-ownership-decision-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-287.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 286 --json number,state,mergedAt,mergeCommit,title,url"
+      required: true
+    - id: "facade-scan"
+      command: "scripted current-head scan over web/backend/app/services/__init__.py facade getter definitions, consumer tokens, and IntegratedServices ownership evidence"
+      required: true
+    - id: "gitnexus-impact-sampling"
+      command: "GitNexus impact for get_integrated_services plus prior G2.133 LOW/HIGH/CRITICAL getter risk evidence"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-integrated-services-facade-getter-ownership-decision-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/integrated-services-facade-getter-ownership-decision-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-287.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests."
+  - "Do not authorize source implementation in this decision packet."
+  - "Do not include get_integrated_services, get_market_data_service, risk helper facades, or HIGH/CRITICAL service getters in a future cleanup list without a separate authorization packet."
+
+risk_and_rollback:
+  risks:
+    - "If IntegratedServices facade getters are treated as independent route-surface getters, future implementation could skip the composition-root ownership boundary"
+    - "If get_market_data_service is grouped with unused facades, the package-level provider symbol collision could be misclassified"
+  rollback_plan: "revert this decision PR to remove only the decision report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "decide IntegratedServices facade getter ownership"
+    modified_scope: "steward tree, ownership decision report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON/YAML parsing, GitNexus staged scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T12:06:42+08:00"
+    approval_note: "Decision packet follows merged G2.133 candidate refresh PR #286"
+    secondary_approved: false

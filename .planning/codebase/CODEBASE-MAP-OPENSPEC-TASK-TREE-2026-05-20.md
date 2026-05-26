@@ -2240,9 +2240,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                service symbol deletion, route dependency deletion, or
 │   │                issue-label change is made here
 │   ├── G2.133 Service lifecycle candidate refresh after WatchlistService
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#286`
 │   │   ├── Evidence: `backend-service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26.md`
-│   │   ├── Current HEAD: `f0e0e37726140499b2e6b25cdad96739fc8f5462`
+│   │   ├── Merge commit: `bc2d2a891787484b7fc65dd8fec61e19d66345bf`
 │   │   ├── Result: confirms Announcement/Email/StockSearch/Watchlist retired
 │   │   │          public getter definitions remain `0`, scans service files
 │   │   │          `152`, app files `575`, API files `219`, tests `204`,
@@ -2258,9 +2258,29 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                facade deletion, route/API, OpenAPI exposure, frontend,
 │   │                PM2, OpenSpec, implementation authorization, or issue-label
 │   │                change is made here
-│   └── Next gate: prepare an IntegratedServices facade getter ownership
-│                  decision packet before authorizing any `services/__init__.py`
-│                  facade getter retirement or migration
+│   ├── G2.134 IntegratedServices facade getter ownership decision
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-integrated-services-facade-getter-ownership-decision-2026-05-26.md`
+│   │   ├── Current HEAD: `bc2d2a891787484b7fc65dd8fec61e19d66345bf`
+│   │   ├── Decision: treat `web/backend/app/services/__init__.py` getters
+│   │   │          as a shared IntegratedServices compatibility facade owned
+│   │   │          by the composition root, not as independent route-surface
+│   │   │          singleton getters
+│   │   ├── Result: retain `get_integrated_services` and
+│   │   │          `get_market_data_service`; mark only
+│   │   │          `get_trading_data_service`, `get_analysis_data_service`,
+│   │   │          `get_data_api_service`, `get_database_service`,
+│   │   │          `get_websocket_service`, and `get_cache_service` as eligible
+│   │   │          for a future unused-facade retirement authorization packet;
+│   │   │          risk helper facades are out of the current service-getter queue
+│   │   └── Boundary: decision-only; no source/test edit, facade deletion,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                implementation authorization, or issue-label change is
+│   │                made here
+│   └── Next gate: prepare a narrow unused IntegratedServices service-facade
+│                  getter retirement authorization packet, excluding
+│                  `get_integrated_services`, `get_market_data_service`, risk
+│                  helper facades, and HIGH/CRITICAL service getters
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -2362,7 +2382,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-watchlist-service-getter-retirement-authorization-2026-05-26.md` | G | G2.130 authorization accepted in PR `#283` at `35dcc90`: authorizes only a future implementation branch to retire `watchlist_service.py` `get_watchlist_service` and `_watchlist_service`, while preserving `WatchlistService`, `install_watchlist_service`, `get_watchlist_service_dependency`, route paths, response contracts, and OpenAPI exposure; current scan shows getter definitions=`1`, singleton tokens=`74`, app/API direct getter calls=`0`, route dependency handlers=`7`, adapter fallback files=`2`, tests with getter refs=`4`; GitNexus impact MEDIUM / impacted=`15` / direct=`9` / processes=`0` | Superseded by G2.131 WatchlistService getter-retirement implementation |
 | `backend-watchlist-service-getter-retirement-implementation-2026-05-26.md` | G | G2.131 implementation accepted in PR `#284` at `ccadd5e`: removes `watchlist_service.py` `get_watchlist_service` and module-level `_watchlist_service`, removes both adapter fallback imports/calls, preserves `WatchlistService`, `install_watchlist_service`, `get_watchlist_service_dependency`, route paths, response contracts, and OpenAPI exposure; TDD red `2 failed, 1 passed`, focused watchlist tests `28 passed`, health route conflicts `120 passed`, ruff/black/import smoke passed, exact scan reports service getter definitions=`0`, service singleton assignments=`0`, adapter fallback imports=`0`, adapter public getter calls=`0`, app/API public getter calls=`0`, route dependency handlers=`7` | Superseded by G2.132 WatchlistService getter-retirement closeout |
 | `backend-watchlist-service-getter-retirement-closeout-2026-05-26.md` | G | G2.132 closeout accepted in PR `#285` at `f0e0e37`: records PR `#284` merged at `2026-05-26T03:30:49Z`, confirms current-head scan still has service getter definitions=`0`, service singleton assignments=`0`, adapter fallback imports=`0`, adapter public getter calls=`0`, app/API public getter calls=`0`, route dependency handlers=`7`, focused watchlist tests `28 passed`, and health route conflicts `120 passed`; no runtime source, tests, route paths, response contracts, OpenAPI exposure, PM2 workflow, OpenSpec change, or issue-label change is modified | Superseded by G2.133 service lifecycle candidate refresh after WatchlistService |
-| `backend-service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26.md` | G | G2.133 candidate refresh prepared at `f0e0e37`: service files=`152`, app files=`575`, API files=`219`, tests=`204`, remaining service getter definitions=`11`, Announcement/Email/StockSearch/Watchlist retired public getter definitions remain `0`; no direct implementation lane is selected; six LOW graph-risk remaining candidates are shared `IntegratedServices` facade getters, `get_market_data_service` is held for graph/text disambiguation, and `get_tdx_service`, `get_data_service`, `get_strategy_service`, `get_streaming_service` remain HIGH/CRITICAL holds | Human review / PR merge decision; if accepted, prepare IntegratedServices facade getter ownership decision packet |
+| `backend-service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26.md` | G | G2.133 candidate refresh accepted in PR `#286` at `bc2d2a8`: service files=`152`, app files=`575`, API files=`219`, tests=`204`, remaining service getter definitions=`11`, Announcement/Email/StockSearch/Watchlist retired public getter definitions remain `0`; no direct implementation lane is selected; six LOW graph-risk remaining candidates are shared `IntegratedServices` facade getters, `get_market_data_service` is held for graph/text disambiguation, and `get_tdx_service`, `get_data_service`, `get_strategy_service`, `get_streaming_service` remain HIGH/CRITICAL holds | Superseded by G2.134 IntegratedServices facade getter ownership decision |
+| `backend-integrated-services-facade-getter-ownership-decision-2026-05-26.md` | G | G2.134 decision prepared at `bc2d2a8`: classifies `web/backend/app/services/__init__.py` getters as a shared IntegratedServices compatibility facade owned by the composition root; retains `get_integrated_services` and `get_market_data_service`; marks only `get_trading_data_service`, `get_analysis_data_service`, `get_data_api_service`, `get_database_service`, `get_websocket_service`, and `get_cache_service` as eligible for a future unused-facade retirement authorization packet; risk helper facades are out of the current service-getter queue | Human review / PR merge decision; if accepted, prepare unused IntegratedServices service-facade getter retirement authorization packet |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
