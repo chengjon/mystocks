@@ -1,0 +1,85 @@
+{
+  "artifact": "watchlist-service-getter-retirement-closeout-2026-05-26",
+  "generated_at": "2026-05-26T11:40:28+08:00",
+  "task": {
+    "id": "G2.132",
+    "title": "WatchlistService getter-retirement closeout",
+    "track": "G",
+    "type": "governance-closeout"
+  },
+  "current_head": {
+    "sha": "ccadd5e0560c4fa1fab7fae130a8b64e624352bc",
+    "short": "ccadd5e05",
+    "subject": "refactor(services): retire watchlist getter singleton (#284)"
+  },
+  "parent_pr": {
+    "number": 284,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T03:30:49Z",
+    "merge_commit": "ccadd5e0560c4fa1fab7fae130a8b64e624352bc",
+    "title": "G2.131 Retire WatchlistService getter singleton",
+    "url": "https://github.com/chengjon/mystocks/pull/284"
+  },
+  "closeout_decision": {
+    "state": "ready-for-review",
+    "decision": "Record G2.131 as merged and close the WatchlistService getter-retirement lane.",
+    "implementation_scope": "No runtime code, tests, API routes, OpenAPI exposure, PM2 workflow, OpenSpec change, or issue-label change is modified by this closeout.",
+    "next_gate": "After this closeout is reviewed and merged, refresh the remaining service lifecycle candidate pool before selecting another implementation lane."
+  },
+  "current_head_scan": {
+    "service_getter_definitions": 0,
+    "service_singleton_assignments": 0,
+    "service_symbols_preserved": {
+      "WatchlistService": true,
+      "install_watchlist_service": true,
+      "get_watchlist_service_dependency": true
+    },
+    "adapter_fallback_imports": 0,
+    "adapter_public_getter_calls": 0,
+    "app_api_public_getter_calls": 0,
+    "route_dependency_refs": 8,
+    "route_dependency_handlers": 7
+  },
+  "verification": [
+    {
+      "id": "parent-pr-state",
+      "command": "gh pr view 284 --json number,state,mergedAt,mergeCommit,title,url",
+      "result": "MERGED at 2026-05-26T03:30:49Z with merge commit ccadd5e0560c4fa1fab7fae130a8b64e624352bc"
+    },
+    {
+      "id": "current-head-scan",
+      "command": "scripted current-head text scan over watchlist_service.py, watchlist adapters, and watchlist route dependency wiring",
+      "result": "getter definitions=0, singleton assignments=0, adapter fallback imports=0, adapter public getter calls=0, app/API public getter calls=0, route dependency handlers=7"
+    },
+    {
+      "id": "focused-watchlist-tests",
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_watchlist_service_getter_retirement.py web/backend/tests/test_watchlist_service_lifecycle_di.py web/backend/tests/test_watchlist_helper_lifecycle_di.py web/backend/tests/test_adapter_mock_fallback_controls.py web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short",
+      "result": "28 passed in 3.29s"
+    },
+    {
+      "id": "health-route-conflicts",
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "120 passed in 73.83s"
+    }
+  ],
+  "scope": {
+    "allowed_paths": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/watchlist-service-getter-retirement-closeout-2026-05-26.json",
+      "docs/reports/quality/backend-watchlist-service-getter-retirement-closeout-2026-05-26.md",
+      "governance/mainline/task-cards/pr-285.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/guides/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  }
+}

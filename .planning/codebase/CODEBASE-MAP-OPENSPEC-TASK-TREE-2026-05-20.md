@@ -2199,9 +2199,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, implementation, or issue-label change is
 │   │                made here
 │   ├── G2.131 WatchlistService getter-retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#284`
 │   │   ├── Evidence: `backend-watchlist-service-getter-retirement-implementation-2026-05-26.md`
-│   │   ├── Current HEAD: `35dcc90cd9a242e8906107a01abf1649d77737ea`
+│   │   ├── Merge commit: `ccadd5e0560c4fa1fab7fae130a8b64e624352bc`
 │   │   ├── Result: removes `watchlist_service.py` `get_watchlist_service`
 │   │   │          and module-level `_watchlist_service`, removes both adapter
 │   │   │          fallback imports/calls, and preserves `WatchlistService`,
@@ -2221,10 +2221,27 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                and steward-tree update; no route/API, OpenAPI exposure,
 │   │                frontend, PM2, OpenSpec, service class deletion, route
 │   │                dependency deletion, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.131; if accepted,
-│                  close out the WatchlistService getter-retirement lane and
-│                  refresh the remaining service lifecycle candidate pool before
-│                  selecting another implementation lane
+│   ├── G2.132 WatchlistService getter-retirement closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-watchlist-service-getter-retirement-closeout-2026-05-26.md`
+│   │   ├── Current HEAD: `ccadd5e0560c4fa1fab7fae130a8b64e624352bc`
+│   │   ├── Result: records PR `#284` as merged and closes the
+│   │   │          WatchlistService getter-retirement lane without changing
+│   │   │          runtime source, tests, route paths, response contracts, or
+│   │   │          OpenAPI exposure
+│   │   ├── Verification: parent PR state `MERGED`; focused watchlist tests
+│   │   │          `28 passed`; health route conflicts `120 passed`; exact
+│   │   │          scan reports service getter definitions=`0`, service
+│   │   │          singleton assignments=`0`, adapter fallback imports=`0`,
+│   │   │          adapter public getter calls=`0`, app/API public getter
+│   │   │          calls=`0`, route dependency handlers=`7`
+│   │   └── Boundary: closeout-only; no source/test edit, runtime behavior,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                service symbol deletion, route dependency deletion, or
+│   │                issue-label change is made here
+│   └── Next gate: after G2.132 review and merge, refresh the remaining service
+│                  lifecycle candidate pool before selecting another
+│                  implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -2324,7 +2341,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-market-data-service-getter-retirement-authorization-2026-05-26.md` | G | G2.111 authorization prepared at `c4abd4e`: authorizes only a future G2.112 implementation branch for the package-level `market_data_service/get_market_data_service.py` `_market_data_service` and `get_market_data_service` retirement; preserves `MarketDataService`, `install_market_data_service`, and `get_market_data_service_dependency`, records GitNexus impact LOW / `0`, direct API refs=`0`, and requires future adapter/package export cleanup because `market_data_adapter.py` and package `__init__.py` still reference the getter | Human review / PR merge decision; if accepted, create G2.112 MarketDataService getter-retirement implementation before any market-data service source edit |
 | `backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26.md` | G | G2.129 candidate refresh accepted in PR `#282` at `cc32d0c2`: confirms Announcement/Email/StockSearch retired getters remain `0`, scans service files=`152`, app files=`575`, API files=`219`, tests=`203`, getter definitions=`12`, selects no direct implementation lane, and identifies `get_watchlist_service` only as a future authorization candidate with GitNexus MEDIUM / impacted=`15` / direct=`9` / processes=`0` | Superseded by G2.130 WatchlistService getter-retirement authorization |
 | `backend-watchlist-service-getter-retirement-authorization-2026-05-26.md` | G | G2.130 authorization accepted in PR `#283` at `35dcc90`: authorizes only a future implementation branch to retire `watchlist_service.py` `get_watchlist_service` and `_watchlist_service`, while preserving `WatchlistService`, `install_watchlist_service`, `get_watchlist_service_dependency`, route paths, response contracts, and OpenAPI exposure; current scan shows getter definitions=`1`, singleton tokens=`74`, app/API direct getter calls=`0`, route dependency handlers=`7`, adapter fallback files=`2`, tests with getter refs=`4`; GitNexus impact MEDIUM / impacted=`15` / direct=`9` / processes=`0` | Superseded by G2.131 WatchlistService getter-retirement implementation |
-| `backend-watchlist-service-getter-retirement-implementation-2026-05-26.md` | G | G2.131 implementation prepared at `35dcc90`: removes `watchlist_service.py` `get_watchlist_service` and module-level `_watchlist_service`, removes both adapter fallback imports/calls, preserves `WatchlistService`, `install_watchlist_service`, `get_watchlist_service_dependency`, route paths, response contracts, and OpenAPI exposure; TDD red `2 failed, 1 passed`, focused watchlist tests `28 passed`, health route conflicts `120 passed`, ruff/black/import smoke passed, exact scan reports service getter definitions=`0`, service singleton assignments=`0`, adapter fallback imports=`0`, adapter public getter calls=`0`, app/API public getter calls=`0`, route dependency handlers=`7` | Human review / PR merge decision; if accepted, close out WatchlistService getter retirement and refresh the remaining service lifecycle candidate pool |
+| `backend-watchlist-service-getter-retirement-implementation-2026-05-26.md` | G | G2.131 implementation accepted in PR `#284` at `ccadd5e`: removes `watchlist_service.py` `get_watchlist_service` and module-level `_watchlist_service`, removes both adapter fallback imports/calls, preserves `WatchlistService`, `install_watchlist_service`, `get_watchlist_service_dependency`, route paths, response contracts, and OpenAPI exposure; TDD red `2 failed, 1 passed`, focused watchlist tests `28 passed`, health route conflicts `120 passed`, ruff/black/import smoke passed, exact scan reports service getter definitions=`0`, service singleton assignments=`0`, adapter fallback imports=`0`, adapter public getter calls=`0`, app/API public getter calls=`0`, route dependency handlers=`7` | Superseded by G2.132 WatchlistService getter-retirement closeout |
+| `backend-watchlist-service-getter-retirement-closeout-2026-05-26.md` | G | G2.132 closeout prepared at `ccadd5e`: records PR `#284` merged at `2026-05-26T03:30:49Z`, confirms current-head scan still has service getter definitions=`0`, service singleton assignments=`0`, adapter fallback imports=`0`, adapter public getter calls=`0`, app/API public getter calls=`0`, route dependency handlers=`7`, focused watchlist tests `28 passed`, and health route conflicts `120 passed`; no runtime source, tests, route paths, response contracts, OpenAPI exposure, PM2 workflow, OpenSpec change, or issue-label change is modified | Human review / PR merge decision; if accepted, refresh the remaining service lifecycle candidate pool |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
