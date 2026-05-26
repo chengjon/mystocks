@@ -2754,11 +2754,12 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
 │   ├── G2.156 Dashboard/TDX design and authorization package
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#309`
 │   │   ├── Evidence: `backend-dashboard-tdx-design-authorization-2026-05-26.md`
 │   │   ├── Generated: `dashboard-tdx-design-authorization-2026-05-26.json`
 │   │   ├── Parent: G2.155 accepted and merged by PR `#308`
 │   │   ├── Current HEAD: `ee2fad4c41b0f4585bc39d9adb59c18326bbbd8e`
+│   │   ├── Merge commit: `e7cb84fae5e0c65cb400f467f6d9b55c3b2775d4`
 │   │   ├── Impact evidence: `get_tdx_service`, `_get_major_index_quotes`,
 │   │   │          and `_get_tdx_live_market_snapshot` remain CRITICAL in
 │   │   │          GitNexus because dashboard helper flows still traverse the
@@ -2782,9 +2783,39 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
-│   └── Next gate: review G2.156; if accepted, start G2.157 as a
-│                  current-head verification-first lane before any
-│                  Dashboard/TDX source implementation begins
+│   ├── G2.157 Dashboard/TDX current-head verification closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-dashboard-tdx-verification-closeout-2026-05-26.md`
+│   │   ├── Generated: `dashboard-tdx-verification-closeout-2026-05-26.json`
+│   │   ├── Parent: G2.156 accepted and merged by PR `#309`
+│   │   ├── Current HEAD: `e7cb84fae5e0c65cb400f467f6d9b55c3b2775d4`
+│   │   ├── GitNexus evidence: `get_tdx_service` remains CRITICAL
+│   │   │          with impacted `6`, direct callers `2`, and processes `5`;
+│   │   │          `_get_major_index_quotes` and
+│   │   │          `_get_tdx_live_market_snapshot` remain CRITICAL with
+│   │   │          impacted `5`, direct callers `2`, and processes `5`;
+│   │   │          `prewarm_dashboard_market_overview_cache` remains LOW
+│   │   ├── Current-head static classification:
+│   │   │          `dashboard_data_source.py` has five `get_tdx_service`
+│   │   │          textual hits, classified as import, constructor fallback
+│   │   │          provider, private helper definition, and two private helper
+│   │   │          calls; direct dashboard helper getter debt is `0`
+│   │   ├── Focused verification: `test_dashboard_data_source.py` `11`
+│   │   │          passed, `test_tdx_service_lifecycle_di.py` `4` passed,
+│   │   │          and `test_health_route_conflicts.py --collect-only`
+│   │   │          collected `120` tests
+│   │   ├── Decision: close Dashboard/TDX without source implementation;
+│   │   │          do not open another Dashboard/TDX source lane unless a
+│   │   │          future current-head contradiction shows new residual direct
+│   │   │          dashboard helper getter debt
+│   │   └── Boundary: closeout-only; no backend source/test edit, route/API,
+│   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
+│   │              script, compatibility wrapper deletion, issue-label
+│   │              change, or GitHub issue state change is performed here
+│   └── Next gate: review G2.157; if accepted, return to the remaining
+│                  high-risk getter queue: Indicator/Data, Strategy adapter,
+│                  root facade compatibility, and route dependency/provider
+│                  governance
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

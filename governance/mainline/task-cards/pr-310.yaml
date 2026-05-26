@@ -1,0 +1,116 @@
+version: "v0.2"
+
+task:
+  id: "pr-310"
+  title: "Close Dashboard/TDX verification lane"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-dashboard-tdx-verification-closeout"
+  objective: "close Dashboard/TDX without source implementation after current-head verification shows zero residual direct helper getter debt"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-dashboard-tdx-verification-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Verification closeout package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/dashboard-tdx-verification-closeout-2026-05-26.json"
+    - "docs/reports/quality/backend-dashboard-tdx-verification-closeout-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-310.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 309 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus impact for get_tdx_service, _get_major_index_quotes, _get_tdx_live_market_snapshot, and prewarm_dashboard_market_overview_cache"
+      required: true
+    - id: "static-classification"
+      command: "classify current dashboard_data_source.py get_tdx_service textual hits and verify direct dashboard helper getter debt is 0"
+      required: true
+    - id: "dashboard-focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_dashboard_data_source.py -q --no-cov --tb=short"
+      required: true
+    - id: "tdx-lifecycle-focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_tdx_service_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-collect-only"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-dashboard-tdx-verification-closeout-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/dashboard-tdx-verification-closeout-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-310.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this closeout package."
+  - "Do not open a Dashboard/TDX source implementation lane from this evidence."
+  - "Do not edit web/backend/app/api/tdx.py or web/backend/app/services/tdx_service.py."
+  - "Do not delete, privatize, or change public compatibility behavior of get_tdx_service()."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If graph impact is mistaken for direct body-call debt, fallback compatibility could be removed unnecessarily."
+    - "If this closeout is treated as route-provider cleanup authorization, active /api/v1/tdx dependency contracts could be modified without the required governance package."
+  rollback_plan: "revert this closeout PR to remove only the closeout report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close Dashboard/TDX after verification shows no residual direct helper getter debt"
+    modified_scope: "steward tree, closeout report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, GitNexus impact evidence, static classification, focused tests, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T22:19:47+08:00"
+    approval_note: "Verification-first closeout after PR #309 authorized G2.157 and current HEAD showed zero residual direct dashboard helper getter debt."
+    secondary_approved: false
+
