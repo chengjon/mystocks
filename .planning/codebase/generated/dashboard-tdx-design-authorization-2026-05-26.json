@@ -1,0 +1,214 @@
+{
+  "artifact": "dashboard-tdx-design-authorization-2026-05-26",
+  "generated_at": "2026-05-26T22:04:45+08:00",
+  "worktree": ".worktrees/g2-156-dashboard-tdx-design-authorization",
+  "branch": "g2-156-dashboard-tdx-design-authorization",
+  "base_head": "ee2fad4c41b0f4585bc39d9adb59c18326bbbd8e",
+  "task": {
+    "id": "G2.156",
+    "title": "Dashboard/TDX design and authorization package",
+    "scope": "governance decision and future-lane authorization only",
+    "authorization": "approved by user in current review thread"
+  },
+  "parent": {
+    "task": "G2.155",
+    "pull_request": 308,
+    "state": "MERGED",
+    "merge_commit": "ee2fad4c41b0f4585bc39d9adb59c18326bbbd8e",
+    "decision": "Dashboard/TDX runtime seam selected as the next high-risk service getter design track."
+  },
+  "source_inputs": [
+    "docs/reports/quality/backend-next-high-risk-service-getter-track-selection-2026-05-26.md",
+    "docs/reports/quality/backend-tdx-dashboard-helper-provider-migration-authorization-2026-05-23.md",
+    "docs/reports/quality/backend-tdx-dashboard-helper-provider-migration-implementation-2026-05-23.md",
+    "docs/reports/quality/backend-tdx-dashboard-helper-provider-closeout-2026-05-23.md",
+    "docs/reports/quality/backend-tdx-route-dependency-consumer-matrix-2026-05-23.md"
+  ],
+  "current_source_shape": {
+    "file": "web/backend/app/api/dashboard_data_source.py",
+    "textual_get_tdx_service_hits": [
+      {
+        "line": 24,
+        "kind": "import",
+        "text": "from app.services.tdx_service import TdxService, get_tdx_service"
+      },
+      {
+        "line": 62,
+        "kind": "constructor_default_provider",
+        "text": "self._tdx_service_provider = tdx_service_provider or get_tdx_service"
+      },
+      {
+        "line": 70,
+        "kind": "private_provider_helper_definition",
+        "text": "def _get_tdx_service(self) -> TdxService:"
+      },
+      {
+        "line": 247,
+        "kind": "private_provider_helper_call",
+        "text": "tdx_service = self._get_tdx_service()"
+      },
+      {
+        "line": 499,
+        "kind": "private_provider_helper_call",
+        "text": "tdx_service = self._get_tdx_service()"
+      }
+    ],
+    "interpretation": "Current dashboard helper code already isolates TDX service acquisition behind constructor/provider fallback and the private _get_tdx_service helper. The remaining textual get_tdx_service hits are not evidence of direct route/helper body calls that must be blindly rewritten."
+  },
+  "gitnexus_impact": {
+    "get_tdx_service": {
+      "risk": "CRITICAL",
+      "impacted_count": 4,
+      "direct_callers": 2,
+      "processes_affected": 5,
+      "d1_callers": [
+        "_get_major_index_quotes",
+        "_get_tdx_live_market_snapshot"
+      ],
+      "d2_callers": [
+        "_get_market_overview_data",
+        "prewarm_dashboard_market_overview_cache"
+      ]
+    },
+    "_get_major_index_quotes": {
+      "risk": "CRITICAL",
+      "impacted_count": 4,
+      "direct_callers": 2,
+      "processes_affected": 5,
+      "d1_callers": [
+        "_get_market_overview_data",
+        "prewarm_dashboard_market_overview_cache"
+      ],
+      "d2_callers": [
+        "get_market_overview_data",
+        "get_dashboard_summary"
+      ]
+    },
+    "_get_tdx_live_market_snapshot": {
+      "risk": "CRITICAL",
+      "impacted_count": 4,
+      "direct_callers": 2,
+      "processes_affected": 5,
+      "d1_callers": [
+        "_get_market_overview_data",
+        "prewarm_dashboard_market_overview_cache"
+      ],
+      "d2_callers": [
+        "get_market_overview_data",
+        "get_dashboard_summary"
+      ]
+    },
+    "prewarm_dashboard_market_overview_cache": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct_callers": 0,
+      "processes_affected": 0
+    }
+  },
+  "consumer_contract_matrix": [
+    {
+      "consumer": "_get_major_index_quotes",
+      "surface": "dashboard market overview index quotes",
+      "tdx_dependency": "uses private _get_tdx_service provider helper when cached values are absent",
+      "fallback_requirement": "must return an empty list or cached data without raising when TDX is unavailable",
+      "must_preserve": [
+        "ranking index fallback",
+        "cache behavior",
+        "dashboard summary response shape"
+      ]
+    },
+    {
+      "consumer": "_get_tdx_live_market_snapshot",
+      "surface": "dashboard live market snapshot",
+      "tdx_dependency": "uses market service engine and private _get_tdx_service provider helper for TDX host/port checks",
+      "fallback_requirement": "must return None or cached snapshot without failing dashboard overview when TDX is unavailable",
+      "must_preserve": [
+        "market service compatibility",
+        "cache behavior",
+        "summary endpoint tolerance"
+      ]
+    },
+    {
+      "consumer": "prewarm_dashboard_market_overview_cache",
+      "surface": "startup/cache prewarm helper",
+      "tdx_dependency": "constructs RealBusinessDataSource with selected app-state TDX service",
+      "fallback_requirement": "must return false on unavailable dependency without blocking app startup",
+      "must_preserve": [
+        "no startup hard failure",
+        "app-state installed service path",
+        "legacy fallback compatibility"
+      ]
+    },
+    {
+      "consumer": "get_dashboard_summary / get_market_overview_data",
+      "surface": "public dashboard API data flow",
+      "tdx_dependency": "indirect through RealBusinessDataSource helper methods",
+      "fallback_requirement": "must keep public UnifiedResponse payload stable and avoid route/OpenAPI drift unless explicitly authorized",
+      "must_preserve": [
+        "public response contract",
+        "route path/method set",
+        "OpenAPI operation identity"
+      ]
+    }
+  ],
+  "future_lane_authorization": {
+    "id": "G2.157",
+    "title": "Dashboard/TDX current-head verification and targeted implementation if needed",
+    "status": "authorized only after G2.156 review acceptance",
+    "default_mode": "verification first; close out without source edits if current HEAD has no residual direct dashboard helper getter debt",
+    "allowed_source_paths_if_residual_debt_exists": [
+      "web/backend/app/api/dashboard_data_source.py"
+    ],
+    "allowed_test_paths": [
+      "web/backend/tests/test_dashboard_data_source.py",
+      "web/backend/tests/test_tdx_service_lifecycle_di.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "required_pre_edit_gates": [
+      "GitNexus impact for get_tdx_service",
+      "GitNexus impact for _get_major_index_quotes",
+      "GitNexus impact for _get_tdx_live_market_snapshot",
+      "GitNexus impact for prewarm_dashboard_market_overview_cache",
+      "current-head static scan classifying each get_tdx_service textual hit",
+      "stop for review if impact remains HIGH/CRITICAL and proposed edits exceed dashboard_data_source.py"
+    ],
+    "required_verification": [
+      "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_dashboard_data_source.py -q --no-cov --tb=short",
+      "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_tdx_service_lifecycle_di.py -q --no-cov --tb=short",
+      "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov",
+      "route/OpenAPI drift check only if route-level dependency contracts are touched"
+    ]
+  },
+  "boundaries": {
+    "do_not_edit_in_g2_156": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/guides/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ],
+    "do_not_authorize_for_g2_157_without_new_review": [
+      "web/backend/app/api/tdx.py",
+      "web/backend/app/services/tdx_service.py",
+      "route path changes",
+      "OpenAPI exposure changes",
+      "get_tdx_service deletion or privatization",
+      "adapter rewrites",
+      "frontend changes",
+      "PM2 workflow changes",
+      "OpenSpec proposal creation"
+    ],
+    "deferred_tracks": [
+      "Indicator/Data",
+      "Strategy adapter",
+      "Realtime streaming/socket",
+      "root facade compatibility",
+      "route dependency/provider governance"
+    ]
+  }
+}
