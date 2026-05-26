@@ -1935,7 +1935,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                service migration, or issue-label change is made here
 │   ├── G2.118 AnnouncementService getter-retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#271` merged at
+│   │   │          `4a2a21272deff876bc9fb5f1058c0682a7f4b5de`
 │   │   ├── Evidence: `backend-announcement-service-getter-retirement-implementation-2026-05-26.md`
 │   │   ├── Current HEAD: `ca1ad8da694f0174b5a80d414cc624d05865ec8f`
 │   │   ├── Result: removes only `announcement_service.py`
@@ -1956,10 +1957,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                steward-tree update; no route/API, OpenAPI exposure,
 │   │                frontend, PM2, OpenSpec, `AnnouncementService` deletion,
 │   │                dependency deletion, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.118; if accepted,
-│                  create G2.119 AnnouncementService getter-retirement
-│                  closeout before selecting the next medium route-backed
-│                  getter lane
+│   ├── G2.119 AnnouncementService getter-retirement closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-announcement-service-getter-retirement-closeout-2026-05-26.md`
+│   │   ├── Current HEAD: `4a2a21272deff876bc9fb5f1058c0682a7f4b5de`
+│   │   ├── Result: records PR `#271` merge and closes the AnnouncementService
+│   │   │          getter-retirement implementation lane; current-head scan
+│   │   │          confirms target getter definitions=`0`, target singleton
+│   │   │          tokens=`0`, API direct getter refs=`0`, route dependency
+│   │   │          handlers preserved=`11`, and focused route-dependency
+│   │   │          regression coverage remains green
+│   │   ├── Verification: focused tests `4 passed`, health route conflicts
+│   │   │          `120 passed`, current-head exact scan files=`776`
+│   │   └── Boundary: closeout-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                implementation authorization, or issue-label change is made here
+│   └── Next gate: create G2.120 service lifecycle candidate refresh after
+│                  AnnouncementService before selecting the next medium
+│                  route-backed getter lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
