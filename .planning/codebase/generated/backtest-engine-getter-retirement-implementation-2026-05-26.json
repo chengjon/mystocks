@@ -1,0 +1,80 @@
+{
+  "schema_version": "1.0",
+  "artifact": "backtest-engine-getter-retirement-implementation",
+  "created_at": "2026-05-26T13:37:00+08:00",
+  "base_head": "0f78609e25898181ea5653edc7350efc03a3bb9b",
+  "authorization": {
+    "lane": "G2.139",
+    "pull_request": 292,
+    "merge_commit": "0f78609e25898181ea5653edc7350efc03a3bb9b",
+    "report": "docs/reports/quality/backend-backtest-engine-getter-retirement-authorization-2026-05-26.md"
+  },
+  "scope": {
+    "mode": "source implementation",
+    "target_service_file": "web/backend/app/services/backtest_engine.py",
+    "focused_test_file": "web/backend/tests/test_backtest_engine_getter_retirement.py",
+    "retired_symbols": [
+      "_backtest_engine",
+      "get_backtest_engine"
+    ],
+    "preserved_symbols": [
+      "BacktestConfig",
+      "BacktestResult",
+      "BacktestEngine"
+    ]
+  },
+  "pre_edit_gate": {
+    "gitnexus_impact": {
+      "symbol": "get_backtest_engine",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0,
+      "modules_affected": 0
+    }
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_engine_getter_retirement.py -q --no-cov --tb=short",
+      "result": "1 failed, 1 passed",
+      "failing_assertion": "hasattr(backtest_engine, '_backtest_engine') was True"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_engine_getter_retirement.py -q --no-cov --tb=short",
+      "result": "2 passed in 0.77s"
+    }
+  },
+  "post_edit_evidence": {
+    "exact_scan": {
+      "BacktestEngine_definition_count": 1,
+      "get_backtest_engine_definition_count": 0,
+      "_backtest_engine_token_count": 0,
+      "remaining_get_backtest_engine_references": [
+        {
+          "file": "web/backend/tests/test_backtest_engine_getter_retirement.py",
+          "count": 1
+        }
+      ]
+    },
+    "import_smoke": {
+      "import_ok": true,
+      "has_getter": false,
+      "has_singleton": false,
+      "BacktestEngine": true,
+      "BacktestConfig": true,
+      "BacktestResult": true
+    },
+    "ruff": "All checks passed",
+    "black_check": "2 files would be left unchanged"
+  },
+  "boundary": {
+    "route_api_changed": false,
+    "openapi_changed": false,
+    "frontend_changed": false,
+    "pm2_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false,
+    "unrelated_service_candidates_changed": false
+  }
+}
