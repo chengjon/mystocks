@@ -2784,11 +2784,12 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
 │   ├── G2.157 Dashboard/TDX current-head verification closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#310`
 │   │   ├── Evidence: `backend-dashboard-tdx-verification-closeout-2026-05-26.md`
 │   │   ├── Generated: `dashboard-tdx-verification-closeout-2026-05-26.json`
 │   │   ├── Parent: G2.156 accepted and merged by PR `#309`
 │   │   ├── Current HEAD: `e7cb84fae5e0c65cb400f467f6d9b55c3b2775d4`
+│   │   ├── Merge commit: `97442014ea3ea3e63ffa170cd00b54889c158924`
 │   │   ├── GitNexus evidence: `get_tdx_service` remains CRITICAL
 │   │   │          with impacted `6`, direct callers `2`, and processes `5`;
 │   │   │          `_get_major_index_quotes` and
@@ -2812,10 +2813,36 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
-│   └── Next gate: review G2.157; if accepted, return to the remaining
-│                  high-risk getter queue: Indicator/Data, Strategy adapter,
-│                  root facade compatibility, and route dependency/provider
-│                  governance
+│   ├── G2.158 Next high-risk service getter track selection after
+│   │          Dashboard/TDX
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.md`
+│   │   ├── Generated: `next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.json`
+│   │   ├── Parent: G2.157 accepted and merged by PR `#310`
+│   │   ├── Current HEAD: `97442014ea3ea3e63ffa170cd00b54889c158924`
+│   │   ├── Refreshed impact: `get_data_service` remains CRITICAL with
+│   │   │          impacted `5`, direct callers `3`, and processes `7`;
+│   │   │          `get_strategy_service` remains CRITICAL with impacted
+│   │   │          `13`, direct callers `6`, and processes `0`;
+│   │   │          `get_streaming_service` remains HIGH with impacted `9`
+│   │   │          but realtime/socket is already closed for now
+│   │   ├── Decision: select Indicator/Data as the next design track because
+│   │   │          it is the smallest remaining CRITICAL implementation
+│   │   │          family after Dashboard/TDX closeout; defer Strategy
+│   │   │          adapter, root facade compatibility, and route
+│   │   │          dependency/provider governance to separate packages
+│   │   ├── G2.159 gate: prepare an Indicator/Data design and authorization
+│   │   │          package with consumer contract matrix, strategy indicator
+│   │   │          parity requirements, focused indicator tests, OpenAPI
+│   │   │          drift rule, allowed path list, and stop conditions before
+│   │   │          any source lane starts
+│   │   └── Boundary: decision-only; no backend source/test edit, route/API,
+│   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
+│   │              script, compatibility wrapper deletion, issue-label
+│   │              change, or GitHub issue state change is performed here
+│   └── Next gate: review G2.158; if accepted, start G2.159
+│                  Indicator/Data design and authorization package before
+│                  any Indicator/Data source implementation begins
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

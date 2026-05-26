@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-311"
+  title: "Select Indicator/Data getter track"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-next-high-risk-getter-track-after-dashboard-tdx"
+  objective: "select Indicator/Data as the next high-risk service getter design track after Dashboard/TDX closeout"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-next-high-risk-getter-track-after-dashboard-tdx"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Decision-only governance package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.json"
+    - "docs/reports/quality/backend-next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-311.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 310 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus impact for get_data_service, get_strategy_service, and get_streaming_service"
+      required: true
+    - id: "token-scan"
+      command: "scan current token counts for get_data_service, get_strategy_service, route dependency providers, and root facade examples"
+      required: true
+    - id: "source-hit-lines"
+      command: "classify current source hit lines for get_data_service and get_strategy_service surfaces"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-311.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this decision package."
+  - "Do not authorize G2.159 source implementation from this package."
+  - "Do not delete or privatize get_data_service()."
+  - "Do not edit Strategy adapter, root facade compatibility, or route dependency/provider surfaces."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this selection is treated as source authorization, Indicator/Data could be edited without the required consumer contract matrix and stop conditions."
+    - "If Strategy adapter breadth is understated, a later source lane may cross adapter, route, and task boundaries without dedicated ownership review."
+  rollback_plan: "revert this decision PR to remove only the decision report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "select Indicator/Data as the next high-risk service getter design track"
+    modified_scope: "steward tree, decision report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, GitNexus impact evidence, token scan, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T22:39:36+08:00"
+    approval_note: "Decision-only track selection after PR #310 closed Dashboard/TDX without source implementation."
+    secondary_approved: false
+
