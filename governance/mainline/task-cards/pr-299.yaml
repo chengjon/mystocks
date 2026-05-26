@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-299"
+  title: "Close out realtime socket manager consumer-injection lane"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-realtime-socket-manager-consumer-injection-closeout"
+  objective: "verify and close the G2.145 Socket.IO manager streaming dependency implementation after merge"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-closeout"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-realtime-socket-manager-consumer-injection-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout-only package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/realtime-socket-manager-consumer-injection-closeout-2026-05-26.json"
+    - "docs/reports/quality/backend-realtime-socket-manager-consumer-injection-closeout-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-299.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 298 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "focused-test"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short"
+      required: true
+    - id: "token-scan"
+      command: "scripted socketio_manager.py get_streaming_service token scan"
+      required: true
+    - id: "baseline-blockers"
+      command: "collect-only checks for socketio legacy export tests and realtime streaming service test check"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-realtime-socket-manager-consumer-injection-closeout-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/realtime-socket-manager-consumer-injection-closeout-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-299.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this closeout."
+  - "Do not delete get_streaming_service, reset_streaming_service, or RealtimeStreamingService."
+  - "Do not restore get_socketio_manager/reset_socketio_manager exports in this closeout."
+  - "Do not fix realtime streaming service datetime test debt in this closeout."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is treated as source authorization, baseline Socket.IO export debt could be mixed into the completed G2.145 lane"
+    - "If baseline blockers are ignored, broader Socket.IO/realtime suites may be mistaken for clean regression gates"
+  rollback_plan: "revert this closeout PR to remove only the closeout report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out the G2.145 Socket.IO manager streaming dependency implementation"
+    modified_scope: "steward tree, closeout report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source edits remain unchanged from merged PR #298"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T15:21:25+08:00"
+    approval_note: "Closeout-only lane after accepted G2.145 implementation merge"
+    secondary_approved: false
+

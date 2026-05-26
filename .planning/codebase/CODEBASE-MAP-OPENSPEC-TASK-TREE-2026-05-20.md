@@ -2486,10 +2486,11 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                PM2, OpenSpec, implementation, or issue-label change is
 │   │                made here
 │   ├── G2.145 Realtime socket manager consumer-injection implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#298`
 │   │   ├── Evidence: `backend-realtime-socket-manager-consumer-injection-implementation-2026-05-26.md`
 │   │   ├── Parent: G2.144 accepted and merged by PR `#297`
 │   │   ├── Current HEAD: `3c27963c86bc095f7f28129d5b47d9257367a31f`
+│   │   ├── Merge commit: `fd04b30d6ff597209be0e923dd62d2cf1b38ee82`
 │   │   ├── Result: adds a manager-level `streaming_service` dependency to
 │   │   │          `MySocketIOManager`; Socket.IO namespace and manager
 │   │   │          streaming consumers use that injected dependency instead of
@@ -2512,7 +2513,31 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                `aggregation_streaming_bridge.py` edit, route/API,
 │   │                OpenAPI, frontend, PM2, OpenSpec, or issue-label change
 │   │                is made here
-│   └── Next gate: review G2.145; if accepted, perform closeout-only G2.146
+│   ├── G2.146 Realtime socket manager consumer-injection closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-realtime-socket-manager-consumer-injection-closeout-2026-05-26.md`
+│   │   ├── Parent: G2.145 accepted and merged by PR `#298`
+│   │   ├── Current HEAD: `fd04b30d6ff597209be0e923dd62d2cf1b38ee82`
+│   │   ├── Result: verifies the merged Socket.IO manager consumer-injection
+│   │   │          lane and closes it without opening another source edit
+│   │   ├── Verification: PR `#298` is merged; focused
+│   │   │          `test_realtime_socket_manager_streaming_dependency.py`
+│   │   │          reports `2 passed`; token scan reports
+│   │   │          `get_streaming_service` total refs=`2` and
+│   │   │          handler-level refs=`0`
+│   │   ├── Baseline blockers confirmed: `test_socketio_manager.py` still
+│   │   │          imports absent `get_socketio_manager`,
+│   │   │          `test_socketio_streaming_integration.py` still imports
+│   │   │          absent `reset_socketio_manager`, and
+│   │   │          `test_realtime_streaming_service.py` still has a
+│   │   │          naive/aware datetime comparison failure
+│   │   └── Boundary: closeout-only; no backend source/test edit,
+│   │                getter deletion, route/API, OpenAPI exposure, frontend,
+│   │                PM2, OpenSpec, issue-label change, or new
+│   │                implementation authorization is made here
+│   └── Next gate: route the baseline Socket.IO export and realtime datetime
+│                  blockers through a separate decision package, or pause the
+│                  realtime/socket track as closed
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

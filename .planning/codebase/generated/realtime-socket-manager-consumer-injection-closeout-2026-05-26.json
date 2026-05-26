@@ -1,0 +1,85 @@
+{
+  "schema_version": "1.0",
+  "artifact": "realtime-socket-manager-consumer-injection-closeout",
+  "created_at": "2026-05-26T15:21:25+08:00",
+  "current_head": "fd04b30d6ff597209be0e923dd62d2cf1b38ee82",
+  "parent_implementation": {
+    "task": "G2.145 Realtime socket manager consumer-injection implementation",
+    "pull_request": 298,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T07:17:17Z",
+    "merge_commit": "fd04b30d6ff597209be0e923dd62d2cf1b38ee82",
+    "evidence": "docs/reports/quality/backend-realtime-socket-manager-consumer-injection-implementation-2026-05-26.md"
+  },
+  "scope": {
+    "workline": "G2.146 realtime socket manager consumer-injection closeout",
+    "mode": "closeout-only",
+    "source_edits_allowed": false,
+    "test_edits_allowed": false,
+    "route_api_openapi_change_allowed": false,
+    "frontend_pm2_openspec_issue_label_change_allowed": false
+  },
+  "closeout_result": {
+    "implementation_accepted_for_closeout": true,
+    "socketio_manager_streaming_dependency_confirmed": true,
+    "getter_retirement_done": false,
+    "getter_retirement_authorized_next": false,
+    "next_source_lane_selected": false
+  },
+  "verification": {
+    "pr_state": {
+      "number": 298,
+      "state": "MERGED",
+      "merged_at": "2026-05-26T07:17:17Z",
+      "merge_commit": "fd04b30d6ff597209be0e923dd62d2cf1b38ee82"
+    },
+    "focused_test": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short",
+      "result": "2 passed in 0.84s"
+    },
+    "token_scan": {
+      "socketio_manager_get_streaming_service_total_refs": 2,
+      "socketio_manager_handler_level_get_streaming_service_refs": 0,
+      "remaining_refs": [
+        {
+          "line": 38,
+          "text": "get_streaming_service,"
+        },
+        {
+          "line": 583,
+          "text": "self.streaming_service = streaming_service or get_streaming_service()"
+        }
+      ]
+    },
+    "baseline_blockers_confirmed": [
+      {
+        "check": "web/backend/tests/test_socketio_manager.py --collect-only",
+        "result": "collection error: cannot import get_socketio_manager",
+        "scope": "baseline blocker; not changed in G2.146"
+      },
+      {
+        "check": "web/backend/tests/test_socketio_streaming_integration.py --collect-only",
+        "result": "collection error: cannot import reset_socketio_manager",
+        "scope": "baseline blocker; not changed in G2.146"
+      },
+      {
+        "check": "web/backend/tests/test_realtime_streaming_service.py",
+        "result": "42 passed, 1 failed: TypeError comparing offset-naive and offset-aware datetimes",
+        "scope": "baseline blocker; realtime_streaming_service.py not edited in G2.145/G2.146"
+      }
+    ]
+  },
+  "decision": {
+    "g2_145_lane_closed": true,
+    "do_not_continue_source_work_from_closeout": true,
+    "recommended_next_gate": "baseline blocker routing decision",
+    "recommended_next_gate_reason": "The Socket.IO consumer-injection lane is closed; remaining failures are pre-existing export/test contract and datetime-test debt, not the G2.145 implementation scope."
+  },
+  "blocked_actions": [
+    "Do not delete get_streaming_service from this closeout.",
+    "Do not edit socketio_manager.py in G2.146.",
+    "Do not restore get_socketio_manager/reset_socketio_manager exports from this closeout without a separate decision package.",
+    "Do not fix realtime_streaming_service datetime tests from this closeout without a separate decision package.",
+    "Do not change route/API, OpenAPI, frontend, PM2, OpenSpec, or issue-label state."
+  ]
+}
