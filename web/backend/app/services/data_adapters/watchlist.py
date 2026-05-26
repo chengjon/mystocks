@@ -43,9 +43,7 @@ class WatchlistDataSourceAdapter(IDataSource):
                 if self._watchlist_service_provider is not None:
                     self._watchlist_service = self._watchlist_service_provider()
                 elif self.mode != "mock":
-                    from app.services.watchlist_service import get_watchlist_service
-
-                    self._watchlist_service = get_watchlist_service()
+                    raise RuntimeError("watchlist_service_provider is required for live watchlist adapter")
             except Exception as e:
                 self._watchlist_service = None
                 raise RuntimeError(f"Failed to initialize watchlist service: {e}")
