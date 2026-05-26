@@ -26,6 +26,10 @@ import structlog
 logger = structlog.get_logger()
 
 
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
 class StreamStatus(str, Enum):
     """流状态枚举"""
 
@@ -52,7 +56,7 @@ class StreamSubscriber:
 
     sid: str  # Socket.IO连接ID
     user_id: Optional[str] = None
-    subscribed_at: datetime = field(default_factory=datetime.utcnow)
+    subscribed_at: datetime = field(default_factory=_utc_now)
     fields: Set[str] = field(default_factory=lambda: {"price", "volume", "timestamp"})  # 订阅的字段
     last_message_id: Optional[str] = None  # 最后接收的消息ID
     messages_received: int = 0  # 接收消息计数
@@ -71,7 +75,7 @@ class StreamData:
     timestamp: int  # Unix毫秒时间戳
     data: Dict[str, Any]  # 实际数据
     version: int = 1  # 版本号（用于去重）
-    created_at: datetime = field(default_factory=datetime.utcnow)
+    created_at: datetime = field(default_factory=_utc_now)
 
     def to_dict(self) -> Dict[str, Any]:
         """转换为字典"""

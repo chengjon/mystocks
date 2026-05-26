@@ -2650,10 +2650,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
 │   │              GitHub issue state change is performed here
 │   ├── G2.149 Realtime streaming datetime test authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#305`
 │   │   ├── Evidence: `backend-realtime-streaming-datetime-test-authorization-2026-05-26.md`
 │   │   ├── Parent: G2.152 accepted and merged by PR `#304`
-│   │   ├── Current HEAD: `6ca7c1860ff3f1c1a87f094a016bef3d296fff6d`
+│   │   ├── Merge commit: `58bdc319c3ca00819b6b4fe7fefa59a5a321ba9d`
 │   │   ├── Result: classifies
 │   │   │          `test_realtime_streaming_service.py::TestStreamSubscriber::test_subscriber_update_activity`
 │   │   │          as a realtime streaming timestamp contract
@@ -2672,9 +2672,35 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │              issue-label change, or GitHub issue state change is
 │   │              performed here
-│   └── Next gate: review G2.149; if accepted, start G2.153 realtime
-│                  streaming timezone-aware timestamps as a separate
-│                  source plus focused-test implementation lane
+│   ├── G2.153 Realtime streaming timezone-aware timestamps
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-realtime-streaming-timezone-aware-timestamps-2026-05-26.md`
+│   │   ├── Generated: `realtime-streaming-timezone-aware-timestamps-2026-05-26.json`
+│   │   ├── Parent: G2.149 accepted and merged by PR `#305`
+│   │   ├── Current HEAD: `58bdc319c3ca00819b6b4fe7fefa59a5a321ba9d`
+│   │   ├── Scope: source plus focused-test implementation limited to
+│   │   │          `realtime_streaming_service.py` and
+│   │   │          `test_realtime_streaming_service.py`
+│   │   ├── Result: introduces `_utc_now()` and uses it for
+│   │   │          `StreamSubscriber.subscribed_at` and
+│   │   │          `StreamData.created_at`, making realtime streaming
+│   │   │          dataclass defaults timezone-aware UTC timestamps
+│   │   ├── Verification: TDD red `1 failed, 42 passed`, explicit
+│   │   │          timezone assertion red `3 failed, 40 passed`, focused
+│   │   │          green `43 passed`, Socket.IO streaming regression
+│   │   │          `20 passed`, Socket.IO manager regression
+│   │   │          `26 passed, 1 warning`, consumer-injection regression
+│   │   │          `2 passed`, and touched-file ruff reports
+│   │   │          `All checks passed`
+│   │   ├── GitNexus: pre-edit impact for `StreamSubscriber` and
+│   │   │          `StreamData` reports LOW risk and impacted count `0`
+│   │   └── Boundary: no Socket.IO manager source edit, route/API,
+│   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
+│   │              script, compatibility wrapper deletion, issue-label
+│   │              change, or GitHub issue state change is performed here
+│   └── Next gate: review G2.153; if accepted, merge it and decide
+│                  whether realtime/socket has remaining high-risk getter
+│                  work or can return to the broader G2 service getter queue
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

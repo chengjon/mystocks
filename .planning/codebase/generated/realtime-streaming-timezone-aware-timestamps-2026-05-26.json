@@ -1,0 +1,109 @@
+{
+  "artifact": "realtime-streaming-timezone-aware-timestamps-2026-05-26",
+  "generated_at": "2026-05-26T18:58:02+08:00",
+  "worktree": ".worktrees/g2-153-realtime-streaming-timezone-aware-timestamps",
+  "branch": "g2-153-realtime-streaming-timezone-aware-timestamps",
+  "base_head": "58bdc319c3ca00819b6b4fe7fefa59a5a321ba9d",
+  "parent": {
+    "task": "G2.149",
+    "pull_request": 305,
+    "merge_commit": "58bdc319c3ca00819b6b4fe7fefa59a5a321ba9d"
+  },
+  "task": {
+    "id": "G2.153",
+    "title": "Realtime streaming timezone-aware timestamps",
+    "scope": "source plus focused tests",
+    "authorization": "approved by user in current review thread"
+  },
+  "problem": {
+    "failing_test": "web/backend/tests/test_realtime_streaming_service.py::TestStreamSubscriber::test_subscriber_update_activity",
+    "symptom": "TypeError comparing offset-naive and offset-aware datetimes",
+    "root_cause": "StreamSubscriber.subscribed_at and StreamData.created_at used datetime.utcnow while update paths already used datetime.now(timezone.utc)"
+  },
+  "gitnexus_impact": [
+    {
+      "target": "StreamSubscriber",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    },
+    {
+      "target": "StreamData",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    }
+  ],
+  "changes": [
+    {
+      "path": "web/backend/app/services/realtime_streaming_service.py",
+      "summary": "Added _utc_now() and used it for StreamSubscriber.subscribed_at and StreamData.created_at default factories."
+    },
+    {
+      "path": "web/backend/tests/test_realtime_streaming_service.py",
+      "summary": "Added timezone-awareness assertions for StreamSubscriber and StreamData timestamps."
+    }
+  ],
+  "line_references": {
+    "helper": "web/backend/app/services/realtime_streaming_service.py:29",
+    "subscriber_default": "web/backend/app/services/realtime_streaming_service.py:59",
+    "stream_data_default": "web/backend/app/services/realtime_streaming_service.py:78",
+    "subscriber_assertions": [
+      "web/backend/tests/test_realtime_streaming_service.py:33",
+      "web/backend/tests/test_realtime_streaming_service.py:52"
+    ],
+    "stream_data_assertions": [
+      "web/backend/tests/test_realtime_streaming_service.py:74"
+    ]
+  },
+  "red_green": {
+    "initial_red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_streaming_service.py -q --no-cov --tb=short",
+      "result": "1 failed, 42 passed",
+      "failure": "TypeError: can't compare offset-naive and offset-aware datetimes"
+    },
+    "explicit_assertion_red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_streaming_service.py -q --no-cov --tb=short",
+      "result": "3 failed, 40 passed",
+      "failures": [
+        "StreamSubscriber.subscribed_at.tzinfo is None",
+        "old_time.tzinfo is None",
+        "StreamData.created_at.tzinfo is None"
+      ]
+    },
+    "green": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_streaming_service.py -q --no-cov --tb=short",
+      "result": "43 passed"
+    }
+  },
+  "verification": [
+    {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_streaming_integration.py -q --no-cov --tb=short",
+      "result": "20 passed"
+    },
+    {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_manager.py -q --no-cov --tb=short",
+      "result": "26 passed, 1 warning",
+      "note": "Existing RuntimeWarning for un-awaited asyncio.sleep in test_update_activity remains outside this lane."
+    },
+    {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short",
+      "result": "2 passed"
+    },
+    {
+      "command": "ruff check web/backend/app/services/realtime_streaming_service.py web/backend/tests/test_realtime_streaming_service.py",
+      "result": "All checks passed"
+    }
+  ],
+  "boundaries": [
+    "No Socket.IO manager source changes.",
+    "No route/API, OpenAPI, frontend, PM2, OpenSpec, config, or script changes.",
+    "No compatibility wrapper deletion.",
+    "No GitHub issue label or issue state changes."
+  ],
+  "next_gate": "Review and merge G2.153; then reassess whether the realtime/socket subtrack has remaining high-risk getter work or can return to the broader G2 high-risk service getter queue."
+}
