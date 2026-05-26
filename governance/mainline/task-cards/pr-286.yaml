@@ -1,0 +1,104 @@
+version: "v0.2"
+
+task:
+  id: "pr-286"
+  title: "Refresh service lifecycle DI candidates after WatchlistService"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-service-lifecycle-di-candidate-refresh-after-watchlist"
+  objective: "record the G2.133 current-head service lifecycle DI candidate refresh after PR #285"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-di-candidate-refresh-after-watchlist"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-service-lifecycle-di-candidate-refresh-after-watchlist"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Candidate refresh records current-head evidence only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26.json"
+    - "docs/reports/quality/backend-service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-286.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 285 --json number,state,mergedAt,mergeCommit,title,url"
+      required: true
+    - id: "candidate-scan"
+      command: "scripted current-head text scan over service getter definitions, retired getter confirmations, text-scan surfaces, and residual Watchlist private-helper token classification"
+      required: true
+    - id: "gitnexus-impact-sampling"
+      command: "GitNexus impact sampling for IntegratedServices facade getters, market_data, data, strategy, streaming, and tdx getters"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-286.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests."
+  - "Do not authorize or perform IntegratedServices facade getter deletion or migration."
+  - "Do not move issue labels, change OpenSpec content, run PM2, or change route/OpenAPI behavior."
+
+risk_and_rollback:
+  risks:
+    - "If LOW graph-risk IntegratedServices facade getters are treated as isolated implementation candidates, the shared composition-root ownership question could be skipped"
+    - "If HIGH/CRITICAL getters are selected without a separate authorization packet, route, adapter, task, dashboard, or streaming seams could regress"
+  rollback_plan: "revert this candidate-refresh PR to remove only the refresh report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "refresh service lifecycle DI candidates after WatchlistService getter retirement"
+    modified_scope: "steward tree, candidate refresh report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON/YAML parsing, GitNexus staged scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T11:54:19+08:00"
+    approval_note: "Candidate refresh follows merged G2.132 closeout PR #285"
+    secondary_approved: false
