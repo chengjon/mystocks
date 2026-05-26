@@ -1,0 +1,111 @@
+{
+  "artifact": "email-service-getter-retirement-authorization-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T08:24:45+08:00",
+  "branch": "g2-121-email-service-getter-retirement-authorization",
+  "current_head": "1f117e1c7aa0333b6c0de272d697043f59f56bc9",
+  "current_head_checked_at_review": "2026-05-26T08:24:45+08:00",
+  "parent_candidate_refresh": {
+    "node": "G2.120",
+    "pr": 273,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T00:21:15Z",
+    "merge_commit": "1f117e1c7aa0333b6c0de272d697043f59f56bc9"
+  },
+  "governance_node": {
+    "id": "G2.121",
+    "lane": "service_lifecycle_di",
+    "type": "authorization",
+    "state": "ready_for_review"
+  },
+  "target": {
+    "service_file": "web/backend/app/services/email_service.py",
+    "getter": "get_email_service",
+    "singleton": "_email_service",
+    "getter_line": 325,
+    "singleton_line": 321,
+    "installer": "install_email_service",
+    "dependency": "get_email_service_dependency",
+    "service_class": "EmailService"
+  },
+  "current_scan": {
+    "get_email_service_definitions": 1,
+    "email_singleton_tokens": 5,
+    "direct_getter_app_refs": 2,
+    "direct_getter_app_ref_files": 1,
+    "direct_getter_api_refs": 0,
+    "direct_getter_api_ref_files": 0,
+    "direct_getter_services_refs": 2,
+    "direct_getter_services_ref_files": 1,
+    "direct_getter_tests_refs": 4,
+    "direct_getter_tests_ref_files": 3,
+    "dependency_app_refs": 8,
+    "dependency_api_refs": 7,
+    "dependency_tests_refs": 3,
+    "route_depends_refs": 6,
+    "api_files_scanned": 219,
+    "backend_test_files_scanned": 201
+  },
+  "gitnexus_impact": {
+    "target": "get_email_service",
+    "risk": "MEDIUM",
+    "impacted_count": 6,
+    "direct": 6,
+    "affected_processes": 0,
+    "modules_affected": 1,
+    "note": "GitNexus reports notification route callers; exact text scan shows notification routes import and call get_email_service_dependency rather than the getter"
+  },
+  "verification": {
+    "parent_pr_state": {
+      "command": "gh pr view 273 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url",
+      "result": "MERGED"
+    },
+    "gitnexus_staged_detect_changes": {
+      "scope": "staged",
+      "risk_level": "low",
+      "changed_count": 0,
+      "changed_files": 4,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "authorized_future_scope": {
+    "future_node": "G2.122",
+    "allowed_paths": [
+      "web/backend/app/services/email_service.py",
+      "web/backend/tests/test_email_service_lifecycle_di.py",
+      "web/backend/tests/test_notification_logging.py",
+      "web/backend/tests/test_email_service_getter_retirement.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/email-service-getter-retirement-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-email-service-getter-retirement-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-274.yaml"
+    ],
+    "allowed_actions": [
+      "remove email_service.py _email_service",
+      "remove email_service.py get_email_service",
+      "change install_email_service fallback to construct EmailService() directly",
+      "update focused lifecycle/logging fakes that still expose the retired getter",
+      "add focused getter-retirement regression coverage"
+    ],
+    "must_preserve": [
+      "EmailService",
+      "install_email_service",
+      "get_email_service_dependency",
+      "EMAIL_SERVICE_STATE_KEY",
+      "notification route paths and OpenAPI exposure"
+    ]
+  },
+  "boundary": {
+    "backend_source_changed": false,
+    "backend_tests_changed": false,
+    "routes_changed": false,
+    "openapi_changed": false,
+    "frontend_changed": false,
+    "pm2_changed": false,
+    "openspec_changed": false,
+    "issue_labels_changed": false,
+    "implementation_performed": false
+  },
+  "next_gate": "human review / PR merge decision for G2.121; if accepted, create G2.122 EmailService getter-retirement implementation before any email service source edit"
+}

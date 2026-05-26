@@ -1974,7 +1974,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation authorization, or issue-label change is made here
 │   ├── G2.120 Service lifecycle candidate refresh after AnnouncementService
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#273` merged at
+│   │   │          `1f117e1c7aa0333b6c0de272d697043f59f56bc9`
 │   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-announcement-2026-05-26.md`
 │   │   ├── Current HEAD: `550ce654219385afa65fc4fbfaf6129b2d2a4ca3`
 │   │   ├── Result: current text scan confirms service files=`152`,
@@ -1995,8 +1996,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.120; if accepted,
-│                  create G2.121 EmailService getter-retirement authorization
+│   ├── G2.121 EmailService getter-retirement authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-email-service-getter-retirement-authorization-2026-05-26.md`
+│   │   ├── Current HEAD: `1f117e1c7aa0333b6c0de272d697043f59f56bc9`
+│   │   ├── Result: authorizes only a future G2.122 implementation branch to
+│   │   │          retire `email_service.py` `_email_service` and
+│   │   │          `get_email_service`, while preserving `EmailService`,
+│   │   │          `install_email_service`, `get_email_service_dependency`,
+│   │   │          notification routes, and OpenAPI exposure
+│   │   ├── Evidence note: exact scan shows direct API getter refs=`0`,
+│   │   │          direct adapter getter refs=`0`, route dependency handlers=`6`,
+│   │   │          and GitNexus impact MEDIUM / `6` with affected processes=`0`;
+│   │   │          future implementation may update only the listed service and
+│   │   │          focused tests after TDD red
+│   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                implementation, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.121; if accepted,
+│                  create G2.122 EmailService getter-retirement implementation
 │                  before any email service source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
