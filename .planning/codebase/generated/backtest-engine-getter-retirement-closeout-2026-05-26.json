@@ -1,0 +1,64 @@
+{
+  "schema_version": "1.0",
+  "artifact": "backtest-engine-getter-retirement-closeout",
+  "created_at": "2026-05-26T13:48:00+08:00",
+  "current_head": "62cf56cc8736c3784f8b7cc9ac5cc21a52d39423",
+  "parent_implementation": {
+    "lane": "G2.140",
+    "pull_request": 293,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T05:32:51Z",
+    "merge_commit": "62cf56cc8736c3784f8b7cc9ac5cc21a52d39423",
+    "title": "G2.140 Retire BacktestEngine getter",
+    "url": "https://github.com/chengjon/mystocks/pull/293"
+  },
+  "closeout_scope": {
+    "mode": "closeout-only",
+    "runtime_code_changed": false,
+    "tests_changed": false,
+    "implementation_authorized": false
+  },
+  "verification": {
+    "focused_test": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_engine_getter_retirement.py -q --no-cov --tb=short",
+      "result": "2 passed in 0.57s"
+    },
+    "exact_scan": {
+      "BacktestEngine_definition_count": 1,
+      "get_backtest_engine_definition_count": 0,
+      "_backtest_engine_token_count": 0,
+      "remaining_get_backtest_engine_references": [
+        {
+          "file": "web/backend/tests/test_backtest_engine_getter_retirement.py",
+          "count": 1
+        }
+      ]
+    },
+    "import_smoke": {
+      "import_ok": true,
+      "has_getter": false,
+      "has_singleton": false,
+      "BacktestConfig": true,
+      "BacktestResult": true,
+      "BacktestEngine": true
+    }
+  },
+  "closed_lane": {
+    "retired_symbols": [
+      "_backtest_engine",
+      "get_backtest_engine"
+    ],
+    "preserved_symbols": [
+      "BacktestConfig",
+      "BacktestResult",
+      "BacktestEngine"
+    ],
+    "next_gate": "refresh remaining service lifecycle candidate pool"
+  },
+  "boundary": {
+    "no_source_or_test_edits": true,
+    "no_route_api_openapi_frontend_pm2_or_openspec_changes": true,
+    "no_issue_label_changes": true,
+    "no_next_implementation_authorization": true
+  }
+}
