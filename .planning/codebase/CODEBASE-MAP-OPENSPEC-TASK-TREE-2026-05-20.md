@@ -2316,9 +2316,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                one focused test, report, generated artifact, task card,
 │   │                and steward-tree update
 │   ├── G2.137 Unused IntegratedServices service-facade getter retirement closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#290`
 │   │   ├── Evidence: `backend-unused-integrated-services-facade-getter-retirement-closeout-2026-05-26.md`
-│   │   ├── Current HEAD: `541a225b5cbc90807d8cc7af20d0ffd42b07fd2d`
+│   │   ├── Merge commit: `090c0c30a7ac64c75e30febce1b3f6e4d20eee1c`
 │   │   ├── Result: records PR `#289` as merged and closes the unused
 │   │   │          IntegratedServices service-facade getter retirement lane
 │   │   │          without changing runtime source, tests, route paths,
@@ -2330,9 +2330,36 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: closeout-only; no source/test edit, runtime behavior,
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                implementation, or issue-label change is made here
-│   └── Next gate: after G2.137 review and merge, refresh the remaining service
-│                  lifecycle candidate pool before selecting another
-│                  implementation lane
+│   ├── G2.138 Service lifecycle candidate refresh after IntegratedServices facade retirement
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-integrated-facade-retirement-2026-05-26.md`
+│   │   ├── Current HEAD: `090c0c30a7ac64c75e30febce1b3f6e4d20eee1c`
+│   │   ├── Result: refreshes the remaining service lifecycle DI candidate
+│   │   │          pool after G2.137 closeout and selects only a future
+│   │   │          authorization candidate, not an implementation lane
+│   │   ├── Verification: service files=`152`, backend app files=`575`,
+│   │   │          API files=`219`, tests=`205`, service getter
+│   │   │          definitions=`54`, root facade getters=`7`, FastAPI
+│   │   │          dependency/provider getters=`9`; retired IntegratedServices
+│   │   │          facade definitions remain `0` and locked facade definitions
+│   │   │          remain `1`
+│   │   ├── Candidate decision: select `get_backtest_engine` /
+│   │   │          `_backtest_engine` only for a future authorization package;
+│   │   │          GitNexus impact is LOW with impacted=`0`, direct=`0`,
+│   │   │          processes=`0`, and exact text scan finds no backend code
+│   │   │          caller outside the defining service file
+│   │   ├── Holds: `get_tdx_service` remains CRITICAL with impacted=`6`,
+│   │   │          direct=`2`, processes=`5`; `get_data_service`,
+│   │   │          `get_strategy_service`, `get_streaming_service`,
+│   │   │          root/risk facades, and active FastAPI dependency/provider
+│   │   │          seams remain out of scope
+│   │   └── Boundary: candidate-refresh-only; no backend source/test edit,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                getter deletion, implementation authorization, or
+│   │                issue-label change is made here
+│   └── Next gate: after G2.138 review and merge, prepare a BacktestEngine
+│                  singleton/getter retirement authorization package before
+│                  any source implementation work
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

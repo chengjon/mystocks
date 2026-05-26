@@ -1,0 +1,137 @@
+{
+  "schema_version": "1.0",
+  "artifact": "service-lifecycle-candidate-refresh-after-integrated-facade-retirement",
+  "created_at": "2026-05-26T13:10:00+08:00",
+  "current_head": "090c0c30a7ac64c75e30febce1b3f6e4d20eee1c",
+  "parent_closeout": {
+    "lane": "G2.137",
+    "pull_request": 290,
+    "merge_commit": "090c0c30a7ac64c75e30febce1b3f6e4d20eee1c",
+    "meaning": "unused IntegratedServices service-facade getter retirement closeout accepted"
+  },
+  "scope": {
+    "mode": "governance-only candidate refresh",
+    "source_roots_scanned": [
+      "web/backend/app/services",
+      "web/backend/app",
+      "web/backend/tests"
+    ],
+    "runtime_code_changed": false,
+    "implementation_authorized": false
+  },
+  "file_counts": {
+    "service_py_files": 152,
+    "backend_app_py_files": 575,
+    "backend_api_py_files": 219,
+    "backend_test_py_files": 205
+  },
+  "getter_inventory": {
+    "service_getter_definitions": 54,
+    "root_facade_getters": 7,
+    "fastapi_dependency_getters": 9,
+    "zero_external_reference_getters": 9
+  },
+  "integrated_services_facade_state": {
+    "retired_definition_counts": {
+      "get_trading_data_service": 0,
+      "get_analysis_data_service": 0,
+      "get_data_api_service": 0,
+      "get_database_service": 0,
+      "get_websocket_service": 0,
+      "get_cache_service": 0
+    },
+    "locked_definition_counts": {
+      "get_integrated_services": 1,
+      "get_market_data_service": 1,
+      "get_risk_calculator": 1,
+      "get_risk_monitoring": 1,
+      "get_risk_alerts": 1,
+      "get_risk_settings": 1,
+      "get_risk_dashboard": 1
+    }
+  },
+  "selected_next_authorization_candidate": {
+    "symbol": "get_backtest_engine",
+    "file": "web/backend/app/services/backtest_engine.py",
+    "line": 275,
+    "singleton_state": "_backtest_engine",
+    "gitnexus_impact": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    },
+    "text_reference_summary": {
+      "code_hits": 1,
+      "code_files": [
+        "web/backend/app/services/backtest_engine.py"
+      ]
+    },
+    "decision": "select as future authorization-candidate lane only"
+  },
+  "held_or_excluded_candidates": [
+    {
+      "symbol": "get_tdx_service",
+      "file": "web/backend/app/services/tdx_service.py",
+      "reason": "GitNexus CRITICAL risk; direct API callers and five affected flows",
+      "gitnexus_impact": {
+        "risk": "CRITICAL",
+        "impacted_count": 6,
+        "direct": 2,
+        "processes_affected": 5
+      }
+    },
+    {
+      "symbol": "get_data_service",
+      "file": "web/backend/app/services/data_service.py",
+      "reason": "existing high-risk design lane; not selected by this refresh"
+    },
+    {
+      "symbol": "get_strategy_service",
+      "file": "web/backend/app/services/strategy_service.py",
+      "reason": "existing high-risk design lane; not selected by this refresh"
+    },
+    {
+      "symbol": "get_streaming_service",
+      "file": "web/backend/app/services/realtime_streaming_service.py",
+      "reason": "existing high-risk design lane with broad caller surface; not selected by this refresh"
+    },
+    {
+      "symbol": "get_market_data_service",
+      "file": "web/backend/app/services/__init__.py",
+      "reason": "locked IntegratedServices composition/root facade; retained by G2.134/G2.137 boundary"
+    },
+    {
+      "symbol": "risk helper facades",
+      "file": "web/backend/app/services/__init__.py",
+      "reason": "locked compatibility facades; not part of this service getter retirement queue"
+    },
+    {
+      "symbol": "get_indicator_registry_dependency",
+      "file": "web/backend/app/services/indicator_registry.py",
+      "reason": "active FastAPI route provider seam; exact text references remain in API and tests"
+    },
+    {
+      "symbol": "get_tradingview_service_dependency",
+      "file": "web/backend/app/services/tradingview_widget_service.py",
+      "reason": "active FastAPI route provider seam; exact text references remain in API and tests"
+    },
+    {
+      "symbol": "get_company_news",
+      "file": "web/backend/app/services/stock_search_service/_stock_search_finnhub.py",
+      "reason": "stock-search helper callable, not a service singleton lifecycle getter"
+    }
+  ],
+  "next_gate": {
+    "lane": "G2.139",
+    "recommended_task": "BacktestEngine singleton/getter retirement authorization",
+    "allowed_mode": "authorization-only",
+    "implementation_allowed": false
+  },
+  "boundary": {
+    "no_source_or_test_edits": true,
+    "no_route_api_openapi_frontend_pm2_or_openspec_changes": true,
+    "no_issue_label_changes": true,
+    "no_getter_deletion": true
+  }
+}
