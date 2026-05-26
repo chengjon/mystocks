@@ -2558,8 +2558,32 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                deletion, route/API, OpenAPI exposure, frontend, PM2,
 │   │                OpenSpec, issue-label change, or implementation
 │   │                authorization is made here
-│   └── Next gate: review G2.147; if accepted, prepare G2.148 Socket.IO
-│                  legacy export contract authorization package
+│   ├── G2.148 Socket.IO legacy export contract authorization
+│   │   ├── State: reviewable decision package
+│   │   ├── Evidence: `backend-socketio-legacy-export-contract-authorization-2026-05-26.md`
+│   │   ├── Parent: G2.147 accepted and merged by PR `#300`
+│   │   ├── Current HEAD: `3b1d67ceb52a5c3ccbbbafb534895c6a70aa6d2e`
+│   │   ├── Result: routes the legacy Socket.IO export collection blocker to
+│   │   │          a future test-only import-alignment lane instead of
+│   │   │          restoring exports from `socketio_manager.py`
+│   │   ├── Verification: focused
+│   │   │          `test_realtime_socket_manager_streaming_dependency.py`
+│   │   │          reports `2 passed`; collect-only still fails for
+│   │   │          `test_socketio_manager.py` on missing
+│   │   │          `get_socketio_manager` and for
+│   │   │          `test_socketio_streaming_integration.py` on missing
+│   │   │          `reset_socketio_manager`
+│   │   ├── Decision: canonical helper path is
+│   │   │          `app.core._socketio_manager_singleton`; runtime composition
+│   │   │          already imports from that helper, so the next lane should
+│   │   │          align stale test imports rather than widen
+│   │   │          `app.core.socketio_manager`
+│   │   └── Boundary: decision-only; no backend source/test edit, helper
+│   │                alias restoration, realtime datetime fix, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, issue-label
+│   │                change, or implementation work is performed here
+│   └── Next gate: review G2.148; if accepted, start G2.150 Socket.IO
+│                  test import alignment as a separate test-only lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
