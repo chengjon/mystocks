@@ -1,0 +1,108 @@
+version: "v0.2"
+
+task:
+  id: "pr-308"
+  title: "Select next high-risk service getter track"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-next-high-risk-service-getter-track-selection"
+  objective: "select Dashboard/TDX as the next high-risk service getter design track after realtime/socket closeout"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-next-high-risk-service-getter-track-selection"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Decision-only governance package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/next-high-risk-service-getter-track-selection-2026-05-26.json"
+    - "docs/reports/quality/backend-next-high-risk-service-getter-track-selection-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-308.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 307 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "openspec-context"
+      command: "openspec list && openspec list --specs"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus impact for get_tdx_service, get_data_service, get_strategy_service, and web/backend/app/services/__init__.py"
+      required: true
+    - id: "token-scan"
+      command: "scan current token counts for get_tdx_service, get_data_service, get_strategy_service, and route provider getters"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-next-high-risk-service-getter-track-selection-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/next-high-risk-service-getter-track-selection-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-308.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this decision package."
+  - "Do not authorize G2.156 source implementation from this package."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+  - "Do not delete compatibility wrappers or provider getters."
+
+risk_and_rollback:
+  risks:
+    - "If this selection is treated as source authorization, Dashboard/TDX code could be modified without the required G2.156 design and authorization package."
+    - "If the route dependency/provider surfaces are treated as cleanup candidates, active FastAPI dependency contracts could be broken."
+  rollback_plan: "revert this decision PR to remove only the decision report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "select Dashboard/TDX as the next high-risk service getter design track"
+    modified_scope: "steward tree, decision report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, GitNexus impact evidence, token scan, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T20:30:33+08:00"
+    approval_note: "Decision-only track selection after PR #307 closed the realtime/socket subtrack."
+    secondary_approved: false

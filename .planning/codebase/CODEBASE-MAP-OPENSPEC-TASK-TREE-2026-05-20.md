@@ -2699,11 +2699,11 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
 │   ├── G2.154 Realtime/socket subtrack closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#307`
 │   │   ├── Evidence: `backend-realtime-socket-subtrack-closeout-2026-05-26.md`
 │   │   ├── Generated: `realtime-socket-subtrack-closeout-2026-05-26.json`
 │   │   ├── Parent: G2.153 accepted and merged by PR `#306`
-│   │   ├── Current HEAD: `bc795386313b40c4d87602fd80a09ad2d275f9d4`
+│   │   ├── Merge commit: `3beee4c192dd060dd5f54022cf30f0d3ea1d7294`
 │   │   ├── Result: closes the dedicated realtime/socket subtrack for now
 │   │   │          after PRs `#297` through `#306` completed the authorized
 │   │   │          manager-level injection, legacy export/test import
@@ -2725,9 +2725,36 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
-│   └── Next gate: review G2.154; if accepted, select the next high-risk
-│                  service getter track through a separate decision or
-│                  authorization package before any new source lane starts
+│   ├── G2.155 Next high-risk service getter track selection
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-next-high-risk-service-getter-track-selection-2026-05-26.md`
+│   │   ├── Generated: `next-high-risk-service-getter-track-selection-2026-05-26.json`
+│   │   ├── Parent: G2.154 accepted and merged by PR `#307`
+│   │   ├── Current HEAD: `3beee4c192dd060dd5f54022cf30f0d3ea1d7294`
+│   │   ├── Refreshed impact: `get_tdx_service` remains CRITICAL with
+│   │   │          impacted `4`, direct callers `2`, and processes `5`;
+│   │   │          `get_data_service` remains CRITICAL with impacted `4`,
+│   │   │          direct callers `3`, and processes `7`; `get_strategy_service`
+│   │   │          remains CRITICAL with impacted `11`, direct callers `6`,
+│   │   │          and processes `0`
+│   │   ├── Decision: select Dashboard/TDX runtime seam as the next
+│   │   │          high-risk service getter design track because its direct
+│   │   │          caller surface is smallest and concentrated in
+│   │   │          `dashboard_data_source.py` helpers; defer Indicator/Data,
+│   │   │          Strategy adapter, root facade compatibility, and route
+│   │   │          dependency/provider governance to separate packages
+│   │   ├── G2.156 gate: prepare a Dashboard/TDX design and authorization
+│   │   │          package with dashboard consumer contract matrix, TDX
+│   │   │          fallback behavior, focused route tests or smoke plan,
+│   │   │          allowed path list, and route/OpenAPI drift rule before
+│   │   │          any Dashboard/TDX source lane starts
+│   │   └── Boundary: decision-only; no backend source/test edit, route/API,
+│   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
+│   │              script, compatibility wrapper deletion, issue-label
+│   │              change, or GitHub issue state change is performed here
+│   └── Next gate: review G2.155; if accepted, start G2.156 Dashboard/TDX
+│                  design and authorization package before any Dashboard/TDX
+│                  source implementation begins
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

@@ -1,0 +1,146 @@
+{
+  "artifact": "next-high-risk-service-getter-track-selection-2026-05-26",
+  "generated_at": "2026-05-26T20:30:33+08:00",
+  "worktree": ".worktrees/g2-155-next-high-risk-getter-track-selection",
+  "branch": "g2-155-next-high-risk-getter-track-selection",
+  "base_head": "3beee4c192dd060dd5f54022cf30f0d3ea1d7294",
+  "task": {
+    "id": "G2.155",
+    "title": "Next high-risk service getter track selection",
+    "scope": "governance decision only",
+    "authorization": "approved by user in current review thread"
+  },
+  "parent": {
+    "task": "G2.154",
+    "pull_request": 307,
+    "merge_commit": "3beee4c192dd060dd5f54022cf30f0d3ea1d7294",
+    "decision": "Realtime/socket subtrack is closed for now; return to broader G2 high-risk service getter queue."
+  },
+  "source_inputs": [
+    "docs/reports/quality/backend-high-risk-service-getter-strategy-decision-2026-05-26.md",
+    "docs/reports/quality/backend-realtime-socket-subtrack-closeout-2026-05-26.md",
+    ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+    "OpenSpec active list and spec list checked on 2026-05-26; PostHog ECONNREFUSED remains telemetry noise"
+  ],
+  "refreshed_impact": [
+    {
+      "track": "Dashboard/TDX",
+      "primary_surface": "get_tdx_service",
+      "risk": "CRITICAL",
+      "impacted_count": 4,
+      "direct_callers": 2,
+      "processes_affected": 5,
+      "d1_callers": [
+        "web/backend/app/api/dashboard_data_source.py::_get_major_index_quotes",
+        "web/backend/app/api/dashboard_data_source.py::_get_tdx_live_market_snapshot"
+      ]
+    },
+    {
+      "track": "Indicator/Data",
+      "primary_surface": "get_data_service",
+      "risk": "CRITICAL",
+      "impacted_count": 4,
+      "direct_callers": 3,
+      "processes_affected": 7,
+      "d1_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators",
+        "web/backend/app/api/indicators/indicator_cache.py::_calculate_single_indicator",
+        "web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators"
+      ]
+    },
+    {
+      "track": "Strategy adapter",
+      "primary_surface": "get_strategy_service",
+      "risk": "CRITICAL",
+      "impacted_count": 11,
+      "direct_callers": 6,
+      "processes_affected": 0,
+      "d1_callers": [
+        "web/backend/app/services/data_adapters/strategy.py::_get_strategy_service",
+        "web/backend/app/services/adapters/strategy_adapter.py::_get_strategy_service",
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py::query_strategy_results",
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py::get_matched_stocks",
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py::get_strategy_summary",
+        "web/backend/app/tasks/backtest_tasks.py::_resolve_backtest_data_source"
+      ]
+    },
+    {
+      "track": "Root facade compatibility",
+      "primary_surface": "web/backend/app/services/__init__.py",
+      "risk": "locked governance surface",
+      "impacted_count": 1,
+      "direct_callers": 1,
+      "processes_affected": 0,
+      "note": "GitNexus file impact is LOW, but G2.143 keeps this track locked because active compatibility exports require a dedicated retirement decision record."
+    }
+  ],
+  "token_scan": {
+    "get_tdx_service": {
+      "files": 3,
+      "hits": 14,
+      "top": [
+        "web/backend/app/api/tdx.py: 6",
+        "web/backend/app/api/dashboard_data_source.py: 5",
+        "web/backend/app/services/tdx_service.py: 3"
+      ]
+    },
+    "get_data_service": {
+      "files": 5,
+      "hits": 10,
+      "top": [
+        "web/backend/app/api/indicators/indicator_cache.py: 3",
+        "web/backend/app/api/v1/strategy/indicators.py: 2",
+        "web/backend/app/api/v1/strategy/ml_runtime_helpers.py: 2",
+        "web/backend/app/api/v1/system/health.py: 2",
+        "web/backend/app/services/data_service.py: 1"
+      ]
+    },
+    "get_strategy_service": {
+      "files": 5,
+      "hits": 27,
+      "top": [
+        "web/backend/app/services/adapters/strategy_adapter.py: 10",
+        "web/backend/app/services/data_adapters/strategy.py: 10",
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py: 4",
+        "web/backend/app/tasks/backtest_tasks.py: 2",
+        "web/backend/app/services/strategy_service.py: 1"
+      ]
+    },
+    "route_provider_surfaces": {
+      "get_market_data_service_v2_dependency": "17 hits across 3 files",
+      "get_tdx_service_dependency": "7 hits across 2 files",
+      "get_indicator_registry_dependency": "4 hits across 2 files"
+    }
+  },
+  "decision": {
+    "selected_track": "Dashboard/TDX runtime seam",
+    "selection_reason": [
+      "It is the smallest remaining CRITICAL implementation family by direct caller count.",
+      "Its current d=1 surface is concentrated in dashboard_data_source helper functions.",
+      "Prior TDX route/provider work exists, so the next package can focus on dashboard consumer contract and fallback behavior instead of inventing a new provider pattern.",
+      "Indicator/Data and Strategy adapter remain broader and should wait for separate dedicated packages."
+    ],
+    "next_gate": "G2.156 Dashboard/TDX design and authorization package",
+    "source_implementation_authorized": false
+  },
+  "g2_156_minimum_requirements": [
+    "Refresh GitNexus impact for get_tdx_service and dashboard_data_source helper callers.",
+    "Produce a dashboard/TDX consumer contract matrix for _get_major_index_quotes, _get_tdx_live_market_snapshot, and their dashboard summary callers.",
+    "Document TDX unavailable/fallback behavior and test-double strategy.",
+    "Define allowed source and test paths before any implementation lane starts.",
+    "Require focused dashboard/TDX route tests or import-safe smoke tests.",
+    "Require route/OpenAPI drift check if the approved implementation touches route-level dependency contracts.",
+    "Explicitly exclude Indicator/Data, Strategy adapter, root facade compatibility, and route dependency/provider governance from the first Dashboard/TDX implementation lane."
+  ],
+  "deferred_tracks": [
+    "Indicator/Data service seam",
+    "Strategy adapter seam",
+    "Root facade compatibility seam",
+    "Route dependency/provider governance seam"
+  ],
+  "boundaries": [
+    "No backend source or test files are edited in G2.155.",
+    "No route/API, OpenAPI, frontend, PM2, OpenSpec, config, script, compatibility wrapper, issue label, or GitHub issue state change is made here.",
+    "This selection does not authorize G2.156 source implementation; it only authorizes drafting the G2.156 design/authorization package."
+  ]
+}
