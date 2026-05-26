@@ -30,6 +30,8 @@ class TestStreamSubscriber:
 
         assert subscriber.sid == "sid_001"
         assert subscriber.user_id == "user_001"
+        assert subscriber.subscribed_at.tzinfo is not None
+        assert subscriber.subscribed_at.utcoffset() is not None
         assert subscriber.messages_received == 0
         assert "price" in subscriber.fields
 
@@ -47,6 +49,10 @@ class TestStreamSubscriber:
 
         subscriber.update_activity()
 
+        assert old_time.tzinfo is not None
+        assert old_time.utcoffset() is not None
+        assert subscriber.subscribed_at.tzinfo is not None
+        assert subscriber.subscribed_at.utcoffset() is not None
         assert subscriber.subscribed_at >= old_time
 
 
@@ -65,6 +71,8 @@ class TestStreamData:
         assert data.message_id == "msg_001"
         assert data.symbol == "600519"
         assert data.version == 1
+        assert data.created_at.tzinfo is not None
+        assert data.created_at.utcoffset() is not None
 
     def test_stream_data_to_dict(self):
         """测试流数据转换"""
