@@ -1,0 +1,111 @@
+version: "v0.2"
+
+task:
+  id: "pr-312"
+  title: "Authorize Indicator/Data design lane"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-indicator-data-design-authorization"
+  objective: "record Indicator/Data consumer contracts and route the existing v1 indicator test-contract blocker before any source implementation"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-indicator-data-design-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Design authorization governance package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/indicator-data-design-authorization-2026-05-27.json"
+    - "docs/reports/quality/backend-indicator-data-design-authorization-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-312.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 311 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus impact/context for get_data_service and Indicator/Data consumers"
+      required: true
+    - id: "static-classification"
+      command: "classify current get_data_service textual hits as definition, import, direct body call, test monkeypatch, or test reference"
+      required: true
+    - id: "focused-baseline-tests"
+      command: "run focused indicator tests and record pass/fail, including known v1 indicator test-contract blocker"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-indicator-data-design-authorization-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/indicator-data-design-authorization-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-312.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this design authorization package."
+  - "Do not authorize Indicator/Data source implementation from this package."
+  - "Do not delete or privatize get_data_service()."
+  - "Do not edit web/backend/app/services/data_service.py."
+  - "Do not edit Strategy adapter, root facade compatibility, or route dependency/provider surfaces."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this package is treated as implementation authorization, source edits could start while a focused v1 indicator regression test still fails."
+    - "If the existing HTTPException expectation is ignored, a later implementation lane may mix dependency injection changes with error-contract test repair."
+  rollback_plan: "revert this decision PR to remove only the design report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "record Indicator/Data design constraints and route the v1 indicator test-contract blocker"
+    modified_scope: "steward tree, design report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, GitNexus evidence, static classification, baseline test evidence, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T00:19:54+08:00"
+    approval_note: "Design authorization package after PR #311 selected Indicator/Data as the next high-risk getter track."
+    secondary_approved: false
+

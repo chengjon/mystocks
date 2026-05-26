@@ -2815,11 +2815,12 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              change, or GitHub issue state change is performed here
 │   ├── G2.158 Next high-risk service getter track selection after
 │   │          Dashboard/TDX
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#311`
 │   │   ├── Evidence: `backend-next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.md`
 │   │   ├── Generated: `next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.json`
 │   │   ├── Parent: G2.157 accepted and merged by PR `#310`
 │   │   ├── Current HEAD: `97442014ea3ea3e63ffa170cd00b54889c158924`
+│   │   ├── Merge commit: `aef7e765b0c0472c2b2f907463345c964735b1f9`
 │   │   ├── Refreshed impact: `get_data_service` remains CRITICAL with
 │   │   │          impacted `5`, direct callers `3`, and processes `7`;
 │   │   │          `get_strategy_service` remains CRITICAL with impacted
@@ -2840,8 +2841,37 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
-│   └── Next gate: review G2.158; if accepted, start G2.159
-│                  Indicator/Data design and authorization package before
+│   ├── G2.159 Indicator/Data design and authorization package
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-indicator-data-design-authorization-2026-05-27.md`
+│   │   ├── Generated: `indicator-data-design-authorization-2026-05-27.json`
+│   │   ├── Parent: G2.158 accepted and merged by PR `#311`
+│   │   ├── Current HEAD: `aef7e765b0c0472c2b2f907463345c964735b1f9`
+│   │   ├── GitNexus evidence: `get_data_service` remains CRITICAL with
+│   │   │          impacted `5`, direct callers `3`, and processes `7`;
+│   │   │          direct callers are `calculate_indicators`,
+│   │   │          `_calculate_single_indicator`, and
+│   │   │          `get_technical_indicators`; downstream indicator-cache
+│   │   │          callers remain LOW-risk helper surfaces
+│   │   ├── Current-head static classification: application direct
+│   │   │          `get_data_service()` body calls are `3` across
+│   │   │          `indicator_cache.py` and `api/v1/strategy/indicators.py`;
+│   │   │          test references are monkeypatches or direct service smokes
+│   │   ├── Verification: `test_indicator_registry_route_provider.py`
+│   │   │          passed `2`; `test_v1_indicators_regressions.py` has
+│   │   │          `1` pass and `1` existing failure because it still expects
+│   │   │          `module.HTTPException` while current code raises canonical
+│   │   │          `BusinessException`
+│   │   ├── Decision: do not open Indicator/Data source implementation yet;
+│   │   │          route the next gate to G2.160 test-contract alignment
+│   │   │          before any `get_data_service` consumer edit
+│   │   └── Boundary: design-authorization only; no backend source/test edit,
+│   │              route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │              config, script, compatibility wrapper deletion,
+│   │              issue-label change, or GitHub issue state change is
+│   │              performed here
+│   └── Next gate: review G2.159; if accepted, start G2.160 as a narrow
+│                  Indicator/Data test-contract alignment package before
 │                  any Indicator/Data source implementation begins
 │
 ├── H. Decision-Only Track: CSRF composition root

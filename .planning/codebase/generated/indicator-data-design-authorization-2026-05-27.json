@@ -1,0 +1,254 @@
+{
+  "artifact": "indicator-data-design-authorization-2026-05-27",
+  "generated_at": "2026-05-27T00:19:54+08:00",
+  "worktree": ".worktrees/g2-159-indicator-data-design-authorization",
+  "branch": "g2-159-indicator-data-design-authorization",
+  "base_head": "aef7e765b0c0472c2b2f907463345c964735b1f9",
+  "task": {
+    "id": "G2.159",
+    "title": "Indicator/Data design and authorization package",
+    "scope": "governance design and authorization only",
+    "authorization": "G2.158 accepted by user and merged through PR #311"
+  },
+  "parent": {
+    "task": "G2.158",
+    "pull_request": 311,
+    "state": "MERGED",
+    "merge_commit": "aef7e765b0c0472c2b2f907463345c964735b1f9",
+    "decision": "Indicator/Data selected as the next high-risk service getter design track."
+  },
+  "source_inputs": [
+    "docs/reports/quality/backend-high-risk-service-getter-strategy-decision-2026-05-26.md",
+    "docs/reports/quality/backend-next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26.md",
+    "docs/reports/quality/backend-dashboard-tdx-verification-closeout-2026-05-26.md"
+  ],
+  "gitnexus_impact": {
+    "get_data_service": {
+      "risk": "CRITICAL",
+      "impacted_count": 5,
+      "direct_callers": 3,
+      "processes_affected": 7,
+      "modules_affected": [
+        "Indicators",
+        "Strategy"
+      ],
+      "d1_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators",
+        "web/backend/app/api/indicators/indicator_cache.py::_calculate_single_indicator",
+        "web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators"
+      ],
+      "d2_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_single_request"
+      ],
+      "d3_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::limited_calculate"
+      ]
+    },
+    "calculate_indicators": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct_callers": 0,
+      "processes_affected": 0
+    },
+    "_calculate_single_indicator": {
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct_callers": 1,
+      "processes_affected": 0,
+      "d1_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_single_request"
+      ],
+      "d2_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::limited_calculate"
+      ],
+      "d3_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators_batch"
+      ]
+    },
+    "get_technical_indicators": {
+      "note": "The name is ambiguous in GitNexus; context lookup was used to select web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators.",
+      "uid": "Function:web/backend/app/api/v1/strategy/indicators.py:get_technical_indicators",
+      "processes": [
+        "Get_technical_indicators -> ShouldAlwaysSelectNothing",
+        "Get_technical_indicators -> ImplForWrapper",
+        "Get_technical_indicators -> GetAttributeNS",
+        "Get_technical_indicators -> Strip",
+        "Get_technical_indicators -> _locationObjectNavigate"
+      ]
+    },
+    "calculate_single_request": {
+      "risk": "LOW",
+      "impacted_count": 2,
+      "direct_callers": 1,
+      "processes_affected": 0,
+      "d1_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::limited_calculate"
+      ]
+    },
+    "limited_calculate": {
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct_callers": 1,
+      "processes_affected": 0,
+      "d1_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators_batch"
+      ]
+    }
+  },
+  "current_head_hit_classification": {
+    "web/backend/app/services/data_service.py": [
+      {
+        "line": 466,
+        "kind": "definition",
+        "text": "def get_data_service() -> DataService:"
+      }
+    ],
+    "web/backend/app/api/indicators/indicator_cache.py": [
+      {
+        "line": 40,
+        "kind": "import",
+        "text": "from app.services.data_service import InvalidDateRangeError, StockDataNotFoundError, get_data_service"
+      },
+      {
+        "line": 343,
+        "kind": "direct_body_call",
+        "text": "data_service = get_data_service()"
+      },
+      {
+        "line": 613,
+        "kind": "direct_body_call",
+        "text": "data_service = get_data_service()"
+      }
+    ],
+    "web/backend/app/api/v1/strategy/indicators.py": [
+      {
+        "line": 17,
+        "kind": "import",
+        "text": "from app.services.data_service import StockDataNotFoundError, get_data_service"
+      },
+      {
+        "line": 201,
+        "kind": "direct_body_call",
+        "text": "frame, _ = get_data_service().get_daily_ohlcv(symbol=symbol, start_date=start_dt, end_date=end_dt)"
+      }
+    ],
+    "web/backend/tests/test_v1_indicators_regressions.py": [
+      {
+        "line": 39,
+        "kind": "test_monkeypatch",
+        "text": "module.get_data_service = lambda: _FakeDataService()"
+      },
+      {
+        "line": 56,
+        "kind": "test_monkeypatch",
+        "text": "module.get_data_service = lambda: _FakeDataService()"
+      }
+    ],
+    "web/backend/tests/test_integration_e2e.py": [
+      {
+        "line": 198,
+        "kind": "test_import",
+        "text": "from app.services.data_service import get_data_service"
+      },
+      {
+        "line": 201,
+        "kind": "test_reference",
+        "text": "data_service = get_data_service()"
+      },
+      {
+        "line": 233,
+        "kind": "test_import",
+        "text": "from app.services.data_service import get_data_service"
+      },
+      {
+        "line": 235,
+        "kind": "test_reference",
+        "text": "data_service = get_data_service()"
+      }
+    ]
+  },
+  "consumer_contract_matrix": [
+    {
+      "consumer": "calculate_indicators",
+      "file": "web/backend/app/api/indicators/indicator_cache.py",
+      "contract": "public indicator calculation flow; must preserve request validation, OHLCV retrieval, cache/accounting behavior, success payload, and canonical exception mapping",
+      "current_getter_use": "direct body call at line 343",
+      "must_preserve": [
+        "UnifiedResponse[Dict] route response",
+        "create_success_response success envelope",
+        "InvalidDateRangeError -> ValidationException",
+        "StockDataNotFoundError -> NotFoundException",
+        "BusinessException propagation"
+      ]
+    },
+    {
+      "consumer": "_calculate_single_indicator",
+      "file": "web/backend/app/api/indicators/indicator_cache.py",
+      "contract": "single indicator calculation helper used by batch/single request paths; must preserve returned dict shape and downstream error handling",
+      "current_getter_use": "direct body call at line 613",
+      "must_preserve": [
+        "indicator result dict shape",
+        "symbol/date input semantics",
+        "calculate_single_request compatibility",
+        "limited_calculate and calculate_indicators_batch behavior"
+      ]
+    },
+    {
+      "consumer": "get_technical_indicators",
+      "file": "web/backend/app/api/v1/strategy/indicators.py",
+      "contract": "strategy indicator API flow; must preserve indicator normalization, get_daily_ohlcv data source behavior, pagination payload, and canonical BusinessException contract",
+      "current_getter_use": "direct body call at line 201",
+      "must_preserve": [
+        "unsupported indicator -> BusinessException 400",
+        "StockDataNotFoundError -> BusinessException 404",
+        "generic data fetch failure -> BusinessException 500",
+        "supported indicator result payloads"
+      ]
+    }
+  ],
+  "verification": {
+    "indicator_registry_route_provider": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --no-cov --tb=short",
+      "result": "2 passed in 2.05s"
+    },
+    "v1_indicators_regressions": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short",
+      "result": "1 failed, 1 passed in 1.81s",
+      "blocker": "test_v1_indicators_rejects_unsupported_indicator still expects module.HTTPException, while current code raises canonical BusinessException for unsupported indicators."
+    },
+    "test_discovery": {
+      "indicator_related_test_files": 18
+    }
+  },
+  "decision": {
+    "status": "design_ready_but_source_blocked",
+    "source_implementation_authorized": false,
+    "next_gate": "G2.160 Indicator/Data test-contract alignment package",
+    "reason": "The seam is well scoped, but existing v1 indicator regression test debt must be aligned with the canonical BusinessException contract before source implementation is opened."
+  },
+  "future_lane_boundaries": {
+    "g2_160_allowed_scope": [
+      "web/backend/tests/test_v1_indicators_regressions.py",
+      "docs/reports/quality/*indicator-data*.md",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/*indicator-data*.json",
+      "governance/mainline/task-cards/pr-*.yaml"
+    ],
+    "eventual_indicator_data_source_lane_allowed_source_paths": [
+      "web/backend/app/api/indicators/indicator_cache.py",
+      "web/backend/app/api/v1/strategy/indicators.py"
+    ],
+    "eventual_indicator_data_source_lane_allowed_test_paths": [
+      "web/backend/tests/test_v1_indicators_regressions.py",
+      "web/backend/tests/test_indicator_registry_route_provider.py",
+      "web/backend/tests/test_integration_e2e.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "stop_conditions": [
+      "Do not edit web/backend/app/services/data_service.py without a new review.",
+      "Do not delete or privatize get_data_service().",
+      "Do not edit Strategy adapter, root facade compatibility, or route dependency/provider surfaces.",
+      "Do not change route path, response envelope, or OpenAPI exposure without a separate drift review."
+    ]
+  }
+}
