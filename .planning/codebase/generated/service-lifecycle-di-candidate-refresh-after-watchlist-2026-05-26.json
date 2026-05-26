@@ -1,0 +1,272 @@
+{
+  "artifact": "service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26",
+  "recorded_at": "2026-05-26T11:54:19+08:00",
+  "workline": "G2.133 service lifecycle DI candidate refresh after WatchlistService getter retirement",
+  "status": "candidate-refresh-prepared-for-review",
+  "current_head": "f0e0e37726140499b2e6b25cdad96739fc8f5462",
+  "stale_if_head_mismatch": true,
+  "parent_pr": {
+    "number": 285,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T03:50:09Z",
+    "merge_commit": "f0e0e37726140499b2e6b25cdad96739fc8f5462",
+    "title": "G2.132 Close out WatchlistService getter retirement",
+    "url": "https://github.com/chengjon/mystocks/pull/285"
+  },
+  "scope_boundary": {
+    "source_edits_authorized": false,
+    "test_edits_authorized": false,
+    "openspec_change_required_now": false,
+    "issue_label_movement_authorized": false,
+    "implementation_authorized": false
+  },
+  "scan_summary": {
+    "service_files": 152,
+    "app_files": 575,
+    "api_files": 219,
+    "test_files": 204,
+    "service_getter_definitions": 11,
+    "retired_getter_confirmations": {
+      "get_announcement_service_definitions": 0,
+      "get_email_service_definitions": 0,
+      "get_stock_search_service_definitions": 0,
+      "get_watchlist_service_definitions": 0,
+      "_announcement_service_tokens": 0,
+      "_email_service_tokens": 0,
+      "_stock_search_service_tokens": 0,
+      "_watchlist_service_singleton_assignments": 0,
+      "_watchlist_service_residual_private_helper_tokens": 10,
+      "_watchlist_service_residual_classification": "adapter private provider/helper names and locals; not a module-level singleton or public getter"
+    }
+  },
+  "candidate_inventory": [
+    {
+      "symbol": "get_analysis_data_service",
+      "definition": {
+        "file": "web/backend/app/services/__init__.py",
+        "line": 272
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 1,
+        "test_direct_calls": 0,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted": 0,
+        "direct": 0,
+        "processes": 0
+      },
+      "disposition": "integrated-services-facade-hold"
+    },
+    {
+      "symbol": "get_cache_service",
+      "definition": {
+        "file": "web/backend/app/services/__init__.py",
+        "line": 296
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 1,
+        "test_direct_calls": 0,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted": 0,
+        "direct": 0,
+        "processes": 0
+      },
+      "disposition": "integrated-services-facade-hold"
+    },
+    {
+      "symbol": "get_data_api_service",
+      "definition": {
+        "file": "web/backend/app/services/__init__.py",
+        "line": 278
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 1,
+        "test_direct_calls": 0,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted": 0,
+        "direct": 0,
+        "processes": 0
+      },
+      "disposition": "integrated-services-facade-hold"
+    },
+    {
+      "symbol": "get_database_service",
+      "definition": {
+        "file": "web/backend/app/services/__init__.py",
+        "line": 284
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 1,
+        "test_direct_calls": 0,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted": 0,
+        "direct": 0,
+        "processes": 0
+      },
+      "disposition": "integrated-services-facade-hold"
+    },
+    {
+      "symbol": "get_trading_data_service",
+      "definition": {
+        "file": "web/backend/app/services/__init__.py",
+        "line": 266
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 1,
+        "test_direct_calls": 0,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted": 0,
+        "direct": 0,
+        "processes": 0
+      },
+      "disposition": "integrated-services-facade-hold"
+    },
+    {
+      "symbol": "get_websocket_service",
+      "definition": {
+        "file": "web/backend/app/services/__init__.py",
+        "line": 290
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 1,
+        "test_direct_calls": 0,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted": 0,
+        "direct": 0,
+        "processes": 0
+      },
+      "disposition": "integrated-services-facade-hold"
+    },
+    {
+      "symbol": "get_market_data_service",
+      "definition": {
+        "file": "web/backend/app/services/__init__.py",
+        "line": 260
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 1,
+        "test_direct_calls": 1,
+        "dependency_refs": 11
+      },
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted": 0,
+        "direct": 0,
+        "processes": 0,
+        "resolved_file": "web/backend/app/services/market_data_service/get_market_data_service.py"
+      },
+      "disposition": "hold-for-graph-text-symbol-disambiguation"
+    },
+    {
+      "symbol": "get_data_service",
+      "definition": {
+        "file": "web/backend/app/services/data_service.py",
+        "line": 466
+      },
+      "text_scan": {
+        "api_direct_calls": 3,
+        "app_direct_calls": 4,
+        "test_direct_calls": 2,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "CRITICAL",
+        "impacted": 4,
+        "direct": 3,
+        "processes": 7
+      },
+      "disposition": "hold-indicators-strategy-data-seam"
+    },
+    {
+      "symbol": "get_strategy_service",
+      "definition": {
+        "file": "web/backend/app/services/strategy_service.py",
+        "line": 455
+      },
+      "text_scan": {
+        "api_direct_calls": 3,
+        "app_direct_calls": 7,
+        "test_direct_calls": 0,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "CRITICAL",
+        "impacted": 11,
+        "direct": 6,
+        "processes": 0,
+        "modules": 5
+      },
+      "disposition": "hold-strategy-route-adapter-task-seam"
+    },
+    {
+      "symbol": "get_streaming_service",
+      "definition": {
+        "file": "web/backend/app/services/realtime_streaming_service.py",
+        "line": 424
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 10,
+        "test_direct_calls": 16,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "HIGH",
+        "impacted": 9,
+        "direct": 9,
+        "processes": 0,
+        "modules": 4
+      },
+      "disposition": "hold-socketio-streaming-seam"
+    },
+    {
+      "symbol": "get_tdx_service",
+      "definition": {
+        "file": "web/backend/app/services/tdx_service.py",
+        "line": 275
+      },
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 2,
+        "test_direct_calls": 0,
+        "dependency_refs": 7
+      },
+      "gitnexus": {
+        "risk": "CRITICAL",
+        "impacted": 4,
+        "direct": 2,
+        "processes": 5
+      },
+      "disposition": "hold-dashboard-live-market-seam"
+    }
+  ],
+  "recommendation": {
+    "direct_implementation_lane": "none",
+    "next_gate": "Prepare an IntegratedServices facade getter ownership decision packet before authorizing any __init__.py facade getter retirement or migration.",
+    "reason": "The only LOW graph-risk remaining candidates are shared IntegratedServices facade getters in web/backend/app/services/__init__.py. They should be handled as an ownership/design decision, not as isolated source edits."
+  }
+}
