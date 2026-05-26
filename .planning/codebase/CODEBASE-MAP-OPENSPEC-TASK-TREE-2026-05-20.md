@@ -2872,11 +2872,12 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, or GitHub issue state change is
 │   │              performed here
 │   ├── G2.160 Indicator/Data test-contract alignment
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#313`
 │   │   ├── Evidence: `backend-indicator-data-test-contract-alignment-2026-05-27.md`
 │   │   ├── Generated: `indicator-data-test-contract-alignment-2026-05-27.json`
 │   │   ├── Parent: G2.159 accepted and merged by PR `#312`
 │   │   ├── Current HEAD: `b31a1c69a96fa83f250e7577c4b21d3b4febbaeb`
+│   │   ├── Merge commit: `296957a12a6d1ce30919925e4637bd63bed5cc18`
 │   │   ├── Scope: `test_v1_indicators_regressions.py` plus governance
 │   │   │          records only; no application source, route/API, OpenAPI,
 │   │   │          frontend, PM2, OpenSpec, config, script, or issue-label
@@ -2892,9 +2893,37 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   │          authorization package
 │   │   └── Boundary: test-contract alignment only; no `get_data_service`
 │   │              definition or application consumer is changed here
-│   └── Next gate: review G2.160; if accepted, start G2.161 as an
-│                  Indicator/Data source implementation authorization
-│                  package before any `get_data_service` consumer edit
+│   ├── G2.161 Indicator/Data source implementation authorization package
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-indicator-data-source-implementation-authorization-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `indicator-data-source-implementation-authorization-2026-05-27.json`
+│   │   ├── Parent: G2.160 accepted and merged by PR `#313`
+│   │   ├── Current HEAD: `296957a12a6d1ce30919925e4637bd63bed5cc18`
+│   │   ├── GitNexus: `get_data_service` remains CRITICAL with `5`
+│   │   │          impacted symbols, `3` direct callers, and `7` affected
+│   │   │          processes; direct application-body callers are still
+│   │   │          limited to `indicator_cache.py:343`,
+│   │   │          `indicator_cache.py:613`, and
+│   │   │          `v1/strategy/indicators.py:201`
+│   │   ├── Baseline verification: v1 indicator regressions `2 passed`,
+│   │   │          indicator registry provider guard `2 passed`, and
+│   │   │          health route import/collection smoke `120 tests
+│   │   │          collected`
+│   │   ├── Decision: authorize future G2.162 only after this package is
+│   │   │          reviewed and merged; G2.162 may replace the `3` direct
+│   │   │          application-body `get_data_service()` calls with narrow
+│   │   │          consumer-local provider seams while preserving the
+│   │   │          public service getter fallback
+│   │   └── Boundary: authorization-only; no backend source/test edit,
+│   │              route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │              config, script, compatibility wrapper deletion,
+│   │              issue-label change, or GitHub issue state change is
+│   │              performed here
+│   └── Next gate: review G2.161; if accepted, start G2.162 as the
+│                  narrow Indicator/Data source implementation lane for
+│                  `indicator_cache.py` and `v1/strategy/indicators.py`
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
