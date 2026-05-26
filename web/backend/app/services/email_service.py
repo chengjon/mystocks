@@ -317,27 +317,12 @@ class EmailService:
         )
 
 
-# 全局邮件服务实例（单例模式）
-_email_service = None
 EMAIL_SERVICE_STATE_KEY = "email_service"
-
-
-def get_email_service() -> EmailService:
-    """
-    获取邮件服务实例（单例）
-
-    Returns:
-        EmailService: 邮件服务实例
-    """
-    global _email_service
-    if _email_service is None:
-        _email_service = EmailService()
-    return _email_service
 
 
 def install_email_service(app: Any, service: EmailService | None = None) -> EmailService:
     """Install the email service instance on FastAPI app.state."""
-    selected_service = service if service is not None else get_email_service()
+    selected_service = service if service is not None else EmailService()
     setattr(app.state, EMAIL_SERVICE_STATE_KEY, selected_service)
     return selected_service
 

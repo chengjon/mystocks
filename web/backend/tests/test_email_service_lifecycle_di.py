@@ -59,7 +59,6 @@ def load_notification_module():
     fake_auth.get_current_user = lambda: None
     fake_auth.get_current_active_user = lambda: None
     fake_email_service.EmailService = FakeEmailService
-    fake_email_service.get_email_service = lambda: FakeEmailService()
     fake_email_service.get_email_service_dependency = lambda: FakeEmailService()
 
     previous = {
@@ -110,7 +109,7 @@ def test_email_service_dependency_installs_app_state_when_missing(monkeypatch):
     fake_app = SimpleNamespace(state=SimpleNamespace())
     request = SimpleNamespace(app=fake_app)
 
-    monkeypatch.setattr(module, "get_email_service", lambda: fake_service)
+    monkeypatch.setattr(module, "EmailService", lambda: fake_service)
 
     assert module.get_email_service_dependency(request) is fake_service
     assert getattr(fake_app.state, module.EMAIL_SERVICE_STATE_KEY) is fake_service
