@@ -2150,7 +2150,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                implementation authorization, next-lane authorization, or
 │   │                issue-label change is made here
 │   ├── G2.129 Service lifecycle candidate refresh after StockSearchService
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#282` merged at
+│   │   │          `cc32d0c2ba52cf7a9669ec1e9976740a84fd5be9`
 │   │   ├── Evidence: `backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26.md`
 │   │   ├── Current HEAD: `dbef525d9b539674d69f75fde59b372d52298913`
 │   │   ├── Result: refreshes the remaining service getter pool after
@@ -2173,9 +2174,32 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.129; if accepted,
-│                  prepare a separate G2.130 WatchlistService getter-retirement
-│                  authorization packet before any source branch is opened
+│   ├── G2.130 WatchlistService getter-retirement authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-watchlist-service-getter-retirement-authorization-2026-05-26.md`
+│   │   ├── Current HEAD: `cc32d0c2ba52cf7a9669ec1e9976740a84fd5be9`
+│   │   ├── Result: authorizes only a future implementation branch to retire
+│   │   │          `watchlist_service.py` `get_watchlist_service` and
+│   │   │          `_watchlist_service`, while preserving `WatchlistService`,
+│   │   │          `install_watchlist_service`,
+│   │   │          `get_watchlist_service_dependency`, route paths, response
+│   │   │          contracts, and OpenAPI exposure
+│   │   ├── Verification: baseline focused watchlist tests `9 passed`;
+│   │   │          current scan shows getter definitions=`1`, singleton
+│   │   │          tokens=`74`, app/API direct getter calls=`0`, route
+│   │   │          dependency handlers=`7`, adapter fallback files=`2`,
+│   │   │          tests with getter refs=`4`
+│   │   ├── Risk note: GitNexus impact is MEDIUM with impacted=`15`,
+│   │   │          direct=`9`, processes=`0`; future implementation must cover
+│   │   │          two adapter fallback helpers and seven route dependency
+│   │   │          handlers in acceptance criteria
+│   │   └── Boundary: authorization-only; no backend source/test edit,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                getter deletion, implementation, or issue-label change is
+│   │                made here
+│   └── Next gate: human review / PR merge decision for G2.130; if accepted,
+│                  open G2.131 WatchlistService getter-retirement implementation
+│                  within the authorized source/test scope
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -2273,7 +2297,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-email-notification-getter-retirement-closeout-2026-05-26.md` | G | G2.109 closeout accepted in PR `#262` at `ae6d2f2`: records PR `#261` merge, confirms current-head `email_notification_service.py:get_email_service` refs=`0`, `_email_service` refs=`0`, route/API direct `email_notification_service` refs=`0`, preserves `EmailNotificationService` and route-backed `get_email_service_dependency`, and re-runs focused tests `5 passed`, health route conflicts `120 passed`, ruff, and black checks | Superseded by G2.110 service lifecycle candidate refresh after EmailNotificationService |
 | `backend-service-lifecycle-candidate-refresh-after-email-notification-2026-05-26.md` | G | G2.110 candidate refresh accepted in PR `#263` at `c4abd4e`: scans service files=`152`, backend app files=`575`, API files=`219`, backend test files=`199`, all test files=`1211`, getter definitions=`16`, candidate-like definitions=`9`; confirms retired `email_notification_service.py:get_email_service` is gone, records `get_market_data_service` as the only LOW / `0` next authorization candidate with route/API direct refs=`0`, and keeps streaming HIGH, TDX/data/strategy/stock search CRITICAL, and email/watchlist/announcement holds out of source scope | Superseded by G2.111 MarketDataService getter-retirement authorization |
 | `backend-market-data-service-getter-retirement-authorization-2026-05-26.md` | G | G2.111 authorization prepared at `c4abd4e`: authorizes only a future G2.112 implementation branch for the package-level `market_data_service/get_market_data_service.py` `_market_data_service` and `get_market_data_service` retirement; preserves `MarketDataService`, `install_market_data_service`, and `get_market_data_service_dependency`, records GitNexus impact LOW / `0`, direct API refs=`0`, and requires future adapter/package export cleanup because `market_data_adapter.py` and package `__init__.py` still reference the getter | Human review / PR merge decision; if accepted, create G2.112 MarketDataService getter-retirement implementation before any market-data service source edit |
-| `backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26.md` | G | G2.129 candidate refresh prepared at `dbef525d9`: confirms Announcement/Email/StockSearch retired getters remain `0`, scans service files=`152`, app files=`575`, API files=`219`, tests=`203`, getter definitions=`12`, selects no direct implementation lane, and identifies `get_watchlist_service` only as a future authorization candidate with GitNexus MEDIUM / impacted=`15` / direct=`9` / processes=`0` | Human review / PR merge decision; if accepted, prepare G2.130 WatchlistService getter-retirement authorization before any source branch |
+| `backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26.md` | G | G2.129 candidate refresh accepted in PR `#282` at `cc32d0c2`: confirms Announcement/Email/StockSearch retired getters remain `0`, scans service files=`152`, app files=`575`, API files=`219`, tests=`203`, getter definitions=`12`, selects no direct implementation lane, and identifies `get_watchlist_service` only as a future authorization candidate with GitNexus MEDIUM / impacted=`15` / direct=`9` / processes=`0` | Superseded by G2.130 WatchlistService getter-retirement authorization |
+| `backend-watchlist-service-getter-retirement-authorization-2026-05-26.md` | G | G2.130 authorization prepared at `cc32d0c2`: authorizes only a future implementation branch to retire `watchlist_service.py` `get_watchlist_service` and `_watchlist_service`, while preserving `WatchlistService`, `install_watchlist_service`, `get_watchlist_service_dependency`, route paths, response contracts, and OpenAPI exposure; current scan shows getter definitions=`1`, singleton tokens=`74`, app/API direct getter calls=`0`, route dependency handlers=`7`, adapter fallback files=`2`, tests with getter refs=`4`; GitNexus impact MEDIUM / impacted=`15` / direct=`9` / processes=`0` | Human review / PR merge decision; if accepted, open G2.131 WatchlistService getter-retirement implementation within the authorized source/test scope |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
