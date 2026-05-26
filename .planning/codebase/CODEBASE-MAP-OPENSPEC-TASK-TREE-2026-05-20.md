@@ -2460,9 +2460,31 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, route/API, OpenAPI exposure, frontend,
 │   │                PM2, OpenSpec, implementation authorization, or
 │   │                issue-label change is made here
-│   └── Next gate: review G2.143; if accepted, prepare a single-track
-│                  Realtime streaming/socket authorization package before any
-│                  source implementation lane
+│   ├── G2.144 Realtime streaming/socket authorization package
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-realtime-streaming-socket-authorization-package-2026-05-26.md`
+│   │   ├── Parent: G2.143 accepted and merged by PR `#296`
+│   │   ├── Current HEAD: `4b361b6c73972ad3b3d9b02bc0488946c5271882`
+│   │   ├── Result: defines the smallest first implementation candidate for
+│   │   │          the realtime streaming/socket track as Socket.IO manager
+│   │   │          consumer-injection only, with no getter deletion
+│   │   ├── Verification: GitNexus impact for `get_streaming_service` remains
+│   │   │          HIGH with impacted=`9`, direct=`9`, processes=`0`;
+│   │   │          source shape scan finds `socketio_manager.py` has `9`
+│   │   │          `get_streaming_service` tokens, while
+│   │   │          `aggregation_streaming_bridge.py` already accepts optional
+│   │   │          `streaming_service` and is not in the first source lane
+│   │   ├── Authorization if approved: G2.145 may edit only
+│   │   │          `web/backend/app/core/socketio_manager.py` plus focused
+│   │   │          socket manager tests and governance artifacts to replace
+│   │   │          repeated direct getter use with a manager-level injected
+│   │   │          streaming dependency
+│   │   └── Boundary: authorization-only; no backend source/test edit,
+│   │                getter deletion, route/API, OpenAPI exposure, frontend,
+│   │                PM2, OpenSpec, implementation, or issue-label change is
+│   │                made here
+│   └── Next gate: review G2.144; if accepted, start G2.145 as a narrow
+│                  Socket.IO manager consumer-injection implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
