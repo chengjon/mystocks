@@ -1,0 +1,140 @@
+{
+  "artifact": "unused-integrated-services-facade-getter-retirement-implementation-2026-05-26",
+  "recorded_at": "2026-05-26T12:42:07+08:00",
+  "workline": "G2.136 unused IntegratedServices service-facade getter retirement implementation",
+  "status": "implementation-prepared-for-review",
+  "current_head": "4aaa5a88eafa6d43df383a083c15642e88205e4d",
+  "stale_if_head_mismatch": true,
+  "parent_pr": {
+    "number": 288,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T04:24:06Z",
+    "merge_commit": "4aaa5a88eafa6d43df383a083c15642e88205e4d",
+    "title": "G2.135 Authorize unused IntegratedServices facade getter retirement",
+    "url": "https://github.com/chengjon/mystocks/pull/288"
+  },
+  "source_changes": {
+    "modified_files": [
+      "web/backend/app/services/__init__.py",
+      "web/backend/tests/test_integrated_services_facade_getter_retirement.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-289.yaml"
+    ],
+    "removed_symbols": [
+      "get_trading_data_service",
+      "get_analysis_data_service",
+      "get_data_api_service",
+      "get_database_service",
+      "get_websocket_service",
+      "get_cache_service"
+    ],
+    "locked_symbols_preserved": [
+      "get_integrated_services",
+      "get_market_data_service",
+      "get_risk_calculator",
+      "get_risk_monitoring",
+      "get_risk_alerts",
+      "get_risk_settings",
+      "get_risk_dashboard"
+    ],
+    "type_annotation_support": "Added TYPE_CHECKING-only imports for retained annotations and removed the runtime RiskProfile import from IntegratedServices.__init__."
+  },
+  "pre_edit_gitnexus_impact": {
+    "get_trading_data_service": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    "get_analysis_data_service": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    "get_data_api_service": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    "get_database_service": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    "get_websocket_service": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    "get_cache_service": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    }
+  },
+  "tdd": {
+    "red": "1 failed, 1 passed; failure confirmed get_trading_data_service still existed on app.services",
+    "green": "2 passed in 0.28s"
+  },
+  "exact_scan": {
+    "removed_definitions": {
+      "get_trading_data_service": 0,
+      "get_analysis_data_service": 0,
+      "get_data_api_service": 0,
+      "get_database_service": 0,
+      "get_websocket_service": 0,
+      "get_cache_service": 0
+    },
+    "locked_definitions": {
+      "get_integrated_services": 1,
+      "get_market_data_service": 1,
+      "get_risk_calculator": 1,
+      "get_risk_monitoring": 1,
+      "get_risk_alerts": 1,
+      "get_risk_settings": 1,
+      "get_risk_dashboard": 1
+    }
+  },
+  "verification": [
+    {
+      "id": "focused-test",
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_integrated_services_facade_getter_retirement.py -q --no-cov --tb=short",
+      "result": "2 passed in 0.28s"
+    },
+    {
+      "id": "import-smoke",
+      "command": "PYTHONPATH=web/backend python -c \"import app.services ...\"",
+      "result": "{'removed_absent': True, 'locked_callable': True}"
+    },
+    {
+      "id": "ruff",
+      "command": "ruff check web/backend/app/services/__init__.py web/backend/tests/test_integrated_services_facade_getter_retirement.py",
+      "result": "All checks passed"
+    },
+    {
+      "id": "black",
+      "command": "black --check web/backend/app/services/__init__.py web/backend/tests/test_integrated_services_facade_getter_retirement.py",
+      "result": "2 files would be left unchanged"
+    },
+    {
+      "id": "staged-gitnexus",
+      "command": "gitnexus detect_changes scope=staged",
+      "result": "risk=low, changed_files=6, changed_count=20, affected_count=0, affected_processes=0"
+    }
+  ],
+  "scope_boundary": {
+    "route_api_changed": false,
+    "openapi_changed": false,
+    "pm2_changed": false,
+    "frontend_changed": false,
+    "openspec_changed": false,
+    "issue_label_changed": false
+  }
+}
