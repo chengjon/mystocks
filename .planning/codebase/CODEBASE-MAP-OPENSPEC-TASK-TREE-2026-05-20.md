@@ -2608,7 +2608,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
 │   │              GitHub issue state change is performed here
 │   ├── G2.151 Socket.IO stream-error emission triage
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#303`
 │   │   ├── Evidence: `backend-socketio-stream-error-emission-triage-2026-05-26.md`
 │   │   ├── Parent: G2.150 accepted and merged by PR `#302`
 │   │   ├── Current HEAD: `34bb3873149aee0b2e4cd06e63a45484a33a068f`
@@ -2629,10 +2629,28 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              restoration, realtime datetime fix, route/API, OpenAPI
 │   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
 │   │              GitHub issue state change is performed here
-│   └── Next gate: review G2.151; if accepted, start G2.152 Socket.IO
-│                  stream-error test patch-target alignment, then return to
-│                  the already split G2.149 realtime datetime test
-│                  authorization
+│   ├── G2.152 Socket.IO stream-error test patch-target alignment
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-socketio-stream-error-test-patch-alignment-2026-05-26.md`
+│   │   ├── Parent: G2.151 accepted and merged by PR `#303`
+│   │   ├── Current HEAD: `9288c3a7cdb8428c5ef984b9ba79e7e8fb2135dc`
+│   │   ├── Result: aligns
+│   │   │          `test_exception_during_subscription` to patch
+│   │   │          `manager.streaming_service.subscribe`, matching the
+│   │   │          current Socket.IO manager-level streaming dependency
+│   │   ├── Verification: red single-test failure reproduced before edit;
+│   │   │          after alignment, the single test reports `1 passed`,
+│   │   │          `test_socketio_streaming_integration.py` reports
+│   │   │          `20 passed`, `test_socketio_manager.py` reports
+│   │   │          `26 passed, 1 warning`, consumer-injection focused
+│   │   │          regression reports `2 passed`, and touched-test ruff
+│   │   │          reports `All checks passed`
+│   │   └── Boundary: test-only; no backend runtime source edit, helper alias
+│   │              restoration, realtime datetime fix, route/API, OpenAPI
+│   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
+│   │              GitHub issue state change is performed here
+│   └── Next gate: review G2.152; if accepted, return to the already split
+│                  G2.149 realtime datetime test authorization
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
