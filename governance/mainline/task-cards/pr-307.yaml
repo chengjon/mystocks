@@ -1,0 +1,105 @@
+version: "v0.2"
+
+task:
+  id: "pr-307"
+  title: "Close realtime socket subtrack"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-realtime-socket-subtrack-closeout"
+  objective: "record the merged realtime/socket sequence and return to the broader high-risk service getter queue"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-realtime-socket-subtrack-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout-only governance package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/realtime-socket-subtrack-closeout-2026-05-26.json"
+    - "docs/reports/quality/backend-realtime-socket-subtrack-closeout-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-307.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 306 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "focused-post-merge-regression"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_streaming_service.py web/backend/tests/test_socketio_streaming_integration.py web/backend/tests/test_socketio_manager.py web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short"
+      required: true
+    - id: "static-token-scan"
+      command: "scan realtime/socket source and tests for datetime.utcnow, _utc_now, get_streaming_service, get_socketio_manager, and reset_socketio_manager counts"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-realtime-socket-subtrack-closeout-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/realtime-socket-subtrack-closeout-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-307.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this closeout package."
+  - "Do not start the next service getter implementation lane from this closeout package."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+  - "Do not delete compatibility wrappers."
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is treated as implementation authorization, the next high-risk getter lane could start without a separate decision package."
+    - "If the realtime/socket subtrack remains open after G2.153, future workers may duplicate already-merged follow-up work."
+  rollback_plan: "revert this closeout PR to remove only the decision report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close the realtime/socket subtrack and return to the broader high-risk service getter queue"
+    modified_scope: "steward tree, closeout report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused regression, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T19:24:08+08:00"
+    approval_note: "Closeout-only package after PR #306 was approved and merged."
+    secondary_approved: false
