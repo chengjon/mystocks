@@ -1,0 +1,112 @@
+{
+  "schema_version": "governance-decision-v1",
+  "id": "g2-148-socketio-legacy-export-contract-authorization",
+  "title": "Socket.IO legacy export contract authorization",
+  "created_at": "2026-05-26T17:34:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "3b1d67ceb52a5c3ccbbbafb534895c6a70aa6d2e",
+  "parent": {
+    "id": "g2-147-realtime-socket-baseline-blocker-routing",
+    "pr": 300,
+    "state": "merged",
+    "merge_commit": "3b1d67ceb52a5c3ccbbbafb534895c6a70aa6d2e"
+  },
+  "scope": {
+    "mode": "decision-only",
+    "runtime_source_edits": false,
+    "test_edits": false,
+    "openspec_edits": false,
+    "route_api_openapi_frontend_pm2_edits": false
+  },
+  "fresh_evidence": {
+    "focused_consumer_injection_regression": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short",
+      "exit_code": 0,
+      "result": "2 passed in 1.04s"
+    },
+    "legacy_socketio_manager_collection": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_manager.py --collect-only -q --no-cov --tb=short",
+      "exit_code": 2,
+      "failure": "ImportError: cannot import name 'get_socketio_manager' from 'app.core.socketio_manager'"
+    },
+    "legacy_socketio_streaming_integration_collection": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_streaming_integration.py --collect-only -q --no-cov --tb=short",
+      "exit_code": 2,
+      "failure": "ImportError: cannot import name 'reset_socketio_manager' from 'app.core.socketio_manager'"
+    },
+    "runtime_singleton_contract": {
+      "canonical_helper_module": "web/backend/app/core/_socketio_manager_singleton.py",
+      "canonical_exports": [
+        "get_socketio_manager",
+        "reset_socketio_manager"
+      ],
+      "runtime_consumers": [
+        "web/backend/app/main.py",
+        "web/backend/app/app_factory.py"
+      ],
+      "runtime_consumer_import_path": "app.core._socketio_manager_singleton"
+    },
+    "stale_test_imports": {
+      "web/backend/tests/test_socketio_manager.py": {
+        "get_socketio_manager_tokens": 8,
+        "reset_socketio_manager_tokens": 5,
+        "current_import_path": "app.core.socketio_manager"
+      },
+      "web/backend/tests/test_socketio_streaming_integration.py": {
+        "get_socketio_manager_tokens": 0,
+        "reset_socketio_manager_tokens": 18,
+        "current_import_path": "app.core.socketio_manager"
+      }
+    }
+  },
+  "decision": {
+    "selected_path": "test-import-alignment-to-canonical-singleton-helper",
+    "rationale": [
+      "The runtime singleton helper contract already exists in app.core._socketio_manager_singleton.",
+      "Production composition roots import get_socketio_manager from the canonical helper module.",
+      "The failing tests import legacy helper names from app.core.socketio_manager, while socketio_manager.py no longer exposes those names.",
+      "Restoring public aliases in socketio_manager.py would re-expand the manager facade and weaken the getter-reduction direction from the service lifecycle workline."
+    ],
+    "authorize_next_lane": {
+      "id": "g2-150-socketio-test-import-alignment",
+      "scope": "test-only import alignment plus focused verification",
+      "allowed_paths": [
+        "web/backend/tests/test_socketio_manager.py",
+        "web/backend/tests/test_socketio_streaming_integration.py",
+        "docs/reports/quality/**",
+        ".planning/codebase/**",
+        "governance/mainline/task-cards/**"
+      ],
+      "forbidden_paths": [
+        "web/backend/app/core/socketio_manager.py",
+        "web/backend/app/core/_socketio_manager_singleton.py",
+        "web/backend/app/services/realtime_streaming_service.py",
+        "web/backend/app/core/aggregation_streaming_bridge.py",
+        "web/backend/app/api/**",
+        "web/frontend/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ]
+    }
+  },
+  "required_next_lane_gates": [
+    "Run GitNexus context or impact before editing test imports if repository policy requires it for test symbols.",
+    "Use TDD-style red evidence from the current collection failures.",
+    "Change only stale test imports to consume get_socketio_manager/reset_socketio_manager from app.core._socketio_manager_singleton.",
+    "Keep MySocketIOManager imported from app.core.socketio_manager.",
+    "Run collect-only for both legacy Socket.IO suites after the import alignment.",
+    "Run the focused G2.145 regression test after the import alignment.",
+    "If collection exposes unrelated behavioral failures, record them as separate baseline debt instead of expanding the lane.",
+    "Run ruff on touched test files.",
+    "Run staged GitNexus detect_changes before commit.",
+    "Run mainline scope gate after commit."
+  ],
+  "non_goals": [
+    "Do not restore get_socketio_manager or reset_socketio_manager exports from app.core.socketio_manager in this authorization package.",
+    "Do not edit runtime source in this authorization package.",
+    "Do not delete socket singleton helpers.",
+    "Do not fix realtime streaming datetime debt in this package.",
+    "Do not change route/API, OpenAPI, frontend, PM2, OpenSpec, issue labels, or GitHub issue state."
+  ],
+  "next_gate": "Review and merge this G2.148 authorization package before starting G2.150 test import alignment."
+}
