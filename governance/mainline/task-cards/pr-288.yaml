@@ -1,0 +1,101 @@
+version: "v0.2"
+
+task:
+  id: "pr-288"
+  title: "Authorize unused IntegratedServices facade getter retirement"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-unused-integrated-services-facade-getter-retirement-authorization"
+  objective: "record the G2.135 authorization boundaries for a future unused IntegratedServices service-facade getter retirement source lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-unused-integrated-services-facade-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-unused-integrated-services-facade-getter-retirement-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization packet records future source boundaries only and does not change runtime code, route paths, OpenAPI behavior, or product surface"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/unused-integrated-services-facade-getter-retirement-authorization-2026-05-26.json"
+    - "docs/reports/quality/backend-unused-integrated-services-facade-getter-retirement-authorization-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-288.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 287 --json number,state,mergedAt,mergeCommit,title,url"
+      required: true
+    - id: "authorization-scope"
+      command: "manual review of allowed future source paths, removable symbols, locked symbols, forbidden paths, and acceptance criteria"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-unused-integrated-services-facade-getter-retirement-authorization-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/unused-integrated-services-facade-getter-retirement-authorization-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-288.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this authorization packet."
+  - "Do not authorize changes to get_integrated_services, get_market_data_service, risk helper facades, or HIGH/CRITICAL service getters."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If the future implementation expands beyond six unused facade getters, it could accidentally touch composition-root behavior"
+    - "If get_market_data_service is included, the known graph/text symbol ambiguity could be mishandled"
+  rollback_plan: "revert this authorization PR to remove only the authorization report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize future unused IntegratedServices service-facade getter retirement"
+    modified_scope: "steward tree, authorization report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON/YAML parsing, GitNexus staged scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T12:16:32+08:00"
+    approval_note: "Authorization follows merged G2.134 ownership decision PR #287"
+    secondary_approved: false
