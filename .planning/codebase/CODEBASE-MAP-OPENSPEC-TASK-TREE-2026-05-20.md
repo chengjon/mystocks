@@ -2015,7 +2015,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation, or issue-label change is made here
 │   ├── G2.122 EmailService getter-retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#275` merged at
+│   │   │          `22021dc8e4faf5b2f206878fbd50bf553635ffc3`
 │   │   ├── Evidence: `backend-email-service-getter-retirement-implementation-2026-05-26.md`
 │   │   ├── Current HEAD: `5b944a53a8a6f960ec1420cfd2a885c364d97bf3`
 │   │   ├── Result: removes only `email_service.py` `_email_service` and
@@ -2036,9 +2037,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                update; no route/API, OpenAPI exposure, frontend, PM2,
 │   │                OpenSpec, `EmailService` deletion, dependency deletion,
 │   │                or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.122; if accepted,
-│                  create G2.123 EmailService getter-retirement closeout before
-│                  selecting the next service lifecycle getter lane
+│   ├── G2.123 EmailService getter-retirement closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-email-service-getter-retirement-closeout-2026-05-26.md`
+│   │   ├── Current HEAD: `22021dc8e4faf5b2f206878fbd50bf553635ffc3`
+│   │   ├── Result: records PR `#275` as merged, verifies current-head
+│   │   │          getter-retirement state, and closes the EmailService getter
+│   │   │          retirement lane as implementation-complete pending review
+│   │   ├── Verification: parent PR `#275` state=`MERGED`, focused tests
+│   │   │          `7 passed`, health route conflicts `120 passed`, exact scan
+│   │   │          reports target getter definitions=`0`, target singleton
+│   │   │          variable tokens=`0`, app/API direct getter refs=`0`, and
+│   │   │          route dependency handlers=`6`
+│   │   └── Boundary: closeout-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                implementation authorization, next-lane authorization, or
+│   │                issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.123; if accepted,
+│                  select the next service lifecycle getter lane from the latest
+│                  candidate refresh instead of reusing stale pre-G2.122 counts
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

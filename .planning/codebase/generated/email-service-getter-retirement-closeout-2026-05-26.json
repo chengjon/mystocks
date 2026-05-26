@@ -1,0 +1,74 @@
+{
+  "artifact": "email-service-getter-retirement-closeout-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T08:58:17+08:00",
+  "branch": "g2-123-email-service-getter-retirement-closeout",
+  "current_head": "22021dc8e4faf5b2f206878fbd50bf553635ffc3",
+  "current_head_checked_at_review": "2026-05-26T08:58:17+08:00",
+  "parent_implementation": {
+    "node": "G2.122 EmailService getter-retirement implementation",
+    "pr": 275,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T00:53:06Z",
+    "merge_commit": "22021dc8e4faf5b2f206878fbd50bf553635ffc3",
+    "url": "https://github.com/chengjon/mystocks/pull/275"
+  },
+  "governance_node": {
+    "current": "G2.123 EmailService getter-retirement closeout",
+    "next_gate": "human review / PR merge decision for G2.123; if accepted, select the next service lifecycle getter lane from the latest candidate refresh"
+  },
+  "current_head_scan": {
+    "backend_app_and_test_python_files_scanned": 777,
+    "target_getter_definitions": 0,
+    "target_singleton_variable_tokens": 0,
+    "api_direct_getter_call_refs": 0,
+    "app_direct_getter_call_refs": 0,
+    "test_direct_getter_call_refs": 0,
+    "dependency_refs": 12,
+    "route_dependency_handlers": 6,
+    "installer_refs": 3,
+    "notes": [
+      "`_email_service` singleton variable token is absent. Substring appearances only remain inside preserved names such as `install_email_service` and `get_email_service_dependency`.",
+      "`get_email_service_dependency` remains preserved because notification routes still depend on the app-state dependency boundary."
+    ]
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_email_service_getter_retirement.py web/backend/tests/test_email_service_lifecycle_di.py web/backend/tests/test_notification_logging.py -q --no-cov --tb=short",
+      "result": "7 passed"
+    },
+    "health_route_conflicts": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "120 passed"
+    },
+    "parent_pr_state": {
+      "command": "gh pr view 275 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title",
+      "result": "MERGED"
+    },
+    "exact_scan": {
+      "result": "target_getter_definitions=0; target_singleton_variable_tokens=0; api_direct_getter_call_refs=0; app_direct_getter_call_refs=0; route_dependency_handlers=6"
+    },
+    "gitnexus_staged_detect_changes": {
+      "scope": "staged",
+      "risk_level": "low",
+      "changed_count": 0,
+      "changed_files": 4,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "boundary": {
+    "closeout_only": true,
+    "source_edits": false,
+    "test_edits": false,
+    "route_or_api_edits": false,
+    "openapi_edits": false,
+    "frontend_edits": false,
+    "pm2_edits": false,
+    "openspec_edits": false,
+    "issue_label_changes": false,
+    "next_lane_authorization": false
+  },
+  "closeout_decision": "EmailService getter retirement implementation is merged and current-head verified. This packet closes the lane for review but does not authorize the next implementation lane.",
+  "next_gate": "Review and merge this closeout. After acceptance, use the latest service lifecycle candidate refresh to select the next getter lane."
+}
