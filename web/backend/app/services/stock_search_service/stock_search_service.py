@@ -71,7 +71,6 @@ if not AKSHARE_AVAILABLE:
     logger.warning("AKShare library not available, A/H share search features are disabled")
 
 
-_stock_search_service = None
 STOCK_SEARCH_SERVICE_STATE_KEY = "stock_search_service"
 
 
@@ -168,16 +167,8 @@ class StockSearchService:
         return results
 
 
-def get_stock_search_service() -> StockSearchService:
-    """获取股票搜索服务实例（单例模式）。"""
-    global _stock_search_service
-    if _stock_search_service is None:
-        _stock_search_service = StockSearchService()
-    return _stock_search_service
-
-
 def install_stock_search_service(app: Any, service: StockSearchService | None = None) -> StockSearchService:
-    selected_service = service if service is not None else get_stock_search_service()
+    selected_service = service if service is not None else StockSearchService()
     setattr(app.state, STOCK_SEARCH_SERVICE_STATE_KEY, selected_service)
     return selected_service
 

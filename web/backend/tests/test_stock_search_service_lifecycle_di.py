@@ -16,7 +16,7 @@ def test_stock_search_service_dependency_installs_app_state_when_missing(monkeyp
     fake_app = SimpleNamespace(state=SimpleNamespace())
     request = SimpleNamespace(app=fake_app)
 
-    monkeypatch.setattr(stock_search_service_module, "get_stock_search_service", lambda: fake_service)
+    monkeypatch.setattr(stock_search_service_module, "StockSearchService", lambda: fake_service)
 
     assert stock_search_service.get_stock_search_service_dependency(request) is fake_service
     assert getattr(fake_app.state, stock_search_service.STOCK_SEARCH_SERVICE_STATE_KEY) is fake_service

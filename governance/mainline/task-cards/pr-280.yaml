@@ -1,0 +1,132 @@
+version: "v0.2"
+
+task:
+  id: "pr-280"
+  title: "Retire StockSearchService module-level getter"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-stock-search-service-getter-retirement-implementation"
+  objective: "retire the StockSearchService module-level getter and singleton while preserving app-state dependency injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-stock-search-service-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-stock-search-service-getter-retirement-implementation"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow service getter retirement; no route, public API surface, OpenAPI exposure, frontend behavior, or OpenSpec capability is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/stock-search-service-getter-retirement-implementation-2026-05-26.json"
+    - "docs/reports/quality/backend-stock-search-service-getter-retirement-implementation-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-280.yaml"
+    - "web/backend/app/services/stock_search_service/stock_search_service.py"
+    - "web/backend/app/services/stock_search_service/__init__.py"
+    - "web/backend/tests/test_stock_search_service_lifecycle_di.py"
+    - "web/backend/tests/test_runtime_regressions_p0.py"
+    - "web/backend/tests/test_stock_search_service_getter_retirement.py"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/backend/app/main.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit stock search or market route handlers"
+  - "Do not modify route paths, response models, response shapes, or OpenAPI exposure"
+  - "Do not modify frontend code"
+  - "Do not modify PM2 workflows"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not delete or rename StockSearchService"
+  - "Do not delete or alter install_stock_search_service"
+  - "Do not delete or alter get_stock_search_service_dependency"
+  - "Do not perform broader stock search service consolidation"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 279 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_getter_retirement.py -q --no-cov --tb=short"
+      required: true
+    - id: "focused-green-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_getter_retirement.py web/backend/tests/test_stock_search_service_lifecycle_di.py web/backend/tests/test_runtime_regressions_p0.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched-files"
+      command: "ruff check web/backend/app/services/stock_search_service/stock_search_service.py web/backend/app/services/stock_search_service/__init__.py web/backend/tests/test_stock_search_service_lifecycle_di.py web/backend/tests/test_runtime_regressions_p0.py web/backend/tests/test_stock_search_service_getter_retirement.py"
+      required: true
+    - id: "black-touched-files"
+      command: "black --check web/backend/app/services/stock_search_service/stock_search_service.py web/backend/app/services/stock_search_service/__init__.py web/backend/tests/test_stock_search_service_lifecycle_di.py web/backend/tests/test_runtime_regressions_p0.py web/backend/tests/test_stock_search_service_getter_retirement.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-stock-search-service-getter-retirement-implementation-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/stock-search-service-getter-retirement-implementation-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-280.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-280.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "GitNexus classified the retired getter as CRITICAL because six route handlers are d=1 dependency consumers"
+    - "If route/API files are edited, stock search or market route contracts could drift outside the authorization"
+    - "If package re-export is not updated, app.services.stock_search_service imports can fail after getter removal"
+  rollback_plan: "revert this narrow implementation PR and keep G2.126 amendment as the latest accepted stock search getter gate"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "retire StockSearchService module-level getter and singleton"
+    modified_scope: "two stock search service package files, three focused tests, steward tree, implementation report, generated artifact, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "module-level getter and package re-export removed; app-state installer and dependency preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, health route conflicts, touched-file lint/format, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T09:51:06+08:00"
+    approval_note: "Implementation packet after PR #279 amendment merge; CRITICAL GitNexus risk acknowledged and route/API files remain out of scope"
+    secondary_approved: false

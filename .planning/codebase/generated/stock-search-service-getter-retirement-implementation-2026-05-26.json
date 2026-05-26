@@ -1,0 +1,118 @@
+{
+  "artifact": "stock-search-service-getter-retirement-implementation-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T09:51:06+08:00",
+  "branch": "g2-127-stock-search-service-getter-retirement-implementation",
+  "current_head": "d23a4cf1de28972f3880495cce659540064b2576",
+  "current_head_checked_at_review": "2026-05-26T09:51:06+08:00",
+  "parent_authorization_amendment": {
+    "node": "G2.126 StockSearchService getter-retirement authorization amendment",
+    "pr": 279,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T01:44:33Z",
+    "merge_commit": "d23a4cf1de28972f3880495cce659540064b2576",
+    "url": "https://github.com/chengjon/mystocks/pull/279"
+  },
+  "pre_edit_gitnexus": {
+    "target": "web/backend/app/services/stock_search_service/stock_search_service.py:get_stock_search_service",
+    "risk": "CRITICAL",
+    "impacted_count": 6,
+    "direct_callers": 6,
+    "processes_affected": 11,
+    "modules_affected": 2,
+    "d1_callers": [
+      "search_stocks",
+      "get_stock_quote",
+      "get_stock_news",
+      "get_market_news",
+      "clear_search_cache",
+      "get_kline_data"
+    ]
+  },
+  "implementation": {
+    "retired": [
+      "web/backend/app/services/stock_search_service/stock_search_service.py:_stock_search_service",
+      "web/backend/app/services/stock_search_service/stock_search_service.py:get_stock_search_service",
+      "web/backend/app/services/stock_search_service/__init__.py:get_stock_search_service re-export"
+    ],
+    "preserved": [
+      "StockSearchService",
+      "STOCK_SEARCH_SERVICE_STATE_KEY",
+      "install_stock_search_service",
+      "get_stock_search_service_dependency",
+      "stock search route paths",
+      "market kline route path",
+      "response contracts",
+      "OpenAPI exposure"
+    ],
+    "touched_files": [
+      "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "web/backend/app/services/stock_search_service/__init__.py",
+      "web/backend/tests/test_stock_search_service_lifecycle_di.py",
+      "web/backend/tests/test_runtime_regressions_p0.py",
+      "web/backend/tests/test_stock_search_service_getter_retirement.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/stock-search-service-getter-retirement-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-stock-search-service-getter-retirement-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-280.yaml"
+    ]
+  },
+  "post_change_scan": {
+    "target_getter_definitions": 0,
+    "target_singleton_variable_tokens": 0,
+    "package_getter_import_exact": false,
+    "package_getter_all_exact": false,
+    "api_direct_getter_calls": 0,
+    "app_direct_getter_calls": 0,
+    "test_direct_getter_calls": 0,
+    "dependency_refs": 14,
+    "route_dependency_handlers": 6,
+    "installer_refs": 7
+  },
+  "verification": {
+    "tdd_red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_getter_retirement.py -q --no-cov --tb=short",
+      "result": "1 failed before implementation"
+    },
+    "focused_green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_getter_retirement.py web/backend/tests/test_stock_search_service_lifecycle_di.py web/backend/tests/test_runtime_regressions_p0.py -q --no-cov --tb=short",
+      "result": "12 passed"
+    },
+    "health_route_conflicts": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "120 passed"
+    },
+    "ruff_touched_files": {
+      "command": "ruff check touched files",
+      "result": "passed"
+    },
+    "black_touched_files": {
+      "command": "black --check touched files",
+      "result": "5 files would be left unchanged"
+    },
+    "package_import_smoke": {
+      "command": "PYTHONPATH=web/backend python import smoke for app.services.stock_search_service",
+      "result": "passed"
+    },
+    "gitnexus_staged_detect_changes": {
+      "scope": "staged",
+      "risk_level": "low",
+      "changed_count": 22,
+      "changed_files": 9,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "boundary": {
+    "source_capable": true,
+    "route_or_api_edits": false,
+    "openapi_edits": false,
+    "frontend_edits": false,
+    "pm2_edits": false,
+    "openspec_edits": false,
+    "issue_label_changes": false,
+    "deleted_stock_search_service_class": false,
+    "deleted_dependency": false
+  },
+  "next_gate": "Review and merge this implementation. If accepted, create G2.128 StockSearchService getter-retirement closeout before selecting another service lifecycle getter lane."
+}
