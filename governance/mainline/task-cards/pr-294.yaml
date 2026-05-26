@@ -1,0 +1,108 @@
+version: "v0.2"
+
+task:
+  id: "pr-294"
+  title: "Close out BacktestEngine getter retirement"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-backtest-engine-getter-retirement-closeout"
+  objective: "record PR #293 merge evidence and close the BacktestEngine singleton/getter retirement lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-backtest-engine-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-backtest-engine-getter-retirement-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout-only packet; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/backtest-engine-getter-retirement-closeout-2026-05-26.json"
+    - "docs/reports/quality/backend-backtest-engine-getter-retirement-closeout-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-294.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 293 --json number,state,mergedAt,mergeCommit,title,url"
+      required: true
+    - id: "focused-closeout-test"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_engine_getter_retirement.py -q --no-cov --tb=short"
+      required: true
+    - id: "exact-scan"
+      command: "scripted exact scan for BacktestEngine, get_backtest_engine, and _backtest_engine"
+      required: true
+    - id: "import-smoke"
+      command: "PYTHONPATH=web/backend python - <<'PY'\nfrom app.services.backtest_engine import BacktestConfig, BacktestEngine, BacktestResult\nprint(BacktestConfig.__name__, BacktestEngine.__name__, BacktestResult.__name__)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-backtest-engine-getter-retirement-closeout-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/backtest-engine-getter-retirement-closeout-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-294.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, or issue-label state."
+  - "Do not select the next implementation lane before a fresh candidate refresh."
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is treated as source authorization, a later worker could edit another service without a fresh candidate refresh"
+    - "If closeout evidence is stale, the steward tree could overstate the merged implementation state"
+  rollback_plan: "revert this closeout PR to remove only the closeout report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out BacktestEngine singleton/getter retirement"
+    modified_scope: "steward tree, closeout report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; closeout records the merged parent implementation and does not change runtime code"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON/YAML parsing, GitNexus staged scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T13:48:00+08:00"
+    approval_note: "Closeout follows merged G2.140 implementation PR #293"
+    secondary_approved: false
+

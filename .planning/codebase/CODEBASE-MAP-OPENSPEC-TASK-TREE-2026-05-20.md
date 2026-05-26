@@ -2380,9 +2380,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, implementation, or issue-label change is
 │   │                made here
 │   ├── G2.140 BacktestEngine singleton/getter retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#293`
 │   │   ├── Evidence: `backend-backtest-engine-getter-retirement-implementation-2026-05-26.md`
-│   │   ├── Current HEAD: `0f78609e25898181ea5653edc7350efc03a3bb9b`
+│   │   ├── Merge commit: `62cf56cc8736c3784f8b7cc9ac5cc21a52d39423`
 │   │   ├── Result: removes only `_backtest_engine` and
 │   │   │          `get_backtest_engine` from
 │   │   │          `web/backend/app/services/backtest_engine.py` and adds a
@@ -2400,9 +2400,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: source-capable but limited to one backend service file,
 │   │                one focused test, report, generated artifact, task card,
 │   │                and steward-tree update
-│   └── Next gate: after G2.140 review and merge, prepare a closeout packet
-│                  before refreshing the remaining service lifecycle candidate
-│                  pool again
+│   ├── G2.141 BacktestEngine singleton/getter retirement closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-backtest-engine-getter-retirement-closeout-2026-05-26.md`
+│   │   ├── Current HEAD: `62cf56cc8736c3784f8b7cc9ac5cc21a52d39423`
+│   │   ├── Result: records PR `#293` as merged and closes the
+│   │   │          BacktestEngine singleton/getter retirement lane without
+│   │   │          changing runtime source, tests, route paths, response
+│   │   │          contracts, or OpenAPI exposure
+│   │   ├── Verification: parent PR state `MERGED`; focused closeout test
+│   │   │          `2 passed`; exact scan reports getter definition=`0`,
+│   │   │          singleton token count=`0`, and `BacktestEngine`
+│   │   │          definition=`1`; import smoke confirms preserved types and
+│   │   │          removed legacy surfaces
+│   │   └── Boundary: closeout-only; no source/test edit, runtime behavior,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                implementation, or issue-label change is made here
+│   └── Next gate: after G2.141 review and merge, refresh the remaining service
+│                  lifecycle candidate pool before selecting another
+│                  implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
