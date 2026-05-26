@@ -1,0 +1,116 @@
+version: "v0.2"
+
+task:
+  id: "pr-282"
+  title: "Refresh service lifecycle candidates after StockSearchService"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-service-lifecycle-candidate-refresh-after-stock-search"
+  objective: "refresh the service getter candidate pool after StockSearchService retirement and select only the next authorization candidate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-candidate-refresh"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-service-lifecycle-candidate-refresh-after-stock-search"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Candidate-refresh-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26.json"
+    - "docs/reports/quality/backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-282.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not edit route handlers"
+  - "Do not modify route paths, response models, response shapes, or OpenAPI exposure"
+  - "Do not modify frontend code"
+  - "Do not modify PM2 workflows"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not authorize implementation"
+  - "Do not delete or alter any service getter"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 281 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "candidate-scan"
+      command: "scripted current-head text scan over service getter definitions, retired getter tokens, route dependency handlers, and direct getter calls"
+      required: true
+    - id: "gitnexus-impact-sampling"
+      command: "GitNexus impact sampling for watchlist, market_data, tdx, data, strategy, and streaming getters"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-282.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-282.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this refresh is mistaken for implementation authorization, WatchlistService getter edits could proceed without adapter fallback and route dependency acceptance criteria"
+    - "If stale pre-G2.128 counts are reused, the next service lifecycle lane could be selected from obsolete evidence"
+  rollback_plan: "revert this governance-only refresh PR and keep G2.128 as the latest accepted closeout gate"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "refresh service lifecycle getter candidates after StockSearchService retirement"
+    modified_scope: "steward tree, candidate refresh report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; refresh-only, no source or test edits"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent PR state, candidate scan, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T10:29:38+08:00"
+    approval_note: "Candidate-refresh-only packet after PR #281 merge; next implementation lane is not authorized here"
+    secondary_approved: false

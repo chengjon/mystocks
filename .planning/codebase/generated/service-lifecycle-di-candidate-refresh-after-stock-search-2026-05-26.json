@@ -1,0 +1,218 @@
+{
+  "artifact": "service-lifecycle-di-candidate-refresh-after-stock-search-2026-05-26",
+  "recorded_at": "2026-05-26T10:29:38+08:00",
+  "workline": "G2.129 service lifecycle DI candidate refresh after StockSearchService getter retirement",
+  "status": "candidate-refresh-prepared-for-review",
+  "current_head": "dbef525d9b539674d69f75fde59b372d52298913",
+  "stale_if_head_mismatch": true,
+  "parent_pr": {
+    "number": 281,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T02:12:03Z",
+    "merge_commit": "dbef525d9b539674d69f75fde59b372d52298913",
+    "title": "G2.128 Close out StockSearchService getter retirement",
+    "url": "https://github.com/chengjon/mystocks/pull/281"
+  },
+  "scope_boundary": {
+    "source_edits_authorized": false,
+    "test_edits_authorized": false,
+    "openspec_change_required_now": false,
+    "issue_label_movement_authorized": false,
+    "implementation_authorized": false
+  },
+  "scan_summary": {
+    "service_files": 152,
+    "app_files": 575,
+    "api_files": 219,
+    "test_files": 203,
+    "service_getter_definitions": 12,
+    "retired_getter_confirmations": {
+      "get_announcement_service_definitions": 0,
+      "get_email_service_definitions": 0,
+      "get_stock_search_service_definitions": 0,
+      "_announcement_service_tokens": 0,
+      "_email_service_tokens": 0,
+      "_stock_search_service_tokens": 0
+    }
+  },
+  "candidate_inventory": [
+    {
+      "symbol": "get_watchlist_service",
+      "definition": {
+        "file": "web/backend/app/services/watchlist_service.py",
+        "line": 613
+      },
+      "disposition": "next-authorization-candidate-only",
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 6,
+        "test_direct_calls": 2,
+        "dependency_refs": 18,
+        "route_dependency_handlers": 7,
+        "adapter_fallback_files": [
+          "web/backend/app/services/adapters/watchlist_adapter.py",
+          "web/backend/app/services/data_adapters/watchlist.py"
+        ]
+      },
+      "gitnexus": {
+        "risk": "MEDIUM",
+        "impacted_count": 15,
+        "direct": 9,
+        "processes_affected": 0,
+        "modules_affected": 2,
+        "direct_callers": [
+          "web/backend/app/services/data_adapters/watchlist.py:_get_watchlist_service",
+          "web/backend/app/services/adapters/watchlist_adapter.py:_get_watchlist_service",
+          "web/backend/app/api/watchlist.py:get_user_groups",
+          "web/backend/app/api/watchlist.py:create_group",
+          "web/backend/app/api/watchlist.py:update_group",
+          "web/backend/app/api/watchlist.py:delete_group",
+          "web/backend/app/api/watchlist.py:get_watchlist_by_group",
+          "web/backend/app/api/watchlist.py:move_stock_to_group",
+          "web/backend/app/api/watchlist.py:get_watchlist_with_groups"
+        ]
+      },
+      "required_next_gate": "Create a separate authorization packet before any source edit; include both adapter fallback seams, seven route dependency handlers, and focused route/test acceptance criteria."
+    },
+    {
+      "symbol": "get_market_data_service",
+      "definition": {
+        "file": "web/backend/app/services/__init__.py",
+        "line": 260
+      },
+      "disposition": "hold-graph-text-symbol-mismatch",
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 2,
+        "test_direct_calls": 16,
+        "dependency_refs": 24
+      },
+      "gitnexus": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "resolved_symbol_file": "web/backend/app/services/market_data_service/get_market_data_service.py"
+      },
+      "required_next_gate": "Disambiguate package helper text evidence from GitNexus graph symbol before selecting this lane."
+    },
+    {
+      "symbol": "get_tdx_service",
+      "definition": {
+        "file": "web/backend/app/services/tdx_service.py",
+        "line": 275
+      },
+      "disposition": "hold-critical-dashboard-seam",
+      "text_scan": {
+        "api_direct_calls": 2,
+        "app_direct_calls": 4,
+        "test_direct_calls": 2,
+        "dependency_refs": 15,
+        "api_files": [
+          "web/backend/app/api/dashboard_data_source.py"
+        ]
+      },
+      "gitnexus": {
+        "risk": "CRITICAL",
+        "impacted_count": 6,
+        "direct": 2,
+        "processes_affected": 5,
+        "modules_affected": 1
+      },
+      "required_next_gate": "Keep on hold until dashboard live-market seam has a dedicated authorization and runtime acceptance plan."
+    },
+    {
+      "symbol": "get_data_service",
+      "definition": {
+        "file": "web/backend/app/services/data_service.py",
+        "line": 466
+      },
+      "disposition": "hold-critical-indicators-strategy-seam",
+      "text_scan": {
+        "api_direct_calls": 5,
+        "app_direct_calls": 6,
+        "test_direct_calls": 6,
+        "dependency_refs": 0,
+        "api_files": [
+          "web/backend/app/api/indicators/indicator_cache.py",
+          "web/backend/app/api/v1/strategy/indicators.py"
+        ]
+      },
+      "gitnexus": {
+        "risk": "CRITICAL",
+        "impacted_count": 5,
+        "direct": 3,
+        "processes_affected": 7,
+        "modules_affected": 2
+      },
+      "required_next_gate": "Keep on hold until indicator and strategy data-contract consumers are split into a design packet."
+    },
+    {
+      "symbol": "get_strategy_service",
+      "definition": {
+        "file": "web/backend/app/services/strategy_service.py",
+        "line": 455
+      },
+      "disposition": "hold-critical-strategy-adapter-task-seam",
+      "text_scan": {
+        "api_direct_calls": 4,
+        "app_direct_calls": 11,
+        "test_direct_calls": 1,
+        "dependency_refs": 0,
+        "api_files": [
+          "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+        ]
+      },
+      "gitnexus": {
+        "risk": "CRITICAL",
+        "impacted_count": 13,
+        "direct": 6,
+        "processes_affected": 0,
+        "modules_affected": 5
+      },
+      "required_next_gate": "Keep on hold until strategy route, adapter, and task seams are triaged outside a narrow getter-retirement batch."
+    },
+    {
+      "symbol": "get_streaming_service",
+      "definition": {
+        "file": "web/backend/app/services/realtime_streaming_service.py",
+        "line": 424
+      },
+      "disposition": "hold-high-streaming-socketio-seam",
+      "text_scan": {
+        "api_direct_calls": 0,
+        "app_direct_calls": 12,
+        "test_direct_calls": 19,
+        "dependency_refs": 0
+      },
+      "gitnexus": {
+        "risk": "HIGH",
+        "impacted_count": 9,
+        "direct": 9,
+        "processes_affected": 0,
+        "modules_affected": 4
+      },
+      "required_next_gate": "Keep on hold; streaming and Socket.IO lifecycle behavior is not a narrow route-service getter retirement."
+    }
+  ],
+  "decision": {
+    "next_direct_implementation_candidate_selected": false,
+    "selected_authorization_candidate": "get_watchlist_service",
+    "selected_authorization_lane": "G2.130 WatchlistService getter-retirement authorization packet",
+    "rationale": "WatchlistService is the only non-HIGH/CRITICAL candidate sampled after StockSearchService closeout, but it still has adapter fallback seams and seven route dependency handlers; therefore this packet authorizes only a future authorization package, not source edits.",
+    "implementation_authorized_now": false
+  },
+  "verification": {
+    "parent_pr_state": "MERGED",
+    "candidate_scan": "fresh current-head scan at dbef525d9b539674d69f75fde59b372d52298913",
+    "gitnexus_impact_sampling": "fresh for watchlist, market_data, tdx, data, strategy, and streaming getters",
+    "staged_gitnexus_detect_changes": {
+      "risk_level": "low",
+      "changed_files": 4,
+      "changed_count": 0,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  }
+}
