@@ -1,0 +1,80 @@
+{
+  "artifact": "unused-integrated-services-facade-getter-retirement-authorization-2026-05-26",
+  "recorded_at": "2026-05-26T12:16:32+08:00",
+  "workline": "G2.135 unused IntegratedServices service-facade getter retirement authorization",
+  "status": "authorization-prepared-for-review",
+  "current_head": "65498c4565db877ee187f9ceb6dd140b7e4db7fd",
+  "stale_if_head_mismatch": true,
+  "parent_pr": {
+    "number": 287,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T04:14:13Z",
+    "merge_commit": "65498c4565db877ee187f9ceb6dd140b7e4db7fd",
+    "title": "G2.134 Decide IntegratedServices facade getter ownership",
+    "url": "https://github.com/chengjon/mystocks/pull/287"
+  },
+  "future_implementation_authorization": {
+    "source_edits_authorized_by_this_packet": false,
+    "future_source_lane": "G2.136 unused IntegratedServices service-facade getter retirement implementation",
+    "future_allowed_paths": [
+      "web/backend/app/services/__init__.py",
+      "web/backend/tests/test_integrated_services_facade_getter_retirement.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-288.yaml"
+    ],
+    "future_removable_symbols": [
+      "get_trading_data_service",
+      "get_analysis_data_service",
+      "get_data_api_service",
+      "get_database_service",
+      "get_websocket_service",
+      "get_cache_service"
+    ],
+    "future_locked_symbols": [
+      "get_integrated_services",
+      "get_market_data_service",
+      "get_risk_calculator",
+      "get_risk_monitoring",
+      "get_risk_alerts",
+      "get_risk_settings",
+      "get_risk_dashboard",
+      "get_tdx_service",
+      "get_data_service",
+      "get_strategy_service",
+      "get_streaming_service"
+    ],
+    "future_forbidden_paths": [
+      "web/backend/app/api/**",
+      "web/backend/app/services/market_data_service/**",
+      "web/backend/app/services/tdx_service.py",
+      "web/backend/app/services/data_service.py",
+      "web/backend/app/services/strategy_service.py",
+      "web/backend/app/services/realtime_streaming_service.py",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "docs/guides/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "acceptance_requirements_for_future_source_lane": [
+    "Run pre-edit GitNexus impact for each future removable symbol.",
+    "Use TDD: first add/adjust a focused test that fails because the removable facade symbols still exist.",
+    "Remove only the six future_removable_symbols from web/backend/app/services/__init__.py.",
+    "Do not modify IntegratedServices construction, get_integrated_services, get_market_data_service, risk helper facades, route files, OpenAPI output, PM2 workflow, or issue labels.",
+    "Focused tests must assert removed symbols are absent and locked symbols remain present/callable as appropriate.",
+    "Run app.services import smoke.",
+    "Run Ruff and Black checks on touched files.",
+    "Run staged GitNexus detect_changes and mainline scope gate before PR."
+  ],
+  "risk_notes": [
+    "This authorization does not open a source edit in G2.135 itself.",
+    "The future implementation is intentionally narrow because the selected symbols have no active app consumers excluding their definitions and no direct test calls in the current scan.",
+    "get_market_data_service remains locked because same-name package provider and tests require separate disambiguation."
+  ]
+}
