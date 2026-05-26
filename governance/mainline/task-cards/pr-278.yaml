@@ -1,0 +1,120 @@
+version: "v0.2"
+
+task:
+  id: "pr-278"
+  title: "Authorize StockSearchService getter retirement"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-stock-search-service-getter-retirement-authorization"
+  objective: "authorize a future StockSearchService getter retirement implementation with explicit CRITICAL risk and d=1 acceptance criteria"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-stock-search-service-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-stock-search-service-getter-retirement-authorization"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/stock-search-service-getter-retirement-authorization-2026-05-26.json"
+    - "docs/reports/quality/backend-stock-search-service-getter-retirement-authorization-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-278.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not edit stock search or market route handlers"
+  - "Do not modify route paths, response models, response shapes, or OpenAPI exposure"
+  - "Do not modify frontend code"
+  - "Do not modify PM2 workflows"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not delete get_stock_search_service in this packet"
+  - "Do not delete _stock_search_service in this packet"
+  - "Do not perform implementation in this packet"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 277 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "stock-search-lifecycle-baseline"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts-baseline"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "gitnexus-context-impact"
+      command: "GitNexus context and impact for get_stock_search_service"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-stock-search-service-getter-retirement-authorization-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/stock-search-service-getter-retirement-authorization-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-278.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-278.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this authorization is mistaken for implementation, a CRITICAL-risk getter edit could proceed without TDD red or d=1 route/test acceptance criteria"
+    - "If route/API files are included in the future implementation without separate approval, stock search and market route contracts could drift"
+  rollback_plan: "revert this governance-only authorization PR and keep G2.124 as the latest accepted candidate refresh"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize future StockSearchService getter retirement"
+    modified_scope: "steward tree, authorization report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; authorization-only, no source or test edits"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent PR state, baseline tests, GitNexus risk recording, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T09:21:33+08:00"
+    approval_note: "Authorization-only packet after PR #277 merge; implementation is deferred to future G2.126 with CRITICAL risk acceptance"
+    secondary_approved: false
