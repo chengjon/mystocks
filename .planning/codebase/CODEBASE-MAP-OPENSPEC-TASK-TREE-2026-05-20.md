@@ -2098,7 +2098,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation, or issue-label change is made here
 │   ├── G2.126 StockSearchService getter-retirement authorization amendment
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#279` merged at
+│   │   │          `d23a4cf1de28972f3880495cce659540064b2576`
 │   │   ├── Evidence: `backend-stock-search-service-getter-retirement-authorization-amendment-2026-05-26.md`
 │   │   ├── Current HEAD: `d2f5a952740db94c382534b0810ba11588660132`
 │   │   ├── Result: amends the future implementation scope before source work:
@@ -2111,11 +2112,29 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: amendment-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.126; if accepted,
-│                  create G2.127 StockSearchService getter-retirement
-│                  implementation with TDD red, package re-export update, and
-│                  CRITICAL-risk d=1 route/test acceptance criteria before any
-│                  source edit
+│   ├── G2.127 StockSearchService getter-retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-stock-search-service-getter-retirement-implementation-2026-05-26.md`
+│   │   ├── Current HEAD: `d23a4cf1de28972f3880495cce659540064b2576`
+│   │   ├── Result: removes `stock_search_service.py` `_stock_search_service`
+│   │   │          and `get_stock_search_service`, removes package re-export,
+│   │   │          changes installer fallback to construct `StockSearchService()`,
+│   │   │          updates legacy tests, and adds retirement regression coverage
+│   │   ├── Verification: TDD red `1 failed`, focused green `12 passed`, health
+│   │   │          route conflicts `120 passed`, touched-file ruff and black
+│   │   │          checks passed, package import smoke passed; exact scan reports
+│   │   │          target getter definitions=`0`, target singleton tokens=`0`,
+│   │   │          package re-export=`0`, app/API/test direct getter calls=`0`,
+│   │   │          and route dependency handlers=`6`
+│   │   └── Boundary: source-capable but limited to stock search service module,
+│   │                package re-export, focused tests, governance report,
+│   │                generated artifact, task card, and steward-tree update; no
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                `StockSearchService` deletion, dependency deletion, or
+│   │                issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.127; if accepted,
+│                  create G2.128 StockSearchService getter-retirement closeout
+│                  before selecting another service lifecycle getter lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

@@ -7,13 +7,14 @@ from __future__ import annotations
 import importlib
 import re
 import sys
+from types import SimpleNamespace
 
 import requests
 
 
-def test_stock_search_singleton_initialization(monkeypatch):
+def test_stock_search_app_state_install_initialization(monkeypatch):
     """
-    Regression: get_stock_search_service() must not crash with NameError.
+    Regression: stock search service app-state installation should initialize cleanly.
     """
     module = importlib.import_module("app.services.stock_search_service.stock_search_service")
 
@@ -21,14 +22,13 @@ def test_stock_search_singleton_initialization(monkeypatch):
         pass
 
     monkeypatch.setattr(module, "StockSearchService", DummyStockSearchService)
-    assert hasattr(module, "_stock_search_service")
-    monkeypatch.setattr(module, "_stock_search_service", None)
+    app = SimpleNamespace(state=SimpleNamespace())
 
-    first = module.get_stock_search_service()
-    second = module.get_stock_search_service()
+    service = module.install_stock_search_service(app)
 
-    assert isinstance(first, DummyStockSearchService)
-    assert second is first
+    assert isinstance(service, DummyStockSearchService)
+    assert getattr(app.state, module.STOCK_SEARCH_SERVICE_STATE_KEY) is service
+    assert module.get_stock_search_service_dependency(SimpleNamespace(app=app)) is service
 
 
 def test_watchlist_mock_data_keeps_success_shape():
