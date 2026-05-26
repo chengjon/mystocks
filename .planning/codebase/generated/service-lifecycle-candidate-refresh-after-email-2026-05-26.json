@@ -1,0 +1,164 @@
+{
+  "artifact": "service-lifecycle-candidate-refresh-after-email-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T09:10:16+08:00",
+  "branch": "g2-124-service-lifecycle-candidate-refresh-after-email",
+  "current_head": "0b761555dd96865e571f7c9ebc1959b8254f52ef",
+  "current_head_checked_at_review": "2026-05-26T09:10:16+08:00",
+  "parent_closeout": {
+    "node": "G2.123 EmailService getter-retirement closeout",
+    "pr": 276,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T01:06:19Z",
+    "merge_commit": "0b761555dd96865e571f7c9ebc1959b8254f52ef",
+    "url": "https://github.com/chengjon/mystocks/pull/276"
+  },
+  "scan_scope": {
+    "service_files": 152,
+    "backend_app_files": 575,
+    "api_files": 219,
+    "adapter_files": 8,
+    "backend_test_files": 202
+  },
+  "retired_getter_check": {
+    "get_announcement_service_definitions": 0,
+    "get_email_service_definitions": 0,
+    "announcement_singleton_variable_tokens": 0,
+    "email_singleton_variable_tokens": 0
+  },
+  "candidate_pool": {
+    "getter_definitions": 13,
+    "bucket_counts": {
+      "hold_app_direct_calls": 9,
+      "needs_review": 2,
+      "route_dependency_candidate": 2
+    },
+    "selected_next_authorization_candidate": "get_stock_search_service",
+    "selected_next_authorization_candidate_reason": "Text scan shows no API or adapter direct getter calls and routes already use the dependency boundary, but GitNexus impact is CRITICAL, so this is authorization-only and not implementation-ready.",
+    "candidates": [
+      {
+        "name": "get_stock_search_service",
+        "file": "web/backend/app/services/stock_search_service/stock_search_service.py",
+        "text_bucket": "route_dependency_candidate",
+        "api_direct_calls": 0,
+        "adapter_direct_calls": 0,
+        "route_dependency_handlers": 6,
+        "dependency_refs": 12,
+        "gitnexus_risk": "CRITICAL",
+        "gitnexus_impacted_count": 6,
+        "gitnexus_processes_affected": 11,
+        "disposition": "next authorization candidate only; source edit requires explicit CRITICAL-risk acceptance"
+      },
+      {
+        "name": "get_watchlist_service",
+        "file": "web/backend/app/services/watchlist_service.py",
+        "text_bucket": "route_dependency_candidate_with_service_adapter_direct_calls",
+        "api_direct_calls": 0,
+        "service_adapter_direct_call_files": [
+          "web/backend/app/services/adapters/watchlist_adapter.py",
+          "web/backend/app/services/data_adapters/watchlist.py"
+        ],
+        "route_dependency_handlers": 7,
+        "dependency_refs": 10,
+        "gitnexus_risk": "MEDIUM",
+        "gitnexus_impacted_count": 15,
+        "gitnexus_processes_affected": 0,
+        "disposition": "hold behind service adapter seam"
+      },
+      {
+        "name": "get_market_data_service",
+        "file": "web/backend/app/services/__init__.py",
+        "text_bucket": "needs_review",
+        "api_direct_calls": 3,
+        "route_dependency_handlers": 7,
+        "dependency_refs": 16,
+        "gitnexus_risk": "LOW",
+        "gitnexus_impacted_count": 0,
+        "gitnexus_processes_affected": 0,
+        "disposition": "hold for symbol disambiguation because text scan and GitNexus impact disagree"
+      },
+      {
+        "name": "get_tdx_service",
+        "file": "web/backend/app/services/tdx_service.py",
+        "text_bucket": "needs_review",
+        "api_direct_calls": 3,
+        "route_dependency_handlers": 5,
+        "dependency_refs": 9,
+        "gitnexus_risk": "CRITICAL",
+        "gitnexus_impacted_count": 6,
+        "gitnexus_processes_affected": 5,
+        "disposition": "hold dashboard/process seam"
+      },
+      {
+        "name": "get_data_service",
+        "file": "web/backend/app/services/data_service.py",
+        "text_bucket": "hold_app_direct_calls",
+        "api_direct_calls": 7,
+        "route_dependency_handlers": 0,
+        "dependency_refs": 0,
+        "gitnexus_risk": "CRITICAL",
+        "gitnexus_impacted_count": 5,
+        "gitnexus_processes_affected": 7,
+        "disposition": "hold indicators/strategy seam"
+      },
+      {
+        "name": "get_strategy_service",
+        "file": "web/backend/app/services/strategy_service.py",
+        "text_bucket": "hold_app_direct_calls",
+        "api_direct_calls": 3,
+        "route_dependency_handlers": 0,
+        "dependency_refs": 0,
+        "gitnexus_risk": "CRITICAL",
+        "gitnexus_impacted_count": 13,
+        "gitnexus_processes_affected": 0,
+        "disposition": "hold adapters/tasks/strategy-management seam"
+      },
+      {
+        "name": "get_streaming_service",
+        "file": "web/backend/app/services/realtime_streaming_service.py",
+        "text_bucket": "hold_app_direct_calls",
+        "api_direct_calls": 0,
+        "route_dependency_handlers": 0,
+        "dependency_refs": 0,
+        "gitnexus_risk": "HIGH",
+        "gitnexus_impacted_count": 9,
+        "gitnexus_processes_affected": 0,
+        "disposition": "hold Socket.IO/streaming seam"
+      }
+    ]
+  },
+  "verification": {
+    "parent_pr_state": {
+      "command": "gh pr view 276 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title",
+      "result": "MERGED"
+    },
+    "candidate_scan": {
+      "command": "scripted current-head text scan over web/backend/app/services, web/backend/app/api, web/backend/app/adapters, and web/backend/tests",
+      "result": "13 getter definitions; AnnouncementService and EmailService retired getter/singleton tokens remain 0"
+    },
+    "gitnexus_impact_sampling": {
+      "result": "stock_search=CRITICAL/6/11 processes; watchlist=MEDIUM/15/0 processes; market_data=LOW/0/0 with symbol mismatch; tdx=CRITICAL/6/5 processes; data=CRITICAL/5/7 processes; strategy=CRITICAL/13/0 processes; streaming=HIGH/9/0 processes"
+    },
+    "gitnexus_staged_detect_changes": {
+      "scope": "staged",
+      "risk_level": "low",
+      "changed_count": 0,
+      "changed_files": 4,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "boundary": {
+    "candidate_refresh_only": true,
+    "source_edits": false,
+    "test_edits": false,
+    "route_or_api_edits": false,
+    "openapi_edits": false,
+    "frontend_edits": false,
+    "pm2_edits": false,
+    "openspec_edits": false,
+    "issue_label_changes": false,
+    "implementation_authorization": false
+  },
+  "next_gate": "Review and merge this candidate refresh. If accepted, create a G2.125 get_stock_search_service authorization packet with explicit CRITICAL GitNexus risk disclosure and d=1 route/test acceptance criteria before any source edit."
+}

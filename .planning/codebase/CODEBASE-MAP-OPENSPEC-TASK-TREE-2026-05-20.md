@@ -2038,7 +2038,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenSpec, `EmailService` deletion, dependency deletion,
 │   │                or issue-label change is made here
 │   ├── G2.123 EmailService getter-retirement closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#276` merged at
+│   │   │          `0b761555dd96865e571f7c9ebc1959b8254f52ef`
 │   │   ├── Evidence: `backend-email-service-getter-retirement-closeout-2026-05-26.md`
 │   │   ├── Current HEAD: `22021dc8e4faf5b2f206878fbd50bf553635ffc3`
 │   │   ├── Result: records PR `#275` as merged, verifies current-head
@@ -2053,9 +2054,31 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation authorization, next-lane authorization, or
 │   │                issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.123; if accepted,
-│                  select the next service lifecycle getter lane from the latest
-│                  candidate refresh instead of reusing stale pre-G2.122 counts
+│   ├── G2.124 Service lifecycle candidate refresh after EmailService
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-email-2026-05-26.md`
+│   │   ├── Current HEAD: `0b761555dd96865e571f7c9ebc1959b8254f52ef`
+│   │   ├── Result: refreshes the getter candidate pool after EmailService
+│   │   │          retirement; confirms AnnouncementService and EmailService
+│   │   │          getter definitions and singleton variables remain absent
+│   │   ├── Candidate note: no low-risk direct implementation candidate is
+│   │   │          selected here; `get_stock_search_service` is the next
+│   │   │          authorization candidate only because text scan shows no API
+│   │   │          or adapter direct getter calls, but GitNexus impact is
+│   │   │          CRITICAL and must be explicitly accepted before any source edit
+│   │   ├── Hold notes: `get_watchlist_service` remains held behind service
+│   │   │          adapter seams; `get_market_data_service` requires symbol
+│   │   │          disambiguation because text scan and GitNexus impact disagree;
+│   │   │          `get_tdx_service`, `get_data_service`, `get_strategy_service`,
+│   │   │          and `get_streaming_service` remain high/critical-risk lanes
+│   │   └── Boundary: candidate-refresh-only; no backend source/test edit,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                getter deletion, implementation authorization, or
+│   │                issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.124; if accepted,
+│                  create a G2.125 `get_stock_search_service` authorization
+│                  packet with explicit CRITICAL GitNexus risk disclosure and
+│                  d=1 route/test acceptance criteria before any source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
