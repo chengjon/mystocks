@@ -1997,7 +1997,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
 │   ├── G2.121 EmailService getter-retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#274` merged at
+│   │   │          `5b944a53a8a6f960ec1420cfd2a885c364d97bf3`
 │   │   ├── Evidence: `backend-email-service-getter-retirement-authorization-2026-05-26.md`
 │   │   ├── Current HEAD: `1f117e1c7aa0333b6c0de272d697043f59f56bc9`
 │   │   ├── Result: authorizes only a future G2.122 implementation branch to
@@ -2013,9 +2014,31 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.121; if accepted,
-│                  create G2.122 EmailService getter-retirement implementation
-│                  before any email service source edit
+│   ├── G2.122 EmailService getter-retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-email-service-getter-retirement-implementation-2026-05-26.md`
+│   │   ├── Current HEAD: `5b944a53a8a6f960ec1420cfd2a885c364d97bf3`
+│   │   ├── Result: removes only `email_service.py` `_email_service` and
+│   │   │          `get_email_service`, changes the installer fallback to
+│   │   │          construct `EmailService()` directly, removes obsolete fake
+│   │   │          getter exposure from focused tests, and adds retirement
+│   │   │          regression coverage
+│   │   ├── Verification: TDD red `1 failed`, focused green `7 passed`,
+│   │   │          health route conflicts `120 passed`, touched-file ruff and
+│   │   │          black checks passed; exact scan reports target getter
+│   │   │          definitions=`0`, target singleton tokens=`0`, app/API
+│   │   │          direct getter refs=`0`, and route dependency handlers=`6`
+│   │   └── Boundary: source-capable but limited to `email_service.py`,
+│   │                `test_email_service_lifecycle_di.py`,
+│   │                `test_notification_logging.py`,
+│   │                `test_email_service_getter_retirement.py`, governance
+│   │                report, generated artifact, task card, and steward-tree
+│   │                update; no route/API, OpenAPI exposure, frontend, PM2,
+│   │                OpenSpec, `EmailService` deletion, dependency deletion,
+│   │                or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.122; if accepted,
+│                  create G2.123 EmailService getter-retirement closeout before
+│                  selecting the next service lifecycle getter lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

@@ -38,7 +38,6 @@ def load_notification_module():
     fake_auth.get_current_user = lambda: None
     fake_auth.get_current_active_user = lambda: None
     fake_email_service.EmailService = SimpleNamespace
-    fake_email_service.get_email_service = lambda: SimpleNamespace(is_configured=lambda: False)
     fake_email_service.get_email_service_dependency = lambda: SimpleNamespace(is_configured=lambda: False)
 
     previous = {
