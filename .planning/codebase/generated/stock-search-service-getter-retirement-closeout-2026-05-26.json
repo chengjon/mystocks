@@ -1,0 +1,68 @@
+{
+  "artifact": "stock-search-service-getter-retirement-closeout-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T10:04:52+08:00",
+  "branch": "g2-128-stock-search-service-getter-retirement-closeout",
+  "current_head": "edf6c2673c6b38b614e43bb78b0ace8696990777",
+  "current_head_checked_at_review": "2026-05-26T10:04:52+08:00",
+  "parent_implementation": {
+    "node": "G2.127 StockSearchService getter-retirement implementation",
+    "pr": 280,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T02:00:56Z",
+    "merge_commit": "edf6c2673c6b38b614e43bb78b0ace8696990777",
+    "url": "https://github.com/chengjon/mystocks/pull/280"
+  },
+  "current_head_scan": {
+    "backend_app_and_test_python_files_scanned": 778,
+    "target_getter_definitions": 0,
+    "target_singleton_variable_tokens": 0,
+    "package_getter_import_exact": false,
+    "package_getter_all_exact": false,
+    "api_direct_getter_calls": 0,
+    "app_direct_getter_calls": 0,
+    "test_direct_getter_calls": 0,
+    "dependency_refs": 14,
+    "route_dependency_handlers": 6,
+    "installer_refs": 7
+  },
+  "verification": {
+    "parent_pr_state": {
+      "command": "gh pr view 280 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title",
+      "result": "MERGED"
+    },
+    "focused_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_getter_retirement.py web/backend/tests/test_stock_search_service_lifecycle_di.py web/backend/tests/test_runtime_regressions_p0.py -q --no-cov --tb=short",
+      "result": "12 passed"
+    },
+    "health_route_conflicts": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "120 passed"
+    },
+    "exact_scan": {
+      "result": "target_getter_definitions=0; target_singleton_variable_tokens=0; package_getter_import_exact=false; package_getter_all_exact=false; direct_getter_calls=0; route_dependency_handlers=6"
+    },
+    "gitnexus_staged_detect_changes": {
+      "scope": "staged",
+      "risk_level": "low",
+      "changed_count": 0,
+      "changed_files": 4,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "boundary": {
+    "closeout_only": true,
+    "source_edits": false,
+    "test_edits": false,
+    "route_or_api_edits": false,
+    "openapi_edits": false,
+    "frontend_edits": false,
+    "pm2_edits": false,
+    "openspec_edits": false,
+    "issue_label_changes": false,
+    "next_lane_authorization": false
+  },
+  "closeout_decision": "StockSearchService getter retirement implementation is merged and current-head verified. This packet closes the lane for review but does not authorize the next implementation lane.",
+  "next_gate": "Review and merge this closeout. After acceptance, refresh the service lifecycle candidate pool before selecting another getter-retirement lane."
+}

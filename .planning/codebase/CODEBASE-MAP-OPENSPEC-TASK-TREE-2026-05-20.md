@@ -2113,7 +2113,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation, or issue-label change is made here
 │   ├── G2.127 StockSearchService getter-retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#280` merged at
+│   │   │          `edf6c2673c6b38b614e43bb78b0ace8696990777`
 │   │   ├── Evidence: `backend-stock-search-service-getter-retirement-implementation-2026-05-26.md`
 │   │   ├── Current HEAD: `d23a4cf1de28972f3880495cce659540064b2576`
 │   │   ├── Result: removes `stock_search_service.py` `_stock_search_service`
@@ -2132,9 +2133,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                `StockSearchService` deletion, dependency deletion, or
 │   │                issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.127; if accepted,
-│                  create G2.128 StockSearchService getter-retirement closeout
-│                  before selecting another service lifecycle getter lane
+│   ├── G2.128 StockSearchService getter-retirement closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-stock-search-service-getter-retirement-closeout-2026-05-26.md`
+│   │   ├── Current HEAD: `edf6c2673c6b38b614e43bb78b0ace8696990777`
+│   │   ├── Result: records PR `#280` as merged and verifies current-head
+│   │   │          StockSearchService getter-retirement state
+│   │   ├── Verification: parent PR `#280` state=`MERGED`, focused tests
+│   │   │          `12 passed`, health route conflicts `120 passed`, exact scan
+│   │   │          reports getter=`0`, singleton=`0`, package re-export=`0`,
+│   │   │          app/API/test direct getter calls=`0`, route dependency
+│   │   │          handlers=`6`
+│   │   └── Boundary: closeout-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                implementation authorization, next-lane authorization, or
+│   │                issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.128; if accepted,
+│                  refresh the service lifecycle candidate pool before selecting
+│                  another getter-retirement lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
