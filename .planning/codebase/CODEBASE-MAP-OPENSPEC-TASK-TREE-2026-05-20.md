@@ -2295,9 +2295,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                implementation, or issue-label change is made here
 │   ├── G2.136 Unused IntegratedServices service-facade getter retirement implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#289`
 │   │   ├── Evidence: `backend-unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.md`
-│   │   ├── Current HEAD: `4aaa5a88eafa6d43df383a083c15642e88205e4d`
+│   │   ├── Merge commit: `541a225b5cbc90807d8cc7af20d0ffd42b07fd2d`
 │   │   ├── Result: removes only `get_trading_data_service`,
 │   │   │          `get_analysis_data_service`, `get_data_api_service`,
 │   │   │          `get_database_service`, `get_websocket_service`, and
@@ -2315,8 +2315,24 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: source-capable but limited to one service facade module,
 │   │                one focused test, report, generated artifact, task card,
 │   │                and steward-tree update
-│   └── Next gate: human review / PR merge decision for G2.136; if accepted,
-│                  close out the unused IntegratedServices facade getter lane
+│   ├── G2.137 Unused IntegratedServices service-facade getter retirement closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-unused-integrated-services-facade-getter-retirement-closeout-2026-05-26.md`
+│   │   ├── Current HEAD: `541a225b5cbc90807d8cc7af20d0ffd42b07fd2d`
+│   │   ├── Result: records PR `#289` as merged and closes the unused
+│   │   │          IntegratedServices service-facade getter retirement lane
+│   │   │          without changing runtime source, tests, route paths,
+│   │   │          response contracts, or OpenAPI exposure
+│   │   ├── Verification: parent PR state `MERGED`; focused closeout test
+│   │   │          `2 passed`; import smoke reports removed absent and locked
+│   │   │          callable; exact scan reports retired definitions=`0` and
+│   │   │          locked definitions=`1`
+│   │   └── Boundary: closeout-only; no source/test edit, runtime behavior,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                implementation, or issue-label change is made here
+│   └── Next gate: after G2.137 review and merge, refresh the remaining service
+│                  lifecycle candidate pool before selecting another
+│                  implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -2421,7 +2437,8 @@ CODEBASE-MAP Architecture Remediation Program
 | `backend-service-lifecycle-di-candidate-refresh-after-watchlist-2026-05-26.md` | G | G2.133 candidate refresh accepted in PR `#286` at `bc2d2a8`: service files=`152`, app files=`575`, API files=`219`, tests=`204`, remaining service getter definitions=`11`, Announcement/Email/StockSearch/Watchlist retired public getter definitions remain `0`; no direct implementation lane is selected; six LOW graph-risk remaining candidates are shared `IntegratedServices` facade getters, `get_market_data_service` is held for graph/text disambiguation, and `get_tdx_service`, `get_data_service`, `get_strategy_service`, `get_streaming_service` remain HIGH/CRITICAL holds | Superseded by G2.134 IntegratedServices facade getter ownership decision |
 | `backend-integrated-services-facade-getter-ownership-decision-2026-05-26.md` | G | G2.134 decision accepted in PR `#287` at `65498c4`: classifies `web/backend/app/services/__init__.py` getters as a shared IntegratedServices compatibility facade owned by the composition root; retains `get_integrated_services` and `get_market_data_service`; marks only `get_trading_data_service`, `get_analysis_data_service`, `get_data_api_service`, `get_database_service`, `get_websocket_service`, and `get_cache_service` as eligible for a future unused-facade retirement authorization packet; risk helper facades are out of the current service-getter queue | Superseded by G2.135 unused IntegratedServices service-facade getter retirement authorization |
 | `backend-unused-integrated-services-facade-getter-retirement-authorization-2026-05-26.md` | G | G2.135 authorization accepted in PR `#288` at `4aaa5a8`: future source lane may remove only `get_trading_data_service`, `get_analysis_data_service`, `get_data_api_service`, `get_database_service`, `get_websocket_service`, and `get_cache_service` from `web/backend/app/services/__init__.py`, with one focused test file and implementation evidence; `get_integrated_services`, `get_market_data_service`, risk helper facades, HIGH/CRITICAL service getters, route/API, OpenAPI, PM2, frontend, OpenSpec, and issue labels remain locked | Superseded by G2.136 unused IntegratedServices service-facade getter retirement implementation |
-| `backend-unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.md` | G | G2.136 implementation prepared at `4aaa5a8`: removes only `get_trading_data_service`, `get_analysis_data_service`, `get_data_api_service`, `get_database_service`, `get_websocket_service`, and `get_cache_service` from `web/backend/app/services/__init__.py`; preserves `get_integrated_services`, `get_market_data_service`, all risk helper facades, route/API, OpenAPI, PM2, frontend, OpenSpec, and issue labels; pre-edit GitNexus impact was LOW / impacted `0` for all six symbols; TDD red `1 failed, 1 passed`, focused test `2 passed`, import smoke, exact scan, Ruff, and Black passed | Human review / PR merge decision; if accepted, close out unused IntegratedServices facade getter lane |
+| `backend-unused-integrated-services-facade-getter-retirement-implementation-2026-05-26.md` | G | G2.136 implementation accepted in PR `#289` at `541a225`: removes only `get_trading_data_service`, `get_analysis_data_service`, `get_data_api_service`, `get_database_service`, `get_websocket_service`, and `get_cache_service` from `web/backend/app/services/__init__.py`; preserves `get_integrated_services`, `get_market_data_service`, all risk helper facades, route/API, OpenAPI, PM2, frontend, OpenSpec, and issue labels; pre-edit GitNexus impact was LOW / impacted `0` for all six symbols; TDD red `1 failed, 1 passed`, focused test `2 passed`, import smoke, exact scan, Ruff, and Black passed | Superseded by G2.137 unused IntegratedServices service-facade getter retirement closeout |
+| `backend-unused-integrated-services-facade-getter-retirement-closeout-2026-05-26.md` | G | G2.137 closeout prepared at `541a225`: records PR `#289` merged at `2026-05-26T04:51:23Z`, confirms current-head scan has retired facade definitions=`0` and locked facade definitions=`1`, focused closeout test `2 passed`, and import smoke `removed_absent=True` / `locked_callable=True`; no runtime source, tests, route paths, response contracts, OpenAPI exposure, PM2 workflow, OpenSpec change, or issue-label change is modified | Human review / PR merge decision; if accepted, refresh the remaining service lifecycle candidate pool |
 
 | G2.1-G2.11 service lifecycle DI early lanes | G | Folded evidence mapping for the first service lifecycle sequence: G2.1 candidate classification, G2.2 email authorization, G2.3 email implementation, G2.4 steward-tree retrospective, G2.5 announcement authorization, G2.6 announcement implementation, G2.7 announcement closeout, G2.8 watchlist selection, G2.9 watchlist authorization, G2.10 watchlist implementation, and G2.11 watchlist closeout. Detailed per-step records remain in the Completed And Reviewed Ledger and G branch source-evidence list. | Superseded by G2.12 adapter-aware watchlist helper cleanup decision packet |
 | `backend-watchlist-helper-cleanup-next-lane-decision-2026-05-23.md` | G | G2.12 decision packet merged: adapter-aware watchlist helper cleanup selected as the next authorization candidate; no source edits or OpenSpec changes were authorized | Superseded by G2.13 authorization packet for future implementation scope |
