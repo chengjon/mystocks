@@ -2439,9 +2439,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
 │   ├── G2.143 High-risk service getter strategy decision package
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#296`
 │   │   ├── Evidence: `backend-high-risk-service-getter-strategy-decision-2026-05-26.md`
 │   │   ├── Current HEAD: `c11dfb858200aaed46beee50c15e022c86408b54`
+│   │   ├── Merge commit: `4b361b6c73972ad3b3d9b02bc0488946c5271882`
 │   │   ├── Result: splits the exhausted low-risk service getter queue into
 │   │   │          six explicit tracks: Dashboard/TDX, Indicator/Data,
 │   │   │          Strategy adapter, Realtime streaming/socket, root facade
@@ -2461,10 +2462,11 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                PM2, OpenSpec, implementation authorization, or
 │   │                issue-label change is made here
 │   ├── G2.144 Realtime streaming/socket authorization package
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#297`
 │   │   ├── Evidence: `backend-realtime-streaming-socket-authorization-package-2026-05-26.md`
 │   │   ├── Parent: G2.143 accepted and merged by PR `#296`
 │   │   ├── Current HEAD: `4b361b6c73972ad3b3d9b02bc0488946c5271882`
+│   │   ├── Merge commit: `3c27963c86bc095f7f28129d5b47d9257367a31f`
 │   │   ├── Result: defines the smallest first implementation candidate for
 │   │   │          the realtime streaming/socket track as Socket.IO manager
 │   │   │          consumer-injection only, with no getter deletion
@@ -2483,8 +2485,34 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, route/API, OpenAPI exposure, frontend,
 │   │                PM2, OpenSpec, implementation, or issue-label change is
 │   │                made here
-│   └── Next gate: review G2.144; if accepted, start G2.145 as a narrow
-│                  Socket.IO manager consumer-injection implementation lane
+│   ├── G2.145 Realtime socket manager consumer-injection implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-realtime-socket-manager-consumer-injection-implementation-2026-05-26.md`
+│   │   ├── Parent: G2.144 accepted and merged by PR `#297`
+│   │   ├── Current HEAD: `3c27963c86bc095f7f28129d5b47d9257367a31f`
+│   │   ├── Result: adds a manager-level `streaming_service` dependency to
+│   │   │          `MySocketIOManager`; Socket.IO namespace and manager
+│   │   │          streaming consumers use that injected dependency instead of
+│   │   │          repeated direct handler-level `get_streaming_service` calls
+│   │   ├── Verification: pre-edit GitNexus impact records
+│   │   │          `get_streaming_service` HIGH impacted=`9`, direct=`9`,
+│   │   │          processes=`0`, and `MySocketIOManager` LOW impacted=`0`;
+│   │   │          TDD red `2 failed`, focused green `2 passed`; Ruff and
+│   │   │          Black passed; token scan reports `get_streaming_service`
+│   │   │          total refs=`2` and handler-level refs=`0`
+│   │   ├── Baseline blockers: existing `test_socketio_manager.py` and
+│   │   │          `test_socketio_streaming_integration.py` still import
+│   │   │          absent `get_socketio_manager` / `reset_socketio_manager`;
+│   │   │          `test_realtime_streaming_service.py` has a pre-existing
+│   │   │          naive/aware datetime assertion failure outside this lane
+│   │   └── Boundary: source-capable but limited to `socketio_manager.py`,
+│   │                one focused test, report, generated artifact, task card,
+│   │                and steward-tree update; no getter deletion,
+│   │                `realtime_streaming_service.py` edit,
+│   │                `aggregation_streaming_bridge.py` edit, route/API,
+│   │                OpenAPI, frontend, PM2, OpenSpec, or issue-label change
+│   │                is made here
+│   └── Next gate: review G2.145; if accepted, perform closeout-only G2.146
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
