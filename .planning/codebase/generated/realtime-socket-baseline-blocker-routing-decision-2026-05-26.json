@@ -1,0 +1,122 @@
+{
+  "schema_version": "1.0",
+  "artifact": "realtime-socket-baseline-blocker-routing-decision",
+  "created_at": "2026-05-26T17:05:22+08:00",
+  "current_head": "e42f4b11524da98cbf22f45807459f8984c9ebed",
+  "parent_closeout": {
+    "task": "G2.146 Realtime socket manager consumer-injection closeout",
+    "pull_request": 299,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T09:01:34Z",
+    "merge_commit": "e42f4b11524da98cbf22f45807459f8984c9ebed",
+    "evidence": "docs/reports/quality/backend-realtime-socket-manager-consumer-injection-closeout-2026-05-26.md"
+  },
+  "scope": {
+    "workline": "G2.147 realtime socket baseline blocker routing decision",
+    "mode": "decision-only",
+    "source_edits_allowed": false,
+    "test_edits_allowed": false,
+    "route_api_openapi_change_allowed": false,
+    "frontend_pm2_openspec_issue_label_change_allowed": false
+  },
+  "current_evidence": {
+    "focused_g2_145_test": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short",
+      "result": "2 passed in 0.83s"
+    },
+    "socketio_export_gap": {
+      "source_file": "web/backend/app/core/socketio_manager.py",
+      "source_export_tokens": {
+        "get_socketio_manager": 0,
+        "reset_socketio_manager": 0
+      },
+      "test_import_tokens": {
+        "web/backend/tests/test_socketio_manager.py": {
+          "get_socketio_manager": 8,
+          "reset_socketio_manager": 5
+        },
+        "web/backend/tests/test_socketio_streaming_integration.py": {
+          "get_socketio_manager": 0,
+          "reset_socketio_manager": 18
+        }
+      },
+      "collect_only_results": [
+        "test_socketio_manager.py cannot import get_socketio_manager",
+        "test_socketio_streaming_integration.py cannot import reset_socketio_manager"
+      ]
+    },
+    "realtime_datetime_test_debt": {
+      "test_file": "web/backend/tests/test_realtime_streaming_service.py",
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_streaming_service.py -q --no-cov --tb=short",
+      "result": "42 passed, 1 failed",
+      "failure": "TypeError comparing offset-naive and offset-aware datetimes",
+      "relevant_lines": [
+        {
+          "line": 46,
+          "text": "old_time = subscriber.subscribed_at"
+        },
+        {
+          "line": 50,
+          "text": "assert subscriber.subscribed_at >= old_time"
+        }
+      ]
+    }
+  },
+  "routing_decision": {
+    "g2_145_track_status": "closed",
+    "do_not_reopen_g2_145": true,
+    "do_not_delete_get_streaming_service": true,
+    "tracks": [
+      {
+        "track_id": "socketio-legacy-export-contract",
+        "name": "Socket.IO legacy export contract alignment",
+        "classification": "test/source contract alignment decision",
+        "problem": "Existing Socket.IO tests import get_socketio_manager/reset_socketio_manager, but socketio_manager.py exposes neither token at current HEAD.",
+        "candidate_next_gate": "G2.148 Socket.IO legacy export contract authorization package",
+        "source_allowed_from_g2_147": false,
+        "decision_options_for_next_gate": [
+          "restore thin get_socketio_manager/reset_socketio_manager compatibility exports and keep tests",
+          "update legacy tests to instantiate MySocketIOManager directly and drop obsolete export expectations",
+          "split test-only modernization from source compatibility if both are needed"
+        ],
+        "required_evidence_before_source": [
+          "GitNexus impact for socketio_manager.py and MySocketIOManager",
+          "import consumer matrix for get_socketio_manager/reset_socketio_manager",
+          "decision on whether these symbols are public compatibility surface or obsolete test-only helpers",
+          "TDD plan and rollback for whichever option is approved"
+        ]
+      },
+      {
+        "track_id": "realtime-streaming-datetime-test-debt",
+        "name": "Realtime streaming datetime test debt",
+        "classification": "test contract debt decision",
+        "problem": "test_realtime_streaming_service.py compares subscriber timestamps across timezone awareness boundaries.",
+        "candidate_next_gate": "G2.149 Realtime streaming datetime test authorization package",
+        "source_allowed_from_g2_147": false,
+        "decision_options_for_next_gate": [
+          "fix the test to compare timezone-aware timestamps consistently",
+          "adjust the source timestamp contract only if a separate source impact review proves the current contract is wrong",
+          "mark as separate test debt if broader realtime source semantics are intentionally unchanged"
+        ],
+        "required_evidence_before_source": [
+          "current RealtimeStreamingService timestamp contract review",
+          "focused failing test or current failing test capture",
+          "decision whether the fix is test-only or source+test",
+          "TDD plan and rollback for the selected scope"
+        ]
+      }
+    ]
+  },
+  "blocked_actions": [
+    "Do not edit source or tests in G2.147.",
+    "Do not restore get_socketio_manager/reset_socketio_manager exports from this decision package.",
+    "Do not change realtime streaming datetime behavior from this decision package.",
+    "Do not delete get_streaming_service/reset_streaming_service/RealtimeStreamingService.",
+    "Do not change route/API, OpenAPI, frontend, PM2, OpenSpec, or issue-label state."
+  ],
+  "recommended_next": {
+    "first": "G2.148 Socket.IO legacy export contract authorization package",
+    "second": "G2.149 Realtime streaming datetime test authorization package",
+    "reason": "Socket.IO collect-only blockers prevent using broader Socket.IO suites as regression gates; datetime debt is separate and should not be mixed with export contract alignment."
+  }
+}
