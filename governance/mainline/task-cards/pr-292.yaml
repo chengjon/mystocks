@@ -1,0 +1,106 @@
+version: "v0.2"
+
+task:
+  id: "pr-292"
+  title: "Authorize BacktestEngine getter retirement"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-backtest-engine-getter-retirement-authorization"
+  objective: "authorize a future narrow implementation lane to retire BacktestEngine module singleton/getter"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-backtest-engine-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-backtest-engine-getter-retirement-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only packet; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/backtest-engine-getter-retirement-authorization-2026-05-26.json"
+    - "docs/reports/quality/backend-backtest-engine-getter-retirement-authorization-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-292.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "gitnexus-impact"
+      command: "GitNexus impact get_backtest_engine direction=upstream"
+      required: true
+    - id: "current-head-scan"
+      command: "scripted exact scan for BacktestEngine, get_backtest_engine, _backtest_engine, and backend code references"
+      required: true
+    - id: "import-smoke"
+      command: "PYTHONPATH=web/backend python - <<'PY'\nfrom app.services.backtest_engine import BacktestConfig, BacktestEngine, BacktestResult, get_backtest_engine\nprint(callable(get_backtest_engine), BacktestEngine.__name__, BacktestConfig.__name__, BacktestResult.__name__)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-backtest-engine-getter-retirement-authorization-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/backtest-engine-getter-retirement-authorization-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-292.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this authorization lane."
+  - "Do not delete get_backtest_engine or _backtest_engine in this authorization lane."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, or issue-label state."
+  - "Do not authorize any other service lifecycle candidate."
+
+risk_and_rollback:
+  risks:
+    - "If this authorization is mistaken for implementation, the source getter could be deleted before TDD and staged GitNexus checks"
+    - "If future implementation proceeds after external callers appear, it could break hidden runtime consumers"
+  rollback_plan: "revert this authorization PR to remove only the authorization report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize a future BacktestEngine singleton/getter retirement implementation lane"
+    modified_scope: "steward tree, authorization report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; this lane records authorization constraints only"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON/YAML parsing, GitNexus staged scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T13:23:00+08:00"
+    approval_note: "Authorization follows G2.138 candidate-refresh selection"
+    secondary_approved: false
+

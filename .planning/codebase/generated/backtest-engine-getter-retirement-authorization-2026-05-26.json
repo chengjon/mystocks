@@ -1,0 +1,106 @@
+{
+  "schema_version": "1.0",
+  "artifact": "backtest-engine-getter-retirement-authorization",
+  "created_at": "2026-05-26T13:23:00+08:00",
+  "current_head": "2d51cbd52bc37dae2ae5f59855bcdb70d41f169c",
+  "parent_refresh": {
+    "lane": "G2.138",
+    "pull_request": 291,
+    "merge_commit": "2d51cbd52bc37dae2ae5f59855bcdb70d41f169c",
+    "selected_candidate": "get_backtest_engine"
+  },
+  "authorization_mode": {
+    "this_lane": "authorization-only",
+    "source_implementation_allowed_in_this_lane": false,
+    "future_implementation_required": true
+  },
+  "target": {
+    "service_file": "web/backend/app/services/backtest_engine.py",
+    "class_to_preserve": "BacktestEngine",
+    "config_to_preserve": "BacktestConfig",
+    "result_to_preserve": "BacktestResult",
+    "singleton_to_retire": "_backtest_engine",
+    "getter_to_retire": "get_backtest_engine"
+  },
+  "current_head_evidence": {
+    "class_definitions": {
+      "BacktestEngine": 1
+    },
+    "getter_definitions": {
+      "get_backtest_engine": 1
+    },
+    "singleton_token_count": {
+      "_backtest_engine": 5
+    },
+    "backend_code_references": [
+      {
+        "file": "web/backend/app/services/backtest_engine.py",
+        "count": 1
+      }
+    ],
+    "import_smoke": {
+      "BacktestConfig": true,
+      "BacktestEngine": true,
+      "BacktestResult": true,
+      "get_backtest_engine": true
+    }
+  },
+  "gitnexus_impact": {
+    "symbol": "get_backtest_engine",
+    "direction": "upstream",
+    "risk": "LOW",
+    "impacted_count": 0,
+    "direct": 0,
+    "processes_affected": 0,
+    "modules_affected": 0
+  },
+  "future_implementation_scope": {
+    "allowed_paths": [
+      "web/backend/app/services/backtest_engine.py",
+      "web/backend/tests/test_backtest_engine_getter_retirement.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/backtest-engine-getter-retirement-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-backtest-engine-getter-retirement-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-293.yaml"
+    ],
+    "must_preserve": [
+      "BacktestConfig",
+      "BacktestResult",
+      "BacktestEngine",
+      "BacktestEngine.run_backtest",
+      "BacktestEngine._simulate_trades",
+      "BacktestEngine._calculate_metrics",
+      "BacktestEngine._calculate_equity_curve",
+      "BacktestEngine._calculate_max_drawdown",
+      "BacktestEngine._empty_result"
+    ],
+    "must_not_change": [
+      "route/API behavior",
+      "OpenAPI exposure",
+      "frontend code",
+      "PM2 workflow",
+      "OpenSpec state",
+      "GitHub issue labels",
+      "unrelated service lifecycle candidates"
+    ]
+  },
+  "future_implementation_requirements": [
+    "Run fresh GitNexus impact for get_backtest_engine before editing.",
+    "Run exact text scan for get_backtest_engine and _backtest_engine before editing.",
+    "Use TDD: add a focused failing test that proves the legacy getter surface is absent while BacktestEngine remains importable.",
+    "Remove only _backtest_engine and get_backtest_engine from web/backend/app/services/backtest_engine.py if the current-head evidence still matches this packet.",
+    "Run focused test web/backend/tests/test_backtest_engine_getter_retirement.py.",
+    "Run Ruff and Black checks over touched backend files.",
+    "Run GitNexus detect_changes on staged scope before committing.",
+    "Run mainline scope gate after commit."
+  ],
+  "rollback": {
+    "strategy": "restore _backtest_engine and get_backtest_engine in web/backend/app/services/backtest_engine.py and remove the focused regression test/report/artifact/task-card updates from the implementation PR",
+    "expected_blast_radius": "low if implementation remains within the authorized paths"
+  },
+  "boundary": {
+    "no_source_or_test_edits_in_this_authorization_pr": true,
+    "no_getter_deletion_in_this_authorization_pr": true,
+    "no_runtime_behavior_change_in_this_authorization_pr": true
+  }
+}
