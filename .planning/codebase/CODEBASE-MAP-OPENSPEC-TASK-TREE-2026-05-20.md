@@ -2401,9 +2401,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                one focused test, report, generated artifact, task card,
 │   │                and steward-tree update
 │   ├── G2.141 BacktestEngine singleton/getter retirement closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#294`
 │   │   ├── Evidence: `backend-backtest-engine-getter-retirement-closeout-2026-05-26.md`
-│   │   ├── Current HEAD: `62cf56cc8736c3784f8b7cc9ac5cc21a52d39423`
+│   │   ├── Merge commit: `32d0cfb1e02d1207301e632b44a94e74efdddf69`
 │   │   ├── Result: records PR `#293` as merged and closes the
 │   │   │          BacktestEngine singleton/getter retirement lane without
 │   │   │          changing runtime source, tests, route paths, response
@@ -2416,9 +2416,29 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: closeout-only; no source/test edit, runtime behavior,
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                implementation, or issue-label change is made here
-│   └── Next gate: after G2.141 review and merge, refresh the remaining service
-│                  lifecycle candidate pool before selecting another
-│                  implementation lane
+│   ├── G2.142 Service lifecycle candidate refresh after BacktestEngine
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-backtest-2026-05-26.md`
+│   │   ├── Current HEAD: `32d0cfb1e02d1207301e632b44a94e74efdddf69`
+│   │   ├── Result: refreshes the remaining service lifecycle DI candidate
+│   │   │          pool after BacktestEngine closeout and selects no direct
+│   │   │          implementation candidate
+│   │   ├── Verification: service files=`152`, backend app files=`575`,
+│   │   │          API files=`219`, tests=`206`, service getter
+│   │   │          definitions=`53`, root facade getters=`7`, FastAPI
+│   │   │          dependency/provider getters=`9`, zero-external-reference
+│   │   │          getters=`0`; BacktestEngine retired tokens remain `0`
+│   │   ├── High-risk holds: `get_tdx_service` CRITICAL impacted=`6`,
+│   │   │          `get_data_service` CRITICAL impacted=`5`,
+│   │   │          `get_strategy_service` CRITICAL impacted=`13`, and
+│   │   │          `get_streaming_service` HIGH impacted=`9`; these require
+│   │   │          design decomposition before implementation authorization
+│   │   └── Boundary: candidate-refresh-only; no backend source/test edit,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                getter deletion, implementation authorization, or
+│   │                issue-label change is made here
+│   └── Next gate: prepare a high-risk service getter strategy decision package
+│                  before selecting another source implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

@@ -1,0 +1,91 @@
+{
+  "schema_version": "1.0",
+  "artifact": "service-lifecycle-candidate-refresh-after-backtest",
+  "created_at": "2026-05-26T13:58:00+08:00",
+  "current_head": "32d0cfb1e02d1207301e632b44a94e74efdddf69",
+  "parent_closeout": {
+    "lane": "G2.141",
+    "pull_request": 294,
+    "merge_commit": "32d0cfb1e02d1207301e632b44a94e74efdddf69",
+    "meaning": "BacktestEngine singleton/getter retirement closeout accepted"
+  },
+  "scope": {
+    "mode": "governance-only candidate refresh",
+    "runtime_code_changed": false,
+    "implementation_authorized": false
+  },
+  "inventory": {
+    "service_py_files": 152,
+    "backend_app_py_files": 575,
+    "backend_api_py_files": 219,
+    "backend_test_py_files": 206,
+    "service_getter_definitions": 53,
+    "root_facade_getters": 7,
+    "fastapi_dependency_getters": 9,
+    "zero_external_reference_getters": 0
+  },
+  "retired_backtest_state": {
+    "get_backtest_engine_tokens_under_services": 0,
+    "_backtest_engine_tokens_under_services": 0
+  },
+  "root_facade_current_refs": {
+    "get_integrated_services": 1,
+    "get_risk_calculator": 1,
+    "get_market_data_service": 18,
+    "get_risk_monitoring": 1,
+    "get_risk_alerts": 1,
+    "get_risk_settings": 2,
+    "get_risk_dashboard": 2
+  },
+  "dependency_provider_current_refs": {
+    "get_market_data_service_v2_dependency": 17,
+    "get_market_data_service_dependency": 15,
+    "get_indicator_registry_dependency": 4,
+    "get_tdx_service_dependency": 8,
+    "get_announcement_service_dependency": 14,
+    "get_email_service_dependency": 11,
+    "get_watchlist_service_dependency": 11,
+    "get_stock_search_service_dependency": 13,
+    "get_tradingview_service_dependency": 10
+  },
+  "high_risk_holds": {
+    "get_tdx_service": {
+      "risk": "CRITICAL",
+      "impacted_count": 6,
+      "direct": 2,
+      "processes_affected": 5
+    },
+    "get_data_service": {
+      "risk": "CRITICAL",
+      "impacted_count": 5,
+      "direct": 3,
+      "processes_affected": 7
+    },
+    "get_strategy_service": {
+      "risk": "CRITICAL",
+      "impacted_count": 13,
+      "direct": 6,
+      "processes_affected": 0,
+      "modules_affected": 5
+    },
+    "get_streaming_service": {
+      "risk": "HIGH",
+      "impacted_count": 9,
+      "direct": 9,
+      "processes_affected": 0,
+      "modules_affected": 4
+    }
+  },
+  "decision": {
+    "direct_next_implementation_candidate": null,
+    "reason": "zero-external-reference service getter candidates are exhausted; remaining candidates are active facades, route dependency/provider seams, or HIGH/CRITICAL service getters",
+    "recommended_next_gate": "G2.143 high-risk service getter strategy decision package",
+    "implementation_allowed": false
+  },
+  "boundary": {
+    "no_source_or_test_edits": true,
+    "no_getter_deletion": true,
+    "no_route_api_openapi_frontend_pm2_or_openspec_changes": true,
+    "no_issue_label_changes": true
+  }
+}
