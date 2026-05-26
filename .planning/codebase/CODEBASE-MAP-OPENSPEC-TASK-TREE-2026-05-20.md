@@ -2331,9 +2331,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                implementation, or issue-label change is made here
 │   ├── G2.138 Service lifecycle candidate refresh after IntegratedServices facade retirement
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#291`
 │   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-integrated-facade-retirement-2026-05-26.md`
-│   │   ├── Current HEAD: `090c0c30a7ac64c75e30febce1b3f6e4d20eee1c`
+│   │   ├── Merge commit: `2d51cbd52bc37dae2ae5f59855bcdb70d41f169c`
 │   │   ├── Result: refreshes the remaining service lifecycle DI candidate
 │   │   │          pool after G2.137 closeout and selects only a future
 │   │   │          authorization candidate, not an implementation lane
@@ -2357,9 +2357,32 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
-│   └── Next gate: after G2.138 review and merge, prepare a BacktestEngine
-│                  singleton/getter retirement authorization package before
-│                  any source implementation work
+│   ├── G2.139 BacktestEngine singleton/getter retirement authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-backtest-engine-getter-retirement-authorization-2026-05-26.md`
+│   │   ├── Current HEAD: `2d51cbd52bc37dae2ae5f59855bcdb70d41f169c`
+│   │   ├── Result: authorizes only a future narrow implementation lane to
+│   │   │          retire `_backtest_engine` and `get_backtest_engine` from
+│   │   │          `web/backend/app/services/backtest_engine.py`
+│   │   ├── Preserved scope: `BacktestConfig`, `BacktestResult`,
+│   │   │          `BacktestEngine`, all BacktestEngine methods, route/API,
+│   │   │          OpenAPI exposure, frontend, PM2, OpenSpec, issue labels,
+│   │   │          and unrelated service lifecycle candidates remain out of
+│   │   │          scope
+│   │   ├── Verification: GitNexus impact for `get_backtest_engine` is LOW
+│   │   │          with impacted=`0`, direct=`0`, processes=`0`; exact scan
+│   │   │          shows `BacktestEngine` definition=`1`, getter definition=`1`,
+│   │   │          `_backtest_engine` token count=`5`, and backend code
+│   │   │          references only in the defining service file; import smoke
+│   │   │          confirms class/config/result/getter importability
+│   │   └── Boundary: authorization-only; no backend source/test edit,
+│   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │                getter deletion, implementation, or issue-label change is
+│   │                made here
+│   └── Next gate: after G2.139 review and merge, execute the BacktestEngine
+│                  singleton/getter retirement implementation lane with TDD,
+│                  fresh GitNexus impact, staged detect_changes, and mainline
+│                  scope gate
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
