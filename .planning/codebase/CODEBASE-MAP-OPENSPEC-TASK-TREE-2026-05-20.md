@@ -2583,7 +2583,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, issue-label
 │   │                change, or implementation work is performed here
 │   ├── G2.150 Socket.IO test import alignment
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#302`
 │   │   ├── Evidence: `backend-socketio-test-import-alignment-2026-05-26.md`
 │   │   ├── Parent: G2.148 accepted and merged by PR `#301`
 │   │   ├── Current HEAD: `deb182e7f3ba7e50d0cc982c51248826e522dacd`
@@ -2607,10 +2607,32 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              restoration, realtime datetime fix, route/API, OpenAPI
 │   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
 │   │              GitHub issue state change is performed here
-│   └── Next gate: review G2.150; if accepted, route the exposed Socket.IO
-│                  streaming error-emission behavior debt as G2.151 or
-│                  continue with the already split G2.149 realtime datetime
-│                  test authorization
+│   ├── G2.151 Socket.IO stream-error emission triage
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-socketio-stream-error-emission-triage-2026-05-26.md`
+│   │   ├── Parent: G2.150 accepted and merged by PR `#302`
+│   │   ├── Current HEAD: `34bb3873149aee0b2e4cd06e63a45484a33a068f`
+│   │   ├── Result: classifies the newly exposed
+│   │   │          `test_exception_during_subscription` failure as test
+│   │   │          patch-target drift after Socket.IO manager consumer
+│   │   │          injection, not as proven runtime error-emission breakage
+│   │   ├── Verification: single-test reproduction still fails on missing
+│   │   │          `stream_error`; diagnostic with stale
+│   │   │          `app.core.socketio_manager.get_streaming_service` patch
+│   │   │          emits `stream_subscribed`, while diagnostic patching
+│   │   │          `manager.streaming_service.subscribe` emits
+│   │   │          `stream_error`
+│   │   ├── Decision: authorize a future G2.152 test-only patch-target
+│   │   │          alignment lane; do not edit runtime source or widen
+│   │   │          `socketio_manager.py`
+│   │   └── Boundary: triage-only; no backend source/test edit, helper alias
+│   │              restoration, realtime datetime fix, route/API, OpenAPI
+│   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
+│   │              GitHub issue state change is performed here
+│   └── Next gate: review G2.151; if accepted, start G2.152 Socket.IO
+│                  stream-error test patch-target alignment, then return to
+│                  the already split G2.149 realtime datetime test
+│                  authorization
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

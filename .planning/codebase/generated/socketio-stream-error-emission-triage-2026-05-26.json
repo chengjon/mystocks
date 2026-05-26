@@ -1,0 +1,88 @@
+{
+  "schema_version": "triage-decision-v1",
+  "id": "g2-151-socketio-stream-error-emission-triage",
+  "title": "Socket.IO streaming error-emission behavior triage",
+  "created_at": "2026-05-26T18:12:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "34bb3873149aee0b2e4cd06e63a45484a33a068f",
+  "parent": {
+    "id": "g2-150-socketio-test-import-alignment",
+    "pr": 302,
+    "state": "merged",
+    "merge_commit": "34bb3873149aee0b2e4cd06e63a45484a33a068f"
+  },
+  "scope": {
+    "mode": "triage-only",
+    "runtime_source_edits": false,
+    "test_edits": false,
+    "openspec_edits": false,
+    "route_api_openapi_frontend_pm2_edits": false
+  },
+  "reproduction": {
+    "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_streaming_integration.py::TestStreamingErrorHandling::test_exception_during_subscription -q --no-cov --tb=short",
+    "exit_code": 1,
+    "failure": "assert any('stream_error' in str(call) for call in calls) is False"
+  },
+  "root_cause": {
+    "summary": "The test patches app.core.socketio_manager.get_streaming_service, but on_subscribe_market_stream now calls self.sio.streaming_service.subscribe after the G2.145 manager-level consumer injection change.",
+    "stale_patch_target": "app.core.socketio_manager.get_streaming_service",
+    "actual_call_path": "namespace.sio.streaming_service.subscribe(...)",
+    "source_location": "web/backend/app/core/socketio_manager.py:on_subscribe_market_stream"
+  },
+  "diagnostics": {
+    "stale_patch_target_result": {
+      "patched": "app.core.socketio_manager.get_streaming_service",
+      "has_stream_error": false,
+      "has_stream_subscribed": true,
+      "meaning": "The old patch target no longer affects the handler call path."
+    },
+    "instance_patch_result": {
+      "patched": "manager.streaming_service.subscribe",
+      "has_stream_error": true,
+      "emitted": "stream_error with error_code INTERNAL_ERROR",
+      "meaning": "The runtime error-emission branch still works when the current call path is patched."
+    }
+  },
+  "decision": {
+    "classification": "test patch-target drift after Socket.IO manager consumer injection",
+    "runtime_bug": false,
+    "recommended_next_lane": "g2-152-socketio-stream-error-test-patch-target-alignment",
+    "recommended_scope": "test-only alignment of test_exception_during_subscription to patch manager.streaming_service.subscribe or inject a fake streaming service",
+    "allowed_paths": [
+      "web/backend/tests/test_socketio_streaming_integration.py",
+      ".planning/codebase/**",
+      "docs/reports/quality/**",
+      "governance/mainline/task-cards/**"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/**",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "required_next_lane_gates": [
+    "Run GitNexus impact before editing test_socketio_streaming_integration.py.",
+    "Use current failing test as red evidence.",
+    "Patch the current call path instead of the legacy get_streaming_service accessor.",
+    "Run the single failing test after the edit.",
+    "Run the full test_socketio_streaming_integration.py focused suite after the edit.",
+    "Run test_socketio_manager.py focused suite to ensure the previous G2.150 lane remains intact.",
+    "Run test_realtime_socket_manager_streaming_dependency.py focused regression.",
+    "Run ruff on the touched test file.",
+    "Run staged GitNexus detect_changes before commit.",
+    "Run mainline scope gate after commit."
+  ],
+  "non_goals": [
+    "Do not edit runtime source in this triage package.",
+    "Do not change Socket.IO manager error-emission behavior in this triage package.",
+    "Do not restore legacy helper aliases.",
+    "Do not touch realtime datetime debt.",
+    "Do not change route/API, OpenAPI, frontend, PM2, OpenSpec, or issue labels."
+  ],
+  "next_gate": "Review and merge this G2.151 triage package before starting G2.152 test-only patch-target alignment."
+}
