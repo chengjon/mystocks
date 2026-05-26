@@ -2055,7 +2055,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                implementation authorization, next-lane authorization, or
 │   │                issue-label change is made here
 │   ├── G2.124 Service lifecycle candidate refresh after EmailService
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#277` merged at
+│   │   │          `4ce4abf60fec2719644d9f64cd657bb0b7d3c8c5`
 │   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-email-2026-05-26.md`
 │   │   ├── Current HEAD: `0b761555dd96865e571f7c9ebc1959b8254f52ef`
 │   │   ├── Result: refreshes the getter candidate pool after EmailService
@@ -2075,10 +2076,30 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.124; if accepted,
-│                  create a G2.125 `get_stock_search_service` authorization
-│                  packet with explicit CRITICAL GitNexus risk disclosure and
-│                  d=1 route/test acceptance criteria before any source edit
+│   ├── G2.125 StockSearchService getter-retirement authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-stock-search-service-getter-retirement-authorization-2026-05-26.md`
+│   │   ├── Current HEAD: `4ce4abf60fec2719644d9f64cd657bb0b7d3c8c5`
+│   │   ├── Result: authorizes only a future G2.126 implementation branch to
+│   │   │          retire `stock_search_service.py` `_stock_search_service` and
+│   │   │          `get_stock_search_service`, while preserving
+│   │   │          `StockSearchService`, `install_stock_search_service`,
+│   │   │          `get_stock_search_service_dependency`, route paths, response
+│   │   │          contracts, and OpenAPI exposure
+│   │   ├── Risk note: GitNexus impact is CRITICAL with impacted count=`6` and
+│   │   │          affected processes=`11`; future implementation must update
+│   │   │          d=1 route/test acceptance criteria before source edit
+│   │   ├── Evidence note: text scan shows API direct getter calls=`0`, route
+│   │   │          dependency handlers=`6`, service self-calls=`2`, and existing
+│   │   │          P0 regression tests still assert the retired singleton/getter
+│   │   │          behavior and must be rewritten during implementation
+│   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                implementation, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.125; if accepted,
+│                  create G2.126 StockSearchService getter-retirement
+│                  implementation with TDD red and CRITICAL-risk d=1 route/test
+│                  acceptance criteria before any source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
