@@ -9,12 +9,12 @@ from typing import Any, Dict, List
 
 import math
 import pandas as pd
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.core.responses import UnifiedResponse
-from app.services.data_service import StockDataNotFoundError, get_data_service
+from app.services.data_service import DataService, StockDataNotFoundError, get_data_service
 from src.indicators.implementations.momentum.rsi import RSIIndicator
 from src.indicators.implementations.trend.ema import EMAIndicator
 from src.indicators.implementations.trend.macd import MACDIndicator
@@ -24,6 +24,10 @@ router = APIRouter(
     prefix="/technical-indicators",
     tags=["Technical Indicators"],
 )
+
+
+def get_strategy_indicator_data_service() -> DataService:
+    return get_data_service()
 
 
 TECHNICAL_INDICATORS_SUCCESS_EXAMPLE = {
@@ -185,6 +189,7 @@ async def get_technical_indicators(
     symbol: str = Query(..., description="Stock symbol"),
     indicators: List[str] = Query(..., description="Indicator names (sma,ema,rsi,macd)"),
     period: int = Query(14, ge=2, le=250, description="Calculation period"),
+    data_service: DataService = Depends(get_strategy_indicator_data_service),
 ):
     """
     计算技术指标。
@@ -198,7 +203,7 @@ async def get_technical_indicators(
     start_dt = end_dt - timedelta(days=lookback_days)
 
     try:
-        frame, _ = get_data_service().get_daily_ohlcv(symbol=symbol, start_date=start_dt, end_date=end_dt)
+        frame, _ = data_service.get_daily_ohlcv(symbol=symbol, start_date=start_dt, end_date=end_dt)
     except StockDataNotFoundError as exc:
         raise BusinessException(status_code=404, detail=str(exc)) from exc
     except Exception as exc:

@@ -1,0 +1,128 @@
+{
+  "artifact": "indicator-data-source-provider-seam-implementation-2026-05-27",
+  "task_id": "G2.162",
+  "status": "ready_for_review",
+  "scope": "narrow_source_implementation",
+  "created_at": "2026-05-27T01:41:49+08:00",
+  "parent": {
+    "task_id": "G2.161",
+    "pr": 314,
+    "merge_commit": "9d31aec75dadf4e90cc438f342cdbe3c3778875b"
+  },
+  "base_head": "9d31aec75dadf4e90cc438f342cdbe3c3778875b",
+  "changed_files": [
+    "web/backend/app/api/indicators/indicator_cache.py",
+    "web/backend/app/api/v1/strategy/indicators.py",
+    "web/backend/tests/test_indicator_registry_route_provider.py",
+    "web/backend/tests/test_v1_indicators_regressions.py",
+    ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+    ".planning/codebase/generated/indicator-data-source-provider-seam-implementation-2026-05-27.json",
+    "docs/reports/quality/backend-indicator-data-source-provider-seam-implementation-2026-05-27.md",
+    "governance/mainline/task-cards/pr-315.yaml"
+  ],
+  "source_changes": {
+    "providers_added": [
+      "web/backend/app/api/indicators/indicator_cache.py::get_indicator_data_service",
+      "web/backend/app/api/v1/strategy/indicators.py::get_strategy_indicator_data_service"
+    ],
+    "consumers_injected": [
+      "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators",
+      "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators_batch",
+      "web/backend/app/api/indicators/indicator_cache.py::_calculate_single_indicator",
+      "web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators"
+    ],
+    "public_get_data_service_preserved": true,
+    "data_service_module_edited": false
+  },
+  "static_closure": {
+    "application_body_get_data_service_calls_before": 3,
+    "application_route_or_helper_body_get_data_service_calls_after": 0,
+    "remaining_provider_fallback_calls": [
+      "web/backend/app/api/indicators/indicator_cache.py::get_indicator_data_service",
+      "web/backend/app/api/v1/strategy/indicators.py::get_strategy_indicator_data_service"
+    ],
+    "import_sites_preserved": true
+  },
+  "gitnexus_pre_edit": {
+    "get_data_service": {
+      "risk": "CRITICAL",
+      "impacted": 5,
+      "direct_callers": 3,
+      "processes": 7
+    },
+    "calculate_indicators": {
+      "risk": "LOW",
+      "impacted": 0
+    },
+    "_calculate_single_indicator": {
+      "risk": "LOW",
+      "impacted": 3
+    },
+    "get_technical_indicators_context": {
+      "incoming_callers": 0,
+      "processes": 5,
+      "note": "Impact lookup by bare name is ambiguous; exact context was resolved by file path."
+    }
+  },
+  "tdd": {
+    "red": [
+      {
+        "command": "test_v1_indicators_regressions.py",
+        "result": "3 failed: missing data_service parameter and missing get_strategy_indicator_data_service"
+      },
+      {
+        "command": "test_indicator_registry_route_provider.py",
+        "result": "1 failed, 2 passed: missing get_indicator_data_service"
+      }
+    ],
+    "green": [
+      {
+        "command": "test_v1_indicators_regressions.py",
+        "result": "3 passed in 1.53s"
+      },
+      {
+        "command": "test_indicator_registry_route_provider.py",
+        "result": "3 passed in 1.86s"
+      }
+    ]
+  },
+  "verification": [
+    {
+      "check": "test_health_route_conflicts.py --collect-only",
+      "result": "120 tests collected in 13.74s"
+    },
+    {
+      "check": "test_v1_indicator_openapi_docs_guard",
+      "result": "1 passed in 13.06s"
+    },
+    {
+      "check": "ruff_touched_backend_files",
+      "result": "All checks passed"
+    },
+    {
+      "check": "openapi_smoke",
+      "result": {
+        "routes": 548,
+        "paths": 500,
+        "duplicate_operation_ids": 0
+      }
+    },
+    {
+      "check": "staged_gitnexus_detect_changes",
+      "result": {
+        "risk_level": "high",
+        "changed_files": 8,
+        "changed_symbols": 23,
+        "affected_processes": 7,
+        "expected_within_authorized_critical_seam": true
+      }
+    }
+  ],
+  "forbidden_scope_preserved": {
+    "web_backend_app_services_data_service_py_edited": false,
+    "get_data_service_deleted_or_privatized": false,
+    "route_path_or_openapi_exposure_changed": false,
+    "frontend_pm2_config_scripts_issue_labels_changed": false
+  },
+  "next_gate": "review_and_merge_g2_162_then_refresh_high_risk_service_getter_inventory"
+}

@@ -37,12 +37,16 @@ from app.schemas.indicator_response import (
     IndicatorMetadata,
     IndicatorRegistryResponse,
 )
-from app.services.data_service import InvalidDateRangeError, StockDataNotFoundError, get_data_service
+from app.services.data_service import DataService, InvalidDateRangeError, StockDataNotFoundError, get_data_service
 from app.services.indicator_calculator import IndicatorCalculationError, InsufficientDataError, get_indicator_calculator
 from app.services.indicator_registry import IndicatorCategory, IndicatorRegistry, get_indicator_registry_dependency
 
 logger = structlog.get_logger()
 router = APIRouter()
+
+
+def get_indicator_data_service() -> DataService:
+    return get_data_service()
 
 
 from app.api.indicators._indicator_cache_responses import (
@@ -263,6 +267,7 @@ async def get_indicators_by_category(
 async def calculate_indicators(
     request: IndicatorCalculateRequest = Body(..., example=INDICATOR_CALCULATE_REQUEST_EXAMPLE),
     current_user: User = Depends(get_current_active_user),
+    data_service: DataService = Depends(get_indicator_data_service),
 ):
     """
     计算技术指标 - Phase 4C Enhanced
@@ -338,9 +343,6 @@ async def calculate_indicators(
 
         # 缓存未命中，执行计算
         indicator_cache._total_requests = getattr(indicator_cache, "_total_requests", 0) + 1
-
-        # Load OHLCV data from database via DataService
-        data_service = get_data_service()
 
         # Convert date strings to datetime
         from datetime import datetime
@@ -517,6 +519,7 @@ async def calculate_indicators(
 async def calculate_indicators_batch(
     request: IndicatorCalculateBatchRequest = Body(..., example=INDICATOR_CALCULATE_BATCH_REQUEST_EXAMPLE),
     current_user: User = Depends(get_current_active_user),
+    data_service: DataService = Depends(get_indicator_data_service),
 ) -> Dict:
     """
     批量计算技术指标 - Phase 4C Enhanced
@@ -545,7 +548,7 @@ async def calculate_indicators_batch(
                     "start_date": str(calc_request.start_date),
                     "end_date": str(calc_request.end_date),
                     "success": True,
-                    "data": await _calculate_single_indicator(calc_request, current_user),
+                    "data": await _calculate_single_indicator(calc_request, current_user, data_service),
                 }
             except Exception as e:
                 logger.error("单个指标计算失败", user_id=current_user.id, symbol=calc_request.symbol, error=str(e))
@@ -604,13 +607,12 @@ async def calculate_indicators_batch(
         )
 
 
-async def _calculate_single_indicator(request, current_user):
+async def _calculate_single_indicator(request, current_user, data_service: DataService):
     """内部函数：计算单个指标请求"""
     # 重用calculate_indicators的核心逻辑
     # 这里简化实现，实际应该提取共同逻辑
     indicator_specs = [{"abbreviation": ind.abbreviation, "parameters": ind.parameters} for ind in request.indicators]
 
-    data_service = get_data_service()
     calculator = get_indicator_calculator()
 
     # 获取数据并计算
