@@ -1,0 +1,94 @@
+{
+  "artifact": "watchlist-service-getter-retirement-implementation-2026-05-26",
+  "recorded_at": "2026-05-26T11:28:00+08:00",
+  "workline": "G2.131 WatchlistService getter-retirement implementation",
+  "status": "implementation-prepared-for-review",
+  "current_head": "35dcc90cd9a242e8906107a01abf1649d77737ea",
+  "stale_if_head_mismatch": true,
+  "parent_pr": {
+    "number": 283,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T03:02:11Z",
+    "merge_commit": "35dcc90cd9a242e8906107a01abf1649d77737ea",
+    "title": "G2.130 Authorize WatchlistService getter retirement",
+    "url": "https://github.com/chengjon/mystocks/pull/283"
+  },
+  "authorization_source": {
+    "report": "docs/reports/quality/backend-watchlist-service-getter-retirement-authorization-2026-05-26.md",
+    "generated_artifact": ".planning/codebase/generated/watchlist-service-getter-retirement-authorization-2026-05-26.json"
+  },
+  "changed_source_files": [
+    "web/backend/app/services/watchlist_service.py",
+    "web/backend/app/services/adapters/watchlist_adapter.py",
+    "web/backend/app/services/data_adapters/watchlist.py"
+  ],
+  "changed_test_files": [
+    "web/backend/tests/test_watchlist_service_lifecycle_di.py",
+    "web/backend/tests/test_watchlist_helper_lifecycle_di.py",
+    "web/backend/tests/test_watchlist_service_getter_retirement.py"
+  ],
+  "preserved_contracts": {
+    "WatchlistService": true,
+    "install_watchlist_service": true,
+    "get_watchlist_service_dependency": true,
+    "route_paths_changed": false,
+    "response_shapes_changed": false,
+    "openapi_exposure_changed": false
+  },
+  "removed_items": {
+    "public_get_watchlist_service_getter": true,
+    "module_level_watchlist_service_singleton": true,
+    "adapter_fallback_imports_of_get_watchlist_service": true
+  },
+  "gitnexus_pre_edit": {
+    "get_watchlist_service": {
+      "risk": "MEDIUM",
+      "impacted_count": 15,
+      "direct": 9,
+      "processes_affected": 0
+    },
+    "adapter_helper_context": {
+      "data_adapters_watchlist_direct_callers": [
+        "_fetch_watchlist_data",
+        "health_check"
+      ],
+      "legacy_adapter_direct_callers": [
+        "_fetch_watchlist_data",
+        "health_check"
+      ]
+    }
+  },
+  "tdd": {
+    "red": "web/backend/tests/test_watchlist_service_getter_retirement.py: 2 failed, 1 passed",
+    "green": "focused watchlist suite: 28 passed"
+  },
+  "verification": {
+    "focused_watchlist_tests": "28 passed in 3.54s",
+    "health_route_conflicts": "120 passed in 83.70s",
+    "ruff_touched": "All checks passed",
+    "black_check_touched": "8 files would be left unchanged",
+    "import_smoke": "watchlist-import-ok",
+    "exact_scan": {
+      "service_getter_definitions": 0,
+      "service_singleton_assignments": 0,
+      "adapter_fallback_imports": 0,
+      "adapter_public_getter_calls": 0,
+      "app_public_getter_calls": 0,
+      "route_dependency_refs": 8,
+      "route_dependency_handlers": 7,
+      "exports_preserved": {
+        "WatchlistService": true,
+        "install_watchlist_service": true,
+        "get_watchlist_service_dependency": true
+      }
+    },
+    "staged_gitnexus_detect_changes": {
+      "risk_level": "low",
+      "changed_files": 10,
+      "changed_count": 45,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "rollback_plan": "Revert this implementation commit to restore get_watchlist_service, _watchlist_service, and the adapter fallback imports if focused tests, health route conflicts, exact scans, staged GitNexus, or mainline scope fail."
+}

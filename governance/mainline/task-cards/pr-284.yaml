@@ -1,0 +1,132 @@
+version: "v0.2"
+
+task:
+  id: "pr-284"
+  title: "Retire WatchlistService compatibility getter"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-watchlist-service-getter-retirement-implementation"
+  objective: "retire the WatchlistService public compatibility getter and module singleton while preserving route dependency injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-watchlist-service-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-watchlist-service-getter-retirement-implementation"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow service getter retirement; no route, public API surface, OpenAPI exposure, frontend behavior, or OpenSpec capability is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/watchlist-service-getter-retirement-implementation-2026-05-26.json"
+    - "docs/reports/quality/backend-watchlist-service-getter-retirement-implementation-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-284.yaml"
+    - "web/backend/app/services/watchlist_service.py"
+    - "web/backend/app/services/adapters/watchlist_adapter.py"
+    - "web/backend/app/services/data_adapters/watchlist.py"
+    - "web/backend/tests/test_watchlist_service_lifecycle_di.py"
+    - "web/backend/tests/test_watchlist_helper_lifecycle_di.py"
+    - "web/backend/tests/test_watchlist_service_getter_retirement.py"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/backend/app/main.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit route handlers"
+  - "Do not modify route paths, response models, response shapes, or OpenAPI exposure"
+  - "Do not modify frontend code"
+  - "Do not modify PM2 workflows"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not delete WatchlistService, install_watchlist_service, or get_watchlist_service_dependency"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 283 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_watchlist_service_getter_retirement.py -q --no-cov --tb=short before implementation"
+      required: true
+    - id: "focused-watchlist-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_watchlist_service_getter_retirement.py web/backend/tests/test_watchlist_service_lifecycle_di.py web/backend/tests/test_watchlist_helper_lifecycle_di.py web/backend/tests/test_adapter_mock_fallback_controls.py web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/services/watchlist_service.py web/backend/app/services/adapters/watchlist_adapter.py web/backend/app/services/data_adapters/watchlist.py web/backend/tests/test_watchlist_service_lifecycle_di.py web/backend/tests/test_watchlist_helper_lifecycle_di.py web/backend/tests/test_watchlist_service_getter_retirement.py"
+      required: true
+    - id: "black-check-touched"
+      command: "black --check web/backend/app/services/watchlist_service.py web/backend/app/services/adapters/watchlist_adapter.py web/backend/app/services/data_adapters/watchlist.py web/backend/tests/test_watchlist_service_lifecycle_di.py web/backend/tests/test_watchlist_helper_lifecycle_di.py web/backend/tests/test_watchlist_service_getter_retirement.py"
+      required: true
+    - id: "exact-scan"
+      command: "scripted scan for service getter definitions, service singleton assignments, adapter fallback imports/calls, app/API public getter calls, and route dependency handler count"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-watchlist-service-getter-retirement-implementation-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/watchlist-service-getter-retirement-implementation-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-284.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-284.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If adapter provider fallback is misread, live watchlist data adapters could attempt to use a retired public getter"
+    - "If route files are edited, the batch could exceed a getter-retirement scope"
+  rollback_plan: "revert this implementation PR to restore get_watchlist_service, _watchlist_service, and both adapter fallback imports"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "retire WatchlistService compatibility getter"
+    modified_scope: "WatchlistService lifecycle module, two watchlist adapter fallback helpers, focused tests, steward tree, report, artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "public compatibility getter and module singleton removed; route dependency injection preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused tests, health route conflicts, exact scans, GitNexus staged scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T11:28:00+08:00"
+    approval_note: "Implementation follows merged G2.130 authorization PR #283"
+    secondary_approved: false

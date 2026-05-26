@@ -605,26 +605,11 @@ class WatchlistService(WatchlistGroupQueriesMixin):
             return False
 
 
-# 创建全局实例
-_watchlist_service = None
 WATCHLIST_SERVICE_STATE_KEY = "watchlist_service"
 
 
-def get_watchlist_service() -> WatchlistService:
-    """
-    获取自选股服务实例（单例模式）
-
-    Returns:
-        WatchlistService: 自选股服务实例
-    """
-    global _watchlist_service
-    if _watchlist_service is None:
-        _watchlist_service = WatchlistService()
-    return _watchlist_service
-
-
 def install_watchlist_service(app: Any, service: WatchlistService | None = None) -> WatchlistService:
-    selected_service = service if service is not None else get_watchlist_service()
+    selected_service = service if service is not None else WatchlistService()
     setattr(app.state, WATCHLIST_SERVICE_STATE_KEY, selected_service)
     return selected_service
 

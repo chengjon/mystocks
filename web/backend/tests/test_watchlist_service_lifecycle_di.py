@@ -14,7 +14,7 @@ def test_watchlist_service_dependency_installs_app_state_when_missing(monkeypatc
     fake_app = SimpleNamespace(state=SimpleNamespace())
     request = SimpleNamespace(app=fake_app)
 
-    monkeypatch.setattr(watchlist_service, "get_watchlist_service", lambda: fake_service)
+    monkeypatch.setattr(watchlist_service, "WatchlistService", lambda: fake_service)
 
     assert watchlist_service.get_watchlist_service_dependency(request) is fake_service
     assert getattr(fake_app.state, watchlist_service.WATCHLIST_SERVICE_STATE_KEY) is fake_service
