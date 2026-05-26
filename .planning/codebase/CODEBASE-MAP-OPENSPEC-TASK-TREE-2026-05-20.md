@@ -2842,11 +2842,12 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
 │   ├── G2.159 Indicator/Data design and authorization package
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#312`
 │   │   ├── Evidence: `backend-indicator-data-design-authorization-2026-05-27.md`
 │   │   ├── Generated: `indicator-data-design-authorization-2026-05-27.json`
 │   │   ├── Parent: G2.158 accepted and merged by PR `#311`
 │   │   ├── Current HEAD: `aef7e765b0c0472c2b2f907463345c964735b1f9`
+│   │   ├── Merge commit: `b31a1c69a96fa83f250e7577c4b21d3b4febbaeb`
 │   │   ├── GitNexus evidence: `get_data_service` remains CRITICAL with
 │   │   │          impacted `5`, direct callers `3`, and processes `7`;
 │   │   │          direct callers are `calculate_indicators`,
@@ -2870,9 +2871,30 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              config, script, compatibility wrapper deletion,
 │   │              issue-label change, or GitHub issue state change is
 │   │              performed here
-│   └── Next gate: review G2.159; if accepted, start G2.160 as a narrow
-│                  Indicator/Data test-contract alignment package before
-│                  any Indicator/Data source implementation begins
+│   ├── G2.160 Indicator/Data test-contract alignment
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-indicator-data-test-contract-alignment-2026-05-27.md`
+│   │   ├── Generated: `indicator-data-test-contract-alignment-2026-05-27.json`
+│   │   ├── Parent: G2.159 accepted and merged by PR `#312`
+│   │   ├── Current HEAD: `b31a1c69a96fa83f250e7577c4b21d3b4febbaeb`
+│   │   ├── Scope: `test_v1_indicators_regressions.py` plus governance
+│   │   │          records only; no application source, route/API, OpenAPI,
+│   │   │          frontend, PM2, OpenSpec, config, script, or issue-label
+│   │   │          change
+│   │   ├── Red/green: focused v1 indicator regression test moved from
+│   │   │          `1 failed, 1 passed` to `2 passed` by asserting canonical
+│   │   │          `BusinessException` status/detail instead of legacy
+│   │   │          `module.HTTPException`; provider guard remained `2 passed`
+│   │   │          and ruff on the touched test passed
+│   │   ├── Decision: G2.159 test-contract blocker is removed; do not start
+│   │   │          source implementation from this package, but G2.161 may
+│   │   │          prepare an Indicator/Data source implementation
+│   │   │          authorization package
+│   │   └── Boundary: test-contract alignment only; no `get_data_service`
+│   │              definition or application consumer is changed here
+│   └── Next gate: review G2.160; if accepted, start G2.161 as an
+│                  Indicator/Data source implementation authorization
+│                  package before any `get_data_service` consumer edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

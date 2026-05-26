@@ -5,6 +5,9 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+import pytest
+
+from app.core.exceptions import BusinessException
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -55,10 +58,8 @@ async def test_v1_indicators_rejects_unsupported_indicator():
     module = _load_module()
     module.get_data_service = lambda: _FakeDataService()
 
-    try:
+    with pytest.raises(BusinessException) as exc_info:
         await module.get_technical_indicators("IF9999.CCFX", ["bollinger"], 14)
-    except module.HTTPException as exc:
-        assert exc.status_code == 400
-        assert "Unsupported indicators" in exc.detail
-    else:
-        raise AssertionError("Expected HTTPException for unsupported indicator")
+
+    assert exc_info.value.status_code == 400
+    assert "Unsupported indicators" in exc_info.value.detail
