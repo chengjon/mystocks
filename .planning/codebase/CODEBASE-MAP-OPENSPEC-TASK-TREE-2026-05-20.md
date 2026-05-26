@@ -2923,7 +2923,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, or GitHub issue state change is
 │   │              performed here
 │   ├── G2.162 Indicator/Data source provider seam implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#315`
 │   │   ├── Evidence:
 │   │   │          `backend-indicator-data-source-provider-seam-implementation-2026-05-27.md`
 │   │   ├── Generated:
@@ -2931,6 +2931,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   ├── Parent: G2.161 accepted and merged by PR `#314`
 │   │   ├── Current HEAD before implementation:
 │   │   │          `9d31aec75dadf4e90cc438f342cdbe3c3778875b`
+│   │   ├── Merge commit: `c9dc5de905e351c4675ee62201edfa1ce4e7ce97`
 │   │   ├── Source change: added `get_indicator_data_service()` and
 │   │   │          `get_strategy_indicator_data_service()` provider seams,
 │   │   │          injected them into Indicator/Data route consumers, and
@@ -2952,9 +2953,43 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              `get_data_service()`, and no route path, OpenAPI
 │   │              exposure, frontend, PM2, OpenSpec, config, script, or
 │   │              issue-label change
-│   └── Next gate: review G2.162; if accepted and merged, refresh the
-│                  high-risk service getter inventory before choosing the
-│                  next source implementation lane
+│   ├── G2.163 Service getter inventory refresh after Indicator/Data
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-service-lifecycle-candidate-refresh-after-indicator-data-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `service-lifecycle-candidate-refresh-after-indicator-data-2026-05-27.json`
+│   │   ├── Parent: G2.162 accepted and merged by PR `#315`
+│   │   ├── Current HEAD: `c9dc5de905e351c4675ee62201edfa1ce4e7ce97`
+│   │   ├── Scan snapshot: service files=`152`, API files=`219`,
+│   │   │          backend test files=`207`, top-level service
+│   │   │          `def get_*` definitions=`53`, root facade getters=`7`,
+│   │   │          service dependency/provider getters=`9`, API local
+│   │   │          provider-like getters=`13`, API `Depends(get_*)`
+│   │   │          sites=`371`, API non-provider service-getter body
+│   │   │          sites=`19`
+│   │   ├── Indicator/Data closure: direct application route/helper body
+│   │   │          `get_data_service()` calls remain `0`; remaining
+│   │   │          `get_data_service()` hits are provider fallbacks in
+│   │   │          `get_indicator_data_service()` and
+│   │   │          `get_strategy_indicator_data_service()`
+│   │   ├── Refreshed high-risk matrix: `get_data_service`
+│   │   │          CRITICAL `5/3/7`, `get_strategy_service` CRITICAL
+│   │   │          `13/6/0`, `get_streaming_service` HIGH `9/9/0`,
+│   │   │          and `get_tdx_service` CRITICAL `6/2/5`
+│   │   ├── Verification: parent PR `#315` merged, v1 indicator
+│   │   │          regressions `3 passed`, indicator provider guard
+│   │   │          `3 passed`, OpenAPI smoke `routes=548`,
+│   │   │          `paths=500`, `duplicate_operation_ids=0`, GitNexus
+│   │   │          analyze refreshed `300` flows
+│   │   └── Boundary: governance-only refresh; no backend source/test
+│   │              edit, route/API behavior, OpenAPI exposure, frontend,
+│   │              PM2, OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, or implementation authorization
+│   │              is performed here
+│   └── Next gate: review G2.163; if accepted, start G2.164 as a
+│                  decision-only high-risk service getter track-selection
+│                  package before any further source implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

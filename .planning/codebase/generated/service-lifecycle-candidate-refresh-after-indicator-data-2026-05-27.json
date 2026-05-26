@@ -1,0 +1,133 @@
+{
+  "artifact": "service-lifecycle-candidate-refresh-after-indicator-data-2026-05-27",
+  "task_id": "G2.163",
+  "status": "ready_for_review",
+  "scope": "governance_only_candidate_refresh",
+  "created_at": "2026-05-27T01:58:47+08:00",
+  "parent": {
+    "task_id": "G2.162",
+    "pr": 315,
+    "merge_commit": "c9dc5de905e351c4675ee62201edfa1ce4e7ce97"
+  },
+  "current_head": "c9dc5de905e351c4675ee62201edfa1ce4e7ce97",
+  "scan_snapshot": {
+    "service_python_files": 152,
+    "api_python_files": 219,
+    "backend_test_python_files": 207,
+    "top_level_service_getter_definitions": 53,
+    "root_facade_getters": 7,
+    "service_dependency_provider_getters": 9,
+    "top_level_api_getters": 32,
+    "api_local_provider_like_getters": 13,
+    "api_depends_getter_sites": 371,
+    "api_non_provider_service_getter_body_call_sites": 19
+  },
+  "indicator_data_closure": {
+    "direct_application_route_or_helper_body_get_data_service_calls": 0,
+    "remaining_provider_fallbacks": [
+      "web/backend/app/api/indicators/indicator_cache.py::get_indicator_data_service",
+      "web/backend/app/api/v1/strategy/indicators.py::get_strategy_indicator_data_service"
+    ],
+    "get_indicator_data_service": {
+      "count": 4,
+      "files": 2
+    },
+    "get_strategy_indicator_data_service": {
+      "count": 3,
+      "files": 2
+    }
+  },
+  "high_risk_getter_matrix": [
+    {
+      "getter": "get_data_service",
+      "risk": "CRITICAL",
+      "impacted": 5,
+      "direct": 3,
+      "processes": 7,
+      "interpretation": "Indicator/Data direct body debt closed; provider-governed runtime seam remains."
+    },
+    {
+      "getter": "get_strategy_service",
+      "risk": "CRITICAL",
+      "impacted": 13,
+      "direct": 6,
+      "processes": 0,
+      "interpretation": "Strong next decision candidate; crosses strategy adapters, strategy-management routes, and backtest task resolution."
+    },
+    {
+      "getter": "get_streaming_service",
+      "risk": "HIGH",
+      "impacted": 9,
+      "direct": 9,
+      "processes": 0,
+      "interpretation": "Realtime/socket lifecycle track; keep separate from strategy adapter work."
+    },
+    {
+      "getter": "get_tdx_service",
+      "risk": "CRITICAL",
+      "impacted": 6,
+      "direct": 2,
+      "processes": 5,
+      "interpretation": "Dashboard/TDX residual graph risk; needs residual decision packet before source work."
+    }
+  ],
+  "token_surface": {
+    "get_data_service": {
+      "count": 9,
+      "files": 4
+    },
+    "get_strategy_service": {
+      "count": 10,
+      "files": 5
+    },
+    "get_streaming_service": {
+      "count": 23,
+      "files": 5
+    },
+    "get_tdx_service": {
+      "count": 6,
+      "files": 4
+    },
+    "get_market_data_service": {
+      "count": 19,
+      "files": 8
+    },
+    "get_market_data_service_v2_dependency": {
+      "count": 18,
+      "files": 4
+    },
+    "get_indicator_data_service": {
+      "count": 4,
+      "files": 2
+    },
+    "get_strategy_indicator_data_service": {
+      "count": 3,
+      "files": 2
+    },
+    "get_indicator_registry_dependency": {
+      "count": 5,
+      "files": 3
+    }
+  },
+  "verification": {
+    "parent_pr_315": "MERGED",
+    "test_v1_indicators_regressions": "3 passed in 1.71s",
+    "test_indicator_registry_route_provider": "3 passed in 2.18s",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0
+    },
+    "gitnexus_analyze": {
+      "nodes": 62910,
+      "edges": 146092,
+      "clusters": 3287,
+      "flows": 300
+    }
+  },
+  "decision": {
+    "source_implementation_selected": false,
+    "next_gate": "G2.164 high-risk service getter track selection after Indicator/Data",
+    "next_gate_type": "decision_only"
+  }
+}
