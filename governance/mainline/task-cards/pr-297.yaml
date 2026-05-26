@@ -1,0 +1,107 @@
+version: "v0.2"
+
+task:
+  id: "pr-297"
+  title: "Authorize realtime streaming/socket consumer-injection lane"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-realtime-streaming-socket-authorization"
+  objective: "authorize a narrow socket manager consumer-injection implementation lane after the high-risk service getter strategy split"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-authorization"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-realtime-streaming-socket-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/realtime-streaming-socket-authorization-2026-05-26.json"
+    - "docs/reports/quality/backend-realtime-streaming-socket-authorization-package-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-297.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 296 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "streaming-impact"
+      command: "GitNexus impact for get_streaming_service"
+      required: true
+    - id: "source-shape"
+      command: "scripted source shape scan for realtime_streaming_service.py, aggregation_streaming_bridge.py, and socketio_manager.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-realtime-streaming-socket-authorization-package-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/realtime-streaming-socket-authorization-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-297.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this authorization package."
+  - "Do not delete, rename, or alter get_streaming_service, reset_streaming_service, or RealtimeStreamingService in this package."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, or issue-label state."
+  - "Do not authorize aggregation_streaming_bridge.py or realtime_streaming_service.py edits in the first downstream implementation lane."
+  - "Do not touch Dashboard/TDX, Indicator/Data, Strategy adapter, root facade, or route dependency/provider tracks from this lane."
+
+risk_and_rollback:
+  risks:
+    - "If this authorization is read too broadly, a later worker could delete the realtime service getter instead of first reducing Socket.IO consumer coupling"
+    - "If socket lifecycle tests are skipped in G2.145, subscription and unsubscribe behavior could regress without route/OpenAPI symptoms"
+  rollback_plan: "revert this authorization PR to remove only the authorization report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize a narrow future socket manager consumer-injection lane"
+    modified_scope: "steward tree, authorization report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source edits remain blocked until G2.144 review approval"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON/YAML parsing, GitNexus staged scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T14:15:00+08:00"
+    approval_note: "User approved merging G2.143 and starting G2.144 as realtime streaming/socket authorization only"
+    secondary_approved: false
+

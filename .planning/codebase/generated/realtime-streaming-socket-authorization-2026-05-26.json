@@ -1,0 +1,134 @@
+{
+  "schema_version": "1.0",
+  "artifact": "realtime-streaming-socket-authorization",
+  "created_at": "2026-05-26T14:15:00+08:00",
+  "current_head": "4b361b6c73972ad3b3d9b02bc0488946c5271882",
+  "parent_decision": {
+    "task": "G2.143 High-risk service getter strategy decision package",
+    "pull_request": 296,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T06:11:43Z",
+    "merge_commit": "4b361b6c73972ad3b3d9b02bc0488946c5271882",
+    "evidence": "docs/reports/quality/backend-high-risk-service-getter-strategy-decision-2026-05-26.md"
+  },
+  "scope": {
+    "workline": "G2.144 realtime streaming/socket authorization package",
+    "mode": "authorization-package-only",
+    "source_edits_in_this_package": false,
+    "test_edits_in_this_package": false,
+    "route_api_openapi_change_allowed": false,
+    "frontend_pm2_openspec_issue_label_change_allowed": false
+  },
+  "target_seam": {
+    "track_id": "realtime-streaming-socket",
+    "primary_getter": "get_streaming_service",
+    "service_file": "web/backend/app/services/realtime_streaming_service.py",
+    "service_class": "RealtimeStreamingService",
+    "risk": "HIGH",
+    "gitnexus_impact": {
+      "impacted": 9,
+      "direct": 9,
+      "processes": 0,
+      "modules": [
+        "Services",
+        "Cluster_1822",
+        "Models",
+        "Get_"
+      ]
+    },
+    "direct_callers": [
+      "web/backend/app/services/aggregation_streaming_bridge.py::__init__",
+      "web/backend/app/core/socketio_manager.py::get_stats",
+      "web/backend/app/core/socketio_manager.py::on_connect",
+      "web/backend/app/core/socketio_manager.py::on_disconnect",
+      "web/backend/app/core/socketio_manager.py::on_subscribe_market_stream",
+      "web/backend/app/core/socketio_manager.py::on_unsubscribe_market_stream",
+      "web/backend/app/core/socketio_manager.py::on_stream_filter_update",
+      "web/backend/app/core/socketio_manager.py::emit_stream_data",
+      "web/backend/app/core/socketio_manager.py::get_streaming_stats"
+    ]
+  },
+  "source_shape": {
+    "realtime_streaming_service.py": {
+      "lines": 436,
+      "contains": [
+        "RealtimeStreamingService",
+        "get_streaming_service",
+        "reset_streaming_service"
+      ],
+      "authorization_status": "do-not-edit-in-first-implementation-lane"
+    },
+    "aggregation_streaming_bridge.py": {
+      "lines": 207,
+      "get_streaming_service_tokens": 2,
+      "shape": "constructor already accepts optional streaming_service and falls back to get_streaming_service",
+      "authorization_status": "observe-only-for-first-implementation-lane"
+    },
+    "socketio_manager.py": {
+      "lines": 688,
+      "get_streaming_service_tokens": 9,
+      "shape": "Socket.IO event handlers call get_streaming_service directly",
+      "authorization_status": "candidate first source lane"
+    }
+  },
+  "authorization_decision": {
+    "this_package_authorizes_source_edits": false,
+    "if_this_package_is_approved": {
+      "next_task": "G2.145 realtime socket manager consumer-injection implementation",
+      "source_lane_may_start": true,
+      "authorized_goal": "Convert MySocketIOManager streaming consumers from repeated direct get_streaming_service calls to an explicit manager-level streaming_service dependency while preserving runtime behavior and the legacy service getter.",
+      "not_authorized_goal": "Do not remove get_streaming_service, _streaming_service, reset_streaming_service, RealtimeStreamingService, aggregation bridge fallback behavior, route/API contracts, OpenAPI exposure, frontend behavior, or PM2 workflows in the first implementation lane."
+    }
+  },
+  "g2_145_allowed_paths_if_approved": {
+    "source": [
+      "web/backend/app/core/socketio_manager.py"
+    ],
+    "tests": [
+      "web/backend/tests/test_socketio_manager.py",
+      "web/backend/tests/test_socketio_streaming_integration.py",
+      "web/backend/tests/test_realtime_socket_manager_streaming_dependency.py"
+    ],
+    "governance": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/realtime-socket-manager-consumer-injection-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-realtime-socket-manager-consumer-injection-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-298.yaml"
+    ]
+  },
+  "g2_145_forbidden_paths_if_approved": [
+    "web/backend/app/services/realtime_streaming_service.py",
+    "web/backend/app/services/aggregation_streaming_bridge.py",
+    "web/backend/app/api/**",
+    "web/backend/app/schemas/**",
+    "web/frontend/**",
+    "src/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "g2_145_required_tdd_and_verification_if_approved": [
+    "Read architecture/STANDARDS.md before edits.",
+    "Run fresh GitNexus impact for get_streaming_service and MySocketIOManager before edits.",
+    "Write a failing focused test proving MySocketIOManager can use an injected streaming service without direct per-handler getter lookup.",
+    "Make the minimal socketio_manager.py change to satisfy the test.",
+    "Keep RealtimeStreamingService and get_streaming_service import compatibility intact.",
+    "Run focused socket manager and streaming tests.",
+    "Run ruff/black checks for touched backend files.",
+    "Run a scripted token scan proving socketio_manager.py no longer has handler-level get_streaming_service calls.",
+    "Run staged GitNexus detect_changes before commit.",
+    "Run mainline scope gate and gitnexus analyze after commit."
+  ],
+  "blocked_actions": [
+    "Do not edit source or tests in G2.144.",
+    "Do not delete get_streaming_service or reset_streaming_service in the first downstream implementation lane.",
+    "Do not edit aggregation_streaming_bridge.py in the first downstream implementation lane.",
+    "Do not change route/API, OpenAPI, frontend, PM2, OpenSpec, or issue-label state.",
+    "Do not touch Dashboard/TDX, Indicator/Data, Strategy adapter, root facade, or route dependency/provider tracks from this lane."
+  ],
+  "rollback_model": {
+    "g2_144": "revert only this authorization package if review rejects the lane split",
+    "future_g2_145": "revert one socketio_manager-focused implementation PR; runtime getter compatibility must remain available"
+  }
+}
