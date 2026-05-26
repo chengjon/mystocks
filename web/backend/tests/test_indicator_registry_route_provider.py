@@ -51,6 +51,19 @@ def test_indicator_registry_routes_expose_app_state_dependency() -> None:
         assert getattr(registry_parameter.default, "dependency", None) is dependency
 
 
+def test_indicator_calculation_routes_expose_data_service_dependency() -> None:
+    dependency = getattr(indicator_cache, "get_indicator_data_service", None)
+
+    assert dependency is not None
+
+    for handler in (
+        indicator_cache.calculate_indicators,
+        indicator_cache.calculate_indicators_batch,
+    ):
+        data_service_parameter = inspect.signature(handler).parameters["data_service"]
+        assert getattr(data_service_parameter.default, "dependency", None) is dependency
+
+
 def test_indicator_registry_routes_accept_injected_registry() -> None:
     registry = _FakeIndicatorRegistry()
     user = SimpleNamespace(id="route-provider-test")

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import importlib
+import inspect
 import sys
 from pathlib import Path
 
@@ -39,9 +40,13 @@ def _load_module():
 
 async def test_v1_indicators_returns_runtime_indicator_values():
     module = _load_module()
-    module.get_data_service = lambda: _FakeDataService()
 
-    payload = await module.get_technical_indicators("IF9999.CCFX", ["rsi", "macd", "sma", "ema"], 14)
+    payload = await module.get_technical_indicators(
+        "IF9999.CCFX",
+        ["rsi", "macd", "sma", "ema"],
+        14,
+        data_service=_FakeDataService(),
+    )
 
     assert payload.success is True
     assert payload.code == 200
@@ -56,10 +61,24 @@ async def test_v1_indicators_returns_runtime_indicator_values():
 
 async def test_v1_indicators_rejects_unsupported_indicator():
     module = _load_module()
-    module.get_data_service = lambda: _FakeDataService()
 
     with pytest.raises(BusinessException) as exc_info:
-        await module.get_technical_indicators("IF9999.CCFX", ["bollinger"], 14)
+        await module.get_technical_indicators(
+            "IF9999.CCFX",
+            ["bollinger"],
+            14,
+            data_service=_FakeDataService(),
+        )
 
     assert exc_info.value.status_code == 400
     assert "Unsupported indicators" in exc_info.value.detail
+
+
+def test_v1_indicators_route_exposes_data_service_dependency():
+    module = _load_module()
+    dependency = getattr(module, "get_strategy_indicator_data_service", None)
+
+    assert dependency is not None
+
+    data_service_parameter = inspect.signature(module.get_technical_indicators).parameters["data_service"]
+    assert getattr(data_service_parameter.default, "dependency", None) is dependency

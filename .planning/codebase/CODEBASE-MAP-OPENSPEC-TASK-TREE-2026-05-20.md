@@ -2894,13 +2894,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: test-contract alignment only; no `get_data_service`
 │   │              definition or application consumer is changed here
 │   ├── G2.161 Indicator/Data source implementation authorization package
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#314`
 │   │   ├── Evidence:
 │   │   │          `backend-indicator-data-source-implementation-authorization-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `indicator-data-source-implementation-authorization-2026-05-27.json`
 │   │   ├── Parent: G2.160 accepted and merged by PR `#313`
 │   │   ├── Current HEAD: `296957a12a6d1ce30919925e4637bd63bed5cc18`
+│   │   ├── Merge commit: `9d31aec75dadf4e90cc438f342cdbe3c3778875b`
 │   │   ├── GitNexus: `get_data_service` remains CRITICAL with `5`
 │   │   │          impacted symbols, `3` direct callers, and `7` affected
 │   │   │          processes; direct application-body callers are still
@@ -2921,9 +2922,39 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              config, script, compatibility wrapper deletion,
 │   │              issue-label change, or GitHub issue state change is
 │   │              performed here
-│   └── Next gate: review G2.161; if accepted, start G2.162 as the
-│                  narrow Indicator/Data source implementation lane for
-│                  `indicator_cache.py` and `v1/strategy/indicators.py`
+│   ├── G2.162 Indicator/Data source provider seam implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-indicator-data-source-provider-seam-implementation-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `indicator-data-source-provider-seam-implementation-2026-05-27.json`
+│   │   ├── Parent: G2.161 accepted and merged by PR `#314`
+│   │   ├── Current HEAD before implementation:
+│   │   │          `9d31aec75dadf4e90cc438f342cdbe3c3778875b`
+│   │   ├── Source change: added `get_indicator_data_service()` and
+│   │   │          `get_strategy_indicator_data_service()` provider seams,
+│   │   │          injected them into Indicator/Data route consumers, and
+│   │   │          preserved public `get_data_service()` fallback behavior
+│   │   ├── Static closure: direct application route/helper body
+│   │   │          `get_data_service()` calls moved from `3` to `0`;
+│   │   │          remaining calls are provider fallback bodies only
+│   │   ├── TDD: red showed missing provider seams and missing
+│   │   │          `data_service` parameter; green produced v1 indicator
+│   │   │          regressions `3 passed` and indicator provider guard
+│   │   │          `3 passed`
+│   │   ├── Verification: health route collect-only `120 tests
+│   │   │          collected`, v1 indicator OpenAPI docs guard `1
+│   │   │          passed`, touched backend ruff passed, OpenAPI smoke
+│   │   │          `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   └── Boundary: no edit to `web/backend/app/services/data_service.py`,
+│   │              no delete/privatize/rename/change of
+│   │              `get_data_service()`, and no route path, OpenAPI
+│   │              exposure, frontend, PM2, OpenSpec, config, script, or
+│   │              issue-label change
+│   └── Next gate: review G2.162; if accepted and merged, refresh the
+│                  high-risk service getter inventory before choosing the
+│                  next source implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

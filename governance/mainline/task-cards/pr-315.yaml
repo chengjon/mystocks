@@ -1,0 +1,129 @@
+version: "v0.2"
+
+task:
+  id: "pr-315"
+  title: "Implement Indicator/Data source provider seam"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-indicator-data-source-provider-seam"
+  objective: "remove direct application-body get_data_service calls from authorized Indicator/Data consumers while preserving the public service getter fallback"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-indicator-data-source-provider-seam"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow provider-seam implementation under an approved service-lifecycle cleanup lane; route paths, public API exposure, OpenAPI paths, PM2 workflows, and frontend behavior are unchanged"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/indicators/indicator_cache.py"
+    - "web/backend/app/api/v1/strategy/indicators.py"
+    - "web/backend/tests/test_indicator_registry_route_provider.py"
+    - "web/backend/tests/test_v1_indicators_regressions.py"
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/indicator-data-source-provider-seam-implementation-2026-05-27.json"
+    - "docs/reports/quality/backend-indicator-data-source-provider-seam-implementation-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-315.yaml"
+  forbidden_paths:
+    - "web/backend/app/services/data_service.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 314 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus impact/context for get_data_service and Indicator/Data direct callers before source edits"
+      required: true
+    - id: "tdd-red"
+      command: "focused provider-seam tests fail before implementation"
+      required: true
+    - id: "tdd-green"
+      command: "focused provider-seam tests pass after implementation"
+      required: true
+    - id: "static-closure"
+      command: "application route/helper body get_data_service calls move from 3 to 0, preserving provider fallback calls"
+      required: true
+    - id: "health-collect-only"
+      command: "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov"
+      required: true
+    - id: "v1-indicator-openapi-docs"
+      command: "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_v1_indicator_endpoints_have_examples_parameter_docs_and_descriptions -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched"
+      command: "ruff check web/backend/app/api/indicators/indicator_cache.py web/backend/app/api/v1/strategy/indicators.py web/backend/tests/test_indicator_registry_route_provider.py web/backend/tests/test_v1_indicators_regressions.py"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.openapi() smoke with non-secret minimal env; record route count, path count, and duplicate operation IDs"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-indicator-data-source-provider-seam-implementation-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/indicator-data-source-provider-seam-implementation-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-315.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit web/backend/app/services/data_service.py."
+  - "Do not delete, privatize, rename, or change get_data_service()."
+  - "Do not edit Strategy adapter, root facade compatibility, Dashboard/TDX, realtime streaming/socket, backup route ownership, or route dependency/provider governance surfaces."
+  - "Do not change route paths, response models, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+  - "Do not start a new source implementation lane from this PR."
+
+risk_and_rollback:
+  risks:
+    - "get_data_service remains a CRITICAL seam; widening scope beyond the two authorized consumers could cross Strategy and Indicators processes."
+    - "If provider defaults are changed incorrectly, direct unit calls may receive FastAPI Depends sentinels instead of fake services."
+  rollback_plan: "revert this PR to restore previous direct consumer calls; public get_data_service remains unchanged throughout"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "remove direct application-body get_data_service calls from Indicator/Data consumers"
+    modified_scope: "two backend consumer files, two focused test files, steward tree, implementation report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "public get_data_service fallback preserved through consumer-local providers"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if TDD red/green, static closure, health collection, v1 indicator docs guard, ruff, OpenAPI smoke, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-27T01:41:49+08:00"
+    approval_note: "Approved by G2.161 PR #314 for the narrow Indicator/Data source implementation lane."
+    secondary_approved: false
+
