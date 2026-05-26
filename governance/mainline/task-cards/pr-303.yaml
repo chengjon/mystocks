@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-303"
+  title: "Triage Socket.IO stream-error emission failure"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-socketio-stream-error-emission-triage"
+  objective: "classify the Socket.IO streaming integration stream_error failure exposed by G2.150"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-socketio-stream-error-emission-triage"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Triage-only package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/socketio-stream-error-emission-triage-2026-05-26.json"
+    - "docs/reports/quality/backend-socketio-stream-error-emission-triage-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-303.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 302 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "single-test-reproduction"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_streaming_integration.py::TestStreamingErrorHandling::test_exception_during_subscription -q --no-cov --tb=short"
+      required: true
+    - id: "diagnostic-stale-patch-target"
+      command: "diagnostic script proving app.core.socketio_manager.get_streaming_service patch emits stream_subscribed, not stream_error"
+      required: true
+    - id: "diagnostic-current-call-path"
+      command: "diagnostic script proving manager.streaming_service.subscribe patch emits stream_error"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-socketio-stream-error-emission-triage-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/socketio-stream-error-emission-triage-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-303.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this triage package."
+  - "Do not fix test_exception_during_subscription in this triage package."
+  - "Do not restore get_socketio_manager/reset_socketio_manager exports in app.core.socketio_manager."
+  - "Do not fix realtime streaming datetime test debt in this triage package."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this triage package is treated as implementation authorization, a stale test patch-target fix could be mixed with runtime Socket.IO source edits."
+    - "If the consumer-injection call path is ignored, future workers may patch the obsolete get_streaming_service accessor again."
+  rollback_plan: "revert this triage PR to remove only the triage report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "classify Socket.IO stream_error test failure after import alignment"
+    modified_scope: "steward tree, triage report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if diagnostics, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T18:12:00+08:00"
+    approval_note: "Triage-only package after accepted G2.150 merge exposed stream_error behavior test debt"
+    secondary_approved: false
+
