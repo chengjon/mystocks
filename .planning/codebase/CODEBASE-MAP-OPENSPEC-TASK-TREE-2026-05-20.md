@@ -2514,10 +2514,11 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenAPI, frontend, PM2, OpenSpec, or issue-label change
 │   │                is made here
 │   ├── G2.146 Realtime socket manager consumer-injection closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#299`
 │   │   ├── Evidence: `backend-realtime-socket-manager-consumer-injection-closeout-2026-05-26.md`
 │   │   ├── Parent: G2.145 accepted and merged by PR `#298`
 │   │   ├── Current HEAD: `fd04b30d6ff597209be0e923dd62d2cf1b38ee82`
+│   │   ├── Merge commit: `e42f4b11524da98cbf22f45807459f8984c9ebed`
 │   │   ├── Result: verifies the merged Socket.IO manager consumer-injection
 │   │   │          lane and closes it without opening another source edit
 │   │   ├── Verification: PR `#298` is merged; focused
@@ -2535,9 +2536,30 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, route/API, OpenAPI exposure, frontend,
 │   │                PM2, OpenSpec, issue-label change, or new
 │   │                implementation authorization is made here
-│   └── Next gate: route the baseline Socket.IO export and realtime datetime
-│                  blockers through a separate decision package, or pause the
-│                  realtime/socket track as closed
+│   ├── G2.147 Realtime socket baseline blocker routing decision
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-realtime-socket-baseline-blocker-routing-decision-2026-05-26.md`
+│   │   ├── Parent: G2.146 accepted and merged by PR `#299`
+│   │   ├── Current HEAD: `e42f4b11524da98cbf22f45807459f8984c9ebed`
+│   │   ├── Result: routes remaining realtime/socket blockers into two
+│   │   │          independent future decision tracks instead of reopening
+│   │   │          G2.145 or expanding G2.146 closeout
+│   │   ├── Verification: focused
+│   │   │          `test_realtime_socket_manager_streaming_dependency.py`
+│   │   │          still reports `2 passed`; source scan finds
+│   │   │          `socketio_manager.py` has `0` `get_socketio_manager` and
+│   │   │          `0` `reset_socketio_manager` tokens, while legacy tests
+│   │   │          still reference those names; realtime streaming service
+│   │   │          test still reports `42 passed, 1 failed`
+│   │   ├── Decision: split next work into G2.148 Socket.IO legacy export
+│   │   │          contract authorization and G2.149 realtime datetime test
+│   │   │          debt authorization; no source/test edit is authorized here
+│   │   └── Boundary: decision-only; no backend source/test edit, getter
+│   │                deletion, route/API, OpenAPI exposure, frontend, PM2,
+│   │                OpenSpec, issue-label change, or implementation
+│   │                authorization is made here
+│   └── Next gate: review G2.147; if accepted, prepare G2.148 Socket.IO
+│                  legacy export contract authorization package
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
