@@ -1,0 +1,83 @@
+{
+  "artifact": "unused-integrated-services-facade-getter-retirement-closeout-2026-05-26",
+  "recorded_at": "2026-05-26T12:54:24+08:00",
+  "workline": "G2.137 unused IntegratedServices service-facade getter retirement closeout",
+  "status": "closeout-prepared-for-review",
+  "current_head": "541a225b5cbc90807d8cc7af20d0ffd42b07fd2d",
+  "stale_if_head_mismatch": true,
+  "parent_pr": {
+    "number": 289,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T04:51:23Z",
+    "merge_commit": "541a225b5cbc90807d8cc7af20d0ffd42b07fd2d",
+    "title": "G2.136 Retire unused IntegratedServices facade getters",
+    "url": "https://github.com/chengjon/mystocks/pull/289"
+  },
+  "closeout_decision": {
+    "state": "ready-for-review",
+    "decision": "Record G2.136 as merged and close the unused IntegratedServices service-facade getter retirement lane.",
+    "implementation_scope": "No runtime code, tests, API routes, OpenAPI exposure, PM2 workflow, OpenSpec change, or issue-label change is modified by this closeout.",
+    "next_gate": "Refresh the remaining service lifecycle candidate pool before selecting another implementation lane."
+  },
+  "current_head_scan": {
+    "removed_definitions": {
+      "get_trading_data_service": 0,
+      "get_analysis_data_service": 0,
+      "get_data_api_service": 0,
+      "get_database_service": 0,
+      "get_websocket_service": 0,
+      "get_cache_service": 0
+    },
+    "locked_definitions": {
+      "get_integrated_services": 1,
+      "get_market_data_service": 1,
+      "get_risk_calculator": 1,
+      "get_risk_monitoring": 1,
+      "get_risk_alerts": 1,
+      "get_risk_settings": 1,
+      "get_risk_dashboard": 1
+    }
+  },
+  "verification": [
+    {
+      "id": "parent-pr-state",
+      "command": "gh pr view 289 --json number,state,mergedAt,mergeCommit,title,url",
+      "result": "MERGED at 2026-05-26T04:51:23Z with merge commit 541a225b5cbc90807d8cc7af20d0ffd42b07fd2d"
+    },
+    {
+      "id": "focused-closeout-test",
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_integrated_services_facade_getter_retirement.py -q --no-cov --tb=short",
+      "result": "2 passed in 0.28s"
+    },
+    {
+      "id": "import-smoke",
+      "command": "PYTHONPATH=web/backend python -c \"import app.services ...\"",
+      "result": "{'removed_absent': True, 'locked_callable': True}"
+    },
+    {
+      "id": "exact-current-head-scan",
+      "command": "scripted current-head scan over app.services facade getter definitions",
+      "result": "removed definitions=0 for six retired facades; locked definitions=1 for seven locked facades"
+    }
+  ],
+  "scope": {
+    "allowed_paths": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/unused-integrated-services-facade-getter-retirement-closeout-2026-05-26.json",
+      "docs/reports/quality/backend-unused-integrated-services-facade-getter-retirement-closeout-2026-05-26.md",
+      "governance/mainline/task-cards/pr-290.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/guides/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  }
+}
