@@ -1,0 +1,88 @@
+{
+  "artifact": "indicator-data-test-contract-alignment-2026-05-27",
+  "generated_at": "2026-05-27T00:40:51+08:00",
+  "worktree": ".worktrees/g2-160-indicator-data-test-contract-alignment",
+  "branch": "g2-160-indicator-data-test-contract-alignment",
+  "base_head": "b31a1c69a96fa83f250e7577c4b21d3b4febbaeb",
+  "task": {
+    "id": "G2.160",
+    "title": "Indicator/Data test-contract alignment",
+    "scope": "narrow test-contract alignment plus governance records",
+    "authorization": "G2.159 accepted by user and merged through PR #312"
+  },
+  "parent": {
+    "task": "G2.159",
+    "pull_request": 312,
+    "state": "MERGED",
+    "merge_commit": "b31a1c69a96fa83f250e7577c4b21d3b4febbaeb",
+    "decision": "Do not open Indicator/Data source implementation until the existing v1 indicator BusinessException/HTTPException test-contract blocker is aligned."
+  },
+  "gitnexus_pre_edit": {
+    "test_v1_indicators_rejects_unsupported_indicator": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct_callers": 0,
+      "processes_affected": 0
+    },
+    "get_technical_indicators": {
+      "note": "Symbol name is ambiguous in GitNexus; context lookup pinned the intended route function at web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators. No application source was edited."
+    }
+  },
+  "red_green": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short",
+      "result": "1 failed, 1 passed in 1.87s",
+      "failure": "test_v1_indicators_rejects_unsupported_indicator expected module.HTTPException, but current implementation raises app.core.exceptions.BusinessException."
+    },
+    "green": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short",
+      "result": "2 passed in 1.61s"
+    }
+  },
+  "change": {
+    "file": "web/backend/tests/test_v1_indicators_regressions.py",
+    "summary": "Import pytest and BusinessException; replace try/except module.HTTPException assertion with pytest.raises(BusinessException) and status/detail assertions.",
+    "application_source_changed": false,
+    "route_or_openapi_changed": false
+  },
+  "verification": {
+    "v1_indicators_regressions": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short",
+      "result": "2 passed in 1.61s"
+    },
+    "indicator_registry_route_provider": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --no-cov --tb=short",
+      "result": "2 passed in 2.06s"
+    },
+    "ruff_touched_test": {
+      "command": "ruff check web/backend/tests/test_v1_indicators_regressions.py",
+      "result": "All checks passed"
+    }
+  },
+  "decision": {
+    "status": "test_contract_aligned",
+    "source_implementation_authorized": false,
+    "next_gate": "G2.161 Indicator/Data source implementation authorization package",
+    "reason": "The focused v1 indicator regression test now matches the canonical BusinessException contract, removing the blocker identified by G2.159."
+  },
+  "boundaries": {
+    "application_source_edits": "none",
+    "test_edit_scope": [
+      "web/backend/tests/test_v1_indicators_regressions.py"
+    ],
+    "do_not_change": [
+      "web/backend/app/**",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "docs/guides/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**",
+      "route/API behavior",
+      "OpenAPI exposure",
+      "get_data_service definition or compatibility behavior"
+    ]
+  }
+}

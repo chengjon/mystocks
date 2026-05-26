@@ -1,0 +1,121 @@
+version: "v0.2"
+
+task:
+  id: "pr-313"
+  title: "Align Indicator/Data test contract"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-indicator-data-test-contract-alignment"
+  objective: "align the focused v1 indicator regression test with the canonical BusinessException contract before Indicator/Data source implementation is considered"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-indicator-data-test-contract-alignment"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Focused test-contract alignment and governance records; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - "web/backend/tests/test_v1_indicators_regressions.py"
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/indicator-data-test-contract-alignment-2026-05-27.json"
+    - "docs/reports/quality/backend-indicator-data-test-contract-alignment-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-313.yaml"
+  forbidden_paths:
+    - "web/backend/app/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 312 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "standards-read"
+      command: "read architecture/STANDARDS.md before test edit"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus impact for test_v1_indicators_rejects_unsupported_indicator and context lookup for web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators"
+      required: true
+    - id: "red-test"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "green-test"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "provider-guard"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched-test"
+      command: "ruff check web/backend/tests/test_v1_indicators_regressions.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-indicator-data-test-contract-alignment-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/indicator-data-test-contract-alignment-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-313.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit application source in this package."
+  - "Do not authorize Indicator/Data source implementation from this package."
+  - "Do not delete or privatize get_data_service()."
+  - "Do not edit web/backend/app/services/data_service.py."
+  - "Do not edit Strategy adapter, root facade compatibility, or route dependency/provider surfaces."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this package is treated as source implementation authorization, get_data_service consumer edits could start before a dedicated source authorization package."
+    - "If the test is changed without preserving status/detail assertions, the canonical BusinessException contract could be weakened."
+  rollback_plan: "revert this PR to restore the previous focused regression test and remove only the closeout report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "align v1 indicator regression test with canonical BusinessException contract"
+    modified_scope: "one focused test file, steward tree, report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; application source is not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if red-green evidence, provider guard, ruff, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-27T00:40:51+08:00"
+    approval_note: "Approved as G2.160 narrow test-contract alignment after PR #312 identified the v1 indicator BusinessException/HTTPException blocker."
+    secondary_approved: false
+
