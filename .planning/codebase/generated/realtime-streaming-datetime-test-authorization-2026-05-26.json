@@ -1,0 +1,97 @@
+{
+  "schema_version": "authorization-decision-v1",
+  "id": "g2-149-realtime-streaming-datetime-test-authorization",
+  "title": "Realtime streaming datetime test authorization",
+  "created_at": "2026-05-26T18:44:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "6ca7c1860ff3f1c1a87f094a016bef3d296fff6d",
+  "parent": {
+    "id": "g2-152-socketio-stream-error-test-patch-alignment",
+    "pr": 304,
+    "state": "merged",
+    "merge_commit": "6ca7c1860ff3f1c1a87f094a016bef3d296fff6d"
+  },
+  "scope": {
+    "mode": "authorization-only",
+    "runtime_source_edits": false,
+    "test_edits": false,
+    "openspec_edits": false,
+    "route_api_openapi_frontend_pm2_edits": false
+  },
+  "reproduction": {
+    "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_streaming_service.py -q --no-cov --tb=short",
+    "exit_code": 1,
+    "result": "1 failed, 42 passed in 0.97s",
+    "failure": "TypeError: can't compare offset-naive and offset-aware datetimes in TestStreamSubscriber.test_subscriber_update_activity"
+  },
+  "root_cause": {
+    "summary": "StreamSubscriber.subscribed_at is initialized with datetime.utcnow, which returns an offset-naive datetime, while update_activity assigns datetime.now(timezone.utc), which returns an offset-aware datetime.",
+    "initial_state": {
+      "field": "StreamSubscriber.subscribed_at",
+      "factory": "datetime.utcnow",
+      "tzinfo": "None"
+    },
+    "after_update_activity": {
+      "assignment": "datetime.now(timezone.utc)",
+      "tzinfo": "UTC"
+    },
+    "related_inconsistency": {
+      "field": "StreamData.created_at",
+      "factory": "datetime.utcnow",
+      "reason_for_inclusion": "same realtime streaming service timestamp convention; no direct failing test yet"
+    }
+  },
+  "gitnexus_evidence": {
+    "StreamSubscriber": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "affected_processes": 0
+    },
+    "StreamData": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "decision": {
+    "classification": "runtime timestamp contract inconsistency exposed by test",
+    "test_only_fix_is_sufficient": false,
+    "recommended_next_lane": "g2-153-realtime-streaming-timezone-aware-timestamps",
+    "recommended_scope": "source plus focused test implementation",
+    "allowed_paths": [
+      "web/backend/app/services/realtime_streaming_service.py",
+      "web/backend/tests/test_realtime_streaming_service.py",
+      ".planning/codebase/**",
+      "docs/reports/quality/**",
+      "governance/mainline/task-cards/**"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/core/**",
+      "web/backend/app/api/**",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "required_next_lane_gates": [
+    "Run GitNexus impact for StreamSubscriber and StreamData before editing source.",
+    "Use the current test_realtime_streaming_service.py failure as red evidence.",
+    "Make realtime streaming dataclass timestamps consistently timezone-aware UTC.",
+    "Add or preserve focused assertions that subscribed_at and created_at are offset-aware UTC.",
+    "Run the full test_realtime_streaming_service.py focused suite.",
+    "Run the Socket.IO regression suites from G2.152 if the touched service can affect them.",
+    "Run ruff on touched source and test files.",
+    "Run staged GitNexus detect_changes before commit.",
+    "Run mainline scope gate after commit."
+  ],
+  "non_goals": [
+    "Do not edit Socket.IO manager or Socket.IO tests in this authorization package.",
+    "Do not change route/API, OpenAPI, frontend, PM2, OpenSpec, issue labels, or GitHub issue state.",
+    "Do not perform the timezone-aware timestamp implementation in this authorization package."
+  ],
+  "next_gate": "Review and merge this G2.149 authorization package before starting G2.153 realtime streaming timezone-aware timestamps."
+}
