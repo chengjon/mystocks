@@ -2077,7 +2077,8 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
 │   ├── G2.125 StockSearchService getter-retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted; PR `#278` merged at
+│   │   │          `d2f5a952740db94c382534b0810ba11588660132`
 │   │   ├── Evidence: `backend-stock-search-service-getter-retirement-authorization-2026-05-26.md`
 │   │   ├── Current HEAD: `4ce4abf60fec2719644d9f64cd657bb0b7d3c8c5`
 │   │   ├── Result: authorizes only a future G2.126 implementation branch to
@@ -2096,10 +2097,25 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   └── Boundary: authorization-only; no backend source/test edit, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
 │   │                implementation, or issue-label change is made here
-│   └── Next gate: human review / PR merge decision for G2.125; if accepted,
-│                  create G2.126 StockSearchService getter-retirement
-│                  implementation with TDD red and CRITICAL-risk d=1 route/test
-│                  acceptance criteria before any source edit
+│   ├── G2.126 StockSearchService getter-retirement authorization amendment
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-stock-search-service-getter-retirement-authorization-amendment-2026-05-26.md`
+│   │   ├── Current HEAD: `d2f5a952740db94c382534b0810ba11588660132`
+│   │   ├── Result: amends the future implementation scope before source work:
+│   │   │          `stock_search_service/__init__.py` must also be allowed
+│   │   │          because it re-exports `get_stock_search_service` in both the
+│   │   │          import list and `__all__`
+│   │   ├── Evidence: package re-export has legacy import at line `9` and
+│   │   │          legacy `__all__` entry at line `20`; lifecycle baseline
+│   │   │          `4 passed`, health route conflicts `120 passed`
+│   │   └── Boundary: amendment-only; no backend source/test edit, route/API,
+│   │                OpenAPI exposure, frontend, PM2, OpenSpec, getter deletion,
+│   │                implementation, or issue-label change is made here
+│   └── Next gate: human review / PR merge decision for G2.126; if accepted,
+│                  create G2.127 StockSearchService getter-retirement
+│                  implementation with TDD red, package re-export update, and
+│                  CRITICAL-risk d=1 route/test acceptance criteria before any
+│                  source edit
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

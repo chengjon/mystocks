@@ -1,0 +1,120 @@
+version: "v0.2"
+
+task:
+  id: "pr-279"
+  title: "Amend StockSearchService getter retirement authorization"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-stock-search-service-getter-retirement-authorization-amendment"
+  objective: "add the stock_search_service package re-export file to the future implementation scope before source edits"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-stock-search-service-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-stock-search-service-getter-retirement-authorization-amendment"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-amendment-only packet; no runtime entrypoint, route, service symbol, public API surface, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/stock-search-service-getter-retirement-authorization-amendment-2026-05-26.json"
+    - "docs/reports/quality/backend-stock-search-service-getter-retirement-authorization-amendment-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-279.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "Do not edit backend source or tests"
+  - "Do not edit stock search or market route handlers"
+  - "Do not modify route paths, response models, response shapes, or OpenAPI exposure"
+  - "Do not modify frontend code"
+  - "Do not modify PM2 workflows"
+  - "Do not create or modify OpenSpec changes/specs"
+  - "Do not change GitHub issue labels or readiness state"
+  - "Do not delete get_stock_search_service in this packet"
+  - "Do not delete _stock_search_service in this packet"
+  - "Do not perform implementation in this packet"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 278 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "package-re-export-evidence"
+      command: "scripted scan of web/backend/app/services/stock_search_service/__init__.py for get_stock_search_service import and __all__ entry"
+      required: true
+    - id: "stock-search-lifecycle-baseline"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_lifecycle_di.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts-baseline"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-stock-search-service-getter-retirement-authorization-amendment-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/stock-search-service-getter-retirement-authorization-amendment-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c \"import pathlib, yaml; yaml.safe_load(pathlib.Path('governance/mainline/task-cards/pr-279.yaml').read_text())\""
+      required: true
+    - id: "mainline-scope"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-279.yaml"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this amendment is skipped, a future implementation could remove the getter from the module but leave a broken package re-export"
+    - "If this amendment is mistaken for implementation, a CRITICAL-risk getter edit could proceed without TDD red or d=1 route/test acceptance criteria"
+  rollback_plan: "revert this governance-only amendment PR and keep G2.125 as the latest accepted authorization gate"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "amend future StockSearchService getter retirement scope"
+    modified_scope: "steward tree, amendment report, generated artifact, and this task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; amendment-only, no source or test edits"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent PR state, package re-export evidence, baseline tests, governance validation, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T09:37:34+08:00"
+    approval_note: "Authorization amendment only after PR #278 merge; implementation is deferred to future G2.127"
+    secondary_approved: false

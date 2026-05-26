@@ -1,0 +1,102 @@
+{
+  "artifact": "stock-search-service-getter-retirement-authorization-amendment-2026-05-26",
+  "status": "ready_for_review",
+  "created_at": "2026-05-26T09:37:34+08:00",
+  "branch": "g2-126-stock-search-service-getter-authorization-amendment",
+  "current_head": "d2f5a952740db94c382534b0810ba11588660132",
+  "current_head_checked_at_review": "2026-05-26T09:37:34+08:00",
+  "parent_authorization": {
+    "node": "G2.125 StockSearchService getter-retirement authorization",
+    "pr": 278,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T01:30:40Z",
+    "merge_commit": "d2f5a952740db94c382534b0810ba11588660132",
+    "url": "https://github.com/chengjon/mystocks/pull/278"
+  },
+  "amendment_reason": {
+    "summary": "G2.125 authorized the target service module and tests but omitted the package re-export file. Removing get_stock_search_service from the implementation module would break package imports unless web/backend/app/services/stock_search_service/__init__.py is updated.",
+    "package_re_export_file": "web/backend/app/services/stock_search_service/__init__.py",
+    "legacy_import_line": 9,
+    "legacy_all_line": 20,
+    "has_legacy_import": true,
+    "has_legacy_all_entry": true
+  },
+  "amended_future_implementation": {
+    "authorized_future_node": "G2.127 StockSearchService getter-retirement implementation",
+    "future_allowed_paths": [
+      "web/backend/app/services/stock_search_service/stock_search_service.py",
+      "web/backend/app/services/stock_search_service/__init__.py",
+      "web/backend/tests/test_stock_search_service_lifecycle_di.py",
+      "web/backend/tests/test_runtime_regressions_p0.py",
+      "web/backend/tests/test_stock_search_service_getter_retirement.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/stock-search-service-getter-retirement-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-stock-search-service-getter-retirement-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-280.yaml"
+    ],
+    "future_forbidden_paths_without_separate_approval": [
+      "web/backend/app/api/**",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "docs/guides/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ],
+    "must_preserve": [
+      "StockSearchService",
+      "install_stock_search_service",
+      "get_stock_search_service_dependency",
+      "stock search route paths",
+      "market kline route path",
+      "response contracts",
+      "OpenAPI exposure"
+    ],
+    "may_retire_in_future_implementation": [
+      "_stock_search_service",
+      "get_stock_search_service",
+      "package re-export of get_stock_search_service"
+    ]
+  },
+  "verification": {
+    "parent_pr_state": {
+      "command": "gh pr view 278 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,url,title",
+      "result": "MERGED"
+    },
+    "package_re_export_evidence": {
+      "command": "scripted scan of web/backend/app/services/stock_search_service/__init__.py",
+      "result": "legacy import line=9; legacy __all__ entry line=20"
+    },
+    "stock_search_lifecycle_tests_baseline": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stock_search_service_lifecycle_di.py -q --no-cov --tb=short",
+      "result": "4 passed"
+    },
+    "health_route_conflicts_baseline": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short",
+      "result": "120 passed"
+    },
+    "gitnexus_staged_detect_changes": {
+      "scope": "staged",
+      "risk_level": "low",
+      "changed_count": 0,
+      "changed_files": 4,
+      "affected_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "boundary": {
+    "amendment_only": true,
+    "source_edits": false,
+    "test_edits": false,
+    "route_or_api_edits": false,
+    "openapi_edits": false,
+    "frontend_edits": false,
+    "pm2_edits": false,
+    "openspec_edits": false,
+    "issue_label_changes": false,
+    "implementation_executed": false
+  },
+  "next_gate": "Review and merge this amendment. If accepted, create G2.127 StockSearchService getter-retirement implementation with TDD red, package re-export update, CRITICAL-risk disclosure, d=1 route/test acceptance criteria, staged GitNexus detect_changes, and post-commit mainline gate."
+}
