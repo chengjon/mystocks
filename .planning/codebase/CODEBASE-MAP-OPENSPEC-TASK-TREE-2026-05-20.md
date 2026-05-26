@@ -2537,7 +2537,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                PM2, OpenSpec, issue-label change, or new
 │   │                implementation authorization is made here
 │   ├── G2.147 Realtime socket baseline blocker routing decision
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#300`
 │   │   ├── Evidence: `backend-realtime-socket-baseline-blocker-routing-decision-2026-05-26.md`
 │   │   ├── Parent: G2.146 accepted and merged by PR `#299`
 │   │   ├── Current HEAD: `e42f4b11524da98cbf22f45807459f8984c9ebed`
@@ -2559,7 +2559,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                OpenSpec, issue-label change, or implementation
 │   │                authorization is made here
 │   ├── G2.148 Socket.IO legacy export contract authorization
-│   │   ├── State: reviewable decision package
+│   │   ├── State: accepted and merged by PR `#301`
 │   │   ├── Evidence: `backend-socketio-legacy-export-contract-authorization-2026-05-26.md`
 │   │   ├── Parent: G2.147 accepted and merged by PR `#300`
 │   │   ├── Current HEAD: `3b1d67ceb52a5c3ccbbbafb534895c6a70aa6d2e`
@@ -2582,8 +2582,35 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                alias restoration, realtime datetime fix, route/API,
 │   │                OpenAPI exposure, frontend, PM2, OpenSpec, issue-label
 │   │                change, or implementation work is performed here
-│   └── Next gate: review G2.148; if accepted, start G2.150 Socket.IO
-│                  test import alignment as a separate test-only lane
+│   ├── G2.150 Socket.IO test import alignment
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-socketio-test-import-alignment-2026-05-26.md`
+│   │   ├── Parent: G2.148 accepted and merged by PR `#301`
+│   │   ├── Current HEAD: `deb182e7f3ba7e50d0cc982c51248826e522dacd`
+│   │   ├── Result: aligns stale Socket.IO test imports to
+│   │   │          `app.core._socketio_manager_singleton` without widening
+│   │   │          `app.core.socketio_manager`
+│   │   ├── Verification: red collect-only failures reproduced for missing
+│   │   │          `get_socketio_manager` and `reset_socketio_manager`; after
+│   │   │          alignment, `test_socketio_manager.py` collects `26` tests,
+│   │   │          `test_socketio_streaming_integration.py` collects `20`
+│   │   │          tests, focused consumer-injection regression reports
+│   │   │          `2 passed`, ruff touched tests reports
+│   │   │          `All checks passed`, and `test_socketio_manager.py`
+│   │   │          reports `26 passed`
+│   │   ├── Newly exposed debt:
+│   │   │          `test_socketio_streaming_integration.py` full suite now
+│   │   │          reaches behavior assertions and reports `1 failed, 19
+│   │   │          passed` for `test_exception_during_subscription`; this is
+│   │   │          routed outside G2.150
+│   │   └── Boundary: test-only; no backend runtime source edit, helper alias
+│   │              restoration, realtime datetime fix, route/API, OpenAPI
+│   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
+│   │              GitHub issue state change is performed here
+│   └── Next gate: review G2.150; if accepted, route the exposed Socket.IO
+│                  streaming error-emission behavior debt as G2.151 or
+│                  continue with the already split G2.149 realtime datetime
+│                  test authorization
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

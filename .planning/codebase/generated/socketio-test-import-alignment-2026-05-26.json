@@ -1,0 +1,99 @@
+{
+  "schema_version": "implementation-evidence-v1",
+  "id": "g2-150-socketio-test-import-alignment",
+  "title": "Socket.IO test import alignment",
+  "created_at": "2026-05-26T17:56:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "deb182e7f3ba7e50d0cc982c51248826e522dacd",
+  "parent": {
+    "id": "g2-148-socketio-legacy-export-contract-authorization",
+    "pr": 301,
+    "state": "merged",
+    "merge_commit": "deb182e7f3ba7e50d0cc982c51248826e522dacd"
+  },
+  "scope": {
+    "mode": "test-only implementation",
+    "runtime_source_edits": false,
+    "test_edits": true,
+    "openspec_edits": false,
+    "route_api_openapi_frontend_pm2_edits": false
+  },
+  "edited_files": [
+    "web/backend/tests/test_socketio_manager.py",
+    "web/backend/tests/test_socketio_streaming_integration.py"
+  ],
+  "implementation": {
+    "test_socketio_manager.py": [
+      "Kept ConnectionManager imported from app.core.socketio_manager.",
+      "Moved get_socketio_manager and reset_socketio_manager imports to app.core._socketio_manager_singleton."
+    ],
+    "test_socketio_streaming_integration.py": [
+      "Kept MySocketIOManager and ConnectionManager imported from app.core.socketio_manager.",
+      "Moved reset_socketio_manager import to app.core._socketio_manager_singleton.",
+      "Renamed unused AsyncMock patch context variables to _mock_emit where no assertions consume the variable."
+    ]
+  },
+  "gitnexus_pre_edit": {
+    "web/backend/tests/test_socketio_manager.py": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "affected_processes": 0
+    },
+    "web/backend/tests/test_socketio_streaming_integration.py": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "red_evidence": {
+    "test_socketio_manager_collect_only": {
+      "exit_code": 2,
+      "failure": "ImportError: cannot import name 'get_socketio_manager' from 'app.core.socketio_manager'"
+    },
+    "test_socketio_streaming_integration_collect_only": {
+      "exit_code": 2,
+      "failure": "ImportError: cannot import name 'reset_socketio_manager' from 'app.core.socketio_manager'"
+    },
+    "focused_consumer_injection_regression_baseline": {
+      "exit_code": 0,
+      "result": "2 passed in 1.02s"
+    }
+  },
+  "green_evidence": {
+    "test_socketio_manager_collect_only": {
+      "exit_code": 0,
+      "result": "26 tests collected in 1.13s"
+    },
+    "test_socketio_streaming_integration_collect_only": {
+      "exit_code": 0,
+      "result": "20 tests collected in 1.05s"
+    },
+    "focused_consumer_injection_regression": {
+      "exit_code": 0,
+      "result": "2 passed in 1.02s"
+    },
+    "ruff_touched_tests": {
+      "exit_code": 0,
+      "result": "All checks passed"
+    },
+    "test_socketio_manager_full_suite": {
+      "exit_code": 0,
+      "result": "26 passed, 1 warning in 1.17s"
+    }
+  },
+  "newly_exposed_baseline_debt": {
+    "test_socketio_streaming_integration_full_suite": {
+      "exit_code": 1,
+      "result": "1 failed, 19 passed in 2.45s",
+      "failure": "TestStreamingErrorHandling.test_exception_during_subscription expects a stream_error emission that was not observed",
+      "routing": "Do not expand G2.150. Route to a future Socket.IO streaming error-emission behavior triage package."
+    }
+  },
+  "non_goals": [
+    "No backend runtime source was edited.",
+    "No helper alias was restored in app.core.socketio_manager.",
+    "No realtime datetime debt was fixed.",
+    "No route/API, OpenAPI, frontend, PM2, OpenSpec, issue-label, or GitHub issue state was changed."
+  ],
+  "next_gate": "Review and merge this G2.150 package. If accepted, decide whether to start G2.151 Socket.IO streaming error-emission behavior triage or continue with G2.149 realtime datetime test authorization."
+}

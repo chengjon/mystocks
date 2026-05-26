@@ -14,6 +14,8 @@ import asyncio
 
 from app.core.socketio_manager import (
     ConnectionManager,
+)
+from app.core._socketio_manager_singleton import (
     get_socketio_manager,
     reset_socketio_manager,
 )

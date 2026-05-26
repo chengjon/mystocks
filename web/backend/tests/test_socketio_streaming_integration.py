@@ -15,6 +15,8 @@ from unittest.mock import AsyncMock, patch
 from app.core.socketio_manager import (
     MySocketIOManager,
     ConnectionManager,
+)
+from app.core._socketio_manager_singleton import (
     reset_socketio_manager,
 )
 from app.services.realtime_streaming_service import (
@@ -91,7 +93,7 @@ class TestSocketIOStreamingEventHandlers:
         """Test market stream subscription with field filter"""
         socketio_namespace.sio.connection_manager.add_connection("sid_001", "user_001")
 
-        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as mock_emit:
+        with patch.object(socketio_namespace, "emit", new_callable=AsyncMock) as _mock_emit:
             await socketio_namespace.on_subscribe_market_stream(
                 "sid_001", {"symbol": "600519", "fields": ["price", "volume"]}
             )
@@ -184,7 +186,7 @@ class TestSocketIOStreamingEventHandlers:
         manager = MySocketIOManager()
         namespace = list(manager.sio.namespace_handlers.values())[0]
 
-        with patch.object(namespace, "emit", new_callable=AsyncMock) as mock_emit:
+        with patch.object(namespace, "emit", new_callable=AsyncMock) as _mock_emit:
             await namespace.on_connect("sid_001", {"HTTP_X_USER_ID": "user_001"})
 
             # Verify connection was added
@@ -306,7 +308,7 @@ class TestStreamingEventIntegration:
 
         streaming_service = get_streaming_service()
 
-        with patch.object(namespace, "emit", new_callable=AsyncMock) as mock_emit:
+        with patch.object(namespace, "emit", new_callable=AsyncMock) as _mock_emit:
             # Both subscribe to same symbol
             await namespace.on_subscribe_market_stream("sid_001", {"symbol": "600519"})
             await namespace.on_subscribe_market_stream("sid_002", {"symbol": "600519"})
@@ -323,7 +325,7 @@ class TestStreamingEventIntegration:
         manager.connection_manager.add_connection("sid_001", "user_001")
         streaming_service = get_streaming_service()
 
-        with patch.object(namespace, "emit", new_callable=AsyncMock) as mock_emit:
+        with patch.object(namespace, "emit", new_callable=AsyncMock) as _mock_emit:
             # Subscribe to multiple symbols
             symbols = ["600519", "000001", "600000"]
             for symbol in symbols:
@@ -343,7 +345,7 @@ class TestStreamingEventIntegration:
         manager.connection_manager.add_connection("sid_001", "user_001")
         streaming_service = get_streaming_service()
 
-        with patch.object(namespace, "emit", new_callable=AsyncMock) as mock_emit:
+        with patch.object(namespace, "emit", new_callable=AsyncMock) as _mock_emit:
             # Subscribe and then unsubscribe
             await namespace.on_subscribe_market_stream("sid_001", {"symbol": "600519"})
             assert "600519" in streaming_service.get_active_symbols()
@@ -366,7 +368,7 @@ class TestStreamingErrorHandling:
         manager = MySocketIOManager()
         namespace = list(manager.sio.namespace_handlers.values())[0]
 
-        with patch.object(namespace, "emit", new_callable=AsyncMock) as mock_emit:
+        with patch.object(namespace, "emit", new_callable=AsyncMock) as _mock_emit:
             # Don't add connection, just try to subscribe
             await namespace.on_subscribe_market_stream("nonexistent_sid", {"symbol": "600519"})
 
