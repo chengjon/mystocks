@@ -2630,7 +2630,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
 │   │              GitHub issue state change is performed here
 │   ├── G2.152 Socket.IO stream-error test patch-target alignment
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#304`
 │   │   ├── Evidence: `backend-socketio-stream-error-test-patch-alignment-2026-05-26.md`
 │   │   ├── Parent: G2.151 accepted and merged by PR `#303`
 │   │   ├── Current HEAD: `9288c3a7cdb8428c5ef984b9ba79e7e8fb2135dc`
@@ -2649,8 +2649,32 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              restoration, realtime datetime fix, route/API, OpenAPI
 │   │              exposure, frontend, PM2, OpenSpec, issue-label change, or
 │   │              GitHub issue state change is performed here
-│   └── Next gate: review G2.152; if accepted, return to the already split
-│                  G2.149 realtime datetime test authorization
+│   ├── G2.149 Realtime streaming datetime test authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-realtime-streaming-datetime-test-authorization-2026-05-26.md`
+│   │   ├── Parent: G2.152 accepted and merged by PR `#304`
+│   │   ├── Current HEAD: `6ca7c1860ff3f1c1a87f094a016bef3d296fff6d`
+│   │   ├── Result: classifies
+│   │   │          `test_realtime_streaming_service.py::TestStreamSubscriber::test_subscriber_update_activity`
+│   │   │          as a realtime streaming timestamp contract
+│   │   │          inconsistency, not a Socket.IO failure
+│   │   ├── Verification: focused realtime streaming service suite reports
+│   │   │          `1 failed, 42 passed`; diagnostic shows initial
+│   │   │          `StreamSubscriber.subscribed_at` has `tzinfo=None` from
+│   │   │          `datetime.utcnow`, while `update_activity()` assigns
+│   │   │          `datetime.now(timezone.utc)` with `tzinfo=UTC`
+│   │   ├── Decision: authorize a future G2.153 source plus focused-test lane
+│   │   │          for timezone-aware realtime streaming timestamps, covering
+│   │   │          `StreamSubscriber.subscribed_at` and reviewing
+│   │   │          `StreamData.created_at`
+│   │   └── Boundary: authorization-only; no backend source/test edit,
+│   │              Socket.IO change, realtime timestamp implementation,
+│   │              route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │              issue-label change, or GitHub issue state change is
+│   │              performed here
+│   └── Next gate: review G2.149; if accepted, start G2.153 realtime
+│                  streaming timezone-aware timestamps as a separate
+│                  source plus focused-test implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
