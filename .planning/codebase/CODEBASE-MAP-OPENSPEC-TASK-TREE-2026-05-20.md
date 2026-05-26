@@ -2417,9 +2417,10 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                implementation, or issue-label change is made here
 │   ├── G2.142 Service lifecycle candidate refresh after BacktestEngine
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#295`
 │   │   ├── Evidence: `backend-service-lifecycle-candidate-refresh-after-backtest-2026-05-26.md`
 │   │   ├── Current HEAD: `32d0cfb1e02d1207301e632b44a94e74efdddf69`
+│   │   ├── Merge commit: `c11dfb858200aaed46beee50c15e022c86408b54`
 │   │   ├── Result: refreshes the remaining service lifecycle DI candidate
 │   │   │          pool after BacktestEngine closeout and selects no direct
 │   │   │          implementation candidate
@@ -2437,8 +2438,31 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
-│   └── Next gate: prepare a high-risk service getter strategy decision package
-│                  before selecting another source implementation lane
+│   ├── G2.143 High-risk service getter strategy decision package
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-high-risk-service-getter-strategy-decision-2026-05-26.md`
+│   │   ├── Current HEAD: `c11dfb858200aaed46beee50c15e022c86408b54`
+│   │   ├── Result: splits the exhausted low-risk service getter queue into
+│   │   │          six explicit tracks: Dashboard/TDX, Indicator/Data,
+│   │   │          Strategy adapter, Realtime streaming/socket, root facade
+│   │   │          compatibility, and route dependency/provider governance
+│   │   ├── Verification: parent PR `#295` is merged; service files=`152`,
+│   │   │          backend app files=`575`, API files=`219`, tests=`206`,
+│   │   │          service getter definitions=`53`, zero-external-reference
+│   │   │          getters=`0`; GitNexus keeps `get_tdx_service`,
+│   │   │          `get_data_service`, and `get_strategy_service` at
+│   │   │          CRITICAL and `get_streaming_service` at HIGH
+│   │   ├── Decision: no direct source lane is selected; recommend a separate
+│   │   │          Realtime streaming/socket authorization package as the
+│   │   │          first downstream design track because it is HIGH rather
+│   │   │          than CRITICAL and has no current process-flow participation
+│   │   └── Boundary: design-decision-only; no backend source/test edit,
+│   │                getter deletion, route/API, OpenAPI exposure, frontend,
+│   │                PM2, OpenSpec, implementation authorization, or
+│   │                issue-label change is made here
+│   └── Next gate: review G2.143; if accepted, prepare a single-track
+│                  Realtime streaming/socket authorization package before any
+│                  source implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

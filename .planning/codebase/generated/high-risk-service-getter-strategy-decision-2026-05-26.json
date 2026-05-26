@@ -1,0 +1,253 @@
+{
+  "schema_version": "1.0",
+  "artifact": "high-risk-service-getter-strategy-decision",
+  "created_at": "2026-05-26T13:59:35+08:00",
+  "current_head": "c11dfb858200aaed46beee50c15e022c86408b54",
+  "parent_refresh": {
+    "task": "G2.142 Service lifecycle candidate refresh after BacktestEngine",
+    "pull_request": 295,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T05:47:30Z",
+    "merge_commit": "c11dfb858200aaed46beee50c15e022c86408b54",
+    "evidence": "docs/reports/quality/backend-service-lifecycle-candidate-refresh-after-backtest-2026-05-26.md"
+  },
+  "scope": {
+    "workline": "G2.143 high-risk service getter strategy decision package",
+    "mode": "design-decision-only",
+    "source_implementation_allowed": false,
+    "source_edits_allowed": false,
+    "test_edits_allowed": false,
+    "openspec_change_created": false,
+    "route_api_openapi_change_allowed": false,
+    "issue_label_change_allowed": false
+  },
+  "inventory_snapshot": {
+    "service_py_files": 152,
+    "backend_app_py_files": 575,
+    "backend_api_py_files": 219,
+    "backend_test_py_files": 206,
+    "service_getter_definitions": 53,
+    "zero_external_reference_getters": 0
+  },
+  "decision": {
+    "direct_next_source_implementation_candidate": null,
+    "reason": "The low-risk unused getter queue is exhausted. Remaining candidates are HIGH/CRITICAL runtime seams, active root compatibility facades, or FastAPI route dependency/provider seams.",
+    "required_next_gate": "Human review of this strategy package, followed by a separate single-track authorization package before any source lane.",
+    "preferred_first_downstream_design_track": "Realtime streaming/socket",
+    "preferred_first_downstream_design_reason": "It is HIGH rather than CRITICAL and has no GitNexus process-flow participation, but still requires a separate authorization package because it touches Socket.IO runtime lifecycle and streaming bridge behavior."
+  },
+  "strategy_tracks": [
+    {
+      "track_id": "dashboard-tdx",
+      "name": "Dashboard/TDX runtime seam",
+      "primary_getter": "get_tdx_service",
+      "file": "web/backend/app/services/tdx_service.py",
+      "risk": "CRITICAL",
+      "gitnexus": {
+        "impacted": 6,
+        "direct": 2,
+        "processes": 5,
+        "modules": [
+          "Api"
+        ],
+        "direct_callers": [
+          "web/backend/app/api/dashboard_data_source.py::_get_major_index_quotes",
+          "web/backend/app/api/dashboard_data_source.py::_get_tdx_live_market_snapshot"
+        ]
+      },
+      "classification": "stateful market-data runtime seam",
+      "disposition": "hold for a dedicated Dashboard/TDX design and authorization package",
+      "required_acceptance_before_source": [
+        "dashboard consumer contract matrix",
+        "TDX unavailable/fallback behavior contract",
+        "focused dashboard route tests or smoke",
+        "route/OpenAPI drift check if route dependency surfaces change",
+        "fresh GitNexus impact before editing"
+      ]
+    },
+    {
+      "track_id": "indicator-data",
+      "name": "Indicator/Data service seam",
+      "primary_getter": "get_data_service",
+      "file": "web/backend/app/services/data_service.py",
+      "risk": "CRITICAL",
+      "gitnexus": {
+        "impacted": 5,
+        "direct": 3,
+        "processes": 7,
+        "modules": [
+          "Indicators",
+          "Strategy"
+        ],
+        "direct_callers": [
+          "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators",
+          "web/backend/app/api/indicators/indicator_cache.py::_calculate_single_indicator",
+          "web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators"
+        ]
+      },
+      "classification": "indicator calculation and strategy-facing data seam",
+      "disposition": "hold for a dedicated Indicator/Data design and authorization package",
+      "required_acceptance_before_source": [
+        "indicator input/output contract matrix",
+        "strategy indicator consumer parity check",
+        "focused indicator cache tests",
+        "OpenAPI examples review if response contracts are touched",
+        "fresh GitNexus impact before editing"
+      ]
+    },
+    {
+      "track_id": "strategy-adapter",
+      "name": "Strategy adapter seam",
+      "primary_getter": "get_strategy_service",
+      "file": "web/backend/app/services/strategy_service.py",
+      "risk": "CRITICAL",
+      "gitnexus": {
+        "impacted": 13,
+        "direct": 6,
+        "processes": 0,
+        "modules": [
+          "Data_adapters",
+          "Adapters",
+          "Strategy_management",
+          "Cdp",
+          "Tasks"
+        ],
+        "direct_callers": [
+          "web/backend/app/services/data_adapters/strategy.py::_get_strategy_service",
+          "web/backend/app/services/adapters/strategy_adapter.py::_get_strategy_service",
+          "web/backend/app/api/strategy_management/_strategy_execution_router.py::query_strategy_results",
+          "web/backend/app/api/strategy_management/_strategy_execution_router.py::get_matched_stocks",
+          "web/backend/app/api/strategy_management/_strategy_execution_router.py::get_strategy_summary",
+          "web/backend/app/tasks/backtest_tasks.py::_resolve_backtest_data_source"
+        ]
+      },
+      "classification": "adapter and strategy execution seam",
+      "disposition": "hold for a dedicated Strategy adapter design and authorization package",
+      "required_acceptance_before_source": [
+        "adapter wrapper ownership decision",
+        "strategy execution router consumer matrix",
+        "backtest task fallback contract",
+        "strategy adapter health-check tests",
+        "fresh GitNexus impact before editing"
+      ]
+    },
+    {
+      "track_id": "realtime-streaming-socket",
+      "name": "Realtime streaming/socket seam",
+      "primary_getter": "get_streaming_service",
+      "file": "web/backend/app/services/realtime_streaming_service.py",
+      "risk": "HIGH",
+      "gitnexus": {
+        "impacted": 9,
+        "direct": 9,
+        "processes": 0,
+        "modules": [
+          "Services",
+          "Cluster_1822",
+          "Models",
+          "Get_"
+        ],
+        "direct_callers": [
+          "web/backend/app/services/aggregation_streaming_bridge.py::__init__",
+          "web/backend/app/core/socketio_manager.py::get_stats",
+          "web/backend/app/core/socketio_manager.py::on_connect",
+          "web/backend/app/core/socketio_manager.py::on_disconnect",
+          "web/backend/app/core/socketio_manager.py::on_subscribe_market_stream",
+          "web/backend/app/core/socketio_manager.py::on_unsubscribe_market_stream",
+          "web/backend/app/core/socketio_manager.py::on_stream_filter_update",
+          "web/backend/app/core/socketio_manager.py::emit_stream_data",
+          "web/backend/app/core/socketio_manager.py::get_streaming_stats"
+        ]
+      },
+      "classification": "streaming lifecycle and socket event seam",
+      "disposition": "recommended first downstream design track, but not source-authorized by this package",
+      "required_acceptance_before_source": [
+        "Socket.IO lifecycle behavior matrix",
+        "stream subscription/unsubscription contract",
+        "streaming bridge ownership decision",
+        "focused socket/streaming tests or import-safe test double plan",
+        "fresh GitNexus impact before editing"
+      ]
+    },
+    {
+      "track_id": "root-facade-compatibility",
+      "name": "Root facade compatibility seam",
+      "primary_getters": [
+        "get_integrated_services",
+        "get_risk_calculator",
+        "get_market_data_service",
+        "get_risk_monitoring",
+        "get_risk_alerts",
+        "get_risk_settings",
+        "get_risk_dashboard"
+      ],
+      "file": "web/backend/app/services/__init__.py",
+      "classification": "root package compatibility facade",
+      "disposition": "locked; not a source implementation candidate without a compatibility-retirement decision record",
+      "current_reference_counts": {
+        "get_integrated_services": 10,
+        "get_risk_calculator": 2,
+        "get_market_data_service": 19,
+        "get_risk_monitoring": 2,
+        "get_risk_alerts": 2,
+        "get_risk_settings": 3,
+        "get_risk_dashboard": 3
+      }
+    },
+    {
+      "track_id": "route-dependency-provider-governance",
+      "name": "Route dependency/provider governance seam",
+      "primary_getters": [
+        "get_market_data_service_v2_dependency",
+        "get_market_data_service_dependency",
+        "get_indicator_registry_dependency",
+        "get_tdx_service_dependency",
+        "get_announcement_service_dependency",
+        "get_email_service_dependency",
+        "get_watchlist_service_dependency",
+        "get_stock_search_service_dependency",
+        "get_tradingview_service_dependency"
+      ],
+      "classification": "active FastAPI dependency/provider surface",
+      "disposition": "locked; treat as route dependency contract, not unused getter debt",
+      "current_reference_counts": {
+        "get_market_data_service_v2_dependency": 18,
+        "get_market_data_service_dependency": 16,
+        "get_indicator_registry_dependency": 5,
+        "get_tdx_service_dependency": 9,
+        "get_announcement_service_dependency": 15,
+        "get_email_service_dependency": 12,
+        "get_watchlist_service_dependency": 12,
+        "get_stock_search_service_dependency": 14,
+        "get_tradingview_service_dependency": 11
+      }
+    }
+  ],
+  "blocked_actions": [
+    "Do not delete or rename any remaining getter from this package.",
+    "Do not edit backend source or tests under G2.143.",
+    "Do not treat root facade getters as unused functions.",
+    "Do not treat FastAPI dependency/provider getters as singleton-retirement candidates.",
+    "Do not open a source implementation lane until a separate single-track authorization package is approved."
+  ],
+  "recommended_sequence": [
+    {
+      "step": "G2.144",
+      "name": "Realtime streaming/socket design authorization package",
+      "mode": "authorization-package-before-source",
+      "source_allowed": false
+    },
+    {
+      "step": "G2.145+",
+      "name": "One approved source implementation lane, only if G2.144 selects and authorizes a narrow edit set",
+      "mode": "source-lane-after-approval",
+      "source_allowed": "requires fresh approval"
+    },
+    {
+      "step": "later",
+      "name": "Dashboard/TDX, Indicator/Data, and Strategy adapter lanes",
+      "mode": "separate design and authorization packages",
+      "source_allowed": "requires separate approval per track"
+    }
+  ]
+}
