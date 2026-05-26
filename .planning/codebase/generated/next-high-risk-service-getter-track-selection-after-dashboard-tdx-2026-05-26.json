@@ -1,0 +1,157 @@
+{
+  "artifact": "next-high-risk-service-getter-track-selection-after-dashboard-tdx-2026-05-26",
+  "generated_at": "2026-05-26T22:39:36+08:00",
+  "worktree": ".worktrees/g2-158-next-high-risk-getter-track-selection",
+  "branch": "g2-158-next-high-risk-getter-track-selection",
+  "base_head": "97442014ea3ea3e63ffa170cd00b54889c158924",
+  "task": {
+    "id": "G2.158",
+    "title": "Next high-risk service getter track selection after Dashboard/TDX closeout",
+    "scope": "governance decision only",
+    "authorization": "approved by user in current review thread"
+  },
+  "parent": {
+    "task": "G2.157",
+    "pull_request": 310,
+    "state": "MERGED",
+    "merge_commit": "97442014ea3ea3e63ffa170cd00b54889c158924",
+    "decision": "Dashboard/TDX closed without source implementation because direct dashboard helper getter debt was 0."
+  },
+  "source_inputs": [
+    "docs/reports/quality/backend-high-risk-service-getter-strategy-decision-2026-05-26.md",
+    "docs/reports/quality/backend-next-high-risk-service-getter-track-selection-2026-05-26.md",
+    "docs/reports/quality/backend-dashboard-tdx-verification-closeout-2026-05-26.md"
+  ],
+  "refreshed_impact": {
+    "get_data_service": {
+      "risk": "CRITICAL",
+      "impacted_count": 5,
+      "direct_callers": 3,
+      "processes_affected": 7,
+      "modules_affected": [
+        "Indicators",
+        "Strategy"
+      ],
+      "d1_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators",
+        "web/backend/app/api/indicators/indicator_cache.py::_calculate_single_indicator",
+        "web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators"
+      ],
+      "d2_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_single_request"
+      ],
+      "d3_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::limited_calculate"
+      ]
+    },
+    "get_strategy_service": {
+      "risk": "CRITICAL",
+      "impacted_count": 13,
+      "direct_callers": 6,
+      "processes_affected": 0,
+      "modules_affected": [
+        "Data_adapters",
+        "Adapters",
+        "Strategy_management",
+        "Tasks"
+      ],
+      "d1_callers": [
+        "web/backend/app/services/data_adapters/strategy.py::_get_strategy_service",
+        "web/backend/app/services/adapters/strategy_adapter.py::_get_strategy_service",
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py::query_strategy_results",
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py::get_matched_stocks",
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py::get_strategy_summary",
+        "web/backend/app/tasks/backtest_tasks.py::_resolve_backtest_data_source"
+      ]
+    },
+    "get_streaming_service": {
+      "risk": "HIGH",
+      "impacted_count": 9,
+      "direct_callers": 9,
+      "processes_affected": 0,
+      "disposition": "Realtime/socket subtrack already closed by G2.154; do not reopen from this selection package without a new contradiction."
+    }
+  },
+  "token_scan": {
+    "get_data_service": {
+      "total": 12,
+      "files": {
+        "web/backend/app/services/data_service.py": 1,
+        "web/backend/app/api/v1/strategy/indicators.py": 2,
+        "web/backend/app/api/indicators/indicator_cache.py": 3,
+        "web/backend/tests/test_v1_indicators_regressions.py": 2,
+        "web/backend/tests/test_integration_e2e.py": 4
+      }
+    },
+    "get_strategy_service": {
+      "total": 12,
+      "files": {
+        "web/backend/app/tasks/backtest_tasks.py": 2,
+        "web/backend/app/services/adapters/strategy_adapter.py": 2,
+        "web/backend/app/services/strategy_service.py": 1,
+        "web/backend/app/services/data_adapters/strategy.py": 2,
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py": 4,
+        "web/backend/tests/test_backtest_tasks_regressions.py": 1
+      }
+    },
+    "route_dependency_provider_examples": {
+      "get_market_data_service_v2_dependency": 18,
+      "get_market_data_service_dependency": 16,
+      "get_indicator_registry_dependency": 5,
+      "get_tdx_service_dependency": 9
+    },
+    "root_facade_examples": {
+      "get_integrated_services": 10,
+      "get_market_data_service": 20
+    }
+  },
+  "decision": {
+    "selected_track": "Indicator/Data service seam",
+    "selection_reason": [
+      "It is the smallest remaining CRITICAL implementation family after Dashboard/TDX closeout.",
+      "Its current direct caller surface is three functions across indicator cache and strategy indicator API.",
+      "It has process participation and public indicator consumers, so it requires a dedicated design and authorization package before any source edit.",
+      "Strategy adapter remains broader, crossing adapters, data adapters, strategy-management routes, and backtest tasks.",
+      "Root facade compatibility and route dependency/provider governance are locked governance tracks, not singleton-retirement implementation candidates."
+    ],
+    "next_gate": "G2.159 Indicator/Data design and authorization package",
+    "source_implementation_authorized": false
+  },
+  "g2_159_minimum_requirements": [
+    "Refresh GitNexus impact for get_data_service and the three direct callers.",
+    "Produce an Indicator/Data consumer contract matrix for calculate_indicators, _calculate_single_indicator, get_technical_indicators, calculate_single_request, and limited_calculate.",
+    "Classify current get_data_service textual hits as definition, import, direct body call, test reference, or acceptable compatibility.",
+    "Define strategy indicator consumer parity requirements.",
+    "Define focused indicator cache and v1 strategy indicator tests.",
+    "Define OpenAPI example/drift rule if response contracts are touched.",
+    "Define allowed source/test paths and explicit stop conditions before implementation."
+  ],
+  "deferred_tracks": [
+    "Strategy adapter",
+    "root facade compatibility",
+    "route dependency/provider governance"
+  ],
+  "boundaries": {
+    "do_not_edit_in_g2_158": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/guides/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ],
+    "do_not_authorize": [
+      "source implementation",
+      "get_data_service deletion or privatization",
+      "Strategy adapter edits",
+      "route dependency/provider cleanup",
+      "root facade compatibility retirement",
+      "OpenAPI exposure changes",
+      "issue-label changes"
+    ]
+  }
+}
