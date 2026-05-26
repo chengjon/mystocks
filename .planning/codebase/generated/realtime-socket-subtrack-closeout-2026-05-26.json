@@ -1,0 +1,124 @@
+{
+  "artifact": "realtime-socket-subtrack-closeout-2026-05-26",
+  "generated_at": "2026-05-26T19:24:08+08:00",
+  "worktree": ".worktrees/g2-154-realtime-socket-subtrack-closeout",
+  "branch": "g2-154-realtime-socket-subtrack-closeout",
+  "base_head": "bc795386313b40c4d87602fd80a09ad2d275f9d4",
+  "task": {
+    "id": "G2.154",
+    "title": "Realtime/socket subtrack closeout",
+    "scope": "governance closeout only",
+    "authorization": "approved by user in current review thread"
+  },
+  "merged_prs": [
+    {
+      "task": "G2.143",
+      "pull_request": 296,
+      "title": "Decide high-risk service getter strategy"
+    },
+    {
+      "task": "G2.144",
+      "pull_request": 297,
+      "title": "Authorize realtime streaming socket lane"
+    },
+    {
+      "task": "G2.145",
+      "pull_request": 298,
+      "title": "Inject Socket.IO streaming service dependency"
+    },
+    {
+      "task": "G2.146",
+      "pull_request": 299,
+      "title": "Close realtime socket injection lane"
+    },
+    {
+      "task": "G2.147",
+      "pull_request": 300,
+      "title": "Route realtime socket baseline blockers"
+    },
+    {
+      "task": "G2.148",
+      "pull_request": 301,
+      "title": "Authorize Socket.IO legacy export contract routing"
+    },
+    {
+      "task": "G2.150",
+      "pull_request": 302,
+      "title": "Align Socket.IO legacy test imports"
+    },
+    {
+      "task": "G2.151",
+      "pull_request": 303,
+      "title": "Triage Socket.IO stream error emission"
+    },
+    {
+      "task": "G2.152",
+      "pull_request": 304,
+      "title": "Align Socket.IO stream error test patch target"
+    },
+    {
+      "task": "G2.149",
+      "pull_request": 305,
+      "title": "Authorize realtime streaming datetime fix"
+    },
+    {
+      "task": "G2.153",
+      "pull_request": 306,
+      "title": "Use aware realtime streaming timestamps",
+      "merge_commit": "bc795386313b40c4d87602fd80a09ad2d275f9d4",
+      "merged_at": "2026-05-26T11:17:58Z"
+    }
+  ],
+  "post_merge_verification": {
+    "focused_tests": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_streaming_service.py web/backend/tests/test_socketio_streaming_integration.py web/backend/tests/test_socketio_manager.py web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short",
+      "result": "91 passed, 1 warning",
+      "warning": "Existing RuntimeWarning for un-awaited asyncio.sleep in test_socketio_manager.py::TestConnectionManager::test_update_activity remains outside this closeout."
+    },
+    "static_scan": [
+      {
+        "file": "web/backend/app/core/socketio_manager.py",
+        "datetime.utcnow": 0,
+        "get_streaming_service": 2,
+        "interpretation": "Remaining references are import plus constructor fallback; handler-level repeated direct calls remain removed."
+      },
+      {
+        "file": "web/backend/app/services/realtime_streaming_service.py",
+        "datetime.utcnow": 0,
+        "_utc_now": 3,
+        "get_streaming_service": 1,
+        "interpretation": "Remaining getter is the service singleton provider itself."
+      },
+      {
+        "file": "web/backend/tests/test_socketio_manager.py",
+        "get_socketio_manager": 8,
+        "reset_socketio_manager": 5,
+        "interpretation": "Tests use the explicit singleton helper module contract restored by G2.150."
+      },
+      {
+        "file": "web/backend/tests/test_socketio_streaming_integration.py",
+        "reset_socketio_manager": 18,
+        "interpretation": "Streaming integration tests use the aligned reset helper and manager-level patch target."
+      }
+    ]
+  },
+  "decision": {
+    "realtime_socket_subtrack_state": "closed for now",
+    "reason": "The authorized realtime/socket dependency-injection lane, legacy export/test import follow-ups, stream-error patch-target alignment, and realtime timestamp inconsistency are all merged with focused post-merge verification.",
+    "next_queue": "Return to the broader G2 high-risk service getter queue.",
+    "next_candidates": [
+      "Dashboard/TDX",
+      "Indicator/Data",
+      "Strategy adapter",
+      "root facade compatibility",
+      "route dependency/provider governance"
+    ],
+    "new_source_lane_authorized": false
+  },
+  "boundaries": [
+    "No backend source or test files are edited in G2.154.",
+    "No Socket.IO manager, realtime streaming service, route/API, OpenAPI, frontend, PM2, OpenSpec, config, script, compatibility wrapper, issue label, or GitHub issue state change is made here.",
+    "This closeout does not authorize the next source implementation lane."
+  ],
+  "next_gate": "Review and merge G2.154; after acceptance, create a separate decision or authorization package for the next high-risk service getter track."
+}

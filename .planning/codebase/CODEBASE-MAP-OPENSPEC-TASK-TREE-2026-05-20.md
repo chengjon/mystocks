@@ -2673,11 +2673,11 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, or GitHub issue state change is
 │   │              performed here
 │   ├── G2.153 Realtime streaming timezone-aware timestamps
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#306`
 │   │   ├── Evidence: `backend-realtime-streaming-timezone-aware-timestamps-2026-05-26.md`
 │   │   ├── Generated: `realtime-streaming-timezone-aware-timestamps-2026-05-26.json`
 │   │   ├── Parent: G2.149 accepted and merged by PR `#305`
-│   │   ├── Current HEAD: `58bdc319c3ca00819b6b4fe7fefa59a5a321ba9d`
+│   │   ├── Merge commit: `bc795386313b40c4d87602fd80a09ad2d275f9d4`
 │   │   ├── Scope: source plus focused-test implementation limited to
 │   │   │          `realtime_streaming_service.py` and
 │   │   │          `test_realtime_streaming_service.py`
@@ -2698,9 +2698,36 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
 │   │              script, compatibility wrapper deletion, issue-label
 │   │              change, or GitHub issue state change is performed here
-│   └── Next gate: review G2.153; if accepted, merge it and decide
-│                  whether realtime/socket has remaining high-risk getter
-│                  work or can return to the broader G2 service getter queue
+│   ├── G2.154 Realtime/socket subtrack closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-realtime-socket-subtrack-closeout-2026-05-26.md`
+│   │   ├── Generated: `realtime-socket-subtrack-closeout-2026-05-26.json`
+│   │   ├── Parent: G2.153 accepted and merged by PR `#306`
+│   │   ├── Current HEAD: `bc795386313b40c4d87602fd80a09ad2d275f9d4`
+│   │   ├── Result: closes the dedicated realtime/socket subtrack for now
+│   │   │          after PRs `#297` through `#306` completed the authorized
+│   │   │          manager-level injection, legacy export/test import
+│   │   │          alignment, stream-error patch-target alignment, and
+│   │   │          timezone-aware realtime streaming timestamp fix
+│   │   ├── Verification: merged-base focused regression across
+│   │   │          `test_realtime_streaming_service.py`,
+│   │   │          `test_socketio_streaming_integration.py`,
+│   │   │          `test_socketio_manager.py`, and
+│   │   │          `test_realtime_socket_manager_streaming_dependency.py`
+│   │   │          reports `91 passed, 1 warning`; static token scan reports
+│   │   │          `datetime.utcnow=0` on the realtime/socket source surfaces
+│   │   │          checked for this closeout
+│   │   ├── Decision: do not open another realtime/socket source lane from
+│   │   │          this closeout; return to the broader G2 high-risk service
+│   │   │          getter queue for a separate next-track decision or
+│   │   │          authorization package
+│   │   └── Boundary: closeout-only; no backend source/test edit, route/API,
+│   │              OpenAPI exposure, frontend, PM2, OpenSpec, config,
+│   │              script, compatibility wrapper deletion, issue-label
+│   │              change, or GitHub issue state change is performed here
+│   └── Next gate: review G2.154; if accepted, select the next high-risk
+│                  service getter track through a separate decision or
+│                  authorization package before any new source lane starts
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
