@@ -1,0 +1,140 @@
+{
+  "schema_version": "1.0",
+  "artifact": "realtime-socket-manager-consumer-injection-implementation",
+  "created_at": "2026-05-26T15:05:00+08:00",
+  "current_head": "3c27963c86bc095f7f28129d5b47d9257367a31f",
+  "parent_authorization": {
+    "task": "G2.144 Realtime streaming/socket authorization package",
+    "pull_request": 297,
+    "state": "MERGED",
+    "merged_at": "2026-05-26T06:49:59Z",
+    "merge_commit": "3c27963c86bc095f7f28129d5b47d9257367a31f",
+    "evidence": "docs/reports/quality/backend-realtime-streaming-socket-authorization-package-2026-05-26.md"
+  },
+  "scope": {
+    "workline": "G2.145 realtime socket manager consumer-injection implementation",
+    "mode": "approved-source-implementation",
+    "source_files_modified": [
+      "web/backend/app/core/socketio_manager.py"
+    ],
+    "test_files_added": [
+      "web/backend/tests/test_realtime_socket_manager_streaming_dependency.py"
+    ],
+    "governance_files_modified": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/realtime-socket-manager-consumer-injection-implementation-2026-05-26.json",
+      "docs/reports/quality/backend-realtime-socket-manager-consumer-injection-implementation-2026-05-26.md",
+      "governance/mainline/task-cards/pr-298.yaml"
+    ],
+    "forbidden_paths_touched": false,
+    "route_api_openapi_change": false,
+    "frontend_pm2_openspec_issue_label_change": false
+  },
+  "pre_edit_gates": {
+    "standards_read": "architecture/STANDARDS.md",
+    "gitnexus": {
+      "get_streaming_service": {
+        "risk": "HIGH",
+        "impacted": 9,
+        "direct": 9,
+        "processes": 0
+      },
+      "MySocketIOManager": {
+        "risk": "LOW",
+        "impacted": 0,
+        "direct": 0,
+        "processes": 0
+      }
+    }
+  },
+  "implementation": {
+    "summary": "MySocketIOManager now accepts an optional streaming_service dependency, stores it as manager-level state, and Socket.IO namespace/manager streaming consumers use that injected dependency instead of direct handler-level get_streaming_service calls.",
+    "preserved": [
+      "RealtimeStreamingService",
+      "get_streaming_service",
+      "reset_streaming_service",
+      "realtime_streaming_service.py",
+      "aggregation_streaming_bridge.py",
+      "route/API behavior",
+      "OpenAPI exposure",
+      "frontend behavior",
+      "PM2 workflows",
+      "OpenSpec state",
+      "issue labels"
+    ],
+    "token_scan_after": {
+      "socketio_manager_get_streaming_service_total_refs": 2,
+      "socketio_manager_handler_level_get_streaming_service_refs": 0,
+      "remaining_refs": [
+        {
+          "line": 38,
+          "text": "get_streaming_service,"
+        },
+        {
+          "line": 583,
+          "text": "self.streaming_service = streaming_service or get_streaming_service()"
+        }
+      ]
+    }
+  },
+  "tdd": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short",
+      "result": "2 failed",
+      "failure": "MySocketIOManager.__init__() got an unexpected keyword argument 'streaming_service'"
+    },
+    "green": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short",
+      "result": "2 passed in 0.83s"
+    }
+  },
+  "verification": {
+    "passed": [
+      {
+        "name": "focused new test",
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short",
+        "result": "2 passed in 0.83s"
+      },
+      {
+        "name": "ruff touched files",
+        "command": "ruff check web/backend/app/core/socketio_manager.py web/backend/tests/test_realtime_socket_manager_streaming_dependency.py",
+        "result": "All checks passed"
+      },
+      {
+        "name": "black check touched files",
+        "command": "black --check web/backend/app/core/socketio_manager.py web/backend/tests/test_realtime_socket_manager_streaming_dependency.py",
+        "result": "2 files would be left unchanged"
+      },
+      {
+        "name": "token scan",
+        "command": "scripted socketio_manager.py get_streaming_service token scan",
+        "result": "total refs 2, handler-level refs 0"
+      }
+    ],
+    "blocked_or_baseline": [
+      {
+        "name": "existing socketio manager tests",
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_manager.py -q --no-cov --tb=short",
+        "result": "collection error: cannot import get_socketio_manager",
+        "baseline_evidence": "parent and current socketio_manager.py both contain zero get_socketio_manager tokens"
+      },
+      {
+        "name": "existing socketio streaming integration tests",
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_streaming_integration.py -q --no-cov --tb=short",
+        "result": "collection error: cannot import reset_socketio_manager",
+        "baseline_evidence": "parent and current socketio_manager.py both contain zero reset_socketio_manager tokens"
+      },
+      {
+        "name": "existing realtime streaming service tests",
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_streaming_service.py -q --no-cov --tb=short",
+        "result": "42 passed, 1 failed",
+        "baseline_evidence": "failure is naive/aware datetime comparison in test_realtime_streaming_service.py; realtime_streaming_service.py was not edited in G2.145"
+      }
+    ]
+  },
+  "next_gate": {
+    "task": "G2.146 realtime socket manager consumer-injection closeout",
+    "mode": "closeout-only",
+    "source_allowed": false
+  }
+}

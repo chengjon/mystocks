@@ -1,0 +1,121 @@
+version: "v0.2"
+
+task:
+  id: "pr-298"
+  title: "Inject streaming dependency into Socket.IO manager"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-realtime-socket-manager-consumer-injection"
+  objective: "replace direct Socket.IO handler-level get_streaming_service lookup with a manager-level streaming service dependency"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-implementation"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-realtime-socket-manager-consumer-injection"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Narrow authorized implementation; no public runtime entrypoint, route, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/core/socketio_manager.py"
+    - "web/backend/tests/test_realtime_socket_manager_streaming_dependency.py"
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/realtime-socket-manager-consumer-injection-implementation-2026-05-26.json"
+    - "docs/reports/quality/backend-realtime-socket-manager-consumer-injection-implementation-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-298.yaml"
+  forbidden_paths:
+    - "web/backend/app/services/realtime_streaming_service.py"
+    - "web/backend/app/services/aggregation_streaming_bridge.py"
+    - "web/backend/app/api/**"
+    - "web/backend/app/schemas/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "pre-edit-impact"
+      command: "GitNexus impact for get_streaming_service and MySocketIOManager before edits"
+      required: true
+    - id: "tdd-red"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short"
+      required: true
+    - id: "tdd-green"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_realtime_socket_manager_streaming_dependency.py -q --no-cov --tb=short"
+      required: true
+    - id: "token-scan"
+      command: "scripted socketio_manager.py get_streaming_service token scan"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/core/socketio_manager.py web/backend/tests/test_realtime_socket_manager_streaming_dependency.py"
+      required: true
+    - id: "black-check"
+      command: "black --check web/backend/app/core/socketio_manager.py web/backend/tests/test_realtime_socket_manager_streaming_dependency.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-realtime-socket-manager-consumer-injection-implementation-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/realtime-socket-manager-consumer-injection-implementation-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-298.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit realtime_streaming_service.py."
+  - "Do not edit aggregation_streaming_bridge.py."
+  - "Do not delete get_streaming_service, reset_streaming_service, or RealtimeStreamingService."
+  - "Do not change route/API, OpenAPI, PM2, frontend, OpenSpec, or issue-label state."
+  - "Do not restore unrelated get_socketio_manager/reset_socketio_manager exports in this lane."
+  - "Do not fix unrelated realtime streaming service datetime test debt in this lane."
+
+risk_and_rollback:
+  risks:
+    - "Socket.IO streaming subscription behavior could regress if manager-level dependency wiring misses namespace paths"
+    - "Baseline Socket.IO tests remain partially non-import-safe because get_socketio_manager/reset_socketio_manager exports are absent in the parent state"
+  rollback_plan: "revert this implementation PR to restore prior socketio_manager.py direct getter usage and remove the focused test and governance artifacts"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "inject a manager-level streaming dependency into the Socket.IO manager"
+    modified_scope: "one backend core file, one focused backend test, steward tree, generated artifact, report, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "legacy realtime streaming service getter remains available as the default constructor fallback"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if focused TDD, token scan, lint/format, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-26T15:05:00+08:00"
+    approval_note: "G2.144 authorization package merged by PR #297; user requested continue into G2.145"
+    secondary_approved: false
+

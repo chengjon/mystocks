@@ -34,6 +34,7 @@ from app.models.websocket_message import (
     create_response_message,
 )
 from app.services.realtime_streaming_service import (
+    RealtimeStreamingService,
     get_streaming_service,
 )
 
@@ -208,7 +209,7 @@ class MySocketIONamespace(AsyncNamespace):
         reconnection_manager.mark_reconnected(sid)
 
         # Initialize streaming state for this connection
-        get_streaming_service()
+        self.sio.streaming_service
         # Note: Streaming subscriptions are explicitly managed via on_subscribe_market_stream
         logger.info(
             "🎬 Streaming support initialized for connection",
@@ -227,10 +228,9 @@ class MySocketIONamespace(AsyncNamespace):
         reconnection_manager.mark_disconnected(sid)
 
         # Clean up streaming subscriptions for this connection
-        streaming_service = get_streaming_service()
-        active_symbols = streaming_service.get_active_symbols()
+        active_symbols = self.sio.streaming_service.get_active_symbols()
         for symbol in active_symbols:
-            streaming_service.unsubscribe(sid, symbol)
+            self.sio.streaming_service.unsubscribe(sid, symbol)
 
         logger.info(
             "🎬 Streaming subscriptions cleaned up on disconnect",
@@ -392,11 +392,10 @@ class MySocketIONamespace(AsyncNamespace):
                 fields = None
 
             # Subscribe to streaming service
-            streaming_service = get_streaming_service()
             connection = self.sio.connection_manager.get_connection(sid)
             user_id = connection.get("user_id") if connection else None
 
-            success = streaming_service.subscribe(sid, symbol, user_id, fields)
+            success = self.sio.streaming_service.subscribe(sid, symbol, user_id, fields)
 
             if success:
                 logger.info(
@@ -454,8 +453,7 @@ class MySocketIONamespace(AsyncNamespace):
                 return
 
             # Unsubscribe from streaming service
-            streaming_service = get_streaming_service()
-            success = streaming_service.unsubscribe(sid, symbol)
+            success = self.sio.streaming_service.unsubscribe(sid, symbol)
 
             if success:
                 logger.info("✅ Market stream unsubscription", sid=sid, symbol=symbol)
@@ -510,8 +508,7 @@ class MySocketIONamespace(AsyncNamespace):
                 return
 
             # Get streaming service and update subscriber fields
-            streaming_service = get_streaming_service()
-            stream = streaming_service.get_stream(symbol)
+            stream = self.sio.streaming_service.get_stream(symbol)
 
             if not stream:
                 await self.emit(
@@ -568,7 +565,11 @@ class MySocketIONamespace(AsyncNamespace):
 class MySocketIOManager:
     """MyStocks Socket.IO服务器管理器"""
 
-    def __init__(self, async_mode: str = "asgi"):
+    def __init__(
+        self,
+        async_mode: str = "asgi",
+        streaming_service: Optional[RealtimeStreamingService] = None,
+    ):
         """初始化Socket.IO管理器"""
         self.sio = AsyncServer(
             async_mode=async_mode,
@@ -579,6 +580,7 @@ class MySocketIOManager:
 
         self.connection_manager = ConnectionManager()
         self.request_handlers: Dict[str, Callable] = {}
+        self.streaming_service = streaming_service or get_streaming_service()
 
         # 注册命名空间
         self.sio.register_namespace(MySocketIONamespace("/", self))
@@ -636,8 +638,7 @@ class MySocketIOManager:
         stats["reconnection"] = reconnection_stats
 
         # 添加流服务统计
-        streaming_service = get_streaming_service()
-        streaming_stats = streaming_service.get_stats()
+        streaming_stats = self.streaming_service.get_stats()
         stats["streaming"] = streaming_stats
 
         return stats
@@ -649,8 +650,7 @@ class MySocketIOManager:
     ) -> None:
         """Emit market data to stream subscribers (room-based broadcast)"""
         try:
-            streaming_service = get_streaming_service()
-            stream = streaming_service.get_stream(symbol)
+            stream = self.streaming_service.get_stream(symbol)
 
             if not stream:
                 logger.warning(
@@ -672,7 +672,7 @@ class MySocketIOManager:
             )
 
             # Also record the broadcast in the stream
-            streaming_service.broadcast_data(symbol, data)
+            self.streaming_service.broadcast_data(symbol, data)
 
         except Exception as e:
             logger.error(
@@ -683,5 +683,4 @@ class MySocketIOManager:
 
     def get_streaming_stats(self) -> Dict[str, Any]:
         """Get real-time streaming service statistics"""
-        streaming_service = get_streaming_service()
-        return streaming_service.get_stats()
+        return self.streaming_service.get_stats()
