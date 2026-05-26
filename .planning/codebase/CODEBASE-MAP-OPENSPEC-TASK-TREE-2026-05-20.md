@@ -2954,13 +2954,13 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              exposure, frontend, PM2, OpenSpec, config, script, or
 │   │              issue-label change
 │   ├── G2.163 Service getter inventory refresh after Indicator/Data
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#316`
 │   │   ├── Evidence:
 │   │   │          `backend-service-lifecycle-candidate-refresh-after-indicator-data-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `service-lifecycle-candidate-refresh-after-indicator-data-2026-05-27.json`
 │   │   ├── Parent: G2.162 accepted and merged by PR `#315`
-│   │   ├── Current HEAD: `c9dc5de905e351c4675ee62201edfa1ce4e7ce97`
+│   │   ├── Evidence HEAD: `c9dc5de905e351c4675ee62201edfa1ce4e7ce97`
 │   │   ├── Scan snapshot: service files=`152`, API files=`219`,
 │   │   │          backend test files=`207`, top-level service
 │   │   │          `def get_*` definitions=`53`, root facade getters=`7`,
@@ -2987,9 +2987,38 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              PM2, OpenSpec, config, script, compatibility deletion,
 │   │              issue-label change, or implementation authorization
 │   │              is performed here
-│   └── Next gate: review G2.163; if accepted, start G2.164 as a
-│                  decision-only high-risk service getter track-selection
-│                  package before any further source implementation lane
+│   ├── G2.164 Next high-risk service getter track selection after
+│   │          Indicator/Data
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-next-high-risk-service-getter-track-selection-after-indicator-data-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `next-high-risk-service-getter-track-selection-after-indicator-data-2026-05-27.json`
+│   │   ├── Parent: G2.163 accepted and merged by PR `#316`
+│   │   ├── Current HEAD: `8b5fb7359a007db704e9f3dfb575d4f5b656075d`
+│   │   ├── Refreshed impact: `get_data_service` remains CRITICAL
+│   │   │          `5/3/7`, `get_strategy_service` remains CRITICAL
+│   │   │          `13/6/0`, `get_streaming_service` remains HIGH
+│   │   │          `9/9/0`, and `get_tdx_service` remains CRITICAL
+│   │   │          `6/2/5`
+│   │   ├── Decision: select Strategy adapter / strategy-management
+│   │   │          `get_strategy_service` as the next high-risk service
+│   │   │          getter design track; defer realtime/socket,
+│   │   │          Dashboard/TDX residual, Indicator/Data residual, root
+│   │   │          facade compatibility, and cross-cutting route provider
+│   │   │          governance
+│   │   ├── G2.165 gate: prepare a Strategy service seam design and
+│   │   │          authorization package that separates adapter/provider,
+│   │   │          strategy-management route, and backtest task surfaces
+│   │   │          before any source implementation lane begins
+│   │   └── Boundary: decision-only; no backend source/test edit, route/API
+│   │              behavior, OpenAPI exposure, frontend, PM2, OpenSpec,
+│   │              config, script, compatibility deletion, issue-label
+│   │              change, or implementation authorization is performed
+│   │              here
+│   └── Next gate: review G2.164; if accepted, start G2.165 as a
+│                  Strategy service seam design and authorization package
+│                  before any strategy source implementation lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -3370,6 +3399,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
 | P2 | Review G2.32 `MarketDataServiceV2` dashboard helper provider migration implementation | Future service seam lane | PR `#171` merged; G2.32 implementation packet is review-ready, removes dashboard helper direct getter calls, preserves `get_market_data_service_v2()` fallback compatibility, and recommends a fresh service lifecycle DI candidate refresh before any next implementation lane |
+| P1 | Review G2.164 high-risk service getter track selection after Indicator/Data | G/#79 service lifecycle lane | Ready for review; selects Strategy service seam as next design/authorization track only, without source implementation authorization |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items
