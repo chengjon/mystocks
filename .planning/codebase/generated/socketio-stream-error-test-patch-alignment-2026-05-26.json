@@ -1,0 +1,82 @@
+{
+  "schema_version": "implementation-evidence-v1",
+  "id": "g2-152-socketio-stream-error-test-patch-alignment",
+  "title": "Socket.IO stream-error test patch-target alignment",
+  "created_at": "2026-05-26T18:25:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "9288c3a7cdb8428c5ef984b9ba79e7e8fb2135dc",
+  "parent": {
+    "id": "g2-151-socketio-stream-error-emission-triage",
+    "pr": 303,
+    "state": "merged",
+    "merge_commit": "9288c3a7cdb8428c5ef984b9ba79e7e8fb2135dc"
+  },
+  "scope": {
+    "mode": "test-only implementation",
+    "runtime_source_edits": false,
+    "test_edits": true,
+    "openspec_edits": false,
+    "route_api_openapi_frontend_pm2_edits": false
+  },
+  "edited_files": [
+    "web/backend/tests/test_socketio_streaming_integration.py"
+  ],
+  "implementation": {
+    "test_exception_during_subscription": [
+      "Replaced the stale app.core.socketio_manager.get_streaming_service patch target.",
+      "Patched manager.streaming_service.subscribe, which is the current call path after Socket.IO manager consumer injection.",
+      "Kept runtime source unchanged."
+    ]
+  },
+  "gitnexus_pre_edit": {
+    "web/backend/tests/test_socketio_streaming_integration.py": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "affected_processes": 0
+    }
+  },
+  "red_evidence": {
+    "single_stream_error_test": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_socketio_streaming_integration.py::TestStreamingErrorHandling::test_exception_during_subscription -q --no-cov --tb=short",
+      "exit_code": 1,
+      "result": "1 failed because stream_error was not observed"
+    },
+    "socketio_manager_suite_baseline": {
+      "exit_code": 0,
+      "result": "26 passed, 1 warning in 1.01s"
+    },
+    "consumer_injection_regression_baseline": {
+      "exit_code": 0,
+      "result": "2 passed in 0.98s"
+    }
+  },
+  "green_evidence": {
+    "single_stream_error_test": {
+      "exit_code": 0,
+      "result": "1 passed in 0.85s"
+    },
+    "streaming_integration_suite": {
+      "exit_code": 0,
+      "result": "20 passed in 0.92s"
+    },
+    "socketio_manager_suite": {
+      "exit_code": 0,
+      "result": "26 passed, 1 warning in 0.90s"
+    },
+    "consumer_injection_regression": {
+      "exit_code": 0,
+      "result": "2 passed in 0.83s"
+    },
+    "ruff_touched_test": {
+      "exit_code": 0,
+      "result": "All checks passed"
+    }
+  },
+  "non_goals": [
+    "No backend runtime source was edited.",
+    "No helper aliases were restored in app.core.socketio_manager.",
+    "No realtime datetime debt was fixed.",
+    "No route/API, OpenAPI, frontend, PM2, OpenSpec, issue-label, or GitHub issue state was changed."
+  ],
+  "next_gate": "Review and merge this G2.152 package, then return to the already split G2.149 realtime datetime test authorization."
+}

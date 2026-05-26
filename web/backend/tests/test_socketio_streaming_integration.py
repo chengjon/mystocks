@@ -386,11 +386,8 @@ class TestStreamingErrorHandling:
         manager.connection_manager.add_connection("sid_001", "user_001")
 
         with patch.object(namespace, "emit", new_callable=AsyncMock) as mock_emit:
-            # Force an exception in streaming service
-            with patch(
-                "app.core.socketio_manager.get_streaming_service",
-                side_effect=Exception("Service error"),
-            ):
+            # Force an exception through the current manager-level streaming dependency.
+            with patch.object(manager.streaming_service, "subscribe", side_effect=Exception("Service error")):
                 await namespace.on_subscribe_market_stream("sid_001", {"symbol": "600519"})
 
                 # Should emit error response
