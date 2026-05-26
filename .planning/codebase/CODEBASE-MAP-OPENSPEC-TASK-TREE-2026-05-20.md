@@ -2358,9 +2358,9 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                getter deletion, implementation authorization, or
 │   │                issue-label change is made here
 │   ├── G2.139 BacktestEngine singleton/getter retirement authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#292`
 │   │   ├── Evidence: `backend-backtest-engine-getter-retirement-authorization-2026-05-26.md`
-│   │   ├── Current HEAD: `2d51cbd52bc37dae2ae5f59855bcdb70d41f169c`
+│   │   ├── Merge commit: `0f78609e25898181ea5653edc7350efc03a3bb9b`
 │   │   ├── Result: authorizes only a future narrow implementation lane to
 │   │   │          retire `_backtest_engine` and `get_backtest_engine` from
 │   │   │          `web/backend/app/services/backtest_engine.py`
@@ -2379,10 +2379,30 @@ CODEBASE-MAP Architecture Remediation Program
 │   │                route/API, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │                getter deletion, implementation, or issue-label change is
 │   │                made here
-│   └── Next gate: after G2.139 review and merge, execute the BacktestEngine
-│                  singleton/getter retirement implementation lane with TDD,
-│                  fresh GitNexus impact, staged detect_changes, and mainline
-│                  scope gate
+│   ├── G2.140 BacktestEngine singleton/getter retirement implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence: `backend-backtest-engine-getter-retirement-implementation-2026-05-26.md`
+│   │   ├── Current HEAD: `0f78609e25898181ea5653edc7350efc03a3bb9b`
+│   │   ├── Result: removes only `_backtest_engine` and
+│   │   │          `get_backtest_engine` from
+│   │   │          `web/backend/app/services/backtest_engine.py` and adds a
+│   │   │          focused regression test
+│   │   ├── Preserved scope: `BacktestConfig`, `BacktestResult`,
+│   │   │          `BacktestEngine`, existing BacktestEngine methods,
+│   │   │          route/API, OpenAPI exposure, frontend, PM2, OpenSpec, issue
+│   │   │          labels, and unrelated service lifecycle candidates remain
+│   │   │          unchanged
+│   │   ├── Verification: pre-edit GitNexus impact LOW / impacted=`0`;
+│   │   │          TDD red `1 failed, 1 passed`; focused green `2 passed`;
+│   │   │          exact scan reports getter definition=`0` and singleton
+│   │   │          token count=`0`; import smoke confirms preserved types and
+│   │   │          removed legacy surfaces; Ruff and Black passed
+│   │   └── Boundary: source-capable but limited to one backend service file,
+│   │                one focused test, report, generated artifact, task card,
+│   │                and steward-tree update
+│   └── Next gate: after G2.140 review and merge, prepare a closeout packet
+│                  before refreshing the remaining service lifecycle candidate
+│                  pool again
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

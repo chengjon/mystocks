@@ -266,15 +266,3 @@ class BacktestEngine:
             equity_curve=pd.DataFrame(),
             trade_history=pd.DataFrame(),
         )
-
-
-# 全局单例
-_backtest_engine = None
-
-
-def get_backtest_engine() -> BacktestEngine:
-    """获取回测引擎单例"""
-    global _backtest_engine
-    if _backtest_engine is None:
-        _backtest_engine = BacktestEngine()
-    return _backtest_engine
