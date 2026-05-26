@@ -1,0 +1,107 @@
+version: "v0.2"
+
+task:
+  id: "pr-285"
+  title: "Close out WatchlistService getter retirement"
+  owner: "main"
+  created_at: "2026-05-26"
+
+mainline:
+  id: "L1-watchlist-service-getter-retirement-closeout"
+  objective: "record PR #284 merge evidence and close the WatchlistService getter-retirement lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-watchlist-service-getter-retirement"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-watchlist-service-getter-retirement-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Closeout-only packet; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/watchlist-service-getter-retirement-closeout-2026-05-26.json"
+    - "docs/reports/quality/backend-watchlist-service-getter-retirement-closeout-2026-05-26.md"
+    - "governance/mainline/task-cards/pr-285.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 284 --json number,state,mergedAt,mergeCommit,title,url"
+      required: true
+    - id: "current-head-scan"
+      command: "scripted current-head text scan over WatchlistService getter definitions, singleton assignments, adapter fallback imports/calls, app/API getter calls, and route dependency handlers"
+      required: true
+    - id: "focused-watchlist-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_watchlist_service_getter_retirement.py web/backend/tests/test_watchlist_service_lifecycle_di.py web/backend/tests/test_watchlist_helper_lifecycle_di.py web/backend/tests/test_adapter_mock_fallback_controls.py web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "health-route-conflicts"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py -q --no-cov --tb=short"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-watchlist-service-getter-retirement-closeout-2026-05-26.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/watchlist-service-getter-retirement-closeout-2026-05-26.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-285.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests."
+  - "Do not change watchlist route paths, response contracts, OpenAPI exposure, PM2 workflow, OpenSpec changes, or GitHub issue labels."
+  - "Do not select the next implementation candidate before a fresh post-closeout candidate refresh."
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is treated as source authorization, a later worker could reopen an already merged WatchlistService getter-retirement implementation lane"
+    - "If the next candidate pool is selected without a fresh scan, completed getter-retirement evidence could be stale"
+  rollback_plan: "revert this closeout PR to remove only the closeout report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out WatchlistService getter retirement"
+    modified_scope: "steward tree, closeout report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; closeout records the merged parent implementation and does not change runtime code"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if markdown governance, JSON/YAML parsing, GitNexus staged scope, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-26T11:40:28+08:00"
+    approval_note: "Closeout follows merged G2.131 implementation PR #284"
+    secondary_approved: false
