@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-27T23:02:44+08:00`
-- Base HEAD checked: `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`
+- Prepared at: `2026-05-28T00:19:16+08:00`
+- Base HEAD checked: `0aac0e16f16480bd99eebb8726e21a7db6566b39`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.188 risk stop-loss route service provider implementation | G/#79 service lifecycle DI | PR `#340` merged at `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`; G2.188 implements path-limited stop-loss route provider injection with stop-loss tests green and OpenAPI dependency leak count `0` | If accepted, merge and start a closeout / candidate-refresh governance packet |
+| P0 | Review G2.189 risk stop-loss provider closeout / candidate refresh | G/#79 service lifecycle DI | PR `#341` merged at `0aac0e16f16480bd99eebb8726e21a7db6566b39`; post-merge stop-loss tests pass, OpenAPI dependency leak count is `0`, and route-body stop-loss resolver calls are `0` | If accepted, start G2.190 data-quality / adapter cross-cutting decision package as design / authorization only |
+| P0 | Preserve G2.188 risk stop-loss route service provider implementation | G/#79 service lifecycle DI | PR `#341` merged; G2.188 closed the stop-loss route-body provider migration while retaining src-level stop-loss provider backing getters | Do not delete retained getters or expand into alerts, legacy `app.api.risk_management`, or other risk route migrations |
 | P0 | Preserve G2.187 risk stop-loss route service provider authorization | G/#79 service lifecycle DI | PR `#340` merged; G2.187 authorized only `web/backend/app/api/risk/stop_loss.py` plus focused tests for G2.188 | Do not expand G2.188 into alerts resolver, legacy `app.api.risk_management`, or other risk route migrations |
 | P0 | Preserve G2.186 remaining getter inventory refresh | G/#79 service lifecycle DI | PR `#339` merged; G2.186 refreshed remaining direct getter inventory and selected stop-loss route provider authorization as the next narrow gate | Do not start a backend source lane from G2.186 |
 | P0 | Preserve G2.185 provider governance decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#338` merged; provider residuals are retained active route contracts and excluded from direct implementation-candidate counts | Do not start a backend source lane from G2.185 |
@@ -30,10 +31,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does the split preserve the full historical steward tree in archive?
-- Is the root entrypoint short enough to serve as a daily navigation file?
-- Does `steward-index.json` include enough fields for automated guards?
-- Does G2.188 stay limited to `web/backend/app/api/risk/stop_loss.py` and focused stop-loss tests?
-- Does the G2.188 OpenAPI smoke prove `execution_service` / `history_service` do not leak into schema parameters?
-- Are the unrelated alerts resolver and legacy `app.api.risk_management` failures kept out of this source lane?
-- Are implementation, authorization, decision, and evidence lanes still distinct?
+- Does G2.189 accurately record PR `#341` as merged at `0aac0e16f16480bd99eebb8726e21a7db6566b39`?
+- Does the stop-loss pair move from candidate status to closed route-body provider migration while retaining provider backing getters?
+- Does G2.189 keep alerts resolver and legacy `app.api.risk_management` baselines out of scope?
+- Does G2.189 avoid authorizing data-quality source implementation directly?
+- Is G2.190 correctly framed as a data-quality / adapter cross-cutting decision and authorization package only?

@@ -1,0 +1,172 @@
+{
+  "schema_version": "2026-05-28.g2-189.closeout-refresh.v1",
+  "generated_at": "2026-05-28T00:19:16+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "0aac0e16f16480bd99eebb8726e21a7db6566b39",
+  "worktree_branch": "g2-189-risk-stop-loss-provider-closeout-refresh",
+  "scope": "governance_closeout_candidate_refresh_package",
+  "source_edit_authority": false,
+  "parent_chain": [
+    {
+      "id": "G2.187",
+      "description": "risk stop-loss route provider authorization",
+      "github_pr": 340,
+      "merge_commit": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a"
+    },
+    {
+      "id": "G2.188",
+      "description": "risk stop-loss route provider implementation",
+      "github_pr": 341,
+      "merge_commit": "0aac0e16f16480bd99eebb8726e21a7db6566b39",
+      "merged_at": "2026-05-27T15:46:26Z"
+    }
+  ],
+  "closed_capability": {
+    "id": "risk-stop-loss-route-provider-migration",
+    "status": "closed_for_route_body_provider_migration",
+    "summary": "G2.188 replaced stop-loss route-body service resolver calls with FastAPI provider-injected service parameters while preserving route paths, HTTP methods, response models, OpenAPI examples, direct-test fallback behavior, and src-level service getters.",
+    "endpoints_with_provider_parameters": 8,
+    "route_body_resolver_calls_after_merge": {
+      "body_resolve_history": 0,
+      "body_resolve_execution": 0
+    },
+    "retained_provider_backing_getters": [
+      "get_stop_loss_history_service",
+      "get_stop_loss_execution_service"
+    ],
+    "retention_reason": "These src-level getters remain provider backing functions and are not deletion candidates in this closeout package."
+  },
+  "post_merge_verification": {
+    "commands": [
+      {
+        "id": "stop-loss-runtime-bootstrap",
+        "result": "5 passed, 5 deselected",
+        "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_risk_runtime_bootstrap_regressions.py -q -k stop_loss --tb=short --disable-warnings --no-cov"
+      },
+      {
+        "id": "stop-loss-route-regressions",
+        "result": "2 passed",
+        "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stop_loss_route_regressions.py -q --tb=short --disable-warnings --no-cov"
+      },
+      {
+        "id": "app-main-risk-router-contract",
+        "result": "1 passed",
+        "command": "PYTHONPATH=web/backend pytest -o addopts= tests/unit/contract/test_risk_router_runtime_import.py::test_app_main_registers_canonical_risk_router_without_loading_compat_shim -q --tb=short --disable-warnings --no-cov"
+      },
+      {
+        "id": "ruff-touched-risk-files",
+        "result": "passed",
+        "command": "ruff check web/backend/app/api/risk/stop_loss.py web/backend/tests/test_risk_runtime_bootstrap_regressions.py web/backend/tests/test_stop_loss_route_regressions.py tests/unit/contract/test_risk_router_runtime_import.py"
+      }
+    ],
+    "openapi_smoke": {
+      "openapi_paths": 500,
+      "stop_loss_paths": 10,
+      "dependency_params_leaked": 0
+    },
+    "route_body_endpoint_check": {
+      "checked_endpoints": [
+        "add_stop_loss_position",
+        "update_stop_loss_price",
+        "remove_stop_loss_position",
+        "get_stop_loss_status",
+        "get_stop_loss_overview",
+        "batch_update_stop_loss_prices",
+        "get_stop_loss_performance",
+        "get_stop_loss_recommendations"
+      ],
+      "all_have_provider_parameters": true,
+      "body_resolve_history_calls": 0,
+      "body_resolve_execution_calls": 0
+    }
+  },
+  "remaining_candidate_refresh": {
+    "source_inventory": ".planning/codebase/generated/service-lifecycle-remaining-getter-inventory-refresh-2026-05-27.json",
+    "raw_direct_getter_names": 111,
+    "raw_direct_getter_calls": 296,
+    "service_singleton_review": {
+      "names": 10,
+      "calls": 43
+    },
+    "candidate_state_after_g2_188": [
+      {
+        "name": "get_stop_loss_history_service",
+        "previous_g2_186_disposition": "recommended next narrow authorization-package candidate",
+        "g2_189_disposition": "closed for route-body provider migration; retained as provider backing getter"
+      },
+      {
+        "name": "get_stop_loss_execution_service",
+        "previous_g2_186_disposition": "recommended next narrow authorization-package candidate",
+        "g2_189_disposition": "closed for route-body provider migration; retained as provider backing getter"
+      },
+      {
+        "name": "get_data_quality_monitor",
+        "calls": 20,
+        "risk": "HIGH",
+        "g2_189_disposition": "recommended next governance target as data-quality / adapter cross-cutting decision package; design and authorization only"
+      },
+      {
+        "name": "get_execution_tracking_evidence_service",
+        "calls": 2,
+        "risk": "HIGH",
+        "g2_189_disposition": "defer to trade execution evidence authorization package"
+      },
+      {
+        "name": "get_prewarming_strategy",
+        "calls": 3,
+        "risk": "HIGH",
+        "g2_189_disposition": "defer to control-plane cache prewarming governance track"
+      },
+      {
+        "name": "get_integrated_services",
+        "calls": 7,
+        "risk": "MEDIUM",
+        "g2_189_disposition": "retain until root facade compatibility retirement package exists"
+      },
+      {
+        "name": "get_unified_data_service",
+        "calls": 5,
+        "risk": "MEDIUM",
+        "g2_189_disposition": "retain as root facade / service self-wrapper; not a route-body singleton implementation candidate"
+      },
+      {
+        "name": "get_data_service",
+        "calls": 2,
+        "risk": "LOW",
+        "g2_189_disposition": "retain under indicator/data provider governance unless later authorization changes it"
+      },
+      {
+        "name": "get_market_data_service_v2",
+        "calls": 1,
+        "risk": "LOW",
+        "g2_189_disposition": "retain as constructor install fallback"
+      },
+      {
+        "name": "get_tdx_service",
+        "calls": 1,
+        "risk": "LOW",
+        "g2_189_disposition": "retain as constructor install fallback; Dashboard/TDX route work remains separate"
+      }
+    ],
+    "recommended_next_governance_target": "data-quality-and-adapter-cross-cutting-decision-package",
+    "recommended_next_work_item": "G2.190 data-quality / adapter cross-cutting decision package",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-189"
+  },
+  "known_out_of_scope_baselines": [
+    "alerts route resolver baseline failures: _resolve_notification_manager, _resolve_rule_engine, _resolve_runtime_alert_service",
+    "legacy app.api.risk_management compatibility module absence"
+  ],
+  "acceptance_boundary": {
+    "if_g2_189_is_accepted": "Start G2.190 as a design / authorization package for the data-quality and adapter cross-cutting track.",
+    "not_authorized": [
+      "backend source edits",
+      "frontend edits",
+      "test edits",
+      "OpenSpec proposal creation",
+      "GitHub issue label changes",
+      "deleting retained src-level provider backing getters",
+      "starting data-quality source implementation directly"
+    ]
+  }
+}

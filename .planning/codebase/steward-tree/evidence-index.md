@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-27T23:02:44+08:00`
-- Base HEAD checked: `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`
+- Prepared at: `2026-05-28T00:19:16+08:00`
+- Base HEAD checked: `0aac0e16f16480bd99eebb8726e21a7db6566b39`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -37,8 +37,10 @@ state transition.
 | `docs/reports/quality/backend-service-lifecycle-remaining-getter-inventory-refresh-2026-05-27.md` | G2.186 human-readable inventory refresh decision package | Accepted by PR `#339`; superseded for stop-loss authorization by G2.187 |
 | `.planning/codebase/generated/risk-stop-loss-route-provider-authorization-2026-05-27.json` | G2.187 risk stop-loss route provider authorization evidence | Accepted by PR `#340`; superseded for implementation review by G2.188 |
 | `docs/reports/quality/backend-risk-stop-loss-route-provider-authorization-2026-05-27.md` | G2.187 human-readable authorization package | Accepted by PR `#340` |
-| `.planning/codebase/generated/risk-stop-loss-route-provider-implementation-2026-05-27.json` | G2.188 risk stop-loss route provider implementation evidence | Current for HEAD `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`; stale if HEAD changes |
-| `docs/reports/quality/backend-risk-stop-loss-route-provider-implementation-2026-05-27.md` | G2.188 human-readable implementation package | Review input until implementation PR is accepted |
+| `.planning/codebase/generated/risk-stop-loss-route-provider-implementation-2026-05-27.json` | G2.188 risk stop-loss route provider implementation evidence | Accepted by PR `#341`; superseded for remaining candidate selection by G2.189 |
+| `docs/reports/quality/backend-risk-stop-loss-route-provider-implementation-2026-05-27.md` | G2.188 human-readable implementation package | Accepted by PR `#341` |
+| `.planning/codebase/generated/risk-stop-loss-provider-closeout-refresh-2026-05-28.json` | G2.189 stop-loss provider closeout and candidate-refresh evidence | Current for HEAD `0aac0e16f16480bd99eebb8726e21a7db6566b39`; review input until PR `#342` is accepted |
+| `docs/reports/quality/backend-risk-stop-loss-provider-closeout-refresh-2026-05-28.md` | G2.189 human-readable closeout and candidate-refresh report | Review input until PR `#342` is accepted |
 
 ## External State Inputs
 
@@ -50,7 +52,8 @@ state transition.
 | GitHub PR `#338` | `MERGED` | G2.185 provider governance decision merged by commit `720248521d705af067d0a2600710444e439d7605` |
 | GitHub PR `#339` | `MERGED` | G2.186 remaining getter inventory refresh merged by commit `a63a6cb9a277195905b046cd31777d95160ee2c6` |
 | GitHub PR `#340` | `MERGED` | G2.187 stop-loss route provider authorization merged by commit `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a` |
-| `origin/wip/root-dirty-20260403` | `a63a6cb9a277195905b046cd31777d95160ee2c6` | Base used for this decision branch |
+| GitHub PR `#341` | `MERGED` | G2.188 stop-loss route provider implementation merged by commit `0aac0e16f16480bd99eebb8726e21a7db6566b39` |
+| `origin/wip/root-dirty-20260403` | `0aac0e16f16480bd99eebb8726e21a7db6566b39` | Base used for this closeout / candidate-refresh branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

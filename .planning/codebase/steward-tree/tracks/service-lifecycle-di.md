@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-27T23:02:44+08:00`
-- Base HEAD checked: `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`
+- Prepared at: `2026-05-28T00:19:16+08:00`
+- Base HEAD checked: `0aac0e16f16480bd99eebb8726e21a7db6566b39`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -40,7 +40,8 @@ It proved a repeatable conveyor:
 | G2.185 route dependency/provider governance decision | Merged by PR `#338` | Classifies active FastAPI providers as retained route contracts, not singleton getter deletion candidates |
 | G2.186 remaining getter inventory refresh | Merged by PR `#339` | Refreshes direct getter inventory after provider governance and recommends a narrow stop-loss authorization package as the next gate |
 | G2.187 risk stop-loss route provider authorization | Merged by PR `#340` | Defines the future G2.188 implementation scope for stop-loss route provider injection without source edits in that PR |
-| G2.188 risk stop-loss route provider implementation | For review | Implements the authorized provider injection in `web/backend/app/api/risk/stop_loss.py`; stop-loss tests and OpenAPI dependency leak smoke pass |
+| G2.188 risk stop-loss route provider implementation | Merged by PR `#341` | Implements the authorized provider injection in `web/backend/app/api/risk/stop_loss.py`; post-merge stop-loss tests and OpenAPI dependency leak smoke pass |
+| G2.189 risk stop-loss provider closeout / candidate refresh | For review | Records PR `#341` closeout, marks the stop-loss pair closed for route-body provider migration, and selects data-quality / adapter cross-cutting governance as the next design-only gate |
 
 ## Current Strategy Getter Residuals
 
@@ -78,34 +79,38 @@ definitions, imports, FastAPI `Depends(...)` provider references,
 | Realtime / streaming track | 10 | 12 | Already governed by realtime streaming/socket track |
 | Service singleton review | 10 | 43 | Classified by G2.186 generated evidence |
 
-The next recommended authorization-only gate is G2.187 risk stop-loss route
-service provider authorization, limited to the stop-loss route pair. High-risk
-data-quality, root-facade, control-plane cache, trade evidence, and constructor
-fallback getters stay deferred to their owner-specific tracks.
+G2.188 closed the stop-loss route-body provider migration. The stop-loss
+src-level getters now remain retained provider backing functions, not deletion
+candidates. High-risk data-quality, root-facade, control-plane cache, trade
+evidence, and constructor fallback getters stay deferred to their owner-specific
+tracks.
 
 ## G2.187 / G2.188 Stop-Loss Provider Lane
 
-At HEAD `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`, G2.188 implements the
+At HEAD `0aac0e16f16480bd99eebb8726e21a7db6566b39`, G2.188 implements the
 G2.187-authorized stop-loss route provider seam by replacing route-body resolver
 calls with FastAPI dependency-injected service parameters.
 
 | Implementation surface | Current direct consumers | GitNexus risk | Current decision |
 |---|---:|---|---|
-| `_resolve_history_service` | 2 | LOW | Wrapped by `get_stop_loss_history_service_provider`; direct test fallback preserved |
-| `_resolve_execution_service` | 6 | MEDIUM | Wrapped by `get_stop_loss_execution_service_provider`; direct test fallback preserved |
+| `_resolve_history_service` | 0 route-body calls after G2.188 | LOW | Wrapped by `get_stop_loss_history_service_provider`; direct test fallback preserved |
+| `_resolve_execution_service` | 0 route-body calls after G2.188 | MEDIUM | Wrapped by `get_stop_loss_execution_service_provider`; direct test fallback preserved |
 
-G2.188 touches only `web/backend/app/api/risk/stop_loss.py`, focused stop-loss
-tests, and governance evidence. It preserves route paths, HTTP methods,
+G2.188 touched only `web/backend/app/api/risk/stop_loss.py`, focused stop-loss
+tests, and governance evidence. It preserved route paths, HTTP methods,
 response-model declarations, OpenAPI examples, and src-level service getters.
-OpenAPI smoke records `openapi_paths=500`, `stop_loss_paths=10`, and
+Post-merge smoke records `openapi_paths=500`, `stop_loss_paths=10`, and
 `dependency_params_leaked=0`.
 
 ## Next Gates
 
-- Review G2.188 risk stop-loss route service provider implementation.
-- If accepted, merge and start a closeout / candidate-refresh governance packet.
-- Do not expand this implementation into alerts resolver fixes, legacy
-  `app.api.risk_management` restoration, or other risk route provider migrations.
+- Review G2.189 risk stop-loss provider closeout / candidate refresh.
+- If accepted, start G2.190 data-quality / adapter cross-cutting decision
+  package as design / authorization only.
+- Do not start data-quality source implementation from G2.189.
+- Do not delete retained stop-loss provider backing getters.
+- Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
+  restoration, or other risk route provider migrations.
 
 ## Forbidden Scope
 
