@@ -1,0 +1,171 @@
+{
+  "schema_version": 1,
+  "title": "Service lifecycle remaining getter inventory refresh after provider governance",
+  "prepared_at": "2026-05-27T22:01:42+08:00",
+  "base_head_checked": "720248521d705af067d0a2600710444e439d7605",
+  "base_relationship": {
+    "previous_gate": "G2.185 route dependency/provider governance decision",
+    "previous_pr": 338,
+    "previous_merge_commit": "720248521d705af067d0a2600710444e439d7605",
+    "source_edit_authority": false
+  },
+  "scan_scope": {
+    "directories": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "file_count": 371,
+    "excluded_patterns": [
+      "function definitions",
+      "import statements",
+      "FastAPI Depends(...) provider references",
+      "names ending in _dependency",
+      "method calls through object receivers",
+      "comments and decorators"
+    ]
+  },
+  "raw_direct_getter_scan": {
+    "direct_getter_names": 111,
+    "direct_getter_calls": 296
+  },
+  "bucket_totals": [
+    {
+      "bucket": "infra_control_plane_session_accessors",
+      "names": 18,
+      "calls": 78,
+      "disposition": "not a service lifecycle source candidate"
+    },
+    {
+      "bucket": "factory_adapter_helper_root_facade",
+      "names": 27,
+      "calls": 101,
+      "disposition": "requires separate facade/adapter ownership decisions"
+    },
+    {
+      "bucket": "manual_review",
+      "names": 44,
+      "calls": 50,
+      "disposition": "do not auto-convert into backlog without owner review"
+    },
+    {
+      "bucket": "cache_messaging_accessors",
+      "names": 3,
+      "calls": 12,
+      "disposition": "cache/messaging lifecycle track, not generic service DI"
+    },
+    {
+      "bucket": "realtime_streaming_track",
+      "names": 10,
+      "calls": 12,
+      "disposition": "already governed by realtime streaming/socket track"
+    },
+    {
+      "bucket": "service_singleton_review",
+      "names": 10,
+      "calls": 43,
+      "disposition": "requires candidate-level classification below"
+    }
+  ],
+  "service_singleton_review_candidates": [
+    {
+      "name": "get_data_quality_monitor",
+      "direct_calls": 20,
+      "first_location": "web/backend/app/api/data_quality.py:112",
+      "gitnexus_risk": "HIGH",
+      "gitnexus_direct_impact": 20,
+      "classification": "data-quality and adapter cross-cutting track",
+      "disposition": "do not start source implementation from G2.186; needs separate design/authorization package"
+    },
+    {
+      "name": "get_integrated_services",
+      "direct_calls": 7,
+      "first_location": "web/backend/app/services/__init__.py:259",
+      "gitnexus_risk": "MEDIUM",
+      "gitnexus_direct_impact": 7,
+      "classification": "root facade compatibility",
+      "disposition": "retain until a root facade compatibility retirement package exists"
+    },
+    {
+      "name": "get_unified_data_service",
+      "direct_calls": 5,
+      "first_location": "web/backend/app/services/unified_data_service.py:587",
+      "gitnexus_risk": "MEDIUM",
+      "gitnexus_direct_impact": 5,
+      "classification": "root facade / service self-wrapper",
+      "disposition": "retain; not a route-body singleton implementation candidate"
+    },
+    {
+      "name": "get_prewarming_strategy",
+      "direct_calls": 3,
+      "first_location": "web/backend/app/api/_cache_prewarming_routes.py:118",
+      "gitnexus_risk": "HIGH",
+      "gitnexus_direct_impact": 3,
+      "classification": "control-plane cache prewarming",
+      "disposition": "route/control-plane track; not a generic service lifecycle DI pilot"
+    },
+    {
+      "name": "get_data_service",
+      "direct_calls": 2,
+      "first_location": "web/backend/app/api/v1/strategy/indicators.py:30",
+      "gitnexus_risk": "LOW",
+      "gitnexus_direct_impact": 2,
+      "classification": "indicator/data route-local provider fallback",
+      "disposition": "retain under provider governance unless a later indicator/data authorization package changes it"
+    },
+    {
+      "name": "get_execution_tracking_evidence_service",
+      "direct_calls": 2,
+      "first_location": "web/backend/app/api/trade/execution_tracking_routes.py:364",
+      "gitnexus_risk": "HIGH",
+      "gitnexus_direct_impact": 2,
+      "classification": "trade evidence route track",
+      "disposition": "separate trade/evidence authorization package required before source changes"
+    },
+    {
+      "name": "get_market_data_service_v2",
+      "direct_calls": 1,
+      "first_location": "web/backend/app/services/market_data_service_v2.py:673",
+      "gitnexus_risk": "LOW",
+      "gitnexus_direct_impact": 1,
+      "classification": "constructor install fallback",
+      "disposition": "retain as installation fallback; not a route-body candidate"
+    },
+    {
+      "name": "get_stop_loss_execution_service",
+      "direct_calls": 1,
+      "first_location": "web/backend/app/api/risk/stop_loss.py:51",
+      "gitnexus_risk": "LOW",
+      "gitnexus_direct_impact": 0,
+      "classification": "risk stop-loss route service getter",
+      "disposition": "recommended next narrow authorization-package candidate"
+    },
+    {
+      "name": "get_stop_loss_history_service",
+      "direct_calls": 1,
+      "first_location": "web/backend/app/api/risk/stop_loss.py:44",
+      "gitnexus_risk": "LOW",
+      "gitnexus_direct_impact": 1,
+      "classification": "risk stop-loss route service getter",
+      "disposition": "recommended next narrow authorization-package candidate"
+    },
+    {
+      "name": "get_tdx_service",
+      "direct_calls": 1,
+      "first_location": "web/backend/app/services/tdx_service.py:290",
+      "gitnexus_risk": "LOW",
+      "gitnexus_direct_impact": 1,
+      "classification": "constructor install fallback",
+      "disposition": "retain as installation fallback; Dashboard/TDX route work remains separate"
+    }
+  ],
+  "decision": {
+    "classification": "inventory-refresh-complete-no-source-lane",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-186",
+    "selected_next_governance_target": "risk-stop-loss-route-service-provider-authorization",
+    "recommended_next_work_item": "G2.187 risk stop-loss route service provider authorization package"
+  },
+  "freshness": {
+    "current_head_checked": "720248521d705af067d0a2600710444e439d7605",
+    "stale_if_head_mismatch": true
+  }
+}

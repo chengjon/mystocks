@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-27T21:33:48+08:00`
-- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
+- Prepared at: `2026-05-27T22:01:42+08:00`
+- Base HEAD checked: `720248521d705af067d0a2600710444e439d7605`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -37,7 +37,8 @@ It proved a repeatable conveyor:
 | G2.182 Strategy route/provider fallback decision | Merged by PR `#335` | Classifies the route/provider fallback as a retained route-local provider seam and does not open a source lane |
 | G2.183 Strategy getter remaining residual decision | Merged by PR `#336` | Closes the current Strategy getter residual track with retained residuals and focused residual test evidence |
 | G2.184 next non-Strategy candidate decision | Merged by PR `#337` | Selects route dependency/provider governance as the next decision target and opens no source lane |
-| G2.185 route dependency/provider governance decision | For review | Classifies active FastAPI providers as retained route contracts, not singleton getter deletion candidates |
+| G2.185 route dependency/provider governance decision | Merged by PR `#338` | Classifies active FastAPI providers as retained route contracts, not singleton getter deletion candidates |
+| G2.186 remaining getter inventory refresh | For review | Refreshes direct getter inventory after provider governance and recommends a narrow stop-loss authorization package as the next gate |
 
 ## Current Strategy Getter Residuals
 
@@ -53,14 +54,41 @@ G2.183 classification recorded these `get_strategy_service` hits under
 | `web/backend/app/tasks/backtest_tasks.py` | 2 | Retained backtest task resolver fallback; do not reopen unless current evidence contradicts focused tests |
 | `web/backend/app/services/strategy_service.py` | 1 | Public getter definition; retain as compatibility entrypoint and do not delete, rename, or privatize here |
 
+## G2.186 Remaining Getter Refresh
+
+At HEAD `720248521d705af067d0a2600710444e439d7605`, G2.186 scanned
+`web/backend/app/api` and `web/backend/app/services` after excluding function
+definitions, imports, FastAPI `Depends(...)` provider references,
+`*_dependency` names, object method calls, comments, and decorators.
+
+| Metric | Count |
+|---|---:|
+| Python files scanned | 371 |
+| Direct `get_*` names after exclusion | 111 |
+| Direct `get_*` calls after exclusion | 296 |
+
+| Candidate class | Names | Calls | Current handling |
+|---|---:|---:|---|
+| Infra / control-plane / session accessors | 18 | 78 | Not service lifecycle source candidates |
+| Factory / adapter / helper / root facade | 27 | 101 | Requires owner-specific decisions |
+| Manual review residue | 44 | 50 | Must not become backlog automatically |
+| Cache / messaging accessors | 3 | 12 | Cache/messaging lifecycle track |
+| Realtime / streaming track | 10 | 12 | Already governed by realtime streaming/socket track |
+| Service singleton review | 10 | 43 | Classified by G2.186 generated evidence |
+
+The next recommended authorization-only gate is G2.187 risk stop-loss route
+service provider authorization, limited to the stop-loss route pair. High-risk
+data-quality, root-facade, control-plane cache, trade evidence, and constructor
+fallback getters stay deferred to their owner-specific tracks.
+
 ## Next Gates
 
-- Review G2.185 route dependency/provider governance residual decision.
-- If accepted, start G2.186 service lifecycle remaining getter inventory refresh
-  after provider governance.
-- Do not start another backend source lane directly from G2.185. The current
-  provider residuals are active route contracts and must be excluded from direct
-  implementation-candidate counts unless a later authorization says otherwise.
+- Review G2.186 remaining getter inventory refresh.
+- If accepted, start G2.187 risk stop-loss route service provider authorization
+  package.
+- Do not start another backend source lane directly from G2.186. The current
+  report is an inventory refresh and next-gate recommendation, not source
+  authorization.
 
 ## Forbidden Scope
 

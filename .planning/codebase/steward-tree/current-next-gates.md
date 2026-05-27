@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-27T21:33:48+08:00`
-- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
+- Prepared at: `2026-05-27T22:01:42+08:00`
+- Base HEAD checked: `720248521d705af067d0a2600710444e439d7605`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.185 route dependency/provider governance residual decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#337` merged at `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`; G2.185 classifies provider residuals as retained active contracts and opens no source lane | If accepted, start G2.186 service lifecycle remaining getter inventory refresh after provider governance |
+| P0 | Review G2.186 remaining getter inventory refresh | G/#79 service lifecycle DI | PR `#338` merged at `720248521d705af067d0a2600710444e439d7605`; G2.186 scans remaining direct getter calls after provider governance and opens no source lane | If accepted, start G2.187 risk stop-loss route service provider authorization package |
+| P0 | Preserve G2.185 provider governance decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#338` merged; provider residuals are retained active route contracts and excluded from direct implementation-candidate counts | Do not start a backend source lane from G2.185 |
 | P0 | Preserve G2.184 next non-Strategy candidate decision | G/#79 service lifecycle DI | PR `#337` merged; G2.184 selected route dependency/provider governance as the next decision target | Do not start a backend source lane from G2.184 |
 | P0 | Preserve G2.183 Strategy getter residual closeout | G/#79 service lifecycle DI | PR `#336` merged; remaining Strategy getter residuals classified as retained and tested | Do not reopen generic Strategy getter implementation unless current HEAD contradicts G2.183 evidence |
 | P0 | Keep steward split structure active | CODEBASE-MAP steward governance | PR `#332` merged at `750fb7c797ff95f27152439ed988a7115252129e` | Future steward updates must use split files and `steward-index.json`, not the archived single-file tree |
@@ -30,6 +31,6 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 - Does the split preserve the full historical steward tree in archive?
 - Is the root entrypoint short enough to serve as a daily navigation file?
 - Does `steward-index.json` include enough fields for automated guards?
-- Does G2.185 correctly classify active FastAPI providers as route contracts rather than deletion candidates?
-- Is G2.186 the right next gate for remaining getter inventory refresh after provider governance?
+- Does G2.186 correctly keep provider fallbacks, root facades, constructor fallbacks, and cross-cutting data-quality getters out of direct source candidacy?
+- Is G2.187 risk stop-loss route service provider authorization the right next narrow gate?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

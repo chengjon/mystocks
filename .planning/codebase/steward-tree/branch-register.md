@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-27T21:33:48+08:00`
-- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
+- Prepared at: `2026-05-27T22:01:42+08:00`
+- Base HEAD checked: `720248521d705af067d0a2600710444e439d7605`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -22,12 +22,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#335` | `g2-182-strategy-route-provider-fallback-decision` | `wip/root-dirty-20260403` | `MERGED` at `597f8186092b4ad3d0704326e292c5e4fa075f15` | Retained route/provider fallback decision |
 | `#336` | `g2-183-strategy-getter-remaining-residual-decision` | `wip/root-dirty-20260403` | `MERGED` at `d454193fdae08ad875c423e0b5aa959d79bedc67` | Strategy getter remaining residual closeout with retained residuals |
 | `#337` | `g2-184-next-nonstrategy-service-getter-candidate-decision` | `wip/root-dirty-20260403` | `MERGED` at `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` | Next non-Strategy candidate decision selecting provider governance |
+| `#338` | `g2-185-route-dependency-provider-governance-decision` | `wip/root-dirty-20260403` | `MERGED` at `720248521d705af067d0a2600710444e439d7605` | Provider governance decision retaining active route contracts |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-185-route-dependency-provider-governance-decision` | `origin/wip/root-dirty-20260403` at `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` | Classify active route dependency/provider residuals and select the next queue-refresh gate | None |
+| `g2-186-remaining-getter-inventory-refresh` | `origin/wip/root-dirty-20260403` at `720248521d705af067d0a2600710444e439d7605` | Refresh remaining direct getter inventory after provider governance and select the next authorization-only gate | G2.185 provider governance decision |
 
 ## OpenSpec Relationship
 
@@ -43,7 +44,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.185 is a provider-governance decision branch only. It records the merged
-state of PR `#337`, classifies active FastAPI dependency providers as retained
-route contracts, and must not introduce backend source edits or a new
-implementation lane.
+G2.186 is an inventory-refresh decision branch only. It records the merged
+state of PR `#338`, excludes retained provider contracts from direct
+implementation-candidate counts, and recommends G2.187 as a stop-loss
+route-service authorization package. It must not introduce backend source edits
+or a new implementation lane.
