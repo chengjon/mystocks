@@ -3163,13 +3163,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              frontend, PM2, OpenSpec, config, script, compatibility
 │   │              deletion, or issue-label change is performed here
 │   ├── G2.170 Backtest task resolver implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#323`
 │   │   ├── Evidence:
 │   │   │          `backend-backtest-task-resolver-implementation-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `backtest-task-resolver-implementation-2026-05-27.json`
 │   │   ├── Parent: G2.169 accepted and merged by PR `#322`
 │   │   ├── Base HEAD: `bc2c0b8e102c455c09ba718b3eff982bf0f6e5e7`
+│   │   ├── Merge HEAD: `d465e41950c2f6fe70ee9c923da3cc55c09212c3`
 │   │   ├── Implementation: introduced task-local
 │   │   │          `_get_strategy_data_source()` provider seam and changed
 │   │   │          `_resolve_backtest_data_source()` to delegate acquisition
@@ -3190,9 +3191,34 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenAPI exposure, frontend, PM2, OpenSpec, config, script,
 │   │              compatibility deletion, or issue-label change is performed
 │   │              here
-│   └── Next gate: review G2.170; if accepted, close out this backtest task
-│                  resolver seam before selecting another Strategy service
-│                  getter residual track
+│   ├── G2.171 Backtest task resolver closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-backtest-task-resolver-closeout-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `backtest-task-resolver-closeout-2026-05-27.json`
+│   │   ├── Parent: G2.170 accepted and merged by PR `#323`
+│   │   ├── Evidence HEAD: `d465e41950c2f6fe70ee9c923da3cc55c09212c3`
+│   │   ├── Closeout: G2.170 is closed as the backtest task resolver seam
+│   │   │          only; public `get_strategy_service` remains unchanged,
+│   │   │          route provider fallback remains retained, and Strategy
+│   │   │          adapter/provider duplication remains deferred
+│   │   ├── Post-merge static result: resolver direct
+│   │   │          `get_strategy_service` mentions remain `0`; helper
+│   │   │          `get_strategy_service` mentions remain `2`; provider seam
+│   │   │          test remains present
+│   │   ├── Verification: backtest task regressions `3 passed`, strategy
+│   │   │          route provider regressions `5 passed`, ruff/black passed,
+│   │   │          and OpenAPI smoke `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   └── Boundary: governance-only closeout; no backend source/test edit,
+│   │              route/API behavior, OpenAPI exposure, frontend, PM2,
+│   │              OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, or next implementation authorization is
+│   │              performed here
+│   └── Next gate: review G2.171; after acceptance, create a separate
+│                  decision-only or authorization-only packet before any
+│                  additional Strategy service getter source implementation
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

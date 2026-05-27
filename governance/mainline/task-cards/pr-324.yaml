@@ -1,0 +1,116 @@
+version: "v0.2"
+
+task:
+  id: "pr-324"
+  title: "Close out backtest task resolver seam"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-backtest-task-resolver-closeout"
+  objective: "record post-merge closeout evidence for G2.170 backtest task resolver provider seam"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-backtest-task-resolver-closeout"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only post-merge closeout; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/backtest-task-resolver-closeout-2026-05-27.json"
+    - "docs/reports/quality/backend-backtest-task-resolver-closeout-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-324.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 323 --json number,state,mergeCommit,url,title"
+      required: true
+    - id: "post-merge-static-scan"
+      command: "scan backtest task resolver helper, resolver, run task, and focused regression test state at current HEAD"
+      required: true
+    - id: "focused-backtest-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "route-provider-regression"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-black-post-merge"
+      command: "ruff check web/backend/app/tasks/backtest_tasks.py web/backend/tests/test_backtest_tasks_regressions.py && black --check web/backend/app/tasks/backtest_tasks.py web/backend/tests/test_backtest_tasks_regressions.py"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.openapi() smoke with minimal non-secret env; record route count, path count, duplicate operation IDs, duplicate-operation-id warnings, and total captured warnings"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-backtest-task-resolver-closeout-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/backtest-task-resolver-closeout-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-324.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this closeout package."
+  - "Do not select or authorize the next Strategy service getter implementation lane from this package."
+  - "Do not edit strategy_service.py, Strategy route provider fallback, or Strategy adapter/provider helper modules."
+  - "Do not delete, privatize, rename, or change get_strategy_service()."
+  - "Do not change route/API behavior, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If closeout is treated as a new implementation authorization, the remaining Strategy service getter tracks could bypass their own decision gates."
+    - "If the broad get_strategy_service seam is marked resolved here, CRITICAL residual surfaces could be hidden by a narrow task-local closure."
+  rollback_plan: "revert this closeout PR to remove only the closeout report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out the merged G2.170 backtest task resolver provider seam"
+    modified_scope: "steward tree, closeout report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, post-merge scan, focused tests, ruff/black, OpenAPI smoke, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T11:25:00+08:00"
+    approval_note: "Governance-only closeout after PR #323 merged the G2.170 implementation."
+    secondary_approved: false
+
