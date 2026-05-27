@@ -1,0 +1,109 @@
+{
+  "work_item": "G2.178",
+  "title": "Strategy adapter provider implementation",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T14:35:50+08:00",
+  "base_head": "3b8f95945fcb489316ddfaf919835d372122fa5f",
+  "rebased_on": {
+    "recorded_at": "2026-05-27T16:04:24+08:00",
+    "base_head": "750fb7c797ff95f27152439ed988a7115252129e",
+    "reason": "PR #332 split the steward tree; G2.178 steward updates moved from the old root tree into split steward files"
+  },
+  "parent": {
+    "work_item": "G2.177",
+    "pr": 330,
+    "state": "MERGED",
+    "merge_commit": "3b8f95945fcb489316ddfaf919835d372122fa5f",
+    "title": "docs(governance): authorize strategy adapter provider seam"
+  },
+  "scope": {
+    "type": "source-implementation",
+    "allowed_paths": [
+      "web/backend/app/services/adapters/strategy_adapter.py",
+      "web/backend/tests/test_adapter_mock_fallback_controls.py"
+    ],
+    "forbidden_paths_preserved": [
+      "web/backend/app/services/data_adapters/strategy.py",
+      "web/backend/app/services/data_adapter.py",
+      "web/backend/app/services/data_source_factory/**",
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+      "web/backend/app/tasks/backtest_tasks.py",
+      "web/backend/app/services/strategy_service.py"
+    ],
+    "route_behavior_changed": false,
+    "openapi_exposure_changed": false,
+    "public_getter_changed": false,
+    "compatibility_deleted": false
+  },
+  "implementation": {
+    "target_path": "web/backend/app/services/adapters/strategy_adapter.py",
+    "constructor_provider_parameter": "strategy_service_provider: Callable[[], Any] | None = None",
+    "provider_storage": "self._strategy_service_provider = strategy_service_provider",
+    "helper_access_point": "_get_strategy_service",
+    "default_public_getter_fallback_preserved": true,
+    "service_cache_preserved": true
+  },
+  "tdd": {
+    "red": "test_strategy_adapter_uses_injected_strategy_service_provider failed with unexpected keyword argument strategy_service_provider",
+    "green": "same focused test passed after optional provider implementation"
+  },
+  "static_guard": {
+    "strategy_adapter_lines": 372,
+    "constructor_line": 24,
+    "helper_line": 40,
+    "has_callable_import": true,
+    "has_provider_parameter": true,
+    "stores_provider": true,
+    "helper_uses_provider": true,
+    "helper_preserves_public_getter_fallback": true,
+    "test_has_provider_case": true,
+    "production_py_get_strategy_service_hits": 19,
+    "production_py_get_strategy_service_files": {
+      "web/backend/app/tasks/backtest_tasks.py": 2,
+      "web/backend/app/services/strategy_service.py": 1,
+      "web/backend/app/services/adapters/strategy_adapter.py": 10,
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py": 6
+    }
+  },
+  "gitnexus_pre_edit": {
+    "canonical_adapter_file": {
+      "risk": "LOW",
+      "impacted_count": 5,
+      "direct": 2,
+      "processes_affected": 0
+    },
+    "focused_test_file": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    }
+  },
+  "verification": {
+    "focused_red": "failed as expected",
+    "focused_green": "1 passed",
+    "adapter_fallback_tests": "8 passed",
+    "logging_noise_tests": "10 passed",
+    "strategy_route_backtest_tests": "8 passed",
+    "data_adapter_regression_tests": "9 passed",
+    "ruff": "passed",
+    "black_check": "passed",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0
+    }
+  },
+  "steward_tree_reconciliation": {
+    "root_tree_modified": false,
+    "updated_paths": [
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      "governance/mainline/task-cards/pr-331.yaml"
+    ],
+    "archived_single_file_tree_used": false
+  },
+  "next_gate": "review G2.178 implementation package; if accepted, close out and refresh remaining Strategy getter residuals"
+}

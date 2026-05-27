@@ -6,7 +6,7 @@
 
 - Status: active track summary
 - Prepared at: `2026-05-27T15:32:41+08:00`
-- Base HEAD checked: `3b8f95945fcb489316ddfaf919835d372122fa5f`
+- Base HEAD checked: `750fb7c797ff95f27152439ed988a7115252129e`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -29,18 +29,17 @@ It proved a repeatable conveyor:
 
 | Node | State | Notes |
 |---|---|---|
-| G2.177 Strategy canonical adapter provider authorization | Accepted by human review in the current workstream; base snapshot still records it as ready for review | Authorized only a constructor-level Strategy service provider seam in canonical `strategy_adapter.py` and focused tests |
-| G2.178 Strategy adapter provider implementation | Open PR `#331`, mergeable at split | Separate source implementation lane; not included in this governance split |
-| Steward split | For review | Reorganizes steward files and index only |
+| Steward split | Merged by PR `#332` | Root task tree is now a short entrypoint; active state belongs in this split track and `steward-index.json` |
+| G2.177 Strategy canonical adapter provider authorization | Accepted and merged by PR `#330` | Authorized only a constructor-level Strategy service provider seam in canonical `strategy_adapter.py` and focused tests |
+| G2.178 Strategy adapter provider implementation | Ready for review in PR `#331` | Adds the approved optional constructor-level provider seam and reconciles the G2.178 steward update into the split tree |
 
 ## Next Gates
 
-- Do not start another service source lane until PR `#331` is resolved or
+- Review PR `#331` as the active G2.178 source implementation lane.
+- If PR `#331` is accepted, create a closeout lane that marks G2.178 as merged
+  and refreshes the remaining Strategy getter residuals.
+- Do not start another service source lane until G2.178 is merged, closed, or
   explicitly superseded.
-- If PR `#331` merges first, update this track and `steward-index.json` to mark
-  G2.178 as merged and create a closeout lane.
-- If this governance split merges first, PR `#331` should reconcile steward file
-  paths if it also edits the root steward tree.
 
 ## Forbidden Scope
 

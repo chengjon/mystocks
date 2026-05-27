@@ -13,6 +13,21 @@ def test_legacy_strategy_adapter_import_reexports_canonical_class():
     assert StrategyAdapter is CanonicalStrategyAdapter
 
 
+def test_strategy_adapter_uses_injected_strategy_service_provider():
+    provided_service = object()
+    calls = []
+
+    def provider():
+        calls.append("called")
+        return provided_service
+
+    adapter = StrategyAdapter({"mode": "real", "fallback_enabled": False}, strategy_service_provider=provider)
+
+    assert adapter._get_strategy_service() is provided_service
+    assert adapter._get_strategy_service() is provided_service
+    assert calls == ["called"]
+
+
 @pytest.mark.asyncio
 async def test_strategy_adapter_does_not_silently_fallback_when_disabled(monkeypatch):
     adapter = StrategyAdapter({"mode": "real", "fallback_enabled": False})
