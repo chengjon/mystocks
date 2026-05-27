@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T01:04:38+08:00`
-- Base HEAD checked: `7154ffbb067dcddc52d80f15342961b51234ac09`
+- Prepared at: `2026-05-28T01:22:05+08:00`
+- Base HEAD checked: `b899a173909d3818370dddbf35b039832266bd1d`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -28,12 +28,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#341` | `g2-188-risk-stop-loss-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `0aac0e16f16480bd99eebb8726e21a7db6566b39` | Path-limited stop-loss route provider implementation closed for G2.189 refresh |
 | `#342` | `g2-189-risk-stop-loss-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `5565e2b0967958c406a4115dc840a9e90a0b2aab` | Governance closeout and candidate refresh selecting data-quality / adapter cross-cutting decision |
 | `#343` | `g2-190-data-quality-adapter-decision` | `wip/root-dirty-20260403` | `MERGED` at `7154ffbb067dcddc52d80f15342961b51234ac09` | Governance decision classifying data-quality / adapter monitor surface as cross-cutting |
+| `#344` | `g2-191-data-quality-route-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `b899a173909d3818370dddbf35b039832266bd1d` | Authorization package for G2.192 data-quality route provider implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-191-data-quality-route-provider-authorization` | `origin/wip/root-dirty-20260403` at `7154ffbb067dcddc52d80f15342961b51234ac09` | Authorize a future route-only data-quality provider implementation lane without source edits in this PR | None in this PR; future G2.192 source lane only after acceptance |
+| `g2-192-data-quality-route-provider-implementation` | `origin/wip/root-dirty-20260403` at `b899a173909d3818370dddbf35b039832266bd1d` | Implement G2.191-authorized data-quality route provider injection in one route file plus focused tests | G2.191 data-quality route provider authorization |
 
 ## OpenSpec Relationship
 
@@ -49,7 +50,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.191 is a governance-only authorization branch after PR `#343` merged G2.190.
-It must not edit backend source, frontend source, tests, OpenSpec changes, or
-API contract files. If accepted, it authorizes G2.192 as a route-only
-implementation lane for `web/backend/app/api/data_quality.py` and focused tests.
+G2.192 is a path-limited source implementation branch after PR `#344` merged
+G2.191. It must not expand beyond `web/backend/app/api/data_quality.py`,
+focused route/provider tests, and governance evidence. Adapter constructor
+migration, legacy adapter compatibility, singleton wrapper deletion, and
+`DataQualityMonitor` internals remain separate lanes.

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T01:04:38+08:00`
-- Base HEAD checked: `7154ffbb067dcddc52d80f15342961b51234ac09`
+- Prepared at: `2026-05-28T01:22:05+08:00`
+- Base HEAD checked: `b899a173909d3818370dddbf35b039832266bd1d`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.191 data-quality route provider authorization | G/#79 service lifecycle DI | PR `#343` merged at `7154ffbb067dcddc52d80f15342961b51234ac09`; G2.191 authorizes only a future route-file implementation lane and keeps current PR source authority at none | If accepted, start G2.192 data-quality route provider implementation lane |
+| P0 | Review G2.192 data-quality route provider implementation | G/#79 service lifecycle DI | PR `#344` merged at `b899a173909d3818370dddbf35b039832266bd1d`; G2.192 implements the authorized route-file provider injection with 7 focused tests green and OpenAPI dependency leak count `0` | If accepted, merge PR `#345` and start G2.193 data-quality route provider closeout / remaining candidate refresh |
+| P0 | Preserve G2.191 data-quality route provider authorization | G/#79 service lifecycle DI | PR `#344` merged; authorized only `web/backend/app/api/data_quality.py` plus focused tests for G2.192 | Do not expand into adapters, singleton wrapper, `DataQualityMonitor` internals, or data-source factory behavior |
 | P0 | Preserve G2.190 data-quality / adapter cross-cutting decision | G/#79 service lifecycle DI | PR `#343` merged; `get_data_quality_monitor` is `CRITICAL` with 20 direct callers across route, adapter, legacy adapter, and wrapper surfaces | Do not batch route, adapter constructor, legacy adapter, and singleton wrapper migration together |
 | P0 | Preserve G2.189 risk stop-loss provider closeout / candidate refresh | G/#79 service lifecycle DI | PR `#342` merged; stop-loss pair is closed for route-body provider migration and retained as provider backing getters | Do not reopen stop-loss or start data-quality source implementation from G2.189 |
 | P0 | Preserve G2.188 risk stop-loss route service provider implementation | G/#79 service lifecycle DI | PR `#341` merged; G2.188 closed the stop-loss route-body provider migration while retaining src-level stop-loss provider backing getters | Do not delete retained getters or expand into alerts, legacy `app.api.risk_management`, or other risk route migrations |
@@ -33,8 +34,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.191 clearly authorize only a future G2.192 implementation lane, not source edits in PR `#344`?
-- Is the future G2.192 scope limited to `web/backend/app/api/data_quality.py` and focused route/provider tests?
-- Are adapter constructor migration, legacy adapter compatibility, and singleton wrapper deletion explicitly forbidden?
-- Does G2.191 require OpenAPI dependency leak and `app.main` smoke with a valid runtime environment before G2.192 merge?
+- Does G2.192 stay limited to `web/backend/app/api/data_quality.py` and focused route/provider tests?
+- Does the TDD red/green evidence prove the provider migration rather than only documenting the target state?
+- Does the OpenAPI smoke prove monitor provider parameters do not leak into the schema?
+- Are adapter constructor migration, legacy adapter compatibility, singleton wrapper deletion, and `DataQualityMonitor` internals untouched?
+- Is the next gate G2.193 governance closeout / remaining candidate refresh only?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
