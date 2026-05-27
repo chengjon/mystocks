@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "title": "Risk stop-loss route service provider authorization package",
+  "prepared_at": "2026-05-27T22:30:42+08:00",
+  "base_head_checked": "a63a6cb9a277195905b046cd31777d95160ee2c6",
+  "base_relationship": {
+    "previous_gate": "G2.186 remaining getter inventory refresh",
+    "previous_pr": 339,
+    "previous_merge_commit": "a63a6cb9a277195905b046cd31777d95160ee2c6",
+    "source_edit_authority_for_this_pr": false
+  },
+  "authorization_target": {
+    "next_lane": "G2.188 risk stop-loss route service provider implementation",
+    "authorization_type": "path-limited source implementation after human acceptance",
+    "source_edit_authority_for_next_lane_if_accepted": true
+  },
+  "current_shape": {
+    "route_file": "web/backend/app/api/risk/stop_loss.py",
+    "history_resolver": {
+      "function": "_resolve_history_service",
+      "line": 43,
+      "direct_getter": "get_stop_loss_history_service",
+      "route_consumers": [
+        "get_stop_loss_performance",
+        "get_stop_loss_recommendations"
+      ]
+    },
+    "execution_resolver": {
+      "function": "_resolve_execution_service",
+      "line": 50,
+      "direct_getter": "get_stop_loss_execution_service",
+      "route_consumers": [
+        "add_stop_loss_position",
+        "update_stop_loss_price",
+        "remove_stop_loss_position",
+        "get_stop_loss_status",
+        "get_stop_loss_overview",
+        "batch_update_stop_loss_prices"
+      ]
+    }
+  },
+  "gitnexus_pre_authorization_evidence": [
+    {
+      "target": "get_stop_loss_history_service",
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 1,
+      "processes": 0,
+      "d1": [
+        "_resolve_history_service"
+      ],
+      "d2": [
+        "get_stop_loss_performance",
+        "get_stop_loss_recommendations"
+      ]
+    },
+    {
+      "target": "get_stop_loss_execution_service",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    {
+      "target": "_resolve_history_service",
+      "risk": "LOW",
+      "impacted_count": 2,
+      "direct": 2,
+      "processes": 0
+    },
+    {
+      "target": "_resolve_execution_service",
+      "risk": "MEDIUM",
+      "impacted_count": 6,
+      "direct": 6,
+      "processes": 0
+    }
+  ],
+  "authorized_next_lane_scope": {
+    "source_paths": [
+      "web/backend/app/api/risk/stop_loss.py"
+    ],
+    "test_paths": [
+      "web/backend/tests/test_risk_runtime_bootstrap_regressions.py",
+      "web/backend/tests/test_stop_loss_route_regressions.py",
+      "tests/unit/contract/test_risk_router_runtime_import.py"
+    ],
+    "forbidden_paths": [
+      "src/**",
+      "web/backend/app/api/risk/_shared.py",
+      "web/backend/app/api/risk/*.py except stop_loss.py",
+      "web/frontend/**",
+      "docs/api/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "authorized_next_lane_design": {
+    "add_fastapi_dependency_import": "from fastapi import APIRouter, Body, Depends, Path, Query",
+    "add_provider_functions": [
+      "get_stop_loss_history_service_dependency",
+      "get_stop_loss_execution_service_dependency"
+    ],
+    "route_body_change": "inject services through FastAPI Depends parameters and replace route-body _resolve_* calls with injected parameters",
+    "contract_boundary": "no route path, HTTP method, response_model, OpenAPI examples, error code, or service behavior change",
+    "compatibility_boundary": "do not delete, rename, or privatize src-level get_stop_loss_* service getters"
+  },
+  "required_next_lane_verification": [
+    "GitNexus impact before editing stop_loss.py symbols in the implementation worktree",
+    "TDD red test proving endpoint functions accept injected fake history/execution services without monkeypatching module-level getters",
+    "pytest -o addopts= web/backend/tests/test_risk_runtime_bootstrap_regressions.py web/backend/tests/test_stop_loss_route_regressions.py tests/unit/contract/test_risk_router_runtime_import.py -q --no-cov",
+    "ruff check web/backend/app/api/risk/stop_loss.py web/backend/tests/test_risk_runtime_bootstrap_regressions.py web/backend/tests/test_stop_loss_route_regressions.py tests/unit/contract/test_risk_router_runtime_import.py",
+    "route/OpenAPI smoke if any route signature or OpenAPI exposure can drift",
+    "gitnexus detect_changes with staged scope before commit"
+  ],
+  "decision": {
+    "classification": "authorization-package-for-review",
+    "source_lane_recommendation": "start-g2-188-only-after-human-acceptance",
+    "selected_next_governance_target": "risk-stop-loss-route-service-provider-implementation",
+    "recommended_next_work_item": "G2.188 risk stop-loss route service provider implementation lane"
+  },
+  "freshness": {
+    "current_head_checked": "a63a6cb9a277195905b046cd31777d95160ee2c6",
+    "stale_if_head_mismatch": true
+  }
+}

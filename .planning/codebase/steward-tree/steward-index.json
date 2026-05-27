@@ -1,10 +1,10 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T22:01:42+08:00",
+  "generated_at": "2026-05-27T22:30:42+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "720248521d705af067d0a2600710444e439d7605",
-  "split_branch": "g2-186-remaining-getter-inventory-refresh",
+  "base_head": "a63a6cb9a277195905b046cd31777d95160ee2c6",
+  "split_branch": "g2-187-risk-stop-loss-provider-authorization",
   "scope": "governance_decision_package",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
@@ -421,9 +421,15 @@
     {
       "id": "g2-186-remaining-getter-inventory-refresh",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.185 route dependency/provider governance decision",
+      "github_pr": {
+        "number": 339,
+        "url": "https://github.com/chengjon/mystocks/pull/339",
+        "state": "MERGED",
+        "merge_commit": "a63a6cb9a277195905b046cd31777d95160ee2c6"
+      },
       "source_edit_authority": false,
       "evidence": [
         ".planning/codebase/generated/service-lifecycle-remaining-getter-inventory-refresh-2026-05-27.json",
@@ -487,7 +493,78 @@
         "current_head_checked": "720248521d705af067d0a2600710444e439d7605",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.187 risk stop-loss route service provider authorization package. Do not start a backend source lane from G2.186."
+      "next_gate": "Superseded by G2.187 risk stop-loss route service provider authorization."
+    },
+    {
+      "id": "g2-187-risk-stop-loss-provider-authorization",
+      "type": "authorization_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.186 remaining getter inventory refresh",
+      "source_edit_authority": false,
+      "future_source_edit_authority_if_accepted": true,
+      "evidence": [
+        ".planning/codebase/generated/risk-stop-loss-route-provider-authorization-2026-05-27.json",
+        "docs/reports/quality/backend-risk-stop-loss-route-provider-authorization-2026-05-27.md",
+        "governance/mainline/task-cards/pr-340.yaml"
+      ],
+      "authorization_scope": {
+        "future_lane": "G2.188 risk stop-loss route service provider implementation",
+        "allowed_source_paths": [
+          "web/backend/app/api/risk/stop_loss.py"
+        ],
+        "allowed_test_paths": [
+          "web/backend/tests/test_risk_runtime_bootstrap_regressions.py",
+          "web/backend/tests/test_stop_loss_route_regressions.py",
+          "tests/unit/contract/test_risk_router_runtime_import.py"
+        ],
+        "forbidden_paths": [
+          "src/**",
+          "web/backend/app/api/risk/_shared.py",
+          "other web/backend/app/api/risk/*.py files",
+          "web/frontend/**",
+          "docs/api/**",
+          "openspec/changes/**",
+          "openspec/specs/**"
+        ]
+      },
+      "gitnexus_evidence": {
+        "get_stop_loss_history_service": {
+          "risk": "LOW",
+          "impacted": 3,
+          "direct": 1,
+          "processes": 0
+        },
+        "get_stop_loss_execution_service": {
+          "risk": "LOW",
+          "impacted": 0,
+          "direct": 0,
+          "processes": 0
+        },
+        "_resolve_history_service": {
+          "risk": "LOW",
+          "impacted": 2,
+          "direct": 2,
+          "processes": 0
+        },
+        "_resolve_execution_service": {
+          "risk": "MEDIUM",
+          "impacted": 6,
+          "direct": 6,
+          "processes": 0
+        }
+      },
+      "decision": {
+        "classification": "authorization-package-for-review",
+        "source_lane_recommendation": "start-g2-188-only-after-human-acceptance",
+        "selected_next_governance_target": "risk-stop-loss-route-service-provider-implementation",
+        "recommended_next_work_item": "G2.188 risk stop-loss route service provider implementation lane"
+      },
+      "freshness": {
+        "current_head_checked": "a63a6cb9a277195905b046cd31777d95160ee2c6",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.188 risk stop-loss route service provider implementation lane. Do not edit source from G2.187."
     },
     {
       "id": "core-batch2-reconciliation",

@@ -1,0 +1,100 @@
+version: "v0.2"
+
+task:
+  id: "pr-340"
+  title: "Authorize risk stop-loss route provider implementation"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-risk-stop-loss-provider-authorization"
+  objective: "authorize a path-limited future implementation lane for stop-loss route service provider injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/risk-stop-loss-route-provider-authorization-2026-05-27.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-risk-stop-loss-route-provider-authorization-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-340.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "OpenSpec proposal creation"
+  - "route signature or OpenAPI schema changes in this PR"
+  - "provider implementation before human acceptance"
+  - "deleting or renaming src-level stop-loss service getters"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/risk-stop-loss-route-provider-authorization-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-340.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-risk-stop-loss-route-provider-authorization-2026-05-27.md"
+      required: true
+    - id: "openspec-lifecycle-di"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this authorization is read as immediate source permission, stop-loss route code can change before review."
+    - "If the future implementation exceeds the route file, it can affect broader risk-management behavior."
+    - "If route/OpenAPI drift is not checked when signatures change, dependency injection may alter public route contracts."
+  rollback_plan: "revert this governance-only PR to remove the G2.187 authorization package and restore the pre-G2.187 steward state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize a future stop-loss route service provider implementation lane"
+    modified_scope: "split steward tree files, authorization report, generated JSON, and task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; no source or compatibility behavior changes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this governance-only PR if the G2.187 authorization package is rejected"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T22:30:42+08:00"
+    approval_note: "Human maintainer approved continuing after PR #339 merge; this lane is a stop-loss route provider authorization package only."
+    secondary_approved: false

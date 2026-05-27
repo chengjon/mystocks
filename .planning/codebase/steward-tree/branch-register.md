@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-27T22:01:42+08:00`
-- Base HEAD checked: `720248521d705af067d0a2600710444e439d7605`
+- Prepared at: `2026-05-27T22:30:42+08:00`
+- Base HEAD checked: `a63a6cb9a277195905b046cd31777d95160ee2c6`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -23,12 +23,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#336` | `g2-183-strategy-getter-remaining-residual-decision` | `wip/root-dirty-20260403` | `MERGED` at `d454193fdae08ad875c423e0b5aa959d79bedc67` | Strategy getter remaining residual closeout with retained residuals |
 | `#337` | `g2-184-next-nonstrategy-service-getter-candidate-decision` | `wip/root-dirty-20260403` | `MERGED` at `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` | Next non-Strategy candidate decision selecting provider governance |
 | `#338` | `g2-185-route-dependency-provider-governance-decision` | `wip/root-dirty-20260403` | `MERGED` at `720248521d705af067d0a2600710444e439d7605` | Provider governance decision retaining active route contracts |
+| `#339` | `g2-186-remaining-getter-inventory-refresh` | `wip/root-dirty-20260403` | `MERGED` at `a63a6cb9a277195905b046cd31777d95160ee2c6` | Remaining getter inventory refresh selecting stop-loss authorization |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-186-remaining-getter-inventory-refresh` | `origin/wip/root-dirty-20260403` at `720248521d705af067d0a2600710444e439d7605` | Refresh remaining direct getter inventory after provider governance and select the next authorization-only gate | G2.185 provider governance decision |
+| `g2-187-risk-stop-loss-provider-authorization` | `origin/wip/root-dirty-20260403` at `a63a6cb9a277195905b046cd31777d95160ee2c6` | Authorize the future stop-loss route service provider implementation lane without changing source in this PR | G2.186 remaining getter inventory refresh |
 
 ## OpenSpec Relationship
 
@@ -44,8 +45,6 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.186 is an inventory-refresh decision branch only. It records the merged
-state of PR `#338`, excludes retained provider contracts from direct
-implementation-candidate counts, and recommends G2.187 as a stop-loss
-route-service authorization package. It must not introduce backend source edits
-or a new implementation lane.
+G2.187 is an authorization branch only. It records the merged state of PR
+`#339`, defines the exact future stop-loss route implementation scope, and must
+not introduce backend source edits in this PR.
