@@ -2,6 +2,32 @@ from __future__ import annotations
 
 from datetime import datetime
 
+import pytest
+
+
+def test_resolve_backtest_data_source_uses_task_local_provider(monkeypatch):
+    from app.tasks import backtest_tasks as module
+
+    fake_data_source = object()
+    fallback_data_source = object()
+
+    monkeypatch.setattr(
+        module,
+        "_get_strategy_data_source",
+        lambda: fake_data_source,
+        raising=False,
+    )
+
+    import app.services.strategy_service as strategy_service_module
+
+    monkeypatch.setattr(
+        strategy_service_module,
+        "get_strategy_service",
+        lambda: fallback_data_source,
+    )
+
+    assert module._resolve_backtest_data_source({"data_source_mode": "auto"}) is fake_data_source
+
 
 def test_run_backtest_task_uses_data_service_singleton(monkeypatch):
     from app.tasks import backtest_tasks as module
@@ -25,10 +51,18 @@ def test_run_backtest_task_uses_data_service_singleton(monkeypatch):
             }
 
     monkeypatch.setattr(module, "BacktestEngine", FakeEngine)
-    monkeypatch.setattr(module, "_save_backtest_results", lambda backtest_id, results: captured.setdefault("saved", results))
+    monkeypatch.setattr(
+        module,
+        "_save_backtest_results",
+        lambda backtest_id, results: captured.setdefault("saved", results),
+    )
     monkeypatch.setattr(module, "_update_backtest_status", lambda *args, **kwargs: None)
     monkeypatch.setattr(module, "get_progress_callback", lambda backtest_id: None)
-    monkeypatch.setattr(module.run_backtest_task, "update_state", lambda **kwargs: captured.setdefault("states", []).append(kwargs))
+    monkeypatch.setattr(
+        module.run_backtest_task,
+        "update_state",
+        lambda **kwargs: captured.setdefault("states", []).append(kwargs),
+    )
 
     import app.services.strategy_service as strategy_service_module
 
@@ -52,11 +86,19 @@ def test_run_backtest_task_rejects_unsupported_data_source_mode(monkeypatch):
     captured = {}
 
     monkeypatch.setattr(module, "_save_backtest_results", lambda *args, **kwargs: None)
-    monkeypatch.setattr(module, "_update_backtest_status", lambda *args, **kwargs: captured.setdefault("failed", args))
+    monkeypatch.setattr(
+        module,
+        "_update_backtest_status",
+        lambda *args, **kwargs: captured.setdefault("failed", args),
+    )
     monkeypatch.setattr(module, "get_progress_callback", lambda backtest_id: None)
-    monkeypatch.setattr(module.run_backtest_task, "update_state", lambda **kwargs: captured.setdefault("states", []).append(kwargs))
+    monkeypatch.setattr(
+        module.run_backtest_task,
+        "update_state",
+        lambda **kwargs: captured.setdefault("states", []).append(kwargs),
+    )
 
-    try:
+    with pytest.raises(ValueError, match="不支持的回测数据源策略"):
         module.run_backtest_task.run(
             backtest_id=8,
             strategy_config={"name": "demo"},
@@ -66,9 +108,5 @@ def test_run_backtest_task_rejects_unsupported_data_source_mode(monkeypatch):
                 "data_source_mode": "mock",
             },
         )
-    except ValueError as exc:
-        assert "不支持的回测数据源策略" in str(exc)
-    else:
-        raise AssertionError("expected ValueError for unsupported data_source_mode")
 
     assert captured["states"][-1]["state"] == "FAILURE"

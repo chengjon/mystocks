@@ -15,6 +15,12 @@ from app.core.celery_app import celery_app, get_progress_callback
 logger = logging.getLogger(__name__)
 
 
+def _get_strategy_data_source():
+    from app.services.strategy_service import get_strategy_service
+
+    return get_strategy_service()
+
+
 def _resolve_backtest_data_source(backtest_config: dict):
     """
     解析回测任务的数据源策略。
@@ -26,9 +32,7 @@ def _resolve_backtest_data_source(backtest_config: dict):
     if data_source_mode not in {"strategy_service", "auto"}:
         raise ValueError(f"不支持的回测数据源策略: {data_source_mode}")
 
-    from app.services.strategy_service import get_strategy_service
-
-    return get_strategy_service()
+    return _get_strategy_data_source()
 
 
 @celery_app.task(bind=True, name="app.tasks.backtest_tasks.run_backtest")

@@ -1,0 +1,108 @@
+{
+  "work_item": "G2.170",
+  "artifact_type": "implementation_package",
+  "status": "ready_for_review",
+  "created_at": "2026-05-27T10:58:14+08:00",
+  "base_head": "bc2c0b8e102c455c09ba718b3eff982bf0f6e5e7",
+  "base_branch": "wip/root-dirty-20260403",
+  "parent": {
+    "work_item": "G2.169",
+    "pr": 322,
+    "state": "MERGED",
+    "merge_commit": "bc2c0b8e102c455c09ba718b3eff982bf0f6e5e7",
+    "title": "docs(governance): authorize backtest task resolver seam"
+  },
+  "scope": {
+    "source_files": [
+      "web/backend/app/tasks/backtest_tasks.py"
+    ],
+    "test_files": [
+      "web/backend/tests/test_backtest_tasks_regressions.py"
+    ],
+    "governance_files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/backtest-task-resolver-implementation-2026-05-27.json",
+      "docs/reports/quality/backend-backtest-task-resolver-implementation-2026-05-27.md",
+      "governance/mainline/task-cards/pr-323.yaml"
+    ],
+    "forbidden_paths_observed": false
+  },
+  "implementation": {
+    "new_helper": {
+      "symbol": "_get_strategy_data_source",
+      "file": "web/backend/app/tasks/backtest_tasks.py",
+      "lines": [18, 23],
+      "role": "task-local Strategy data-source provider seam"
+    },
+    "modified_resolver": {
+      "symbol": "_resolve_backtest_data_source",
+      "file": "web/backend/app/tasks/backtest_tasks.py",
+      "lines": [24, 38],
+      "change": "delegates data-source acquisition to _get_strategy_data_source after preserving mode validation"
+    },
+    "preserved_behavior": [
+      "data_source_mode default remains strategy_service",
+      "strategy_service mode remains supported",
+      "auto mode remains supported",
+      "unsupported mode still raises ValueError",
+      "run_backtest_task still calls _resolve_backtest_data_source once",
+      "public get_strategy_service remains available and unchanged"
+    ]
+  },
+  "static_scan": {
+    "resolver_direct_getter_mentions": 0,
+    "resolver_helper_mentions": 1,
+    "helper_getter_mentions": 2,
+    "run_task_resolver_mentions": 1,
+    "provider_test_present": true,
+    "unsupported_mode_pytest_raises": true
+  },
+  "gitnexus": {
+    "pre_edit_target": "_resolve_backtest_data_source",
+    "risk": "LOW",
+    "impacted_count": 1,
+    "direct_callers": 1,
+    "affected_processes": 0,
+    "direct_caller_symbols": [
+      "web/backend/app/tasks/backtest_tasks.py::run_backtest_task"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py::test_resolve_backtest_data_source_uses_task_local_provider -q --no-cov --tb=short",
+      "result": "1 failed in 2.66s",
+      "expected_failure": "resolver ignored the task-local provider seam and returned the fallback service object"
+    },
+    "green": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short",
+      "result": "3 passed in 2.60s"
+    },
+    "final": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short",
+      "result": "3 passed in 3.18s"
+    }
+  },
+  "verification": {
+    "strategy_route_provider_regression": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py -q --no-cov --tb=short",
+      "result": "5 passed in 6.29s"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/tasks/backtest_tasks.py web/backend/tests/test_backtest_tasks_regressions.py",
+      "result": "All checks passed!"
+    },
+    "black": {
+      "command": "black --check web/backend/app/tasks/backtest_tasks.py web/backend/tests/test_backtest_tasks_regressions.py",
+      "result": "2 files would be left unchanged"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "total_warnings_captured": 121,
+      "env_note": "minimal non-secret placeholder env used for required import gate"
+    }
+  },
+  "next_gate": "Review G2.170. If accepted, close out this backtest resolver seam before selecting another Strategy service getter residual track."
+}
