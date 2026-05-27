@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T23:02:44+08:00",
+  "generated_at": "2026-05-28T00:19:16+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a",
-  "split_branch": "g2-188-risk-stop-loss-provider-implementation",
-  "scope": "path_limited_source_implementation_package",
-  "source_edit_authority": true,
+  "base_head": "0aac0e16f16480bd99eebb8726e21a7db6566b39",
+  "split_branch": "g2-189-risk-stop-loss-provider-closeout-refresh",
+  "scope": "governance_closeout_candidate_refresh_package",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -575,9 +575,17 @@
     {
       "id": "g2-188-risk-stop-loss-provider-implementation",
       "type": "implementation_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.187 risk stop-loss route service provider authorization",
+      "github_pr": {
+        "number": 341,
+        "url": "https://github.com/chengjon/mystocks/pull/341",
+        "state": "MERGED",
+        "merged_at": "2026-05-27T15:46:26Z",
+        "head_ref": "g2-188-risk-stop-loss-provider-implementation",
+        "merge_commit": "0aac0e16f16480bd99eebb8726e21a7db6566b39"
+      },
       "source_edit_authority": true,
       "evidence": [
         ".planning/codebase/generated/risk-stop-loss-route-provider-implementation-2026-05-27.json",
@@ -628,16 +636,69 @@
         "legacy app.api.risk_management compatibility import absence"
       ],
       "decision": {
-        "classification": "path-limited-source-implementation-for-review",
-        "source_lane_recommendation": "review-pr-341-before-merge",
+        "classification": "implementation-accepted",
+        "source_lane_recommendation": "closed-by-g2-189-closeout",
         "selected_next_governance_target": "risk-stop-loss-provider-closeout-or-candidate-refresh",
         "recommended_next_work_item": "G2.189 closeout / remaining candidate refresh after G2.188 acceptance"
       },
       "freshness": {
-        "current_head_checked": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a",
+        "current_head_checked": "0aac0e16f16480bd99eebb8726e21a7db6566b39",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, merge and start a closeout / candidate-refresh governance packet; do not expand into alerts, legacy risk_management compat, or other risk route migrations."
+      "next_gate": "Superseded by G2.189 closeout / remaining candidate refresh."
+    },
+    {
+      "id": "g2-189-risk-stop-loss-provider-closeout-refresh",
+      "type": "closeout_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.188 risk stop-loss route service provider implementation",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/risk-stop-loss-provider-closeout-refresh-2026-05-28.json",
+        "docs/reports/quality/backend-risk-stop-loss-provider-closeout-refresh-2026-05-28.md",
+        "governance/mainline/task-cards/pr-342.yaml"
+      ],
+      "closeout_result": {
+        "github_pr": {
+          "number": 341,
+          "url": "https://github.com/chengjon/mystocks/pull/341",
+          "state": "MERGED",
+          "merge_commit": "0aac0e16f16480bd99eebb8726e21a7db6566b39"
+        },
+        "endpoints_with_provider_parameters": 8,
+        "route_body_resolver_calls": {
+          "body_resolve_history": 0,
+          "body_resolve_execution": 0
+        },
+        "openapi_paths": 500,
+        "stop_loss_paths": 10,
+        "dependency_params_leaked": 0,
+        "tests": {
+          "stop_loss_runtime_bootstrap": "5 passed, 5 deselected",
+          "stop_loss_route_regressions": "2 passed",
+          "app_main_risk_router_contract_targeted": "1 passed",
+          "ruff": "passed"
+        }
+      },
+      "candidate_refresh": {
+        "stop_loss_pair": "closed_for_route_body_provider_migration_retained_as_provider_backing_getters",
+        "next_recommended_governance_target": "data-quality-and-adapter-cross-cutting-decision-package",
+        "next_recommended_work_item": "G2.190 data-quality / adapter cross-cutting decision package",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-189",
+        "deferred_tracks": [
+          "trade execution evidence",
+          "control-plane cache prewarming",
+          "root facade compatibility",
+          "indicator/data provider fallback",
+          "constructor install fallbacks"
+        ]
+      },
+      "freshness": {
+        "current_head_checked": "0aac0e16f16480bd99eebb8726e21a7db6566b39",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.190 data-quality / adapter cross-cutting decision and authorization package only; do not start source implementation from G2.189."
     },
     {
       "id": "core-batch2-reconciliation",
