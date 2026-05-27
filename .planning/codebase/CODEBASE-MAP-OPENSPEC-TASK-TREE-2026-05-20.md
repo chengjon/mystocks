@@ -3289,13 +3289,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, or source implementation is performed
 │   │              here
 │   ├── G2.174 Strategy legacy adapter wrapper implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#327`
 │   │   ├── Evidence:
 │   │   │          `backend-strategy-adapter-wrapper-implementation-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `strategy-adapter-wrapper-implementation-2026-05-27.json`
 │   │   ├── Parent: G2.173 accepted and merged by PR `#326`
 │   │   ├── Base HEAD: `1fca532a056549f1869773c7dcd9ae3be5170425`
+│   │   ├── Merge HEAD: `ba2572da6d31f05dcc65b735a361ceaa3435c280`
 │   │   ├── Implementation: `web/backend/app/services/data_adapters/strategy.py`
 │   │   │          is now a thin compatibility wrapper that re-exports
 │   │   │          canonical `StrategyDataSourceAdapter` from
@@ -3319,9 +3320,36 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              route/API behavior, OpenAPI exposure, frontend, PM2,
 │   │              OpenSpec, config, script, compatibility deletion, and
 │   │              issue-label state remain unchanged
-│   └── Next gate: review G2.174; if accepted, close the wrapper lane and
-│                  refresh remaining Strategy service getter residuals before
-│                  selecting the next Strategy or high-risk getter track
+│   ├── G2.175 Strategy legacy adapter wrapper closeout
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-strategy-adapter-wrapper-closeout-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `strategy-adapter-wrapper-closeout-2026-05-27.json`
+│   │   ├── Parent: G2.174 accepted and merged by PR `#327`
+│   │   ├── Current HEAD: `ba2572da6d31f05dcc65b735a361ceaa3435c280`
+│   │   ├── Closeout decision: G2.174 is closed as the legacy Strategy
+│   │   │          adapter compatibility-wrapper lane; no compatibility
+│   │   │          surface was deleted
+│   │   ├── Post-merge verification: adapter fallback tests `7 passed`,
+│   │   │          logging regression tests `10 passed`, strategy
+│   │   │          route/backtest sanity tests `8 passed`, ruff/black
+│   │   │          passed, and OpenAPI smoke `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   ├── Residual scan: production `.py` `get_strategy_service` hits
+│   │   │          under `web/backend/app` are now `19`; legacy
+│   │   │          `data_adapters/strategy.py` owns `0` hits, route
+│   │   │          provider fallback owns `6`, closed backtest helper owns
+│   │   │          `2`, canonical `strategy_adapter.py` owns `10`, and
+│   │   │          public getter definition owns `1`
+│   │   └── Boundary: governance closeout only; no backend source/test edit,
+│   │              route/API behavior, OpenAPI exposure, frontend, PM2,
+│   │              OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, or implementation authorization is
+│   │              performed here
+│   └── Next gate: review G2.175; if accepted, open a separate residual-refresh
+│                  decision package before any further Strategy source
+│                  implementation
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

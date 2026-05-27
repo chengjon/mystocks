@@ -1,0 +1,57 @@
+{
+  "work_item": "G2.175",
+  "title": "Strategy legacy adapter wrapper closeout",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T13:24:00+08:00",
+  "current_head": "ba2572da6d31f05dcc65b735a361ceaa3435c280",
+  "parent": {
+    "work_item": "G2.174",
+    "pr": 327,
+    "state": "MERGED",
+    "merged_at": "2026-05-27T05:13:40Z",
+    "merge_commit": "ba2572da6d31f05dcc65b735a361ceaa3435c280",
+    "title": "refactor(backend): wrap legacy strategy adapter path"
+  },
+  "scope": {
+    "type": "governance-closeout",
+    "source_changes": false,
+    "test_changes": false,
+    "route_behavior_changes": false,
+    "openapi_exposure_changes": false
+  },
+  "closeout_decision": {
+    "g2_174_closed": true,
+    "legacy_path": "web/backend/app/services/data_adapters/strategy.py",
+    "canonical_path": "web/backend/app/services/adapters/strategy_adapter.py",
+    "compatibility_surface_deleted": false,
+    "legacy_direct_import_resolves_to_canonical_class": true
+  },
+  "post_merge_verification": {
+    "adapter_fallback_tests": "7 passed",
+    "logging_noise_tests": "10 passed",
+    "strategy_route_backtest_tests": "8 passed",
+    "ruff": "passed",
+    "black_check": "passed",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0
+    }
+  },
+  "residual_scan": {
+    "legacy_wrapper_lines": 9,
+    "legacy_reexports_canonical": true,
+    "legacy_has_class_def": false,
+    "legacy_has_get_strategy_service": false,
+    "production_py_get_strategy_service_hits": 19,
+    "production_py_get_strategy_service_files": {
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py": 6,
+      "web/backend/app/tasks/backtest_tasks.py": 2,
+      "web/backend/app/services/adapters/strategy_adapter.py": 10,
+      "web/backend/app/services/strategy_service.py": 1
+    },
+    "legacy_direct_import_hits_in_web_backend_app": 0
+  },
+  "next_gate": "open a separate residual-refresh decision package before any further Strategy source implementation"
+}
