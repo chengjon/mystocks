@@ -1,10 +1,10 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T18:06:02+08:00",
+  "generated_at": "2026-05-27T20:49:23+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "597f8186092b4ad3d0704326e292c5e4fa075f15",
-  "split_branch": "g2-183-strategy-getter-remaining-residual-decision",
+  "base_head": "d454193fdae08ad875c423e0b5aa959d79bedc67",
+  "split_branch": "g2-184-next-nonstrategy-service-getter-candidate-decision",
   "scope": "governance_decision_package",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
@@ -271,7 +271,7 @@
     {
       "id": "g2-183-strategy-getter-remaining-residual-decision",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.182 Strategy route/provider fallback decision",
       "source_edit_authority": false,
@@ -295,10 +295,73 @@
         "recommended_next_work_item": "select next non-Strategy service lifecycle DI candidate"
       },
       "freshness": {
-        "current_head_checked": "597f8186092b4ad3d0704326e292c5e4fa075f15",
+        "current_head_checked": "d454193fdae08ad875c423e0b5aa959d79bedc67",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, use a separate decision package to select the next non-Strategy service lifecycle DI candidate."
+      "next_gate": "Superseded by G2.184 next non-Strategy service getter candidate decision."
+    },
+    {
+      "id": "g2-184-next-nonstrategy-service-getter-candidate-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.183 Strategy getter remaining residual decision",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/next-nonstrategy-service-getter-candidate-decision-2026-05-27.json",
+        "docs/reports/quality/backend-next-nonstrategy-service-getter-candidate-decision-2026-05-27.md",
+        "governance/mainline/task-cards/pr-337.yaml"
+      ],
+      "refreshed_candidates": {
+        "gitnexus_repo": "g2-184-next-nonstrategy-service-getter-candidate-decision",
+        "gitnexus_index_refreshed": true,
+        "impact_after_refresh": {
+          "get_tdx_service": {
+            "risk": "LOW",
+            "impacted": 1,
+            "direct": 1,
+            "processes": 0
+          },
+          "get_data_service": {
+            "risk": "LOW",
+            "impacted": 2,
+            "direct": 2,
+            "processes": 0
+          },
+          "get_streaming_service": {
+            "risk": "LOW",
+            "impacted": 2,
+            "direct": 2,
+            "processes": 0
+          },
+          "get_market_data_service": {
+            "risk": "LOW",
+            "impacted": 0,
+            "direct": 0,
+            "processes": 0
+          }
+        },
+        "static_provider_surfaces": [
+          "get_market_data_service_v2_dependency",
+          "get_indicator_data_service",
+          "get_strategy_indicator_data_service",
+          "get_indicator_registry_dependency",
+          "route-local Strategy dependency",
+          "TDX provider fallback",
+          "Realtime constructor/provider fallback"
+        ]
+      },
+      "decision": {
+        "classification": "no-new-nonstrategy-getter-source-lane",
+        "selected_next_governance_target": "route-dependency-provider-governance-residual-decision",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-184",
+        "recommended_next_work_item": "G2.185 route dependency/provider governance residual decision package"
+      },
+      "freshness": {
+        "current_head_checked": "d454193fdae08ad875c423e0b5aa959d79bedc67",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.185 route dependency/provider governance residual decision package. Do not start a backend source lane from G2.184."
     },
     {
       "id": "core-batch2-reconciliation",

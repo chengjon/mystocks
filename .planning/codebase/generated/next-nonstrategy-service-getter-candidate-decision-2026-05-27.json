@@ -1,0 +1,233 @@
+{
+  "work_item": "G2.184",
+  "title": "Next non-Strategy service getter candidate decision",
+  "state": "ready_for_review",
+  "recorded_at": "2026-05-27T20:49:23+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "d454193fdae08ad875c423e0b5aa959d79bedc67",
+  "branch": "g2-184-next-nonstrategy-service-getter-candidate-decision",
+  "scope": "governance_decision_package_only",
+  "source_edit_authority": false,
+  "parent_item": {
+    "id": "G2.183",
+    "title": "Strategy getter remaining residual decision",
+    "pr": 336,
+    "merge_commit": "d454193fdae08ad875c423e0b5aa959d79bedc67",
+    "decision": "Strategy getter residual track closed with retained residuals; select next non-Strategy candidate through a separate decision package."
+  },
+  "freshness": {
+    "git_head": "d454193fdae08ad875c423e0b5aa959d79bedc67",
+    "gitnexus_repo": "g2-184-next-nonstrategy-service-getter-candidate-decision",
+    "gitnexus_index_refreshed": true,
+    "gitnexus_command": "gitnexus analyze --with-gitignore",
+    "stale_if_head_mismatch": true
+  },
+  "current_static_scan": {
+    "scope": [
+      "web/backend/app",
+      "web/backend/tests"
+    ],
+    "getters": {
+      "get_tdx_service": {
+        "token_count": 6,
+        "files": 4,
+        "category_counts": {
+          "definition": 1,
+          "import": 1,
+          "provider_dependency": 0,
+          "call": 1,
+          "other": 3
+        }
+      },
+      "get_data_service": {
+        "token_count": 9,
+        "files": 4,
+        "category_counts": {
+          "definition": 1,
+          "import": 4,
+          "provider_dependency": 0,
+          "call": 4,
+          "other": 0
+        }
+      },
+      "get_streaming_service": {
+        "token_count": 25,
+        "files": 6,
+        "category_counts": {
+          "definition": 1,
+          "import": 0,
+          "provider_dependency": 0,
+          "call": 18,
+          "other": 6
+        },
+        "interpretation": "app references are constructor fallback/import/service definition surfaces; most call tokens are focused tests"
+      },
+      "get_market_data_service": {
+        "token_count": 19,
+        "files": 8,
+        "category_counts": {
+          "definition": 1,
+          "import": 1,
+          "provider_dependency": 0,
+          "call": 1,
+          "other": 16
+        }
+      },
+      "get_market_data_service_v2_dependency": {
+        "token_count": 18,
+        "files": 4,
+        "category_counts": {
+          "definition": 1,
+          "import": 1,
+          "provider_dependency": 14,
+          "call": 1,
+          "other": 1
+        },
+        "interpretation": "active route dependency/provider surface, not a getter-retirement source lane"
+      },
+      "get_indicator_data_service": {
+        "token_count": 4,
+        "files": 2,
+        "category_counts": {
+          "definition": 1,
+          "import": 0,
+          "provider_dependency": 2,
+          "call": 0,
+          "other": 1
+        }
+      },
+      "get_strategy_indicator_data_service": {
+        "token_count": 3,
+        "files": 2,
+        "category_counts": {
+          "definition": 1,
+          "import": 0,
+          "provider_dependency": 1,
+          "call": 0,
+          "other": 1
+        }
+      },
+      "get_indicator_registry_dependency": {
+        "token_count": 5,
+        "files": 3,
+        "category_counts": {
+          "definition": 1,
+          "import": 1,
+          "provider_dependency": 2,
+          "call": 0,
+          "other": 1
+        }
+      },
+      "get_strategy_service": {
+        "token_count": 13,
+        "files": 6,
+        "category_counts": {
+          "definition": 1,
+          "import": 3,
+          "provider_dependency": 0,
+          "call": 3,
+          "other": 6
+        },
+        "interpretation": "closed by G2.183 as retained residuals; included here only as a freshness check"
+      }
+    }
+  },
+  "gitnexus_impact_after_refresh": {
+    "get_tdx_service": {
+      "risk": "LOW",
+      "impacted": 1,
+      "direct": 1,
+      "processes": 0,
+      "d1": [
+        "web/backend/app/services/tdx_service.py::install_tdx_service"
+      ]
+    },
+    "get_data_service": {
+      "risk": "LOW",
+      "impacted": 2,
+      "direct": 2,
+      "processes": 0,
+      "d1": [
+        "web/backend/app/api/indicators/indicator_cache.py::get_indicator_data_service",
+        "web/backend/app/api/v1/strategy/indicators.py::get_strategy_indicator_data_service"
+      ]
+    },
+    "get_streaming_service": {
+      "risk": "LOW",
+      "impacted": 2,
+      "direct": 2,
+      "processes": 0,
+      "d1": [
+        "web/backend/app/services/aggregation_streaming_bridge.py::__init__",
+        "web/backend/app/core/socketio_manager.py::__init__"
+      ]
+    },
+    "get_market_data_service": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    "get_market_data_service_v2_dependency": {
+      "risk": "not_indexed_by_gitnexus_symbol_lookup",
+      "static_interpretation": "active FastAPI route dependency/provider function with 14 provider sites in market_v2.py"
+    }
+  },
+  "prior_closure_inputs": {
+    "realtime_socket": {
+      "evidence": "docs/reports/quality/backend-realtime-socket-subtrack-closeout-2026-05-26.md",
+      "decision": "closed for now; remaining getter references are import plus constructor fallback"
+    },
+    "dashboard_tdx": {
+      "evidence": "docs/reports/quality/backend-dashboard-tdx-verification-closeout-2026-05-26.md",
+      "decision": "closed without implementation; direct dashboard helper getter debt is 0"
+    },
+    "indicator_data": {
+      "evidence": "docs/reports/quality/backend-service-lifecycle-candidate-refresh-after-indicator-data-2026-05-27.md",
+      "decision": "direct route/helper body debt closed; remaining hits are provider-governed runtime seam"
+    },
+    "strategy": {
+      "evidence": "docs/reports/quality/backend-strategy-getter-remaining-residual-decision-2026-05-27.md",
+      "decision": "closed with retained residuals"
+    }
+  },
+  "decision": {
+    "classification": "no-new-nonstrategy-getter-source-lane",
+    "selected_next_governance_target": "route-dependency-provider-governance-residual-decision",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-184",
+    "rationale": [
+      "The previously high-risk non-Strategy tracks now have accepted or review-ready closeout evidence and no current fresh GitNexus HIGH/CRITICAL risk after the G2.184 index refresh.",
+      "Current static surfaces are mainly route dependency/provider functions, constructor fallbacks, public compatibility definitions, package exports, and focused tests.",
+      "The remaining material question is whether cross-route provider functions have consistent ownership, naming, compatibility retention, and OpenAPI/test evidence boundaries.",
+      "That question is a governance/provider-contract decision, not a path-limited service getter implementation lane."
+    ],
+    "recommended_next_work_item": "G2.185 route dependency/provider governance residual decision package"
+  },
+  "g2_185_minimum_requirements": [
+    "Inventory active provider dependency functions, including get_market_data_service_v2_dependency, get_indicator_data_service, get_strategy_indicator_data_service, get_indicator_registry_dependency, route-local Strategy dependency, TDX provider fallbacks, and realtime constructor/provider fallbacks.",
+    "Classify each provider as active route dependency, constructor fallback, public compatibility getter, package export, test-only helper, or retirement candidate.",
+    "Define ownership rules for route-local providers versus service-level public getters.",
+    "Decide whether any future source lane is warranted, and if so produce a separate authorization package with exact allowed files, focused tests, rollback rules, and GitNexus impact.",
+    "Do not delete, rename, privatize, or move provider functions from the G2.185 decision package."
+  ],
+  "not_authorized": [
+    "backend source edits",
+    "backend test edits",
+    "frontend edits",
+    "route/API/OpenAPI exposure changes",
+    "PM2 commands",
+    "OpenSpec change creation or spec edits",
+    "GitHub issue label changes",
+    "deleting or privatizing compatibility getters",
+    "starting a new implementation lane before G2.185 is reviewed and approved"
+  ],
+  "updated_steward_files": [
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md"
+  ],
+  "next_gate": "Review G2.184. If accepted, start G2.185 route dependency/provider governance residual decision package; do not start a backend source lane from G2.184."
+}

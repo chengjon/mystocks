@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-337"
+  title: "Select next non-Strategy service lifecycle governance target"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-next-nonstrategy-service-getter-candidate-decision"
+  objective: "select the next non-Strategy service lifecycle DI governance target after Strategy residual closeout"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance decision package only; selects route dependency/provider governance as the next decision target without changing runtime, routes, tests, frontend, OpenAPI, or product behavior."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/next-nonstrategy-service-getter-candidate-decision-2026-05-27.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-next-nonstrategy-service-getter-candidate-decision-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-337.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source edits"
+  - "No test edits"
+  - "No route, API, OpenAPI, PM2, frontend, config, script, or issue-label changes"
+  - "No deletion, rename, move, privatization, or behavior change of service getter functions"
+  - "No direct implementation lane selection"
+  - "No OpenSpec proposal creation"
+  - "No compatibility wrapper retirement"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/next-nonstrategy-service-getter-candidate-decision-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-337.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-next-nonstrategy-service-getter-candidate-decision-2026-05-27.md"
+      required: true
+    - id: "openspec-lifecycle-di"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this decision is read as source authorization, provider functions or compatibility getters could be changed without a path-limited authorization package."
+    - "If refreshed LOW GitNexus impact is treated as permanent truth, future provider-governance drift may be missed after later route changes."
+    - "If token counts are used as deletion evidence, active route dependency/provider surfaces could be broken."
+  rollback_plan: "revert this PR to restore the pre-G2.184 steward state and remove the next-candidate decision report, generated JSON, and task card."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "select route dependency/provider governance as the next non-Strategy service lifecycle decision target"
+    modified_scope: "split steward tree files, decision report, generated JSON, and task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; no source or compatibility behavior changes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this governance-only PR if the no-new-source-lane decision is rejected"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T20:49:23+08:00"
+    approval_note: "Human maintainer approved continuing after PR #336 merge; this lane is a next-candidate decision package only."
+    secondary_approved: false

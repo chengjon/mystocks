@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-27T18:06:02+08:00`
-- Base HEAD checked: `597f8186092b4ad3d0704326e292c5e4fa075f15`
+- Prepared at: `2026-05-27T20:49:23+08:00`
+- Base HEAD checked: `d454193fdae08ad875c423e0b5aa959d79bedc67`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -28,14 +28,17 @@ state transition.
 | `.planning/codebase/generated/strategy-route-provider-fallback-decision-2026-05-27.json` | G2.182 route/provider fallback classification evidence | Current for HEAD `0398eb81259bba5c7d8c8ba6479056554e13d064` |
 | `docs/reports/quality/backend-strategy-route-provider-fallback-decision-2026-05-27.md` | G2.182 human-readable route/provider fallback decision package | Accepted by PR `#335`; superseded for remaining-residual closeout by G2.183 |
 | `.planning/codebase/generated/strategy-getter-remaining-residual-decision-2026-05-27.json` | G2.183 remaining Strategy getter residual closeout evidence | Current for HEAD `597f8186092b4ad3d0704326e292c5e4fa075f15` |
-| `docs/reports/quality/backend-strategy-getter-remaining-residual-decision-2026-05-27.md` | G2.183 human-readable remaining-residual decision package | Review input until accepted |
+| `docs/reports/quality/backend-strategy-getter-remaining-residual-decision-2026-05-27.md` | G2.183 human-readable remaining-residual decision package | Accepted by PR `#336`; superseded for next-gate selection by G2.184 |
+| `.planning/codebase/generated/next-nonstrategy-service-getter-candidate-decision-2026-05-27.json` | G2.184 next non-Strategy service getter candidate decision evidence | Current for HEAD `d454193fdae08ad875c423e0b5aa959d79bedc67`; stale if HEAD changes |
+| `docs/reports/quality/backend-next-nonstrategy-service-getter-candidate-decision-2026-05-27.md` | G2.184 human-readable next-candidate decision package | Review input until accepted |
 
 ## External State Inputs
 
 | Input | Current state at split | Notes |
 |---|---|---|
 | GitHub PR `#331` | `MERGED` | G2.178 source implementation lane closed by merge commit `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` |
-| `origin/wip/root-dirty-20260403` | `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` | Base used for this closeout branch |
+| GitHub PR `#336` | `MERGED` | G2.183 remaining Strategy getter residual closeout merged by commit `d454193fdae08ad875c423e0b5aa959d79bedc67` |
+| `origin/wip/root-dirty-20260403` | `d454193fdae08ad875c423e0b5aa959d79bedc67` | Base used for this decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

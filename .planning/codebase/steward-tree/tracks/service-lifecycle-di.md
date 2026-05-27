@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-27T18:06:02+08:00`
-- Base HEAD checked: `597f8186092b4ad3d0704326e292c5e4fa075f15`
+- Prepared at: `2026-05-27T20:49:23+08:00`
+- Base HEAD checked: `d454193fdae08ad875c423e0b5aa959d79bedc67`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -35,13 +35,15 @@ It proved a repeatable conveyor:
 | G2.180 Strategy adapter provider closeout | Merged by PR `#333` | Records G2.178 as closed and refreshes residual Strategy getter distribution without source edits |
 | G2.181 Strategy getter residual refresh decision | Merged by PR `#334` | Rechecks residual classes and selects route/provider fallback as the next governance target |
 | G2.182 Strategy route/provider fallback decision | Merged by PR `#335` | Classifies the route/provider fallback as a retained route-local provider seam and does not open a source lane |
-| G2.183 Strategy getter remaining residual decision | For review | Closes the current Strategy getter residual track with retained residuals and focused residual test evidence |
+| G2.183 Strategy getter remaining residual decision | Merged by PR `#336` | Closes the current Strategy getter residual track with retained residuals and focused residual test evidence |
+| G2.184 next non-Strategy candidate decision | For review | Selects route dependency/provider governance as the next decision target and opens no source lane |
 
 ## Current Strategy Getter Residuals
 
-At HEAD `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704`, production `.py`
-At HEAD `597f8186092b4ad3d0704326e292c5e4fa075f15`, `get_strategy_service`
-hits under `web/backend/app` remain `19`:
+At HEAD `d454193fdae08ad875c423e0b5aa959d79bedc67`, the current Strategy
+getter residual track is closed with retained residuals. The latest accepted
+G2.183 classification recorded these `get_strategy_service` hits under
+`web/backend/app`:
 
 | File | Hits | Current decision |
 |---|---:|---|
@@ -52,12 +54,12 @@ hits under `web/backend/app` remain `19`:
 
 ## Next Gates
 
-- Review G2.183 remaining residual decision.
-- If accepted, close the current Strategy getter residual track with retained
-  residuals and select the next non-Strategy service lifecycle DI candidate in a
-  separate decision package.
-- Do not start another Strategy service getter source lane from this
-  remaining-residual decision package.
+- Review G2.184 next non-Strategy candidate decision.
+- If accepted, start G2.185 route dependency/provider governance residual
+  decision package.
+- Do not start another backend source lane directly from G2.184. The current
+  non-Strategy residuals are provider/compatibility shaped after fresh GitNexus
+  indexing and need provider ownership classification first.
 
 ## Forbidden Scope
 
