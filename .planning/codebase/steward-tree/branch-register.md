@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T00:19:16+08:00`
-- Base HEAD checked: `0aac0e16f16480bd99eebb8726e21a7db6566b39`
+- Prepared at: `2026-05-28T00:38:03+08:00`
+- Base HEAD checked: `5565e2b0967958c406a4115dc840a9e90a0b2aab`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -26,12 +26,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#339` | `g2-186-remaining-getter-inventory-refresh` | `wip/root-dirty-20260403` | `MERGED` at `a63a6cb9a277195905b046cd31777d95160ee2c6` | Remaining getter inventory refresh selecting stop-loss authorization |
 | `#340` | `g2-187-risk-stop-loss-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a` | Authorization package for G2.188 stop-loss route provider implementation |
 | `#341` | `g2-188-risk-stop-loss-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `0aac0e16f16480bd99eebb8726e21a7db6566b39` | Path-limited stop-loss route provider implementation closed for G2.189 refresh |
+| `#342` | `g2-189-risk-stop-loss-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `5565e2b0967958c406a4115dc840a9e90a0b2aab` | Governance closeout and candidate refresh selecting data-quality / adapter cross-cutting decision |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-189-risk-stop-loss-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `0aac0e16f16480bd99eebb8726e21a7db6566b39` | Record PR `#341` closeout, mark the stop-loss pair closed for route-body provider migration, and refresh the next service-lifecycle governance target | None; governance closeout and candidate refresh only |
+| `g2-190-data-quality-adapter-decision` | `origin/wip/root-dirty-20260403` at `5565e2b0967958c406a4115dc840a9e90a0b2aab` | Classify the `get_data_quality_monitor` cross-cutting surface and select the next route-only authorization gate | None; governance decision package only |
 
 ## OpenSpec Relationship
 
@@ -47,8 +48,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.189 is a governance-only closeout branch after PR `#341` merged G2.188. It
+G2.190 is a governance-only decision branch after PR `#342` merged G2.189. It
 must not edit backend source, frontend source, tests, OpenSpec changes, or API
-contract files. The next recommended lane is G2.190 data-quality / adapter
-cross-cutting decision and authorization only; source implementation remains
-blocked until a separate authorization package is accepted.
+contract files. The next recommended lane is G2.191 data-quality route provider
+authorization only; source implementation remains blocked until a separate
+authorization package is accepted.

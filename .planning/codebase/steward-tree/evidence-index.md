@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T00:19:16+08:00`
-- Base HEAD checked: `0aac0e16f16480bd99eebb8726e21a7db6566b39`
+- Prepared at: `2026-05-28T00:38:03+08:00`
+- Base HEAD checked: `5565e2b0967958c406a4115dc840a9e90a0b2aab`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -41,6 +41,8 @@ state transition.
 | `docs/reports/quality/backend-risk-stop-loss-route-provider-implementation-2026-05-27.md` | G2.188 human-readable implementation package | Accepted by PR `#341` |
 | `.planning/codebase/generated/risk-stop-loss-provider-closeout-refresh-2026-05-28.json` | G2.189 stop-loss provider closeout and candidate-refresh evidence | Current for HEAD `0aac0e16f16480bd99eebb8726e21a7db6566b39`; review input until PR `#342` is accepted |
 | `docs/reports/quality/backend-risk-stop-loss-provider-closeout-refresh-2026-05-28.md` | G2.189 human-readable closeout and candidate-refresh report | Review input until PR `#342` is accepted |
+| `.planning/codebase/generated/data-quality-adapter-cross-cutting-decision-2026-05-28.json` | G2.190 data-quality / adapter cross-cutting decision evidence | Current for HEAD `5565e2b0967958c406a4115dc840a9e90a0b2aab`; review input until PR `#343` is accepted |
+| `docs/reports/quality/backend-data-quality-adapter-cross-cutting-decision-2026-05-28.md` | G2.190 human-readable decision package | Review input until PR `#343` is accepted |
 
 ## External State Inputs
 
@@ -53,7 +55,8 @@ state transition.
 | GitHub PR `#339` | `MERGED` | G2.186 remaining getter inventory refresh merged by commit `a63a6cb9a277195905b046cd31777d95160ee2c6` |
 | GitHub PR `#340` | `MERGED` | G2.187 stop-loss route provider authorization merged by commit `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a` |
 | GitHub PR `#341` | `MERGED` | G2.188 stop-loss route provider implementation merged by commit `0aac0e16f16480bd99eebb8726e21a7db6566b39` |
-| `origin/wip/root-dirty-20260403` | `0aac0e16f16480bd99eebb8726e21a7db6566b39` | Base used for this closeout / candidate-refresh branch |
+| GitHub PR `#342` | `MERGED` | G2.189 stop-loss provider closeout / candidate refresh merged by commit `5565e2b0967958c406a4115dc840a9e90a0b2aab` |
+| `origin/wip/root-dirty-20260403` | `5565e2b0967958c406a4115dc840a9e90a0b2aab` | Base used for this decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

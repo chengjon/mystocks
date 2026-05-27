@@ -1,0 +1,118 @@
+version: "v0.2"
+
+task:
+  id: "pr-343"
+  title: "Decide data-quality adapter cross-cutting lifecycle path"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-adapter-cross-cutting-decision"
+  objective: "classify the get_data_quality_monitor cross-cutting surface and select the next governance-only route authorization gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance decision package only; no runtime entrypoints, route paths, response models, frontend behavior, PM2 workflows, or public API ownership change"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-adapter-cross-cutting-decision-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-adapter-cross-cutting-decision-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-343.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "editing backend source"
+  - "editing frontend source"
+  - "editing tests"
+  - "migrating data-quality route handlers"
+  - "migrating adapter constructors"
+  - "deleting data-quality singleton wrapper or provider backing getters"
+  - "changing route paths, HTTP methods, response models, or OpenAPI examples"
+  - "creating OpenSpec proposals"
+  - "changing GitHub issue labels"
+  - "starting data-quality source implementation"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-adapter-cross-cutting-decision-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-343.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-data-quality-adapter-cross-cutting-decision-2026-05-28.md"
+      required: true
+    - id: "openspec-lifecycle-di"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-343.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 5565e2b0967958c406a4115dc840a9e90a0b2aab --head-sha HEAD --report /tmp/pr343-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this CRITICAL surface is misread as implementation authorization, adapter and route behavior could be changed without the required split plan."
+    - "If adapter constructor work is batched with route-provider work, the lifecycle migration can lose owner-specific rollback boundaries."
+  rollback_plan: "revert this governance-only PR to restore the prior steward tree and candidate-refresh state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "classify get_data_quality_monitor as a critical cross-cutting surface and select a route-only authorization gate"
+    modified_scope: "governance tree files, one generated JSON evidence artifact, one quality report, and this task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; singleton wrapper and adapter consumers remain unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if the steward tree misstates the CRITICAL risk or next-gate boundaries"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T00:38:03+08:00"
+    approval_note: "Human maintainer approved continuing after PR #342 merge; this lane is governance-only data-quality / adapter cross-cutting decision."
+    secondary_approved: true
