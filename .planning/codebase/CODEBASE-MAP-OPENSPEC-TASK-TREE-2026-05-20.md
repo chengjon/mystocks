@@ -3133,13 +3133,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, or implementation authorization is
 │   │              performed here
 │   ├── G2.169 Backtest task resolver authorization
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#322`
 │   │   ├── Evidence:
 │   │   │          `backend-backtest-task-resolver-authorization-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `backtest-task-resolver-authorization-2026-05-27.json`
 │   │   ├── Parent: G2.168 accepted and merged by PR `#321`
 │   │   ├── Evidence HEAD: `9994a89c73e38a11b907060bb11663df35eff6e6`
+│   │   ├── Merge HEAD: `bc2c0b8e102c455c09ba718b3eff982bf0f6e5e7`
 │   │   ├── Target: future source-capable G2.170 may only touch
 │   │   │          `web/backend/app/tasks/backtest_tasks.py` and
 │   │   │          `web/backend/tests/test_backtest_tasks_regressions.py`
@@ -3161,9 +3162,37 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              fallback edit, route/API behavior, OpenAPI exposure,
 │   │              frontend, PM2, OpenSpec, config, script, compatibility
 │   │              deletion, or issue-label change is performed here
-│   └── Next gate: review G2.169; if accepted, start G2.170 as a
-│                  path-limited implementation lane for
-│                  `backtest_tasks.py::_resolve_backtest_data_source`
+│   ├── G2.170 Backtest task resolver implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-backtest-task-resolver-implementation-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `backtest-task-resolver-implementation-2026-05-27.json`
+│   │   ├── Parent: G2.169 accepted and merged by PR `#322`
+│   │   ├── Base HEAD: `bc2c0b8e102c455c09ba718b3eff982bf0f6e5e7`
+│   │   ├── Implementation: introduced task-local
+│   │   │          `_get_strategy_data_source()` provider seam and changed
+│   │   │          `_resolve_backtest_data_source()` to delegate acquisition
+│   │   │          through that seam after preserving mode validation
+│   │   ├── Static result: resolver direct `get_strategy_service` mentions
+│   │   │          are `0`; helper `get_strategy_service` mentions are `2`;
+│   │   │          `run_backtest_task` still calls the resolver once
+│   │   ├── TDD evidence: provider-seam red test `1 failed`, then backtest
+│   │   │          task regressions `3 passed`
+│   │   ├── Verification: strategy route provider regressions `5 passed`,
+│   │   │          ruff passed, black check passed, and OpenAPI smoke
+│   │   │          `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   └── Boundary: path-limited source implementation; public
+│   │              `get_strategy_service` remains unchanged, Strategy route
+│   │              provider fallback remains unchanged, adapter/provider
+│   │              helpers remain deferred, and no route/API behavior,
+│   │              OpenAPI exposure, frontend, PM2, OpenSpec, config, script,
+│   │              compatibility deletion, or issue-label change is performed
+│   │              here
+│   └── Next gate: review G2.170; if accepted, close out this backtest task
+│                  resolver seam before selecting another Strategy service
+│                  getter residual track
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

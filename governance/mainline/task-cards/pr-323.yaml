@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-323"
+  title: "Inject backtest task resolver provider seam"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-backtest-task-resolver-implementation"
+  objective: "introduce a task-local Strategy data-source provider seam for web/backend/app/tasks/backtest_tasks.py::_resolve_backtest_data_source"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-backtest-task-resolver-implementation"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Path-limited implementation inside an approved G2.169 authorization boundary; no route, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/backtest-task-resolver-implementation-2026-05-27.json"
+    - "docs/reports/quality/backend-backtest-task-resolver-implementation-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-323.yaml"
+    - "web/backend/app/tasks/backtest_tasks.py"
+    - "web/backend/tests/test_backtest_tasks_regressions.py"
+  forbidden_paths:
+    - "web/backend/app/services/strategy_service.py"
+    - "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+    - "web/backend/app/services/adapters/strategy_adapter.py"
+    - "web/backend/app/services/data_adapters/strategy.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 322 --json number,state,mergeCommit,url,title"
+      required: true
+    - id: "gitnexus-pre-edit-impact"
+      command: "GitNexus impact for _resolve_backtest_data_source before source edit"
+      required: true
+    - id: "tdd-red"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py::test_resolve_backtest_data_source_uses_task_local_provider -q --no-cov --tb=short"
+      required: true
+    - id: "tdd-green"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "route-provider-regression"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-touched-files"
+      command: "ruff check web/backend/app/tasks/backtest_tasks.py web/backend/tests/test_backtest_tasks_regressions.py"
+      required: true
+    - id: "black-check-touched-files"
+      command: "black --check web/backend/app/tasks/backtest_tasks.py web/backend/tests/test_backtest_tasks_regressions.py"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.openapi() smoke with minimal non-secret env; record route count, path count, duplicate operation IDs, duplicate-operation-id warnings, and total captured warnings"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-backtest-task-resolver-implementation-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/backtest-task-resolver-implementation-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-323.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit strategy_service.py."
+  - "Do not edit Strategy route provider fallback."
+  - "Do not edit Strategy adapter/provider helper modules."
+  - "Do not delete, privatize, rename, or change get_strategy_service()."
+  - "Do not change Celery app configuration, task queue behavior, route/API behavior, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this implementation is expanded beyond the task-local resolver seam, it could mix a LOW task seam with the broader CRITICAL public Strategy service getter problem."
+    - "If adapter/provider helpers are changed here, their topology would bypass the separate adapter design gate."
+    - "If route provider fallback is changed here, G2.166 compatibility behavior could regress outside this lane."
+  rollback_plan: "revert this implementation PR to restore the previous inline resolver behavior and remove only the provider-seam test plus G2.170 governance artifacts"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "move backtest task Strategy data-source acquisition behind a task-local provider seam"
+    modified_scope: "backtest task resolver, focused regression test, steward tree, implementation report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "public get_strategy_service remains available and behavior-compatible"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if TDD red/green evidence, focused regressions, ruff/black, OpenAPI smoke, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-27T10:58:14+08:00"
+    approval_note: "User approved continuing after PR #322; implementation is limited to the G2.169 authorized backtest task resolver seam."
+    secondary_approved: false
+
