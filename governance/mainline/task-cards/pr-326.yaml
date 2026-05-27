@@ -1,0 +1,120 @@
+version: "v0.2"
+
+task:
+  id: "pr-326"
+  title: "Design Strategy adapter compatibility wrapper lane"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-strategy-adapter-provider-design"
+  objective: "select canonical Strategy adapter ownership and authorize a future narrow wrapper implementation for the legacy data_adapters path"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-strategy-adapter-provider-design"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Design/authorization package only; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/strategy-adapter-provider-design-2026-05-27.json"
+    - "docs/reports/quality/backend-strategy-adapter-provider-design-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-326.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 325 --json number,state,mergeCommit,url,title"
+      required: true
+    - id: "adapter-ownership-scan"
+      command: "scan canonical adapters path, legacy data_adapters path, data_adapter compatibility entrypoint, package exports, factory imports, and tests"
+      required: true
+    - id: "gitnexus-evidence"
+      command: "GitNexus file impact for both Strategy adapter modules and context for both _get_strategy_service helpers"
+      required: true
+    - id: "focused-adapter-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_adapter_mock_fallback_controls.py web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "route-backtest-sanity"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.openapi() smoke with minimal non-secret env; record route count, path count, duplicate operation IDs, duplicate-operation-id warnings, and total captured warnings"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-strategy-adapter-provider-design-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/strategy-adapter-provider-design-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-326.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this design package."
+  - "Do not implement the legacy wrapper conversion in this package."
+  - "Do not edit canonical strategy_adapter.py."
+  - "Do not edit data_adapter.py or data_source_factory.py."
+  - "Do not remove or edit Strategy route provider fallback."
+  - "Do not reopen the backtest task resolver lane."
+  - "Do not delete, privatize, rename, or change get_strategy_service()."
+  - "Do not change route/API behavior, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If the legacy path is deleted instead of wrapped, direct imports of app.services.data_adapters.strategy could break."
+    - "If canonical strategy_adapter.py is edited in the next lane, a low-risk wrapper conversion could expand into broader adapter behavior change."
+    - "If public get_strategy_service is touched, this lane could accidentally enter the broader CRITICAL getter retirement problem."
+  rollback_plan: "revert this design PR to remove only the design report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "select canonical Strategy adapter ownership and authorize a future legacy-wrapper implementation lane"
+    modified_scope: "steward tree, design report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, ownership scan, GitNexus evidence, focused tests, OpenAPI smoke, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T12:23:11+08:00"
+    approval_note: "Design/authorization package after PR #325 selected Strategy adapter/provider duplication as the next track."
+    secondary_approved: false
+

@@ -1,0 +1,162 @@
+{
+  "work_item": "G2.173",
+  "artifact_type": "design_authorization_package",
+  "status": "ready_for_review",
+  "created_at": "2026-05-27T12:23:11+08:00",
+  "current_head": "b867716f77f8f509d1a7ec49c76346422bfd66ac",
+  "base_branch": "wip/root-dirty-20260403",
+  "parent": {
+    "work_item": "G2.172",
+    "pr": 325,
+    "state": "MERGED",
+    "merge_commit": "b867716f77f8f509d1a7ec49c76346422bfd66ac",
+    "title": "docs(governance): select strategy adapter residual track"
+  },
+  "scope": {
+    "type": "design_authorization_only",
+    "source_files_changed": [],
+    "test_files_changed": [],
+    "governance_files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/strategy-adapter-provider-design-2026-05-27.json",
+      "docs/reports/quality/backend-strategy-adapter-provider-design-2026-05-27.md",
+      "governance/mainline/task-cards/pr-326.yaml"
+    ]
+  },
+  "ownership_decision": {
+    "canonical_implementation": "web/backend/app/services/adapters/strategy_adapter.py",
+    "legacy_compatibility_path": "web/backend/app/services/data_adapters/strategy.py",
+    "decision": "future implementation should convert the legacy path to a thin compatibility wrapper that re-exports the canonical StrategyDataSourceAdapter"
+  },
+  "current_shape": {
+    "canonical": {
+      "file": "web/backend/app/services/adapters/strategy_adapter.py",
+      "line_count": 368,
+      "class": "StrategyDataSourceAdapter",
+      "class_line": 21,
+      "helper": "_get_strategy_service",
+      "helper_line": 39
+    },
+    "legacy_duplicate": {
+      "file": "web/backend/app/services/data_adapters/strategy.py",
+      "line_count": 367,
+      "class": "StrategyDataSourceAdapter",
+      "class_line": 18,
+      "helper": "_get_strategy_service",
+      "helper_line": 36
+    },
+    "shared_methods": [
+      "_get_strategy_service",
+      "_get_mock_manager",
+      "_is_mock_mode",
+      "_should_use_mock_fallback",
+      "get_data",
+      "_fetch_strategy_data",
+      "_get_mock_strategy_data",
+      "health_check",
+      "get_metrics"
+    ]
+  },
+  "canonical_evidence": {
+    "data_adapter_compat_entrypoint": {
+      "file": "web/backend/app/services/data_adapter.py",
+      "statement": "actual implementations have been split to app.services.adapters",
+      "strategy_export": "StrategyDataSourceAdapter"
+    },
+    "adapters_package_export": {
+      "file": "web/backend/app/services/adapters/__init__.py",
+      "exports": ["StrategyDataSourceAdapter"]
+    },
+    "data_adapters_package_export": {
+      "file": "web/backend/app/services/data_adapters/__init__.py",
+      "exists": false
+    },
+    "factory_path": {
+      "file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "import_path": "app.services.data_adapter -> app.services.adapters",
+      "strategy_construction_line": 125
+    },
+    "test_references": {
+      "canonical_path": [
+        "web/backend/tests/test_logging_noise_regressions.py"
+      ],
+      "legacy_direct_path": [
+        "web/backend/tests/test_adapter_mock_fallback_controls.py"
+      ]
+    }
+  },
+  "gitnexus": {
+    "file_impacts": [
+      {
+        "target": "web/backend/app/services/adapters/strategy_adapter.py",
+        "risk": "LOW",
+        "impacted_count": 2,
+        "direct_upstream": ["web/backend/app/services/adapters/__init__.py"]
+      },
+      {
+        "target": "web/backend/app/services/data_adapters/strategy.py",
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct_upstream": []
+      }
+    ],
+    "helper_contexts": [
+      {
+        "target": "web/backend/app/services/adapters/strategy_adapter.py::_get_strategy_service",
+        "incoming": ["_fetch_strategy_data", "health_check"],
+        "outgoing": ["get_strategy_service"]
+      },
+      {
+        "target": "web/backend/app/services/data_adapters/strategy.py::_get_strategy_service",
+        "incoming": ["_fetch_strategy_data", "health_check"],
+        "outgoing": ["get_strategy_service"]
+      }
+    ],
+    "public_getter_state": "get_strategy_service remains CRITICAL from G2.172 and is not authorized for retirement"
+  },
+  "verification": {
+    "parent_pr_state": "MERGED",
+    "head_matches_remote": true,
+    "adapter_and_logging_focused_tests": "16 passed in 4.24s",
+    "route_and_backtest_sanity": "8 passed in 5.43s",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "total_warnings_captured": 121,
+      "env_note": "minimal non-secret placeholder env used for required import gate"
+    }
+  },
+  "future_authorization": {
+    "future_work_item": "G2.174",
+    "implementation_authorized_after_review": true,
+    "allowed_source_paths": [
+      "web/backend/app/services/data_adapters/strategy.py"
+    ],
+    "allowed_test_paths": [
+      "web/backend/tests/test_adapter_mock_fallback_controls.py"
+    ],
+    "required_properties": [
+      "canonical StrategyDataSourceAdapter remains web/backend/app/services/adapters/strategy_adapter.py",
+      "legacy direct import app.services.data_adapters.strategy.StrategyDataSourceAdapter remains functional",
+      "data_adapters/strategy.py becomes a thin wrapper instead of a duplicate implementation",
+      "public get_strategy_service remains unchanged",
+      "Strategy route provider fallback remains unchanged",
+      "backtest resolver remains closed"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/services/adapters/strategy_adapter.py",
+      "web/backend/app/services/data_adapter.py",
+      "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+      "web/backend/app/tasks/backtest_tasks.py",
+      "web/frontend/**",
+      "openspec/changes/**",
+      "openspec/specs/**",
+      "config/**",
+      "scripts/**"
+    ]
+  },
+  "next_gate": "Review G2.173. If accepted, start G2.174 path-limited wrapper implementation."
+}
