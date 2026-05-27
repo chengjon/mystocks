@@ -3218,13 +3218,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, or next implementation authorization is
 │   │              performed here
 │   ├── G2.172 Strategy residual current track decision
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#325`
 │   │   ├── Evidence:
 │   │   │          `backend-strategy-residual-current-track-decision-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `strategy-residual-current-track-decision-2026-05-27.json`
 │   │   ├── Parent: G2.171 accepted and merged by PR `#324`
 │   │   ├── Evidence HEAD: `68c6b4149984aab583dacebf9cdd1ff131189c3e`
+│   │   ├── Merge HEAD: `b867716f77f8f509d1a7ec49c76346422bfd66ac`
 │   │   ├── Residual scan: `get_strategy_service` has `29` production text
 │   │   │          hits across `5` files; adapter/provider duplication owns
 │   │   │          `20` hits across `2` files, route provider fallback owns
@@ -3249,9 +3250,46 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenSpec, config, script, compatibility deletion,
 │   │              issue-label change, adapter implementation authorization,
 │   │              or public getter retirement is performed here
-│   └── Next gate: review G2.172; if accepted, create G2.173 as a
-│                  Strategy adapter/provider duplication design or
-│                  authorization package before any source implementation
+│   ├── G2.173 Strategy adapter/provider design
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-strategy-adapter-provider-design-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `strategy-adapter-provider-design-2026-05-27.json`
+│   │   ├── Parent: G2.172 accepted and merged by PR `#325`
+│   │   ├── Evidence HEAD: `b867716f77f8f509d1a7ec49c76346422bfd66ac`
+│   │   ├── Ownership decision: canonical implementation is
+│   │   │          `web/backend/app/services/adapters/strategy_adapter.py`;
+│   │   │          `web/backend/app/services/data_adapters/strategy.py` is
+│   │   │          the legacy direct import path and should become a thin
+│   │   │          compatibility wrapper in a future lane
+│   │   ├── Evidence: `data_adapter.py` declares implementations split to
+│   │   │          `app.services.adapters`, `adapters/__init__.py` exports
+│   │   │          `StrategyDataSourceAdapter`, `data_adapters/__init__.py`
+│   │   │          is absent, and factory construction resolves through
+│   │   │          `app.services.data_adapter` into `app.services.adapters`
+│   │   ├── GitNexus evidence: canonical adapter file impact is LOW with
+│   │   │          `2` upstream hits; legacy data-adapters file impact is
+│   │   │          LOW with `0` upstream hits; both helpers still have
+│   │   │          `_fetch_strategy_data` and `health_check` incoming callers
+│   │   ├── Authorization: future G2.174 may only convert
+│   │   │          `data_adapters/strategy.py` into a compatibility wrapper
+│   │   │          and update focused adapter fallback tests after review;
+│   │   │          canonical `strategy_adapter.py`, factory, route provider,
+│   │   │          backtest resolver, and public `get_strategy_service`
+│   │   │          remain locked out of scope
+│   │   ├── Verification: adapter/logging focused tests `16 passed`,
+│   │   │          strategy route/backtest sanity tests `8 passed`, and
+│   │   │          OpenAPI smoke `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   └── Boundary: design/authorization only; no backend source/test edit,
+│   │              route/API behavior, OpenAPI exposure, frontend, PM2,
+│   │              OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, or source implementation is performed
+│   │              here
+│   └── Next gate: review G2.173; if accepted, start G2.174 as a
+│                  path-limited legacy wrapper implementation for
+│                  `data_adapters/strategy.py`
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
