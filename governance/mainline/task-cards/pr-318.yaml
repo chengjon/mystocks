@@ -1,0 +1,118 @@
+version: "v0.2"
+
+task:
+  id: "pr-318"
+  title: "Authorize Strategy service seam route provider injection"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-strategy-service-seam-design-authorization"
+  objective: "authorize a narrow future Strategy route provider injection lane without implementing source changes"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-strategy-service-seam-design-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only governance package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/strategy-service-seam-design-authorization-2026-05-27.json"
+    - "docs/reports/quality/backend-strategy-service-seam-design-authorization-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-318.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 317 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "gitnexus-impact-refresh"
+      command: "GitNexus impact/context for get_strategy_service plus focused impact for query_strategy_results and _resolve_backtest_data_source"
+      required: true
+    - id: "hit-classification"
+      command: "classify get_strategy_service references into definition/import/Depends/body-call/test-reference categories"
+      required: true
+    - id: "focused-strategy-route-docs-test"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_v1_strategy_management_endpoints_have_success_examples_and_parameter_docs -q --no-cov"
+      required: true
+    - id: "focused-backtest-task-test"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.openapi() smoke with non-secret minimal env; record route count, path count, duplicate operation IDs, and warnings"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-strategy-service-seam-design-authorization-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/strategy-service-seam-design-authorization-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-318.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check -- .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md .planning/codebase/generated/strategy-service-seam-design-authorization-2026-05-27.json docs/reports/quality/backend-strategy-service-seam-design-authorization-2026-05-27.md governance/mainline/task-cards/pr-318.yaml"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this authorization package."
+  - "Do not start G2.166 source implementation before this package is reviewed and merged."
+  - "Do not delete, privatize, rename, or change get_strategy_service()."
+  - "Do not authorize adapter/provider duplication or task/backtest resolution work in G2.166."
+  - "Do not edit route/API behavior, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this package is treated as implementation, the CRITICAL shared get_strategy_service seam could be edited without the G2.166 TDD and route-contract gates."
+    - "If adapter/provider duplication or task/backtest resolution is folded into G2.166, the implementation scope becomes too broad for a narrow provider-injection lane."
+  rollback_plan: "revert this governance PR to remove only the authorization report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize future narrow Strategy route provider injection lane"
+    modified_scope: "steward tree, authorization report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, impact refresh, hit classification, focused tests, OpenAPI smoke, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T08:02:56+08:00"
+    approval_note: "Authorization-only package after PR #317 selected the Strategy service seam as the next high-risk getter design track."
+    secondary_approved: false

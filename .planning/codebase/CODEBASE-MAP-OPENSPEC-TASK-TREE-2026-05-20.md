@@ -2989,13 +2989,13 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              is performed here
 │   ├── G2.164 Next high-risk service getter track selection after
 │   │          Indicator/Data
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#317`
 │   │   ├── Evidence:
 │   │   │          `backend-next-high-risk-service-getter-track-selection-after-indicator-data-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `next-high-risk-service-getter-track-selection-after-indicator-data-2026-05-27.json`
 │   │   ├── Parent: G2.163 accepted and merged by PR `#316`
-│   │   ├── Current HEAD: `8b5fb7359a007db704e9f3dfb575d4f5b656075d`
+│   │   ├── Evidence HEAD: `8b5fb7359a007db704e9f3dfb575d4f5b656075d`
 │   │   ├── Refreshed impact: `get_data_service` remains CRITICAL
 │   │   │          `5/3/7`, `get_strategy_service` remains CRITICAL
 │   │   │          `13/6/0`, `get_streaming_service` remains HIGH
@@ -3016,9 +3016,37 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              config, script, compatibility deletion, issue-label
 │   │              change, or implementation authorization is performed
 │   │              here
-│   └── Next gate: review G2.164; if accepted, start G2.165 as a
-│                  Strategy service seam design and authorization package
-│                  before any strategy source implementation lane
+│   ├── G2.165 Strategy service seam design and authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-strategy-service-seam-design-authorization-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `strategy-service-seam-design-authorization-2026-05-27.json`
+│   │   ├── Parent: G2.164 accepted and merged by PR `#317`
+│   │   ├── Current HEAD: `3355c50c5a0c9cf5b20dd9d33300a695e5a3807b`
+│   │   ├── GitNexus evidence: `get_strategy_service` remains CRITICAL
+│   │   │          `13/6/0`; direct caller surfaces split into two adapter
+│   │   │          provider calls, three strategy-management route calls,
+│   │   │          and one backtest task resolver call
+│   │   ├── Decision: authorize future G2.166 only as a narrow Strategy
+│   │   │          route provider injection lane for
+│   │   │          `_strategy_execution_router.py`; adapter/provider
+│   │   │          duplication and task/backtest resolution remain deferred
+│   │   ├── G2.166 target: replace the three route-handler body calls to
+│   │   │          `get_strategy_service()` with a local FastAPI provider
+│   │   │          wrapper while preserving public `get_strategy_service()`
+│   │   │          fallback compatibility and all route/OpenAPI contracts
+│   │   ├── Verification: parent PR `#317` merged, strategy route OpenAPI
+│   │   │          docs focused test `1 passed`, backtest task regressions
+│   │   │          `2 passed`, OpenAPI smoke `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   └── Boundary: authorization-only; no backend source/test edit,
+│   │              route/API behavior, OpenAPI exposure, frontend, PM2,
+│   │              OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, or implementation is performed here
+│   └── Next gate: review G2.165; if accepted, start G2.166 as the
+│                  narrow Strategy route provider injection implementation
+│                  lane
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
@@ -3399,7 +3427,7 @@ and recording whether a contradiction requires reconciliation.
 | P1 | Refresh route/OpenAPI/probe evidence after runtime unblock | `sequence-backend-architecture-unblocks` | Complete; next gate is control-plane route governance classification, including `GET /metrics` duplicate path/method |
 | P1 | Keep Core Batch 2 blocked until Task 3.2 and #83 evidence gates are explicit | Core split lane | Blocked |
 | P2 | Review G2.32 `MarketDataServiceV2` dashboard helper provider migration implementation | Future service seam lane | PR `#171` merged; G2.32 implementation packet is review-ready, removes dashboard helper direct getter calls, preserves `get_market_data_service_v2()` fallback compatibility, and recommends a fresh service lifecycle DI candidate refresh before any next implementation lane |
-| P1 | Review G2.164 high-risk service getter track selection after Indicator/Data | G/#79 service lifecycle lane | Ready for review; selects Strategy service seam as next design/authorization track only, without source implementation authorization |
+| P1 | Review G2.165 Strategy service seam design and authorization | G/#79 service lifecycle lane | Ready for review; authorizes only a future narrow Strategy route provider injection implementation lane, without editing source in G2.165 |
 | P2 | Keep CSRF and miniQMT tracks decision/evidence-only | Decision and external evidence lanes | No implementation branch |
 
 ## Deferred Items

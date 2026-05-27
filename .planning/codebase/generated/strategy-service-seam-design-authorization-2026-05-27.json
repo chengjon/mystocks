@@ -1,0 +1,146 @@
+{
+  "artifact": "strategy-service-seam-design-authorization",
+  "task_id": "G2.165",
+  "status": "review_ready",
+  "scope": "authorization_package_only",
+  "created_at": "2026-05-27T08:02:56+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "3355c50c5a0c9cf5b20dd9d33300a695e5a3807b",
+  "parent": {
+    "task_id": "G2.164",
+    "pr": 317,
+    "state": "merged",
+    "merge_commit": "3355c50c5a0c9cf5b20dd9d33300a695e5a3807b",
+    "report": "docs/reports/quality/backend-next-high-risk-service-getter-track-selection-after-indicator-data-2026-05-27.md",
+    "artifact": ".planning/codebase/generated/next-high-risk-service-getter-track-selection-after-indicator-data-2026-05-27.json"
+  },
+  "decision": {
+    "next_gate": "G2.166",
+    "summary": "Authorize a future narrow Strategy route provider injection implementation lane after G2.165 review and merge.",
+    "selected_slice": "strategy_management_route_provider_injection",
+    "no_source_edits_in_this_package": true,
+    "implementation_start_requires_review_merge": true
+  },
+  "gitnexus": {
+    "get_strategy_service": {
+      "risk": "CRITICAL",
+      "impacted": 13,
+      "direct": 6,
+      "processes": 0,
+      "affected_modules": [
+        "Data_adapters",
+        "Adapters",
+        "Strategy_management",
+        "Cdp",
+        "Tasks"
+      ]
+    },
+    "query_strategy_results": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    "_resolve_backtest_data_source": {
+      "risk": "LOW",
+      "impacted": 1,
+      "direct": 1,
+      "processes": 0
+    }
+  },
+  "current_head_hit_classification": {
+    "definition": 1,
+    "imports": 4,
+    "depends_sites": 0,
+    "application_body_calls": 6,
+    "backend_test_references": 1,
+    "body_calls": [
+      {
+        "file": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+        "line": 399,
+        "disposition": "authorized_for_g2_166"
+      },
+      {
+        "file": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+        "line": 461,
+        "disposition": "authorized_for_g2_166"
+      },
+      {
+        "file": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+        "line": 503,
+        "disposition": "authorized_for_g2_166"
+      },
+      {
+        "file": "web/backend/app/services/adapters/strategy_adapter.py",
+        "line": 45,
+        "disposition": "deferred_adapter_provider_duplication"
+      },
+      {
+        "file": "web/backend/app/services/data_adapters/strategy.py",
+        "line": 42,
+        "disposition": "deferred_adapter_provider_duplication"
+      },
+      {
+        "file": "web/backend/app/tasks/backtest_tasks.py",
+        "line": 31,
+        "disposition": "deferred_task_backtest_resolution"
+      }
+    ]
+  },
+  "authorized_future_paths": {
+    "application_source": [
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+    ],
+    "focused_tests": [
+      "web/backend/tests/test_strategy_management_route_provider.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "governance": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/strategy-service-route-provider-injection-implementation-2026-05-27.json",
+      "docs/reports/quality/backend-strategy-service-route-provider-injection-implementation-2026-05-27.md",
+      "governance/mainline/task-cards/pr-319.yaml"
+    ]
+  },
+  "forbidden_future_paths_or_actions": [
+    "edit web/backend/app/services/strategy_service.py",
+    "delete, privatize, rename, or change get_strategy_service()",
+    "edit web/backend/app/services/data_adapters/strategy.py",
+    "edit web/backend/app/services/adapters/strategy_adapter.py",
+    "edit web/backend/app/tasks/backtest_tasks.py",
+    "edit broad strategy-management routers outside _strategy_execution_router.py",
+    "change route paths, methods, response models, operation IDs, tags, summaries, descriptions, examples, OpenAPI exposure, or response body shapes",
+    "change frontend callers, PM2 workflows, config, scripts, OpenSpec state, or GitHub issue labels",
+    "fold realtime/socket, Dashboard/TDX, Indicator/Data residual, root facade compatibility, adapter/provider duplication, or task/backtest resolution into G2.166"
+  ],
+  "target_g2_166_closure_metric": {
+    "direct_body_calls_in_strategy_execution_router": {
+      "before": 3,
+      "target_after": 0
+    },
+    "public_get_strategy_service_definition": "unchanged",
+    "adapter_and_backtest_body_calls": "unchanged"
+  },
+  "baseline_verification": {
+    "parent_pr_317": "MERGED",
+    "strategy_route_docs_test": "1 passed in 18.87s",
+    "backtest_task_regressions": "2 passed in 3.14s",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "warnings": 0
+    }
+  },
+  "required_g2_166_gates": [
+    "confirm G2.166 worktree contains merged PR #318",
+    "rerun GitNexus impact for get_strategy_service and the three route handlers",
+    "use TDD with a focused route-provider test",
+    "run focused provider, strategy route OpenAPI docs, and backtest task regression tests",
+    "ruff touched backend files",
+    "OpenAPI smoke",
+    "staged GitNexus detect changes",
+    "mainline scope gate",
+    "gitnexus analyze --with-gitignore after commit"
+  ]
+}
