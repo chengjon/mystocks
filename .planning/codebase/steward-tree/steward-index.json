@@ -1,0 +1,151 @@
+{
+  "schema_version": "2026-05-27.steward-index.v1",
+  "generated_at": "2026-05-27T15:32:41+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "3b8f95945fcb489316ddfaf919835d372122fa5f",
+  "split_branch": "g2-179-steward-tree-governance-split",
+  "scope": "governance_only",
+  "source_edit_authority": false,
+  "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+  "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
+  "split_files": [
+    {
+      "purpose": "governance_contract",
+      "path": ".planning/codebase/steward-tree/README.md"
+    },
+    {
+      "purpose": "machine_readable_index",
+      "path": ".planning/codebase/steward-tree/steward-index.json"
+    },
+    {
+      "purpose": "active_next_gates",
+      "path": ".planning/codebase/steward-tree/current-next-gates.md"
+    },
+    {
+      "purpose": "branch_register",
+      "path": ".planning/codebase/steward-tree/branch-register.md"
+    },
+    {
+      "purpose": "evidence_index",
+      "path": ".planning/codebase/steward-tree/evidence-index.md"
+    },
+    {
+      "purpose": "completed_ledger",
+      "path": ".planning/codebase/steward-tree/completed-ledger.md"
+    },
+    {
+      "purpose": "freshness_matrix",
+      "path": ".planning/codebase/steward-tree/freshness-matrix.md"
+    },
+    {
+      "purpose": "service_lifecycle_di_track",
+      "path": ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    },
+    {
+      "purpose": "route_openapi_governance_track",
+      "path": ".planning/codebase/steward-tree/tracks/route-openapi-governance.md"
+    },
+    {
+      "purpose": "core_split_compatibility_track",
+      "path": ".planning/codebase/steward-tree/tracks/core-split-and-compatibility.md"
+    }
+  ],
+  "tool_roles": {
+    "context_mode": "analysis_output_index_and_context_hygiene",
+    "gitnexus": "code_graph_impact_and_staged_change_risk",
+    "github_pr": "delivery_review_merge_and_issue_state",
+    "graphiti": "accepted_milestone_digest_memory",
+    "openspec": "proposal_approval_task_and_archive_authority",
+    "steward_tree": "cross_artifact_gate_and_evidence_coordination"
+  },
+  "state_vocabulary": [
+    "blocked",
+    "for_review",
+    "accepted",
+    "open_pr",
+    "merged",
+    "closed",
+    "deferred",
+    "stale_aware",
+    "contradiction_unresolved"
+  ],
+  "active_nodes": [
+    {
+      "id": "steward-tree-v2-split",
+      "type": "governance",
+      "state": "for_review",
+      "owner_lane": "CODEBASE-MAP steward governance",
+      "parent": "single-file steward tree",
+      "evidence": [
+        ".planning/codebase/CODEBASE-MAP-STEWARD-TREE-RETROSPECTIVE-2026-05-22.md",
+        ".planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md"
+      ],
+      "allowed_scope": [
+        ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+        ".planning/codebase/steward-tree/**",
+        "docs/reports/quality/steward-tree-governance-split-2026-05-27.md",
+        "governance/mainline/task-cards/pr-332.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "openspec/changes/**",
+        "openspec/specs/**",
+        "config/**",
+        "scripts/**"
+      ],
+      "source_edit_authority": false,
+      "freshness": {
+        "current_head_checked": "3b8f95945fcb489316ddfaf919835d372122fa5f",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "Review and merge the governance split PR if the split files and JSON index are accepted."
+    },
+    {
+      "id": "g2-178-strategy-adapter-provider-implementation",
+      "type": "implementation",
+      "state": "open_pr",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.177 Strategy canonical adapter provider authorization",
+      "github_pr": {
+        "number": 331,
+        "url": "https://github.com/chengjon/mystocks/pull/331",
+        "state_at_split": "OPEN",
+        "mergeable_at_split": "MERGEABLE",
+        "head_ref": "g2-178-strategy-adapter-provider-implementation"
+      },
+      "source_edit_authority": true,
+      "included_in_this_branch": false,
+      "freshness": {
+        "current_head_checked": "3b8f95945fcb489316ddfaf919835d372122fa5f",
+        "stale_if_pr_state_changes": true
+      },
+      "next_gate": "Human merge/review decision for PR #331; do not mix this governance split with PR #331 source changes."
+    },
+    {
+      "id": "core-batch2-reconciliation",
+      "type": "blocked_gate",
+      "state": "blocked",
+      "owner_lane": "Core split and compatibility wrapper lane",
+      "source_edit_authority": false,
+      "evidence": [
+        "split-backend-core-modules-with-compatibility-wrappers"
+      ],
+      "next_gate": "Keep Core Batch 2 blocked until Task 3.2 and shared evidence gates have explicit disposition."
+    },
+    {
+      "id": "route-openapi-governance",
+      "type": "governance_track",
+      "state": "active",
+      "owner_lane": "Route/OpenAPI governance",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/steward-tree/tracks/route-openapi-governance.md"
+      ],
+      "next_gate": "Use route/OpenAPI governance for trading, control-plane, compatibility exposure, and duplicate operation ID decisions before route source edits."
+    }
+  ]
+}

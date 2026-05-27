@@ -1,0 +1,104 @@
+version: "v0.2"
+
+task:
+  id: "pr-332"
+  title: "split CODEBASE-MAP steward tree and add machine-readable index"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-steward-tree-governance-split"
+  objective: "split the oversized CODEBASE-MAP steward tree by usage and add a machine-readable steward index"
+  milestone_id: "L2-architecture-governance-closeout"
+  slice_id: "L3-steward-tree-operating-model"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "none"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Documentation-only steward tree split; no runtime, route, source, test, or product behavior changes."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/steward-tree/**"
+    - "docs/reports/quality/steward-tree-governance-split-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-332.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+    - "config/**"
+    - "scripts/**"
+    - "docs/api/**"
+
+non_goals:
+  - "No backend or frontend source edits"
+  - "No test edits"
+  - "No OpenSpec proposal creation"
+  - "No GitHub issue label changes"
+  - "No PR #331 merge or source reconciliation"
+  - "No compatibility wrapper deletion"
+  - "No runtime, PM2, or OpenAPI behavior changes"
+
+acceptance:
+  checks:
+    - id: "json-index-valid"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null"
+      required: true
+    - id: "split-files-exist"
+      command: "python - <<'PY'\nfrom pathlib import Path\nrequired = [\n'.planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md',\n'.planning/codebase/steward-tree/README.md',\n'.planning/codebase/steward-tree/steward-index.json',\n'.planning/codebase/steward-tree/current-next-gates.md',\n'.planning/codebase/steward-tree/branch-register.md',\n'.planning/codebase/steward-tree/evidence-index.md',\n'.planning/codebase/steward-tree/completed-ledger.md',\n'.planning/codebase/steward-tree/freshness-matrix.md',\n'.planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md',\n]\nmissing = [p for p in required if not Path(p).exists()]\nif missing:\n    raise SystemExit('missing: ' + ', '.join(missing))\nprint('split_files_ok')\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md .planning/codebase/steward-tree/README.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/freshness-matrix.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/tracks/route-openapi-governance.md .planning/codebase/steward-tree/tracks/core-split-and-compatibility.md docs/reports/quality/steward-tree-governance-split-2026-05-27.md"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "PR #331 may also edit the root steward tree; merge order may require path-limited documentation reconciliation."
+    - "Automation that expects the old single huge file must switch to steward-index.json or the archived snapshot."
+  rollback_plan: "Revert this PR to restore the previous single-file steward tree path and remove the split steward-tree directory."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "split the CODEBASE-MAP steward tree into a short entrypoint, purpose-specific files, and a JSON steward index"
+    modified_scope: "planning docs, steward-tree split files, governance report, and task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "full historical tree preserved in archive"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert the governance-only PR if consumers still require the previous single-file layout"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T15:32:41+08:00"
+    approval_note: "Human maintainer requested steward tree governance strengthening, machine-readable index, and purpose-based split."
+    secondary_approved: false
