@@ -1,0 +1,123 @@
+{
+  "schema_version": "2026-05-28.g2-195.authorization.v1",
+  "generated_at": "2026-05-28T02:31:48+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "e30e16605df6aaa333989a7ac247bab3dcd0dd01",
+  "worktree_branch": "g2-195-data-quality-adapter-split-authorization",
+  "status": "for_review",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "g2-194-data-quality-adapter-seam-design",
+    "github_pr": 347,
+    "merge_commit": "e30e16605df6aaa333989a7ac247bab3dcd0dd01",
+    "decision": "adapter_split constructor seam first; implementation remains blocked until a separate authorization package is accepted"
+  },
+  "authorization": {
+    "classification": "future_source_authorization_package",
+    "authorized_future_lane": "G2.196 data-quality adapter_split constructor provider implementation",
+    "authorized_future_scope": "Introduce injectable data-quality monitor construction for adapter_split only, preserving default runtime behavior and avoiding global getter calls when an injected fake or provider is supplied.",
+    "future_source_edit_authority_if_accepted": true,
+    "future_authorized_source_paths": [
+      "web/backend/app/services/adapters_split/base_adapter.py",
+      "web/backend/app/services/adapters_split/baostock_adapter.py",
+      "web/backend/app/services/adapters_split/tushare_adapter.py",
+      "web/backend/app/services/adapters_split/customer_adapter.py",
+      "web/backend/app/services/adapters_split/byapi_adapter.py",
+      "web/backend/app/services/adapters_split/akshare_adapter.py",
+      "web/backend/app/services/adapters_split/efinance_adapter.py",
+      "web/backend/app/services/adapters_split/tdx_adapter.py"
+    ],
+    "future_authorized_test_paths": [
+      "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
+    ],
+    "future_forbidden_paths": [
+      "web/backend/app/services/adapters/**",
+      "web/backend/app/services/data_adapters/**",
+      "web/backend/app/services/market_data_adapter.py",
+      "web/backend/app/services/_data_quality_monitor_singleton.py",
+      "web/backend/app/services/data_quality_monitor.py",
+      "web/backend/app/api/**",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "current_inventory_at_authorization": {
+    "files_scanned": 8,
+    "constructors_with_quality_monitor_parameter": 0,
+    "base_adapter": {
+      "path": "web/backend/app/services/adapters_split/base_adapter.py",
+      "constructor_line": 23,
+      "singleton_assignment_line": 27,
+      "log_data_quality_uses_self_quality_monitor_line": 100
+    },
+    "subclass_singleton_assignment_lines": {
+      "web/backend/app/services/adapters_split/baostock_adapter.py": 22,
+      "web/backend/app/services/adapters_split/tushare_adapter.py": 22,
+      "web/backend/app/services/adapters_split/customer_adapter.py": 35,
+      "web/backend/app/services/adapters_split/byapi_adapter.py": 24,
+      "web/backend/app/services/adapters_split/akshare_adapter.py": 22,
+      "web/backend/app/services/adapters_split/efinance_adapter.py": 22,
+      "web/backend/app/services/adapters_split/tdx_adapter.py": 22
+    }
+  },
+  "gitnexus_evidence_at_authorization": {
+    "BaseAdapter": {
+      "risk": "MEDIUM",
+      "impacted_count": 7,
+      "direct_extenders": [
+        "TushareAdapter",
+        "TDXAdapter",
+        "EfinanceAdapter",
+        "CustomerAdapter",
+        "BYAPIAdapter",
+        "BaostockAdapter",
+        "AkshareAdapter"
+      ]
+    },
+    "get_data_quality_monitor": {
+      "risk": "CRITICAL",
+      "impacted_count": 24,
+      "direct_callers": 20,
+      "processes_affected": 7,
+      "modules_affected": 4,
+      "authorization_boundary": "G2.196 may only reduce adapter_split constructor direct calls; all other callers remain out of scope."
+    }
+  },
+  "future_implementation_requirements": {
+    "constructor_policy": [
+      "BaseAdapter may accept an optional injected monitor or provider while defaulting to get_data_quality_monitor() for backward compatibility.",
+      "Adapter subclass constructors may accept an optional keyword-only monitor or provider and pass it to BaseAdapter.",
+      "Subclass constructors must not overwrite an injected monitor with a singleton result.",
+      "CustomerAdapter must preserve ws_url compatibility; any injection parameter should be keyword-only."
+    ],
+    "test_double_contract": {
+      "name": "FakeDataQualityMonitor",
+      "methods": {
+        "check_data_quality": "sync method that records calls and returns a truthy {'is_valid': true-like value}",
+        "evaluate_data_quality": "async method that records calls and returns a truthy result for later runtime-monitoring lanes"
+      }
+    },
+    "required_future_checks": [
+      "TDD red test for injected fake monitor before implementation",
+      "focused pytest for adapter_split constructor provider regression",
+      "import smoke for BaseAdapter and the seven adapter_split subclasses",
+      "ruff check on the eight adapter_split source files and the focused test",
+      "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "gitnexus_detect_changes(scope=staged) after staging the future implementation batch"
+    ]
+  },
+  "non_goals": [
+    "Do not edit source files in G2.195.",
+    "Do not implement adapter constructor injection in this authorization package.",
+    "Do not touch service adapters, legacy adapters, market_data_adapter.py, singleton wrappers, or DataQualityMonitor internals.",
+    "Do not change routes, OpenAPI schema, frontend consumers, PM2 workflows, or API contracts.",
+    "Do not delete compatibility wrappers or singleton backing APIs."
+  ],
+  "next_gate": "If accepted, start G2.196 data-quality adapter_split constructor provider implementation with the exact future authorized paths and checks above."
+}

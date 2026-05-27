@@ -1,0 +1,118 @@
+version: "v0.2"
+
+task:
+  id: "pr-348"
+  title: "Authorize data-quality adapter_split constructor provider implementation"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-adapter-split-authorization"
+  objective: "authorize the future adapter_split-only constructor provider implementation lane without editing source in this PR"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only future implementation authorization; no route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, or public API ownership changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-adapter-split-constructor-provider-authorization-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-authorization-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-348.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "editing backend source"
+  - "editing tests"
+  - "implementing adapter constructor injection"
+  - "service adapter migration"
+  - "legacy adapter compatibility edits"
+  - "market_data_adapter.py edits"
+  - "singleton wrapper deletion"
+  - "DataQualityMonitor internals"
+  - "creating OpenSpec proposals"
+  - "changing GitHub issue labels"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-adapter-split-constructor-provider-authorization-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-348.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-authorization-2026-05-28.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-348.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha e30e16605df6aaa333989a7ac247bab3dcd0dd01 --head-sha HEAD --report /tmp/pr348-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If G2.195 is misread as source authority, adapter constructor edits could start in the authorization PR instead of the future implementation PR."
+    - "If G2.196 expands beyond adapter_split, the CRITICAL get_data_quality_monitor seam loses rollback boundaries."
+  rollback_plan: "revert this PR to remove the authorization package and keep G2.194 as the active adapter seam design gate."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize the future adapter_split-only constructor provider implementation lane"
+    modified_scope: "governance evidence, steward tree state, and PR #348 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source implementation remains blocked until G2.196"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if it edits source or authorizes non-adapter_split surfaces"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T02:31:48+08:00"
+    approval_note: "Human maintainer requested continuing after PR #347; this lane is authorization-only and does not perform source implementation."
+    secondary_approved: true

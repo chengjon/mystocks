@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T02:10:15+08:00`
-- Base HEAD checked: `ea659d52903a5e9884d396069526ea08f15109a6`
+- Prepared at: `2026-05-28T02:31:48+08:00`
+- Base HEAD checked: `e30e16605df6aaa333989a7ac247bab3dcd0dd01`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -46,7 +46,8 @@ It proved a repeatable conveyor:
 | G2.191 data-quality route provider authorization | Merged by PR `#344` | Authorized a future G2.192 route-only implementation lane for `web/backend/app/api/data_quality.py` and focused tests, with no source edits in G2.191 |
 | G2.192 data-quality route provider implementation | Merged by PR `#345` | Implements authorized provider injection in `web/backend/app/api/data_quality.py`; focused tests and OpenAPI leak smoke pass |
 | G2.193 data-quality route provider closeout / remaining candidate refresh | Merged by PR `#346` | Marks route-body provider migration closed and selects adapter constructor seam design / test-double decision as the next governance gate |
-| G2.194 data-quality adapter constructor seam design | For review | Selects `adapter_split` constructor provider authorization as the next gate, defines test-double contract, and keeps source authority at none |
+| G2.194 data-quality adapter constructor seam design | Merged by PR `#347` | Selects `adapter_split` constructor provider authorization as the next gate, defines test-double contract, and keeps source authority at none |
+| G2.195 data-quality `adapter_split` constructor provider authorization | For review | Authorizes the future G2.196 `adapter_split` constructor provider implementation lane while keeping source authority at none in this PR |
 
 ## Current Strategy Getter Residuals
 
@@ -232,12 +233,59 @@ Required future test-double contract:
 - Future source implementation must prove subclass constructors do not overwrite
   the injected monitor and default runtime behavior remains compatible.
 
+## G2.195 Data-Quality Adapter Split Constructor Provider Authorization
+
+At HEAD `e30e16605df6aaa333989a7ac247bab3dcd0dd01`, PR `#347` is merged and
+the next gate is an authorization package for a future source lane.
+
+G2.195 authorizes G2.196 only after review acceptance. G2.195 itself has no
+source edit authority.
+
+Future authorized implementation lane:
+
+| Future lane | Authorized scope |
+|---|---|
+| G2.196 data-quality `adapter_split` constructor provider implementation | Add injectable data-quality monitor construction for `adapter_split` classes only, preserving default singleton behavior |
+
+Future authorized source paths:
+
+| Path | Future role |
+|---|---|
+| `web/backend/app/services/adapters_split/base_adapter.py` | Add injection seam defaulting to current singleton behavior |
+| `web/backend/app/services/adapters_split/baostock_adapter.py` | Pass injected monitor/provider through constructor |
+| `web/backend/app/services/adapters_split/tushare_adapter.py` | Pass injected monitor/provider through constructor |
+| `web/backend/app/services/adapters_split/customer_adapter.py` | Preserve `ws_url`; use keyword-only injection |
+| `web/backend/app/services/adapters_split/byapi_adapter.py` | Pass injected monitor/provider through constructor |
+| `web/backend/app/services/adapters_split/akshare_adapter.py` | Pass injected monitor/provider through constructor |
+| `web/backend/app/services/adapters_split/efinance_adapter.py` | Pass injected monitor/provider through constructor |
+| `web/backend/app/services/adapters_split/tdx_adapter.py` | Pass injected monitor/provider through constructor |
+
+Future authorized test path:
+
+| Path | Future role |
+|---|---|
+| `web/backend/tests/test_adapter_split_data_quality_monitor_provider.py` | Focused fake-monitor constructor provider regression tests |
+
+Future forbidden surfaces remain:
+
+- service adapters under `web/backend/app/services/adapters/`
+- legacy adapters under `web/backend/app/services/data_adapters/`
+- `web/backend/app/services/market_data_adapter.py`
+- `web/backend/app/services/_data_quality_monitor_singleton.py`
+- `web/backend/app/services/data_quality_monitor.py`
+- route, frontend, OpenAPI contract, config, script, and OpenSpec change files
+
+Required future checks include a focused pytest for the new test path, ruff on
+the eight adapter files plus test, OpenSpec strict validation, and staged
+GitNexus change detection.
+
 ## Next Gates
 
-- Review G2.194 data-quality adapter constructor seam design decision.
-- If accepted, start G2.195 data-quality `adapter_split` constructor provider
-  authorization package.
-- Do not start adapter constructor implementation from G2.194.
+- Review G2.195 data-quality `adapter_split` constructor provider authorization
+  package.
+- If accepted, start G2.196 data-quality `adapter_split` constructor provider
+  implementation.
+- Do not start adapter constructor implementation from G2.195 itself.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

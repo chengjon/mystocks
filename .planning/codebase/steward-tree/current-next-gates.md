@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T02:10:15+08:00`
-- Base HEAD checked: `ea659d52903a5e9884d396069526ea08f15109a6`
+- Prepared at: `2026-05-28T02:31:48+08:00`
+- Base HEAD checked: `e30e16605df6aaa333989a7ac247bab3dcd0dd01`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,9 +15,10 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.194 data-quality adapter constructor seam design | G/#79 service lifecycle DI | PR `#346` merged at `ea659d52903a5e9884d396069526ea08f15109a6`; G2.194 selects `adapter_split` constructor provider authorization as the next gate and keeps source authority at none | If accepted, start G2.195 data-quality `adapter_split` constructor provider authorization package |
-| P0 | Preserve G2.193 data-quality route provider closeout / remaining candidate refresh | G/#79 service lifecycle DI | PR `#346` merged; route-body migration is closed, remaining adapter surfaces are refreshed, and G2.194 is the current design gate | Do not implement adapter changes from G2.193 or G2.194 |
-| P0 | Preserve G2.192 data-quality route provider implementation | G/#79 service lifecycle DI | PR `#345` merged; route body `get_data_quality_monitor()` and `monitor_data_quality()` calls are both `0` | Do not start adapter constructor implementation from G2.192, G2.193, or G2.194 |
+| P0 | Review G2.195 data-quality `adapter_split` constructor provider authorization | G/#79 service lifecycle DI | PR `#347` merged at `e30e16605df6aaa333989a7ac247bab3dcd0dd01`; G2.195 authorizes a future G2.196 implementation lane but keeps source authority at none in this PR | If accepted, start G2.196 data-quality `adapter_split` constructor provider implementation |
+| P0 | Preserve G2.194 data-quality adapter constructor seam design | G/#79 service lifecycle DI | PR `#347` merged; G2.194 selected `adapter_split` constructor seam as the next authorization target | Do not implement adapter changes from G2.194 or G2.195 |
+| P0 | Preserve G2.193 data-quality route provider closeout / remaining candidate refresh | G/#79 service lifecycle DI | PR `#346` merged; route-body migration is closed, remaining adapter surfaces are refreshed, and G2.194 design has been accepted | Do not reopen route-body provider migration while authorizing `adapter_split` constructor work |
+| P0 | Preserve G2.192 data-quality route provider implementation | G/#79 service lifecycle DI | PR `#345` merged; route body `get_data_quality_monitor()` and `monitor_data_quality()` calls are both `0` | Do not start adapter constructor implementation from G2.192, G2.193, G2.194, or G2.195 |
 | P0 | Preserve G2.191 data-quality route provider authorization | G/#79 service lifecycle DI | PR `#344` merged; authorized only `web/backend/app/api/data_quality.py` plus focused tests for G2.192 | Do not expand into adapters, singleton wrapper, `DataQualityMonitor` internals, or data-source factory behavior |
 | P0 | Preserve G2.190 data-quality / adapter cross-cutting decision | G/#79 service lifecycle DI | PR `#343` merged; `get_data_quality_monitor` is `CRITICAL` with 20 direct callers across route, adapter, legacy adapter, and wrapper surfaces | Do not batch route, adapter constructor, legacy adapter, and singleton wrapper migration together |
 | P0 | Preserve G2.189 risk stop-loss provider closeout / candidate refresh | G/#79 service lifecycle DI | PR `#342` merged; stop-loss pair is closed for route-body provider migration and retained as provider backing getters | Do not reopen stop-loss or start data-quality source implementation from G2.189 |
@@ -36,8 +37,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.194 keep adapter implementation locked behind a separate G2.195 authorization package?
-- Is `adapter_split` separated from service-adapter, legacy-adapter, `market_data_adapter.py`, and singleton-wrapper surfaces?
-- Does the test-double contract cover both `check_data_quality` and `evaluate_data_quality` without changing source code?
-- Is G2.195 an authorization package rather than an implementation lane?
+- Does G2.195 authorize only the future G2.196 `adapter_split` constructor provider implementation lane?
+- Are the eight future source paths and one future test path narrow enough for one source PR?
+- Are service adapters, legacy adapters, `market_data_adapter.py`, singleton wrappers, and `DataQualityMonitor` internals still forbidden?
+- Does G2.195 itself avoid all source and test edits?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

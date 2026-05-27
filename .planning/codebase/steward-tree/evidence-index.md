@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T02:10:15+08:00`
-- Base HEAD checked: `ea659d52903a5e9884d396069526ea08f15109a6`
+- Prepared at: `2026-05-28T02:31:48+08:00`
+- Base HEAD checked: `e30e16605df6aaa333989a7ac247bab3dcd0dd01`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -49,8 +49,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-route-provider-implementation-2026-05-28.md` | G2.192 human-readable implementation package | Accepted by PR `#345`; superseded for closeout / remaining candidate refresh by G2.193 |
 | `.planning/codebase/generated/data-quality-route-provider-closeout-refresh-2026-05-28.json` | G2.193 data-quality route provider closeout / refresh evidence | Accepted by PR `#346`; superseded for adapter constructor seam design by G2.194 |
 | `docs/reports/quality/backend-data-quality-route-provider-closeout-refresh-2026-05-28.md` | G2.193 human-readable closeout / refresh report | Accepted by PR `#346`; superseded for adapter constructor seam design by G2.194 |
-| `.planning/codebase/generated/data-quality-adapter-seam-design-decision-2026-05-28.json` | G2.194 data-quality adapter constructor seam design decision evidence | Current for HEAD `ea659d52903a5e9884d396069526ea08f15109a6`; review input until PR `#347` is accepted |
-| `docs/reports/quality/backend-data-quality-adapter-seam-design-decision-2026-05-28.md` | G2.194 human-readable adapter seam design decision report | Review input until PR `#347` is accepted |
+| `.planning/codebase/generated/data-quality-adapter-seam-design-decision-2026-05-28.json` | G2.194 data-quality adapter constructor seam design decision evidence | Accepted by PR `#347`; superseded for implementation authorization by G2.195 |
+| `docs/reports/quality/backend-data-quality-adapter-seam-design-decision-2026-05-28.md` | G2.194 human-readable adapter seam design decision report | Accepted by PR `#347`; superseded for implementation authorization by G2.195 |
+| `.planning/codebase/generated/data-quality-adapter-split-constructor-provider-authorization-2026-05-28.json` | G2.195 data-quality `adapter_split` constructor provider authorization evidence | Current for HEAD `e30e16605df6aaa333989a7ac247bab3dcd0dd01`; review input until PR `#348` is accepted |
+| `docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-authorization-2026-05-28.md` | G2.195 human-readable authorization package | Review input until PR `#348` is accepted |
 
 ## External State Inputs
 
@@ -68,7 +70,8 @@ state transition.
 | GitHub PR `#344` | `MERGED` | G2.191 data-quality route provider authorization merged by commit `b899a173909d3818370dddbf35b039832266bd1d` |
 | GitHub PR `#345` | `MERGED` | G2.192 data-quality route provider implementation merged by commit `2b0c3ce373fba38bacd62eff5436822527dccda1` |
 | GitHub PR `#346` | `MERGED` | G2.193 data-quality route provider closeout / refresh merged by commit `ea659d52903a5e9884d396069526ea08f15109a6` |
-| `origin/wip/root-dirty-20260403` | `ea659d52903a5e9884d396069526ea08f15109a6` | Base used for this adapter seam design branch |
+| GitHub PR `#347` | `MERGED` | G2.194 data-quality adapter constructor seam design merged by commit `e30e16605df6aaa333989a7ac247bab3dcd0dd01` |
+| `origin/wip/root-dirty-20260403` | `e30e16605df6aaa333989a7ac247bab3dcd0dd01` | Base used for this adapter_split constructor provider authorization branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules
