@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-27T22:01:42+08:00`
-- Base HEAD checked: `720248521d705af067d0a2600710444e439d7605`
+- Prepared at: `2026-05-27T22:30:42+08:00`
+- Base HEAD checked: `a63a6cb9a277195905b046cd31777d95160ee2c6`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -38,7 +38,8 @@ It proved a repeatable conveyor:
 | G2.183 Strategy getter remaining residual decision | Merged by PR `#336` | Closes the current Strategy getter residual track with retained residuals and focused residual test evidence |
 | G2.184 next non-Strategy candidate decision | Merged by PR `#337` | Selects route dependency/provider governance as the next decision target and opens no source lane |
 | G2.185 route dependency/provider governance decision | Merged by PR `#338` | Classifies active FastAPI providers as retained route contracts, not singleton getter deletion candidates |
-| G2.186 remaining getter inventory refresh | For review | Refreshes direct getter inventory after provider governance and recommends a narrow stop-loss authorization package as the next gate |
+| G2.186 remaining getter inventory refresh | Merged by PR `#339` | Refreshes direct getter inventory after provider governance and recommends a narrow stop-loss authorization package as the next gate |
+| G2.187 risk stop-loss route provider authorization | For review | Defines the future G2.188 implementation scope for stop-loss route provider injection without source edits in this PR |
 
 ## Current Strategy Getter Residuals
 
@@ -81,14 +82,28 @@ service provider authorization, limited to the stop-loss route pair. High-risk
 data-quality, root-facade, control-plane cache, trade evidence, and constructor
 fallback getters stay deferred to their owner-specific tracks.
 
+## G2.187 Stop-Loss Authorization
+
+At HEAD `a63a6cb9a277195905b046cd31777d95160ee2c6`, G2.187 authorizes, for a
+future reviewed lane only, replacing stop-loss route-body resolver calls with
+FastAPI dependency-injected service parameters.
+
+| Future implementation surface | Current direct consumers | GitNexus risk | Current decision |
+|---|---:|---|---|
+| `_resolve_history_service` | 2 | LOW | May be replaced by `get_stop_loss_history_service_dependency` in G2.188 after acceptance |
+| `_resolve_execution_service` | 6 | MEDIUM | May be replaced by `get_stop_loss_execution_service_dependency` in G2.188 after acceptance |
+
+G2.187 allows the future source lane to touch only
+`web/backend/app/api/risk/stop_loss.py` and focused tests. It forbids service
+module changes, compatibility getter removal, route path changes, response-model
+changes, and OpenSpec edits.
+
 ## Next Gates
 
-- Review G2.186 remaining getter inventory refresh.
-- If accepted, start G2.187 risk stop-loss route service provider authorization
-  package.
-- Do not start another backend source lane directly from G2.186. The current
-  report is an inventory refresh and next-gate recommendation, not source
-  authorization.
+- Review G2.187 risk stop-loss route service provider authorization.
+- If accepted, start G2.188 risk stop-loss route service provider implementation
+  lane.
+- Do not start G2.188 until this authorization package is accepted.
 
 ## Forbidden Scope
 
