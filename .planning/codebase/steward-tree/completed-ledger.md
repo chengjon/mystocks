@@ -20,7 +20,7 @@ exact verification output.
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
 | Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, and closeout pattern across multiple services | Continue with path-limited source lanes only after authorization |
-| Strategy route/provider residuals | Route provider, backtest resolver, and adapter wrapper decisions narrowed residual `get_strategy_service` surfaces | PR `#331` handles G2.178 implementation separately |
+| Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 records closeout and residual distribution |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Closeout Rule
