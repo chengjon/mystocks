@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-27T22:30:42+08:00`
-- Base HEAD checked: `a63a6cb9a277195905b046cd31777d95160ee2c6`
+- Prepared at: `2026-05-27T23:02:44+08:00`
+- Base HEAD checked: `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -39,7 +39,8 @@ It proved a repeatable conveyor:
 | G2.184 next non-Strategy candidate decision | Merged by PR `#337` | Selects route dependency/provider governance as the next decision target and opens no source lane |
 | G2.185 route dependency/provider governance decision | Merged by PR `#338` | Classifies active FastAPI providers as retained route contracts, not singleton getter deletion candidates |
 | G2.186 remaining getter inventory refresh | Merged by PR `#339` | Refreshes direct getter inventory after provider governance and recommends a narrow stop-loss authorization package as the next gate |
-| G2.187 risk stop-loss route provider authorization | For review | Defines the future G2.188 implementation scope for stop-loss route provider injection without source edits in this PR |
+| G2.187 risk stop-loss route provider authorization | Merged by PR `#340` | Defines the future G2.188 implementation scope for stop-loss route provider injection without source edits in that PR |
+| G2.188 risk stop-loss route provider implementation | For review | Implements the authorized provider injection in `web/backend/app/api/risk/stop_loss.py`; stop-loss tests and OpenAPI dependency leak smoke pass |
 
 ## Current Strategy Getter Residuals
 
@@ -82,28 +83,29 @@ service provider authorization, limited to the stop-loss route pair. High-risk
 data-quality, root-facade, control-plane cache, trade evidence, and constructor
 fallback getters stay deferred to their owner-specific tracks.
 
-## G2.187 Stop-Loss Authorization
+## G2.187 / G2.188 Stop-Loss Provider Lane
 
-At HEAD `a63a6cb9a277195905b046cd31777d95160ee2c6`, G2.187 authorizes, for a
-future reviewed lane only, replacing stop-loss route-body resolver calls with
-FastAPI dependency-injected service parameters.
+At HEAD `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`, G2.188 implements the
+G2.187-authorized stop-loss route provider seam by replacing route-body resolver
+calls with FastAPI dependency-injected service parameters.
 
-| Future implementation surface | Current direct consumers | GitNexus risk | Current decision |
+| Implementation surface | Current direct consumers | GitNexus risk | Current decision |
 |---|---:|---|---|
-| `_resolve_history_service` | 2 | LOW | May be replaced by `get_stop_loss_history_service_dependency` in G2.188 after acceptance |
-| `_resolve_execution_service` | 6 | MEDIUM | May be replaced by `get_stop_loss_execution_service_dependency` in G2.188 after acceptance |
+| `_resolve_history_service` | 2 | LOW | Wrapped by `get_stop_loss_history_service_provider`; direct test fallback preserved |
+| `_resolve_execution_service` | 6 | MEDIUM | Wrapped by `get_stop_loss_execution_service_provider`; direct test fallback preserved |
 
-G2.187 allows the future source lane to touch only
-`web/backend/app/api/risk/stop_loss.py` and focused tests. It forbids service
-module changes, compatibility getter removal, route path changes, response-model
-changes, and OpenSpec edits.
+G2.188 touches only `web/backend/app/api/risk/stop_loss.py`, focused stop-loss
+tests, and governance evidence. It preserves route paths, HTTP methods,
+response-model declarations, OpenAPI examples, and src-level service getters.
+OpenAPI smoke records `openapi_paths=500`, `stop_loss_paths=10`, and
+`dependency_params_leaked=0`.
 
 ## Next Gates
 
-- Review G2.187 risk stop-loss route service provider authorization.
-- If accepted, start G2.188 risk stop-loss route service provider implementation
-  lane.
-- Do not start G2.188 until this authorization package is accepted.
+- Review G2.188 risk stop-loss route service provider implementation.
+- If accepted, merge and start a closeout / candidate-refresh governance packet.
+- Do not expand this implementation into alerts resolver fixes, legacy
+  `app.api.risk_management` restoration, or other risk route provider migrations.
 
 ## Forbidden Scope
 

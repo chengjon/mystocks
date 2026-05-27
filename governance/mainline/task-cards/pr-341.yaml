@@ -1,0 +1,126 @@
+version: "v0.2"
+
+task:
+  id: "pr-341"
+  title: "Implement risk stop-loss route provider injection"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-risk-stop-loss-provider-implementation"
+  objective: "replace stop-loss route-body service resolver calls with route-local FastAPI provider injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Path-limited risk stop-loss route provider injection; route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, and public API ownership remain unchanged"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/risk/stop_loss.py"
+    - "web/backend/tests/test_risk_runtime_bootstrap_regressions.py"
+    - "web/backend/tests/test_stop_loss_route_regressions.py"
+    - ".planning/codebase/generated/risk-stop-loss-route-provider-implementation-2026-05-27.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-risk-stop-loss-route-provider-implementation-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-341.yaml"
+  forbidden_paths:
+    - "src/**"
+    - "web/backend/app/api/risk/_shared.py"
+    - "web/backend/app/api/risk/alerts.py"
+    - "web/backend/app/api/risk/metrics.py"
+    - "web/backend/app/api/risk/v31.py"
+    - "web/frontend/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "deleting or renaming src-level stop-loss service getters"
+  - "changing route paths, HTTP methods, response models, or OpenAPI examples"
+  - "migrating other risk routes or generic provider surfaces"
+  - "fixing alerts resolver baseline failures"
+  - "restoring or changing the legacy app.api.risk_management compatibility module"
+  - "creating OpenSpec proposals"
+
+acceptance:
+  checks:
+    - id: "tdd-stop-loss-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_risk_runtime_bootstrap_regressions.py -q -k stop_loss --tb=short --disable-warnings --no-cov"
+      required: true
+    - id: "stop-loss-route-regressions"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stop_loss_route_regressions.py -q --tb=short --disable-warnings --no-cov"
+      required: true
+    - id: "app-main-risk-router-contract"
+      command: "PYTHONPATH=web/backend pytest -o addopts= tests/unit/contract/test_risk_router_runtime_import.py::test_app_main_registers_canonical_risk_router_without_loading_compat_shim -q --tb=short --disable-warnings --no-cov"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/risk/stop_loss.py web/backend/tests/test_risk_runtime_bootstrap_regressions.py web/backend/tests/test_stop_loss_route_regressions.py tests/unit/contract/test_risk_router_runtime_import.py"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/risk-stop-loss-route-provider-implementation-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-341.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-risk-stop-loss-route-provider-implementation-2026-05-27.md"
+      required: true
+    - id: "openspec-lifecycle-di"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If provider parameters leak into OpenAPI, public stop-loss API schema can drift."
+    - "If route-direct test compatibility is lost, existing route unit tests can stop representing current behavior."
+    - "If this lane expands into alerts or legacy risk_management compatibility fixes, it exceeds the G2.187 authorization."
+  rollback_plan: "revert this PR to restore route-body resolver calls and remove the added stop-loss provider tests and governance evidence."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement path-limited stop-loss route service provider injection"
+    modified_scope: "one stop-loss route file, focused stop-loss tests, and G2.188 governance evidence"
+    dependency_changes: "adds FastAPI Depends usage in stop_loss.py only"
+    legacy_logic_impact: "src-level getters remain intact; direct route test calls keep resolver fallback"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if route/OpenAPI smoke or stop-loss tests regress"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-27T23:02:44+08:00"
+    approval_note: "Human maintainer approved continuing after PR #340 acceptance; this lane is limited to stop-loss route provider injection."
+    secondary_approved: true

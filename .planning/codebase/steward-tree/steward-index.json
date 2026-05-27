@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T22:30:42+08:00",
+  "generated_at": "2026-05-27T23:02:44+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "a63a6cb9a277195905b046cd31777d95160ee2c6",
-  "split_branch": "g2-187-risk-stop-loss-provider-authorization",
-  "scope": "governance_decision_package",
-  "source_edit_authority": false,
+  "base_head": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a",
+  "split_branch": "g2-188-risk-stop-loss-provider-implementation",
+  "scope": "path_limited_source_implementation_package",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -498,11 +498,17 @@
     {
       "id": "g2-187-risk-stop-loss-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.186 remaining getter inventory refresh",
       "source_edit_authority": false,
       "future_source_edit_authority_if_accepted": true,
+      "github_pr": {
+        "number": 340,
+        "url": "https://github.com/chengjon/mystocks/pull/340",
+        "state": "MERGED",
+        "merge_commit": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a"
+      },
       "evidence": [
         ".planning/codebase/generated/risk-stop-loss-route-provider-authorization-2026-05-27.json",
         "docs/reports/quality/backend-risk-stop-loss-route-provider-authorization-2026-05-27.md",
@@ -555,16 +561,83 @@
         }
       },
       "decision": {
-        "classification": "authorization-package-for-review",
-        "source_lane_recommendation": "start-g2-188-only-after-human-acceptance",
+        "classification": "authorization-package-accepted",
+        "source_lane_recommendation": "g2-188-started-after-human-acceptance",
         "selected_next_governance_target": "risk-stop-loss-route-service-provider-implementation",
         "recommended_next_work_item": "G2.188 risk stop-loss route service provider implementation lane"
       },
       "freshness": {
-        "current_head_checked": "a63a6cb9a277195905b046cd31777d95160ee2c6",
+        "current_head_checked": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.188 risk stop-loss route service provider implementation lane. Do not edit source from G2.187."
+      "next_gate": "Superseded by G2.188 risk stop-loss route service provider implementation."
+    },
+    {
+      "id": "g2-188-risk-stop-loss-provider-implementation",
+      "type": "implementation_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.187 risk stop-loss route service provider authorization",
+      "source_edit_authority": true,
+      "evidence": [
+        ".planning/codebase/generated/risk-stop-loss-route-provider-implementation-2026-05-27.json",
+        "docs/reports/quality/backend-risk-stop-loss-route-provider-implementation-2026-05-27.md",
+        "governance/mainline/task-cards/pr-341.yaml"
+      ],
+      "authorized_scope": {
+        "source_paths": [
+          "web/backend/app/api/risk/stop_loss.py"
+        ],
+        "test_paths": [
+          "web/backend/tests/test_risk_runtime_bootstrap_regressions.py",
+          "web/backend/tests/test_stop_loss_route_regressions.py"
+        ],
+        "governance_paths": [
+          ".planning/codebase/generated/risk-stop-loss-route-provider-implementation-2026-05-27.json",
+          "docs/reports/quality/backend-risk-stop-loss-route-provider-implementation-2026-05-27.md",
+          "governance/mainline/task-cards/pr-341.yaml",
+          ".planning/codebase/steward-tree/current-next-gates.md",
+          ".planning/codebase/steward-tree/steward-index.json",
+          ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+          ".planning/codebase/steward-tree/branch-register.md",
+          ".planning/codebase/steward-tree/evidence-index.md",
+          ".planning/codebase/steward-tree/completed-ledger.md"
+        ],
+        "forbidden_paths": [
+          "src/**",
+          "web/backend/app/api/risk/_shared.py",
+          "other web/backend/app/api/risk/*.py files",
+          "web/frontend/**",
+          "docs/api/**",
+          "openspec/changes/**",
+          "openspec/specs/**"
+        ]
+      },
+      "verification": {
+        "stop_loss_runtime_bootstrap": "5 passed, 5 deselected",
+        "stop_loss_route_regressions": "2 passed",
+        "app_main_risk_router_contract_targeted": "1 passed",
+        "openapi_paths": 500,
+        "stop_loss_paths": 10,
+        "dependency_params_leaked": 0,
+        "ruff": "passed",
+        "git_diff_check": "passed"
+      },
+      "known_out_of_scope_failures": [
+        "alerts route resolver baseline failures",
+        "legacy app.api.risk_management compatibility import absence"
+      ],
+      "decision": {
+        "classification": "path-limited-source-implementation-for-review",
+        "source_lane_recommendation": "review-pr-341-before-merge",
+        "selected_next_governance_target": "risk-stop-loss-provider-closeout-or-candidate-refresh",
+        "recommended_next_work_item": "G2.189 closeout / remaining candidate refresh after G2.188 acceptance"
+      },
+      "freshness": {
+        "current_head_checked": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, merge and start a closeout / candidate-refresh governance packet; do not expand into alerts, legacy risk_management compat, or other risk route migrations."
     },
     {
       "id": "core-batch2-reconciliation",

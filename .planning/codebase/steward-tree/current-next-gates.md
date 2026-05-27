@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-27T22:30:42+08:00`
-- Base HEAD checked: `a63a6cb9a277195905b046cd31777d95160ee2c6`
+- Prepared at: `2026-05-27T23:02:44+08:00`
+- Base HEAD checked: `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.187 risk stop-loss route service provider authorization | G/#79 service lifecycle DI | PR `#339` merged at `a63a6cb9a277195905b046cd31777d95160ee2c6`; G2.187 defines path-limited future implementation scope and keeps this PR docs-only | If accepted, start G2.188 risk stop-loss route service provider implementation lane |
+| P0 | Review G2.188 risk stop-loss route service provider implementation | G/#79 service lifecycle DI | PR `#340` merged at `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`; G2.188 implements path-limited stop-loss route provider injection with stop-loss tests green and OpenAPI dependency leak count `0` | If accepted, merge and start a closeout / candidate-refresh governance packet |
+| P0 | Preserve G2.187 risk stop-loss route service provider authorization | G/#79 service lifecycle DI | PR `#340` merged; G2.187 authorized only `web/backend/app/api/risk/stop_loss.py` plus focused tests for G2.188 | Do not expand G2.188 into alerts resolver, legacy `app.api.risk_management`, or other risk route migrations |
 | P0 | Preserve G2.186 remaining getter inventory refresh | G/#79 service lifecycle DI | PR `#339` merged; G2.186 refreshed remaining direct getter inventory and selected stop-loss route provider authorization as the next narrow gate | Do not start a backend source lane from G2.186 |
 | P0 | Preserve G2.185 provider governance decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#338` merged; provider residuals are retained active route contracts and excluded from direct implementation-candidate counts | Do not start a backend source lane from G2.185 |
 | P0 | Preserve G2.184 next non-Strategy candidate decision | G/#79 service lifecycle DI | PR `#337` merged; G2.184 selected route dependency/provider governance as the next decision target | Do not start a backend source lane from G2.184 |
@@ -32,6 +33,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 - Does the split preserve the full historical steward tree in archive?
 - Is the root entrypoint short enough to serve as a daily navigation file?
 - Does `steward-index.json` include enough fields for automated guards?
-- Does G2.187 correctly limit the future source lane to `web/backend/app/api/risk/stop_loss.py` and focused tests?
-- Is G2.188 allowed to proceed only after this authorization package is reviewed and accepted?
+- Does G2.188 stay limited to `web/backend/app/api/risk/stop_loss.py` and focused stop-loss tests?
+- Does the G2.188 OpenAPI smoke prove `execution_service` / `history_service` do not leak into schema parameters?
+- Are the unrelated alerts resolver and legacy `app.api.risk_management` failures kept out of this source lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
