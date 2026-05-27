@@ -1,0 +1,132 @@
+version: "v0.2"
+
+task:
+  id: "pr-345"
+  title: "Implement data-quality route provider injection"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-route-provider-implementation"
+  objective: "replace data-quality route-body monitor singleton calls with route-local FastAPI provider injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Path-limited data-quality route provider injection; route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, and public API ownership remain unchanged"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/data_quality.py"
+    - "web/backend/tests/test_data_quality_route_provider_regressions.py"
+    - "web/backend/tests/test_data_quality_mock_configuration.py"
+    - "tests/unit/contract/test_data_quality_router_runtime_import.py"
+    - ".planning/codebase/generated/data-quality-route-provider-implementation-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-route-provider-implementation-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-345.yaml"
+  forbidden_paths:
+    - "web/backend/app/services/_data_quality_monitor_singleton.py"
+    - "web/backend/app/services/data_quality_monitor.py"
+    - "web/backend/app/services/adapters_split/**"
+    - "web/backend/app/services/adapters/**"
+    - "web/backend/app/services/data_adapters/**"
+    - "web/backend/app/services/market_data_adapter.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "migrating adapter constructors"
+  - "editing legacy adapter compatibility surfaces"
+  - "deleting data-quality singleton wrapper or provider backing helpers"
+  - "rewriting DataQualityMonitor internals"
+  - "changing route paths, HTTP methods, response models, or OpenAPI examples"
+  - "creating OpenSpec proposals"
+  - "changing GitHub issue labels"
+
+acceptance:
+  checks:
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_route_provider_regressions.py -q --tb=short --disable-warnings --no-cov"
+      required: true
+    - id: "focused-tests"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_route_provider_regressions.py web/backend/tests/test_data_quality_mock_configuration.py tests/unit/contract/test_data_quality_router_runtime_import.py -q --tb=short --disable-warnings --no-cov"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/data_quality.py web/backend/tests/test_data_quality_route_provider_regressions.py web/backend/tests/test_data_quality_mock_configuration.py tests/unit/contract/test_data_quality_router_runtime_import.py"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-route-provider-implementation-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-345.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-data-quality-route-provider-implementation-2026-05-28.md"
+      required: true
+    - id: "openspec-lifecycle-di"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-345.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha b899a173909d3818370dddbf35b039832266bd1d --head-sha HEAD --report /tmp/pr345-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If provider params leak into OpenAPI, the data-quality API schema can drift."
+    - "If this source lane expands into adapters or singleton deletion, it violates G2.191 authorization and loses rollback boundaries."
+  rollback_plan: "revert this PR to restore route-body singleton helper calls and remove the added focused tests and governance evidence."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement route-local provider injection for data-quality monitor access"
+    modified_scope: "one route file, focused tests, and G2.192 governance evidence"
+    dependency_changes: "adds FastAPI Depends usage in data_quality.py only"
+    legacy_logic_impact: "singleton helper and adapter consumers remain intact; direct route test fallback is preserved"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if route/OpenAPI smoke or focused data-quality tests regress"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T01:22:05+08:00"
+    approval_note: "Human maintainer approved continuing after PR #344 acceptance; this lane is limited to data-quality route provider injection."
+    secondary_approved: true

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T01:04:38+08:00`
-- Base HEAD checked: `7154ffbb067dcddc52d80f15342961b51234ac09`
+- Prepared at: `2026-05-28T01:22:05+08:00`
+- Base HEAD checked: `b899a173909d3818370dddbf35b039832266bd1d`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -43,7 +43,8 @@ It proved a repeatable conveyor:
 | G2.188 risk stop-loss route provider implementation | Merged by PR `#341` | Implements the authorized provider injection in `web/backend/app/api/risk/stop_loss.py`; post-merge stop-loss tests and OpenAPI dependency leak smoke pass |
 | G2.189 risk stop-loss provider closeout / candidate refresh | Merged by PR `#342` | Records PR `#341` closeout, marks the stop-loss pair closed for route-body provider migration, and selects data-quality / adapter cross-cutting governance as the next design-only gate |
 | G2.190 data-quality / adapter cross-cutting decision | Merged by PR `#343` | Classifies `get_data_quality_monitor` as `CRITICAL`, splits the route/adapter/wrapper surfaces, and selects G2.191 route-only authorization as the next gate |
-| G2.191 data-quality route provider authorization | For review | Authorizes a future G2.192 route-only implementation lane for `web/backend/app/api/data_quality.py` and focused tests, with no source edits in G2.191 |
+| G2.191 data-quality route provider authorization | Merged by PR `#344` | Authorized a future G2.192 route-only implementation lane for `web/backend/app/api/data_quality.py` and focused tests, with no source edits in G2.191 |
+| G2.192 data-quality route provider implementation | For review | Implements authorized provider injection in `web/backend/app/api/data_quality.py`; focused tests and OpenAPI leak smoke pass |
 
 ## Current Strategy Getter Residuals
 
@@ -139,12 +140,32 @@ G2.192 as a path-limited source lane. G2.192 must preserve route paths, HTTP
 methods, response models, OpenAPI examples, error response contract, data-source
 factory behavior, and current `DataQualityMonitor` backing singleton behavior.
 
+## G2.192 Data-Quality Route Provider Implementation
+
+At HEAD `b899a173909d3818370dddbf35b039832266bd1d`, G2.192 applies the G2.191
+authorization to the route file only.
+
+| Result | Value |
+|---|---:|
+| Route body `get_data_quality_monitor()` calls | 0 |
+| Route body `monitor_data_quality()` helper calls | 0 |
+| Route handlers using `Depends(get_data_quality_monitor_provider)` | 7 |
+| Direct-call fallback resolver uses | 7 |
+| Focused tests | 7 passed |
+| OpenAPI paths | 500 |
+| Data-quality OpenAPI paths | 9 |
+| Dependency parameters leaked into OpenAPI | 0 |
+
+G2.192 does not change adapter constructors, legacy adapter compatibility,
+singleton wrappers, or `DataQualityMonitor` internals.
+
 ## Next Gates
 
-- Review G2.191 data-quality route provider authorization package.
-- If accepted, start G2.192 data-quality route provider implementation lane.
-- Do not start G2.192 before G2.191 is accepted.
-- Do not migrate adapter constructors or delete singleton wrappers from G2.191.
+- Review G2.192 data-quality route provider implementation package.
+- If accepted, merge PR `#345` and start G2.193 closeout / remaining candidate
+  refresh.
+- Do not start adapter constructor implementation from G2.192.
+- Do not migrate adapter constructors or delete singleton wrappers from G2.192.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
   restoration, or other risk route provider migrations.
 
