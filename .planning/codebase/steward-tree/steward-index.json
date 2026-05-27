@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T15:32:41+08:00",
+  "generated_at": "2026-05-27T16:04:24+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "3b8f95945fcb489316ddfaf919835d372122fa5f",
-  "split_branch": "g2-179-steward-tree-governance-split",
-  "scope": "governance_only",
-  "source_edit_authority": false,
+  "base_head": "750fb7c797ff95f27152439ed988a7115252129e",
+  "split_branch": "g2-178-strategy-adapter-provider-implementation",
+  "scope": "implementation_with_steward_reconciliation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -74,7 +74,7 @@
     {
       "id": "steward-tree-v2-split",
       "type": "governance",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "CODEBASE-MAP steward governance",
       "parent": "single-file steward tree",
       "evidence": [
@@ -99,15 +99,15 @@
       ],
       "source_edit_authority": false,
       "freshness": {
-        "current_head_checked": "3b8f95945fcb489316ddfaf919835d372122fa5f",
+        "current_head_checked": "750fb7c797ff95f27152439ed988a7115252129e",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "Review and merge the governance split PR if the split files and JSON index are accepted."
+      "next_gate": "Use the split steward files for current state; do not append active updates to the archived single-file tree."
     },
     {
       "id": "g2-178-strategy-adapter-provider-implementation",
       "type": "implementation",
-      "state": "open_pr",
+      "state": "for_review",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.177 Strategy canonical adapter provider authorization",
       "github_pr": {
@@ -118,12 +118,17 @@
         "head_ref": "g2-178-strategy-adapter-provider-implementation"
       },
       "source_edit_authority": true,
-      "included_in_this_branch": false,
+      "included_in_this_branch": true,
+      "evidence": [
+        ".planning/codebase/generated/strategy-adapter-provider-implementation-2026-05-27.json",
+        "docs/reports/quality/backend-strategy-adapter-provider-implementation-2026-05-27.md",
+        "governance/mainline/task-cards/pr-331.yaml"
+      ],
       "freshness": {
-        "current_head_checked": "3b8f95945fcb489316ddfaf919835d372122fa5f",
+        "current_head_checked": "750fb7c797ff95f27152439ed988a7115252129e",
         "stale_if_pr_state_changes": true
       },
-      "next_gate": "Human merge/review decision for PR #331; do not mix this governance split with PR #331 source changes."
+      "next_gate": "Human review/merge decision for PR #331; if accepted, create a closeout lane and refresh remaining Strategy getter residuals."
     },
     {
       "id": "core-batch2-reconciliation",

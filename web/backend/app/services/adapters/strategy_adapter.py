@@ -4,7 +4,7 @@
 
 import time
 from datetime import datetime
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 from app.services.data_source_interface import (
     HealthStatus,
@@ -21,12 +21,13 @@ from .metrics import DataSourceMetrics
 class StrategyDataSourceAdapter(IDataSource):
     """策略管理数据源适配器 - 集成现有策略服务到数据源工厂模式"""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any], strategy_service_provider: Callable[[], Any] | None = None):
         self.config = config
         self.source_type = "strategy"
         self.name = config.get("name", "Strategy Management Source")
         self.mode = str(config.get("mode", "mock")).lower()
         self.fallback_enabled = bool(config.get("fallback_enabled", False))
+        self._strategy_service_provider = strategy_service_provider
 
         # Initialize services lazily (only when needed)
         self._strategy_service = None
@@ -40,9 +41,12 @@ class StrategyDataSourceAdapter(IDataSource):
         """Lazy initialization of strategy service"""
         if self._strategy_service is None:
             try:
-                from app.services.strategy_service import get_strategy_service
+                if self._strategy_service_provider is not None:
+                    self._strategy_service = self._strategy_service_provider()
+                else:
+                    from app.services.strategy_service import get_strategy_service
 
-                self._strategy_service = get_strategy_service()
+                    self._strategy_service = get_strategy_service()
             except Exception as e:
                 self._strategy_service = None
                 raise RuntimeError(f"Failed to initialize strategy service: {e}")
