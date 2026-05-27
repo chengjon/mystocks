@@ -1,0 +1,120 @@
+version: "v0.2"
+
+task:
+  id: "pr-325"
+  title: "Select next Strategy residual track"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-strategy-residual-current-track-decision"
+  objective: "refresh current Strategy get_strategy_service residual state after G2.171 and select the next non-implementation track"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-strategy-residual-current-track-decision"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Decision-only residual refresh and next-track selection; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/strategy-residual-current-track-decision-2026-05-27.json"
+    - "docs/reports/quality/backend-strategy-residual-current-track-decision-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-325.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 324 --json number,state,mergeCommit,url,title"
+      required: true
+    - id: "residual-static-scan"
+      command: "scan web/backend/app for get_strategy_service residual hits and classify route fallback, adapter/provider duplication, public getter definition, and closed backtest resolver"
+      required: true
+    - id: "gitnexus-evidence"
+      command: "GitNexus impact for get_strategy_service and context for both adapter _get_strategy_service helpers"
+      required: true
+    - id: "focused-backtest-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "route-provider-regression"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py -q --no-cov --tb=short"
+      required: true
+    - id: "adapter-mock-fallback-controls"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_adapter_mock_fallback_controls.py -q --no-cov --tb=short"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.openapi() smoke with minimal non-secret env; record route count, path count, duplicate operation IDs, duplicate-operation-id warnings, and total captured warnings"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-strategy-residual-current-track-decision-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/strategy-residual-current-track-decision-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-325.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this decision package."
+  - "Do not authorize adapter source implementation directly from this package."
+  - "Do not remove or edit Strategy route provider fallback."
+  - "Do not reopen the backtest task resolver lane."
+  - "Do not delete, privatize, rename, or change get_strategy_service()."
+  - "Do not change route/API behavior, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this decision is treated as implementation authorization, two parallel Strategy adapter packages could be edited without an ownership/design gate."
+    - "If public get_strategy_service is treated as closed, a CRITICAL broad compatibility surface could be hidden by narrow residual closure work."
+  rollback_plan: "revert this decision PR to remove only the residual decision report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "refresh current Strategy getter residual state and select adapter/provider duplication as the next design track"
+    modified_scope: "steward tree, decision report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, residual scan, GitNexus evidence, focused tests, OpenAPI smoke, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T11:54:10+08:00"
+    approval_note: "Decision-only current residual refresh after PR #324 merged the G2.171 closeout."
+    secondary_approved: false
+
