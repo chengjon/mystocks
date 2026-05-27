@@ -1,10 +1,10 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T20:49:23+08:00",
+  "generated_at": "2026-05-27T21:33:48+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "d454193fdae08ad875c423e0b5aa959d79bedc67",
-  "split_branch": "g2-184-next-nonstrategy-service-getter-candidate-decision",
+  "base_head": "b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba",
+  "split_branch": "g2-185-route-dependency-provider-governance-decision",
   "scope": "governance_decision_package",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
@@ -303,7 +303,7 @@
     {
       "id": "g2-184-next-nonstrategy-service-getter-candidate-decision",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.183 Strategy getter remaining residual decision",
       "source_edit_authority": false,
@@ -358,10 +358,59 @@
         "recommended_next_work_item": "G2.185 route dependency/provider governance residual decision package"
       },
       "freshness": {
-        "current_head_checked": "d454193fdae08ad875c423e0b5aa959d79bedc67",
+        "current_head_checked": "b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.185 route dependency/provider governance residual decision package. Do not start a backend source lane from G2.184."
+      "next_gate": "Superseded by G2.185 route dependency/provider governance residual decision package."
+    },
+    {
+      "id": "g2-185-route-dependency-provider-governance-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.184 next non-Strategy service getter candidate decision",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/route-dependency-provider-governance-decision-2026-05-27.json",
+        "docs/reports/quality/backend-route-dependency-provider-governance-decision-2026-05-27.md",
+        "governance/mainline/task-cards/pr-338.yaml"
+      ],
+      "provider_inventory": {
+        "classification": "route-provider-contracts-retained",
+        "service_level_fastapi_providers": [
+          "get_data_source_factory_dependency",
+          "get_market_data_service_v2_dependency",
+          "get_market_data_service_dependency",
+          "get_advanced_analysis_service_dependency",
+          "get_announcement_service_dependency",
+          "get_stock_search_service_dependency",
+          "get_watchlist_service_dependency",
+          "get_email_service_dependency",
+          "get_tradingview_service_dependency",
+          "get_tdx_service_dependency",
+          "get_indicator_registry_dependency"
+        ],
+        "route_local_or_constructor_providers": [
+          "get_strategy_service_dependency",
+          "get_indicator_data_service",
+          "get_strategy_indicator_data_service",
+          "get_data_source_dependency",
+          "get_streaming_service"
+        ],
+        "gitnexus_index_refreshed": true,
+        "gitnexus_note": "FastAPI Depends consumers require static route/provider scan; impacted=0 is not delete evidence."
+      },
+      "decision": {
+        "classification": "route-provider-contracts-retained",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-185",
+        "selected_next_governance_target": "service-lifecycle-candidate-refresh-after-provider-governance",
+        "recommended_next_work_item": "G2.186 service lifecycle remaining getter inventory refresh after provider governance"
+      },
+      "freshness": {
+        "current_head_checked": "b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.186 service lifecycle remaining getter inventory refresh after provider governance. Do not start a backend source lane from G2.185."
     },
     {
       "id": "core-batch2-reconciliation",
@@ -383,7 +432,7 @@
       "evidence": [
         ".planning/codebase/steward-tree/tracks/route-openapi-governance.md"
       ],
-      "next_gate": "Use route/OpenAPI governance for trading, control-plane, compatibility exposure, and duplicate operation ID decisions before route source edits."
+      "next_gate": "Use route/OpenAPI governance for provider ownership, trading, control-plane, compatibility exposure, and duplicate operation ID decisions before route source edits."
     }
   ]
 }

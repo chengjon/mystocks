@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-27T20:49:23+08:00`
-- Base HEAD checked: `d454193fdae08ad875c423e0b5aa959d79bedc67`
+- Prepared at: `2026-05-27T21:33:48+08:00`
+- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -30,7 +30,9 @@ state transition.
 | `.planning/codebase/generated/strategy-getter-remaining-residual-decision-2026-05-27.json` | G2.183 remaining Strategy getter residual closeout evidence | Current for HEAD `597f8186092b4ad3d0704326e292c5e4fa075f15` |
 | `docs/reports/quality/backend-strategy-getter-remaining-residual-decision-2026-05-27.md` | G2.183 human-readable remaining-residual decision package | Accepted by PR `#336`; superseded for next-gate selection by G2.184 |
 | `.planning/codebase/generated/next-nonstrategy-service-getter-candidate-decision-2026-05-27.json` | G2.184 next non-Strategy service getter candidate decision evidence | Current for HEAD `d454193fdae08ad875c423e0b5aa959d79bedc67`; stale if HEAD changes |
-| `docs/reports/quality/backend-next-nonstrategy-service-getter-candidate-decision-2026-05-27.md` | G2.184 human-readable next-candidate decision package | Review input until accepted |
+| `docs/reports/quality/backend-next-nonstrategy-service-getter-candidate-decision-2026-05-27.md` | G2.184 human-readable next-candidate decision package | Accepted by PR `#337`; superseded for provider classification by G2.185 |
+| `.planning/codebase/generated/route-dependency-provider-governance-decision-2026-05-27.json` | G2.185 route dependency/provider governance decision evidence | Current for HEAD `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`; stale if HEAD changes |
+| `docs/reports/quality/backend-route-dependency-provider-governance-decision-2026-05-27.md` | G2.185 human-readable provider-governance decision package | Review input until accepted |
 
 ## External State Inputs
 
@@ -38,7 +40,8 @@ state transition.
 |---|---|---|
 | GitHub PR `#331` | `MERGED` | G2.178 source implementation lane closed by merge commit `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` |
 | GitHub PR `#336` | `MERGED` | G2.183 remaining Strategy getter residual closeout merged by commit `d454193fdae08ad875c423e0b5aa959d79bedc67` |
-| `origin/wip/root-dirty-20260403` | `d454193fdae08ad875c423e0b5aa959d79bedc67` | Base used for this decision branch |
+| GitHub PR `#337` | `MERGED` | G2.184 next non-Strategy candidate decision merged by commit `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` |
+| `origin/wip/root-dirty-20260403` | `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` | Base used for this decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

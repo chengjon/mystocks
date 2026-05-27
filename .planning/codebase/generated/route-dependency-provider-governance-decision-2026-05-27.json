@@ -1,0 +1,255 @@
+{
+  "work_item": "G2.185",
+  "title": "Route dependency/provider governance residual decision",
+  "state": "ready_for_review",
+  "recorded_at": "2026-05-27T21:33:48+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba",
+  "branch": "g2-185-route-dependency-provider-governance-decision",
+  "scope": "governance_decision_package_only",
+  "source_edit_authority": false,
+  "parent_item": {
+    "id": "G2.184",
+    "title": "Next non-Strategy service getter candidate decision",
+    "pr": 337,
+    "merge_commit": "b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba",
+    "decision": "Do not open a source lane from token counts; classify route dependency/provider residuals first."
+  },
+  "freshness": {
+    "git_head": "b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba",
+    "gitnexus_repo": "g2-185-route-dependency-provider-governance-decision",
+    "gitnexus_index_refreshed": true,
+    "gitnexus_command": "gitnexus analyze --with-gitignore",
+    "stale_if_head_mismatch": true
+  },
+  "provider_inventory": {
+    "scope": [
+      "web/backend/app/api",
+      "web/backend/app/services",
+      "web/backend/app/core"
+    ],
+    "route_dependency_providers": [
+      {
+        "name": "get_market_data_service_v2_dependency",
+        "tokens": 18,
+        "depends_sites": 14,
+        "definition": "web/backend/app/services/market_data_service_v2.py:678",
+        "consumers": [
+          "web/backend/app/api/market_v2.py",
+          "web/backend/app/api/dashboard_data_source.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_market_data_service_dependency",
+        "tokens": 16,
+        "depends_sites": 7,
+        "definition": "web/backend/app/services/market_data_service/get_market_data_service.py:34",
+        "consumers": [
+          "web/backend/app/api/market/market_data_request.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_tdx_service_dependency",
+        "tokens": 7,
+        "depends_sites": 5,
+        "definition": "web/backend/app/services/tdx_service.py:295",
+        "consumers": [
+          "web/backend/app/api/tdx.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_advanced_analysis_service_dependency",
+        "tokens": 16,
+        "depends_sites": 14,
+        "definition": "web/backend/app/services/advanced_analysis_service.py:497",
+        "consumers": [
+          "web/backend/app/api/advanced_analysis_api.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_announcement_service_dependency",
+        "tokens": 13,
+        "depends_sites": 11,
+        "definition": "web/backend/app/services/announcement_service.py:530",
+        "consumers": [
+          "web/backend/app/api/announcement/routes.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_email_service_dependency",
+        "tokens": 8,
+        "depends_sites": 6,
+        "definition": "web/backend/app/services/email_service.py:330",
+        "consumers": [
+          "web/backend/app/api/notification.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_watchlist_service_dependency",
+        "tokens": 9,
+        "depends_sites": 7,
+        "definition": "web/backend/app/services/watchlist_service.py:617",
+        "consumers": [
+          "web/backend/app/api/watchlist.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_stock_search_service_dependency",
+        "tokens": 11,
+        "depends_sites": 6,
+        "definition": "web/backend/app/services/stock_search_service/stock_search_service.py:176",
+        "consumers": [
+          "web/backend/app/api/stock_search/stock_search_result.py",
+          "web/backend/app/api/market/market_data_request.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_tradingview_service_dependency",
+        "tokens": 8,
+        "depends_sites": 6,
+        "definition": "web/backend/app/services/tradingview_widget_service.py:331",
+        "consumers": [
+          "web/backend/app/api/tradingview.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_indicator_registry_dependency",
+        "tokens": 5,
+        "depends_sites": 2,
+        "definition": "web/backend/app/services/indicator_registry.py:649",
+        "consumers": [
+          "web/backend/app/api/indicators/indicator_cache.py"
+        ],
+        "classification": "active service-level FastAPI provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_data_source_factory_dependency",
+        "tokens": 30,
+        "depends_sites": 18,
+        "definition": "web/backend/app/services/data_source_factory/data_source_factory.py:314",
+        "consumers": [
+          "web/backend/app/api/data_quality.py",
+          "web/backend/app/api/data/*.py",
+          "web/backend/app/api/market/market_data_request.py"
+        ],
+        "classification": "active cross-domain service-level FastAPI provider",
+        "decision": "retain"
+      }
+    ],
+    "route_local_or_constructor_providers": [
+      {
+        "name": "get_strategy_service_dependency",
+        "tokens": 4,
+        "depends_sites": 3,
+        "location": "web/backend/app/api/strategy_management/_strategy_execution_router.py:33",
+        "classification": "retained route-local provider fallback",
+        "decision": "retain under G2.182/G2.183 closure"
+      },
+      {
+        "name": "get_indicator_data_service",
+        "tokens": 4,
+        "depends_sites": 2,
+        "location": "web/backend/app/api/indicators/indicator_cache.py:48",
+        "classification": "route-local provider fallback over public DataService getter",
+        "decision": "retain"
+      },
+      {
+        "name": "get_strategy_indicator_data_service",
+        "tokens": 3,
+        "depends_sites": 1,
+        "location": "web/backend/app/api/v1/strategy/indicators.py:29",
+        "classification": "route-local provider fallback over public DataService getter",
+        "decision": "retain"
+      },
+      {
+        "name": "get_data_source_dependency",
+        "tokens": 5,
+        "depends_sites": 3,
+        "location": "web/backend/app/api/dashboard.py / dashboard_data_source.py",
+        "classification": "dashboard route-local data-source provider",
+        "decision": "retain"
+      },
+      {
+        "name": "get_streaming_service",
+        "tokens": 25,
+        "location": "web/backend/app/services/realtime_streaming_service.py:428",
+        "classification": "public compatibility getter plus constructor fallback consumers",
+        "decision": "retain; realtime/socket subtrack closed by prior evidence"
+      }
+    ]
+  },
+  "gitnexus_impact_after_refresh": {
+    "note": "GitNexus upstream impact is useful for symbol blast radius, but FastAPI Depends consumer links require static route/provider scanning for this decision.",
+    "providers_checked": {
+      "get_data_source_factory_dependency": "LOW, impacted 0",
+      "get_market_data_service_v2_dependency": "LOW, impacted 0",
+      "get_market_data_service_dependency": "LOW, impacted 0",
+      "get_advanced_analysis_service_dependency": "LOW, impacted 0",
+      "get_tdx_service_dependency": "LOW, impacted 0",
+      "get_strategy_service_dependency": "LOW, impacted 0",
+      "get_indicator_registry_dependency": "LOW, impacted 0",
+      "get_stock_search_service_dependency": "LOW, impacted 0"
+    }
+  },
+  "decision": {
+    "classification": "route-provider-contracts-retained",
+    "source_lane_recommendation": "do-not-open-source-implementation-from-g2-185",
+    "selected_next_governance_target": "service-lifecycle-candidate-refresh-after-provider-governance",
+    "recommended_next_work_item": "G2.186 service lifecycle remaining getter inventory refresh after provider governance",
+    "rules": [
+      "FastAPI dependency/provider functions are active route contracts, not singleton-retirement candidates.",
+      "Public get_*_service compatibility getters remain valid fallback entrypoints unless a later compatibility-retirement package explicitly authorizes changing them.",
+      "Route-local providers may remain route-local when they intentionally encapsulate route-specific fallback behavior.",
+      "Graph impact 0 does not imply deletability for provider functions because static route decorators and Depends sites are the consumer truth.",
+      "Future provider edits require route-level override tests and OpenAPI/route smoke when route signatures or exposure can change."
+    ]
+  },
+  "g2_186_minimum_requirements": [
+    "Rescan all service getter and provider tokens after accepting the G2.185 provider governance decision.",
+    "Exclude retained route dependency providers, route-local provider fallbacks, constructor fallbacks, package exports, public compatibility getter definitions, and test-only references from implementation-candidate counts.",
+    "Report only remaining direct route-body or service-body singleton getter calls that are not provider-governed.",
+    "If no direct implementation candidates remain, prepare a service lifecycle DI closeout or queue-slimming decision package.",
+    "If a candidate remains, require a separate authorization package before source edits."
+  ],
+  "not_authorized": [
+    "backend source edits",
+    "backend test edits",
+    "frontend edits",
+    "route/API/OpenAPI exposure changes",
+    "PM2 commands",
+    "OpenSpec change creation or spec edits",
+    "GitHub issue label changes",
+    "deleting or privatizing provider functions",
+    "deleting or privatizing public compatibility getters",
+    "starting a new implementation lane before G2.186 or a later authorization package is reviewed and approved"
+  ],
+  "updated_steward_files": [
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/tracks/route-openapi-governance.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md"
+  ],
+  "next_gate": "Review G2.185. If accepted, start G2.186 service lifecycle remaining getter inventory refresh after provider governance; do not start a backend source lane from G2.185."
+}
