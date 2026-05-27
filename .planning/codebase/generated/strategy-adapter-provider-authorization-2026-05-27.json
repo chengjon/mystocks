@@ -1,0 +1,103 @@
+{
+  "work_item": "G2.177",
+  "title": "Strategy adapter provider authorization",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T14:01:21+08:00",
+  "current_head": "46cf4b25da6cb29852663206fa815dd5b37f9787",
+  "parent": {
+    "work_item": "G2.176",
+    "pr": 329,
+    "state": "MERGED",
+    "merged_at": "2026-05-27T05:54:22Z",
+    "merge_commit": "46cf4b25da6cb29852663206fa815dd5b37f9787",
+    "title": "docs(governance): refresh strategy residual decision"
+  },
+  "scope": {
+    "type": "design-authorization-package",
+    "source_changes": false,
+    "test_changes": false,
+    "route_behavior_changes": false,
+    "openapi_exposure_changes": false,
+    "implementation_authorized_for_future_lane": true,
+    "current_package_performs_implementation": false
+  },
+  "source_facts": {
+    "target_path": "web/backend/app/services/adapters/strategy_adapter.py",
+    "line_count": 368,
+    "markers": {
+      "class StrategyDataSourceAdapter": 21,
+      "def __init__": 24,
+      "def _get_strategy_service": 39,
+      "async def _fetch_strategy_data": 99,
+      "async def health_check": 322
+    },
+    "constructor_signature": "def __init__(self, config: Dict[str, Any]):",
+    "get_strategy_service_mentions": 10,
+    "private_helper_mentions": 8,
+    "constructor_provider_mentions": 0,
+    "has_should_use_mock_fallback": true,
+    "has_mock_fallback_guard": true
+  },
+  "residual_scan": {
+    "production_py_get_strategy_service_hits": 19,
+    "files": {
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py": 6,
+      "web/backend/app/tasks/backtest_tasks.py": 2,
+      "web/backend/app/services/strategy_service.py": 1,
+      "web/backend/app/services/adapters/strategy_adapter.py": 10
+    },
+    "legacy_data_adapters_strategy_hits": 0
+  },
+  "gitnexus": {
+    "canonical_adapter_file_impact": {
+      "risk": "LOW",
+      "impacted_count": 5,
+      "direct": 2,
+      "processes_affected": 0
+    },
+    "public_getter_symbol_impact": {
+      "risk": "CRITICAL",
+      "impacted_count": 13,
+      "direct": 6,
+      "processes_affected": 0,
+      "modules_affected": 5
+    },
+    "tooling_note": "symbol-level impact still reports stale legacy data_adapters/strategy.py helper symbols; static scan remains the ownership source of truth for the closed legacy wrapper path"
+  },
+  "authorization": {
+    "future_work_item": "G2.178",
+    "future_lane_type": "path-limited-source-implementation",
+    "allowed_paths": [
+      "web/backend/app/services/adapters/strategy_adapter.py",
+      "web/backend/tests/test_adapter_mock_fallback_controls.py"
+    ],
+    "allowed_shape": [
+      "add optional constructor-level strategy service provider callable",
+      "preserve default constructor behavior",
+      "keep _get_strategy_service as the adapter-local access point",
+      "use injected provider when supplied and public get_strategy_service fallback otherwise",
+      "preserve service caching, exception behavior, mock fallback behavior, metrics behavior, and response shapes"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/services/data_adapters/strategy.py",
+      "web/backend/app/services/data_adapter.py",
+      "web/backend/app/services/data_source_factory/**",
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+      "web/backend/app/tasks/backtest_tasks.py",
+      "web/backend/app/services/strategy_service.py"
+    ]
+  },
+  "verification": {
+    "adapter_fallback_tests": "7 passed",
+    "logging_noise_tests": "10 passed",
+    "strategy_route_backtest_tests": "8 passed",
+    "data_adapter_regression_tests": "9 passed",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0
+    }
+  },
+  "next_gate": "review G2.177; if accepted, start G2.178 as a path-limited implementation lane for the canonical Strategy adapter provider seam"
+}

@@ -3349,13 +3349,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, or implementation authorization is
 │   │              performed here
 │   ├── G2.176 Strategy residual refresh decision
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#329`
 │   │   ├── Evidence:
 │   │   │          `backend-strategy-residual-refresh-decision-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `strategy-residual-refresh-decision-2026-05-27.json`
 │   │   ├── Parent: G2.175 accepted and merged by PR `#328`
 │   │   ├── Current HEAD: `2718dd07ce10dbe94937ed0bb758956677b3dce4`
+│   │   ├── Merge HEAD: `46cf4b25da6cb29852663206fa815dd5b37f9787`
 │   │   ├── Residual scan: production `.py` `get_strategy_service` hits
 │   │   │          under `web/backend/app` remain `19`; route provider
 │   │   │          fallback owns `6`, closed backtest helper owns `2`,
@@ -3383,9 +3384,50 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenSpec, config, script, compatibility deletion,
 │   │              issue-label change, or source implementation authorization
 │   │              is performed here
-│   └── Next gate: review G2.176; if accepted, open G2.177 as a narrow
-│                  Strategy canonical adapter provider design/authorization
-│                  package before any further Strategy source implementation
+│   ├── G2.177 Strategy canonical adapter provider authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-strategy-adapter-provider-authorization-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `strategy-adapter-provider-authorization-2026-05-27.json`
+│   │   ├── Parent: G2.176 accepted and merged by PR `#329`
+│   │   ├── Current HEAD: `46cf4b25da6cb29852663206fa815dd5b37f9787`
+│   │   ├── Source facts: canonical `strategy_adapter.py` has `368`
+│   │   │          lines; constructor still accepts only `config`;
+│   │   │          `_get_strategy_service()` starts at line `39`,
+│   │   │          `_fetch_strategy_data()` at line `99`, and
+│   │   │          `health_check()` at line `322`
+│   │   ├── Residual scan: production `.py` `get_strategy_service` hits
+│   │   │          remain `19`; canonical `strategy_adapter.py` owns `10`,
+│   │   │          route provider fallback owns `6`, closed backtest helper
+│   │   │          owns `2`, public getter definition owns `1`, and legacy
+│   │   │          `data_adapters/strategy.py` owns `0`
+│   │   ├── GitNexus evidence: canonical `strategy_adapter.py` file impact
+│   │   │          is LOW with `5` impacted and `0` affected processes;
+│   │   │          public `get_strategy_service` remains CRITICAL at symbol
+│   │   │          level with `13` impacted, `6` direct callers, and `0`
+│   │   │          affected processes
+│   │   ├── Authorization: future G2.178 may only add an optional
+│   │   │          constructor-level Strategy service provider seam in
+│   │   │          canonical `strategy_adapter.py` and focused tests in
+│   │   │          `test_adapter_mock_fallback_controls.py`; default
+│   │   │          constructor behavior, public `get_strategy_service`,
+│   │   │          factory construction, route provider fallback, backtest
+│   │   │          helper, legacy wrapper, route/API behavior, and OpenAPI
+│   │   │          exposure must remain unchanged
+│   │   ├── Verification: adapter fallback tests `7 passed`, logging
+│   │   │          regression tests `10 passed`, strategy route/backtest
+│   │   │          sanity tests `8 passed`, data adapter regression tests
+│   │   │          `9 passed`, and OpenAPI smoke `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   └── Boundary: design/authorization only; no backend source/test edit,
+│   │              route/API behavior, OpenAPI exposure, frontend, PM2,
+│   │              OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, or current source implementation is
+│   │              performed here
+│   └── Next gate: review G2.177; if accepted, start G2.178 as a
+│                  path-limited canonical Strategy adapter provider
+│                  implementation lane with TDD
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
