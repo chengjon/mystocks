@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T02:10:15+08:00",
+  "generated_at": "2026-05-28T02:31:48+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "ea659d52903a5e9884d396069526ea08f15109a6",
-  "split_branch": "g2-194-data-quality-adapter-seam-design",
-  "scope": "governance_only_data_quality_adapter_constructor_seam_design",
+  "base_head": "e30e16605df6aaa333989a7ac247bab3dcd0dd01",
+  "split_branch": "g2-195-data-quality-adapter-split-authorization",
+  "scope": "governance_only_data_quality_adapter_split_constructor_provider_authorization",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -987,7 +987,7 @@
     {
       "id": "g2-194-data-quality-adapter-seam-design",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.193 data-quality route provider closeout / remaining candidate refresh",
       "source_edit_authority": false,
@@ -1072,10 +1072,104 @@
         ]
       },
       "freshness": {
-        "current_head_checked": "ea659d52903a5e9884d396069526ea08f15109a6",
+        "current_head_checked": "e30e16605df6aaa333989a7ac247bab3dcd0dd01",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.195 authorization package; do not implement adapter source changes from G2.194."
+      "github_pr": {
+        "number": 347,
+        "url": "https://github.com/chengjon/mystocks/pull/347",
+        "state": "MERGED",
+        "merge_commit": "e30e16605df6aaa333989a7ac247bab3dcd0dd01"
+      },
+      "next_gate": "Superseded by G2.195 data-quality adapter_split constructor provider authorization."
+    },
+    {
+      "id": "g2-195-data-quality-adapter-split-constructor-provider-authorization",
+      "type": "authorization_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.194 data-quality adapter constructor seam design",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/data-quality-adapter-split-constructor-provider-authorization-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-authorization-2026-05-28.md",
+        "governance/mainline/task-cards/pr-348.yaml"
+      ],
+      "future_source_edit_authority_if_accepted": true,
+      "authorized_future_lane": "G2.196 data-quality adapter_split constructor provider implementation",
+      "authorized_future_source_paths": [
+        "web/backend/app/services/adapters_split/base_adapter.py",
+        "web/backend/app/services/adapters_split/baostock_adapter.py",
+        "web/backend/app/services/adapters_split/tushare_adapter.py",
+        "web/backend/app/services/adapters_split/customer_adapter.py",
+        "web/backend/app/services/adapters_split/byapi_adapter.py",
+        "web/backend/app/services/adapters_split/akshare_adapter.py",
+        "web/backend/app/services/adapters_split/efinance_adapter.py",
+        "web/backend/app/services/adapters_split/tdx_adapter.py"
+      ],
+      "authorized_future_test_paths": [
+        "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
+      ],
+      "future_forbidden_surfaces": [
+        "web/backend/app/services/adapters/**",
+        "web/backend/app/services/data_adapters/**",
+        "web/backend/app/services/market_data_adapter.py",
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py",
+        "web/backend/app/api/**",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "current_inventory": {
+        "adapter_split_files_scanned": 8,
+        "constructors_with_quality_monitor_parameter": 0,
+        "BaseAdapter_singleton_assignment_line": 27,
+        "BaseAdapter_log_data_quality_uses_self_quality_monitor_line": 100,
+        "subclass_singleton_assignment_lines": {
+          "baostock_adapter.py": 22,
+          "tushare_adapter.py": 22,
+          "customer_adapter.py": 35,
+          "byapi_adapter.py": 24,
+          "akshare_adapter.py": 22,
+          "efinance_adapter.py": 22,
+          "tdx_adapter.py": 22
+        }
+      },
+      "gitnexus_evidence": {
+        "BaseAdapter": {
+          "risk": "MEDIUM",
+          "impacted_count": 7,
+          "direct_extenders": 7
+        },
+        "get_data_quality_monitor": {
+          "risk": "CRITICAL",
+          "impacted_count": 24,
+          "direct_callers": 20,
+          "processes_affected": 7,
+          "modules_affected": 4,
+          "authorization_boundary": "G2.196 may only reduce adapter_split constructor calls"
+        }
+      },
+      "future_test_double_contract": {
+        "check_data_quality": "sync fake records calls and returns truthy quality result",
+        "evaluate_data_quality": "async fake records calls and returns truthy result for later runtime-monitoring surfaces"
+      },
+      "future_required_checks": [
+        "focused pytest for web/backend/tests/test_adapter_split_data_quality_monitor_provider.py",
+        "ruff check on eight adapter_split source files plus focused test",
+        "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+        "gitnexus_detect_changes(scope=staged)"
+      ],
+      "freshness": {
+        "current_head_checked": "e30e16605df6aaa333989a7ac247bab3dcd0dd01",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.196 implementation on the exact authorized paths; do not implement source changes from G2.195."
     },
     {
       "id": "core-batch2-reconciliation",
