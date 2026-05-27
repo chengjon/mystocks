@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-27T20:49:23+08:00`
-- Base HEAD checked: `d454193fdae08ad875c423e0b5aa959d79bedc67`
+- Prepared at: `2026-05-27T21:33:48+08:00`
+- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -36,7 +36,8 @@ It proved a repeatable conveyor:
 | G2.181 Strategy getter residual refresh decision | Merged by PR `#334` | Rechecks residual classes and selects route/provider fallback as the next governance target |
 | G2.182 Strategy route/provider fallback decision | Merged by PR `#335` | Classifies the route/provider fallback as a retained route-local provider seam and does not open a source lane |
 | G2.183 Strategy getter remaining residual decision | Merged by PR `#336` | Closes the current Strategy getter residual track with retained residuals and focused residual test evidence |
-| G2.184 next non-Strategy candidate decision | For review | Selects route dependency/provider governance as the next decision target and opens no source lane |
+| G2.184 next non-Strategy candidate decision | Merged by PR `#337` | Selects route dependency/provider governance as the next decision target and opens no source lane |
+| G2.185 route dependency/provider governance decision | For review | Classifies active FastAPI providers as retained route contracts, not singleton getter deletion candidates |
 
 ## Current Strategy Getter Residuals
 
@@ -54,12 +55,12 @@ G2.183 classification recorded these `get_strategy_service` hits under
 
 ## Next Gates
 
-- Review G2.184 next non-Strategy candidate decision.
-- If accepted, start G2.185 route dependency/provider governance residual
-  decision package.
-- Do not start another backend source lane directly from G2.184. The current
-  non-Strategy residuals are provider/compatibility shaped after fresh GitNexus
-  indexing and need provider ownership classification first.
+- Review G2.185 route dependency/provider governance residual decision.
+- If accepted, start G2.186 service lifecycle remaining getter inventory refresh
+  after provider governance.
+- Do not start another backend source lane directly from G2.185. The current
+  provider residuals are active route contracts and must be excluded from direct
+  implementation-candidate counts unless a later authorization says otherwise.
 
 ## Forbidden Scope
 

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-27T20:49:23+08:00`
-- Base HEAD checked: `d454193fdae08ad875c423e0b5aa959d79bedc67`
+- Prepared at: `2026-05-27T21:33:48+08:00`
+- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -21,12 +21,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#334` | `g2-181-strategy-getter-residual-refresh-decision` | `wip/root-dirty-20260403` | `MERGED` at `0398eb81259bba5c7d8c8ba6479056554e13d064` | Residual refresh and next target selection |
 | `#335` | `g2-182-strategy-route-provider-fallback-decision` | `wip/root-dirty-20260403` | `MERGED` at `597f8186092b4ad3d0704326e292c5e4fa075f15` | Retained route/provider fallback decision |
 | `#336` | `g2-183-strategy-getter-remaining-residual-decision` | `wip/root-dirty-20260403` | `MERGED` at `d454193fdae08ad875c423e0b5aa959d79bedc67` | Strategy getter remaining residual closeout with retained residuals |
+| `#337` | `g2-184-next-nonstrategy-service-getter-candidate-decision` | `wip/root-dirty-20260403` | `MERGED` at `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` | Next non-Strategy candidate decision selecting provider governance |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-184-next-nonstrategy-service-getter-candidate-decision` | `origin/wip/root-dirty-20260403` at `d454193fdae08ad875c423e0b5aa959d79bedc67` | Select the next non-Strategy service lifecycle governance target after Strategy residual closeout | None |
+| `g2-185-route-dependency-provider-governance-decision` | `origin/wip/root-dirty-20260403` at `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` | Classify active route dependency/provider residuals and select the next queue-refresh gate | None |
 
 ## OpenSpec Relationship
 
@@ -42,7 +43,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.184 is a candidate-selection decision branch only. It records the merged
-state of PR `#336`, confirms that prior high-risk non-Strategy getter tracks are
-currently provider/compatibility shaped after fresh GitNexus indexing, and must
-not introduce backend source edits or a new implementation lane.
+G2.185 is a provider-governance decision branch only. It records the merged
+state of PR `#337`, classifies active FastAPI dependency providers as retained
+route contracts, and must not introduce backend source edits or a new
+implementation lane.

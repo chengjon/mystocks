@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-27T15:32:41+08:00`
-- Base HEAD checked: `3b8f95945fcb489316ddfaf919835d372122fa5f`
+- Prepared at: `2026-05-27T21:33:48+08:00`
+- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
 
 Boundary note: this track summary does not authorize route source edits,
 OpenAPI exposure changes, compatibility deletion, frontend consumer changes, or
@@ -46,6 +46,9 @@ then indexed from `evidence-index.md` and `steward-index.json` when active.
 
 ## Next Gates
 
+- Review G2.185 route dependency/provider governance residual decision. It
+  classifies active FastAPI providers as route contracts and does not authorize
+  route source edits or OpenAPI exposure changes.
 - Use this track for future trading route, backup route, control-plane, health,
   status, probe, and compatibility exposure decisions.
 - Keep source edits locked until the route owner, OpenAPI exposure policy, and
