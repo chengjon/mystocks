@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T00:38:03+08:00`
-- Base HEAD checked: `5565e2b0967958c406a4115dc840a9e90a0b2aab`
+- Prepared at: `2026-05-28T01:04:38+08:00`
+- Base HEAD checked: `7154ffbb067dcddc52d80f15342961b51234ac09`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -43,6 +43,8 @@ state transition.
 | `docs/reports/quality/backend-risk-stop-loss-provider-closeout-refresh-2026-05-28.md` | G2.189 human-readable closeout and candidate-refresh report | Review input until PR `#342` is accepted |
 | `.planning/codebase/generated/data-quality-adapter-cross-cutting-decision-2026-05-28.json` | G2.190 data-quality / adapter cross-cutting decision evidence | Current for HEAD `5565e2b0967958c406a4115dc840a9e90a0b2aab`; review input until PR `#343` is accepted |
 | `docs/reports/quality/backend-data-quality-adapter-cross-cutting-decision-2026-05-28.md` | G2.190 human-readable decision package | Review input until PR `#343` is accepted |
+| `.planning/codebase/generated/data-quality-route-provider-authorization-2026-05-28.json` | G2.191 data-quality route provider authorization evidence | Current for HEAD `7154ffbb067dcddc52d80f15342961b51234ac09`; review input until PR `#344` is accepted |
+| `docs/reports/quality/backend-data-quality-route-provider-authorization-2026-05-28.md` | G2.191 human-readable authorization package | Review input until PR `#344` is accepted |
 
 ## External State Inputs
 
@@ -56,7 +58,8 @@ state transition.
 | GitHub PR `#340` | `MERGED` | G2.187 stop-loss route provider authorization merged by commit `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a` |
 | GitHub PR `#341` | `MERGED` | G2.188 stop-loss route provider implementation merged by commit `0aac0e16f16480bd99eebb8726e21a7db6566b39` |
 | GitHub PR `#342` | `MERGED` | G2.189 stop-loss provider closeout / candidate refresh merged by commit `5565e2b0967958c406a4115dc840a9e90a0b2aab` |
-| `origin/wip/root-dirty-20260403` | `5565e2b0967958c406a4115dc840a9e90a0b2aab` | Base used for this decision branch |
+| GitHub PR `#343` | `MERGED` | G2.190 data-quality / adapter decision merged by commit `7154ffbb067dcddc52d80f15342961b51234ac09` |
+| `origin/wip/root-dirty-20260403` | `7154ffbb067dcddc52d80f15342961b51234ac09` | Base used for this authorization branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

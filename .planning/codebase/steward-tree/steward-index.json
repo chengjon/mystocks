@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T00:38:03+08:00",
+  "generated_at": "2026-05-28T01:04:38+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "5565e2b0967958c406a4115dc840a9e90a0b2aab",
-  "split_branch": "g2-190-data-quality-adapter-decision",
-  "scope": "data_quality_adapter_cross_cutting_decision_package",
+  "base_head": "7154ffbb067dcddc52d80f15342961b51234ac09",
+  "split_branch": "g2-191-data-quality-route-provider-authorization",
+  "scope": "data_quality_route_provider_authorization_package",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -711,9 +711,17 @@
     {
       "id": "g2-190-data-quality-adapter-decision",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.189 risk stop-loss provider closeout / candidate refresh",
+      "github_pr": {
+        "number": 343,
+        "url": "https://github.com/chengjon/mystocks/pull/343",
+        "state": "MERGED",
+        "merged_at": "2026-05-27T17:02:01Z",
+        "head_ref": "g2-190-data-quality-adapter-decision",
+        "merge_commit": "7154ffbb067dcddc52d80f15342961b51234ac09"
+      },
       "source_edit_authority": false,
       "evidence": [
         ".planning/codebase/generated/data-quality-adapter-cross-cutting-decision-2026-05-28.json",
@@ -767,10 +775,71 @@
         ]
       },
       "freshness": {
-        "current_head_checked": "5565e2b0967958c406a4115dc840a9e90a0b2aab",
+        "current_head_checked": "7154ffbb067dcddc52d80f15342961b51234ac09",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.191 data-quality route provider authorization package only; do not start source implementation from G2.190."
+      "next_gate": "Superseded by G2.191 data-quality route provider authorization."
+    },
+    {
+      "id": "g2-191-data-quality-route-provider-authorization",
+      "type": "authorization_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.190 data-quality / adapter cross-cutting decision",
+      "source_edit_authority": false,
+      "future_source_edit_authority_if_accepted": true,
+      "evidence": [
+        ".planning/codebase/generated/data-quality-route-provider-authorization-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-route-provider-authorization-2026-05-28.md",
+        "governance/mainline/task-cards/pr-344.yaml"
+      ],
+      "authorized_future_lane": {
+        "id": "g2-192-data-quality-route-provider-implementation",
+        "source_paths": [
+          "web/backend/app/api/data_quality.py"
+        ],
+        "test_paths": [
+          "web/backend/tests/test_data_quality_mock_configuration.py",
+          "web/backend/tests/test_data_quality_route_provider_regressions.py",
+          "tests/unit/contract/test_data_quality_router_runtime_import.py"
+        ],
+        "forbidden_paths": [
+          "web/backend/app/services/_data_quality_monitor_singleton.py",
+          "web/backend/app/services/data_quality_monitor.py",
+          "web/backend/app/services/adapters_split/**",
+          "web/backend/app/services/adapters/**",
+          "web/backend/app/services/data_adapters/**",
+          "web/backend/app/services/market_data_adapter.py",
+          "web/frontend/**",
+          "src/**",
+          "docs/api/**",
+          "openspec/changes/**",
+          "openspec/specs/**"
+        ]
+      },
+      "route_surface": {
+        "route_count": 9,
+        "routes_touching_monitor_surface": 7,
+        "current_get_data_quality_monitor_calls": 6,
+        "current_monitor_data_quality_calls": 1
+      },
+      "required_future_checks": [
+        "GitNexus impact/context before source edits with CRITICAL risk acknowledgement",
+        "TDD route-provider regression",
+        "OpenAPI dependency leak smoke",
+        "app.main import / route registration smoke with required environment available",
+        "ruff check touched route and test files",
+        "GitNexus staged detect_changes",
+        "mainline scope gate"
+      ],
+      "preconditions": [
+        "Clean G2.191 worktree app.openapi smoke is blocked by missing local .env; G2.192 needs required environment or approved named equivalent before smoke evidence is valid."
+      ],
+      "freshness": {
+        "current_head_checked": "7154ffbb067dcddc52d80f15342961b51234ac09",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.192 data-quality route provider implementation lane; do not edit source from G2.191."
     },
     {
       "id": "core-batch2-reconciliation",
