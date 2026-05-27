@@ -130,7 +130,6 @@ def test_v31_stop_loss_history_endpoints_use_runtime_history_service_even_withou
         async def get_strategy_recommendations(self, strategy_type, symbol):
             return {"strategy_type": strategy_type, "symbol": symbol, "recommendations": ["keep"]}
 
-    monkeypatch.setattr(module, "ENHANCED_RISK_FEATURES_AVAILABLE", False)
     monkeypatch.setattr(module, "get_stop_loss_history_service", lambda: FakeHistoryService())
 
     performance = asyncio.run(
@@ -142,6 +141,43 @@ def test_v31_stop_loss_history_endpoints_use_runtime_history_service_even_withou
 
     assert performance["total_trades"] == 2
     assert recommendations["recommendations"] == ["keep"]
+
+
+def test_v31_stop_loss_history_endpoints_accept_injected_service_without_getter_patch(monkeypatch) -> None:
+    from web.backend.app.api.risk import stop_loss as module
+
+    class FakeHistoryService:
+        async def get_strategy_performance(self, **kwargs):
+            return {"total_trades": 3, "filters": kwargs}
+
+        async def get_strategy_recommendations(self, strategy_type, symbol):
+            return {"strategy_type": strategy_type, "symbol": symbol, "recommendations": ["tighten"]}
+
+    def fail_getter():
+        raise AssertionError("route should use the injected stop-loss history service")
+
+    monkeypatch.setattr(module, "get_stop_loss_history_service", fail_getter)
+
+    injected_service = FakeHistoryService()
+    performance = asyncio.run(
+        module.get_stop_loss_performance(
+            strategy_type="volatility_adaptive",
+            symbol="600519.SH",
+            days=15,
+            history_service=injected_service,
+        )
+    )
+    recommendations = asyncio.run(
+        module.get_stop_loss_recommendations(
+            strategy_type="volatility_adaptive",
+            symbol="600519.SH",
+            history_service=injected_service,
+        )
+    )
+
+    assert performance["total_trades"] == 3
+    assert performance["filters"]["symbol"] == "600519.SH"
+    assert recommendations["recommendations"] == ["tighten"]
 
 
 def test_v31_stop_loss_execution_endpoints_use_runtime_execution_service_even_without_feature_flag(monkeypatch) -> None:
@@ -165,7 +201,6 @@ def test_v31_stop_loss_execution_endpoints_use_runtime_execution_service_even_wi
         async def batch_update_prices(self, price_updates):
             return {"total_checked": len(price_updates)}
 
-    monkeypatch.setattr(module, "ENHANCED_RISK_FEATURES_AVAILABLE", False)
     monkeypatch.setattr(module, "get_stop_loss_execution_service", lambda: FakeExecutionService())
 
     added = asyncio.run(
@@ -183,6 +218,63 @@ def test_v31_stop_loss_execution_endpoints_use_runtime_execution_service_even_wi
     assert updated["checked"] is True
     assert status["found"] is True
     assert overview["total_positions"] == 1
+    assert batch["total_checked"] == 1
+    assert removed["success"] is True
+
+
+def test_v31_stop_loss_execution_endpoints_accept_injected_service_without_getter_patch(monkeypatch) -> None:
+    from web.backend.app.api.risk import stop_loss as module
+
+    class FakeExecutionService:
+        async def add_position_monitoring(self, **kwargs):
+            return {"success": True, "position_id": kwargs["position_id"]}
+
+        async def update_position_price(self, **kwargs):
+            return {"checked": True, "position_id": kwargs["position_id"]}
+
+        async def remove_position_monitoring(self, position_id):
+            return True
+
+        async def get_monitoring_status(self, position_id=None):
+            if position_id:
+                return {"found": True, "position_id": position_id}
+            return {"total_positions": 2}
+
+        async def batch_update_prices(self, price_updates):
+            return {"total_checked": len(price_updates)}
+
+    def fail_getter():
+        raise AssertionError("route should use the injected stop-loss execution service")
+
+    monkeypatch.setattr(module, "get_stop_loss_execution_service", fail_getter)
+
+    injected_service = FakeExecutionService()
+    added = asyncio.run(
+        module.add_stop_loss_position(
+            {"symbol": "600519.SH", "position_id": "pos-1", "entry_price": 100.0, "quantity": 10},
+            execution_service=injected_service,
+        )
+    )
+    updated = asyncio.run(
+        module.update_stop_loss_price(
+            {"position_id": "pos-1", "current_price": 95.0},
+            execution_service=injected_service,
+        )
+    )
+    status = asyncio.run(module.get_stop_loss_status("pos-1", execution_service=injected_service))
+    overview = asyncio.run(module.get_stop_loss_overview(execution_service=injected_service))
+    batch = asyncio.run(
+        module.batch_update_stop_loss_prices(
+            {"price_updates": {"600519.SH": 95.0}},
+            execution_service=injected_service,
+        )
+    )
+    removed = asyncio.run(module.remove_stop_loss_position("pos-1", execution_service=injected_service))
+
+    assert added["success"] is True
+    assert updated["checked"] is True
+    assert status["found"] is True
+    assert overview["total_positions"] == 2
     assert batch["total_checked"] == 1
     assert removed["success"] is True
 

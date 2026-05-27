@@ -1,12 +1,12 @@
 from datetime import datetime, timedelta
 from typing import Any, Dict, Optional
 
-from fastapi import APIRouter, Body, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
+from fastapi.params import Depends as DependsParam
 
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.openapi_config import COMMON_RESPONSES
 from app.api.risk._shared import (
-    ENHANCED_RISK_FEATURES_AVAILABLE,
     RISK_MANAGEMENT_V31_AVAILABLE,
     get_risk_management_core,
     get_stop_loss_execution_service,
@@ -52,6 +52,21 @@ def _resolve_execution_service():
     if not execution_service:
         raise BusinessException(detail="止损执行服务不可用", status_code=503, error_code="STOP_LOSS_EXECUTION_UNAVAILABLE")
     return execution_service
+
+
+def get_stop_loss_history_service_provider():
+    return _resolve_history_service()
+
+
+def get_stop_loss_execution_service_provider():
+    return _resolve_execution_service()
+
+
+def _resolve_direct_call_dependency(service: Any, resolver):
+    if isinstance(service, DependsParam):
+        return resolver()
+    return service
+
 
 STOP_LOSS_ADD_POSITION_EXAMPLES = {
     "monitor_equity_position": {
@@ -319,10 +334,11 @@ STOP_LOSS_TRIGGER_RESPONSES = _success_response_spec(
     responses=STOP_LOSS_ADD_POSITION_RESPONSES,
 )
 async def add_stop_loss_position(
-    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_ADD_POSITION_EXAMPLES)
+    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_ADD_POSITION_EXAMPLES),
+    execution_service: Any = Depends(get_stop_loss_execution_service_provider),
 ) -> Dict[str, Any]:
     try:
-        execution_service = _resolve_execution_service()
+        execution_service = _resolve_direct_call_dependency(execution_service, _resolve_execution_service)
 
         result = await execution_service.add_position_monitoring(
             symbol=request["symbol"],
@@ -356,10 +372,11 @@ async def add_stop_loss_position(
     responses=STOP_LOSS_UPDATE_PRICE_RESPONSES,
 )
 async def update_stop_loss_price(
-    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_UPDATE_PRICE_EXAMPLES)
+    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_UPDATE_PRICE_EXAMPLES),
+    execution_service: Any = Depends(get_stop_loss_execution_service_provider),
 ) -> Dict[str, Any]:
     try:
-        execution_service = _resolve_execution_service()
+        execution_service = _resolve_direct_call_dependency(execution_service, _resolve_execution_service)
 
         result = await execution_service.update_position_price(
             position_id=request["position_id"],
@@ -385,9 +402,10 @@ async def update_stop_loss_price(
 )
 async def remove_stop_loss_position(
     position_id: str = Path(..., description="需要移除的止损监控持仓ID。"),
+    execution_service: Any = Depends(get_stop_loss_execution_service_provider),
 ) -> Dict[str, Any]:
     try:
-        execution_service = _resolve_execution_service()
+        execution_service = _resolve_direct_call_dependency(execution_service, _resolve_execution_service)
 
         success = await execution_service.remove_position_monitoring(position_id)
         if not success:
@@ -412,9 +430,10 @@ async def remove_stop_loss_position(
 )
 async def get_stop_loss_status(
     position_id: str = Path(..., description="需要查询止损状态的持仓ID。"),
+    execution_service: Any = Depends(get_stop_loss_execution_service_provider),
 ) -> Dict[str, Any]:
     try:
-        execution_service = _resolve_execution_service()
+        execution_service = _resolve_direct_call_dependency(execution_service, _resolve_execution_service)
 
         result = await execution_service.get_monitoring_status(position_id)
         if not result.get("found"):
@@ -437,9 +456,11 @@ async def get_stop_loss_status(
     description="获取当前全部止损监控持仓的总览信息，用于盘中风控看板或批量巡检。",
     responses=STOP_LOSS_OVERVIEW_RESPONSES,
 )
-async def get_stop_loss_overview() -> Dict[str, Any]:
+async def get_stop_loss_overview(
+    execution_service: Any = Depends(get_stop_loss_execution_service_provider),
+) -> Dict[str, Any]:
     try:
-        execution_service = _resolve_execution_service()
+        execution_service = _resolve_direct_call_dependency(execution_service, _resolve_execution_service)
 
         return await execution_service.get_monitoring_status()
 
@@ -460,10 +481,11 @@ async def get_stop_loss_overview() -> Dict[str, Any]:
     responses=STOP_LOSS_BATCH_UPDATE_RESPONSES,
 )
 async def batch_update_stop_loss_prices(
-    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_BATCH_UPDATE_EXAMPLES)
+    request: Dict[str, Any] = Body(..., openapi_examples=STOP_LOSS_BATCH_UPDATE_EXAMPLES),
+    execution_service: Any = Depends(get_stop_loss_execution_service_provider),
 ) -> Dict[str, Any]:
     try:
-        execution_service = _resolve_execution_service()
+        execution_service = _resolve_direct_call_dependency(execution_service, _resolve_execution_service)
 
         price_updates = request.get("price_updates", {})
         if not price_updates:
@@ -491,9 +513,10 @@ async def get_stop_loss_performance(
     strategy_type: Optional[str] = Query(None, description="可选的止损策略类型，用于筛选指定策略表现。"),
     symbol: Optional[str] = Query(None, description="可选的股票代码，用于筛选单一标的止损表现。"),
     days: int = Query(30, description="回溯统计的天数窗口，默认 30 天。"),
+    history_service: Any = Depends(get_stop_loss_history_service_provider),
 ) -> Dict[str, Any]:
     try:
-        history_service = _resolve_history_service()
+        history_service = _resolve_direct_call_dependency(history_service, _resolve_history_service)
 
         date_from = datetime.now() - timedelta(days=days)
         return await history_service.get_strategy_performance(
@@ -521,9 +544,10 @@ async def get_stop_loss_performance(
 async def get_stop_loss_recommendations(
     strategy_type: str = Query(..., description="用于生成推荐结论的止损策略类型。"),
     symbol: Optional[str] = Query(None, description="可选的股票代码，用于生成单一标的建议。"),
+    history_service: Any = Depends(get_stop_loss_history_service_provider),
 ) -> Dict[str, Any]:
     try:
-        history_service = _resolve_history_service()
+        history_service = _resolve_direct_call_dependency(history_service, _resolve_history_service)
 
         return await history_service.get_strategy_recommendations(strategy_type, symbol)
 

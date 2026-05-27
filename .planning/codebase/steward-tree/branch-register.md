@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-27T22:30:42+08:00`
-- Base HEAD checked: `a63a6cb9a277195905b046cd31777d95160ee2c6`
+- Prepared at: `2026-05-27T23:02:44+08:00`
+- Base HEAD checked: `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -24,12 +24,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#337` | `g2-184-next-nonstrategy-service-getter-candidate-decision` | `wip/root-dirty-20260403` | `MERGED` at `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` | Next non-Strategy candidate decision selecting provider governance |
 | `#338` | `g2-185-route-dependency-provider-governance-decision` | `wip/root-dirty-20260403` | `MERGED` at `720248521d705af067d0a2600710444e439d7605` | Provider governance decision retaining active route contracts |
 | `#339` | `g2-186-remaining-getter-inventory-refresh` | `wip/root-dirty-20260403` | `MERGED` at `a63a6cb9a277195905b046cd31777d95160ee2c6` | Remaining getter inventory refresh selecting stop-loss authorization |
+| `#340` | `g2-187-risk-stop-loss-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a` | Authorization package for G2.188 stop-loss route provider implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-187-risk-stop-loss-provider-authorization` | `origin/wip/root-dirty-20260403` at `a63a6cb9a277195905b046cd31777d95160ee2c6` | Authorize the future stop-loss route service provider implementation lane without changing source in this PR | G2.186 remaining getter inventory refresh |
+| `g2-188-risk-stop-loss-provider-implementation` | `origin/wip/root-dirty-20260403` at `2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a` | Implement the G2.187-authorized stop-loss route service provider injection in one route file plus focused tests | G2.187 stop-loss route service provider authorization |
 
 ## OpenSpec Relationship
 
@@ -45,6 +46,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.187 is an authorization branch only. It records the merged state of PR
-`#339`, defines the exact future stop-loss route implementation scope, and must
-not introduce backend source edits in this PR.
+G2.188 is a path-limited source implementation branch. It starts only after PR
+`#340` merged the G2.187 authorization package, and it must not expand beyond
+`web/backend/app/api/risk/stop_loss.py`, focused stop-loss tests, and governance
+evidence. Alerts resolver failures and the legacy `app.api.risk_management`
+compatibility import failure remain separate lanes.

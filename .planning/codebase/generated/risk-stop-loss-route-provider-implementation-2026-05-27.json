@@ -1,0 +1,152 @@
+{
+  "schema_version": "2026-05-27.risk-stop-loss-provider-implementation.v1",
+  "generated_at": "2026-05-27T23:02:44+08:00",
+  "branch": "g2-188-risk-stop-loss-provider-implementation",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a",
+  "authorization": {
+    "source": "G2.187 risk stop-loss route service provider authorization",
+    "pr": 340,
+    "merged_at": "2026-05-27T14:46:15Z",
+    "merge_commit": "2d3b9c7e3ff30c81a19d51e66c32d2c06c1e1c4a",
+    "scope_status": "accepted_for_g2_188_path_limited_source_implementation"
+  },
+  "changed_paths": [
+    "web/backend/app/api/risk/stop_loss.py",
+    "web/backend/tests/test_risk_runtime_bootstrap_regressions.py",
+    "web/backend/tests/test_stop_loss_route_regressions.py"
+  ],
+  "source_change_summary": {
+    "provider_functions_added": [
+      "get_stop_loss_history_service_provider",
+      "get_stop_loss_execution_service_provider"
+    ],
+    "direct_call_compatibility_helper_added": "_resolve_direct_call_dependency",
+    "injected_execution_service_endpoints": [
+      "add_stop_loss_position",
+      "update_stop_loss_price",
+      "remove_stop_loss_position",
+      "get_stop_loss_status",
+      "get_stop_loss_overview",
+      "batch_update_stop_loss_prices"
+    ],
+    "injected_history_service_endpoints": [
+      "get_stop_loss_performance",
+      "get_stop_loss_recommendations"
+    ],
+    "preserved_boundaries": [
+      "route paths",
+      "HTTP methods",
+      "response_model declarations",
+      "OpenAPI examples",
+      "src-level stop-loss service getters",
+      "route-local BusinessException and ValidationException semantics"
+    ]
+  },
+  "gitnexus_pre_edit_impact": {
+    "get_stop_loss_history_service": {
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 1,
+      "processes_affected": 0
+    },
+    "get_stop_loss_execution_service": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    },
+    "_resolve_history_service": {
+      "risk": "LOW",
+      "impacted_count": 2,
+      "direct": 2,
+      "processes_affected": 0
+    },
+    "_resolve_execution_service": {
+      "risk": "MEDIUM",
+      "impacted_count": 6,
+      "direct": 6,
+      "processes_affected": 0
+    },
+    "endpoint_symbols": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "symbols_checked": [
+        "add_stop_loss_position",
+        "update_stop_loss_price",
+        "remove_stop_loss_position",
+        "get_stop_loss_status",
+        "get_stop_loss_overview",
+        "batch_update_stop_loss_prices",
+        "get_stop_loss_performance",
+        "get_stop_loss_recommendations"
+      ]
+    }
+  },
+  "tdd_evidence": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_risk_runtime_bootstrap_regressions.py -q -k stop_loss --tb=short --disable-warnings --no-cov",
+      "result": "2 failed, 3 passed, 5 deselected",
+      "expected_failures": [
+        "get_stop_loss_performance() got an unexpected keyword argument 'history_service'",
+        "add_stop_loss_position() got an unexpected keyword argument 'execution_service'"
+      ]
+    },
+    "green": [
+      {
+        "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_risk_runtime_bootstrap_regressions.py -q -k stop_loss --tb=short --disable-warnings --no-cov",
+        "result": "5 passed, 5 deselected"
+      },
+      {
+        "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_stop_loss_route_regressions.py -q --tb=short --disable-warnings --no-cov",
+        "result": "2 passed"
+      },
+      {
+        "command": "PYTHONPATH=web/backend pytest -o addopts= tests/unit/contract/test_risk_router_runtime_import.py::test_app_main_registers_canonical_risk_router_without_loading_compat_shim -q --tb=short --disable-warnings --no-cov",
+        "result": "1 passed"
+      }
+    ]
+  },
+  "openapi_smoke": {
+    "command": "env PYTHONPATH=web/backend POSTGRESQL_HOST=localhost POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test JWT_SECRET_KEY=testsecret BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python - <<'PY' ...",
+    "openapi_paths": 500,
+    "stop_loss_paths": 10,
+    "dependency_params_leaked": 0
+  },
+  "quality_gates": {
+    "ruff": {
+      "command": "ruff check web/backend/app/api/risk/stop_loss.py web/backend/tests/test_risk_runtime_bootstrap_regressions.py web/backend/tests/test_stop_loss_route_regressions.py tests/unit/contract/test_risk_router_runtime_import.py",
+      "result": "All checks passed"
+    },
+    "git_diff_check": {
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  },
+  "known_out_of_scope_baseline_failures": [
+    {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_risk_runtime_bootstrap_regressions.py -q --tb=short --disable-warnings --no-cov",
+      "result": "4 failed, 6 passed",
+      "reason": "unrelated alerts route resolver baseline failures",
+      "symbols": [
+        "_resolve_notification_manager",
+        "_resolve_rule_engine",
+        "_resolve_runtime_alert_service"
+      ]
+    },
+    {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= tests/unit/contract/test_risk_router_runtime_import.py -q --tb=short --disable-warnings --no-cov",
+      "result": "1 failed, 1 passed when run with stop_loss_route_regressions.py",
+      "reason": "unrelated legacy app.api.risk_management compatibility module import is absent at current HEAD"
+    }
+  ],
+  "next_gate": {
+    "recommended": "review G2.188 implementation PR; if accepted, merge and start a closeout/candidate-refresh governance packet",
+    "do_not_expand_to": [
+      "src-level stop-loss service getter deletion",
+      "other risk route provider migrations",
+      "alerts resolver fixes",
+      "legacy risk_management compatibility router fixes"
+    ]
+  }
+}
