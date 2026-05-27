@@ -5,23 +5,24 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-27T15:32:41+08:00`
-- Base HEAD checked: `3b8f95945fcb489316ddfaf919835d372122fa5f`
+- Prepared at: `2026-05-27T16:58:24+08:00`
+- Base HEAD checked: `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
 
-## Active GitHub PRs Relevant To The Steward Tree
+## Recent GitHub PRs Relevant To The Steward Tree
 
-| PR | Branch | Base | State at split | Relationship |
+| PR | Branch | Base | State | Relationship |
 |---|---|---|---|---|
-| `#331` | `g2-178-strategy-adapter-provider-implementation` | `wip/root-dirty-20260403` | `OPEN`, `MERGEABLE` | Source implementation lane for G2.178; intentionally not included in this governance split |
+| `#331` | `g2-178-strategy-adapter-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` | Source implementation lane for G2.178 |
+| `#332` | `g2-179-steward-tree-governance-split` | `wip/root-dirty-20260403` | `MERGED` at `750fb7c797ff95f27152439ed988a7115252129e` | Steward tree split and machine-readable index |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-179-steward-tree-governance-split` | `origin/wip/root-dirty-20260403` at `3b8f95945fcb489316ddfaf919835d372122fa5f` | Split the steward tree by usage and add machine-readable index | None |
+| `g2-180-strategy-adapter-provider-closeout` | `origin/wip/root-dirty-20260403` at `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` | Close G2.178 and refresh Strategy getter residual distribution | None |
 
 ## OpenSpec Relationship
 
@@ -37,7 +38,5 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-If PR `#331` merges before this split, update the service lifecycle track and
-`steward-index.json` to mark G2.178 as merged before merging this branch. If
-this split merges first, PR `#331` may need a small documentation-only
-reconciliation against the new split layout.
+G2.180 is a closeout branch only. It records the already merged state of PR
+`#331` and must not introduce another Strategy service getter implementation.

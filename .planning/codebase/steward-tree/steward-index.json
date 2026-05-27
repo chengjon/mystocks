@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T16:04:24+08:00",
+  "generated_at": "2026-05-27T16:58:24+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "750fb7c797ff95f27152439ed988a7115252129e",
-  "split_branch": "g2-178-strategy-adapter-provider-implementation",
-  "scope": "implementation_with_steward_reconciliation",
-  "source_edit_authority": true,
+  "base_head": "8bfb4dc74b06d6bb930e48ebf3d27bb28d908704",
+  "split_branch": "g2-180-strategy-adapter-provider-closeout",
+  "scope": "governance_closeout",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -107,15 +107,16 @@
     {
       "id": "g2-178-strategy-adapter-provider-implementation",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.177 Strategy canonical adapter provider authorization",
       "github_pr": {
         "number": 331,
         "url": "https://github.com/chengjon/mystocks/pull/331",
-        "state_at_split": "OPEN",
-        "mergeable_at_split": "MERGEABLE",
-        "head_ref": "g2-178-strategy-adapter-provider-implementation"
+        "state_at_closeout": "MERGED",
+        "mergeable_before_merge": "MERGEABLE",
+        "head_ref": "g2-178-strategy-adapter-provider-implementation",
+        "merge_commit": "8bfb4dc74b06d6bb930e48ebf3d27bb28d908704"
       },
       "source_edit_authority": true,
       "included_in_this_branch": true,
@@ -125,10 +126,37 @@
         "governance/mainline/task-cards/pr-331.yaml"
       ],
       "freshness": {
-        "current_head_checked": "750fb7c797ff95f27152439ed988a7115252129e",
+        "current_head_checked": "8bfb4dc74b06d6bb930e48ebf3d27bb28d908704",
         "stale_if_pr_state_changes": true
       },
-      "next_gate": "Human review/merge decision for PR #331; if accepted, create a closeout lane and refresh remaining Strategy getter residuals."
+      "next_gate": "Closed by G2.180 closeout; use the residual refresh gate for remaining Strategy getter surfaces."
+    },
+    {
+      "id": "g2-180-strategy-adapter-provider-closeout",
+      "type": "closeout",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.178 Strategy adapter provider implementation",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/strategy-adapter-provider-closeout-2026-05-27.json",
+        "docs/reports/quality/backend-strategy-adapter-provider-closeout-2026-05-27.md",
+        "governance/mainline/task-cards/pr-333.yaml"
+      ],
+      "residual": {
+        "get_strategy_service_hits": 19,
+        "files": {
+          "web/backend/app/tasks/backtest_tasks.py": 2,
+          "web/backend/app/services/adapters/strategy_adapter.py": 10,
+          "web/backend/app/services/strategy_service.py": 1,
+          "web/backend/app/api/strategy_management/_strategy_execution_router.py": 6
+        }
+      },
+      "freshness": {
+        "current_head_checked": "8bfb4dc74b06d6bb930e48ebf3d27bb28d908704",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "Review closeout; if accepted, prepare a separate residual-refresh decision package before any further Strategy getter source edits."
     },
     {
       "id": "core-batch2-reconciliation",

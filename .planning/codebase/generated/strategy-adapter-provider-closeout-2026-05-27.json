@@ -1,0 +1,51 @@
+{
+  "work_item": "G2.180",
+  "title": "Strategy adapter provider closeout",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T16:58:24+08:00",
+  "base_head": "8bfb4dc74b06d6bb930e48ebf3d27bb28d908704",
+  "scope": {
+    "type": "governance-closeout",
+    "source_edit_authority": false,
+    "route_behavior_changed": false,
+    "openapi_exposure_changed": false,
+    "compatibility_deleted": false,
+    "issue_label_changed": false
+  },
+  "closed_item": {
+    "work_item": "G2.178",
+    "github_pr": 331,
+    "merge_commit": "8bfb4dc74b06d6bb930e48ebf3d27bb28d908704",
+    "title": "refactor(backend): inject strategy adapter provider"
+  },
+  "implementation_facts": {
+    "target_path": "web/backend/app/services/adapters/strategy_adapter.py",
+    "has_provider_parameter": true,
+    "stores_provider": true,
+    "uses_provider": true,
+    "preserves_public_getter_fallback": true,
+    "constructor_line": 24,
+    "helper_line": 40,
+    "strategy_adapter_lines": 372
+  },
+  "residual_scan": {
+    "pattern": "get_strategy_service",
+    "root": "web/backend/app",
+    "total_hits": 19,
+    "files": {
+      "web/backend/app/tasks/backtest_tasks.py": 2,
+      "web/backend/app/services/adapters/strategy_adapter.py": 10,
+      "web/backend/app/services/strategy_service.py": 1,
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py": 6
+    }
+  },
+  "updated_steward_files": [
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md"
+  ],
+  "next_gate": "review G2.180 closeout; if accepted, prepare a separate residual-refresh decision package before further Strategy getter source edits"
+}

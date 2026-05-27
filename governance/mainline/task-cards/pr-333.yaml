@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-333"
+  title: "Close Strategy adapter provider seam"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-strategy-adapter-provider-closeout"
+  objective: "record G2.178 as merged and refresh remaining Strategy getter residual distribution without source edits"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance closeout only; records a merged source lane and residual scan without changing runtime, routes, tests, frontend, OpenAPI, or product behavior."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/strategy-adapter-provider-closeout-2026-05-27.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-strategy-adapter-provider-closeout-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-333.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source edits"
+  - "No test edits"
+  - "No route, API, OpenAPI, PM2, frontend, config, script, or issue-label changes"
+  - "No deletion, rename, privatization, or behavior change of get_strategy_service()"
+  - "No new Strategy getter source implementation lane"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/strategy-adapter-provider-closeout-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-333.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-strategy-adapter-provider-closeout-2026-05-27.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If this closeout is read as source authorization, Strategy getter cleanup could restart without a residual decision package."
+    - "If residual counts are used as permanent truth, later code changes may make them stale."
+  rollback_plan: "revert this PR to restore the pre-closeout steward state and remove the closeout report, generated JSON, and task card."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close G2.178 after PR #331 merge and refresh Strategy getter residual distribution"
+    modified_scope: "split steward tree files, closeout report, generated JSON, and task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; no source or compatibility behavior changes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this governance-only PR if closeout wording is rejected"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T16:58:24+08:00"
+    approval_note: "Human maintainer approved continuing after PR #331 merge; this lane is closeout/residual-refresh governance only."
+    secondary_approved: false
