@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T01:22:05+08:00`
-- Base HEAD checked: `b899a173909d3818370dddbf35b039832266bd1d`
+- Prepared at: `2026-05-28T01:52:33+08:00`
+- Base HEAD checked: `2b0c3ce373fba38bacd62eff5436822527dccda1`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -44,7 +44,8 @@ It proved a repeatable conveyor:
 | G2.189 risk stop-loss provider closeout / candidate refresh | Merged by PR `#342` | Records PR `#341` closeout, marks the stop-loss pair closed for route-body provider migration, and selects data-quality / adapter cross-cutting governance as the next design-only gate |
 | G2.190 data-quality / adapter cross-cutting decision | Merged by PR `#343` | Classifies `get_data_quality_monitor` as `CRITICAL`, splits the route/adapter/wrapper surfaces, and selects G2.191 route-only authorization as the next gate |
 | G2.191 data-quality route provider authorization | Merged by PR `#344` | Authorized a future G2.192 route-only implementation lane for `web/backend/app/api/data_quality.py` and focused tests, with no source edits in G2.191 |
-| G2.192 data-quality route provider implementation | For review | Implements authorized provider injection in `web/backend/app/api/data_quality.py`; focused tests and OpenAPI leak smoke pass |
+| G2.192 data-quality route provider implementation | Merged by PR `#345` | Implements authorized provider injection in `web/backend/app/api/data_quality.py`; focused tests and OpenAPI leak smoke pass |
+| G2.193 data-quality route provider closeout / remaining candidate refresh | For review | Marks route-body provider migration closed and selects adapter constructor seam design / test-double decision as the next governance gate |
 
 ## Current Strategy Getter Residuals
 
@@ -159,13 +160,42 @@ authorization to the route file only.
 G2.192 does not change adapter constructors, legacy adapter compatibility,
 singleton wrappers, or `DataQualityMonitor` internals.
 
+## G2.193 Data-Quality Route Provider Closeout / Refresh
+
+At HEAD `2b0c3ce373fba38bacd62eff5436822527dccda1`, PR `#345` is merged and
+the data-quality route-body provider migration is closed.
+
+| Closeout result | Value |
+|---|---:|
+| Route body `get_data_quality_monitor()` calls | 0 |
+| Route body `monitor_data_quality()` helper calls | 0 |
+| Retained provider backing `get_data_quality_monitor()` calls in route file | 1 |
+| Route handlers using `Depends(get_data_quality_monitor_provider)` | 7 |
+| Direct-call fallback resolver uses | 7 |
+| Focused tests | 7 passed |
+| OpenAPI paths | 500 |
+| Data-quality OpenAPI paths | 9 |
+| Dependency parameters leaked into OpenAPI | 0 |
+
+Remaining `get_data_quality_monitor` surface after route closeout:
+
+| Bucket | Files | Getter calls | Current decision |
+|---|---:|---:|---|
+| route | 1 | 1 | Retained provider backing getter, not route-body debt |
+| adapter_split | 8 | 8 | Next governance target: adapter constructor seam design / test-double decision |
+| service_adapter | 2 | 2 | Compatibility surface, defer until adapter seam design is explicit |
+| legacy_adapter | 2 | 2 | Compatibility surface, defer to owner-specific decision |
+| other | 1 | 1 | `market_data_adapter.py` compatibility surface |
+| service_wrapper | 1 | 2 | Retain singleton wrapper / backing API until consumers are migrated and verified |
+
 ## Next Gates
 
-- Review G2.192 data-quality route provider implementation package.
-- If accepted, merge PR `#345` and start G2.193 closeout / remaining candidate
+- Review G2.193 data-quality route provider closeout / remaining candidate
   refresh.
-- Do not start adapter constructor implementation from G2.192.
-- Do not migrate adapter constructors or delete singleton wrappers from G2.192.
+- If accepted, start G2.194 data-quality adapter constructor seam design /
+  test-double decision package.
+- Do not start adapter constructor implementation from G2.193.
+- Do not migrate adapter constructors or delete singleton wrappers from G2.193.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
   restoration, or other risk route provider migrations.
 

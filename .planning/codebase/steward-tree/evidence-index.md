@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T01:22:05+08:00`
-- Base HEAD checked: `b899a173909d3818370dddbf35b039832266bd1d`
+- Prepared at: `2026-05-28T01:52:33+08:00`
+- Base HEAD checked: `2b0c3ce373fba38bacd62eff5436822527dccda1`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -45,8 +45,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-adapter-cross-cutting-decision-2026-05-28.md` | G2.190 human-readable decision package | Accepted by PR `#343`; superseded for route authorization by G2.191 |
 | `.planning/codebase/generated/data-quality-route-provider-authorization-2026-05-28.json` | G2.191 data-quality route provider authorization evidence | Accepted by PR `#344`; superseded for implementation review by G2.192 |
 | `docs/reports/quality/backend-data-quality-route-provider-authorization-2026-05-28.md` | G2.191 human-readable authorization package | Accepted by PR `#344`; superseded for implementation review by G2.192 |
-| `.planning/codebase/generated/data-quality-route-provider-implementation-2026-05-28.json` | G2.192 data-quality route provider implementation evidence | Current for HEAD `b899a173909d3818370dddbf35b039832266bd1d`; review input until PR `#345` is accepted |
-| `docs/reports/quality/backend-data-quality-route-provider-implementation-2026-05-28.md` | G2.192 human-readable implementation package | Review input until PR `#345` is accepted |
+| `.planning/codebase/generated/data-quality-route-provider-implementation-2026-05-28.json` | G2.192 data-quality route provider implementation evidence | Accepted by PR `#345`; superseded for closeout / remaining candidate refresh by G2.193 |
+| `docs/reports/quality/backend-data-quality-route-provider-implementation-2026-05-28.md` | G2.192 human-readable implementation package | Accepted by PR `#345`; superseded for closeout / remaining candidate refresh by G2.193 |
+| `.planning/codebase/generated/data-quality-route-provider-closeout-refresh-2026-05-28.json` | G2.193 data-quality route provider closeout / refresh evidence | Current for HEAD `2b0c3ce373fba38bacd62eff5436822527dccda1`; review input until PR `#346` is accepted |
+| `docs/reports/quality/backend-data-quality-route-provider-closeout-refresh-2026-05-28.md` | G2.193 human-readable closeout / refresh report | Review input until PR `#346` is accepted |
 
 ## External State Inputs
 
@@ -62,7 +64,8 @@ state transition.
 | GitHub PR `#342` | `MERGED` | G2.189 stop-loss provider closeout / candidate refresh merged by commit `5565e2b0967958c406a4115dc840a9e90a0b2aab` |
 | GitHub PR `#343` | `MERGED` | G2.190 data-quality / adapter decision merged by commit `7154ffbb067dcddc52d80f15342961b51234ac09` |
 | GitHub PR `#344` | `MERGED` | G2.191 data-quality route provider authorization merged by commit `b899a173909d3818370dddbf35b039832266bd1d` |
-| `origin/wip/root-dirty-20260403` | `b899a173909d3818370dddbf35b039832266bd1d` | Base used for this implementation branch |
+| GitHub PR `#345` | `MERGED` | G2.192 data-quality route provider implementation merged by commit `2b0c3ce373fba38bacd62eff5436822527dccda1` |
+| `origin/wip/root-dirty-20260403` | `2b0c3ce373fba38bacd62eff5436822527dccda1` | Base used for this closeout / refresh branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

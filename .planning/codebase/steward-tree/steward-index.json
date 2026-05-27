@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T01:22:05+08:00",
+  "generated_at": "2026-05-28T01:52:33+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "b899a173909d3818370dddbf35b039832266bd1d",
-  "split_branch": "g2-192-data-quality-route-provider-implementation",
-  "scope": "path_limited_data_quality_route_provider_implementation",
-  "source_edit_authority": true,
+  "base_head": "2b0c3ce373fba38bacd62eff5436822527dccda1",
+  "split_branch": "g2-193-data-quality-route-provider-closeout-refresh",
+  "scope": "governance_only_data_quality_route_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -852,9 +852,17 @@
     {
       "id": "g2-192-data-quality-route-provider-implementation",
       "type": "implementation_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.191 data-quality route provider authorization",
+      "github_pr": {
+        "number": 345,
+        "url": "https://github.com/chengjon/mystocks/pull/345",
+        "state": "MERGED",
+        "merged_at": "2026-05-27T17:49:25Z",
+        "head_ref": "g2-192-data-quality-route-provider-implementation",
+        "merge_commit": "2b0c3ce373fba38bacd62eff5436822527dccda1"
+      },
       "source_edit_authority": true,
       "evidence": [
         ".planning/codebase/generated/data-quality-route-provider-implementation-2026-05-28.json",
@@ -900,10 +908,75 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "b899a173909d3818370dddbf35b039832266bd1d",
+        "current_head_checked": "2b0c3ce373fba38bacd62eff5436822527dccda1",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, merge and start G2.193 data-quality route provider closeout / remaining candidate refresh; do not start adapter implementation from G2.192."
+      "next_gate": "Superseded by G2.193 data-quality route provider closeout / remaining candidate refresh."
+    },
+    {
+      "id": "g2-193-data-quality-route-provider-closeout-refresh",
+      "type": "closeout_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.192 data-quality route provider implementation",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/data-quality-route-provider-closeout-refresh-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-route-provider-closeout-refresh-2026-05-28.md",
+        "governance/mainline/task-cards/pr-346.yaml"
+      ],
+      "closeout_result": {
+        "github_pr": {
+          "number": 345,
+          "url": "https://github.com/chengjon/mystocks/pull/345",
+          "state": "MERGED",
+          "merge_commit": "2b0c3ce373fba38bacd62eff5436822527dccda1"
+        },
+        "route_provider_surface": "closed_for_route_body_provider_migration",
+        "route_body_get_data_quality_monitor_calls": 0,
+        "route_body_monitor_data_quality_calls": 0,
+        "route_file_provider_backing_get_data_quality_monitor_calls": 1,
+        "depends_provider_params": 7,
+        "direct_call_fallbacks": 7,
+        "focused_tests": "7 passed",
+        "openapi_paths": 500,
+        "data_quality_paths": 9,
+        "dependency_params_leaked": 0
+      },
+      "candidate_refresh": {
+        "route_surface": "closed_for_route_body_provider_migration_retained_as_provider_backing_getter",
+        "remaining_buckets": {
+          "adapter_split": {
+            "files": 8,
+            "getter_calls": 8
+          },
+          "service_adapter": {
+            "files": 2,
+            "getter_calls": 2
+          },
+          "legacy_adapter": {
+            "files": 2,
+            "getter_calls": 2
+          },
+          "market_data_adapter_compatibility": {
+            "files": 1,
+            "getter_calls": 1
+          },
+          "service_wrapper": {
+            "files": 1,
+            "getter_calls": 2,
+            "monitor_helper_calls": 1
+          }
+        },
+        "next_recommended_governance_target": "data-quality-adapter-constructor-seam-design",
+        "next_recommended_work_item": "G2.194 data-quality adapter constructor seam design / test-double decision package",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-193"
+      },
+      "freshness": {
+        "current_head_checked": "2b0c3ce373fba38bacd62eff5436822527dccda1",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.194 data-quality adapter constructor seam design / test-double decision package; do not implement adapter changes from G2.193."
     },
     {
       "id": "core-batch2-reconciliation",

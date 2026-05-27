@@ -1,0 +1,119 @@
+version: "v0.2"
+
+task:
+  id: "pr-346"
+  title: "Close out data-quality route provider implementation"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-route-provider-closeout-refresh"
+  objective: "record PR #345 closeout and refresh remaining data-quality monitor surfaces before selecting the next governance gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only closeout and candidate refresh; no route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, or public API ownership changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-route-provider-closeout-refresh-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-route-provider-closeout-refresh-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-346.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "editing backend source"
+  - "editing tests"
+  - "adapter constructor implementation"
+  - "legacy adapter compatibility edits"
+  - "singleton wrapper deletion"
+  - "DataQualityMonitor internals"
+  - "creating OpenSpec proposals"
+  - "changing GitHub issue labels"
+
+acceptance:
+  checks:
+    - id: "focused-tests-observed"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_route_provider_regressions.py web/backend/tests/test_data_quality_mock_configuration.py tests/unit/contract/test_data_quality_router_runtime_import.py -q --tb=short --disable-warnings --no-cov"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-route-provider-closeout-refresh-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-346.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-data-quality-route-provider-closeout-refresh-2026-05-28.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-346.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 2b0c3ce373fba38bacd62eff5436822527dccda1 --head-sha HEAD --report /tmp/pr346-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "If G2.193 is misread as implementation authority, adapter source edits could start before seam design is approved."
+    - "If remaining surfaces are not separated, route closeout could be conflated with adapter constructor migration."
+  rollback_plan: "revert this PR to remove the governance-only closeout / refresh evidence and restore the previous steward tree next gate."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out data-quality route provider implementation and refresh remaining monitor surfaces"
+    modified_scope: "governance evidence, steward tree state, and PR #346 task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; adapter and singleton surfaces remain untouched"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if it misstates PR #345 closeout or authorizes source implementation"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T01:52:33+08:00"
+    approval_note: "Human maintainer approved continuing after PR #345 acceptance; this lane is governance-only closeout and remaining candidate refresh."
+    secondary_approved: true

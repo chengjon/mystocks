@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T01:22:05+08:00`
-- Base HEAD checked: `b899a173909d3818370dddbf35b039832266bd1d`
+- Prepared at: `2026-05-28T01:52:33+08:00`
+- Base HEAD checked: `2b0c3ce373fba38bacd62eff5436822527dccda1`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.192 data-quality route provider implementation | G/#79 service lifecycle DI | PR `#344` merged at `b899a173909d3818370dddbf35b039832266bd1d`; G2.192 implements the authorized route-file provider injection with 7 focused tests green and OpenAPI dependency leak count `0` | If accepted, merge PR `#345` and start G2.193 data-quality route provider closeout / remaining candidate refresh |
+| P0 | Review G2.193 data-quality route provider closeout / remaining candidate refresh | G/#79 service lifecycle DI | PR `#345` merged at `2b0c3ce373fba38bacd62eff5436822527dccda1`; route-body migration is closed with 7 focused tests green and OpenAPI dependency leak count `0` | If accepted, start G2.194 data-quality adapter constructor seam design / test-double decision package |
+| P0 | Preserve G2.192 data-quality route provider implementation | G/#79 service lifecycle DI | PR `#345` merged; route body `get_data_quality_monitor()` and `monitor_data_quality()` calls are both `0` | Do not start adapter constructor implementation from G2.192 or G2.193 |
 | P0 | Preserve G2.191 data-quality route provider authorization | G/#79 service lifecycle DI | PR `#344` merged; authorized only `web/backend/app/api/data_quality.py` plus focused tests for G2.192 | Do not expand into adapters, singleton wrapper, `DataQualityMonitor` internals, or data-source factory behavior |
 | P0 | Preserve G2.190 data-quality / adapter cross-cutting decision | G/#79 service lifecycle DI | PR `#343` merged; `get_data_quality_monitor` is `CRITICAL` with 20 direct callers across route, adapter, legacy adapter, and wrapper surfaces | Do not batch route, adapter constructor, legacy adapter, and singleton wrapper migration together |
 | P0 | Preserve G2.189 risk stop-loss provider closeout / candidate refresh | G/#79 service lifecycle DI | PR `#342` merged; stop-loss pair is closed for route-body provider migration and retained as provider backing getters | Do not reopen stop-loss or start data-quality source implementation from G2.189 |
@@ -34,9 +35,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.192 stay limited to `web/backend/app/api/data_quality.py` and focused route/provider tests?
-- Does the TDD red/green evidence prove the provider migration rather than only documenting the target state?
-- Does the OpenAPI smoke prove monitor provider parameters do not leak into the schema?
-- Are adapter constructor migration, legacy adapter compatibility, singleton wrapper deletion, and `DataQualityMonitor` internals untouched?
-- Is the next gate G2.193 governance closeout / remaining candidate refresh only?
+- Does G2.193 correctly mark the data-quality route-body provider migration closed after PR `#345`?
+- Does the remaining surface refresh keep adapter constructors, legacy adapters, singleton wrapper, and `DataQualityMonitor` internals out of scope?
+- Is G2.194 a design / test-double decision package rather than an adapter implementation lane?
+- Does the retained route provider backing getter stay distinct from route-body singleton calls?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
