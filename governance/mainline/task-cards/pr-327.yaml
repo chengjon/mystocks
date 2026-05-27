@@ -1,0 +1,122 @@
+version: "v0.2"
+
+task:
+  id: "pr-327"
+  title: "Wrap legacy Strategy adapter direct import path"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-strategy-adapter-wrapper-implementation"
+  objective: "convert the legacy Strategy data_adapters direct import path into a thin compatibility wrapper around the canonical adapter implementation"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Path-limited service compatibility wrapper; no runtime route, page, public API, OpenAPI exposure, PM2 workflow, or product entrypoint changes are introduced"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/strategy-adapter-wrapper-implementation-2026-05-27.json"
+    - "docs/reports/quality/backend-strategy-adapter-wrapper-implementation-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-327.yaml"
+    - "web/backend/app/services/data_adapters/strategy.py"
+    - "web/backend/tests/test_adapter_mock_fallback_controls.py"
+  forbidden_paths:
+    - "web/backend/app/services/adapters/strategy_adapter.py"
+    - "web/backend/app/services/data_adapter.py"
+    - "web/backend/app/services/data_source_factory.py"
+    - "web/backend/app/services/data_source_factory/**"
+    - "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+    - "web/backend/app/tasks/backtest_tasks.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 326 --repo chengjon/mystocks --json number,state,mergedAt,title,url"
+      required: true
+    - id: "adapter-fallback-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_adapter_mock_fallback_controls.py -q --no-cov --tb=short"
+      required: true
+    - id: "logging-noise-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "strategy-route-backtest-sanity"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/services/data_adapters/strategy.py web/backend/tests/test_adapter_mock_fallback_controls.py"
+      required: true
+    - id: "black-check"
+      command: "black --check web/backend/app/services/data_adapters/strategy.py web/backend/tests/test_adapter_mock_fallback_controls.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-strategy-adapter-wrapper-implementation-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/strategy-adapter-wrapper-implementation-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-327.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit canonical strategy_adapter.py."
+  - "Do not edit data_adapter.py or data_source_factory.py."
+  - "Do not remove or edit Strategy route provider fallback."
+  - "Do not reopen the backtest task resolver lane."
+  - "Do not delete, privatize, rename, or change get_strategy_service()."
+  - "Do not change route/API behavior, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If canonical strategy_adapter.py is edited, this wrapper conversion could expand into broader Strategy adapter behavior change."
+    - "If public get_strategy_service is touched, this lane could accidentally enter the broader CRITICAL getter retirement problem."
+    - "If the legacy path is removed instead of wrapped, direct imports of app.services.data_adapters.strategy could break."
+  rollback_plan: "revert this PR to restore the previous duplicate legacy implementation and remove the identity test plus G2.174 governance artifacts"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "convert the legacy Strategy data_adapters direct import path into a canonical compatibility wrapper"
+    modified_scope: "legacy Strategy data_adapters wrapper, focused adapter fallback test, steward tree, implementation report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "legacy direct imports are preserved and now resolve to the canonical StrategyDataSourceAdapter class"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if TDD red/green evidence, adapter fallback tests, logging tests, strategy route/backtest sanity tests, ruff, black, OpenAPI smoke, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-27T13:02:04+08:00"
+    approval_note: "User approved continuing after PR #326 design package; G2.174 is limited to the authorized legacy Strategy adapter wrapper implementation."
+    secondary_approved: false

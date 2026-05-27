@@ -3251,13 +3251,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, adapter implementation authorization,
 │   │              or public getter retirement is performed here
 │   ├── G2.173 Strategy adapter/provider design
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#326`
 │   │   ├── Evidence:
 │   │   │          `backend-strategy-adapter-provider-design-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `strategy-adapter-provider-design-2026-05-27.json`
 │   │   ├── Parent: G2.172 accepted and merged by PR `#325`
 │   │   ├── Evidence HEAD: `b867716f77f8f509d1a7ec49c76346422bfd66ac`
+│   │   ├── Merge HEAD: `1fca532a056549f1869773c7dcd9ae3be5170425`
 │   │   ├── Ownership decision: canonical implementation is
 │   │   │          `web/backend/app/services/adapters/strategy_adapter.py`;
 │   │   │          `web/backend/app/services/data_adapters/strategy.py` is
@@ -3287,9 +3288,40 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenSpec, config, script, compatibility deletion,
 │   │              issue-label change, or source implementation is performed
 │   │              here
-│   └── Next gate: review G2.173; if accepted, start G2.174 as a
-│                  path-limited legacy wrapper implementation for
-│                  `data_adapters/strategy.py`
+│   ├── G2.174 Strategy legacy adapter wrapper implementation
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-strategy-adapter-wrapper-implementation-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `strategy-adapter-wrapper-implementation-2026-05-27.json`
+│   │   ├── Parent: G2.173 accepted and merged by PR `#326`
+│   │   ├── Base HEAD: `1fca532a056549f1869773c7dcd9ae3be5170425`
+│   │   ├── Implementation: `web/backend/app/services/data_adapters/strategy.py`
+│   │   │          is now a thin compatibility wrapper that re-exports
+│   │   │          canonical `StrategyDataSourceAdapter` from
+│   │   │          `app.services.adapters.strategy_adapter`
+│   │   ├── Test guard: `test_adapter_mock_fallback_controls.py` now asserts
+│   │   │          legacy direct import class identity matches the canonical
+│   │   │          adapter class
+│   │   ├── GitNexus evidence: legacy data-adapters file impact LOW with
+│   │   │          `1` direct test import and `0` affected processes; focused
+│   │   │          test file impact LOW with `0` upstream dependents
+│   │   ├── TDD evidence: identity test failed with
+│   │   │          `assert StrategyAdapter is CanonicalStrategyAdapter`, then
+│   │   │          passed after wrapper conversion
+│   │   ├── Verification: adapter fallback tests `7 passed`, logging
+│   │   │          regression tests `10 passed`, strategy route/backtest sanity
+│   │   │          tests `8 passed`, ruff/black passed, and OpenAPI smoke
+│   │   │          `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   └── Boundary: canonical `strategy_adapter.py`, factory, route
+│   │              provider, backtest resolver, public `get_strategy_service`,
+│   │              route/API behavior, OpenAPI exposure, frontend, PM2,
+│   │              OpenSpec, config, script, compatibility deletion, and
+│   │              issue-label state remain unchanged
+│   └── Next gate: review G2.174; if accepted, close the wrapper lane and
+│                  refresh remaining Strategy service getter residuals before
+│                  selecting the next Strategy or high-risk getter track
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

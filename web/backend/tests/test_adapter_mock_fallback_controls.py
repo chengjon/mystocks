@@ -4,8 +4,13 @@ from pathlib import Path
 
 import pytest
 
+from app.services.adapters.strategy_adapter import StrategyDataSourceAdapter as CanonicalStrategyAdapter
 from app.services.data_adapters.strategy import StrategyDataSourceAdapter as StrategyAdapter
 from app.services.data_adapters.watchlist import WatchlistDataSourceAdapter as WatchlistAdapter
+
+
+def test_legacy_strategy_adapter_import_reexports_canonical_class():
+    assert StrategyAdapter is CanonicalStrategyAdapter
 
 
 @pytest.mark.asyncio

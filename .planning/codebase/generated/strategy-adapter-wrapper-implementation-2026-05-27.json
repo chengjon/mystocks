@@ -1,0 +1,79 @@
+{
+  "work_item": "G2.174",
+  "title": "Strategy legacy adapter wrapper implementation",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T13:02:04+08:00",
+  "base_head": "1fca532a056549f1869773c7dcd9ae3be5170425",
+  "parent": {
+    "work_item": "G2.173",
+    "pr": 326,
+    "merge_commit": "1fca532a056549f1869773c7dcd9ae3be5170425",
+    "title": "docs(governance): design strategy adapter wrapper lane"
+  },
+  "scope": {
+    "allowed_paths": [
+      "web/backend/app/services/data_adapters/strategy.py",
+      "web/backend/tests/test_adapter_mock_fallback_controls.py",
+      "docs/reports/quality/backend-strategy-adapter-wrapper-implementation-2026-05-27.md",
+      ".planning/codebase/generated/strategy-adapter-wrapper-implementation-2026-05-27.json",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      "governance/mainline/task-cards/pr-327.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/services/adapters/strategy_adapter.py",
+      "web/backend/app/services/data_adapter.py",
+      "web/backend/app/services/data_source_factory.py",
+      "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+      "web/backend/app/tasks/backtest_tasks.py"
+    ]
+  },
+  "implementation": {
+    "legacy_path": "web/backend/app/services/data_adapters/strategy.py",
+    "canonical_path": "web/backend/app/services/adapters/strategy_adapter.py",
+    "change": "legacy path reexports canonical StrategyDataSourceAdapter as a compatibility wrapper",
+    "public_getter_changed": false,
+    "route_behavior_changed": false,
+    "openapi_exposure_changed": false,
+    "compatibility_deleted": false
+  },
+  "gitnexus": {
+    "legacy_file_impact": {
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct": 1,
+      "processes_affected": 0
+    },
+    "test_file_impact": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    }
+  },
+  "tdd": {
+    "red": "test_legacy_strategy_adapter_import_reexports_canonical_class failed with assert StrategyAdapter is CanonicalStrategyAdapter",
+    "green": "same test passed after wrapper conversion"
+  },
+  "verification": {
+    "adapter_fallback_tests": "7 passed",
+    "logging_noise_tests": "10 passed",
+    "strategy_route_backtest_tests": "8 passed",
+    "ruff": "passed",
+    "black_check": "passed",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0
+    }
+  },
+  "static_guard": {
+    "legacy_wrapper_lines": 9,
+    "legacy_has_get_strategy_service": false,
+    "legacy_defines_strategy_data_source_adapter_class": false,
+    "legacy_reexports_canonical_class": true,
+    "identity_test_present": true
+  },
+  "next_gate": "review G2.174 implementation package; if accepted, close out and refresh remaining Strategy getter residuals"
+}
