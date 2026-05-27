@@ -3075,13 +3075,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              `get_strategy_service()` fallback compatibility
 │   ├── G2.167 Service getter inventory refresh after Strategy route
 │   │          provider
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#320`
 │   │   ├── Evidence:
 │   │   │          `backend-service-lifecycle-candidate-refresh-after-strategy-route-provider-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `service-lifecycle-candidate-refresh-after-strategy-route-provider-2026-05-27.json`
 │   │   ├── Parent: G2.166 accepted and merged by PR `#319`
 │   │   ├── Evidence HEAD: `03cff1a688337a170801add2dea52050b9bbea44`
+│   │   ├── Merge commit: `8f3cc0c15ec80b5e9acdbdf83f407abee44a6bd2`
 │   │   ├── Strategy route closure: route-handler body
 │   │   │          `get_strategy_service()` calls remain `0`; route
 │   │   │          provider fallback call is `1`; and
@@ -3104,10 +3105,35 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              PM2, OpenSpec, config, script, compatibility deletion,
 │   │              issue-label change, or implementation authorization
 │   │              is performed here
-│   └── Next gate: review G2.167; if accepted, start G2.168 as a
-│                  decision-only Strategy residual split package for
-│                  adapter/provider duplication vs backtest task
-│                  resolution
+│   ├── G2.168 Strategy service residual split decision
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-strategy-service-residual-split-decision-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `strategy-service-residual-split-decision-2026-05-27.json`
+│   │   ├── Parent: G2.167 accepted and merged by PR `#320`
+│   │   ├── Evidence HEAD: `8f3cc0c15ec80b5e9acdbdf83f407abee44a6bd2`
+│   │   ├── Residual split: route provider fallback is intentionally
+│   │   │          retained; `backtest_tasks.py::_resolve_backtest_data_source`
+│   │   │          is selected as the next authorization candidate; and the
+│   │   │          two Strategy adapter `_get_strategy_service` helpers are
+│   │   │          deferred to a separate adapter design track
+│   │   ├── GitNexus evidence: `get_strategy_service` remains CRITICAL
+│   │   │          `13/6/0`, while `_resolve_backtest_data_source` is LOW
+│   │   │          `1/1/0`; both adapter helpers have two incoming callers
+│   │   │          each and still call public `get_strategy_service()`
+│   │   ├── Verification: strategy route provider focused test `5 passed`,
+│   │   │          backtest task regressions `2 passed`, adapter mock fallback
+│   │   │          controls `6 passed`, and OpenAPI smoke `routes=548`,
+│   │   │          `paths=500`, `duplicate_operation_ids=0`
+│   │   └── Boundary: decision-only; no backend source/test edit,
+│   │              route/API behavior, OpenAPI exposure, frontend, PM2,
+│   │              OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, or implementation authorization is
+│   │              performed here
+│   └── Next gate: review G2.168; if accepted, start G2.169 as an
+│                  authorization-only package for
+│                  `backtest_tasks.py::_resolve_backtest_data_source`
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
