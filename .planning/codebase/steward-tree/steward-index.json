@@ -1,10 +1,10 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T21:33:48+08:00",
+  "generated_at": "2026-05-27T22:01:42+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba",
-  "split_branch": "g2-185-route-dependency-provider-governance-decision",
+  "base_head": "720248521d705af067d0a2600710444e439d7605",
+  "split_branch": "g2-186-remaining-getter-inventory-refresh",
   "scope": "governance_decision_package",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
@@ -366,9 +366,15 @@
     {
       "id": "g2-185-route-dependency-provider-governance-decision",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.184 next non-Strategy service getter candidate decision",
+      "github_pr": {
+        "number": 338,
+        "url": "https://github.com/chengjon/mystocks/pull/338",
+        "state": "MERGED",
+        "merge_commit": "720248521d705af067d0a2600710444e439d7605"
+      },
       "source_edit_authority": false,
       "evidence": [
         ".planning/codebase/generated/route-dependency-provider-governance-decision-2026-05-27.json",
@@ -410,7 +416,78 @@
         "current_head_checked": "b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.186 service lifecycle remaining getter inventory refresh after provider governance. Do not start a backend source lane from G2.185."
+      "next_gate": "Superseded by G2.186 remaining getter inventory refresh."
+    },
+    {
+      "id": "g2-186-remaining-getter-inventory-refresh",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.185 route dependency/provider governance decision",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/service-lifecycle-remaining-getter-inventory-refresh-2026-05-27.json",
+        "docs/reports/quality/backend-service-lifecycle-remaining-getter-inventory-refresh-2026-05-27.md",
+        "governance/mainline/task-cards/pr-339.yaml"
+      ],
+      "inventory": {
+        "scan_scope": [
+          "web/backend/app/api",
+          "web/backend/app/services"
+        ],
+        "scanned_files": 371,
+        "direct_getter_names_after_exclusion": 111,
+        "direct_getter_calls_after_exclusion": 296,
+        "bucket_totals": {
+          "infra_control_plane_session_accessors": {
+            "names": 18,
+            "calls": 78
+          },
+          "factory_adapter_helper_root_facade": {
+            "names": 27,
+            "calls": 101
+          },
+          "manual_review": {
+            "names": 44,
+            "calls": 50
+          },
+          "cache_messaging_accessors": {
+            "names": 3,
+            "calls": 12
+          },
+          "realtime_streaming_track": {
+            "names": 10,
+            "calls": 12
+          },
+          "service_singleton_review": {
+            "names": 10,
+            "calls": 43
+          }
+        },
+        "service_singleton_review_names": [
+          "get_data_quality_monitor",
+          "get_integrated_services",
+          "get_unified_data_service",
+          "get_prewarming_strategy",
+          "get_data_service",
+          "get_execution_tracking_evidence_service",
+          "get_market_data_service_v2",
+          "get_stop_loss_execution_service",
+          "get_stop_loss_history_service",
+          "get_tdx_service"
+        ]
+      },
+      "decision": {
+        "classification": "inventory-refresh-complete-no-source-lane",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-186",
+        "selected_next_governance_target": "risk-stop-loss-route-service-provider-authorization",
+        "recommended_next_work_item": "G2.187 risk stop-loss route service provider authorization package"
+      },
+      "freshness": {
+        "current_head_checked": "720248521d705af067d0a2600710444e439d7605",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.187 risk stop-loss route service provider authorization package. Do not start a backend source lane from G2.186."
     },
     {
       "id": "core-batch2-reconciliation",

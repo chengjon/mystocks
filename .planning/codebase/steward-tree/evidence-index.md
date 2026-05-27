@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-27T21:33:48+08:00`
-- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
+- Prepared at: `2026-05-27T22:01:42+08:00`
+- Base HEAD checked: `720248521d705af067d0a2600710444e439d7605`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -31,8 +31,10 @@ state transition.
 | `docs/reports/quality/backend-strategy-getter-remaining-residual-decision-2026-05-27.md` | G2.183 human-readable remaining-residual decision package | Accepted by PR `#336`; superseded for next-gate selection by G2.184 |
 | `.planning/codebase/generated/next-nonstrategy-service-getter-candidate-decision-2026-05-27.json` | G2.184 next non-Strategy service getter candidate decision evidence | Current for HEAD `d454193fdae08ad875c423e0b5aa959d79bedc67`; stale if HEAD changes |
 | `docs/reports/quality/backend-next-nonstrategy-service-getter-candidate-decision-2026-05-27.md` | G2.184 human-readable next-candidate decision package | Accepted by PR `#337`; superseded for provider classification by G2.185 |
-| `.planning/codebase/generated/route-dependency-provider-governance-decision-2026-05-27.json` | G2.185 route dependency/provider governance decision evidence | Current for HEAD `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`; stale if HEAD changes |
-| `docs/reports/quality/backend-route-dependency-provider-governance-decision-2026-05-27.md` | G2.185 human-readable provider-governance decision package | Review input until accepted |
+| `.planning/codebase/generated/route-dependency-provider-governance-decision-2026-05-27.json` | G2.185 route dependency/provider governance decision evidence | Current for HEAD `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`; accepted by PR `#338` |
+| `docs/reports/quality/backend-route-dependency-provider-governance-decision-2026-05-27.md` | G2.185 human-readable provider-governance decision package | Accepted by PR `#338`; superseded for remaining getter queue refresh by G2.186 |
+| `.planning/codebase/generated/service-lifecycle-remaining-getter-inventory-refresh-2026-05-27.json` | G2.186 remaining getter inventory refresh evidence | Current for HEAD `720248521d705af067d0a2600710444e439d7605`; stale if HEAD changes |
+| `docs/reports/quality/backend-service-lifecycle-remaining-getter-inventory-refresh-2026-05-27.md` | G2.186 human-readable inventory refresh decision package | Review input until accepted |
 
 ## External State Inputs
 
@@ -41,7 +43,8 @@ state transition.
 | GitHub PR `#331` | `MERGED` | G2.178 source implementation lane closed by merge commit `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` |
 | GitHub PR `#336` | `MERGED` | G2.183 remaining Strategy getter residual closeout merged by commit `d454193fdae08ad875c423e0b5aa959d79bedc67` |
 | GitHub PR `#337` | `MERGED` | G2.184 next non-Strategy candidate decision merged by commit `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` |
-| `origin/wip/root-dirty-20260403` | `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba` | Base used for this decision branch |
+| GitHub PR `#338` | `MERGED` | G2.185 provider governance decision merged by commit `720248521d705af067d0a2600710444e439d7605` |
+| `origin/wip/root-dirty-20260403` | `720248521d705af067d0a2600710444e439d7605` | Base used for this decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-05-27T21:33:48+08:00`
-- Base HEAD checked: `b54e7d043720a8c8bc67ad96f4f7eaad0b23ceba`
+- Prepared at: `2026-05-27T22:01:42+08:00`
+- Base HEAD checked: `720248521d705af067d0a2600710444e439d7605`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -21,7 +21,7 @@ exact verification output.
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
 | Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, and closeout pattern across multiple services | Continue with path-limited source lanes only after authorization |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184 merged by PR `#337`; G2.185 now reviews active FastAPI provider classification before the next inventory refresh |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184 merged by PR `#337`; G2.185 merged by PR `#338`; G2.186 refreshes remaining getter inventory after provider governance and recommends G2.187 stop-loss route service authorization |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Closeout Rule
