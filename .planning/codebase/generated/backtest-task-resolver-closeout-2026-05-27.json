@@ -1,0 +1,75 @@
+{
+  "work_item": "G2.171",
+  "artifact_type": "closeout_package",
+  "status": "ready_for_review",
+  "created_at": "2026-05-27T11:25:00+08:00",
+  "current_head": "d465e41950c2f6fe70ee9c923da3cc55c09212c3",
+  "base_branch": "wip/root-dirty-20260403",
+  "parent": {
+    "work_item": "G2.170",
+    "pr": 323,
+    "state": "MERGED",
+    "merge_commit": "d465e41950c2f6fe70ee9c923da3cc55c09212c3",
+    "title": "refactor(backend): inject backtest task resolver provider"
+  },
+  "scope": {
+    "type": "governance_only_closeout",
+    "source_files_changed": [],
+    "test_files_changed": [],
+    "governance_files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/backtest-task-resolver-closeout-2026-05-27.json",
+      "docs/reports/quality/backend-backtest-task-resolver-closeout-2026-05-27.md",
+      "governance/mainline/task-cards/pr-324.yaml"
+    ]
+  },
+  "post_merge_static_scan": {
+    "helper_symbol": "_get_strategy_data_source",
+    "helper_lines": [18, 23],
+    "resolver_symbol": "_resolve_backtest_data_source",
+    "resolver_lines": [24, 38],
+    "run_task_symbol": "run_backtest_task",
+    "run_task_lines": [39, 132],
+    "resolver_direct_getter_mentions": 0,
+    "resolver_helper_mentions": 1,
+    "helper_getter_mentions": 2,
+    "run_task_resolver_mentions": 1,
+    "provider_test_present": true,
+    "unsupported_mode_pytest_raises": true
+  },
+  "verification": {
+    "parent_pr_state": "MERGED",
+    "head_matches_remote": true,
+    "backtest_regressions": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short",
+      "result": "3 passed in 3.02s"
+    },
+    "strategy_route_provider_regressions": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py -q --no-cov --tb=short",
+      "result": "5 passed in 4.46s"
+    },
+    "ruff_black": {
+      "command": "ruff check web/backend/app/tasks/backtest_tasks.py web/backend/tests/test_backtest_tasks_regressions.py && black --check web/backend/app/tasks/backtest_tasks.py web/backend/tests/test_backtest_tasks_regressions.py",
+      "result": "All checks passed; 2 files would be left unchanged"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "total_warnings_captured": 121,
+      "env_note": "minimal non-secret placeholder env used for required import gate"
+    }
+  },
+  "closeout_decision": {
+    "g2_170_closed": true,
+    "closed_scope": "backtest task resolver provider seam only",
+    "not_closed": [
+      "Strategy route provider fallback retention",
+      "Strategy adapter/provider duplication",
+      "public get_strategy_service compatibility surface",
+      "broad get_strategy_service retirement"
+    ]
+  },
+  "next_gate": "Create a new decision-only or authorization-only packet before any additional Strategy service getter source implementation."
+}
