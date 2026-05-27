@@ -1,0 +1,90 @@
+{
+  "work_item": "G2.176",
+  "title": "Strategy residual refresh decision",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T13:41:32+08:00",
+  "current_head": "2718dd07ce10dbe94937ed0bb758956677b3dce4",
+  "parent": {
+    "work_item": "G2.175",
+    "pr": 328,
+    "state": "MERGED",
+    "merged_at": "2026-05-27T05:32:27Z",
+    "merge_commit": "2718dd07ce10dbe94937ed0bb758956677b3dce4",
+    "title": "docs(governance): close strategy adapter wrapper lane"
+  },
+  "scope": {
+    "type": "decision-package",
+    "source_changes": false,
+    "test_changes": false,
+    "route_behavior_changes": false,
+    "openapi_exposure_changes": false,
+    "implementation_authorized": false
+  },
+  "residual_scan": {
+    "production_py_get_strategy_service_hits": 19,
+    "files": {
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py": 6,
+      "web/backend/app/tasks/backtest_tasks.py": 2,
+      "web/backend/app/services/adapters/strategy_adapter.py": 10,
+      "web/backend/app/services/strategy_service.py": 1
+    },
+    "classifications": {
+      "route_provider_fallback": 6,
+      "closed_backtest_helper": 2,
+      "canonical_adapter_provider": 10,
+      "public_getter_definition": 1,
+      "legacy_data_adapters_strategy": 0
+    },
+    "legacy_wrapper": {
+      "lines": 9,
+      "reexports_canonical": true,
+      "has_get_strategy_service": false,
+      "defines_strategy_data_source_adapter_class": false
+    }
+  },
+  "gitnexus": {
+    "analyze": {
+      "nodes": 62938,
+      "edges": 146073,
+      "clusters": 3285,
+      "flows": 300
+    },
+    "canonical_adapter_file_impact": {
+      "risk": "LOW",
+      "impacted_count": 5,
+      "direct": 2,
+      "processes_affected": 0
+    },
+    "legacy_wrapper_file_impact": {
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct": 1,
+      "processes_affected": 0
+    },
+    "public_getter_symbol_impact": {
+      "risk": "CRITICAL",
+      "impacted_count": 13,
+      "direct": 6,
+      "processes_affected": 0,
+      "modules_affected": 5
+    },
+    "tooling_note": "symbol-level impact still reports stale legacy data_adapters/strategy.py helper symbols after fresh analyze; current-head static scan is the ownership source of truth for the legacy wrapper state"
+  },
+  "verification": {
+    "adapter_fallback_tests": "7 passed",
+    "strategy_route_backtest_tests": "8 passed",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0
+    }
+  },
+  "decision": {
+    "selected_next_track": "canonical Strategy adapter provider seam",
+    "next_work_item": "G2.177",
+    "next_work_item_type": "design-authorization-package",
+    "source_implementation_authorized_now": false
+  },
+  "next_gate": "review G2.176; if accepted, open G2.177 as a narrow Strategy canonical adapter provider design/authorization package"
+}

@@ -1,0 +1,113 @@
+version: "v0.2"
+
+task:
+  id: "pr-329"
+  title: "Refresh Strategy getter residuals after wrapper closeout"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-strategy-residual-refresh-decision"
+  objective: "refresh Strategy service getter residual ownership after the legacy adapter wrapper closeout and select the next design track"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-strategy-residual-refresh-decision"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Decision package only; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/strategy-residual-refresh-decision-2026-05-27.json"
+    - "docs/reports/quality/backend-strategy-residual-refresh-decision-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-329.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 328 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,title,url"
+      required: true
+    - id: "residual-scan"
+      command: "rg --glob '*.py' 'get_strategy_service' web/backend/app"
+      required: true
+    - id: "focused-adapter-fallback-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_adapter_mock_fallback_controls.py -q --no-cov --tb=short"
+      required: true
+    - id: "focused-strategy-route-backtest-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-strategy-residual-refresh-decision-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/strategy-residual-refresh-decision-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-329.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this decision package."
+  - "Do not authorize immediate Strategy source implementation."
+  - "Do not edit canonical strategy_adapter.py."
+  - "Do not edit the legacy wrapper implementation from PR #327."
+  - "Do not edit data_adapter.py or data_source_factory.py."
+  - "Do not remove or edit Strategy route provider fallback."
+  - "Do not reopen the backtest task resolver lane."
+  - "Do not delete, privatize, rename, or change get_strategy_service()."
+  - "Do not change route/API behavior, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this decision package is treated as source authorization, canonical strategy_adapter.py could be changed before G2.177 design review."
+    - "If stale symbol-level graph output is used without the current static scan, removed legacy helper symbols could be misclassified as active residuals."
+  rollback_plan: "revert this decision PR to remove only the decision report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "refresh Strategy getter residual ownership after the wrapper closeout and select canonical strategy_adapter.py as the next design track"
+    modified_scope: "steward tree, decision report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, residual scan, focused verification, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T13:41:32+08:00"
+    approval_note: "Decision package after PR #328 closeout; selects only the next design/authorization track and does not authorize source implementation."
+    secondary_approved: false
