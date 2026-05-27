@@ -1,0 +1,106 @@
+{
+  "artifact": "strategy-service-residual-split-decision-2026-05-27",
+  "task_id": "G2.168",
+  "status": "ready_for_review",
+  "scope": "decision_only_strategy_residual_split",
+  "created_at": "2026-05-27T09:47:49+08:00",
+  "parent": {
+    "task_id": "G2.167",
+    "pr": 320,
+    "merge_commit": "8f3cc0c15ec80b5e9acdbdf83f407abee44a6bd2",
+    "title": "docs(governance): refresh service getter inventory after strategy route provider"
+  },
+  "current_head": "8f3cc0c15ec80b5e9acdbdf83f407abee44a6bd2",
+  "residual_map": [
+    {
+      "track": "route_provider_fallback",
+      "file": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+      "line": 34,
+      "function": "get_strategy_service_dependency",
+      "disposition": "retain"
+    },
+    {
+      "track": "strategy_adapter_provider_duplication",
+      "file": "web/backend/app/services/adapters/strategy_adapter.py",
+      "line": 45,
+      "function": "_get_strategy_service",
+      "disposition": "defer_to_adapter_design_track"
+    },
+    {
+      "track": "strategy_adapter_provider_duplication",
+      "file": "web/backend/app/services/data_adapters/strategy.py",
+      "line": 42,
+      "function": "_get_strategy_service",
+      "disposition": "defer_to_adapter_design_track"
+    },
+    {
+      "track": "backtest_task_data_source_resolution",
+      "file": "web/backend/app/tasks/backtest_tasks.py",
+      "line": 31,
+      "function": "_resolve_backtest_data_source",
+      "disposition": "next_authorization_candidate"
+    }
+  ],
+  "route_static_status": {
+    "strategy_route_handler_body_calls": 0,
+    "route_provider_fallback_calls": 1,
+    "depends_get_strategy_service_dependency_sites": 3
+  },
+  "gitnexus": {
+    "get_strategy_service": {
+      "risk": "CRITICAL",
+      "impacted": 13,
+      "direct": 6,
+      "processes": 0
+    },
+    "_resolve_backtest_data_source": {
+      "risk": "LOW",
+      "impacted": 1,
+      "direct": 1,
+      "processes": 0
+    },
+    "adapter_helper_contexts": [
+      {
+        "file": "web/backend/app/services/adapters/strategy_adapter.py",
+        "symbol": "_get_strategy_service",
+        "incoming_callers": [
+          "_fetch_strategy_data",
+          "health_check"
+        ],
+        "outgoing": "get_strategy_service"
+      },
+      {
+        "file": "web/backend/app/services/data_adapters/strategy.py",
+        "symbol": "_get_strategy_service",
+        "incoming_callers": [
+          "_fetch_strategy_data",
+          "health_check"
+        ],
+        "outgoing": "get_strategy_service"
+      }
+    ]
+  },
+  "verification": {
+    "focused_tests": {
+      "web/backend/tests/test_strategy_management_route_provider.py": "5 passed in 4.07s",
+      "web/backend/tests/test_backtest_tasks_regressions.py": "2 passed in 2.33s",
+      "web/backend/tests/test_adapter_mock_fallback_controls.py": "6 passed in 0.23s"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "total_warnings_captured": 121
+    }
+  },
+  "decision": {
+    "implementation_authorized": false,
+    "tracks": {
+      "route_provider_fallback": "retain",
+      "backtest_task_data_source_resolution": "next_authorization_candidate",
+      "strategy_adapter_provider_duplication": "defer_to_separate_adapter_design_track"
+    },
+    "next_gate": "G2.169 authorization-only package for web/backend/app/tasks/backtest_tasks.py::_resolve_backtest_data_source"
+  }
+}
