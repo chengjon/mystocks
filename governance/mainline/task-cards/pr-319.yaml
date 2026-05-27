@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-319"
+  title: "Inject Strategy route service provider"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-strategy-route-provider-injection"
+  objective: "replace direct Strategy route-handler get_strategy_service calls with a route-local provider injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-strategy-route-provider-injection"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorized narrow route-provider injection under G2.165; public route contract, OpenAPI exposure, PM2 workflow, frontend behavior, and service singleton implementation are unchanged"
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+    - "web/backend/tests/test_strategy_management_route_provider.py"
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/strategy-service-route-provider-injection-implementation-2026-05-27.json"
+    - "docs/reports/quality/backend-strategy-service-route-provider-injection-implementation-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-319.yaml"
+  forbidden_paths:
+    - "web/backend/app/services/strategy_service.py"
+    - "web/backend/app/services/data_adapters/strategy.py"
+    - "web/backend/app/services/adapters/strategy_adapter.py"
+    - "web/backend/app/tasks/backtest_tasks.py"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 318 --json number,state,mergedAt,mergeCommit,url,title"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus impact for get_strategy_service and route handlers before source edits"
+      required: true
+    - id: "tdd-red"
+      command: "focused strategy route provider tests fail before implementation"
+      required: true
+    - id: "tdd-green"
+      command: "focused strategy route provider tests pass after implementation"
+      required: true
+    - id: "static-closure"
+      command: "route-handler body get_strategy_service calls move from 3 to 0, preserving provider fallback call"
+      required: true
+    - id: "strategy-route-docs"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_v1_strategy_management_endpoints_have_success_examples_and_parameter_docs -q --no-cov"
+      required: true
+    - id: "backtest-task-regressions"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/strategy_management/_strategy_execution_router.py web/backend/tests/test_strategy_management_route_provider.py"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.openapi() smoke with non-secret minimal env; record route count, path count, duplicate operation IDs, and warnings"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-strategy-service-route-provider-injection-implementation-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/strategy-service-route-provider-injection-implementation-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-319.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check -- web/backend/app/api/strategy_management/_strategy_execution_router.py web/backend/tests/test_strategy_management_route_provider.py .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md .planning/codebase/generated/strategy-service-route-provider-injection-implementation-2026-05-27.json docs/reports/quality/backend-strategy-service-route-provider-injection-implementation-2026-05-27.md governance/mainline/task-cards/pr-319.yaml"
+      required: true
+
+non_goals:
+  - "Do not edit web/backend/app/services/strategy_service.py or change public get_strategy_service() fallback compatibility."
+  - "Do not edit Strategy adapter/provider duplication or task/backtest resolution surfaces."
+  - "Do not change route paths, methods, response models, operation IDs, examples, OpenAPI exposure, frontend callers, PM2 workflows, OpenSpec state, config, scripts, or issue-label state."
+  - "Do not fold realtime/socket, Dashboard/TDX, Indicator/Data residual, root facade compatibility, adapter/provider duplication, or task/backtest resolution into this implementation lane."
+
+risk_and_rollback:
+  risks:
+    - "If route dependency injection changes FastAPI route contracts, OpenAPI or frontend consumers could drift."
+    - "If the public get_strategy_service fallback is changed, deferred adapter and backtest consumers could break."
+  rollback_plan: "revert this PR to restore direct route-handler getter calls and remove the focused test/report/artifact/task-card/tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "replace direct Strategy route-handler service getter calls with route-local provider injection"
+    modified_scope: "one backend route module, one focused test file, steward tree, implementation report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "public get_strategy_service fallback and deferred adapter/backtest consumers are unchanged"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if TDD red/green, static closure, strategy route docs guard, backtest regressions, ruff, OpenAPI smoke, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-27T08:21:30+08:00"
+    approval_note: "Approved by G2.165 PR #318 for the narrow Strategy route provider injection implementation lane."
+    secondary_approved: false

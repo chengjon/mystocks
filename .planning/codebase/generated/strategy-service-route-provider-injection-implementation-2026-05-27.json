@@ -1,0 +1,98 @@
+{
+  "artifact": "strategy-service-route-provider-injection-implementation",
+  "task_id": "G2.166",
+  "status": "review_ready",
+  "scope": "source_implementation",
+  "created_at": "2026-05-27T08:21:30+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head_before_commit": "e5f8a4a2a53bc707a57732ac5c6e14d1f63a5444",
+  "parent": {
+    "task_id": "G2.165",
+    "pr": 318,
+    "state": "merged",
+    "merge_commit": "e5f8a4a2a53bc707a57732ac5c6e14d1f63a5444",
+    "report": "docs/reports/quality/backend-strategy-service-seam-design-authorization-2026-05-27.md",
+    "artifact": ".planning/codebase/generated/strategy-service-seam-design-authorization-2026-05-27.json"
+  },
+  "implementation": {
+    "source_files": [
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+    ],
+    "test_files": [
+      "web/backend/tests/test_strategy_management_route_provider.py"
+    ],
+    "provider_added": "get_strategy_service_dependency",
+    "injected_handlers": [
+      "query_strategy_results",
+      "get_matched_stocks",
+      "get_strategy_summary"
+    ],
+    "public_getter_compatibility_preserved": true,
+    "deferred_surfaces_unchanged": [
+      "web/backend/app/services/strategy_service.py",
+      "web/backend/app/services/data_adapters/strategy.py",
+      "web/backend/app/services/adapters/strategy_adapter.py",
+      "web/backend/app/tasks/backtest_tasks.py"
+    ]
+  },
+  "gitnexus_pre_edit": {
+    "get_strategy_service": {
+      "risk": "CRITICAL",
+      "impacted": 13,
+      "direct": 6,
+      "processes": 0
+    },
+    "query_strategy_results": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    },
+    "get_matched_stocks": {
+      "risk": "LOW",
+      "impacted": 1,
+      "direct": 1,
+      "processes": 0
+    },
+    "get_strategy_summary": {
+      "risk": "LOW",
+      "impacted": 0,
+      "direct": 0,
+      "processes": 0
+    }
+  },
+  "closure_metrics": {
+    "route_handler_body_get_strategy_service_calls": {
+      "before": 3,
+      "after": 0
+    },
+    "depends_get_strategy_service_dependency_sites": {
+      "before": 0,
+      "after": 3
+    },
+    "provider_fallback_get_strategy_service_calls": {
+      "before": 0,
+      "after": 1,
+      "expected": true
+    },
+    "adapter_and_backtest_body_calls": "unchanged"
+  },
+  "verification": {
+    "tdd_red": "5 failed in 4.57s",
+    "tdd_green": "5 passed in 4.36s",
+    "strategy_route_docs_focused_test": "1 passed in 13.62s",
+    "backtest_task_regressions": "2 passed in 1.94s",
+    "ruff_touched_backend_files": "All checks passed!",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "warnings": 0
+    }
+  },
+  "next_gate": {
+    "task_id": "G2.167",
+    "type": "governance_refresh",
+    "description": "refresh service getter inventory after Strategy route provider injection"
+  }
+}

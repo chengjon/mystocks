@@ -8,7 +8,7 @@ import re
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 
 from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field, field_validator
@@ -17,7 +17,7 @@ from app.openapi_config import COMMON_RESPONSES
 from ._strategy_execution_responses import (STRATEGY_DEFINITIONS_RESPONSES, STRATEGY_RUN_SINGLE_RESPONSES, STRATEGY_RUN_BATCH_RESPONSES, STRATEGY_RESULTS_RESPONSES, MATCHED_STOCKS_RESPONSES, STRATEGY_SUMMARY_RESPONSES)
 from app.core.responses import ErrorCodes, ResponseMessages, UnifiedResponse, create_error_response, create_success_response
 from app.services.data_source_factory import DataSourceFactory
-from app.services.strategy_service import get_strategy_service
+from app.services.strategy_service import StrategyService, get_strategy_service
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,11 @@ STRATEGY_ROUTE_RESPONSES = {
 }
 
 router = APIRouter(responses=STRATEGY_ROUTE_RESPONSES)
+
+
+def get_strategy_service_dependency() -> StrategyService:
+    return get_strategy_service()
+
 
 # ==================== 请求/响应模型 ====================
 
@@ -380,6 +385,7 @@ async def query_strategy_results(
     match_result: Optional[bool] = Query(None, description="是否匹配"),
     limit: int = Query(100, description="返回数量", ge=1, le=1000),
     offset: int = Query(0, description="偏移量", ge=0, le=10000),
+    strategy_service: StrategyService = Depends(get_strategy_service_dependency),
 ):
     """
     查询策略结果
@@ -396,7 +402,7 @@ async def query_strategy_results(
         策略结果列表
     """
     try:
-        service = get_strategy_service()
+        service = strategy_service
 
         # 解析日期
         check_date_obj = None
@@ -445,6 +451,7 @@ async def get_matched_stocks(
     strategy_code: str = Query(..., description="策略代码", min_length=1, max_length=50, pattern=r"^[a-z0-9_]+$"),
     check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
     limit: int = Query(100, description="返回数量", ge=1, le=1000),
+    strategy_service: StrategyService = Depends(get_strategy_service_dependency),
 ):
     """
     获取匹配指定策略的股票列表
@@ -458,7 +465,7 @@ async def get_matched_stocks(
         匹配的股票列表
     """
     try:
-        service = get_strategy_service()
+        service = strategy_service
 
         # 解析日期
         check_date_obj = None
@@ -488,7 +495,8 @@ async def get_matched_stocks(
     responses=STRATEGY_SUMMARY_RESPONSES,
 )
 async def get_strategy_summary(
-    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$")
+    check_date: Optional[str] = Query(None, description="检查日期 YYYY-MM-DD", pattern=r"^\d{4}-\d{2}-\d{2}$"),
+    strategy_service: StrategyService = Depends(get_strategy_service_dependency),
 ):
     """
     获取策略统计摘要
@@ -500,7 +508,7 @@ async def get_strategy_summary(
         各策略的匹配数量统计
     """
     try:
-        service = get_strategy_service()
+        service = strategy_service
 
         # 解析日期
         check_date_obj = None
