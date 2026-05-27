@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T00:19:16+08:00`
-- Base HEAD checked: `0aac0e16f16480bd99eebb8726e21a7db6566b39`
+- Prepared at: `2026-05-28T00:38:03+08:00`
+- Base HEAD checked: `5565e2b0967958c406a4115dc840a9e90a0b2aab`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -41,7 +41,8 @@ It proved a repeatable conveyor:
 | G2.186 remaining getter inventory refresh | Merged by PR `#339` | Refreshes direct getter inventory after provider governance and recommends a narrow stop-loss authorization package as the next gate |
 | G2.187 risk stop-loss route provider authorization | Merged by PR `#340` | Defines the future G2.188 implementation scope for stop-loss route provider injection without source edits in that PR |
 | G2.188 risk stop-loss route provider implementation | Merged by PR `#341` | Implements the authorized provider injection in `web/backend/app/api/risk/stop_loss.py`; post-merge stop-loss tests and OpenAPI dependency leak smoke pass |
-| G2.189 risk stop-loss provider closeout / candidate refresh | For review | Records PR `#341` closeout, marks the stop-loss pair closed for route-body provider migration, and selects data-quality / adapter cross-cutting governance as the next design-only gate |
+| G2.189 risk stop-loss provider closeout / candidate refresh | Merged by PR `#342` | Records PR `#341` closeout, marks the stop-loss pair closed for route-body provider migration, and selects data-quality / adapter cross-cutting governance as the next design-only gate |
+| G2.190 data-quality / adapter cross-cutting decision | For review | Classifies `get_data_quality_monitor` as `CRITICAL`, splits the route/adapter/wrapper surfaces, and selects G2.191 route-only authorization as the next gate |
 
 ## Current Strategy Getter Residuals
 
@@ -102,13 +103,29 @@ response-model declarations, OpenAPI examples, and src-level service getters.
 Post-merge smoke records `openapi_paths=500`, `stop_loss_paths=10`, and
 `dependency_params_leaked=0`.
 
+## G2.190 Data-Quality / Adapter Cross-Cutting Lane
+
+At HEAD `5565e2b0967958c406a4115dc840a9e90a0b2aab`, GitNexus classifies
+`get_data_quality_monitor` as `CRITICAL`: 20 direct callers, 24 impacted symbols,
+7 affected processes, and 4 affected modules.
+
+| Surface | Files | Getter calls | Current decision |
+|---|---:|---:|---|
+| Data-quality route | 1 | 6 | Select as the next route-only authorization package, not source implementation |
+| Split adapter constructors | 8 | 8 | Defer until interface / test-double design exists |
+| Legacy adapter compatibility | 5 | 5 | Defer to separate compatibility ownership decision |
+| Service wrapper / export | 2 | 2 | Retain until route and adapter consumers are migrated and verified |
+
+G2.190 does not authorize source edits. It recommends G2.191 as a
+data-quality route provider authorization package only.
+
 ## Next Gates
 
-- Review G2.189 risk stop-loss provider closeout / candidate refresh.
-- If accepted, start G2.190 data-quality / adapter cross-cutting decision
-  package as design / authorization only.
-- Do not start data-quality source implementation from G2.189.
-- Do not delete retained stop-loss provider backing getters.
+- Review G2.190 data-quality / adapter cross-cutting decision.
+- If accepted, start G2.191 data-quality route provider authorization package
+  only.
+- Do not start data-quality source implementation from G2.190.
+- Do not migrate adapter constructors or delete singleton wrappers from G2.190.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
   restoration, or other risk route provider migrations.
 

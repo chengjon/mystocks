@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T00:19:16+08:00",
+  "generated_at": "2026-05-28T00:38:03+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "0aac0e16f16480bd99eebb8726e21a7db6566b39",
-  "split_branch": "g2-189-risk-stop-loss-provider-closeout-refresh",
-  "scope": "governance_closeout_candidate_refresh_package",
+  "base_head": "5565e2b0967958c406a4115dc840a9e90a0b2aab",
+  "split_branch": "g2-190-data-quality-adapter-decision",
+  "scope": "data_quality_adapter_cross_cutting_decision_package",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -650,9 +650,17 @@
     {
       "id": "g2-189-risk-stop-loss-provider-closeout-refresh",
       "type": "closeout_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.188 risk stop-loss route service provider implementation",
+      "github_pr": {
+        "number": 342,
+        "url": "https://github.com/chengjon/mystocks/pull/342",
+        "state": "MERGED",
+        "merged_at": "2026-05-27T16:32:36Z",
+        "head_ref": "g2-189-risk-stop-loss-provider-closeout-refresh",
+        "merge_commit": "5565e2b0967958c406a4115dc840a9e90a0b2aab"
+      },
       "source_edit_authority": false,
       "evidence": [
         ".planning/codebase/generated/risk-stop-loss-provider-closeout-refresh-2026-05-28.json",
@@ -695,10 +703,74 @@
         ]
       },
       "freshness": {
-        "current_head_checked": "0aac0e16f16480bd99eebb8726e21a7db6566b39",
+        "current_head_checked": "5565e2b0967958c406a4115dc840a9e90a0b2aab",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.190 data-quality / adapter cross-cutting decision and authorization package only; do not start source implementation from G2.189."
+      "next_gate": "Superseded by G2.190 data-quality / adapter cross-cutting decision."
+    },
+    {
+      "id": "g2-190-data-quality-adapter-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.189 risk stop-loss provider closeout / candidate refresh",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/data-quality-adapter-cross-cutting-decision-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-adapter-cross-cutting-decision-2026-05-28.md",
+        "governance/mainline/task-cards/pr-343.yaml"
+      ],
+      "analysis": {
+        "target": "get_data_quality_monitor",
+        "definition": "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "gitnexus_risk": "CRITICAL",
+        "impacted_count": 24,
+        "direct_callers": 20,
+        "processes_affected": 7,
+        "modules_affected": 4,
+        "static_inventory": {
+          "files": 16,
+          "get_data_quality_monitor_calls": 21,
+          "monitor_data_quality_calls": 2
+        },
+        "surface_buckets": {
+          "route": {
+            "files": 1,
+            "get_calls": 6,
+            "monitor_calls": 1
+          },
+          "adapter_split": {
+            "files": 8,
+            "get_calls": 8
+          },
+          "legacy_adapter": {
+            "files": 5,
+            "get_calls": 5
+          },
+          "service_wrapper": {
+            "files": 2,
+            "get_calls": 2,
+            "monitor_calls": 1
+          }
+        }
+      },
+      "decision": {
+        "classification": "critical-cross-cutting-surface-do-not-implement-as-single-batch",
+        "selected_next_governance_target": "data-quality-route-provider-authorization",
+        "recommended_next_work_item": "G2.191 data-quality route provider authorization package",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-190",
+        "deferred_tracks": [
+          "adapter constructor migration after interface/test-double design",
+          "legacy adapter compatibility ownership",
+          "singleton wrapper retention / eventual retirement",
+          "DataQualityMonitor implementation changes"
+        ]
+      },
+      "freshness": {
+        "current_head_checked": "5565e2b0967958c406a4115dc840a9e90a0b2aab",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.191 data-quality route provider authorization package only; do not start source implementation from G2.190."
     },
     {
       "id": "core-batch2-reconciliation",

@@ -1,0 +1,231 @@
+{
+  "schema_version": "2026-05-28.g2-190.decision.v1",
+  "generated_at": "2026-05-28T00:38:03+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "5565e2b0967958c406a4115dc840a9e90a0b2aab",
+  "worktree_branch": "g2-190-data-quality-adapter-decision",
+  "scope": "data_quality_adapter_cross_cutting_decision_package",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "G2.189",
+    "description": "risk stop-loss provider closeout / candidate refresh",
+    "github_pr": 342,
+    "merge_commit": "5565e2b0967958c406a4115dc840a9e90a0b2aab",
+    "merged_at": "2026-05-27T16:32:36Z"
+  },
+  "target_surface": {
+    "primary_getter": "get_data_quality_monitor",
+    "definition": "web/backend/app/services/_data_quality_monitor_singleton.py",
+    "backing_class": "DataQualityMonitor",
+    "backing_class_file": "web/backend/app/services/data_quality_monitor.py",
+    "current_global_state": "_global_monitor",
+    "current_export_path": "web/backend/app/services/data_quality_monitor.py"
+  },
+  "gitnexus_evidence": {
+    "target": "Function:web/backend/app/services/_data_quality_monitor_singleton.py:get_data_quality_monitor",
+    "risk": "CRITICAL",
+    "impacted_count": 24,
+    "direct_callers": 20,
+    "processes_affected": 7,
+    "modules_affected": 4,
+    "affected_modules": [
+      "Services",
+      "Data_adapters",
+      "Api",
+      "Adapters"
+    ]
+  },
+  "static_inventory": {
+    "files_with_data_quality_monitor_surface": 16,
+    "get_data_quality_monitor_calls": 21,
+    "monitor_data_quality_calls": 2,
+    "buckets": {
+      "route": {
+        "files": 1,
+        "get_calls": 6,
+        "monitor_calls": 1,
+        "paths": [
+          "web/backend/app/api/data_quality.py"
+        ]
+      },
+      "adapter_split": {
+        "files": 8,
+        "get_calls": 8,
+        "monitor_calls": 0,
+        "paths": [
+          "web/backend/app/services/adapters_split/base_adapter.py",
+          "web/backend/app/services/adapters_split/baostock_adapter.py",
+          "web/backend/app/services/adapters_split/tushare_adapter.py",
+          "web/backend/app/services/adapters_split/customer_adapter.py",
+          "web/backend/app/services/adapters_split/byapi_adapter.py",
+          "web/backend/app/services/adapters_split/akshare_adapter.py",
+          "web/backend/app/services/adapters_split/efinance_adapter.py",
+          "web/backend/app/services/adapters_split/tdx_adapter.py"
+        ]
+      },
+      "legacy_adapter": {
+        "files": 5,
+        "get_calls": 5,
+        "monitor_calls": 0,
+        "paths": [
+          "web/backend/app/services/adapters/dashboard_adapter.py",
+          "web/backend/app/services/adapters/data_adapter.py",
+          "web/backend/app/services/data_adapters/data_source.py",
+          "web/backend/app/services/data_adapters/dashboard.py",
+          "web/backend/app/services/market_data_adapter.py"
+        ]
+      },
+      "service_wrapper": {
+        "files": 2,
+        "get_calls": 2,
+        "monitor_calls": 1,
+        "paths": [
+          "web/backend/app/services/data_quality_monitor.py",
+          "web/backend/app/services/_data_quality_monitor_singleton.py"
+        ]
+      }
+    }
+  },
+  "route_surface": {
+    "file": "web/backend/app/api/data_quality.py",
+    "route_count": 9,
+    "routes_with_getter_or_monitor_calls": 7,
+    "routes": [
+      {
+        "method": "GET",
+        "path": "/health",
+        "function": "get_sources_health",
+        "get_calls": 0,
+        "monitor_calls": 0
+      },
+      {
+        "method": "GET",
+        "path": "/metrics",
+        "function": "get_data_quality_metrics",
+        "get_calls": 1,
+        "monitor_calls": 0
+      },
+      {
+        "method": "GET",
+        "path": "/alerts",
+        "function": "get_active_alerts",
+        "get_calls": 1,
+        "monitor_calls": 0
+      },
+      {
+        "method": "POST",
+        "path": "/alerts/{alert_id}/acknowledge",
+        "function": "acknowledge_alert",
+        "get_calls": 1,
+        "monitor_calls": 0
+      },
+      {
+        "method": "POST",
+        "path": "/alerts/{alert_id}/resolve",
+        "function": "resolve_alert",
+        "get_calls": 1,
+        "monitor_calls": 0
+      },
+      {
+        "method": "GET",
+        "path": "/config/mode",
+        "function": "get_data_source_mode",
+        "get_calls": 0,
+        "monitor_calls": 0
+      },
+      {
+        "method": "GET",
+        "path": "/status/overview",
+        "function": "get_system_status_overview",
+        "get_calls": 1,
+        "monitor_calls": 0
+      },
+      {
+        "method": "POST",
+        "path": "/test/quality",
+        "function": "test_data_quality",
+        "get_calls": 0,
+        "monitor_calls": 1
+      },
+      {
+        "method": "GET",
+        "path": "/metrics/trends",
+        "function": "get_quality_trends",
+        "get_calls": 1,
+        "monitor_calls": 0
+      }
+    ]
+  },
+  "decision": {
+    "classification": "critical-cross-cutting-surface-do-not-implement-as-single-batch",
+    "selected_next_governance_target": "data-quality-route-provider-authorization",
+    "recommended_next_work_item": "G2.191 data-quality route provider authorization package",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-190",
+    "strategy": [
+      {
+        "track": "route_provider",
+        "surface": "web/backend/app/api/data_quality.py",
+        "recommended_sequence": 1,
+        "next_gate": "Prepare G2.191 authorization package for route-only provider injection. No source edits in G2.190."
+      },
+      {
+        "track": "adapter_split_constructor",
+        "surface": "web/backend/app/services/adapters_split/*.py",
+        "recommended_sequence": 2,
+        "next_gate": "Require interface/test-double design before adapter constructor changes."
+      },
+      {
+        "track": "legacy_adapter_compatibility",
+        "surface": "web/backend/app/services/adapters/*.py and data_adapters/*.py",
+        "recommended_sequence": 3,
+        "next_gate": "Separate compatibility ownership decision before source edits."
+      },
+      {
+        "track": "singleton_wrapper_retention",
+        "surface": "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "recommended_sequence": 4,
+        "next_gate": "Retain wrapper until route and adapter consumers are migrated and current HEAD proves no runtime consumers remain."
+      }
+    ]
+  },
+  "g2_191_authorization_shape": {
+    "type": "authorization_package_only",
+    "suggested_future_source_surface": [
+      "web/backend/app/api/data_quality.py"
+    ],
+    "suggested_future_test_surface": [
+      "focused data-quality route/provider regression tests",
+      "OpenAPI dependency leak smoke",
+      "app.main import / data-quality route registration smoke"
+    ],
+    "must_preserve": [
+      "route paths",
+      "HTTP methods",
+      "response models",
+      "OpenAPI examples",
+      "error response contract",
+      "data-source factory behavior",
+      "DataQualityMonitor backing singleton behavior"
+    ],
+    "must_not_include": [
+      "adapter constructor migration",
+      "legacy adapter compatibility cleanup",
+      "DataQualityMonitor implementation rewrite",
+      "singleton wrapper deletion"
+    ]
+  },
+  "acceptance_boundary": {
+    "if_g2_190_is_accepted": "Start G2.191 as a route-only authorization package for data-quality route provider injection.",
+    "not_authorized": [
+      "backend source edits",
+      "frontend edits",
+      "test edits",
+      "OpenSpec proposal creation",
+      "GitHub issue label changes",
+      "adapter constructor migration",
+      "singleton wrapper deletion",
+      "data-quality source implementation"
+    ]
+  }
+}
