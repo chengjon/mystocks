@@ -1,0 +1,124 @@
+{
+  "schema_version": "2026-05-28.g2-193.closeout-refresh.v1",
+  "generated_at": "2026-05-28T01:52:33+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "2b0c3ce373fba38bacd62eff5436822527dccda1",
+  "worktree_branch": "g2-193-data-quality-route-provider-closeout-refresh",
+  "scope": "governance_only_data_quality_route_provider_closeout_refresh",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "G2.192",
+    "description": "data-quality route provider implementation",
+    "github_pr": 345,
+    "merge_commit": "2b0c3ce373fba38bacd62eff5436822527dccda1",
+    "merged_at": "2026-05-27T17:49:25Z"
+  },
+  "closeout_result": {
+    "route_provider_surface": "closed_for_route_body_provider_migration",
+    "route_file": "web/backend/app/api/data_quality.py",
+    "provider_definitions": {
+      "get_data_quality_monitor_provider": 1,
+      "_resolve_direct_call_dependency": 1
+    },
+    "route_body_get_data_quality_monitor_calls": 0,
+    "route_body_monitor_data_quality_calls": 0,
+    "route_file_get_data_quality_monitor_calls": 1,
+    "route_file_monitor_data_quality_calls": 0,
+    "depends_provider_params": 7,
+    "direct_call_fallbacks": 7
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_route_provider_regressions.py web/backend/tests/test_data_quality_mock_configuration.py tests/unit/contract/test_data_quality_router_runtime_import.py -q --tb=short --disable-warnings --no-cov",
+      "result": "7 passed"
+    },
+    "openapi_smoke": {
+      "environment": "approved dummy local environment variables for required settings only; repository root and web/backend on PYTHONPATH",
+      "openapi_paths": 500,
+      "data_quality_paths": 9,
+      "dependency_params_leaked": 0
+    },
+    "github_pr_345": {
+      "state": "MERGED",
+      "checks": "all observed checks passed or skipped before merge"
+    }
+  },
+  "remaining_surface_refresh": {
+    "scan_scope": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "totals_by_bucket": {
+      "route": {
+        "files": 1,
+        "get_data_quality_monitor_calls": 1,
+        "monitor_data_quality_calls": 0,
+        "classification": "provider backing getter retained, route-body migration closed"
+      },
+      "adapter_split": {
+        "files": 8,
+        "get_data_quality_monitor_calls": 8,
+        "monitor_data_quality_calls": 0,
+        "classification": "remaining adapter constructor seam"
+      },
+      "service_adapter": {
+        "files": 2,
+        "get_data_quality_monitor_calls": 2,
+        "monitor_data_quality_calls": 0,
+        "classification": "remaining adapter compatibility seam"
+      },
+      "legacy_adapter": {
+        "files": 2,
+        "get_data_quality_monitor_calls": 2,
+        "monitor_data_quality_calls": 0,
+        "classification": "remaining legacy adapter compatibility seam"
+      },
+      "other": {
+        "files": 1,
+        "get_data_quality_monitor_calls": 1,
+        "monitor_data_quality_calls": 0,
+        "classification": "market_data_adapter compatibility surface"
+      },
+      "service_wrapper": {
+        "files": 1,
+        "get_data_quality_monitor_calls": 2,
+        "monitor_data_quality_calls": 1,
+        "classification": "retained singleton wrapper / backing API"
+      }
+    },
+    "remaining_rows": [
+      "web/backend/app/services/adapters_split/base_adapter.py",
+      "web/backend/app/services/adapters_split/baostock_adapter.py",
+      "web/backend/app/services/adapters_split/tushare_adapter.py",
+      "web/backend/app/services/adapters_split/customer_adapter.py",
+      "web/backend/app/services/adapters_split/byapi_adapter.py",
+      "web/backend/app/services/adapters_split/akshare_adapter.py",
+      "web/backend/app/services/adapters_split/efinance_adapter.py",
+      "web/backend/app/services/adapters_split/tdx_adapter.py",
+      "web/backend/app/services/adapters/dashboard_adapter.py",
+      "web/backend/app/services/adapters/data_adapter.py",
+      "web/backend/app/services/data_adapters/data_source.py",
+      "web/backend/app/services/data_adapters/dashboard.py",
+      "web/backend/app/services/market_data_adapter.py",
+      "web/backend/app/services/_data_quality_monitor_singleton.py"
+    ]
+  },
+  "decision": {
+    "classification": "route-provider-closeout-complete-remaining-adapter-seams-deferred",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-193",
+    "selected_next_governance_target": "data-quality-adapter-constructor-seam-design",
+    "recommended_next_work_item": "G2.194 data-quality adapter constructor seam design / test-double decision package"
+  },
+  "explicit_non_goals": [
+    "adapter constructor implementation",
+    "legacy adapter compatibility edits",
+    "singleton wrapper deletion",
+    "DataQualityMonitor internals",
+    "frontend edits",
+    "src edits",
+    "docs/api edits",
+    "OpenSpec change/spec edits"
+  ],
+  "next_gate": "If accepted, start G2.194 data-quality adapter constructor seam design / test-double decision package; do not implement adapter changes from G2.193."
+}
