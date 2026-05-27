@@ -3106,13 +3106,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              issue-label change, or implementation authorization
 │   │              is performed here
 │   ├── G2.168 Strategy service residual split decision
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#321`
 │   │   ├── Evidence:
 │   │   │          `backend-strategy-service-residual-split-decision-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `strategy-service-residual-split-decision-2026-05-27.json`
 │   │   ├── Parent: G2.167 accepted and merged by PR `#320`
 │   │   ├── Evidence HEAD: `8f3cc0c15ec80b5e9acdbdf83f407abee44a6bd2`
+│   │   ├── Merge HEAD: `9994a89c73e38a11b907060bb11663df35eff6e6`
 │   │   ├── Residual split: route provider fallback is intentionally
 │   │   │          retained; `backtest_tasks.py::_resolve_backtest_data_source`
 │   │   │          is selected as the next authorization candidate; and the
@@ -3131,8 +3132,37 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenSpec, config, script, compatibility deletion,
 │   │              issue-label change, or implementation authorization is
 │   │              performed here
-│   └── Next gate: review G2.168; if accepted, start G2.169 as an
-│                  authorization-only package for
+│   ├── G2.169 Backtest task resolver authorization
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-backtest-task-resolver-authorization-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `backtest-task-resolver-authorization-2026-05-27.json`
+│   │   ├── Parent: G2.168 accepted and merged by PR `#321`
+│   │   ├── Evidence HEAD: `9994a89c73e38a11b907060bb11663df35eff6e6`
+│   │   ├── Target: future source-capable G2.170 may only touch
+│   │   │          `web/backend/app/tasks/backtest_tasks.py` and
+│   │   │          `web/backend/tests/test_backtest_tasks_regressions.py`
+│   │   │          plus governance artifacts after this authorization is
+│   │   │          reviewed and accepted
+│   │   ├── Current resolver facts: `_resolve_backtest_data_source` still
+│   │   │          owns the task-local Strategy data-source fallback,
+│   │   │          accepts `strategy_service` and `auto`, and is called once
+│   │   │          by `run_backtest_task`
+│   │   ├── GitNexus evidence: `_resolve_backtest_data_source` is LOW
+│   │   │          with `1` direct caller, `0` affected processes, and the
+│   │   │          direct caller is `run_backtest_task`; broader public
+│   │   │          `get_strategy_service` remains out of scope
+│   │   ├── Verification: parent PR `#321` merged, backtest task regressions
+│   │   │          `2 passed`, and strategy route provider regressions
+│   │   │          `5 passed`
+│   │   └── Boundary: authorization-only; no backend source/test edit,
+│   │              Strategy adapter/provider edit, Strategy route provider
+│   │              fallback edit, route/API behavior, OpenAPI exposure,
+│   │              frontend, PM2, OpenSpec, config, script, compatibility
+│   │              deletion, or issue-label change is performed here
+│   └── Next gate: review G2.169; if accepted, start G2.170 as a
+│                  path-limited implementation lane for
 │                  `backtest_tasks.py::_resolve_backtest_data_source`
 │
 ├── H. Decision-Only Track: CSRF composition root

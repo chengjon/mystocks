@@ -1,0 +1,100 @@
+{
+  "work_item": "G2.169",
+  "artifact_type": "authorization_package",
+  "status": "ready_for_review",
+  "created_at": "2026-05-27T10:14:06+08:00",
+  "current_head": "9994a89c73e38a11b907060bb11663df35eff6e6",
+  "base_branch": "wip/root-dirty-20260403",
+  "parent": {
+    "work_item": "G2.168",
+    "pr": 321,
+    "state": "MERGED",
+    "merge_commit": "9994a89c73e38a11b907060bb11663df35eff6e6",
+    "title": "docs(governance): split strategy service residual tracks"
+  },
+  "target": {
+    "file": "web/backend/app/tasks/backtest_tasks.py",
+    "symbol": "_resolve_backtest_data_source",
+    "symbol_lines": [18, 34],
+    "direct_caller": "run_backtest_task",
+    "direct_caller_lines": [35, 128],
+    "current_modes": ["auto", "strategy_service"],
+    "current_internal_getter": "get_strategy_service"
+  },
+  "gitnexus": {
+    "target": "_resolve_backtest_data_source",
+    "risk": "LOW",
+    "impacted_count": 1,
+    "direct_callers": 1,
+    "affected_processes": 0,
+    "affected_modules": 1,
+    "direct_caller_symbols": [
+      "web/backend/app/tasks/backtest_tasks.py::run_backtest_task"
+    ],
+    "outgoing_symbols": [
+      "web/backend/app/services/strategy_service.py::get_strategy_service"
+    ],
+    "note": "Broader get_strategy_service remains CRITICAL from G2.168 evidence and is not authorized for removal here."
+  },
+  "verification": {
+    "parent_pr_state": "MERGED",
+    "static_scan": {
+      "resolver_get_strategy_service_mentions": 2,
+      "task_resolver_mentions": 1,
+      "route_provider_body_calls": 0,
+      "route_provider_fallback_calls": 1
+    },
+    "tests": [
+      {
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov",
+        "result": "2 passed in 2.18s"
+      },
+      {
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py -q --no-cov",
+        "result": "5 passed in 3.71s"
+      }
+    ],
+    "openapi_smoke": "not_required_for_authorization_only_package"
+  },
+  "authorization": {
+    "future_work_item": "G2.170",
+    "future_scope_type": "source_capable_after_review",
+    "allowed_paths": [
+      "web/backend/app/tasks/backtest_tasks.py",
+      "web/backend/tests/test_backtest_tasks_regressions.py",
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/*backtest-task-resolver*2026-05-27.json",
+      "docs/reports/quality/*backtest-task-resolver*2026-05-27.md",
+      "governance/mainline/task-cards/pr-*.yaml"
+    ],
+    "required_future_properties": [
+      "preserve data_source_mode compatibility for strategy_service and auto",
+      "preserve unsupported-mode ValueError behavior",
+      "keep public get_strategy_service available and unchanged",
+      "leave Strategy route provider fallback untouched",
+      "leave Strategy adapter/provider helpers to their own design track",
+      "use TDD red/green before implementation",
+      "run GitNexus impact before source edits",
+      "run staged GitNexus detect_changes before commit"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/services/strategy_service.py",
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+      "web/backend/app/services/adapters/strategy_adapter.py",
+      "web/backend/app/services/data_adapters/strategy.py",
+      "web/frontend/**",
+      "openspec/changes/**",
+      "openspec/specs/**",
+      "config/**",
+      "scripts/**"
+    ]
+  },
+  "non_goals": [
+    "do not edit source or tests in G2.169",
+    "do not delete or change public get_strategy_service",
+    "do not change route/API behavior or OpenAPI exposure",
+    "do not change Celery task queue semantics, retry behavior, status persistence, or result persistence",
+    "do not treat the broader Strategy service getter seam as solved"
+  ],
+  "next_gate": "Review and accept G2.169 before opening G2.170 source implementation."
+}
