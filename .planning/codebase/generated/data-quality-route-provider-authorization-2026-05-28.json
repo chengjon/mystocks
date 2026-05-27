@@ -1,0 +1,179 @@
+{
+  "schema_version": "2026-05-28.g2-191.authorization.v1",
+  "generated_at": "2026-05-28T01:04:38+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "7154ffbb067dcddc52d80f15342961b51234ac09",
+  "worktree_branch": "g2-191-data-quality-route-provider-authorization",
+  "scope": "data_quality_route_provider_authorization_package",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "G2.190",
+    "description": "data-quality / adapter cross-cutting decision",
+    "github_pr": 343,
+    "merge_commit": "7154ffbb067dcddc52d80f15342961b51234ac09",
+    "merged_at": "2026-05-27T17:02:01Z"
+  },
+  "authorization_decision": {
+    "status": "review_candidate",
+    "authorizes_future_lane": "G2.192 data-quality route provider implementation",
+    "does_not_authorize_current_pr_source_edits": true,
+    "future_source_edit_authority_if_accepted": true,
+    "classification": "route-only-provider-implementation-authorization",
+    "source_lane_recommendation": "start-g2-192-only-after-g2-191-acceptance"
+  },
+  "target_surface": {
+    "route_file": "web/backend/app/api/data_quality.py",
+    "route_count": 9,
+    "routes_touching_monitor_surface": 7,
+    "current_route_get_data_quality_monitor_calls": 6,
+    "current_route_monitor_data_quality_calls": 1,
+    "provider_backing_getter": "get_data_quality_monitor",
+    "provider_backing_helper": "monitor_data_quality",
+    "singleton_wrapper": "web/backend/app/services/_data_quality_monitor_singleton.py",
+    "backing_class": "DataQualityMonitor"
+  },
+  "route_inventory": [
+    {
+      "method": "GET",
+      "path": "/health",
+      "function": "get_sources_health",
+      "getter_calls": 0,
+      "monitor_helper_calls": 0,
+      "authorized_for_future_change": false
+    },
+    {
+      "method": "GET",
+      "path": "/metrics",
+      "function": "get_data_quality_metrics",
+      "getter_calls": 1,
+      "monitor_helper_calls": 0,
+      "authorized_for_future_change": true
+    },
+    {
+      "method": "GET",
+      "path": "/alerts",
+      "function": "get_active_alerts",
+      "getter_calls": 1,
+      "monitor_helper_calls": 0,
+      "authorized_for_future_change": true
+    },
+    {
+      "method": "POST",
+      "path": "/alerts/{alert_id}/acknowledge",
+      "function": "acknowledge_alert",
+      "getter_calls": 1,
+      "monitor_helper_calls": 0,
+      "authorized_for_future_change": true
+    },
+    {
+      "method": "POST",
+      "path": "/alerts/{alert_id}/resolve",
+      "function": "resolve_alert",
+      "getter_calls": 1,
+      "monitor_helper_calls": 0,
+      "authorized_for_future_change": true
+    },
+    {
+      "method": "GET",
+      "path": "/config/mode",
+      "function": "get_data_source_mode",
+      "getter_calls": 0,
+      "monitor_helper_calls": 0,
+      "authorized_for_future_change": false
+    },
+    {
+      "method": "GET",
+      "path": "/status/overview",
+      "function": "get_system_status_overview",
+      "getter_calls": 1,
+      "monitor_helper_calls": 0,
+      "authorized_for_future_change": true
+    },
+    {
+      "method": "POST",
+      "path": "/test/quality",
+      "function": "test_data_quality",
+      "getter_calls": 0,
+      "monitor_helper_calls": 1,
+      "authorized_for_future_change": true
+    },
+    {
+      "method": "GET",
+      "path": "/metrics/trends",
+      "function": "get_quality_trends",
+      "getter_calls": 1,
+      "monitor_helper_calls": 0,
+      "authorized_for_future_change": true
+    }
+  ],
+  "future_g2_192_allowed_scope": {
+    "source_paths": [
+      "web/backend/app/api/data_quality.py"
+    ],
+    "test_paths": [
+      "web/backend/tests/test_data_quality_mock_configuration.py",
+      "web/backend/tests/test_data_quality_route_provider_regressions.py",
+      "tests/unit/contract/test_data_quality_router_runtime_import.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/generated/data-quality-route-provider-implementation-2026-05-28.json",
+      "docs/reports/quality/backend-data-quality-route-provider-implementation-2026-05-28.md",
+      "governance/mainline/task-cards/pr-345.yaml",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md"
+    ],
+    "explicitly_forbidden_paths": [
+      "web/backend/app/services/_data_quality_monitor_singleton.py",
+      "web/backend/app/services/data_quality_monitor.py",
+      "web/backend/app/services/adapters_split/**",
+      "web/backend/app/services/adapters/**",
+      "web/backend/app/services/data_adapters/**",
+      "web/backend/app/services/market_data_adapter.py",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "future_g2_192_must_preserve": [
+    "route paths",
+    "HTTP methods",
+    "response models",
+    "OpenAPI examples",
+    "error response contract",
+    "data-source factory behavior",
+    "DataQualityMonitor backing singleton behavior",
+    "direct route test compatibility where existing tests call route functions directly"
+  ],
+  "future_g2_192_required_checks": [
+    "GitNexus impact/context before source edits, with explicit CRITICAL risk acknowledgement",
+    "TDD red/green route-provider regression test",
+    "focused data-quality route/provider regression tests",
+    "OpenAPI dependency leak smoke proving monitor/provider params do not appear in schema",
+    "app.main import / data-quality route registration smoke with required environment available",
+    "ruff check for touched route and test files",
+    "GitNexus staged detect_changes before commit",
+    "mainline scope gate for the implementation PR"
+  ],
+  "current_blockers_or_preconditions": [
+    {
+      "item": "app.openapi smoke from clean G2.191 worktree",
+      "status": "blocked by missing local environment file",
+      "details": "The clean G2.191 worktree has .env.example but no .env. app.main import reports missing POSTGRESQL_HOST, POSTGRESQL_USER, POSTGRESQL_PASSWORD, JWT_SECRET_KEY, BACKEND_PORT, and BACKEND_BACKUP_PORT."
+    }
+  ],
+  "deferred_surfaces": [
+    "adapter constructor migration",
+    "legacy adapter compatibility ownership",
+    "singleton wrapper retention / eventual retirement",
+    "DataQualityMonitor implementation changes",
+    "frontend or docs/api contract changes"
+  ],
+  "next_gate": "If accepted, start G2.192 data-quality route provider implementation lane. Do not edit source from G2.191."
+}
