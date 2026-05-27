@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-27T17:44:36+08:00`
-- Base HEAD checked: `0398eb81259bba5c7d8c8ba6479056554e13d064`
+- Prepared at: `2026-05-27T18:06:02+08:00`
+- Base HEAD checked: `597f8186092b4ad3d0704326e292c5e4fa075f15`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.182 Strategy route/provider fallback decision | G/#79 service lifecycle DI | PR `#334` merged at `0398eb81259bba5c7d8c8ba6479056554e13d064`; route/provider fallback classified as retained route-local provider seam | If accepted, prepare G2.183 to decide track closeout vs adapter-local lifecycle cleanup authorization |
+| P0 | Review G2.183 Strategy getter remaining residual decision | G/#79 service lifecycle DI | PR `#335` merged at `597f8186092b4ad3d0704326e292c5e4fa075f15`; remaining Strategy getter residuals classified as retained and tested | If accepted, return to service lifecycle DI queue for next non-Strategy getter candidate selection |
 | P0 | Keep steward split structure active | CODEBASE-MAP steward governance | PR `#332` merged at `750fb7c797ff95f27152439ed988a7115252129e` | Future steward updates must use split files and `steward-index.json`, not the archived single-file tree |
 | P1 | Preserve implementation authorization boundary | All lanes | Active | Every source lane still needs its own authorization packet |
 | P1 | Keep Core Batch 2 blocked | Core split / compatibility wrappers | Blocked | Resolve Task 3.2 and shared evidence gate disposition before selecting Batch 2 |
@@ -28,6 +28,6 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 - Does the split preserve the full historical steward tree in archive?
 - Is the root entrypoint short enough to serve as a daily navigation file?
 - Does `steward-index.json` include enough fields for automated guards?
-- Does G2.182 correctly retain the route-local provider fallback without opening a source lane?
-- Is G2.183 the right next gate for track closeout vs adapter-local lifecycle cleanup authorization?
+- Does G2.183 correctly close the Strategy getter residual track without authorizing deletion or adapter-local cleanup?
+- Is the next gate now a non-Strategy service lifecycle DI candidate selection?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

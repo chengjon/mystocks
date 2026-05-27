@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-27T17:44:36+08:00`
-- Base HEAD checked: `0398eb81259bba5c7d8c8ba6479056554e13d064`
+- Prepared at: `2026-05-27T18:06:02+08:00`
+- Base HEAD checked: `597f8186092b4ad3d0704326e292c5e4fa075f15`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -26,7 +26,9 @@ state transition.
 | `.planning/codebase/generated/strategy-getter-residual-refresh-decision-2026-05-27.json` | G2.181 residual class refresh and next-gate decision evidence | Current for HEAD `ba929aee2e7fc0de0278f80f30caa185fafa6b5c` |
 | `docs/reports/quality/backend-strategy-getter-residual-refresh-decision-2026-05-27.md` | G2.181 human-readable residual-refresh decision package | Accepted by PR `#334`; superseded for route/provider fallback classification by G2.182 |
 | `.planning/codebase/generated/strategy-route-provider-fallback-decision-2026-05-27.json` | G2.182 route/provider fallback classification evidence | Current for HEAD `0398eb81259bba5c7d8c8ba6479056554e13d064` |
-| `docs/reports/quality/backend-strategy-route-provider-fallback-decision-2026-05-27.md` | G2.182 human-readable route/provider fallback decision package | Review input until accepted |
+| `docs/reports/quality/backend-strategy-route-provider-fallback-decision-2026-05-27.md` | G2.182 human-readable route/provider fallback decision package | Accepted by PR `#335`; superseded for remaining-residual closeout by G2.183 |
+| `.planning/codebase/generated/strategy-getter-remaining-residual-decision-2026-05-27.json` | G2.183 remaining Strategy getter residual closeout evidence | Current for HEAD `597f8186092b4ad3d0704326e292c5e4fa075f15` |
+| `docs/reports/quality/backend-strategy-getter-remaining-residual-decision-2026-05-27.md` | G2.183 human-readable remaining-residual decision package | Review input until accepted |
 
 ## External State Inputs
 
