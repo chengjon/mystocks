@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-27T17:22:14+08:00`
-- Base HEAD checked: `ba929aee2e7fc0de0278f80f30caa185fafa6b5c`
+- Prepared at: `2026-05-27T17:44:36+08:00`
+- Base HEAD checked: `0398eb81259bba5c7d8c8ba6479056554e13d064`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -18,12 +18,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#331` | `g2-178-strategy-adapter-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` | Source implementation lane for G2.178 |
 | `#332` | `g2-179-steward-tree-governance-split` | `wip/root-dirty-20260403` | `MERGED` at `750fb7c797ff95f27152439ed988a7115252129e` | Steward tree split and machine-readable index |
 | `#333` | `g2-180-strategy-adapter-provider-closeout` | `wip/root-dirty-20260403` | `MERGED` at `ba929aee2e7fc0de0278f80f30caa185fafa6b5c` | Governance closeout for G2.178 and residual scan handoff |
+| `#334` | `g2-181-strategy-getter-residual-refresh-decision` | `wip/root-dirty-20260403` | `MERGED` at `0398eb81259bba5c7d8c8ba6479056554e13d064` | Residual refresh and next target selection |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-181-strategy-getter-residual-refresh-decision` | `origin/wip/root-dirty-20260403` at `ba929aee2e7fc0de0278f80f30caa185fafa6b5c` | Recheck Strategy getter residual classes and select the next governance target | None |
+| `g2-182-strategy-route-provider-fallback-decision` | `origin/wip/root-dirty-20260403` at `0398eb81259bba5c7d8c8ba6479056554e13d064` | Decide whether the Strategy route/provider fallback opens a source lane | None |
 
 ## OpenSpec Relationship
 
@@ -39,7 +40,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.181 is a residual-refresh decision branch only. It records the already merged
-state of PR `#333`, selects route/provider fallback as the recommended next
-governance target, and must not introduce another Strategy service getter
+G2.182 is a route/provider fallback decision branch only. It records the already
+merged state of PR `#334`, classifies the fallback as a retained route-local
+provider seam, and must not introduce another Strategy service getter
 implementation.

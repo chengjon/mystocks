@@ -1,10 +1,10 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-27T17:22:14+08:00",
+  "generated_at": "2026-05-27T17:44:36+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "ba929aee2e7fc0de0278f80f30caa185fafa6b5c",
-  "split_branch": "g2-181-strategy-getter-residual-refresh-decision",
+  "base_head": "0398eb81259bba5c7d8c8ba6479056554e13d064",
+  "split_branch": "g2-182-strategy-route-provider-fallback-decision",
   "scope": "governance_decision_package",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
@@ -170,9 +170,17 @@
     {
       "id": "g2-181-strategy-getter-residual-refresh-decision",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.180 Strategy adapter provider closeout",
+      "github_pr": {
+        "number": 334,
+        "url": "https://github.com/chengjon/mystocks/pull/334",
+        "state_at_closeout": "MERGED",
+        "mergeable_before_merge": "MERGEABLE",
+        "head_ref": "g2-181-strategy-getter-residual-refresh-decision",
+        "merge_commit": "0398eb81259bba5c7d8c8ba6479056554e13d064"
+      },
       "source_edit_authority": false,
       "evidence": [
         ".planning/codebase/generated/strategy-getter-residual-refresh-decision-2026-05-27.json",
@@ -198,10 +206,58 @@
         ]
       },
       "freshness": {
-        "current_head_checked": "ba929aee2e7fc0de0278f80f30caa185fafa6b5c",
+        "source_evidence_head": "ba929aee2e7fc0de0278f80f30caa185fafa6b5c",
+        "current_head_checked": "0398eb81259bba5c7d8c8ba6479056554e13d064",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, prepare G2.182 route/provider fallback decision package before any Strategy getter source edits."
+      "next_gate": "Superseded by G2.182 route/provider fallback decision package."
+    },
+    {
+      "id": "g2-182-strategy-route-provider-fallback-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.181 Strategy getter residual refresh decision",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/strategy-route-provider-fallback-decision-2026-05-27.json",
+        "docs/reports/quality/backend-strategy-route-provider-fallback-decision-2026-05-27.md",
+        "governance/mainline/task-cards/pr-335.yaml"
+      ],
+      "route_provider_residual": {
+        "target_path": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+        "get_strategy_service_hits": 6,
+        "import_line": 20,
+        "provider_definition_line": 33,
+        "provider_fallback_call_line": 34,
+        "endpoint_depends_usages": {
+          "query_strategy_results": {
+            "line": 388,
+            "method": "GET",
+            "path": "/results"
+          },
+          "get_matched_stocks": {
+            "line": 454,
+            "method": "GET",
+            "path": "/matched-stocks"
+          },
+          "get_strategy_summary": {
+            "line": 499,
+            "method": "GET",
+            "path": "/stats/summary"
+          }
+        }
+      },
+      "decision": {
+        "classification": "retained route-local provider fallback",
+        "source_lane_recommendation": "do-not-open-from-this-residual",
+        "recommended_next_work_item": "G2.183 Strategy getter remaining residual track closeout / adapter-local decision"
+      },
+      "freshness": {
+        "current_head_checked": "0398eb81259bba5c7d8c8ba6479056554e13d064",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, prepare G2.183 to decide track closeout vs adapter-local lifecycle cleanup authorization."
     },
     {
       "id": "core-batch2-reconciliation",
