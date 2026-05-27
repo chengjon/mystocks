@@ -1,0 +1,116 @@
+version: "v0.2"
+
+task:
+  id: "pr-330"
+  title: "Authorize Strategy adapter provider seam"
+  owner: "main"
+  created_at: "2026-05-27"
+
+mainline:
+  id: "L1-strategy-adapter-provider-authorization"
+  objective: "authorize a future path-limited implementation lane for the canonical Strategy adapter provider seam"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "not-required-strategy-adapter-provider-authorization"
+  approval_status: "not_required"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Design/authorization package only; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md"
+    - ".planning/codebase/generated/strategy-adapter-provider-authorization-2026-05-27.json"
+    - "docs/reports/quality/backend-strategy-adapter-provider-authorization-2026-05-27.md"
+    - "governance/mainline/task-cards/pr-330.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/guides/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+acceptance:
+  checks:
+    - id: "parent-pr-state"
+      command: "gh pr view 329 --repo chengjon/mystocks --json number,state,mergedAt,mergeCommit,title,url"
+      required: true
+    - id: "focused-adapter-fallback-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_adapter_mock_fallback_controls.py -q --no-cov --tb=short"
+      required: true
+    - id: "focused-logging-noise-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "focused-strategy-route-backtest-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py web/backend/tests/test_backtest_tasks_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "data-adapter-regression-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= tests/backend/test_data_adapter_regression.py -q --no-cov --tb=short"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md docs/reports/quality/backend-strategy-adapter-provider-authorization-2026-05-27.md"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/strategy-adapter-provider-authorization-2026-05-27.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-330.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+
+non_goals:
+  - "Do not edit backend source or tests in this design/authorization package."
+  - "Do not implement the provider seam in this package."
+  - "Do not edit data_adapters/strategy.py."
+  - "Do not edit data_adapter.py or data_source_factory.py."
+  - "Do not remove or edit Strategy route provider fallback."
+  - "Do not reopen the backtest task resolver lane."
+  - "Do not delete, privatize, rename, or change get_strategy_service()."
+  - "Do not change route/API behavior, OpenAPI exposure, PM2, frontend, OpenSpec, config, scripts, or issue-label state."
+
+risk_and_rollback:
+  risks:
+    - "If this authorization is treated as implementation, canonical strategy_adapter.py could be changed without TDD red/green evidence."
+    - "If G2.178 edits factory or route providers, a narrow adapter seam could expand into broader Strategy architecture work."
+    - "If public get_strategy_service is changed, this lane could accidentally enter the CRITICAL getter retirement problem."
+  rollback_plan: "revert this design PR to remove only the authorization report, generated artifact, task card, and steward-tree update"
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "authorize a future narrow implementation lane for the canonical Strategy adapter provider seam"
+    modified_scope: "steward tree, authorization report, generated artifact, and task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source and tests are not edited"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if parent state, source fact scan, GitNexus evidence, focused verification, markdown governance, JSON/YAML parsing, staged GitNexus, mainline scope, or diff checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: false
+    approved_by: "main"
+    approved_at: "2026-05-27T14:01:21+08:00"
+    approval_note: "Design/authorization package after PR #329 selected canonical Strategy adapter provider seam as the next track. Future G2.178 remains path-limited and must use TDD."
+    secondary_approved: false
