@@ -1,0 +1,154 @@
+{
+  "artifact": "service-lifecycle-candidate-refresh-after-strategy-route-provider-2026-05-27",
+  "task_id": "G2.167",
+  "status": "ready_for_review",
+  "scope": "governance_only_candidate_refresh",
+  "created_at": "2026-05-27T08:58:04+08:00",
+  "parent": {
+    "task_id": "G2.166",
+    "pr": 319,
+    "merge_commit": "03cff1a688337a170801add2dea52050b9bbea44",
+    "title": "refactor(backend): inject strategy route service provider"
+  },
+  "current_head": "03cff1a688337a170801add2dea52050b9bbea44",
+  "strategy_route_provider_closure": {
+    "route_handler_body_calls": 0,
+    "provider_fallback_calls": 1,
+    "depends_sites": 3,
+    "public_getter_fallback_preserved": true,
+    "note": "GitNexus still reports route handlers as direct upstream callers because provider-mediated route participation remains in the graph; static route-handler body calls are the closure metric."
+  },
+  "remaining_strategy_surfaces": [
+    {
+      "surface": "route_provider_fallback",
+      "file": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+      "line": 34,
+      "status": "intentionally_retained"
+    },
+    {
+      "surface": "adapter_provider_duplication",
+      "file": "web/backend/app/services/adapters/strategy_adapter.py",
+      "line": 45,
+      "status": "deferred"
+    },
+    {
+      "surface": "adapter_provider_duplication",
+      "file": "web/backend/app/services/data_adapters/strategy.py",
+      "line": 42,
+      "status": "deferred"
+    },
+    {
+      "surface": "backtest_task_resolver",
+      "file": "web/backend/app/tasks/backtest_tasks.py",
+      "line": 31,
+      "status": "deferred"
+    }
+  ],
+  "high_risk_getter_matrix": [
+    {
+      "getter": "get_strategy_service",
+      "risk": "CRITICAL",
+      "impacted": 13,
+      "direct": 6,
+      "processes": 0,
+      "interpretation": "Route-handler body debt is closed; residual must be split into adapter/provider duplication and backtest task resolution before source work."
+    },
+    {
+      "getter": "get_data_service",
+      "risk": "CRITICAL",
+      "impacted": 5,
+      "direct": 3,
+      "processes": 7,
+      "interpretation": "Indicator/Data route body debt is already closed; keep as provider-governed runtime seam."
+    },
+    {
+      "getter": "get_streaming_service",
+      "risk": "HIGH",
+      "impacted": 9,
+      "direct": 9,
+      "processes": 0,
+      "interpretation": "Realtime/socket lifecycle track remains separate."
+    },
+    {
+      "getter": "get_tdx_service",
+      "risk": "CRITICAL",
+      "impacted": 6,
+      "direct": 2,
+      "processes": 5,
+      "interpretation": "Dashboard/TDX residual remains separate."
+    }
+  ],
+  "token_surface": {
+    "scope": [
+      "web/backend/app/api",
+      "web/backend/app/services",
+      "web/backend/app/tasks",
+      "web/backend/app/core"
+    ],
+    "exclude_backend_tests": true,
+    "tokens": {
+      "get_data_service": {
+        "count": 5,
+        "files": 3
+      },
+      "get_strategy_service": {
+        "count": 9,
+        "files": 5
+      },
+      "get_streaming_service": {
+        "count": 5,
+        "files": 3
+      },
+      "get_tdx_service": {
+        "count": 4,
+        "files": 2
+      },
+      "get_market_data_service": {
+        "count": 2,
+        "files": 2
+      },
+      "get_market_data_service_v2_dependency": {
+        "count": 17,
+        "files": 3
+      },
+      "get_indicator_data_service": {
+        "count": 3,
+        "files": 1
+      },
+      "get_strategy_indicator_data_service": {
+        "count": 2,
+        "files": 1
+      },
+      "get_indicator_registry_dependency": {
+        "count": 4,
+        "files": 2
+      }
+    }
+  },
+  "verification": {
+    "parent_pr": {
+      "number": 319,
+      "state": "MERGED",
+      "merge_commit": "03cff1a688337a170801add2dea52050b9bbea44"
+    },
+    "focused_tests": {
+      "web/backend/tests/test_strategy_management_route_provider.py": "5 passed in 3.32s",
+      "web/backend/tests/test_health_route_conflicts.py::test_v1_strategy_management_endpoints_have_success_examples_and_parameter_docs": "1 passed in 12.57s"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "total_warnings_captured": 121
+    }
+  },
+  "decision": {
+    "implementation_authorized": false,
+    "next_gate": "G2.168 decision-only Strategy residual track-split package",
+    "recommended_split": [
+      "Strategy adapter/provider duplication",
+      "Backtest task data-source resolution"
+    ]
+  }
+}

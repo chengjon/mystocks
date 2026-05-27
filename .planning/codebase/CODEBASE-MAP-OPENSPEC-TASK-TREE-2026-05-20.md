@@ -3045,7 +3045,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenSpec, config, script, compatibility deletion,
 │   │              issue-label change, or implementation is performed here
 │   ├── G2.166 Strategy route provider injection implementation
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#319`
 │   │   ├── Evidence:
 │   │   │          `backend-strategy-service-route-provider-injection-implementation-2026-05-27.md`
 │   │   ├── Generated:
@@ -3053,6 +3053,7 @@ CODEBASE-MAP Architecture Remediation Program
 │   │   ├── Parent: G2.165 accepted and merged by PR `#318`
 │   │   ├── Current HEAD before implementation commit:
 │   │   │          `e5f8a4a2a53bc707a57732ac5c6e14d1f63a5444`
+│   │   ├── Merge commit: `03cff1a688337a170801add2dea52050b9bbea44`
 │   │   ├── Implementation: added
 │   │   │          `get_strategy_service_dependency()` provider in
 │   │   │          `_strategy_execution_router.py` and injected it into
@@ -3072,9 +3073,41 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              models, OpenAPI exposure, frontend, PM2, OpenSpec,
 │   │              config, scripts, issue labels, or public
 │   │              `get_strategy_service()` fallback compatibility
-│   └── Next gate: review G2.166; if accepted, start G2.167 as a
-│                  governance-only service getter inventory refresh after
-│                  Strategy route provider injection
+│   ├── G2.167 Service getter inventory refresh after Strategy route
+│   │          provider
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-service-lifecycle-candidate-refresh-after-strategy-route-provider-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `service-lifecycle-candidate-refresh-after-strategy-route-provider-2026-05-27.json`
+│   │   ├── Parent: G2.166 accepted and merged by PR `#319`
+│   │   ├── Evidence HEAD: `03cff1a688337a170801add2dea52050b9bbea44`
+│   │   ├── Strategy route closure: route-handler body
+│   │   │          `get_strategy_service()` calls remain `0`; route
+│   │   │          provider fallback call is `1`; and
+│   │   │          `Depends(get_strategy_service_dependency)` sites are `3`
+│   │   ├── Refreshed high-risk matrix: `get_strategy_service` remains
+│   │   │          CRITICAL `13/6/0`, `get_data_service` remains CRITICAL
+│   │   │          `5/3/7`, `get_streaming_service` remains HIGH `9/9/0`,
+│   │   │          and `get_tdx_service` remains CRITICAL `6/2/5`
+│   │   ├── Decision: no implementation is authorized; remaining
+│   │   │          Strategy residual must be split into adapter/provider
+│   │   │          duplication and backtest task data-source resolution
+│   │   │          before any source lane begins
+│   │   ├── Verification: parent PR `#319` merged, strategy route provider
+│   │   │          focused test `5 passed`, strategy route OpenAPI docs
+│   │   │          focused test `1 passed`, OpenAPI smoke `routes=548`,
+│   │   │          `paths=500`, `duplicate_operation_ids=0`, and
+│   │   │          `duplicate_operation_id_warnings=0`
+│   │   └── Boundary: governance-only refresh; no backend source/test
+│   │              edit, route/API behavior, OpenAPI exposure, frontend,
+│   │              PM2, OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, or implementation authorization
+│   │              is performed here
+│   └── Next gate: review G2.167; if accepted, start G2.168 as a
+│                  decision-only Strategy residual split package for
+│                  adapter/provider duplication vs backtest task
+│                  resolution
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md
