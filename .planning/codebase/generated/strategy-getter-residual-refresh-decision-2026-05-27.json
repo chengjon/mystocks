@@ -1,0 +1,84 @@
+{
+  "work_item": "G2.181",
+  "title": "Strategy getter residual refresh decision",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T17:22:14+08:00",
+  "base_head": "ba929aee2e7fc0de0278f80f30caa185fafa6b5c",
+  "scope": {
+    "type": "governance-decision-package",
+    "source_edit_authority": false,
+    "route_behavior_changed": false,
+    "openapi_exposure_changed": false,
+    "compatibility_deleted": false,
+    "issue_label_changed": false,
+    "openspec_change_created": false
+  },
+  "parent_items": [
+    {
+      "work_item": "G2.178",
+      "github_pr": 331,
+      "merge_commit": "8bfb4dc74b06d6bb930e48ebf3d27bb28d908704",
+      "title": "Strategy adapter provider implementation"
+    },
+    {
+      "work_item": "G2.180",
+      "github_pr": 333,
+      "merge_commit": "ba929aee2e7fc0de0278f80f30caa185fafa6b5c",
+      "title": "Strategy adapter provider closeout"
+    }
+  ],
+  "residual_scan": {
+    "pattern": "get_strategy_service",
+    "root": "web/backend/app",
+    "total_hits": 19,
+    "files": {
+      "web/backend/app/tasks/backtest_tasks.py": {
+        "hits": 2,
+        "lines": [19, 21],
+        "classification": "backtest task helper residual",
+        "decision": "do not reopen from this package unless current evidence later contradicts the closed resolver-seam handling"
+      },
+      "web/backend/app/services/adapters/strategy_adapter.py": {
+        "hits": 10,
+        "lines": [40, 47, 49, 106, 120, 136, 153, 183, 332, 344],
+        "classification": "canonical adapter-local residual",
+        "decision": "keep under future adapter-local lifecycle cleanup consideration; do not start source edits from this package"
+      },
+      "web/backend/app/services/strategy_service.py": {
+        "hits": 1,
+        "lines": [455],
+        "classification": "public getter definition",
+        "decision": "retain as public compatibility entrypoint; not a deletion, rename, or privatization candidate here"
+      },
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py": {
+        "hits": 6,
+        "lines": [20, 33, 34, 388, 454, 499],
+        "classification": "route provider fallback residual",
+        "decision": "recommended next governance target; requires a separate route/provider fallback decision package before source authorization"
+      }
+    }
+  },
+  "decision": {
+    "selected_next_governance_target": "strategy route provider fallback residual",
+    "recommended_next_work_item": "G2.182",
+    "recommended_next_package": "Strategy route provider fallback residual decision package",
+    "not_authorized": [
+      "backend source edits",
+      "test edits",
+      "route behavior changes",
+      "OpenAPI exposure changes",
+      "public get_strategy_service deletion or privatization",
+      "adapter-local cleanup implementation",
+      "backtest task helper implementation"
+    ]
+  },
+  "updated_steward_files": [
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md"
+  ],
+  "next_gate": "review G2.181; if accepted, prepare G2.182 route/provider fallback residual decision package before any Strategy getter source edits"
+}

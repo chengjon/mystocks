@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-05-27T15:32:41+08:00`
-- Base HEAD checked: `3b8f95945fcb489316ddfaf919835d372122fa5f`
+- Prepared at: `2026-05-27T17:22:14+08:00`
+- Base HEAD checked: `ba929aee2e7fc0de0278f80f30caa185fafa6b5c`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -20,7 +20,7 @@ exact verification output.
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
 | Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, and closeout pattern across multiple services | Continue with path-limited source lanes only after authorization |
-| Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 records closeout and residual distribution |
+| Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 now reviews route/provider fallback as the next governance target |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Closeout Rule

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-27T15:32:41+08:00`
-- Base HEAD checked: `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704`
+- Prepared at: `2026-05-27T17:22:14+08:00`
+- Base HEAD checked: `ba929aee2e7fc0de0278f80f30caa185fafa6b5c`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -22,7 +22,9 @@ state transition.
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
 | `.planning/codebase/generated/strategy-adapter-provider-closeout-2026-05-27.json` | G2.180 closeout and residual-refresh evidence | Current for HEAD `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` |
-| `docs/reports/quality/backend-strategy-adapter-provider-closeout-2026-05-27.md` | G2.180 human-readable closeout report | Review input until accepted |
+| `docs/reports/quality/backend-strategy-adapter-provider-closeout-2026-05-27.md` | G2.180 human-readable closeout report | Accepted by PR `#333`; superseded for residual next-gate selection by G2.181 |
+| `.planning/codebase/generated/strategy-getter-residual-refresh-decision-2026-05-27.json` | G2.181 residual class refresh and next-gate decision evidence | Current for HEAD `ba929aee2e7fc0de0278f80f30caa185fafa6b5c` |
+| `docs/reports/quality/backend-strategy-getter-residual-refresh-decision-2026-05-27.md` | G2.181 human-readable residual-refresh decision package | Review input until accepted |
 
 ## External State Inputs
 
