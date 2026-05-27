@@ -1,0 +1,101 @@
+{
+  "work_item": "G2.182",
+  "title": "Strategy route provider fallback decision",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T17:44:36+08:00",
+  "base_head": "0398eb81259bba5c7d8c8ba6479056554e13d064",
+  "scope": {
+    "type": "governance-decision-package",
+    "source_edit_authority": false,
+    "route_behavior_changed": false,
+    "openapi_exposure_changed": false,
+    "compatibility_deleted": false,
+    "issue_label_changed": false,
+    "openspec_change_created": false
+  },
+  "parent_item": {
+    "work_item": "G2.181",
+    "github_pr": 334,
+    "merge_commit": "0398eb81259bba5c7d8c8ba6479056554e13d064",
+    "title": "Strategy getter residual refresh decision"
+  },
+  "route_provider_evidence": {
+    "target_path": "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+    "line_count": 558,
+    "get_strategy_service_hits": 6,
+    "hit_classes": {
+      "import": {
+        "line": 20,
+        "text": "from app.services.strategy_service import StrategyService, get_strategy_service"
+      },
+      "route_local_provider": {
+        "definition_line": 33,
+        "fallback_call_line": 34,
+        "function": "get_strategy_service_dependency"
+      },
+      "route_depends_usages": [
+        {
+          "line": 388,
+          "function": "query_strategy_results",
+          "method": "GET",
+          "path": "/results"
+        },
+        {
+          "line": 454,
+          "function": "get_matched_stocks",
+          "method": "GET",
+          "path": "/matched-stocks"
+        },
+        {
+          "line": 499,
+          "function": "get_strategy_summary",
+          "method": "GET",
+          "path": "/stats/summary"
+        }
+      ]
+    },
+    "comparison": {
+      "backend_api_files_with_get_dependency_pattern": 21,
+      "interpretation": "route-local Depends(get_*_dependency) provider functions are an established backend API pattern"
+    },
+    "focused_test": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_strategy_management_route_provider.py -q --no-cov --tb=short",
+      "result": "5 passed in 4.79s",
+      "test_file": "web/backend/tests/test_strategy_management_route_provider.py"
+    }
+  },
+  "decision": {
+    "classification": "retained route-local provider fallback",
+    "source_lane_recommendation": "do-not-open-from-this-residual",
+    "rationale": [
+      "The route handlers do not call get_strategy_service directly; they depend on get_strategy_service_dependency via FastAPI Depends.",
+      "The remaining direct fallback call is inside the route-local provider helper.",
+      "Focused tests already verify that the route exposes the local provider and the three affected handlers depend on it.",
+      "Removing or replacing the fallback would be a broader route dependency-provider policy change, not a narrow bug fix."
+    ],
+    "retained_endpoints": [
+      "GET /results",
+      "GET /matched-stocks",
+      "GET /stats/summary"
+    ],
+    "not_authorized": [
+      "backend source edits",
+      "test edits",
+      "route behavior changes",
+      "OpenAPI exposure changes",
+      "public get_strategy_service deletion or privatization",
+      "adapter-local cleanup implementation",
+      "backtest task helper implementation"
+    ],
+    "recommended_next_work_item": "G2.183 Strategy getter remaining residual track closeout / adapter-local decision"
+  },
+  "updated_steward_files": [
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md"
+  ],
+  "next_gate": "review G2.182; if accepted, prepare G2.183 to decide whether remaining Strategy getter work is track closeout or adapter-local lifecycle cleanup authorization"
+}
