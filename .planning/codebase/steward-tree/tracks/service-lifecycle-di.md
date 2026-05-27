@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-27T17:44:36+08:00`
-- Base HEAD checked: `0398eb81259bba5c7d8c8ba6479056554e13d064`
+- Prepared at: `2026-05-27T18:06:02+08:00`
+- Base HEAD checked: `597f8186092b4ad3d0704326e292c5e4fa075f15`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -34,28 +34,30 @@ It proved a repeatable conveyor:
 | G2.178 Strategy adapter provider implementation | Merged by PR `#331` | Added the approved optional constructor-level provider seam and reconciled the G2.178 steward update into the split tree |
 | G2.180 Strategy adapter provider closeout | Merged by PR `#333` | Records G2.178 as closed and refreshes residual Strategy getter distribution without source edits |
 | G2.181 Strategy getter residual refresh decision | Merged by PR `#334` | Rechecks residual classes and selects route/provider fallback as the next governance target |
-| G2.182 Strategy route/provider fallback decision | For review | Classifies the route/provider fallback as a retained route-local provider seam and does not open a source lane |
+| G2.182 Strategy route/provider fallback decision | Merged by PR `#335` | Classifies the route/provider fallback as a retained route-local provider seam and does not open a source lane |
+| G2.183 Strategy getter remaining residual decision | For review | Closes the current Strategy getter residual track with retained residuals and focused residual test evidence |
 
 ## Current Strategy Getter Residuals
 
 At HEAD `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704`, production `.py`
-At HEAD `0398eb81259bba5c7d8c8ba6479056554e13d064`, `get_strategy_service`
+At HEAD `597f8186092b4ad3d0704326e292c5e4fa075f15`, `get_strategy_service`
 hits under `web/backend/app` remain `19`:
 
 | File | Hits | Current decision |
 |---|---:|---|
-| `web/backend/app/services/adapters/strategy_adapter.py` | 10 | Canonical adapter-local residual; defer future adapter-local lifecycle cleanup until a separate decision/authorization package exists |
+| `web/backend/app/services/adapters/strategy_adapter.py` | 10 | Retained adapter-local helper/provider seam; no adapter-local cleanup authorization opened by G2.183 |
 | `web/backend/app/api/strategy_management/_strategy_execution_router.py` | 6 | Retained route-local provider fallback; no source lane opened by G2.182 |
-| `web/backend/app/tasks/backtest_tasks.py` | 2 | Backtest task helper residual; do not reopen unless current evidence contradicts the closed resolver-seam handling |
+| `web/backend/app/tasks/backtest_tasks.py` | 2 | Retained backtest task resolver fallback; do not reopen unless current evidence contradicts focused tests |
 | `web/backend/app/services/strategy_service.py` | 1 | Public getter definition; retain as compatibility entrypoint and do not delete, rename, or privatize here |
 
 ## Next Gates
 
-- Review G2.182 route/provider fallback decision.
-- If accepted, prepare G2.183 to decide track closeout vs adapter-local
-  lifecycle cleanup authorization.
+- Review G2.183 remaining residual decision.
+- If accepted, close the current Strategy getter residual track with retained
+  residuals and select the next non-Strategy service lifecycle DI candidate in a
+  separate decision package.
 - Do not start another Strategy service getter source lane from this
-  route/provider fallback decision package.
+  remaining-residual decision package.
 
 ## Forbidden Scope
 

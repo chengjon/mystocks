@@ -1,0 +1,93 @@
+{
+  "work_item": "G2.183",
+  "title": "Strategy getter remaining residual decision",
+  "state": "ready-for-review",
+  "recorded_at": "2026-05-27T18:06:02+08:00",
+  "base_head": "597f8186092b4ad3d0704326e292c5e4fa075f15",
+  "scope": {
+    "type": "governance-decision-package",
+    "source_edit_authority": false,
+    "route_behavior_changed": false,
+    "openapi_exposure_changed": false,
+    "compatibility_deleted": false,
+    "issue_label_changed": false,
+    "openspec_change_created": false
+  },
+  "parent_item": {
+    "work_item": "G2.182",
+    "github_pr": 335,
+    "merge_commit": "597f8186092b4ad3d0704326e292c5e4fa075f15",
+    "title": "Strategy route provider fallback decision"
+  },
+  "residual_scan": {
+    "pattern": "get_strategy_service",
+    "root": "web/backend/app",
+    "total_hits": 19,
+    "files": {
+      "web/backend/app/tasks/backtest_tasks.py": {
+        "hits": 2,
+        "lines": [19, 21],
+        "classification": "backtest task resolver fallback",
+        "decision": "retained; do not reopen unless fresh current-HEAD evidence contradicts the resolver-seam tests"
+      },
+      "web/backend/app/services/adapters/strategy_adapter.py": {
+        "hits": 10,
+        "lines": [40, 47, 49, 106, 120, 136, 153, 183, 332, 344],
+        "classification": "adapter-local helper/provider seam",
+        "decision": "retained; no adapter-local cleanup authorization from this package"
+      },
+      "web/backend/app/services/strategy_service.py": {
+        "hits": 1,
+        "lines": [455],
+        "classification": "public compatibility getter definition",
+        "decision": "retained; not a deletion, rename, or privatization candidate"
+      },
+      "web/backend/app/api/strategy_management/_strategy_execution_router.py": {
+        "hits": 6,
+        "lines": [20, 33, 34, 388, 454, 499],
+        "classification": "route-local provider fallback",
+        "decision": "retained by G2.182"
+      }
+    }
+  },
+  "focused_test_evidence": {
+    "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_adapter_mock_fallback_controls.py web/backend/tests/test_backtest_tasks_regressions.py web/backend/tests/test_strategy_management_route_provider.py -q --no-cov --tb=short",
+    "result": "16 passed in 4.52s",
+    "covered_surfaces": [
+      "StrategyDataSourceAdapter provider/fallback controls",
+      "backtest task resolver fallback",
+      "strategy route provider fallback"
+    ]
+  },
+  "decision": {
+    "classification": "strategy-getter-track-closeout-with-retained-residuals",
+    "source_lane_recommendation": "do-not-open-adapter-local-cleanup-now",
+    "rationale": [
+      "The remaining route/provider fallback was retained by G2.182.",
+      "The adapter-local residuals are internal helper/provider seam calls after the approved constructor provider seam.",
+      "The backtest task residual is a resolver fallback covered by focused regression tests.",
+      "The public get_strategy_service definition remains the compatibility entrypoint.",
+      "Focused tests covering adapter, backtest, and route residual surfaces passed."
+    ],
+    "closed_strategy_getter_track": true,
+    "recommended_next_work_item": "return to service lifecycle DI queue for next non-Strategy getter candidate selection"
+  },
+  "not_authorized": [
+    "backend source edits",
+    "test edits",
+    "route behavior changes",
+    "OpenAPI exposure changes",
+    "public get_strategy_service deletion or privatization",
+    "adapter-local cleanup implementation",
+    "backtest task helper implementation"
+  ],
+  "updated_steward_files": [
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md"
+  ],
+  "next_gate": "review G2.183; if accepted, use a separate decision package to select the next non-Strategy service lifecycle DI candidate"
+}
