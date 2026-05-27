@@ -3192,13 +3192,14 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              compatibility deletion, or issue-label change is performed
 │   │              here
 │   ├── G2.171 Backtest task resolver closeout
-│   │   ├── State: ready for review
+│   │   ├── State: accepted and merged by PR `#324`
 │   │   ├── Evidence:
 │   │   │          `backend-backtest-task-resolver-closeout-2026-05-27.md`
 │   │   ├── Generated:
 │   │   │          `backtest-task-resolver-closeout-2026-05-27.json`
 │   │   ├── Parent: G2.170 accepted and merged by PR `#323`
 │   │   ├── Evidence HEAD: `d465e41950c2f6fe70ee9c923da3cc55c09212c3`
+│   │   ├── Merge HEAD: `68c6b4149984aab583dacebf9cdd1ff131189c3e`
 │   │   ├── Closeout: G2.170 is closed as the backtest task resolver seam
 │   │   │          only; public `get_strategy_service` remains unchanged,
 │   │   │          route provider fallback remains retained, and Strategy
@@ -3216,9 +3217,41 @@ CODEBASE-MAP Architecture Remediation Program
 │   │              OpenSpec, config, script, compatibility deletion,
 │   │              issue-label change, or next implementation authorization is
 │   │              performed here
-│   └── Next gate: review G2.171; after acceptance, create a separate
-│                  decision-only or authorization-only packet before any
-│                  additional Strategy service getter source implementation
+│   ├── G2.172 Strategy residual current track decision
+│   │   ├── State: ready for review
+│   │   ├── Evidence:
+│   │   │          `backend-strategy-residual-current-track-decision-2026-05-27.md`
+│   │   ├── Generated:
+│   │   │          `strategy-residual-current-track-decision-2026-05-27.json`
+│   │   ├── Parent: G2.171 accepted and merged by PR `#324`
+│   │   ├── Evidence HEAD: `68c6b4149984aab583dacebf9cdd1ff131189c3e`
+│   │   ├── Residual scan: `get_strategy_service` has `29` production text
+│   │   │          hits across `5` files; adapter/provider duplication owns
+│   │   │          `20` hits across `2` files, route provider fallback owns
+│   │   │          `6` hits, public getter definition owns `1`, and the
+│   │   │          closed backtest resolver helper owns `2`
+│   │   ├── Decision: retain route provider fallback, keep the backtest
+│   │   │          resolver closed, keep public `get_strategy_service`
+│   │   │          unchanged, and select Strategy adapter/provider
+│   │   │          duplication as the next design/authorization track
+│   │   ├── GitNexus evidence: broad `get_strategy_service` remains
+│   │   │          CRITICAL with `13` impacted symbols, `6` direct callers,
+│   │   │          and `0` affected processes; both adapter helper contexts
+│   │   │          have `_fetch_strategy_data` and `health_check` incoming
+│   │   │          callers and public `get_strategy_service` outgoing calls
+│   │   ├── Verification: backtest task regressions `3 passed`, strategy
+│   │   │          route provider regressions `5 passed`, adapter mock
+│   │   │          fallback controls `6 passed`, and OpenAPI smoke
+│   │   │          `routes=548`, `paths=500`,
+│   │   │          `duplicate_operation_ids=0`
+│   │   └── Boundary: decision-only; no backend source/test edit,
+│   │              route/API behavior, OpenAPI exposure, frontend, PM2,
+│   │              OpenSpec, config, script, compatibility deletion,
+│   │              issue-label change, adapter implementation authorization,
+│   │              or public getter retirement is performed here
+│   └── Next gate: review G2.172; if accepted, create G2.173 as a
+│                  Strategy adapter/provider duplication design or
+│                  authorization package before any source implementation
 │
 ├── H. Decision-Only Track: CSRF composition root
 │   ├── Source evidence: backend-csrf-composition-root-decision-2026-05-19.md

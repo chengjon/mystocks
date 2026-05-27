@@ -1,0 +1,157 @@
+{
+  "work_item": "G2.172",
+  "artifact_type": "decision_package",
+  "status": "ready_for_review",
+  "created_at": "2026-05-27T11:54:10+08:00",
+  "current_head": "68c6b4149984aab583dacebf9cdd1ff131189c3e",
+  "base_branch": "wip/root-dirty-20260403",
+  "parent": {
+    "work_item": "G2.171",
+    "pr": 324,
+    "state": "MERGED",
+    "merge_commit": "68c6b4149984aab583dacebf9cdd1ff131189c3e",
+    "title": "docs(governance): close out backtest task resolver seam"
+  },
+  "scope": {
+    "type": "decision_only_current_residual_refresh",
+    "source_files_changed": [],
+    "test_files_changed": [],
+    "governance_files": [
+      ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
+      ".planning/codebase/generated/strategy-residual-current-track-decision-2026-05-27.json",
+      "docs/reports/quality/backend-strategy-residual-current-track-decision-2026-05-27.md",
+      "governance/mainline/task-cards/pr-325.yaml"
+    ]
+  },
+  "residual_scan": {
+    "root": "web/backend/app",
+    "token": "get_strategy_service",
+    "total_hits": 29,
+    "files": 5,
+    "by_classification": {
+      "route_provider_fallback_retained": {
+        "hits": 6,
+        "files": [
+          "web/backend/app/api/strategy_management/_strategy_execution_router.py"
+        ],
+        "decision": "retain"
+      },
+      "adapter_provider_duplication_track": {
+        "hits": 20,
+        "files": [
+          "web/backend/app/services/adapters/strategy_adapter.py",
+          "web/backend/app/services/data_adapters/strategy.py"
+        ],
+        "decision": "select_next_design_track"
+      },
+      "public_getter_definition": {
+        "hits": 1,
+        "files": [
+          "web/backend/app/services/strategy_service.py"
+        ],
+        "decision": "retain"
+      },
+      "backtest_task_resolver_closed": {
+        "hits": 2,
+        "files": [
+          "web/backend/app/tasks/backtest_tasks.py"
+        ],
+        "decision": "closed_no_reopen"
+      }
+    }
+  },
+  "route_fallback_state": {
+    "provider": "get_strategy_service_dependency",
+    "provider_lines": [33, 39],
+    "provider_direct_getter_calls": 1,
+    "route_handlers": [
+      {
+        "name": "query_strategy_results",
+        "lines": [379, 442],
+        "body_getter_mentions": 0,
+        "dependency_mentions": 1
+      },
+      {
+        "name": "get_matched_stocks",
+        "lines": [450, 489],
+        "body_getter_mentions": 0,
+        "dependency_mentions": 1
+      },
+      {
+        "name": "get_strategy_summary",
+        "lines": [497, 558],
+        "body_getter_mentions": 0,
+        "dependency_mentions": 1
+      }
+    ],
+    "decision": "retain"
+  },
+  "backtest_resolver_state": {
+    "resolver_direct_getter_mentions": 0,
+    "helper_public_getter_mentions": 2,
+    "provider_test_present": true,
+    "decision": "closed_no_reopen"
+  },
+  "adapter_provider_duplication_state": [
+    {
+      "file": "web/backend/app/services/adapters/strategy_adapter.py",
+      "helper_lines": [39, 50],
+      "helper_public_getter_mentions": 3,
+      "fetch_helper_mentions": 5,
+      "health_helper_mentions": 2,
+      "gitnexus_incoming": ["_fetch_strategy_data", "health_check"],
+      "gitnexus_outgoing": ["get_strategy_service"]
+    },
+    {
+      "file": "web/backend/app/services/data_adapters/strategy.py",
+      "helper_lines": [36, 47],
+      "helper_public_getter_mentions": 3,
+      "fetch_helper_mentions": 5,
+      "health_helper_mentions": 2,
+      "gitnexus_incoming": ["_fetch_strategy_data", "health_check"],
+      "gitnexus_outgoing": ["get_strategy_service"]
+    }
+  ],
+  "gitnexus": {
+    "target": "get_strategy_service",
+    "risk": "CRITICAL",
+    "impacted_count": 13,
+    "direct_callers": 6,
+    "affected_processes": 0,
+    "affected_modules": 5,
+    "module_hits": {
+      "Data_adapters": 4,
+      "Adapters": 4,
+      "Strategy_management": 3,
+      "Tasks": 1,
+      "Cdp": 1
+    }
+  },
+  "verification": {
+    "parent_pr_state": "MERGED",
+    "head_matches_remote": true,
+    "backtest_regressions": "3 passed in 2.05s",
+    "strategy_route_provider_regressions": "5 passed in 3.34s",
+    "adapter_mock_fallback_controls": "6 passed in 0.19s",
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "total_warnings_captured": 121,
+      "env_note": "minimal non-secret placeholder env used for required import gate"
+    }
+  },
+  "decision": {
+    "next_work_item": "G2.173",
+    "next_track": "strategy_adapter_provider_duplication_design",
+    "next_track_type": "decision_or_authorization_only",
+    "implementation_authorized": false,
+    "ordering": [
+      "retain route provider fallback",
+      "keep backtest task resolver closed",
+      "retain public get_strategy_service",
+      "create adapter/provider duplication design package before any source implementation"
+    ]
+  }
+}
