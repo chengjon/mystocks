@@ -1,0 +1,148 @@
+{
+  "schema_version": "2026-05-28.g2-194.decision.v1",
+  "generated_at": "2026-05-28T02:10:15+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "ea659d52903a5e9884d396069526ea08f15109a6",
+  "worktree_branch": "g2-194-data-quality-adapter-seam-design",
+  "scope": "governance_only_data_quality_adapter_constructor_seam_design",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "G2.193",
+    "description": "data-quality route provider closeout / remaining candidate refresh",
+    "github_pr": 346,
+    "merge_commit": "ea659d52903a5e9884d396069526ea08f15109a6",
+    "merged_at": "2026-05-27T18:07:58Z"
+  },
+  "current_inventory": {
+    "head": "ea659d52903a5e9884d396069526ea08f15109a6",
+    "files_scanned": 14,
+    "get_data_quality_monitor_calls": 15,
+    "monitor_data_quality_calls": 1,
+    "constructor_count": 15,
+    "constructors_with_quality_monitor_param": 0,
+    "quality_monitor_methods_used": [
+      "check_data_quality",
+      "evaluate_data_quality"
+    ],
+    "existing_test_hit_files": [
+      "web/backend/tests/test_logging_noise_regressions.py",
+      "web/backend/tests/_test_data_source_factory_management.py",
+      "web/backend/tests/_test_data_source_factory_support.py",
+      "web/backend/tests/test_market_data_service_getter_retirement.py",
+      "tests/backend/test_data_adapter_regression.py"
+    ]
+  },
+  "surface_buckets": {
+    "adapter_split_constructor": {
+      "files": 8,
+      "get_data_quality_monitor_calls": 8,
+      "constructor_shape": "BaseAdapter plus seven subclasses call get_data_quality_monitor during __init__",
+      "classification": "next recommended governance target"
+    },
+    "service_adapter_trigger_monitoring": {
+      "files": 2,
+      "get_data_quality_monitor_calls": 2,
+      "constructor_shape": "config constructors plus async _trigger_quality_monitoring runtime getter",
+      "classification": "defer until adapter_split pattern is proven"
+    },
+    "legacy_adapter_trigger_monitoring": {
+      "files": 2,
+      "get_data_quality_monitor_calls": 2,
+      "constructor_shape": "config constructors plus async _trigger_quality_monitoring runtime getter",
+      "classification": "defer to compatibility ownership decision"
+    },
+    "market_data_adapter_compatibility": {
+      "files": 1,
+      "get_data_quality_monitor_calls": 1,
+      "constructor_shape": "config constructor plus async _trigger_quality_monitoring runtime getter",
+      "classification": "defer to market-data compatibility decision"
+    },
+    "service_wrapper": {
+      "files": 1,
+      "get_data_quality_monitor_calls": 2,
+      "monitor_data_quality_calls": 1,
+      "classification": "retained backing API; not a deletion candidate"
+    }
+  },
+  "gitnexus_evidence": {
+    "get_data_quality_monitor": {
+      "risk": "CRITICAL",
+      "impacted_count": 24,
+      "direct_callers": 20,
+      "processes_affected": 7,
+      "modules_affected": 4
+    },
+    "BaseAdapter": {
+      "risk": "MEDIUM",
+      "impacted_count": 7,
+      "direct": 7,
+      "processes_affected": 0,
+      "d1_extenders": [
+        "TushareAdapter",
+        "TDXAdapter",
+        "EfinanceAdapter",
+        "CustomerAdapter",
+        "BYAPIAdapter",
+        "BaostockAdapter",
+        "AkshareAdapter"
+      ]
+    }
+  },
+  "decision": {
+    "classification": "adapter_split_constructor_seam_first_design",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-194",
+    "selected_next_governance_target": "data-quality-adapter-split-constructor-provider-authorization",
+    "recommended_next_work_item": "G2.195 data-quality adapter_split constructor provider authorization package",
+    "future_authorization_shape": {
+      "future_lane": "G2.196 data-quality adapter_split constructor provider implementation after G2.195 acceptance",
+      "candidate_source_paths": [
+        "web/backend/app/services/adapters_split/base_adapter.py",
+        "web/backend/app/services/adapters_split/baostock_adapter.py",
+        "web/backend/app/services/adapters_split/tushare_adapter.py",
+        "web/backend/app/services/adapters_split/customer_adapter.py",
+        "web/backend/app/services/adapters_split/byapi_adapter.py",
+        "web/backend/app/services/adapters_split/akshare_adapter.py",
+        "web/backend/app/services/adapters_split/efinance_adapter.py",
+        "web/backend/app/services/adapters_split/tdx_adapter.py"
+      ],
+      "candidate_test_paths": [
+        "new focused adapter_split constructor provider regression test",
+        "existing adapter_split import / construction smoke if present"
+      ],
+      "forbidden_future_paths_until_separate_decision": [
+        "web/backend/app/services/adapters/**",
+        "web/backend/app/services/data_adapters/**",
+        "web/backend/app/services/market_data_adapter.py",
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py"
+      ]
+    }
+  },
+  "test_double_contract": {
+    "name": "FakeDataQualityMonitor",
+    "required_methods": {
+      "check_data_quality": "sync method returning {'is_valid': true-like value} and recording calls",
+      "evaluate_data_quality": "async method returning true-like value and recording calls for later runtime-monitoring tracks"
+    },
+    "required_assertions_for_future_implementation": [
+      "adapter constructors can receive the fake monitor or provider without calling the global getter",
+      "BaseAdapter._log_data_quality uses the injected monitor",
+      "subclass constructors do not overwrite the injected monitor with the singleton",
+      "existing constructor defaults still preserve current runtime behavior"
+    ]
+  },
+  "explicit_non_goals": [
+    "backend source edits",
+    "test edits",
+    "adapter constructor implementation",
+    "legacy adapter compatibility edits",
+    "singleton wrapper deletion",
+    "DataQualityMonitor internals",
+    "frontend edits",
+    "src edits",
+    "docs/api edits",
+    "OpenSpec change/spec edits"
+  ],
+  "next_gate": "If accepted, start G2.195 data-quality adapter_split constructor provider authorization package; do not implement adapter changes from G2.194."
+}

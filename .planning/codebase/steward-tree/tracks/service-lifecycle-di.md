@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T01:52:33+08:00`
-- Base HEAD checked: `2b0c3ce373fba38bacd62eff5436822527dccda1`
+- Prepared at: `2026-05-28T02:10:15+08:00`
+- Base HEAD checked: `ea659d52903a5e9884d396069526ea08f15109a6`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -45,7 +45,8 @@ It proved a repeatable conveyor:
 | G2.190 data-quality / adapter cross-cutting decision | Merged by PR `#343` | Classifies `get_data_quality_monitor` as `CRITICAL`, splits the route/adapter/wrapper surfaces, and selects G2.191 route-only authorization as the next gate |
 | G2.191 data-quality route provider authorization | Merged by PR `#344` | Authorized a future G2.192 route-only implementation lane for `web/backend/app/api/data_quality.py` and focused tests, with no source edits in G2.191 |
 | G2.192 data-quality route provider implementation | Merged by PR `#345` | Implements authorized provider injection in `web/backend/app/api/data_quality.py`; focused tests and OpenAPI leak smoke pass |
-| G2.193 data-quality route provider closeout / remaining candidate refresh | For review | Marks route-body provider migration closed and selects adapter constructor seam design / test-double decision as the next governance gate |
+| G2.193 data-quality route provider closeout / remaining candidate refresh | Merged by PR `#346` | Marks route-body provider migration closed and selects adapter constructor seam design / test-double decision as the next governance gate |
+| G2.194 data-quality adapter constructor seam design | For review | Selects `adapter_split` constructor provider authorization as the next gate, defines test-double contract, and keeps source authority at none |
 
 ## Current Strategy Getter Residuals
 
@@ -188,14 +189,57 @@ Remaining `get_data_quality_monitor` surface after route closeout:
 | other | 1 | 1 | `market_data_adapter.py` compatibility surface |
 | service_wrapper | 1 | 2 | Retain singleton wrapper / backing API until consumers are migrated and verified |
 
+## G2.194 Data-Quality Adapter Constructor Seam Design
+
+At HEAD `ea659d52903a5e9884d396069526ea08f15109a6`, PR `#346` is merged and the
+remaining data-quality adapter seam is classified as constructor-level
+dependency ownership, not route-body provider debt.
+
+| Inventory item | Value |
+|---|---:|
+| Adapter-related files scanned | 14 |
+| `get_data_quality_monitor()` calls | 15 |
+| `monitor_data_quality()` helper calls | 1 |
+| `__init__` definitions | 15 |
+| Constructors with quality monitor parameter | 0 |
+
+Surface classification:
+
+| Surface | Files | Getter calls | G2.194 decision |
+|---|---:|---:|---|
+| `adapter_split` | 8 | 8 | Next governance target: constructor provider authorization |
+| service adapters | 2 | 2 | Defer; async runtime monitoring surface, not constructor migration |
+| legacy adapters | 2 | 2 | Defer to owner-specific compatibility decision |
+| `market_data_adapter.py` | 1 | 1 | Defer as compatibility surface |
+| singleton wrapper | 1 | 2 plus 1 helper | Retain backing API until consumers are migrated and verified |
+
+GitNexus design evidence:
+
+| Target | Risk | Impact summary | Decision use |
+|---|---|---|---|
+| `get_data_quality_monitor` | CRITICAL | 24 impacted symbols, 20 direct callers, 7 processes, 4 modules | Do not migrate all surfaces in one source lane |
+| `BaseAdapter` | MEDIUM | 7 direct subclass extenders | Use `adapter_split` constructor seam as the first authorization candidate |
+
+Required future test-double contract:
+
+- `FakeDataQualityMonitor.check_data_quality(data, source_or_context)` records
+  calls and returns a truthy quality result.
+- `FakeDataQualityMonitor.evaluate_data_quality(...)` records calls and returns
+  a truthy result for later async runtime-monitoring surfaces.
+- Future source implementation must prove `BaseAdapter` and subclass
+  constructors can accept the fake monitor/provider without calling the global
+  getter.
+- Future source implementation must prove subclass constructors do not overwrite
+  the injected monitor and default runtime behavior remains compatible.
+
 ## Next Gates
 
-- Review G2.193 data-quality route provider closeout / remaining candidate
-  refresh.
-- If accepted, start G2.194 data-quality adapter constructor seam design /
-  test-double decision package.
-- Do not start adapter constructor implementation from G2.193.
-- Do not migrate adapter constructors or delete singleton wrappers from G2.193.
+- Review G2.194 data-quality adapter constructor seam design decision.
+- If accepted, start G2.195 data-quality `adapter_split` constructor provider
+  authorization package.
+- Do not start adapter constructor implementation from G2.194.
+- Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
+  singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
   restoration, or other risk route provider migrations.
 

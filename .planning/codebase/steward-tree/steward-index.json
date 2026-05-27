@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T01:52:33+08:00",
+  "generated_at": "2026-05-28T02:10:15+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "2b0c3ce373fba38bacd62eff5436822527dccda1",
-  "split_branch": "g2-193-data-quality-route-provider-closeout-refresh",
-  "scope": "governance_only_data_quality_route_provider_closeout_refresh",
+  "base_head": "ea659d52903a5e9884d396069526ea08f15109a6",
+  "split_branch": "g2-194-data-quality-adapter-seam-design",
+  "scope": "governance_only_data_quality_adapter_constructor_seam_design",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -916,7 +916,7 @@
     {
       "id": "g2-193-data-quality-route-provider-closeout-refresh",
       "type": "closeout_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.192 data-quality route provider implementation",
       "source_edit_authority": false,
@@ -973,10 +973,109 @@
         "source_lane_recommendation": "do-not-start-source-implementation-from-g2-193"
       },
       "freshness": {
-        "current_head_checked": "2b0c3ce373fba38bacd62eff5436822527dccda1",
+        "current_head_checked": "ea659d52903a5e9884d396069526ea08f15109a6",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.194 data-quality adapter constructor seam design / test-double decision package; do not implement adapter changes from G2.193."
+      "github_pr": {
+        "number": 346,
+        "url": "https://github.com/chengjon/mystocks/pull/346",
+        "state": "MERGED",
+        "merge_commit": "ea659d52903a5e9884d396069526ea08f15109a6"
+      },
+      "next_gate": "Superseded by G2.194 data-quality adapter constructor seam design."
+    },
+    {
+      "id": "g2-194-data-quality-adapter-seam-design",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.193 data-quality route provider closeout / remaining candidate refresh",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/data-quality-adapter-seam-design-decision-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-adapter-seam-design-decision-2026-05-28.md",
+        "governance/mainline/task-cards/pr-347.yaml"
+      ],
+      "current_inventory": {
+        "files_scanned": 14,
+        "get_data_quality_monitor_calls": 15,
+        "monitor_data_quality_calls": 1,
+        "init_definitions": 15,
+        "constructors_with_quality_monitor_parameter": 0,
+        "methods_required_by_remaining_surfaces": [
+          "check_data_quality",
+          "evaluate_data_quality"
+        ]
+      },
+      "surface_buckets": {
+        "adapter_split": {
+          "files": 8,
+          "getter_calls": 8,
+          "decision": "next_authorization_target"
+        },
+        "service_adapter": {
+          "files": 2,
+          "getter_calls": 2,
+          "decision": "defer_async_runtime_monitoring_surface"
+        },
+        "legacy_adapter": {
+          "files": 2,
+          "getter_calls": 2,
+          "decision": "defer_owner_specific_compatibility_surface"
+        },
+        "market_data_adapter": {
+          "files": 1,
+          "getter_calls": 1,
+          "decision": "defer_compatibility_surface"
+        },
+        "service_wrapper": {
+          "files": 1,
+          "getter_calls": 2,
+          "monitor_helper_calls": 1,
+          "decision": "retain_backing_api_until_consumers_migrate"
+        }
+      },
+      "gitnexus_evidence": {
+        "get_data_quality_monitor": {
+          "risk": "CRITICAL",
+          "impacted_count": 24,
+          "direct_callers": 20,
+          "processes": 7,
+          "modules": 4
+        },
+        "BaseAdapter": {
+          "risk": "MEDIUM",
+          "direct_extenders": 7,
+          "decision_use": "adapter_split_constructor_seam_first"
+        }
+      },
+      "decision": {
+        "classification": "adapter_split_constructor_seam_first_design",
+        "selected_next_governance_target": "data-quality-adapter-split-constructor-provider-authorization",
+        "recommended_next_work_item": "G2.195 data-quality adapter_split constructor provider authorization package",
+        "future_implementation_lane_after_authorization": "G2.196 data-quality adapter_split constructor provider implementation",
+        "deferred_surfaces": [
+          "service_adapter",
+          "legacy_adapter",
+          "market_data_adapter",
+          "service_wrapper",
+          "DataQualityMonitor internals"
+        ]
+      },
+      "test_double_contract": {
+        "check_data_quality": "sync fake records calls and returns truthy quality result",
+        "evaluate_data_quality": "async fake records calls and returns truthy result for later runtime-monitoring surfaces",
+        "future_source_requirements": [
+          "BaseAdapter and subclasses can receive fake monitor/provider without global getter",
+          "subclass constructors do not overwrite injected monitor",
+          "default runtime behavior remains compatible"
+        ]
+      },
+      "freshness": {
+        "current_head_checked": "ea659d52903a5e9884d396069526ea08f15109a6",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.195 authorization package; do not implement adapter source changes from G2.194."
     },
     {
       "id": "core-batch2-reconciliation",
