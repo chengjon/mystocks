@@ -738,11 +738,39 @@ G2.210 has no source authority. It records that the remaining singleton/backing
 API is a high-risk root ownership surface and must not be treated as a routine
 adapter/source cleanup.
 
+## G2.211 Data-Quality Monitor Singleton Authorization
+
+At HEAD `619be9cac1f9516b3df42a41ca362ca9d42d5c9a`, PR `#363` is merged and
+G2.210 is accepted.
+
+Authorization result:
+
+| Item | Result |
+|---|---|
+| Future lane | G2.212 data-quality monitor singleton/backing API compatibility implementation |
+| Current PR source authority | None |
+| Future source authority after acceptance | Yes, path-limited |
+| Authorized future source paths | `web/backend/app/services/_data_quality_monitor_singleton.py`, `web/backend/app/services/data_quality_monitor.py` |
+| Authorized future focused test | `web/backend/tests/test_data_quality_monitor_singleton_provider.py` |
+| Route/adapters future source authority | None |
+
+Future G2.212 constraints:
+
+- preserve `get_data_quality_monitor()` and `monitor_data_quality()` public
+  imports from `app.services.data_quality_monitor`
+- preserve default singleton fallback behavior
+- allow only compatibility/provider helper additions in
+  `_data_quality_monitor_singleton.py`
+- allow `data_quality_monitor.py` edits only for facade import / `__all__`
+  maintenance
+- do not migrate routes, adapters, adapter-split constructors, or
+  `market_data_adapter.py`
+
 ## Next Gates
 
-- Review G2.210 data-quality monitor residual ownership decision.
-- If accepted, start G2.211 data-quality monitor singleton/backing API authorization package with no source edits.
-- Do not open the next source lane before G2.211 defines source authority, consumer matrix, focused tests, and rollback rules.
+- Review G2.211 data-quality monitor singleton/backing API authorization package.
+- If accepted, start G2.212 data-quality monitor singleton/backing API compatibility implementation in a separate source lane.
+- Do not edit routes, adapters, adapter-split constructors, `market_data_adapter.py`, OpenAPI, frontend, config, scripts, or OpenSpec in G2.212.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

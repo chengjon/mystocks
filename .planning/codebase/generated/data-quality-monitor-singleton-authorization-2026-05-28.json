@@ -1,0 +1,100 @@
+{
+  "schema_version": "2026-05-28.authorization-package.v1",
+  "generated_at": "2026-05-28T22:18:21+08:00",
+  "repo": "mystocks_spec",
+  "base_branch": "wip/root-dirty-20260403",
+  "git_head": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
+  "worktree_branch": "g2-211-data-quality-monitor-singleton-authorization",
+  "parent_lane": "G2.210 data-quality monitor residual ownership decision",
+  "parent_pr": 363,
+  "parent_merge_commit": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
+  "scope": "data_quality_monitor_singleton_backing_api_authorization",
+  "source_edit_authority": false,
+  "authorized_future_lane": {
+    "id": "G2.212",
+    "name": "data-quality monitor singleton/backing API compatibility implementation",
+    "source_edit_authority_after_acceptance": true,
+    "allowed_source_paths": [
+      "web/backend/app/services/_data_quality_monitor_singleton.py",
+      "web/backend/app/services/data_quality_monitor.py"
+    ],
+    "allowed_test_paths": [
+      "web/backend/tests/test_data_quality_monitor_singleton_provider.py"
+    ],
+    "required_regression_test_paths": [
+      "web/backend/tests/test_data_quality_route_provider_regressions.py",
+      "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py",
+      "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py",
+      "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py",
+      "web/backend/tests/test_logging_noise_regressions.py",
+      "web/backend/tests/test_large_file_split_regressions.py"
+    ],
+    "forbidden_source_paths": [
+      "web/backend/app/api/**",
+      "web/backend/app/services/adapters/**",
+      "web/backend/app/services/adapters_split/**",
+      "web/backend/app/services/data_adapters/**",
+      "web/backend/app/services/market_data_adapter.py",
+      "web/backend/app/services/data_adapter.py.backup.20260130",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "authorized_future_shape": [
+    "Preserve public imports from app.services.data_quality_monitor, including get_data_quality_monitor and monitor_data_quality.",
+    "Preserve default singleton fallback behavior when no override or provider is supplied.",
+    "Allow only compatibility-oriented helper additions in _data_quality_monitor_singleton.py, such as explicit provider/reset hooks for tests or lifecycle wiring.",
+    "Allow data_quality_monitor.py edits only for re-export/import surface maintenance; do not change DataQualityMonitor internals.",
+    "Do not migrate route handlers, adapters, adapter_split constructors, or market_data_adapter.py in G2.212."
+  ],
+  "current_consumer_matrix": {
+    "route_provider": {
+      "path": "web/backend/app/api/data_quality.py",
+      "state": "already uses get_data_quality_monitor_provider and Depends",
+      "future_source_edits_authorized": false
+    },
+    "closed_adapter_fallbacks": [
+      "web/backend/app/services/adapters/dashboard_adapter.py",
+      "web/backend/app/services/adapters/data_adapter.py",
+      "web/backend/app/services/adapters_split/base_adapter.py",
+      "web/backend/app/services/market_data_adapter.py"
+    ],
+    "singleton_backing_api": [
+      "web/backend/app/services/_data_quality_monitor_singleton.py",
+      "web/backend/app/services/data_quality_monitor.py"
+    ],
+    "historical_backup": [
+      "web/backend/app/services/data_adapter.py.backup.20260130"
+    ]
+  },
+  "required_future_tdd": {
+    "red": "A focused singleton provider/reset test fails before implementation because no explicit test-safe override/reset hook exists.",
+    "green": "The focused singleton provider/reset test passes after compatibility helpers are added without changing default runtime behavior.",
+    "regression": "Existing route provider, canonical adapter, adapter_split, market_data_adapter, logging-noise, and large-file split regression tests remain passing."
+  },
+  "required_future_gitnexus": [
+    "Run impact for get_data_quality_monitor before editing.",
+    "Run context for get_data_quality_monitor and monitor_data_quality before editing.",
+    "Known impact is CRITICAL from G2.210; stop only if the future diff expands beyond the authorized two source files or introduces additional HIGH/CRITICAL surfaces outside the known consumer matrix.",
+    "Run staged detect_changes before commit."
+  ],
+  "non_goals": [
+    "source edits in G2.211",
+    "route/provider migration in G2.212",
+    "adapter or adapter_split migration in G2.212",
+    "market_data_adapter.py edits in G2.212",
+    "DataQualityMonitor class internals",
+    "historical backup cleanup",
+    "getter deletion or rename",
+    "OpenAPI, frontend, config, script, or OpenSpec edits"
+  ],
+  "freshness": {
+    "current_head_checked": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
+    "stale_if_head_mismatch": true
+  }
+}

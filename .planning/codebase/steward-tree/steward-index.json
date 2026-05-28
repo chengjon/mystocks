@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T20:48:36+08:00",
+  "generated_at": "2026-05-28T22:18:21+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
-  "split_branch": "g2-210-data-quality-monitor-residual-ownership-decision",
-  "scope": "data_quality_monitor_residual_ownership_decision",
+  "base_head": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
+  "split_branch": "g2-211-data-quality-monitor-singleton-authorization",
+  "scope": "data_quality_monitor_singleton_authorization",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -2057,12 +2057,14 @@
     {
       "id": "g2-210-data-quality-monitor-residual-ownership-decision",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.209 data-quality market_data_adapter.py provider seam closeout / residual refresh",
       "source_edit_authority": false,
       "parent_github_pr": 362,
       "parent_merge_commit": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
+      "github_pr": 363,
+      "merge_commit": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
       "evidence": [
         ".planning/codebase/generated/data-quality-monitor-residual-ownership-decision-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-monitor-residual-ownership-decision-2026-05-28.md",
@@ -2103,7 +2105,51 @@
         "current_head_checked": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.211 data-quality monitor singleton/backing API authorization package without source authority."
+      "next_gate": "Superseded by G2.211 data-quality monitor singleton/backing API authorization package."
+    },
+    {
+      "id": "g2-211-data-quality-monitor-singleton-authorization",
+      "type": "authorization_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.210 data-quality monitor residual ownership decision",
+      "source_edit_authority": false,
+      "parent_github_pr": 363,
+      "parent_merge_commit": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-monitor-singleton-authorization-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-monitor-singleton-authorization-2026-05-28.md",
+        "governance/mainline/task-cards/pr-364.yaml"
+      ],
+      "authorized_future_lane": {
+        "id": "G2.212",
+        "name": "data-quality monitor singleton/backing API compatibility implementation",
+        "allowed_source_paths": [
+          "web/backend/app/services/_data_quality_monitor_singleton.py",
+          "web/backend/app/services/data_quality_monitor.py"
+        ],
+        "allowed_test_paths": [
+          "web/backend/tests/test_data_quality_monitor_singleton_provider.py"
+        ],
+        "required_regression_test_paths": [
+          "web/backend/tests/test_data_quality_route_provider_regressions.py",
+          "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py",
+          "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py",
+          "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py",
+          "web/backend/tests/test_logging_noise_regressions.py",
+          "web/backend/tests/test_large_file_split_regressions.py"
+        ]
+      },
+      "authorization_constraints": [
+        "preserve get_data_quality_monitor and monitor_data_quality public imports",
+        "preserve default singleton fallback behavior",
+        "do not edit routes, adapters, adapter_split constructors, market_data_adapter.py, OpenAPI, frontend, config, scripts, or OpenSpec"
+      ],
+      "freshness": {
+        "current_head_checked": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.212 data-quality monitor singleton/backing API compatibility implementation in a separate source lane."
     },
     {
       "id": "core-batch2-reconciliation",

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T20:48:36+08:00`
-- Base HEAD checked: `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230`
+- Prepared at: `2026-05-28T22:18:21+08:00`
+- Base HEAD checked: `619be9cac1f9516b3df42a41ca362ca9d42d5c9a`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -47,12 +47,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#360` | `g2-207-data-quality-market-data-adapter-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `b4b34375eef0186b81be9a24491328dab72c2e21` | Authorization package for G2.208 `market_data_adapter.py` provider seam implementation |
 | `#361` | `g2-208-data-quality-market-data-adapter-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `90d8f12cc01f9fb360abc531673e3ed9535706e7` | Path-limited `market_data_adapter.py` provider seam implementation closed for G2.209 refresh |
 | `#362` | `g2-209-data-quality-market-data-adapter-provider-closeout` | `wip/root-dirty-20260403` | `MERGED` at `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230` | Governance closeout selecting G2.210 data-quality monitor residual ownership decision |
+| `#363` | `g2-210-data-quality-monitor-residual-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `619be9cac1f9516b3df42a41ca362ca9d42d5c9a` | Decision package selecting G2.211 singleton/backing API authorization |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-210-data-quality-monitor-residual-ownership-decision` | `origin/wip/root-dirty-20260403` at `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230` | Decide remaining data-quality monitor singleton/backing API ownership and next authorization gate | No |
+| `g2-211-data-quality-monitor-singleton-authorization` | `origin/wip/root-dirty-20260403` at `619be9cac1f9516b3df42a41ca362ca9d42d5c9a` | Authorize future data-quality monitor singleton/backing API compatibility implementation | No |
 
 ## OpenSpec Relationship
 
@@ -68,7 +69,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.210 is a no-source residual ownership decision branch after PR `#362` merged
-G2.209. It is limited to governance evidence, steward tree updates, and a task
-card. If accepted, the next gate is a G2.211 singleton/backing API authorization
-package, not a direct source implementation lane.
+G2.211 is a no-source authorization branch after PR `#363` merged G2.210. It is
+limited to governance evidence, steward tree updates, and a task card. If
+accepted, the next gate is a separate G2.212 source implementation lane limited
+to the authorized singleton/backing API paths.

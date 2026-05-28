@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T20:48:36+08:00`
-- Base HEAD checked: `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230`
+- Prepared at: `2026-05-28T22:18:21+08:00`
+- Base HEAD checked: `619be9cac1f9516b3df42a41ca362ca9d42d5c9a`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.210 data-quality monitor residual ownership decision | G/#79 service lifecycle DI | PR `#362` merged at `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230`; G2.210 classifies the singleton/backing API as a high-risk root ownership surface without source edits | If accepted, start G2.211 singleton/backing API authorization package; do not open source implementation directly |
+| P0 | Review G2.211 data-quality monitor singleton/backing API authorization | G/#79 service lifecycle DI | PR `#363` merged at `619be9cac1f9516b3df42a41ca362ca9d42d5c9a`; G2.211 authorizes a future path-limited G2.212 compatibility implementation without source edits in this PR | If accepted, start G2.212 implementation in a separate source lane; do not edit routes, adapters, OpenAPI, frontend, config, scripts, or OpenSpec |
+| P0 | Preserve G2.210 data-quality monitor residual ownership decision | G/#79 service lifecycle DI | PR `#363` merged; singleton/backing API is a high-risk root ownership surface, not a routine cleanup | Use G2.211 authorization before any source lane |
 | P0 | Preserve G2.209 data-quality `market_data_adapter.py` provider seam closeout / residual refresh | G/#79 service lifecycle DI | PR `#362` merged; `market_data_adapter.py` is closed and remaining monitor residuals are routed to G2.210 ownership decision | Do not reopen closed G2.208/G2.209 source scope without contradictory current HEAD evidence |
 | P0 | Preserve G2.208 data-quality `market_data_adapter.py` provider seam implementation | G/#79 service lifecycle DI | PR `#361` merged; optional quality monitor injection is implemented for `MarketDataSourceAdapter` while preserving default singleton fallback | Do not reopen `market_data_adapter.py` source unless current HEAD evidence contradicts G2.208/G2.209 |
 | P0 | Preserve G2.207 data-quality `market_data_adapter.py` provider seam authorization package | G/#79 service lifecycle DI | PR `#360` merged; future implementation scope was limited to `market_data_adapter.py` plus focused tests | Do not expand into `data_source_factory`, singleton wrapper/backing API, routes, OpenAPI, frontend, config, scripts, or OpenSpec |
