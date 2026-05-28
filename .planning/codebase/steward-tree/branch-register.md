@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T02:31:48+08:00`
-- Base HEAD checked: `e30e16605df6aaa333989a7ac247bab3dcd0dd01`
+- Prepared at: `2026-05-28T07:45:53+08:00`
+- Base HEAD checked: `fabd674e8a748cdd2c51a80eebb5ad20b52bc737`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -32,12 +32,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#345` | `g2-192-data-quality-route-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `2b0c3ce373fba38bacd62eff5436822527dccda1` | Path-limited data-quality route provider implementation closed for G2.193 refresh |
 | `#346` | `g2-193-data-quality-route-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `ea659d52903a5e9884d396069526ea08f15109a6` | Governance closeout / remaining surface refresh selecting G2.194 adapter constructor seam design |
 | `#347` | `g2-194-data-quality-adapter-seam-design` | `wip/root-dirty-20260403` | `MERGED` at `e30e16605df6aaa333989a7ac247bab3dcd0dd01` | Governance design decision selecting G2.195 adapter_split constructor provider authorization |
+| `#348` | `g2-195-data-quality-adapter-split-authorization` | `wip/root-dirty-20260403` | `MERGED` at `fabd674e8a748cdd2c51a80eebb5ad20b52bc737` | Authorization package for G2.196 adapter_split constructor provider implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-195-data-quality-adapter-split-authorization` | `origin/wip/root-dirty-20260403` at `e30e16605df6aaa333989a7ac247bab3dcd0dd01` | Authorize the future G2.196 `adapter_split` constructor provider implementation lane without editing source in this PR | None; governance-only authorization package |
+| `g2-196-data-quality-adapter-split-implementation` | `origin/wip/root-dirty-20260403` at `fabd674e8a748cdd2c51a80eebb5ad20b52bc737` | Implement the authorized `adapter_split` constructor provider seam with focused TDD evidence | Yes; limited to eight `adapter_split` source files plus one focused test |
 
 ## OpenSpec Relationship
 
@@ -53,8 +54,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.195 is a governance-only authorization branch after PR `#347` merged G2.194.
-It must not edit backend source, frontend source, tests, OpenSpec changes, API
-contract files, config, or scripts. If accepted, it authorizes G2.196 as the
-data-quality `adapter_split` constructor provider implementation lane; it does
-not implement that lane itself.
+G2.196 is a path-limited source implementation branch after PR `#348` merged
+G2.195. It may edit only the eight authorized `adapter_split` source files plus
+one focused test, alongside governance evidence and steward updates. If
+accepted, it should be followed by G2.197 closeout / remaining candidate refresh
+before any further data-quality monitor migration lane is selected.

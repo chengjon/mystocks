@@ -8,7 +8,6 @@ from typing import Dict, List, Optional
 
 from .base_adapter import BaseAdapter
 from app.core.database import db_service
-from app.services.data_quality_monitor import get_data_quality_monitor
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -16,10 +15,9 @@ logger = __import__("logging").getLogger(__name__)
 class EfinanceAdapter(BaseAdapter):
     """Efinance数据源适配器"""
 
-    def __init__(self):
-        super().__init__(name="Efinance", source_type="efinance")
+    def __init__(self, *, quality_monitor=None):
+        super().__init__(name="Efinance", source_type="efinance", quality_monitor=quality_monitor)
         self.db_service = db_service
-        self.quality_monitor = get_data_quality_monitor()
 
         logger.info(f"初始化{self.name}适配器")
 

@@ -54,6 +54,8 @@ domains:
         label: "1.3 多数据源集成"
         coverage_paths:
           - "src/adapters/**"
+          - "web/backend/app/services/adapters_split/**"
+          - "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
           - "config/data_sources*"
         entrypoints:
           governance:

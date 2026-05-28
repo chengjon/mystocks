@@ -8,7 +8,6 @@ from typing import Dict, List, Optional
 
 from .base_adapter import BaseAdapter
 from app.core.database import db_service
-from app.services.data_quality_monitor import get_data_quality_monitor
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -16,14 +15,13 @@ logger = __import__("logging").getLogger(__name__)
 class TDXAdapter(BaseAdapter):
     """TDX通达信数据源适配器"""
 
-    def __init__(self):
-        super().__init__(name="TDX", source_type="tdx")
+    def __init__(self, *, quality_monitor=None):
+        super().__init__(name="TDX", source_type="tdx", quality_monitor=quality_monitor)
         self.db_service = db_service
-        self.quality_monitor = get_data_quality_monitor()
         self.connection_pool = None
         self.max_connections = 5
 
-        logger.info(f"初始化{TDX}适配器")
+        logger.info(f"初始化{self.name}适配器")
 
     async def get_stock_basic(self, stock_code: str) -> Optional[Dict]:
         """获取股票基本信息"""

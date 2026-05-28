@@ -1,0 +1,116 @@
+{
+  "schema_version": "2026-05-28.g2-196.implementation.v1",
+  "generated_at": "2026-05-28T07:45:53+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "fabd674e8a748cdd2c51a80eebb5ad20b52bc737",
+  "worktree_branch": "g2-196-data-quality-adapter-split-implementation",
+  "status": "for_review",
+  "source_edit_authority": true,
+  "parent": {
+    "id": "g2-195-data-quality-adapter-split-constructor-provider-authorization",
+    "github_pr": 348,
+    "merge_commit": "fabd674e8a748cdd2c51a80eebb5ad20b52bc737",
+    "authorization": "adapter_split-only constructor provider implementation"
+  },
+  "implemented_scope": {
+    "source_paths": [
+      "web/backend/app/services/adapters_split/base_adapter.py",
+      "web/backend/app/services/adapters_split/baostock_adapter.py",
+      "web/backend/app/services/adapters_split/tushare_adapter.py",
+      "web/backend/app/services/adapters_split/customer_adapter.py",
+      "web/backend/app/services/adapters_split/byapi_adapter.py",
+      "web/backend/app/services/adapters_split/akshare_adapter.py",
+      "web/backend/app/services/adapters_split/efinance_adapter.py",
+      "web/backend/app/services/adapters_split/tdx_adapter.py"
+    ],
+    "test_paths": [
+      "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/generated/data-quality-adapter-split-constructor-provider-implementation-2026-05-28.json",
+      "docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-implementation-2026-05-28.md",
+      "governance/mainline/task-cards/pr-349.yaml",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      "governance/function-tree/catalog.yaml"
+    ]
+  },
+  "implementation_summary": {
+    "base_adapter": "BaseAdapter now accepts an optional quality_monitor and defaults to get_data_quality_monitor() when not injected.",
+    "subclasses": "Seven adapter_split subclasses accept keyword-only quality_monitor and pass it to BaseAdapter without overwriting injected monitor.",
+    "compatibility": "Default construction remains compatible because BaseAdapter still owns the singleton fallback.",
+    "incidental_authorized_fixes": [
+      "tushare_adapter.py now imports os for existing os.getenv usage.",
+      "byapi_adapter.py now imports os for existing os.getenv usage.",
+      "tdx_adapter.py constructor logger now uses self.name instead of undefined TDX."
+    ]
+  },
+  "post_implementation_inventory": {
+    "adapter_split_files_scanned": 8,
+    "base_adapter_get_data_quality_monitor_calls": 1,
+    "subclass_get_data_quality_monitor_calls": 0,
+    "subclass_get_data_quality_monitor_imports": 0,
+    "constructors_accepting_quality_monitor": 8,
+    "focused_test_count": 1
+  },
+  "gitnexus_pre_edit_evidence": {
+    "BaseAdapter": {
+      "risk": "MEDIUM",
+      "impacted_count": 7,
+      "direct_extenders": 7
+    },
+    "get_data_quality_monitor": {
+      "risk": "CRITICAL",
+      "impacted_count": 24,
+      "direct_callers": 20,
+      "processes_affected": 7,
+      "authorization_boundary": "only adapter_split constructor calls were migrated"
+    }
+  },
+  "tdd_evidence": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -q -n 0 --tb=short --no-cov web/backend/tests/test_adapter_split_data_quality_monitor_provider.py",
+      "result": "failed as expected",
+      "failure": "BaostockAdapter.__init__() got an unexpected keyword argument 'quality_monitor'"
+    },
+    "green": {
+      "command": "env PYTHONPATH=web/backend pytest -q -n 0 --tb=short --no-cov web/backend/tests/test_adapter_split_data_quality_monitor_provider.py",
+      "result": "1 passed"
+    }
+  },
+  "verification": {
+    "focused_pytest": "1 passed",
+    "ruff_authorized_files": "All checks passed",
+    "import_smoke": "passed with minimal dummy required env; no service startup",
+    "openspec_validate": "migrate-backend-singletons-to-lifecycle-di valid; PostHog network flush noise only",
+    "git_diff_check": "passed",
+    "mainline_scope_gate": "passed after task-card schema alignment to feature/domain-01/domain-01-node-03 and Function Tree catalog coverage for adapters_split",
+    "gitnexus_detect_changes_staged": {
+      "risk": "low",
+      "changed_files": 18,
+      "changed_symbols": 84,
+      "affected_processes": 0
+    }
+  },
+  "forbidden_scope_preserved": [
+    "web/backend/app/services/adapters/**",
+    "web/backend/app/services/data_adapters/**",
+    "web/backend/app/services/market_data_adapter.py",
+    "web/backend/app/services/_data_quality_monitor_singleton.py",
+    "web/backend/app/services/data_quality_monitor.py",
+    "web/backend/app/api/**",
+    "web/frontend/**",
+    "src/**",
+    "docs/api/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "next_gate": "If accepted, run a G2.197 closeout / remaining candidate refresh before selecting any further data-quality monitor migration lane."
+}
