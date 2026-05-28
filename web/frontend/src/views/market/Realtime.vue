@@ -1,15 +1,24 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
 import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
 import { extractRealtimeMarketOverview, type RealtimeMarketOverview } from './marketRealtimeData'
 
 const { loading, error, lastRequestId, exec } = useArtDecoApi()
-const overview = ref<RealtimeMarketOverview | null>(null)
 const activePreset = ref('core')
 const hasLoaded = ref(false)
+const verifiedOverviewByPreset = ref<Record<string, RealtimeMarketOverview>>({})
+const verifiedRequestIdByPreset = ref<Record<string, string>>({})
+const verifiedCacheSourceByPreset = ref<Record<string, string>>({})
+const verifiedSnapshotAtByPreset = ref<Record<string, number>>({})
+const nowMs = ref(Date.now())
 let requestSequence = 0
+let freshnessTimer: ReturnType<typeof setInterval> | undefined
+
+type RuntimeState = 'loading' | 'refreshing' | 'live' | 'cache' | 'stale' | 'degraded' | 'empty' | 'error'
+
+const SNAPSHOT_STALE_MS = 60_000
 
 const presetOptions = [
   { label: '核心蓝筹样本', value: 'core' },
@@ -40,9 +49,10 @@ const quoteColumns = [
   { key: 'volume', label: '成交额(亿)' }
 ]
 
+const currentOverview = computed(() => verifiedOverviewByPreset.value[activePreset.value] ?? null)
 const quoteRows = computed(() => {
-  if (!overview.value?.indices) return []
-  return overview.value.indices.map((item) => ({
+  if (!currentOverview.value?.indices) return []
+  return currentOverview.value.indices.map((item) => ({
     name: item.name,
     symbol: item.symbol,
     price: Number(item.current_price ?? 0).toFixed(2),
@@ -53,9 +63,9 @@ const quoteRows = computed(() => {
 })
 
 const breadth = computed(() => ({
-  up: overview.value?.up_count ?? 0,
-  flat: overview.value?.flat_count ?? 0,
-  down: overview.value?.down_count ?? 0
+  up: currentOverview.value?.up_count ?? 0,
+  flat: currentOverview.value?.flat_count ?? 0,
+  down: currentOverview.value?.down_count ?? 0
 }))
 
 const marketMood = computed(() => {
@@ -74,28 +84,129 @@ const breadthPercentages = computed(() => {
   }
 })
 
+const hasCurrentVerifiedSnapshot = computed(() => Boolean(verifiedOverviewByPreset.value[activePreset.value]))
+const isAwaitingFirstSnapshot = computed(() => loading.value && !hasLoaded.value && !error.value && quoteRows.value.length === 0)
+const showSummaryPlaceholders = computed(() => !hasCurrentVerifiedSnapshot.value && (loading.value || Boolean(error.value)) && quoteRows.value.length === 0)
+const showDistributionPlaceholder = computed(() => !hasCurrentVerifiedSnapshot.value && quoteRows.value.length === 0)
+const showEmptyState = computed(() => hasLoaded.value && !loading.value && !error.value && quoteRows.value.length === 0)
+const displayRequestId = computed(() => {
+  if (showSummaryPlaceholders.value) {
+    return 'N/A'
+  }
+
+  return verifiedRequestIdByPreset.value[activePreset.value] || 'N/A'
+})
+
+const isCurrentCacheSnapshot = computed(() => verifiedCacheSourceByPreset.value[activePreset.value] === 'service-worker-cache')
+const currentSnapshotAt = computed(() => verifiedSnapshotAtByPreset.value[activePreset.value] ?? 0)
+const snapshotAgeMs = computed(() => (currentSnapshotAt.value ? Math.max(0, nowMs.value - currentSnapshotAt.value) : 0))
+const isCurrentStaleSnapshot = computed(
+  () => hasCurrentVerifiedSnapshot.value && !loading.value && snapshotAgeMs.value > SNAPSHOT_STALE_MS
+)
+const freshnessLabel = computed(() => {
+  if (showSummaryPlaceholders.value) return '--'
+  if (!currentSnapshotAt.value) return '未同步'
+
+  const seconds = Math.max(0, Math.floor(snapshotAgeMs.value / 1000))
+  if (seconds < 60) return `${seconds}秒前`
+
+  const minutes = Math.floor(seconds / 60)
+  return `${minutes}分钟前`
+})
+
+const runtimeState = computed<RuntimeState>(() => {
+  if (loading.value && !hasCurrentVerifiedSnapshot.value) return 'loading'
+  if (error.value && hasCurrentVerifiedSnapshot.value) return 'degraded'
+  if (error.value) return 'error'
+  if (showEmptyState.value) return 'empty'
+  if (isCurrentStaleSnapshot.value) return 'stale'
+  if (isCurrentCacheSnapshot.value) return 'cache'
+  if (loading.value) return 'refreshing'
+  return 'live'
+})
+
+const runtimeStateText = computed(() => {
+  const labels: Record<RuntimeState, string> = {
+    loading: '同步中',
+    refreshing: '刷新中',
+    live: '实时',
+    cache: '缓存快照',
+    stale: '快照可能已过期',
+    degraded: '降级显示',
+    empty: '暂无行情',
+    error: '行情异常'
+  }
+  return labels[runtimeState.value]
+})
+
+const runtimeStateDescription = computed(() => {
+  const descriptions: Record<RuntimeState, string> = {
+    loading: '正在获取首份样本快照，页面结构保持稳定。',
+    refreshing: '正在刷新行情，当前仍显示上一份已验证快照。',
+    live: '当前展示最近一次已验证样本快照。',
+    cache: '当前行情来自本地缓存快照，非实时网络刷新。',
+    stale: '当前快照已超过实时观察窗口，请刷新后再判断短线状态。',
+    degraded: '行情同步失败，已保留上一份有效样本快照。',
+    empty: '当前样本暂无可展示行情，可切换样本或重试。',
+    error: '行情同步失败，当前暂无已验证样本快照。'
+  }
+  return descriptions[runtimeState.value]
+})
+
+const showStateBanner = computed(() => ['cache', 'stale', 'degraded', 'empty', 'error'].includes(runtimeState.value))
+const stateBannerClass = computed(() => `state-banner--${runtimeState.value}`)
+
 const topStats = computed(() => ({
-  totalTurnover: quoteRows.value.length ? `${quoteRows.value.reduce((sum, r) => sum + Number(r.volume), 0).toFixed(1)}亿` : '0亿',
-  mood: `${marketMood.value}%`,
+  totalTurnover: showSummaryPlaceholders.value
+    ? '--'
+    : quoteRows.value.length
+      ? `${quoteRows.value.reduce((sum, r) => sum + Number(r.volume), 0).toFixed(1)}亿`
+      : '0亿',
+  mood: showSummaryPlaceholders.value ? '--' : `${marketMood.value}%`,
   preset: presetOptions.find((i) => i.value === activePreset.value)?.label ?? '核心蓝筹样本',
-  sampleCount: `${quoteRows.value.length}只`
+  sampleCount: showSummaryPlaceholders.value ? '--' : `${quoteRows.value.length}只`
 }))
 
+const contentShellMeta = computed(() => ({
+  mood: showSummaryPlaceholders.value ? '--' : topStats.value.mood,
+  up: showSummaryPlaceholders.value ? '--' : String(breadth.value.up),
+  down: showSummaryPlaceholders.value ? '--' : String(breadth.value.down)
+}))
+
+const distributionStatusText = computed(() => {
+  if (isAwaitingFirstSnapshot.value) {
+    return '首份样本快照同步中，涨跌分布待接入。'
+  }
+
+  if (!hasCurrentVerifiedSnapshot.value) {
+    return '当前暂无已验证样本快照，涨跌分布待接入。'
+  }
+
+  return `当前样本偏${marketMood.value >= 50 ? '强' : '弱'}，情绪值 ${marketMood.value}%`
+})
+
+const errorBannerText = computed(() => {
+  if (hasCurrentVerifiedSnapshot.value) {
+    return '实时行情加载失败，已保留上一份有效样本快照。'
+  }
+
+  return '实时行情加载失败，当前暂无已验证样本快照。'
+})
+
 const pageStatusText = computed(() => {
-  if (loading.value) return '同步中'
-  if (error.value) return '行情异常'
-  if (!quoteRows.value.length) return '暂无行情'
+  if (runtimeState.value !== 'live') return runtimeStateText.value
   return marketMood.value >= 50 ? '样本偏强' : '样本偏弱'
 })
 const pageToneClass = computed(() => {
-  if (loading.value) return 'is-loading'
-  if (error.value) return 'is-error'
+  if (runtimeState.value === 'loading' || runtimeState.value === 'refreshing') return 'is-loading'
+  if (runtimeState.value === 'error' || runtimeState.value === 'degraded') return 'is-error'
+  if (runtimeState.value === 'cache' || runtimeState.value === 'stale') return 'is-cache'
   return marketMood.value >= 50 ? 'is-rise' : 'is-fall'
 })
-const showEmptyState = computed(() => hasLoaded.value && !loading.value && !error.value && quoteRows.value.length === 0)
 
 const fetchOverview = async () => {
   const currentRequest = ++requestSequence
+  const requestPreset = activePreset.value
   const symbols = presetSymbolsMap[activePreset.value] ?? presetSymbolsMap.core
   const data = await exec(
     () =>
@@ -111,7 +222,27 @@ const fetchOverview = async () => {
     return
   }
   if (data) {
-    overview.value = extractRealtimeMarketOverview(data)
+    verifiedOverviewByPreset.value = {
+      ...verifiedOverviewByPreset.value,
+      [requestPreset]: extractRealtimeMarketOverview(data),
+    }
+    if (lastRequestId.value) {
+      verifiedRequestIdByPreset.value = {
+        ...verifiedRequestIdByPreset.value,
+        [requestPreset]: lastRequestId.value,
+      }
+    }
+    const cacheSource = (data as { cache_source?: string })?.cache_source ?? ''
+    verifiedCacheSourceByPreset.value = {
+      ...verifiedCacheSourceByPreset.value,
+      [requestPreset]: cacheSource,
+    }
+    const snapshotTime = Date.now()
+    verifiedSnapshotAtByPreset.value = {
+      ...verifiedSnapshotAtByPreset.value,
+      [requestPreset]: snapshotTime,
+    }
+    nowMs.value = snapshotTime
   }
   hasLoaded.value = true
 }
@@ -120,26 +251,27 @@ watch(activePreset, () => {
   fetchOverview()
 })
 
-onMounted(fetchOverview)
+onMounted(() => {
+  nowMs.value = Date.now()
+  freshnessTimer = setInterval(() => {
+    nowMs.value = Date.now()
+  }, 15_000)
+  fetchOverview()
+})
+
+onBeforeUnmount(() => {
+  if (freshnessTimer) {
+    clearInterval(freshnessTimer)
+  }
+})
 </script>
 
 <template>
   <div class="market-realtime-tab page-enter" :class="pageToneClass">
-    <section class="hero-shell artdeco-card-shell">
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">live quote observatory</span>
-          <div class="hero-meta">
-            <span v-if="lastRequestId">TRACE_ID: {{ lastRequestId }}</span>
-            <span>PRESET: {{ topStats.preset }}</span>
-            <span>SAMPLE: {{ topStats.sampleCount }}</span>
-          </div>
-        </div>
-      </div>
-
+    <section class="route-header-shell artdeco-card-shell">
       <ArtDecoHeader
         title="实时行情工作台"
-        subtitle="基于实时 quotes 接口支持的股票样本，观察快照、成交额与涨跌分布。"
+        subtitle="跟踪当前样本报价、成交额与涨跌分布。"
         :show-status="true"
         :status-text="pageStatusText"
       >
@@ -152,58 +284,69 @@ onMounted(fetchOverview)
           </ArtDecoButton>
         </template>
       </ArtDecoHeader>
+
+      <div class="status-strip" :class="`status-strip--${runtimeState}`" role="status" aria-live="polite">
+        <div class="status-strip-main">
+          <span class="status-pill">{{ runtimeStateText }}</span>
+          <span>{{ runtimeStateDescription }}</span>
+        </div>
+        <div class="status-strip-meta">
+          <span>最新快照 {{ freshnessLabel }}</span>
+          <span>样本 {{ topStats.sampleCount }}</span>
+          <span>TRACE {{ displayRequestId }}</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="control-row toolbar artdeco-card-shell">
+      <div class="control-row-main">
+        <ArtDecoSelect v-model="activePreset" :options="presetOptions" label="观察样本" placeholder="选择样本" />
+      </div>
+      <div class="control-row-meta" aria-label="当前样本摘要">
+        <span>PRESET: {{ topStats.preset }}</span>
+        <span>情绪 {{ topStats.mood }}</span>
+        <span>涨 {{ contentShellMeta.up }}</span>
+        <span>跌 {{ contentShellMeta.down }}</span>
+      </div>
     </section>
 
     <section class="stats-strip artdeco-card-shell" v-loading="loading">
-      <ArtDecoStatCard label="样本总成交" :value="topStats.totalTurnover" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="样本总成交" :value="topStats.totalTurnover" :show-change="false" />
       <ArtDecoStatCard label="样本情绪" :value="topStats.mood" :show-change="false" :variant="marketMood >= 50 ? 'rise' : 'fall'" />
-      <ArtDecoStatCard label="观察样本" :value="topStats.preset" :show-change="false" variant="gold" />
-      <ArtDecoStatCard label="样本数量" :value="topStats.sampleCount" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="观察样本" :value="topStats.preset" :show-change="false" />
+      <ArtDecoStatCard label="样本数量" :value="topStats.sampleCount" :show-change="false" />
     </section>
 
-    <section class="content-shell artdeco-card-shell">
-      <div class="content-shell-header">
+    <section class="workbench-shell artdeco-card-shell">
+      <div class="workbench-header">
         <div class="content-shell-copy">
-          <span class="content-shell-kicker">sample quote route</span>
           <h2 class="content-shell-title">样本快照与分布面板</h2>
           <p class="content-shell-subtitle">切换真实支持的股票样本组合，观察报价、成交额与涨跌分布的即时变化。</p>
         </div>
-        <div class="content-shell-meta">
-          <span>MOOD: {{ topStats.mood }}</span>
-          <span>UP: {{ breadth.up }}</span>
-          <span>DOWN: {{ breadth.down }}</span>
-        </div>
       </div>
 
-      <div class="toolbar artdeco-card">
-        <div class="toolbar-left">
-          <ArtDecoSelect v-model="activePreset" :options="presetOptions" label="观察样本" placeholder="选择样本" />
-        </div>
-        <ArtDecoButton variant="outline" size="sm" :loading="loading" :disabled="loading" @click="fetchOverview">刷新行情</ArtDecoButton>
-      </div>
-
-      <div v-if="error" class="state-banner state-banner--error" role="alert">
-        <span>实时行情加载失败，已保留上一份有效样本快照。</span>
+      <div v-if="showStateBanner" class="state-banner" :class="stateBannerClass" :role="error ? 'alert' : 'status'" aria-live="polite">
+        <span>{{ error ? errorBannerText : runtimeStateDescription }}</span>
         <ArtDecoButton variant="outline" size="sm" @click="fetchOverview">重试</ArtDecoButton>
       </div>
 
-      <div v-else-if="showEmptyState" class="state-banner state-banner--empty" role="status" aria-live="polite">
-        <span>当前样本快照为空，暂无可展示的报价与分布数据。</span>
-      </div>
-
       <div class="content-grid">
-        <ArtDecoCard title="样本报价快照" hoverable>
+        <ArtDecoCard title="样本报价快照" :hoverable="false">
           <ArtDecoTable :columns="quoteColumns" :data="quoteRows" />
         </ArtDecoCard>
 
-        <ArtDecoCard title="样本涨跌分布" hoverable>
-          <div class="distribution-bar">
+        <ArtDecoCard title="样本涨跌分布" :hoverable="false">
+          <div v-if="showDistributionPlaceholder" class="distribution-pending" role="status" aria-live="polite">
+            {{ distributionStatusText }}
+          </div>
+
+          <div v-else class="distribution-bar">
             <div class="bar-segment rise-segment" :style="{ width: `${breadthPercentages.up}%` }">涨 {{ breadth.up }}</div>
             <div class="bar-segment flat-segment" :style="{ width: `${breadthPercentages.flat}%` }">平 {{ breadth.flat }}</div>
             <div class="bar-segment down-segment" :style="{ width: `${breadthPercentages.down}%` }">跌 {{ breadth.down }}</div>
           </div>
 
-          <div class="mood-text">当前样本偏{{ marketMood >= 50 ? '强' : '弱' }}，情绪值 {{ marketMood }}%</div>
+          <div class="mood-text">{{ distributionStatusText }}</div>
         </ArtDecoCard>
       </div>
     </section>
@@ -240,11 +383,21 @@ onMounted(fetchOverview)
   border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 14%, transparent);
   pointer-events: none;
 }
-.hero-shell, .stats-strip, .content-shell { width: 100%; }
-.hero-shell, .content-shell { display: flex; flex-direction: column; gap: var(--artdeco-spacing-5); }
+.route-header-shell,
+.stats-strip,
+.control-row,
+.workbench-shell {
+  width: 100%;
+}
 
-.hero-rail,
-.content-shell-header {
+.route-header-shell,
+.workbench-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--artdeco-spacing-5);
+}
+
+.workbench-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
@@ -252,78 +405,99 @@ onMounted(fetchOverview)
   flex-wrap: wrap;
 }
 
-.hero-copy,
 .content-shell-copy {
   display: flex;
   flex-direction: column;
   gap: var(--artdeco-spacing-2);
 }
-.hero-eyebrow,
-.content-shell-kicker {
-  font-family: var(--artdeco-font-mono);
-  font-size: var(--artdeco-text-xs);
-  letter-spacing: var(--artdeco-tracking-wide);
-  color: var(--artdeco-gold-dim);
-  text-transform: uppercase;
+
+.status-strip,
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--artdeco-spacing-4);
+  flex-wrap: wrap;
+  padding: var(--artdeco-spacing-4);
+  border: 1px solid color-mix(in srgb, var(--artdeco-gold-primary) 16%, var(--artdeco-border-default));
+  background: color-mix(in srgb, var(--artdeco-bg-card) 88%, var(--artdeco-gold-primary) 6%);
 }
 
-.hero-meta,
-.content-shell-meta {
+.status-strip-main,
+.status-strip-meta,
+.control-row-main,
+.control-row-meta {
   display: flex;
+  align-items: center;
   gap: var(--artdeco-spacing-3);
   flex-wrap: wrap;
+}
+
+.status-strip-main {
+  color: var(--artdeco-fg-primary);
+  font-size: var(--artdeco-text-sm);
+}
+
+.status-strip-meta,
+.control-row-meta {
   font-family: var(--artdeco-font-mono);
   font-variant-numeric: tabular-nums;
   font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
 }
-.hero-shell.is-rise :deep(.status-indicator),
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-px));
+  padding: 0 var(--artdeco-spacing-3);
+  border: 1px solid var(--artdeco-border-default);
+  color: var(--artdeco-gold-primary);
+  background: var(--artdeco-gold-opacity-05);
+  font-family: var(--artdeco-font-mono);
+  font-weight: 600;
+  font-size: var(--artdeco-text-xs);
+}
+
+.status-strip--live .status-pill,
 .market-realtime-tab.is-rise :deep(.status-indicator) {
   border-color: color-mix(in srgb, var(--artdeco-rise) 48%, var(--artdeco-border-default));
   background: color-mix(in srgb, var(--artdeco-rise) 10%, transparent);
 }
-.hero-shell.is-rise :deep(.status-dot),
 .market-realtime-tab.is-rise :deep(.status-dot) {
   background: var(--artdeco-rise);
   box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-rise);
 }
-.hero-shell.is-fall :deep(.status-indicator),
 .market-realtime-tab.is-fall :deep(.status-indicator),
-.hero-shell.is-error :deep(.status-indicator),
 .market-realtime-tab.is-error :deep(.status-indicator) {
   border-color: color-mix(in srgb, var(--artdeco-down) 48%, var(--artdeco-border-default));
   background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
 }
-.hero-shell.is-fall :deep(.status-dot),
 .market-realtime-tab.is-fall :deep(.status-dot),
-.hero-shell.is-error :deep(.status-dot),
 .market-realtime-tab.is-error :deep(.status-dot) {
   background: var(--artdeco-down);
   box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-down);
 }
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: var(--artdeco-spacing-4);
-  margin-bottom: var(--artdeco-spacing-6);
-  border: 1px solid var(--artdeco-border-default);
+
+.market-realtime-tab.is-cache :deep(.status-indicator),
+.status-strip--cache .status-pill,
+.status-strip--stale .status-pill {
+  border-color: color-mix(in srgb, var(--artdeco-gold-primary) 42%, var(--artdeco-border-default));
   background: var(--artdeco-gold-opacity-05);
 }
-.toolbar :deep(.artdeco-button) {
-  min-width: calc(var(--artdeco-spacing-20) * 2);
-}
-.toolbar :deep(.artdeco-select select:focus-visible),
-.toolbar :deep(.artdeco-button:focus-visible) {
+
+.control-row :deep(.artdeco-select select:focus-visible),
+.route-header-shell :deep(.artdeco-button:focus-visible),
+.state-banner :deep(.artdeco-button:focus-visible) {
   outline: none;
   box-shadow: 0 0 0 1px var(--artdeco-gold-primary), var(--artdeco-glow-subtle);
 }
-.toolbar :deep(.artdeco-select select) {
-  min-height: 44px;
+
+.control-row :deep(.artdeco-select select) {
+  min-height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-1));
 }
-.toolbar-left {
-  display: flex;
-  gap: var(--artdeco-spacing-3);
+
+.control-row-main {
   min-width: calc(var(--artdeco-spacing-20) * 5 + var(--artdeco-spacing-10) - var(--artdeco-spacing-8));
 }
 .stats-strip {
@@ -336,8 +510,6 @@ onMounted(fetchOverview)
   font-family: var(--artdeco-font-display);
   font-size: var(--artdeco-text-xl);
   color: var(--artdeco-gold-primary);
-  text-transform: uppercase;
-  letter-spacing: var(--artdeco-tracking-wide);
 }
 .content-shell-subtitle {
   margin: 0;
@@ -364,7 +536,16 @@ onMounted(fetchOverview)
   border: 1px solid var(--artdeco-border-default);
   font-family: var(--artdeco-font-body);
 }
-.state-banner--error { background: color-mix(in srgb, var(--artdeco-down) 8%, transparent); border-color: color-mix(in srgb, var(--artdeco-down) 32%, var(--artdeco-border-default)); }
+.state-banner--error,
+.state-banner--degraded {
+  background: color-mix(in srgb, var(--artdeco-down) 8%, transparent);
+  border-color: color-mix(in srgb, var(--artdeco-down) 32%, var(--artdeco-border-default));
+}
+.state-banner--cache,
+.state-banner--stale {
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 7%, transparent);
+  border-color: color-mix(in srgb, var(--artdeco-gold-primary) 28%, var(--artdeco-border-default));
+}
 .state-banner--empty { background: color-mix(in srgb, var(--artdeco-gold-primary) 6%, transparent); }
 
 .distribution-bar {
@@ -372,6 +553,15 @@ onMounted(fetchOverview)
   height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-2) - var(--artdeco-spacing-px) - var(--artdeco-spacing-px));
   border: 1px solid var(--artdeco-border-default);
   overflow: hidden;
+}
+.distribution-pending {
+  padding: var(--artdeco-spacing-4);
+  border: 1px dashed color-mix(in srgb, var(--artdeco-gold-primary) 34%, transparent);
+  background: color-mix(in srgb, var(--artdeco-bg-card) 92%, var(--artdeco-gold-primary) 8%);
+  color: var(--artdeco-fg-muted);
+  letter-spacing: 0;
+  font-size: var(--artdeco-text-xs);
+  line-height: var(--artdeco-leading-relaxed);
 }
 .bar-segment {
   display: flex;
@@ -401,7 +591,7 @@ onMounted(fetchOverview)
 .market-realtime-tab :deep(.quote-change--fall) { color: var(--artdeco-down); }
 .market-realtime-tab :deep(.quote-change--flat) { color: var(--artdeco-flat); }
 
-@media (width <= 75rem) {
+@media (width <= var(--artdeco-breakpoint-lg)) {
   .market-realtime-tab :deep(.artdeco-header) {
     flex-wrap: wrap;
     align-items: flex-start;
@@ -427,50 +617,4 @@ onMounted(fetchOverview)
   }
 }
 
-@media (width <= 48rem) {
-  .market-realtime-tab :deep(.artdeco-header) {
-    gap: var(--artdeco-spacing-3);
-  }
-
-  .market-realtime-tab :deep(.header-right) {
-    align-items: stretch;
-  }
-
-  .market-realtime-tab :deep(.header-status),
-  .market-realtime-tab :deep(.header-actions) {
-    width: 100%;
-  }
-
-  .market-realtime-tab :deep(.header-actions .artdeco-button) {
-    width: 100%;
-  }
-
-  .stats-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-meta,
-  .content-shell-meta,
-  .toolbar-left {
-    width: 100%;
-  }
-
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .toolbar-left {
-    min-width: 0;
-    flex-direction: column;
-  }
-
-  .artdeco-card-shell {
-    padding: var(--artdeco-spacing-4);
-  }
-
-  .bar-segment {
-    font-size: calc(var(--artdeco-text-xs) - 1px);
-  }
-}
 </style>
