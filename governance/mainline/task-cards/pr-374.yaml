@@ -1,0 +1,128 @@
+version: "v0.2"
+
+task:
+  id: "pr-374"
+  title: "Inject execution tracking evidence provider"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-execution-tracking-evidence-provider-injection"
+  objective: "implement the G2.220-authorized FastAPI dependency injection seam for get_execution_tracking_evidence_service"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.221 preserves route paths, response models, request schemas, UnifiedResponse envelopes, and OpenAPI path count; it only changes provider acquisition from route-body direct calls to FastAPI dependency injection."
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/trade/execution_tracking_routes.py"
+    - "web/backend/tests/test_trade_execution_tracking_routes.py"
+    - ".planning/codebase/generated/execution-tracking-evidence-provider-injection-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-execution-tracking-evidence-provider-injection-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-374.yaml"
+  forbidden_paths:
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "route path changes"
+  - "response_model changes"
+  - "UnifiedResponse envelope changes"
+  - "request schema changes"
+  - "miniQMT evidence semantic changes"
+  - "broker_state or bridge evidence interpretation changes"
+  - "trigger_external_execution changes"
+  - "other trade route provider migrations"
+  - "DataService, Strategy, data-quality, realtime/socket, cache, root-facade, adapter_split, or market_data_adapter changes"
+  - "OpenSpec proposal or spec creation"
+
+acceptance:
+  checks:
+    - id: "gitnexus-impact-before-edit"
+      command: "gitnexus impact get_execution_tracking_evidence_service upstream"
+      required: true
+    - id: "tdd-red"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py::test_execution_tracking_routes_can_use_dependency_overridden_miniqmt_evidence_service -q --no-cov --tb=short"
+      required: true
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/trade/execution_tracking_routes.py web/backend/tests/test_trade_execution_tracking_routes.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-execution-tracking-evidence-provider-injection-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-374.yaml --base-sha 3d2dc3e8204388cc157c23df59f584a3efb268fe --head-sha HEAD --report /tmp/pr374-mainline-governance-report.json"
+      required: true
+    - id: "gitnexus-staged-or-compare"
+      command: "gitnexus detect_changes staged or compare scope"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "GitNexus impact is HIGH because the provider participates in Trade execution tracking flows."
+    - "FastAPI dependency injection must not alter OpenAPI paths, response models, or response envelopes."
+    - "Dependency override support must be limited to list/detail route provider acquisition."
+  rollback_plan: "Revert this PR; route code returns to direct provider helper calls and focused tests return to the previous monkeypatch seam."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Convert execution tracking list/detail evidence provider acquisition to explicit FastAPI dependency injection."
+    modified_scope: "One trade route module, one focused test module, generated evidence, steward tree, and task card."
+    dependency_changes: "No package dependencies; imports FastAPI Depends already available from FastAPI."
+    legacy_logic_impact: "Preserves route paths, response models, UnifiedResponse shape, and miniQMT semantics."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If route/OpenAPI smoke or focused tests regress, revert this PR before selecting another provider candidate."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T02:42:26+08:00"
+    approval_note: "Approved after PR #373 acceptance to start the G2.221 path-limited execution tracking evidence provider injection implementation lane."
+    secondary_approved: false

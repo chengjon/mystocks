@@ -20,8 +20,10 @@ def _load_trade_package():
     return importlib.import_module("app.api.trade")
 
 
-def _build_client(package):
+def _build_client(package, dependency_overrides=None):
     app = FastAPI()
+    if dependency_overrides:
+        app.dependency_overrides.update(dependency_overrides)
     app.include_router(package.router, prefix="/api/v1/trade")
     return TestClient(app)
 
@@ -70,12 +72,11 @@ class FakeExecutionTrackingEvidenceService:
         ]
 
 
-def test_execution_tracking_routes_can_use_injected_miniqmt_evidence_service(monkeypatch):
+def test_execution_tracking_routes_can_use_dependency_overridden_miniqmt_evidence_service(monkeypatch):
     package = _load_trade_package()
     routes_module = importlib.import_module("app.api.trade.execution_tracking_routes")
 
     fake_service = FakeExecutionTrackingEvidenceService()
-    monkeypatch.setattr(routes_module, "get_execution_tracking_evidence_service", lambda: fake_service)
     monkeypatch.setattr(
         routes_module,
         "query_internal_statements",
@@ -90,7 +91,10 @@ def test_execution_tracking_routes_can_use_injected_miniqmt_evidence_service(mon
         },
     )
 
-    client = _build_client(package)
+    client = _build_client(
+        package,
+        dependency_overrides={routes_module.get_execution_tracking_evidence_service: lambda: fake_service},
+    )
     list_response = client.get("/api/v1/trade/execution-tracking", params={"account_id": "backtest:7"})
     detail_response = client.get("/api/v1/trade/execution-tracking/attempt-local-777")
 
