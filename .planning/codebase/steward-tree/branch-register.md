@@ -44,12 +44,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#357` | `g2-204-data-quality-legacy-adapter-compatibility-wrapper` | `wip/root-dirty-20260403` | `MERGED` at `a621ba4ae66f581074a3b66539e296cbf0ced1b5` | Path-limited thin-wrapper implementation closed for G2.205 refresh |
 | `#358` | `g2-205-data-quality-legacy-adapter-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `44909f5d048700115da6a9eb9345957b8af3d077` | Governance closeout selecting G2.206 `market_data_adapter.py` compatibility facade ownership decision |
 | `#359` | `g2-206-data-quality-market-data-adapter-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0` | Decision package selecting G2.207 provider seam authorization |
+| `#360` | `g2-207-data-quality-market-data-adapter-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `b4b34375eef0186b81be9a24491328dab72c2e21` | Authorization package for G2.208 `market_data_adapter.py` provider seam implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-207-data-quality-market-data-adapter-provider-authorization` | `origin/wip/root-dirty-20260403` at `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0` | Authorize the future path-limited `market_data_adapter.py` provider seam implementation | No |
+| `g2-208-data-quality-market-data-adapter-provider-implementation` | `origin/wip/root-dirty-20260403` at `b4b34375eef0186b81be9a24491328dab72c2e21` | Implement the path-limited `market_data_adapter.py` provider seam | Yes, limited |
 
 ## OpenSpec Relationship
 
@@ -65,6 +66,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.207 is a governance-only authorization branch after PR `#359` merged G2.206.
-It does not edit source. If accepted, the next gate is a G2.208 implementation
-branch limited to the explicitly authorized source and test paths.
+G2.208 is a path-limited source implementation branch after PR `#360` merged
+G2.207. It is limited to `market_data_adapter.py`, one focused provider seam
+test, function-tree mapping, and governance evidence. If accepted, the next gate
+is a G2.209 closeout / residual refresh.

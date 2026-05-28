@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T17:41:53+08:00`
-- Base HEAD checked: `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0`
+- Prepared at: `2026-05-28T17:58:00+08:00`
+- Base HEAD checked: `b4b34375eef0186b81be9a24491328dab72c2e21`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -59,7 +59,8 @@ It proved a repeatable conveyor:
 | G2.204 data-quality legacy adapter compatibility wrapper implementation | Merged by PR `#357` | Converts two legacy modules into thin wrappers, preserves old import paths, and reduces target legacy getter calls to `0` |
 | G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | Merged by PR `#358` | Closes the legacy wrapper target and recommends G2.206 `market_data_adapter.py` compatibility facade ownership decision |
 | G2.206 data-quality `market_data_adapter.py` compatibility facade ownership decision | Merged by PR `#359` | Classifies `market_data_adapter.py` as active data-source-factory compatibility facade and recommends G2.207 provider seam authorization |
-| G2.207 data-quality `market_data_adapter.py` provider seam authorization | For review | Authorizes future G2.208 source implementation scope without source edits in G2.207 |
+| G2.207 data-quality `market_data_adapter.py` provider seam authorization | Merged by PR `#360` | Authorizes future G2.208 source implementation scope without source edits in G2.207 |
+| G2.208 data-quality `market_data_adapter.py` provider seam implementation | For review | Implements optional quality monitor injection while preserving default singleton fallback and data-source-factory constructor compatibility |
 
 ## Current Strategy Getter Residuals
 
@@ -645,11 +646,40 @@ Forbidden in G2.208 unless a later package explicitly expands scope:
 - `DataQualityMonitor` internals
 - route, OpenAPI, frontend, config, script, or OpenSpec changes
 
+PR `#360` merged this lane at
+`b4b34375eef0186b81be9a24491328dab72c2e21`.
+
+## G2.208 Data-Quality Market Data Adapter Provider Implementation
+
+At HEAD `b4b34375eef0186b81be9a24491328dab72c2e21`, PR `#360` is merged and
+G2.207 is accepted.
+
+Implementation result:
+
+| Item | Before | After |
+|---|---|---|
+| `MarketDataSourceAdapter` constructor | `config` only | `config`, plus keyword-only optional `quality_monitor` |
+| Default quality monitor behavior | module-level getter fallback | preserved |
+| Injected quality monitor behavior | not supported | injected monitor bypasses module-level getter |
+| `data_source_factory` constructor compatibility | `MarketDataSourceAdapter(config.__dict__)` | preserved |
+
+TDD evidence:
+
+| Phase | Result |
+|---|---|
+| RED | `1 failed` on unexpected `quality_monitor` keyword argument |
+| GREEN | focused provider seam test `2 passed` |
+| Regression | authorized market adapter / factory regression package `18 passed` |
+| Ruff | authorized files passed |
+
+G2.208 does not edit `data_source_factory`, singleton wrapper/backing API,
+route/OpenAPI, frontend, config, script, or OpenSpec surfaces.
+
 ## Next Gates
 
-- Review G2.207 `market_data_adapter.py` provider seam authorization package.
-- If accepted, start G2.208 implementation with only the authorized source and test paths.
-- Do not expand G2.208 into `data_source_factory`, singleton wrapper/backing API, routes, OpenAPI, frontend, config, scripts, or OpenSpec changes.
+- Review G2.208 `market_data_adapter.py` provider seam implementation.
+- If accepted, start G2.209 closeout / residual refresh with no source edits.
+- Do not open the next source lane before G2.209 classifies remaining data-quality monitor surfaces.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

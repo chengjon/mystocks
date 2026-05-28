@@ -58,10 +58,12 @@ domains:
           - "web/backend/app/services/adapters/data_adapter.py"
           - "web/backend/app/services/data_adapters/dashboard.py"
           - "web/backend/app/services/data_adapters/data_source.py"
+          - "web/backend/app/services/market_data_adapter.py"
           - "web/backend/app/services/adapters_split/**"
           - "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
           - "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py"
           - "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py"
+          - "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py"
           - "config/data_sources*"
         entrypoints:
           governance:
@@ -75,10 +77,12 @@ domains:
             - "web/backend/app/services/adapters/data_adapter.py"
             - "web/backend/app/services/data_adapters/dashboard.py"
             - "web/backend/app/services/data_adapters/data_source.py"
+            - "web/backend/app/services/market_data_adapter.py"
           tests:
             - "tests/unit/adapters/**"
             - "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py"
             - "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py"
+            - "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py"
           operations:
             - "docs/operations/OPS_MANUAL.md"
       - id: "domain-01-node-04"
