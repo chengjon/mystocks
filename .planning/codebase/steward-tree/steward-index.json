@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T01:22:32+08:00",
+  "generated_at": "2026-05-29T01:42:47+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "4d2b69e449975d145976e10c8af965e16dc60a1e",
-  "split_branch": "g2-218-data-service-provider-closeout-refresh",
-  "scope": "data_service_provider_closeout_refresh",
+  "base_head": "d4ee917ad642939c4c60000998b8bea5ca7c9a65",
+  "split_branch": "g2-219-execution-tracking-evidence-provider-decision",
+  "scope": "execution_tracking_evidence_provider_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -2554,7 +2554,7 @@
     {
       "id": "g2-218-data-service-provider-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.217 DataService provider/reset seam implementation",
       "source_edit_authority": false,
@@ -2589,7 +2589,10 @@
           "get_prewarming_strategy"
         ]
       },
-      "next_gate": "If accepted, start G2.219 no-source ownership decision for get_execution_tracking_evidence_service; do not start source implementation directly.",
+      "next_gate": "Superseded by G2.219 trade execution tracking evidence provider ownership decision.",
+      "github_pr": 371,
+      "head_ref": "g2-218-data-service-provider-closeout-refresh",
+      "merge_commit": "d4ee917ad642939c4c60000998b8bea5ca7c9a65",
       "allowed_scope": [
         ".planning/codebase/generated/data-service-provider-closeout-refresh-2026-05-29.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -2615,7 +2618,76 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "4d2b69e449975d145976e10c8af965e16dc60a1e",
+        "current_head_checked": "d4ee917ad642939c4c60000998b8bea5ca7c9a65",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-219-execution-tracking-evidence-provider-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + trade route/provider governance",
+      "parent": "G2.218 DataService provider/reset seam closeout / residual refresh",
+      "source_edit_authority": false,
+      "parent_github_pr": 371,
+      "parent_merge_commit": "d4ee917ad642939c4c60000998b8bea5ca7c9a65",
+      "evidence": [
+        ".planning/codebase/generated/execution-tracking-evidence-provider-ownership-decision-2026-05-29.json",
+        "docs/reports/quality/backend-execution-tracking-evidence-provider-ownership-decision-2026-05-29.md",
+        "governance/mainline/task-cards/pr-372.yaml"
+      ],
+      "target": {
+        "symbol": "get_execution_tracking_evidence_service",
+        "file": "web/backend/app/api/trade/execution_tracking_routes.py",
+        "definition_line": 289,
+        "classification": "trade evidence route-local provider surface"
+      },
+      "gitnexus_impact": {
+        "risk": "HIGH",
+        "impacted_count": 2,
+        "direct_callers": 2,
+        "processes_affected": 3,
+        "modules_affected": 1,
+        "affected_module": "Trade"
+      },
+      "verification": {
+        "focused_trade_route_tests": "web/backend/tests/test_trade_execution_tracking_routes.py: 4 passed",
+        "ruff": "passed",
+        "openspec_validate": "valid",
+        "openapi_smoke": "blocked_by_missing_required_environment"
+      },
+      "decision": {
+        "result": "classify as trade route/provider ownership surface, not generic singleton cleanup",
+        "source_implementation_allowed_now": false,
+        "selected_next_gate": "G2.220 trade execution tracking evidence provider authorization package"
+      },
+      "next_gate": "If accepted, start G2.220 no-source authorization package; do not start source implementation directly.",
+      "allowed_scope": [
+        ".planning/codebase/generated/execution-tracking-evidence-provider-ownership-decision-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-execution-tracking-evidence-provider-ownership-decision-2026-05-29.md",
+        "governance/mainline/task-cards/pr-372.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "d4ee917ad642939c4c60000998b8bea5ca7c9a65",
         "stale_if_head_mismatch": true
       }
     },

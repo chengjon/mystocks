@@ -1,0 +1,141 @@
+{
+  "schema_version": "2026-05-29.execution-tracking-evidence-provider-ownership-decision.v1",
+  "generated_at": "2026-05-29T01:42:47+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-219-execution-tracking-evidence-provider-decision",
+  "base_head": "d4ee917ad642939c4c60000998b8bea5ca7c9a65",
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "parent": {
+    "g2": "G2.218",
+    "github_pr": 371,
+    "state": "MERGED",
+    "merge_commit": "d4ee917ad642939c4c60000998b8bea5ca7c9a65",
+    "summary": "DataService provider/reset seam closeout accepted into wip/root-dirty-20260403"
+  },
+  "target": {
+    "symbol": "get_execution_tracking_evidence_service",
+    "file": "web/backend/app/api/trade/execution_tracking_routes.py",
+    "definition_line": 289,
+    "classification": "trade evidence route-local provider surface"
+  },
+  "gitnexus_impact": {
+    "repo": "mystocks_spec",
+    "risk": "HIGH",
+    "impacted_count": 2,
+    "direct_callers": 2,
+    "processes_affected": 3,
+    "modules_affected": 1,
+    "direct_callers_list": [
+      "_load_execution_records",
+      "get_execution_tracking_detail"
+    ],
+    "affected_processes": [
+      "Get_execution_tracking_detail -> Strip",
+      "Get_execution_tracking_detail -> _as_int",
+      "Get_execution_tracking_detail -> _broker_state_for"
+    ],
+    "affected_module": "Trade"
+  },
+  "static_inventory": {
+    "route_file_line_count": 563,
+    "test_file_line_count": 221,
+    "route_decorators": [
+      {
+        "line": 435,
+        "method": "GET",
+        "role": "list execution tracking"
+      },
+      {
+        "line": 469,
+        "method": "POST",
+        "role": "record external execution trigger"
+      },
+      {
+        "line": 533,
+        "method": "GET",
+        "role": "get execution tracking detail"
+      }
+    ],
+    "provider_lines": [
+      {
+        "line": 289,
+        "text": "def get_execution_tracking_evidence_service() -> ExecutionTrackingEvidenceService:"
+      },
+      {
+        "line": 364,
+        "text": "for record in get_execution_tracking_evidence_service().load_records("
+      },
+      {
+        "line": 542,
+        "text": "evidence_service = get_execution_tracking_evidence_service()"
+      }
+    ],
+    "depends_usage": 0,
+    "test_count": 4,
+    "test_seam": "web/backend/tests/test_trade_execution_tracking_routes.py monkeypatches get_execution_tracking_evidence_service at line 78"
+  },
+  "verification": {
+    "pytest": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py -q --no-cov --tb=short",
+      "result": "4 passed in 3.30s"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/trade/execution_tracking_routes.py web/backend/tests/test_trade_execution_tracking_routes.py",
+      "result": "All checks passed!"
+    },
+    "openspec": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "Change 'migrate-backend-singletons-to-lifecycle-di' is valid",
+      "telemetry_note": "PostHog network flush failure is telemetry noise."
+    },
+    "openapi_smoke": {
+      "command": "env PYTHONPATH=web/backend python -c '<app.main route/OpenAPI smoke>'",
+      "result": "blocked_by_environment",
+      "missing_environment": [
+        "POSTGRESQL_HOST",
+        "POSTGRESQL_USER",
+        "POSTGRESQL_PASSWORD",
+        "JWT_SECRET_KEY",
+        "BACKEND_PORT",
+        "BACKEND_BACKUP_PORT"
+      ]
+    }
+  },
+  "decision": {
+    "state": "ownership_decision_for_review",
+    "result": "Do not treat get_execution_tracking_evidence_service as a generic service singleton cleanup. It belongs to the trade execution tracking route/provider ownership surface.",
+    "rationale": [
+      "The provider is defined inside the trade route module and constructs ExecutionTrackingEvidenceService on demand.",
+      "It is called by both list loading and detail lookup, so a blind source edit has HIGH graph impact.",
+      "Existing tests already use a route-module monkeypatch seam, but FastAPI Depends is not yet used.",
+      "Current route/OpenAPI verification is environment-blocked, so source implementation should not start from this decision package."
+    ],
+    "selected_next_gate": "G2.220 trade execution tracking evidence provider authorization package",
+    "source_implementation_allowed_now": false
+  },
+  "next_gate": {
+    "g2": "G2.220",
+    "title": "trade execution tracking evidence provider authorization",
+    "source_edit_authority": false,
+    "scope": [
+      "define whether a later path-limited source lane should convert direct provider calls to route dependency/provider injection",
+      "require current app.main/OpenAPI smoke or explicit environment-blocker disposition before source implementation",
+      "keep route contracts, response models, miniQMT evidence semantics, and tests stable"
+    ]
+  },
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ]
+}

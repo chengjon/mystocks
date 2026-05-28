@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T01:22:32+08:00`
-- Base HEAD checked: `4d2b69e449975d145976e10c8af965e16dc60a1e`
+- Prepared at: `2026-05-29T01:42:47+08:00`
+- Base HEAD checked: `d4ee917ad642939c4c60000998b8bea5ca7c9a65`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -97,8 +97,10 @@ state transition.
 | `docs/reports/quality/backend-indicator-data-service-provider-authorization-2026-05-29.md` | G2.216 human-readable provider authorization report | Accepted by PR `#369`; superseded for implementation evidence by G2.217 |
 | `.planning/codebase/generated/data-service-provider-reset-seam-implementation-2026-05-29.json` | G2.217 `DataService` provider/reset seam implementation evidence | Accepted by PR `#370`; superseded for closeout evidence by G2.218 |
 | `docs/reports/quality/backend-data-service-provider-reset-seam-implementation-2026-05-29.md` | G2.217 human-readable implementation report | Accepted by PR `#370`; superseded for closeout evidence by G2.218 |
-| `.planning/codebase/generated/data-service-provider-closeout-refresh-2026-05-29.json` | G2.218 `DataService` provider/reset seam closeout and residual refresh evidence | Review input until PR `#371` is accepted |
-| `docs/reports/quality/backend-data-service-provider-closeout-refresh-2026-05-29.md` | G2.218 human-readable closeout / residual refresh report | Review input until PR `#371` is accepted |
+| `.planning/codebase/generated/data-service-provider-closeout-refresh-2026-05-29.json` | G2.218 `DataService` provider/reset seam closeout and residual refresh evidence | Accepted by PR `#371`; superseded for next ownership evidence by G2.219 |
+| `docs/reports/quality/backend-data-service-provider-closeout-refresh-2026-05-29.md` | G2.218 human-readable closeout / residual refresh report | Accepted by PR `#371`; superseded for next ownership evidence by G2.219 |
+| `.planning/codebase/generated/execution-tracking-evidence-provider-ownership-decision-2026-05-29.json` | G2.219 `get_execution_tracking_evidence_service` ownership decision evidence | Review input until PR `#372` is accepted |
+| `docs/reports/quality/backend-execution-tracking-evidence-provider-ownership-decision-2026-05-29.md` | G2.219 human-readable ownership decision report | Review input until PR `#372` is accepted |
 
 ## External State Inputs
 

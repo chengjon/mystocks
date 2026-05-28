@@ -1012,11 +1012,46 @@ G2.218 does not authorize backend source edits, test edits, OpenSpec changes,
 route/OpenAPI changes, issue label changes, or direct implementation for the
 next candidate.
 
+## G2.219 Trade Execution Tracking Evidence Provider Ownership
+
+G2.219 is a no-source ownership decision package after PR `#371` merged at
+`d4ee917ad642939c4c60000998b8bea5ca7c9a65`.
+
+Target:
+
+| Item | Value |
+|---|---|
+| Symbol | `get_execution_tracking_evidence_service` |
+| File | `web/backend/app/api/trade/execution_tracking_routes.py:289` |
+| Current shape | route-local factory for `ExecutionTrackingEvidenceService` |
+| Current injection style | direct route-module helper calls; no FastAPI `Depends` usage |
+
+Current evidence:
+
+| Check | Result |
+|---|---|
+| GitNexus impact | `HIGH`, 2 direct callers, 3 affected processes, Trade module |
+| Focused trade execution route tests | `4 passed` |
+| Ruff on route/test files | passed |
+| OpenSpec strict validate | valid |
+| app.main/OpenAPI smoke | environment-blocked by missing required env vars |
+
+Ownership decision:
+
+`get_execution_tracking_evidence_service` is a trade execution tracking
+route/provider ownership surface, not a generic service singleton cleanup
+candidate. The existing route-local helper and test monkeypatch seam are
+evidence for possible injection, not implementation authorization.
+
+G2.219 selects G2.220 as a no-source authorization package to define whether a
+later path-limited implementation should convert list/detail direct provider
+calls to explicit route dependency/provider injection.
+
 ## Next Gates
 
-- Review G2.218 `DataService` provider/reset seam closeout / residual refresh.
-- If accepted, start G2.219 no-source ownership decision for `get_execution_tracking_evidence_service`.
-- Do not start another source implementation directly from G2.218 or G2.219.
+- Review G2.219 trade execution tracking evidence provider ownership decision.
+- If accepted, start G2.220 no-source trade execution tracking evidence provider authorization.
+- Do not start source implementation directly from G2.219 or G2.220.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
