@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T02:01:47+08:00`
-- Base HEAD checked: `b51256b775f7b4c6e5baad8c82a7f86446c0151b`
+- Prepared at: `2026-05-29T02:42:26+08:00`
+- Base HEAD checked: `3d2dc3e8204388cc157c23df59f584a3efb268fe`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -57,12 +57,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#370` | `g2-217-data-service-provider-reset-seam` | `wip/root-dirty-20260403` | `MERGED` at `4d2b69e449975d145976e10c8af965e16dc60a1e` | Path-limited implementation adding `DataService` provider/reset seam while preserving default singleton fallback |
 | `#371` | `g2-218-data-service-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `d4ee917ad642939c4c60000998b8bea5ca7c9a65` | No-source closeout selecting G2.219 `get_execution_tracking_evidence_service` ownership decision |
 | `#372` | `g2-219-execution-tracking-evidence-provider-decision` | `wip/root-dirty-20260403` | `MERGED` at `b51256b775f7b4c6e5baad8c82a7f86446c0151b` | No-source ownership decision selecting G2.220 trade execution tracking evidence provider authorization |
+| `#373` | `g2-220-execution-tracking-evidence-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `3d2dc3e8204388cc157c23df59f584a3efb268fe` | No-source authorization selecting G2.221 path-limited execution tracking provider injection |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-220-execution-tracking-evidence-provider-authorization` | `origin/wip/root-dirty-20260403` at `b51256b775f7b4c6e5baad8c82a7f86446c0151b` | Authorize the exact future route/provider injection boundary for `get_execution_tracking_evidence_service` | No |
+| `g2-221-execution-tracking-evidence-provider-injection` | `origin/wip/root-dirty-20260403` at `3d2dc3e8204388cc157c23df59f584a3efb268fe` | Implement the authorized execution tracking list/detail provider injection seam | Yes, limited to the authorized route/test pair |
 
 ## OpenSpec Relationship
 
@@ -78,7 +79,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.220 is a no-source authorization branch after PR `#372` merged G2.219. It is
-limited to governance evidence, steward tree updates, and a task card. If
-accepted, the next gate is G2.221 path-limited implementation in the trade
-execution tracking route/test pair.
+G2.221 is a path-limited implementation branch after PR `#373` merged G2.220.
+It is limited to the trade execution tracking route/test pair plus governance
+evidence. If accepted, the next gate is G2.222 no-source closeout and residual
+refresh.

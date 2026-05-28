@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T02:01:47+08:00`
-- Base HEAD checked: `b51256b775f7b4c6e5baad8c82a7f86446c0151b`
+- Prepared at: `2026-05-29T02:42:26+08:00`
+- Base HEAD checked: `3d2dc3e8204388cc157c23df59f584a3efb268fe`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.220 trade execution tracking evidence provider authorization | G/#79 service lifecycle DI + trade route/provider governance | PR `#372` merged at `b51256b775f7b4c6e5baad8c82a7f86446c0151b`; G2.220 authorizes a future path-limited G2.221 route/provider injection lane, but makes no source change itself | If accepted, start G2.221 implementation limited to `execution_tracking_routes.py`, `test_trade_execution_tracking_routes.py`, and governance evidence |
+| P0 | Review G2.221 trade execution tracking evidence provider injection | G/#79 service lifecycle DI + trade route/provider governance | PR `#373` merged at `3d2dc3e8204388cc157c23df59f584a3efb268fe`; G2.221 implements the authorized list/detail route provider injection and keeps route/OpenAPI contracts stable | If accepted, start G2.222 no-source closeout and residual refresh |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.220 correctly treat PR `#372` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.220 preserve the GitNexus `HIGH` impact as a path-limit and pre-edit impact gate for G2.221?
-- Does G2.220 authorize only the route/test pair needed for provider injection and keep all other source out of scope?
-- Does G2.220 preserve route paths, response models, `UnifiedResponse`, request schemas, and miniQMT semantics as invariants?
-- Is G2.221 correctly positioned as the first source implementation lane after this authorization, not before?
+- Does G2.221 correctly treat PR `#373` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.221 preserve the GitNexus `HIGH` impact as a path-limit while touching only the authorized route/test pair?
+- Does G2.221 implement provider injection only for execution tracking list/detail flows and keep `trigger_external_execution` out of scope?
+- Does G2.221 preserve route paths, response models, `UnifiedResponse`, request schemas, and miniQMT semantics as invariants?
+- Is G2.222 correctly positioned as a no-source closeout and residual refresh, not a new implementation lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

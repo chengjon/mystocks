@@ -1,0 +1,128 @@
+{
+  "schema_version": "2026-05-29.g2-implementation-evidence.v1",
+  "g2": "G2.221",
+  "title": "execution tracking evidence provider route injection implementation",
+  "prepared_at": "2026-05-29T02:42:26+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "3d2dc3e8204388cc157c23df59f584a3efb268fe",
+  "branch": "g2-221-execution-tracking-evidence-provider-injection",
+  "parent": {
+    "g2": "G2.220",
+    "github_pr": 373,
+    "merge_commit": "3d2dc3e8204388cc157c23df59f584a3efb268fe",
+    "authorization": "path-limited implementation for execution_tracking_routes.py and test_trade_execution_tracking_routes.py"
+  },
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": true,
+  "allowed_scope": [
+    "web/backend/app/api/trade/execution_tracking_routes.py",
+    "web/backend/tests/test_trade_execution_tracking_routes.py",
+    ".planning/codebase/generated/execution-tracking-evidence-provider-injection-2026-05-29.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-execution-tracking-evidence-provider-injection-2026-05-29.md",
+    "governance/mainline/task-cards/pr-374.yaml"
+  ],
+  "forbidden_scope": [
+    "web/frontend/**",
+    "src/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "gitnexus_impact_before_edit": {
+    "target": "get_execution_tracking_evidence_service",
+    "risk": "HIGH",
+    "direct_callers": 2,
+    "impacted_count": 2,
+    "processes_affected": 3,
+    "modules_affected": 1,
+    "affected_module": "Trade",
+    "d1_callers": [
+      "_load_execution_records",
+      "get_execution_tracking_detail"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "test": "test_execution_tracking_routes_can_use_dependency_overridden_miniqmt_evidence_service",
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py::test_execution_tracking_routes_can_use_dependency_overridden_miniqmt_evidence_service -q --no-cov --tb=short",
+      "result": "1 failed",
+      "expected_failure": "dependency override did not reach route body; list response items were empty"
+    },
+    "green": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py::test_execution_tracking_routes_can_use_dependency_overridden_miniqmt_evidence_service -q --no-cov --tb=short",
+      "result": "1 passed"
+    }
+  },
+  "implementation": {
+    "route_file": "web/backend/app/api/trade/execution_tracking_routes.py",
+    "test_file": "web/backend/tests/test_trade_execution_tracking_routes.py",
+    "changes": [
+      "imported fastapi.Depends",
+      "kept get_execution_tracking_evidence_service as the default provider factory",
+      "added evidence_service parameter to _load_execution_records",
+      "loaded bridge evidence through the injected evidence_service",
+      "added Depends(get_execution_tracking_evidence_service) to execution tracking list route",
+      "added Depends(get_execution_tracking_evidence_service) to execution tracking detail route",
+      "updated focused test to use FastAPI dependency_overrides instead of monkeypatching the provider helper"
+    ],
+    "line_evidence": {
+      "route_import": 8,
+      "load_records_parameter": 337,
+      "load_records_injected_call": 365,
+      "list_route_depends": 448,
+      "detail_route_depends": 544,
+      "test_dependency_overrides_helper": 23,
+      "test_dependency_override_usage": 96
+    }
+  },
+  "contract_invariants": {
+    "route_path_changes": false,
+    "response_model_changes": false,
+    "unified_response_shape_changes": false,
+    "request_schema_changes": false,
+    "miniqmt_evidence_semantic_changes": false,
+    "broker_state_or_bridge_interpretation_changes": false,
+    "trigger_external_execution_changed": false
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py -q --no-cov --tb=short",
+      "result": "4 passed in 3.11s"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/trade/execution_tracking_routes.py web/backend/tests/test_trade_execution_tracking_routes.py",
+      "result": "All checks passed!"
+    },
+    "openapi_smoke": {
+      "command": "python -c import app.main and app.openapi() with transient runtime environment",
+      "result": "passed",
+      "route_count": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "warnings": 0,
+      "secret_handling": "required environment keys were supplied transiently; secret values were not persisted or recorded"
+    },
+    "direct_provider_scan": {
+      "total_symbol_hits": 3,
+      "definition_hits": 1,
+      "depends_hits": 2,
+      "route_body_direct_provider_calls": 0
+    }
+  },
+  "next_gate": {
+    "g2": "G2.222",
+    "title": "execution tracking provider injection closeout and residual refresh",
+    "source_edit_authority": false,
+    "purpose": "confirm current-head residuals, steward state, and whether the execution tracking provider seam is closed"
+  }
+}

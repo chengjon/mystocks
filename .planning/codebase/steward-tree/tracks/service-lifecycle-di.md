@@ -1091,12 +1091,48 @@ G2.220 baseline app.main/OpenAPI smoke passed with transient runtime
 environment: `route_count=548`, `openapi_paths=500`. Secret values were not
 persisted in repository files or recorded in this track summary.
 
+## G2.221 Trade Execution Tracking Evidence Provider Injection
+
+G2.221 is the path-limited source implementation after PR `#373` merged at
+`3d2dc3e8204388cc157c23df59f584a3efb268fe`.
+
+Implementation result:
+
+| Item | Value |
+|---|---|
+| Source path | `web/backend/app/api/trade/execution_tracking_routes.py` |
+| Test path | `web/backend/tests/test_trade_execution_tracking_routes.py` |
+| Provider factory | `get_execution_tracking_evidence_service` retained |
+| List route | uses `Depends(get_execution_tracking_evidence_service)` |
+| Detail route | uses `Depends(get_execution_tracking_evidence_service)` |
+| Helper seam | `_load_execution_records` receives injected `evidence_service` |
+| Trigger route | unchanged / out of scope |
+
+TDD and verification:
+
+| Check | Result |
+|---|---|
+| GitNexus pre-edit impact | `HIGH`, 2 direct callers, 3 affected processes |
+| TDD red | dependency override test failed before source edit |
+| TDD green | dependency override test passed after source edit |
+| Focused route tests | `4 passed` |
+| Ruff | passed |
+| app.main/OpenAPI smoke | passed, `route_count=548`, `openapi_paths=500`, duplicate operation IDs `0` |
+
+Contract invariants preserved:
+
+- no route path changes
+- no `response_model` changes
+- no `UnifiedResponse` envelope changes
+- no request schema changes
+- no miniQMT evidence semantic changes
+- no `broker_state` or bridge evidence interpretation changes
+
 ## Next Gates
 
-- Review G2.220 trade execution tracking evidence provider authorization.
-- If accepted, start G2.221 path-limited implementation for the execution tracking route/test pair.
-- Do not expand G2.221 beyond `execution_tracking_routes.py`,
-  `test_trade_execution_tracking_routes.py`, and governance evidence.
+- Review G2.221 trade execution tracking evidence provider injection implementation.
+- If accepted, start G2.222 no-source closeout and residual refresh for the execution tracking provider seam.
+- Do not expand G2.222 into new source edits or another provider candidate.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.

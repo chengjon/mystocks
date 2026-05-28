@@ -5,7 +5,7 @@ from decimal import Decimal
 from typing import Any, Literal, TypeVar
 from uuid import uuid4
 
-from fastapi import APIRouter, Body, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 
 from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
@@ -334,6 +334,7 @@ def _load_execution_records(
     bridge_task_id: str | None,
     page: int,
     page_size: int,
+    evidence_service: ExecutionTrackingEvidenceService,
 ) -> list[dict[str, Any]]:
     try:
         internal_payload = query_internal_statements(
@@ -361,7 +362,7 @@ def _load_execution_records(
     )
     records.extend(
         record
-        for record in get_execution_tracking_evidence_service().load_records(
+        for record in evidence_service.load_records(
             account_id=account_id,
             order_id=order_id,
             bridge_task_id=bridge_task_id,
@@ -444,6 +445,7 @@ async def get_execution_tracking(
     bridge_task_id: str | None = Query(None, description="miniQMT bridge task id filter"),
     page: int = Query(1, ge=1, description="页码"),
     page_size: int = Query(20, ge=1, le=100, description="每页数量"),
+    evidence_service: ExecutionTrackingEvidenceService = Depends(get_execution_tracking_evidence_service),
 ) -> UnifiedResponse[ExecutionTrackingListPayload]:
     records = _load_execution_records(
         account_id=account_id,
@@ -451,6 +453,7 @@ async def get_execution_tracking(
         bridge_task_id=bridge_task_id,
         page=page,
         page_size=page_size,
+        evidence_service=evidence_service,
     )
     items = [_build_tracking_item(record) for record in records]
     payload = ExecutionTrackingListPayload(
@@ -538,8 +541,8 @@ async def trigger_external_execution(
 )
 async def get_execution_tracking_detail(
     tracking_id: str = Path(..., description="Execution tracking identity returned by the trigger or list endpoint"),
+    evidence_service: ExecutionTrackingEvidenceService = Depends(get_execution_tracking_evidence_service),
 ) -> UnifiedResponse[ExecutionTrackingDetailPayload]:
-    evidence_service = get_execution_tracking_evidence_service()
     record = evidence_service.load_record_by_tracking_id(tracking_id) or _EXECUTION_TRIGGERS.get(tracking_id)
     if record is None:
         raise BusinessException(
