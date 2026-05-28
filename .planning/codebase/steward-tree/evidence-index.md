@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T11:30:22+08:00`
-- Base HEAD checked: `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`
+- Prepared at: `2026-05-28T11:53:30+08:00`
+- Base HEAD checked: `e672f1523c30037202310278daf71488681d9a1f`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -63,8 +63,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-authorization-2026-05-28.md` | G2.199 human-readable authorization package | Accepted by PR `#352`; superseded for implementation evidence by G2.200 |
 | `.planning/codebase/generated/data-quality-canonical-service-adapter-provider-implementation-2026-05-28.json` | G2.200 canonical service adapter provider implementation evidence | Accepted by PR `#353`; superseded for residual refresh by G2.201 |
 | `docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-implementation-2026-05-28.md` | G2.200 human-readable implementation report | Accepted by PR `#353`; superseded for residual refresh by G2.201 |
-| `.planning/codebase/generated/data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.json` | G2.201 canonical service adapter closeout / residual refresh evidence | Current for HEAD `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`; review input until PR `#354` is accepted |
-| `docs/reports/quality/backend-data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.md` | G2.201 human-readable closeout / residual refresh report | Review input until PR `#354` is accepted |
+| `.planning/codebase/generated/data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.json` | G2.201 canonical service adapter closeout / residual refresh evidence | Accepted by PR `#354`; superseded for legacy adapter ownership by G2.202 |
+| `docs/reports/quality/backend-data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.md` | G2.201 human-readable closeout / residual refresh report | Accepted by PR `#354`; superseded for legacy adapter ownership by G2.202 |
+| `.planning/codebase/generated/data-quality-legacy-adapter-ownership-decision-2026-05-28.json` | G2.202 legacy data adapter compatibility ownership decision evidence | Current for HEAD `e672f1523c30037202310278daf71488681d9a1f`; review input until PR `#355` is accepted |
+| `docs/reports/quality/backend-data-quality-legacy-adapter-ownership-decision-2026-05-28.md` | G2.202 human-readable ownership decision report | Review input until PR `#355` is accepted |
 
 ## External State Inputs
 
@@ -89,7 +91,8 @@ state transition.
 | GitHub PR `#351` | `MERGED` | G2.198 residual adapter ownership decision merged by commit `a6b54ddfb24055552d634757f01dc03bd6ca6e62` |
 | GitHub PR `#352` | `MERGED` | G2.199 canonical service adapter authorization merged by commit `41bef3787160ec3bf7b9b31220df9d99a3437474` |
 | GitHub PR `#353` | `MERGED` | G2.200 canonical service adapter provider implementation merged by commit `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e` |
-| `origin/wip/root-dirty-20260403` | `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e` | Base used for this canonical service adapter closeout / refresh branch |
+| GitHub PR `#354` | `MERGED` | G2.201 canonical service adapter closeout / residual refresh merged by commit `e672f1523c30037202310278daf71488681d9a1f` |
+| `origin/wip/root-dirty-20260403` | `e672f1523c30037202310278daf71488681d9a1f` | Base used for this legacy adapter ownership decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

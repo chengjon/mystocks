@@ -1,0 +1,120 @@
+{
+  "schema_version": "2026-05-28.g2-decision.v1",
+  "node": "G2.202 data-quality legacy adapter compatibility ownership decision",
+  "generated_at": "2026-05-28T11:53:30+08:00",
+  "git": {
+    "branch": "g2-202-data-quality-legacy-adapter-ownership-decision",
+    "base_branch": "wip/root-dirty-20260403",
+    "base_head": "e672f1523c30037202310278daf71488681d9a1f",
+    "current_head_checked": "e672f1523c30037202310278daf71488681d9a1f",
+    "stale_if_head_mismatch": true
+  },
+  "parent": {
+    "node": "G2.201 data-quality canonical service adapter closeout / refresh",
+    "github_pr": 354,
+    "merge_commit": "e672f1523c30037202310278daf71488681d9a1f",
+    "relationship": "G2.201 selected this G2.202 decision-only legacy data adapter compatibility ownership gate"
+  },
+  "source_edit_authority": false,
+  "scope": {
+    "decision_targets": [
+      "web/backend/app/services/data_adapters/dashboard.py",
+      "web/backend/app/services/data_adapters/data_source.py"
+    ],
+    "forbidden_surfaces": [
+      "web/backend/app/services/market_data_adapter.py",
+      "web/backend/app/services/_data_quality_monitor_singleton.py",
+      "web/backend/app/services/data_quality_monitor.py",
+      "web/backend/app/services/adapters/**",
+      "web/backend/app/services/adapter_split/**",
+      "web/backend/app/api/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "target_facts": [
+    {
+      "path": "web/backend/app/services/data_adapters/dashboard.py",
+      "line_count": 299,
+      "classes": [
+        "DashboardDataSourceAdapter"
+      ],
+      "get_data_quality_monitor_calls": 1,
+      "import_line": "from app.services.data_quality_monitor import get_data_quality_monitor",
+      "gitnexus_upstream_impact": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0
+      }
+    },
+    {
+      "path": "web/backend/app/services/data_adapters/data_source.py",
+      "line_count": 688,
+      "classes": [
+        "DataDataSourceAdapter"
+      ],
+      "get_data_quality_monitor_calls": 1,
+      "import_line": "from app.services.data_quality_monitor import get_data_quality_monitor",
+      "gitnexus_upstream_impact": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0
+      }
+    }
+  ],
+  "consumer_scan": {
+    "module_path_patterns": [
+      "app.services.data_adapters.dashboard",
+      "app.services.data_adapters.data_source",
+      "services.data_adapters.dashboard",
+      "services.data_adapters.data_source",
+      "data_adapters.dashboard",
+      "data_adapters.data_source"
+    ],
+    "external_python_legacy_module_imports": 0,
+    "legacy_module_imports": [],
+    "class_name_scan_note": "Class-name text hits are ambiguous because canonical app.services.adapters modules use the same class names. The active runtime class-name hits outside the two legacy files point to canonical adapters, the app.services.data_adapter facade, and data_source_factory imports through that facade.",
+    "facade_import_truth": {
+      "web/backend/app/services/data_adapter.py": "imports from app.services.adapters",
+      "web/backend/app/services/data_source_factory/data_source_factory.py": "imports DataDataSourceAdapter and DashboardDataSourceAdapter from app.services.data_adapter facade",
+      "web/backend/app/services/adapters/__init__.py": "re-exports canonical app.services.adapters classes"
+    }
+  },
+  "decision": {
+    "classification": "legacy_compatibility_surfaces_without_active_external_module_path_imports",
+    "ownership": "legacy compatibility ownership must be decided explicitly; static non-use is not deletion authority",
+    "source_lane_recommendation": "do_not_start_source_implementation_from_g2_202",
+    "selected_next_governance_target": "data-quality-legacy-adapter-compatibility-closure-authorization",
+    "recommended_next_work_item": "G2.203 data-quality legacy adapter compatibility closure authorization package",
+    "future_authorization_options": [
+      "authorize a narrow implementation to convert both files into explicit compatibility wrappers",
+      "authorize a narrow implementation to retire both files only if consumer/import smoke and rollback gates are satisfied",
+      "retain both files as historical compatibility surfaces if a current consumer contradiction appears"
+    ]
+  },
+  "future_g2_203_minimum_acceptance": [
+    "rerun module-path consumer scan at current HEAD",
+    "rerun GitNexus impact for both target files before any source edit authorization",
+    "define exact implementation shape before source edits: thin wrapper, retirement, or retained no-op",
+    "include import smoke for app.services.data_adapter and data_source_factory",
+    "include focused regression coverage if source implementation is later authorized",
+    "exclude market_data_adapter.py, singleton wrapper/backing API, canonical adapters, routes, OpenAPI, frontend, config, scripts, and OpenSpec files"
+  ],
+  "validation": {
+    "json_parse": "passed",
+    "yaml_parse": "passed",
+    "markdown_governance": "passed; checked_files=6; errors=0",
+    "openspec_validate": "passed; PostHog telemetry warning only",
+    "git_diff_check": "passed",
+    "mainline_scope_gate": "passed; changed_files=9; violations=0; report=/tmp/pr355-mainline-governance-report.json",
+    "gitnexus_staged_detect_changes": "low risk; changed_files=9; changed_symbols=0; affected_processes=0"
+  }
+}
