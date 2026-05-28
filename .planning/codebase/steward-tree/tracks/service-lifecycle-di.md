@@ -976,11 +976,47 @@ G2.217 does not edit route wrappers, route/OpenAPI contracts, Strategy residuals
 data-quality monitor source, trade/cache/realtime providers, `adapter_split`, or
 `market_data_adapter.py`.
 
+## G2.218 DataService Provider/Reset Seam Closeout / Residual Refresh
+
+G2.218 closes the accepted G2.217 source lane after PR `#370` merged at
+`4d2b69e449975d145976e10c8af965e16dc60a1e`. This is a no-source closeout and
+residual refresh package.
+
+Current evidence:
+
+| Check | Result |
+|---|---|
+| Import smoke | `import_smoke=pass provider_override=pass reset_default=pass` |
+| Focused provider test | `2 passed` |
+| Indicator route provider regressions | `6 passed` |
+| Ruff | passed |
+| OpenSpec strict validate | valid |
+
+`get_data_service` residual classification:
+
+| Surface | Current state | Decision |
+|---|---|---|
+| Direct singleton wrapper calls | 2 route-local provider wrappers in `indicator_cache.py` and `v1/strategy/indicators.py` | Retain as provider wrappers |
+| Canonical function definition | `web/backend/app/services/data_service.py` | Closed by G2.217 provider/reset seam |
+| Local helper names / imports | `ml_runtime_helpers.py`, `v1/system/health.py` | Not `app.services.data_service.get_data_service()` residuals |
+
+Residual queue after closing `get_data_service`:
+
+| Candidate | Current scan | Classification | Disposition |
+|---|---:|---|---|
+| `get_execution_tracking_evidence_service` | 3 calls in 2 files | trade evidence route-local provider surface | Select G2.219 no-source ownership decision |
+| `get_unified_data_service` | 6 calls in 1 file | root facade / compatibility surface | Defer behind trade evidence ownership decision |
+| `get_prewarming_strategy` | 6 calls in 3 files | cache prewarming route/provider surface | Defer behind higher-risk trade/root-facade decisions |
+
+G2.218 does not authorize backend source edits, test edits, OpenSpec changes,
+route/OpenAPI changes, issue label changes, or direct implementation for the
+next candidate.
+
 ## Next Gates
 
-- Review G2.217 indicator/data `DataService` provider/reset seam implementation.
-- If accepted, start G2.218 no-source closeout / residual refresh before selecting another source lane.
-- Do not start another source implementation directly from G2.217.
+- Review G2.218 `DataService` provider/reset seam closeout / residual refresh.
+- If accepted, start G2.219 no-source ownership decision for `get_execution_tracking_evidence_service`.
+- Do not start another source implementation directly from G2.218 or G2.219.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.

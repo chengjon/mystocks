@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T23:28:14+08:00`
-- Base HEAD checked: `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`
+- Prepared at: `2026-05-29T01:22:32+08:00`
+- Base HEAD checked: `4d2b69e449975d145976e10c8af965e16dc60a1e`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -95,8 +95,10 @@ state transition.
 | `docs/reports/quality/backend-indicator-data-get-data-service-ownership-decision-2026-05-28.md` | G2.215 human-readable ownership decision report | Accepted by PR `#368`; superseded for provider/reset authorization by G2.216 |
 | `.planning/codebase/generated/indicator-data-service-provider-authorization-2026-05-29.json` | G2.216 indicator/data `DataService` provider/reset seam authorization evidence | Accepted by PR `#369`; superseded for implementation evidence by G2.217 |
 | `docs/reports/quality/backend-indicator-data-service-provider-authorization-2026-05-29.md` | G2.216 human-readable provider authorization report | Accepted by PR `#369`; superseded for implementation evidence by G2.217 |
-| `.planning/codebase/generated/data-service-provider-reset-seam-implementation-2026-05-29.json` | G2.217 `DataService` provider/reset seam implementation evidence | Review input until PR `#370` is accepted |
-| `docs/reports/quality/backend-data-service-provider-reset-seam-implementation-2026-05-29.md` | G2.217 human-readable implementation report | Review input until PR `#370` is accepted |
+| `.planning/codebase/generated/data-service-provider-reset-seam-implementation-2026-05-29.json` | G2.217 `DataService` provider/reset seam implementation evidence | Accepted by PR `#370`; superseded for closeout evidence by G2.218 |
+| `docs/reports/quality/backend-data-service-provider-reset-seam-implementation-2026-05-29.md` | G2.217 human-readable implementation report | Accepted by PR `#370`; superseded for closeout evidence by G2.218 |
+| `.planning/codebase/generated/data-service-provider-closeout-refresh-2026-05-29.json` | G2.218 `DataService` provider/reset seam closeout and residual refresh evidence | Review input until PR `#371` is accepted |
+| `docs/reports/quality/backend-data-service-provider-closeout-refresh-2026-05-29.md` | G2.218 human-readable closeout / residual refresh report | Review input until PR `#371` is accepted |
 
 ## External State Inputs
 

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T23:28:14+08:00`
-- Base HEAD checked: `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`
+- Prepared at: `2026-05-29T01:22:32+08:00`
+- Base HEAD checked: `4d2b69e449975d145976e10c8af965e16dc60a1e`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -54,12 +54,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#367` | `g2-214-non-strategy-provider-queue-refresh` | `wip/root-dirty-20260403` | `MERGED` at `a508fb263173b2014d307c4baec3b1eca0f42340` | No-source queue refresh selecting G2.215 indicator/data `get_data_service` ownership decision |
 | `#368` | `g2-215-indicator-data-get-data-service-decision` | `wip/root-dirty-20260403` | `MERGED` at `cec3f727534008d2a48221c656c22f82f351e3d7` | No-source ownership decision selecting G2.216 indicator/data `DataService` provider authorization |
 | `#369` | `g2-216-indicator-data-service-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `68ba10829b89095f8b907d249f59198995543ebc` | No-source authorization selecting G2.217 `DataService` provider/reset seam implementation |
+| `#370` | `g2-217-data-service-provider-reset-seam` | `wip/root-dirty-20260403` | `MERGED` at `4d2b69e449975d145976e10c8af965e16dc60a1e` | Path-limited implementation adding `DataService` provider/reset seam while preserving default singleton fallback |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-217-data-service-provider-reset-seam` | `origin/wip/root-dirty-20260403` at `68ba10829b89095f8b907d249f59198995543ebc` | Implement the approved path-limited `DataService` provider/reset seam while preserving default singleton fallback | Yes |
+| `g2-218-data-service-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `4d2b69e449975d145976e10c8af965e16dc60a1e` | Close out the merged `DataService` provider/reset seam and refresh residual provider/getter queue | No |
 
 ## OpenSpec Relationship
 
@@ -75,7 +76,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.217 is a path-limited implementation branch after PR `#369` merged G2.216. It
-is limited to `web/backend/app/services/data_service.py`, a focused provider
-test, governance evidence, steward tree updates, and a task card. If accepted,
-the next gate is G2.218 closeout / residual refresh with no source edits.
+G2.218 is a no-source closeout branch after PR `#370` merged G2.217. It is
+limited to governance evidence, steward tree updates, and a task card. If
+accepted, the next gate is G2.219 `get_execution_tracking_evidence_service`
+ownership decision, also with no source edits.

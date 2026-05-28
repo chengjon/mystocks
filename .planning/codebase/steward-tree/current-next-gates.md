@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T23:51:14+08:00`
-- Base HEAD checked: `a508fb263173b2014d307c4baec3b1eca0f42340`
+- Prepared at: `2026-05-29T01:22:32+08:00`
+- Base HEAD checked: `4d2b69e449975d145976e10c8af965e16dc60a1e`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.217 indicator/data `DataService` provider/reset seam implementation | G/#79 service lifecycle DI | PR `#369` merged at `68ba10829b89095f8b907d249f59198995543ebc`; G2.217 adds `set_data_service_provider()` / `reset_data_service_provider()` while preserving `get_data_service()` fallback | If accepted, start G2.218 no-source closeout / residual refresh; do not start another source lane directly |
+| P0 | Review G2.218 `DataService` provider/reset seam closeout / residual refresh | G/#79 service lifecycle DI | PR `#370` merged at `4d2b69e449975d145976e10c8af965e16dc60a1e`; G2.218 refreshes merged verification, closes the `get_data_service` implementation lane, and selects G2.219 trade execution tracking evidence provider ownership decision | If accepted, start G2.219 no-source ownership decision for `get_execution_tracking_evidence_service`; do not start another source lane directly |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.217 preserve `get_data_service()` as the public default singleton fallback?
-- Does `reset_data_service_provider()` clear both provider override and cached singleton state?
-- Do indicator route provider regressions remain green without route/OpenAPI edits?
-- Does G2.217 keep Strategy, data-quality, trade, cache, realtime, and adapter surfaces out of scope?
-- Is G2.218 correctly positioned as a no-source closeout / residual refresh before another implementation lane?
+- Does G2.218 correctly treat PR `#370` as merged and accepted into `wip/root-dirty-20260403`?
+- Does the merged `DataService` provider/reset seam still pass import smoke and focused regressions at `4d2b69e449975d145976e10c8af965e16dc60a1e`?
+- Does the residual refresh separate the two direct route-local `get_data_service()` wrapper calls from unrelated token hits?
+- Does G2.218 keep all backend source, tests, route/OpenAPI contracts, OpenSpec changes, and issue label changes out of scope?
+- Is G2.219 correctly positioned as a no-source ownership decision for `get_execution_tracking_evidence_service` before any implementation lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
