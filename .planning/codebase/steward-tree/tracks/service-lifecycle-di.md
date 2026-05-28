@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T12:37:20+08:00`
-- Base HEAD checked: `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f`
+- Prepared at: `2026-05-28T13:15:46+08:00`
+- Base HEAD checked: `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -55,7 +55,8 @@ It proved a repeatable conveyor:
 | G2.200 data-quality canonical service adapter provider implementation | Merged by PR `#353` | Implements optional constructor monitor injection in the two canonical service adapters with focused TDD evidence |
 | G2.201 data-quality canonical service adapter closeout / refresh | Merged by PR `#354` | Closes the canonical service adapter lane and selects legacy data adapter compatibility ownership as the next decision gate |
 | G2.202 data-quality legacy adapter compatibility ownership decision | Merged by PR `#355` | Classifies two legacy `data_adapters` files as compatibility ownership surfaces and selects G2.203 authorization-only compatibility closure |
-| G2.203 data-quality legacy adapter compatibility closure authorization | For review | Authorizes only a future thin-wrapper compatibility implementation shape for the two legacy modules; deletion remains unauthorized |
+| G2.203 data-quality legacy adapter compatibility closure authorization | Merged by PR `#356` | Authorizes only a future thin-wrapper compatibility implementation shape for the two legacy modules; deletion remains unauthorized |
+| G2.204 data-quality legacy adapter compatibility wrapper implementation | For review | Converts two legacy modules into thin wrappers, preserves old import paths, and reduces target legacy getter calls to `0` |
 
 ## Current Strategy Getter Residuals
 
@@ -529,11 +530,34 @@ delete files, touch `market_data_adapter.py`, alter singleton wrapper/backing
 APIs, edit canonical adapters, or expand into routes, OpenAPI, frontend, config,
 scripts, or OpenSpec files.
 
+## G2.204 Data-Quality Legacy Adapter Compatibility Wrapper Implementation
+
+At HEAD `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd`, PR `#356` is merged and
+G2.203 is accepted.
+
+Implementation result:
+
+| Target | Result |
+|---|---|
+| `web/backend/app/services/data_adapters/dashboard.py` | Thin wrapper re-exporting canonical `DashboardDataSourceAdapter` |
+| `web/backend/app/services/data_adapters/data_source.py` | Thin wrapper re-exporting canonical `DataDataSourceAdapter` |
+| `web/backend/tests/test_data_quality_legacy_data_adapter_compat.py` | Focused compatibility test for old import paths and getter removal |
+
+TDD evidence:
+
+| Phase | Result |
+|---|---|
+| RED | `2 failed`, proving legacy classes were not canonical and legacy modules still contained `get_data_quality_monitor` |
+| GREEN | `2 passed` focused compatibility test |
+| Regression | `23 passed` broader focused package |
+| Targeted ruff/import smoke | Passed |
+| Legacy getter scan | `0` calls in the two wrapper modules |
+
 ## Next Gates
 
-- Review G2.203 data-quality legacy adapter compatibility closure authorization.
-- If accepted, start G2.204 data-quality legacy adapter compatibility wrapper implementation.
-- Do not delete legacy modules; G2.204 is limited to thin wrappers plus focused tests.
+- Review G2.204 data-quality legacy adapter compatibility wrapper implementation.
+- If accepted, start G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh.
+- Do not open the next source lane before G2.205 refresh classifies remaining data-quality monitor surfaces.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

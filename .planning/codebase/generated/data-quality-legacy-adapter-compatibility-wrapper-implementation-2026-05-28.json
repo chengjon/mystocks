@@ -1,0 +1,92 @@
+{
+  "schema_version": "2026-05-28.g2-implementation.v1",
+  "node": "G2.204 data-quality legacy adapter compatibility wrapper implementation",
+  "generated_at": "2026-05-28T13:15:46+08:00",
+  "git": {
+    "branch": "g2-204-data-quality-legacy-adapter-compatibility-wrapper",
+    "base_branch": "wip/root-dirty-20260403",
+    "base_head": "142a2bf1c0c5f979cf9c32415d2f25832e7e62cd",
+    "current_head_checked": "142a2bf1c0c5f979cf9c32415d2f25832e7e62cd",
+    "stale_if_head_mismatch": true
+  },
+  "parent": {
+    "node": "G2.203 data-quality legacy adapter compatibility closure authorization",
+    "github_pr": 356,
+    "merge_commit": "142a2bf1c0c5f979cf9c32415d2f25832e7e62cd",
+    "relationship": "G2.203 authorized this narrow source lane after human acceptance"
+  },
+  "source_edit_authority": true,
+  "authorized_scope": {
+    "source_paths": [
+      "web/backend/app/services/data_adapters/dashboard.py",
+      "web/backend/app/services/data_adapters/data_source.py"
+    ],
+    "test_paths": [
+      "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.json",
+      "docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.md",
+      "governance/mainline/task-cards/pr-357.yaml",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md"
+    ]
+  },
+  "implementation_result": {
+    "legacy_dashboard_module": "thin wrapper re-exporting app.services.adapters.dashboard_adapter.DashboardDataSourceAdapter",
+    "legacy_data_source_module": "thin wrapper re-exporting app.services.adapters.data_adapter.DataDataSourceAdapter",
+    "deletion": "not performed",
+    "get_data_quality_monitor_calls_in_legacy_modules": 0,
+    "legacy_module_compatibility": "old module paths still import canonical classes"
+  },
+  "gitnexus_pre_edit_impact": {
+    "web/backend/app/services/data_adapters/dashboard.py": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    },
+    "web/backend/app/services/data_adapters/data_source.py": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    }
+  },
+  "tdd": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_legacy_data_adapter_compat.py -q --no-cov",
+      "result": "2 failed before implementation",
+      "failures": [
+        "legacy classes were not canonical classes",
+        "legacy dashboard module still contained get_data_quality_monitor"
+      ]
+    },
+    "green": {
+      "focused_pytest": "2 passed",
+      "broader_focused_pytest": "23 passed"
+    }
+  },
+  "validation": {
+    "focused_pytest": "2 passed",
+    "broader_focused_pytest": "23 passed",
+    "ruff": "passed",
+    "import_smoke": "passed",
+    "legacy_getter_scan": "0 get_data_quality_monitor calls in the two legacy modules",
+    "json_parse": "passed",
+    "yaml_parse": "passed",
+    "markdown_governance": "passed; checked_files=6; errors=0",
+    "openspec_validate": "passed; PostHog telemetry warning only",
+    "git_diff_check": "passed",
+    "mainline_scope_gate": "passed; changed_files=14; violations=0; report=/tmp/pr357-mainline-governance-report.json",
+    "gitnexus_staged_detect_changes": "low risk; changed_files=14; changed_symbols=30; affected_processes=0",
+    "gitnexus_compare_detect_changes": "low risk; changed_files=14; changed_symbols=30; affected_processes=0"
+  },
+  "next_gate": "If accepted, start G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh without new source authority."
+}

@@ -1,0 +1,141 @@
+version: "v0.2"
+
+task:
+  id: "pr-357"
+  title: "Implement data-quality legacy adapter compatibility wrappers"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-legacy-adapter-compatibility-wrapper-implementation"
+  objective: "convert two legacy data-quality adapter modules into thin compatibility wrappers while preserving old import paths"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-03"
+  affected_entrypoints:
+    - "core"
+    - "tests"
+    - "governance"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "Compatibility-wrapper source lane only; no route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, or public API ownership changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.md"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-357.yaml"
+    - "web/backend/app/services/data_adapters/dashboard.py"
+    - "web/backend/app/services/data_adapters/data_source.py"
+    - "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py"
+  forbidden_paths:
+    - "web/backend/app/services/market_data_adapter.py"
+    - "web/backend/app/services/_data_quality_monitor_singleton.py"
+    - "web/backend/app/services/data_quality_monitor.py"
+    - "web/backend/app/services/adapters/**"
+    - "web/backend/app/services/adapters_split/**"
+    - "web/backend/app/api/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "legacy module deletion"
+  - "market_data_adapter.py edits"
+  - "singleton wrapper deletion"
+  - "DataQualityMonitor internals"
+  - "canonical adapter edits"
+  - "route changes"
+  - "OpenAPI contract changes"
+  - "frontend changes"
+  - "OpenSpec proposal creation"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_legacy_data_adapter_compat.py web/backend/tests/test_data_quality_canonical_service_adapter_provider.py tests/backend/test_data_adapter_regression.py web/backend/tests/test_logging_noise_regressions.py -q --no-cov"
+      required: true
+    - id: "ruff-authorized-files"
+      command: "ruff check web/backend/app/services/data_adapters/dashboard.py web/backend/app/services/data_adapters/data_source.py web/backend/tests/test_data_quality_legacy_data_adapter_compat.py"
+      required: true
+    - id: "import-smoke"
+      command: "env PYTHONPATH=web/backend python - <<'PY'\nfrom app.services.adapters.dashboard_adapter import DashboardDataSourceAdapter as CanonicalDashboard\nfrom app.services.adapters.data_adapter import DataDataSourceAdapter as CanonicalData\nfrom app.services.data_adapters.dashboard import DashboardDataSourceAdapter as LegacyDashboard\nfrom app.services.data_adapters.data_source import DataDataSourceAdapter as LegacyData\nfrom app.services.data_adapter import DashboardDataSourceAdapter as FacadeDashboard, DataDataSourceAdapter as FacadeData\nfrom app.services.data_source_factory import data_source_factory\nassert LegacyDashboard is CanonicalDashboard\nassert LegacyData is CanonicalData\nassert FacadeDashboard is CanonicalDashboard\nassert FacadeData is CanonicalData\nassert data_source_factory is not None\nprint('import smoke ok')\nPY"
+      required: true
+    - id: "legacy-getter-scan"
+      command: "python - <<'PY'\nfrom pathlib import Path\ntargets = [Path('web/backend/app/services/data_adapters/dashboard.py'), Path('web/backend/app/services/data_adapters/data_source.py')]\nfor target in targets:\n    text = target.read_text(encoding='utf-8')\n    assert 'get_data_quality_monitor(' not in text, target\nprint('legacy getter scan ok')\nPY"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-357.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-357.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 142a2bf1c0c5f979cf9c32415d2f25832e7e62cd --head-sha HEAD --report /tmp/pr357-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Old module paths must continue importing the canonical adapter classes."
+    - "Deleting legacy modules would exceed G2.203 authorization; wrappers must remain present."
+  rollback_plan: "revert this PR to restore the post-#356 legacy adapter modules and rerun G2.204 authorization before retrying."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement thin compatibility wrappers for two legacy data-quality adapter modules"
+    modified_scope: "two legacy data adapter source files, one focused test, governance evidence, function-tree mapping, steward tree files, and one task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "old import paths remain compatible and now resolve to canonical adapter classes"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if compatibility imports, focused tests, or scope gates fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T13:15:46+08:00"
+    approval_note: "Human maintainer approved continuing after PR #356 acceptance; this lane implements only the G2.203-authorized thin compatibility wrappers."
+    secondary_approved: true

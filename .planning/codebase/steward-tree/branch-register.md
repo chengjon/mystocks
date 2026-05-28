@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T12:37:20+08:00`
-- Base HEAD checked: `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f`
+- Prepared at: `2026-05-28T13:15:46+08:00`
+- Base HEAD checked: `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -40,12 +40,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#353` | `g2-200-data-quality-canonical-service-adapter-provider` | `wip/root-dirty-20260403` | `MERGED` at `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e` | Path-limited canonical service adapter provider implementation closed for G2.201 refresh |
 | `#354` | `g2-201-data-quality-canonical-service-adapter-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `e672f1523c30037202310278daf71488681d9a1f` | Governance closeout selecting G2.202 legacy adapter compatibility ownership decision |
 | `#355` | `g2-202-data-quality-legacy-adapter-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f` | Decision package selecting G2.203 legacy adapter compatibility closure authorization |
+| `#356` | `g2-203-data-quality-legacy-adapter-compatibility-closure-authorization` | `wip/root-dirty-20260403` | `MERGED` at `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd` | Authorization package for G2.204 thin-wrapper compatibility implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-203-data-quality-legacy-adapter-compatibility-closure-authorization` | `origin/wip/root-dirty-20260403` at `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f` | Authorize future thin-wrapper compatibility closure for the two legacy data-quality adapter modules | No |
+| `g2-204-data-quality-legacy-adapter-compatibility-wrapper` | `origin/wip/root-dirty-20260403` at `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd` | Implement thin compatibility wrappers for the two legacy data-quality adapter modules | Yes, limited |
 
 ## OpenSpec Relationship
 
@@ -61,8 +62,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.203 is a governance-only authorization branch after PR `#355` merged G2.202.
-It authorizes only a future thin-wrapper implementation shape for the two
-legacy `web/backend/app/services/data_adapters/*` targets. It does not authorize
-deletion, direct source edits in this PR, or expansion into other adapter,
-wrapper, route, OpenAPI, frontend, config, script, or OpenSpec surfaces.
+G2.204 is a source implementation branch after PR `#356` merged G2.203. It is
+limited to converting the two legacy `web/backend/app/services/data_adapters/*`
+targets into thin compatibility wrappers and adding one focused test. It does
+not authorize deletion or expansion into other adapter, wrapper, route, OpenAPI,
+frontend, config, script, or OpenSpec surfaces.
