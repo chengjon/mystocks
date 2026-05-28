@@ -1,0 +1,143 @@
+{
+  "schema_version": "2026-05-28.g2-implementation.v1",
+  "generated_at": "2026-05-28T10:53:34+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "41bef3787160ec3bf7b9b31220df9d99a3437474",
+  "worktree_branch": "g2-200-data-quality-canonical-service-adapter-provider",
+  "status": "implementation_evidence",
+  "source_edit_authority": true,
+  "parent": {
+    "node": "G2.199 data-quality canonical service adapter provider authorization",
+    "github_pr": 352,
+    "merge_commit": "41bef3787160ec3bf7b9b31220df9d99a3437474"
+  },
+  "implementation": {
+    "node": "G2.200 data-quality canonical service adapter provider implementation",
+    "purpose": "add injectable data-quality monitor construction for canonical service adapters while preserving default singleton compatibility",
+    "changed_source_paths": [
+      "web/backend/app/services/adapters/dashboard_adapter.py",
+      "web/backend/app/services/adapters/data_adapter.py"
+    ],
+    "changed_test_paths": [
+      "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py"
+    ],
+    "changed_function_tree_paths": [
+      "governance/function-tree/catalog.yaml",
+      "docs/FUNCTION_TREE.md"
+    ],
+    "source_changes": {
+      "dashboard_adapter": {
+        "constructor_line": 25,
+        "constructor": "def __init__(self, config: Dict[str, Any], *, quality_monitor: Optional[Any] = None)",
+        "stored_field_line": 27,
+        "monitor_selection_line": 254,
+        "default_behavior": "falls back to get_data_quality_monitor() when quality_monitor is None"
+      },
+      "data_adapter": {
+        "constructor_line": 27,
+        "constructor": "def __init__(self, config: Dict[str, Any], *, quality_monitor: Optional[Any] = None)",
+        "stored_field_line": 29,
+        "monitor_selection_line": 623,
+        "default_behavior": "falls back to get_data_quality_monitor() when quality_monitor is None"
+      }
+    },
+    "preserved_behavior": [
+      "config remains the positional constructor argument",
+      "quality_monitor is keyword-only",
+      "app.services.data_adapter facade remains unchanged",
+      "data_source_factory construction through config.__dict__ remains compatible",
+      "route paths, OpenAPI contracts, frontend code, config, scripts, OpenSpec changes, monitor internals, wrapper, and legacy adapters remain untouched"
+    ]
+  },
+  "gitnexus_impact": {
+    "dashboard_adapter_file": {
+      "risk": "LOW",
+      "impacted_count": 5,
+      "direct": 2,
+      "processes_affected": 0,
+      "direct_files": [
+        "web/backend/tests/test_logging_noise_regressions.py",
+        "web/backend/app/services/adapters/__init__.py"
+      ]
+    },
+    "data_adapter_file": {
+      "risk": "LOW",
+      "impacted_count": 4,
+      "direct": 1,
+      "processes_affected": 0,
+      "direct_files": [
+        "web/backend/app/services/adapters/__init__.py"
+      ]
+    }
+  },
+  "verification": {
+    "tdd_red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_canonical_service_adapter_provider.py -q --tb=short --no-cov",
+      "status": "failed_as_expected",
+      "failure": "constructors did not accept quality_monitor keyword argument"
+    },
+    "tdd_green": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_canonical_service_adapter_provider.py -q --tb=short --no-cov",
+      "status": "passed",
+      "result": "2 passed"
+    },
+    "focused_regression": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_canonical_service_adapter_provider.py tests/backend/test_data_adapter_regression.py web/backend/tests/test_logging_noise_regressions.py -q --tb=short --no-cov",
+      "status": "passed",
+      "result": "21 passed"
+    },
+    "ruff_changed_paths": {
+      "command": "ruff check web/backend/app/services/adapters/dashboard_adapter.py web/backend/app/services/adapters/data_adapter.py web/backend/tests/test_data_quality_canonical_service_adapter_provider.py",
+      "status": "passed"
+    },
+    "import_smoke": {
+      "initial_without_env": "blocked by required environment configuration: POSTGRESQL_HOST, POSTGRESQL_USER, POSTGRESQL_PASSWORD, JWT_SECRET_KEY, BACKEND_PORT, BACKEND_BACKUP_PORT",
+      "with_minimal_dummy_env": "passed"
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "status": "passed",
+      "note": "PostHog network flush warning observed after successful validation"
+    },
+    "json_yaml_parse": {
+      "status": "passed",
+      "files": [
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/generated/data-quality-canonical-service-adapter-provider-implementation-2026-05-28.json",
+        "governance/mainline/task-cards/pr-353.yaml"
+      ]
+    },
+    "markdown_governance": {
+      "status": "passed",
+      "checked_files": 6,
+      "errors": 0
+    },
+    "git_diff_check": "passed",
+    "gitnexus_staged_detect_changes": {
+      "status": "passed",
+      "risk_level": "low",
+      "changed_files": 14,
+      "changed_symbols": 0,
+      "affected_processes": 0
+    },
+    "function_tree_mapping": {
+      "status": "updated",
+      "domain_id": "domain-01",
+      "node_id": "domain-01-node-03",
+      "mapped_paths": [
+        "web/backend/app/services/adapters/dashboard_adapter.py",
+        "web/backend/app/services/adapters/data_adapter.py",
+        "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py"
+      ],
+      "function_tree_mirror": "docs/FUNCTION_TREE.md"
+    },
+    "mainline_scope_gate": {
+      "status": "passed",
+      "changed_files": 14,
+      "violations": 0,
+      "report": "/tmp/pr353-mainline-governance-report.json"
+    }
+  },
+  "next_gate": "If G2.200 is accepted, run G2.201 closeout / residual refresh before selecting another data-quality monitor surface."
+}

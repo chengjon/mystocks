@@ -1,0 +1,138 @@
+version: "v0.2"
+
+task:
+  id: "pr-353"
+  title: "Implement data-quality canonical service adapter provider seam"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-canonical-service-adapter-provider-implementation"
+  objective: "add injectable data-quality monitor construction for canonical service adapters while preserving singleton fallback compatibility"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-03"
+  affected_entrypoints:
+    - "core"
+    - "tests"
+    - "governance"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "Constructor-level service seam only; no route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, or public API ownership changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-canonical-service-adapter-provider-implementation-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-implementation-2026-05-28.md"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-353.yaml"
+    - "web/backend/app/services/adapters/dashboard_adapter.py"
+    - "web/backend/app/services/adapters/data_adapter.py"
+    - "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py"
+  forbidden_paths:
+    - "web/backend/app/services/adapters_split/**"
+    - "web/backend/app/services/data_adapters/**"
+    - "web/backend/app/services/market_data_adapter.py"
+    - "web/backend/app/services/_data_quality_monitor_singleton.py"
+    - "web/backend/app/services/data_quality_monitor.py"
+    - "web/backend/app/api/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "legacy data_adapters migration"
+  - "adapter_split edits"
+  - "market_data_adapter.py edits"
+  - "singleton wrapper deletion"
+  - "DataQualityMonitor internals"
+  - "route changes"
+  - "OpenAPI contract changes"
+  - "frontend changes"
+  - "OpenSpec proposal creation"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_canonical_service_adapter_provider.py tests/backend/test_data_adapter_regression.py web/backend/tests/test_logging_noise_regressions.py -q --tb=short --no-cov"
+      required: true
+    - id: "ruff-authorized-files"
+      command: "ruff check web/backend/app/services/adapters/dashboard_adapter.py web/backend/app/services/adapters/data_adapter.py web/backend/tests/test_data_quality_canonical_service_adapter_provider.py"
+      required: true
+    - id: "import-smoke"
+      command: "env PYTHONPATH=web/backend POSTGRESQL_HOST=localhost POSTGRESQL_USER=test POSTGRESQL_PASSWORD=test JWT_SECRET_KEY=test-secret-key-with-enough-length-for-smoke BACKEND_PORT=8888 BACKEND_BACKUP_PORT=8889 python -c \"from app.services.data_adapter import DashboardDataSourceAdapter, DataDataSourceAdapter; from app.services.data_source_factory.data_source_factory import DataSourceFactory; DashboardDataSourceAdapter({'name':'smoke-dashboard'}); DataDataSourceAdapter({'name':'smoke-data'}); print('import smoke ok')\""
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-canonical-service-adapter-provider-implementation-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-353.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-implementation-2026-05-28.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-353.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 41bef3787160ec3bf7b9b31220df9d99a3437474 --head-sha HEAD --report /tmp/pr353-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Constructor signature changes must remain backward compatible for app.services.data_adapter and data_source_factory construction."
+    - "Injecting a monitor must not bypass default singleton fallback behavior when no monitor is provided."
+  rollback_plan: "revert this PR to restore the post-#352 canonical service adapter behavior and rerun G2.200 authorization before retrying."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement canonical service adapter data-quality monitor provider seam"
+    modified_scope: "two canonical service adapter source files, one focused test, governance evidence, steward tree files, and one task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "default singleton fallback remains compatible; legacy adapters and wrapper are untouched"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if constructor compatibility, injected-monitor behavior, or mainline scope gate fails"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T10:46:53+08:00"
+    approval_note: "Human maintainer approved continuing after PR #352 acceptance; this lane implements only the G2.199-authorized canonical service adapter provider seam."
+    secondary_approved: true

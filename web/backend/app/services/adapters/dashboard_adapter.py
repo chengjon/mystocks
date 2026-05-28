@@ -22,8 +22,9 @@ from .metrics import DataSourceMetrics
 class DashboardDataSourceAdapter(IDataSource):
     """仪表盘数据源适配器 - 集成现有 Dashboard API 到数据源工厂模式"""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any], *, quality_monitor: Optional[Any] = None):
         self.config = config
+        self._quality_monitor = quality_monitor
         self.source_type = "dashboard"
         self.name = config.get("name", "Dashboard Source")
 
@@ -250,7 +251,7 @@ class DashboardDataSourceAdapter(IDataSource):
     ) -> None:
         """数据质量监控"""
         try:
-            monitor = get_data_quality_monitor()
+            monitor = self._quality_monitor if self._quality_monitor is not None else get_data_quality_monitor()
             await monitor.evaluate_data_quality(
                 data=data or {},
                 source=f"{self.source_type}:{endpoint}",
@@ -308,4 +309,3 @@ class DashboardDataSourceAdapter(IDataSource):
 # ============================================================================
 # Technical Analysis Data Source Adapter
 # ============================================================================
-
