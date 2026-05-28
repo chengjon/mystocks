@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T23:11:00+08:00`
-- Base HEAD checked: `e7d9fe63285181f0227661628272487dc63d4e2c`
+- Prepared at: `2026-05-28T23:28:14+08:00`
+- Base HEAD checked: `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#365` merged at `e7d9fe63285181f0227661628272487dc63d4e2c`; G2.213 classifies remaining data-quality monitor residuals and selects no new data-quality source lane | If accepted, start G2.214 non-strategy provider governance queue refresh / next-candidate selection with no source edits |
+| P0 | Review G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#366` merged at `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`; G2.214 selects G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | If accepted, start G2.215 no-source ownership decision; do not start source implementation directly |
+| P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
 | P0 | Preserve G2.211 data-quality monitor singleton/backing API authorization | G/#79 service lifecycle DI | PR `#364` merged; G2.211 authorized a future path-limited G2.212 compatibility implementation | Do not expand G2.212 beyond the two authorized source files and one focused test |
 | P0 | Preserve G2.210 data-quality monitor residual ownership decision | G/#79 service lifecycle DI | PR `#363` merged; singleton/backing API is a high-risk root ownership surface, not a routine cleanup | Use G2.211 authorization before any source lane |

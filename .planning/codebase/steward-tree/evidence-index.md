@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T23:11:00+08:00`
-- Base HEAD checked: `e7d9fe63285181f0227661628272487dc63d4e2c`
+- Prepared at: `2026-05-28T23:28:14+08:00`
+- Base HEAD checked: `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -87,8 +87,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-monitor-singleton-authorization-2026-05-28.md` | G2.211 human-readable singleton/backing API authorization report | Accepted by PR `#364`; superseded for implementation evidence by G2.212 |
 | `.planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json` | G2.212 data-quality monitor singleton/backing API implementation evidence | Accepted by PR `#365`; superseded for closeout / residual refresh by G2.213 |
 | `docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md` | G2.212 human-readable singleton/backing API implementation report | Accepted by PR `#365`; superseded for closeout / residual refresh by G2.213 |
-| `.planning/codebase/generated/data-quality-monitor-singleton-closeout-refresh-2026-05-28.json` | G2.213 data-quality monitor singleton/backing API closeout / residual refresh evidence | Current for HEAD `e7d9fe63285181f0227661628272487dc63d4e2c`; review input until PR `#366` is accepted |
-| `docs/reports/quality/backend-data-quality-monitor-singleton-closeout-refresh-2026-05-28.md` | G2.213 human-readable singleton/backing API closeout / residual refresh report | Review input until PR `#366` is accepted |
+| `.planning/codebase/generated/data-quality-monitor-singleton-closeout-refresh-2026-05-28.json` | G2.213 data-quality monitor singleton/backing API closeout / residual refresh evidence | Accepted by PR `#366`; superseded for broader provider queue selection by G2.214 |
+| `docs/reports/quality/backend-data-quality-monitor-singleton-closeout-refresh-2026-05-28.md` | G2.213 human-readable singleton/backing API closeout / residual refresh report | Accepted by PR `#366`; superseded for broader provider queue selection by G2.214 |
+| `.planning/codebase/generated/nonstrategy-provider-queue-refresh-2026-05-28.json` | G2.214 non-Strategy provider queue refresh / next-candidate decision evidence | Current for HEAD `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`; review input until PR `#367` is accepted |
+| `docs/reports/quality/backend-nonstrategy-provider-queue-refresh-2026-05-28.md` | G2.214 human-readable non-Strategy provider queue refresh report | Review input until PR `#367` is accepted |
 
 ## External State Inputs
 

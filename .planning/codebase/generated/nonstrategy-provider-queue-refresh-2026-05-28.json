@@ -1,0 +1,131 @@
+{
+  "schema_version": "2026-05-28.g2-next-candidate-decision.v1",
+  "id": "g2-214-non-strategy-provider-queue-refresh",
+  "generated_at": "2026-05-28T23:28:14+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
+  "branch": "g2-214-non-strategy-provider-queue-refresh",
+  "parent_gate": {
+    "id": "g2-213-data-quality-monitor-singleton-closeout-refresh",
+    "github_pr": 366,
+    "merge_commit": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
+    "accepted_scope": "data-quality monitor singleton/backing API closeout and residual refresh"
+  },
+  "source_edit_authority": false,
+  "openspec": {
+    "change_id": "migrate-backend-singletons-to-lifecycle-di",
+    "approval_status": "approved",
+    "validate_command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+  },
+  "queue_scan": {
+    "scope": "web/backend/app/**/*.py",
+    "provider_getter_files": 201,
+    "provider_getter_items": 408,
+    "buckets": {
+      "closed_data_quality_monitor": {
+        "items": 14,
+        "disposition": "closed by G2.213 unless fresh current-HEAD evidence contradicts"
+      },
+      "excluded_strategy": {
+        "items": 44,
+        "disposition": "Strategy residuals closed by G2.183 with retained residuals"
+      },
+      "route_provider_surface": {
+        "items": 131,
+        "disposition": "active route/provider governance surface; not a direct source lane from G2.214"
+      },
+      "realtime_streaming_socket": {
+        "items": 36,
+        "disposition": "previous realtime/socket subtrack evidence exists; do not reopen from token count alone"
+      },
+      "dashboard_tdx": {
+        "items": 11,
+        "disposition": "Dashboard/TDX direct helper debt remains closed; retain until contradictory evidence"
+      },
+      "indicator_data": {
+        "items": 45,
+        "disposition": "requires current-HEAD contradiction review because get_data_service now reports CRITICAL impact"
+      },
+      "adapter_or_factory": {
+        "items": 26,
+        "disposition": "factory/adapter ownership surface; defer behind higher-risk current-head contradiction"
+      },
+      "risk_alert": {
+        "items": 23,
+        "disposition": "risk/alert ownership surface; stop-loss pair already closed, broader alert surfaces deferred"
+      },
+      "other_service_provider": {
+        "items": 78,
+        "disposition": "mixed infra/control-plane/root facade queue; candidate-level decisions required"
+      }
+    }
+  },
+  "candidate_impact_refresh": {
+    "get_data_service": {
+      "file": "web/backend/app/services/data_service.py",
+      "risk": "CRITICAL",
+      "impacted_count": 4,
+      "direct": 3,
+      "processes_affected": 7,
+      "modules_affected": 2,
+      "direct_callers": [
+        "web/backend/app/api/indicators/indicator_cache.py::calculate_indicators",
+        "web/backend/app/api/indicators/indicator_cache.py::_calculate_single_indicator",
+        "web/backend/app/api/v1/strategy/indicators.py::get_technical_indicators"
+      ],
+      "disposition": "selected for G2.215 no-source current-head contradiction / ownership decision"
+    },
+    "get_execution_tracking_evidence_service": {
+      "file": "web/backend/app/api/trade/execution_tracking_routes.py",
+      "risk": "HIGH",
+      "impacted_count": 2,
+      "direct": 2,
+      "processes_affected": 3,
+      "modules_affected": 1,
+      "disposition": "defer behind get_data_service because trade evidence route remains a separate high-risk track"
+    },
+    "get_prewarming_strategy": {
+      "file": "web/backend/app/core/cache_prewarming.py",
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 3,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "disposition": "defer because current risk is lower and bounded to cache prewarming routes"
+    },
+    "get_unified_data_service": {
+      "file": "web/backend/app/services/unified_data_service.py",
+      "risk": "MEDIUM",
+      "impacted_count": 5,
+      "direct": 5,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "disposition": "retain as root facade / service self-wrapper pending root-facade ownership decision"
+    }
+  },
+  "decision": {
+    "classification": "no_source_next_candidate_selection",
+    "selected_next_governance_target": "indicator-data-get-data-service-current-head-contradiction-decision",
+    "recommended_next_work_item": "G2.215 indicator/data get_data_service current-HEAD contradiction / ownership decision package",
+    "source_lane_selected": false,
+    "rationale": [
+      "G2.213 closed the data-quality monitor conveyor and returned the broader non-Strategy queue to active triage.",
+      "Fresh GitNexus current-HEAD impact reports get_data_service as CRITICAL, with indicator and strategy-indicator route callers and seven affected processes.",
+      "Older G2.184/G2.186 evidence treated get_data_service as retained or LOW; the current graph is enough to require a no-source contradiction / ownership decision before any implementation authorization.",
+      "Trade execution evidence and cache prewarming remain separate tracks; neither should be batched with indicator/data ownership review."
+    ]
+  },
+  "verification_results": {
+    "json_yaml_parse": "passed",
+    "markdown_governance": "errors 0",
+    "openspec_validate": "valid; PostHog telemetry noise only",
+    "diff_check": "passed"
+  },
+  "next_gate": {
+    "id": "g2-215",
+    "name": "indicator/data get_data_service current-HEAD contradiction / ownership decision",
+    "source_edit_authority": false,
+    "purpose": "Classify whether current get_data_service route callers are retained provider surfaces, route-body direct singleton debt, or a future path-limited authorization candidate."
+  }
+}

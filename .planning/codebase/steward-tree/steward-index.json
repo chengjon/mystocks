@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T23:11:00+08:00",
+  "generated_at": "2026-05-28T23:28:14+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "e7d9fe63285181f0227661628272487dc63d4e2c",
-  "split_branch": "g2-213-data-quality-monitor-singleton-closeout-refresh",
-  "scope": "data_quality_monitor_singleton_closeout_refresh",
+  "base_head": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
+  "split_branch": "g2-214-non-strategy-provider-queue-refresh",
+  "scope": "nonstrategy_provider_queue_refresh",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -2212,12 +2212,14 @@
     {
       "id": "g2-213-data-quality-monitor-singleton-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.212 data-quality monitor singleton/backing API compatibility implementation",
       "source_edit_authority": false,
       "parent_github_pr": 365,
       "parent_merge_commit": "e7d9fe63285181f0227661628272487dc63d4e2c",
+      "github_pr": 366,
+      "merge_commit": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
       "evidence": [
         ".planning/codebase/generated/data-quality-monitor-singleton-closeout-refresh-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-monitor-singleton-closeout-refresh-2026-05-28.md",
@@ -2261,7 +2263,74 @@
         "current_head_checked": "e7d9fe63285181f0227661628272487dc63d4e2c",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.214 non-strategy provider governance queue refresh / next-candidate selection with no source edits."
+      "next_gate": "Superseded by G2.214 non-Strategy provider governance queue refresh / next-candidate selection."
+    },
+    {
+      "id": "g2-214-non-strategy-provider-queue-refresh",
+      "type": "next_candidate_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.213 data-quality monitor singleton/backing API closeout / residual refresh",
+      "source_edit_authority": false,
+      "parent_github_pr": 366,
+      "parent_merge_commit": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
+      "evidence": [
+        ".planning/codebase/generated/nonstrategy-provider-queue-refresh-2026-05-28.json",
+        "docs/reports/quality/backend-nonstrategy-provider-queue-refresh-2026-05-28.md",
+        "governance/mainline/task-cards/pr-367.yaml"
+      ],
+      "queue_scan": {
+        "scope": "web/backend/app/**/*.py",
+        "provider_getter_files": 201,
+        "provider_getter_items": 408,
+        "buckets": {
+          "closed_data_quality_monitor": 14,
+          "excluded_strategy": 44,
+          "route_provider_surface": 131,
+          "realtime_streaming_socket": 36,
+          "dashboard_tdx": 11,
+          "indicator_data": 45,
+          "adapter_or_factory": 26,
+          "risk_alert": 23,
+          "other_service_provider": 78
+        }
+      },
+      "candidate_impact_refresh": {
+        "get_data_service": {
+          "risk": "CRITICAL",
+          "direct": 3,
+          "processes_affected": 7,
+          "disposition": "selected for G2.215 no-source current-HEAD contradiction / ownership decision"
+        },
+        "get_execution_tracking_evidence_service": {
+          "risk": "HIGH",
+          "direct": 2,
+          "processes_affected": 3,
+          "disposition": "defer as separate trade evidence route track"
+        },
+        "get_unified_data_service": {
+          "risk": "MEDIUM",
+          "direct": 5,
+          "processes_affected": 0,
+          "disposition": "retain as root facade pending owner-specific decision"
+        },
+        "get_prewarming_strategy": {
+          "risk": "LOW",
+          "direct": 3,
+          "processes_affected": 0,
+          "disposition": "defer as lower-risk cache prewarming route surface"
+        }
+      },
+      "decision": {
+        "selected_next_governance_target": "G2.215 indicator/data get_data_service current-HEAD contradiction / ownership decision",
+        "source_lane_selected": false,
+        "reason": "Fresh current-HEAD GitNexus evidence reports get_data_service as CRITICAL, contradicting older LOW/retained wording enough to require no-source ownership classification before any implementation authorization."
+      },
+      "freshness": {
+        "current_head_checked": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.215 indicator/data get_data_service current-HEAD contradiction / ownership decision with no source edits."
     },
     {
       "id": "core-batch2-reconciliation",
