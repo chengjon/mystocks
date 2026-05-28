@@ -1,0 +1,123 @@
+version: "v0.2"
+
+task:
+  id: "pr-373"
+  title: "Authorize execution tracking evidence provider injection"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-execution-tracking-evidence-provider-authorization"
+  objective: "authorize the exact future route/provider injection boundary for get_execution_tracking_evidence_service without source edits"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "G2.220 is a no-source authorization package. It changes no runtime route entrypoint, public HTTP API, OpenAPI exposure, PM2 workflow, frontend behavior, source code, or tests."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/execution-tracking-evidence-provider-authorization-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-execution-tracking-evidence-provider-authorization-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-373.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route/OpenAPI contract changes"
+  - "ExecutionTrackingEvidenceService implementation changes"
+  - "miniQMT evidence semantic changes"
+  - "DataService, Strategy, data-quality, realtime/socket, cache, root-facade, adapter_split, or market_data_adapter changes"
+  - "GitHub issue or PR label changes"
+  - "OpenSpec proposal or spec creation"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/trade/execution_tracking_routes.py web/backend/tests/test_trade_execution_tracking_routes.py"
+      required: true
+    - id: "json-yaml-parse"
+      command: "python - <<'PY'\nimport json, yaml\nfor path in ['.planning/codebase/generated/execution-tracking-evidence-provider-authorization-2026-05-29.json', '.planning/codebase/steward-tree/steward-index.json']:\n    with open(path, encoding='utf-8') as f:\n        json.load(f)\nwith open('governance/mainline/task-cards/pr-373.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-execution-tracking-evidence-provider-authorization-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-373.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha b51256b775f7b4c6e5baad8c82a7f86446c0151b --head-sha HEAD --report /tmp/pr373-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "This package authorizes a future source lane but does not itself edit source; reviewers must not treat it as implementation."
+    - "The target has HIGH GitNexus impact, so the future source lane must remain path-limited."
+    - "If accepted, G2.221 may edit only web/backend/app/api/trade/execution_tracking_routes.py and web/backend/tests/test_trade_execution_tracking_routes.py, plus governance evidence."
+    - "G2.220 app.main/OpenAPI smoke passed with transient runtime environment; G2.221 must rerun smoke after source edits before claiming implementation complete."
+  rollback_plan: "Revert this PR; no runtime source or test changes are present."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize exact future implementation boundaries for execution tracking evidence provider injection."
+    modified_scope: "Governance reports, generated evidence, steward tree, and task card only."
+    dependency_changes: "None."
+    legacy_logic_impact: "None; no source or test files are modified."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If accepted, G2.221 may edit only the authorized route and test files plus governance evidence."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T02:01:47+08:00"
+    approval_note: "Approved to continue from merged PR #372 into the G2.220 no-source trade execution tracking evidence provider authorization lane."
+    secondary_approved: false

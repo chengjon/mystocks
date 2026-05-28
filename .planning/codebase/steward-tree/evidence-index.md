@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T01:42:47+08:00`
-- Base HEAD checked: `d4ee917ad642939c4c60000998b8bea5ca7c9a65`
+- Prepared at: `2026-05-29T02:01:47+08:00`
+- Base HEAD checked: `b51256b775f7b4c6e5baad8c82a7f86446c0151b`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -99,8 +99,10 @@ state transition.
 | `docs/reports/quality/backend-data-service-provider-reset-seam-implementation-2026-05-29.md` | G2.217 human-readable implementation report | Accepted by PR `#370`; superseded for closeout evidence by G2.218 |
 | `.planning/codebase/generated/data-service-provider-closeout-refresh-2026-05-29.json` | G2.218 `DataService` provider/reset seam closeout and residual refresh evidence | Accepted by PR `#371`; superseded for next ownership evidence by G2.219 |
 | `docs/reports/quality/backend-data-service-provider-closeout-refresh-2026-05-29.md` | G2.218 human-readable closeout / residual refresh report | Accepted by PR `#371`; superseded for next ownership evidence by G2.219 |
-| `.planning/codebase/generated/execution-tracking-evidence-provider-ownership-decision-2026-05-29.json` | G2.219 `get_execution_tracking_evidence_service` ownership decision evidence | Review input until PR `#372` is accepted |
-| `docs/reports/quality/backend-execution-tracking-evidence-provider-ownership-decision-2026-05-29.md` | G2.219 human-readable ownership decision report | Review input until PR `#372` is accepted |
+| `.planning/codebase/generated/execution-tracking-evidence-provider-ownership-decision-2026-05-29.json` | G2.219 `get_execution_tracking_evidence_service` ownership decision evidence | Accepted by PR `#372`; superseded for authorization evidence by G2.220 |
+| `docs/reports/quality/backend-execution-tracking-evidence-provider-ownership-decision-2026-05-29.md` | G2.219 human-readable ownership decision report | Accepted by PR `#372`; superseded for authorization evidence by G2.220 |
+| `.planning/codebase/generated/execution-tracking-evidence-provider-authorization-2026-05-29.json` | G2.220 trade execution tracking evidence provider authorization evidence | Review input until PR `#373` is accepted |
+| `docs/reports/quality/backend-execution-tracking-evidence-provider-authorization-2026-05-29.md` | G2.220 human-readable authorization report | Review input until PR `#373` is accepted |
 
 ## External State Inputs
 
@@ -132,7 +134,8 @@ state transition.
 | GitHub PR `#358` | `MERGED` | G2.205 legacy adapter wrapper closeout / residual refresh merged by commit `44909f5d048700115da6a9eb9345957b8af3d077` |
 | GitHub PR `#359` | `MERGED` | G2.206 `market_data_adapter.py` ownership decision merged by commit `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0` |
 | GitHub PR `#360` | `MERGED` | G2.207 `market_data_adapter.py` provider seam authorization merged by commit `b4b34375eef0186b81be9a24491328dab72c2e21` |
-| `origin/wip/root-dirty-20260403` | `b4b34375eef0186b81be9a24491328dab72c2e21` | Base used for this implementation branch |
+| GitHub PR `#372` | `MERGED` | G2.219 `get_execution_tracking_evidence_service` ownership decision merged by commit `b51256b775f7b4c6e5baad8c82a7f86446c0151b` |
+| `origin/wip/root-dirty-20260403` | `b51256b775f7b4c6e5baad8c82a7f86446c0151b` | Base used for this authorization branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules
