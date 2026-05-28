@@ -1,0 +1,118 @@
+version: "v0.2"
+
+task:
+  id: "pr-369"
+  title: "Authorize DataService provider seam"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-indicator-data-service-provider-authorization"
+  objective: "authorize or reject a future path-limited DataService provider/reset seam before any source implementation"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Authorization-only package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/indicator-data-service-provider-authorization-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-indicator-data-service-provider-authorization-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-369.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "source edits in this PR"
+  - "opening G2.217 implementation in this PR"
+  - "route/OpenAPI contract changes"
+  - "Strategy getter residual reopen"
+  - "data-quality monitor source reopen"
+  - "trade execution evidence provider changes"
+  - "cache prewarming provider changes"
+  - "realtime streaming/socket provider changes"
+  - "adapter_split or market_data_adapter changes"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "json-yaml-parse"
+      command: "python - <<'PY'\nimport json, yaml\nfor path in ['.planning/codebase/generated/indicator-data-service-provider-authorization-2026-05-29.json', '.planning/codebase/steward-tree/steward-index.json']:\n    with open(path, encoding='utf-8') as f:\n        json.load(f)\nwith open('governance/mainline/task-cards/pr-369.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-indicator-data-service-provider-authorization-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-369.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha cec3f727534008d2a48221c656c22f82f351e3d7 --head-sha HEAD --report /tmp/pr369-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Authorization package could be misread as implementation authority before review; non-goals and forbidden paths prevent source edits in this PR."
+    - "Fresh GitNexus LOW/direct-2 evidence could be misread as deletion evidence; this package preserves get_data_service() as a public default fallback."
+    - "Future implementation could accidentally batch route/OpenAPI, Strategy, data-quality, trade, cache, realtime, or adapter surfaces unless G2.217 stays path-limited."
+  rollback_plan: "Revert this governance-only commit; no runtime or source state changes are made."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future path-limited DataService provider/reset seam after G2.215 ownership classification."
+    modified_scope: "Only steward tree, generated evidence, quality report, and task-card governance files."
+    dependency_changes: "None."
+    legacy_logic_impact: "No runtime or compatibility behavior changes in this PR."
+    rollback_ready: "Yes; revert the governance commit."
+    risk_and_rollback_point: "Do not start G2.217 source implementation until this package is reviewed and accepted."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T00:20:39+08:00"
+    approval_note: "Approved to continue from merged PR #368 into G2.216 no-source indicator/data DataService provider authorization package."
+    secondary_approved: false

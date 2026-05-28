@@ -1,0 +1,109 @@
+{
+  "schema_version": "2026-05-29.g2-service-lifecycle-authorization.v1",
+  "generated_at": "2026-05-29T00:20:39+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "cec3f727534008d2a48221c656c22f82f351e3d7",
+  "split_branch": "g2-216-indicator-data-service-provider-authorization",
+  "owner_lane": "G/#79 service lifecycle DI",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "g2-215-indicator-data-get-data-service-ownership-decision",
+    "github_pr": 368,
+    "merge_commit": "cec3f727534008d2a48221c656c22f82f351e3d7",
+    "decision": "classify get_data_service as DataService singleton/backing API with route dependency-provider consumers"
+  },
+  "target": {
+    "symbol": "get_data_service",
+    "definition": {
+      "file": "web/backend/app/services/data_service.py",
+      "line": 466,
+      "classification": "DataService singleton/backing API"
+    }
+  },
+  "fresh_gitnexus_impact": {
+    "repo": "g2-216-indicator-data-service-provider-authorization",
+    "indexed_at": "2026-05-28T16:23:39.044Z",
+    "risk": "LOW",
+    "impacted_count": 2,
+    "direct_callers": 2,
+    "processes_affected": 0,
+    "modules_affected": 0,
+    "direct_symbols": [
+      "web/backend/app/api/indicators/indicator_cache.py:get_indicator_data_service",
+      "web/backend/app/api/v1/strategy/indicators.py:get_strategy_indicator_data_service"
+    ],
+    "interpretation": "Fresh worktree indexing reduces the current graph to two route-local provider wrappers. G2.215 remains valid as an ownership split; G2.216 uses the fresh provider-wrapper shape for authorization."
+  },
+  "static_source_scan": {
+    "singleton_surface": {
+      "file": "web/backend/app/services/data_service.py",
+      "lines": {
+        "_data_service": 463,
+        "get_data_service": 466
+      },
+      "current_behavior": "get_data_service lazily creates and caches DataService() through the module-level _data_service singleton."
+    },
+    "provider_wrappers": [
+      {
+        "file": "web/backend/app/api/indicators/indicator_cache.py",
+        "line": 49,
+        "symbol": "get_indicator_data_service",
+        "route_dependency_lines": [
+          270,
+          522
+        ]
+      },
+      {
+        "file": "web/backend/app/api/v1/strategy/indicators.py",
+        "line": 30,
+        "symbol": "get_strategy_indicator_data_service",
+        "route_dependency_lines": [
+          192
+        ]
+      }
+    ],
+    "current_direct_getter_source_calls": 2,
+    "current_shape": "Only route-local provider wrappers call get_data_service directly; route handlers consume DataService through FastAPI Depends parameters."
+  },
+  "authorization_decision": {
+    "status": "proposed_for_review",
+    "authorize_future_source_lane_if_accepted": true,
+    "next_lane": {
+      "id": "G2.217",
+      "name": "indicator/data DataService provider/reset seam implementation",
+      "type": "path_limited_implementation",
+      "source_edit_authority": "only after this G2.216 package is accepted"
+    },
+    "allowed_future_source_paths": [
+      "web/backend/app/services/data_service.py"
+    ],
+    "allowed_future_test_paths": [
+      "web/backend/tests/test_data_service_singleton_provider.py"
+    ],
+    "required_future_regression_checks": [
+      "web/backend/tests/test_indicator_registry_route_provider.py",
+      "web/backend/tests/test_v1_indicators_regressions.py"
+    ],
+    "required_future_behavior": [
+      "preserve get_data_service() as the public default singleton fallback",
+      "allow a registered provider override for lifecycle wiring and isolated tests",
+      "provide a reset helper that clears provider override and cached singleton state",
+      "keep indicator and strategy-indicator route provider wrappers compatible without route/OpenAPI contract changes"
+    ],
+    "must_not_batch": [
+      "route/OpenAPI contract changes",
+      "Strategy getter residual reopen",
+      "data-quality monitor source reopen",
+      "trade execution evidence provider work",
+      "cache prewarming provider work",
+      "realtime streaming/socket provider work",
+      "adapter_split or market_data_adapter work"
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "cec3f727534008d2a48221c656c22f82f351e3d7",
+    "stale_if_head_mismatch": true,
+    "gitnexus_tool_note": "The root mystocks_spec GitNexus index reported missing_kuzu; this package refreshed and used the isolated g2-216 worktree index."
+  }
+}
