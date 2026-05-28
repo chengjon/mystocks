@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T10:53:34+08:00`
-- Base HEAD checked: `41bef3787160ec3bf7b9b31220df9d99a3437474`
+- Prepared at: `2026-05-28T11:30:22+08:00`
+- Base HEAD checked: `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,8 +15,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.200 data-quality canonical service adapter provider implementation | G/#79 service lifecycle DI | PR `#352` merged at `41bef3787160ec3bf7b9b31220df9d99a3437474`; G2.200 implements only the authorized canonical service adapter monitor seam | If accepted, start G2.201 closeout / residual refresh before selecting another data-quality monitor surface |
-| P0 | Preserve G2.199 data-quality canonical service adapter provider authorization | G/#79 service lifecycle DI | PR `#352` merged; G2.200 source authority is limited to two canonical service adapters and listed tests | Do not touch legacy data adapters, `market_data_adapter.py`, wrapper, or monitor internals under G2.200 |
+| P0 | Review G2.201 data-quality canonical service adapter closeout / refresh | G/#79 service lifecycle DI | PR `#353` merged at `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`; G2.201 closes the canonical service adapter lane and selects the next decision target | If accepted, start G2.202 legacy data adapter compatibility ownership decision; do not open source authority directly |
+| P0 | Preserve G2.200 data-quality canonical service adapter provider implementation | G/#79 service lifecycle DI | PR `#353` merged; canonical service adapters now have optional monitor injection with singleton fallback | Do not reopen canonical service adapter source unless current HEAD evidence contradicts G2.200 tests |
+| P0 | Preserve G2.199 data-quality canonical service adapter provider authorization | G/#79 service lifecycle DI | PR `#352` merged; G2.200 source authority was limited to two canonical service adapters and listed tests | Do not touch legacy data adapters, `market_data_adapter.py`, wrapper, or monitor internals without a new decision package |
 | P0 | Preserve G2.198 data-quality residual adapter ownership decision | G/#79 service lifecycle DI | PR `#351` merged; canonical service adapters selected as the G2.199/G2.200 target | Do not touch legacy data adapters, `market_data_adapter.py`, wrapper, or monitor internals without a new decision package |
 | P0 | Preserve G2.197 data-quality monitor closeout / remaining candidate refresh | G/#79 service lifecycle DI | PR `#350` merged; `adapter_split` subclass constructor lane is closed and remaining candidates are classified | Do not bypass G2.198/G2.199 before touching service adapters, legacy adapters, `market_data_adapter.py`, or wrappers |
 | P0 | Preserve G2.196 data-quality `adapter_split` constructor provider implementation | G/#79 service lifecycle DI | PR `#349` merged; subclass-level `get_data_quality_monitor()` calls/imports are `0`; `BaseAdapter` fallback remains intentional | Do not expand into service adapters, legacy adapters, singleton wrappers, routes, or frontend |
@@ -42,8 +43,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.200 stay within the PR `#352` authorization boundary?
-- Does G2.200 preserve positional `config` constructor compatibility for both canonical service adapters?
-- Do the focused tests prove injected monitors bypass the global getter while default fallback remains available?
-- Are legacy data adapters, `market_data_adapter.py`, wrapper, route/OpenAPI, frontend, config, script, and OpenSpec surfaces still untouched?
+- Does G2.201 accurately record PR `#353` as merged at `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`?
+- Does G2.201 correctly close canonical service adapters while retaining singleton fallback calls as compatibility behavior?
+- Does G2.201 select G2.202 as a decision-only legacy data adapter compatibility ownership gate?
+- Are `market_data_adapter.py`, singleton wrapper, route/OpenAPI, frontend, config, script, and OpenSpec surfaces still deferred?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

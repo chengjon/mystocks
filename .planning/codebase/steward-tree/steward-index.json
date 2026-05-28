@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T10:53:34+08:00",
+  "generated_at": "2026-05-28T11:30:22+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "41bef3787160ec3bf7b9b31220df9d99a3437474",
-  "split_branch": "g2-200-data-quality-canonical-service-adapter-provider",
-  "scope": "data_quality_canonical_service_adapter_provider_implementation",
-  "source_edit_authority": true,
+  "base_head": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
+  "split_branch": "g2-201-data-quality-canonical-service-adapter-closeout-refresh",
+  "scope": "data_quality_canonical_service_adapter_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -1458,12 +1458,14 @@
     {
       "id": "g2-200-data-quality-canonical-service-adapter-provider-implementation",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.199 data-quality canonical service adapter provider authorization",
       "source_edit_authority": true,
       "parent_github_pr": 352,
       "parent_merge_commit": "41bef3787160ec3bf7b9b31220df9d99a3437474",
+      "github_pr": 353,
+      "merge_commit": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
       "evidence": [
         ".planning/codebase/generated/data-quality-canonical-service-adapter-provider-implementation-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-implementation-2026-05-28.md",
@@ -1514,10 +1516,75 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "41bef3787160ec3bf7b9b31220df9d99a3437474",
+        "current_head_checked": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.201 closeout / residual refresh before selecting another data-quality monitor surface."
+      "next_gate": "Superseded by G2.201 data-quality canonical service adapter closeout / refresh."
+    },
+    {
+      "id": "g2-201-data-quality-canonical-service-adapter-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.200 data-quality canonical service adapter provider implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 353,
+      "parent_merge_commit": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.md",
+        "governance/mainline/task-cards/pr-354.yaml"
+      ],
+      "closeout_result": {
+        "canonical_service_adapter_lane": "closed",
+        "post_merge_focused_pytest": "21 passed",
+        "post_merge_import_smoke": "passed with minimal dummy required env",
+        "openspec_validate": "passed"
+      },
+      "residual_scan": {
+        "total_get_data_quality_monitor_calls": 9,
+        "route_provider_backing": {
+          "files": 1,
+          "calls": 1,
+          "decision": "retained provider backing getter"
+        },
+        "adapter_split_base_fallback": {
+          "files": 1,
+          "calls": 1,
+          "decision": "closed adapter_split lane; retain default singleton fallback"
+        },
+        "canonical_service_adapter_fallback": {
+          "files": 2,
+          "calls": 2,
+          "decision": "closed by G2.200; retain fallback for default construction"
+        },
+        "legacy_data_adapter": {
+          "files": 2,
+          "calls": 2,
+          "decision": "select as G2.202 compatibility ownership decision target"
+        },
+        "market_data_adapter_facade": {
+          "files": 1,
+          "calls": 1,
+          "decision": "defer as root compatibility facade surface"
+        },
+        "singleton_wrapper_backing": {
+          "files": 1,
+          "calls": 2,
+          "decision": "retain backing API; not a deletion lane"
+        }
+      },
+      "gitnexus_reference": {
+        "legacy_dashboard": "LOW; impacted_count=0",
+        "legacy_data_source": "LOW; impacted_count=0",
+        "market_data_adapter_facade": "LOW; impacted_count=3",
+        "singleton_wrapper_backing": "LOW; impacted_count=19"
+      },
+      "freshness": {
+        "current_head_checked": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.202 data-quality legacy adapter compatibility ownership decision without source authority."
     },
     {
       "id": "core-batch2-reconciliation",

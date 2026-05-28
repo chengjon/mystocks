@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T10:53:34+08:00`
-- Base HEAD checked: `41bef3787160ec3bf7b9b31220df9d99a3437474`
+- Prepared at: `2026-05-28T11:30:22+08:00`
+- Base HEAD checked: `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -61,8 +61,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-residual-adapter-ownership-decision-2026-05-28.md` | G2.198 human-readable residual adapter ownership decision report | Accepted by PR `#351`; superseded for canonical service adapter authorization by G2.199 |
 | `.planning/codebase/generated/data-quality-canonical-service-adapter-provider-authorization-2026-05-28.json` | G2.199 canonical service adapter provider authorization evidence | Accepted by PR `#352`; superseded for implementation evidence by G2.200 |
 | `docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-authorization-2026-05-28.md` | G2.199 human-readable authorization package | Accepted by PR `#352`; superseded for implementation evidence by G2.200 |
-| `.planning/codebase/generated/data-quality-canonical-service-adapter-provider-implementation-2026-05-28.json` | G2.200 canonical service adapter provider implementation evidence | Current for HEAD `41bef3787160ec3bf7b9b31220df9d99a3437474`; review input until PR `#353` is accepted |
-| `docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-implementation-2026-05-28.md` | G2.200 human-readable implementation report | Review input until PR `#353` is accepted |
+| `.planning/codebase/generated/data-quality-canonical-service-adapter-provider-implementation-2026-05-28.json` | G2.200 canonical service adapter provider implementation evidence | Accepted by PR `#353`; superseded for residual refresh by G2.201 |
+| `docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-implementation-2026-05-28.md` | G2.200 human-readable implementation report | Accepted by PR `#353`; superseded for residual refresh by G2.201 |
+| `.planning/codebase/generated/data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.json` | G2.201 canonical service adapter closeout / residual refresh evidence | Current for HEAD `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`; review input until PR `#354` is accepted |
+| `docs/reports/quality/backend-data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.md` | G2.201 human-readable closeout / residual refresh report | Review input until PR `#354` is accepted |
 
 ## External State Inputs
 
@@ -86,7 +88,8 @@ state transition.
 | GitHub PR `#350` | `MERGED` | G2.197 data-quality monitor closeout / refresh merged by commit `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` |
 | GitHub PR `#351` | `MERGED` | G2.198 residual adapter ownership decision merged by commit `a6b54ddfb24055552d634757f01dc03bd6ca6e62` |
 | GitHub PR `#352` | `MERGED` | G2.199 canonical service adapter authorization merged by commit `41bef3787160ec3bf7b9b31220df9d99a3437474` |
-| `origin/wip/root-dirty-20260403` | `41bef3787160ec3bf7b9b31220df9d99a3437474` | Base used for this canonical service adapter implementation branch |
+| GitHub PR `#353` | `MERGED` | G2.200 canonical service adapter provider implementation merged by commit `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e` |
+| `origin/wip/root-dirty-20260403` | `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e` | Base used for this canonical service adapter closeout / refresh branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

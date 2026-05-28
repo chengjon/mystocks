@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T10:53:34+08:00`
-- Base HEAD checked: `41bef3787160ec3bf7b9b31220df9d99a3437474`
+- Prepared at: `2026-05-28T11:30:22+08:00`
+- Base HEAD checked: `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -37,12 +37,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#350` | `g2-197-data-quality-monitor-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` | Closeout / remaining candidate refresh selecting G2.198 residual adapter ownership decision |
 | `#351` | `g2-198-data-quality-residual-adapter-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `a6b54ddfb24055552d634757f01dc03bd6ca6e62` | Decision selecting canonical service adapter provider authorization as G2.199 |
 | `#352` | `g2-199-data-quality-canonical-service-adapter-authorization` | `wip/root-dirty-20260403` | `MERGED` at `41bef3787160ec3bf7b9b31220df9d99a3437474` | Authorization package for G2.200 canonical service adapter provider implementation |
+| `#353` | `g2-200-data-quality-canonical-service-adapter-provider` | `wip/root-dirty-20260403` | `MERGED` at `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e` | Path-limited canonical service adapter provider implementation closed for G2.201 refresh |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-200-data-quality-canonical-service-adapter-provider` | `origin/wip/root-dirty-20260403` at `41bef3787160ec3bf7b9b31220df9d99a3437474` | Implement the authorized canonical service adapter provider seam | Yes, limited to `dashboard_adapter.py`, `data_adapter.py`, and focused tests |
+| `g2-201-data-quality-canonical-service-adapter-closeout-refresh` | `origin/wip/root-dirty-20260403` at `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e` | Close the canonical service adapter provider lane and refresh residual data-quality monitor surfaces | No |
 
 ## OpenSpec Relationship
 
@@ -58,8 +59,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.200 is a path-limited implementation branch after PR `#352` merged G2.199.
-It implements only the authorized constructor-level monitor seam for canonical
-service adapters and keeps legacy data adapters, `market_data_adapter.py`,
-singleton wrapper, monitor internals, routes, frontend, and OpenSpec changes out
-of scope.
+G2.201 is a governance-only closeout branch after PR `#353` merged G2.200. It
+closes the canonical service adapter implementation lane, refreshes the remaining
+data-quality monitor surfaces, and selects G2.202 as a decision-only legacy data
+adapter compatibility ownership gate.

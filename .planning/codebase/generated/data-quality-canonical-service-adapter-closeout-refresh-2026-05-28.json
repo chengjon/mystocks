@@ -1,0 +1,154 @@
+{
+  "schema_version": "2026-05-28.g2-closeout-refresh.v1",
+  "generated_at": "2026-05-28T11:30:22+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
+  "worktree_branch": "g2-201-data-quality-canonical-service-adapter-closeout-refresh",
+  "status": "closeout_refresh",
+  "source_edit_authority": false,
+  "parent": {
+    "node": "G2.200 data-quality canonical service adapter provider implementation",
+    "github_pr": 353,
+    "merge_commit": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e"
+  },
+  "closeout": {
+    "canonical_service_adapter_lane": "closed",
+    "implementation_result": "DashboardDataSourceAdapter and DataDataSourceAdapter accept keyword-only quality_monitor while preserving positional config construction and singleton fallback behavior",
+    "closed_paths": [
+      "web/backend/app/services/adapters/dashboard_adapter.py",
+      "web/backend/app/services/adapters/data_adapter.py",
+      "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py"
+    ]
+  },
+  "residual_scan": {
+    "git_head": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
+    "command": "rg -n \"get_data_quality_monitor\\\\(\" web/backend/app/services web/backend/app/api -g '*.py'",
+    "total_calls": 9,
+    "buckets": {
+      "route_provider_backing": {
+        "files": 1,
+        "calls": 1,
+        "entries": [
+          "web/backend/app/api/data_quality.py:52"
+        ],
+        "decision": "retained provider backing getter from prior route provider lane"
+      },
+      "adapter_split_base_fallback": {
+        "files": 1,
+        "calls": 1,
+        "entries": [
+          "web/backend/app/services/adapters_split/base_adapter.py:27"
+        ],
+        "decision": "closed adapter_split lane; retain default singleton fallback"
+      },
+      "canonical_service_adapter_fallback": {
+        "files": 2,
+        "calls": 2,
+        "entries": [
+          "web/backend/app/services/adapters/data_adapter.py:623",
+          "web/backend/app/services/adapters/dashboard_adapter.py:254"
+        ],
+        "decision": "closed by G2.200; retain fallback for default construction"
+      },
+      "legacy_data_adapter": {
+        "files": 2,
+        "calls": 2,
+        "entries": [
+          "web/backend/app/services/data_adapters/dashboard.py:249",
+          "web/backend/app/services/data_adapters/data_source.py:608"
+        ],
+        "decision": "select as G2.202 compatibility ownership decision target; no source authority from G2.201"
+      },
+      "market_data_adapter_facade": {
+        "files": 1,
+        "calls": 1,
+        "entries": [
+          "web/backend/app/services/market_data_adapter.py:327"
+        ],
+        "decision": "defer as root compatibility facade surface until an owner-specific decision package"
+      },
+      "singleton_wrapper_backing": {
+        "files": 1,
+        "calls": 2,
+        "entries": [
+          "web/backend/app/services/_data_quality_monitor_singleton.py:12",
+          "web/backend/app/services/_data_quality_monitor_singleton.py:24"
+        ],
+        "decision": "retain backing API; not a deletion lane"
+      }
+    }
+  },
+  "gitnexus_reference": {
+    "legacy_dashboard": {
+      "path": "web/backend/app/services/data_adapters/dashboard.py",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "processes_affected": 0
+    },
+    "legacy_data_source": {
+      "path": "web/backend/app/services/data_adapters/data_source.py",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "processes_affected": 0
+    },
+    "market_data_adapter_facade": {
+      "path": "web/backend/app/services/market_data_adapter.py",
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 1,
+      "processes_affected": 0
+    },
+    "singleton_wrapper_backing": {
+      "path": "web/backend/app/services/_data_quality_monitor_singleton.py",
+      "risk": "LOW",
+      "impacted_count": 19,
+      "direct": 1,
+      "processes_affected": 0
+    }
+  },
+  "verification": {
+    "post_merge_focused_pytest": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_canonical_service_adapter_provider.py tests/backend/test_data_adapter_regression.py web/backend/tests/test_logging_noise_regressions.py -q --tb=short --no-cov",
+      "status": "passed",
+      "result": "21 passed"
+    },
+    "post_merge_import_smoke": {
+      "status": "passed",
+      "note": "passed with minimal dummy required env through app.services.data_adapter and data_source_factory"
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "status": "passed",
+      "note": "PostHog network flush warning observed after successful validation"
+    },
+    "json_yaml_parse": {
+      "status": "passed",
+      "files": [
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/generated/data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.json",
+        "governance/mainline/task-cards/pr-354.yaml"
+      ]
+    },
+    "markdown_governance": {
+      "status": "passed",
+      "checked_files": 6,
+      "errors": 0
+    },
+    "git_diff_check": "passed",
+    "gitnexus_staged_detect_changes": {
+      "status": "passed",
+      "risk_level": "low",
+      "changed_files": 9,
+      "changed_symbols": 0,
+      "affected_processes": 0
+    },
+    "mainline_scope_gate": {
+      "status": "passed",
+      "changed_files": 9,
+      "violations": 0,
+      "report": "/tmp/pr354-mainline-governance-report.json"
+    }
+  },
+  "next_gate": "G2.202 data-quality legacy adapter compatibility ownership decision; decision-only before any source implementation."
+}
