@@ -711,10 +711,16 @@ class DataQualityMonitor:
         """检查监控是否启用"""
         return self.monitoring_enabled
 
-from app.services._data_quality_monitor_singleton import get_data_quality_monitor, monitor_data_quality
+from app.services._data_quality_monitor_singleton import (
+    get_data_quality_monitor,
+    monitor_data_quality,
+    reset_data_quality_monitor_provider,
+    set_data_quality_monitor_provider,
+)
 
 __all__ = [
     "DataQualityLevel", "AlertSeverity", "DataQualityMetric", "DataQualityAlert", "DataSourceQualityMetrics",
     "IDataQualityRule", "SchemaValidationRule", "DataFreshnessRule", "DataConsistencyRule", "DataQualityMonitor",
     "get_data_quality_monitor", "monitor_data_quality",
+    "reset_data_quality_monitor_provider", "set_data_quality_monitor_provider",
 ]

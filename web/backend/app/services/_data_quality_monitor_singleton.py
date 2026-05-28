@@ -2,16 +2,32 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, Optional
+from typing import Any, Callable, Dict, Optional
 
 from app.services.data_quality_monitor import DataQualityMonitor
 
 _global_monitor: Optional[DataQualityMonitor] = None
+_monitor_provider: Optional[Callable[[], DataQualityMonitor]] = None
+
+
+def set_data_quality_monitor_provider(provider: Optional[Callable[[], DataQualityMonitor]]) -> None:
+    """Register an explicit monitor provider for lifecycle wiring or tests."""
+    global _monitor_provider
+    _monitor_provider = provider
+
+
+def reset_data_quality_monitor_provider() -> None:
+    """Reset provider override and cached singleton monitor."""
+    global _global_monitor, _monitor_provider
+    _monitor_provider = None
+    _global_monitor = None
 
 
 def get_data_quality_monitor() -> DataQualityMonitor:
     """获取全局数据质量监控实例"""
     global _global_monitor
+    if _monitor_provider is not None:
+        return _monitor_provider()
     if _global_monitor is None:
         _global_monitor = DataQualityMonitor()
     return _global_monitor

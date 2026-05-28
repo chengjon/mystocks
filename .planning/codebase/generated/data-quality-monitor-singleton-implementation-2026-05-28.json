@@ -1,0 +1,119 @@
+{
+  "schema_version": "2026-05-28.g2-implementation-evidence.v1",
+  "id": "g2-212-data-quality-monitor-singleton-implementation",
+  "generated_at": "2026-05-28T22:40:00+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
+  "branch": "g2-212-data-quality-monitor-singleton-implementation",
+  "parent_gate": {
+    "id": "g2-211-data-quality-monitor-singleton-authorization",
+    "github_pr": 364,
+    "merge_commit": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
+    "accepted_scope": "path-limited source implementation for the data-quality monitor singleton/backing API compatibility seam"
+  },
+  "openspec": {
+    "change_id": "migrate-backend-singletons-to-lifecycle-di",
+    "approval_status": "approved",
+    "validate_command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+  },
+  "source_edit_authority": true,
+  "authorized_paths": {
+    "source": [
+      "web/backend/app/services/_data_quality_monitor_singleton.py",
+      "web/backend/app/services/data_quality_monitor.py"
+    ],
+    "tests": [
+      "web/backend/tests/test_data_quality_monitor_singleton_provider.py"
+    ],
+    "governance": [
+      ".planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md",
+      "governance/mainline/task-cards/pr-365.yaml"
+    ]
+  },
+  "forbidden_scope": [
+    "web/backend/app/api/**",
+    "web/backend/app/services/adapters/**",
+    "web/backend/app/services/adapters_split/**",
+    "web/backend/app/services/data_adapters/**",
+    "web/backend/app/services/market_data_adapter.py",
+    "web/backend/app/services/data_adapter.py.backup.20260130",
+    "web/frontend/**",
+    "src/**",
+    "docs/api/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "implementation": {
+    "summary": "Preserve default global DataQualityMonitor fallback while adding explicit provider/reset hooks for lifecycle wiring and focused tests.",
+    "public_imports_preserved": [
+      "app.services.data_quality_monitor.get_data_quality_monitor",
+      "app.services.data_quality_monitor.monitor_data_quality"
+    ],
+    "public_imports_added": [
+      "app.services.data_quality_monitor.set_data_quality_monitor_provider",
+      "app.services.data_quality_monitor.reset_data_quality_monitor_provider"
+    ],
+    "default_singleton_fallback_preserved": true,
+    "route_adapter_scope_changed": false,
+    "openapi_scope_changed": false
+  },
+  "gitnexus_pre_edit": {
+    "get_data_quality_monitor": {
+      "risk": "CRITICAL",
+      "impacted_count": 24,
+      "direct": 20,
+      "processes_affected": 7,
+      "modules_affected": 4,
+      "disposition": "Known high-risk root seam from G2.210; G2.211 authorized only a compatibility-first provider hook inside the singleton/backing API paths."
+    },
+    "monitor_data_quality": {
+      "risk": "LOW",
+      "impacted_count": 1,
+      "direct": 1,
+      "disposition": "Covered by focused provider-hook regression test."
+    }
+  },
+  "tdd": {
+    "red_command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_monitor_singleton_provider.py -q --no-cov --tb=short",
+    "red_result": "ImportError before implementation: reset_data_quality_monitor_provider was not exported from app.services.data_quality_monitor.",
+    "green_command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_monitor_singleton_provider.py -q --no-cov --tb=short",
+    "green_result": "3 passed"
+  },
+  "verification": {
+    "focused_pytest": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_monitor_singleton_provider.py -q --no-cov --tb=short",
+      "result": "3 passed"
+    },
+    "authorized_non_large_regression": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_monitor_singleton_provider.py web/backend/tests/test_data_quality_route_provider_regressions.py web/backend/tests/test_data_quality_canonical_service_adapter_provider.py web/backend/tests/test_adapter_split_data_quality_monitor_provider.py web/backend/tests/test_market_data_adapter_quality_monitor_provider.py web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short",
+      "result": "20 passed"
+    },
+    "large_file_split_regression_record": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_large_file_split_regressions.py -q --no-cov --tb=short || true",
+      "result": "35 passed, 4 failed",
+      "failure_disposition": "Existing unrelated baseline failures in missing historical split files/exports; not fixed in G2.212."
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/services/_data_quality_monitor_singleton.py web/backend/app/services/data_quality_monitor.py web/backend/tests/test_data_quality_monitor_singleton_provider.py",
+      "result": "All checks passed"
+    }
+  },
+  "next_gate": {
+    "id": "g2-213",
+    "name": "data-quality monitor singleton/backing API closeout and residual refresh",
+    "source_edit_authority": false,
+    "purpose": "Review G2.212 implementation evidence, classify remaining residuals, and decide whether any further source lane is warranted."
+  }
+}

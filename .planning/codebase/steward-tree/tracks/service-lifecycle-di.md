@@ -766,11 +766,44 @@ Future G2.212 constraints:
 - do not migrate routes, adapters, adapter-split constructors, or
   `market_data_adapter.py`
 
+## G2.212 Data-Quality Monitor Singleton Implementation
+
+At HEAD `535a6d9c1565b4ced7942cb4082104f2fb0506fd`, PR `#364` is merged and
+G2.211 is accepted.
+
+Implementation result:
+
+| Item | Result |
+|---|---|
+| Lane | G2.212 data-quality monitor singleton/backing API compatibility implementation |
+| Source authority | Yes, path-limited |
+| Source paths | `web/backend/app/services/_data_quality_monitor_singleton.py`, `web/backend/app/services/data_quality_monitor.py` |
+| Focused test | `web/backend/tests/test_data_quality_monitor_singleton_provider.py` |
+| Public imports preserved | `get_data_quality_monitor`, `monitor_data_quality` |
+| Public hooks added | `set_data_quality_monitor_provider`, `reset_data_quality_monitor_provider` |
+| Default singleton fallback | Preserved |
+| Route/adapters/OpenAPI changes | None |
+
+Verification summary:
+
+| Check | Result |
+|---|---|
+| Focused provider seam test | `3 passed` |
+| Authorized non-large regression set | `20 passed` |
+| Large-file split regression record | `35 passed`, `4 failed` existing unrelated baseline issues |
+| Ruff on touched source/test files | Passed |
+| OpenSpec strict validate | Passed |
+
+G2.212 does not close all residual ownership questions. It only gives the
+remaining singleton/backing API surface a compatibility provider hook so future
+lifecycle wiring can depend on an explicit seam instead of directly mutating the
+module-level singleton.
+
 ## Next Gates
 
-- Review G2.211 data-quality monitor singleton/backing API authorization package.
-- If accepted, start G2.212 data-quality monitor singleton/backing API compatibility implementation in a separate source lane.
-- Do not edit routes, adapters, adapter-split constructors, `market_data_adapter.py`, OpenAPI, frontend, config, scripts, or OpenSpec in G2.212.
+- Review G2.212 data-quality monitor singleton/backing API compatibility implementation.
+- If accepted, start G2.213 data-quality monitor singleton/backing API closeout / residual refresh with no source edits.
+- Do not open another source lane before G2.213 classifies remaining residuals and selects a next gate.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
