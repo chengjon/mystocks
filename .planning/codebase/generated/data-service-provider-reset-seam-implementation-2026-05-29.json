@@ -1,0 +1,106 @@
+{
+  "schema_version": "2026-05-29.g2-service-lifecycle-implementation.v1",
+  "generated_at": "2026-05-29T00:46:30+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "68ba10829b89095f8b907d249f59198995543ebc",
+  "split_branch": "g2-217-data-service-provider-reset-seam",
+  "owner_lane": "G/#79 service lifecycle DI",
+  "source_edit_authority": true,
+  "parent": {
+    "id": "g2-216-indicator-data-service-provider-authorization",
+    "github_pr": 369,
+    "merge_commit": "68ba10829b89095f8b907d249f59198995543ebc",
+    "decision": "authorize future path-limited DataService provider/reset seam implementation"
+  },
+  "gitnexus_pre_edit_impact": {
+    "repo": "g2-217-data-service-provider-reset-seam",
+    "indexed_at": "2026-05-28T16:41:52.531Z",
+    "target": "get_data_service",
+    "risk": "LOW",
+    "impacted_count": 2,
+    "direct_callers": 2,
+    "processes_affected": 0,
+    "modules_affected": 0,
+    "direct_symbols": [
+      "web/backend/app/api/indicators/indicator_cache.py:get_indicator_data_service",
+      "web/backend/app/api/v1/strategy/indicators.py:get_strategy_indicator_data_service"
+    ]
+  },
+  "implemented_surface": {
+    "source_paths": [
+      "web/backend/app/services/data_service.py"
+    ],
+    "test_paths": [
+      "web/backend/tests/test_data_service_singleton_provider.py"
+    ],
+    "added_public_helpers": [
+      "set_data_service_provider",
+      "reset_data_service_provider"
+    ],
+    "preserved_public_helpers": [
+      "get_data_service"
+    ],
+    "behavior": [
+      "get_data_service returns a registered provider override when one is present",
+      "get_data_service keeps the existing lazy singleton fallback when no provider override is present",
+      "reset_data_service_provider clears both provider override and cached singleton state"
+    ]
+  },
+  "verification": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_service_singleton_provider.py -q --no-cov --tb=short",
+      "result": "ImportError: cannot import name 'reset_data_service_provider' from 'app.services.data_service'",
+      "expected": true
+    },
+    "green": [
+      {
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_service_singleton_provider.py -q --no-cov --tb=short",
+        "result": "2 passed in 2.25s"
+      },
+      {
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py -q --no-cov --tb=short",
+        "result": "3 passed in 4.11s"
+      },
+      {
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short",
+        "result": "3 passed in 2.98s"
+      }
+    ]
+  },
+  "gitnexus_staged_scope": {
+    "risk_level": "high",
+    "changed_files": 11,
+    "changed_symbols": 15,
+    "affected_processes": 12,
+    "interpretation": "GitNexus staged attribution marks the whole data_service.py symbol set as modified after a top-level import and singleton-section edit. The cached source diff is localized to the Callable import, provider/reset helpers, and the provider branch in get_data_service.",
+    "localized_data_service_diff": [
+      "typing import adds Callable",
+      "_data_service_provider module variable is added next to _data_service",
+      "set_data_service_provider() is added",
+      "reset_data_service_provider() is added",
+      "get_data_service() checks provider override before default lazy singleton fallback"
+    ]
+  },
+  "next_gate": {
+    "id": "G2.218",
+    "name": "DataService provider/reset seam closeout and residual refresh",
+    "type": "closeout_refresh",
+    "source_edit_authority": false,
+    "purpose": "verify G2.217 after review/merge, update remaining provider queue, and prevent immediate batching into another source lane"
+  },
+  "non_goals": [
+    "route/OpenAPI contract changes",
+    "route provider wrapper edits",
+    "Strategy getter residual reopen",
+    "data-quality monitor source reopen",
+    "trade execution evidence provider work",
+    "cache prewarming provider work",
+    "realtime streaming/socket provider work",
+    "adapter_split or market_data_adapter work"
+  ],
+  "freshness": {
+    "current_head_checked": "68ba10829b89095f8b907d249f59198995543ebc",
+    "stale_if_head_mismatch": true
+  }
+}

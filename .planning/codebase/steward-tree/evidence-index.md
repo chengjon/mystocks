@@ -93,8 +93,10 @@ state transition.
 | `docs/reports/quality/backend-nonstrategy-provider-queue-refresh-2026-05-28.md` | G2.214 human-readable non-Strategy provider queue refresh report | Accepted by PR `#367`; superseded for `get_data_service` ownership by G2.215 |
 | `.planning/codebase/generated/indicator-data-get-data-service-ownership-decision-2026-05-28.json` | G2.215 indicator/data `get_data_service` ownership decision evidence | Accepted by PR `#368`; superseded for provider/reset authorization by G2.216 |
 | `docs/reports/quality/backend-indicator-data-get-data-service-ownership-decision-2026-05-28.md` | G2.215 human-readable ownership decision report | Accepted by PR `#368`; superseded for provider/reset authorization by G2.216 |
-| `.planning/codebase/generated/indicator-data-service-provider-authorization-2026-05-29.json` | G2.216 indicator/data `DataService` provider/reset seam authorization evidence | Review input until PR `#369` is accepted |
-| `docs/reports/quality/backend-indicator-data-service-provider-authorization-2026-05-29.md` | G2.216 human-readable provider authorization report | Review input until PR `#369` is accepted |
+| `.planning/codebase/generated/indicator-data-service-provider-authorization-2026-05-29.json` | G2.216 indicator/data `DataService` provider/reset seam authorization evidence | Accepted by PR `#369`; superseded for implementation evidence by G2.217 |
+| `docs/reports/quality/backend-indicator-data-service-provider-authorization-2026-05-29.md` | G2.216 human-readable provider authorization report | Accepted by PR `#369`; superseded for implementation evidence by G2.217 |
+| `.planning/codebase/generated/data-service-provider-reset-seam-implementation-2026-05-29.json` | G2.217 `DataService` provider/reset seam implementation evidence | Review input until PR `#370` is accepted |
+| `docs/reports/quality/backend-data-service-provider-reset-seam-implementation-2026-05-29.md` | G2.217 human-readable implementation report | Review input until PR `#370` is accepted |
 
 ## External State Inputs
 
