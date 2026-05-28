@@ -707,11 +707,42 @@ Residual classification:
 G2.209 has no source authority. It does not edit `web/backend/**`, route,
 OpenAPI, frontend, config, script, or OpenSpec surfaces.
 
+## G2.210 Data-Quality Monitor Residual Ownership Decision
+
+At HEAD `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230`, PR `#362` is merged and
+G2.209 is accepted.
+
+Decision result:
+
+| Item | Result |
+|---|---|
+| Root getter | `web/backend/app/services/_data_quality_monitor_singleton.py:get_data_quality_monitor` |
+| GitNexus risk | CRITICAL |
+| Impacted symbols | 24 |
+| Direct dependents | 20 |
+| Affected processes | 7 |
+| Affected modules | 4 |
+| Source edit authority | None |
+
+Residual ownership classification:
+
+| Residual surface | Classification | Handling |
+|---|---|---|
+| `market_data_adapter.py` fallback | Closed market-data adapter fallback | Preserve G2.208/G2.209 closed status |
+| `adapters/dashboard_adapter.py`, `adapters/data_adapter.py` | Closed canonical service adapter fallback | Preserve G2.200/G2.201 closed status |
+| `adapters_split/base_adapter.py` | Closed adapter-split fallback | Preserve G2.196/G2.197 closed status |
+| `_data_quality_monitor_singleton.py`, `data_quality_monitor.py` | Singleton/backing API ownership surface | Requires G2.211 authorization package |
+| `data_adapter.py.backup.20260130` | Historical backup file | Separate repository hygiene authority required |
+
+G2.210 has no source authority. It records that the remaining singleton/backing
+API is a high-risk root ownership surface and must not be treated as a routine
+adapter/source cleanup.
+
 ## Next Gates
 
-- Review G2.209 `market_data_adapter.py` provider seam closeout / residual refresh.
-- If accepted, start G2.210 data-quality monitor residual ownership decision with no source edits.
-- Do not open the next source lane before G2.210 decides singleton/backing API and retained fallback ownership.
+- Review G2.210 data-quality monitor residual ownership decision.
+- If accepted, start G2.211 data-quality monitor singleton/backing API authorization package with no source edits.
+- Do not open the next source lane before G2.211 defines source authority, consumer matrix, focused tests, and rollback rules.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

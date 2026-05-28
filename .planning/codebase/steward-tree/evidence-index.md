@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T19:32:39+08:00`
-- Base HEAD checked: `90d8f12cc01f9fb360abc531673e3ed9535706e7`
+- Prepared at: `2026-05-28T20:48:36+08:00`
+- Base HEAD checked: `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -79,8 +79,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-market-data-adapter-provider-authorization-2026-05-28.md` | G2.207 human-readable provider seam authorization package | Accepted by PR `#360`; superseded for implementation evidence by G2.208 |
 | `.planning/codebase/generated/data-quality-market-data-adapter-provider-implementation-2026-05-28.json` | G2.208 `market_data_adapter.py` provider seam implementation evidence | Accepted by PR `#361`; superseded for closeout / residual refresh by G2.209 |
 | `docs/reports/quality/backend-data-quality-market-data-adapter-provider-implementation-2026-05-28.md` | G2.208 human-readable provider seam implementation report | Accepted by PR `#361`; superseded for closeout / residual refresh by G2.209 |
-| `.planning/codebase/generated/data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.json` | G2.209 `market_data_adapter.py` provider seam closeout / residual refresh evidence | Current for HEAD `90d8f12cc01f9fb360abc531673e3ed9535706e7`; review input until PR `#362` is accepted |
-| `docs/reports/quality/backend-data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.md` | G2.209 human-readable closeout / residual refresh report | Review input until PR `#362` is accepted |
+| `.planning/codebase/generated/data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.json` | G2.209 `market_data_adapter.py` provider seam closeout / residual refresh evidence | Accepted by PR `#362`; superseded for residual ownership by G2.210 |
+| `docs/reports/quality/backend-data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.md` | G2.209 human-readable closeout / residual refresh report | Accepted by PR `#362`; superseded for residual ownership by G2.210 |
+| `.planning/codebase/generated/data-quality-monitor-residual-ownership-decision-2026-05-28.json` | G2.210 data-quality monitor residual ownership decision evidence | Current for HEAD `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230`; review input until PR `#363` is accepted |
+| `docs/reports/quality/backend-data-quality-monitor-residual-ownership-decision-2026-05-28.md` | G2.210 human-readable residual ownership decision report | Review input until PR `#363` is accepted |
 
 ## External State Inputs
 

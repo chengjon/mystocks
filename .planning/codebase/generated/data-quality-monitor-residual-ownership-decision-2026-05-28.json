@@ -1,0 +1,126 @@
+{
+  "schema_version": "2026-05-28.decision-package.v1",
+  "generated_at": "2026-05-28T20:48:36+08:00",
+  "repo": "mystocks_spec",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
+  "worktree_branch": "g2-210-data-quality-monitor-residual-ownership-decision",
+  "status": "for_review",
+  "source_edit_authority": false,
+  "parent": {
+    "lane": "G2.209 data-quality market_data_adapter.py provider seam closeout / residual refresh",
+    "github_pr": 362,
+    "merge_commit": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
+    "decision": "accepted closeout; remaining data-quality monitor surfaces require ownership decision before any new source lane"
+  },
+  "current_scan": {
+    "pattern": "get_data_quality_monitor|DataQualityMonitor",
+    "current_head_checked": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
+    "service_file_count": 7,
+    "service_hit_count": 21,
+    "test_file_count": 7,
+    "test_hit_count": 17,
+    "service_hits": [
+      {
+        "path": "web/backend/app/services/adapters_split/base_adapter.py",
+        "matches": 2,
+        "classification": "closed_adapter_split_fallback"
+      },
+      {
+        "path": "web/backend/app/services/adapters/dashboard_adapter.py",
+        "matches": 2,
+        "classification": "closed_canonical_service_adapter_fallback"
+      },
+      {
+        "path": "web/backend/app/services/adapters/data_adapter.py",
+        "matches": 2,
+        "classification": "closed_canonical_service_adapter_fallback"
+      },
+      {
+        "path": "web/backend/app/services/data_adapter.py.backup.20260130",
+        "matches": 3,
+        "classification": "historical_backup"
+      },
+      {
+        "path": "web/backend/app/services/data_quality_monitor.py",
+        "matches": 4,
+        "classification": "public_singleton_facade"
+      },
+      {
+        "path": "web/backend/app/services/market_data_adapter.py",
+        "matches": 2,
+        "classification": "closed_market_data_adapter_fallback"
+      },
+      {
+        "path": "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "matches": 6,
+        "classification": "singleton_backing_api"
+      }
+    ],
+    "test_hits": [
+      "web/backend/tests/test_large_file_split_regressions.py",
+      "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py",
+      "web/backend/tests/test_data_quality_route_provider_regressions.py",
+      "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py",
+      "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py",
+      "web/backend/tests/test_logging_noise_regressions.py",
+      "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py"
+    ]
+  },
+  "gitnexus_impact": {
+    "target": "Function:web/backend/app/services/_data_quality_monitor_singleton.py:get_data_quality_monitor",
+    "direction": "upstream",
+    "include_tests": true,
+    "max_depth": 2,
+    "risk": "CRITICAL",
+    "impacted_count": 24,
+    "direct": 20,
+    "processes_affected": 7,
+    "modules_affected": 4,
+    "affected_modules": [
+      "Services",
+      "Data_adapters",
+      "Api",
+      "Adapters"
+    ]
+  },
+  "decision": {
+    "classification": "high_risk_singleton_backing_api_ownership_surface",
+    "closed_surfaces_to_preserve": [
+      "web/backend/app/services/market_data_adapter.py",
+      "web/backend/app/services/adapters/dashboard_adapter.py",
+      "web/backend/app/services/adapters/data_adapter.py",
+      "web/backend/app/services/adapters_split/base_adapter.py"
+    ],
+    "ownership_surfaces_requiring_authorization": [
+      "web/backend/app/services/_data_quality_monitor_singleton.py",
+      "web/backend/app/services/data_quality_monitor.py"
+    ],
+    "separate_hygiene_surface": [
+      "web/backend/app/services/data_adapter.py.backup.20260130"
+    ],
+    "tests_are_contract_evidence_not_source_authority": true,
+    "implementation_from_this_package": false
+  },
+  "next_gate": {
+    "id": "G2.211",
+    "name": "data-quality monitor singleton/backing API authorization package",
+    "source_edit_authority": false,
+    "required_before_source_lane": [
+      "consumer matrix for data-quality route callers, service adapters, adapter_split constructors, and monitor_data_quality helper",
+      "explicit decision on public facade versus private singleton helper ownership",
+      "allowed source path list and focused test list for any future implementation",
+      "rollback plan for preserving route/API behavior and default fallback compatibility"
+    ]
+  },
+  "non_goals": [
+    "Do not edit web/backend source in G2.210.",
+    "Do not delete or rename get_data_quality_monitor.",
+    "Do not reopen closed market_data_adapter.py, canonical adapter, or adapter_split fallback lanes without contradictory current evidence.",
+    "Do not treat historical backup cleanup as service lifecycle DI implementation."
+  ],
+  "freshness": {
+    "current_head_checked": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
+    "stale_if_head_mismatch": true
+  }
+}

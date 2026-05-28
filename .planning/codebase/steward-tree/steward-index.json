@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T19:32:39+08:00",
+  "generated_at": "2026-05-28T20:48:36+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "90d8f12cc01f9fb360abc531673e3ed9535706e7",
-  "split_branch": "g2-209-data-quality-market-data-adapter-provider-closeout",
-  "scope": "data_quality_market_data_adapter_provider_closeout_refresh",
+  "base_head": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
+  "split_branch": "g2-210-data-quality-monitor-residual-ownership-decision",
+  "scope": "data_quality_monitor_residual_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -2010,12 +2010,14 @@
     {
       "id": "g2-209-data-quality-market-data-adapter-provider-closeout",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.208 data-quality market_data_adapter.py provider seam implementation",
       "source_edit_authority": false,
       "parent_github_pr": 361,
       "parent_merge_commit": "90d8f12cc01f9fb360abc531673e3ed9535706e7",
+      "github_pr": 362,
+      "merge_commit": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
       "evidence": [
         ".planning/codebase/generated/data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.md",
@@ -2050,7 +2052,58 @@
         "current_head_checked": "90d8f12cc01f9fb360abc531673e3ed9535706e7",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.210 data-quality monitor residual ownership decision without source authority."
+      "next_gate": "Superseded by G2.210 data-quality monitor residual ownership decision."
+    },
+    {
+      "id": "g2-210-data-quality-monitor-residual-ownership-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.209 data-quality market_data_adapter.py provider seam closeout / residual refresh",
+      "source_edit_authority": false,
+      "parent_github_pr": 362,
+      "parent_merge_commit": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-monitor-residual-ownership-decision-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-monitor-residual-ownership-decision-2026-05-28.md",
+        "governance/mainline/task-cards/pr-363.yaml"
+      ],
+      "scan_facts": {
+        "pattern": "get_data_quality_monitor|DataQualityMonitor",
+        "service_file_count": 7,
+        "service_hit_count": 21,
+        "test_file_count": 7,
+        "test_hit_count": 17
+      },
+      "gitnexus_impact": {
+        "target": "web/backend/app/services/_data_quality_monitor_singleton.py:get_data_quality_monitor",
+        "risk": "CRITICAL",
+        "impacted_count": 24,
+        "direct": 20,
+        "processes_affected": 7,
+        "modules_affected": 4
+      },
+      "decision": {
+        "classification": "high_risk_singleton_backing_api_ownership_surface",
+        "preserve_closed_surfaces": [
+          "web/backend/app/services/market_data_adapter.py",
+          "web/backend/app/services/adapters/dashboard_adapter.py",
+          "web/backend/app/services/adapters/data_adapter.py",
+          "web/backend/app/services/adapters_split/base_adapter.py"
+        ],
+        "requires_authorization": [
+          "web/backend/app/services/_data_quality_monitor_singleton.py",
+          "web/backend/app/services/data_quality_monitor.py"
+        ],
+        "repository_hygiene_only": [
+          "web/backend/app/services/data_adapter.py.backup.20260130"
+        ]
+      },
+      "freshness": {
+        "current_head_checked": "33b6ace2f68e23bcf07a12f53511d1f7b9fb8230",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.211 data-quality monitor singleton/backing API authorization package without source authority."
     },
     {
       "id": "core-batch2-reconciliation",

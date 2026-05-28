@@ -1,0 +1,110 @@
+version: "v0.2"
+
+task:
+  id: "pr-363-data-quality-monitor-residual-ownership-decision"
+  title: "Decide data-quality monitor residual ownership"
+  owner: "codex"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-monitor-residual-ownership-decision"
+  objective: "classify remaining data-quality monitor residuals and define the next authorization gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only decision package; no runtime entrypoint changes."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-monitor-residual-ownership-decision-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-monitor-residual-ownership-decision-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-363.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "No backend source edits."
+  - "No getter deletion or rename."
+  - "No route, OpenAPI, frontend, config, script, or OpenSpec edits."
+  - "No PR merge or issue label changes."
+  - "No source implementation authority for G2.211."
+
+acceptance:
+  checks:
+    - id: "json-yaml-parse"
+      command: "python - <<'PY'\nimport json, yaml\nwith open('.planning/codebase/generated/data-quality-monitor-residual-ownership-decision-2026-05-28.json', encoding='utf-8') as f:\n    json.load(f)\nwith open('.planning/codebase/steward-tree/steward-index.json', encoding='utf-8') as f:\n    json.load(f)\nwith open('governance/mainline/task-cards/pr-363.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-quality-monitor-residual-ownership-decision-2026-05-28.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-363.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 33b6ace2f68e23bcf07a12f53511d1f7b9fb8230 --head-sha HEAD --report /tmp/pr363-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Decision package could be misread as source authorization; boundary notes and forbidden paths prevent that."
+    - "Residual counts are snapshot data; stale_if_head_mismatch requires refresh after HEAD changes."
+  rollback_plan: "Revert this governance-only commit; no runtime or source state changes are made."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Classify remaining data-quality monitor residuals after G2.209 and select a dedicated authorization gate."
+    modified_scope: "Only steward tree, generated evidence, quality report, and task-card governance files."
+    dependency_changes: "None."
+    legacy_logic_impact: "No runtime or compatibility behavior changes."
+    rollback_ready: "Yes; revert the governance commit."
+    risk_and_rollback_point: "Do not proceed to source implementation until G2.211 is separately authorized."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-28T20:48:36+08:00"
+    approval_note: "Approved to continue from G2.209 into G2.210 governance-only residual ownership decision."
+    secondary_approved: false
