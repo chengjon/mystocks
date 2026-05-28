@@ -1,0 +1,128 @@
+{
+  "schema_version": "2026-05-28.g2-closeout-refresh-evidence.v1",
+  "id": "g2-213-data-quality-monitor-singleton-closeout-refresh",
+  "generated_at": "2026-05-28T23:11:00+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "e7d9fe63285181f0227661628272487dc63d4e2c",
+  "branch": "g2-213-data-quality-monitor-singleton-closeout-refresh",
+  "parent_gate": {
+    "id": "g2-212-data-quality-monitor-singleton-implementation",
+    "github_pr": 365,
+    "merge_commit": "e7d9fe63285181f0227661628272487dc63d4e2c",
+    "accepted_scope": "provider/reset hook implementation for the data-quality monitor singleton/backing API"
+  },
+  "source_edit_authority": false,
+  "openspec": {
+    "change_id": "migrate-backend-singletons-to-lifecycle-di",
+    "approval_status": "approved",
+    "validate_command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+  },
+  "scan": {
+    "scope": "web/backend/app/**/*.py",
+    "term": "get_data_quality_monitor",
+    "active_files": 7,
+    "active_occurrences": 29,
+    "active_calls": 7,
+    "generated_at_head": "e7d9fe63285181f0227661628272487dc63d4e2c",
+    "classification": [
+      {
+        "bucket": "singleton_backing_api",
+        "disposition": "closed by G2.212; retain provider/reset seam and default singleton fallback",
+        "files": [
+          {
+            "path": "web/backend/app/services/_data_quality_monitor_singleton.py",
+            "occurrences": 2,
+            "calls": 2,
+            "imports": 0
+          },
+          {
+            "path": "web/backend/app/services/data_quality_monitor.py",
+            "occurrences": 2,
+            "calls": 0,
+            "imports": 0
+          }
+        ]
+      },
+      {
+        "bucket": "route_api_provider_surface",
+        "disposition": "retained active FastAPI dependency/provider surface; not a direct implementation candidate in this lane",
+        "files": [
+          {
+            "path": "web/backend/app/api/data_quality.py",
+            "occurrences": 17,
+            "calls": 1,
+            "imports": 1
+          }
+        ]
+      },
+      {
+        "bucket": "closed_canonical_service_adapter_fallbacks",
+        "disposition": "closed by G2.200/G2.201; retain default fallback unless fresh current-HEAD evidence contradicts",
+        "files": [
+          {
+            "path": "web/backend/app/services/adapters/dashboard_adapter.py",
+            "occurrences": 2,
+            "calls": 1,
+            "imports": 1
+          },
+          {
+            "path": "web/backend/app/services/adapters/data_adapter.py",
+            "occurrences": 2,
+            "calls": 1,
+            "imports": 1
+          }
+        ]
+      },
+      {
+        "bucket": "closed_market_data_adapter_facade_fallback",
+        "disposition": "closed by G2.208/G2.209; retain compatibility facade fallback unless fresh current-HEAD evidence contradicts",
+        "files": [
+          {
+            "path": "web/backend/app/services/market_data_adapter.py",
+            "occurrences": 2,
+            "calls": 1,
+            "imports": 1
+          }
+        ]
+      },
+      {
+        "bucket": "closed_adapter_split_base_fallback",
+        "disposition": "closed by G2.196/G2.197; retain BaseAdapter fallback unless fresh current-HEAD evidence contradicts",
+        "files": [
+          {
+            "path": "web/backend/app/services/adapters_split/base_adapter.py",
+            "occurrences": 2,
+            "calls": 1,
+            "imports": 1
+          }
+        ]
+      }
+    ]
+  },
+  "closeout_decision": {
+    "data_quality_monitor_conveyor_state": "closed_after_review",
+    "new_source_lane_selected": false,
+    "reason": "All remaining active get_data_quality_monitor surfaces are either the accepted singleton/backing API seam, retained route provider surface, or previously closed fallback surfaces.",
+    "do_not_reopen_without": "fresh current-HEAD evidence contradicting G2.196/G2.197, G2.200/G2.201, G2.208/G2.209, or G2.212 verification"
+  },
+  "verification_plan": {
+    "focused_pytest": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_monitor_singleton_provider.py -q --no-cov --tb=short",
+    "authorized_non_large_regression": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_monitor_singleton_provider.py web/backend/tests/test_data_quality_route_provider_regressions.py web/backend/tests/test_data_quality_canonical_service_adapter_provider.py web/backend/tests/test_adapter_split_data_quality_monitor_provider.py web/backend/tests/test_market_data_adapter_quality_monitor_provider.py web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short",
+    "openspec": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+  },
+  "verification_results": {
+    "focused_pytest": "3 passed",
+    "authorized_non_large_regression": "20 passed",
+    "json_yaml_parse": "passed",
+    "markdown_governance": "errors 0",
+    "openspec_validate": "valid; PostHog telemetry noise only",
+    "diff_check": "passed"
+  },
+  "next_gate": {
+    "id": "g2-214",
+    "name": "non-strategy provider governance queue refresh / next candidate selection",
+    "source_edit_authority": false,
+    "purpose": "Return from the data-quality monitor conveyor to the broader non-strategy provider queue and select any next candidate through a no-source governance decision first."
+  }
+}
