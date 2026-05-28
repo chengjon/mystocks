@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T13:15:46+08:00`
-- Base HEAD checked: `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd`
+- Prepared at: `2026-05-28T19:32:39+08:00`
+- Base HEAD checked: `90d8f12cc01f9fb360abc531673e3ed9535706e7`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -77,8 +77,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-market-data-adapter-ownership-decision-2026-05-28.md` | G2.206 human-readable ownership decision report | Accepted by PR `#359`; superseded for provider seam authorization by G2.207 |
 | `.planning/codebase/generated/data-quality-market-data-adapter-provider-authorization-2026-05-28.json` | G2.207 `market_data_adapter.py` provider seam authorization evidence | Accepted by PR `#360`; superseded for implementation evidence by G2.208 |
 | `docs/reports/quality/backend-data-quality-market-data-adapter-provider-authorization-2026-05-28.md` | G2.207 human-readable provider seam authorization package | Accepted by PR `#360`; superseded for implementation evidence by G2.208 |
-| `.planning/codebase/generated/data-quality-market-data-adapter-provider-implementation-2026-05-28.json` | G2.208 `market_data_adapter.py` provider seam implementation evidence | Current for HEAD `b4b34375eef0186b81be9a24491328dab72c2e21`; review input until PR `#361` is accepted |
-| `docs/reports/quality/backend-data-quality-market-data-adapter-provider-implementation-2026-05-28.md` | G2.208 human-readable provider seam implementation report | Review input until PR `#361` is accepted |
+| `.planning/codebase/generated/data-quality-market-data-adapter-provider-implementation-2026-05-28.json` | G2.208 `market_data_adapter.py` provider seam implementation evidence | Accepted by PR `#361`; superseded for closeout / residual refresh by G2.209 |
+| `docs/reports/quality/backend-data-quality-market-data-adapter-provider-implementation-2026-05-28.md` | G2.208 human-readable provider seam implementation report | Accepted by PR `#361`; superseded for closeout / residual refresh by G2.209 |
+| `.planning/codebase/generated/data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.json` | G2.209 `market_data_adapter.py` provider seam closeout / residual refresh evidence | Current for HEAD `90d8f12cc01f9fb360abc531673e3ed9535706e7`; review input until PR `#362` is accepted |
+| `docs/reports/quality/backend-data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.md` | G2.209 human-readable closeout / residual refresh report | Review input until PR `#362` is accepted |
 
 ## External State Inputs
 

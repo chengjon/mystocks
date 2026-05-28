@@ -1,0 +1,117 @@
+{
+  "schema_version": "2026-05-28.closeout-refresh.v1",
+  "generated_at": "2026-05-28T19:32:39+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "90d8f12cc01f9fb360abc531673e3ed9535706e7",
+  "worktree_branch": "g2-209-data-quality-market-data-adapter-provider-closeout",
+  "status": "closeout_refresh",
+  "source_edit_authority": false,
+  "parent": {
+    "node": "G2.208 data-quality market_data_adapter.py provider seam implementation",
+    "github_pr": 361,
+    "merge_commit": "90d8f12cc01f9fb360abc531673e3ed9535706e7",
+    "implementation_commit": "7c73e338e"
+  },
+  "closeout": {
+    "closed_target": "web/backend/app/services/market_data_adapter.py quality monitor provider seam",
+    "constructor_signature": "def __init__(self, config: Dict[str, Any], *, quality_monitor: Any = None):",
+    "stores_injected_monitor": true,
+    "monitor_selection": "monitor = self._quality_monitor if self._quality_monitor is not None else get_data_quality_monitor()",
+    "default_singleton_fallback_preserved": true,
+    "injected_monitor_bypasses_module_getter": true,
+    "data_source_factory_compatibility": {
+      "direct_import": "web/backend/app/services/data_source_factory/data_source_factory.py:32",
+      "constructor_call": "web/backend/app/services/data_source_factory/data_source_factory.py:113: MarketDataSourceAdapter(config.__dict__)",
+      "status": "preserved"
+    }
+  },
+  "residual_scan": {
+    "command_summary": "rg get_data_quality_monitor / quality_monitor across web/backend/app/services and web/backend/tests, plus MarketDataSourceAdapter reference scan",
+    "service_getter_hit_count": 15,
+    "test_getter_hit_count": 12,
+    "market_data_adapter_target_status": "closed_with_retained_singleton_fallback",
+    "live_service_files_with_get_data_quality_monitor": [
+      {
+        "path": "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "classification": "singleton_backing_api",
+        "handling": "retained; requires separate ownership decision before any source edits"
+      },
+      {
+        "path": "web/backend/app/services/data_quality_monitor.py",
+        "classification": "public_singleton_facade",
+        "handling": "retained; requires separate ownership decision before any source edits"
+      },
+      {
+        "path": "web/backend/app/services/adapters/dashboard_adapter.py",
+        "classification": "closed_canonical_service_adapter_fallback",
+        "handling": "covered by G2.200/G2.201; do not reopen unless current evidence contradicts those reports"
+      },
+      {
+        "path": "web/backend/app/services/adapters/data_adapter.py",
+        "classification": "closed_canonical_service_adapter_fallback",
+        "handling": "covered by G2.200/G2.201; do not reopen unless current evidence contradicts those reports"
+      },
+      {
+        "path": "web/backend/app/services/adapters_split/base_adapter.py",
+        "classification": "closed_adapter_split_base_fallback",
+        "handling": "covered by G2.196/G2.197; do not reopen unless current evidence contradicts those reports"
+      },
+      {
+        "path": "web/backend/app/services/market_data_adapter.py",
+        "classification": "closed_market_data_adapter_fallback",
+        "handling": "closed by G2.208/G2.209; retained fallback is intentional compatibility behavior"
+      }
+    ],
+    "historical_files_with_get_data_quality_monitor": [
+      {
+        "path": "web/backend/app/services/data_adapter.py.backup.20260130",
+        "classification": "historical_backup_file",
+        "handling": "not a G2.209 source target; cleanup requires separate repository hygiene authority"
+      }
+    ],
+    "test_files_with_get_data_quality_monitor": [
+      "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py",
+      "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py",
+      "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py",
+      "web/backend/tests/test_data_quality_route_provider_regressions.py",
+      "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py"
+    ]
+  },
+  "verification": {
+    "github_pr_361": {
+      "state": "MERGED",
+      "merge_commit": "90d8f12cc01f9fb360abc531673e3ed9535706e7",
+      "merged_at": "2026-05-28T11:28:46Z"
+    },
+    "post_merge_focused_pytest": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_adapter_quality_monitor_provider.py -q --no-cov --tb=short",
+      "expected_result": "2 passed"
+    },
+    "post_merge_regression_pytest": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_adapter_quality_monitor_provider.py web/backend/tests/test_market_data_service_getter_retirement.py web/backend/tests/_test_data_source_factory_management.py -q --no-cov --tb=short",
+      "expected_result": "18 passed"
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "expected_result": "valid; PostHog telemetry flush noise is non-blocking if validation succeeds"
+    }
+  },
+  "next_gate": {
+    "id": "G2.210",
+    "name": "data-quality monitor residual ownership decision",
+    "source_edit_authority": false,
+    "purpose": "Decide whether singleton/backing API, closed fallback surfaces, and historical backup cleanup need separate authorization lanes; do not open a source implementation directly from G2.209."
+  },
+  "non_goals": [
+    "No edits under web/backend/** in G2.209",
+    "No singleton wrapper deletion or privatization",
+    "No data_source_factory source changes",
+    "No route, OpenAPI, frontend, config, script, or OpenSpec change edits",
+    "No deletion of historical backup files"
+  ],
+  "freshness": {
+    "current_head_checked": "90d8f12cc01f9fb360abc531673e3ed9535706e7",
+    "stale_if_head_mismatch": true
+  }
+}

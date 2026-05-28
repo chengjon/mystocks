@@ -1,0 +1,126 @@
+version: "v0.2"
+
+task:
+  id: "pr-362"
+  title: "Close out market data adapter quality monitor provider seam"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-market-data-adapter-provider-closeout"
+  objective: "close out the merged market_data_adapter.py quality monitor provider seam and classify remaining residuals"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "G2.209 is a no-source closeout and residual classification package; it does not change route ownership, public API behavior, runtime entrypoints, or source coverage."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-362.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "data_source_factory source edits"
+  - "singleton wrapper deletion"
+  - "DataQualityMonitor internals"
+  - "canonical adapter edits"
+  - "legacy data adapter wrapper edits"
+  - "route changes"
+  - "OpenAPI contract changes"
+  - "frontend changes"
+  - "OpenSpec proposal creation"
+  - "GitHub issue label changes"
+  - "historical backup file deletion"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_adapter_quality_monitor_provider.py -q --no-cov --tb=short"
+      required: true
+    - id: "authorized-regression"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_adapter_quality_monitor_provider.py web/backend/tests/test_market_data_service_getter_retirement.py web/backend/tests/_test_data_source_factory_management.py -q --no-cov --tb=short"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-362.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-362.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 90d8f12cc01f9fb360abc531673e3ed9535706e7 --head-sha HEAD --report /tmp/pr362-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A closeout report could incorrectly imply source authority for retained singleton/backing API residuals."
+    - "Residual fallback hits could be misread as unclosed defects instead of intentional compatibility behavior."
+  rollback_plan: "revert this PR to restore the post-#361 governance state, then rerun the residual scan before retrying G2.209."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close out the merged market data adapter quality monitor provider seam and classify remaining residuals"
+    modified_scope: "governance evidence, steward tree files, and one task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; fallback retention is documented as intentional compatibility behavior"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if governance parsing, OpenSpec validation, scope gate, or post-merge regression checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T19:32:39+08:00"
+    approval_note: "Human maintainer approved continuing after PR #361 acceptance; this lane records closeout and residual classification only."
+    secondary_approved: true
