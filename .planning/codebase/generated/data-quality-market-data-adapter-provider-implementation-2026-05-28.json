@@ -1,0 +1,89 @@
+{
+  "schema_version": "2026-05-28.g2-implementation-package.v1",
+  "generated_at": "2026-05-28T17:58:00+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "git_head": "b4b34375eef0186b81be9a24491328dab72c2e21",
+  "worktree_branch": "g2-208-data-quality-market-data-adapter-provider-implementation",
+  "parent_lane": "G2.207 data-quality market_data_adapter.py provider seam authorization",
+  "parent_pr": 360,
+  "parent_merge_commit": "b4b34375eef0186b81be9a24491328dab72c2e21",
+  "scope": "path-limited provider seam implementation",
+  "source_edit_authority": true,
+  "changed_source_paths": [
+    "web/backend/app/services/market_data_adapter.py"
+  ],
+  "changed_test_paths": [
+    "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py"
+  ],
+  "changed_governance_paths": [
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml"
+  ],
+  "implementation_result": {
+    "constructor_contract": "MarketDataSourceAdapter keeps positional config and adds keyword-only optional quality_monitor",
+    "default_behavior": "No injected monitor keeps the module-level get_data_quality_monitor fallback",
+    "injected_behavior": "Injected quality_monitor is used by _trigger_quality_monitoring and bypasses the module-level getter",
+    "factory_compatibility": "MarketDataSourceAdapter(config.__dict__) remains valid because the new parameter is keyword-only optional",
+    "target_file_line_count_after": 482,
+    "target_get_data_quality_monitor_text_hits_after": 2
+  },
+  "tdd_evidence": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_market_data_adapter_quality_monitor_provider.py -q --no-cov --tb=short",
+      "result": "1 failed",
+      "expected_failure": "TypeError: MarketDataSourceAdapter.__init__() got an unexpected keyword argument 'quality_monitor'"
+    },
+    "green": {
+      "focused_new_test": "2 passed",
+      "authorized_regression": "18 passed",
+      "ruff_authorized_files": "All checks passed"
+    }
+  },
+  "gitnexus_evidence": {
+    "pre_edit_file_impact": {
+      "target": "web/backend/app/services/market_data_adapter.py",
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 1,
+      "processes_affected": 0
+    },
+    "pre_edit_class_impact": {
+      "target": "MarketDataSourceAdapter",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0
+    }
+  },
+  "required_post_commit_checks": [
+    "focused pytest for new test",
+    "authorized regression pytest set",
+    "targeted ruff",
+    "JSON/YAML parse",
+    "Markdown governance gate",
+    "OpenSpec strict validation",
+    "mainline scope gate",
+    "GitNexus staged/compare detect_changes"
+  ],
+  "non_goals_preserved": [
+    "web/backend/app/services/data_source_factory/** source edits",
+    "web/backend/app/services/_data_quality_monitor_singleton.py edits",
+    "web/backend/app/services/data_quality_monitor.py edits",
+    "adapters/adapters_split/data_adapters edits",
+    "route or OpenAPI changes",
+    "frontend changes",
+    "OpenSpec proposal creation",
+    "GitHub issue label changes"
+  ],
+  "recommended_next_gate": {
+    "id": "G2.209",
+    "name": "data-quality market_data_adapter.py provider seam closeout / residual refresh",
+    "type": "governance closeout package",
+    "source_edit_authority": false
+  },
+  "freshness": {
+    "current_head_checked_at_review": "b4b34375eef0186b81be9a24491328dab72c2e21",
+    "stale_if_head_mismatch": true
+  }
+}

@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T17:41:53+08:00",
+  "generated_at": "2026-05-28T17:58:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "ded789ee5d49d6ddcce5d8a69af1901a8481d1f0",
-  "split_branch": "g2-207-data-quality-market-data-adapter-provider-authorization",
-  "scope": "data_quality_market_data_adapter_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "b4b34375eef0186b81be9a24491328dab72c2e21",
+  "split_branch": "g2-208-data-quality-market-data-adapter-provider-implementation",
+  "scope": "data_quality_market_data_adapter_provider_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -1884,12 +1884,14 @@
     {
       "id": "g2-207-data-quality-market-data-adapter-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.206 data-quality market_data_adapter.py compatibility facade ownership decision",
       "source_edit_authority": false,
       "parent_github_pr": 359,
       "parent_merge_commit": "ded789ee5d49d6ddcce5d8a69af1901a8481d1f0",
+      "github_pr": 360,
+      "merge_commit": "b4b34375eef0186b81be9a24491328dab72c2e21",
       "evidence": [
         ".planning/codebase/generated/data-quality-market-data-adapter-provider-authorization-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-market-data-adapter-provider-authorization-2026-05-28.md",
@@ -1933,10 +1935,70 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "ded789ee5d49d6ddcce5d8a69af1901a8481d1f0",
+        "current_head_checked": "b4b34375eef0186b81be9a24491328dab72c2e21",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.208 data-quality market_data_adapter.py provider seam implementation with authorized paths only."
+      "next_gate": "Superseded by G2.208 data-quality market_data_adapter.py provider seam implementation."
+    },
+    {
+      "id": "g2-208-data-quality-market-data-adapter-provider-implementation",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.207 data-quality market_data_adapter.py provider seam authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 360,
+      "parent_merge_commit": "b4b34375eef0186b81be9a24491328dab72c2e21",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-market-data-adapter-provider-implementation-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-market-data-adapter-provider-implementation-2026-05-28.md",
+        "governance/mainline/task-cards/pr-361.yaml"
+      ],
+      "changed_source_paths": [
+        "web/backend/app/services/market_data_adapter.py"
+      ],
+      "changed_test_paths": [
+        "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py"
+      ],
+      "changed_governance_paths": [
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml"
+      ],
+      "implementation_facts": {
+        "constructor_preserves_positional_config": true,
+        "keyword_only_quality_monitor": true,
+        "default_singleton_fallback_preserved": true,
+        "injected_monitor_bypasses_module_getter": true,
+        "data_source_factory_constructor_compatibility_preserved": true
+      },
+      "verification": {
+        "gitnexus_pre_edit_impact": "LOW for target file and class",
+        "tdd_red": "1 failed on unexpected quality_monitor keyword argument",
+        "focused_pytest_green": "2 passed",
+        "authorized_regression_pytest": "18 passed",
+        "ruff": "passed"
+      },
+      "forbidden_surfaces_preserved": [
+        "web/backend/app/services/data_source_factory/**",
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py",
+        "web/backend/app/services/adapters/**",
+        "web/backend/app/services/adapters_split/**",
+        "web/backend/app/services/data_adapters/**",
+        "web/backend/app/api/**",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "b4b34375eef0186b81be9a24491328dab72c2e21",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.209 data-quality market_data_adapter.py provider seam closeout / residual refresh without source authority."
     },
     {
       "id": "core-batch2-reconciliation",

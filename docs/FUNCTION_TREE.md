@@ -124,6 +124,7 @@
 | Byapi | ⚠️ | 7 | 403问题待修 |
 | Backend canonical service adapters | ✅ | backend | `web/backend/app/services/adapters/dashboard_adapter.py` 与 `web/backend/app/services/adapters/data_adapter.py` 接入数据源工厂，并通过 G2.200 支持可注入 data-quality monitor seam |
 | Backend legacy data adapter wrappers | ✅ | backend | `web/backend/app/services/data_adapters/dashboard.py` 与 `web/backend/app/services/data_adapters/data_source.py` 通过 G2.204 保留旧模块路径并重导出 canonical adapters |
+| Backend market data adapter facade | ✅ | backend | `web/backend/app/services/market_data_adapter.py` 通过 G2.208 保留 `MarketDataSourceAdapter(config)` 兼容构造，并支持可注入 data-quality monitor seam |
 
 ### 1.4 K线数据服务 {#domain-01-node-04}
 

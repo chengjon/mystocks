@@ -35,11 +35,12 @@ class DataSourceMetrics:
 class MarketDataSourceAdapter(IDataSource):
     """市场数据源适配器 - 集成现有 MarketDataService 到数据源工厂模式"""
 
-    def __init__(self, config: Dict[str, Any]):
+    def __init__(self, config: Dict[str, Any], *, quality_monitor: Any = None):
         self.config = config
         self.source_type = "market"
         self.name = config.get("name", "Market Data Source")
         self.mode = config.get("mode", "mock")
+        self._quality_monitor = quality_monitor
 
         # Lazy initialization of services (only when needed)
         self._market_service = None
@@ -324,7 +325,7 @@ class MarketDataSourceAdapter(IDataSource):
     ) -> None:
         """触发数据质量监控"""
         try:
-            monitor = get_data_quality_monitor()
+            monitor = self._quality_monitor if self._quality_monitor is not None else get_data_quality_monitor()
             await monitor.evaluate_data_quality(
                 data=data or {},
                 source=f"{self.source_type}:{endpoint}",

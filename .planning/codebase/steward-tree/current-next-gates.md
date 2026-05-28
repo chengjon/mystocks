@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T17:41:53+08:00`
-- Base HEAD checked: `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0`
+- Prepared at: `2026-05-28T17:58:00+08:00`
+- Base HEAD checked: `b4b34375eef0186b81be9a24491328dab72c2e21`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.207 data-quality `market_data_adapter.py` provider seam authorization package | G/#79 service lifecycle DI | PR `#359` merged at `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0`; G2.207 authorizes a future G2.208 implementation lane but opens no source authority in this PR | If accepted, start G2.208 implementation with authorized paths only |
+| P0 | Review G2.208 data-quality `market_data_adapter.py` provider seam implementation | G/#79 service lifecycle DI | PR `#360` merged at `b4b34375eef0186b81be9a24491328dab72c2e21`; G2.208 implements optional quality monitor injection for `MarketDataSourceAdapter` | If accepted, start G2.209 closeout / residual refresh; do not open the next source lane directly |
+| P0 | Preserve G2.207 data-quality `market_data_adapter.py` provider seam authorization package | G/#79 service lifecycle DI | PR `#360` merged; future implementation scope was limited to `market_data_adapter.py` plus focused tests | Do not expand into `data_source_factory`, singleton wrapper/backing API, routes, OpenAPI, frontend, config, scripts, or OpenSpec |
 | P0 | Preserve G2.206 data-quality `market_data_adapter.py` compatibility facade ownership decision | G/#79 service lifecycle DI | PR `#359` merged; `market_data_adapter.py` is an active factory-owned compatibility facade, not a deletion or thin-wrapper candidate | Do not implement from G2.206; use G2.207 authorization first |
 | P0 | Preserve G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | G/#79 service lifecycle DI | PR `#358` merged; legacy wrapper target is closed and `market_data_adapter.py` was selected as the next decision target | Do not open source work before G2.206 is accepted |
 | P0 | Preserve G2.204 data-quality legacy adapter compatibility wrapper implementation | G/#79 service lifecycle DI | PR `#357` merged; two legacy modules are thin wrappers and target legacy getter calls are `0` | Do not delete legacy modules or reopen the two wrapper targets without new evidence contradicting G2.204/G2.205 |
