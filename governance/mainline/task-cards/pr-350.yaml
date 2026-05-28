@@ -1,0 +1,107 @@
+version: "v0.2"
+
+task:
+  id: "pr-350"
+  title: "Close out data-quality monitor adapter_split lane and refresh residual candidates"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-monitor-closeout-refresh"
+  objective: "record PR #349 closeout and refresh remaining data-quality monitor ownership candidates"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only closeout and residual candidate refresh; no route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, or public API ownership changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-monitor-closeout-refresh-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-monitor-closeout-refresh-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-350.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source implementation"
+  - "test source edits"
+  - "adapter migration"
+  - "singleton wrapper deletion"
+  - "DataQualityMonitor internals"
+  - "route changes"
+  - "frontend changes"
+  - "OpenSpec proposal creation"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "node -e \"JSON.parse(require('fs').readFileSync('.planning/codebase/generated/data-quality-monitor-closeout-refresh-2026-05-28.json','utf8')); JSON.parse(require('fs').readFileSync('.planning/codebase/steward-tree/steward-index.json','utf8'));\""
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-quality-monitor-closeout-refresh-2026-05-28.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-350.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha e4245ebe54c5ad6d2aebf4802d165d59700c9eeb --head-sha HEAD --report /tmp/pr350-mainline-governance-report.json"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.197 is governance-only; accidentally treating it as source implementation authority would reopen a broader data-quality monitor migration without authorization."
+    - "Residual candidate counts are snapshot facts at HEAD e4245ebe54c5ad6d2aebf4802d165d59700c9eeb and must be refreshed before any future source lane."
+  rollback_plan: "revert this PR to restore the steward tree to the post-#349 state and rerun the residual inventory refresh."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close G2.196 and refresh remaining data-quality monitor candidates"
+    modified_scope: "governance reports, generated evidence, steward tree files, and one task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; no backend source files are modified"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if residual classification or steward state is incorrect"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T09:14:57+08:00"
+    approval_note: "Human maintainer approved continuing after PR #349 acceptance; this lane is closeout and residual refresh only."
+    secondary_approved: true
