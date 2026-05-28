@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T11:30:22+08:00`
-- Base HEAD checked: `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`
+- Prepared at: `2026-05-28T11:53:30+08:00`
+- Base HEAD checked: `e672f1523c30037202310278daf71488681d9a1f`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -53,7 +53,8 @@ It proved a repeatable conveyor:
 | G2.198 data-quality residual adapter ownership decision | Merged by PR `#351` | Selects canonical service adapters as the next authorization target while deferring legacy data adapters, `market_data_adapter.py`, and wrapper retention |
 | G2.199 data-quality canonical service adapter provider authorization | Merged by PR `#352` | Authorizes future G2.200 implementation for canonical service adapters only; no source edits in G2.199 |
 | G2.200 data-quality canonical service adapter provider implementation | Merged by PR `#353` | Implements optional constructor monitor injection in the two canonical service adapters with focused TDD evidence |
-| G2.201 data-quality canonical service adapter closeout / refresh | For review | Closes the canonical service adapter lane and selects legacy data adapter compatibility ownership as the next decision gate |
+| G2.201 data-quality canonical service adapter closeout / refresh | Merged by PR `#354` | Closes the canonical service adapter lane and selects legacy data adapter compatibility ownership as the next decision gate |
+| G2.202 data-quality legacy adapter compatibility ownership decision | For review | Classifies two legacy `data_adapters` files as compatibility ownership surfaces and selects G2.203 authorization-only compatibility closure |
 
 ## Current Strategy Getter Residuals
 
@@ -476,11 +477,36 @@ GitNexus reference for deferred surfaces:
 | `web/backend/app/services/market_data_adapter.py` | LOW | `impacted_count=3`, `direct=1`, `processes_affected=0` |
 | `web/backend/app/services/_data_quality_monitor_singleton.py` | LOW | `impacted_count=19`, `direct=1`, `processes_affected=0` |
 
+## G2.202 Data-Quality Legacy Adapter Compatibility Ownership Decision
+
+At HEAD `e672f1523c30037202310278daf71488681d9a1f`, PR `#354` is merged and
+G2.201 is accepted.
+
+Decision result:
+
+| Target | Evidence | Decision |
+|---|---|---|
+| `web/backend/app/services/data_adapters/dashboard.py` | `DashboardDataSourceAdapter`, 299 lines, one `get_data_quality_monitor()` call, GitNexus `LOW/0` | Legacy compatibility ownership surface; no source edits in G2.202 |
+| `web/backend/app/services/data_adapters/data_source.py` | `DataDataSourceAdapter`, 688 lines, one `get_data_quality_monitor()` call, GitNexus `LOW/0` | Legacy compatibility ownership surface; no source edits in G2.202 |
+
+Consumer evidence:
+
+| Check | Result |
+|---|---|
+| Exact module-path imports of `app.services.data_adapters.dashboard` / `data_source` outside the legacy package | `0` |
+| Class-name text scan | Ambiguous because canonical `app.services.adapters.*` classes share the names |
+| Root facade | `web/backend/app/services/data_adapter.py` imports from canonical `app.services.adapters` |
+| Data source factory | Imports through `app.services.data_adapter` facade, not the legacy module path |
+
+G2.202 selects G2.203 as an authorization-only compatibility closure package.
+G2.203 must decide the exact implementation shape before any source lane:
+thin wrapper, retirement with rollback gates, or retained legacy surface.
+
 ## Next Gates
 
-- Review G2.201 data-quality canonical service adapter closeout / refresh.
-- If accepted, start G2.202 data-quality legacy adapter compatibility ownership decision.
-- Do not start a source lane for legacy adapters before G2.202 is accepted.
+- Review G2.202 data-quality legacy adapter compatibility ownership decision.
+- If accepted, start G2.203 data-quality legacy adapter compatibility closure authorization.
+- Do not start a source lane for legacy adapters before G2.203 authorization is accepted.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

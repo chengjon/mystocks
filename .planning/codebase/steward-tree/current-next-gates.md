@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T11:30:22+08:00`
-- Base HEAD checked: `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`
+- Prepared at: `2026-05-28T11:53:30+08:00`
+- Base HEAD checked: `e672f1523c30037202310278daf71488681d9a1f`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.201 data-quality canonical service adapter closeout / refresh | G/#79 service lifecycle DI | PR `#353` merged at `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`; G2.201 closes the canonical service adapter lane and selects the next decision target | If accepted, start G2.202 legacy data adapter compatibility ownership decision; do not open source authority directly |
+| P0 | Review G2.202 data-quality legacy adapter compatibility ownership decision | G/#79 service lifecycle DI | PR `#354` merged at `e672f1523c30037202310278daf71488681d9a1f`; G2.202 classifies two legacy `data_adapters` files as compatibility ownership surfaces | If accepted, start G2.203 authorization-only compatibility closure package; do not edit or delete legacy files directly from G2.202 |
+| P0 | Preserve G2.201 data-quality canonical service adapter closeout / refresh | G/#79 service lifecycle DI | PR `#354` merged; G2.201 closes the canonical service adapter lane and selects G2.202 | Do not reopen canonical service adapter source unless current HEAD evidence contradicts G2.200/G2.201 |
 | P0 | Preserve G2.200 data-quality canonical service adapter provider implementation | G/#79 service lifecycle DI | PR `#353` merged; canonical service adapters now have optional monitor injection with singleton fallback | Do not reopen canonical service adapter source unless current HEAD evidence contradicts G2.200 tests |
 | P0 | Preserve G2.199 data-quality canonical service adapter provider authorization | G/#79 service lifecycle DI | PR `#352` merged; G2.200 source authority was limited to two canonical service adapters and listed tests | Do not touch legacy data adapters, `market_data_adapter.py`, wrapper, or monitor internals without a new decision package |
 | P0 | Preserve G2.198 data-quality residual adapter ownership decision | G/#79 service lifecycle DI | PR `#351` merged; canonical service adapters selected as the G2.199/G2.200 target | Do not touch legacy data adapters, `market_data_adapter.py`, wrapper, or monitor internals without a new decision package |
@@ -43,8 +44,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.201 accurately record PR `#353` as merged at `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`?
-- Does G2.201 correctly close canonical service adapters while retaining singleton fallback calls as compatibility behavior?
-- Does G2.201 select G2.202 as a decision-only legacy data adapter compatibility ownership gate?
-- Are `market_data_adapter.py`, singleton wrapper, route/OpenAPI, frontend, config, script, and OpenSpec surfaces still deferred?
+- Does G2.202 correctly classify `web/backend/app/services/data_adapters/dashboard.py` and `web/backend/app/services/data_adapters/data_source.py` as legacy compatibility ownership surfaces?
+- Does G2.202 preserve the rule that module-path non-use is evidence, not deletion authority?
+- Does G2.202 correctly select G2.203 as an authorization-only compatibility closure package?
+- Are `market_data_adapter.py`, singleton wrapper, route/OpenAPI, frontend, config, script, canonical adapter, and OpenSpec surfaces still deferred?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

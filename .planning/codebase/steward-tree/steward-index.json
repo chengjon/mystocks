@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T11:30:22+08:00",
+  "generated_at": "2026-05-28T11:53:30+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
-  "split_branch": "g2-201-data-quality-canonical-service-adapter-closeout-refresh",
-  "scope": "data_quality_canonical_service_adapter_closeout_refresh",
+  "base_head": "e672f1523c30037202310278daf71488681d9a1f",
+  "split_branch": "g2-202-data-quality-legacy-adapter-ownership-decision",
+  "scope": "data_quality_legacy_adapter_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -1524,12 +1524,14 @@
     {
       "id": "g2-201-data-quality-canonical-service-adapter-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.200 data-quality canonical service adapter provider implementation",
       "source_edit_authority": false,
       "parent_github_pr": 353,
       "parent_merge_commit": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
+      "github_pr": 354,
+      "merge_commit": "e672f1523c30037202310278daf71488681d9a1f",
       "evidence": [
         ".planning/codebase/generated/data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.md",
@@ -1584,7 +1586,77 @@
         "current_head_checked": "cbd9b3a7ee730c72a63dbc7adb6490564c12c71e",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.202 data-quality legacy adapter compatibility ownership decision without source authority."
+      "next_gate": "Superseded by G2.202 data-quality legacy adapter compatibility ownership decision."
+    },
+    {
+      "id": "g2-202-data-quality-legacy-adapter-ownership-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.201 data-quality canonical service adapter closeout / refresh",
+      "source_edit_authority": false,
+      "parent_github_pr": 354,
+      "parent_merge_commit": "e672f1523c30037202310278daf71488681d9a1f",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-legacy-adapter-ownership-decision-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-legacy-adapter-ownership-decision-2026-05-28.md",
+        "governance/mainline/task-cards/pr-355.yaml"
+      ],
+      "decision": {
+        "classification": "legacy_compatibility_surfaces_without_active_external_module_path_imports",
+        "ownership": "legacy compatibility ownership must be decided explicitly; static non-use is not deletion authority",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-202",
+        "selected_next_governance_target": "data-quality-legacy-adapter-compatibility-closure-authorization",
+        "recommended_next_work_item": "G2.203 data-quality legacy adapter compatibility closure authorization package",
+        "future_authorization_options": [
+          "thin compatibility wrapper",
+          "retirement with consumer/import smoke and rollback gates",
+          "retained legacy surface if current consumer contradiction appears"
+        ]
+      },
+      "target_facts": {
+        "legacy_dashboard": {
+          "path": "web/backend/app/services/data_adapters/dashboard.py",
+          "class": "DashboardDataSourceAdapter",
+          "lines": 299,
+          "get_data_quality_monitor_calls": 1,
+          "gitnexus_impact": "LOW; impacted_count=0"
+        },
+        "legacy_data_source": {
+          "path": "web/backend/app/services/data_adapters/data_source.py",
+          "class": "DataDataSourceAdapter",
+          "lines": 688,
+          "get_data_quality_monitor_calls": 1,
+          "gitnexus_impact": "LOW; impacted_count=0"
+        }
+      },
+      "consumer_scan": {
+        "external_python_legacy_module_imports": 0,
+        "class_name_scan_note": "ambiguous because canonical app.services.adapters modules share names",
+        "root_facade_truth": "web/backend/app/services/data_adapter.py imports from app.services.adapters",
+        "factory_truth": "data_source_factory imports through app.services.data_adapter facade"
+      },
+      "forbidden_surfaces_preserved": [
+        "web/backend/app/services/market_data_adapter.py",
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py",
+        "web/backend/app/services/adapters/**",
+        "web/backend/app/services/adapter_split/**",
+        "web/backend/app/api/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "e672f1523c30037202310278daf71488681d9a1f",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.203 data-quality legacy adapter compatibility closure authorization without source authority."
     },
     {
       "id": "core-batch2-reconciliation",
