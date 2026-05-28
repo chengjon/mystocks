@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T02:31:48+08:00`
-- Base HEAD checked: `e30e16605df6aaa333989a7ac247bab3dcd0dd01`
+- Prepared at: `2026-05-28T07:45:53+08:00`
+- Base HEAD checked: `fabd674e8a748cdd2c51a80eebb5ad20b52bc737`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,8 +15,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.195 data-quality `adapter_split` constructor provider authorization | G/#79 service lifecycle DI | PR `#347` merged at `e30e16605df6aaa333989a7ac247bab3dcd0dd01`; G2.195 authorizes a future G2.196 implementation lane but keeps source authority at none in this PR | If accepted, start G2.196 data-quality `adapter_split` constructor provider implementation |
-| P0 | Preserve G2.194 data-quality adapter constructor seam design | G/#79 service lifecycle DI | PR `#347` merged; G2.194 selected `adapter_split` constructor seam as the next authorization target | Do not implement adapter changes from G2.194 or G2.195 |
+| P0 | Review G2.196 data-quality `adapter_split` constructor provider implementation | G/#79 service lifecycle DI | PR `#348` merged at `fabd674e8a748cdd2c51a80eebb5ad20b52bc737`; G2.196 implements the authorized `adapter_split` constructor injection seam with focused TDD evidence | If accepted, start G2.197 data-quality monitor closeout / remaining candidate refresh |
+| P0 | Preserve G2.195 data-quality `adapter_split` constructor provider authorization | G/#79 service lifecycle DI | PR `#348` merged; G2.195 authorized only eight `adapter_split` source paths plus one focused test path | Do not expand G2.196 into service adapters, legacy adapters, singleton wrappers, routes, or frontend |
+| P0 | Preserve G2.194 data-quality adapter constructor seam design | G/#79 service lifecycle DI | PR `#347` merged; G2.194 selected `adapter_split` constructor seam as the next authorization target | Do not implement adapter changes outside the accepted G2.195/G2.196 scope |
 | P0 | Preserve G2.193 data-quality route provider closeout / remaining candidate refresh | G/#79 service lifecycle DI | PR `#346` merged; route-body migration is closed, remaining adapter surfaces are refreshed, and G2.194 design has been accepted | Do not reopen route-body provider migration while authorizing `adapter_split` constructor work |
 | P0 | Preserve G2.192 data-quality route provider implementation | G/#79 service lifecycle DI | PR `#345` merged; route body `get_data_quality_monitor()` and `monitor_data_quality()` calls are both `0` | Do not start adapter constructor implementation from G2.192, G2.193, G2.194, or G2.195 |
 | P0 | Preserve G2.191 data-quality route provider authorization | G/#79 service lifecycle DI | PR `#344` merged; authorized only `web/backend/app/api/data_quality.py` plus focused tests for G2.192 | Do not expand into adapters, singleton wrapper, `DataQualityMonitor` internals, or data-source factory behavior |
@@ -37,8 +38,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.195 authorize only the future G2.196 `adapter_split` constructor provider implementation lane?
-- Are the eight future source paths and one future test path narrow enough for one source PR?
-- Are service adapters, legacy adapters, `market_data_adapter.py`, singleton wrappers, and `DataQualityMonitor` internals still forbidden?
-- Does G2.195 itself avoid all source and test edits?
+- Does G2.196 modify only the eight authorized `adapter_split` source files and one focused test?
+- Does default singleton fallback remain in `BaseAdapter` for existing callers?
+- Are subclass-level `get_data_quality_monitor()` calls and imports retired without touching forbidden surfaces?
+- Is G2.197 correctly positioned as closeout / remaining candidate refresh rather than another direct source lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

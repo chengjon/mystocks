@@ -1,0 +1,139 @@
+version: "v0.2"
+
+task:
+  id: "pr-349"
+  title: "Implement data-quality adapter_split constructor provider seam"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-adapter-split-implementation"
+  objective: "implement the authorized adapter_split-only constructor provider seam for data-quality monitor injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-03"
+  affected_entrypoints:
+    - "governance"
+    - "core"
+    - "tests"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Internal service constructor injection seam; no route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, or public API ownership changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-adapter-split-constructor-provider-implementation-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-implementation-2026-05-28.md"
+    - "governance/function-tree/catalog.yaml"
+    - "governance/mainline/task-cards/pr-349.yaml"
+    - "web/backend/app/services/adapters_split/base_adapter.py"
+    - "web/backend/app/services/adapters_split/baostock_adapter.py"
+    - "web/backend/app/services/adapters_split/tushare_adapter.py"
+    - "web/backend/app/services/adapters_split/customer_adapter.py"
+    - "web/backend/app/services/adapters_split/byapi_adapter.py"
+    - "web/backend/app/services/adapters_split/akshare_adapter.py"
+    - "web/backend/app/services/adapters_split/efinance_adapter.py"
+    - "web/backend/app/services/adapters_split/tdx_adapter.py"
+    - "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
+  forbidden_paths:
+    - "web/backend/app/services/adapters/**"
+    - "web/backend/app/services/data_adapters/**"
+    - "web/backend/app/services/market_data_adapter.py"
+    - "web/backend/app/services/_data_quality_monitor_singleton.py"
+    - "web/backend/app/services/data_quality_monitor.py"
+    - "web/backend/app/api/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "service adapter migration"
+  - "legacy adapter compatibility edits"
+  - "market_data_adapter.py edits"
+  - "singleton wrapper deletion"
+  - "DataQualityMonitor internals"
+  - "route changes"
+  - "frontend changes"
+  - "OpenSpec proposal creation"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -q -n 0 --tb=short --no-cov web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
+      required: true
+    - id: "ruff-authorized-files"
+      command: "ruff check web/backend/app/services/adapters_split/base_adapter.py web/backend/app/services/adapters_split/baostock_adapter.py web/backend/app/services/adapters_split/tushare_adapter.py web/backend/app/services/adapters_split/customer_adapter.py web/backend/app/services/adapters_split/byapi_adapter.py web/backend/app/services/adapters_split/akshare_adapter.py web/backend/app/services/adapters_split/efinance_adapter.py web/backend/app/services/adapters_split/tdx_adapter.py web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-adapter-split-constructor-provider-implementation-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-349.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-implementation-2026-05-28.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-349.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha fabd674e8a748cdd2c51a80eebb5ad20b52bc737 --head-sha HEAD --report /tmp/pr349-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "BaseAdapter is inherited by seven adapter_split subclasses; all subclass constructors must preserve default compatibility."
+    - "get_data_quality_monitor remains CRITICAL globally; this PR must only reduce adapter_split constructor calls."
+  rollback_plan: "revert this PR to restore the pre-G2.196 adapter_split constructor behavior and return to the accepted G2.195 authorization state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "implement adapter_split constructor monitor injection"
+    modified_scope: "eight adapter_split source files, one focused test, and governance evidence only"
+    dependency_changes: "none"
+    legacy_logic_impact: "default singleton fallback remains in BaseAdapter"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if constructor compatibility or scoped checks regress"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T07:45:53+08:00"
+    approval_note: "Human maintainer approved continuing after PR #348 acceptance; this lane is the authorized adapter_split-only source implementation."
+    secondary_approved: true

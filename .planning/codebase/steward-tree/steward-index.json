@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T02:31:48+08:00",
+  "generated_at": "2026-05-28T07:45:53+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "e30e16605df6aaa333989a7ac247bab3dcd0dd01",
-  "split_branch": "g2-195-data-quality-adapter-split-authorization",
-  "scope": "governance_only_data_quality_adapter_split_constructor_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "fabd674e8a748cdd2c51a80eebb5ad20b52bc737",
+  "split_branch": "g2-196-data-quality-adapter-split-implementation",
+  "scope": "data_quality_adapter_split_constructor_provider_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -1086,7 +1086,7 @@
     {
       "id": "g2-195-data-quality-adapter-split-constructor-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.194 data-quality adapter constructor seam design",
       "source_edit_authority": false,
@@ -1166,10 +1166,69 @@
         "gitnexus_detect_changes(scope=staged)"
       ],
       "freshness": {
-        "current_head_checked": "e30e16605df6aaa333989a7ac247bab3dcd0dd01",
+        "current_head_checked": "fabd674e8a748cdd2c51a80eebb5ad20b52bc737",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.196 implementation on the exact authorized paths; do not implement source changes from G2.195."
+      "github_pr": {
+        "number": 348,
+        "url": "https://github.com/chengjon/mystocks/pull/348",
+        "state": "MERGED",
+        "merge_commit": "fabd674e8a748cdd2c51a80eebb5ad20b52bc737"
+      },
+      "next_gate": "Superseded by G2.196 data-quality adapter_split constructor provider implementation."
+    },
+    {
+      "id": "g2-196-data-quality-adapter-split-constructor-provider-implementation",
+      "type": "implementation_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.195 data-quality adapter_split constructor provider authorization",
+      "source_edit_authority": true,
+      "evidence": [
+        ".planning/codebase/generated/data-quality-adapter-split-constructor-provider-implementation-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-implementation-2026-05-28.md",
+        "governance/mainline/task-cards/pr-349.yaml"
+      ],
+      "source_paths": [
+        "web/backend/app/services/adapters_split/base_adapter.py",
+        "web/backend/app/services/adapters_split/baostock_adapter.py",
+        "web/backend/app/services/adapters_split/tushare_adapter.py",
+        "web/backend/app/services/adapters_split/customer_adapter.py",
+        "web/backend/app/services/adapters_split/byapi_adapter.py",
+        "web/backend/app/services/adapters_split/akshare_adapter.py",
+        "web/backend/app/services/adapters_split/efinance_adapter.py",
+        "web/backend/app/services/adapters_split/tdx_adapter.py"
+      ],
+      "test_paths": [
+        "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py"
+      ],
+      "implementation_result": {
+        "base_adapter_singleton_fallback_calls": 1,
+        "subclass_get_data_quality_monitor_calls": 0,
+        "subclass_get_data_quality_monitor_imports": 0,
+        "constructors_accepting_quality_monitor": 8,
+        "focused_tests": "1 passed",
+        "ruff_authorized_files": "All checks passed"
+      },
+      "incidental_authorized_fixes": [
+        "tushare_adapter.py imports os for existing os.getenv usage",
+        "byapi_adapter.py imports os for existing os.getenv usage",
+        "tdx_adapter.py logs self.name instead of undefined TDX"
+      ],
+      "verification": {
+        "tdd_red": "failed on missing quality_monitor constructor parameter",
+        "focused_pytest": "1 passed",
+      "ruff": "All checks passed",
+      "import_smoke": "passed with minimal dummy required env",
+      "openspec_validate": "valid; PostHog network flush noise only",
+      "mainline_scope_gate": "passed",
+      "gitnexus_detect_changes_staged": "low risk; 18 changed files, 84 changed symbols, 0 affected processes"
+    },
+      "freshness": {
+        "current_head_checked": "fabd674e8a748cdd2c51a80eebb5ad20b52bc737",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.197 closeout / remaining candidate refresh before selecting another data-quality monitor migration lane."
     },
     {
       "id": "core-batch2-reconciliation",

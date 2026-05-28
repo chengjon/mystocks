@@ -12,7 +12,6 @@ import websockets
 
 from .base_adapter import BaseAdapter
 from app.core.database import db_service
-from app.services.data_quality_monitor import get_data_quality_monitor
 
 logger = __import__("logging").getLogger(__name__)
 
@@ -20,8 +19,8 @@ logger = __import__("logging").getLogger(__name__)
 class CustomerAdapter(BaseAdapter):
     """客户端数据源适配器"""
 
-    def __init__(self, ws_url: Optional[str] = None):
-        super().__init__(name="Customer", source_type="customer")
+    def __init__(self, ws_url: Optional[str] = None, *, quality_monitor=None):
+        super().__init__(name="Customer", source_type="customer", quality_monitor=quality_monitor)
         if ws_url is None:
             ws_url = os.getenv("BACKEND_WS_URL", "").strip()
         if not ws_url:
@@ -32,7 +31,6 @@ class CustomerAdapter(BaseAdapter):
         self.ws_url = ws_url
 
         self.db_service = db_service
-        self.quality_monitor = get_data_quality_monitor()
         self.websocket = None
         self.subscriptions = set()
         self.max_retries = 3

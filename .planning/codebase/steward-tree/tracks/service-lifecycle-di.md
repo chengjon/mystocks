@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T02:31:48+08:00`
-- Base HEAD checked: `e30e16605df6aaa333989a7ac247bab3dcd0dd01`
+- Prepared at: `2026-05-28T07:45:53+08:00`
+- Base HEAD checked: `fabd674e8a748cdd2c51a80eebb5ad20b52bc737`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -47,7 +47,8 @@ It proved a repeatable conveyor:
 | G2.192 data-quality route provider implementation | Merged by PR `#345` | Implements authorized provider injection in `web/backend/app/api/data_quality.py`; focused tests and OpenAPI leak smoke pass |
 | G2.193 data-quality route provider closeout / remaining candidate refresh | Merged by PR `#346` | Marks route-body provider migration closed and selects adapter constructor seam design / test-double decision as the next governance gate |
 | G2.194 data-quality adapter constructor seam design | Merged by PR `#347` | Selects `adapter_split` constructor provider authorization as the next gate, defines test-double contract, and keeps source authority at none |
-| G2.195 data-quality `adapter_split` constructor provider authorization | For review | Authorizes the future G2.196 `adapter_split` constructor provider implementation lane while keeping source authority at none in this PR |
+| G2.195 data-quality `adapter_split` constructor provider authorization | Merged by PR `#348` | Authorizes the future G2.196 `adapter_split` constructor provider implementation lane while keeping source authority at none in that PR |
+| G2.196 data-quality `adapter_split` constructor provider implementation | For review | Implements optional constructor monitor injection in `adapter_split` only, with focused TDD evidence |
 
 ## Current Strategy Getter Residuals
 
@@ -279,13 +280,48 @@ Required future checks include a focused pytest for the new test path, ruff on
 the eight adapter files plus test, OpenSpec strict validation, and staged
 GitNexus change detection.
 
+## G2.196 Data-Quality Adapter Split Constructor Provider Implementation
+
+At HEAD `fabd674e8a748cdd2c51a80eebb5ad20b52bc737`, PR `#348` is merged and
+the G2.195 authorization package is accepted.
+
+G2.196 implements the authorized `adapter_split` constructor provider seam:
+
+| Item | Before | After |
+|---|---:|---:|
+| `adapter_split` subclass `get_data_quality_monitor()` calls | 7 | 0 |
+| `adapter_split` subclass `get_data_quality_monitor` imports | 7 | 0 |
+| `BaseAdapter` singleton fallback calls | 1 | 1 |
+| Constructors accepting `quality_monitor` | 0 | 8 |
+| Focused regression tests | 0 | 1 |
+
+Implementation evidence:
+
+- `BaseAdapter` accepts optional `quality_monitor` and falls back to the current
+  singleton getter for default construction.
+- Seven `adapter_split` subclasses accept keyword-only `quality_monitor` and
+  pass it through to `BaseAdapter`.
+- `CustomerAdapter` preserves `ws_url` compatibility.
+- `tushare_adapter.py` and `byapi_adapter.py` import `os` for existing
+  `os.getenv` usage reached by constructor smoke.
+- `tdx_adapter.py` logs `self.name` instead of undefined `TDX`.
+
+Focused verification:
+
+| Check | Result |
+|---|---|
+| TDD red | Failed on missing `quality_monitor` constructor parameter |
+| Focused pytest | `1 passed` |
+| Ruff authorized files | `All checks passed` |
+| Import smoke | Passed with minimal dummy required env |
+| OpenSpec strict validate | Valid; PostHog network flush noise only |
+
 ## Next Gates
 
-- Review G2.195 data-quality `adapter_split` constructor provider authorization
-  package.
-- If accepted, start G2.196 data-quality `adapter_split` constructor provider
-  implementation.
-- Do not start adapter constructor implementation from G2.195 itself.
+- Review G2.196 data-quality `adapter_split` constructor provider implementation.
+- If accepted, start G2.197 data-quality monitor closeout / remaining candidate
+  refresh.
+- Do not start another data-quality source implementation directly from G2.196.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
@@ -295,7 +331,7 @@ GitNexus change detection.
 
 This track summary forbids:
 
-- backend source edits
+- unauthorized backend source edits
 - frontend edits
 - test edits
 - OpenSpec proposal creation

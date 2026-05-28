@@ -20,11 +20,11 @@ logger = __import__("logging").getLogger(__name__)
 class BaseAdapter(ABC):
     """数据源适配器基类"""
 
-    def __init__(self, name: str, source_type: str):
+    def __init__(self, name: str, source_type: str, quality_monitor: Optional[Any] = None):
         self.name = name
         self.source_type = source_type
         self.metrics = DataSourceMetrics()
-        self.quality_monitor = get_data_quality_monitor()
+        self.quality_monitor = quality_monitor or get_data_quality_monitor()
         self.db_service = db_service
 
         logger.info(f"初始化{self.name}适配器")
