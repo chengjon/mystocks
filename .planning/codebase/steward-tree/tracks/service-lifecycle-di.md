@@ -1047,11 +1047,56 @@ G2.219 selects G2.220 as a no-source authorization package to define whether a
 later path-limited implementation should convert list/detail direct provider
 calls to explicit route dependency/provider injection.
 
+## G2.220 Trade Execution Tracking Evidence Provider Authorization
+
+G2.220 is a no-source authorization package after PR `#372` merged at
+`b51256b775f7b4c6e5baad8c82a7f86446c0151b`.
+
+Authorization decision:
+
+| Item | Value |
+|---|---|
+| G2.220 source authority | none |
+| Conditional next implementation | G2.221 only after review acceptance |
+| Allowed implementation source path | `web/backend/app/api/trade/execution_tracking_routes.py` |
+| Allowed implementation test path | `web/backend/tests/test_trade_execution_tracking_routes.py` |
+| Out of scope | `trigger_external_execution`, miniQMT semantics, response contracts, request schemas |
+
+Authorized future G2.221 pattern, if this package is accepted:
+
+- preserve `get_execution_tracking_evidence_service` as the default provider factory
+- add explicit route dependency/provider injection for execution tracking list/detail flows
+- pass the injected evidence service into `_load_execution_records`
+- inject the evidence service into `get_execution_tracking_detail`
+- update focused tests to use FastAPI dependency override or an equivalent explicit injection seam
+
+Contract invariants:
+
+- no route path changes
+- no `response_model` changes
+- no `UnifiedResponse` envelope changes
+- no request schema changes
+- no miniQMT evidence semantic changes
+- no `broker_state` or bridge evidence interpretation changes
+
+Pre-implementation gates for a later G2.221 lane:
+
+- rerun GitNexus impact before source edits
+- rerun app.main/OpenAPI smoke after source edits before claiming implementation complete
+- run focused execution tracking route tests before and after edits
+- run ruff on the touched route/test pair
+- keep staged scope limited to the authorized route/test pair plus governance evidence
+
+G2.220 baseline app.main/OpenAPI smoke passed with transient runtime
+environment: `route_count=548`, `openapi_paths=500`. Secret values were not
+persisted in repository files or recorded in this track summary.
+
 ## Next Gates
 
-- Review G2.219 trade execution tracking evidence provider ownership decision.
-- If accepted, start G2.220 no-source trade execution tracking evidence provider authorization.
-- Do not start source implementation directly from G2.219 or G2.220.
+- Review G2.220 trade execution tracking evidence provider authorization.
+- If accepted, start G2.221 path-limited implementation for the execution tracking route/test pair.
+- Do not expand G2.221 beyond `execution_tracking_routes.py`,
+  `test_trade_execution_tracking_routes.py`, and governance evidence.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.

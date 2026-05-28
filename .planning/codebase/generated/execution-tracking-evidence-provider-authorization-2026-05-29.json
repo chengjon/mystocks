@@ -1,0 +1,140 @@
+{
+  "schema_version": "2026-05-29.execution-tracking-evidence-provider-authorization.v1",
+  "generated_at": "2026-05-29T02:01:47+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-220-execution-tracking-evidence-provider-authorization",
+  "base_head": "b51256b775f7b4c6e5baad8c82a7f86446c0151b",
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "parent": {
+    "g2": "G2.219",
+    "github_pr": 372,
+    "state": "MERGED",
+    "merge_commit": "b51256b775f7b4c6e5baad8c82a7f86446c0151b",
+    "summary": "Execution tracking evidence provider ownership decision accepted into wip/root-dirty-20260403"
+  },
+  "target": {
+    "symbol": "get_execution_tracking_evidence_service",
+    "file": "web/backend/app/api/trade/execution_tracking_routes.py",
+    "definition_line": 289,
+    "classification": "trade execution tracking route/provider seam"
+  },
+  "current_shape": {
+    "provider_definition": "def get_execution_tracking_evidence_service() -> ExecutionTrackingEvidenceService",
+    "provider_factory_line": 290,
+    "direct_call_lines": [
+      364,
+      542
+    ],
+    "load_helper": "_load_execution_records",
+    "list_route": "get_execution_tracking",
+    "detail_route": "get_execution_tracking_detail",
+    "trigger_route_scope": "out_of_scope"
+  },
+  "fresh_impact": {
+    "gitnexus_repo": "mystocks_spec",
+    "risk": "HIGH",
+    "impacted_count": 2,
+    "direct_callers": [
+      "_load_execution_records",
+      "get_execution_tracking_detail"
+    ],
+    "processes_affected": 3,
+    "modules_affected": [
+      "Trade"
+    ]
+  },
+  "authorization_decision": {
+    "state": "authorized_for_future_implementation_after_acceptance",
+    "authorized_future_g2": "G2.221",
+    "source_implementation_allowed_in_this_package": false,
+    "future_source_authority_if_g2_220_accepted": true,
+    "allowed_future_source_paths": [
+      "web/backend/app/api/trade/execution_tracking_routes.py"
+    ],
+    "allowed_future_test_paths": [
+      "web/backend/tests/test_trade_execution_tracking_routes.py"
+    ],
+    "forbidden_future_source_paths": [
+      "web/backend/app/api/trade/** except execution_tracking_routes.py",
+      "web/backend/app/services/**",
+      "web/backend/app/api/** outside web/backend/app/api/trade/execution_tracking_routes.py",
+      "web/backend/tests/** outside web/backend/tests/test_trade_execution_tracking_routes.py",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ],
+    "authorized_future_pattern": [
+      "preserve get_execution_tracking_evidence_service as the default provider factory",
+      "add route dependency/provider injection for list and detail execution tracking flows",
+      "pass the injected evidence service into _load_execution_records instead of calling the provider helper inside the helper",
+      "inject the evidence service into get_execution_tracking_detail instead of calling the provider helper in the route body",
+      "leave trigger_external_execution out of scope",
+      "update focused tests to use FastAPI dependency override or equivalent explicit injection seam"
+    ],
+    "contract_invariants": [
+      "no path changes",
+      "no response_model changes",
+      "no UnifiedResponse shape changes",
+      "no request schema changes",
+      "no miniQMT evidence semantic changes",
+      "no broker_state or bridge evidence interpretation changes"
+    ],
+    "pre_implementation_gate": [
+      "run GitNexus impact before source edits",
+      "rerun app.main/OpenAPI smoke before claiming the later source implementation complete",
+      "run focused trade execution tracking tests before and after implementation",
+      "run ruff on the changed route/test files"
+    ]
+  },
+  "verification": {
+    "pytest": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py -q --no-cov --tb=short",
+      "result": "4 passed in 2.13s"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/trade/execution_tracking_routes.py web/backend/tests/test_trade_execution_tracking_routes.py",
+      "result": "All checks passed!"
+    },
+    "openspec": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "Change 'migrate-backend-singletons-to-lifecycle-di' is valid",
+      "telemetry_note": "PostHog network flush failure is telemetry noise."
+    },
+    "openapi_smoke": {
+      "command": "python -c import app.main and app.openapi() with transient runtime environment",
+      "result": "passed",
+      "verified_at": "2026-05-29T02:24:28+08:00",
+      "route_count": 548,
+      "openapi_paths": 500,
+      "secret_handling": "required environment keys were supplied transiently; secret values were not persisted or recorded",
+      "required_rerun_for_g2_221": true
+    }
+  },
+  "next_gate": {
+    "g2": "G2.221",
+    "title": "trade execution tracking evidence provider route injection implementation",
+    "source_edit_authority": "conditional_on_accepting_g2_220",
+    "scope": [
+      "path-limited implementation in execution_tracking_routes.py",
+      "focused test updates in test_trade_execution_tracking_routes.py",
+      "governance evidence and task card only"
+    ]
+  },
+  "forbidden_scope_this_package": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ]
+}
