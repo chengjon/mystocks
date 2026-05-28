@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T00:46:30+08:00",
+  "generated_at": "2026-05-29T01:22:32+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "68ba10829b89095f8b907d249f59198995543ebc",
-  "split_branch": "g2-217-data-service-provider-reset-seam",
-  "scope": "indicator_data_data_service_provider_reset_implementation",
-  "source_edit_authority": true,
+  "base_head": "4d2b69e449975d145976e10c8af965e16dc60a1e",
+  "split_branch": "g2-218-data-service-provider-closeout-refresh",
+  "scope": "data_service_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -1218,12 +1218,12 @@
       "verification": {
         "tdd_red": "failed on missing quality_monitor constructor parameter",
         "focused_pytest": "1 passed",
-      "ruff": "All checks passed",
-      "import_smoke": "passed with minimal dummy required env",
-      "openspec_validate": "valid; PostHog network flush noise only",
-      "mainline_scope_gate": "passed",
-      "gitnexus_detect_changes_staged": "low risk; 18 changed files, 84 changed symbols, 0 affected processes"
-    },
+        "ruff": "All checks passed",
+        "import_smoke": "passed with minimal dummy required env",
+        "openspec_validate": "valid; PostHog network flush noise only",
+        "mainline_scope_gate": "passed",
+        "gitnexus_detect_changes_staged": "low risk; 18 changed files, 84 changed symbols, 0 affected processes"
+      },
       "freshness": {
         "current_head_checked": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb",
         "stale_if_head_mismatch": true
@@ -2487,7 +2487,7 @@
     {
       "id": "g2-217-data-service-provider-reset-seam",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.216 indicator/data DataService provider authorization package",
       "source_edit_authority": true,
@@ -2543,10 +2543,81 @@
         "interpretation": "File-level attribution marks existing data_service.py methods as modified; cached source diff is localized to typing import, provider/reset helpers, and get_data_service provider branch."
       },
       "freshness": {
-        "current_head_checked": "68ba10829b89095f8b907d249f59198995543ebc",
+        "current_head_checked": "4d2b69e449975d145976e10c8af965e16dc60a1e",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.218 no-source DataService provider/reset seam closeout and residual refresh."
+      "next_gate": "Superseded by G2.218 DataService provider/reset seam closeout and residual refresh.",
+      "github_pr": 370,
+      "head_ref": "g2-217-data-service-provider-reset-seam",
+      "merge_commit": "4d2b69e449975d145976e10c8af965e16dc60a1e"
+    },
+    {
+      "id": "g2-218-data-service-provider-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.217 DataService provider/reset seam implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 370,
+      "parent_merge_commit": "4d2b69e449975d145976e10c8af965e16dc60a1e",
+      "evidence": [
+        ".planning/codebase/generated/data-service-provider-closeout-refresh-2026-05-29.json",
+        "docs/reports/quality/backend-data-service-provider-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-371.yaml"
+      ],
+      "verification": {
+        "import_smoke": "import_smoke=pass provider_override=pass reset_default=pass",
+        "focused_provider_test": "web/backend/tests/test_data_service_singleton_provider.py: 2 passed",
+        "route_provider_regressions": "web/backend/tests/test_indicator_registry_route_provider.py + web/backend/tests/test_v1_indicators_regressions.py: 6 passed",
+        "ruff": "passed",
+        "openspec_validate": "valid"
+      },
+      "data_service_residuals": {
+        "direct_singleton_wrapper_calls": [
+          "web/backend/app/api/indicators/indicator_cache.py:49",
+          "web/backend/app/api/v1/strategy/indicators.py:30"
+        ],
+        "decision": "retain route-local provider wrappers; do not reopen DataService source from token-only matches"
+      },
+      "residual_candidate_refresh": {
+        "closed": [
+          "get_data_service"
+        ],
+        "selected_next_gate": "get_execution_tracking_evidence_service",
+        "deferred": [
+          "get_unified_data_service",
+          "get_prewarming_strategy"
+        ]
+      },
+      "next_gate": "If accepted, start G2.219 no-source ownership decision for get_execution_tracking_evidence_service; do not start source implementation directly.",
+      "allowed_scope": [
+        ".planning/codebase/generated/data-service-provider-closeout-refresh-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-data-service-provider-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-371.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "4d2b69e449975d145976e10c8af965e16dc60a1e",
+        "stale_if_head_mismatch": true
+      }
     },
     {
       "id": "core-batch2-reconciliation",

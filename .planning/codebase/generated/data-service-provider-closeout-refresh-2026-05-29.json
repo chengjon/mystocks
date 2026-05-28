@@ -1,0 +1,128 @@
+{
+  "schema_version": "2026-05-29.data-service-provider-closeout-refresh.v1",
+  "generated_at": "2026-05-29T01:22:32+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-218-data-service-provider-closeout-refresh",
+  "base_head": "4d2b69e449975d145976e10c8af965e16dc60a1e",
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "parent": {
+    "g2": "G2.217",
+    "github_pr": 370,
+    "state": "MERGED",
+    "merge_commit": "4d2b69e449975d145976e10c8af965e16dc60a1e",
+    "head_commit": "9e8504a82b5d5c57a0e046be2d3ddde13027a3d3",
+    "summary": "DataService provider/reset seam implementation accepted into wip/root-dirty-20260403"
+  },
+  "verification": {
+    "import_smoke": {
+      "command": "env PYTHONPATH=web/backend python -c '<DataService provider/reset smoke>'",
+      "exit": 0,
+      "result": "import_smoke=pass provider_override=pass reset_default=pass",
+      "note": "Default fallback smoke initializes DataService and emits existing TDengine/MyStocksUnifiedManager startup logs."
+    },
+    "pytest": [
+      {
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_service_singleton_provider.py -q --no-cov --tb=short",
+        "result": "2 passed in 1.64s"
+      },
+      {
+        "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_indicator_registry_route_provider.py web/backend/tests/test_v1_indicators_regressions.py -q --no-cov --tb=short",
+        "result": "6 passed in 2.63s"
+      }
+    ],
+    "ruff": {
+      "command": "ruff check web/backend/app/services/data_service.py web/backend/tests/test_data_service_singleton_provider.py",
+      "result": "All checks passed!"
+    },
+    "openspec": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "Change 'migrate-backend-singletons-to-lifecycle-di' is valid",
+      "telemetry_note": "PostHog network flush failure is telemetry noise."
+    }
+  },
+  "data_service_static_refresh": {
+    "token_hits_in_web_backend_app": 5,
+    "rg_source_call_lines": 7,
+    "singleton_import_call_files": [
+      {
+        "file": "web/backend/app/api/indicators/indicator_cache.py",
+        "line": 49,
+        "role": "route-local provider wrapper",
+        "text": "return get_data_service()"
+      },
+      {
+        "file": "web/backend/app/api/v1/strategy/indicators.py",
+        "line": 30,
+        "role": "route-local provider wrapper",
+        "text": "return get_data_service()"
+      }
+    ],
+    "non_residual_token_hits": [
+      {
+        "file": "web/backend/app/services/data_service.py",
+        "role": "canonical provider function definition"
+      },
+      {
+        "file": "web/backend/app/api/v1/strategy/ml_runtime_helpers.py",
+        "role": "imports DataService symbol but does not call get_data_service() directly"
+      },
+      {
+        "file": "web/backend/app/api/v1/system/health.py",
+        "role": "local EnhancedDataService helper named _get_data_service, not app.services.data_service.get_data_service"
+      }
+    ],
+    "decision": "Keep the two route-local provider wrappers; do not reopen DataService source from token-only matches."
+  },
+  "residual_candidate_refresh": {
+    "get_data_service": {
+      "state": "closed_by_g2_217",
+      "next_action": "Do not reopen unless current HEAD contradicts provider/reset seam evidence."
+    },
+    "get_execution_tracking_evidence_service": {
+      "file_count": 2,
+      "call_count": 3,
+      "primary_file": "web/backend/app/api/trade/execution_tracking_routes.py",
+      "classification": "trade evidence route-local provider surface",
+      "recommended_next_gate": "G2.219 no-source ownership decision package"
+    },
+    "get_unified_data_service": {
+      "file_count": 1,
+      "call_count": 6,
+      "primary_file": "web/backend/app/services/unified_data_service.py",
+      "classification": "root facade / compatibility surface",
+      "recommended_next_gate": "defer behind trade evidence ownership decision"
+    },
+    "get_prewarming_strategy": {
+      "file_count": 3,
+      "call_count": 6,
+      "primary_file": "web/backend/app/api/_cache_prewarming_routes.py",
+      "classification": "cache prewarming route/provider surface",
+      "recommended_next_gate": "defer behind higher-risk trade evidence and root facade decisions"
+    }
+  },
+  "next_gate": {
+    "g2": "G2.219",
+    "title": "trade execution tracking evidence provider ownership decision",
+    "source_edit_authority": false,
+    "scope": [
+      "regenerate current ownership evidence for get_execution_tracking_evidence_service",
+      "decide whether it remains a route-local provider seam or needs a later authorization package",
+      "do not edit web/backend source in the decision package"
+    ]
+  },
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ]
+}
