@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T23:11:00+08:00`
-- Base HEAD checked: `e7d9fe63285181f0227661628272487dc63d4e2c`
+- Prepared at: `2026-05-28T23:28:14+08:00`
+- Base HEAD checked: `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -50,12 +50,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#363` | `g2-210-data-quality-monitor-residual-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `619be9cac1f9516b3df42a41ca362ca9d42d5c9a` | Decision package selecting G2.211 singleton/backing API authorization |
 | `#364` | `g2-211-data-quality-monitor-singleton-authorization` | `wip/root-dirty-20260403` | `MERGED` at `535a6d9c1565b4ced7942cb4082104f2fb0506fd` | Authorization package selecting G2.212 data-quality monitor singleton/backing API implementation |
 | `#365` | `g2-212-data-quality-monitor-singleton-implementation` | `wip/root-dirty-20260403` | `MERGED` at `e7d9fe63285181f0227661628272487dc63d4e2c` | Path-limited singleton/backing API provider seam implementation closed for G2.213 refresh |
+| `#366` | `g2-213-data-quality-monitor-singleton-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117` | No-source closeout selecting G2.214 non-Strategy provider queue refresh |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-213-data-quality-monitor-singleton-closeout-refresh` | `origin/wip/root-dirty-20260403` at `e7d9fe63285181f0227661628272487dc63d4e2c` | Close out data-quality monitor singleton/backing API provider seam and classify remaining residuals | No |
+| `g2-214-non-strategy-provider-queue-refresh` | `origin/wip/root-dirty-20260403` at `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117` | Refresh broader non-Strategy provider/getter queue and select the next no-source governance target | No |
 
 ## OpenSpec Relationship
 
@@ -71,7 +72,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.213 is a no-source closeout / residual refresh branch after PR `#365` merged
-G2.212. It is limited to governance evidence, steward tree updates, and a task
-card. If accepted, the next gate is G2.214 non-strategy provider governance
-queue refresh / next-candidate selection with no source edits.
+G2.214 is a no-source queue refresh branch after PR `#366` merged G2.213. It is
+limited to governance evidence, steward tree updates, and a task card. If
+accepted, the next gate is G2.215 indicator/data `get_data_service`
+current-HEAD contradiction / ownership decision with no source edits.

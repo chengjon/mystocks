@@ -1,0 +1,117 @@
+version: "v0.2"
+
+task:
+  id: "pr-367"
+  title: "Refresh non-Strategy provider queue"
+  owner: "codex"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-nonstrategy-provider-queue-refresh"
+  objective: "refresh the non-Strategy provider/getter governance queue after data-quality monitor closeout and select the next no-source decision target"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Decision-only package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/nonstrategy-provider-queue-refresh-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-nonstrategy-provider-queue-refresh-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-367.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "source edits in this PR"
+  - "route/provider migration in this PR"
+  - "opening G2.215 implementation"
+  - "trade execution evidence provider changes"
+  - "cache prewarming provider changes"
+  - "data-quality monitor source reopen"
+  - "Strategy residual reopen"
+  - "OpenAPI, frontend, config, script, or OpenSpec edits"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "json-yaml-parse"
+      command: "python - <<'PY'\nimport json, yaml\nfor path in ['.planning/codebase/generated/nonstrategy-provider-queue-refresh-2026-05-28.json', '.planning/codebase/steward-tree/steward-index.json']:\n    with open(path, encoding='utf-8') as f:\n        json.load(f)\nwith open('governance/mainline/task-cards/pr-367.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-nonstrategy-provider-queue-refresh-2026-05-28.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-367.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117 --head-sha HEAD --report /tmp/pr367-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Decision package could be misread as source implementation authority; forbidden paths and next-gate wording prevent that."
+    - "Current impact scan can become stale if route or indicator files change before review."
+    - "Selecting get_data_service from current CRITICAL graph evidence could accidentally reopen unrelated indicator/data work unless G2.215 remains decision-only."
+  rollback_plan: "Revert this governance-only commit; no runtime or source state changes are made."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Refresh the non-Strategy provider queue and select the next no-source decision target."
+    modified_scope: "Only steward tree, generated evidence, quality report, and task-card governance files."
+    dependency_changes: "None."
+    legacy_logic_impact: "No runtime or compatibility behavior changes in this PR."
+    rollback_ready: "Yes; revert the governance commit."
+    risk_and_rollback_point: "Do not start G2.215 as source implementation; it must be a no-source current-HEAD contradiction / ownership decision first."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-28T23:28:14+08:00"
+    approval_note: "Approved to continue from merged PR #366 into G2.214 no-source non-Strategy provider queue refresh / next-candidate selection."
+    secondary_approved: false

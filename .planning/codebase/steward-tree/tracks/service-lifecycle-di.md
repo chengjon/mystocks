@@ -831,10 +831,44 @@ Closeout decision:
 - route API provider residuals remain governed by route/provider governance,
   not by a direct data-quality monitor implementation lane
 
+## G2.214 Non-Strategy Provider Queue Refresh
+
+At HEAD `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`, PR `#366` is merged and
+G2.213 is accepted.
+
+Queue refresh:
+
+| Bucket | Items | Current handling |
+|---|---:|---|
+| Closed data-quality monitor | 14 | Closed by G2.213 unless fresh current-HEAD evidence contradicts |
+| Excluded Strategy | 44 | Closed by G2.183 with retained residuals |
+| Route provider surface | 131 | Active route/provider governance surface |
+| Realtime streaming/socket | 36 | Prior realtime/socket subtrack evidence exists; do not reopen from token count alone |
+| Dashboard/TDX | 11 | Direct helper debt remains closed |
+| Indicator/Data | 45 | Requires current-HEAD contradiction review |
+| Adapter/factory | 26 | Defer behind higher-risk current-head contradiction |
+| Risk/alert | 23 | Stop-loss pair closed; broader alert surfaces deferred |
+| Other service/provider | 78 | Mixed infra/control-plane/root facade queue |
+
+Candidate impact refresh:
+
+| Candidate | Current risk | Direct | Processes | Disposition |
+|---|---:|---:|---:|---|
+| `get_data_service` | CRITICAL | 3 | 7 | Select for G2.215 no-source current-HEAD contradiction / ownership decision |
+| `get_execution_tracking_evidence_service` | HIGH | 2 | 3 | Defer as separate trade evidence route track |
+| `get_unified_data_service` | MEDIUM | 5 | 0 | Retain as root facade pending owner-specific decision |
+| `get_prewarming_strategy` | LOW | 3 | 0 | Defer as lower-risk cache prewarming route surface |
+
+G2.214 has no source authority. It does not reopen Indicator/Data source work.
+It records that current GitNexus evidence contradicts older LOW/retained
+wording for `get_data_service`, so the next step must be an ownership decision
+before any source authorization.
+
 ## Next Gates
 
-- Review G2.213 data-quality monitor singleton/backing API closeout / residual refresh.
-- If accepted, start G2.214 non-strategy provider governance queue refresh / next-candidate selection with no source edits.
+- Review G2.214 non-Strategy provider queue refresh / next-candidate selection.
+- If accepted, start G2.215 indicator/data `get_data_service` current-HEAD contradiction / ownership decision with no source edits.
+- Do not start source implementation from G2.214 or G2.215 until a later path-limited authorization package is approved.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
