@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T09:14:57+08:00",
+  "generated_at": "2026-05-28T09:35:10+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb",
-  "split_branch": "g2-197-data-quality-monitor-closeout-refresh",
-  "scope": "data_quality_monitor_closeout_refresh",
+  "base_head": "3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1",
+  "split_branch": "g2-198-data-quality-residual-adapter-ownership-decision",
+  "scope": "data_quality_residual_adapter_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -1241,7 +1241,7 @@
     {
       "id": "g2-197-data-quality-monitor-closeout-refresh",
       "type": "closeout_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.196 data-quality adapter_split constructor provider implementation",
       "source_edit_authority": false,
@@ -1305,10 +1305,80 @@
         }
       },
       "freshness": {
-        "current_head_checked": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb",
+        "current_head_checked": "3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.198 data-quality residual adapter ownership decision; do not start source implementation directly from G2.197."
+      "github_pr": {
+        "number": 350,
+        "url": "https://github.com/chengjon/mystocks/pull/350",
+        "state": "MERGED",
+        "merged_at": "2026-05-28T01:29:45Z",
+        "head_ref": "g2-197-data-quality-monitor-closeout-refresh",
+        "merge_commit": "3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1"
+      },
+      "next_gate": "Superseded by G2.198 data-quality residual adapter ownership decision."
+    },
+    {
+      "id": "g2-198-data-quality-residual-adapter-ownership-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.197 data-quality monitor closeout / remaining candidate refresh",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/data-quality-residual-adapter-ownership-decision-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-residual-adapter-ownership-decision-2026-05-28.md",
+        "governance/mainline/task-cards/pr-351.yaml"
+      ],
+      "candidate_facts": {
+        "canonical_service_adapters": {
+          "files": 2,
+          "getter_calls": 2,
+          "paths": [
+            "web/backend/app/services/adapters/dashboard_adapter.py",
+            "web/backend/app/services/adapters/data_adapter.py"
+          ],
+          "decision": "selected_next_authorization_target"
+        },
+        "legacy_data_adapters": {
+          "files": 2,
+          "getter_calls": 2,
+          "paths": [
+            "web/backend/app/services/data_adapters/dashboard.py",
+            "web/backend/app/services/data_adapters/data_source.py"
+          ],
+          "decision": "defer to compatibility ownership decision; do not delete from static search alone"
+        },
+        "market_data_adapter_compatibility": {
+          "files": 1,
+          "getter_calls": 1,
+          "paths": [
+            "web/backend/app/services/market_data_adapter.py"
+          ],
+          "decision": "defer as root compatibility facade surface"
+        },
+        "service_wrapper_and_canonical_monitor": {
+          "files": 2,
+          "decision": "retain backing API and canonical implementation"
+        }
+      },
+      "decision": {
+        "classification": "canonical_service_adapters_first",
+        "selected_next_governance_target": "data-quality-canonical-service-adapter-provider-authorization",
+        "recommended_next_work_item": "G2.199 data-quality canonical service adapter provider authorization package",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-198",
+        "deferred_surfaces": [
+          "legacy data_adapters compatibility",
+          "market_data_adapter.py compatibility facade",
+          "singleton wrapper retention / eventual retirement",
+          "DataQualityMonitor implementation internals"
+        ]
+      },
+      "freshness": {
+        "current_head_checked": "3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.199 data-quality canonical service adapter provider authorization; do not start source implementation directly from G2.198."
     },
     {
       "id": "core-batch2-reconciliation",

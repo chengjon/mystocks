@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T09:14:57+08:00`
-- Base HEAD checked: `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`
+- Prepared at: `2026-05-28T09:35:10+08:00`
+- Base HEAD checked: `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -49,7 +49,8 @@ It proved a repeatable conveyor:
 | G2.194 data-quality adapter constructor seam design | Merged by PR `#347` | Selects `adapter_split` constructor provider authorization as the next gate, defines test-double contract, and keeps source authority at none |
 | G2.195 data-quality `adapter_split` constructor provider authorization | Merged by PR `#348` | Authorizes the future G2.196 `adapter_split` constructor provider implementation lane while keeping source authority at none in that PR |
 | G2.196 data-quality `adapter_split` constructor provider implementation | Merged by PR `#349` | Implements optional constructor monitor injection in `adapter_split` only, with focused TDD evidence |
-| G2.197 data-quality monitor closeout / remaining candidate refresh | For review | Closes the `adapter_split` subclass constructor lane and refreshes remaining service adapter, legacy adapter, compatibility facade, and wrapper surfaces |
+| G2.197 data-quality monitor closeout / remaining candidate refresh | Merged by PR `#350` | Closes the `adapter_split` subclass constructor lane and refreshes remaining service adapter, legacy adapter, compatibility facade, and wrapper surfaces |
+| G2.198 data-quality residual adapter ownership decision | For review | Selects canonical service adapters as the next authorization target while deferring legacy data adapters, `market_data_adapter.py`, and wrapper retention |
 
 ## Current Strategy Getter Residuals
 
@@ -347,11 +348,38 @@ Remaining data-quality monitor surfaces:
 G2.197 recommends G2.198 as a decision-only residual adapter ownership package.
 It does not authorize another source implementation lane.
 
+PR `#350` merged this lane at
+`3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`.
+
+## G2.198 Data-Quality Residual Adapter Ownership Decision
+
+At HEAD `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`, PR `#350` is merged and
+the G2.197 closeout / refresh is accepted.
+
+G2.198 selects canonical service adapters as the next ownership target:
+
+| Surface | Files | Getter calls | Current decision |
+|---|---:|---:|---|
+| canonical service adapters | 2 | 2 | Select as G2.199 authorization target |
+| legacy data adapters | 2 | 2 | Defer to compatibility ownership decision |
+| `market_data_adapter.py` | 1 | 1 | Defer as root compatibility facade surface |
+| singleton wrapper / canonical monitor | 2 | 2 or re-export | Retain backing API and canonical implementation |
+
+Selected future authorization candidate:
+
+| Path | Role |
+|---|---|
+| `web/backend/app/services/adapters/dashboard_adapter.py` | Canonical dashboard data-source adapter, currently calls `get_data_quality_monitor()` in async monitoring helper |
+| `web/backend/app/services/adapters/data_adapter.py` | Canonical data data-source adapter, currently calls `get_data_quality_monitor()` in async monitoring helper |
+
+G2.198 recommends G2.199 as an authorization-only package. It does not authorize
+source implementation directly.
+
 ## Next Gates
 
-- Review G2.197 data-quality monitor closeout / remaining candidate refresh.
-- If accepted, start G2.198 data-quality residual adapter ownership decision.
-- Do not start another data-quality source implementation directly from G2.197.
+- Review G2.198 data-quality residual adapter ownership decision.
+- If accepted, start G2.199 data-quality canonical service adapter provider authorization.
+- Do not start another data-quality source implementation directly from G2.198.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

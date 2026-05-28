@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T09:14:57+08:00`
-- Base HEAD checked: `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`
+- Prepared at: `2026-05-28T09:35:10+08:00`
+- Base HEAD checked: `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.197 data-quality monitor closeout / remaining candidate refresh | G/#79 service lifecycle DI | PR `#349` merged at `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`; G2.197 closes the `adapter_split` subclass constructor lane and refreshes remaining candidates | If accepted, start G2.198 residual adapter ownership decision; do not start source implementation directly |
+| P0 | Review G2.198 data-quality residual adapter ownership decision | G/#79 service lifecycle DI | PR `#350` merged at `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`; G2.198 selects canonical service adapters as the next authorization target | If accepted, start G2.199 canonical service adapter provider authorization; do not start source implementation directly |
+| P0 | Preserve G2.197 data-quality monitor closeout / remaining candidate refresh | G/#79 service lifecycle DI | PR `#350` merged; `adapter_split` subclass constructor lane is closed and remaining candidates are classified | Do not bypass G2.198/G2.199 before touching service adapters, legacy adapters, `market_data_adapter.py`, or wrappers |
 | P0 | Preserve G2.196 data-quality `adapter_split` constructor provider implementation | G/#79 service lifecycle DI | PR `#349` merged; subclass-level `get_data_quality_monitor()` calls/imports are `0`; `BaseAdapter` fallback remains intentional | Do not expand into service adapters, legacy adapters, singleton wrappers, routes, or frontend |
 | P0 | Preserve G2.195 data-quality `adapter_split` constructor provider authorization | G/#79 service lifecycle DI | PR `#348` merged; G2.195 authorized only eight `adapter_split` source paths plus one focused test path | Treat the G2.196 implementation as closed after G2.197 review, not as authority for broader adapter migration |
 | P0 | Preserve G2.194 data-quality adapter constructor seam design | G/#79 service lifecycle DI | PR `#347` merged; G2.194 selected `adapter_split` constructor seam as the next authorization target | Do not implement adapter changes outside the accepted G2.195/G2.196 scope |
@@ -39,8 +40,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.197 accurately record PR `#349` as merged at `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`?
-- Does G2.197 correctly close the `adapter_split` subclass constructor lane while retaining the `BaseAdapter` fallback?
-- Are service adapters, legacy data adapters, `market_data_adapter.py`, and wrapper retention still separated into the next decision gate?
-- Is G2.198 correctly positioned as a decision-only residual adapter ownership package rather than another direct source lane?
+- Does G2.198 accurately record PR `#350` as merged at `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`?
+- Does G2.198 correctly select canonical service adapters as the next authorization target?
+- Are legacy data adapters, `market_data_adapter.py`, and wrapper retention still deferred to separate decisions?
+- Is G2.199 correctly positioned as authorization-only before any future source implementation?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

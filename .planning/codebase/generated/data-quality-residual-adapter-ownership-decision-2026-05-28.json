@@ -1,0 +1,110 @@
+{
+  "schema_version": "2026-05-28.g2-198.decision.v1",
+  "generated_at": "2026-05-28T09:35:10+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1",
+  "worktree_branch": "g2-198-data-quality-residual-adapter-ownership-decision",
+  "status": "for_review",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "g2-197-data-quality-monitor-closeout-refresh",
+    "github_pr": 350,
+    "state": "MERGED",
+    "merged_at": "2026-05-28T01:29:45Z",
+    "merge_commit": "3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1"
+  },
+  "candidate_facts": {
+    "canonical_service_adapters": {
+      "files": [
+        "web/backend/app/services/adapters/dashboard_adapter.py",
+        "web/backend/app/services/adapters/data_adapter.py"
+      ],
+      "getter_calls": 2,
+      "getter_imports": 2,
+      "constructor_quality_monitor_parameters": 0,
+      "active_factory_relationship": "data_source_factory imports DashboardDataSourceAdapter and DataDataSourceAdapter through app.services.data_adapter facade",
+      "decision": "selected_next_authorization_target"
+    },
+    "legacy_data_adapters": {
+      "files": [
+        "web/backend/app/services/data_adapters/dashboard.py",
+        "web/backend/app/services/data_adapters/data_source.py"
+      ],
+      "getter_calls": 2,
+      "getter_imports": 2,
+      "direct_module_text_consumers": 0,
+      "decision": "defer to compatibility ownership decision; do not delete from static search alone"
+    },
+    "market_data_adapter_compatibility": {
+      "files": [
+        "web/backend/app/services/market_data_adapter.py"
+      ],
+      "getter_calls": 1,
+      "getter_imports": 1,
+      "factory_constructed": true,
+      "decision": "defer as root compatibility facade surface"
+    },
+    "service_wrapper_and_canonical_monitor": {
+      "files": [
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py"
+      ],
+      "getter_calls_or_exports": 2,
+      "decision": "retain backing API and canonical implementation; not a deletion lane"
+    }
+  },
+  "decision": {
+    "classification": "canonical_service_adapters_first",
+    "selected_next_governance_target": "data-quality-canonical-service-adapter-provider-authorization",
+    "recommended_next_work_item": "G2.199 data-quality canonical service adapter provider authorization package",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-198",
+    "future_authorization_candidate": {
+      "source_paths": [
+        "web/backend/app/services/adapters/dashboard_adapter.py",
+        "web/backend/app/services/adapters/data_adapter.py"
+      ],
+      "likely_test_surfaces": [
+        "tests/backend/test_data_adapter_regression.py",
+        "web/backend/tests/test_logging_noise_regressions.py"
+      ],
+      "must_preserve": [
+        "app.services.data_adapter compatibility facade",
+        "data_source_factory construction behavior",
+        "async _trigger_quality_monitoring behavior",
+        "default runtime singleton fallback compatibility"
+      ]
+    },
+    "deferred_surfaces": [
+      "legacy data_adapters compatibility",
+      "market_data_adapter.py compatibility facade",
+      "singleton wrapper retention / eventual retirement",
+      "DataQualityMonitor implementation internals"
+    ]
+  },
+  "verification": {
+    "head": "3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1",
+    "worktree_status": "clean before edits",
+    "candidate_scan": "residual candidates inspected for getter/import lines, constructors, factory relationships, and text consumers",
+    "json_parse": "passed",
+    "markdown_governance": "errors=0, checked_files=6",
+    "openspec_validate": "migrate-backend-singletons-to-lifecycle-di valid",
+    "mainline_scope_gate": "passed",
+    "gitnexus_detect_changes_staged": {
+      "risk": "low",
+      "changed_files": 9,
+      "changed_symbols": 0,
+      "affected_processes": 0
+    }
+  },
+  "forbidden_scope_preserved": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ]
+}
