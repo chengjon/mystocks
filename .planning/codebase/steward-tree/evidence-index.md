@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T22:18:21+08:00`
-- Base HEAD checked: `619be9cac1f9516b3df42a41ca362ca9d42d5c9a`
+- Prepared at: `2026-05-28T23:11:00+08:00`
+- Base HEAD checked: `e7d9fe63285181f0227661628272487dc63d4e2c`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -85,8 +85,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-monitor-residual-ownership-decision-2026-05-28.md` | G2.210 human-readable residual ownership decision report | Accepted by PR `#363`; superseded for singleton/backing API authorization by G2.211 |
 | `.planning/codebase/generated/data-quality-monitor-singleton-authorization-2026-05-28.json` | G2.211 data-quality monitor singleton/backing API authorization evidence | Accepted by PR `#364`; superseded for implementation evidence by G2.212 |
 | `docs/reports/quality/backend-data-quality-monitor-singleton-authorization-2026-05-28.md` | G2.211 human-readable singleton/backing API authorization report | Accepted by PR `#364`; superseded for implementation evidence by G2.212 |
-| `.planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json` | G2.212 data-quality monitor singleton/backing API implementation evidence | Current for HEAD `535a6d9c1565b4ced7942cb4082104f2fb0506fd`; review input until PR `#365` is accepted |
-| `docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md` | G2.212 human-readable singleton/backing API implementation report | Review input until PR `#365` is accepted |
+| `.planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json` | G2.212 data-quality monitor singleton/backing API implementation evidence | Accepted by PR `#365`; superseded for closeout / residual refresh by G2.213 |
+| `docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md` | G2.212 human-readable singleton/backing API implementation report | Accepted by PR `#365`; superseded for closeout / residual refresh by G2.213 |
+| `.planning/codebase/generated/data-quality-monitor-singleton-closeout-refresh-2026-05-28.json` | G2.213 data-quality monitor singleton/backing API closeout / residual refresh evidence | Current for HEAD `e7d9fe63285181f0227661628272487dc63d4e2c`; review input until PR `#366` is accepted |
+| `docs/reports/quality/backend-data-quality-monitor-singleton-closeout-refresh-2026-05-28.md` | G2.213 human-readable singleton/backing API closeout / residual refresh report | Review input until PR `#366` is accepted |
 
 ## External State Inputs
 

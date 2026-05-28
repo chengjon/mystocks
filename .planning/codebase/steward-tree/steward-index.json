@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T22:40:00+08:00",
+  "generated_at": "2026-05-28T23:11:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
-  "split_branch": "g2-212-data-quality-monitor-singleton-implementation",
-  "scope": "data_quality_monitor_singleton_implementation",
-  "source_edit_authority": true,
+  "base_head": "e7d9fe63285181f0227661628272487dc63d4e2c",
+  "split_branch": "g2-213-data-quality-monitor-singleton-closeout-refresh",
+  "scope": "data_quality_monitor_singleton_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -2156,12 +2156,14 @@
     {
       "id": "g2-212-data-quality-monitor-singleton-implementation",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.211 data-quality monitor singleton/backing API authorization",
       "source_edit_authority": true,
       "parent_github_pr": 364,
       "parent_merge_commit": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
+      "github_pr": 365,
+      "merge_commit": "e7d9fe63285181f0227661628272487dc63d4e2c",
       "evidence": [
         ".planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md",
@@ -2205,7 +2207,61 @@
         "current_head_checked": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.213 data-quality monitor singleton/backing API closeout / residual refresh with no source edits."
+      "next_gate": "Superseded by G2.213 data-quality monitor singleton/backing API closeout / residual refresh."
+    },
+    {
+      "id": "g2-213-data-quality-monitor-singleton-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.212 data-quality monitor singleton/backing API compatibility implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 365,
+      "parent_merge_commit": "e7d9fe63285181f0227661628272487dc63d4e2c",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-monitor-singleton-closeout-refresh-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-monitor-singleton-closeout-refresh-2026-05-28.md",
+        "governance/mainline/task-cards/pr-366.yaml"
+      ],
+      "residual_scan": {
+        "term": "get_data_quality_monitor",
+        "scope": "web/backend/app/**/*.py",
+        "active_files": 7,
+        "active_occurrences": 29,
+        "active_calls": 7,
+        "classification": {
+          "singleton_backing_api": {
+            "files": 2,
+            "disposition": "closed by G2.212; retain provider/reset seam and default singleton fallback"
+          },
+          "route_api_provider_surface": {
+            "files": 1,
+            "disposition": "retained active FastAPI dependency/provider surface"
+          },
+          "closed_canonical_service_adapter_fallbacks": {
+            "files": 2,
+            "disposition": "closed by G2.200/G2.201"
+          },
+          "closed_market_data_adapter_facade_fallback": {
+            "files": 1,
+            "disposition": "closed by G2.208/G2.209"
+          },
+          "closed_adapter_split_base_fallback": {
+            "files": 1,
+            "disposition": "closed by G2.196/G2.197"
+          }
+        }
+      },
+      "closeout_decision": {
+        "new_data_quality_monitor_source_lane_selected": false,
+        "data_quality_monitor_conveyor_state": "closed_after_review",
+        "route_provider_residuals_remain_under_route_provider_governance": true
+      },
+      "freshness": {
+        "current_head_checked": "e7d9fe63285181f0227661628272487dc63d4e2c",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.214 non-strategy provider governance queue refresh / next-candidate selection with no source edits."
     },
     {
       "id": "core-batch2-reconciliation",

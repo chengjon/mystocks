@@ -799,11 +799,43 @@ remaining singleton/backing API surface a compatibility provider hook so future
 lifecycle wiring can depend on an explicit seam instead of directly mutating the
 module-level singleton.
 
+## G2.213 Data-Quality Monitor Singleton Closeout / Residual Refresh
+
+At HEAD `e7d9fe63285181f0227661628272487dc63d4e2c`, PR `#365` is merged and
+G2.212 is accepted.
+
+Residual scan:
+
+| Metric | Count |
+|---|---:|
+| Active `get_data_quality_monitor` files | 7 |
+| Active occurrences | 29 |
+| Active calls | 7 |
+
+Residual classification:
+
+| Bucket | Files | Disposition |
+|---|---:|---|
+| Singleton/backing API seam | 2 | Closed by G2.212; retain provider/reset seam and default fallback |
+| Route API provider surface | 1 | Retained active FastAPI dependency/provider surface |
+| Closed canonical service adapter fallbacks | 2 | Closed by G2.200/G2.201 |
+| Closed `market_data_adapter.py` facade fallback | 1 | Closed by G2.208/G2.209 |
+| Closed `adapter_split` base fallback | 1 | Closed by G2.196/G2.197 |
+
+Closeout decision:
+
+- no new data-quality monitor source lane is selected from this refresh
+- do not reopen the data-quality monitor source conveyor unless fresh
+  current-HEAD evidence contradicts accepted G2.196/G2.197, G2.200/G2.201,
+  G2.208/G2.209, or G2.212 evidence
+- route API provider residuals remain governed by route/provider governance,
+  not by a direct data-quality monitor implementation lane
+
 ## Next Gates
 
-- Review G2.212 data-quality monitor singleton/backing API compatibility implementation.
-- If accepted, start G2.213 data-quality monitor singleton/backing API closeout / residual refresh with no source edits.
-- Do not open another source lane before G2.213 classifies remaining residuals and selects a next gate.
+- Review G2.213 data-quality monitor singleton/backing API closeout / residual refresh.
+- If accepted, start G2.214 non-strategy provider governance queue refresh / next-candidate selection with no source edits.
+- Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
