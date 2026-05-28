@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T23:28:14+08:00",
+  "generated_at": "2026-05-28T23:51:14+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
-  "split_branch": "g2-214-non-strategy-provider-queue-refresh",
-  "scope": "nonstrategy_provider_queue_refresh",
+  "base_head": "a508fb263173b2014d307c4baec3b1eca0f42340",
+  "split_branch": "g2-215-indicator-data-get-data-service-decision",
+  "scope": "indicator_data_get_data_service_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -2268,12 +2268,14 @@
     {
       "id": "g2-214-non-strategy-provider-queue-refresh",
       "type": "next_candidate_decision",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.213 data-quality monitor singleton/backing API closeout / residual refresh",
       "source_edit_authority": false,
       "parent_github_pr": 366,
       "parent_merge_commit": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
+      "github_pr": 367,
+      "merge_commit": "a508fb263173b2014d307c4baec3b1eca0f42340",
       "evidence": [
         ".planning/codebase/generated/nonstrategy-provider-queue-refresh-2026-05-28.json",
         "docs/reports/quality/backend-nonstrategy-provider-queue-refresh-2026-05-28.md",
@@ -2330,7 +2332,84 @@
         "current_head_checked": "3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.215 indicator/data get_data_service current-HEAD contradiction / ownership decision with no source edits."
+      "next_gate": "Superseded by G2.215 indicator/data get_data_service ownership decision."
+    },
+    {
+      "id": "g2-215-indicator-data-get-data-service-ownership-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.214 non-Strategy provider governance queue refresh / next-candidate selection",
+      "source_edit_authority": false,
+      "parent_github_pr": 367,
+      "parent_merge_commit": "a508fb263173b2014d307c4baec3b1eca0f42340",
+      "evidence": [
+        ".planning/codebase/generated/indicator-data-get-data-service-ownership-decision-2026-05-28.json",
+        "docs/reports/quality/backend-indicator-data-get-data-service-ownership-decision-2026-05-28.md",
+        "governance/mainline/task-cards/pr-368.yaml"
+      ],
+      "target": {
+        "symbol": "get_data_service",
+        "definition": "web/backend/app/services/data_service.py:466",
+        "classification": "DataService singleton/backing API"
+      },
+      "gitnexus_impact": {
+        "risk": "CRITICAL",
+        "impacted_count": 5,
+        "direct_callers": 3,
+        "processes_affected": 7,
+        "modules_affected": 2,
+        "direct_symbols": [
+          "web/backend/app/api/indicators/indicator_cache.py:calculate_indicators",
+          "web/backend/app/api/indicators/indicator_cache.py:_calculate_single_indicator",
+          "web/backend/app/api/v1/strategy/indicators.py:get_technical_indicators"
+        ]
+      },
+      "static_source_scan": {
+        "direct_get_data_service_source_calls": 2,
+        "provider_wrappers": [
+          "web/backend/app/api/indicators/indicator_cache.py:get_indicator_data_service",
+          "web/backend/app/api/v1/strategy/indicators.py:get_strategy_indicator_data_service"
+        ],
+        "interpretation": "Route handlers consume DataService through FastAPI Depends provider parameters; current source shape is provider-wrapper based."
+      },
+      "ownership_classification": {
+        "data_service_singleton_backing_api": {
+          "files": [
+            "web/backend/app/services/data_service.py"
+          ],
+          "disposition": "retain; source changes require separate authorization"
+        },
+        "indicator_route_dependency_provider": {
+          "files": [
+            "web/backend/app/api/indicators/indicator_cache.py"
+          ],
+          "disposition": "active route provider surface; not direct route-body singleton debt"
+        },
+        "strategy_technical_indicator_route_provider": {
+          "files": [
+            "web/backend/app/api/v1/strategy/indicators.py"
+          ],
+          "disposition": "route/provider surface only; do not reopen closed Strategy getter residuals"
+        },
+        "indicator_helper_call_chain": {
+          "files": [
+            "web/backend/app/api/indicators/indicator_cache.py"
+          ],
+          "disposition": "graph participant receiving injected data_service; not a separate direct getter call site"
+        }
+      },
+      "decision": {
+        "older_low_retained_wording_superseded": true,
+        "source_lane_selected": false,
+        "implementation_authorized": false,
+        "classification": "critical shared service backing API with active route dependency-provider consumers"
+      },
+      "freshness": {
+        "current_head_checked": "a508fb263173b2014d307c4baec3b1eca0f42340",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.216 indicator/data DataService singleton provider authorization package with no source edits."
     },
     {
       "id": "core-batch2-reconciliation",

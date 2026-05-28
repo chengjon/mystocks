@@ -1,0 +1,160 @@
+{
+  "schema_version": "2026-05-28.g2-service-lifecycle-decision.v1",
+  "generated_at": "2026-05-28T23:51:14+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "a508fb263173b2014d307c4baec3b1eca0f42340",
+  "split_branch": "g2-215-indicator-data-get-data-service-decision",
+  "owner_lane": "G/#79 service lifecycle DI",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "g2-214-nonstrategy-provider-queue-refresh",
+    "github_pr": 367,
+    "merge_commit": "a508fb263173b2014d307c4baec3b1eca0f42340",
+    "decision": "select G2.215 get_data_service current-HEAD contradiction / ownership decision"
+  },
+  "target": {
+    "symbol": "get_data_service",
+    "definition": {
+      "file": "web/backend/app/services/data_service.py",
+      "line": 466,
+      "classification": "DataService singleton/backing API"
+    }
+  },
+  "gitnexus_impact": {
+    "risk": "CRITICAL",
+    "impacted_count": 5,
+    "direct_callers": 3,
+    "processes_affected": 7,
+    "modules_affected": 2,
+    "direct_symbols": [
+      {
+        "name": "calculate_indicators",
+        "file": "web/backend/app/api/indicators/indicator_cache.py",
+        "depth": 1,
+        "confidence": 0.9
+      },
+      {
+        "name": "_calculate_single_indicator",
+        "file": "web/backend/app/api/indicators/indicator_cache.py",
+        "depth": 1,
+        "confidence": 0.9
+      },
+      {
+        "name": "get_technical_indicators",
+        "file": "web/backend/app/api/v1/strategy/indicators.py",
+        "depth": 1,
+        "confidence": 0.9
+      }
+    ],
+    "affected_modules": [
+      {
+        "name": "Indicators",
+        "impact": "direct",
+        "hits": 4
+      },
+      {
+        "name": "Strategy",
+        "impact": "direct",
+        "hits": 1
+      }
+    ]
+  },
+  "static_source_scan": {
+    "scope": [
+      "web/backend/app/services/data_service.py",
+      "web/backend/app/api/indicators/indicator_cache.py",
+      "web/backend/app/api/v1/strategy/indicators.py"
+    ],
+    "direct_get_data_service_source_calls": 2,
+    "occurrences": [
+      {
+        "file": "web/backend/app/services/data_service.py",
+        "line": 466,
+        "text": "def get_data_service() -> DataService:"
+      },
+      {
+        "file": "web/backend/app/api/indicators/indicator_cache.py",
+        "line": 40,
+        "text": "from app.services.data_service import DataService, InvalidDateRangeError, StockDataNotFoundError, get_data_service"
+      },
+      {
+        "file": "web/backend/app/api/indicators/indicator_cache.py",
+        "line": 49,
+        "text": "return get_data_service()"
+      },
+      {
+        "file": "web/backend/app/api/v1/strategy/indicators.py",
+        "line": 17,
+        "text": "from app.services.data_service import DataService, StockDataNotFoundError, get_data_service"
+      },
+      {
+        "file": "web/backend/app/api/v1/strategy/indicators.py",
+        "line": 30,
+        "text": "return get_data_service()"
+      }
+    ],
+    "interpretation": "Current source has provider-wrapper calls to get_data_service; route handlers consume DataService through Depends provider parameters."
+  },
+  "ownership_classification": [
+    {
+      "surface": "DataService singleton/backing API",
+      "files": [
+        "web/backend/app/services/data_service.py"
+      ],
+      "current_state": "active global singleton fallback",
+      "decision": "retain; requires a separate authorization package before source changes"
+    },
+    {
+      "surface": "Indicator route dependency provider",
+      "files": [
+        "web/backend/app/api/indicators/indicator_cache.py"
+      ],
+      "current_state": "route handlers depend on get_indicator_data_service via FastAPI Depends",
+      "decision": "active route provider surface; do not treat as direct route-body singleton debt"
+    },
+    {
+      "surface": "Strategy technical-indicator route dependency provider",
+      "files": [
+        "web/backend/app/api/v1/strategy/indicators.py"
+      ],
+      "current_state": "strategy technical-indicator route depends on get_strategy_indicator_data_service via FastAPI Depends",
+      "decision": "route/provider surface only; do not reopen the closed Strategy getter residual track from this evidence"
+    },
+    {
+      "surface": "Indicator helper call chain",
+      "files": [
+        "web/backend/app/api/indicators/indicator_cache.py"
+      ],
+      "current_state": "_calculate_single_indicator receives data_service as a parameter from route dependency injection",
+      "decision": "graph impact participant; not a separate direct get_data_service call site"
+    }
+  ],
+  "decision": {
+    "current_head_contradiction_resolved": true,
+    "older_low_retained_wording_superseded": true,
+    "classification": "critical shared service backing API with active route dependency-provider consumers",
+    "source_lane_selected": false,
+    "implementation_authorized": false,
+    "reason": "CRITICAL graph impact is real at route/process level, but current source shape is provider-wrapper based. Ownership must be split before any implementation."
+  },
+  "next_gate": {
+    "id": "G2.216",
+    "name": "indicator/data DataService singleton provider authorization package",
+    "type": "authorization_package",
+    "source_edit_authority": false,
+    "purpose": "define whether a future source lane may add a DataService provider/reset seam while preserving get_data_service default singleton fallback and route provider compatibility",
+    "must_not_batch": [
+      "Strategy getter residual reopen",
+      "route/OpenAPI contract changes",
+      "trade evidence provider work",
+      "cache prewarming provider work",
+      "data-quality monitor source reopen",
+      "realtime streaming/socket work"
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "a508fb263173b2014d307c4baec3b1eca0f42340",
+    "stale_if_head_mismatch": true
+  }
+}
