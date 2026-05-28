@@ -1,0 +1,110 @@
+{
+  "schema_version": "2026-05-28.g2-197.closeout-refresh.v1",
+  "generated_at": "2026-05-28T09:14:57+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb",
+  "worktree_branch": "g2-197-data-quality-monitor-closeout-refresh",
+  "status": "for_review",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "g2-196-data-quality-adapter-split-constructor-provider-implementation",
+    "github_pr": 349,
+    "state": "MERGED",
+    "merged_at": "2026-05-28T01:11:29Z",
+    "merge_commit": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb"
+  },
+  "closed_surface": {
+    "adapter_split": {
+      "files": 8,
+      "subclass_get_data_quality_monitor_calls": 0,
+      "subclass_get_data_quality_monitor_imports": 0,
+      "base_adapter_singleton_fallback_calls": 1,
+      "base_adapter_singleton_fallback_imports": 1,
+      "constructors_accepting_quality_monitor": 8,
+      "decision": "closed_for_subclass_constructor_provider_migration; BaseAdapter fallback retained for compatibility"
+    }
+  },
+  "residual_inventory": {
+    "files_scanned": 152,
+    "files_with_monitor_refs": 15,
+    "buckets": {
+      "adapters_split": {
+        "files": 8,
+        "getter_calls": 1,
+        "getter_imports": 1,
+        "decision": "closed; only BaseAdapter fallback remains"
+      },
+      "service_adapters": {
+        "files": 2,
+        "getter_calls": 2,
+        "getter_imports": 2,
+        "paths": [
+          "web/backend/app/services/adapters/dashboard_adapter.py",
+          "web/backend/app/services/adapters/data_adapter.py"
+        ],
+        "decision": "defer to residual adapter ownership decision"
+      },
+      "data_adapters": {
+        "files": 2,
+        "getter_calls": 2,
+        "getter_imports": 2,
+        "paths": [
+          "web/backend/app/services/data_adapters/dashboard.py",
+          "web/backend/app/services/data_adapters/data_source.py"
+        ],
+        "decision": "defer to legacy data adapter compatibility decision"
+      },
+      "market_data_adapter_compatibility": {
+        "files": 1,
+        "getter_calls": 1,
+        "getter_imports": 1,
+        "paths": [
+          "web/backend/app/services/market_data_adapter.py"
+        ],
+        "decision": "defer as root compatibility facade surface"
+      },
+      "service_wrapper_and_canonical_monitor": {
+        "files": 2,
+        "getter_calls": 2,
+        "getter_imports": 1,
+        "paths": [
+          "web/backend/app/services/_data_quality_monitor_singleton.py",
+          "web/backend/app/services/data_quality_monitor.py"
+        ],
+        "decision": "retain backing API and canonical implementation; not a deletion lane"
+      }
+    }
+  },
+  "recommended_next_gate": {
+    "id": "g2-198-data-quality-residual-adapter-ownership-decision",
+    "type": "decision_package",
+    "source_edit_authority": false,
+    "purpose": "decide whether the next data-quality monitor lane should target service adapters, legacy data adapters, market_data_adapter compatibility, or wrapper retention; do not open source implementation directly from G2.197"
+  },
+  "verification": {
+    "inventory_script": "scanned web/backend/app/services/**/*.py and counted get_data_quality_monitor/DataQualityMonitor/quality_monitor references",
+    "git_head": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb",
+    "worktree_status": "clean before edits",
+    "json_parse": "passed",
+    "markdown_governance": "errors=0, checked_files=6",
+    "openspec_validate": "migrate-backend-singletons-to-lifecycle-di valid",
+    "mainline_scope_gate": "passed after task-card required governance metadata was added",
+    "gitnexus_detect_changes_staged": {
+      "risk": "low",
+      "changed_files": 9,
+      "changed_symbols": 0,
+      "affected_processes": 0
+    }
+  },
+  "forbidden_scope_preserved": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ]
+}

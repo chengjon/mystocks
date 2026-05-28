@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T07:45:53+08:00`
-- Base HEAD checked: `fabd674e8a748cdd2c51a80eebb5ad20b52bc737`
+- Prepared at: `2026-05-28T09:14:57+08:00`
+- Base HEAD checked: `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -48,7 +48,8 @@ It proved a repeatable conveyor:
 | G2.193 data-quality route provider closeout / remaining candidate refresh | Merged by PR `#346` | Marks route-body provider migration closed and selects adapter constructor seam design / test-double decision as the next governance gate |
 | G2.194 data-quality adapter constructor seam design | Merged by PR `#347` | Selects `adapter_split` constructor provider authorization as the next gate, defines test-double contract, and keeps source authority at none |
 | G2.195 data-quality `adapter_split` constructor provider authorization | Merged by PR `#348` | Authorizes the future G2.196 `adapter_split` constructor provider implementation lane while keeping source authority at none in that PR |
-| G2.196 data-quality `adapter_split` constructor provider implementation | For review | Implements optional constructor monitor injection in `adapter_split` only, with focused TDD evidence |
+| G2.196 data-quality `adapter_split` constructor provider implementation | Merged by PR `#349` | Implements optional constructor monitor injection in `adapter_split` only, with focused TDD evidence |
+| G2.197 data-quality monitor closeout / remaining candidate refresh | For review | Closes the `adapter_split` subclass constructor lane and refreshes remaining service adapter, legacy adapter, compatibility facade, and wrapper surfaces |
 
 ## Current Strategy Getter Residuals
 
@@ -316,12 +317,41 @@ Focused verification:
 | Import smoke | Passed with minimal dummy required env |
 | OpenSpec strict validate | Valid; PostHog network flush noise only |
 
+PR `#349` merged this lane at
+`e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`.
+
+## G2.197 Data-Quality Monitor Closeout / Refresh
+
+At HEAD `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`, PR `#349` is merged and
+the G2.196 `adapter_split` implementation is closed.
+
+Closeout result:
+
+| Item | Current value |
+|---|---:|
+| `adapter_split` subclass `get_data_quality_monitor()` calls | 0 |
+| `adapter_split` subclass `get_data_quality_monitor` imports | 0 |
+| `BaseAdapter` compatibility fallback calls | 1 |
+| Constructors accepting `quality_monitor` | 8 |
+
+Remaining data-quality monitor surfaces:
+
+| Surface | Files | Getter calls | Current decision |
+|---|---:|---:|---|
+| `adapter_split` | 8 | 1 | Closed; only `BaseAdapter` compatibility fallback remains |
+| service adapters | 2 | 2 | Defer to residual adapter ownership decision |
+| legacy data adapters | 2 | 2 | Defer to owner-specific compatibility decision |
+| `market_data_adapter.py` | 1 | 1 | Defer as root compatibility facade surface |
+| singleton wrapper / canonical monitor | 2 | 2 | Retain backing API and canonical implementation; not a deletion lane |
+
+G2.197 recommends G2.198 as a decision-only residual adapter ownership package.
+It does not authorize another source implementation lane.
+
 ## Next Gates
 
-- Review G2.196 data-quality `adapter_split` constructor provider implementation.
-- If accepted, start G2.197 data-quality monitor closeout / remaining candidate
-  refresh.
-- Do not start another data-quality source implementation directly from G2.196.
+- Review G2.197 data-quality monitor closeout / remaining candidate refresh.
+- If accepted, start G2.198 data-quality residual adapter ownership decision.
+- Do not start another data-quality source implementation directly from G2.197.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

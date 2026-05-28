@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T07:45:53+08:00`
-- Base HEAD checked: `fabd674e8a748cdd2c51a80eebb5ad20b52bc737`
+- Prepared at: `2026-05-28T09:14:57+08:00`
+- Base HEAD checked: `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -53,8 +53,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-adapter-seam-design-decision-2026-05-28.md` | G2.194 human-readable adapter seam design decision report | Accepted by PR `#347`; superseded for implementation authorization by G2.195 |
 | `.planning/codebase/generated/data-quality-adapter-split-constructor-provider-authorization-2026-05-28.json` | G2.195 data-quality `adapter_split` constructor provider authorization evidence | Accepted by PR `#348`; superseded for implementation evidence by G2.196 |
 | `docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-authorization-2026-05-28.md` | G2.195 human-readable authorization package | Accepted by PR `#348`; superseded for implementation evidence by G2.196 |
-| `.planning/codebase/generated/data-quality-adapter-split-constructor-provider-implementation-2026-05-28.json` | G2.196 data-quality `adapter_split` constructor provider implementation evidence | Current for HEAD `fabd674e8a748cdd2c51a80eebb5ad20b52bc737`; review input until PR `#349` is accepted |
-| `docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-implementation-2026-05-28.md` | G2.196 human-readable implementation report | Review input until PR `#349` is accepted |
+| `.planning/codebase/generated/data-quality-adapter-split-constructor-provider-implementation-2026-05-28.json` | G2.196 data-quality `adapter_split` constructor provider implementation evidence | Accepted by PR `#349`; superseded for closeout / remaining candidate refresh by G2.197 |
+| `docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-implementation-2026-05-28.md` | G2.196 human-readable implementation report | Accepted by PR `#349`; superseded for closeout / remaining candidate refresh by G2.197 |
+| `.planning/codebase/generated/data-quality-monitor-closeout-refresh-2026-05-28.json` | G2.197 data-quality monitor closeout / remaining candidate refresh evidence | Current for HEAD `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`; review input until PR `#350` is accepted |
+| `docs/reports/quality/backend-data-quality-monitor-closeout-refresh-2026-05-28.md` | G2.197 human-readable closeout / refresh report | Review input until PR `#350` is accepted |
 
 ## External State Inputs
 
@@ -74,7 +76,8 @@ state transition.
 | GitHub PR `#346` | `MERGED` | G2.193 data-quality route provider closeout / refresh merged by commit `ea659d52903a5e9884d396069526ea08f15109a6` |
 | GitHub PR `#347` | `MERGED` | G2.194 data-quality adapter constructor seam design merged by commit `e30e16605df6aaa333989a7ac247bab3dcd0dd01` |
 | GitHub PR `#348` | `MERGED` | G2.195 data-quality adapter_split constructor provider authorization merged by commit `fabd674e8a748cdd2c51a80eebb5ad20b52bc737` |
-| `origin/wip/root-dirty-20260403` | `fabd674e8a748cdd2c51a80eebb5ad20b52bc737` | Base used for this adapter_split constructor provider implementation branch |
+| GitHub PR `#349` | `MERGED` | G2.196 data-quality adapter_split constructor provider implementation merged by commit `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb` |
+| `origin/wip/root-dirty-20260403` | `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb` | Base used for this closeout / remaining candidate refresh branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

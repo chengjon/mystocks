@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T07:45:53+08:00",
+  "generated_at": "2026-05-28T09:14:57+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "fabd674e8a748cdd2c51a80eebb5ad20b52bc737",
-  "split_branch": "g2-196-data-quality-adapter-split-implementation",
-  "scope": "data_quality_adapter_split_constructor_provider_implementation",
-  "source_edit_authority": true,
+  "base_head": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb",
+  "split_branch": "g2-197-data-quality-monitor-closeout-refresh",
+  "scope": "data_quality_monitor_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -1180,7 +1180,7 @@
     {
       "id": "g2-196-data-quality-adapter-split-constructor-provider-implementation",
       "type": "implementation_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.195 data-quality adapter_split constructor provider authorization",
       "source_edit_authority": true,
@@ -1225,10 +1225,90 @@
       "gitnexus_detect_changes_staged": "low risk; 18 changed files, 84 changed symbols, 0 affected processes"
     },
       "freshness": {
-        "current_head_checked": "fabd674e8a748cdd2c51a80eebb5ad20b52bc737",
+        "current_head_checked": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.197 closeout / remaining candidate refresh before selecting another data-quality monitor migration lane."
+      "github_pr": {
+        "number": 349,
+        "url": "https://github.com/chengjon/mystocks/pull/349",
+        "state": "MERGED",
+        "merged_at": "2026-05-28T01:11:29Z",
+        "head_ref": "g2-196-data-quality-adapter-split-implementation",
+        "merge_commit": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb"
+      },
+      "next_gate": "Superseded by G2.197 data-quality monitor closeout / remaining candidate refresh."
+    },
+    {
+      "id": "g2-197-data-quality-monitor-closeout-refresh",
+      "type": "closeout_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.196 data-quality adapter_split constructor provider implementation",
+      "source_edit_authority": false,
+      "evidence": [
+        ".planning/codebase/generated/data-quality-monitor-closeout-refresh-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-monitor-closeout-refresh-2026-05-28.md",
+        "governance/mainline/task-cards/pr-350.yaml"
+      ],
+      "closeout_result": {
+        "github_pr": {
+          "number": 349,
+          "url": "https://github.com/chengjon/mystocks/pull/349",
+          "state": "MERGED",
+          "merge_commit": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb"
+        },
+        "adapter_split_subclass_get_data_quality_monitor_calls": 0,
+        "adapter_split_subclass_get_data_quality_monitor_imports": 0,
+        "base_adapter_singleton_fallback_calls": 1,
+        "constructors_accepting_quality_monitor": 8
+      },
+      "candidate_refresh": {
+        "adapter_split": {
+          "files": 8,
+          "getter_calls": 1,
+          "decision": "closed; only BaseAdapter compatibility fallback remains"
+        },
+        "service_adapters": {
+          "files": 2,
+          "getter_calls": 2,
+          "paths": [
+            "web/backend/app/services/adapters/dashboard_adapter.py",
+            "web/backend/app/services/adapters/data_adapter.py"
+          ],
+          "decision": "defer to residual adapter ownership decision"
+        },
+        "legacy_data_adapters": {
+          "files": 2,
+          "getter_calls": 2,
+          "paths": [
+            "web/backend/app/services/data_adapters/dashboard.py",
+            "web/backend/app/services/data_adapters/data_source.py"
+          ],
+          "decision": "defer to owner-specific compatibility decision"
+        },
+        "market_data_adapter_compatibility": {
+          "files": 1,
+          "getter_calls": 1,
+          "paths": [
+            "web/backend/app/services/market_data_adapter.py"
+          ],
+          "decision": "defer as root compatibility facade surface"
+        },
+        "service_wrapper_and_canonical_monitor": {
+          "files": 2,
+          "getter_calls": 2,
+          "paths": [
+            "web/backend/app/services/_data_quality_monitor_singleton.py",
+            "web/backend/app/services/data_quality_monitor.py"
+          ],
+          "decision": "retain backing API and canonical implementation; not a deletion lane"
+        }
+      },
+      "freshness": {
+        "current_head_checked": "e4245ebe54c5ad6d2aebf4802d165d59700c9eeb",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.198 data-quality residual adapter ownership decision; do not start source implementation directly from G2.197."
     },
     {
       "id": "core-batch2-reconciliation",
