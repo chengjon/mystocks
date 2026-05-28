@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T17:17:56+08:00",
+  "generated_at": "2026-05-28T17:41:53+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "44909f5d048700115da6a9eb9345957b8af3d077",
-  "split_branch": "g2-206-data-quality-market-data-adapter-ownership-decision",
-  "scope": "data_quality_market_data_adapter_ownership_decision",
+  "base_head": "ded789ee5d49d6ddcce5d8a69af1901a8481d1f0",
+  "split_branch": "g2-207-data-quality-market-data-adapter-provider-authorization",
+  "scope": "data_quality_market_data_adapter_provider_authorization",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -1833,12 +1833,14 @@
     {
       "id": "g2-206-data-quality-market-data-adapter-ownership-decision",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh",
       "source_edit_authority": false,
       "parent_github_pr": 358,
       "parent_merge_commit": "44909f5d048700115da6a9eb9345957b8af3d077",
+      "github_pr": 359,
+      "merge_commit": "ded789ee5d49d6ddcce5d8a69af1901a8481d1f0",
       "evidence": [
         ".planning/codebase/generated/data-quality-market-data-adapter-ownership-decision-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-market-data-adapter-ownership-decision-2026-05-28.md",
@@ -1874,10 +1876,67 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "44909f5d048700115da6a9eb9345957b8af3d077",
+        "current_head_checked": "ded789ee5d49d6ddcce5d8a69af1901a8481d1f0",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.207 data-quality market_data_adapter.py provider seam authorization; no source implementation from G2.206."
+      "next_gate": "Superseded by G2.207 data-quality market_data_adapter.py provider seam authorization."
+    },
+    {
+      "id": "g2-207-data-quality-market-data-adapter-provider-authorization",
+      "type": "authorization_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.206 data-quality market_data_adapter.py compatibility facade ownership decision",
+      "source_edit_authority": false,
+      "parent_github_pr": 359,
+      "parent_merge_commit": "ded789ee5d49d6ddcce5d8a69af1901a8481d1f0",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-market-data-adapter-provider-authorization-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-market-data-adapter-provider-authorization-2026-05-28.md",
+        "governance/mainline/task-cards/pr-360.yaml"
+      ],
+      "authorized_future_lane": {
+        "id": "G2.208",
+        "name": "data-quality market_data_adapter.py provider seam implementation",
+        "allowed_source_paths": [
+          "web/backend/app/services/market_data_adapter.py"
+        ],
+        "allowed_test_paths": [
+          "web/backend/tests/test_market_data_adapter_quality_monitor_provider.py",
+          "web/backend/tests/test_market_data_service_getter_retirement.py"
+        ],
+        "consumer_check_paths": [
+          "web/backend/tests/_test_data_source_factory_management.py"
+        ]
+      },
+      "required_future_shape": {
+        "preserve_positional_config": true,
+        "keyword_only_optional_injection": true,
+        "preserve_singleton_fallback": true,
+        "injected_monitor_bypasses_module_getter": true,
+        "preserve_data_source_factory_constructor_call": true
+      },
+      "forbidden_future_expansion_without_new_decision": [
+        "web/backend/app/services/data_source_factory/**",
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py",
+        "web/backend/app/services/adapters/**",
+        "web/backend/app/services/adapters_split/**",
+        "web/backend/app/services/data_adapters/**",
+        "web/backend/app/api/**",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "ded789ee5d49d6ddcce5d8a69af1901a8481d1f0",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.208 data-quality market_data_adapter.py provider seam implementation with authorized paths only."
     },
     {
       "id": "core-batch2-reconciliation",
