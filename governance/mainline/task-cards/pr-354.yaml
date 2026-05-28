@@ -1,0 +1,117 @@
+version: "v0.2"
+
+task:
+  id: "pr-354"
+  title: "Close data-quality canonical service adapter provider lane"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-canonical-service-adapter-closeout-refresh"
+  objective: "close the accepted canonical service adapter provider implementation and refresh remaining data-quality monitor surfaces"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Governance-only closeout and residual refresh; no route paths, HTTP methods, response models, OpenAPI examples, frontend behavior, PM2 workflows, or public API ownership changes"
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-354.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/FUNCTION_TREE.md"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "governance/function-tree/catalog.yaml"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source implementation"
+  - "test source edits"
+  - "legacy data adapter migration"
+  - "market_data_adapter.py edits"
+  - "singleton wrapper deletion"
+  - "route changes"
+  - "OpenAPI contract changes"
+  - "frontend changes"
+  - "OpenSpec proposal creation"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-354.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-quality-canonical-service-adapter-closeout-refresh-2026-05-28.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-354.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha cbd9b3a7ee730c72a63dbc7adb6490564c12c71e --head-sha HEAD --report /tmp/pr354-mainline-governance-report.json"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Treating G2.201 as source authority would bypass the required G2.202 decision gate."
+    - "Legacy data adapter graph impact is low or empty, but static non-use is not deletion authority."
+  rollback_plan: "revert this PR to restore the post-#353 steward state and rerun the closeout / residual refresh."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "close canonical service adapter provider implementation and refresh residual data-quality monitor surfaces"
+    modified_scope: "governance reports, generated evidence, steward tree files, and one task card only"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; no backend source files are modified"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if the residual classification or next gate is incorrect"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T11:26:09+08:00"
+    approval_note: "Human maintainer approved continuing after PR #353 acceptance; this lane is closeout and residual refresh only."
+    secondary_approved: true

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T10:53:34+08:00`
-- Base HEAD checked: `41bef3787160ec3bf7b9b31220df9d99a3437474`
+- Prepared at: `2026-05-28T11:30:22+08:00`
+- Base HEAD checked: `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -52,7 +52,8 @@ It proved a repeatable conveyor:
 | G2.197 data-quality monitor closeout / remaining candidate refresh | Merged by PR `#350` | Closes the `adapter_split` subclass constructor lane and refreshes remaining service adapter, legacy adapter, compatibility facade, and wrapper surfaces |
 | G2.198 data-quality residual adapter ownership decision | Merged by PR `#351` | Selects canonical service adapters as the next authorization target while deferring legacy data adapters, `market_data_adapter.py`, and wrapper retention |
 | G2.199 data-quality canonical service adapter provider authorization | Merged by PR `#352` | Authorizes future G2.200 implementation for canonical service adapters only; no source edits in G2.199 |
-| G2.200 data-quality canonical service adapter provider implementation | For review | Implements optional constructor monitor injection in the two canonical service adapters with focused TDD evidence |
+| G2.200 data-quality canonical service adapter provider implementation | Merged by PR `#353` | Implements optional constructor monitor injection in the two canonical service adapters with focused TDD evidence |
+| G2.201 data-quality canonical service adapter closeout / refresh | For review | Closes the canonical service adapter lane and selects legacy data adapter compatibility ownership as the next decision gate |
 
 ## Current Strategy Getter Residuals
 
@@ -439,11 +440,47 @@ Focused verification:
 | Import smoke | Passed with minimal dummy required env |
 | OpenSpec strict validate | Valid; PostHog network flush noise only |
 
+PR `#353` merged this lane at
+`cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`.
+
+## G2.201 Data-Quality Canonical Service Adapter Closeout / Refresh
+
+At HEAD `cbd9b3a7ee730c72a63dbc7adb6490564c12c71e`, PR `#353` is merged and
+G2.200 is accepted.
+
+Closeout result:
+
+| Surface | State | Decision |
+|---|---|---|
+| Canonical service adapters | Closed | `DashboardDataSourceAdapter` and `DataDataSourceAdapter` now support keyword-only `quality_monitor` injection while preserving singleton fallback |
+| Focused tests | Closed | Post-merge focused regression package records `21 passed` |
+| Function-tree / mainline mapping | Closed | `domain-01-node-03` maps the two canonical service adapter paths and focused test |
+
+Remaining `get_data_quality_monitor()` surface after G2.201 refresh:
+
+| Bucket | Files | Calls | Current decision |
+|---|---:|---:|---|
+| Route provider backing | 1 | 1 | Retained provider backing getter from prior route provider lane |
+| `adapter_split` base fallback | 1 | 1 | Closed adapter_split lane; retain default singleton fallback |
+| Canonical service adapter fallback | 2 | 2 | Closed by G2.200; retain fallback for default construction |
+| Legacy data adapters | 2 | 2 | Select as G2.202 compatibility ownership decision target; no source authority from G2.201 |
+| `market_data_adapter.py` facade | 1 | 1 | Defer as root compatibility facade surface until an owner-specific decision package |
+| Singleton wrapper / backing API | 1 | 2 | Retain backing API; not a deletion lane |
+
+GitNexus reference for deferred surfaces:
+
+| Target | Risk | Impact |
+|---|---|---|
+| `web/backend/app/services/data_adapters/dashboard.py` | LOW | `impacted_count=0`, `processes_affected=0` |
+| `web/backend/app/services/data_adapters/data_source.py` | LOW | `impacted_count=0`, `processes_affected=0` |
+| `web/backend/app/services/market_data_adapter.py` | LOW | `impacted_count=3`, `direct=1`, `processes_affected=0` |
+| `web/backend/app/services/_data_quality_monitor_singleton.py` | LOW | `impacted_count=19`, `direct=1`, `processes_affected=0` |
+
 ## Next Gates
 
-- Review G2.200 data-quality canonical service adapter provider implementation.
-- If accepted, start G2.201 closeout / residual refresh before selecting another data-quality monitor surface.
-- Do not start another source lane before G2.200 is accepted and closed out.
+- Review G2.201 data-quality canonical service adapter closeout / refresh.
+- If accepted, start G2.202 data-quality legacy adapter compatibility ownership decision.
+- Do not start a source lane for legacy adapters before G2.202 is accepted.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
