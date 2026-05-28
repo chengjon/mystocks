@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-28T09:14:57+08:00`
-- Base HEAD checked: `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`
+- Prepared at: `2026-05-28T09:35:10+08:00`
+- Base HEAD checked: `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -55,8 +55,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-authorization-2026-05-28.md` | G2.195 human-readable authorization package | Accepted by PR `#348`; superseded for implementation evidence by G2.196 |
 | `.planning/codebase/generated/data-quality-adapter-split-constructor-provider-implementation-2026-05-28.json` | G2.196 data-quality `adapter_split` constructor provider implementation evidence | Accepted by PR `#349`; superseded for closeout / remaining candidate refresh by G2.197 |
 | `docs/reports/quality/backend-data-quality-adapter-split-constructor-provider-implementation-2026-05-28.md` | G2.196 human-readable implementation report | Accepted by PR `#349`; superseded for closeout / remaining candidate refresh by G2.197 |
-| `.planning/codebase/generated/data-quality-monitor-closeout-refresh-2026-05-28.json` | G2.197 data-quality monitor closeout / remaining candidate refresh evidence | Current for HEAD `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`; review input until PR `#350` is accepted |
-| `docs/reports/quality/backend-data-quality-monitor-closeout-refresh-2026-05-28.md` | G2.197 human-readable closeout / refresh report | Review input until PR `#350` is accepted |
+| `.planning/codebase/generated/data-quality-monitor-closeout-refresh-2026-05-28.json` | G2.197 data-quality monitor closeout / remaining candidate refresh evidence | Accepted by PR `#350`; superseded for residual adapter ownership decision by G2.198 |
+| `docs/reports/quality/backend-data-quality-monitor-closeout-refresh-2026-05-28.md` | G2.197 human-readable closeout / refresh report | Accepted by PR `#350`; superseded for residual adapter ownership decision by G2.198 |
+| `.planning/codebase/generated/data-quality-residual-adapter-ownership-decision-2026-05-28.json` | G2.198 residual data-quality adapter ownership decision evidence | Current for HEAD `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`; review input until PR `#351` is accepted |
+| `docs/reports/quality/backend-data-quality-residual-adapter-ownership-decision-2026-05-28.md` | G2.198 human-readable residual adapter ownership decision report | Review input until PR `#351` is accepted |
 
 ## External State Inputs
 
@@ -77,7 +79,8 @@ state transition.
 | GitHub PR `#347` | `MERGED` | G2.194 data-quality adapter constructor seam design merged by commit `e30e16605df6aaa333989a7ac247bab3dcd0dd01` |
 | GitHub PR `#348` | `MERGED` | G2.195 data-quality adapter_split constructor provider authorization merged by commit `fabd674e8a748cdd2c51a80eebb5ad20b52bc737` |
 | GitHub PR `#349` | `MERGED` | G2.196 data-quality adapter_split constructor provider implementation merged by commit `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb` |
-| `origin/wip/root-dirty-20260403` | `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb` | Base used for this closeout / remaining candidate refresh branch |
+| GitHub PR `#350` | `MERGED` | G2.197 data-quality monitor closeout / refresh merged by commit `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` |
+| `origin/wip/root-dirty-20260403` | `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` | Base used for this residual adapter ownership decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

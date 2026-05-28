@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T09:14:57+08:00`
-- Base HEAD checked: `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb`
+- Prepared at: `2026-05-28T09:35:10+08:00`
+- Base HEAD checked: `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -34,12 +34,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#347` | `g2-194-data-quality-adapter-seam-design` | `wip/root-dirty-20260403` | `MERGED` at `e30e16605df6aaa333989a7ac247bab3dcd0dd01` | Governance design decision selecting G2.195 adapter_split constructor provider authorization |
 | `#348` | `g2-195-data-quality-adapter-split-authorization` | `wip/root-dirty-20260403` | `MERGED` at `fabd674e8a748cdd2c51a80eebb5ad20b52bc737` | Authorization package for G2.196 adapter_split constructor provider implementation |
 | `#349` | `g2-196-data-quality-adapter-split-implementation` | `wip/root-dirty-20260403` | `MERGED` at `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb` | Path-limited `adapter_split` constructor provider implementation closed for G2.197 refresh |
+| `#350` | `g2-197-data-quality-monitor-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` | Closeout / remaining candidate refresh selecting G2.198 residual adapter ownership decision |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-197-data-quality-monitor-closeout-refresh` | `origin/wip/root-dirty-20260403` at `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb` | Close out PR `#349`, refresh remaining data-quality monitor candidates, and select the next decision gate | No |
+| `g2-198-data-quality-residual-adapter-ownership-decision` | `origin/wip/root-dirty-20260403` at `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` | Decide residual data-quality monitor adapter ownership and select the next authorization gate | No |
 
 ## OpenSpec Relationship
 
@@ -55,8 +56,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.197 is a governance-only closeout branch after PR `#349` merged G2.196. It
-records the `adapter_split` constructor provider implementation as closed,
-refreshes the remaining service adapter / legacy data adapter / compatibility
-facade / wrapper surfaces, and recommends G2.198 as a decision-only next gate.
-It must not authorize another data-quality monitor source lane directly.
+G2.198 is a governance-only decision branch after PR `#350` merged G2.197. It
+selects canonical service adapters as the next authorization target, defers
+legacy data adapters, `market_data_adapter.py`, and wrapper retention to separate
+decisions, and recommends G2.199 as authorization-only before any source
+implementation.
