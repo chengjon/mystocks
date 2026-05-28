@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T00:20:39+08:00",
+  "generated_at": "2026-05-29T00:46:30+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "cec3f727534008d2a48221c656c22f82f351e3d7",
-  "split_branch": "g2-216-indicator-data-service-provider-authorization",
-  "scope": "indicator_data_data_service_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "68ba10829b89095f8b907d249f59198995543ebc",
+  "split_branch": "g2-217-data-service-provider-reset-seam",
+  "scope": "indicator_data_data_service_provider_reset_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -2417,12 +2417,15 @@
     {
       "id": "g2-216-indicator-data-service-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.215 indicator/data get_data_service ownership decision",
       "source_edit_authority": false,
       "parent_github_pr": 368,
       "parent_merge_commit": "cec3f727534008d2a48221c656c22f82f351e3d7",
+      "github_pr": 369,
+      "head_ref": "g2-216-indicator-data-service-provider-authorization",
+      "merge_commit": "68ba10829b89095f8b907d249f59198995543ebc",
       "evidence": [
         ".planning/codebase/generated/indicator-data-service-provider-authorization-2026-05-29.json",
         "docs/reports/quality/backend-indicator-data-service-provider-authorization-2026-05-29.md",
@@ -2479,7 +2482,71 @@
         "current_head_checked": "cec3f727534008d2a48221c656c22f82f351e3d7",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.217 indicator/data DataService provider/reset seam implementation with path-limited source authority only."
+      "next_gate": "Superseded by G2.217 indicator/data DataService provider/reset seam implementation."
+    },
+    {
+      "id": "g2-217-data-service-provider-reset-seam",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.216 indicator/data DataService provider authorization package",
+      "source_edit_authority": true,
+      "parent_github_pr": 369,
+      "parent_merge_commit": "68ba10829b89095f8b907d249f59198995543ebc",
+      "evidence": [
+        ".planning/codebase/generated/data-service-provider-reset-seam-implementation-2026-05-29.json",
+        "docs/reports/quality/backend-data-service-provider-reset-seam-implementation-2026-05-29.md",
+        "governance/mainline/task-cards/pr-370.yaml"
+      ],
+      "pre_edit_gitnexus_impact": {
+        "repo": "g2-217-data-service-provider-reset-seam",
+        "indexed_at": "2026-05-28T16:41:52.531Z",
+        "target": "get_data_service",
+        "risk": "LOW",
+        "impacted_count": 2,
+        "direct_callers": 2,
+        "processes_affected": 0,
+        "modules_affected": 0
+      },
+      "implemented_surface": {
+        "source_paths": [
+          "web/backend/app/services/data_service.py"
+        ],
+        "test_paths": [
+          "web/backend/tests/test_data_service_singleton_provider.py"
+        ],
+        "added_public_helpers": [
+          "set_data_service_provider",
+          "reset_data_service_provider"
+        ],
+        "preserved_public_helpers": [
+          "get_data_service"
+        ],
+        "required_regression_checks": [
+          "web/backend/tests/test_indicator_registry_route_provider.py",
+          "web/backend/tests/test_v1_indicators_regressions.py"
+        ]
+      },
+      "verification": {
+        "red": "expected ImportError for reset_data_service_provider before implementation",
+        "green": [
+          "web/backend/tests/test_data_service_singleton_provider.py: 2 passed",
+          "web/backend/tests/test_indicator_registry_route_provider.py: 3 passed",
+          "web/backend/tests/test_v1_indicators_regressions.py: 3 passed"
+        ]
+      },
+      "gitnexus_staged_scope": {
+        "risk_level": "high",
+        "changed_files": 11,
+        "changed_symbols": 15,
+        "affected_processes": 12,
+        "interpretation": "File-level attribution marks existing data_service.py methods as modified; cached source diff is localized to typing import, provider/reset helpers, and get_data_service provider branch."
+      },
+      "freshness": {
+        "current_head_checked": "68ba10829b89095f8b907d249f59198995543ebc",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.218 no-source DataService provider/reset seam closeout and residual refresh."
     },
     {
       "id": "core-batch2-reconciliation",

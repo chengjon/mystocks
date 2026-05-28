@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.216 indicator/data `DataService` provider authorization package | G/#79 service lifecycle DI | PR `#368` merged at `cec3f727534008d2a48221c656c22f82f351e3d7`; fresh G2.216 GitNexus evidence reports `get_data_service` as LOW with 2 route-local provider callers | If accepted, start G2.217 path-limited `DataService` provider/reset seam implementation; do not edit source before acceptance |
+| P0 | Review G2.217 indicator/data `DataService` provider/reset seam implementation | G/#79 service lifecycle DI | PR `#369` merged at `68ba10829b89095f8b907d249f59198995543ebc`; G2.217 adds `set_data_service_provider()` / `reset_data_service_provider()` while preserving `get_data_service()` fallback | If accepted, start G2.218 no-source closeout / residual refresh; do not start another source lane directly |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,8 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.216 correctly treat the fresh LOW/direct-2 GitNexus evidence as provider-wrapper confirmation, not deletion evidence?
-- Does G2.216 preserve `get_data_service()` as the public default singleton fallback?
-- Does G2.216 authorize only a future path-limited `data_service.py` provider/reset seam implementation after review?
-- Does G2.216 keep route/OpenAPI, Strategy, data-quality, trade, cache, realtime, and adapter surfaces out of the next implementation lane?
+- Does G2.217 preserve `get_data_service()` as the public default singleton fallback?
+- Does `reset_data_service_provider()` clear both provider override and cached singleton state?
+- Do indicator route provider regressions remain green without route/OpenAPI edits?
+- Does G2.217 keep Strategy, data-quality, trade, cache, realtime, and adapter surfaces out of scope?
+- Is G2.218 correctly positioned as a no-source closeout / residual refresh before another implementation lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

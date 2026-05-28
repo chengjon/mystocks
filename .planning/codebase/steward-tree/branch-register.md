@@ -53,12 +53,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#366` | `g2-213-data-quality-monitor-singleton-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117` | No-source closeout selecting G2.214 non-Strategy provider queue refresh |
 | `#367` | `g2-214-non-strategy-provider-queue-refresh` | `wip/root-dirty-20260403` | `MERGED` at `a508fb263173b2014d307c4baec3b1eca0f42340` | No-source queue refresh selecting G2.215 indicator/data `get_data_service` ownership decision |
 | `#368` | `g2-215-indicator-data-get-data-service-decision` | `wip/root-dirty-20260403` | `MERGED` at `cec3f727534008d2a48221c656c22f82f351e3d7` | No-source ownership decision selecting G2.216 indicator/data `DataService` provider authorization |
+| `#369` | `g2-216-indicator-data-service-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `68ba10829b89095f8b907d249f59198995543ebc` | No-source authorization selecting G2.217 `DataService` provider/reset seam implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-216-indicator-data-service-provider-authorization` | `origin/wip/root-dirty-20260403` at `cec3f727534008d2a48221c656c22f82f351e3d7` | Authorize or reject a future path-limited `DataService` provider/reset seam after G2.215 ownership classification | No |
+| `g2-217-data-service-provider-reset-seam` | `origin/wip/root-dirty-20260403` at `68ba10829b89095f8b907d249f59198995543ebc` | Implement the approved path-limited `DataService` provider/reset seam while preserving default singleton fallback | Yes |
 
 ## OpenSpec Relationship
 
@@ -74,7 +75,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.216 is a no-source authorization branch after PR `#368` merged G2.215. It is
-limited to governance evidence, steward tree updates, and a task card. If
-accepted, the next gate is G2.217 indicator/data `DataService` provider/reset
-seam implementation with path-limited source authority only.
+G2.217 is a path-limited implementation branch after PR `#369` merged G2.216. It
+is limited to `web/backend/app/services/data_service.py`, a focused provider
+test, governance evidence, steward tree updates, and a task card. If accepted,
+the next gate is G2.218 closeout / residual refresh with no source edits.

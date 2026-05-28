@@ -10,7 +10,7 @@ import logging
 import os
 import sys
 from datetime import datetime
-from typing import Dict, Optional, Tuple
+from typing import Callable, Dict, Optional, Tuple
 
 import numpy as np
 import pandas as pd
@@ -461,11 +461,27 @@ class DataService:
 
 # Global singleton
 _data_service = None
+_data_service_provider: Optional[Callable[[], DataService]] = None
+
+
+def set_data_service_provider(provider: Optional[Callable[[], DataService]]) -> None:
+    """Register an explicit DataService provider for lifecycle wiring or tests."""
+    global _data_service_provider
+    _data_service_provider = provider
+
+
+def reset_data_service_provider() -> None:
+    """Reset provider override and cached singleton DataService."""
+    global _data_service, _data_service_provider
+    _data_service_provider = None
+    _data_service = None
 
 
 def get_data_service() -> DataService:
     """获取数据服务单例"""
     global _data_service
+    if _data_service_provider is not None:
+        return _data_service_provider()
     if _data_service is None:
         _data_service = DataService()
     return _data_service

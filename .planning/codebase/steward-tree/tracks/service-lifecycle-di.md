@@ -925,7 +925,7 @@ Direct callers:
 
 Authorization proposal:
 
-- If G2.216 is accepted, future G2.217 may edit only
+- G2.216 was accepted by PR `#369`; G2.217 may edit only
   `web/backend/app/services/data_service.py` plus a focused
   `web/backend/tests/test_data_service_singleton_provider.py`.
 - Future G2.217 must preserve `get_data_service()` as the public default
@@ -935,13 +935,52 @@ Authorization proposal:
 - Future G2.217 must run route-provider regressions for
   `web/backend/tests/test_indicator_registry_route_provider.py` and
   `web/backend/tests/test_v1_indicators_regressions.py`.
-- G2.216 itself has no source authority and makes no runtime change.
+- G2.216 itself had no source authority and made no runtime change.
+
+## G2.217 Indicator/Data DataService Provider/Reset Seam
+
+G2.217 implements the path-limited source lane authorized by G2.216 after PR
+`#369` merged at `68ba10829b89095f8b907d249f59198995543ebc`.
+
+Pre-edit GitNexus impact for `get_data_service`:
+
+| Metric | Value |
+|---|---:|
+| GitNexus risk | `LOW` |
+| GitNexus direct callers | 2 |
+| Affected processes | 0 |
+| Affected modules | 0 |
+
+Implementation surface:
+
+| File | Change |
+|---|---|
+| `web/backend/app/services/data_service.py` | Adds `_data_service_provider`, `set_data_service_provider()`, and `reset_data_service_provider()` while preserving `get_data_service()` default singleton fallback |
+| `web/backend/tests/test_data_service_singleton_provider.py` | Covers provider override and reset-to-default singleton behavior |
+
+Verification evidence:
+
+| Check | Result |
+|---|---|
+| Red provider test | Expected `ImportError` before implementation |
+| Focused provider test | `2 passed` |
+| Indicator route provider regression | `3 passed` |
+| v1 indicator route regression | `3 passed` |
+
+GitNexus staged scope reports `high` risk because file-level attribution marks
+existing `data_service.py` methods as modified. The cached source diff is
+localized to the typing import, provider/reset helpers, and the provider branch
+inside `get_data_service()`.
+
+G2.217 does not edit route wrappers, route/OpenAPI contracts, Strategy residuals,
+data-quality monitor source, trade/cache/realtime providers, `adapter_split`, or
+`market_data_adapter.py`.
 
 ## Next Gates
 
-- Review G2.216 indicator/data `DataService` provider authorization package.
-- If accepted, start G2.217 indicator/data `DataService` provider/reset seam implementation with path-limited source authority only.
-- Do not start source implementation from G2.216 until this authorization package is reviewed and accepted.
+- Review G2.217 indicator/data `DataService` provider/reset seam implementation.
+- If accepted, start G2.218 no-source closeout / residual refresh before selecting another source lane.
+- Do not start another source implementation directly from G2.217.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
