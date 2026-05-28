@@ -41,12 +41,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#354` | `g2-201-data-quality-canonical-service-adapter-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `e672f1523c30037202310278daf71488681d9a1f` | Governance closeout selecting G2.202 legacy adapter compatibility ownership decision |
 | `#355` | `g2-202-data-quality-legacy-adapter-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f` | Decision package selecting G2.203 legacy adapter compatibility closure authorization |
 | `#356` | `g2-203-data-quality-legacy-adapter-compatibility-closure-authorization` | `wip/root-dirty-20260403` | `MERGED` at `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd` | Authorization package for G2.204 thin-wrapper compatibility implementation |
+| `#357` | `g2-204-data-quality-legacy-adapter-compatibility-wrapper` | `wip/root-dirty-20260403` | `MERGED` at `a621ba4ae66f581074a3b66539e296cbf0ced1b5` | Path-limited thin-wrapper implementation closed for G2.205 refresh |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-204-data-quality-legacy-adapter-compatibility-wrapper` | `origin/wip/root-dirty-20260403` at `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd` | Implement thin compatibility wrappers for the two legacy data-quality adapter modules | Yes, limited |
+| `g2-205-data-quality-legacy-adapter-closeout-refresh` | `origin/wip/root-dirty-20260403` at `a621ba4ae66f581074a3b66539e296cbf0ced1b5` | Close out the legacy wrapper target and refresh remaining data-quality monitor residual ownership | No |
 
 ## OpenSpec Relationship
 
@@ -62,8 +63,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.204 is a source implementation branch after PR `#356` merged G2.203. It is
-limited to converting the two legacy `web/backend/app/services/data_adapters/*`
-targets into thin compatibility wrappers and adding one focused test. It does
-not authorize deletion or expansion into other adapter, wrapper, route, OpenAPI,
-frontend, config, script, or OpenSpec surfaces.
+G2.205 is a governance-only closeout branch after PR `#357` merged G2.204. It
+does not authorize deletion or expansion into other adapter, wrapper, route,
+OpenAPI, frontend, config, script, or OpenSpec surfaces. If accepted, the next
+gate is a G2.206 decision package for `market_data_adapter.py` compatibility
+facade ownership.

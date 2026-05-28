@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T13:15:46+08:00`
-- Base HEAD checked: `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd`
+- Prepared at: `2026-05-28T16:50:15+08:00`
+- Base HEAD checked: `a621ba4ae66f581074a3b66539e296cbf0ced1b5`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -56,7 +56,8 @@ It proved a repeatable conveyor:
 | G2.201 data-quality canonical service adapter closeout / refresh | Merged by PR `#354` | Closes the canonical service adapter lane and selects legacy data adapter compatibility ownership as the next decision gate |
 | G2.202 data-quality legacy adapter compatibility ownership decision | Merged by PR `#355` | Classifies two legacy `data_adapters` files as compatibility ownership surfaces and selects G2.203 authorization-only compatibility closure |
 | G2.203 data-quality legacy adapter compatibility closure authorization | Merged by PR `#356` | Authorizes only a future thin-wrapper compatibility implementation shape for the two legacy modules; deletion remains unauthorized |
-| G2.204 data-quality legacy adapter compatibility wrapper implementation | For review | Converts two legacy modules into thin wrappers, preserves old import paths, and reduces target legacy getter calls to `0` |
+| G2.204 data-quality legacy adapter compatibility wrapper implementation | Merged by PR `#357` | Converts two legacy modules into thin wrappers, preserves old import paths, and reduces target legacy getter calls to `0` |
+| G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | For review | Closes the legacy wrapper target and recommends G2.206 `market_data_adapter.py` compatibility facade ownership decision |
 
 ## Current Strategy Getter Residuals
 
@@ -553,11 +554,44 @@ TDD evidence:
 | Targeted ruff/import smoke | Passed |
 | Legacy getter scan | `0` calls in the two wrapper modules |
 
+PR `#357` merged this lane at
+`a621ba4ae66f581074a3b66539e296cbf0ced1b5`.
+
+## G2.205 Data-Quality Legacy Adapter Compatibility Wrapper Closeout / Refresh
+
+At HEAD `a621ba4ae66f581074a3b66539e296cbf0ced1b5`, PR `#357` is merged and
+G2.204 is accepted.
+
+Closeout result:
+
+| Surface | State | Decision |
+|---|---|---|
+| Legacy data adapter wrappers | Closed | The two legacy modules preserve old import paths and contain `0` `get_data_quality_monitor` calls |
+| Wrapper deletion | Not authorized | Legacy modules remain compatibility surfaces |
+| Focused compatibility test | Present | `web/backend/tests/test_data_quality_legacy_data_adapter_compat.py` remains the regression check |
+
+Remaining active app `get_data_quality_monitor` surface after G2.205 refresh:
+
+| Bucket | Files | Active hits | Current decision |
+|---|---:|---:|---|
+| Route provider backing | 1 | 17 | Retain as FastAPI dependency/provider surface; route-body direct-call migration is already closed |
+| `adapter_split` base fallback | 1 | 2 | Retain default singleton fallback after G2.196 constructor injection |
+| Canonical service adapter fallbacks | 2 | 4 | Retain default singleton fallback after G2.200 optional monitor injection |
+| Legacy data adapter wrappers | 2 | 0 | Closed by G2.204/G2.205 |
+| `market_data_adapter.py` facade | 1 | 2 | Select as G2.206 compatibility facade ownership decision target |
+| Singleton wrapper / backing API | 2 | 4 | Retain public backing API; not a deletion lane |
+
+Excluded text hits:
+
+- `web/backend/app/services/data_adapter.py.backup.20260130` is a backup artifact
+  and is not counted as active source.
+- Focused tests are expected regression evidence, not source residuals.
+
 ## Next Gates
 
-- Review G2.204 data-quality legacy adapter compatibility wrapper implementation.
-- If accepted, start G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh.
-- Do not open the next source lane before G2.205 refresh classifies remaining data-quality monitor surfaces.
+- Review G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh.
+- If accepted, start G2.206 `market_data_adapter.py` compatibility facade ownership decision with no source authority.
+- Do not open the next source lane before G2.206 classifies the compatibility facade and its relation to singleton wrapper retirement.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T13:15:46+08:00`
-- Base HEAD checked: `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd`
+- Prepared at: `2026-05-28T16:50:15+08:00`
+- Base HEAD checked: `a621ba4ae66f581074a3b66539e296cbf0ced1b5`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.204 data-quality legacy adapter compatibility wrapper implementation | G/#79 service lifecycle DI | PR `#356` merged at `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd`; G2.204 converts two legacy modules into thin wrappers and keeps old import paths | If accepted, start G2.205 closeout / residual refresh; do not open the next source lane directly |
+| P0 | Review G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | G/#79 service lifecycle DI | PR `#357` merged at `a621ba4ae66f581074a3b66539e296cbf0ced1b5`; G2.205 closes the legacy wrapper target and refreshes remaining monitor surfaces without source edits | If accepted, start G2.206 `market_data_adapter.py` compatibility facade ownership decision; no source authority |
+| P0 | Preserve G2.204 data-quality legacy adapter compatibility wrapper implementation | G/#79 service lifecycle DI | PR `#357` merged; two legacy modules are thin wrappers and target legacy getter calls are `0` | Do not delete legacy modules or reopen the two wrapper targets without new evidence contradicting G2.204/G2.205 |
 | P0 | Preserve G2.203 data-quality legacy adapter compatibility closure authorization | G/#79 service lifecycle DI | PR `#356` merged; G2.203 authorizes only thin wrappers, not deletion | Do not delete legacy modules or expand beyond the two wrappers plus focused test |
 | P0 | Preserve G2.202 data-quality legacy adapter compatibility ownership decision | G/#79 service lifecycle DI | PR `#355` merged; G2.202 classifies two legacy `data_adapters` files as compatibility ownership surfaces | Do not edit or delete legacy files directly from G2.202 |
 | P0 | Preserve G2.201 data-quality canonical service adapter closeout / refresh | G/#79 service lifecycle DI | PR `#354` merged; G2.201 closes the canonical service adapter lane and selects G2.202 | Do not reopen canonical service adapter source unless current HEAD evidence contradicts G2.200/G2.201 |

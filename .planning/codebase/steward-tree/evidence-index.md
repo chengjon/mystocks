@@ -69,8 +69,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-legacy-adapter-ownership-decision-2026-05-28.md` | G2.202 human-readable ownership decision report | Accepted by PR `#355`; superseded for closure authorization by G2.203 |
 | `.planning/codebase/generated/data-quality-legacy-adapter-compatibility-closure-authorization-2026-05-28.json` | G2.203 legacy adapter compatibility closure authorization evidence | Accepted by PR `#356`; superseded for wrapper implementation by G2.204 |
 | `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-closure-authorization-2026-05-28.md` | G2.203 human-readable compatibility closure authorization report | Accepted by PR `#356`; superseded for wrapper implementation by G2.204 |
-| `.planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.json` | G2.204 legacy adapter compatibility wrapper implementation evidence | Current for HEAD `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd`; review input until PR `#357` is accepted |
-| `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.md` | G2.204 human-readable wrapper implementation report | Review input until PR `#357` is accepted |
+| `.planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.json` | G2.204 legacy adapter compatibility wrapper implementation evidence | Accepted by PR `#357`; superseded for closeout / residual refresh by G2.205 |
+| `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.md` | G2.204 human-readable wrapper implementation report | Accepted by PR `#357`; superseded for closeout / residual refresh by G2.205 |
+| `.planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.json` | G2.205 legacy adapter wrapper closeout / residual refresh evidence | Current for HEAD `a621ba4ae66f581074a3b66539e296cbf0ced1b5`; review input until PR `#358` is accepted |
+| `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.md` | G2.205 human-readable closeout / residual refresh report | Review input until PR `#358` is accepted |
 
 ## External State Inputs
 
@@ -98,7 +100,8 @@ state transition.
 | GitHub PR `#354` | `MERGED` | G2.201 canonical service adapter closeout / residual refresh merged by commit `e672f1523c30037202310278daf71488681d9a1f` |
 | GitHub PR `#355` | `MERGED` | G2.202 legacy adapter ownership decision merged by commit `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f` |
 | GitHub PR `#356` | `MERGED` | G2.203 legacy adapter compatibility closure authorization merged by commit `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd` |
-| `origin/wip/root-dirty-20260403` | `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd` | Base used for this compatibility wrapper implementation branch |
+| GitHub PR `#357` | `MERGED` | G2.204 legacy adapter compatibility wrapper implementation merged by commit `a621ba4ae66f581074a3b66539e296cbf0ced1b5` |
+| `origin/wip/root-dirty-20260403` | `a621ba4ae66f581074a3b66539e296cbf0ced1b5` | Base used for this closeout / residual refresh branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

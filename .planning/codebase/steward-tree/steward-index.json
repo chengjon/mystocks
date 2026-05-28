@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T13:15:46+08:00",
+  "generated_at": "2026-05-28T16:50:15+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "142a2bf1c0c5f979cf9c32415d2f25832e7e62cd",
-  "split_branch": "g2-204-data-quality-legacy-adapter-compatibility-wrapper",
-  "scope": "data_quality_legacy_adapter_compatibility_wrapper_implementation",
-  "source_edit_authority": true,
+  "base_head": "a621ba4ae66f581074a3b66539e296cbf0ced1b5",
+  "split_branch": "g2-205-data-quality-legacy-adapter-closeout-refresh",
+  "scope": "data_quality_legacy_adapter_compatibility_wrapper_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -1718,12 +1718,14 @@
     {
       "id": "g2-204-data-quality-legacy-adapter-compatibility-wrapper-implementation",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.203 data-quality legacy adapter compatibility closure authorization",
       "source_edit_authority": true,
       "parent_github_pr": 356,
       "parent_merge_commit": "142a2bf1c0c5f979cf9c32415d2f25832e7e62cd",
+      "github_pr": 357,
+      "merge_commit": "a621ba4ae66f581074a3b66539e296cbf0ced1b5",
       "evidence": [
         ".planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.md",
@@ -1771,10 +1773,60 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "142a2bf1c0c5f979cf9c32415d2f25832e7e62cd",
+        "current_head_checked": "a621ba4ae66f581074a3b66539e296cbf0ced1b5",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh without new source authority."
+      "next_gate": "Superseded by G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh."
+    },
+    {
+      "id": "g2-205-data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.204 data-quality legacy adapter compatibility wrapper implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 357,
+      "parent_merge_commit": "a621ba4ae66f581074a3b66539e296cbf0ced1b5",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.md",
+        "governance/mainline/task-cards/pr-358.yaml"
+      ],
+      "closeout_facts": {
+        "legacy_wrapper_target_state": "closed",
+        "legacy_wrapper_get_data_quality_monitor_calls": 0,
+        "legacy_wrapper_deletion_authorized": false,
+        "old_import_paths_preserved": true
+      },
+      "residual_refresh": {
+        "all_text_hits_under_app_and_tests": 42,
+        "active_app_hits_excluding_backup_files": 29,
+        "active_app_hits_by_file": {
+          "web/backend/app/api/data_quality.py": 17,
+          "web/backend/app/services/_data_quality_monitor_singleton.py": 2,
+          "web/backend/app/services/adapters_split/base_adapter.py": 2,
+          "web/backend/app/services/adapters/data_adapter.py": 2,
+          "web/backend/app/services/adapters/dashboard_adapter.py": 2,
+          "web/backend/app/services/data_quality_monitor.py": 2,
+          "web/backend/app/services/market_data_adapter.py": 2
+        }
+      },
+      "recommended_next_gate": "G2.206 data-quality market_data_adapter.py compatibility facade ownership decision without source authority",
+      "forbidden_surfaces_preserved": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "a621ba4ae66f581074a3b66539e296cbf0ced1b5",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.206 data-quality market_data_adapter.py compatibility facade ownership decision; no source edits."
     },
     {
       "id": "core-batch2-reconciliation",
