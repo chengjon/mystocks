@@ -1,0 +1,103 @@
+{
+  "schema_version": "2026-05-28.g2-authorization.v1",
+  "node": "G2.203 data-quality legacy adapter compatibility closure authorization",
+  "generated_at": "2026-05-28T12:37:20+08:00",
+  "git": {
+    "branch": "g2-203-data-quality-legacy-adapter-compatibility-closure-authorization",
+    "base_branch": "wip/root-dirty-20260403",
+    "base_head": "bf5d5ffba6bfc837c009a3d937cf0a9e6549883f",
+    "current_head_checked": "bf5d5ffba6bfc837c009a3d937cf0a9e6549883f",
+    "stale_if_head_mismatch": true
+  },
+  "parent": {
+    "node": "G2.202 data-quality legacy adapter compatibility ownership decision",
+    "github_pr": 355,
+    "merge_commit": "bf5d5ffba6bfc837c009a3d937cf0a9e6549883f",
+    "relationship": "G2.202 selected this authorization-only compatibility closure package"
+  },
+  "source_edit_authority": false,
+  "future_source_lane": {
+    "recommended_node": "G2.204 data-quality legacy adapter compatibility wrapper implementation",
+    "authorized_shape": "convert the two legacy data_adapters modules into thin compatibility wrappers that re-export canonical app.services.adapters classes",
+    "deletion_authorized": false,
+    "source_authority_after_human_acceptance": true,
+    "allowed_source_paths_after_acceptance": [
+      "web/backend/app/services/data_adapters/dashboard.py",
+      "web/backend/app/services/data_adapters/data_source.py"
+    ],
+    "allowed_test_paths_after_acceptance": [
+      "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py"
+    ]
+  },
+  "current_evidence": {
+    "exact_legacy_module_imports_outside_package": 0,
+    "total_get_data_quality_monitor_calls": 9,
+    "legacy_target_getter_calls": [
+      {
+        "path": "web/backend/app/services/data_adapters/dashboard.py",
+        "line": 249,
+        "line_text": "monitor = get_data_quality_monitor()"
+      },
+      {
+        "path": "web/backend/app/services/data_adapters/data_source.py",
+        "line": 608,
+        "line_text": "monitor = get_data_quality_monitor()"
+      }
+    ],
+    "gitnexus": {
+      "web/backend/app/services/data_adapters/dashboard.py": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0
+      },
+      "web/backend/app/services/data_adapters/data_source.py": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0
+      }
+    }
+  },
+  "authorization_decision": {
+    "classification": "authorize_thin_wrapper_implementation_after_human_acceptance",
+    "why_not_delete": "Exact module-path consumer count is zero, but static non-use is not deletion authority and hidden consumers may rely on old import paths.",
+    "why_thin_wrapper": "Thin wrappers preserve old module paths while removing duplicate legacy implementation bodies and their direct global monitor calls.",
+    "source_lane_recommendation": "start G2.204 only after this authorization package is accepted"
+  },
+  "future_g2_204_acceptance": [
+    "GitNexus impact for both legacy files before editing",
+    "red test proving legacy module imports resolve to canonical classes or equivalent wrapper contract",
+    "convert only the two legacy modules to thin wrappers; do not delete files",
+    "focused test coverage for legacy module import compatibility and canonical class identity or behavior",
+    "import smoke for app.services.data_adapter and data_source_factory",
+    "targeted ruff for changed source and test files",
+    "rg verification that get_data_quality_monitor() no longer appears in the two legacy modules",
+    "GitNexus staged detect_changes before commit",
+    "mainline scope gate with G2.204 task card"
+  ],
+  "forbidden_future_g2_204_scope": [
+    "web/backend/app/services/market_data_adapter.py",
+    "web/backend/app/services/_data_quality_monitor_singleton.py",
+    "web/backend/app/services/data_quality_monitor.py",
+    "web/backend/app/services/adapters/**",
+    "web/backend/app/services/adapters_split/**",
+    "web/backend/app/api/**",
+    "web/frontend/**",
+    "src/**",
+    "docs/api/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "validation": {
+    "json_parse": "passed",
+    "yaml_parse": "passed",
+    "markdown_governance": "passed; checked_files=6; errors=0",
+    "openspec_validate": "passed; PostHog telemetry warning only",
+    "git_diff_check": "passed",
+    "mainline_scope_gate": "passed; changed_files=9; violations=0; report=/tmp/pr356-mainline-governance-report.json",
+    "gitnexus_staged_detect_changes": "low risk; changed_files=9; changed_symbols=0; affected_processes=0"
+  }
+}
