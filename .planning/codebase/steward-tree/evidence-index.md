@@ -71,8 +71,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-closure-authorization-2026-05-28.md` | G2.203 human-readable compatibility closure authorization report | Accepted by PR `#356`; superseded for wrapper implementation by G2.204 |
 | `.planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.json` | G2.204 legacy adapter compatibility wrapper implementation evidence | Accepted by PR `#357`; superseded for closeout / residual refresh by G2.205 |
 | `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.md` | G2.204 human-readable wrapper implementation report | Accepted by PR `#357`; superseded for closeout / residual refresh by G2.205 |
-| `.planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.json` | G2.205 legacy adapter wrapper closeout / residual refresh evidence | Current for HEAD `a621ba4ae66f581074a3b66539e296cbf0ced1b5`; review input until PR `#358` is accepted |
-| `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.md` | G2.205 human-readable closeout / residual refresh report | Review input until PR `#358` is accepted |
+| `.planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.json` | G2.205 legacy adapter wrapper closeout / residual refresh evidence | Accepted by PR `#358`; superseded for `market_data_adapter.py` ownership by G2.206 |
+| `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.md` | G2.205 human-readable closeout / residual refresh report | Accepted by PR `#358`; superseded for `market_data_adapter.py` ownership by G2.206 |
+| `.planning/codebase/generated/data-quality-market-data-adapter-ownership-decision-2026-05-28.json` | G2.206 `market_data_adapter.py` ownership decision evidence | Current for HEAD `44909f5d048700115da6a9eb9345957b8af3d077`; review input until PR `#359` is accepted |
+| `docs/reports/quality/backend-data-quality-market-data-adapter-ownership-decision-2026-05-28.md` | G2.206 human-readable ownership decision report | Review input until PR `#359` is accepted |
 
 ## External State Inputs
 
@@ -101,7 +103,8 @@ state transition.
 | GitHub PR `#355` | `MERGED` | G2.202 legacy adapter ownership decision merged by commit `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f` |
 | GitHub PR `#356` | `MERGED` | G2.203 legacy adapter compatibility closure authorization merged by commit `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd` |
 | GitHub PR `#357` | `MERGED` | G2.204 legacy adapter compatibility wrapper implementation merged by commit `a621ba4ae66f581074a3b66539e296cbf0ced1b5` |
-| `origin/wip/root-dirty-20260403` | `a621ba4ae66f581074a3b66539e296cbf0ced1b5` | Base used for this closeout / residual refresh branch |
+| GitHub PR `#358` | `MERGED` | G2.205 legacy adapter wrapper closeout / residual refresh merged by commit `44909f5d048700115da6a9eb9345957b8af3d077` |
+| `origin/wip/root-dirty-20260403` | `44909f5d048700115da6a9eb9345957b8af3d077` | Base used for this ownership decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules
