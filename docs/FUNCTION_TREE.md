@@ -122,6 +122,7 @@
 | SinaFinance | ✅ | 5 | 股票评级 |
 | Tushare | ⚠️ | 6 | 需Token配置 |
 | Byapi | ⚠️ | 7 | 403问题待修 |
+| Backend canonical service adapters | ✅ | backend | `web/backend/app/services/adapters/dashboard_adapter.py` 与 `web/backend/app/services/adapters/data_adapter.py` 接入数据源工厂，并通过 G2.200 支持可注入 data-quality monitor seam |
 
 ### 1.4 K线数据服务 {#domain-01-node-04}
 

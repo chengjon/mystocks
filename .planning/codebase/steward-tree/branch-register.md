@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T10:14:06+08:00`
-- Base HEAD checked: `a6b54ddfb24055552d634757f01dc03bd6ca6e62`
+- Prepared at: `2026-05-28T10:53:34+08:00`
+- Base HEAD checked: `41bef3787160ec3bf7b9b31220df9d99a3437474`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -36,12 +36,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#349` | `g2-196-data-quality-adapter-split-implementation` | `wip/root-dirty-20260403` | `MERGED` at `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb` | Path-limited `adapter_split` constructor provider implementation closed for G2.197 refresh |
 | `#350` | `g2-197-data-quality-monitor-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` | Closeout / remaining candidate refresh selecting G2.198 residual adapter ownership decision |
 | `#351` | `g2-198-data-quality-residual-adapter-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `a6b54ddfb24055552d634757f01dc03bd6ca6e62` | Decision selecting canonical service adapter provider authorization as G2.199 |
+| `#352` | `g2-199-data-quality-canonical-service-adapter-authorization` | `wip/root-dirty-20260403` | `MERGED` at `41bef3787160ec3bf7b9b31220df9d99a3437474` | Authorization package for G2.200 canonical service adapter provider implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-199-data-quality-canonical-service-adapter-authorization` | `origin/wip/root-dirty-20260403` at `a6b54ddfb24055552d634757f01dc03bd6ca6e62` | Authorize a future canonical service adapter provider implementation lane | No |
+| `g2-200-data-quality-canonical-service-adapter-provider` | `origin/wip/root-dirty-20260403` at `41bef3787160ec3bf7b9b31220df9d99a3437474` | Implement the authorized canonical service adapter provider seam | Yes, limited to `dashboard_adapter.py`, `data_adapter.py`, and focused tests |
 
 ## OpenSpec Relationship
 
@@ -57,8 +58,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.199 is a governance-only authorization branch after PR `#351` merged G2.198.
-It defines the future G2.200 path-limited implementation surface for canonical
+G2.200 is a path-limited implementation branch after PR `#352` merged G2.199.
+It implements only the authorized constructor-level monitor seam for canonical
 service adapters and keeps legacy data adapters, `market_data_adapter.py`,
 singleton wrapper, monitor internals, routes, frontend, and OpenSpec changes out
 of scope.

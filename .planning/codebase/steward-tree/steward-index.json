@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T10:14:06+08:00",
+  "generated_at": "2026-05-28T10:53:34+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "a6b54ddfb24055552d634757f01dc03bd6ca6e62",
-  "split_branch": "g2-199-data-quality-canonical-service-adapter-authorization",
-  "scope": "data_quality_canonical_service_adapter_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "41bef3787160ec3bf7b9b31220df9d99a3437474",
+  "split_branch": "g2-200-data-quality-canonical-service-adapter-provider",
+  "scope": "data_quality_canonical_service_adapter_provider_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -1391,10 +1391,12 @@
     {
       "id": "g2-199-data-quality-canonical-service-adapter-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.198 data-quality residual adapter ownership decision",
       "source_edit_authority": false,
+      "github_pr": 352,
+      "merge_commit": "41bef3787160ec3bf7b9b31220df9d99a3437474",
       "evidence": [
         ".planning/codebase/generated/data-quality-canonical-service-adapter-provider-authorization-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-authorization-2026-05-28.md",
@@ -1448,10 +1450,74 @@
         "gitnexus_detect_changes(scope=staged)"
       ],
       "freshness": {
-        "current_head_checked": "a6b54ddfb24055552d634757f01dc03bd6ca6e62",
+        "current_head_checked": "41bef3787160ec3bf7b9b31220df9d99a3437474",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.200 data-quality canonical service adapter provider implementation with the authorized paths only."
+      "next_gate": "Superseded by G2.200 data-quality canonical service adapter provider implementation."
+    },
+    {
+      "id": "g2-200-data-quality-canonical-service-adapter-provider-implementation",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.199 data-quality canonical service adapter provider authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 352,
+      "parent_merge_commit": "41bef3787160ec3bf7b9b31220df9d99a3437474",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-canonical-service-adapter-provider-implementation-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-canonical-service-adapter-provider-implementation-2026-05-28.md",
+        "governance/mainline/task-cards/pr-353.yaml"
+      ],
+      "changed_source_paths": [
+        "web/backend/app/services/adapters/dashboard_adapter.py",
+        "web/backend/app/services/adapters/data_adapter.py"
+      ],
+      "changed_test_paths": [
+        "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py"
+      ],
+      "implementation_facts": {
+        "dashboard_adapter": {
+          "constructor": "def __init__(self, config: Dict[str, Any], *, quality_monitor: Optional[Any] = None)",
+          "stored_field_line": 27,
+          "monitor_selection_line": 254,
+          "default_fallback": "get_data_quality_monitor() when quality_monitor is None"
+        },
+        "data_adapter": {
+          "constructor": "def __init__(self, config: Dict[str, Any], *, quality_monitor: Optional[Any] = None)",
+          "stored_field_line": 29,
+          "monitor_selection_line": 623,
+          "default_fallback": "get_data_quality_monitor() when quality_monitor is None"
+        }
+      },
+      "verification": {
+        "gitnexus_impact": "LOW for both canonical adapter files",
+        "tdd_red": "2 failed on missing quality_monitor constructor keyword",
+        "tdd_green": "2 passed",
+        "focused_regression": "21 passed",
+        "ruff": "passed",
+        "import_smoke": "passed with minimal dummy required env",
+        "openspec_validate": "passed"
+      },
+      "forbidden_surfaces_preserved": [
+        "web/backend/app/services/data_adapters/**",
+        "web/backend/app/services/market_data_adapter.py",
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py",
+        "web/backend/app/api/**",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "41bef3787160ec3bf7b9b31220df9d99a3437474",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.201 closeout / residual refresh before selecting another data-quality monitor surface."
     },
     {
       "id": "core-batch2-reconciliation",
