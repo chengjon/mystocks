@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T16:50:15+08:00`
-- Base HEAD checked: `a621ba4ae66f581074a3b66539e296cbf0ced1b5`
+- Prepared at: `2026-05-28T17:17:56+08:00`
+- Base HEAD checked: `44909f5d048700115da6a9eb9345957b8af3d077`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | G/#79 service lifecycle DI | PR `#357` merged at `a621ba4ae66f581074a3b66539e296cbf0ced1b5`; G2.205 closes the legacy wrapper target and refreshes remaining monitor surfaces without source edits | If accepted, start G2.206 `market_data_adapter.py` compatibility facade ownership decision; no source authority |
+| P0 | Review G2.206 data-quality `market_data_adapter.py` compatibility facade ownership decision | G/#79 service lifecycle DI | PR `#358` merged at `44909f5d048700115da6a9eb9345957b8af3d077`; G2.206 classifies `market_data_adapter.py` as an active factory-owned compatibility facade and opens no source authority | If accepted, start G2.207 provider seam authorization package; do not implement from G2.206 |
+| P0 | Preserve G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | G/#79 service lifecycle DI | PR `#358` merged; legacy wrapper target is closed and `market_data_adapter.py` was selected as the next decision target | Do not open source work before G2.206 is accepted |
 | P0 | Preserve G2.204 data-quality legacy adapter compatibility wrapper implementation | G/#79 service lifecycle DI | PR `#357` merged; two legacy modules are thin wrappers and target legacy getter calls are `0` | Do not delete legacy modules or reopen the two wrapper targets without new evidence contradicting G2.204/G2.205 |
 | P0 | Preserve G2.203 data-quality legacy adapter compatibility closure authorization | G/#79 service lifecycle DI | PR `#356` merged; G2.203 authorizes only thin wrappers, not deletion | Do not delete legacy modules or expand beyond the two wrappers plus focused test |
 | P0 | Preserve G2.202 data-quality legacy adapter compatibility ownership decision | G/#79 service lifecycle DI | PR `#355` merged; G2.202 classifies two legacy `data_adapters` files as compatibility ownership surfaces | Do not edit or delete legacy files directly from G2.202 |

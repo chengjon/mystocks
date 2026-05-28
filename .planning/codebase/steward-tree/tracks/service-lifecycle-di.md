@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T16:50:15+08:00`
-- Base HEAD checked: `a621ba4ae66f581074a3b66539e296cbf0ced1b5`
+- Prepared at: `2026-05-28T17:17:56+08:00`
+- Base HEAD checked: `44909f5d048700115da6a9eb9345957b8af3d077`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -57,7 +57,8 @@ It proved a repeatable conveyor:
 | G2.202 data-quality legacy adapter compatibility ownership decision | Merged by PR `#355` | Classifies two legacy `data_adapters` files as compatibility ownership surfaces and selects G2.203 authorization-only compatibility closure |
 | G2.203 data-quality legacy adapter compatibility closure authorization | Merged by PR `#356` | Authorizes only a future thin-wrapper compatibility implementation shape for the two legacy modules; deletion remains unauthorized |
 | G2.204 data-quality legacy adapter compatibility wrapper implementation | Merged by PR `#357` | Converts two legacy modules into thin wrappers, preserves old import paths, and reduces target legacy getter calls to `0` |
-| G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | For review | Closes the legacy wrapper target and recommends G2.206 `market_data_adapter.py` compatibility facade ownership decision |
+| G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | Merged by PR `#358` | Closes the legacy wrapper target and recommends G2.206 `market_data_adapter.py` compatibility facade ownership decision |
+| G2.206 data-quality `market_data_adapter.py` compatibility facade ownership decision | For review | Classifies `market_data_adapter.py` as active data-source-factory compatibility facade and recommends G2.207 provider seam authorization |
 
 ## Current Strategy Getter Residuals
 
@@ -587,11 +588,36 @@ Excluded text hits:
   and is not counted as active source.
 - Focused tests are expected regression evidence, not source residuals.
 
+PR `#358` merged this lane at
+`44909f5d048700115da6a9eb9345957b8af3d077`.
+
+## G2.206 Data-Quality Market Data Adapter Ownership Decision
+
+At HEAD `44909f5d048700115da6a9eb9345957b8af3d077`, PR `#358` is merged and
+G2.205 is accepted.
+
+Decision result:
+
+| Target | Evidence | Decision |
+|---|---|---|
+| `web/backend/app/services/market_data_adapter.py` | 481 lines; defines `DataSourceMetrics` and `MarketDataSourceAdapter`; imports `get_data_quality_monitor` at line 10 and calls it at line 327 | Active data-source-factory compatibility facade; no source edits in G2.206 |
+| `web/backend/app/services/data_source_factory/data_source_factory.py` | Direct app importer and constructor caller | Must remain compatible; test in future lane, but do not edit unless explicitly authorized |
+
+GitNexus reference:
+
+| Target | Risk | Impact |
+|---|---|---|
+| `web/backend/app/services/market_data_adapter.py` | LOW | `impacted_count=3`, `direct=1`, `processes_affected=0` |
+
+G2.206 selects G2.207 as an authorization-only package for a future narrow
+provider seam. It does not authorize deletion, wrapper conversion, or source
+implementation.
+
 ## Next Gates
 
-- Review G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh.
-- If accepted, start G2.206 `market_data_adapter.py` compatibility facade ownership decision with no source authority.
-- Do not open the next source lane before G2.206 classifies the compatibility facade and its relation to singleton wrapper retirement.
+- Review G2.206 `market_data_adapter.py` compatibility facade ownership decision.
+- If accepted, start G2.207 `market_data_adapter.py` provider seam authorization package with no source edits in the authorization PR.
+- Do not open implementation before G2.207 explicitly authorizes paths, tests, rollback, and GitNexus checks.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

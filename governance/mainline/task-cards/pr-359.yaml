@@ -1,0 +1,119 @@
+version: "v0.2"
+
+task:
+  id: "pr-359"
+  title: "Decide market data adapter compatibility facade ownership"
+  owner: "main"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-market-data-adapter-ownership-decision"
+  objective: "classify market_data_adapter.py ownership and select the next authorization gate without source edits"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains: []
+  exemption_reason: "Decision-only ownership package; no runtime entrypoint, route, service symbol, public API surface, OpenAPI exposure, PM2 workflow, or frontend behavior is changed."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-market-data-adapter-ownership-decision-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-quality-market-data-adapter-ownership-decision-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-359.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "market_data_adapter.py edits"
+  - "market_data_adapter.py deletion"
+  - "source edits to data_source_factory"
+  - "singleton wrapper deletion"
+  - "DataQualityMonitor internals"
+  - "route changes"
+  - "OpenAPI contract changes"
+  - "frontend changes"
+  - "OpenSpec proposal creation"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/steward-tree/steward-index.json >/dev/null && python -m json.tool .planning/codebase/generated/data-quality-market-data-adapter-ownership-decision-2026-05-28.json >/dev/null"
+      required: true
+    - id: "yaml-parse"
+      command: "python - <<'PY'\nimport yaml\nwith open('governance/mainline/task-cards/pr-359.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-quality-market-data-adapter-ownership-decision-2026-05-28.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-359.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 44909f5d048700115da6a9eb9345957b8af3d077 --head-sha HEAD --report /tmp/pr359-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The compatibility facade can be misread as dead code because it has a narrow direct app importer."
+    - "Authorizing deletion or source edits from this decision package would bypass G2.207."
+  rollback_plan: "revert this PR to return steward-tree state to the post-#358 closeout baseline, then rerun the ownership decision."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "classify market_data_adapter.py ownership and select the next authorization gate"
+    modified_scope: "governance evidence, steward tree state, quality report, and one task card"
+    dependency_changes: "none"
+    legacy_logic_impact: "none; source remains exactly as merged by PR #358"
+    rollback_ready: "yes"
+    risk_and_rollback_point: "revert this PR if decision evidence, scope gate, or governance checks fail"
+
+governance:
+  phase: "phase_a_pr_hard_gate"
+  mainline_drift_threshold_percent: 5
+  stop_rule_owner: "main"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "main"
+    approved_at: "2026-05-28T17:17:56+08:00"
+    approval_note: "Human maintainer approved continuing after PR #358 acceptance; this lane records ownership decision only and opens no source authority."
+    secondary_approved: true
