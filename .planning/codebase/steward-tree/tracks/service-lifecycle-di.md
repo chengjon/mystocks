@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T11:53:30+08:00`
-- Base HEAD checked: `e672f1523c30037202310278daf71488681d9a1f`
+- Prepared at: `2026-05-28T12:37:20+08:00`
+- Base HEAD checked: `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -54,7 +54,8 @@ It proved a repeatable conveyor:
 | G2.199 data-quality canonical service adapter provider authorization | Merged by PR `#352` | Authorizes future G2.200 implementation for canonical service adapters only; no source edits in G2.199 |
 | G2.200 data-quality canonical service adapter provider implementation | Merged by PR `#353` | Implements optional constructor monitor injection in the two canonical service adapters with focused TDD evidence |
 | G2.201 data-quality canonical service adapter closeout / refresh | Merged by PR `#354` | Closes the canonical service adapter lane and selects legacy data adapter compatibility ownership as the next decision gate |
-| G2.202 data-quality legacy adapter compatibility ownership decision | For review | Classifies two legacy `data_adapters` files as compatibility ownership surfaces and selects G2.203 authorization-only compatibility closure |
+| G2.202 data-quality legacy adapter compatibility ownership decision | Merged by PR `#355` | Classifies two legacy `data_adapters` files as compatibility ownership surfaces and selects G2.203 authorization-only compatibility closure |
+| G2.203 data-quality legacy adapter compatibility closure authorization | For review | Authorizes only a future thin-wrapper compatibility implementation shape for the two legacy modules; deletion remains unauthorized |
 
 ## Current Strategy Getter Residuals
 
@@ -502,11 +503,37 @@ G2.202 selects G2.203 as an authorization-only compatibility closure package.
 G2.203 must decide the exact implementation shape before any source lane:
 thin wrapper, retirement with rollback gates, or retained legacy surface.
 
+## G2.203 Data-Quality Legacy Adapter Compatibility Closure Authorization
+
+At HEAD `bf5d5ffba6bfc837c009a3d937cf0a9e6549883f`, PR `#355` is merged and
+G2.202 is accepted.
+
+Authorization result:
+
+| Future lane | Authorized files | Authorized shape |
+|---|---|---|
+| G2.204 data-quality legacy adapter compatibility wrapper implementation | `web/backend/app/services/data_adapters/dashboard.py`, `web/backend/app/services/data_adapters/data_source.py`, `web/backend/tests/test_data_quality_legacy_data_adapter_compat.py` | Thin compatibility wrappers re-exporting canonical `app.services.adapters` classes |
+
+Current evidence:
+
+| Check | Result |
+|---|---|
+| Exact external imports of legacy module paths | `0` |
+| Target getter calls | Two calls total, one in each legacy module |
+| GitNexus impact | LOW/0 for both target files |
+| Deletion authority | Not granted |
+
+G2.203 does not authorize source edits in this PR. If accepted, G2.204 may edit
+only the two legacy modules and one focused compatibility test. It must not
+delete files, touch `market_data_adapter.py`, alter singleton wrapper/backing
+APIs, edit canonical adapters, or expand into routes, OpenAPI, frontend, config,
+scripts, or OpenSpec files.
+
 ## Next Gates
 
-- Review G2.202 data-quality legacy adapter compatibility ownership decision.
-- If accepted, start G2.203 data-quality legacy adapter compatibility closure authorization.
-- Do not start a source lane for legacy adapters before G2.203 authorization is accepted.
+- Review G2.203 data-quality legacy adapter compatibility closure authorization.
+- If accepted, start G2.204 data-quality legacy adapter compatibility wrapper implementation.
+- Do not delete legacy modules; G2.204 is limited to thin wrappers plus focused tests.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
