@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-28T22:18:21+08:00",
+  "generated_at": "2026-05-28T22:40:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
-  "split_branch": "g2-211-data-quality-monitor-singleton-authorization",
-  "scope": "data_quality_monitor_singleton_authorization",
-  "source_edit_authority": false,
+  "base_head": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
+  "split_branch": "g2-212-data-quality-monitor-singleton-implementation",
+  "scope": "data_quality_monitor_singleton_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -2110,12 +2110,14 @@
     {
       "id": "g2-211-data-quality-monitor-singleton-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.210 data-quality monitor residual ownership decision",
       "source_edit_authority": false,
       "parent_github_pr": 363,
       "parent_merge_commit": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
+      "github_pr": 364,
+      "merge_commit": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
       "evidence": [
         ".planning/codebase/generated/data-quality-monitor-singleton-authorization-2026-05-28.json",
         "docs/reports/quality/backend-data-quality-monitor-singleton-authorization-2026-05-28.md",
@@ -2149,7 +2151,61 @@
         "current_head_checked": "619be9cac1f9516b3df42a41ca362ca9d42d5c9a",
         "stale_if_head_mismatch": true
       },
-      "next_gate": "If accepted, start G2.212 data-quality monitor singleton/backing API compatibility implementation in a separate source lane."
+      "next_gate": "Superseded by G2.212 data-quality monitor singleton/backing API compatibility implementation."
+    },
+    {
+      "id": "g2-212-data-quality-monitor-singleton-implementation",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.211 data-quality monitor singleton/backing API authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 364,
+      "parent_merge_commit": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
+      "evidence": [
+        ".planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json",
+        "docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md",
+        "governance/mainline/task-cards/pr-365.yaml"
+      ],
+      "changed_source_paths": [
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py"
+      ],
+      "changed_test_paths": [
+        "web/backend/tests/test_data_quality_monitor_singleton_provider.py"
+      ],
+      "function_tree": {
+        "domain_id": "domain-01",
+        "node_id": "domain-01-node-03",
+        "updated_paths": [
+          "docs/FUNCTION_TREE.md",
+          "governance/function-tree/catalog.yaml"
+        ]
+      },
+      "implementation_result": {
+        "public_imports_preserved": [
+          "get_data_quality_monitor",
+          "monitor_data_quality"
+        ],
+        "public_hooks_added": [
+          "set_data_quality_monitor_provider",
+          "reset_data_quality_monitor_provider"
+        ],
+        "default_singleton_fallback_preserved": true,
+        "route_adapter_openapi_scope_changed": false
+      },
+      "verification": {
+        "focused_pytest": "3 passed",
+        "authorized_non_large_regression": "20 passed",
+        "large_file_split_regression_record": "35 passed, 4 failed existing unrelated baseline issues",
+        "ruff": "passed",
+        "openspec_validate": "passed"
+      },
+      "freshness": {
+        "current_head_checked": "535a6d9c1565b4ced7942cb4082104f2fb0506fd",
+        "stale_if_head_mismatch": true
+      },
+      "next_gate": "If accepted, start G2.213 data-quality monitor singleton/backing API closeout / residual refresh with no source edits."
     },
     {
       "id": "core-batch2-reconciliation",

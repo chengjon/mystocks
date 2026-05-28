@@ -83,8 +83,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-market-data-adapter-provider-closeout-refresh-2026-05-28.md` | G2.209 human-readable closeout / residual refresh report | Accepted by PR `#362`; superseded for residual ownership by G2.210 |
 | `.planning/codebase/generated/data-quality-monitor-residual-ownership-decision-2026-05-28.json` | G2.210 data-quality monitor residual ownership decision evidence | Accepted by PR `#363`; superseded for singleton/backing API authorization by G2.211 |
 | `docs/reports/quality/backend-data-quality-monitor-residual-ownership-decision-2026-05-28.md` | G2.210 human-readable residual ownership decision report | Accepted by PR `#363`; superseded for singleton/backing API authorization by G2.211 |
-| `.planning/codebase/generated/data-quality-monitor-singleton-authorization-2026-05-28.json` | G2.211 data-quality monitor singleton/backing API authorization evidence | Current for HEAD `619be9cac1f9516b3df42a41ca362ca9d42d5c9a`; review input until PR `#364` is accepted |
-| `docs/reports/quality/backend-data-quality-monitor-singleton-authorization-2026-05-28.md` | G2.211 human-readable singleton/backing API authorization report | Review input until PR `#364` is accepted |
+| `.planning/codebase/generated/data-quality-monitor-singleton-authorization-2026-05-28.json` | G2.211 data-quality monitor singleton/backing API authorization evidence | Accepted by PR `#364`; superseded for implementation evidence by G2.212 |
+| `docs/reports/quality/backend-data-quality-monitor-singleton-authorization-2026-05-28.md` | G2.211 human-readable singleton/backing API authorization report | Accepted by PR `#364`; superseded for implementation evidence by G2.212 |
+| `.planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json` | G2.212 data-quality monitor singleton/backing API implementation evidence | Current for HEAD `535a6d9c1565b4ced7942cb4082104f2fb0506fd`; review input until PR `#365` is accepted |
+| `docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md` | G2.212 human-readable singleton/backing API implementation report | Review input until PR `#365` is accepted |
 
 ## External State Inputs
 

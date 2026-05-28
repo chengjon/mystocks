@@ -1,0 +1,136 @@
+version: "v0.2"
+
+task:
+  id: "pr-365"
+  title: "Implement data-quality monitor singleton provider seam"
+  owner: "codex"
+  created_at: "2026-05-28"
+
+mainline:
+  id: "L1-data-quality-monitor-singleton-implementation"
+  objective: "add a provider/reset compatibility seam to the data-quality monitor singleton backing API while preserving default singleton fallback"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "feature"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "domain-01"
+  node_id: "domain-01-node-03"
+  affected_entrypoints:
+    - "governance"
+    - "core"
+    - "tests"
+  update_status: "required"
+  secondary_domains: []
+  exemption_reason: "Not exempted; G2.212 updates docs/FUNCTION_TREE.md and governance/function-tree/catalog.yaml for domain-01-node-03."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md"
+    - "governance/mainline/task-cards/pr-365.yaml"
+    - "web/backend/app/services/_data_quality_monitor_singleton.py"
+    - "web/backend/app/services/data_quality_monitor.py"
+    - "web/backend/tests/test_data_quality_monitor_singleton_provider.py"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/backend/app/services/adapters/**"
+    - "web/backend/app/services/adapters_split/**"
+    - "web/backend/app/services/data_adapters/**"
+    - "web/backend/app/services/market_data_adapter.py"
+    - "web/backend/app/services/data_adapter.py.backup.20260130"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "route migration"
+  - "adapter or adapter_split migration"
+  - "legacy data_adapters migration"
+  - "market_data_adapter.py edits"
+  - "DataQualityMonitor class internals"
+  - "OpenAPI, frontend, config, script, or OpenSpec edits"
+  - "deleting, renaming, or changing the semantics of get_data_quality_monitor or monitor_data_quality"
+  - "GitHub issue label changes"
+
+acceptance:
+  checks:
+    - id: "focused-pytest"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_monitor_singleton_provider.py -q --no-cov --tb=short"
+      required: true
+    - id: "authorized-non-large-regression"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_data_quality_monitor_singleton_provider.py web/backend/tests/test_data_quality_route_provider_regressions.py web/backend/tests/test_data_quality_canonical_service_adapter_provider.py web/backend/tests/test_adapter_split_data_quality_monitor_provider.py web/backend/tests/test_market_data_adapter_quality_monitor_provider.py web/backend/tests/test_logging_noise_regressions.py -q --no-cov --tb=short"
+      required: true
+    - id: "large-file-split-regression-record"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_large_file_split_regressions.py -q --no-cov --tb=short || true"
+      required: false
+    - id: "ruff"
+      command: "ruff check web/backend/app/services/_data_quality_monitor_singleton.py web/backend/app/services/data_quality_monitor.py web/backend/tests/test_data_quality_monitor_singleton_provider.py"
+      required: true
+    - id: "json-yaml-parse"
+      command: "python - <<'PY'\nimport json, yaml\nfor path in ['.planning/codebase/generated/data-quality-monitor-singleton-implementation-2026-05-28.json', '.planning/codebase/steward-tree/steward-index.json']:\n    with open(path, encoding='utf-8') as f:\n        json.load(f)\nwith open('governance/mainline/task-cards/pr-365.yaml', encoding='utf-8') as f:\n    yaml.safe_load(f)\nPY"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md docs/FUNCTION_TREE.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "diff-check"
+      command: "git diff --check"
+      required: true
+    - id: "cached-diff-check"
+      command: "git diff --cached --check"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-365.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 535a6d9c1565b4ced7942cb4082104f2fb0506fd --head-sha HEAD --report /tmp/pr365-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "get_data_quality_monitor is a CRITICAL impact root; this PR adds only an optional provider hook and preserves default fallback behavior."
+    - "Provider override could leak between tests; reset_data_quality_monitor_provider clears both provider and cached singleton."
+  rollback_plan: "Revert this PR; public singleton imports remain available in the previous implementation."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Add a provider/reset seam to the data-quality monitor singleton backing API."
+    modified_scope: "Two source files, one focused test, and governance/function-tree evidence files."
+    dependency_changes: "None."
+    legacy_logic_impact: "Default DataQualityMonitor singleton fallback and existing public imports are preserved."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "Do not start another source lane until G2.213 closeout / residual refresh classifies remaining residuals."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-28T22:40:00+08:00"
+    approval_note: "Approved to continue from G2.211 into the G2.212 path-limited source implementation lane after PR #364 merge."
+    secondary_approved: false

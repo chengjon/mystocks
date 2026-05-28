@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T22:18:21+08:00`
-- Base HEAD checked: `619be9cac1f9516b3df42a41ca362ca9d42d5c9a`
+- Prepared at: `2026-05-28T22:40:00+08:00`
+- Base HEAD checked: `535a6d9c1565b4ced7942cb4082104f2fb0506fd`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -48,12 +48,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#361` | `g2-208-data-quality-market-data-adapter-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `90d8f12cc01f9fb360abc531673e3ed9535706e7` | Path-limited `market_data_adapter.py` provider seam implementation closed for G2.209 refresh |
 | `#362` | `g2-209-data-quality-market-data-adapter-provider-closeout` | `wip/root-dirty-20260403` | `MERGED` at `33b6ace2f68e23bcf07a12f53511d1f7b9fb8230` | Governance closeout selecting G2.210 data-quality monitor residual ownership decision |
 | `#363` | `g2-210-data-quality-monitor-residual-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `619be9cac1f9516b3df42a41ca362ca9d42d5c9a` | Decision package selecting G2.211 singleton/backing API authorization |
+| `#364` | `g2-211-data-quality-monitor-singleton-authorization` | `wip/root-dirty-20260403` | `MERGED` at `535a6d9c1565b4ced7942cb4082104f2fb0506fd` | Authorization package selecting G2.212 data-quality monitor singleton/backing API implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-211-data-quality-monitor-singleton-authorization` | `origin/wip/root-dirty-20260403` at `619be9cac1f9516b3df42a41ca362ca9d42d5c9a` | Authorize future data-quality monitor singleton/backing API compatibility implementation | No |
+| `g2-212-data-quality-monitor-singleton-implementation` | `origin/wip/root-dirty-20260403` at `535a6d9c1565b4ced7942cb4082104f2fb0506fd` | Implement data-quality monitor singleton/backing API provider/reset hook while preserving default singleton fallback | Yes, limited to the authorized singleton/backing API paths and focused test |
 
 ## OpenSpec Relationship
 
@@ -69,7 +70,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.211 is a no-source authorization branch after PR `#363` merged G2.210. It is
-limited to governance evidence, steward tree updates, and a task card. If
-accepted, the next gate is a separate G2.212 source implementation lane limited
-to the authorized singleton/backing API paths.
+G2.212 is the source implementation branch after PR `#364` merged G2.211. It is
+limited to the authorized singleton/backing API paths plus one focused test and
+governance evidence. If accepted, the next gate is G2.213 closeout / residual
+refresh with no source edits.
