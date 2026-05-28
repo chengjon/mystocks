@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T17:17:56+08:00`
-- Base HEAD checked: `44909f5d048700115da6a9eb9345957b8af3d077`
+- Prepared at: `2026-05-28T17:41:53+08:00`
+- Base HEAD checked: `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -58,7 +58,8 @@ It proved a repeatable conveyor:
 | G2.203 data-quality legacy adapter compatibility closure authorization | Merged by PR `#356` | Authorizes only a future thin-wrapper compatibility implementation shape for the two legacy modules; deletion remains unauthorized |
 | G2.204 data-quality legacy adapter compatibility wrapper implementation | Merged by PR `#357` | Converts two legacy modules into thin wrappers, preserves old import paths, and reduces target legacy getter calls to `0` |
 | G2.205 data-quality legacy adapter compatibility wrapper closeout / residual refresh | Merged by PR `#358` | Closes the legacy wrapper target and recommends G2.206 `market_data_adapter.py` compatibility facade ownership decision |
-| G2.206 data-quality `market_data_adapter.py` compatibility facade ownership decision | For review | Classifies `market_data_adapter.py` as active data-source-factory compatibility facade and recommends G2.207 provider seam authorization |
+| G2.206 data-quality `market_data_adapter.py` compatibility facade ownership decision | Merged by PR `#359` | Classifies `market_data_adapter.py` as active data-source-factory compatibility facade and recommends G2.207 provider seam authorization |
+| G2.207 data-quality `market_data_adapter.py` provider seam authorization | For review | Authorizes future G2.208 source implementation scope without source edits in G2.207 |
 
 ## Current Strategy Getter Residuals
 
@@ -613,11 +614,42 @@ G2.206 selects G2.207 as an authorization-only package for a future narrow
 provider seam. It does not authorize deletion, wrapper conversion, or source
 implementation.
 
+PR `#359` merged this lane at
+`ded789ee5d49d6ddcce5d8a69af1901a8481d1f0`.
+
+## G2.207 Data-Quality Market Data Adapter Provider Authorization
+
+At HEAD `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0`, PR `#359` is merged and
+G2.206 is accepted.
+
+Authorization result:
+
+| Future lane | Authorized source path | Authorized tests |
+|---|---|---|
+| G2.208 `market_data_adapter.py` provider seam implementation | `web/backend/app/services/market_data_adapter.py` | `web/backend/tests/test_market_data_adapter_quality_monitor_provider.py`, `web/backend/tests/test_market_data_service_getter_retirement.py` |
+
+Required future shape:
+
+- preserve the existing positional `config` constructor argument
+- add only keyword-only optional injection parameters
+- preserve singleton fallback behavior when no injection is supplied
+- ensure injected monitor/provider bypasses the module-level
+  `get_data_quality_monitor()` getter
+- keep `MarketDataSourceAdapter(config.__dict__)` compatible for
+  `data_source_factory`
+
+Forbidden in G2.208 unless a later package explicitly expands scope:
+
+- source edits under `web/backend/app/services/data_source_factory/**`
+- singleton wrapper deletion or privatization
+- `DataQualityMonitor` internals
+- route, OpenAPI, frontend, config, script, or OpenSpec changes
+
 ## Next Gates
 
-- Review G2.206 `market_data_adapter.py` compatibility facade ownership decision.
-- If accepted, start G2.207 `market_data_adapter.py` provider seam authorization package with no source edits in the authorization PR.
-- Do not open implementation before G2.207 explicitly authorizes paths, tests, rollback, and GitNexus checks.
+- Review G2.207 `market_data_adapter.py` provider seam authorization package.
+- If accepted, start G2.208 implementation with only the authorized source and test paths.
+- Do not expand G2.208 into `data_source_factory`, singleton wrapper/backing API, routes, OpenAPI, frontend, config, scripts, or OpenSpec changes.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

@@ -73,8 +73,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-implementation-2026-05-28.md` | G2.204 human-readable wrapper implementation report | Accepted by PR `#357`; superseded for closeout / residual refresh by G2.205 |
 | `.planning/codebase/generated/data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.json` | G2.205 legacy adapter wrapper closeout / residual refresh evidence | Accepted by PR `#358`; superseded for `market_data_adapter.py` ownership by G2.206 |
 | `docs/reports/quality/backend-data-quality-legacy-adapter-compatibility-wrapper-closeout-refresh-2026-05-28.md` | G2.205 human-readable closeout / residual refresh report | Accepted by PR `#358`; superseded for `market_data_adapter.py` ownership by G2.206 |
-| `.planning/codebase/generated/data-quality-market-data-adapter-ownership-decision-2026-05-28.json` | G2.206 `market_data_adapter.py` ownership decision evidence | Current for HEAD `44909f5d048700115da6a9eb9345957b8af3d077`; review input until PR `#359` is accepted |
-| `docs/reports/quality/backend-data-quality-market-data-adapter-ownership-decision-2026-05-28.md` | G2.206 human-readable ownership decision report | Review input until PR `#359` is accepted |
+| `.planning/codebase/generated/data-quality-market-data-adapter-ownership-decision-2026-05-28.json` | G2.206 `market_data_adapter.py` ownership decision evidence | Accepted by PR `#359`; superseded for provider seam authorization by G2.207 |
+| `docs/reports/quality/backend-data-quality-market-data-adapter-ownership-decision-2026-05-28.md` | G2.206 human-readable ownership decision report | Accepted by PR `#359`; superseded for provider seam authorization by G2.207 |
+| `.planning/codebase/generated/data-quality-market-data-adapter-provider-authorization-2026-05-28.json` | G2.207 `market_data_adapter.py` provider seam authorization evidence | Current for HEAD `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0`; review input until PR `#360` is accepted |
+| `docs/reports/quality/backend-data-quality-market-data-adapter-provider-authorization-2026-05-28.md` | G2.207 human-readable provider seam authorization package | Review input until PR `#360` is accepted |
 
 ## External State Inputs
 
@@ -104,7 +106,8 @@ state transition.
 | GitHub PR `#356` | `MERGED` | G2.203 legacy adapter compatibility closure authorization merged by commit `142a2bf1c0c5f979cf9c32415d2f25832e7e62cd` |
 | GitHub PR `#357` | `MERGED` | G2.204 legacy adapter compatibility wrapper implementation merged by commit `a621ba4ae66f581074a3b66539e296cbf0ced1b5` |
 | GitHub PR `#358` | `MERGED` | G2.205 legacy adapter wrapper closeout / residual refresh merged by commit `44909f5d048700115da6a9eb9345957b8af3d077` |
-| `origin/wip/root-dirty-20260403` | `44909f5d048700115da6a9eb9345957b8af3d077` | Base used for this ownership decision branch |
+| GitHub PR `#359` | `MERGED` | G2.206 `market_data_adapter.py` ownership decision merged by commit `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0` |
+| `origin/wip/root-dirty-20260403` | `ded789ee5d49d6ddcce5d8a69af1901a8481d1f0` | Base used for this authorization branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules
