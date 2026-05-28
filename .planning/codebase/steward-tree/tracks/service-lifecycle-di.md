@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T09:35:10+08:00`
-- Base HEAD checked: `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`
+- Prepared at: `2026-05-28T10:14:06+08:00`
+- Base HEAD checked: `a6b54ddfb24055552d634757f01dc03bd6ca6e62`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -50,7 +50,8 @@ It proved a repeatable conveyor:
 | G2.195 data-quality `adapter_split` constructor provider authorization | Merged by PR `#348` | Authorizes the future G2.196 `adapter_split` constructor provider implementation lane while keeping source authority at none in that PR |
 | G2.196 data-quality `adapter_split` constructor provider implementation | Merged by PR `#349` | Implements optional constructor monitor injection in `adapter_split` only, with focused TDD evidence |
 | G2.197 data-quality monitor closeout / remaining candidate refresh | Merged by PR `#350` | Closes the `adapter_split` subclass constructor lane and refreshes remaining service adapter, legacy adapter, compatibility facade, and wrapper surfaces |
-| G2.198 data-quality residual adapter ownership decision | For review | Selects canonical service adapters as the next authorization target while deferring legacy data adapters, `market_data_adapter.py`, and wrapper retention |
+| G2.198 data-quality residual adapter ownership decision | Merged by PR `#351` | Selects canonical service adapters as the next authorization target while deferring legacy data adapters, `market_data_adapter.py`, and wrapper retention |
+| G2.199 data-quality canonical service adapter provider authorization | For review | Authorizes future G2.200 implementation for canonical service adapters only; no source edits in this PR |
 
 ## Current Strategy Getter Residuals
 
@@ -375,11 +376,45 @@ Selected future authorization candidate:
 G2.198 recommends G2.199 as an authorization-only package. It does not authorize
 source implementation directly.
 
+PR `#351` merged this lane at
+`a6b54ddfb24055552d634757f01dc03bd6ca6e62`.
+
+## G2.199 Data-Quality Canonical Service Adapter Provider Authorization
+
+At HEAD `a6b54ddfb24055552d634757f01dc03bd6ca6e62`, PR `#351` is merged and
+G2.198's ownership decision is accepted.
+
+G2.199 authorizes a future G2.200 implementation lane only after review
+acceptance. G2.199 itself has no source edit authority.
+
+Future authorized source paths:
+
+| Path | Future role |
+|---|---|
+| `web/backend/app/services/adapters/dashboard_adapter.py` | Add optional injectable data-quality monitor seam while preserving `config` positional constructor compatibility |
+| `web/backend/app/services/adapters/data_adapter.py` | Add optional injectable data-quality monitor seam while preserving `config` positional constructor compatibility |
+
+Future authorized test paths:
+
+| Path | Future role |
+|---|---|
+| `web/backend/tests/test_data_quality_canonical_service_adapter_provider.py` | New focused fake-monitor provider regression tests |
+| `tests/backend/test_data_adapter_regression.py` | Existing adapter regression coverage if needed |
+| `web/backend/tests/test_logging_noise_regressions.py` | Existing dashboard adapter logging/noise regression coverage if needed |
+
+Future forbidden surfaces remain:
+
+- legacy data adapters under `web/backend/app/services/data_adapters/`
+- `web/backend/app/services/market_data_adapter.py`
+- `web/backend/app/services/_data_quality_monitor_singleton.py`
+- `web/backend/app/services/data_quality_monitor.py`
+- route, frontend, OpenAPI contract, config, script, and OpenSpec change files
+
 ## Next Gates
 
-- Review G2.198 data-quality residual adapter ownership decision.
-- If accepted, start G2.199 data-quality canonical service adapter provider authorization.
-- Do not start another data-quality source implementation directly from G2.198.
+- Review G2.199 data-quality canonical service adapter provider authorization.
+- If accepted, start G2.200 data-quality canonical service adapter provider implementation.
+- Do not start G2.200 before G2.199 is accepted.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`

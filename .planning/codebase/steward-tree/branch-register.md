@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-28T09:35:10+08:00`
-- Base HEAD checked: `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1`
+- Prepared at: `2026-05-28T10:14:06+08:00`
+- Base HEAD checked: `a6b54ddfb24055552d634757f01dc03bd6ca6e62`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -35,12 +35,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#348` | `g2-195-data-quality-adapter-split-authorization` | `wip/root-dirty-20260403` | `MERGED` at `fabd674e8a748cdd2c51a80eebb5ad20b52bc737` | Authorization package for G2.196 adapter_split constructor provider implementation |
 | `#349` | `g2-196-data-quality-adapter-split-implementation` | `wip/root-dirty-20260403` | `MERGED` at `e4245ebe54c5ad6d2aebf4802d165d59700c9eeb` | Path-limited `adapter_split` constructor provider implementation closed for G2.197 refresh |
 | `#350` | `g2-197-data-quality-monitor-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` | Closeout / remaining candidate refresh selecting G2.198 residual adapter ownership decision |
+| `#351` | `g2-198-data-quality-residual-adapter-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `a6b54ddfb24055552d634757f01dc03bd6ca6e62` | Decision selecting canonical service adapter provider authorization as G2.199 |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-198-data-quality-residual-adapter-ownership-decision` | `origin/wip/root-dirty-20260403` at `3acf90c3ab17dbb3b47150a03f1cdee1c96dc8f1` | Decide residual data-quality monitor adapter ownership and select the next authorization gate | No |
+| `g2-199-data-quality-canonical-service-adapter-authorization` | `origin/wip/root-dirty-20260403` at `a6b54ddfb24055552d634757f01dc03bd6ca6e62` | Authorize a future canonical service adapter provider implementation lane | No |
 
 ## OpenSpec Relationship
 
@@ -56,8 +57,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.198 is a governance-only decision branch after PR `#350` merged G2.197. It
-selects canonical service adapters as the next authorization target, defers
-legacy data adapters, `market_data_adapter.py`, and wrapper retention to separate
-decisions, and recommends G2.199 as authorization-only before any source
-implementation.
+G2.199 is a governance-only authorization branch after PR `#351` merged G2.198.
+It defines the future G2.200 path-limited implementation surface for canonical
+service adapters and keeps legacy data adapters, `market_data_adapter.py`,
+singleton wrapper, monitor internals, routes, frontend, and OpenSpec changes out
+of scope.

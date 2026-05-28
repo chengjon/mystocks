@@ -1,0 +1,121 @@
+{
+  "schema_version": "2026-05-28.g2-199.authorization.v1",
+  "generated_at": "2026-05-28T10:14:06+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "a6b54ddfb24055552d634757f01dc03bd6ca6e62",
+  "worktree_branch": "g2-199-data-quality-canonical-service-adapter-authorization",
+  "status": "for_review",
+  "source_edit_authority": false,
+  "parent": {
+    "id": "g2-198-data-quality-residual-adapter-ownership-decision",
+    "github_pr": 351,
+    "state": "MERGED",
+    "merged_at": "2026-05-28T02:10:17Z",
+    "merge_commit": "a6b54ddfb24055552d634757f01dc03bd6ca6e62"
+  },
+  "authorization": {
+    "future_lane": "G2.200 data-quality canonical service adapter provider implementation",
+    "future_source_edit_authority_if_accepted": true,
+    "future_source_paths": [
+      "web/backend/app/services/adapters/dashboard_adapter.py",
+      "web/backend/app/services/adapters/data_adapter.py"
+    ],
+    "future_test_paths": [
+      "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py",
+      "tests/backend/test_data_adapter_regression.py",
+      "web/backend/tests/test_logging_noise_regressions.py"
+    ],
+    "future_implementation_shape": [
+      "Add optional keyword-only quality_monitor injection to both canonical service adapter constructors.",
+      "Preserve existing config positional constructor compatibility.",
+      "Use the injected monitor in async _trigger_quality_monitoring without calling the global getter.",
+      "Retain default runtime behavior by falling back to get_data_quality_monitor when no monitor is injected.",
+      "Keep app.services.data_adapter compatibility facade and data_source_factory construction behavior intact."
+    ]
+  },
+  "current_facts": {
+    "dashboard_adapter": {
+      "path": "web/backend/app/services/adapters/dashboard_adapter.py",
+      "class": "DashboardDataSourceAdapter",
+      "constructor": "def __init__(self, config: Dict[str, Any])",
+      "getter_import_line": 9,
+      "getter_call_line": 253,
+      "quality_monitor_parameter": false
+    },
+    "data_adapter": {
+      "path": "web/backend/app/services/adapters/data_adapter.py",
+      "class": "DataDataSourceAdapter",
+      "constructor": "def __init__(self, config: Dict[str, Any])",
+      "getter_import_line": 10,
+      "getter_call_line": 622,
+      "quality_monitor_parameter": false
+    },
+    "factory_relationship": {
+      "path": "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "facade_import_line": 18,
+      "data_adapter_construction_line": 116,
+      "dashboard_adapter_construction_line": 119,
+      "decision_use": "future implementation must preserve construction through app.services.data_adapter facade"
+    },
+    "gitnexus_context": {
+      "dashboard_adapter_exact_file": "found canonical DashboardDataSourceAdapter at web/backend/app/services/adapters/dashboard_adapter.py; incoming graph refs empty",
+      "data_adapter_exact_file": "found canonical DataDataSourceAdapter at web/backend/app/services/adapters/data_adapter.py; incoming graph refs empty",
+      "note": "text scan and factory evidence are used because graph incoming refs do not capture the facade construction path"
+    }
+  },
+  "future_forbidden_surfaces": [
+    "web/backend/app/services/data_adapters/**",
+    "web/backend/app/services/market_data_adapter.py",
+    "web/backend/app/services/_data_quality_monitor_singleton.py",
+    "web/backend/app/services/data_quality_monitor.py",
+    "web/backend/app/api/**",
+    "web/frontend/**",
+    "src/**",
+    "docs/api/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "future_required_checks": [
+    "GitNexus impact/context before source edits on the exact target files or classes",
+    "TDD red/green for injected monitor avoiding global getter calls",
+    "focused pytest for web/backend/tests/test_data_quality_canonical_service_adapter_provider.py",
+    "focused regression coverage for tests/backend/test_data_adapter_regression.py and web/backend/tests/test_logging_noise_regressions.py when touched",
+    "ruff check on authorized source and test paths",
+    "import smoke for canonical adapter constructors through app.services.data_adapter and data_source_factory",
+    "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+    "gitnexus_detect_changes(scope=staged)"
+  ],
+  "verification": {
+    "head": "a6b54ddfb24055552d634757f01dc03bd6ca6e62",
+    "worktree_status": "clean before edits",
+    "candidate_scan": "authorized candidates inspected for constructors, getter/import lines, factory relationship, and test surface existence",
+    "json_parse": "passed for this authorization artifact and steward-index.json",
+    "markdown_governance": {
+      "status": "passed",
+      "checked_files": 6,
+      "errors": 0
+    },
+    "openspec_validate": {
+      "change": "migrate-backend-singletons-to-lifecycle-di",
+      "strict": true,
+      "status": "passed"
+    },
+    "git_diff_check": "passed",
+    "gitnexus_staged_detect_changes": {
+      "status": "passed",
+      "risk_level": "low",
+      "changed_files": 9,
+      "changed_symbols": 0,
+      "affected_processes": 0
+    },
+    "mainline_scope_gate": {
+      "status": "passed",
+      "changed_files": 9,
+      "violations": 0,
+      "report": "/tmp/pr352-mainline-governance-report.json"
+    }
+  }
+}
