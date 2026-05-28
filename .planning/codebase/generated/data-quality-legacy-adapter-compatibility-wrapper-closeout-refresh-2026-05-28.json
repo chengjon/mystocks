@@ -1,0 +1,123 @@
+{
+  "schema_version": "2026-05-28.g2-closeout-refresh.v1",
+  "generated_at": "2026-05-28T16:50:15+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "git_head": "a621ba4ae66f581074a3b66539e296cbf0ced1b5",
+  "worktree_branch": "g2-205-data-quality-legacy-adapter-closeout-refresh",
+  "parent_lane": "G2.204 data-quality legacy adapter compatibility wrapper implementation",
+  "parent_pr": 357,
+  "parent_merge_commit": "a621ba4ae66f581074a3b66539e296cbf0ced1b5",
+  "scope": "governance closeout and residual refresh only",
+  "source_edit_authority": false,
+  "closed_capability": {
+    "legacy_data_adapter_wrapper_modules": {
+      "state": "closed_for_thin_wrapper_compatibility",
+      "paths": [
+        "web/backend/app/services/data_adapters/dashboard.py",
+        "web/backend/app/services/data_adapters/data_source.py"
+      ],
+      "legacy_get_data_quality_monitor_calls": 0,
+      "deletion_authorized": false,
+      "old_import_paths_preserved": true
+    },
+    "focused_test": {
+      "path": "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py",
+      "state": "present",
+      "role": "proves old module paths resolve to canonical adapter classes and legacy wrappers do not contain get_data_quality_monitor"
+    }
+  },
+  "post_merge_residual_scan": {
+    "scan_scope": "web/backend/app and web/backend/tests",
+    "all_text_hits": 42,
+    "active_app_hits_excluding_backup_files": 29,
+    "active_app_hits_by_file": {
+      "web/backend/app/api/data_quality.py": 17,
+      "web/backend/app/services/_data_quality_monitor_singleton.py": 2,
+      "web/backend/app/services/adapters_split/base_adapter.py": 2,
+      "web/backend/app/services/adapters/data_adapter.py": 2,
+      "web/backend/app/services/adapters/dashboard_adapter.py": 2,
+      "web/backend/app/services/data_quality_monitor.py": 2,
+      "web/backend/app/services/market_data_adapter.py": 2
+    },
+    "excluded_hits_by_file": {
+      "web/backend/app/services/data_adapter.py.backup.20260130": 3,
+      "web/backend/tests/test_adapter_split_data_quality_monitor_provider.py": 3,
+      "web/backend/tests/test_data_quality_canonical_service_adapter_provider.py": 2,
+      "web/backend/tests/test_data_quality_legacy_data_adapter_compat.py": 2,
+      "web/backend/tests/test_data_quality_route_provider_regressions.py": 3
+    }
+  },
+  "residual_classification": {
+    "route_provider_backing": {
+      "files": [
+        "web/backend/app/api/data_quality.py"
+      ],
+      "decision": "retained route provider dependency surface; route-body direct-call migration already closed by G2.192/G2.193"
+    },
+    "adapter_split_base_fallback": {
+      "files": [
+        "web/backend/app/services/adapters_split/base_adapter.py"
+      ],
+      "decision": "retained default singleton fallback after G2.196 constructor injection"
+    },
+    "canonical_service_adapter_fallbacks": {
+      "files": [
+        "web/backend/app/services/adapters/dashboard_adapter.py",
+        "web/backend/app/services/adapters/data_adapter.py"
+      ],
+      "decision": "retained default singleton fallback after G2.200 optional monitor injection"
+    },
+    "legacy_data_adapter_wrappers": {
+      "files": [
+        "web/backend/app/services/data_adapters/dashboard.py",
+        "web/backend/app/services/data_adapters/data_source.py"
+      ],
+      "decision": "closed by G2.204; no remaining getter calls in the legacy wrapper targets"
+    },
+    "market_data_adapter_facade": {
+      "files": [
+        "web/backend/app/services/market_data_adapter.py"
+      ],
+      "decision": "remaining compatibility facade; requires owner-specific decision package before any source implementation"
+    },
+    "singleton_wrapper_and_backing_api": {
+      "files": [
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/data_quality_monitor.py"
+      ],
+      "decision": "retained backing API; not a deletion or privatization lane"
+    },
+    "backup_artifact": {
+      "files": [
+        "web/backend/app/services/data_adapter.py.backup.20260130"
+      ],
+      "decision": "excluded from active source residual count; handle only through repository cleanup governance"
+    },
+    "tests": {
+      "decision": "expected regression evidence; not source residuals"
+    }
+  },
+  "recommended_next_gate": {
+    "id": "G2.206",
+    "name": "data-quality market_data_adapter compatibility facade ownership decision",
+    "type": "governance decision package",
+    "source_edit_authority": false,
+    "reason": "legacy data_adapter wrappers are now closed; market_data_adapter.py remains the next owner-specific compatibility facade before singleton wrapper retirement can be considered"
+  },
+  "non_goals": [
+    "backend source edits",
+    "legacy wrapper deletion",
+    "market_data_adapter.py edits",
+    "singleton wrapper deletion or privatization",
+    "DataQualityMonitor internals",
+    "route or OpenAPI changes",
+    "frontend changes",
+    "OpenSpec proposal creation",
+    "GitHub issue label changes"
+  ],
+  "freshness": {
+    "current_head_checked_at_review": "a621ba4ae66f581074a3b66539e296cbf0ced1b5",
+    "stale_if_head_mismatch": true
+  }
+}
