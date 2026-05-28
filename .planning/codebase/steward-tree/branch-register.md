@@ -51,12 +51,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#364` | `g2-211-data-quality-monitor-singleton-authorization` | `wip/root-dirty-20260403` | `MERGED` at `535a6d9c1565b4ced7942cb4082104f2fb0506fd` | Authorization package selecting G2.212 data-quality monitor singleton/backing API implementation |
 | `#365` | `g2-212-data-quality-monitor-singleton-implementation` | `wip/root-dirty-20260403` | `MERGED` at `e7d9fe63285181f0227661628272487dc63d4e2c` | Path-limited singleton/backing API provider seam implementation closed for G2.213 refresh |
 | `#366` | `g2-213-data-quality-monitor-singleton-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117` | No-source closeout selecting G2.214 non-Strategy provider queue refresh |
+| `#367` | `g2-214-non-strategy-provider-queue-refresh` | `wip/root-dirty-20260403` | `MERGED` at `a508fb263173b2014d307c4baec3b1eca0f42340` | No-source queue refresh selecting G2.215 indicator/data `get_data_service` ownership decision |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-214-non-strategy-provider-queue-refresh` | `origin/wip/root-dirty-20260403` at `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117` | Refresh broader non-Strategy provider/getter queue and select the next no-source governance target | No |
+| `g2-215-indicator-data-get-data-service-decision` | `origin/wip/root-dirty-20260403` at `a508fb263173b2014d307c4baec3b1eca0f42340` | Resolve current-HEAD `get_data_service` CRITICAL impact contradiction and classify ownership before source authorization | No |
 
 ## OpenSpec Relationship
 
@@ -72,7 +73,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.214 is a no-source queue refresh branch after PR `#366` merged G2.213. It is
-limited to governance evidence, steward tree updates, and a task card. If
-accepted, the next gate is G2.215 indicator/data `get_data_service`
-current-HEAD contradiction / ownership decision with no source edits.
+G2.215 is a no-source ownership decision branch after PR `#367` merged G2.214.
+It is limited to governance evidence, steward tree updates, and a task card. If
+accepted, the next gate is G2.216 indicator/data `DataService` singleton
+provider authorization package with no source edits.

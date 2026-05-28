@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-28T23:28:14+08:00`
-- Base HEAD checked: `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`
+- Prepared at: `2026-05-28T23:51:14+08:00`
+- Base HEAD checked: `a508fb263173b2014d307c4baec3b1eca0f42340`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#366` merged at `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`; G2.214 selects G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | If accepted, start G2.215 no-source ownership decision; do not start source implementation directly |
+| P0 | Review G2.215 indicator/data `get_data_service` ownership decision | G/#79 service lifecycle DI | PR `#367` merged at `a508fb263173b2014d307c4baec3b1eca0f42340`; G2.215 classifies `get_data_service` as a CRITICAL shared `DataService` backing API with route dependency-provider consumers | If accepted, start G2.216 no-source authorization package; do not start source implementation directly |
+| P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
 | P0 | Preserve G2.211 data-quality monitor singleton/backing API authorization | G/#79 service lifecycle DI | PR `#364` merged; G2.211 authorized a future path-limited G2.212 compatibility implementation | Do not expand G2.212 beyond the two authorized source files and one focused test |
@@ -56,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.204 correctly preserve old legacy module import paths while resolving to canonical adapter classes?
-- Does G2.204 keep deletion unauthorized and leave both legacy modules present as wrappers?
-- Does G2.204 reduce `get_data_quality_monitor()` calls in the two legacy modules to `0`?
-- Does G2.204 correctly select G2.205 as a closeout / residual refresh package?
-- Are `market_data_adapter.py`, singleton wrapper, route/OpenAPI, frontend, config, script, canonical adapter, and OpenSpec surfaces still deferred?
+- Does G2.215 correctly distinguish GitNexus CRITICAL graph impact from direct route-body singleton debt?
+- Does G2.215 preserve `get_data_service()` as a retained backing API instead of authorizing source edits?
+- Does G2.215 keep `indicator_cache.py` and `api/v1/strategy/indicators.py` classified as route dependency-provider consumers?
+- Does G2.215 avoid reopening the closed Strategy getter residual track?
+- Does G2.215 correctly select G2.216 as a no-source authorization package, not an implementation lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

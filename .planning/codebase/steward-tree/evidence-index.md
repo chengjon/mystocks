@@ -89,8 +89,10 @@ state transition.
 | `docs/reports/quality/backend-data-quality-monitor-singleton-implementation-2026-05-28.md` | G2.212 human-readable singleton/backing API implementation report | Accepted by PR `#365`; superseded for closeout / residual refresh by G2.213 |
 | `.planning/codebase/generated/data-quality-monitor-singleton-closeout-refresh-2026-05-28.json` | G2.213 data-quality monitor singleton/backing API closeout / residual refresh evidence | Accepted by PR `#366`; superseded for broader provider queue selection by G2.214 |
 | `docs/reports/quality/backend-data-quality-monitor-singleton-closeout-refresh-2026-05-28.md` | G2.213 human-readable singleton/backing API closeout / residual refresh report | Accepted by PR `#366`; superseded for broader provider queue selection by G2.214 |
-| `.planning/codebase/generated/nonstrategy-provider-queue-refresh-2026-05-28.json` | G2.214 non-Strategy provider queue refresh / next-candidate decision evidence | Current for HEAD `3d3f8285f3a83cb4dda60d9b7eb8cf36fdf77117`; review input until PR `#367` is accepted |
-| `docs/reports/quality/backend-nonstrategy-provider-queue-refresh-2026-05-28.md` | G2.214 human-readable non-Strategy provider queue refresh report | Review input until PR `#367` is accepted |
+| `.planning/codebase/generated/nonstrategy-provider-queue-refresh-2026-05-28.json` | G2.214 non-Strategy provider queue refresh / next-candidate decision evidence | Accepted by PR `#367`; superseded for `get_data_service` ownership by G2.215 |
+| `docs/reports/quality/backend-nonstrategy-provider-queue-refresh-2026-05-28.md` | G2.214 human-readable non-Strategy provider queue refresh report | Accepted by PR `#367`; superseded for `get_data_service` ownership by G2.215 |
+| `.planning/codebase/generated/indicator-data-get-data-service-ownership-decision-2026-05-28.json` | G2.215 indicator/data `get_data_service` ownership decision evidence | Current for HEAD `a508fb263173b2014d307c4baec3b1eca0f42340`; review input until PR `#368` is accepted |
+| `docs/reports/quality/backend-indicator-data-get-data-service-ownership-decision-2026-05-28.md` | G2.215 human-readable ownership decision report | Review input until PR `#368` is accepted |
 
 ## External State Inputs
 

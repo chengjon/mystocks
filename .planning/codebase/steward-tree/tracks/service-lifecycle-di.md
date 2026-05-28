@@ -864,11 +864,48 @@ It records that current GitNexus evidence contradicts older LOW/retained
 wording for `get_data_service`, so the next step must be an ownership decision
 before any source authorization.
 
+G2.214 is accepted by PR `#367`, merged at
+`a508fb263173b2014d307c4baec3b1eca0f42340`.
+
+## G2.215 Indicator/Data `get_data_service` Ownership Decision
+
+At HEAD `a508fb263173b2014d307c4baec3b1eca0f42340`, PR `#367` is merged and
+G2.214 is accepted.
+
+Current evidence:
+
+| Evidence | Value |
+|---|---:|
+| GitNexus risk | `CRITICAL` |
+| GitNexus direct callers | 3 |
+| Affected processes | 7 |
+| Affected modules | 2 |
+| Static direct `get_data_service()` source calls | 2 |
+
+Ownership classification:
+
+| Surface | Files | Current decision |
+|---|---|---|
+| `DataService` singleton/backing API | `web/backend/app/services/data_service.py` | Retain; requires a later authorization package before source edits |
+| Indicator route dependency provider | `web/backend/app/api/indicators/indicator_cache.py` | Active FastAPI provider surface; not direct route-body singleton debt |
+| Strategy technical-indicator route dependency provider | `web/backend/app/api/v1/strategy/indicators.py` | Route/provider surface only; do not reopen closed Strategy getter residuals |
+| Indicator helper call chain | `web/backend/app/api/indicators/indicator_cache.py` | Graph participant receiving injected `data_service`; not a separate direct getter call site |
+
+Decision:
+
+- G2.215 supersedes older LOW/retained wording for `get_data_service`.
+- The CRITICAL graph impact is accepted as route/process-level risk.
+- The current source shape is provider-wrapper based, so this is not a direct
+  route-body singleton cleanup.
+- G2.215 has no source authority and selects no implementation lane.
+- If accepted, the next gate is G2.216 indicator/data `DataService` singleton
+  provider authorization package, also no-source.
+
 ## Next Gates
 
-- Review G2.214 non-Strategy provider queue refresh / next-candidate selection.
-- If accepted, start G2.215 indicator/data `get_data_service` current-HEAD contradiction / ownership decision with no source edits.
-- Do not start source implementation from G2.214 or G2.215 until a later path-limited authorization package is approved.
+- Review G2.215 indicator/data `get_data_service` ownership decision.
+- If accepted, start G2.216 indicator/data `DataService` singleton provider authorization package with no source edits.
+- Do not start source implementation from G2.215 or G2.216 until a later path-limited implementation package is approved.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
