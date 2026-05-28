@@ -675,11 +675,43 @@ TDD evidence:
 G2.208 does not edit `data_source_factory`, singleton wrapper/backing API,
 route/OpenAPI, frontend, config, script, or OpenSpec surfaces.
 
+PR `#361` merged this lane at
+`90d8f12cc01f9fb360abc531673e3ed9535706e7`.
+
+## G2.209 Data-Quality Market Data Adapter Provider Closeout / Residual Refresh
+
+At HEAD `90d8f12cc01f9fb360abc531673e3ed9535706e7`, PR `#361` is merged and
+G2.208 is accepted.
+
+Closeout result:
+
+| Item | Result |
+|---|---|
+| Target path | `web/backend/app/services/market_data_adapter.py` |
+| Provider seam status | Closed |
+| Constructor compatibility | `MarketDataSourceAdapter(config)` preserved |
+| Injection compatibility | Keyword-only optional `quality_monitor` retained |
+| Default fallback | `get_data_quality_monitor()` fallback intentionally retained |
+| `data_source_factory` compatibility | `MarketDataSourceAdapter(config.__dict__)` remains compatible |
+
+Residual classification:
+
+| Residual surface | Classification | Handling |
+|---|---|---|
+| `market_data_adapter.py` fallback | Closed market-data adapter fallback | Do not reopen without contradictory current evidence |
+| `adapters/dashboard_adapter.py`, `adapters/data_adapter.py` | Closed canonical service adapter fallback | Covered by G2.200/G2.201 |
+| `adapters_split/base_adapter.py` | Closed adapter-split base fallback | Covered by G2.196/G2.197 |
+| `_data_quality_monitor_singleton.py`, `data_quality_monitor.py` | Singleton/backing API | Retained pending a separate ownership decision |
+| `data_adapter.py.backup.20260130` | Historical backup file | Separate repository hygiene authority required |
+
+G2.209 has no source authority. It does not edit `web/backend/**`, route,
+OpenAPI, frontend, config, script, or OpenSpec surfaces.
+
 ## Next Gates
 
-- Review G2.208 `market_data_adapter.py` provider seam implementation.
-- If accepted, start G2.209 closeout / residual refresh with no source edits.
-- Do not open the next source lane before G2.209 classifies remaining data-quality monitor surfaces.
+- Review G2.209 `market_data_adapter.py` provider seam closeout / residual refresh.
+- If accepted, start G2.210 data-quality monitor residual ownership decision with no source edits.
+- Do not open the next source lane before G2.210 decides singleton/backing API and retained fallback ownership.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
