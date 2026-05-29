@@ -2494,6 +2494,14 @@ test.describe("Phase 3 Mainline Matrix", () => {
     await page.goto(`${FRONTEND_BASE_URL}/trade/reconciliation`)
 
     await expect(page.getByText("对账单工作台").first()).toBeVisible()
+    await expect(page.getByTestId("trade-reconciliation-page")).toBeVisible()
+    await expect(page.getByTestId("trade-reconciliation-header")).toBeVisible()
+    await expect(page.getByTestId("trade-reconciliation-refresh")).toBeVisible()
+    await expect(page.getByTestId("trade-reconciliation-control-row")).toBeVisible()
+    await expect(page.getByTestId("trade-reconciliation-status-strip")).toContainText("总笔数")
+    await expect(page.getByTestId("trade-reconciliation-work-area")).toBeVisible()
+    await expect(page.getByTestId("trade-reconciliation-statement-panel")).toBeVisible()
+    await expect(page.getByTestId("trade-reconciliation-result-panel")).toBeVisible()
     await expect(page.locator(".hero-meta")).toContainText("ACCOUNT: backtest:7")
     await expect(page.locator(".trade-reconciliation")).toContainText("600519.SH")
 

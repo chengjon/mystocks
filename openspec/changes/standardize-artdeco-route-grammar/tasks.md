@@ -34,6 +34,15 @@ Alignment record:
 - Report: `docs/reports/tasks/2026-05-29-artdeco-risk-alerts-hook-alignment-report.md`
 - Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
 
+Additional alignment record:
+
+- Date: 2026-05-29
+- User wording: `请继续`
+- Selected route: `web/frontend/src/views/trade/Reconciliation.vue`
+- Report: `docs/reports/tasks/2026-05-29-artdeco-trade-reconciliation-hook-alignment-report.md`
+- Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
+- Note: this route already contained control-level hooks; this batch added route-level grammar hooks and replaced page-local raw spacing/color literals with existing ArtDeco tokens.
+
 ## 4. Shared Component Extraction Gate
 
 - [ ] 4.1 Draft a separate extraction proposal before creating shared Vue components.

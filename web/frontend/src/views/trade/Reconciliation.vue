@@ -100,8 +100,8 @@ const onAccountChange = async (event: Event) => {
 </script>
 
 <template>
-  <div class="trade-reconciliation page-enter">
-    <section class="hero-shell artdeco-card-shell">
+  <div class="trade-reconciliation page-enter" data-testid="trade-reconciliation-page">
+    <section class="hero-shell artdeco-card-shell" data-testid="trade-reconciliation-header">
       <div class="hero-rail">
         <div class="hero-copy">
           <span class="hero-eyebrow">trade reconciliation desk</span>
@@ -123,7 +123,7 @@ const onAccountChange = async (event: Event) => {
         :status-type="pageStatusType"
       >
         <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="refresh">
+          <ArtDecoButton variant="outline" size="sm" :loading="loading" data-testid="trade-reconciliation-refresh" @click="refresh">
             <template #icon>
               <ArtDecoIcon name="refresh" />
             </template>
@@ -146,7 +146,7 @@ const onAccountChange = async (event: Event) => {
       </ArtDecoHeader>
     </section>
 
-    <section class="control-shell artdeco-card-shell">
+    <section class="control-shell artdeco-card-shell" data-testid="trade-reconciliation-control-row">
       <div class="control-grid">
         <label class="field">
           <span>对账账户</span>
@@ -216,7 +216,7 @@ const onAccountChange = async (event: Event) => {
       </div>
     </section>
 
-    <section class="stats-strip artdeco-card-shell">
+    <section class="stats-strip artdeco-card-shell" data-testid="trade-reconciliation-status-strip">
       <ArtDecoStatCard label="总笔数" :value="statementSummary.totalCount" :show-change="false" variant="gold" />
       <ArtDecoStatCard label="账单金额" :value="statementSummary.totalAmount" :show-change="false" variant="gold" />
       <ArtDecoStatCard label="手续费" :value="statementSummary.totalCommission" :show-change="false" variant="gold" />
@@ -225,16 +225,18 @@ const onAccountChange = async (event: Event) => {
       <ArtDecoStatCard label="缺少券商记录" :value="displayMissingBrokerRecordCount" :show-change="false" variant="fall" />
     </section>
 
-    <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+    <p v-if="runtimeMessage" class="runtime-message" aria-live="polite" data-testid="trade-reconciliation-runtime-state">
+      {{ runtimeMessage }}
+    </p>
 
-    <section v-if="executionContext" class="execution-context artdeco-card-shell">
+    <section v-if="executionContext" class="execution-context artdeco-card-shell" data-testid="trade-reconciliation-execution-context">
       <span>执行跟踪上下文</span>
       <strong>{{ executionContext.orderId || executionContext.bridgeTaskId || executionContext.accountId }}</strong>
       <a :href="executionContext.href">返回执行跟踪详情</a>
     </section>
 
-    <section class="grid-shell">
-      <ArtDecoCard title="内部账单快照">
+    <section class="grid-shell" data-testid="trade-reconciliation-work-area">
+      <ArtDecoCard title="内部账单快照" data-testid="trade-reconciliation-statement-panel">
         <div v-if="statementRows.length === 0" class="table-empty">
           暂无内部账单记录。
         </div>
@@ -262,7 +264,7 @@ const onAccountChange = async (event: Event) => {
         </div>
       </ArtDecoCard>
 
-      <ArtDecoCard title="对账结果">
+      <ArtDecoCard title="对账结果" data-testid="trade-reconciliation-result-panel">
         <div v-if="resultRows.length === 0" class="table-empty">
           导入完成后将在这里展示只读对账结果。
         </div>
@@ -305,53 +307,54 @@ const onAccountChange = async (event: Event) => {
 .trade-reconciliation {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: var(--artdeco-spacing-5);
 }
 
 .hero-shell,
 .control-shell,
 .stats-strip {
-  padding: 20px;
+  padding: var(--artdeco-spacing-5);
 }
 
 .hero-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  color: var(--el-text-color-secondary, #7a6f62);
-  font-size: 12px;
+  gap: var(--artdeco-spacing-3);
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-compact-sm);
   letter-spacing: 0.04em;
 }
 
 .control-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(11.25rem, 1fr));
+  gap: var(--artdeco-spacing-4);
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: var(--artdeco-spacing-2);
 }
 
 .field span {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--artdeco-text-compact-sm);
+  font-weight: var(--artdeco-font-semibold);
 }
 
 .field select,
 .field input[type='date'],
 .field input[type='file'] {
-  min-height: 40px;
-  padding: 8px 12px;
-  border: 1px solid rgba(106, 83, 58, 0.18);
-  border-radius: 12px;
-  background: rgba(255, 252, 246, 0.92);
+  min-height: var(--artdeco-spacing-10);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+  border: var(--artdeco-spacing-px) solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-lg);
+  background: var(--artdeco-bg-elevated);
+  color: var(--artdeco-fg-primary);
 }
 
 .field small {
-  color: var(--el-text-color-secondary, #7a6f62);
+  color: var(--artdeco-fg-muted);
 }
 
 .field--actions {
@@ -360,39 +363,40 @@ const onAccountChange = async (event: Event) => {
 
 .runtime-message {
   margin: 0;
-  padding: 12px 16px;
-  border-radius: 14px;
-  background: rgba(255, 248, 235, 0.92);
-  color: #6d512d;
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  border: var(--artdeco-spacing-px) solid var(--ad-chip-border-warning);
+  border-radius: var(--artdeco-radius-lg);
+  background: var(--ad-chip-bg-warning);
+  color: var(--ad-chip-text-warning);
 }
 
 .execution-context {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  color: var(--artdeco-text-primary, #f2f0e4);
+  gap: var(--artdeco-spacing-3);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  color: var(--artdeco-fg-primary);
 }
 
 .execution-context span {
-  color: var(--artdeco-text-muted, #a0a0a0);
-  font-size: 12px;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-compact-sm);
 }
 
 .execution-context strong {
   font-family: var(--artdeco-font-data, 'JetBrains Mono', monospace);
-  font-size: 12px;
+  font-size: var(--artdeco-text-compact-sm);
 }
 
 .execution-context a {
-  color: var(--artdeco-gold, #d4af37);
-  font-size: 12px;
+  color: var(--artdeco-gold-primary);
+  font-size: var(--artdeco-text-compact-sm);
 }
 
 .grid-shell {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(20rem, 1fr));
+  gap: var(--artdeco-spacing-5);
 }
 
 .statement-table-shell {
@@ -402,53 +406,53 @@ const onAccountChange = async (event: Event) => {
 .statement-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: var(--artdeco-text-compact-base);
 }
 
 .statement-table th,
 .statement-table td {
-  padding: 12px 10px;
-  border-bottom: 1px solid rgba(106, 83, 58, 0.12);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-2);
+  border-bottom: var(--artdeco-spacing-px) solid var(--artdeco-gold-opacity-10);
   text-align: left;
   white-space: nowrap;
 }
 
 .table-empty {
-  padding: 32px 0;
-  color: var(--el-text-color-secondary, #7a6f62);
+  padding: var(--artdeco-spacing-8) var(--artdeco-spacing-0);
+  color: var(--artdeco-fg-muted);
 }
 
 .status-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 78px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 600;
+  min-width: 5rem;
+  padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
+  border-radius: var(--artdeco-radius-full);
+  font-size: var(--artdeco-text-compact-sm);
+  font-weight: var(--artdeco-font-semibold);
 }
 
 .status-chip--matched {
-  background: rgba(66, 184, 131, 0.16);
-  color: #1f7d58;
+  background: var(--ad-chip-bg-active);
+  color: var(--ad-chip-text-active);
 }
 
 .status-chip--mismatched {
-  background: rgba(245, 166, 35, 0.16);
-  color: #9f5c00;
+  background: var(--ad-chip-bg-warning);
+  color: var(--ad-chip-text-warning);
 }
 
 .status-chip--missing_broker_record {
-  background: rgba(214, 80, 80, 0.16);
-  color: #a13d3d;
+  background: var(--ad-chip-bg-loss);
+  color: var(--ad-chip-text-loss);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 48rem) {
   .hero-shell,
   .control-shell,
   .stats-strip {
-    padding: 16px;
+    padding: var(--artdeco-spacing-4);
   }
 
   .grid-shell {

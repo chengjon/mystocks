@@ -318,10 +318,11 @@ Tasks:
 - [x] 4.6 Draft and validate OpenSpec proposal `standardize-artdeco-route-grammar`.
 - [x] 4.7 Implement approved route grammar documentation in `ARTDECO_COMPONENT_GUIDE.md` and `ARTDECO_MASTER_INDEX.md`.
 - [x] 4.8 Apply the route-level E2E hook standard to `risk/Alerts.vue`.
+- [x] 4.9 Apply the route-level E2E hook standard and page-local token cleanup to `trade/Reconciliation.vue`.
 
 ## 6. Recommended Immediate Next Action
 
-Do not start a new route yet.
+Do not start shared component extraction yet.
 
 The immediate next action should be:
 
@@ -330,7 +331,8 @@ The immediate next action should be:
 3. Use the refreshed extraction analysis as the approval boundary before any shared component proposal.
 4. Use `ARTDECO_COMPONENT_GUIDE.md` §8 as the route grammar / runtime trust strip / route-level E2E hook standard for future page craft work.
 5. Treat `risk/Alerts.vue` as the first completed hook-alignment pilot; use `docs/reports/tasks/2026-05-29-artdeco-risk-alerts-hook-alignment-report.md` as evidence.
-6. Do not start shared component extraction until separately approved.
+6. Treat `trade/Reconciliation.vue` as the second completed hook-alignment pilot; use `docs/reports/tasks/2026-05-29-artdeco-trade-reconciliation-hook-alignment-report.md` as evidence.
+7. Do not start shared component extraction until separately approved.
 
 The previous approval gate has now been satisfied. Future implementation approval wording should still include `批准`, `同意`, or `执行`, for example:
 
