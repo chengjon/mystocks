@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T09:38:00+08:00",
+  "generated_at": "2026-05-29T10:34:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "36c38fbf233945b7e45ed67b50591665942d4b32",
-  "split_branch": "g2-225-industry-concept-unified-data-service-cleanup",
-  "scope": "industry_concept_unified_data_service_cleanup_implementation",
-  "source_edit_authority": true,
+  "base_head": "5837b8af55499e8ee9d7ba14cf543abb9bc45e39",
+  "split_branch": "g2-226-industry-concept-unified-data-service-closeout-refresh",
+  "scope": "industry_concept_unified_data_service_cleanup_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -3123,10 +3123,13 @@
     {
       "id": "g2-225-industry-concept-unified-data-service-cleanup",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + unified data facade governance",
       "parent": "G2.224 industry_concept_analysis.py cleanup authorization",
       "source_edit_authority": true,
+      "github_pr": 378,
+      "head_ref": "g2-225-industry-concept-unified-data-service-cleanup",
+      "merge_commit": "5837b8af55499e8ee9d7ba14cf543abb9bc45e39",
       "parent_github_pr": 377,
       "parent_merge_commit": "36c38fbf233945b7e45ed67b50591665942d4b32",
       "evidence": [
@@ -3171,7 +3174,7 @@
         "app_openapi_smoke": "routes=548, paths=500, industry and concept paths present",
         "openspec_validate": "valid"
       },
-      "next_gate": "If accepted, merge G2.225 and run G2.226 closeout / residual refresh before selecting another unified-data or cache provider candidate.",
+      "next_gate": "Superseded by G2.226 closeout / residual refresh before selecting another unified-data or cache provider candidate.",
       "allowed_scope": [
         "web/backend/app/api/industry_concept_analysis.py",
         "web/backend/tests/test_health_route_conflicts.py",
@@ -3198,7 +3201,83 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "36c38fbf233945b7e45ed67b50591665942d4b32",
+        "current_head_checked": "5837b8af55499e8ee9d7ba14cf543abb9bc45e39",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-226-industry-concept-unified-data-service-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + unified data facade governance",
+      "parent": "G2.225 industry_concept_analysis.py cleanup implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 378,
+      "parent_merge_commit": "5837b8af55499e8ee9d7ba14cf543abb9bc45e39",
+      "evidence": [
+        ".planning/codebase/generated/industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.json",
+        "docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-379.yaml"
+      ],
+      "closeout": {
+        "target_file": "web/backend/app/api/industry_concept_analysis.py",
+        "direct_unified_data_service_calls_after": 0,
+        "unified_data_service_import_present_after": false,
+        "remaining_unified_data_hits": 9,
+        "remaining_unified_data_hit_files": [
+          "web/backend/app/services/unified_data_service.py"
+        ],
+        "target_route_paths_preserved": true,
+        "target_response_models_preserved": true,
+        "openapi_smoke": "routes=548, paths=500, industry and concept paths present"
+      },
+      "next_candidate": {
+        "symbol": "get_prewarming_strategy",
+        "definition_file": "web/backend/app/core/cache_prewarming.py",
+        "definition_line": 306,
+        "classification": "cache prewarming route/provider surface",
+        "text_hits": 5,
+        "hit_files": [
+          "web/backend/app/api/_cache_prewarming_routes.py",
+          "web/backend/app/core/cache_prewarming.py"
+        ],
+        "gitnexus_risk": "LOW",
+        "direct_callers": 3,
+        "processes_affected": 0,
+        "selected_next_gate": "G2.227 no-source get_prewarming_strategy ownership decision"
+      },
+      "verification": {
+        "focused_regression_test": "web/backend/tests/test_health_route_conflicts.py::test_industry_concept_list_endpoints_do_not_instantiate_unified_data_service_directly: 1 passed",
+        "ruff": "passed",
+        "app_openapi_smoke": "routes=548, paths=500, industry and concept paths present"
+      },
+      "next_gate": "If accepted, start G2.227 no-source ownership decision for get_prewarming_strategy; do not start cache prewarming source implementation from G2.226.",
+      "allowed_scope": [
+        ".planning/codebase/generated/industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-379.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "5837b8af55499e8ee9d7ba14cf543abb9bc45e39",
         "stale_if_head_mismatch": true
       }
     },
