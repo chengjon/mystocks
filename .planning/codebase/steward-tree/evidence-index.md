@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-30T01:04:48+08:00`
-- Base HEAD checked: `05844e89873ad4fc729dab87942ea80f81bde39a`
+- Prepared at: `2026-05-30T01:23:24+08:00`
+- Base HEAD checked: `6bb9104295c31eac0e5b99dcaa65264c79fda085`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,6 +21,9 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
+| `.planning/codebase/generated/postgres-async-provider-authorization-2026-05-30.json` | G2.246 `get_postgres_async` provider authorization evidence | Review input for PR `#399`; current for HEAD `6bb9104295c31eac0e5b99dcaa65264c79fda085` |
+| `docs/reports/quality/backend-postgres-async-provider-authorization-2026-05-30.md` | G2.246 human-readable provider authorization packet | Review input for PR `#399`; no-source governance only |
+| `governance/mainline/task-cards/pr-399.yaml` | Path-limited governance task card for G2.246 | Review input; forbids source/test/runtime/OpenSpec changes |
 | `.planning/codebase/generated/postgres-async-ownership-decision-2026-05-30.json` | G2.245 `get_postgres_async` ownership / provider decision evidence | Review input for PR `#398`; current for HEAD `05844e89873ad4fc729dab87942ea80f81bde39a` |
 | `docs/reports/quality/backend-postgres-async-ownership-decision-2026-05-30.md` | G2.245 human-readable ownership / provider decision report | Review input for PR `#398`; no-source governance only |
 | `governance/mainline/task-cards/pr-398.yaml` | Path-limited governance task card for G2.245 | Review input; forbids source/test/runtime/OpenSpec changes |
