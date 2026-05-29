@@ -16,13 +16,75 @@ Priority: P2 (Utility)
 Coverage: 70% functional + smoke testing
 """
 
+import ast
+from pathlib import Path
+
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[3]
+MONITORING_ANALYSIS_FILE = PROJECT_ROOT / "web/backend/app/api/monitoring_analysis.py"
+MONITORING_PORTFOLIO_FILE = PROJECT_ROOT / "web/backend/app/api/_monitoring_portfolio_router.py"
+
+
+def _parse_module(path: Path) -> ast.Module:
+    return ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+
+
+def _function_by_name(module: ast.Module, name: str) -> ast.AsyncFunctionDef | ast.FunctionDef:
+    for node in module.body:
+        if isinstance(node, (ast.AsyncFunctionDef, ast.FunctionDef)) and node.name == name:
+            return node
+    raise AssertionError(f"{name} not found in module")
+
+
+def _calls_function(node: ast.AST, name: str) -> bool:
+    return any(isinstance(child, ast.Call) and isinstance(child.func, ast.Name) and child.func.id == name for child in ast.walk(node))
+
+
+def _has_dependency_provider_param(function: ast.AsyncFunctionDef | ast.FunctionDef, provider_name: str) -> bool:
+    for default in function.args.defaults:
+        if not isinstance(default, ast.Call):
+            continue
+        if not (isinstance(default.func, ast.Name) and default.func.id == "Depends"):
+            continue
+        for arg in default.args:
+            if isinstance(arg, ast.Name) and arg.id == provider_name:
+                return True
+    return False
 
 
 class TestMonitoringAnalysisAPIFile:
     """Test suite for monitoring_analysis.py API file"""
+
+    @pytest.mark.file_test
+    def test_monitoring_calculator_factory_uses_route_dependency_provider(self):
+        """G2.238 keeps calculator factory lookup out of active route bodies."""
+        expected_handlers = {
+            MONITORING_PORTFOLIO_FILE: {
+                "get_portfolio_summary",
+                "get_portfolio_alerts",
+                "get_rebalance_suggestions",
+            },
+            MONITORING_ANALYSIS_FILE: {
+                "calculate_health_score",
+                "batch_calculate_health_scores",
+                "analyze_portfolio",
+                "identify_market_regime",
+                "get_engine_status",
+            },
+        }
+
+        for path, handler_names in expected_handlers.items():
+            module = _parse_module(path)
+            provider = _function_by_name(module, "get_monitoring_calculator_factory")
+            assert _calls_function(provider, "get_calculator_factory")
+
+            for handler_name in handler_names:
+                handler = _function_by_name(module, handler_name)
+                assert not _calls_function(handler, "get_calculator_factory"), handler_name
+                assert _has_dependency_provider_param(handler, "get_monitoring_calculator_factory"), handler_name
 
     @pytest.mark.file_test
     def test_calculate_health_endpoint(self, api_test_fixtures):

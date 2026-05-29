@@ -17,14 +17,13 @@ import logging
 from datetime import date, datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Body, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 from app.core.exceptions import BusinessException
 from pydantic import BaseModel, Field
 
 from app.api._monitoring_portfolio_router import router as monitoring_portfolio_router
 from app.core.exception_handlers import handle_exceptions
 from app.core.responses import UnifiedResponse
-from app.openapi_config import COMMON_RESPONSES
 from app.api._monitoring_analysis_responses import (
     BATCH_CALCULATE_HEALTH_REQUEST_EXAMPLES,
     BATCH_CALCULATE_HEALTH_SUCCESS_RESPONSE,
@@ -42,6 +41,12 @@ logger = logging.getLogger(__name__)
 # Prefix is governed by the central route registry.
 router = APIRouter(tags=["monitoring-analysis"], responses=MONITORING_ANALYSIS_ROUTE_RESPONSES)
 router.include_router(monitoring_portfolio_router)
+
+
+def get_monitoring_calculator_factory():
+    from src.monitoring.domain.calculator_factory import get_calculator_factory
+
+    return get_calculator_factory()
 
 
 # ==================== 请求模型 ====================
@@ -137,6 +142,7 @@ class MarketRegimeResponse(BaseModel):
 async def calculate_health_score(
     request: CalculateHealthRequest = Body(..., openapi_examples=CALCULATE_HEALTH_REQUEST_EXAMPLES),
     use_gpu: bool = Query(False, description="是否使用GPU计算"),
+    calculator_factory=Depends(get_monitoring_calculator_factory),
 ) -> UnifiedResponse[HealthScoreWithRiskResponse]:
     """
     计算单只股票的健康度评分
@@ -147,9 +153,9 @@ async def calculate_health_score(
     - **market_regime**: 市场体制 (自动识别时可省略)
     """
     try:
-        from src.monitoring.domain.calculator_factory import EngineType, get_calculator_factory
+        from src.monitoring.domain.calculator_factory import EngineType
 
-        factory = get_calculator_factory()
+        factory = calculator_factory
 
         engine_type = EngineType.GPU if use_gpu else EngineType.AUTO
 
@@ -199,6 +205,7 @@ async def calculate_health_score(
 async def batch_calculate_health_scores(
     request: BatchCalculateHealthRequest = Body(..., openapi_examples=BATCH_CALCULATE_HEALTH_REQUEST_EXAMPLES),
     use_gpu: bool = Query(False, description="是否使用GPU计算"),
+    calculator_factory=Depends(get_monitoring_calculator_factory),
 ) -> UnifiedResponse[List[HealthScoreWithRiskResponse]]:
     """
     批量计算健康度评分
@@ -207,9 +214,9 @@ async def batch_calculate_health_scores(
     - **include_risk_metrics**: 是否包含高级风险指标
     """
     try:
-        from src.monitoring.domain.calculator_factory import EngineType, get_calculator_factory
+        from src.monitoring.domain.calculator_factory import EngineType
 
-        factory = get_calculator_factory()
+        factory = calculator_factory
 
         engine_type = EngineType.GPU if use_gpu else EngineType.AUTO
 
@@ -338,15 +345,15 @@ async def analyze_portfolio(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
     include_risk_metrics: bool = Query(False, description="是否包含高级风险指标"),
+    calculator_factory=Depends(get_monitoring_calculator_factory),
 ) -> UnifiedResponse[PortfolioAnalysisResponse]:
     """
     分析投资组合健康度
     """
     try:
-        from src.monitoring.domain.calculator_factory import get_calculator_factory
         from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
-        factory = get_calculator_factory()
+        factory = calculator_factory
         postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
@@ -461,6 +468,7 @@ async def analyze_portfolio(
 @handle_exceptions
 async def identify_market_regime(
     index_code: str = Query("000001.SH", description="指数代码"),
+    calculator_factory=Depends(get_monitoring_calculator_factory),
 ) -> UnifiedResponse[MarketRegimeResponse]:
     """
     识别当前市场体制
@@ -471,9 +479,7 @@ async def identify_market_regime(
         import numpy as np
         import pandas as pd
 
-        from src.monitoring.domain.calculator_factory import get_calculator_factory
-
-        factory = get_calculator_factory()
+        factory = calculator_factory
 
         np.random.seed(42)
         pd.date_range(start="2024-01-01", periods=100, freq="D")
@@ -507,14 +513,14 @@ async def identify_market_regime(
     responses=ENGINE_STATUS_SUCCESS_RESPONSE,
 )
 @handle_exceptions
-async def get_engine_status() -> UnifiedResponse[Dict[str, Any]]:
+async def get_engine_status(
+    calculator_factory=Depends(get_monitoring_calculator_factory),
+) -> UnifiedResponse[Dict[str, Any]]:
     """
     获取计算引擎状态
     """
     try:
-        from src.monitoring.domain.calculator_factory import get_calculator_factory
-
-        factory = get_calculator_factory()
+        factory = calculator_factory
         status = factory.get_engine_status()
 
         return UnifiedResponse(data=status, message="获取引擎状态成功")

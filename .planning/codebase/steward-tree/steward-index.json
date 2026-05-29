@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T19:13:42+08:00",
+  "generated_at": "2026-05-29T20:34:17+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "f39aca8815d59739787349ed1025e7a1b7e2c050",
-  "split_branch": "g2-237-monitoring-calculator-factory-provider-authorization",
-  "scope": "monitoring_calculator_factory_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "ef11ae6577bf62d15b814af732ba291696e5b084",
+  "split_branch": "g2-238-monitoring-calculator-factory-provider-injection",
+  "scope": "monitoring_calculator_factory_provider_injection",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -3924,7 +3924,7 @@
     {
       "id": "g2-235-service-lifecycle-residual-candidate-refresh",
       "type": "candidate_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.234 data-source config manager provider closeout / residual refresh",
       "source_edit_authority": false,
@@ -4019,7 +4019,7 @@
     {
       "id": "g2-236-monitoring-calculator-factory-ownership-decision",
       "type": "ownership_provider_seam_decision",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.235 service lifecycle residual candidate refresh after data-source config manager",
       "source_edit_authority": false,
@@ -4102,13 +4102,15 @@
     {
       "id": "g2-237-monitoring-calculator-factory-provider-authorization",
       "type": "authorization",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.236 monitoring calculator factory ownership / provider seam decision",
       "source_edit_authority": false,
       "future_source_edit_authority_if_accepted": true,
       "parent_github_pr": 389,
       "parent_merge_commit": "f39aca8815d59739787349ed1025e7a1b7e2c050",
+      "github_pr": 390,
+      "merge_commit": "ef11ae6577bf62d15b814af732ba291696e5b084",
       "evidence": [
         ".planning/codebase/generated/monitoring-calculator-factory-provider-authorization-2026-05-29.json",
         "docs/reports/quality/backend-monitoring-calculator-factory-provider-authorization-2026-05-29.md",
@@ -4171,7 +4173,7 @@
         "source_edits_authorized_now": false,
         "g2_238_created_now": false
       },
-      "next_gate": "If accepted, create G2.238 as a separate source implementation lane limited to the authorized future source/test paths. Do not start source implementation from G2.237.",
+      "next_gate": "Superseded by G2.238 monitoring calculator factory provider injection.",
       "allowed_scope": [
         ".planning/codebase/generated/monitoring-calculator-factory-provider-authorization-2026-05-29.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -4198,6 +4200,91 @@
       ],
       "freshness": {
         "current_head_checked": "f39aca8815d59739787349ed1025e7a1b7e2c050",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-238-monitoring-calculator-factory-provider-injection",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.237 monitoring calculator factory provider authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 390,
+      "parent_merge_commit": "ef11ae6577bf62d15b814af732ba291696e5b084",
+      "evidence": [
+        ".planning/codebase/generated/monitoring-calculator-factory-provider-injection-2026-05-29.json",
+        "docs/reports/quality/backend-monitoring-calculator-factory-provider-injection-2026-05-29.md",
+        "governance/mainline/task-cards/pr-391.yaml"
+      ],
+      "changed_source_paths": [
+        "web/backend/app/api/monitoring_analysis.py",
+        "web/backend/app/api/_monitoring_portfolio_router.py"
+      ],
+      "changed_test_paths": [
+        "tests/api/file_tests/test_monitoring_analysis_api.py"
+      ],
+      "implementation_result": {
+        "provider_name": "get_monitoring_calculator_factory",
+        "providers_added": 2,
+        "target_handlers": 8,
+        "direct_route_body_get_calculator_factory_calls_after": 0,
+        "fastapi_dependency_parameters_after": 8,
+        "domain_factory_file_changed": false,
+        "openapi_routes": 548,
+        "openapi_paths": 500
+      },
+      "tdd_evidence": {
+        "red": "provider guard test failed before implementation: get_monitoring_calculator_factory not found",
+        "green": "provider guard test passed after implementation"
+      },
+      "verification": {
+        "gitnexus_impact_before_edit": "HIGH, 9 impacted, 9 direct, 3 affected processes, 2 modules; MCP transport closed, CLI fallback used",
+        "focused_monitoring_analysis_tests": "17 passed",
+        "health_route_conflicts_collect": "121 tests collected",
+        "ruff_authorized_files": "All checks passed",
+        "app_openapi_smoke": "routes=548, paths=500",
+        "static_guard": "2 providers, 8 target handlers, 0 direct route-body get_calculator_factory() calls"
+      },
+      "preserved_boundaries": [
+        "src/monitoring/domain/calculator_factory.py unchanged",
+        "route paths unchanged",
+        "response models unchanged",
+        "UnifiedResponse contracts unchanged",
+        "calculator construction behavior unchanged",
+        "get_mock_data_manager, get_monitoring_db, get_postgres_async out of scope"
+      ],
+      "next_gate": "If accepted, start G2.239 no-source monitoring calculator factory provider closeout / residual refresh. Do not expand this implementation lane.",
+      "allowed_scope": [
+        "web/backend/app/api/monitoring_analysis.py",
+        "web/backend/app/api/_monitoring_portfolio_router.py",
+        "tests/api/file_tests/test_monitoring_analysis_api.py",
+        ".planning/codebase/generated/monitoring-calculator-factory-provider-injection-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-monitoring-calculator-factory-provider-injection-2026-05-29.md",
+        "governance/mainline/task-cards/pr-391.yaml"
+      ],
+      "forbidden_scope": [
+        "src/monitoring/domain/calculator_factory.py",
+        "web/backend/app/services/**",
+        "web/backend/app/schemas/**",
+        "web/backend/app/models/**",
+        "web/frontend/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "ef11ae6577bf62d15b814af732ba291696e5b084",
         "stale_if_head_mismatch": true
       }
     },

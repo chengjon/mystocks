@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T19:13:42+08:00`
-- Base HEAD checked: `f39aca8815d59739787349ed1025e7a1b7e2c050`
+- Prepared at: `2026-05-29T20:34:17+08:00`
+- Base HEAD checked: `ef11ae6577bf62d15b814af732ba291696e5b084`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -135,8 +135,10 @@ state transition.
 | `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.md` | G2.235 human-readable residual candidate refresh package | Accepted by PR `#388`; superseded for ownership decision by G2.236 |
 | `.planning/codebase/generated/monitoring-calculator-factory-ownership-decision-2026-05-29.json` | G2.236 monitoring calculator factory ownership / provider seam decision evidence | Accepted by PR `#389`; superseded for authorization by G2.237 |
 | `docs/reports/quality/backend-monitoring-calculator-factory-ownership-decision-2026-05-29.md` | G2.236 human-readable ownership / provider seam decision package | Accepted by PR `#389`; superseded for authorization by G2.237 |
-| `.planning/codebase/generated/monitoring-calculator-factory-provider-authorization-2026-05-29.json` | G2.237 monitoring calculator factory provider authorization evidence | Review input until PR `#390` is accepted |
-| `docs/reports/quality/backend-monitoring-calculator-factory-provider-authorization-2026-05-29.md` | G2.237 human-readable provider authorization package | Review input until PR `#390` is accepted |
+| `.planning/codebase/generated/monitoring-calculator-factory-provider-authorization-2026-05-29.json` | G2.237 monitoring calculator factory provider authorization evidence | Accepted by PR `#390`; superseded for implementation by G2.238 |
+| `docs/reports/quality/backend-monitoring-calculator-factory-provider-authorization-2026-05-29.md` | G2.237 human-readable provider authorization package | Accepted by PR `#390`; superseded for implementation by G2.238 |
+| `.planning/codebase/generated/monitoring-calculator-factory-provider-injection-2026-05-29.json` | G2.238 monitoring calculator factory provider injection evidence | Review input until PR `#391` is accepted |
+| `docs/reports/quality/backend-monitoring-calculator-factory-provider-injection-2026-05-29.md` | G2.238 human-readable provider injection report | Review input until PR `#391` is accepted |
 
 ## External State Inputs
 

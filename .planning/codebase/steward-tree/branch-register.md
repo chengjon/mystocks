@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T19:13:42+08:00`
-- Base HEAD checked: `f39aca8815d59739787349ed1025e7a1b7e2c050`
+- Prepared at: `2026-05-29T20:34:17+08:00`
+- Base HEAD checked: `ef11ae6577bf62d15b814af732ba291696e5b084`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -74,12 +74,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#387` | `g2-234-data-source-config-manager-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5` | No-source closeout / residual refresh selecting G2.235 service lifecycle residual candidate refresh |
 | `#388` | `g2-235-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `383598ab2a30da31513468b97537183322b46af9` | No-source residual candidate refresh selecting G2.236 monitoring calculator factory ownership decision |
 | `#389` | `g2-236-monitoring-calculator-factory-decision` | `wip/root-dirty-20260403` | `MERGED` at `f39aca8815d59739787349ed1025e7a1b7e2c050` | No-source ownership / provider seam decision selecting G2.237 monitoring calculator factory provider authorization |
+| `#390` | `g2-237-monitoring-calculator-factory-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `ef11ae6577bf62d15b814af732ba291696e5b084` | No-source provider authorization selecting G2.238 monitoring calculator factory provider injection |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-237-monitoring-calculator-factory-provider-authorization` | `origin/wip/root-dirty-20260403` at `f39aca8815d59739787349ed1025e7a1b7e2c050` | Authorize a bounded future monitoring calculator factory provider injection lane after accepted G2.236 | No |
+| `g2-238-monitoring-calculator-factory-provider-injection` | `origin/wip/root-dirty-20260403` at `ef11ae6577bf62d15b814af732ba291696e5b084` | Implement bounded monitoring calculator factory provider injection after accepted G2.237 | Yes, path-limited |
 
 ## OpenSpec Relationship
 
@@ -95,7 +96,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.237 is a no-source authorization packet after PR `#389` merged G2.236. It
-authorizes only a future bounded G2.238 lane, if accepted, for monitoring
-calculator factory provider injection in two API modules plus focused tests. It
-does not create G2.238 or authorize source implementation in this PR.
+G2.238 is the path-limited implementation lane after PR `#390` merged G2.237.
+It moves the 8 active route-body `get_calculator_factory()` calls into
+route-local FastAPI dependency providers in the two authorized API modules plus
+one focused test. It must not expand into calculator domain source, route
+contracts, OpenAPI, frontend, config, scripts, or OpenSpec.
