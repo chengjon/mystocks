@@ -1,0 +1,73 @@
+{
+  "schema_version": "2026-05-29.monitoring-calculator-factory-provider-closeout-refresh.v1",
+  "g2_id": "G2.239",
+  "status": "closeout_refresh_for_review",
+  "generated_at": "2026-05-29T21:17:11+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-239-monitoring-calculator-factory-provider-closeout-refresh",
+  "base_head": "fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.238",
+    "github_pr": 391,
+    "merge_commit": "fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea",
+    "decision": "implemented monitoring calculator factory provider injection"
+  },
+  "closeout_summary": {
+    "provider_functions": 2,
+    "target_handlers": 8,
+    "direct_route_body_get_calculator_factory_calls": 0,
+    "depends_parameters": 8,
+    "domain_factory_file_changed": false,
+    "route_paths_changed": false,
+    "openapi_paths_changed": false,
+    "response_contracts_changed": false
+  },
+  "current_head_evidence": {
+    "head": "fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea",
+    "branch": "g2-239-monitoring-calculator-factory-provider-closeout-refresh",
+    "static_scan": {
+      "providers": 2,
+      "target_handlers": 8,
+      "direct_route_body_calls": 0,
+      "depends_parameters": 8
+    },
+    "focused_tests": {
+      "command": "pytest -o addopts= tests/api/file_tests/test_monitoring_analysis_api.py -q --no-cov --tb=short",
+      "result": "17 passed"
+    },
+    "health_route_conflicts_collect": {
+      "command": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov",
+      "result": "121 tests collected"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/monitoring_analysis.py web/backend/app/api/_monitoring_portfolio_router.py tests/api/file_tests/test_monitoring_analysis_api.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "app.main import and app.openapi() with transient runtime environment",
+      "result": "routes=548, paths=500"
+    }
+  },
+  "residual_refresh": {
+    "monitoring_calculator_factory_route_body_residual": "closed",
+    "remaining_monitoring_calculator_factory_domain_accessor": "retained domain owner; not a route-provider residual",
+    "same_module_non_consumer": "monitoring_analysis.py:get_health_score_history remains non-consumer",
+    "next_gate_recommendation": "G2.240 no-source service lifecycle residual candidate refresh",
+    "next_gate_source_authority": false
+  },
+  "preserved_boundaries": [
+    "src/monitoring/domain/calculator_factory.py unchanged",
+    "route paths unchanged",
+    "response models unchanged",
+    "UnifiedResponse contracts unchanged",
+    "calculator construction behavior unchanged",
+    "get_mock_data_manager, get_monitoring_db, and get_postgres_async out of scope"
+  ],
+  "rollback_plan": "Revert PR #391 if G2.238 behavior contradicts closeout evidence; G2.239 itself is no-source and can be reverted independently.",
+  "next_gate": {
+    "if_accepted": "G2.240 no-source service lifecycle residual candidate refresh",
+    "source_edits_authorized_by_next_gate": false
+  }
+}

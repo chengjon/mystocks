@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T20:34:17+08:00`
-- Base HEAD checked: `ef11ae6577bf62d15b814af732ba291696e5b084`
+- Prepared at: `2026-05-29T21:17:11+08:00`
+- Base HEAD checked: `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1637,11 +1637,46 @@ Preserved boundaries:
 - `get_mock_data_manager`, `get_monitoring_db`, and `get_postgres_async`
   remained out of scope.
 
-Next gate:
+Closeout status:
 
-- Review G2.238.
-- If accepted, run G2.239 as a no-source closeout / residual refresh.
+- G2.238 was accepted by PR `#391` and merged at
+  `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`.
+- G2.239 is the no-source closeout / residual refresh for this provider lane.
 - Do not expand G2.238 into another source lane.
+
+## G2.239 Monitoring Calculator Factory Provider Closeout / Residual Refresh
+
+G2.239 is the no-source closeout / residual refresh after PR `#391` merged
+G2.238 at `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`.
+
+Closeout result:
+
+| Item | Result |
+|---|---:|
+| Route-local providers present | 2 |
+| Target handlers | 8 |
+| Direct route-body `get_calculator_factory()` calls | 0 |
+| FastAPI dependency parameters | 8 |
+| Focused monitoring API tests | 17 passed |
+| Health route conflict collect | 121 tests collected |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+
+Preserved boundaries:
+
+- No source, test, route, OpenAPI, frontend, config, scripts, or OpenSpec files
+  are modified by G2.239.
+- `src/monitoring/domain/calculator_factory.py` remains a monitoring domain
+  factory and is not rewritten.
+- `get_mock_data_manager`, `get_monitoring_db`, and `get_postgres_async`
+  remain outside this lane.
+
+Residual refresh decision:
+
+- Close the monitoring calculator factory route-body provider migration unless
+  current-HEAD evidence contradicts the closeout.
+- Select G2.240 no-source service lifecycle residual candidate refresh as the
+  next gate before any new source lane starts.
+- G2.239 itself does not authorize source implementation.
 
 ## Forbidden Scope
 

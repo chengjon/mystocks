@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T20:34:17+08:00`
-- Base HEAD checked: `ef11ae6577bf62d15b814af732ba291696e5b084`
+- Prepared at: `2026-05-29T21:17:11+08:00`
+- Base HEAD checked: `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.238 monitoring calculator factory provider injection | G/#79 service lifecycle DI | PR `#390` merged at `ef11ae6577bf62d15b814af732ba291696e5b084`; G2.238 moved 8 active route-body `get_calculator_factory()` calls into 2 route-local `Depends(get_monitoring_calculator_factory)` providers | If accepted, run G2.239 no-source closeout / residual refresh; do not expand this source lane |
+| P0 | Review G2.239 monitoring calculator factory provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#391` merged at `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`; G2.239 confirms 2 route-local providers, 8 target handlers, 0 direct route-body `get_calculator_factory()` calls, 8 dependency parameters, and OpenAPI `548/500` | If accepted, start G2.240 no-source service lifecycle residual candidate refresh; do not start source work from G2.239 |
+| P0 | Preserve G2.238 monitoring calculator factory provider injection | G/#79 service lifecycle DI | PR `#391` merged at `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`; moved 8 active route-body `get_calculator_factory()` calls into 2 route-local `Depends(get_monitoring_calculator_factory)` providers | Do not expand this source lane or reopen `calculator_factory.py` without contradictory current-HEAD evidence |
 | P0 | Preserve G2.237 monitoring calculator factory provider authorization packet | G/#79 service lifecycle DI | PR `#390` merged at `ef11ae6577bf62d15b814af732ba291696e5b084`; authorized only G2.238 source paths and focused tests | Do not use G2.237 to edit `calculator_factory.py`, route contracts, OpenAPI, frontend, config, scripts, or OpenSpec |
 | P0 | Preserve G2.236 monitoring calculator factory ownership / provider seam decision | G/#79 service lifecycle DI | PR `#389` merged at `f39aca8815d59739787349ed1025e7a1b7e2c050`; `get_calculator_factory` remains a monitoring domain factory while 8 active API route-body consumers form the provider seam | Do not rewrite `src/monitoring/domain/calculator_factory.py`; use G2.237 only for no-source authorization review |
 | P0 | Preserve G2.235 service lifecycle residual candidate refresh after data-source config manager | G/#79 service lifecycle DI | PR `#388` merged at `383598ab2a30da31513468b97537183322b46af9`; selected `get_calculator_factory` as the next bounded HIGH-risk decision target | Superseded by accepted G2.236 and active G2.237 authorization packet |
@@ -63,9 +64,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.238 correctly treat PR `#390` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.238 stay within the two authorized API files plus focused monitoring test?
-- Does G2.238 reduce active route-body `get_calculator_factory()` calls in the 8 target handlers to `0`?
-- Does G2.238 preserve `src/monitoring/domain/calculator_factory.py` and calculator construction behavior?
-- Does G2.238 keep OpenAPI at `routes=548`, `paths=500` unless base changes?
+- Does G2.239 correctly treat PR `#391` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.239 preserve the G2.238 closeout result: 2 route-local providers, 8 target handlers, 0 direct route-body calls, and 8 dependency parameters?
+- Does G2.239 stay no-source and update only governance evidence, steward files, and its task card?
+- Does G2.239 keep `src/monitoring/domain/calculator_factory.py`, route contracts, OpenAPI exposure, frontend, config, scripts, and OpenSpec out of scope?
+- Does G2.239 keep OpenAPI at `routes=548`, `paths=500` unless base changes?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
