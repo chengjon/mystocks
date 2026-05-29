@@ -1,0 +1,175 @@
+{
+  "schema_version": "2026-05-29.monitoring-calculator-factory-provider-authorization.v1",
+  "g2_id": "G2.237",
+  "status": "authorization_packet_for_review",
+  "generated_at": "2026-05-29T19:13:42+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-237-monitoring-calculator-factory-provider-authorization",
+  "base_head": "f39aca8815d59739787349ed1025e7a1b7e2c050",
+  "source_edit_authority": false,
+  "future_source_edit_authority_if_accepted": true,
+  "parent": {
+    "g2_id": "G2.236",
+    "github_pr": 389,
+    "merge_commit": "f39aca8815d59739787349ed1025e7a1b7e2c050",
+    "decision": "get_calculator_factory remains monitoring domain ownership; the active concern is an API provider seam across 8 route-body consumers"
+  },
+  "scope": {
+    "mode": "no_source_authorization_packet",
+    "source_files_changed_now": false,
+    "test_files_changed_now": false,
+    "route_or_openapi_changes_now": false,
+    "openspec_changes_now": false,
+    "issue_label_changes_now": false,
+    "implementation_authorized_by_this_pr": false,
+    "authorized_future_lane_if_accepted": "G2.238 monitoring calculator factory provider injection",
+    "authorized_future_source_paths": [
+      "web/backend/app/api/monitoring_analysis.py",
+      "web/backend/app/api/_monitoring_portfolio_router.py"
+    ],
+    "authorized_future_test_paths": [
+      "tests/api/file_tests/test_monitoring_analysis_api.py"
+    ],
+    "verification_only_paths": [
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "forbidden_future_paths_without_new_authorization": [
+      "src/monitoring/domain/calculator_factory.py",
+      "web/frontend/**",
+      "docs/api/**",
+      "openspec/changes/**",
+      "openspec/specs/**",
+      "config/**",
+      "scripts/**"
+    ]
+  },
+  "ownership_boundary": {
+    "symbol": "get_calculator_factory",
+    "definition": "src/monitoring/domain/calculator_factory.py:339",
+    "factory_type": "HealthCalculatorFactory",
+    "domain_owner": "monitoring domain calculator factory",
+    "domain_rewrite_authorized": false,
+    "domain_singleton_lifecycle_authorized": false,
+    "api_provider_seam_authorized_for_future_lane": true
+  },
+  "current_head_evidence": {
+    "route_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "base_head": "f39aca8815d59739787349ed1025e7a1b7e2c050"
+    },
+    "active_route_consumers": [
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "handler": "get_portfolio_summary",
+        "handler_line": 148,
+        "factory_call_line": 159,
+        "route": "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary"
+      },
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "handler": "get_portfolio_alerts",
+        "handler_line": 216,
+        "factory_call_line": 228,
+        "route": "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts"
+      },
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "handler": "get_rebalance_suggestions",
+        "handler_line": 288,
+        "factory_call_line": 299,
+        "route": "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance"
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "handler": "calculate_health_score",
+        "handler_line": 137,
+        "factory_call_line": 152,
+        "route": "POST /api/v1/monitoring/analysis/calculate"
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "handler": "batch_calculate_health_scores",
+        "handler_line": 199,
+        "factory_call_line": 212,
+        "route": "POST /api/v1/monitoring/analysis/calculate/batch"
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "handler": "analyze_portfolio",
+        "handler_line": 337,
+        "factory_call_line": 349,
+        "route": "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}"
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "handler": "identify_market_regime",
+        "handler_line": 462,
+        "factory_call_line": 476,
+        "route": "GET /api/v1/monitoring/analysis/market-regime"
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "handler": "get_engine_status",
+        "handler_line": 510,
+        "factory_call_line": 517,
+        "route": "GET /api/v1/monitoring/analysis/engine/status"
+      }
+    ],
+    "same_module_non_consumer": {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "handler": "get_health_score_history",
+      "route": "GET /api/v1/monitoring/analysis/results/{stock_code}",
+      "factory_call": false
+    }
+  },
+  "authorized_future_implementation_shape": {
+    "provider_pattern": "Introduce explicit route dependency provider(s) returning HealthCalculatorFactory while preserving lazy domain import behavior.",
+    "recommended_provider_name": "get_monitoring_calculator_factory",
+    "recommended_route_change": "Replace route-body get_calculator_factory() calls with FastAPI Depends(get_monitoring_calculator_factory) parameters in the 8 listed handlers.",
+    "recommended_scope_shape": "Keep provider definitions local to the two authorized API modules unless a future authorization explicitly permits a shared helper file.",
+    "must_preserve": [
+      "all current route paths and HTTP methods",
+      "OpenAPI path count 500 unless unrelated concurrent base changes are documented",
+      "response_model and UnifiedResponse contracts",
+      "current lazy import / startup behavior unless implementation evidence proves module-level imports are safe",
+      "HealthCalculatorFactory domain ownership and public behavior",
+      "existing monitoring analysis test behavior"
+    ],
+    "must_not_do": [
+      "rewrite src/monitoring/domain/calculator_factory.py",
+      "change calculator construction semantics",
+      "change GPU/CPU/risk calculator selection behavior",
+      "change route paths, status codes, or response shapes",
+      "edit get_mock_data_manager, get_monitoring_db, or get_postgres_async",
+      "bundle unrelated monitoring route cleanup"
+    ]
+  },
+  "gitnexus_evidence": {
+    "mcp_status": "transport closed during impact request; CLI fallback used",
+    "cli_command": "gitnexus impact get_calculator_factory --direction upstream --repo mystocks --summary-only",
+    "risk": "HIGH",
+    "impacted_count": 9,
+    "direct": 9,
+    "processes_affected": 3,
+    "modules_affected": 2,
+    "conclusion": "Future source implementation must run fresh GitNexus impact/context before edits and staged/compare detect after edits."
+  },
+  "required_future_verification": [
+    "GitNexus impact/context for get_calculator_factory and edited route handlers before source edits",
+    "pytest -o addopts= tests/api/file_tests/test_monitoring_analysis_api.py -q --no-cov --tb=short",
+    "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov",
+    "app.main import and app.openapi() smoke with routes=548, paths=500 unless base changed",
+    "ruff check on authorized future source/test files",
+    "grep/static guard proving active route-body get_calculator_factory() calls in the 8 target handlers are reduced to 0",
+    "GitNexus staged and compare detect showing expected route/provider-only impact"
+  ],
+  "rollback_plan_for_future_lane": "Revert only the future implementation PR; route handlers should return to route-body factory calls with no domain factory changes.",
+  "decision": {
+    "authorization_recommendation": "approve a bounded future G2.238 implementation lane if this packet is accepted",
+    "source_edits_authorized_now": false,
+    "g2_238_created_now": false,
+    "reason": "G2.236 established that the risk is an API provider seam, not a domain factory rewrite. G2.237 narrows a future implementation lane to two API files plus focused tests."
+  }
+}
