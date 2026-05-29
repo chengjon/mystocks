@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T07:53:38+08:00`
-- Base HEAD checked: `14339f44a8c4a145615fe35836dec8fc376ce75b`
+- Prepared at: `2026-05-29T08:19:43+08:00`
+- Base HEAD checked: `e7402fffe29bee5f7f2a4ada5a60a4bf26876969`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.222 execution tracking provider closeout / residual refresh | G/#79 service lifecycle DI + trade route/provider governance | PR `#374` merged at `14339f44a8c4a145615fe35836dec8fc376ce75b`; G2.222 records `get_execution_tracking_evidence_service` route-body direct calls at `0` and keeps the remaining provider queue no-source | If accepted, start G2.223 no-source `get_unified_data_service` ownership decision |
+| P0 | Review G2.223 `get_unified_data_service` ownership decision | G/#79 service lifecycle DI + unified data facade governance | PR `#375` merged at `e7402fffe29bee5f7f2a4ada5a60a4bf26876969`; G2.223 classifies `get_unified_data_service` as a root facade / compatibility service surface and splits `industry_concept_analysis.py` direct `UnifiedDataService()` instantiations into a separate route cleanup candidate | If accepted, start G2.224 no-source authorization package for `industry_concept_analysis.py` direct `UnifiedDataService()` instantiation cleanup; do not implement directly |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.222 correctly treat PR `#374` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.222 classify the execution tracking provider seam as closed while preserving the factory as an intentional FastAPI dependency target?
-- Does G2.222 keep `get_unified_data_service` and `get_prewarming_strategy` as future no-source ownership candidates, not implementation authority?
-- Does G2.222 preserve route paths, response models, `UnifiedResponse`, request schemas, and miniQMT semantics as invariants?
-- Is G2.223 correctly positioned as a no-source ownership decision for `get_unified_data_service`?
+- Does G2.223 correctly treat PR `#375` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.223 classify `get_unified_data_service` as a root facade / compatibility service surface rather than a direct implementation target?
+- Does G2.223 split the two `industry_concept_analysis.py` direct `UnifiedDataService()` instantiations into a separate route cleanup authorization candidate?
+- Does G2.223 preserve route paths, response models, `UnifiedResponse`, request schemas, and data-source behavior as invariants?
+- Is G2.224 correctly positioned as a no-source authorization package before any source lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
