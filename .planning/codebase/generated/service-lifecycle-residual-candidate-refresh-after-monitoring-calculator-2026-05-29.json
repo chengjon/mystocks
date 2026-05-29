@@ -1,0 +1,177 @@
+{
+  "schema_version": "2026-05-29.service-lifecycle-residual-candidate-refresh-after-monitoring-calculator.v1",
+  "g2_id": "G2.240",
+  "status": "candidate_refresh_for_review",
+  "generated_at": "2026-05-29T22:03:24+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-240-service-lifecycle-residual-candidate-refresh",
+  "base_head": "d68c381d75cf9dffc601ef8390fbec9c85e55d18",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.239",
+    "github_pr": 392,
+    "merge_commit": "d68c381d75cf9dffc601ef8390fbec9c85e55d18",
+    "decision": "closed monitoring calculator factory provider lane and requested this residual refresh"
+  },
+  "scan_summary": {
+    "python_files_scanned": 1500,
+    "head": "d68c381d75cf9dffc601ef8390fbec9c85e55d18",
+    "app_openapi_smoke_target": {
+      "routes": 548,
+      "paths": 500
+    },
+    "gitnexus_mcp_status": "transport closed; CLI fallback used for impact sampling"
+  },
+  "closed_or_retained_surfaces": [
+    {
+      "symbol": "get_calculator_factory",
+      "disposition": "closed by G2.238/G2.239 for active route-body calls",
+      "current_head_evidence": {
+        "definition_count": 1,
+        "call_expressions": 3,
+        "active_route_body_calls": 0,
+        "route_local_provider_wrapper_calls": 2,
+        "domain_internal_calls": 1
+      },
+      "reopen_policy": "do not reopen monitoring calculator factory source unless current HEAD contradicts PR #391/#392 closeout evidence"
+    },
+    {
+      "symbol": "get_config_manager",
+      "disposition": "closed by G2.233/G2.234 for active route-body calls; legacy old route file remains non-active evidence",
+      "current_head_evidence": {
+        "active_route_body_calls": 0,
+        "legacy_old_file_direct_calls": 8,
+        "route_local_provider_wrapper_calls": 1
+      }
+    },
+    {
+      "symbol": "get_data_service",
+      "disposition": "retained under indicator/data provider governance",
+      "current_head_evidence": {
+        "definition_count": 1,
+        "call_expressions": 8,
+        "active_route_body_calls": 0
+      }
+    },
+    {
+      "symbol": "get_strategy_service",
+      "disposition": "retained Strategy high-risk residual; not a generic next source lane",
+      "current_head_evidence": {
+        "definition_count": 1,
+        "call_expressions": 3,
+        "active_route_body_calls": 0
+      }
+    },
+    {
+      "symbol": "get_data_quality_monitor",
+      "disposition": "closed or retained by prior data-quality provider governance lanes",
+      "current_head_evidence": {
+        "definition_count": 1,
+        "call_expressions": 11,
+        "active_route_body_calls": 0
+      }
+    }
+  ],
+  "candidate_queue": [
+    {
+      "rank": 1,
+      "symbol": "get_mock_data_manager",
+      "primary_file": "web/backend/app/mock/mock_data/factory.py",
+      "definition_count": 1,
+      "import_lines": 16,
+      "call_expressions": 27,
+      "test_calls": 4,
+      "active_route_body_calls": 0,
+      "primary_files": [
+        "web/backend/app/mock/mock_data/factory.py",
+        "web/backend/app/api/market/_market_heatmap_router.py",
+        "web/backend/app/api/market/market_data_request.py",
+        "web/backend/app/api/stock_search/stock_search_support.py",
+        "web/backend/app/api/strategy_management/_helpers.py",
+        "web/backend/app/api/tradingview.py",
+        "web/backend/app/api/wencai.py"
+      ],
+      "gitnexus_sample": {
+        "repo": "mystocks",
+        "method": "CLI fallback",
+        "risk": "CRITICAL",
+        "impacted_count": 63,
+        "direct": 27,
+        "processes_affected": 4,
+        "modules_affected": 8
+      },
+      "classification": "cross-domain mock/runtime data seam",
+      "recommendation": "select G2.241 as a no-source ownership / runtime seam decision packet before any implementation authorization"
+    },
+    {
+      "rank": 2,
+      "symbol": "get_postgres_async",
+      "primary_file": "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+      "definition_count": 1,
+      "import_lines": 28,
+      "call_expressions": 30,
+      "test_calls": 2,
+      "active_route_body_calls": 3,
+      "gitnexus_sample": {
+        "repo": "mystocks",
+        "method": "CLI fallback",
+        "risk": "LOW",
+        "impacted_count": 4,
+        "direct": 3,
+        "processes_affected": 0,
+        "modules_affected": 2
+      },
+      "classification": "infrastructure data-access singleton with signal-monitoring route touch points",
+      "recommendation": "defer behind ownership classification; do not batch with mock data manager"
+    },
+    {
+      "rank": 3,
+      "symbol": "get_monitoring_db",
+      "primary_files": [
+        "web/backend/app/api/risk/_shared.py",
+        "web/backend/app/api/strategy_management/_helpers.py",
+        "web/backend/app/utils/risk_utils.py"
+      ],
+      "definition_count": 3,
+      "import_lines": 4,
+      "call_expressions": 12,
+      "active_route_body_calls": 0,
+      "gitnexus_sample": {
+        "repo": "mystocks",
+        "method": "CLI fallback",
+        "result": "ambiguous; multiple matching symbols"
+      },
+      "classification": "multi-definition monitoring/risk/strategy seam",
+      "recommendation": "defer; disambiguation and ownership classification must precede authorization"
+    }
+  ],
+  "decision": {
+    "selected_next_gate": {
+      "g2_id": "G2.241",
+      "title": "mock data manager ownership / runtime seam decision packet",
+      "source_edit_authority": false,
+      "scope": [
+        "classify get_mock_data_manager ownership and runtime/mock data responsibilities",
+        "separate active API/helper consumers from mock-data factory internals",
+        "decide whether future work should use provider injection, test double extraction, or retained compatibility",
+        "define forbidden scope for get_postgres_async, get_monitoring_db, route contracts, OpenAPI, frontend, config, scripts, and OpenSpec"
+      ]
+    },
+    "source_lane_authorized_now": false,
+    "rationale": [
+      "G2.239 closed the previous monitoring calculator factory route-body provider residual.",
+      "get_mock_data_manager is the highest-risk remaining candidate and cannot safely enter implementation without a decision packet.",
+      "get_postgres_async is infrastructure-owned and should not be batched with mock/runtime ownership decisions.",
+      "get_monitoring_db is multi-definition and must be disambiguated before any authorization."
+    ]
+  },
+  "verification_targets": {
+    "json_parse": "this artifact and steward-index.json must parse",
+    "markdown_governance": "0 errors for generated report and touched steward docs",
+    "app_openapi_smoke": "routes=548, paths=500 at current HEAD",
+    "openspec": "migrate-backend-singletons-to-lifecycle-di --strict",
+    "mainline_scope": "governance-only; no source or test files",
+    "gitnexus": "detect_changes staged/compare should report 0 affected processes and LOW risk for docs-only diff"
+  }
+}

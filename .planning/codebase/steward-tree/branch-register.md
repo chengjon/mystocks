@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T21:17:11+08:00`
-- Base HEAD checked: `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`
+- Prepared at: `2026-05-29T22:03:24+08:00`
+- Base HEAD checked: `d68c381d75cf9dffc601ef8390fbec9c85e55d18`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -76,12 +76,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#389` | `g2-236-monitoring-calculator-factory-decision` | `wip/root-dirty-20260403` | `MERGED` at `f39aca8815d59739787349ed1025e7a1b7e2c050` | No-source ownership / provider seam decision selecting G2.237 monitoring calculator factory provider authorization |
 | `#390` | `g2-237-monitoring-calculator-factory-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `ef11ae6577bf62d15b814af732ba291696e5b084` | No-source provider authorization selecting G2.238 monitoring calculator factory provider injection |
 | `#391` | `g2-238-monitoring-calculator-factory-provider-injection` | `wip/root-dirty-20260403` | `MERGED` at `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea` | Path-limited monitoring calculator factory provider injection closing 8 active route-body factory calls |
+| `#392` | `g2-239-monitoring-calculator-factory-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `d68c381d75cf9dffc601ef8390fbec9c85e55d18` | No-source monitoring calculator factory provider closeout / residual refresh selecting G2.240 |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-239-monitoring-calculator-factory-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea` | Close out accepted G2.238 and refresh the next service lifecycle residual gate | No |
+| `g2-240-service-lifecycle-residual-candidate-refresh` | `origin/wip/root-dirty-20260403` at `d68c381d75cf9dffc601ef8390fbec9c85e55d18` | Refresh remaining service lifecycle DI candidates after accepted G2.239 closeout | No |
 
 ## OpenSpec Relationship
 
@@ -97,8 +98,9 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.239 is the no-source closeout / residual refresh after PR `#391` merged
-G2.238. It records the accepted monitoring calculator factory provider result,
-refreshes steward evidence, and recommends G2.240 as a no-source service
-lifecycle residual candidate refresh. It must not expand into calculator domain
-source, route contracts, OpenAPI, frontend, config, scripts, tests, or OpenSpec.
+G2.240 is the no-source service lifecycle residual candidate refresh after PR
+`#392` merged G2.239. It records the accepted monitoring calculator factory
+closeout, refreshes remaining candidates, and recommends G2.241 as a no-source
+`get_mock_data_manager` ownership / runtime seam decision packet. It must not
+authorize source edits, tests, route contracts, OpenAPI, frontend, config,
+scripts, or OpenSpec.

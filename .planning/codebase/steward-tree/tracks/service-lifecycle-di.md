@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T21:17:11+08:00`
-- Base HEAD checked: `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`
+- Prepared at: `2026-05-29T22:03:24+08:00`
+- Base HEAD checked: `d68c381d75cf9dffc601ef8390fbec9c85e55d18`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1677,6 +1677,43 @@ Residual refresh decision:
 - Select G2.240 no-source service lifecycle residual candidate refresh as the
   next gate before any new source lane starts.
 - G2.239 itself does not authorize source implementation.
+
+Closeout status:
+
+- G2.239 was accepted by PR `#392` and merged at
+  `d68c381d75cf9dffc601ef8390fbec9c85e55d18`.
+- G2.240 is the no-source residual candidate refresh after this closeout.
+
+## G2.240 Service Lifecycle Residual Candidate Refresh After Monitoring Calculator
+
+G2.240 is the no-source candidate refresh after PR `#392` merged G2.239 at
+`d68c381d75cf9dffc601ef8390fbec9c85e55d18`.
+
+Current carry-forward:
+
+| Item | Result |
+|---|---:|
+| `get_calculator_factory` active route-body calls | 0 |
+| `get_calculator_factory` provider wrapper calls | 2 |
+| `get_calculator_factory` domain-internal calls | 1 |
+| Python files scanned | 1500 |
+| app/OpenAPI smoke target | `routes=548`, `paths=500` |
+
+Candidate queue:
+
+| Rank | Candidate | Classification | Current evidence | Recommendation |
+|---:|---|---|---|---|
+| 1 | `get_mock_data_manager` | Cross-domain mock/runtime data seam | 1 definition, 16 import lines, 27 call expressions; GitNexus CLI sample `CRITICAL`, 63 impacted, 27 direct, 4 processes, 8 modules | Select G2.241 no-source ownership / runtime seam decision |
+| 2 | `get_postgres_async` | Infrastructure data-access singleton | 1 definition, 28 import lines, 30 call expressions, 3 active route-body calls; GitNexus CLI sample `LOW` | Defer behind infrastructure ownership classification |
+| 3 | `get_monitoring_db` | Multi-definition monitoring/risk/strategy seam | 3 definitions, 12 call expressions; GitNexus CLI sample ambiguous | Defer until disambiguation and ownership classification |
+
+Decision:
+
+- G2.240 does not authorize implementation.
+- Select G2.241 as a no-source `get_mock_data_manager` ownership / runtime seam
+  decision packet.
+- Keep `get_postgres_async` and `get_monitoring_db` out of G2.241 except as
+  explicit non-target boundaries.
 
 ## Forbidden Scope
 
