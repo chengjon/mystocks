@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T16:50:00+08:00`
-- Base HEAD checked: `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`
+- Prepared at: `2026-05-29T17:30:00+08:00`
+- Base HEAD checked: `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -127,8 +127,10 @@ state transition.
 | `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-2026-05-29.md` | G2.231 human-readable residual candidate refresh package | Accepted by PR `#384`; superseded for authorization evidence by G2.232 |
 | `.planning/codebase/generated/data-source-config-manager-provider-authorization-2026-05-29.json` | G2.232 data-source config manager provider authorization evidence | Accepted by PR `#385`; superseded for implementation evidence by G2.233 |
 | `docs/reports/quality/backend-data-source-config-manager-provider-authorization-2026-05-29.md` | G2.232 human-readable authorization package | Accepted by PR `#385`; superseded for implementation evidence by G2.233 |
-| `.planning/codebase/generated/data-source-config-manager-provider-injection-2026-05-29.json` | G2.233 data-source config manager provider injection evidence | Review input until PR `#386` is accepted |
-| `docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md` | G2.233 human-readable implementation package | Review input until PR `#386` is accepted |
+| `.planning/codebase/generated/data-source-config-manager-provider-injection-2026-05-29.json` | G2.233 data-source config manager provider injection evidence | Accepted by PR `#386`; superseded for closeout evidence by G2.234 |
+| `docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md` | G2.233 human-readable implementation package | Accepted by PR `#386`; superseded for closeout evidence by G2.234 |
+| `.planning/codebase/generated/data-source-config-manager-provider-closeout-refresh-2026-05-29.json` | G2.234 data-source config manager provider closeout / residual refresh evidence | Review input until PR `#387` is accepted |
+| `docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md` | G2.234 human-readable closeout / residual refresh package | Review input until PR `#387` is accepted |
 
 ## External State Inputs
 

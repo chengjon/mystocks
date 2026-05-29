@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T16:50:00+08:00`
-- Base HEAD checked: `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`
+- Prepared at: `2026-05-29T17:30:00+08:00`
+- Base HEAD checked: `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1454,14 +1454,38 @@ migration as implemented for review. If accepted, G2.234 should be a no-source
 closeout / residual refresh that confirms post-merge state and selects the next
 candidate without opening source edits directly.
 
+## G2.234 Data-Source Config Manager Provider Closeout / Residual Refresh
+
+G2.234 is the no-source closeout / residual refresh after PR `#386` merged G2.233
+at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`.
+
+Closeout evidence:
+
+| Evidence | Value |
+|---|---:|
+| Active route file | `web/backend/app/api/data_source_config.py` |
+| Active route-body `get_config_manager()` calls | 0 |
+| Active `manager` dependency parameters | 9 |
+| Route-local provider wrapper definitions | 1 |
+| Legacy `.old.py` text hits | 9 |
+| Legacy `.old.py` registered | No |
+| Focused route contract tests | 12 passed |
+| Ruff | Passed |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+
+Decision: close the active data-source config manager route-body provider
+migration. Do not reopen `data_source_config.py` source work unless current HEAD
+evidence contradicts this closeout. Select G2.235 no-source service lifecycle
+residual candidate refresh as the next gate before any new source lane starts.
+
 ## Next Gates
 
-- Review G2.233 data-source config manager provider injection.
-- If accepted, start G2.234 no-source data-source config manager provider
-  injection closeout / residual refresh.
+- Review G2.234 data-source config manager provider closeout / residual refresh.
+- If accepted, start G2.235 no-source service lifecycle residual candidate
+  refresh.
 - Do not reopen cache prewarming source work without contradictory current-HEAD
   evidence.
-- Do not edit `data_source_config.old.py` from G2.233.
+- Do not edit `data_source_config.old.py` from G2.234.
 - Do not edit `_data_source_config_responses.py` from G2.233 unless a later
   package explicitly authorizes response/dependency separation.
 - Do not expand into route paths, response models, SQL queries, error-contract

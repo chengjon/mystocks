@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T16:50:00+08:00`
-- Base HEAD checked: `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`
+- Prepared at: `2026-05-29T17:30:00+08:00`
+- Base HEAD checked: `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.233 data-source config manager provider injection | G/#79 service lifecycle DI | PR `#385` merged at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`; G2.233 moves 9 active `data_source_config.py` route-body manager lookups into `Depends(get_config_manager_dependency)` | If accepted, start G2.234 no-source closeout / residual refresh; do not reopen `data_source_config.py` source without contradictory current-HEAD evidence |
+| P0 | Review G2.234 data-source config manager provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#386` merged at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`; active route-body `get_config_manager()` calls are `0`, dependency parameters are `9`, OpenAPI remains `548/500` | If accepted, start G2.235 no-source service lifecycle residual candidate refresh before any new source lane |
+| P0 | Preserve G2.233 data-source config manager provider injection | G/#79 service lifecycle DI | PR `#386` merged at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`; moved 9 active route-body manager lookups into `Depends(get_config_manager_dependency)` | Do not reopen `data_source_config.py` source without contradictory current-HEAD evidence |
 | P0 | Preserve G2.232 data-source config manager provider authorization | G/#79 service lifecycle DI | PR `#385` merged at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`; authorized only the G2.233 path-limited provider injection lane | Do not use G2.232 to edit `data_source_config.old.py`, `_data_source_config_responses.py`, route paths, OpenAPI, frontend, config, scripts, or OpenSpec |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
@@ -58,9 +59,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.233 correctly treat PR `#385` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.233 keep source edits limited to active `data_source_config.py` plus focused tests?
-- Does G2.233 keep `data_source_config.old.py` and `_data_source_config_responses.py` untouched?
-- Does G2.233 preserve route paths, auth/current_user behavior, response models, and OpenAPI exposure?
-- Does G2.233 reduce active route-body `get_config_manager()` calls from 9 to 0 while preserving the default backing getter?
+- Does G2.234 correctly treat PR `#386` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.234 confirm active route-body `get_config_manager()` calls remain 0 and dependency parameters remain 9?
+- Does G2.234 keep `data_source_config.old.py` as an unregistered legacy false-positive rather than an edit target?
+- Does G2.234 preserve route paths, auth/current_user behavior, response models, and OpenAPI exposure?
+- Does G2.234 select G2.235 as no-source residual candidate refresh before any new source lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-387"
+  title: "Close out data-source config manager provider injection"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-data-source-config-manager-provider-closeout-refresh"
+  objective: "confirm post-merge closure of the data_source_config.py get_config_manager provider injection and select the next residual refresh gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.234 is a no-source closeout / residual-refresh package; no runtime route, test, OpenAPI, PM2, frontend, or product behavior changes are introduced."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-source-config-manager-provider-closeout-refresh-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-387.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test source edits in this PR"
+  - "data_source_config.py implementation changes"
+  - "data_source_config.old.py edits or deletion"
+  - "_data_source_config_responses.py edits"
+  - "route/OpenAPI contract changes"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+
+acceptance:
+  checks:
+    - id: "post-merge-closeout-evidence"
+      command: "current HEAD evidence confirms active route-body get_config_manager calls = 0 and dependency parameters = 9"
+      required: true
+    - id: "focused-data-source-config-tests"
+      command: "pytest -o addopts= tests/api/file_tests/test_data_source_config_api.py web/backend/tests/test_data_source_config_provider_injection.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-current"
+      command: "ruff check web/backend/app/api/data_source_config.py web/backend/tests/test_data_source_config_provider_injection.py tests/api/file_tests/test_data_source_config_api.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "artifact-parse"
+      command: "node parses .planning/codebase/generated/data-source-config-manager-provider-closeout-refresh-2026-05-29.json and .planning/codebase/steward-tree/steward-index.json"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-387.yaml --base-sha 875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f --head-sha HEAD --report /tmp/pr387-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus detect_changes staged/compare"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Reviewers may mistake closeout evidence as authority for another source lane; G2.234 is no-source only."
+    - "data_source_config.old.py remains a legacy false-positive and must not be edited or deleted from this closeout."
+    - "The next source lane must wait for G2.235 current-HEAD residual classification."
+  rollback_plan: "Revert this PR; no runtime source or test changes are present."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close out the G2.233 data-source config manager provider injection and select the next no-source residual refresh gate."
+    modified_scope: "Governance reports, generated evidence, steward tree, and task card only."
+    dependency_changes: "None."
+    legacy_logic_impact: "None; no source or test files are modified, and legacy data_source_config.old.py remains untouched."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If current HEAD contradicts active route-body getter count or OpenAPI route/path count, stop before G2.235."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T17:30:00+08:00"
+    approval_note: "Approved by steward sequence after PR #386 merge to run no-source G2.234 closeout / residual refresh."
+    secondary_approved: false

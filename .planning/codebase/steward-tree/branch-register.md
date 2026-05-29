@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T16:50:00+08:00`
-- Base HEAD checked: `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`
+- Prepared at: `2026-05-29T17:30:00+08:00`
+- Base HEAD checked: `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -70,12 +70,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#383` | `g2-230-cache-prewarming-route-di-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c` | No-source cache prewarming route DI closeout selecting G2.231 residual candidate refresh |
 | `#384` | `g2-231-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` | No-source residual refresh selecting G2.232 data-source config manager provider authorization |
 | `#385` | `g2-232-data-source-config-manager-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8` | No-source authorization selecting G2.233 data-source config manager provider injection |
+| `#386` | `g2-233-data-source-config-manager-provider-injection` | `wip/root-dirty-20260403` | `MERGED` at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f` | Path-limited provider injection closing active `data_source_config.py` route-body manager calls |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-233-data-source-config-manager-provider-injection` | `origin/wip/root-dirty-20260403` at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8` | Implement the authorized provider injection lane for active data-source config manager route-body calls | Yes, limited to `data_source_config.py` plus focused tests |
+| `g2-234-data-source-config-manager-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f` | Close out the data-source config manager provider injection and select the next residual refresh gate | No |
 
 ## OpenSpec Relationship
 
@@ -91,7 +92,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.233 is a path-limited implementation branch after PR `#385` merged G2.232.
-It implements the authorized provider injection lane for active
-`data_source_config.py` `get_config_manager()` route-body calls while keeping
-`data_source_config.old.py` and `_data_source_config_responses.py` out of scope.
+G2.234 is a no-source closeout / residual-refresh branch after PR `#386`
+merged G2.233. It confirms the active `data_source_config.py`
+`get_config_manager()` route-body calls are closed and selects G2.235 no-source
+residual candidate refresh as the next gate.

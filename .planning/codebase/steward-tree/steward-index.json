@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T16:50:00+08:00",
+  "generated_at": "2026-05-29T17:30:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
-  "split_branch": "g2-233-data-source-config-manager-provider-injection",
-  "scope": "data_source_config_manager_provider_injection",
-  "source_edit_authority": true,
+  "base_head": "875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f",
+  "split_branch": "g2-234-data-source-config-manager-provider-closeout-refresh",
+  "scope": "data_source_config_manager_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -3752,12 +3752,14 @@
     {
       "id": "g2-233-data-source-config-manager-provider-injection",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.232 data-source config manager provider authorization",
       "source_edit_authority": true,
       "parent_github_pr": 385,
       "parent_merge_commit": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
+      "github_pr": 386,
+      "merge_commit": "875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f",
       "evidence": [
         ".planning/codebase/generated/data-source-config-manager-provider-injection-2026-05-29.json",
         "docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md",
@@ -3818,7 +3820,7 @@
         "data_source_config.old.py untouched",
         "_data_source_config_responses.py untouched"
       ],
-      "next_gate": "If accepted, start G2.234 no-source data-source config manager provider injection closeout / residual refresh.",
+      "next_gate": "Superseded by G2.234 no-source data-source config manager provider injection closeout / residual refresh.",
       "allowed_scope": [
         "web/backend/app/api/data_source_config.py",
         "tests/api/file_tests/test_data_source_config_api.py",
@@ -3848,7 +3850,72 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
+        "current_head_checked": "875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-234-data-source-config-manager-provider-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.233 data-source config manager provider injection",
+      "source_edit_authority": false,
+      "parent_github_pr": 386,
+      "parent_merge_commit": "875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f",
+      "evidence": [
+        ".planning/codebase/generated/data-source-config-manager-provider-closeout-refresh-2026-05-29.json",
+        "docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-387.yaml"
+      ],
+      "closeout": {
+        "route_file": "web/backend/app/api/data_source_config.py",
+        "provider_wrapper": "get_config_manager_dependency",
+        "active_route_body_getter_calls": 0,
+        "active_manager_dependency_parameters": 9,
+        "provider_definition_count": 1,
+        "legacy_false_positive_file": "web/backend/app/api/data_source_config.old.py",
+        "legacy_false_positive_text_hits": 9,
+        "legacy_false_positive_registered": false,
+        "data_source_config_manager_provider_migration_closed": true,
+        "source_reopen_allowed_without_contradiction": false
+      },
+      "verification": {
+        "focused_tests": "tests/api/file_tests/test_data_source_config_api.py + web/backend/tests/test_data_source_config_provider_injection.py: 12 passed",
+        "ruff": "passed",
+        "app_openapi_smoke": "routes=548, paths=500"
+      },
+      "decision": {
+        "selected_next_gate": "G2.235 no-source service lifecycle residual candidate refresh",
+        "reason": "The active data-source config manager route-body provider seam is closed; select the next candidate from current HEAD before authorizing another source lane."
+      },
+      "next_gate": "If accepted, start G2.235 no-source service lifecycle residual candidate refresh.",
+      "allowed_scope": [
+        ".planning/codebase/generated/data-source-config-manager-provider-closeout-refresh-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-387.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f",
         "stale_if_head_mismatch": true
       }
     },
