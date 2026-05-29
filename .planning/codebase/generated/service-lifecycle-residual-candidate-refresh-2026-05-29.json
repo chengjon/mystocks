@@ -1,0 +1,110 @@
+{
+  "schema_version": "2026-05-29.service-lifecycle-residual-refresh.v1",
+  "g2_id": "G2.231",
+  "status": "candidate_refresh_for_review",
+  "generated_at": "2026-05-29T14:40:40+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-231-service-lifecycle-residual-candidate-refresh",
+  "base_head": "2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.230",
+    "github_pr": 383,
+    "merge_commit": "2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c",
+    "decision": "cache prewarming route DI closeout accepted; refresh remaining service lifecycle residuals before selecting another source lane"
+  },
+  "scan_summary": {
+    "api_service_suffix_groups": 4,
+    "api_service_suffix_direct_groups": 4,
+    "api_non_method_getter_groups": 62,
+    "active_data_source_config_get_config_manager_calls": 9,
+    "legacy_data_source_config_old_get_config_manager_calls": 8,
+    "legacy_old_file_registered": false,
+    "route_registration_truth": "web/backend/app/router_registry.py imports app.api.data_source_config; data_source_config.old.py is not registered"
+  },
+  "closed_or_retained_surfaces": [
+    {
+      "symbol": "get_prewarming_strategy",
+      "disposition": "closed by G2.229/G2.230",
+      "current_head_evidence": "0 route-body direct calls; 3 Depends(get_prewarming_strategy) uses"
+    },
+    {
+      "symbol": "get_stop_loss_history_service / get_stop_loss_execution_service",
+      "disposition": "closed by G2.188/G2.189 and retained as provider backing getters",
+      "current_head_evidence": "direct calls remain only inside route-local provider helper initialization in web/backend/app/api/risk/stop_loss.py"
+    },
+    {
+      "symbol": "get_data_service",
+      "disposition": "retained under indicator/data provider governance",
+      "current_head_evidence": "2 provider-return sites in indicator routes; GitNexus risk LOW for the service symbol"
+    },
+    {
+      "symbol": "get_strategy_service",
+      "disposition": "strategy high-risk provider seam; not a generic next source lane",
+      "current_head_evidence": "1 provider-return site in strategy execution router; GitNexus risk CRITICAL"
+    }
+  ],
+  "candidate_queue": [
+    {
+      "rank": 1,
+      "symbol": "get_config_manager",
+      "primary_file": "web/backend/app/api/data_source_config.py",
+      "definition": "web/backend/app/api/_data_source_config_responses.py:get_config_manager",
+      "active_direct_calls": 9,
+      "legacy_false_positive_calls": 8,
+      "gitnexus_risk": "HIGH",
+      "gitnexus_direct_callers": 9,
+      "gitnexus_processes_affected": 3,
+      "classification": "route/provider seam needing no-source decision/authorization before source edits",
+      "reason": "Active data-source config routes repeatedly call get_config_manager() in route bodies and import runtime dependencies from a responses module; scope is concentrated enough for a dedicated authorization package but too risky for direct implementation from this refresh."
+    },
+    {
+      "rank": 2,
+      "symbol": "get_calculator_factory",
+      "primary_file": "src/monitoring/domain/calculator_factory.py",
+      "active_direct_calls": 8,
+      "gitnexus_risk": "HIGH",
+      "classification": "monitoring portfolio domain candidate",
+      "reason": "High impact and domain-specific; defer until data-source config seam is decided."
+    },
+    {
+      "rank": 3,
+      "symbol": "get_mock_data_manager",
+      "primary_file": "web/backend/app/mock/mock_data/factory.py",
+      "active_direct_calls": 8,
+      "gitnexus_risk": "CRITICAL",
+      "classification": "cross-domain mock/runtime seam",
+      "reason": "Critical blast radius across API, adapters, tests, stock search, strategy management, and market modules; requires a separate design package."
+    },
+    {
+      "rank": 4,
+      "symbol": "get_monitoring_db",
+      "active_direct_calls": 12,
+      "gitnexus_risk": "AMBIGUOUS",
+      "classification": "multi-definition monitoring/risk/strategy seam",
+      "reason": "Multiple definitions in risk and strategy helper modules require a separate ownership classification before authorization."
+    }
+  ],
+  "decision": {
+    "selected_next_gate": {
+      "g2_id": "G2.232",
+      "title": "data-source config manager provider seam decision / authorization",
+      "source_edit_authority": false,
+      "scope": [
+        "classify active data_source_config.py get_config_manager route-body calls",
+        "separate active route truth from data_source_config.old.py false positives",
+        "decide whether to authorize a future path-limited provider injection lane",
+        "do not edit backend source in the decision package"
+      ]
+    },
+    "do_not_open_source_from_g2_231": true,
+    "reason": "G2.231 is a current-HEAD residual refresh. The selected seam is HIGH risk and needs a dedicated decision/authorization packet before any source lane."
+  },
+  "verification_targets": {
+    "app_openapi_smoke": "routes=548, paths=500 expected at current HEAD",
+    "openspec": "migrate-backend-singletons-to-lifecycle-di --strict",
+    "mainline_scope": "governance-only; no source or test files",
+    "gitnexus": "detect_changes staged/compare should report 0 changed symbols and LOW risk"
+  }
+}
