@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T18:05:00+08:00`
-- Base HEAD checked: `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`
+- Prepared at: `2026-05-29T18:30:00+08:00`
+- Base HEAD checked: `383598ab2a30da31513468b97537183322b46af9`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.235 service lifecycle residual candidate refresh after data-source config manager | G/#79 service lifecycle DI | PR `#387` merged at `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`; `get_config_manager` remains closed for active route-body calls; `get_calculator_factory` is the next bounded HIGH-risk candidate | If accepted, start G2.236 no-source monitoring calculator factory ownership / provider seam decision packet before any source lane |
+| P0 | Review G2.236 monitoring calculator factory ownership / provider seam decision | G/#79 service lifecycle DI | PR `#388` merged at `383598ab2a30da31513468b97537183322b46af9`; `get_calculator_factory` remains a monitoring domain factory while 8 active API route-body consumers form the provider seam | If accepted, consider G2.237 no-source monitoring calculator factory provider authorization packet; do not start source implementation from G2.236 |
+| P0 | Preserve G2.235 service lifecycle residual candidate refresh after data-source config manager | G/#79 service lifecycle DI | PR `#388` merged at `383598ab2a30da31513468b97537183322b46af9`; selected `get_calculator_factory` as the next bounded HIGH-risk decision target | Do not create G2.237 or source work until G2.236 is reviewed |
 | P0 | Preserve G2.234 data-source config manager provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#387` merged at `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`; active route-body `get_config_manager()` calls are `0`, dependency parameters are `9`, OpenAPI remains `548/500` | Do not reopen `data_source_config.py` source without contradictory current-HEAD evidence |
 | P0 | Preserve G2.233 data-source config manager provider injection | G/#79 service lifecycle DI | PR `#386` merged at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`; moved 9 active route-body manager lookups into `Depends(get_config_manager_dependency)` | Do not reopen `data_source_config.py` source without contradictory current-HEAD evidence |
 | P0 | Preserve G2.232 data-source config manager provider authorization | G/#79 service lifecycle DI | PR `#385` merged at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`; authorized only the G2.233 path-limited provider injection lane | Do not use G2.232 to edit `data_source_config.old.py`, `_data_source_config_responses.py`, route paths, OpenAPI, frontend, config, scripts, or OpenSpec |
@@ -60,9 +61,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.235 correctly treat PR `#387` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.235 preserve the G2.234 closeout for active route-body `get_config_manager()` calls?
-- Does G2.235 correctly rank `get_calculator_factory` as the next bounded HIGH-risk decision target after `get_config_manager` is closed?
-- Does G2.235 defer `get_mock_data_manager`, `get_monitoring_db`, and `get_postgres_async` instead of batching them into the next gate?
-- Does G2.235 select G2.236 as a no-source monitoring calculator factory ownership / provider seam decision packet before any source lane?
+- Does G2.236 correctly treat PR `#388` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.236 correctly classify `get_calculator_factory` as monitoring domain factory ownership plus API route/provider seam?
+- Does G2.236 preserve the domain factory and avoid authorizing a `src/monitoring/domain/calculator_factory.py` rewrite?
+- Does G2.236 limit future consideration to a separate G2.237 no-source authorization packet, not source implementation?
+- Does G2.236 keep `get_mock_data_manager`, `get_monitoring_db`, and `get_postgres_async` out of this decision scope?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

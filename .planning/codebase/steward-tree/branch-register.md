@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T18:05:00+08:00`
-- Base HEAD checked: `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`
+- Prepared at: `2026-05-29T18:30:00+08:00`
+- Base HEAD checked: `383598ab2a30da31513468b97537183322b46af9`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -72,12 +72,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#385` | `g2-232-data-source-config-manager-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8` | No-source authorization selecting G2.233 data-source config manager provider injection |
 | `#386` | `g2-233-data-source-config-manager-provider-injection` | `wip/root-dirty-20260403` | `MERGED` at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f` | Path-limited provider injection closing active `data_source_config.py` route-body manager calls |
 | `#387` | `g2-234-data-source-config-manager-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5` | No-source closeout / residual refresh selecting G2.235 service lifecycle residual candidate refresh |
+| `#388` | `g2-235-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `383598ab2a30da31513468b97537183322b46af9` | No-source residual candidate refresh selecting G2.236 monitoring calculator factory ownership decision |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-235-service-lifecycle-residual-candidate-refresh` | `origin/wip/root-dirty-20260403` at `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5` | Refresh residual service lifecycle candidates after data-source config manager closeout and select the next no-source decision gate | No |
+| `g2-236-monitoring-calculator-factory-decision` | `origin/wip/root-dirty-20260403` at `383598ab2a30da31513468b97537183322b46af9` | Decide monitoring calculator factory ownership and provider seam before any G2.237 authorization or source lane | No |
 
 ## OpenSpec Relationship
 
@@ -93,8 +94,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.235 is a no-source residual candidate refresh branch after PR `#387`
-merged G2.234. It confirms the active `data_source_config.py`
-`get_config_manager()` route-body calls remain closed and selects G2.236
-monitoring calculator factory ownership / provider seam decision as the next
-no-source gate.
+G2.236 is a no-source ownership / provider seam decision branch after PR `#388`
+merged G2.235. It classifies `get_calculator_factory` as monitoring domain
+factory ownership plus an API route/provider seam and does not create G2.237 or
+authorize source implementation.
