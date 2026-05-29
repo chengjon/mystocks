@@ -1,0 +1,120 @@
+version: "v0.2"
+
+task:
+  id: "pr-385"
+  title: "Authorize data-source config manager provider lane"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-data-source-config-manager-provider-authorization"
+  objective: "authorize a future path-limited provider injection lane for data_source_config.py get_config_manager route-body calls"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.232 is a no-source authorization package; no runtime route, test, OpenAPI, PM2, frontend, or product behavior changes are introduced."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-source-config-manager-provider-authorization-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-source-config-manager-provider-authorization-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-385.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test source edits in this PR"
+  - "data_source_config.py implementation"
+  - "_data_source_config_responses.py implementation"
+  - "route/OpenAPI contract changes"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+
+acceptance:
+  checks:
+    - id: "authorization-evidence"
+      command: "current HEAD evidence authorizes only future G2.233 path-limited implementation, not G2.232 source edits"
+      required: true
+    - id: "artifact-parse"
+      command: "node parses .planning/codebase/generated/data-source-config-manager-provider-authorization-2026-05-29.json and .planning/codebase/steward-tree/steward-index.json"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-source-config-manager-provider-authorization-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-385.yaml --base-sha 05c84d1f4f5e42d9db0ace21ef3ba110dacbc184 --head-sha HEAD --report /tmp/pr385-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus detect_changes staged/compare"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Reviewers may mistake authorization as current source implementation; G2.232 is no-source only."
+    - "get_config_manager is HIGH risk and source work must remain path-limited if G2.233 starts."
+    - "data_source_config.old.py must remain classified as a legacy false-positive unless a separate cleanup package authorizes it."
+  rollback_plan: "Revert this PR; no runtime source or test changes are present."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future G2.233 provider injection lane for active data_source_config.py get_config_manager route-body calls."
+    modified_scope: "Governance reports, generated evidence, steward tree, and task card only."
+    dependency_changes: "None."
+    legacy_logic_impact: "None; no source or test files are modified."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If current HEAD contradicts the active/legacy split or route count, stop before opening G2.233."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T15:24:12+08:00"
+    approval_note: "Approved by steward sequence after PR #384 merge to run no-source G2.232 data-source config manager provider authorization."
+    secondary_approved: false

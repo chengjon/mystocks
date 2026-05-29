@@ -1,0 +1,80 @@
+{
+  "schema_version": "2026-05-29.data-source-config-manager-provider-authorization.v1",
+  "g2_id": "G2.232",
+  "status": "authorization_for_review",
+  "generated_at": "2026-05-29T15:24:12+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-232-data-source-config-manager-provider-authorization",
+  "base_head": "05c84d1f4f5e42d9db0ace21ef3ba110dacbc184",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.231",
+    "github_pr": 384,
+    "merge_commit": "05c84d1f4f5e42d9db0ace21ef3ba110dacbc184",
+    "decision": "select get_config_manager in active data_source_config.py as next no-source decision / authorization target"
+  },
+  "candidate": {
+    "symbol": "get_config_manager",
+    "definition": "web/backend/app/api/_data_source_config_responses.py:get_config_manager",
+    "active_route_file": "web/backend/app/api/data_source_config.py",
+    "active_route_registration": "web/backend/app/router_registry.py imports app.api.data_source_config and includes data_source_config.router",
+    "legacy_false_positive_file": "web/backend/app/api/data_source_config.old.py",
+    "legacy_false_positive_registered": false,
+    "active_route_body_calls": 9,
+    "legacy_false_positive_calls": 8,
+    "current_dependency_shape": "route handlers call get_config_manager() inside function bodies",
+    "current_runtime_dependency_export_shape": "data_source_config.py imports router, get_current_user, and get_config_manager from _data_source_config_responses.py",
+    "gitnexus_risk": "HIGH",
+    "gitnexus_direct_callers": 9,
+    "gitnexus_processes_affected": 3
+  },
+  "authorized_future_lane": {
+    "g2_id": "G2.233",
+    "title": "data-source config manager route provider injection",
+    "source_edit_authority": true,
+    "allowed_source_paths": [
+      "web/backend/app/api/data_source_config.py"
+    ],
+    "allowed_test_paths": [
+      "tests/api/file_tests/test_data_source_config_api.py",
+      "web/backend/tests/test_data_source_config_provider_injection.py"
+    ],
+    "implementation_intent": [
+      "introduce a route-local dependency/provider wrapper for DataSourceConfigManager",
+      "inject the manager into the 9 active route handlers that currently call get_config_manager() in route bodies",
+      "preserve the default backing get_config_manager() behavior",
+      "preserve router registration, route paths, response models, auth/current_user dependencies, and OpenAPI exposure",
+      "do not edit data_source_config.old.py"
+    ],
+    "exit_criteria": [
+      "active data_source_config.py route-body get_config_manager() calls are 0",
+      "active data_source_config.py route dependency uses for the manager are 9",
+      "legacy data_source_config.old.py calls remain classified as false positives and are not edited",
+      "app/OpenAPI smoke remains routes=548 and paths=500 unless an unrelated current-HEAD change explains drift"
+    ]
+  },
+  "explicit_non_authorized_scope": [
+    "web/backend/app/api/_data_source_config_responses.py source edits from G2.232",
+    "web/backend/app/api/data_source_config.old.py edits or deletion",
+    "route path changes",
+    "response model changes",
+    "OpenAPI exposure changes",
+    "auth/current_user behavior changes",
+    "PM2 commands",
+    "frontend changes",
+    "OpenSpec proposal/spec edits"
+  ],
+  "decision": {
+    "selected_next_gate": "G2.233 data-source config manager route provider injection",
+    "g2_232_source_edits_authorized": false,
+    "g2_233_source_edits_conditionally_authorized_after_review": true,
+    "reason": "The seam is HIGH risk but concentrated in one active route module. A path-limited provider injection can remove route-body singleton calls while preserving route contracts and the existing backing getter."
+  },
+  "verification_targets": {
+    "app_openapi_smoke": "routes=548, paths=500 expected at current HEAD",
+    "openspec": "migrate-backend-singletons-to-lifecycle-di --strict",
+    "mainline_scope": "governance-only; no source or test files in G2.232",
+    "gitnexus": "detect_changes staged/compare should report 0 changed symbols and LOW risk for G2.232"
+  }
+}

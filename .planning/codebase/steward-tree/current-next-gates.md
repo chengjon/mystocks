@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T14:40:40+08:00`
-- Base HEAD checked: `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c`
+- Prepared at: `2026-05-29T15:24:12+08:00`
+- Base HEAD checked: `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.231 service lifecycle residual candidate refresh | G/#79 service lifecycle DI | PR `#383` merged at `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c`; current HEAD refresh selects `get_config_manager` in `data_source_config.py` as the next no-source decision / authorization target | If accepted, start G2.232 data-source config manager provider seam decision / authorization; do not edit backend source from G2.231 |
+| P0 | Review G2.232 data-source config manager provider authorization | G/#79 service lifecycle DI | PR `#384` merged at `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184`; authorizes future G2.233 path-limited provider injection for 9 active `get_config_manager()` route-body calls | If accepted, start G2.233 implementation limited to `data_source_config.py` plus focused tests; do not touch `data_source_config.old.py` |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.231 correctly treat PR `#383` as merged and accepted into `wip/root-dirty-20260403`?
-- Does the current residual scan correctly separate active `data_source_config.py` route truth from `data_source_config.old.py` false positives?
-- Does `get_config_manager` require a dedicated no-source G2.232 decision / authorization before source edits?
-- Does G2.231 preserve cache prewarming, stop-loss, indicator/data, and strategy retained/closed dispositions?
-- Does G2.231 remain no-source and avoid reopening any implementation lane?
+- Does G2.232 correctly treat PR `#384` as merged and accepted into `wip/root-dirty-20260403`?
+- Does the authorization limit future source work to active `data_source_config.py` route/provider injection plus focused tests?
+- Does G2.232 keep `data_source_config.old.py` as a legacy false-positive rather than an edit target?
+- Does G2.232 preserve route paths, auth/current_user behavior, response models, and OpenAPI exposure?
+- Does G2.232 remain no-source while authorizing only a future G2.233 implementation lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
