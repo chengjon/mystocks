@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T22:42:25+08:00",
+  "generated_at": "2026-05-30T00:30:17+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c",
-  "split_branch": "g2-242-mock-data-manager-provider-authorization",
-  "scope": "mock_data_manager_provider_authorization",
+  "base_head": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
+  "split_branch": "g2-243-mock-data-manager-provider-reset-seam",
+  "scope": "mock_data_manager_provider_reset_seam",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -4537,10 +4537,12 @@
     {
       "id": "g2-242-mock-data-manager-provider-authorization",
       "type": "provider_authorization",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.241 mock data manager ownership / runtime seam decision",
       "source_edit_authority": false,
+      "github_pr": 395,
+      "merge_commit": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
       "parent_github_pr": 394,
       "parent_merge_commit": "cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c",
       "evidence": [
@@ -4596,7 +4598,7 @@
           "change routes, OpenAPI, frontend, config, scripts, or OpenSpec"
         ]
       },
-      "next_gate": "If accepted, start G2.243 path-limited mock data manager provider/reset seam implementation. If rejected, return get_mock_data_manager to residual ownership classification.",
+      "next_gate": "Superseded by G2.243 path-limited mock data manager provider/reset seam implementation. Do not use G2.242 to migrate additional consumers.",
       "allowed_scope": [
         ".planning/codebase/generated/mock-data-manager-provider-authorization-2026-05-29.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -4622,7 +4624,98 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c",
+        "current_head_checked": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-243-mock-data-manager-provider-reset-seam",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.242 mock data manager provider/reset seam authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 395,
+      "parent_merge_commit": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
+      "evidence": [
+        ".planning/codebase/generated/mock-data-manager-provider-reset-seam-2026-05-30.json",
+        "docs/reports/quality/backend-mock-data-manager-provider-reset-seam-2026-05-30.md",
+        "governance/mainline/task-cards/pr-396.yaml"
+      ],
+      "subject": {
+        "symbol": "get_mock_data_manager",
+        "primary_file": "web/backend/app/mock/mock_data/factory.py",
+        "implementation_shape": "provider/reset/test-double seam",
+        "preserved_accessor": true
+      },
+      "current_head_evidence": {
+        "factory_file_lines_after": 190,
+        "gitnexus_risk": "CRITICAL",
+        "gitnexus_impacted_count": 63,
+        "gitnexus_direct": 27,
+        "gitnexus_processes_affected": 4,
+        "gitnexus_modules_affected": 8,
+        "focused_tests": "14 passed",
+        "ruff": "All checks passed",
+        "app_routes": 548,
+        "openapi_paths": 500
+      },
+      "implementation": {
+        "added_api": [
+          "set_mock_data_manager_provider",
+          "reset_mock_data_manager_provider"
+        ],
+        "preserved_api": [
+          "get_mock_data_manager"
+        ],
+        "preserved_behavior": [
+          "package-level cached manager lookup",
+          "UnifiedMockDataManager creation path",
+          "fallback manager behavior",
+          "mock response shapes"
+        ],
+        "non_goals": [
+          "API/helper fallback consumer migration",
+          "service adapter rewrite",
+          "legacy/facade adapter rewrite",
+          "route changes",
+          "OpenAPI changes",
+          "frontend changes",
+          "config or script changes",
+          "OpenSpec changes"
+        ]
+      },
+      "next_gate": "If accepted, start G2.244 no-source mock data manager provider/reset seam closeout and residual refresh.",
+      "allowed_scope": [
+        "web/backend/app/mock/mock_data/factory.py",
+        "web/backend/tests/test_mock_data_manager_configuration.py",
+        "web/backend/tests/test_runtime_regressions_p0.py",
+        ".planning/codebase/generated/mock-data-manager-provider-reset-seam-2026-05-30.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-mock-data-manager-provider-reset-seam-2026-05-30.md",
+        "governance/mainline/task-cards/pr-396.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/app/api/**",
+        "web/backend/app/services/**",
+        "web/backend/app/tasks/**",
+        "src/**",
+        "web/frontend/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
         "stale_if_head_mismatch": true
       }
     },

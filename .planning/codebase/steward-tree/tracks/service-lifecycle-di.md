@@ -1815,6 +1815,48 @@ Next gate:
 - If G2.242 is rejected, keep `get_mock_data_manager` in the residual queue and
   return to ownership classification.
 
+Closeout status:
+
+- G2.242 was accepted by PR `#395` and merged at
+  `e7506af885ed635580f2ab765ec9e4fe279cc98b`.
+- G2.243 is the path-limited provider/reset seam implementation after this
+  authorization.
+
+## G2.243 Mock Data Manager Provider / Reset Seam Implementation
+
+G2.243 is the source implementation after PR `#395` merged G2.242 at
+`e7506af885ed635580f2ab765ec9e4fe279cc98b`.
+
+Implementation:
+
+- `factory.py` adds `set_mock_data_manager_provider(provider)`.
+- `factory.py` adds `reset_mock_data_manager_provider()`.
+- `get_mock_data_manager()` checks an explicit provider first, then preserves
+  the previous cached manager, `UnifiedMockDataManager`, and fallback paths.
+- Focused tests cover provider override/reset and existing mock runtime shapes.
+
+Current evidence:
+
+| Item | Result |
+|---|---:|
+| GitNexus impact before edit | `CRITICAL`, 63 impacted, 27 direct, 4 processes, 8 modules |
+| Factory file lines after | 190 |
+| Focused mock manager + runtime tests | 14 passed |
+| Ruff on authorized files | All checks passed |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+
+Preserved boundaries:
+
+- `get_mock_data_manager` remains the compatibility accessor.
+- API/helper fallback consumers are not migrated.
+- Service adapters and legacy/facade adapters are not rewritten.
+- Routes, OpenAPI, frontend, config, scripts, and OpenSpec are unchanged.
+
+Next gate:
+
+- If accepted, start G2.244 no-source closeout / residual refresh.
+- G2.243 does not authorize additional consumer migration.
+
 ## Forbidden Scope
 
 This track summary forbids:

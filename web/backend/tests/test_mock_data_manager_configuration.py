@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import importlib
 from pathlib import Path
+
+import pytest
 
 from app.mock.mock_data.core import UnifiedMockDataManager
 
@@ -41,12 +44,10 @@ def test_mock_data_manager_does_not_silently_fallback_when_disabled(monkeypatch)
     monkeypatch.setattr(manager, "_get_real_data", lambda *_args, **_kwargs: (_ for _ in ()).throw(RuntimeError("real failed")))
     monkeypatch.setattr(manager, "_get_mock_data", lambda *_args, **_kwargs: {"mock": True})
 
-    try:
+    with pytest.raises(RuntimeError) as exc_info:
         manager.get_data("watchlist")
-    except RuntimeError as exc:
-        assert str(exc) == "real failed"
-    else:
-        raise AssertionError("expected real path failure to be raised")
+
+    assert str(exc_info.value) == "real failed"
 
 
 def test_mock_data_manager_allows_fallback_when_enabled(monkeypatch):
@@ -58,3 +59,26 @@ def test_mock_data_manager_allows_fallback_when_enabled(monkeypatch):
     result = manager.get_data("watchlist")
 
     assert result["mock"] is True
+
+
+def test_mock_data_manager_provider_can_be_overridden_and_reset():
+    factory = importlib.import_module("app.mock.mock_data.factory")
+
+    class TestDoubleManager:
+        def get_data(self, data_type, **kwargs):
+            return {"source": "test-double", "data_type": data_type, "kwargs": kwargs}
+
+    factory.set_mock_data_manager_provider(lambda: TestDoubleManager())
+
+    try:
+        manager = factory.get_mock_data_manager()
+
+        assert manager.get_data("watchlist", user_id=1) == {
+            "source": "test-double",
+            "data_type": "watchlist",
+            "kwargs": {"user_id": 1},
+        }
+    finally:
+        factory.reset_mock_data_manager_provider()
+
+    assert not isinstance(factory.get_mock_data_manager(), TestDoubleManager)

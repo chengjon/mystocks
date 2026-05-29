@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T22:42:25+08:00`
-- Base HEAD checked: `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`
+- Prepared at: `2026-05-30T00:30:17+08:00`
+- Base HEAD checked: `e7506af885ed635580f2ab765ec9e4fe279cc98b`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -79,12 +79,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#392` | `g2-239-monitoring-calculator-factory-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `d68c381d75cf9dffc601ef8390fbec9c85e55d18` | No-source monitoring calculator factory provider closeout / residual refresh selecting G2.240 |
 | `#393` | `g2-240-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc` | No-source residual candidate refresh selecting G2.241 mock data manager ownership decision |
 | `#394` | `g2-241-mock-data-manager-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c` | No-source ownership / runtime seam decision selecting G2.242 mock data manager provider/reset seam authorization |
+| `#395` | `g2-242-mock-data-manager-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `e7506af885ed635580f2ab765ec9e4fe279cc98b` | No-source provider/reset seam authorization selecting G2.243 path-limited implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-242-mock-data-manager-provider-authorization` | `origin/wip/root-dirty-20260403` at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c` | Authorize a future path-limited `get_mock_data_manager` provider/reset/test-double seam after accepted G2.241 | No |
+| `g2-243-mock-data-manager-provider-reset-seam` | `origin/wip/root-dirty-20260403` at `e7506af885ed635580f2ab765ec9e4fe279cc98b` | Implement the authorized `get_mock_data_manager` provider/reset/test-double seam after accepted G2.242 | Yes, limited to the task card |
 
 ## OpenSpec Relationship
 
