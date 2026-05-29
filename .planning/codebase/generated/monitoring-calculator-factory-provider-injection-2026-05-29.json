@@ -1,0 +1,113 @@
+{
+  "schema_version": "2026-05-29.monitoring-calculator-factory-provider-injection.v1",
+  "g2_id": "G2.238",
+  "status": "implementation_for_review",
+  "generated_at": "2026-05-29T20:34:17+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-238-monitoring-calculator-factory-provider-injection",
+  "base_head": "ef11ae6577bf62d15b814af732ba291696e5b084",
+  "source_edit_authority": true,
+  "parent": {
+    "g2_id": "G2.237",
+    "github_pr": 390,
+    "merge_commit": "ef11ae6577bf62d15b814af732ba291696e5b084",
+    "decision": "authorize a bounded monitoring calculator factory provider injection lane"
+  },
+  "authorized_scope": {
+    "source_files": [
+      "web/backend/app/api/monitoring_analysis.py",
+      "web/backend/app/api/_monitoring_portfolio_router.py"
+    ],
+    "test_files": [
+      "tests/api/file_tests/test_monitoring_analysis_api.py"
+    ],
+    "verification_only_paths": [
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "forbidden_paths_preserved": [
+      "src/monitoring/domain/calculator_factory.py",
+      "web/frontend/**",
+      "docs/api/**",
+      "openspec/changes/**",
+      "openspec/specs/**",
+      "config/**",
+      "scripts/**"
+    ]
+  },
+  "implementation_summary": {
+    "provider_functions_added": 2,
+    "provider_name": "get_monitoring_calculator_factory",
+    "target_route_handlers": 8,
+    "direct_route_body_get_calculator_factory_calls_after": 0,
+    "fastapi_dependency_parameters_after": 8,
+    "domain_factory_file_changed": false,
+    "route_paths_changed": false,
+    "openapi_paths_changed": false,
+    "response_contracts_changed": false
+  },
+  "source_locations": {
+    "web/backend/app/api/monitoring_analysis.py": {
+      "provider_line": 46,
+      "dependency_lines": [145, 208, 348, 471, 517],
+      "factory_assignment_lines": [158, 219, 356, 482, 523]
+    },
+    "web/backend/app/api/_monitoring_portfolio_router.py": {
+      "provider_line": 102,
+      "dependency_lines": [157, 226, 297],
+      "factory_assignment_lines": [165, 234, 305]
+    },
+    "tests/api/file_tests/test_monitoring_analysis_api.py": {
+      "guard_test_line": 62
+    }
+  },
+  "tdd_evidence": {
+    "red": {
+      "command": "pytest -o addopts= tests/api/file_tests/test_monitoring_analysis_api.py::TestMonitoringAnalysisAPIFile::test_monitoring_calculator_factory_uses_route_dependency_provider -q --no-cov --tb=short",
+      "status": "failed_before_implementation",
+      "failure": "AssertionError: get_monitoring_calculator_factory not found in module"
+    },
+    "green": {
+      "command": "pytest -o addopts= tests/api/file_tests/test_monitoring_analysis_api.py::TestMonitoringAnalysisAPIFile::test_monitoring_calculator_factory_uses_route_dependency_provider -q --no-cov --tb=short",
+      "status": "passed_after_implementation",
+      "result": "1 passed"
+    }
+  },
+  "verification": {
+    "gitnexus_impact_before_edit": {
+      "mcp_status": "transport_closed",
+      "cli_command": "gitnexus impact get_calculator_factory --direction upstream --repo mystocks --summary-only",
+      "risk": "HIGH",
+      "impacted_count": 9,
+      "direct": 9,
+      "processes_affected": 3,
+      "modules_affected": 2
+    },
+    "focused_tests": {
+      "command": "pytest -o addopts= tests/api/file_tests/test_monitoring_analysis_api.py -q --no-cov --tb=short",
+      "result": "17 passed"
+    },
+    "health_route_conflicts_collect": {
+      "command": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov",
+      "result": "121 tests collected"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/monitoring_analysis.py web/backend/app/api/_monitoring_portfolio_router.py tests/api/file_tests/test_monitoring_analysis_api.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "app.main import and app.openapi() with transient runtime environment",
+      "result": "routes=548, paths=500"
+    },
+    "static_guard": {
+      "providers": 2,
+      "direct_route_body_calls": 0,
+      "target_handlers": 8
+    }
+  },
+  "rollback_plan": "Revert the G2.238 PR; the two API modules return to route-body get_calculator_factory() calls and the focused guard test is removed.",
+  "next_gate": {
+    "if_accepted": "G2.239 no-source closeout / residual refresh for monitoring calculator factory provider injection",
+    "source_edits_authorized_by_next_gate": false
+  }
+}

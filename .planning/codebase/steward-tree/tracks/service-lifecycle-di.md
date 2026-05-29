@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T19:13:42+08:00`
-- Base HEAD checked: `f39aca8815d59739787349ed1025e7a1b7e2c050`
+- Prepared at: `2026-05-29T20:34:17+08:00`
+- Base HEAD checked: `ef11ae6577bf62d15b814af732ba291696e5b084`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1604,6 +1604,44 @@ Next gate:
 - Review G2.237.
 - If accepted, create G2.238 as the bounded implementation lane.
 - Do not edit source from G2.237.
+
+## G2.238 Monitoring Calculator Factory Provider Injection
+
+G2.238 is the path-limited implementation lane after PR `#390` merged G2.237 at
+`ef11ae6577bf62d15b814af732ba291696e5b084`.
+
+Implementation result:
+
+| Item | Result |
+|---|---:|
+| Route-local providers added | 2 |
+| Target handlers | 8 |
+| Direct route-body `get_calculator_factory()` calls after | 0 |
+| FastAPI dependency parameters after | 8 |
+| Focused monitoring API tests | 17 passed |
+| Health route conflict collect | 121 tests collected |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+
+Changed source/test paths:
+
+- `web/backend/app/api/monitoring_analysis.py`
+- `web/backend/app/api/_monitoring_portfolio_router.py`
+- `tests/api/file_tests/test_monitoring_analysis_api.py`
+
+Preserved boundaries:
+
+- `src/monitoring/domain/calculator_factory.py` unchanged.
+- Route paths, response models, OpenAPI exposure, and `UnifiedResponse`
+  contracts unchanged.
+- Calculator construction and GPU/CPU/risk selection behavior unchanged.
+- `get_mock_data_manager`, `get_monitoring_db`, and `get_postgres_async`
+  remained out of scope.
+
+Next gate:
+
+- Review G2.238.
+- If accepted, run G2.239 as a no-source closeout / residual refresh.
+- Do not expand G2.238 into another source lane.
 
 ## Forbidden Scope
 
