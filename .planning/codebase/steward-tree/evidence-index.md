@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T22:22:46+08:00`
-- Base HEAD checked: `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`
+- Prepared at: `2026-05-29T22:42:25+08:00`
+- Base HEAD checked: `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,6 +21,9 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
+| `.planning/codebase/generated/mock-data-manager-provider-authorization-2026-05-29.json` | G2.242 provider/reset seam authorization evidence | Review input for PR `#395`; current for HEAD `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c` |
+| `docs/reports/quality/backend-mock-data-manager-provider-authorization-2026-05-29.md` | G2.242 human-readable authorization packet | Review input for PR `#395`; does not authorize source edits until accepted |
+| `governance/mainline/task-cards/pr-395.yaml` | Path-limited governance task card for G2.242 | Review input; allowed paths are governance docs/artifacts only |
 | `.planning/codebase/generated/strategy-adapter-provider-closeout-2026-05-27.json` | G2.180 closeout and residual-refresh evidence | Current for HEAD `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` |
 | `docs/reports/quality/backend-strategy-adapter-provider-closeout-2026-05-27.md` | G2.180 human-readable closeout report | Accepted by PR `#333`; superseded for residual next-gate selection by G2.181 |
 | `.planning/codebase/generated/strategy-getter-residual-refresh-decision-2026-05-27.json` | G2.181 residual class refresh and next-gate decision evidence | Current for HEAD `ba929aee2e7fc0de0278f80f30caa185fafa6b5c` |

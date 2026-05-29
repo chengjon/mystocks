@@ -1762,6 +1762,59 @@ Next gate:
   authorization.
 - G2.241 does not authorize source edits.
 
+Closeout status:
+
+- G2.241 was accepted by PR `#394` and merged at
+  `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`.
+- G2.242 is the no-source provider/reset seam authorization after this
+  decision.
+
+## G2.242 Mock Data Manager Provider / Reset Seam Authorization
+
+G2.242 is the no-source authorization packet after PR `#394` merged G2.241 at
+`cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`.
+
+Authorization decision:
+
+- G2.242 does not authorize source edits.
+- If accepted, it authorizes a future G2.243 source lane limited to adding an
+  explicit provider/reset/test-double seam around `get_mock_data_manager`.
+- The compatibility accessor, default cached manager behavior, fallback manager
+  behavior, and mock response shapes must be preserved.
+
+Future G2.243 allowed source authority if G2.242 is accepted:
+
+| Path | Role |
+|---|---|
+| `web/backend/app/mock/mock_data/factory.py` | Provider/reset/test-double seam source |
+| `web/backend/tests/test_mock_data_manager_configuration.py` | Focused manager configuration tests |
+| `web/backend/tests/test_runtime_regressions_p0.py` | Runtime shape regression tests |
+
+Current evidence:
+
+| Item | Result |
+|---|---:|
+| Factory file lines | 156 |
+| Definition count | 1 |
+| Import lines | 16 |
+| Call expressions | 27 |
+| Active route-body calls | 0 |
+| GitNexus CLI sample | `CRITICAL`, 63 impacted, 27 direct, 4 processes, 8 modules |
+| app/OpenAPI smoke target | `routes=548`, `paths=500` |
+
+Forbidden scope for G2.242 and the future G2.243 source lane:
+
+- Do not batch-migrate API/helper fallback consumers.
+- Do not rewrite service adapters or legacy/facade adapters.
+- Do not remove or rename `get_mock_data_manager`.
+- Do not change routes, OpenAPI, frontend, config, scripts, or OpenSpec.
+
+Next gate:
+
+- If G2.242 is accepted, start G2.243 as a path-limited implementation lane.
+- If G2.242 is rejected, keep `get_mock_data_manager` in the residual queue and
+  return to ownership classification.
+
 ## Forbidden Scope
 
 This track summary forbids:
