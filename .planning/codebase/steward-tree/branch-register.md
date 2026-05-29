@@ -65,12 +65,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#378` | `g2-225-industry-concept-unified-data-service-cleanup` | `wip/root-dirty-20260403` | `MERGED` at `5837b8af55499e8ee9d7ba14cf543abb9bc45e39` | Path-limited implementation closing `industry_concept_analysis.py` direct `UnifiedDataService()` calls |
 | `#379` | `g2-226-industry-concept-unified-data-service-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `854878cd2e09384daddaa8547e8cebc970ec2b74` | No-source closeout / residual refresh selecting G2.227 `get_prewarming_strategy` ownership decision |
 | `#380` | `g2-227-cache-prewarming-strategy-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b` | No-source ownership decision selecting G2.228 cache prewarming strategy provider authorization |
+| `#381` | `g2-228-cache-prewarming-strategy-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `4d77ee68a1a4a30516134b995c82fa777c3b44d6` | No-source authorization selecting G2.229 cache prewarming route DI implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-228-cache-prewarming-strategy-provider-authorization` | `origin/wip/root-dirty-20260403` at `f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b` | Authorize a future path-limited cache prewarming strategy provider implementation lane | No |
+| `g2-229-cache-prewarming-route-di-implementation` | `origin/wip/root-dirty-20260403` at `4d77ee68a1a4a30516134b995c82fa777c3b44d6` | Implement cache prewarming route dependency injection within the G2.228 authorized path set | Yes |
 
 ## OpenSpec Relationship
 
@@ -86,8 +87,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.228 is a no-source authorization branch after PR `#380` merged G2.227. It is
-limited to authorization evidence, steward-tree updates, and a task card. If
-accepted, the next gate is G2.229 cache prewarming route dependency injection
-implementation; cache prewarming source implementation is not authorized by
-G2.228.
+G2.229 is a path-limited source implementation branch after PR `#381` merged
+G2.228. It is limited to `_cache_prewarming_routes.py`, one focused cache API
+test, generated evidence, steward-tree updates, and a task card. If accepted,
+the next gate is G2.230 no-source closeout / residual refresh.

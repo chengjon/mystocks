@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T11:32:00+08:00",
+  "generated_at": "2026-05-29T12:04:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b",
-  "split_branch": "g2-228-cache-prewarming-strategy-provider-authorization",
-  "scope": "cache_prewarming_strategy_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "4d77ee68a1a4a30516134b995c82fa777c3b44d6",
+  "split_branch": "g2-229-cache-prewarming-route-di-implementation",
+  "scope": "cache_prewarming_route_di_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -3372,12 +3372,14 @@
     {
       "id": "g2-228-cache-prewarming-strategy-provider-authorization",
       "type": "authorization",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + cache prewarming provider governance",
       "parent": "G2.227 cache prewarming strategy ownership decision",
       "source_edit_authority": false,
       "parent_github_pr": 380,
       "parent_merge_commit": "f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b",
+      "github_pr": 381,
+      "merge_commit": "4d77ee68a1a4a30516134b995c82fa777c3b44d6",
       "evidence": [
         ".planning/codebase/generated/cache-prewarming-strategy-provider-authorization-2026-05-29.json",
         "docs/reports/quality/backend-cache-prewarming-strategy-provider-authorization-2026-05-29.md",
@@ -3427,7 +3429,7 @@
         "ruff": "passed",
         "app_openapi_smoke": "routes=548, paths=500, cache prewarming paths present"
       },
-      "next_gate": "If accepted, start G2.229 as a separate path-limited source implementation lane. G2.228 itself remains no-source governance.",
+      "next_gate": "Superseded by G2.229 cache prewarming route dependency injection implementation.",
       "allowed_scope": [
         ".planning/codebase/generated/cache-prewarming-strategy-provider-authorization-2026-05-29.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -3453,7 +3455,91 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b",
+        "current_head_checked": "4d77ee68a1a4a30516134b995c82fa777c3b44d6",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-229-cache-prewarming-route-di-implementation",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + cache prewarming provider governance",
+      "parent": "G2.228 cache prewarming strategy provider authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 381,
+      "parent_merge_commit": "4d77ee68a1a4a30516134b995c82fa777c3b44d6",
+      "evidence": [
+        ".planning/codebase/generated/cache-prewarming-route-di-implementation-2026-05-29.json",
+        "docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md",
+        "governance/mainline/task-cards/pr-382.yaml"
+      ],
+      "authorized_scope": {
+        "source_paths": [
+          "web/backend/app/api/_cache_prewarming_routes.py"
+        ],
+        "test_paths": [
+          "web/backend/tests/test_cache_api.py"
+        ]
+      },
+      "implementation": {
+        "target_symbol": "get_prewarming_strategy",
+        "route_file": "web/backend/app/api/_cache_prewarming_routes.py",
+        "changed_route_handlers": [
+          "trigger_cache_prewarming",
+          "get_prewarming_status",
+          "get_cache_health_status"
+        ],
+        "route_body_direct_getter_calls_before": 3,
+        "route_body_direct_getter_calls_after": 0,
+        "dependency_parameters_after": 3,
+        "provider_dependency": "Depends(get_prewarming_strategy)"
+      },
+      "verification": {
+        "tdd_red": "web/backend/tests/test_cache_api.py::test_cache_prewarming_routes_inject_strategy_provider failed before implementation",
+        "tdd_green": "web/backend/tests/test_cache_api.py::test_cache_prewarming_routes_inject_strategy_provider: 1 passed",
+        "focused_cache_tests": "web/backend/tests/test_cache_prewarming.py + web/backend/tests/test_cache_api.py: 55 passed",
+        "ruff": "passed",
+        "app_openapi_smoke": "routes=548, paths=500, cache prewarming paths present"
+      },
+      "preserved_invariants": [
+        "route paths",
+        "OpenAPI exposure",
+        "auth dependency",
+        "response shape",
+        "get_prewarming_strategy default provider",
+        "CachePrewarmingStrategy behavior",
+        "get_cache_monitor behavior"
+      ],
+      "next_gate": "If accepted, start G2.230 no-source cache prewarming route DI closeout / residual refresh.",
+      "allowed_scope": [
+        "web/backend/app/api/_cache_prewarming_routes.py",
+        "web/backend/tests/test_cache_api.py",
+        ".planning/codebase/generated/cache-prewarming-route-di-implementation-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md",
+        "governance/mainline/task-cards/pr-382.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/app/core/cache_prewarming.py",
+        "web/backend/app/api/cache.py",
+        "web/backend/app/services/**",
+        "web/backend/app/schemas/**",
+        "web/backend/app/models/**",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "4d77ee68a1a4a30516134b995c82fa777c3b44d6",
         "stale_if_head_mismatch": true
       }
     },

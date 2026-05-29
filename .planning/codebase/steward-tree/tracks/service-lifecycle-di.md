@@ -1326,15 +1326,39 @@ authorize source edits. Future tests, if G2.229 starts, are limited to
 `web/backend/tests/test_cache_api.py` and
 `web/backend/tests/test_cache_prewarming.py`.
 
+## G2.229 Cache Prewarming Route DI Implementation
+
+G2.229 is a path-limited source implementation after PR `#381` merged G2.228 at
+`4d77ee68a1a4a30516134b995c82fa777c3b44d6`.
+
+Implementation evidence:
+
+| Evidence | Value |
+|---|---:|
+| Route file | `web/backend/app/api/_cache_prewarming_routes.py` |
+| Focused test file | `web/backend/tests/test_cache_api.py` |
+| Target route handlers | 3 |
+| Route-body direct getter calls before | 3 |
+| Route-body direct getter calls after | 0 |
+| Injected dependency parameters after | 3 |
+| TDD red guard | failed before implementation |
+| TDD green guard | `1 passed` |
+| Focused cache tests | `55 passed` |
+| app.main / OpenAPI smoke | `routes=548`, `paths=500`, cache prewarming paths present |
+
+Decision: G2.229 implements the G2.228-authorized provider lane by injecting
+`CachePrewarmingStrategy` into `trigger_cache_prewarming`,
+`get_prewarming_status`, and `get_cache_health_status` via
+`Depends(get_prewarming_strategy)`. Route paths, auth, response shape, OpenAPI
+exposure, `get_prewarming_strategy`, `CachePrewarmingStrategy`, and
+`get_cache_monitor` behavior remain unchanged.
+
 ## Next Gates
 
-- Review G2.228 cache prewarming strategy provider authorization.
-- If accepted, start G2.229 cache prewarming route dependency injection
-  implementation.
-- Do not start cache prewarming source implementation from G2.228.
-- Keep any future source lane limited to `web/backend/app/api/_cache_prewarming_routes.py`,
-  `web/backend/tests/test_cache_api.py`, and
-  `web/backend/tests/test_cache_prewarming.py` unless a separate review expands scope.
+- Review G2.229 cache prewarming route DI implementation.
+- If accepted, start G2.230 no-source cache prewarming route DI closeout /
+  residual refresh.
+- Do not expand cache prewarming source scope from G2.229.
 - Do not expand into route paths, response models, SQL queries, error-contract
   behavior, `get_unified_data_service`, or frontend code.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.

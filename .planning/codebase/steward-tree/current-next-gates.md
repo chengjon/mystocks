@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.228 cache prewarming strategy provider authorization | G/#79 service lifecycle DI + cache prewarming provider governance | PR `#380` merged at `f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b`; G2.228 authorizes a future G2.229 path-limited implementation lane while remaining no-source | If accepted, start G2.229 cache prewarming route dependency injection implementation; do not edit cache prewarming source from G2.228 |
+| P0 | Review G2.229 cache prewarming route DI implementation | G/#79 service lifecycle DI + cache prewarming provider governance | PR `#381` merged at `4d77ee68a1a4a30516134b995c82fa777c3b44d6`; G2.229 replaces three route-body `get_prewarming_strategy()` calls with `Depends(get_prewarming_strategy)` injection | If accepted, start G2.230 no-source closeout / residual refresh; do not expand cache prewarming source scope from G2.229 |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.228 correctly treat PR `#380` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.228 remain no-source while authorizing only a future G2.229 implementation lane?
-- Does the future implementation scope stay limited to `web/backend/app/api/_cache_prewarming_routes.py` plus focused cache tests?
-- Does G2.228 preserve cache route paths, OpenAPI exposure, `CachePrewarmingStrategy` behavior, and `get_prewarming_strategy` as invariants?
-- Does G2.228 keep cache prewarming source edits out of this authorization lane?
+- Does G2.229 correctly treat PR `#381` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.229 stay within the authorized source/test paths from G2.228?
+- Do the three target handlers inject `prewarming_strategy` and avoid route-body direct `get_prewarming_strategy()` calls?
+- Does G2.229 preserve cache route paths, OpenAPI exposure, auth, response shape, and `CachePrewarmingStrategy` behavior?
+- Is G2.230 correctly positioned as no-source closeout / residual refresh?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
