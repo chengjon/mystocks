@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T10:56:00+08:00`
-- Base HEAD checked: `854878cd2e09384daddaa8547e8cebc970ec2b74`
+- Prepared at: `2026-05-29T14:40:40+08:00`
+- Base HEAD checked: `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.230 cache prewarming route DI closeout / residual refresh | G/#79 service lifecycle DI + cache prewarming provider governance | PR `#382` merged at `4a0e41eac399e052ed3ebc9facc7dbf08761ab0a`; current HEAD has 0 route-body `get_prewarming_strategy()` calls and 3 injected dependency uses | If accepted, start G2.231 no-source service lifecycle residual candidate refresh; do not reopen cache prewarming source without contradictory current-HEAD evidence |
+| P0 | Review G2.231 service lifecycle residual candidate refresh | G/#79 service lifecycle DI | PR `#383` merged at `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c`; current HEAD refresh selects `get_config_manager` in `data_source_config.py` as the next no-source decision / authorization target | If accepted, start G2.232 data-source config manager provider seam decision / authorization; do not edit backend source from G2.231 |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.230 correctly treat PR `#382` as merged and accepted into `wip/root-dirty-20260403`?
-- Does current HEAD show 0 route-body direct `get_prewarming_strategy()` calls and 3 injected dependency uses?
-- Does G2.230 remain no-source and avoid reopening cache prewarming implementation?
-- Does G2.230 preserve cache route paths, OpenAPI exposure, auth, response shape, and `CachePrewarmingStrategy` behavior?
-- Is G2.231 correctly positioned as no-source residual candidate refresh before selecting another source lane?
+- Does G2.231 correctly treat PR `#383` as merged and accepted into `wip/root-dirty-20260403`?
+- Does the current residual scan correctly separate active `data_source_config.py` route truth from `data_source_config.old.py` false positives?
+- Does `get_config_manager` require a dedicated no-source G2.232 decision / authorization before source edits?
+- Does G2.231 preserve cache prewarming, stop-loss, indicator/data, and strategy retained/closed dispositions?
+- Does G2.231 remain no-source and avoid reopening any implementation lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

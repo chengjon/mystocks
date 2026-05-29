@@ -1374,13 +1374,38 @@ prewarming source work unless current HEAD evidence contradicts this closeout.
 Select G2.231 no-source service lifecycle residual candidate refresh as the next
 gate before choosing another source lane.
 
+## G2.231 Service Lifecycle Residual Candidate Refresh
+
+G2.231 is a no-source residual candidate refresh after PR `#383` merged G2.230
+at `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c`.
+
+Refresh evidence:
+
+| Evidence | Value |
+|---|---:|
+| Service-suffix API getter groups | 4 |
+| Broader non-method `get_*()` API groups | 62 |
+| Active `data_source_config.py` `get_config_manager()` calls | 9 |
+| Legacy `data_source_config.old.py` false-positive calls | 8 |
+| `get_config_manager` GitNexus risk | HIGH |
+| `get_config_manager` direct callers | 9 |
+| `get_config_manager` affected processes | 3 |
+
+Decision: select G2.232 data-source config manager provider seam decision /
+authorization as the next no-source gate. G2.231 does not authorize backend
+source edits. The G2.232 packet should classify active route truth separately
+from `data_source_config.old.py` false positives and decide whether a future
+path-limited provider injection lane is allowed.
+
 ## Next Gates
 
-- Review G2.230 cache prewarming route DI closeout / residual refresh.
-- If accepted, start G2.231 no-source service lifecycle residual candidate
-  refresh.
+- Review G2.231 service lifecycle residual candidate refresh.
+- If accepted, start G2.232 data-source config manager provider seam decision /
+  authorization.
 - Do not reopen cache prewarming source work without contradictory current-HEAD
   evidence.
+- Do not edit `data_source_config.py` or `_data_source_config_responses.py`
+  before G2.232 is reviewed and accepted.
 - Do not expand into route paths, response models, SQL queries, error-contract
   behavior, `get_unified_data_service`, or frontend code.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
