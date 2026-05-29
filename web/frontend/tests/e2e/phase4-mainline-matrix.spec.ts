@@ -1385,6 +1385,13 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await gotoRoute(page, "/risk/alerts")
 
     await expect(page.getByText("风险告警工作台").first()).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-page")).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-header")).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-refresh")).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-review-lens")).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-status-strip")).toContainText("存在未读告警")
+    await expect(page.getByTestId("risk-alerts-table")).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-rules-secondary")).toBeVisible()
     await expect(page.locator(".risk-alerts")).toContainText("近期告警")
     await expect(page.locator(".risk-alerts")).toContainText("已跌破止损线，请立即处理。")
     await expect(page.locator(".risk-alerts")).toContainText("规则列表")
@@ -1438,6 +1445,7 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await gotoRoute(page, "/risk/alerts")
 
     await expect(page.getByText("风险告警工作台").first()).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-status-strip")).toContainText("获取告警记录失败")
     await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
     await expect(page.locator(".hero-meta")).toContainText("UNREAD: --")
     await expect(page.locator(".content-shell-meta")).toContainText("RULES: --")
@@ -1491,6 +1499,7 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await gotoRoute(page, "/risk/alerts")
 
     await expect(page.getByText("风险告警工作台").first()).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-status-strip")).toContainText("获取告警记录失败")
     await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
     await expect(page.locator(".hero-meta")).toContainText("UNREAD: --")
     await expect(page.locator(".content-shell-meta")).toContainText("RULES: 2")

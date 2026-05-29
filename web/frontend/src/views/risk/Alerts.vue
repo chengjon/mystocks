@@ -1,6 +1,6 @@
 <template>
-  <div class="risk-alerts page-enter" :class="{ 'is-embedded': isEmbedded }">
-    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
+  <div class="risk-alerts page-enter" :class="{ 'is-embedded': isEmbedded }" data-testid="risk-alerts-page">
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell" data-testid="risk-alerts-header">
       <div class="hero-rail">
         <div class="hero-copy">
           <span class="hero-eyebrow">风险告警审阅</span>
@@ -20,7 +20,13 @@
         :status-type="pageStatusType"
       >
         <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="fetchRiskAlerts">
+          <ArtDecoButton
+            variant="outline"
+            size="sm"
+            :loading="loading"
+            data-testid="risk-alerts-refresh"
+            @click="fetchRiskAlerts"
+          >
             <template #icon>
               <ArtDecoIcon name="refresh" />
             </template>
@@ -50,7 +56,12 @@
         </div>
       </div>
 
-      <div class="triage-control-row" data-test="risk-alerts-triage-controls" aria-label="告警分诊筛选">
+      <div
+        class="triage-control-row"
+        data-test="risk-alerts-triage-controls"
+        data-testid="risk-alerts-review-lens"
+        aria-label="告警分诊筛选"
+      >
         <div class="triage-control-group" role="group" aria-label="告警等级筛选">
           <button
             v-for="option in severityFilters"
@@ -79,7 +90,12 @@
         </button>
       </div>
 
-      <div class="runtime-status-strip" data-test="risk-alerts-runtime-strip" aria-live="polite">
+      <div
+        class="runtime-status-strip"
+        data-test="risk-alerts-runtime-strip"
+        data-testid="risk-alerts-status-strip"
+        aria-live="polite"
+      >
         <div>
           <span class="runtime-status-label">{{ pageStatusText }}</span>
           <p>{{ visibleRuntimeMessage }}</p>
@@ -94,7 +110,7 @@
         <div v-if="!loading && hasVerifiedAlertsSnapshot && filteredAlertRecords.length === 0" class="empty-state">
           {{ visibleAlertsEmptyText }}
         </div>
-        <div class="alerts-table-shell" data-test="risk-alerts-table">
+        <div class="alerts-table-shell" data-test="risk-alerts-table" data-testid="risk-alerts-table">
           <el-table :data="filteredAlertRecords" stripe :empty-text="visibleAlertsEmptyText">
             <el-table-column prop="symbol" label="代码" width="110" />
             <el-table-column prop="stock_name" label="名称" width="140" />
@@ -114,7 +130,12 @@
         </div>
       </ArtDecoCard>
 
-      <section class="rule-management-secondary" data-test="risk-alerts-rules-secondary" aria-labelledby="risk-alerts-rules-title">
+      <section
+        class="rule-management-secondary"
+        data-test="risk-alerts-rules-secondary"
+        data-testid="risk-alerts-rules-secondary"
+        aria-labelledby="risk-alerts-rules-title"
+      >
         <div class="rule-management-heading">
           <div>
             <span class="content-shell-kicker">次级配置</span>

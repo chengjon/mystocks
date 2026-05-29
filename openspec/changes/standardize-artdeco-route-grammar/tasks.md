@@ -21,10 +21,18 @@ Approval record:
 
 ## 3. Optional Page Alignment After Separate Approval
 
-- [ ] 3.1 Select one low-risk route to adopt the hook standard.
-- [ ] 3.2 Add failing route-level E2E assertions before page implementation.
-- [ ] 3.3 Implement only the approved route-local hook and grammar alignment.
-- [ ] 3.4 Verify with targeted E2E, ArtDeco token check, eslint, type-check, and `impeccable --json`.
+- [x] 3.1 Select one low-risk route to adopt the hook standard.
+- [x] 3.2 Add failing route-level E2E assertions before page implementation.
+- [x] 3.3 Implement only the approved route-local hook and grammar alignment.
+- [x] 3.4 Verify with targeted E2E, ArtDeco token check, eslint, type-check, and `impeccable --json`.
+
+Alignment record:
+
+- Date: 2026-05-29
+- User wording: `同意，请继续`
+- Selected route: `web/frontend/src/views/risk/Alerts.vue`
+- Report: `docs/reports/tasks/2026-05-29-artdeco-risk-alerts-hook-alignment-report.md`
+- Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
 
 ## 4. Shared Component Extraction Gate
 
