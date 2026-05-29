@@ -1128,11 +1128,45 @@ Contract invariants preserved:
 - no miniQMT evidence semantic changes
 - no `broker_state` or bridge evidence interpretation changes
 
+## G2.222 Trade Execution Tracking Provider Closeout
+
+G2.222 is a no-source closeout / residual refresh after PR `#374` merged at
+`14339f44a8c4a145615fe35836dec8fc376ce75b`.
+
+Closeout result:
+
+| Evidence | Count |
+|---|---:|
+| `get_execution_tracking_evidence_service` total hits | 3 |
+| Provider factory definition | 1 |
+| FastAPI `Depends(...)` bindings | 2 |
+| Route-body direct provider calls | 0 |
+
+Decision: the execution tracking provider seam is closed. The remaining factory
+definition is intentional because it is the FastAPI dependency target and test
+override key.
+
+Verification:
+
+| Check | Result |
+|---|---|
+| Focused route tests | `4 passed` |
+| Ruff | passed |
+| app.main/OpenAPI smoke | passed, `route_count=548`, `openapi_paths=500`, duplicate operation IDs `0`, duplicate operation ID warnings `0`; Python smoke captured `121` existing dependency/schema deprecation warnings |
+| OpenSpec strict validate | valid, with PostHog telemetry noise |
+
+Remaining provider queue after G2.222:
+
+| Candidate | Risk | Direct callers | Processes affected | Classification | Disposition |
+|---|---|---:|---:|---|---|
+| `get_unified_data_service` | MEDIUM | 5 | 0 | root facade / compatibility service surface | Select G2.223 no-source ownership decision |
+| `get_prewarming_strategy` | LOW | 3 | 0 | cache prewarming route/provider surface | Defer behind unified data service ownership decision |
+
 ## Next Gates
 
-- Review G2.221 trade execution tracking evidence provider injection implementation.
-- If accepted, start G2.222 no-source closeout and residual refresh for the execution tracking provider seam.
-- Do not expand G2.222 into new source edits or another provider candidate.
+- Review G2.222 trade execution tracking provider closeout / residual refresh.
+- If accepted, start G2.223 no-source `get_unified_data_service` ownership decision.
+- Do not expand G2.223 directly into source edits or skip ownership classification.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
