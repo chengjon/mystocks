@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T08:19:43+08:00`
-- Base HEAD checked: `e7402fffe29bee5f7f2a4ada5a60a4bf26876969`
+- Prepared at: `2026-05-29T08:42:47+08:00`
+- Base HEAD checked: `5eef37a097d55d209a69485bc29e89dd3aeb4076`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1193,16 +1193,43 @@ Decision: do not start a direct implementation lane for
 for the `industry_concept_analysis.py` direct `UnifiedDataService()`
 instantiation cleanup candidate.
 
+## G2.224 Industry/Concept UnifiedDataService Cleanup Authorization
+
+G2.224 is a no-source authorization package after PR `#376` merged G2.223 at
+`5eef37a097d55d209a69485bc29e89dd3aeb4076`.
+
+Authorization evidence:
+
+| Evidence | Value |
+|---|---:|
+| Candidate source file | `web/backend/app/api/industry_concept_analysis.py` |
+| Direct unassigned `UnifiedDataService()` calls | 2 |
+| Import candidate | line `26` |
+| Target no-op call lines | `224`, `277` |
+| Target routes | `/api/analysis/industry/list`, `/api/analysis/concept/list` |
+| Target response models | `IndustryListResponse`, `ConceptListResponse` |
+| Exact route graph incoming callers | 0 for both target route functions |
+| Focused endpoint metadata test | `1 passed` |
+| Ruff target check | passed |
+
+Decision: authorize G2.225 as a future path-limited source lane if the
+maintainer accepts G2.224. G2.225 may remove only the two unassigned
+`UnifiedDataService()` calls and the now-unused import. It must preserve route
+paths, response models, OpenAPI exposure, SQL queries, `get_postgresql_engine`,
+error-contract behavior, `UnifiedDataService`, `get_unified_data_service`, and
+cache prewarming provider work.
+
 ## Next Gates
 
-- Review G2.223 `get_unified_data_service` ownership decision.
-- If accepted, start G2.224 no-source authorization for
-  `industry_concept_analysis.py` direct `UnifiedDataService()` instantiation
-  cleanup.
-- Do not expand G2.224 directly into source edits or skip route contract
-  authorization.
-- Keep `get_prewarming_strategy` deferred until the unified data / industry
-  concept cleanup path is closed or explicitly bypassed.
+- Review G2.224 `industry_concept_analysis.py` direct `UnifiedDataService()`
+  cleanup authorization.
+- If accepted, start G2.225 path-limited source implementation for the two
+  no-op calls plus now-unused import only.
+- Do not expand G2.225 into route paths, response models, SQL queries,
+  error-contract behavior, `UnifiedDataService`, `get_unified_data_service`, or
+  cache prewarming provider work.
+- Keep `get_prewarming_strategy` deferred until the industry/concept cleanup
+  path is closed or explicitly bypassed.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.

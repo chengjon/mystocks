@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T08:19:43+08:00`
-- Base HEAD checked: `e7402fffe29bee5f7f2a4ada5a60a4bf26876969`
+- Prepared at: `2026-05-29T08:42:47+08:00`
+- Base HEAD checked: `5eef37a097d55d209a69485bc29e89dd3aeb4076`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -60,12 +60,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#373` | `g2-220-execution-tracking-evidence-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `3d2dc3e8204388cc157c23df59f584a3efb268fe` | No-source authorization selecting G2.221 path-limited execution tracking provider injection |
 | `#374` | `g2-221-execution-tracking-evidence-provider-injection` | `wip/root-dirty-20260403` | `MERGED` at `14339f44a8c4a145615fe35836dec8fc376ce75b` | Path-limited implementation closing execution tracking route-body provider calls |
 | `#375` | `g2-222-execution-tracking-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `e7402fffe29bee5f7f2a4ada5a60a4bf26876969` | No-source execution tracking provider closeout / residual refresh |
+| `#376` | `g2-223-unified-data-service-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `5eef37a097d55d209a69485bc29e89dd3aeb4076` | No-source `get_unified_data_service` ownership decision selecting G2.224 authorization |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-223-unified-data-service-ownership-decision` | `origin/wip/root-dirty-20260403` at `e7402fffe29bee5f7f2a4ada5a60a4bf26876969` | Classify `get_unified_data_service` ownership and split route direct-instantiation cleanup into the next authorization gate | No |
+| `g2-224-industry-concept-unified-data-service-cleanup-authorization` | `origin/wip/root-dirty-20260403` at `5eef37a097d55d209a69485bc29e89dd3aeb4076` | Authorize a future narrow cleanup of two direct `UnifiedDataService()` no-op calls in `industry_concept_analysis.py` | No |
 
 ## OpenSpec Relationship
 
@@ -81,8 +82,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.223 is a no-source ownership decision branch after PR `#375` merged G2.222.
-It is limited to ownership evidence, steward-tree updates, and a task card. If
-accepted, the next gate is G2.224 no-source authorization for the
-`industry_concept_analysis.py` direct `UnifiedDataService()` instantiation
-cleanup candidate.
+G2.224 is a no-source authorization branch after PR `#376` merged G2.223. It is
+limited to authorization evidence, steward-tree updates, and a task card. If
+accepted, the next gate is G2.225 path-limited source implementation for the
+`industry_concept_analysis.py` direct `UnifiedDataService()` cleanup candidate.

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T08:19:43+08:00`
-- Base HEAD checked: `e7402fffe29bee5f7f2a4ada5a60a4bf26876969`
+- Prepared at: `2026-05-29T08:42:47+08:00`
+- Base HEAD checked: `5eef37a097d55d209a69485bc29e89dd3aeb4076`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -107,8 +107,10 @@ state transition.
 | `docs/reports/quality/backend-execution-tracking-evidence-provider-injection-2026-05-29.md` | G2.221 human-readable implementation report | Accepted by PR `#374`; superseded for closeout evidence by G2.222 |
 | `.planning/codebase/generated/execution-tracking-provider-closeout-refresh-2026-05-29.json` | G2.222 execution tracking provider closeout / residual refresh evidence | Accepted by PR `#375`; superseded for ownership routing by G2.223 |
 | `docs/reports/quality/backend-execution-tracking-provider-closeout-refresh-2026-05-29.md` | G2.222 human-readable closeout / residual refresh report | Accepted by PR `#375`; superseded for ownership routing by G2.223 |
-| `.planning/codebase/generated/unified-data-service-ownership-decision-2026-05-29.json` | G2.223 `get_unified_data_service` ownership decision evidence | Review input until PR `#376` is accepted |
-| `docs/reports/quality/backend-unified-data-service-ownership-decision-2026-05-29.md` | G2.223 human-readable ownership decision package | Review input until PR `#376` is accepted |
+| `.planning/codebase/generated/unified-data-service-ownership-decision-2026-05-29.json` | G2.223 `get_unified_data_service` ownership decision evidence | Accepted by PR `#376`; superseded for source authorization by G2.224 |
+| `docs/reports/quality/backend-unified-data-service-ownership-decision-2026-05-29.md` | G2.223 human-readable ownership decision package | Accepted by PR `#376`; superseded for source authorization by G2.224 |
+| `.planning/codebase/generated/industry-concept-unified-data-service-cleanup-authorization-2026-05-29.json` | G2.224 `industry_concept_analysis.py` direct `UnifiedDataService()` cleanup authorization evidence | Review input until PR `#377` is accepted |
+| `docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-authorization-2026-05-29.md` | G2.224 human-readable authorization package | Review input until PR `#377` is accepted |
 
 ## External State Inputs
 
@@ -144,7 +146,8 @@ state transition.
 | GitHub PR `#373` | `MERGED` | G2.220 `get_execution_tracking_evidence_service` authorization merged by commit `3d2dc3e8204388cc157c23df59f584a3efb268fe` |
 | GitHub PR `#374` | `MERGED` | G2.221 `get_execution_tracking_evidence_service` injection merged by commit `14339f44a8c4a145615fe35836dec8fc376ce75b` |
 | GitHub PR `#375` | `MERGED` | G2.222 `get_execution_tracking_evidence_service` closeout merged by commit `e7402fffe29bee5f7f2a4ada5a60a4bf26876969` |
-| `origin/wip/root-dirty-20260403` | `e7402fffe29bee5f7f2a4ada5a60a4bf26876969` | Base used for this ownership decision branch |
+| GitHub PR `#376` | `MERGED` | G2.223 `get_unified_data_service` ownership decision merged by commit `5eef37a097d55d209a69485bc29e89dd3aeb4076` |
+| `origin/wip/root-dirty-20260403` | `5eef37a097d55d209a69485bc29e89dd3aeb4076` | Base used for this authorization branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

@@ -1,0 +1,137 @@
+{
+  "schema_version": "2026-05-29.steward-evidence.v1",
+  "g2": "G2.224",
+  "title": "Industry/concept UnifiedDataService cleanup authorization",
+  "prepared_at": "2026-05-29T08:42:47+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "5eef37a097d55d209a69485bc29e89dd3aeb4076",
+  "branch": "g2-224-industry-concept-unified-data-service-cleanup-authorization",
+  "parent": {
+    "g2": "G2.223",
+    "github_pr": 376,
+    "merge_commit": "5eef37a097d55d209a69485bc29e89dd3aeb4076"
+  },
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "allowed_scope": [
+    ".planning/codebase/generated/industry-concept-unified-data-service-cleanup-authorization-2026-05-29.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-authorization-2026-05-29.md",
+    "governance/mainline/task-cards/pr-377.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "candidate": {
+    "file": "web/backend/app/api/industry_concept_analysis.py",
+    "cleanup_lines": [
+      224,
+      277
+    ],
+    "import_line": 26,
+    "shape": "two unassigned UnifiedDataService() constructor calls plus the now-unused UnifiedDataService import if a later source lane removes those calls",
+    "route_paths": [
+      "GET /api/analysis/industry/list",
+      "GET /api/analysis/concept/list"
+    ],
+    "response_models": [
+      "IndustryListResponse",
+      "ConceptListResponse"
+    ]
+  },
+  "current_head_evidence": {
+    "route_function_context": {
+      "get_industry_list": {
+        "file": "web/backend/app/api/industry_concept_analysis.py",
+        "start_line": 215,
+        "incoming_callers": 0,
+        "outgoing_calls": [
+          "get_postgresql_engine"
+        ]
+      },
+      "get_concept_list": {
+        "file": "web/backend/app/api/industry_concept_analysis.py",
+        "start_line": 268,
+        "incoming_callers": 0,
+        "outgoing_calls": [
+          "get_postgresql_engine"
+        ]
+      }
+    },
+    "route_contract": {
+      "router_prefix": "/api/analysis",
+      "industry_path": "/industry/list",
+      "concept_path": "/concept/list",
+      "industry_response_model": "IndustryListResponse",
+      "concept_response_model": "ConceptListResponse",
+      "industry_responses_object": "INDUSTRY_LIST_RESPONSES",
+      "concept_responses_object": "CONCEPT_LIST_RESPONSES"
+    },
+    "verification": {
+      "metadata_test": "web/backend/tests/test_health_route_conflicts.py::test_industry_concept_analysis_endpoints_have_examples_and_error_responses: 1 passed",
+      "ruff": "ruff check web/backend/app/api/industry_concept_analysis.py web/backend/tests/test_health_route_conflicts.py: passed"
+    }
+  },
+  "authorization_decision": {
+    "future_source_lane_selected": true,
+    "future_source_lane_id": "G2.225",
+    "implementation_authorized_by_this_pr": false,
+    "future_allowed_source_paths_if_approved": [
+      "web/backend/app/api/industry_concept_analysis.py"
+    ],
+    "future_optional_test_paths_if_needed": [
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "future_allowed_edits": [
+      "remove the unassigned UnifiedDataService() call in get_industry_list",
+      "remove the unassigned UnifiedDataService() call in get_concept_list",
+      "remove the UnifiedDataService import if it becomes unused"
+    ],
+    "future_forbidden_edits": [
+      "route path changes",
+      "response_model changes",
+      "OpenAPI exposure changes",
+      "SQL query changes",
+      "get_postgresql_engine changes",
+      "HTTPException/error-contract changes",
+      "UnifiedDataService constructor changes",
+      "get_unified_data_service deletion or rename",
+      "cache prewarming provider work",
+      "frontend changes"
+    ],
+    "required_future_verification": [
+      "GitNexus impact/context for get_industry_list and get_concept_list before source edits",
+      "ruff check web/backend/app/api/industry_concept_analysis.py web/backend/tests/test_health_route_conflicts.py",
+      "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_industry_concept_analysis_endpoints_have_examples_and_error_responses -q --no-cov --tb=short",
+      "app.main/OpenAPI smoke with transient runtime environment",
+      "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "mainline scope gate and GitNexus staged detect_changes before commit"
+    ]
+  },
+  "next_gate": {
+    "id": "G2.225",
+    "name": "industry/concept UnifiedDataService cleanup implementation",
+    "type": "path_limited_source_implementation",
+    "source_edit_authority": false,
+    "purpose": "after maintainer approval, remove two route no-op UnifiedDataService() instantiations and any now-unused import without changing route contracts"
+  },
+  "freshness": {
+    "current_head_checked": "5eef37a097d55d209a69485bc29e89dd3aeb4076",
+    "stale_if_head_mismatch": true
+  }
+}
