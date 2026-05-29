@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T22:22:46+08:00`
-- Base HEAD checked: `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`
+- Prepared at: `2026-05-29T22:42:25+08:00`
+- Base HEAD checked: `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -78,12 +78,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#391` | `g2-238-monitoring-calculator-factory-provider-injection` | `wip/root-dirty-20260403` | `MERGED` at `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea` | Path-limited monitoring calculator factory provider injection closing 8 active route-body factory calls |
 | `#392` | `g2-239-monitoring-calculator-factory-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `d68c381d75cf9dffc601ef8390fbec9c85e55d18` | No-source monitoring calculator factory provider closeout / residual refresh selecting G2.240 |
 | `#393` | `g2-240-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc` | No-source residual candidate refresh selecting G2.241 mock data manager ownership decision |
+| `#394` | `g2-241-mock-data-manager-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c` | No-source ownership / runtime seam decision selecting G2.242 mock data manager provider/reset seam authorization |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-241-mock-data-manager-ownership-decision` | `origin/wip/root-dirty-20260403` at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc` | Classify `get_mock_data_manager` ownership and runtime seam after accepted G2.240 | No |
+| `g2-242-mock-data-manager-provider-authorization` | `origin/wip/root-dirty-20260403` at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c` | Authorize a future path-limited `get_mock_data_manager` provider/reset/test-double seam after accepted G2.241 | No |
 
 ## OpenSpec Relationship
 

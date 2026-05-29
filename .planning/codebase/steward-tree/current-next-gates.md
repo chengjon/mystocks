@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T22:22:46+08:00`
-- Base HEAD checked: `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`
+- Prepared at: `2026-05-29T22:42:25+08:00`
+- Base HEAD checked: `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.241 mock data manager ownership / runtime seam decision | G/#79 service lifecycle DI | PR `#393` merged at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`; G2.241 classifies `get_mock_data_manager` as a mock data runtime facade / compatibility accessor with CRITICAL impact | If accepted, start G2.242 no-source mock data manager provider/reset seam authorization; do not start source work from G2.241 |
+| P0 | Review G2.242 mock data manager provider/reset seam authorization | G/#79 service lifecycle DI | PR `#394` merged at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`; G2.242 is a no-source authorization packet for a future G2.243 path-limited provider/reset/test-double seam | If accepted, start G2.243 source lane limited to `web/backend/app/mock/mock_data/factory.py` and focused mock/runtime regression tests |
+| P0 | Preserve G2.241 mock data manager ownership / runtime seam decision | G/#79 service lifecycle DI | PR `#394` merged at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`; `get_mock_data_manager` is a mock data runtime facade / compatibility accessor with CRITICAL impact | Do not start source work from G2.241; use G2.242 only for provider/reset seam authorization review |
 | P0 | Preserve G2.240 service lifecycle residual candidate refresh | G/#79 service lifecycle DI | PR `#393` merged at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`; G2.240 ranked `get_mock_data_manager` as the next no-source decision target and deferred `get_postgres_async` / `get_monitoring_db` | Do not treat G2.240 as implementation authorization |
 | P0 | Preserve G2.239 monitoring calculator factory provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#392` merged at `d68c381d75cf9dffc601ef8390fbec9c85e55d18`; G2.239 confirmed 2 route-local providers, 8 target handlers, 0 direct route-body `get_calculator_factory()` calls, 8 dependency parameters, and OpenAPI `548/500` | Do not reopen monitoring calculator factory source without contradictory current-HEAD evidence |
 | P0 | Preserve G2.238 monitoring calculator factory provider injection | G/#79 service lifecycle DI | PR `#391` merged at `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`; moved 8 active route-body `get_calculator_factory()` calls into 2 route-local `Depends(get_monitoring_calculator_factory)` providers | Do not expand this source lane or reopen `calculator_factory.py` without contradictory current-HEAD evidence |
