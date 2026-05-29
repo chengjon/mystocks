@@ -1,0 +1,159 @@
+{
+  "schema_version": "2026-05-30.g2-postgres-async-ownership-decision.v1",
+  "generated_at": "2026-05-30T01:04:48+08:00",
+  "g2_id": "G2.245",
+  "status": "ownership_decision_for_review",
+  "repo": "chengjon/mystocks",
+  "branch": "g2-245-postgres-async-ownership-decision",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "05844e89873ad4fc729dab87942ea80f81bde39a",
+  "parent": {
+    "g2_id": "G2.244",
+    "github_pr": 397,
+    "merge_commit": "05844e89873ad4fc729dab87942ea80f81bde39a",
+    "summary": "mock data manager provider closeout and residual refresh selected get_postgres_async as the next no-source ownership/provider decision"
+  },
+  "authority": {
+    "source_edit_authority": false,
+    "test_edit_authority": false,
+    "runtime_command_authority": false,
+    "openspec_proposal_authority": false,
+    "github_issue_authority": false,
+    "allowed_work": "governance evidence, steward tree updates, task card, and review report only"
+  },
+  "subject": {
+    "symbol": "get_postgres_async",
+    "primary_file": "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+    "reexport_file": "src/monitoring/infrastructure/postgresql_async_v3.py",
+    "owned_object": "MonitoringPostgreSQLAccess",
+    "classification": "single-definition infrastructure data-access singleton accessor",
+    "ownership_decision": "infrastructure-owned singleton accessor and compatibility facade; not a route-owned helper, not a deletion candidate, and not a direct low-risk source pilot"
+  },
+  "static_scan": {
+    "files_scanned": 2318,
+    "definition_count": 1,
+    "import_lines": 28,
+    "import_sources": {
+      "direct_singleton_module": 1,
+      "public_reexport_module": 27,
+      "other": 0
+    },
+    "call_tokens_including_definition": 31,
+    "invocation_calls_excluding_definition": 30,
+    "active_api_route_body_calls": 21,
+    "historical_api_route_body_calls": 1,
+    "depends_calls": 0,
+    "files_with_hits": 14
+  },
+  "consumer_buckets": [
+    {
+      "bucket": "monitoring infrastructure and background tasks",
+      "files": [
+        "src/monitoring/async_monitoring.py",
+        "src/monitoring/signal_aggregation_task.py",
+        "src/monitoring/signal_recorder.py",
+        "src/monitoring/signal_result_tracker.py"
+      ],
+      "invocation_calls": 4,
+      "decision": "preserve compatibility; future provider seam must not break non-API background consumers"
+    },
+    {
+      "bucket": "singleton lifecycle helpers",
+      "files": [
+        "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py"
+      ],
+      "invocation_calls": 2,
+      "decision": "initialize_postgres_async and close_postgres_async remain lifecycle helper consumers"
+    },
+    {
+      "bucket": "active API route-body consumers",
+      "files": [
+        "web/backend/app/api/_data_source_config_responses.py",
+        "web/backend/app/api/_monitoring_portfolio_router.py",
+        "web/backend/app/api/monitoring_analysis.py",
+        "web/backend/app/api/monitoring_watchlists.py",
+        "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "web/backend/app/api/v1/system/settings.py"
+      ],
+      "invocation_calls": 21,
+      "decision": "route-body calls require separate provider authorization before any source migration"
+    },
+    {
+      "bucket": "historical API file",
+      "files": [
+        "web/backend/app/api/data_source_config.old.py"
+      ],
+      "invocation_calls": 1,
+      "decision": "record as historical compatibility evidence; do not use as source edit authorization"
+    },
+    {
+      "bucket": "tests",
+      "files": [
+        "tests/unit/test_signal_monitoring_integration.py"
+      ],
+      "invocation_calls": 2,
+      "decision": "test consumers are evidence for compatibility and future provider test-double design"
+    }
+  ],
+  "gitnexus": {
+    "mcp_status": "failed",
+    "mcp_error": "Transport closed",
+    "cli_fallback": {
+      "repo": "mystocks",
+      "target_uid": "Function:src/monitoring/infrastructure/_postgresql_async_v3_singleton.py:get_postgres_async",
+      "risk": "LOW",
+      "impacted_count": 4,
+      "direct": 3,
+      "processes_affected": 0,
+      "modules_affected": 2,
+      "affected_modules": [
+        {
+          "name": "Infrastructure",
+          "hits": 2,
+          "impact": "direct"
+        },
+        {
+          "name": "Api",
+          "hits": 1,
+          "impact": "indirect"
+        }
+      ],
+      "context_incoming_calls": [
+        "initialize_postgres_async",
+        "close_postgres_async",
+        "PostgresSystemSettingsRepository.__init__"
+      ]
+    },
+    "interpretation": "GitNexus graph sees a low symbol-level blast radius, but static scan shows broad route-body usage. Any source lane must honor the static consumer matrix."
+  },
+  "decision": {
+    "approved_classification_for_review": "get_postgres_async is an infrastructure-owned singleton accessor and compatibility facade.",
+    "not_authorized": [
+      "source implementation",
+      "route migration",
+      "delete or rename get_postgres_async",
+      "delete or bypass public re-export from postgresql_async_v3.py",
+      "turn API route-body consumers into direct edits without a follow-up authorization packet"
+    ],
+    "next_gate": {
+      "g2_id": "G2.246",
+      "title": "postgres async provider authorization",
+      "type": "no-source authorization packet",
+      "source_edit_authority": false,
+      "purpose": "choose whether a future source lane should add an infrastructure-level provider/reset seam, route-local provider wrappers, or a hybrid path preserving background task consumers"
+    },
+    "deferred": [
+      {
+        "symbol": "get_monitoring_db",
+        "reason": "multi-definition monitoring/risk/strategy seam requires separate disambiguation and ownership classification"
+      }
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "05844e89873ad4fc729dab87942ea80f81bde39a",
+    "stale_if_head_mismatch": true,
+    "openspec_change": "migrate-backend-singletons-to-lifecycle-di",
+    "openspec_validate": "valid with PostHog telemetry network noise"
+  }
+}

@@ -1899,6 +1899,63 @@ Decision:
   decision packet.
 - Do not start source work from G2.244.
 
+Closeout status:
+
+- G2.244 was accepted by PR `#397` and merged at
+  `05844e89873ad4fc729dab87942ea80f81bde39a`.
+- G2.245 is the no-source `get_postgres_async` ownership / provider decision
+  after this closeout.
+
+## G2.245 Postgres Async Ownership / Provider Decision
+
+G2.245 is the no-source decision packet after PR `#397` merged G2.244 at
+`05844e89873ad4fc729dab87942ea80f81bde39a`.
+
+Current evidence:
+
+| Evidence | Value |
+|---|---:|
+| `get_postgres_async` definitions | 1 |
+| Import lines | 28 |
+| Public re-export imports | 27 |
+| Direct singleton-module imports | 1 |
+| Invocation calls excluding definition | 30 |
+| Active API route-body calls | 21 |
+| Historical `.old.py` API calls | 1 |
+| `Depends(get_postgres_async)` calls | 0 |
+| GitNexus CLI impact | `LOW`, 4 impacted, 3 direct, 0 processes, 2 modules |
+
+Ownership decision:
+
+- `get_postgres_async` is an infrastructure-owned singleton accessor and
+  compatibility facade for `MonitoringPostgreSQLAccess`.
+- It is not a route-owned helper, deletion candidate, or direct low-risk source
+  pilot.
+- The public `src.monitoring.infrastructure.postgresql_async_v3` import surface
+  must be preserved until a future accepted source lane explicitly changes it.
+- Static scan evidence overrides graph-risk optimism for source planning: the
+  graph impact is low, but active API route-body usage is broad enough to require
+  a separate authorization packet.
+
+Consumer buckets:
+
+| Bucket | Calls | Handling |
+|---|---:|---|
+| Monitoring infrastructure/background tasks | 4 | Preserve compatibility |
+| Singleton lifecycle helpers | 2 | Preserve `initialize_postgres_async` / `close_postgres_async` consumers |
+| Active API route-body consumers | 21 | Requires future provider authorization before source work |
+| Historical `.old.py` consumer | 1 | Record as historical evidence only |
+| Tests | 2 | Use as compatibility/test-double evidence |
+
+Decision:
+
+- Select G2.246 as a no-source postgres async provider authorization packet.
+- G2.246 should choose between an infrastructure-level provider/reset seam,
+  route-local provider wrappers, or a hybrid path that preserves background task
+  compatibility.
+- Defer `get_monitoring_db` until separate multi-definition disambiguation.
+- Do not start source work from G2.245.
+
 ## Forbidden Scope
 
 This track summary forbids:
