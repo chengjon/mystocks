@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T20:34:17+08:00`
-- Base HEAD checked: `ef11ae6577bf62d15b814af732ba291696e5b084`
+- Prepared at: `2026-05-29T21:17:11+08:00`
+- Base HEAD checked: `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -137,8 +137,10 @@ state transition.
 | `docs/reports/quality/backend-monitoring-calculator-factory-ownership-decision-2026-05-29.md` | G2.236 human-readable ownership / provider seam decision package | Accepted by PR `#389`; superseded for authorization by G2.237 |
 | `.planning/codebase/generated/monitoring-calculator-factory-provider-authorization-2026-05-29.json` | G2.237 monitoring calculator factory provider authorization evidence | Accepted by PR `#390`; superseded for implementation by G2.238 |
 | `docs/reports/quality/backend-monitoring-calculator-factory-provider-authorization-2026-05-29.md` | G2.237 human-readable provider authorization package | Accepted by PR `#390`; superseded for implementation by G2.238 |
-| `.planning/codebase/generated/monitoring-calculator-factory-provider-injection-2026-05-29.json` | G2.238 monitoring calculator factory provider injection evidence | Review input until PR `#391` is accepted |
-| `docs/reports/quality/backend-monitoring-calculator-factory-provider-injection-2026-05-29.md` | G2.238 human-readable provider injection report | Review input until PR `#391` is accepted |
+| `.planning/codebase/generated/monitoring-calculator-factory-provider-injection-2026-05-29.json` | G2.238 monitoring calculator factory provider injection evidence | Accepted by PR `#391`; superseded for closeout evidence by G2.239 |
+| `docs/reports/quality/backend-monitoring-calculator-factory-provider-injection-2026-05-29.md` | G2.238 human-readable provider injection report | Accepted by PR `#391`; superseded for closeout evidence by G2.239 |
+| `.planning/codebase/generated/monitoring-calculator-factory-provider-closeout-refresh-2026-05-29.json` | G2.239 monitoring calculator factory provider closeout / residual refresh evidence | Review input until PR `#392` is accepted |
+| `docs/reports/quality/backend-monitoring-calculator-factory-provider-closeout-refresh-2026-05-29.md` | G2.239 human-readable closeout / residual refresh report | Review input until PR `#392` is accepted |
 
 ## External State Inputs
 
@@ -183,7 +185,8 @@ state transition.
 | GitHub PR `#382` | `MERGED` | G2.229 cache prewarming route DI implementation merged by commit `4a0e41eac399e052ed3ebc9facc7dbf08761ab0a` |
 | GitHub PR `#383` | `MERGED` | G2.230 cache prewarming route DI closeout / residual refresh merged by commit `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c` |
 | GitHub PR `#384` | `MERGED` | G2.231 service lifecycle residual candidate refresh merged by commit `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` |
-| `origin/wip/root-dirty-20260403` | `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` | Base used for this authorization branch |
+| GitHub PR `#391` | `MERGED` | G2.238 monitoring calculator factory provider injection merged by commit `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea` |
+| `origin/wip/root-dirty-20260403` | `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea` | Base used for this closeout branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules
