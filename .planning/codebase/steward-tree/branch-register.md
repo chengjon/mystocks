@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T14:40:40+08:00`
-- Base HEAD checked: `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c`
+- Prepared at: `2026-05-29T15:24:12+08:00`
+- Base HEAD checked: `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -68,12 +68,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#381` | `g2-228-cache-prewarming-strategy-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `4d77ee68a1a4a30516134b995c82fa777c3b44d6` | No-source authorization selecting G2.229 cache prewarming route DI implementation |
 | `#382` | `g2-229-cache-prewarming-route-di-implementation` | `wip/root-dirty-20260403` | `MERGED` at `4a0e41eac399e052ed3ebc9facc7dbf08761ab0a` | Path-limited cache prewarming route DI implementation |
 | `#383` | `g2-230-cache-prewarming-route-di-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c` | No-source cache prewarming route DI closeout selecting G2.231 residual candidate refresh |
+| `#384` | `g2-231-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` | No-source residual refresh selecting G2.232 data-source config manager provider authorization |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-231-service-lifecycle-residual-candidate-refresh` | `origin/wip/root-dirty-20260403` at `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c` | Refresh remaining service lifecycle residual candidates and select the next decision / authorization gate | No |
+| `g2-232-data-source-config-manager-provider-authorization` | `origin/wip/root-dirty-20260403` at `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` | Authorize a future path-limited provider injection lane for active data-source config manager route-body calls | No |
 
 ## OpenSpec Relationship
 
@@ -89,7 +90,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.231 is a no-source residual candidate refresh branch after PR `#383` merged
-G2.230. It records current-HEAD service lifecycle residual evidence and selects
-G2.232 data-source config manager provider seam decision / authorization as the
-next gate.
+G2.232 is a no-source authorization branch after PR `#384` merged G2.231. It
+authorizes a future G2.233 path-limited provider injection lane for active
+`data_source_config.py` `get_config_manager()` route-body calls while keeping
+`data_source_config.old.py` out of scope.

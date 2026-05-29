@@ -1397,15 +1397,39 @@ source edits. The G2.232 packet should classify active route truth separately
 from `data_source_config.old.py` false positives and decide whether a future
 path-limited provider injection lane is allowed.
 
+## G2.232 Data-Source Config Manager Provider Authorization
+
+G2.232 is a no-source authorization package after PR `#384` merged G2.231 at
+`05c84d1f4f5e42d9db0ace21ef3ba110dacbc184`.
+
+Authorization evidence:
+
+| Evidence | Value |
+|---|---:|
+| Candidate symbol | `get_config_manager` |
+| Active route file | `web/backend/app/api/data_source_config.py` |
+| Active route-body calls | 9 |
+| Legacy `.old.py` false-positive calls | 8 |
+| GitNexus risk | HIGH |
+| GitNexus direct callers | 9 |
+| GitNexus affected processes | 3 |
+
+Decision: authorize future G2.233 path-limited provider injection for active
+`data_source_config.py` route handlers. G2.232 itself remains no-source. Future
+G2.233 source scope is limited to `data_source_config.py` plus focused tests and
+must preserve route paths, auth/current_user behavior, response models, OpenAPI
+exposure, and the default backing `get_config_manager()` behavior. Do not edit
+`data_source_config.old.py`.
+
 ## Next Gates
 
-- Review G2.231 service lifecycle residual candidate refresh.
-- If accepted, start G2.232 data-source config manager provider seam decision /
-  authorization.
+- Review G2.232 data-source config manager provider authorization.
+- If accepted, start G2.233 data-source config manager route provider injection.
 - Do not reopen cache prewarming source work without contradictory current-HEAD
   evidence.
-- Do not edit `data_source_config.py` or `_data_source_config_responses.py`
-  before G2.232 is reviewed and accepted.
+- Do not edit `data_source_config.old.py` from G2.233.
+- Do not edit `_data_source_config_responses.py` from G2.233 unless a later
+  package explicitly authorizes response/dependency separation.
 - Do not expand into route paths, response models, SQL queries, error-contract
   behavior, `get_unified_data_service`, or frontend code.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.

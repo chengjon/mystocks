@@ -123,8 +123,10 @@ state transition.
 | `docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md` | G2.229 human-readable implementation package | Accepted by PR `#382`; superseded for closeout evidence by G2.230 |
 | `.planning/codebase/generated/cache-prewarming-route-di-closeout-refresh-2026-05-29.json` | G2.230 cache prewarming route DI closeout / residual refresh evidence | Accepted by PR `#383`; superseded for residual candidate selection by G2.231 |
 | `docs/reports/quality/backend-cache-prewarming-route-di-closeout-refresh-2026-05-29.md` | G2.230 human-readable closeout / residual refresh package | Accepted by PR `#383`; superseded for residual candidate selection by G2.231 |
-| `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-2026-05-29.json` | G2.231 service lifecycle residual candidate refresh evidence | Review input until PR `#384` is accepted |
-| `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-2026-05-29.md` | G2.231 human-readable residual candidate refresh package | Review input until PR `#384` is accepted |
+| `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-2026-05-29.json` | G2.231 service lifecycle residual candidate refresh evidence | Accepted by PR `#384`; superseded for authorization evidence by G2.232 |
+| `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-2026-05-29.md` | G2.231 human-readable residual candidate refresh package | Accepted by PR `#384`; superseded for authorization evidence by G2.232 |
+| `.planning/codebase/generated/data-source-config-manager-provider-authorization-2026-05-29.json` | G2.232 data-source config manager provider authorization evidence | Review input until PR `#385` is accepted |
+| `docs/reports/quality/backend-data-source-config-manager-provider-authorization-2026-05-29.md` | G2.232 human-readable authorization package | Review input until PR `#385` is accepted |
 
 ## External State Inputs
 
@@ -168,7 +170,8 @@ state transition.
 | GitHub PR `#381` | `MERGED` | G2.228 cache prewarming strategy provider authorization merged by commit `4d77ee68a1a4a30516134b995c82fa777c3b44d6` |
 | GitHub PR `#382` | `MERGED` | G2.229 cache prewarming route DI implementation merged by commit `4a0e41eac399e052ed3ebc9facc7dbf08761ab0a` |
 | GitHub PR `#383` | `MERGED` | G2.230 cache prewarming route DI closeout / residual refresh merged by commit `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c` |
-| `origin/wip/root-dirty-20260403` | `2652d59b02dedaecd4ac05a2f95fce8ab4ae2e3c` | Base used for this residual candidate refresh branch |
+| GitHub PR `#384` | `MERGED` | G2.231 service lifecycle residual candidate refresh merged by commit `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` |
+| `origin/wip/root-dirty-20260403` | `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` | Base used for this authorization branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules
