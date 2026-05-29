@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T08:42:47+08:00",
+  "generated_at": "2026-05-29T09:38:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "5eef37a097d55d209a69485bc29e89dd3aeb4076",
-  "split_branch": "g2-224-industry-concept-unified-data-service-cleanup-authorization",
-  "scope": "industry_concept_unified_data_service_cleanup_authorization",
-  "source_edit_authority": false,
+  "base_head": "36c38fbf233945b7e45ed67b50591665942d4b32",
+  "split_branch": "g2-225-industry-concept-unified-data-service-cleanup",
+  "scope": "industry_concept_unified_data_service_cleanup_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -3040,10 +3040,13 @@
     {
       "id": "g2-224-industry-concept-unified-data-service-cleanup-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + unified data facade governance",
       "parent": "G2.223 get_unified_data_service ownership decision",
       "source_edit_authority": false,
+      "github_pr": 377,
+      "head_ref": "g2-224-industry-concept-unified-data-service-cleanup-authorization",
+      "merge_commit": "36c38fbf233945b7e45ed67b50591665942d4b32",
       "parent_github_pr": 376,
       "parent_merge_commit": "5eef37a097d55d209a69485bc29e89dd3aeb4076",
       "evidence": [
@@ -3087,7 +3090,7 @@
           "web/backend/tests/test_health_route_conflicts.py"
         ]
       },
-      "next_gate": "If accepted, start G2.225 path-limited source implementation for the two no-op UnifiedDataService() calls plus now-unused import only.",
+      "next_gate": "Superseded by G2.225 path-limited source implementation for the two no-op UnifiedDataService() calls plus now-unused import only.",
       "allowed_scope": [
         ".planning/codebase/generated/industry-concept-unified-data-service-cleanup-authorization-2026-05-29.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -3113,7 +3116,89 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "5eef37a097d55d209a69485bc29e89dd3aeb4076",
+        "current_head_checked": "36c38fbf233945b7e45ed67b50591665942d4b32",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-225-industry-concept-unified-data-service-cleanup",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + unified data facade governance",
+      "parent": "G2.224 industry_concept_analysis.py cleanup authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 377,
+      "parent_merge_commit": "36c38fbf233945b7e45ed67b50591665942d4b32",
+      "evidence": [
+        ".planning/codebase/generated/industry-concept-unified-data-service-cleanup-implementation-2026-05-29.json",
+        "docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-implementation-2026-05-29.md",
+        "governance/mainline/task-cards/pr-378.yaml"
+      ],
+      "target": {
+        "file": "web/backend/app/api/industry_concept_analysis.py",
+        "route_paths": [
+          "GET /api/analysis/industry/list",
+          "GET /api/analysis/concept/list"
+        ],
+        "classification": "route no-op constructor cleanup implementation"
+      },
+      "implementation": {
+        "removed_unassigned_unified_data_service_constructor_calls": 2,
+        "removed_unified_data_service_import": true,
+        "direct_unified_data_service_calls_in_target_after": 0,
+        "target_import_present_after": false,
+        "route_paths_changed": false,
+        "response_models_changed": false,
+        "openapi_exposure_changed": false,
+        "sql_query_text_changed": false,
+        "database_access_path_changed": false,
+        "error_contract_changed": false,
+        "get_unified_data_service_changed": false,
+        "cache_prewarming_provider_changed": false
+      },
+      "gitnexus_impact": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct_callers": 0,
+        "processes_affected": 0,
+        "modules_affected": 0
+      },
+      "verification": {
+        "tdd_red": "new direct-constructor regression test failed before source edit",
+        "tdd_green": "new direct-constructor regression test passed after source edit",
+        "focused_endpoint_tests": "web/backend/tests/test_health_route_conflicts.py target pair: 2 passed",
+        "ruff": "passed",
+        "app_openapi_smoke": "routes=548, paths=500, industry and concept paths present",
+        "openspec_validate": "valid"
+      },
+      "next_gate": "If accepted, merge G2.225 and run G2.226 closeout / residual refresh before selecting another unified-data or cache provider candidate.",
+      "allowed_scope": [
+        "web/backend/app/api/industry_concept_analysis.py",
+        "web/backend/tests/test_health_route_conflicts.py",
+        ".planning/codebase/generated/industry-concept-unified-data-service-cleanup-implementation-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-implementation-2026-05-29.md",
+        "governance/mainline/task-cards/pr-378.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/** outside the authorized route/test pair",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "36c38fbf233945b7e45ed67b50591665942d4b32",
         "stale_if_head_mismatch": true
       }
     },

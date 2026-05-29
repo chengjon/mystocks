@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T08:42:47+08:00`
-- Base HEAD checked: `5eef37a097d55d209a69485bc29e89dd3aeb4076`
+- Prepared at: `2026-05-29T09:38:00+08:00`
+- Base HEAD checked: `36c38fbf233945b7e45ed67b50591665942d4b32`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -61,12 +61,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#374` | `g2-221-execution-tracking-evidence-provider-injection` | `wip/root-dirty-20260403` | `MERGED` at `14339f44a8c4a145615fe35836dec8fc376ce75b` | Path-limited implementation closing execution tracking route-body provider calls |
 | `#375` | `g2-222-execution-tracking-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `e7402fffe29bee5f7f2a4ada5a60a4bf26876969` | No-source execution tracking provider closeout / residual refresh |
 | `#376` | `g2-223-unified-data-service-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `5eef37a097d55d209a69485bc29e89dd3aeb4076` | No-source `get_unified_data_service` ownership decision selecting G2.224 authorization |
+| `#377` | `g2-224-industry-concept-unified-data-service-cleanup-authorization` | `wip/root-dirty-20260403` | `MERGED` at `36c38fbf233945b7e45ed67b50591665942d4b32` | No-source authorization selecting G2.225 `industry_concept_analysis.py` cleanup implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-224-industry-concept-unified-data-service-cleanup-authorization` | `origin/wip/root-dirty-20260403` at `5eef37a097d55d209a69485bc29e89dd3aeb4076` | Authorize a future narrow cleanup of two direct `UnifiedDataService()` no-op calls in `industry_concept_analysis.py` | No |
+| `g2-225-industry-concept-unified-data-service-cleanup` | `origin/wip/root-dirty-20260403` at `36c38fbf233945b7e45ed67b50591665942d4b32` | Implement the authorized narrow cleanup of two direct `UnifiedDataService()` no-op calls in `industry_concept_analysis.py` | Yes, limited to the authorized route/test pair |
 
 ## OpenSpec Relationship
 
@@ -82,7 +83,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.224 is a no-source authorization branch after PR `#376` merged G2.223. It is
-limited to authorization evidence, steward-tree updates, and a task card. If
-accepted, the next gate is G2.225 path-limited source implementation for the
-`industry_concept_analysis.py` direct `UnifiedDataService()` cleanup candidate.
+G2.225 is a path-limited source branch after PR `#377` merged G2.224. It is
+limited to the authorized route/test pair, implementation evidence, steward-tree
+updates, and a task card. If accepted, the next gate is G2.226 closeout /
+residual refresh before selecting another unified-data or cache provider
+candidate.

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T08:42:47+08:00`
-- Base HEAD checked: `5eef37a097d55d209a69485bc29e89dd3aeb4076`
+- Prepared at: `2026-05-29T09:38:00+08:00`
+- Base HEAD checked: `36c38fbf233945b7e45ed67b50591665942d4b32`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.224 `industry_concept_analysis.py` direct `UnifiedDataService()` cleanup authorization | G/#79 service lifecycle DI + unified data facade governance | PR `#376` merged at `5eef37a097d55d209a69485bc29e89dd3aeb4076`; G2.224 authorizes only a future narrow cleanup lane for two unassigned `UnifiedDataService()` calls and the now-unused import if accepted | If accepted, start G2.225 path-limited source implementation; do not change route paths, response models, SQL queries, error contracts, or `get_unified_data_service` |
+| P0 | Review G2.225 `industry_concept_analysis.py` direct `UnifiedDataService()` cleanup implementation | G/#79 service lifecycle DI + unified data facade governance | PR `#377` merged at `36c38fbf233945b7e45ed67b50591665942d4b32`; G2.225 removes only two unassigned `UnifiedDataService()` calls and the now-unused import, with focused TDD evidence | If accepted, merge G2.225 and run G2.226 closeout / residual refresh before selecting another unified-data or cache provider candidate |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.224 correctly treat PR `#376` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.224 authorize only a future narrow cleanup of two unassigned `UnifiedDataService()` calls and the now-unused import?
-- Does G2.224 preserve route paths, response models, OpenAPI exposure, SQL queries, `get_postgresql_engine`, and error contracts as invariants?
-- Is G2.225 correctly positioned as a path-limited source implementation lane that still needs explicit maintainer approval?
-- Does G2.224 keep `get_unified_data_service` and `get_prewarming_strategy` out of this cleanup lane?
+- Does G2.225 correctly treat PR `#377` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.225 remove only the two unassigned `UnifiedDataService()` calls and the now-unused import?
+- Does G2.225 preserve route paths, response models, OpenAPI exposure, SQL queries, `get_postgresql_engine`, and error contracts as invariants?
+- Is G2.226 correctly positioned as the post-merge closeout / residual refresh before selecting another candidate?
+- Does G2.225 keep `get_unified_data_service` and `get_prewarming_strategy` out of this cleanup lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

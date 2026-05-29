@@ -1,0 +1,132 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-05-29T09:38:00+08:00",
+  "g2_id": "G2.225",
+  "status": "implementation_for_review",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "36c38fbf233945b7e45ed67b50591665942d4b32",
+  "parent": {
+    "g2_id": "G2.224",
+    "github_pr": 377,
+    "merge_commit": "36c38fbf233945b7e45ed67b50591665942d4b32",
+    "authorization_report": "docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-authorization-2026-05-29.md"
+  },
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": true,
+  "allowed_source_paths": [
+    "web/backend/app/api/industry_concept_analysis.py"
+  ],
+  "allowed_test_paths": [
+    "web/backend/tests/test_health_route_conflicts.py"
+  ],
+  "modified_source_paths": [
+    "web/backend/app/api/industry_concept_analysis.py"
+  ],
+  "modified_test_paths": [
+    "web/backend/tests/test_health_route_conflicts.py"
+  ],
+  "implementation": {
+    "removed_unassigned_unified_data_service_constructor_calls": 2,
+    "removed_unified_data_service_import": true,
+    "target_route_functions": [
+      "get_industry_list",
+      "get_concept_list"
+    ],
+    "target_routes": [
+      "GET /api/analysis/industry/list",
+      "GET /api/analysis/concept/list"
+    ],
+    "route_paths_changed": false,
+    "response_models_changed": false,
+    "openapi_exposure_changed": false,
+    "sql_query_text_changed": false,
+    "database_access_path_changed": false,
+    "get_postgresql_engine_changed": false,
+    "http_exception_contract_changed": false,
+    "unified_data_service_constructor_changed": false,
+    "get_unified_data_service_changed": false,
+    "cache_prewarming_provider_changed": false,
+    "frontend_changed": false
+  },
+  "gitnexus": {
+    "exact_context": {
+      "get_industry_list": {
+        "file": "web/backend/app/api/industry_concept_analysis.py",
+        "start_line_before_edit": 215,
+        "incoming_graph_callers": 0,
+        "outgoing_calls": [
+          "get_postgresql_engine"
+        ],
+        "processes": []
+      },
+      "get_concept_list": {
+        "file": "web/backend/app/api/industry_concept_analysis.py",
+        "start_line_before_edit": 268,
+        "incoming_graph_callers": 0,
+        "outgoing_calls": [
+          "get_postgresql_engine"
+        ],
+        "processes": []
+      }
+    },
+    "file_impact": {
+      "target": "web/backend/app/api/industry_concept_analysis.py",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct_callers": 0,
+      "processes_affected": 0,
+      "modules_affected": 0
+    },
+    "exact_incoming_cypher_rows": 2,
+    "exact_incoming_callers": 0
+  },
+  "static_scan": {
+    "before": {
+      "direct_unified_data_service_calls_in_target": 2,
+      "web_backend_app_hits": 12
+    },
+    "after": {
+      "direct_unified_data_service_calls_in_target": 0,
+      "target_import_present": false,
+      "target_hits_after": [],
+      "web_backend_app_hits": 9
+    }
+  },
+  "tdd": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_industry_concept_list_endpoints_do_not_instantiate_unified_data_service_directly -q --no-cov --tb=short",
+      "result": "failed before source edit on UnifiedDataService()"
+    },
+    "green": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_industry_concept_list_endpoints_do_not_instantiate_unified_data_service_directly -q --no-cov --tb=short",
+      "result": "1 passed"
+    }
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_industry_concept_analysis_endpoints_have_examples_and_error_responses web/backend/tests/test_health_route_conflicts.py::test_industry_concept_list_endpoints_do_not_instantiate_unified_data_service_directly -q --no-cov --tb=short",
+      "result": "2 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/industry_concept_analysis.py web/backend/tests/test_health_route_conflicts.py",
+      "result": "All checks passed"
+    },
+    "app_main_openapi_smoke": {
+      "command": "python -c import app.main and app.openapi() with transient non-secret placeholders",
+      "result": {
+        "routes": 548,
+        "paths": 500,
+        "industry_path_present": true,
+        "concept_path_present": true
+      }
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid",
+      "posthog_telemetry_noise": true
+    }
+  },
+  "next_gate": "After review and merge, run G2.226 closeout / residual refresh before selecting another unified-data or cache provider candidate.",
+  "rollback": "Revert the PR; the route file returns to the prior no-op constructor calls and the test file returns to metadata-only assertions."
+}
