@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T22:03:24+08:00`
-- Base HEAD checked: `d68c381d75cf9dffc601ef8390fbec9c85e55d18`
+- Prepared at: `2026-05-29T22:22:46+08:00`
+- Base HEAD checked: `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1714,6 +1714,53 @@ Decision:
   decision packet.
 - Keep `get_postgres_async` and `get_monitoring_db` out of G2.241 except as
   explicit non-target boundaries.
+
+Closeout status:
+
+- G2.240 was accepted by PR `#393` and merged at
+  `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`.
+- G2.241 is the no-source ownership / runtime seam decision after this refresh.
+
+## G2.241 Mock Data Manager Ownership / Runtime Seam Decision
+
+G2.241 is the no-source decision packet after PR `#393` merged G2.240 at
+`70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`.
+
+Ownership decision:
+
+- `get_mock_data_manager` is a mock data runtime facade and compatibility
+  accessor.
+- It is not a route dependency provider, deletion candidate, thin wrapper, or
+  single-consumer source pilot.
+- Future work should preserve the compatibility accessor and first introduce an
+  explicit provider/reset/test-double seam only after a separate authorization.
+
+Current evidence:
+
+| Item | Result |
+|---|---:|
+| Definition count | 1 |
+| Primary file | `web/backend/app/mock/mock_data/factory.py` |
+| Import lines | 16 |
+| Call expressions | 27 |
+| Active route-body calls | 0 |
+| GitNexus CLI sample | `CRITICAL`, 63 impacted, 27 direct, 4 processes, 8 modules |
+
+Consumer matrix:
+
+| Bucket | Calls | Files | Handling |
+|---|---:|---:|---|
+| API/helper fallback consumers | 8 | 6 | Preserve as consumers; do not batch-migrate from G2.241 |
+| Mock factory / fixture helpers | 9 | 2 | Owner surface for future provider/reset seam |
+| Active service adapters | 3 | 3 | Do not rewrite from G2.241 |
+| Legacy/facade adapters | 3 | 3 | Defer behind future authorization |
+| Tests | 4 | 3 | Preserve as verification consumers |
+
+Next gate:
+
+- If accepted, start G2.242 no-source mock data manager provider/reset seam
+  authorization.
+- G2.241 does not authorize source edits.
 
 ## Forbidden Scope
 

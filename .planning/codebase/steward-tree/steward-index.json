@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T22:03:24+08:00",
+  "generated_at": "2026-05-29T22:22:46+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "d68c381d75cf9dffc601ef8390fbec9c85e55d18",
-  "split_branch": "g2-240-service-lifecycle-residual-candidate-refresh",
-  "scope": "service_lifecycle_residual_candidate_refresh_after_monitoring_calculator",
+  "base_head": "70d75e77fa28fa8b9931fcdc4e89688478f8f1fc",
+  "split_branch": "g2-241-mock-data-manager-ownership-decision",
+  "scope": "mock_data_manager_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -4372,12 +4372,14 @@
     {
       "id": "g2-240-service-lifecycle-residual-candidate-refresh",
       "type": "candidate_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.239 monitoring calculator factory provider closeout / residual refresh",
       "source_edit_authority": false,
       "parent_github_pr": 392,
       "parent_merge_commit": "d68c381d75cf9dffc601ef8390fbec9c85e55d18",
+      "github_pr": 393,
+      "merge_commit": "70d75e77fa28fa8b9931fcdc4e89688478f8f1fc",
       "evidence": [
         ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-monitoring-calculator-2026-05-29.json",
         "docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-monitoring-calculator-2026-05-29.md",
@@ -4424,7 +4426,7 @@
         "title": "mock data manager ownership / runtime seam decision packet",
         "source_edit_authority": false
       },
-      "next_gate": "If accepted, start G2.241 no-source get_mock_data_manager ownership / runtime seam decision. Do not start source work from G2.240.",
+      "next_gate": "Superseded by G2.241 no-source get_mock_data_manager ownership / runtime seam decision.",
       "allowed_scope": [
         ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-monitoring-calculator-2026-05-29.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -4450,7 +4452,83 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "d68c381d75cf9dffc601ef8390fbec9c85e55d18",
+        "current_head_checked": "70d75e77fa28fa8b9931fcdc4e89688478f8f1fc",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-241-mock-data-manager-ownership-decision",
+      "type": "ownership_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.240 service lifecycle residual candidate refresh",
+      "source_edit_authority": false,
+      "parent_github_pr": 393,
+      "parent_merge_commit": "70d75e77fa28fa8b9931fcdc4e89688478f8f1fc",
+      "evidence": [
+        ".planning/codebase/generated/mock-data-manager-ownership-decision-2026-05-29.json",
+        "docs/reports/quality/backend-mock-data-manager-ownership-decision-2026-05-29.md",
+        "governance/mainline/task-cards/pr-394.yaml"
+      ],
+      "subject": {
+        "symbol": "get_mock_data_manager",
+        "primary_file": "web/backend/app/mock/mock_data/factory.py",
+        "ownership_classification": "mock data runtime facade and compatibility accessor",
+        "source_edit_authority": false
+      },
+      "current_head_evidence": {
+        "python_files_scanned": 1500,
+        "definition_count": 1,
+        "import_lines": 16,
+        "call_expressions": 27,
+        "active_route_body_calls": 0,
+        "gitnexus_risk": "CRITICAL",
+        "gitnexus_impacted_count": 63,
+        "gitnexus_direct": 27,
+        "gitnexus_processes_affected": 4,
+        "gitnexus_modules_affected": 8
+      },
+      "decision": {
+        "ownership": "mock data runtime facade and compatibility accessor",
+        "not_a": [
+          "route dependency provider",
+          "deletion candidate",
+          "thin compatibility wrapper",
+          "single-consumer source pilot"
+        ],
+        "selected_next_gate": {
+          "g2_id": "G2.242",
+          "title": "mock data manager provider/reset seam authorization",
+          "source_edit_authority": false
+        }
+      },
+      "next_gate": "If accepted, start G2.242 no-source mock data manager provider/reset seam authorization. Do not start source work from G2.241.",
+      "allowed_scope": [
+        ".planning/codebase/generated/mock-data-manager-ownership-decision-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-mock-data-manager-ownership-decision-2026-05-29.md",
+        "governance/mainline/task-cards/pr-394.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "70d75e77fa28fa8b9931fcdc4e89688478f8f1fc",
         "stale_if_head_mismatch": true
       }
     },

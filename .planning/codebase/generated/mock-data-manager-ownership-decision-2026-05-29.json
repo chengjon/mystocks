@@ -1,0 +1,164 @@
+{
+  "schema_version": "2026-05-29.mock-data-manager-ownership-decision.v1",
+  "g2_id": "G2.241",
+  "status": "ownership_decision_for_review",
+  "generated_at": "2026-05-29T22:22:46+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-241-mock-data-manager-ownership-decision",
+  "base_head": "70d75e77fa28fa8b9931fcdc4e89688478f8f1fc",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.240",
+    "github_pr": 393,
+    "merge_commit": "70d75e77fa28fa8b9931fcdc4e89688478f8f1fc",
+    "decision": "selected get_mock_data_manager as the next no-source ownership / runtime seam decision target"
+  },
+  "subject": {
+    "symbol": "get_mock_data_manager",
+    "primary_file": "web/backend/app/mock/mock_data/factory.py",
+    "definition_line": 26,
+    "factory_file_lines": 156,
+    "ownership_classification": "mock data runtime facade and compatibility accessor",
+    "not_classified_as": [
+      "route dependency provider",
+      "deletion candidate",
+      "thin compatibility wrapper",
+      "single-consumer source pilot"
+    ]
+  },
+  "current_head_evidence": {
+    "head": "70d75e77fa28fa8b9931fcdc4e89688478f8f1fc",
+    "python_files_scanned": 1500,
+    "definition_count": 1,
+    "import_lines": 16,
+    "call_expressions": 27,
+    "active_route_body_calls": 0,
+    "consumer_buckets": {
+      "api_or_helper": {
+        "calls": 8,
+        "files": [
+          "web/backend/app/api/market/_market_heatmap_router.py",
+          "web/backend/app/api/market/market_data_request.py",
+          "web/backend/app/api/stock_search/stock_search_support.py",
+          "web/backend/app/api/strategy_management/_helpers.py",
+          "web/backend/app/api/tradingview.py",
+          "web/backend/app/api/wencai.py"
+        ]
+      },
+      "mock_factory_or_fixture": {
+        "calls": 9,
+        "files": [
+          "web/backend/app/mock/mock_data/factory.py",
+          "web/backend/app/mock/mock_data/technical_data.py"
+        ]
+      },
+      "adapter": {
+        "calls": 3,
+        "files": [
+          "web/backend/app/services/adapters/strategy_adapter.py",
+          "web/backend/app/services/adapters/technical_analysis_adapter.py",
+          "web/backend/app/services/adapters/watchlist_adapter.py"
+        ]
+      },
+      "legacy_or_facade_adapter": {
+        "calls": 3,
+        "files": [
+          "web/backend/app/services/data_adapters/technical_analysis.py",
+          "web/backend/app/services/data_adapters/watchlist.py",
+          "web/backend/app/services/market_data_adapter.py"
+        ]
+      },
+      "test": {
+        "calls": 4,
+        "files": [
+          "tests/integration/simple_p2_test.py",
+          "tests/unit/gpu/simple_p2_test.py",
+          "web/backend/tests/test_runtime_regressions_p0.py"
+        ]
+      }
+    },
+    "factory_runtime_behavior": {
+      "uses_app_main_cached_mock_data_manager": true,
+      "has_fallback_manager": true,
+      "has_compatibility_helper_functions": true,
+      "helper_functions": [
+        "get_dashboard_data",
+        "get_stocks_data",
+        "get_technical_data",
+        "get_wencai_data",
+        "get_strategy_data",
+        "get_monitoring_data",
+        "get_backtest_data",
+        "data_source_toggle"
+      ]
+    },
+    "gitnexus_impact_sample": {
+      "method": "CLI fallback because MCP transport closed",
+      "risk": "CRITICAL",
+      "impacted_count": 63,
+      "direct": 27,
+      "processes_affected": 4,
+      "modules_affected": 8,
+      "affected_process_examples": [
+        "technical_analysis_adapter.get_data",
+        "wencai.get_all_queries",
+        "tradingview.get_chart_config",
+        "tradingview.get_mini_chart_config"
+      ]
+    }
+  },
+  "decision": {
+    "ownership": "Keep get_mock_data_manager owned by the mock data runtime/fallback facade until a separate provider/reset authorization is accepted.",
+    "recommended_next_gate": {
+      "g2_id": "G2.242",
+      "title": "mock data manager provider/reset seam authorization",
+      "source_edit_authority": false,
+      "future_source_lane_shape_if_approved": {
+        "goal": "introduce an explicit provider/reset/test-double seam while preserving the existing get_mock_data_manager compatibility accessor",
+        "candidate_source_scope": [
+          "web/backend/app/mock/mock_data/factory.py",
+          "focused mock-data manager tests only"
+        ],
+        "non_goals": [
+          "migrate all API/helper consumers in one batch",
+          "rewrite adapter classes",
+          "remove get_mock_data_manager",
+          "change mock response shapes",
+          "change route paths or OpenAPI"
+        ]
+      }
+    },
+    "source_lane_authorized_now": false,
+    "rationale": [
+      "GitNexus impact is CRITICAL and the consumer surface crosses API helpers, adapters, mock factory helpers, and tests.",
+      "There are no active route-body calls, so route-provider migration is not the immediate shape.",
+      "The current factory already acts as a compatibility accessor over a runtime cached manager plus fallback manager.",
+      "A provider/reset seam should be authorized separately before any source implementation."
+    ]
+  },
+  "forbidden_scope": [
+    "web/backend/app/api/**",
+    "web/backend/app/services/**",
+    "web/backend/app/tasks/**",
+    "src/**",
+    "tests/**",
+    "web/backend/tests/**",
+    "web/frontend/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "verification_targets": {
+    "json_parse": "this artifact and steward-index.json must parse",
+    "markdown_governance": "0 errors for generated report and touched steward docs",
+    "app_openapi_smoke": "routes=548, paths=500 at current HEAD",
+    "openspec": "migrate-backend-singletons-to-lifecycle-di --strict",
+    "mainline_scope": "governance-only; no source or test files",
+    "gitnexus": "detect_changes staged/compare should report 0 affected processes and LOW risk for docs-only diff"
+  }
+}
