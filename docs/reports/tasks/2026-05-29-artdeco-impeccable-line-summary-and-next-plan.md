@@ -148,7 +148,7 @@ The three page pilots have converged on a useful Web ArtDeco page grammar:
 | OpenSpec change | Tasks complete, strict validation passed, archive ownership decision completed | Do not archive from root; root canonical spec belongs to earlier 2026-05-12 ArtDeco governance archives |
 | GitNexus staged detect | Repo index addressable again, but staged detect still times out | Keep `.gitnexusignore`; investigate GitNexus detect performance separately before relying on it as a blocking gate |
 | Shared component extraction | Deferred; documentation-only analysis completed | Use `docs/reports/tasks/2026-05-29-artdeco-page-pilot-extraction-analysis.md` as the approval boundary before any extraction proposal |
-| Next routed page | Not selected | Recommended next critique target: `web/frontend/src/views/trade/Signals.vue` |
+| Next routed page | `trade/Signals.vue` critique completed | Shape brief is the next design-only step; implementation still requires explicit approval |
 
 ## 5. Recommended Next Sequence
 
@@ -265,11 +265,21 @@ Why:
 
 Planned sequence:
 
-- [ ] 3.1 `$impeccable critique web/frontend/src/views/trade/Signals.vue`
-- [ ] 3.2 Save critique report under `docs/reports/tasks/`.
-- [ ] 3.3 `$impeccable shape trade signals ArtDeco signal triage desk`
+- [x] 3.1 `$impeccable critique web/frontend/src/views/trade/Signals.vue`
+- [x] 3.2 Save critique report under `docs/reports/tasks/`.
+- [ ] 3.3 `$impeccable shape trade signals ArtDeco signal trust desk`
 - [ ] 3.4 Wait for explicit approval before implementation.
 - [ ] 3.5 Implement only the approved slice.
+
+Critique report:
+
+- `docs/reports/tasks/2026-05-29-artdeco-trade-signals-critique.md`
+
+Critique verdict:
+
+- good token discipline and real runtime-state foundations
+- P0/P1 issues are desktop constraint drift via `@media`, missing route-level `data-test` hooks, runtime trust state not being prominent enough, and canonical route dependence on `artdeco-pages` internals
+- no implementation should begin before a shape brief is approved
 
 Secondary candidates after `trade/Signals.vue`:
 
@@ -300,6 +310,6 @@ The immediate next action should be:
 1. Keep `add-artdeco-impeccable-design-gate` out of root archive mutation unless a separate spec-merge task is approved.
 2. Treat `.worktrees/artdeco-archive-preflight-de0c5b8c9` / `efa776cf0` as the isolated archive candidate for this line.
 3. Use the extraction analysis as the approval boundary before any shared component proposal.
-4. Select the next route for critique only after accepting that archive/merge remains a separate governance task.
+4. Draft the `trade/Signals.vue` shape brief only if the user wants to continue the next design-only step.
 
-Only after that should the next page, likely `trade/Signals.vue`, enter critique and shape.
+Only after the shape brief is explicitly approved should any `trade/Signals.vue` implementation begin.
