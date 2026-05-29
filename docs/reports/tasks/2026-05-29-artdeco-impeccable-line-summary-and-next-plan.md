@@ -267,13 +267,19 @@ Planned sequence:
 
 - [x] 3.1 `$impeccable critique web/frontend/src/views/trade/Signals.vue`
 - [x] 3.2 Save critique report under `docs/reports/tasks/`.
-- [ ] 3.3 `$impeccable shape trade signals ArtDeco signal trust desk`
+- [x] 3.3 `$impeccable shape trade signals ArtDeco signal trust desk`
 - [ ] 3.4 Wait for explicit approval before implementation.
 - [ ] 3.5 Implement only the approved slice.
 
 Critique report:
 
 - `docs/reports/tasks/2026-05-29-artdeco-trade-signals-critique.md`
+
+Shape brief:
+
+- `docs/reports/tasks/2026-05-29-artdeco-trade-signals-shape-brief.md`
+- status: awaiting explicit user approval
+- implementation gate: no Vue, SCSS, router, API, test, or shared component changes until approval
 
 Critique verdict:
 
