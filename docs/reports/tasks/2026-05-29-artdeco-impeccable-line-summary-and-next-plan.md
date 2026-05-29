@@ -1,0 +1,295 @@
+# ArtDeco Impeccable Line Summary And Next Plan
+
+> Date: 2026-05-29
+> Scope: Web frontend ArtDeco design governance and page craft line.
+> Method: impeccable design workflow under OpenSpec / project proposal-first gates.
+
+## 1. Line Goal
+
+Use impeccable as a Web-side design governance workflow, not as a broad full-site beautification pass.
+
+The line goal remains:
+
+- audit the already implemented Web ArtDeco design
+- improve page design quality
+- improve component reuse only after repeated page patterns are proven
+- tighten visual token use
+- make runtime states part of the interface
+- strengthen verification gates
+- align implementation with the current ArtDeco document system
+
+The operating rule is unchanged: critique and shape first, source implementation only after explicit approval.
+
+## 2. Completed Work
+
+### 2.1 Governance And Context
+
+| Area | Status | Evidence |
+|---|---|---|
+| Impeccable context refresh | Completed in two steps | `PRODUCT.md` / `DESIGN.md` were committed on 2026-05-10 in `93f6d6974`, then refreshed again in the current dirty worktree for this Web ArtDeco/page-design line |
+| Primary alignment plan | Completed | `docs/reports/tasks/2026-05-28-artdeco-web-design-alignment-plan.md` |
+| OpenSpec gate | Completed as active change tasks; not yet archived | `openspec/changes/add-artdeco-impeccable-design-gate/` |
+| Governance spec | Updated / available | `openspec/specs/artdeco-design-governance/spec.md` |
+| Next-route batch planning | Completed | `docs/reports/tasks/2026-05-29-artdeco-impeccable-next-route-batch-plan.md` |
+
+OpenSpec note:
+
+- `add-artdeco-impeccable-design-gate` tasks are marked complete.
+- The change is still active under `openspec/changes/`.
+- It should be archived only after the current uncommitted trade positions slice is either committed into the intended batch or explicitly excluded from the OpenSpec closeout; see §5 Phase 1 for the decision point.
+
+### 2.2 Page Pilot 1: Market Realtime
+
+| Item | Status |
+|---|---|
+| Target | `web/frontend/src/views/market/Realtime.vue` |
+| Critique | `docs/reports/tasks/2026-05-28-artdeco-market-realtime-critique.md` |
+| Shape brief | `docs/reports/tasks/2026-05-28-artdeco-market-realtime-shape-brief.md` |
+| Approval packet | `docs/reports/tasks/2026-05-28-artdeco-market-realtime-approval-packet.md` |
+| Implementation report | `docs/reports/tasks/2026-05-28-artdeco-market-realtime-implementation-report.md` |
+| Commit | `de0c5b8c9 feat(web): add ArtDeco realtime design gate pilot` |
+
+Implemented direction:
+
+- compact market data workbench
+- stronger control/status row
+- runtime metadata preserved for E2E compatibility
+- ArtDeco token discipline kept
+- route-specific implementation without premature shared extraction
+
+Verification recorded in the report:
+
+- `npm run type-check -- --pretty false`: pass, 0 type errors
+- targeted Chromium E2E for market data: 18 passed, 0 failed, 0 skipped
+- GitNexus impact: LOW risk
+- GitNexus detect/refresh remained partially blocked by tooling timeouts
+
+### 2.3 Page Pilot 2: Risk Alerts
+
+| Item | Status |
+|---|---|
+| Target | `web/frontend/src/views/risk/Alerts.vue` |
+| Critique | `docs/reports/tasks/2026-05-29-artdeco-risk-alerts-critique.md` |
+| Shape brief | `docs/reports/tasks/2026-05-29-artdeco-risk-alerts-shape-brief.md` |
+| Implementation report | `docs/reports/tasks/2026-05-29-artdeco-risk-alerts-implementation-report.md` |
+| Commit | `8ed6c91d0 feat(web): craft ArtDeco risk alerts triage desk` |
+
+Implemented direction:
+
+- risk alert triage desk
+- clearer severity-first information hierarchy
+- runtime status and error handling strengthened
+- focused tests added / updated
+- route-level E2E coverage preserved
+
+Verification recorded in the report:
+
+- focused Vitest: 1 file, 8 tests passed
+- `npm run type-check -- --pretty false`: pass
+- Chromium E2E `Risk-Alerts`: 4 tests passed
+- ArtDeco token and lint checks completed
+
+### 2.4 Page Pilot 3: Trade Positions
+
+| Item | Status |
+|---|---|
+| Target | `web/frontend/src/views/trade/Center.vue` |
+| Route | `/trade/positions` |
+| Critique | `docs/reports/tasks/2026-05-29-artdeco-trade-positions-critique.md` |
+| Shape brief | `docs/reports/tasks/2026-05-29-artdeco-trade-positions-shape-brief.md` |
+| Implementation report | `docs/reports/tasks/2026-05-29-artdeco-trade-positions-implementation-report.md` |
+| Commit | This scoped commit: `feat(web): craft ArtDeco trade positions review desk` |
+
+Implemented direction:
+
+- positions review workbench
+- `全部 / 盈利 / 亏损 / 高仓位 / 需关注` review segments
+- runtime status strip
+- Chinese operational copy
+- route-level `data-test` hooks
+- transform-based position bar instead of width animation
+- row flags for loss / high-weight review
+
+Verification completed:
+
+- `npm run test -- src/views/trade/__tests__/Center.spec.ts`: 1 file, 5 tests passed
+- `npx eslint src/views/trade/Center.vue`: pass
+- `node scripts/check-artdeco-tokens.js --target-file src/views/trade/Center.vue`: pass
+- `npm run type-check -- --pretty false`: pass, 0 type errors
+- `npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts -g "Trade-Positions" --project=chromium`: Chromium, 4 passed
+- `npx impeccable --json src/views/trade/Center.vue`: `[]`
+- 1440px browser screenshot: `/tmp/trade-positions-artdeco-1440-final.png`
+
+GitNexus closeout status:
+
+- GitNexus pre-edit impact returned LOW risk.
+- `.gitnexusignore` now excludes generated Grafana / Prometheus local monitoring data so GitNexus can address the repo again as `mystocks`.
+- `gitnexus analyze --index-only --max-file-size 64 --worker-timeout 10` refreshed the index registry but still exited non-zero after worker timeouts.
+- `gitnexus_detect_changes(scope="staged")` was rerun against the staged target batch and timed out at 120s; CLI `gitnexus detect-changes --scope staged --repo mystocks` also hung beyond the local patience window and was killed.
+- Post-commit GitNexus refresh was attempted with the same bounded analyze command, exceeded the MCP 120s call limit, and the current-repo analyze process was killed.
+
+## 3. Patterns Proven So Far
+
+The three page pilots have converged on a useful Web ArtDeco page grammar:
+
+1. Route-specific workbench framing is better than decorative hero composition.
+2. Runtime state belongs near the primary work surface, not buried as incidental metadata.
+3. Dense financial tables need review lenses or triage controls before they need more ornament.
+4. User-facing copy should be Chinese-first and operational; internal English scaffolding should not leak.
+5. ArtDeco gold should structure hierarchy; risk, PnL, stale, degraded, and error states should carry their own semantic emphasis.
+6. Stable `data-test` hooks are part of design quality for routed operational pages.
+7. Shared extraction should wait until repeated page patterns are compared side-by-side; the next extraction phase is that comparison, not immediate shared component code.
+
+## 4. Closeout Status
+
+| Item | Status | Recommended action |
+|---|---|---|
+| Trade positions slice | Committed in this scoped batch | No further action in this slice |
+| OpenSpec change | Tasks complete but still active | Validate and archive after deciding whether the trade positions slice belongs in this change closeout |
+| GitNexus staged detect | Repo index addressable again, but staged detect still times out | Keep `.gitnexusignore`; investigate GitNexus detect performance separately before relying on it as a blocking gate |
+| Shared component extraction | Deferred | Run documentation-only extraction analysis across Realtime / Alerts / Positions |
+| Next routed page | Not selected | Recommended next critique target: `web/frontend/src/views/trade/Signals.vue` |
+
+## 5. Recommended Next Sequence
+
+### Phase 0: Close Current Slice
+
+Priority: P0.
+
+Tasks:
+
+- [ ] 0.1 Review the current target diff for `trade/Center.vue`, `trade/__tests__/Center.spec.ts`, `phase3-mainline-matrix.spec.ts`, and the three trade-position reports.
+- [ ] 0.2 Rerun focused verification immediately before commit.
+- [ ] 0.3 Decide whether to commit the trade positions slice now.
+- [ ] 0.4 If committing, use a scoped commit such as `feat(web): craft ArtDeco trade positions review desk`.
+- [ ] 0.5 Record the commit hash in `2026-05-29-artdeco-trade-positions-implementation-report.md`.
+
+Recommended verification before commit:
+
+```text
+# Run from web/frontend/
+npm run test -- src/views/trade/__tests__/Center.spec.ts
+npx eslint src/views/trade/Center.vue
+node scripts/check-artdeco-tokens.js --target-file src/views/trade/Center.vue
+npm run type-check -- --pretty false
+npx playwright test tests/e2e/phase3-mainline-matrix.spec.ts -g "Trade-Positions" --project=chromium
+
+# Run from repository root
+git diff --check -- <target files>
+```
+
+GitNexus closeout:
+
+- [x] 0.6 Add safe `.gitnexusignore` exclusions for generated Grafana / Prometheus local monitoring data.
+- [x] 0.7 Rerun `gitnexus analyze --index-only --max-file-size 64 --worker-timeout 10` and confirm the repo is addressable again.
+- [x] 0.8 Stage only target files and rerun `gitnexus_detect_changes(scope="staged")`.
+- [ ] 0.9 Investigate staged detect timeout as a separate GitNexus performance/tooling task.
+
+### Phase 1: OpenSpec Closeout
+
+Priority: P0 after Phase 0.
+
+Tasks:
+
+- [ ] 1.1 Run `openspec validate add-artdeco-impeccable-design-gate --strict`.
+- [ ] 1.2 Confirm `openspec/changes/add-artdeco-impeccable-design-gate/tasks.md` accurately reflects all completed work.
+- [ ] 1.3 Decide whether this OpenSpec change should include only the Realtime pilot or the full three-page governance pilot.
+- [ ] 1.4 Archive the change only after the intended implementation set is committed or explicitly excluded.
+
+Decision point:
+
+- If the OpenSpec change is meant as a governance gate only, archive it after validation.
+- If it is meant to cover the three-page pilot line, update closeout docs with Risk Alerts and Trade Positions evidence before archive.
+
+### Phase 2: Extract Pattern Analysis
+
+Priority: P1.
+
+This should be documentation-only first. Phase 2 is the side-by-side comparison required by §3 item 7; its output is an extraction analysis / shape brief, not shared component implementation.
+
+Recommended command intent:
+
+```text
+$impeccable extract Realtime Alerts Positions ArtDeco runtime workbench patterns
+```
+
+Tasks:
+
+- [ ] 2.1 Compare `market/Realtime.vue`, `risk/Alerts.vue`, and `trade/Center.vue`.
+- [ ] 2.2 Identify repeated structure across header bands, control rows, runtime strips, data panels, and table states.
+- [ ] 2.3 Decide which repetition is real enough to extract.
+- [ ] 2.4 Produce an extraction shape brief before touching shared components.
+
+Candidate extraction assets:
+
+| Candidate | Priority | Reason |
+|---|---|---|
+| `ArtDecoRuntimeStatusStrip` | P1 | Repeated verified / refreshing / stale / degraded / error state grammar |
+| `ArtDecoReviewSegments` | P1 | Repeated route-local triage control grammar |
+| `ArtDecoDataWorkbenchHeader` | P2 | Useful but more page-specific; risk of over-generalization |
+| `ArtDecoDataPanel` | P2 | Potential table/status shell, but needs one more page to prove API shape |
+
+Extraction guardrail:
+
+- Do not extract page-specific API, labels, financial semantics, or route-specific data transformation into shared components.
+
+### Phase 3: Next Route Critique And Shape
+
+Priority: P1.
+
+Recommended next target:
+
+```text
+web/frontend/src/views/trade/Signals.vue
+```
+
+Why:
+
+- 711 lines
+- high table/reference density
+- about 20 error-tagged lines in a line-based scan; identifier occurrence counts are higher
+- 0 `data-test` references
+- 4 `title` prop bindings
+- direct fit with signal monitoring and trade workflow
+- complements the positions page without broadening into system settings too early
+
+Planned sequence:
+
+- [ ] 3.1 `$impeccable critique web/frontend/src/views/trade/Signals.vue`
+- [ ] 3.2 Save critique report under `docs/reports/tasks/`.
+- [ ] 3.3 `$impeccable shape trade signals ArtDeco signal triage desk`
+- [ ] 3.4 Wait for explicit approval before implementation.
+- [ ] 3.5 Implement only the approved slice.
+
+Secondary candidates after `trade/Signals.vue`:
+
+| Candidate | Priority | Why |
+|---|---|---|
+| `web/frontend/src/views/trade/Reconciliation.vue` | P1 | Contains raw hex colors and reconciliation workflow risk; good token/governance target |
+| `web/frontend/src/views/system/Settings.vue` | P1 | Operational settings page, high runtime/error density, no `data-test` hooks |
+| `web/frontend/src/views/risk/Overview.vue` | P2 | Complements `risk/Alerts.vue` with broader risk posture |
+| `web/frontend/src/views/data/FundFlow.vue` | P2 | Data-heavy table route, useful after trade/risk patterns stabilize |
+
+### Phase 4: Verification Gate Hardening
+
+Priority: P1/P2.
+
+Tasks:
+
+- [ ] 4.1 Add targeted Playwright coverage for new Trade Positions segment filters and filtered-empty state.
+- [ ] 4.2 Add a route-level ArtDeco verification checklist for critique/shape/craft reports.
+- [ ] 4.3 Define minimum `data-test` hooks expected on data-heavy pages.
+- [ ] 4.4 Track `npx impeccable --json <page>` output in each implementation report.
+
+## 6. Recommended Immediate Next Action
+
+Do not start a new route yet.
+
+The immediate next action should be:
+
+1. Track the remaining GitNexus staged-detect timeout separately from the page design slice.
+2. Validate and archive the completed OpenSpec change if no more governance tasks are needed in it.
+3. Run a documentation-only extraction analysis across the three completed page pilots.
+4. Select the next route for critique only after that comparison is complete.
+
+Only after that should the next page, likely `trade/Signals.vue`, enter critique and shape.

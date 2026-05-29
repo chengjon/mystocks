@@ -20,18 +20,36 @@ export interface Position {
   positionPercent: number
 }
 
+type PositionSegmentKey = 'all' | 'gain' | 'loss' | 'highWeight' | 'attention'
+
+interface RuntimeStatus {
+  label: string
+  detail: string
+  tone: 'success' | 'warning' | 'info' | 'neutral'
+}
+
+const HIGH_WEIGHT_THRESHOLD = 30
+
 const props = defineProps<{
   positions?: Position[]
 }>()
 
 const internalPositions = ref<Position[]>([])
+const activeSegment = ref<PositionSegmentKey>('all')
+const hasLoaded = ref(false)
+const staleError = ref<string | null>(null)
+const hasVerifiedPositionsSnapshot = ref(false)
+const lastVerifiedRequestId = ref('')
+const lastVerifiedProcessTime = ref('')
 const instance = getCurrentInstance()
-const { exec, loading, lastRequestId, lastProcessTime } = useArtDecoApi()
+const { exec, loading, error, lastRequestId, lastProcessTime } = useArtDecoApi()
 
 const isEmbedded = computed(() => {
   const rawProps = instance?.vnode.props
   return Boolean(rawProps && 'positions' in rawProps)
 })
+const hasProvidedPositionsSnapshot = computed(() => Array.isArray(props.positions))
+const hasTrustedPositionsSnapshot = computed(() => hasVerifiedPositionsSnapshot.value || hasProvidedPositionsSnapshot.value)
 
 const displayPositions = computed(() => {
   if (Array.isArray(props.positions) && props.positions.length > 0) {
@@ -40,24 +58,77 @@ const displayPositions = computed(() => {
   return internalPositions.value
 })
 
-const totalMarketValue = computed(() =>
-  `¥${displayPositions.value.reduce((sum, position) => sum + Number(position.marketValue || 0), 0).toFixed(0)}`,
+const rawTotalMarketValue = computed(() =>
+  displayPositions.value.reduce((sum, position) => sum + Number(position.marketValue || 0), 0),
 )
-const totalPnl = computed(() =>
-  displayPositions.value.reduce((sum, position) => sum + Number(position.pnl || 0), 0),
-)
+const totalMarketValue = computed(() => `¥${rawTotalMarketValue.value.toFixed(0)}`)
+const totalPnl = computed(() => displayPositions.value.reduce((sum, position) => sum + Number(position.pnl || 0), 0))
 const positiveCount = computed(() =>
   displayPositions.value.filter((position) => position.pnl >= 0).length,
+)
+const negativeCount = computed(() =>
+  displayPositions.value.filter((position) => position.pnl < 0).length,
+)
+const highWeightPositions = computed(() =>
+  displayPositions.value.filter((position) => isHighWeightPosition(position)),
+)
+const attentionPositions = computed(() =>
+  displayPositions.value.filter((position) => needsPositionAttention(position)),
+)
+const positionSegments = computed(() => [
+  { key: 'all' as const, label: '全部', count: displayPositions.value.length },
+  { key: 'gain' as const, label: '盈利', count: positiveCount.value },
+  { key: 'loss' as const, label: '亏损', count: negativeCount.value },
+  { key: 'highWeight' as const, label: '高仓位', count: highWeightPositions.value.length },
+  { key: 'attention' as const, label: '需关注', count: attentionPositions.value.length },
+])
+const filteredPositions = computed(() => {
+  switch (activeSegment.value) {
+    case 'gain':
+      return displayPositions.value.filter((position) => position.pnl >= 0)
+    case 'loss':
+      return displayPositions.value.filter((position) => position.pnl < 0)
+    case 'highWeight':
+      return highWeightPositions.value
+    case 'attention':
+      return attentionPositions.value
+    default:
+      return displayPositions.value
+  }
+})
+const activeSegmentLabel = computed(() =>
+  positionSegments.value.find((segment) => segment.key === activeSegment.value)?.label ?? '全部',
 )
 const highestWeight = computed(() => {
   if (displayPositions.value.length === 0) return '--'
   const value = Math.max(...displayPositions.value.map((position) => Number(position.positionPercent || 0)))
   return `${value.toFixed(2)}%`
 })
-const displayRequestId = computed(() => lastRequestId.value || 'N/A')
+const isAwaitingFirstPositionsLoad = computed(() => loading.value && !hasLoaded.value && !error.value && displayPositions.value.length === 0)
+const effectiveError = computed(() => (!hasTrustedPositionsSnapshot.value ? error.value : null))
+const showSummaryPlaceholders = computed(() => !hasTrustedPositionsSnapshot.value)
+const displayRequestId = computed(() => {
+  if (hasVerifiedPositionsSnapshot.value) {
+    return lastVerifiedRequestId.value || 'N/A'
+  }
+  if (!lastRequestId.value) {
+    return isAwaitingFirstPositionsLoad.value ? '--' : 'N/A'
+  }
+  return effectiveError.value ? 'N/A' : lastRequestId.value
+})
 const displayProcessTime = computed(() => {
+  if (hasVerifiedPositionsSnapshot.value) {
+    if (!lastVerifiedProcessTime.value) {
+      return 'N/A'
+    }
+    const verifiedValue = Number.parseFloat(lastVerifiedProcessTime.value)
+    if (Number.isNaN(verifiedValue)) {
+      return lastVerifiedProcessTime.value
+    }
+    return `${verifiedValue.toFixed(2)}ms`
+  }
   if (!lastProcessTime.value) {
-    return 'N/A'
+    return isAwaitingFirstPositionsLoad.value ? '--' : 'N/A'
   }
   const value = Number.parseFloat(lastProcessTime.value)
   if (Number.isNaN(value)) {
@@ -65,19 +136,127 @@ const displayProcessTime = computed(() => {
   }
   return `${value.toFixed(2)}ms`
 })
+const displayRowCount = computed(() => (showSummaryPlaceholders.value ? '--' : String(filteredPositions.value.length)))
+const displayPositiveCount = computed(() => (showSummaryPlaceholders.value ? '--' : String(positiveCount.value)))
+const displayNegativeCount = computed(() => (showSummaryPlaceholders.value ? '--' : String(negativeCount.value)))
+const displayTotalMarketValue = computed(() => (showSummaryPlaceholders.value ? '--' : totalMarketValue.value))
+const displayHighestWeight = computed(() => (showSummaryPlaceholders.value ? '--' : highestWeight.value))
+const displayTotalPnl = computed(() => (showSummaryPlaceholders.value ? '--' : `¥${totalPnl.value.toFixed(0)}`))
 const pageStatusText = computed(() => {
+  if (effectiveError.value) return '同步失败'
+  if (staleError.value) return '显示缓存快照'
+  if (loading.value && hasTrustedPositionsSnapshot.value) return '刷新中'
   if (loading.value) return '同步中'
-  return displayPositions.value.length > 0 ? '持仓在线' : '暂无持仓'
+  return displayPositions.value.length > 0 ? '快照已验证' : '暂无持仓'
 })
 const pageStatusType = computed(() => {
-  if (totalPnl.value > 0) return 'success'
-  if (totalPnl.value < 0) return 'warning'
+  if (effectiveError.value || staleError.value) return 'warning'
   return 'info'
 })
+const runtimeStatus = computed<RuntimeStatus>(() => {
+  if (effectiveError.value) {
+    return {
+      label: '同步失败',
+      detail: `${effectiveError.value}，请重试。`,
+      tone: 'warning',
+    }
+  }
+  if (staleError.value) {
+    return {
+      label: '显示缓存快照',
+      detail: `${staleError.value}，当前仍显示上次成功同步的持仓快照。`,
+      tone: 'warning',
+    }
+  }
+  if (loading.value && hasTrustedPositionsSnapshot.value) {
+    return {
+      label: '刷新中',
+      detail: '正在同步最新持仓，当前表格保持上次已验证快照。',
+      tone: 'info',
+    }
+  }
+  if (loading.value) {
+    return {
+      label: '同步中',
+      detail: '持仓数据同步中...',
+      tone: 'info',
+    }
+  }
+  if (hasTrustedPositionsSnapshot.value && displayPositions.value.length > 0) {
+    return {
+      label: '已验证',
+      detail: `当前显示 ${activeSegmentLabel.value} 持仓 ${filteredPositions.value.length} 条。`,
+      tone: totalPnl.value < 0 ? 'warning' : 'success',
+    }
+  }
+  if (hasTrustedPositionsSnapshot.value) {
+    return {
+      label: '暂无持仓',
+      detail: '最近一次同步成功，但当前没有持仓记录。',
+      tone: 'neutral',
+    }
+  }
+  return {
+    label: '等待同步',
+    detail: '等待持仓数据同步。',
+    tone: 'neutral',
+  }
+})
+const positionsStateMessage = computed(() => runtimeStatus.value.detail)
+const filteredEmptyMessage = computed(() =>
+  `当前「${activeSegmentLabel.value}」视图没有匹配持仓。`,
+)
+
+function markVerifiedPositionsSnapshot() {
+  hasVerifiedPositionsSnapshot.value = true
+  lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
+  lastVerifiedProcessTime.value = lastProcessTime.value || lastVerifiedProcessTime.value
+}
 
 const loadPositions = async () => {
+  staleError.value = null
   const responseData = await exec(() => apiClient.get('/v1/trade/positions'), { silent: true })
+  if (!responseData) {
+    hasLoaded.value = true
+    if (hasVerifiedPositionsSnapshot.value) {
+      staleError.value = error.value || '持仓拉取失败'
+    } else {
+      internalPositions.value = []
+    }
+    return
+  }
   internalPositions.value = toTradingPositionRows(extractPositionsPayload(responseData))
+  markVerifiedPositionsSnapshot()
+  hasLoaded.value = true
+}
+
+function clampPositionPercent(value: number): number {
+  if (!Number.isFinite(value)) {
+    return 0
+  }
+  return Math.min(Math.max(value, 0), 100)
+}
+
+function selectPositionSegment(segment: PositionSegmentKey) {
+  activeSegment.value = segment
+}
+
+function isHighWeightPosition(position: Position): boolean {
+  return Number(position.positionPercent || 0) >= HIGH_WEIGHT_THRESHOLD
+}
+
+function needsPositionAttention(position: Position): boolean {
+  return position.pnl < 0 || position.pnlPercent < 0 || isHighWeightPosition(position)
+}
+
+function getPositionAttentionLabel(position: Position): string {
+  if (position.pnl < 0 || position.pnlPercent < 0) {
+    return '亏损'
+  }
+  if (isHighWeightPosition(position)) {
+    return '高仓位'
+  }
+  return ''
 }
 
 onMounted(() => {
@@ -88,15 +267,19 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="artdeco-trading-positions" :class="{ 'is-embedded': isEmbedded }">
-    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
+  <div
+    class="artdeco-trading-positions"
+    :class="{ 'is-embedded': isEmbedded }"
+    data-test="trade-positions-page"
+  >
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell" data-test="trade-positions-header">
       <div class="hero-rail">
         <div class="hero-copy">
-          <span class="hero-eyebrow">position ledger desk</span>
+          <span class="hero-eyebrow">持仓审阅</span>
           <div class="hero-meta">
-            <span>REQ_ID: {{ displayRequestId }}</span>
-            <span>TIME: {{ displayProcessTime }}</span>
-            <span>ROWS: {{ displayPositions.length }}</span>
+            <span>请求: {{ displayRequestId }}</span>
+            <span>耗时: {{ displayProcessTime }}</span>
+            <span>行数: {{ displayRowCount }}</span>
           </div>
         </div>
       </div>
@@ -115,6 +298,7 @@ onMounted(() => {
             motion="data"
             size="sm"
             :loading="loading"
+            data-test="trade-positions-refresh"
             @click="loadPositions"
           >
             <template #icon>
@@ -127,83 +311,156 @@ onMounted(() => {
     </section>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="持仓标的" :value="displayPositions.length" variant="gold" />
-      <ArtDecoStatCard label="盈利标的" :value="positiveCount" variant="rise" />
-      <ArtDecoStatCard label="组合市值" :value="totalMarketValue" variant="gold" />
-      <ArtDecoStatCard label="最高仓位" :value="highestWeight" variant="gold" />
+      <ArtDecoStatCard label="持仓标的" :value="displayRowCount" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="盈利标的" :value="displayPositiveCount" :show-change="false" variant="rise" />
+      <ArtDecoStatCard label="亏损标的" :value="displayNegativeCount" :show-change="false" variant="fall" />
+      <ArtDecoStatCard label="组合市值" :value="displayTotalMarketValue" :show-change="false" variant="gold" />
     </section>
 
     <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
-          <span class="content-shell-kicker">position allocation route</span>
-          <h3 class="content-shell-title">持仓结构与仓位面板</h3>
-          <p class="content-shell-subtitle">从持股数、成本、市值到盈亏与仓位占比，形成完整的持仓监控工作流。</p>
+          <span class="content-shell-kicker">仓位快照</span>
+          <h3 class="content-shell-title">持仓审阅与仓位面板</h3>
+          <p class="content-shell-subtitle">聚焦市值、盈亏与仓位占比，快速识别需要继续跟进的持仓。</p>
         </div>
         <div class="content-shell-meta">
-          <span>MARKET_VALUE: {{ totalMarketValue }}</span>
-          <span>TOTAL_PNL: ¥{{ totalPnl.toFixed(0) }}</span>
+          <span>市值: {{ displayTotalMarketValue }}</span>
+          <span>总盈亏: {{ displayTotalPnl }}</span>
+          <span>最高仓位: {{ displayHighestWeight }}</span>
         </div>
       </div>
 
       <ArtDecoCard title="持仓明细" hoverable>
-        <div class="artdeco-trading-positions__table">
-          <div class="artdeco-trading-positions__header">
-            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--symbol">股票</div>
-            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--shares">持股数</div>
-            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--avg-cost">平均成本</div>
-            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--current-price">当前价</div>
-            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--market-value">市值</div>
-            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--pnl">盈亏</div>
-            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--pnl-percent">盈亏%</div>
-            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--position">仓位%</div>
+        <div
+          class="artdeco-trading-positions__controls"
+          data-test="trade-positions-segments"
+          role="tablist"
+          aria-label="持仓审阅视图"
+        >
+          <button
+            v-for="segment in positionSegments"
+            :key="segment.key"
+            class="artdeco-trading-positions__segment"
+            :class="{ 'is-active': activeSegment === segment.key }"
+            type="button"
+            role="tab"
+            :aria-selected="activeSegment === segment.key"
+            :data-segment="segment.key"
+            @click="selectPositionSegment(segment.key)"
+          >
+            <span>{{ segment.label }}</span>
+            <strong>{{ showSummaryPlaceholders ? '--' : segment.count }}</strong>
+          </button>
+        </div>
+        <div
+          class="artdeco-trading-positions__runtime"
+          :class="`is-${runtimeStatus.tone}`"
+          :data-state="runtimeStatus.label"
+          data-test="trade-positions-runtime"
+        >
+          <span class="artdeco-trading-positions__runtime-label">{{ runtimeStatus.label }}</span>
+          <p class="artdeco-trading-positions__status" aria-live="polite">
+            {{ positionsStateMessage }}
+          </p>
+        </div>
+        <div
+          class="artdeco-trading-positions__table"
+          role="table"
+          aria-label="持仓明细表"
+          :aria-busy="loading ? 'true' : 'false'"
+          data-test="trade-positions-table"
+        >
+          <div class="artdeco-trading-positions__header" role="rowgroup">
+            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--symbol" role="columnheader">股票</div>
+            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--shares" role="columnheader">持股数</div>
+            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--avg-cost" role="columnheader">平均成本</div>
+            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--current-price" role="columnheader">当前价</div>
+            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--market-value" role="columnheader">市值</div>
+            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--pnl" role="columnheader">盈亏</div>
+            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--pnl-percent" role="columnheader">盈亏%</div>
+            <div class="artdeco-trading-positions__col artdeco-trading-positions__col--position" role="columnheader">仓位%</div>
           </div>
-          <div v-if="displayPositions.length === 0" class="artdeco-trading-positions__empty">
-            暂无持仓数据
+          <div
+            v-if="effectiveError"
+            class="artdeco-trading-positions__empty artdeco-trading-positions__empty--error"
+            data-test="trade-positions-error"
+          >
+            <p>持仓拉取失败，当前无法展示真实数据。</p>
+            <ArtDecoButton variant="outline" size="sm" data-test="trade-positions-retry" @click="loadPositions">
+              <template #icon>
+                <ArtDecoIcon name="refresh" />
+              </template>
+              重试
+            </ArtDecoButton>
           </div>
-          <div v-else class="artdeco-trading-positions__body">
-            <div v-for="position in displayPositions" :key="position.symbol" class="artdeco-trading-positions__row">
-              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--symbol">
+          <div v-else-if="displayPositions.length === 0" class="artdeco-trading-positions__empty" data-test="trade-positions-empty">
+            {{ loading ? '持仓数据同步中...' : '暂无持仓数据' }}
+          </div>
+          <div v-else-if="filteredPositions.length === 0" class="artdeco-trading-positions__empty" data-test="trade-positions-filtered-empty">
+            {{ filteredEmptyMessage }}
+          </div>
+          <div v-else class="artdeco-trading-positions__body" role="rowgroup">
+            <div
+              v-for="position in filteredPositions"
+              :key="position.symbol"
+              class="artdeco-trading-positions__row"
+              :class="{
+                'is-attention': needsPositionAttention(position),
+                'is-high-weight': isHighWeightPosition(position),
+                'is-loss': position.pnl < 0,
+              }"
+              role="row"
+              data-test="trade-positions-row"
+            >
+              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--symbol" role="cell">
                 <div class="artdeco-trading-positions__symbol-name">{{ position.name }}</div>
-                <div class="artdeco-trading-positions__symbol-code">{{ position.symbol }}</div>
+                <div class="artdeco-trading-positions__symbol-code">
+                  {{ position.symbol }}
+                  <span v-if="getPositionAttentionLabel(position)" class="artdeco-trading-positions__row-flag">
+                    {{ getPositionAttentionLabel(position) }}
+                  </span>
+                </div>
               </div>
-              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--shares">
+              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--shares artdeco-trading-positions__numeric" role="cell">
                 {{ position.shares }}
               </div>
-              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--avg-cost">
+              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--avg-cost artdeco-trading-positions__numeric" role="cell">
                 ¥{{ position.avgCost }}
               </div>
-              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--current-price">
+              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--current-price artdeco-trading-positions__numeric" role="cell">
                 ¥{{ position.currentPrice }}
               </div>
-              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--market-value">
+              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--market-value artdeco-trading-positions__numeric" role="cell">
                 ¥{{ position.marketValue }}
               </div>
               <div
-                class="artdeco-trading-positions__col artdeco-trading-positions__col--pnl"
+                class="artdeco-trading-positions__col artdeco-trading-positions__col--pnl artdeco-trading-positions__numeric"
                 :class="
                   position.pnl >= 0
                     ? 'artdeco-trading-positions__pnl--rise'
                     : 'artdeco-trading-positions__pnl--fall'
                 "
+                role="cell"
               >
                 ¥{{ position.pnl }}
               </div>
               <div
-                class="artdeco-trading-positions__col artdeco-trading-positions__col--pnl-percent"
+                class="artdeco-trading-positions__col artdeco-trading-positions__col--pnl-percent artdeco-trading-positions__numeric"
                 :class="
                   position.pnlPercent >= 0
                     ? 'artdeco-trading-positions__pnl--rise'
                     : 'artdeco-trading-positions__pnl--fall'
                 "
+                role="cell"
               >
                 {{ position.pnlPercent >= 0 ? '+' : '' }}{{ position.pnlPercent }}%
               </div>
-              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--position">
+              <div class="artdeco-trading-positions__col artdeco-trading-positions__col--position" role="cell">
                 <div class="artdeco-trading-positions__position-bar">
                   <div
                     class="artdeco-trading-positions__position-fill"
-                    :style="{ width: position.positionPercent + '%' }"
+                    :style="{ transform: `scaleX(${clampPositionPercent(position.positionPercent) / 100})` }"
                   ></div>
                   <span class="artdeco-trading-positions__position-text">
                     {{ position.positionPercent }}%
@@ -284,10 +541,9 @@ onMounted(() => {
 
 .hero-eyebrow,
 .content-shell-kicker {
-  font-family: var(--artdeco-font-mono);
+  font-family: var(--artdeco-font-body);
   font-size: var(--artdeco-text-xs);
   font-weight: 600;
-  text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-wider);
   color: var(--artdeco-gold-dim);
 }
@@ -301,7 +557,6 @@ onMounted(() => {
   font-family: var(--artdeco-font-mono);
   font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
-  text-transform: uppercase;
   letter-spacing: var(--artdeco-tracking-wide);
 }
 
@@ -328,6 +583,87 @@ onMounted(() => {
 .artdeco-trading-positions__table {
   width: 100%;
   overflow-x: auto;
+}
+
+.artdeco-trading-positions__controls {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+  flex-wrap: wrap;
+  margin-bottom: var(--artdeco-spacing-3);
+}
+
+.artdeco-trading-positions__segment {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
+  min-height: var(--artdeco-spacing-8);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-sm);
+  background: var(--artdeco-bg-surface);
+  color: var(--artdeco-fg-muted);
+  font-family: var(--artdeco-font-body);
+  font-size: var(--artdeco-text-sm);
+  cursor: pointer;
+  transition:
+    border-color var(--artdeco-transition-base),
+    color var(--artdeco-transition-base),
+    background-color var(--artdeco-transition-base);
+
+  strong {
+    font-family: var(--artdeco-font-mono);
+    font-size: var(--artdeco-text-xs);
+    color: var(--artdeco-fg-primary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &:hover {
+    border-color: var(--artdeco-gold-dim);
+    color: var(--artdeco-fg-primary);
+  }
+
+  &.is-active {
+    border-color: var(--artdeco-gold-primary);
+    background: var(--artdeco-bg-elevated);
+    color: var(--artdeco-gold-primary);
+  }
+}
+
+.artdeco-trading-positions__runtime {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-3);
+  margin-bottom: var(--artdeco-spacing-3);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  border: 1px solid var(--artdeco-border-default);
+  background: var(--artdeco-bg-surface);
+}
+
+.artdeco-trading-positions__runtime-label {
+  flex: 0 0 auto;
+  font-family: var(--artdeco-font-body);
+  font-size: var(--artdeco-text-xs);
+  font-weight: 700;
+  color: var(--artdeco-fg-primary);
+}
+
+.artdeco-trading-positions__runtime.is-success {
+  border-color: var(--artdeco-gold-dim);
+}
+
+.artdeco-trading-positions__runtime.is-warning {
+  border-color: var(--artdeco-warning);
+}
+
+.artdeco-trading-positions__runtime.is-info {
+  border-color: var(--artdeco-gold-dim);
+}
+
+.artdeco-trading-positions__status {
+  margin: 0;
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
 }
 
 .artdeco-trading-positions__header {
@@ -366,6 +702,14 @@ onMounted(() => {
   text-align: center;
 }
 
+.artdeco-trading-positions__empty--error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--artdeco-spacing-3);
+  color: var(--artdeco-warning);
+}
+
 .artdeco-trading-positions__row {
   display: grid;
   grid-template-columns:
@@ -384,10 +728,20 @@ onMounted(() => {
   font-family: var(--artdeco-font-body);
   font-size: var(--artdeco-text-sm);
   min-width: var(--artdeco-trading-positions-table-width);
-  transition: all var(--artdeco-transition-base);
+  transition:
+    background-color var(--artdeco-transition-base),
+    border-color var(--artdeco-transition-base);
 
   &:hover {
     background: var(--artdeco-bg-elevated);
+  }
+
+  &.is-attention {
+    border-left: var(--artdeco-trading-positions-border-width) solid var(--artdeco-gold-dim);
+  }
+
+  &.is-loss {
+    border-left-color: var(--artdeco-down);
   }
 }
 
@@ -397,8 +751,25 @@ onMounted(() => {
 }
 
 .artdeco-trading-positions__symbol-code {
+  display: flex;
+  align-items: center;
+  gap: var(--artdeco-spacing-2);
   font-size: var(--artdeco-text-xs);
   color: var(--artdeco-fg-muted);
+}
+
+.artdeco-trading-positions__row-flag {
+  padding: 0 var(--artdeco-spacing-2);
+  border: 1px solid var(--artdeco-border-default);
+  color: var(--artdeco-gold-dim);
+  font-size: var(--artdeco-text-xs);
+  line-height: var(--artdeco-leading-tight);
+  white-space: nowrap;
+}
+
+.artdeco-trading-positions__numeric {
+  font-family: var(--artdeco-font-mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .artdeco-trading-positions__pnl--rise {
@@ -419,9 +790,11 @@ onMounted(() => {
 }
 
 .artdeco-trading-positions__position-fill {
+  width: 100%;
   height: 100%;
+  transform-origin: left center;
   background: linear-gradient(90deg, var(--artdeco-gold-primary), var(--artdeco-up));
-  transition: width var(--artdeco-transition-base);
+  transition: transform var(--artdeco-transition-base);
 }
 
 .artdeco-trading-positions__position-text {
@@ -458,20 +831,4 @@ onMounted(() => {
   border-width: 0 var(--artdeco-trading-positions-border-width) var(--artdeco-trading-positions-border-width) 0;
 }
 
-@media (width <= 75rem) {
-  .stats-strip {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (width <= 48rem) {
-  .stats-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-meta,
-  .content-shell-meta {
-    width: 100%;
-  }
-}
 </style>

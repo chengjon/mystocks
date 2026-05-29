@@ -1,0 +1,4 @@
+# Generated local monitoring data; indexing these bundles can stall GitNexus.
+config/monitoring-stack/data/grafana/plugins/
+config/monitoring-stack/data/prometheus/
+data/grafana/plugins/
