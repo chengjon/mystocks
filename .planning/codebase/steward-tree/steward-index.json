@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T12:04:00+08:00",
+  "generated_at": "2026-05-29T12:26:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "4d77ee68a1a4a30516134b995c82fa777c3b44d6",
-  "split_branch": "g2-229-cache-prewarming-route-di-implementation",
-  "scope": "cache_prewarming_route_di_implementation",
-  "source_edit_authority": true,
+  "base_head": "4a0e41eac399e052ed3ebc9facc7dbf08761ab0a",
+  "split_branch": "g2-230-cache-prewarming-route-di-closeout-refresh",
+  "scope": "cache_prewarming_route_di_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -3462,12 +3462,14 @@
     {
       "id": "g2-229-cache-prewarming-route-di-implementation",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + cache prewarming provider governance",
       "parent": "G2.228 cache prewarming strategy provider authorization",
       "source_edit_authority": true,
       "parent_github_pr": 381,
       "parent_merge_commit": "4d77ee68a1a4a30516134b995c82fa777c3b44d6",
+      "github_pr": 382,
+      "merge_commit": "4a0e41eac399e052ed3ebc9facc7dbf08761ab0a",
       "evidence": [
         ".planning/codebase/generated/cache-prewarming-route-di-implementation-2026-05-29.json",
         "docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md",
@@ -3510,7 +3512,7 @@
         "CachePrewarmingStrategy behavior",
         "get_cache_monitor behavior"
       ],
-      "next_gate": "If accepted, start G2.230 no-source cache prewarming route DI closeout / residual refresh.",
+      "next_gate": "Superseded by G2.230 no-source cache prewarming route DI closeout / residual refresh.",
       "allowed_scope": [
         "web/backend/app/api/_cache_prewarming_routes.py",
         "web/backend/tests/test_cache_api.py",
@@ -3539,7 +3541,68 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "4d77ee68a1a4a30516134b995c82fa777c3b44d6",
+        "current_head_checked": "4a0e41eac399e052ed3ebc9facc7dbf08761ab0a",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-230-cache-prewarming-route-di-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + cache prewarming provider governance",
+      "parent": "G2.229 cache prewarming route DI implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 382,
+      "parent_merge_commit": "4a0e41eac399e052ed3ebc9facc7dbf08761ab0a",
+      "evidence": [
+        ".planning/codebase/generated/cache-prewarming-route-di-closeout-refresh-2026-05-29.json",
+        "docs/reports/quality/backend-cache-prewarming-route-di-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-383.yaml"
+      ],
+      "closeout": {
+        "route_file": "web/backend/app/api/_cache_prewarming_routes.py",
+        "route_body_direct_getter_calls": 0,
+        "dependency_uses": 3,
+        "typed_dependency_parameters": 3,
+        "cache_prewarming_route_di_closed": true,
+        "source_reopen_allowed_without_contradiction": false
+      },
+      "verification": {
+        "focused_cache_tests": "web/backend/tests/test_cache_prewarming.py + web/backend/tests/test_cache_api.py: 55 passed",
+        "ruff": "passed",
+        "app_openapi_smoke": "routes=548, paths=500, cache prewarming paths present"
+      },
+      "decision": {
+        "selected_next_gate": "G2.231 no-source service lifecycle residual candidate refresh",
+        "reason": "Refresh remaining service lifecycle residuals from current HEAD before selecting another source lane."
+      },
+      "next_gate": "If accepted, start G2.231 no-source service lifecycle residual candidate refresh. Do not reopen cache prewarming source without contradictory current-HEAD evidence.",
+      "allowed_scope": [
+        ".planning/codebase/generated/cache-prewarming-route-di-closeout-refresh-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-cache-prewarming-route-di-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-383.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "4a0e41eac399e052ed3ebc9facc7dbf08761ab0a",
         "stale_if_head_mismatch": true
       }
     },

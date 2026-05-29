@@ -119,8 +119,10 @@ state transition.
 | `docs/reports/quality/backend-cache-prewarming-strategy-ownership-decision-2026-05-29.md` | G2.227 human-readable ownership decision package | Accepted by PR `#380`; superseded for authorization evidence by G2.228 |
 | `.planning/codebase/generated/cache-prewarming-strategy-provider-authorization-2026-05-29.json` | G2.228 cache prewarming strategy provider authorization evidence | Accepted by PR `#381`; superseded for implementation evidence by G2.229 |
 | `docs/reports/quality/backend-cache-prewarming-strategy-provider-authorization-2026-05-29.md` | G2.228 human-readable authorization package | Accepted by PR `#381`; superseded for implementation evidence by G2.229 |
-| `.planning/codebase/generated/cache-prewarming-route-di-implementation-2026-05-29.json` | G2.229 cache prewarming route DI implementation evidence | Review input until PR `#382` is accepted |
-| `docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md` | G2.229 human-readable implementation package | Review input until PR `#382` is accepted |
+| `.planning/codebase/generated/cache-prewarming-route-di-implementation-2026-05-29.json` | G2.229 cache prewarming route DI implementation evidence | Accepted by PR `#382`; superseded for closeout evidence by G2.230 |
+| `docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md` | G2.229 human-readable implementation package | Accepted by PR `#382`; superseded for closeout evidence by G2.230 |
+| `.planning/codebase/generated/cache-prewarming-route-di-closeout-refresh-2026-05-29.json` | G2.230 cache prewarming route DI closeout / residual refresh evidence | Review input until PR `#383` is accepted |
+| `docs/reports/quality/backend-cache-prewarming-route-di-closeout-refresh-2026-05-29.md` | G2.230 human-readable closeout / residual refresh package | Review input until PR `#383` is accepted |
 
 ## External State Inputs
 
@@ -162,6 +164,7 @@ state transition.
 | GitHub PR `#379` | `MERGED` | G2.226 `industry_concept_analysis.py` cleanup closeout / residual refresh merged by commit `854878cd2e09384daddaa8547e8cebc970ec2b74` |
 | GitHub PR `#380` | `MERGED` | G2.227 `get_prewarming_strategy` ownership decision merged by commit `f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b` |
 | GitHub PR `#381` | `MERGED` | G2.228 cache prewarming strategy provider authorization merged by commit `4d77ee68a1a4a30516134b995c82fa777c3b44d6` |
+| GitHub PR `#382` | `MERGED` | G2.229 cache prewarming route DI implementation merged by commit `4a0e41eac399e052ed3ebc9facc7dbf08761ab0a` |
 | `origin/wip/root-dirty-20260403` | `854878cd2e09384daddaa8547e8cebc970ec2b74` | Base used for this ownership decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 

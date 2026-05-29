@@ -1353,12 +1353,34 @@ Decision: G2.229 implements the G2.228-authorized provider lane by injecting
 exposure, `get_prewarming_strategy`, `CachePrewarmingStrategy`, and
 `get_cache_monitor` behavior remain unchanged.
 
+## G2.230 Cache Prewarming Route DI Closeout / Refresh
+
+G2.230 is a no-source closeout / residual refresh after PR `#382` merged G2.229
+at `4a0e41eac399e052ed3ebc9facc7dbf08761ab0a`.
+
+Closeout evidence:
+
+| Evidence | Value |
+|---|---:|
+| Route-body direct `get_prewarming_strategy()` calls | 0 |
+| `Depends(get_prewarming_strategy)` uses | 3 |
+| Typed `prewarming_strategy` parameters | 3 |
+| Focused cache tests | `55 passed` |
+| Ruff target files | passed |
+| app.main / OpenAPI smoke | `routes=548`, `paths=500`, cache prewarming paths present |
+
+Decision: close the cache prewarming route/provider surface. Do not reopen cache
+prewarming source work unless current HEAD evidence contradicts this closeout.
+Select G2.231 no-source service lifecycle residual candidate refresh as the next
+gate before choosing another source lane.
+
 ## Next Gates
 
-- Review G2.229 cache prewarming route DI implementation.
-- If accepted, start G2.230 no-source cache prewarming route DI closeout /
-  residual refresh.
-- Do not expand cache prewarming source scope from G2.229.
+- Review G2.230 cache prewarming route DI closeout / residual refresh.
+- If accepted, start G2.231 no-source service lifecycle residual candidate
+  refresh.
+- Do not reopen cache prewarming source work without contradictory current-HEAD
+  evidence.
 - Do not expand into route paths, response models, SQL queries, error-contract
   behavior, `get_unified_data_service`, or frontend code.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.

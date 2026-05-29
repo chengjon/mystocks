@@ -1,0 +1,121 @@
+version: "v0.2"
+
+task:
+  id: "pr-383"
+  title: "Close out cache prewarming route DI implementation"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-cache-prewarming-route-di-closeout-refresh"
+  objective: "verify the G2.229 cache prewarming route DI implementation and select the next no-source residual refresh gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.230 is no-source closeout evidence only; no runtime route, test, OpenAPI, PM2, frontend, or product behavior changes are introduced."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/cache-prewarming-route-di-closeout-refresh-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-cache-prewarming-route-di-closeout-refresh-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-383.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test source edits in this PR"
+  - "cache prewarming provider implementation"
+  - "route/OpenAPI contract changes"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+
+acceptance:
+  checks:
+    - id: "residual-scan"
+      command: "current HEAD scan proves route-body direct get_prewarming_strategy() calls are 0 and dependency uses are 3"
+      required: true
+    - id: "focused-cache-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_cache_prewarming.py web/backend/tests/test_cache_api.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-current"
+      command: "ruff check web/backend/app/api/_cache_prewarming_routes.py web/backend/app/core/cache_prewarming.py web/backend/app/api/cache.py web/backend/tests/test_cache_api.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-cache-prewarming-route-di-closeout-refresh-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-383.yaml --base-sha 4a0e41eac399e052ed3ebc9facc7dbf08761ab0a --head-sha HEAD --report /tmp/pr383-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus detect_changes staged/compare"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Reviewers may mistake closeout as new implementation authority; it is no-source only."
+    - "Residual counts are current-HEAD snapshots and stale if HEAD changes."
+  rollback_plan: "Revert this PR; no runtime source or test changes are present."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close out G2.229 cache prewarming route DI implementation and select residual refresh as the next gate."
+    modified_scope: "Governance reports, generated evidence, steward tree, and task card only."
+    dependency_changes: "None."
+    legacy_logic_impact: "None; no source or test files are modified."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If current HEAD contradicts direct getter call count or OpenAPI smoke, stop before selecting a new source lane."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T12:26:00+08:00"
+    approval_note: "Approved after PR #382 merge to run no-source G2.230 cache prewarming route DI closeout / residual refresh."
+    secondary_approved: false
