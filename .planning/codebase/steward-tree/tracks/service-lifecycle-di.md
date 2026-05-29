@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T18:30:00+08:00`
-- Base HEAD checked: `383598ab2a30da31513468b97537183322b46af9`
+- Prepared at: `2026-05-29T19:13:42+08:00`
+- Base HEAD checked: `f39aca8815d59739787349ed1025e7a1b7e2c050`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1543,17 +1543,16 @@ Active route consumer matrix:
 
 Decision: `get_calculator_factory` remains owned by the monitoring domain
 factory. The active migration concern is an API route/provider seam, not a
-domain factory rewrite. If G2.236 is accepted, consider G2.237 as a separate
-no-source monitoring calculator factory provider authorization packet. G2.236
-does not create G2.237 and does not authorize source implementation.
+domain factory rewrite. G2.236 was accepted by PR `#389`, enabling G2.237 as a
+separate no-source monitoring calculator factory provider authorization packet.
+G2.236 does not authorize source implementation.
 
 ## Next Gates
 
-- Review G2.236 monitoring calculator factory ownership / provider seam
-  decision.
-- Only if G2.236 is accepted, consider G2.237 no-source monitoring calculator
-  factory provider authorization packet.
-- Do not start source implementation from G2.236.
+- Review G2.237 monitoring calculator factory provider authorization.
+- Only if G2.237 is accepted, create G2.238 as a path-limited source
+  implementation lane.
+- Do not start source implementation from G2.237.
 - Do not reopen cache prewarming source work without contradictory current-HEAD
   evidence.
 - Do not edit `data_source_config.old.py` from G2.234.
@@ -1566,6 +1565,45 @@ does not create G2.237 and does not authorize source implementation.
   singleton-wrapper migration with `adapter_split` constructor migration.
 - Do not expand into alerts resolver fixes, legacy `app.api.risk_management`
   restoration, or other risk route provider migrations.
+
+## G2.237 Monitoring Calculator Factory Provider Authorization
+
+G2.237 is the no-source authorization packet after PR `#389` merged G2.236 at
+`f39aca8815d59739787349ed1025e7a1b7e2c050`.
+
+Authorization boundary:
+
+| Item | Decision |
+|---|---|
+| Source authority now | No |
+| Future lane if accepted | G2.238 monitoring calculator factory provider injection |
+| Future source paths | `web/backend/app/api/monitoring_analysis.py`, `web/backend/app/api/_monitoring_portfolio_router.py` |
+| Future test path | `tests/api/file_tests/test_monitoring_analysis_api.py` |
+| Verification-only path | `web/backend/tests/test_health_route_conflicts.py` |
+| Domain factory rewrite | Not authorized |
+| New shared helper file | Not authorized without a new decision |
+
+Recommended future shape:
+
+- Add explicit route dependency provider(s), recommended name
+  `get_monitoring_calculator_factory`.
+- Keep domain import lazy inside provider unless fresh startup evidence proves
+  a module-level import is safe.
+- Replace the 8 route-body `get_calculator_factory()` calls with
+  `Depends(get_monitoring_calculator_factory)` parameters.
+- Preserve all route paths, response models, `UnifiedResponse` contracts,
+  OpenAPI exposure, and `HealthCalculatorFactory` behavior.
+
+GitNexus risk signal for the underlying symbol remains HIGH: CLI fallback
+reported 9 impacted symbols, 9 direct references, 3 affected processes, and 2
+affected modules. Future implementation must rerun impact/context before edits
+and staged/compare detect after edits.
+
+Next gate:
+
+- Review G2.237.
+- If accepted, create G2.238 as the bounded implementation lane.
+- Do not edit source from G2.237.
 
 ## Forbidden Scope
 

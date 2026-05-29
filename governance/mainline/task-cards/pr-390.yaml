@@ -1,0 +1,126 @@
+version: "v0.2"
+
+task:
+  id: "pr-390"
+  title: "Authorize monitoring calculator factory provider lane"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-monitoring-calculator-factory-provider-authorization"
+  objective: "authorize a bounded future provider injection lane for get_calculator_factory API consumers"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.237 is a no-source authorization package; no runtime route, test, OpenAPI, PM2, frontend, or product behavior changes are introduced."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/monitoring-calculator-factory-provider-authorization-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-monitoring-calculator-factory-provider-authorization-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-390.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test source edits in this PR"
+  - "route/OpenAPI contract changes"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+  - "issue label changes"
+  - "creating G2.238"
+  - "source implementation in this PR"
+  - "src/monitoring/domain/calculator_factory.py rewrite"
+  - "calculator construction behavior changes"
+  - "get_mock_data_manager implementation"
+  - "get_monitoring_db implementation"
+  - "get_postgres_async implementation"
+
+acceptance:
+  checks:
+    - id: "authorization-evidence"
+      command: "current HEAD scan confirms 8 active route-body get_calculator_factory consumers and bounded future source paths"
+      required: true
+    - id: "artifact-parse"
+      command: "node parses .planning/codebase/generated/monitoring-calculator-factory-provider-authorization-2026-05-29.json and .planning/codebase/steward-tree/steward-index.json"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-monitoring-calculator-factory-provider-authorization-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-390.yaml --base-sha f39aca8815d59739787349ed1025e7a1b7e2c050 --head-sha HEAD --report /tmp/pr390-mainline-governance-report.json"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus detect_changes staged/compare"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Reviewers may mistake G2.237 as source authority; this PR is no-source only."
+    - "get_calculator_factory remains HIGH risk; future implementation must be path-limited and separately reviewed."
+    - "A shared dependency helper file is not authorized by this packet; future implementation must stay in the two route modules unless separately approved."
+  rollback_plan: "Revert this PR; no runtime source or test changes are present."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future bounded provider injection lane for monitoring calculator factory route consumers."
+    modified_scope: "Governance reports, generated evidence, steward tree, and task card only."
+    dependency_changes: "None."
+    legacy_logic_impact: "None; no source or test files are modified."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If accepted, future G2.238 may only modify the two listed route modules plus focused tests."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T19:13:42+08:00"
+    approval_note: "Approved after G2.236 PR #389 merge to prepare a no-source G2.237 monitoring calculator factory provider authorization packet."
+    secondary_approved: false

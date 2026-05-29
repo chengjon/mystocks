@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T18:30:00+08:00`
-- Base HEAD checked: `383598ab2a30da31513468b97537183322b46af9`
+- Prepared at: `2026-05-29T19:13:42+08:00`
+- Base HEAD checked: `f39aca8815d59739787349ed1025e7a1b7e2c050`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -133,8 +133,10 @@ state transition.
 | `docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md` | G2.234 human-readable closeout / residual refresh package | Accepted by PR `#387`; superseded for residual candidate selection by G2.235 |
 | `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.json` | G2.235 service lifecycle residual candidate refresh after data-source config manager evidence | Accepted by PR `#388`; superseded for ownership decision by G2.236 |
 | `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.md` | G2.235 human-readable residual candidate refresh package | Accepted by PR `#388`; superseded for ownership decision by G2.236 |
-| `.planning/codebase/generated/monitoring-calculator-factory-ownership-decision-2026-05-29.json` | G2.236 monitoring calculator factory ownership / provider seam decision evidence | Review input until PR `#389` is accepted |
-| `docs/reports/quality/backend-monitoring-calculator-factory-ownership-decision-2026-05-29.md` | G2.236 human-readable ownership / provider seam decision package | Review input until PR `#389` is accepted |
+| `.planning/codebase/generated/monitoring-calculator-factory-ownership-decision-2026-05-29.json` | G2.236 monitoring calculator factory ownership / provider seam decision evidence | Accepted by PR `#389`; superseded for authorization by G2.237 |
+| `docs/reports/quality/backend-monitoring-calculator-factory-ownership-decision-2026-05-29.md` | G2.236 human-readable ownership / provider seam decision package | Accepted by PR `#389`; superseded for authorization by G2.237 |
+| `.planning/codebase/generated/monitoring-calculator-factory-provider-authorization-2026-05-29.json` | G2.237 monitoring calculator factory provider authorization evidence | Review input until PR `#390` is accepted |
+| `docs/reports/quality/backend-monitoring-calculator-factory-provider-authorization-2026-05-29.md` | G2.237 human-readable provider authorization package | Review input until PR `#390` is accepted |
 
 ## External State Inputs
 
