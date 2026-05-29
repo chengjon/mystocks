@@ -1,0 +1,136 @@
+version: "v0.2"
+
+task:
+  id: "pr-400"
+  title: "Implement postgres async provider reset seam"
+  owner: "codex"
+  created_at: "2026-05-30"
+
+mainline:
+  id: "L1-postgres-async-provider-reset-seam"
+  objective: "add a provider/reset seam around get_postgres_async while preserving singleton fallback and public re-export behavior"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.247 preserves route paths, response models, OpenAPI exposure, and database connection semantics while adding only the authorized provider/reset seam."
+
+scope:
+  allowed_paths:
+    - "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py"
+    - "src/monitoring/infrastructure/postgresql_async_v3.py"
+    - "tests/unit/monitoring/test_postgres_async_provider.py"
+    - ".planning/codebase/generated/postgres-async-provider-reset-seam-2026-05-30.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-postgres-async-provider-reset-seam-2026-05-30.md"
+    - "governance/mainline/task-cards/pr-400.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/**"
+    - "web/backend/app/services/**"
+    - "web/backend/app/tasks/**"
+    - "web/frontend/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "API route consumer migration"
+  - "route dependency/provider migration"
+  - "changing route paths"
+  - "OpenAPI schema exposure changes"
+  - "response model or response shape changes"
+  - "database connection semantic changes"
+  - "background monitoring task rewrite"
+  - "get_monitoring_db work"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+  - "issue label changes"
+
+acceptance:
+  checks:
+    - id: "standards-read"
+      command: "architecture/STANDARDS.md read before source edits"
+      required: true
+    - id: "gitnexus-impact-before-edit"
+      command: "GitNexus impact/context for get_postgres_async before source edits, with CLI fallback if MCP fails"
+      required: true
+    - id: "tdd-red"
+      command: "pytest tests/unit/monitoring/test_postgres_async_provider.py before implementation fails for missing provider/reset export"
+      required: true
+    - id: "focused-tests"
+      command: "env PYTHONPATH=. pytest -q tests/unit/monitoring/test_postgres_async_provider.py -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff-current"
+      command: "ruff check src/monitoring/infrastructure/_postgresql_async_v3_singleton.py src/monitoring/infrastructure/postgresql_async_v3.py tests/unit/monitoring/test_postgres_async_provider.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-postgres-async-provider-reset-seam-2026-05-30.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-400.yaml --base-sha efeaaebc031844e8393e8ca1bff723a5900f1a61 --head-sha HEAD --report /tmp/pr400-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus detect_changes staged/compare"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "get_postgres_async has 21 active API route-body consumers, but this PR does not migrate those consumers."
+    - "The public re-export surface must stay importable."
+    - "Provider override must not replace default lazy singleton behavior when reset."
+  rollback_plan: "Revert this PR; the explicit provider/reset seam and focused test are removed while existing fallback/default behavior returns to the previous implementation."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Add an explicit provider/reset seam around get_postgres_async."
+    modified_scope: "Two monitoring infrastructure files, one focused test file, and governance evidence updates."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "Existing lazy singleton fallback, lifecycle helpers, and public re-export imports are preserved."
+    rollback_ready: "Revert PR #400."
+    risk_and_rollback_point: "Provider seam only; rollback is single-PR revert and no route consumer migration is included."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-30T01:38:57+08:00"
+    approval_note: "Approved after G2.246 accepted PR #399; implementation limited to authorized postgres async provider/reset seam."
+    secondary_approved: false

@@ -1,0 +1,101 @@
+{
+  "schema_version": "2026-05-30.g2-postgres-async-provider-reset-seam.v1",
+  "generated_at": "2026-05-30T01:38:57+08:00",
+  "g2_id": "G2.247",
+  "status": "implementation_for_review",
+  "repo": "chengjon/mystocks",
+  "branch": "g2-247-postgres-async-provider-reset-seam",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "efeaaebc031844e8393e8ca1bff723a5900f1a61",
+  "parent": {
+    "g2_id": "G2.246",
+    "github_pr": 399,
+    "merge_commit": "efeaaebc031844e8393e8ca1bff723a5900f1a61",
+    "summary": "postgres async provider authorization approved a path-limited infrastructure provider/reset seam"
+  },
+  "authority": {
+    "source_edit_authority": true,
+    "authorized_source_paths": [
+      "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+      "src/monitoring/infrastructure/postgresql_async_v3.py"
+    ],
+    "authorized_test_paths": [
+      "tests/unit/monitoring/test_postgres_async_provider.py"
+    ],
+    "route_edit_authority": false,
+    "openapi_change_authority": false,
+    "runtime_command_authority": false,
+    "openspec_proposal_authority": false
+  },
+  "implementation": {
+    "added": [
+      "PostgresAsyncProvider type alias",
+      "set_postgres_async_provider(provider)",
+      "reset_postgres_async_provider()",
+      "provider branch in get_postgres_async()",
+      "public re-export of provider/reset helpers from postgresql_async_v3.py",
+      "focused provider/reset tests"
+    ],
+    "preserved": [
+      "lazy MonitoringPostgreSQLAccess singleton fallback",
+      "initialize_postgres_async behavior",
+      "close_postgres_async behavior",
+      "public postgresql_async_v3.py import surface for existing singleton helpers",
+      "route paths and OpenAPI schema"
+    ],
+    "not_changed": [
+      "API route consumers",
+      "background monitoring task consumers",
+      "database connection semantics",
+      "get_monitoring_db",
+      "OpenSpec changes"
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "env PYTHONPATH=. pytest -q tests/unit/monitoring/test_postgres_async_provider.py -n 0 --tb=short --no-cov",
+      "result": "collection failed before implementation",
+      "failure": "ImportError: cannot import name 'reset_postgres_async_provider' from 'src.monitoring.infrastructure.postgresql_async_v3'"
+    },
+    "green": {
+      "command": "env PYTHONPATH=. pytest -q tests/unit/monitoring/test_postgres_async_provider.py -n 0 --tb=short --no-cov",
+      "result": "3 passed"
+    }
+  },
+  "verification": {
+    "gitnexus_mcp": {
+      "impact": "failed: Transport closed",
+      "context": "failed: Transport closed"
+    },
+    "gitnexus_cli_pre_edit": {
+      "risk": "LOW",
+      "impacted_count": 4,
+      "direct": 3,
+      "processes_affected": 0,
+      "modules_affected": 2
+    },
+    "ruff": {
+      "command": "ruff check src/monitoring/infrastructure/_postgresql_async_v3_singleton.py src/monitoring/infrastructure/postgresql_async_v3.py tests/unit/monitoring/test_postgres_async_provider.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "import app.main and app.openapi() with transient test environment",
+      "routes": 548,
+      "paths": 500,
+      "result": "passed"
+    },
+    "initial_openapi_smoke_retry_note": "First smoke attempt lacked BACKEND_PORT and BACKEND_BACKUP_PORT; rerun with complete transient environment passed."
+  },
+  "next_gate": {
+    "g2_id": "G2.248",
+    "title": "postgres async provider closeout and residual refresh",
+    "type": "no-source closeout_refresh",
+    "source_edit_authority": false,
+    "purpose": "close out the provider/reset seam and decide whether route consumer migration is ready for a separate authorization packet"
+  },
+  "freshness": {
+    "current_head_checked": "efeaaebc031844e8393e8ca1bff723a5900f1a61",
+    "stale_if_head_mismatch": true,
+    "openspec_change": "migrate-backend-singletons-to-lifecycle-di"
+  }
+}

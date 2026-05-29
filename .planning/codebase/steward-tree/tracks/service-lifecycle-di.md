@@ -2002,6 +2002,45 @@ Decision:
 - Do not start route consumer migration from G2.246.
 - Do not start source work until G2.246 is accepted.
 
+Closeout status:
+
+- G2.246 was accepted by PR `#399` and merged at
+  `efeaaebc031844e8393e8ca1bff723a5900f1a61`.
+- G2.247 is the path-limited postgres async provider/reset seam implementation
+  after this authorization.
+
+## G2.247 Postgres Async Provider / Reset Seam Implementation
+
+G2.247 is the source implementation after PR `#399` merged G2.246 at
+`efeaaebc031844e8393e8ca1bff723a5900f1a61`.
+
+Implementation:
+
+- Added `PostgresAsyncProvider`.
+- Added `set_postgres_async_provider(provider)`.
+- Added `reset_postgres_async_provider()`.
+- Updated `get_postgres_async()` to use an explicit provider when installed.
+- Preserved lazy singleton fallback when no explicit provider is installed.
+- Preserved `initialize_postgres_async()` and `close_postgres_async()`.
+- Preserved public imports from `src.monitoring.infrastructure.postgresql_async_v3`.
+
+Verification:
+
+| Item | Result |
+|---|---:|
+| TDD red | collection failed before implementation on missing provider/reset export |
+| Focused provider tests | 3 passed |
+| Ruff on touched source/test files | All checks passed |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+| GitNexus CLI pre-edit impact | `LOW`, 4 impacted, 3 direct, 0 processes, 2 modules |
+
+Decision:
+
+- If accepted, start G2.248 no-source postgres async provider closeout /
+  residual refresh.
+- Do not migrate API route consumers from G2.247.
+- Keep `get_monitoring_db` deferred.
+
 ## Forbidden Scope
 
 This track summary forbids:
