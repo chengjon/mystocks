@@ -175,6 +175,52 @@ describe('RiskAlerts routed count-kpi truth', () => {
     expect(wrapper.text()).not.toContain('1.00')
   })
 
+  it('surfaces alert triage controls and filters rows before secondary rule management', async () => {
+    getAlertsMock.mockResolvedValueOnce({
+      success: true,
+      request_id: 'req-alert-records-triage',
+      data: [
+        {
+          id: 10,
+          symbol: '600519',
+          stock_name: '贵州茅台',
+          alert_type: 'stop_loss',
+          alert_level: 'critical',
+          alert_message: '已跌破止损线，请立即处理。',
+          is_read: false,
+          alert_time: '2026-04-01T09:31:00Z',
+        },
+        {
+          id: 11,
+          symbol: '000001',
+          stock_name: '平安银行',
+          alert_type: 'watch',
+          alert_level: 'info',
+          alert_message: '观察信息，无需立即处理。',
+          is_read: true,
+          alert_time: '2026-04-01T09:35:00Z',
+        },
+      ],
+    })
+
+    const wrapper = mountAlertsPage()
+
+    await flushPromises()
+
+    expect(wrapper.get('[data-test="risk-alerts-triage-controls"]').text()).toContain('仅未读')
+    expect(wrapper.get('[data-test="risk-alerts-triage-controls"]').text()).toContain('高优先级')
+    expect(wrapper.get('[data-test="risk-alerts-table"]').text()).toContain('已跌破止损线，请立即处理。')
+    expect(wrapper.get('[data-test="risk-alerts-table"]').text()).toContain('观察信息，无需立即处理。')
+
+    await wrapper.get('[data-test="risk-alerts-filter-unread"]').trigger('click')
+    expect(wrapper.get('[data-test="risk-alerts-table"]').text()).toContain('已跌破止损线，请立即处理。')
+    expect(wrapper.get('[data-test="risk-alerts-table"]').text()).not.toContain('观察信息，无需立即处理。')
+
+    await wrapper.get('[data-test="risk-alerts-filter-critical"]').trigger('click')
+    expect(wrapper.get('[data-test="risk-alerts-table"]').text()).toContain('已跌破止损线，请立即处理。')
+    expect(wrapper.get('[data-test="risk-alerts-rules-secondary"]').text()).toContain('规则配置')
+  })
+
   it('does not leak a failed first-load risk alerts request id before any verified snapshot exists', async () => {
     getAlertRulesMock.mockResolvedValueOnce({
       success: false,
