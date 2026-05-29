@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-30T00:30:17+08:00`
-- Base HEAD checked: `e7506af885ed635580f2ab765ec9e4fe279cc98b`
+- Prepared at: `2026-05-30T00:45:20+08:00`
+- Base HEAD checked: `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.243 mock data manager provider/reset seam implementation | G/#79 service lifecycle DI | PR `#395` merged at `e7506af885ed635580f2ab765ec9e4fe279cc98b`; G2.243 adds the authorized provider/reset/test-double seam while preserving `get_mock_data_manager` compatibility | If accepted, start G2.244 no-source closeout / residual refresh; do not migrate additional consumers from G2.243 |
+| P0 | Review G2.244 mock data manager provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#396` merged at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`; G2.244 closes the provider/reset seam and selects `get_postgres_async` as the next no-source ownership decision | If accepted, start G2.245 no-source `get_postgres_async` ownership / provider decision; do not start source work from G2.244 |
+| P0 | Preserve G2.243 mock data manager provider/reset seam implementation | G/#79 service lifecycle DI | PR `#396` merged at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`; provider/reset/test-double seam exists and focused tests pass | Do not migrate additional consumers from G2.243 |
 | P0 | Preserve G2.242 mock data manager provider/reset seam authorization | G/#79 service lifecycle DI | PR `#395` merged at `e7506af885ed635580f2ab765ec9e4fe279cc98b`; G2.242 authorized only the G2.243 path-limited source lane | Do not use G2.242 to start any consumer migration or adapter rewrite |
 | P0 | Preserve G2.241 mock data manager ownership / runtime seam decision | G/#79 service lifecycle DI | PR `#394` merged at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`; `get_mock_data_manager` is a mock data runtime facade / compatibility accessor with CRITICAL impact | Do not start source work from G2.241; use G2.242 only for provider/reset seam authorization review |
 | P0 | Preserve G2.240 service lifecycle residual candidate refresh | G/#79 service lifecycle DI | PR `#393` merged at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`; G2.240 ranked `get_mock_data_manager` as the next no-source decision target and deferred `get_postgres_async` / `get_monitoring_db` | Do not treat G2.240 as implementation authorization |

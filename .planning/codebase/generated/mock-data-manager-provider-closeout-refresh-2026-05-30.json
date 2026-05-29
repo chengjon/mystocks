@@ -1,0 +1,90 @@
+{
+  "schema_version": "2026-05-30.mock-data-manager-provider-closeout-refresh.v1",
+  "g2_id": "G2.244",
+  "status": "closeout_refresh_for_review",
+  "generated_at": "2026-05-30T00:45:20+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-244-mock-data-manager-provider-closeout-refresh",
+  "base_head": "a0eec8bea7077e59e25a6f4491d4c695b1e25ed9",
+  "parent": {
+    "g2_id": "G2.243",
+    "github_pr": 396,
+    "merge_commit": "a0eec8bea7077e59e25a6f4491d4c695b1e25ed9"
+  },
+  "source_edit_authority": false,
+  "closeout": {
+    "subject": "get_mock_data_manager",
+    "primary_file": "web/backend/app/mock/mock_data/factory.py",
+    "result": "provider/reset/test-double seam implemented and verified",
+    "factory_lines": 190,
+    "has_set_mock_data_manager_provider": true,
+    "has_reset_mock_data_manager_provider": true,
+    "provider_token_count": 9,
+    "test_override_reset_present": true,
+    "preserved_behavior": [
+      "get_mock_data_manager compatibility accessor remains",
+      "package-level cached manager lookup remains",
+      "UnifiedMockDataManager creation path remains",
+      "fallback manager behavior remains",
+      "mock response shapes remain"
+    ]
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_mock_data_manager_configuration.py web/backend/tests/test_runtime_regressions_p0.py -q --no-cov --tb=short",
+      "result": "14 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/mock/mock_data/factory.py web/backend/tests/test_mock_data_manager_configuration.py web/backend/tests/test_runtime_regressions_p0.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_id_warnings": 0
+    }
+  },
+  "residual_candidate_refresh": {
+    "python_files_scanned": 575,
+    "candidates": [
+      {
+        "candidate": "get_postgres_async",
+        "classification": "single-definition infrastructure data-access singleton",
+        "definition_count": 1,
+        "import_lines": 28,
+        "call_expressions": 30,
+        "files": 8,
+        "api_route_body_calls": 22,
+        "gitnexus_impact": {
+          "risk": "LOW",
+          "impacted_count": 4,
+          "direct": 3,
+          "processes_affected": 0,
+          "modules_affected": 2
+        },
+        "recommendation": "select G2.245 no-source ownership / provider decision before any source lane"
+      },
+      {
+        "candidate": "get_monitoring_db",
+        "classification": "multi-definition monitoring/risk/strategy logging seam",
+        "definition_count": 3,
+        "import_lines": 2,
+        "call_expressions": 12,
+        "files": 9,
+        "api_route_body_calls": 12,
+        "gitnexus_impact": {
+          "risk": "UNKNOWN",
+          "status": "ambiguous",
+          "candidate_count": 3
+        },
+        "recommendation": "defer until disambiguation and ownership classification"
+      }
+    ]
+  },
+  "next_gate": {
+    "g2_id": "G2.245",
+    "title": "postgres async singleton ownership / provider decision",
+    "source_edit_authority": false
+  }
+}

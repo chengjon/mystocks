@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-30T00:30:17+08:00`
-- Base HEAD checked: `e7506af885ed635580f2ab765ec9e4fe279cc98b`
+- Prepared at: `2026-05-30T00:45:20+08:00`
+- Base HEAD checked: `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,6 +21,9 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
+| `.planning/codebase/generated/mock-data-manager-provider-closeout-refresh-2026-05-30.json` | G2.244 closeout and residual-refresh evidence | Review input for PR `#397`; current for HEAD `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9` |
+| `docs/reports/quality/backend-mock-data-manager-provider-closeout-refresh-2026-05-30.md` | G2.244 human-readable closeout / residual-refresh report | Review input for PR `#397`; no-source governance only |
+| `governance/mainline/task-cards/pr-397.yaml` | Path-limited governance task card for G2.244 | Review input; forbids source/test/runtime/OpenSpec changes |
 | `.planning/codebase/generated/mock-data-manager-provider-reset-seam-2026-05-30.json` | G2.243 provider/reset seam implementation evidence | Review input for PR `#396`; current for HEAD `e7506af885ed635580f2ab765ec9e4fe279cc98b` plus branch changes |
 | `docs/reports/quality/backend-mock-data-manager-provider-reset-seam-2026-05-30.md` | G2.243 human-readable implementation report | Review input for PR `#396`; source authority limited to task-card paths |
 | `governance/mainline/task-cards/pr-396.yaml` | Path-limited implementation task card for G2.243 | Review input; forbids consumer migration and route/OpenAPI changes |

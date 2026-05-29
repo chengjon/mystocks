@@ -1857,6 +1857,48 @@ Next gate:
 - If accepted, start G2.244 no-source closeout / residual refresh.
 - G2.243 does not authorize additional consumer migration.
 
+Closeout status:
+
+- G2.243 was accepted by PR `#396` and merged at
+  `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`.
+- G2.244 is the no-source closeout / residual refresh after this implementation.
+
+## G2.244 Mock Data Manager Provider Closeout / Residual Refresh
+
+G2.244 is the no-source closeout and residual refresh after PR `#396` merged
+G2.243 at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`.
+
+Closeout:
+
+- `set_mock_data_manager_provider(provider)` exists.
+- `reset_mock_data_manager_provider()` exists.
+- `get_mock_data_manager` remains the compatibility accessor.
+- G2.243 did not migrate API/helper fallback consumers, service adapters, or
+  legacy/facade adapters.
+
+Verification:
+
+| Item | Result |
+|---|---:|
+| Focused mock manager + runtime tests | 14 passed |
+| Ruff on G2.243 touched runtime/test files | All checks passed |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+
+Residual candidate refresh:
+
+| Rank | Candidate | Classification | Current evidence | Recommendation |
+|---:|---|---|---|---|
+| 1 | `get_postgres_async` | Single-definition infrastructure data-access singleton | 1 definition, 28 import lines, 30 call expressions, 22 API route-body calls; GitNexus CLI impact `LOW`, 4 impacted, 3 direct, 0 processes, 2 modules | Select G2.245 no-source ownership / provider decision |
+| 2 | `get_monitoring_db` | Multi-definition monitoring/risk/strategy logging seam | 3 definitions, 2 import lines, 12 call expressions, 12 API route-body calls; GitNexus impact ambiguous with 3 candidates | Defer until disambiguation and ownership classification |
+
+Decision:
+
+- Close the mock data manager provider/reset seam unless current-HEAD evidence
+  contradicts this closeout.
+- Select G2.245 as a no-source `get_postgres_async` ownership / provider
+  decision packet.
+- Do not start source work from G2.244.
+
 ## Forbidden Scope
 
 This track summary forbids:
