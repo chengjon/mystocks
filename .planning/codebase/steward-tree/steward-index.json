@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-30T01:04:48+08:00",
+  "generated_at": "2026-05-30T01:23:24+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "05844e89873ad4fc729dab87942ea80f81bde39a",
-  "split_branch": "g2-245-postgres-async-ownership-decision",
-  "scope": "postgres_async_ownership_decision",
+  "base_head": "6bb9104295c31eac0e5b99dcaa65264c79fda085",
+  "split_branch": "g2-246-postgres-async-provider-authorization",
+  "scope": "postgres_async_provider_authorization",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -4813,12 +4813,14 @@
     {
       "id": "g2-245-postgres-async-ownership-decision",
       "type": "ownership_decision",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.244 mock data manager provider closeout / residual refresh",
       "source_edit_authority": false,
       "parent_github_pr": 397,
       "parent_merge_commit": "05844e89873ad4fc729dab87942ea80f81bde39a",
+      "github_pr": 398,
+      "merge_commit": "6bb9104295c31eac0e5b99dcaa65264c79fda085",
       "evidence": [
         ".planning/codebase/generated/postgres-async-ownership-decision-2026-05-30.json",
         "docs/reports/quality/backend-postgres-async-ownership-decision-2026-05-30.md",
@@ -4892,6 +4894,91 @@
       ],
       "freshness": {
         "current_head_checked": "05844e89873ad4fc729dab87942ea80f81bde39a",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-246-postgres-async-provider-authorization",
+      "type": "provider_authorization",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.245 postgres async ownership / provider decision",
+      "source_edit_authority": false,
+      "parent_github_pr": 398,
+      "parent_merge_commit": "6bb9104295c31eac0e5b99dcaa65264c79fda085",
+      "evidence": [
+        ".planning/codebase/generated/postgres-async-provider-authorization-2026-05-30.json",
+        "docs/reports/quality/backend-postgres-async-provider-authorization-2026-05-30.md",
+        "governance/mainline/task-cards/pr-399.yaml"
+      ],
+      "subject": {
+        "symbol": "get_postgres_async",
+        "primary_file": "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+        "reexport_file": "src/monitoring/infrastructure/postgresql_async_v3.py",
+        "owned_object": "MonitoringPostgreSQLAccess",
+        "authorization_decision": "future path-limited infrastructure provider/reset seam",
+        "source_edit_authority": false
+      },
+      "current_head_evidence": {
+        "definition_count": 1,
+        "import_lines": 28,
+        "public_reexport_imports": 27,
+        "direct_singleton_module_imports": 1,
+        "invocation_calls": 30,
+        "active_api_route_body_calls": 21,
+        "historical_api_route_body_calls": 1,
+        "depends_calls": 0,
+        "gitnexus_mcp_status": "failed_transport_closed",
+        "gitnexus_cli_risk": "LOW",
+        "gitnexus_cli_impacted_count": 4,
+        "gitnexus_cli_direct": 3,
+        "gitnexus_cli_processes_affected": 0,
+        "gitnexus_cli_modules_affected": 2
+      },
+      "authorized_future_lane": {
+        "g2_id": "G2.247",
+        "title": "postgres async provider/reset seam implementation",
+        "source_edit_authority": true,
+        "allowed_paths": [
+          "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+          "src/monitoring/infrastructure/postgresql_async_v3.py",
+          "tests/unit/monitoring/test_postgres_async_provider.py"
+        ],
+        "forbidden": [
+          "API route consumer migration",
+          "route path or OpenAPI changes",
+          "background monitoring behavior changes",
+          "database connection semantic changes",
+          "get_monitoring_db work"
+        ]
+      },
+      "next_gate": "If accepted, start G2.247 path-limited postgres async provider/reset seam implementation. Do not start route consumer migration from G2.246.",
+      "allowed_scope": [
+        ".planning/codebase/generated/postgres-async-provider-authorization-2026-05-30.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-postgres-async-provider-authorization-2026-05-30.md",
+        "governance/mainline/task-cards/pr-399.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "6bb9104295c31eac0e5b99dcaa65264c79fda085",
         "stale_if_head_mismatch": true
       }
     },

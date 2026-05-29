@@ -82,12 +82,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#395` | `g2-242-mock-data-manager-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `e7506af885ed635580f2ab765ec9e4fe279cc98b` | No-source provider/reset seam authorization selecting G2.243 path-limited implementation |
 | `#396` | `g2-243-mock-data-manager-provider-reset-seam` | `wip/root-dirty-20260403` | `MERGED` at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9` | Path-limited provider/reset seam implementation selecting G2.244 closeout refresh |
 | `#397` | `g2-244-mock-data-manager-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `05844e89873ad4fc729dab87942ea80f81bde39a` | No-source mock data manager provider closeout / residual refresh selecting G2.245 postgres async ownership decision |
+| `#398` | `g2-245-postgres-async-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `6bb9104295c31eac0e5b99dcaa65264c79fda085` | No-source postgres async ownership decision selecting G2.246 provider authorization |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-245-postgres-async-ownership-decision` | `origin/wip/root-dirty-20260403` at `05844e89873ad4fc729dab87942ea80f81bde39a` | Classify `get_postgres_async` ownership / provider seam and select a no-source authorization next gate | No |
+| `g2-246-postgres-async-provider-authorization` | `origin/wip/root-dirty-20260403` at `6bb9104295c31eac0e5b99dcaa65264c79fda085` | Authorize the future path-limited `get_postgres_async` provider/reset seam implementation | No |
 
 ## OpenSpec Relationship
 
@@ -103,8 +104,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.245 is the no-source ownership / provider decision after PR `#397` merged
-G2.244. It classifies `get_postgres_async` as an infrastructure-owned singleton
-accessor and compatibility facade, and recommends G2.246 as a no-source provider
-authorization package. It must not authorize source edits, tests, route
-contracts, OpenAPI, frontend, config, scripts, or OpenSpec.
+G2.246 is the no-source provider authorization after PR `#398` merged G2.245.
+It authorizes only a future G2.247 path-limited provider/reset seam for
+`get_postgres_async`. It must not perform source edits, route consumer migration,
+route contracts, OpenAPI, frontend, config, scripts, or OpenSpec changes.

@@ -1,0 +1,114 @@
+{
+  "schema_version": "2026-05-30.g2-postgres-async-provider-authorization.v1",
+  "generated_at": "2026-05-30T01:23:24+08:00",
+  "g2_id": "G2.246",
+  "status": "provider_authorization_for_review",
+  "repo": "chengjon/mystocks",
+  "branch": "g2-246-postgres-async-provider-authorization",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "6bb9104295c31eac0e5b99dcaa65264c79fda085",
+  "parent": {
+    "g2_id": "G2.245",
+    "github_pr": 398,
+    "merge_commit": "6bb9104295c31eac0e5b99dcaa65264c79fda085",
+    "summary": "postgres async ownership decision classified get_postgres_async as an infrastructure-owned singleton accessor / compatibility facade"
+  },
+  "authority": {
+    "source_edit_authority": false,
+    "test_edit_authority": false,
+    "runtime_command_authority": false,
+    "openspec_proposal_authority": false,
+    "github_issue_authority": false,
+    "allowed_work": "provider authorization evidence, steward tree updates, task card, and review report only"
+  },
+  "subject": {
+    "symbol": "get_postgres_async",
+    "primary_file": "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+    "reexport_file": "src/monitoring/infrastructure/postgresql_async_v3.py",
+    "owned_object": "MonitoringPostgreSQLAccess",
+    "authorization_decision": "authorize a future path-limited G2.247 implementation to add an infrastructure-level provider/reset seam while preserving the existing singleton fallback and public re-export surface"
+  },
+  "current_head_evidence": {
+    "files_scanned": 2318,
+    "definition_count": 1,
+    "import_lines": 28,
+    "public_reexport_imports": 27,
+    "direct_singleton_module_imports": 1,
+    "invocation_calls": 30,
+    "active_api_route_body_calls": 21,
+    "historical_api_route_body_calls": 1,
+    "depends_calls": 0,
+    "files_with_hits": 14,
+    "gitnexus_mcp_status": "failed_transport_closed",
+    "gitnexus_cli_risk": "LOW",
+    "gitnexus_cli_impacted_count": 4,
+    "gitnexus_cli_direct": 3,
+    "gitnexus_cli_processes_affected": 0,
+    "gitnexus_cli_modules_affected": 2
+  },
+  "rejected_authorization_options": [
+    {
+      "option": "route-local provider wrappers first",
+      "reason": "There are 21 active API route-body calls across multiple route files. Migrating those before creating an infrastructure seam would widen the first source lane and bypass background-task compatibility concerns."
+    },
+    {
+      "option": "bulk consumer migration",
+      "reason": "Bulk migration would mix API route, monitoring infrastructure, historical compatibility, and tests in one lane."
+    },
+    {
+      "option": "delete or rename get_postgres_async",
+      "reason": "The symbol remains the compatibility accessor and has 28 import lines, mostly through the public re-export surface."
+    }
+  ],
+  "authorized_future_lane": {
+    "g2_id": "G2.247",
+    "title": "postgres async provider/reset seam implementation",
+    "source_edit_authority": true,
+    "allowed_paths": [
+      "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+      "src/monitoring/infrastructure/postgresql_async_v3.py",
+      "tests/unit/monitoring/test_postgres_async_provider.py"
+    ],
+    "required_behavior": [
+      "add an explicit provider hook for get_postgres_async",
+      "add a reset hook that clears explicit provider state and restores default singleton behavior",
+      "preserve lazy MonitoringPostgreSQLAccess creation when no explicit provider is installed",
+      "preserve initialize_postgres_async and close_postgres_async behavior",
+      "preserve imports from src.monitoring.infrastructure.postgresql_async_v3",
+      "add focused tests proving provider override, reset, fallback, and public re-export behavior"
+    ],
+    "forbidden_behavior": [
+      "migrating API route-body consumers",
+      "changing route paths, response contracts, or OpenAPI schema",
+      "changing background monitoring task behavior",
+      "changing database connection semantics",
+      "deleting get_postgres_async or the public re-export",
+      "editing get_monitoring_db or unrelated singleton seams"
+    ],
+    "pre_implementation_gates": [
+      "read architecture/STANDARDS.md",
+      "run GitNexus impact/context for get_postgres_async and the singleton module, using CLI fallback if MCP remains unavailable",
+      "run TDD red first for the provider/reset API before source implementation",
+      "limit staged files to the authorized paths",
+      "run focused pytest for the new provider test and any existing postgres async singleton/import smoke",
+      "run ruff on touched source/test files",
+      "run app/OpenAPI smoke to confirm route/path count is unchanged",
+      "run mainline scope gate with the future task card"
+    ]
+  },
+  "not_authorized_from_g2_246": [
+    "source implementation in this PR",
+    "G2.247 implementation before this packet is accepted",
+    "route dependency/provider migration",
+    "API route edits",
+    "OpenAPI changes",
+    "PM2 commands",
+    "get_monitoring_db disambiguation or implementation"
+  ],
+  "freshness": {
+    "current_head_checked": "6bb9104295c31eac0e5b99dcaa65264c79fda085",
+    "stale_if_head_mismatch": true,
+    "openspec_change": "migrate-backend-singletons-to-lifecycle-di",
+    "openspec_validate": "valid with PostHog telemetry network noise"
+  }
+}

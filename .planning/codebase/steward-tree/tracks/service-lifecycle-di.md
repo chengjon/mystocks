@@ -1956,6 +1956,52 @@ Decision:
 - Defer `get_monitoring_db` until separate multi-definition disambiguation.
 - Do not start source work from G2.245.
 
+Closeout status:
+
+- G2.245 was accepted by PR `#398` and merged at
+  `6bb9104295c31eac0e5b99dcaa65264c79fda085`.
+- G2.246 is the no-source postgres async provider authorization after this
+  ownership decision.
+
+## G2.246 Postgres Async Provider Authorization
+
+G2.246 is the no-source authorization packet after PR `#398` merged G2.245 at
+`6bb9104295c31eac0e5b99dcaa65264c79fda085`.
+
+Authorization evidence:
+
+| Evidence | Value |
+|---|---:|
+| `get_postgres_async` definitions | 1 |
+| Import lines | 28 |
+| Public re-export imports | 27 |
+| Invocation calls | 30 |
+| Active API route-body calls | 21 |
+| Historical `.old.py` API calls | 1 |
+| `Depends(get_postgres_async)` calls | 0 |
+| GitNexus CLI impact | `LOW`, 4 impacted, 3 direct, 0 processes, 2 modules |
+
+Authorization decision:
+
+- Authorize G2.247 as a path-limited source lane to add an infrastructure-level
+  provider/reset seam around `get_postgres_async`.
+- The future lane may touch only:
+  - `src/monitoring/infrastructure/_postgresql_async_v3_singleton.py`
+  - `src/monitoring/infrastructure/postgresql_async_v3.py`
+  - `tests/unit/monitoring/test_postgres_async_provider.py`
+- The future lane must preserve lazy singleton fallback, lifecycle helpers, and
+  the public `postgresql_async_v3.py` import surface.
+- Route-local provider wrappers and bulk API consumer migration are explicitly
+  excluded from G2.247.
+- `get_monitoring_db` remains deferred.
+
+Decision:
+
+- If accepted, start G2.247 path-limited postgres async provider/reset seam
+  implementation.
+- Do not start route consumer migration from G2.246.
+- Do not start source work until G2.246 is accepted.
+
 ## Forbidden Scope
 
 This track summary forbids:
