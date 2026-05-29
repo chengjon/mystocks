@@ -243,7 +243,7 @@ Extraction guardrail:
 
 - Do not extract page-specific API, labels, financial semantics, or route-specific data transformation into shared components.
 
-### Phase 3: Next Route Critique And Shape
+### Phase 3: Trade Signals Craft Slice
 
 Priority: P1.
 
@@ -269,8 +269,8 @@ Planned sequence:
 - [x] 3.2 Save critique report under `docs/reports/tasks/`.
 - [x] 3.3 `$impeccable shape trade signals ArtDeco signal trust desk`
 - [x] 3.4 Produce implementation approval packet and TDD acceptance plan.
-- [ ] 3.5 Wait for explicit approval before implementation.
-- [ ] 3.6 Implement only the approved slice.
+- [x] 3.5 Wait for explicit approval before implementation.
+- [x] 3.6 Implement only the approved slice.
 
 Critique report:
 
@@ -279,20 +279,21 @@ Critique report:
 Shape brief:
 
 - `docs/reports/tasks/2026-05-29-artdeco-trade-signals-shape-brief.md`
-- status: awaiting explicit user approval
-- implementation gate: no Vue, SCSS, router, API, test, or shared component changes until approval
+- status: approved and implemented
+- implementation gate: satisfied by explicit user approval before Vue / SCSS / test changes
 
 Implementation approval packet:
 
 - `docs/reports/tasks/2026-05-29-artdeco-trade-signals-implementation-approval-packet.md`
-- status: awaiting explicit user approval
-- TDD gate: first implementation step should add failing route-level E2E assertions for trust strip / review lens / `data-test` hooks
+- status: implemented
+- TDD gate: fulfilled by first adding failing route-level E2E assertions for trust strip / review lens / `data-test` hooks
+- implementation report: `docs/reports/tasks/2026-05-29-artdeco-trade-signals-implementation-report.md`
 
 Critique verdict:
 
 - good token discipline and real runtime-state foundations
 - P0/P1 issues are desktop constraint drift via `@media`, missing route-level `data-test` hooks, runtime trust state not being prominent enough, and canonical route dependence on `artdeco-pages` internals
-- no implementation should begin before a shape brief is approved
+- implementation began only after explicit approval; scope stayed local to `Signals.vue` and targeted Trade-Signals E2E
 
 Secondary candidates after `trade/Signals.vue`:
 
@@ -323,12 +324,12 @@ The immediate next action should be:
 1. Keep `add-artdeco-impeccable-design-gate` out of root archive mutation unless a separate spec-merge task is approved.
 2. Treat `.worktrees/artdeco-archive-preflight-de0c5b8c9` / `efa776cf0` as the isolated archive candidate for this line.
 3. Use the extraction analysis as the approval boundary before any shared component proposal.
-4. Await explicit approval before `trade/Signals.vue` implementation.
+4. Treat `trade/Signals.vue` as implemented and use its verification results as the fourth page in the route-grammar comparison set.
 
-Required approval wording should include `批准`, `同意`, or `执行`, for example:
+The previous approval gate has now been satisfied. Future implementation approval wording should still include `批准`, `同意`, or `执行`, for example:
 
 ```text
 批准实施 trade/Signals.vue shape brief，并包含 @media 清理；继续保持不改路由、不改 API 合同、不抽共享组件。
 ```
 
-Only after explicit approval should any `trade/Signals.vue` implementation begin.
+Only after explicit approval should any future route implementation begin.
