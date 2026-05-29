@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T22:42:25+08:00`
-- Base HEAD checked: `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`
+- Prepared at: `2026-05-30T00:30:17+08:00`
+- Base HEAD checked: `e7506af885ed635580f2ab765ec9e4fe279cc98b`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.242 mock data manager provider/reset seam authorization | G/#79 service lifecycle DI | PR `#394` merged at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`; G2.242 is a no-source authorization packet for a future G2.243 path-limited provider/reset/test-double seam | If accepted, start G2.243 source lane limited to `web/backend/app/mock/mock_data/factory.py` and focused mock/runtime regression tests |
+| P0 | Review G2.243 mock data manager provider/reset seam implementation | G/#79 service lifecycle DI | PR `#395` merged at `e7506af885ed635580f2ab765ec9e4fe279cc98b`; G2.243 adds the authorized provider/reset/test-double seam while preserving `get_mock_data_manager` compatibility | If accepted, start G2.244 no-source closeout / residual refresh; do not migrate additional consumers from G2.243 |
+| P0 | Preserve G2.242 mock data manager provider/reset seam authorization | G/#79 service lifecycle DI | PR `#395` merged at `e7506af885ed635580f2ab765ec9e4fe279cc98b`; G2.242 authorized only the G2.243 path-limited source lane | Do not use G2.242 to start any consumer migration or adapter rewrite |
 | P0 | Preserve G2.241 mock data manager ownership / runtime seam decision | G/#79 service lifecycle DI | PR `#394` merged at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`; `get_mock_data_manager` is a mock data runtime facade / compatibility accessor with CRITICAL impact | Do not start source work from G2.241; use G2.242 only for provider/reset seam authorization review |
 | P0 | Preserve G2.240 service lifecycle residual candidate refresh | G/#79 service lifecycle DI | PR `#393` merged at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`; G2.240 ranked `get_mock_data_manager` as the next no-source decision target and deferred `get_postgres_async` / `get_monitoring_db` | Do not treat G2.240 as implementation authorization |
 | P0 | Preserve G2.239 monitoring calculator factory provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#392` merged at `d68c381d75cf9dffc601ef8390fbec9c85e55d18`; G2.239 confirmed 2 route-local providers, 8 target handlers, 0 direct route-body `get_calculator_factory()` calls, 8 dependency parameters, and OpenAPI `548/500` | Do not reopen monitoring calculator factory source without contradictory current-HEAD evidence |

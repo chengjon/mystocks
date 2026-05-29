@@ -1,0 +1,102 @@
+{
+  "schema_version": "2026-05-30.mock-data-manager-provider-reset-seam.v1",
+  "g2_id": "G2.243",
+  "status": "implementation_for_review",
+  "generated_at": "2026-05-30T00:30:17+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-243-mock-data-manager-provider-reset-seam",
+  "base_head": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
+  "parent": {
+    "g2_id": "G2.242",
+    "github_pr": 395,
+    "merge_commit": "e7506af885ed635580f2ab765ec9e4fe279cc98b"
+  },
+  "source_edit_authority": true,
+  "authorized_scope": {
+    "source_paths": [
+      "web/backend/app/mock/mock_data/factory.py"
+    ],
+    "test_paths": [
+      "web/backend/tests/test_mock_data_manager_configuration.py",
+      "web/backend/tests/test_runtime_regressions_p0.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/generated/mock-data-manager-provider-reset-seam-2026-05-30.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-mock-data-manager-provider-reset-seam-2026-05-30.md",
+      "governance/mainline/task-cards/pr-396.yaml"
+    ]
+  },
+  "implementation_summary": {
+    "subject": "get_mock_data_manager",
+    "primary_file": "web/backend/app/mock/mock_data/factory.py",
+    "added_api": [
+      "set_mock_data_manager_provider",
+      "reset_mock_data_manager_provider"
+    ],
+    "preserved_api": [
+      "get_mock_data_manager"
+    ],
+    "preserved_behavior": [
+      "default package-level cached mock_data_manager lookup",
+      "UnifiedMockDataManager creation path",
+      "fallback manager behavior",
+      "mock response shapes"
+    ],
+    "non_goals": [
+      "API/helper fallback consumer migration",
+      "service adapter rewrite",
+      "legacy/facade adapter rewrite",
+      "route changes",
+      "OpenAPI changes",
+      "frontend changes",
+      "config or script changes",
+      "OpenSpec changes"
+    ]
+  },
+  "evidence_snapshot": {
+    "gitnexus_impact_before_edit": {
+      "mcp_status": "Transport closed",
+      "cli_fallback": true,
+      "risk": "CRITICAL",
+      "impacted_count": 63,
+      "direct": 27,
+      "processes_affected": 4,
+      "modules_affected": 8
+    },
+    "red_test": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_mock_data_manager_configuration.py::test_mock_data_manager_provider_can_be_overridden_and_reset -q --no-cov --tb=short",
+      "result": "failed before implementation with AttributeError: module 'app.mock.mock_data.factory' has no attribute 'set_mock_data_manager_provider'"
+    },
+    "green_tests": [
+      {
+        "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_mock_data_manager_configuration.py::test_mock_data_manager_provider_can_be_overridden_and_reset -q --no-cov --tb=short",
+        "result": "1 passed"
+      },
+      {
+        "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_mock_data_manager_configuration.py web/backend/tests/test_runtime_regressions_p0.py -q --no-cov --tb=short",
+        "result": "14 passed"
+      }
+    ],
+    "ruff": {
+      "command": "ruff check web/backend/app/mock/mock_data/factory.py web/backend/tests/test_mock_data_manager_configuration.py web/backend/tests/test_runtime_regressions_p0.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_id_warnings": 0
+    }
+  },
+  "next_gate": {
+    "g2_id": "G2.244",
+    "title": "mock data manager provider/reset seam closeout and residual refresh",
+    "source_edit_authority": false
+  }
+}

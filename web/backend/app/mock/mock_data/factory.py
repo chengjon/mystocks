@@ -1,9 +1,14 @@
 """Mock 数据子模块"""
 
+from __future__ import annotations
+
 import logging
-from typing import Any, Dict, List
+from typing import Any, Callable, Dict, List, Optional
 
 logger = logging.getLogger(__name__)
+
+MockDataManagerProvider = Callable[[], Any]
+_mock_data_manager_provider: Optional[MockDataManagerProvider] = None
 
 
 
@@ -23,9 +28,36 @@ def _is_valid_manager(manager: Any) -> bool:
     return callable(getattr(manager, "get_data", None))
 
 
+def set_mock_data_manager_provider(provider: MockDataManagerProvider) -> None:
+    """Install an explicit mock data manager provider for tests or app wiring."""
+    global _mock_data_manager_provider
+    _mock_data_manager_provider = provider
+
+
+def reset_mock_data_manager_provider() -> None:
+    """Restore the default mock data manager lookup path."""
+    global _mock_data_manager_provider
+    _mock_data_manager_provider = None
+
+
 def get_mock_data_manager() -> 'UnifiedMockDataManager':
     """获取Mock数据管理器实例"""
     try:
+        if _mock_data_manager_provider is not None:
+            manager = _mock_data_manager_provider()
+            logger.info(
+                "使用显式 mock_data_manager provider: type=%s module=%s",
+                type(manager).__name__,
+                getattr(type(manager), "__module__", "unknown"),
+            )
+            if _is_valid_manager(manager):
+                return manager
+            logger.error(
+                "显式 mock_data_manager provider 返回无效 manager: type=%s module=%s",
+                type(manager).__name__,
+                getattr(type(manager), "__module__", "unknown"),
+            )
+
         from app.mock.mock_data import UnifiedMockDataManager
 
         # 尝试从全局模块缓存获取实例
@@ -134,6 +166,8 @@ def data_source_toggle(func):
 
 if __name__ == "__main__":
     # 测试代码
+    from app.mock.mock_data import UnifiedMockDataManager
+
     manager = UnifiedMockDataManager(use_mock_data=True)
 
     # 测试获取Dashboard数据
