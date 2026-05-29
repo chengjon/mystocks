@@ -6,7 +6,7 @@ from typing import Any
 import structlog
 from fastapi import APIRouter, Depends
 
-from app.core.cache_prewarming import get_cache_monitor, get_prewarming_strategy
+from app.core.cache_prewarming import CachePrewarmingStrategy, get_cache_monitor, get_prewarming_strategy
 from app.core.exceptions import BusinessException
 from app.core.security import User, get_current_user
 from app.openapi_config import COMMON_RESPONSES
@@ -113,9 +113,12 @@ CACHE_MONITORING_HEALTH_RESPONSES = {
     description="立即执行一次缓存预热任务并返回预热数量、失败数量和耗时，供值班排障或发布后手动补热使用。",
     responses=PREWARM_TRIGGER_RESPONSES,
 )
-async def trigger_cache_prewarming(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+async def trigger_cache_prewarming(
+    current_user: User = Depends(get_current_user),
+    prewarming_strategy: CachePrewarmingStrategy = Depends(get_prewarming_strategy),
+) -> dict[str, Any]:
     try:
-        result = get_prewarming_strategy().prewarm_cache()
+        result = prewarming_strategy.prewarm_cache()
         logger.info(
             "✅ 缓存预热完成",
             prewarmed_count=result.get("prewarmed_count", 0),
@@ -140,9 +143,12 @@ async def trigger_cache_prewarming(current_user: User = Depends(get_current_user
     description="返回缓存预热策略的当前状态、最近执行时间和下一次计划执行时间，供缓存运营监控使用。",
     responses=PREWARM_STATUS_RESPONSES,
 )
-async def get_prewarming_status(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+async def get_prewarming_status(
+    current_user: User = Depends(get_current_user),
+    prewarming_strategy: CachePrewarmingStrategy = Depends(get_prewarming_strategy),
+) -> dict[str, Any]:
     try:
-        status = get_prewarming_strategy().get_prewarming_status()
+        status = prewarming_strategy.get_prewarming_status()
         logger.info("✅ 获取预热状态")
         return {"success": True, "data": status, "timestamp": _timestamp()}
     except Exception as error:
@@ -184,9 +190,12 @@ async def get_cache_monitoring_metrics(current_user: User = Depends(get_current_
     description="根据缓存命中率和延迟计算当前健康状态，供健康面板和告警系统快速判定缓存是否需要人工干预。",
     responses=CACHE_MONITORING_HEALTH_RESPONSES,
 )
-async def get_cache_health_status(current_user: User = Depends(get_current_user)) -> dict[str, Any]:
+async def get_cache_health_status(
+    current_user: User = Depends(get_current_user),
+    prewarming_strategy: CachePrewarmingStrategy = Depends(get_prewarming_strategy),
+) -> dict[str, Any]:
     try:
-        health = get_prewarming_strategy().get_health_status()
+        health = prewarming_strategy.get_health_status()
         status = health.get("status", "unknown")
         hit_rate = health.get("hit_rate", 0)
         message = (

@@ -13,6 +13,7 @@ Test Coverage:
 """
 
 import os
+import inspect
 
 os.environ.setdefault("POSTGRESQL_HOST", "localhost")
 os.environ.setdefault("POSTGRESQL_USER", "test")
@@ -25,6 +26,7 @@ import pytest
 from fastapi.testclient import TestClient
 from datetime import datetime
 
+from app.api import _cache_prewarming_routes
 from app.api.cache import router
 from app.core.cache_manager import reset_cache_manager, get_cache_manager
 from app.core.cache_integration import reset_cache_integration
@@ -430,6 +432,23 @@ class TestCacheAPIResponseFormat:
         assert response.status_code == 400
         # 检查错误响应有detail
         assert "detail" in response.json() or "detail" in str(response.content)
+
+
+def test_cache_prewarming_routes_inject_strategy_provider():
+    """Cache prewarming routes should receive the strategy as a dependency."""
+    target_names = (
+        "trigger_cache_prewarming",
+        "get_prewarming_status",
+        "get_cache_health_status",
+    )
+
+    for name in target_names:
+        handler = getattr(_cache_prewarming_routes, name)
+        source = inspect.getsource(handler)
+        signature = inspect.signature(handler)
+
+        assert "prewarming_strategy" in signature.parameters
+        assert "get_prewarming_strategy()" not in source
 
 
 if __name__ == "__main__":

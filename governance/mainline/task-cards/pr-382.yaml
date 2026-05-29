@@ -1,0 +1,130 @@
+version: "v0.2"
+
+task:
+  id: "pr-382"
+  title: "Implement cache prewarming route dependency injection"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-cache-prewarming-route-di-implementation"
+  objective: "replace direct route-body get_prewarming_strategy calls with an explicit FastAPI dependency provider"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.229 preserves route paths, response shapes, OpenAPI exposure, auth, and cache prewarming behavior; it only moves the default strategy lookup into FastAPI dependency injection for three route handlers."
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/_cache_prewarming_routes.py"
+    - "web/backend/tests/test_cache_api.py"
+    - ".planning/codebase/generated/cache-prewarming-route-di-implementation-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-382.yaml"
+  forbidden_paths:
+    - "web/backend/app/core/cache_prewarming.py"
+    - "web/backend/app/api/cache.py"
+    - "web/backend/app/services/**"
+    - "web/backend/app/schemas/**"
+    - "web/backend/app/models/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "CachePrewarmingStrategy behavior changes"
+  - "get_prewarming_strategy deletion or rename"
+  - "get_cache_monitor behavior changes"
+  - "route path changes"
+  - "OpenAPI schema exposure changes"
+  - "response model or response shape changes"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+
+acceptance:
+  checks:
+    - id: "gitnexus-impact-before-edit"
+      command: "GitNexus impact/context for get_prewarming_strategy and _cache_prewarming_routes.py before source edits"
+      required: true
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_cache_api.py::test_cache_prewarming_routes_inject_strategy_provider -q --no-cov --tb=short before implementation"
+      required: true
+    - id: "focused-cache-tests"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_cache_prewarming.py web/backend/tests/test_cache_api.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-current"
+      command: "ruff check web/backend/app/api/_cache_prewarming_routes.py web/backend/app/core/cache_prewarming.py web/backend/app/api/cache.py web/backend/tests/test_cache_api.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-382.yaml --base-sha 4d77ee68a1a4a30516134b995c82fa777c3b44d6 --head-sha HEAD --report /tmp/pr382-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus detect_changes staged/compare"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The route handlers remain active FastAPI endpoints imported through app.api.cache."
+    - "Dependency injection must preserve default provider behavior and auth dependency order."
+    - "Route/OpenAPI path count must remain unchanged unless current HEAD documents drift."
+  rollback_plan: "Revert this PR; route handlers return to direct get_prewarming_strategy() calls and the focused guard test is removed."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Move three cache prewarming route-body strategy lookups into FastAPI dependency injection."
+    modified_scope: "One route module, one focused test module, generated evidence, steward tree, and task card."
+    dependency_changes: "No new package dependency; route handlers use existing Depends(get_prewarming_strategy)."
+    legacy_logic_impact: "Preserves route paths, response shapes, OpenAPI exposure, auth, and CachePrewarmingStrategy behavior."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If focused cache tests, app.main/OpenAPI smoke, or route paths regress, revert before selecting another candidate."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T12:04:00+08:00"
+    approval_note: "Approved by G2.228 / PR #381 to run the path-limited cache prewarming route DI implementation lane."
+    secondary_approved: false
