@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T02:42:26+08:00",
+  "generated_at": "2026-05-29T07:53:38+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "3d2dc3e8204388cc157c23df59f584a3efb268fe",
-  "split_branch": "g2-221-execution-tracking-evidence-provider-injection",
-  "scope": "execution_tracking_evidence_provider_injection",
-  "source_edit_authority": true,
+  "base_head": "14339f44a8c4a145615fe35836dec8fc376ce75b",
+  "split_branch": "g2-222-execution-tracking-provider-closeout-refresh",
+  "scope": "execution_tracking_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -2792,10 +2792,13 @@
     {
       "id": "g2-221-execution-tracking-evidence-provider-injection",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + trade route/provider governance",
       "parent": "G2.220 execution tracking evidence provider authorization",
       "source_edit_authority": true,
+      "github_pr": 374,
+      "head_ref": "g2-221-execution-tracking-evidence-provider-injection",
+      "merge_commit": "14339f44a8c4a145615fe35836dec8fc376ce75b",
       "parent_github_pr": 373,
       "parent_merge_commit": "3d2dc3e8204388cc157c23df59f584a3efb268fe",
       "evidence": [
@@ -2846,7 +2849,7 @@
         "ruff": "passed",
         "openapi_smoke": "passed with transient runtime environment: route_count=548, openapi_paths=500, duplicate_operation_ids=0, warnings=0"
       },
-      "next_gate": "If accepted, start G2.222 no-source closeout and residual refresh; do not open a new provider source lane directly from G2.221.",
+      "next_gate": "Superseded by G2.222 no-source execution tracking provider closeout and residual refresh.",
       "allowed_scope": [
         "web/backend/app/api/trade/execution_tracking_routes.py",
         "web/backend/tests/test_trade_execution_tracking_routes.py",
@@ -2873,7 +2876,85 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "3d2dc3e8204388cc157c23df59f584a3efb268fe",
+        "current_head_checked": "14339f44a8c4a145615fe35836dec8fc376ce75b",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-222-execution-tracking-provider-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + trade route/provider governance",
+      "parent": "G2.221 execution tracking evidence provider injection",
+      "source_edit_authority": false,
+      "parent_github_pr": 374,
+      "parent_merge_commit": "14339f44a8c4a145615fe35836dec8fc376ce75b",
+      "evidence": [
+        ".planning/codebase/generated/execution-tracking-provider-closeout-refresh-2026-05-29.json",
+        "docs/reports/quality/backend-execution-tracking-provider-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-375.yaml"
+      ],
+      "target": {
+        "symbol": "get_execution_tracking_evidence_service",
+        "file": "web/backend/app/api/trade/execution_tracking_routes.py",
+        "classification": "closed route/provider injection seam"
+      },
+      "closeout": {
+        "total_symbol_hits": 3,
+        "definition_hits": 1,
+        "depends_hits": 2,
+        "route_body_direct_provider_calls": 0,
+        "factory_retained_intentionally": true
+      },
+      "verification": {
+        "focused_trade_route_tests": "web/backend/tests/test_trade_execution_tracking_routes.py: 4 passed",
+        "ruff": "passed",
+        "openapi_smoke": "passed with transient runtime environment: route_count=548, openapi_paths=500, duplicate_operation_ids=0, duplicate_operation_id_warnings=0, python_warnings_total=121 existing dependency/schema deprecation warnings",
+        "openspec_validate": "valid"
+      },
+      "remaining_provider_queue": {
+        "get_unified_data_service": {
+          "risk": "MEDIUM",
+          "direct_callers": 5,
+          "processes_affected": 0,
+          "classification": "root facade / compatibility service surface",
+          "recommended_next_gate": "G2.223 no-source ownership decision"
+        },
+        "get_prewarming_strategy": {
+          "risk": "LOW",
+          "direct_callers": 3,
+          "processes_affected": 0,
+          "classification": "cache prewarming route/provider surface",
+          "recommended_next_gate": "defer behind unified data service ownership decision"
+        }
+      },
+      "next_gate": "If accepted, start G2.223 no-source get_unified_data_service ownership decision; do not open source implementation directly from G2.222.",
+      "allowed_scope": [
+        ".planning/codebase/generated/execution-tracking-provider-closeout-refresh-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-execution-tracking-provider-closeout-refresh-2026-05-29.md",
+        "governance/mainline/task-cards/pr-375.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "14339f44a8c4a145615fe35836dec8fc376ce75b",
         "stale_if_head_mismatch": true
       }
     },

@@ -1,0 +1,102 @@
+{
+  "schema_version": "2026-05-29.g2-closeout-evidence.v1",
+  "g2": "G2.222",
+  "title": "execution tracking provider seam closeout and residual refresh",
+  "prepared_at": "2026-05-29T07:53:38+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "14339f44a8c4a145615fe35836dec8fc376ce75b",
+  "branch": "g2-222-execution-tracking-provider-closeout-refresh",
+  "parent": {
+    "g2": "G2.221",
+    "github_pr": 374,
+    "merge_commit": "14339f44a8c4a145615fe35836dec8fc376ce75b",
+    "implementation": "path-limited execution tracking evidence provider injection"
+  },
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "allowed_scope": [
+    ".planning/codebase/generated/execution-tracking-provider-closeout-refresh-2026-05-29.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-execution-tracking-provider-closeout-refresh-2026-05-29.md",
+    "governance/mainline/task-cards/pr-375.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "closeout": {
+    "target": "get_execution_tracking_evidence_service",
+    "status": "closed_as_route_provider_injection_seam",
+    "residual_shape": {
+      "total_symbol_hits": 3,
+      "definition_hits": 1,
+      "depends_hits": 2,
+      "route_body_direct_provider_calls": 0
+    },
+    "meaning": "the default provider factory remains intentionally available for FastAPI Depends and tests; route-body direct provider calls are closed"
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_trade_execution_tracking_routes.py -q --no-cov --tb=short",
+      "result": "4 passed in 3.67s"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/trade/execution_tracking_routes.py web/backend/tests/test_trade_execution_tracking_routes.py",
+      "result": "All checks passed!"
+    },
+    "openapi_smoke": {
+      "command": "python -c import app.main and app.openapi() with transient runtime environment",
+      "result": "passed",
+      "route_count": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "duplicate_operation_id_warnings": 0,
+      "python_warnings_total": 121,
+      "python_warnings_note": "Current app.main/app.openapi() smoke captures existing dependency/schema deprecation warnings; G2.222 is no-source and does not introduce them.",
+      "secret_handling": "required environment keys were supplied transiently; secret values were not persisted or recorded"
+    },
+    "openspec": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "Change 'migrate-backend-singletons-to-lifecycle-di' is valid",
+      "telemetry_note": "PostHog network flush failure is telemetry noise"
+    }
+  },
+  "remaining_provider_queue": {
+    "get_unified_data_service": {
+      "text_hits": 6,
+      "gitnexus_risk": "MEDIUM",
+      "direct_callers": 5,
+      "processes_affected": 0,
+      "classification": "root facade / compatibility service surface",
+      "recommended_next_gate": "G2.223 no-source ownership decision"
+    },
+    "get_prewarming_strategy": {
+      "text_hits": 4,
+      "gitnexus_risk": "LOW",
+      "direct_callers": 3,
+      "processes_affected": 0,
+      "classification": "cache prewarming route/provider surface",
+      "recommended_next_gate": "defer behind unified data service ownership decision"
+    }
+  },
+  "next_gate": {
+    "g2": "G2.223",
+    "title": "unified data service ownership decision",
+    "source_edit_authority": false,
+    "purpose": "classify get_unified_data_service as root facade, compatibility surface, provider candidate, or retained singleton before any implementation lane"
+  }
+}
