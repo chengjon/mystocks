@@ -1,0 +1,193 @@
+{
+  "schema_version": "2026-05-29.monitoring-calculator-factory-ownership-decision.v1",
+  "g2_id": "G2.236",
+  "status": "decision_packet_for_review",
+  "generated_at": "2026-05-29T18:30:00+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-236-monitoring-calculator-factory-decision",
+  "base_head": "383598ab2a30da31513468b97537183322b46af9",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.235",
+    "github_pr": 388,
+    "merge_commit": "383598ab2a30da31513468b97537183322b46af9",
+    "decision": "select get_calculator_factory as the next bounded HIGH-risk no-source ownership / provider seam decision target"
+  },
+  "scope": {
+    "mode": "governance_decision_only",
+    "source_files_changed": false,
+    "test_files_changed": false,
+    "route_or_openapi_changes_authorized": false,
+    "openspec_changes_authorized": false,
+    "issue_label_changes_authorized": false,
+    "implementation_authorized": false,
+    "g2_237_created": false
+  },
+  "current_head_evidence": {
+    "head": "383598ab2a30da31513468b97537183322b46af9",
+    "app_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "status": "passed",
+      "environment": "non_sensitive_placeholder"
+    },
+    "focused_tests": {
+      "tests/api/file_tests/test_monitoring_analysis_api.py": "16 passed",
+      "web/backend/tests/test_health_route_conflicts.py --collect-only": "121 tests collected"
+    }
+  },
+  "ownership_classification": {
+    "symbol": "get_calculator_factory",
+    "definition": {
+      "file": "src/monitoring/domain/calculator_factory.py",
+      "line": 339,
+      "owner": "monitoring domain calculator factory",
+      "classification": "canonical domain factory / singleton-backed factory accessor",
+      "decision": "retain domain ownership; do not move or rewrite the domain factory from this decision packet"
+    },
+    "route_provider_seam": {
+      "owner": "monitoring analysis API route layer",
+      "classification": "route-body direct factory lookup seam",
+      "decision": "future work, if approved separately, should introduce route/provider injection at the API layer while preserving the domain factory contract"
+    },
+    "domain_internal_helper": {
+      "file": "src/monitoring/domain/calculator_factory.py",
+      "function": "calculate_health_score",
+      "line": 364,
+      "classification": "domain helper backing call",
+      "decision": "retain; not a route-provider migration target"
+    }
+  },
+  "active_route_consumers": [
+    {
+      "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+      "handler": "get_portfolio_summary",
+      "route": "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary",
+      "direct_call_line": 159,
+      "include_in_schema": true
+    },
+    {
+      "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+      "handler": "get_portfolio_alerts",
+      "route": "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+      "direct_call_line": 228,
+      "include_in_schema": true
+    },
+    {
+      "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+      "handler": "get_rebalance_suggestions",
+      "route": "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance",
+      "direct_call_line": 299,
+      "include_in_schema": true
+    },
+    {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "handler": "calculate_health_score",
+      "route": "POST /api/v1/monitoring/analysis/calculate",
+      "direct_call_line": 152,
+      "include_in_schema": true
+    },
+    {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "handler": "batch_calculate_health_scores",
+      "route": "POST /api/v1/monitoring/analysis/calculate/batch",
+      "direct_call_line": 212,
+      "include_in_schema": true
+    },
+    {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "handler": "analyze_portfolio",
+      "route": "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}",
+      "direct_call_line": 349,
+      "include_in_schema": true
+    },
+    {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "handler": "identify_market_regime",
+      "route": "GET /api/v1/monitoring/analysis/market-regime",
+      "direct_call_line": 476,
+      "include_in_schema": true
+    },
+    {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "handler": "get_engine_status",
+      "route": "GET /api/v1/monitoring/analysis/engine/status",
+      "direct_call_line": 517,
+      "include_in_schema": true
+    }
+  ],
+  "non_consumer_routes_in_same_modules": [
+    {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "handler": "get_health_score_history",
+      "route": "GET /api/v1/monitoring/analysis/results/{stock_code}",
+      "decision": "same module but no get_calculator_factory direct call; do not include as a provider injection target without fresh evidence"
+    }
+  ],
+  "gitnexus_sample": {
+    "repo": "mystocks",
+    "index_status": "stale; use as directional graph risk signal only",
+    "target": "Function:src/monitoring/domain/calculator_factory.py:get_calculator_factory",
+    "risk": "HIGH",
+    "impacted_count": 9,
+    "direct": 9,
+    "processes_affected": 3,
+    "modules_affected": 2,
+    "affected_processes": [
+      "get_portfolio_summary",
+      "get_rebalance_suggestions",
+      "get_portfolio_alerts"
+    ],
+    "affected_modules": [
+      "Domain",
+      "Api"
+    ]
+  },
+  "decision": {
+    "ownership_decision": "get_calculator_factory remains owned by the monitoring domain factory; the active migration concern is an API route/provider seam, not a domain factory rewrite.",
+    "provider_seam_decision": "a future provider injection lane is reasonable, but must be separately authorized; G2.236 itself authorizes no source edits.",
+    "recommended_next_gate_if_accepted": {
+      "g2_id": "G2.237",
+      "title": "monitoring calculator factory provider authorization packet",
+      "type": "no_source_authorization_packet",
+      "source_edit_authority_now": false,
+      "minimum_authorization_scope_to_evaluate": [
+        "web/backend/app/api/_monitoring_portfolio_router.py",
+        "web/backend/app/api/monitoring_analysis.py",
+        "tests/api/file_tests/test_monitoring_analysis_api.py",
+        "optional focused provider-injection regression test"
+      ],
+      "must_preserve": [
+        "all route paths",
+        "all response_model declarations",
+        "all OpenAPI include_in_schema states",
+        "auth/current_user behavior where present",
+        "request and response schemas",
+        "domain factory default behavior",
+        "lazy import / startup behavior unless G2.237 explicitly approves a change"
+      ],
+      "must_not_include": [
+        "src/monitoring/domain/calculator_factory.py domain rewrite",
+        "get_mock_data_manager",
+        "get_monitoring_db",
+        "get_postgres_async",
+        "route/OpenAPI contract edits",
+        "frontend edits",
+        "config or script edits",
+        "OpenSpec change creation"
+      ]
+    },
+    "source_lane_authorized_now": false,
+    "g2_237_created_now": false
+  },
+  "verification_targets": {
+    "json_parse": "this artifact and steward-index.json must parse",
+    "markdown_governance": "0 errors for generated report and touched steward docs",
+    "focused_tests": "tests/api/file_tests/test_monitoring_analysis_api.py should pass",
+    "app_openapi_smoke": "routes=548, paths=500 at current HEAD",
+    "openspec": "migrate-backend-singletons-to-lifecycle-di --strict",
+    "mainline_scope": "governance-only; no source or test files",
+    "gitnexus": "detect_changes staged/compare should report 0 affected processes and LOW risk for docs-only diff"
+  }
+}

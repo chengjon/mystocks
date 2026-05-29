@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T18:05:00+08:00`
-- Base HEAD checked: `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`
+- Prepared at: `2026-05-29T18:30:00+08:00`
+- Base HEAD checked: `383598ab2a30da31513468b97537183322b46af9`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1512,12 +1512,48 @@ Decision: select G2.236 as a no-source monitoring calculator factory ownership
 route/OpenAPI changes, test edits, OpenSpec changes, issue label movement, or
 PM2 commands.
 
+## G2.236 Monitoring Calculator Factory Ownership / Provider Seam Decision
+
+G2.236 is the no-source ownership / provider seam decision after PR `#388`
+merged G2.235 at `383598ab2a30da31513468b97537183322b46af9`.
+
+Ownership evidence:
+
+| Evidence | Value |
+|---|---:|
+| Domain definition | `src/monitoring/domain/calculator_factory.py:339` |
+| Domain internal helper call | `src/monitoring/domain/calculator_factory.py:364` |
+| Active API route-body factory calls | 8 |
+| Active route files | 2 |
+| OpenAPI included factory-backed routes | 8 |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+| Focused monitoring API tests | 16 passed |
+| Health route conflict collect | 121 tests collected |
+| GitNexus sample risk | HIGH |
+| GitNexus sample direct impact | 9 |
+| GitNexus sample affected processes | 3 |
+
+Active route consumer matrix:
+
+| File | Handler count | Direct calls | Decision |
+|---|---:|---:|---|
+| `web/backend/app/api/_monitoring_portfolio_router.py` | 3 | 3 | Future route/API provider seam candidate only after separate authorization |
+| `web/backend/app/api/monitoring_analysis.py` | 5 factory-backed handlers; `get_health_score_history` is not a factory consumer | 5 | Future route/API provider seam candidate only after separate authorization |
+| `src/monitoring/domain/calculator_factory.py` | 1 domain helper call | 1 | Retain; not a route-provider migration target |
+
+Decision: `get_calculator_factory` remains owned by the monitoring domain
+factory. The active migration concern is an API route/provider seam, not a
+domain factory rewrite. If G2.236 is accepted, consider G2.237 as a separate
+no-source monitoring calculator factory provider authorization packet. G2.236
+does not create G2.237 and does not authorize source implementation.
+
 ## Next Gates
 
-- Review G2.235 service lifecycle residual candidate refresh after data-source
-  config manager.
-- If accepted, start G2.236 no-source monitoring calculator factory ownership /
-  provider seam decision packet.
+- Review G2.236 monitoring calculator factory ownership / provider seam
+  decision.
+- Only if G2.236 is accepted, consider G2.237 no-source monitoring calculator
+  factory provider authorization packet.
+- Do not start source implementation from G2.236.
 - Do not reopen cache prewarming source work without contradictory current-HEAD
   evidence.
 - Do not edit `data_source_config.old.py` from G2.234.
