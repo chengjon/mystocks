@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T08:42:47+08:00`
-- Base HEAD checked: `5eef37a097d55d209a69485bc29e89dd3aeb4076`
+- Prepared at: `2026-05-29T16:50:00+08:00`
+- Base HEAD checked: `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -125,8 +125,10 @@ state transition.
 | `docs/reports/quality/backend-cache-prewarming-route-di-closeout-refresh-2026-05-29.md` | G2.230 human-readable closeout / residual refresh package | Accepted by PR `#383`; superseded for residual candidate selection by G2.231 |
 | `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-2026-05-29.json` | G2.231 service lifecycle residual candidate refresh evidence | Accepted by PR `#384`; superseded for authorization evidence by G2.232 |
 | `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-2026-05-29.md` | G2.231 human-readable residual candidate refresh package | Accepted by PR `#384`; superseded for authorization evidence by G2.232 |
-| `.planning/codebase/generated/data-source-config-manager-provider-authorization-2026-05-29.json` | G2.232 data-source config manager provider authorization evidence | Review input until PR `#385` is accepted |
-| `docs/reports/quality/backend-data-source-config-manager-provider-authorization-2026-05-29.md` | G2.232 human-readable authorization package | Review input until PR `#385` is accepted |
+| `.planning/codebase/generated/data-source-config-manager-provider-authorization-2026-05-29.json` | G2.232 data-source config manager provider authorization evidence | Accepted by PR `#385`; superseded for implementation evidence by G2.233 |
+| `docs/reports/quality/backend-data-source-config-manager-provider-authorization-2026-05-29.md` | G2.232 human-readable authorization package | Accepted by PR `#385`; superseded for implementation evidence by G2.233 |
+| `.planning/codebase/generated/data-source-config-manager-provider-injection-2026-05-29.json` | G2.233 data-source config manager provider injection evidence | Review input until PR `#386` is accepted |
+| `docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md` | G2.233 human-readable implementation package | Review input until PR `#386` is accepted |
 
 ## External State Inputs
 

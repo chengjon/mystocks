@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T10:56:00+08:00`
-- Base HEAD checked: `854878cd2e09384daddaa8547e8cebc970ec2b74`
+- Prepared at: `2026-05-29T16:50:00+08:00`
+- Base HEAD checked: `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1421,10 +1421,44 @@ must preserve route paths, auth/current_user behavior, response models, OpenAPI
 exposure, and the default backing `get_config_manager()` behavior. Do not edit
 `data_source_config.old.py`.
 
+## G2.233 Data-Source Config Manager Provider Injection
+
+G2.233 is the path-limited implementation after PR `#385` merged G2.232 at
+`1f63a46657858920a3df9799ffc0c45ccf3b3dd8`.
+
+Implementation evidence:
+
+| Evidence | Value |
+|---|---:|
+| Active route file | `web/backend/app/api/data_source_config.py` |
+| Active route handlers changed | 9 |
+| Active route-body `get_config_manager()` calls before | 9 |
+| Active route-body `get_config_manager()` calls after | 0 |
+| Active `manager` dependency parameters after | 9 |
+| Route-local provider wrapper | `get_config_manager_dependency` |
+| Legacy `.old.py` edited | No |
+| `_data_source_config_responses.py` edited | No |
+
+Verification evidence:
+
+| Check | Result |
+|---|---|
+| TDD RED | `web/backend/tests/test_data_source_config_provider_injection.py`: 2 failed before implementation |
+| TDD GREEN | `web/backend/tests/test_data_source_config_provider_injection.py`: 2 passed |
+| Focused route contract tests | `tests/api/file_tests/test_data_source_config_api.py` + `web/backend/tests/test_data_source_config_provider_injection.py`: 12 passed |
+| Ruff | Passed |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+
+Decision: mark the active data-source config manager route-body provider
+migration as implemented for review. If accepted, G2.234 should be a no-source
+closeout / residual refresh that confirms post-merge state and selects the next
+candidate without opening source edits directly.
+
 ## Next Gates
 
-- Review G2.232 data-source config manager provider authorization.
-- If accepted, start G2.233 data-source config manager route provider injection.
+- Review G2.233 data-source config manager provider injection.
+- If accepted, start G2.234 no-source data-source config manager provider
+  injection closeout / residual refresh.
 - Do not reopen cache prewarming source work without contradictory current-HEAD
   evidence.
 - Do not edit `data_source_config.old.py` from G2.233.

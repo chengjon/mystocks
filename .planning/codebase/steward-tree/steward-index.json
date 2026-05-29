@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T15:24:12+08:00",
+  "generated_at": "2026-05-29T16:50:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "05c84d1f4f5e42d9db0ace21ef3ba110dacbc184",
-  "split_branch": "g2-232-data-source-config-manager-provider-authorization",
-  "scope": "data_source_config_manager_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
+  "split_branch": "g2-233-data-source-config-manager-provider-injection",
+  "scope": "data_source_config_manager_provider_injection",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -3675,12 +3675,14 @@
     {
       "id": "g2-232-data-source-config-manager-provider-authorization",
       "type": "authorization",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.231 service lifecycle residual candidate refresh",
       "source_edit_authority": false,
       "parent_github_pr": 384,
       "parent_merge_commit": "05c84d1f4f5e42d9db0ace21ef3ba110dacbc184",
+      "github_pr": 385,
+      "merge_commit": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
       "evidence": [
         ".planning/codebase/generated/data-source-config-manager-provider-authorization-2026-05-29.json",
         "docs/reports/quality/backend-data-source-config-manager-provider-authorization-2026-05-29.md",
@@ -3717,7 +3719,7 @@
           "default backing get_config_manager behavior"
         ]
       },
-      "next_gate": "If accepted, start G2.233 path-limited data-source config manager route provider injection. Do not edit data_source_config.old.py.",
+      "next_gate": "Superseded by G2.233 data-source config manager route provider injection.",
       "allowed_scope": [
         ".planning/codebase/generated/data-source-config-manager-provider-authorization-2026-05-29.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -3743,7 +3745,110 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "05c84d1f4f5e42d9db0ace21ef3ba110dacbc184",
+        "current_head_checked": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-233-data-source-config-manager-provider-injection",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.232 data-source config manager provider authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 385,
+      "parent_merge_commit": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
+      "evidence": [
+        ".planning/codebase/generated/data-source-config-manager-provider-injection-2026-05-29.json",
+        "docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md",
+        "governance/mainline/task-cards/pr-386.yaml"
+      ],
+      "authorized_scope": {
+        "source_paths": [
+          "web/backend/app/api/data_source_config.py"
+        ],
+        "test_paths": [
+          "tests/api/file_tests/test_data_source_config_api.py",
+          "web/backend/tests/test_data_source_config_provider_injection.py"
+        ]
+      },
+      "gitnexus_impact": {
+        "target": "get_config_manager",
+        "risk": "HIGH",
+        "impacted_count": 9,
+        "direct_callers": 9,
+        "processes_affected": 3,
+        "modules_affected": 1
+      },
+      "implementation": {
+        "target_symbol": "get_config_manager",
+        "route_file": "web/backend/app/api/data_source_config.py",
+        "provider_dependency": "Depends(get_config_manager_dependency)",
+        "changed_route_handlers": [
+          "create_data_source",
+          "update_data_source",
+          "delete_data_source",
+          "get_data_source",
+          "list_data_sources",
+          "batch_operations",
+          "get_version_history",
+          "rollback_to_version",
+          "reload_config"
+        ],
+        "route_body_direct_getter_calls_before": 9,
+        "route_body_direct_getter_calls_after": 0,
+        "dependency_parameters_after": 9,
+        "legacy_old_file_edited": false,
+        "backing_getter_edited": false
+      },
+      "verification": {
+        "tdd_red": "web/backend/tests/test_data_source_config_provider_injection.py: 2 failed before implementation",
+        "tdd_green": "web/backend/tests/test_data_source_config_provider_injection.py: 2 passed",
+        "focused_tests": "tests/api/file_tests/test_data_source_config_api.py + web/backend/tests/test_data_source_config_provider_injection.py: 12 passed",
+        "ruff": "passed",
+        "app_openapi_smoke": "routes=548, paths=500"
+      },
+      "preserved_invariants": [
+        "route paths",
+        "router registration",
+        "auth/current_user dependencies",
+        "response models and UnifiedResponse shape",
+        "OpenAPI exposure",
+        "default backing get_config_manager behavior",
+        "data_source_config.old.py untouched",
+        "_data_source_config_responses.py untouched"
+      ],
+      "next_gate": "If accepted, start G2.234 no-source data-source config manager provider injection closeout / residual refresh.",
+      "allowed_scope": [
+        "web/backend/app/api/data_source_config.py",
+        "tests/api/file_tests/test_data_source_config_api.py",
+        "web/backend/tests/test_data_source_config_provider_injection.py",
+        ".planning/codebase/generated/data-source-config-manager-provider-injection-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md",
+        "governance/mainline/task-cards/pr-386.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/app/api/data_source_config.old.py",
+        "web/backend/app/api/_data_source_config_responses.py",
+        "web/backend/app/services/**",
+        "web/backend/app/schemas/**",
+        "web/backend/app/models/**",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
         "stale_if_head_mismatch": true
       }
     },
