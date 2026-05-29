@@ -147,8 +147,8 @@ That means the next responsible step is a design-pattern document or OpenSpec fo
 ## 8. Recommended Next Work
 
 1. Do not extract shared components yet.
-2. Open a small follow-up task to normalize the route-level ArtDeco page grammar in documentation.
-3. Run `$impeccable critique web/frontend/src/views/trade/Signals.vue` as the next route-only audit.
+2. Treat `trade/Signals.vue` as the fourth completed pilot and use it to refresh the route-grammar evidence set.
+3. Open a small OpenSpec follow-up only for the route-level ArtDeco page grammar and verification-hook standard.
 4. Before any future `$impeccable craft`, require a shape brief and explicit user approval.
 5. Before any future `$impeccable extract`, require an extraction proposal that proves:
    - at least four routed pages share the same pattern
@@ -171,3 +171,70 @@ Completed for this documentation batch:
 Known blocker carried forward:
 
 - GitNexus staged detect remained a tooling-performance blocker in the previous commit and should be tracked separately from ArtDeco page design work.
+
+## 10. Post-Signals Four-Pilot Refresh
+
+This section supersedes the earlier three-pilot extraction notes now that `trade/Signals.vue` has been implemented and committed as `88ec01fd3 feat(web): craft ArtDeco trade signals trust desk`.
+
+### 10.1 Current Evidence Set
+
+| Route | Source lines | Local `@media` count | `data-testid` attrs | Primary runtime marker | Latest targeted E2E |
+|---|---:|---:|---:|---|---|
+| `market/Realtime.vue` | 621 | 1 | 0 | `status-strip` | market external PM2 smoke: 18 passed |
+| `risk/Alerts.vue` | 753 | 2 | 0 | `runtime-status-strip` | Risk-Alerts Chromium: 4 passed |
+| `trade/Center.vue` | 835 | 0 | 0 | `artdeco-trading-positions__runtime` | Trade-Positions Chromium: 4 passed |
+| `trade/Signals.vue` | 821 | 0 | 7 | `signal-trust-strip` | Trade-Signals Chromium: 4 passed |
+
+### 10.2 Four-Route Grammar
+
+The four completed pilots now prove this Web ArtDeco route grammar:
+
+```text
+compact operational header
+-> first-level review/control lens
+-> runtime trust/status strip
+-> primary data surface
+-> secondary evidence panels
+```
+
+This grammar is strong enough to document and govern. It is still not a direct approval to extract shared Vue components, because each route still owns different data semantics, API orchestration, fallback copy, and table/list behavior.
+
+### 10.3 Extraction Readiness Update
+
+Ready to document now:
+
+- route-level page grammar
+- runtime state vocabulary
+- first-level review/control lens placement
+- primary data surface placement
+- secondary panel placement
+- route-level E2E hook expectations
+- no-route/no-API/no-shared-component boundary for page craft slices
+
+Candidate for a future OpenSpec proposal, not immediate code:
+
+- `ArtDecoRouteHeaderBand`
+- `ArtDecoReviewLens`
+- `ArtDecoRuntimeTrustStrip`
+- `ArtDecoPrimaryDataSurfaceShell`
+- `ArtDecoRouteVerificationHooks`
+
+Still not ready for direct extraction:
+
+- API loading, normalization, stale snapshot, or retry orchestration
+- route metadata, breadcrumbs, menu state, or router definitions
+- table/list row semantics
+- financial domain labels
+- page-specific fallback copy
+- compatibility imports from `web/frontend/src/views/artdeco-pages/**`
+
+### 10.4 Updated Next Step
+
+The next implementation should be documentation/specification work:
+
+1. Draft an OpenSpec proposal such as `standardize-artdeco-route-grammar`.
+2. Define route-level E2E hook naming before touching earlier pilots.
+3. Define shared-component contracts before creating any files under `src/components/artdeco/**`.
+4. Choose one low-risk follow-up route only after the proposal is approved.
+
+This keeps the line aligned with the user boundary: no route changes, no API contract changes, and no shared component extraction without a separate approval gate.

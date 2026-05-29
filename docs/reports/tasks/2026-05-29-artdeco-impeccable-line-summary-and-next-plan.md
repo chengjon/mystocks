@@ -314,6 +314,7 @@ Tasks:
 - [ ] 4.2 Add a route-level ArtDeco verification checklist for critique/shape/craft reports.
 - [ ] 4.3 Define minimum `data-test` hooks expected on data-heavy pages.
 - [ ] 4.4 Track `npx impeccable --json <page>` output in each implementation report.
+- [x] 4.5 Refresh `2026-05-29-artdeco-page-pilot-extraction-analysis.md` with `trade/Signals.vue` as the fourth completed pilot.
 
 ## 6. Recommended Immediate Next Action
 
@@ -323,8 +324,8 @@ The immediate next action should be:
 
 1. Keep `add-artdeco-impeccable-design-gate` out of root archive mutation unless a separate spec-merge task is approved.
 2. Treat `.worktrees/artdeco-archive-preflight-de0c5b8c9` / `efa776cf0` as the isolated archive candidate for this line.
-3. Use the extraction analysis as the approval boundary before any shared component proposal.
-4. Treat `trade/Signals.vue` as implemented and use its verification results as the fourth page in the route-grammar comparison set.
+3. Use the refreshed extraction analysis as the approval boundary before any shared component proposal.
+4. Draft an OpenSpec proposal for route-level ArtDeco page grammar and verification-hook standards before any shared component extraction.
 
 The previous approval gate has now been satisfied. Future implementation approval wording should still include `批准`, `同意`, or `执行`, for example:
 
