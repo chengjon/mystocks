@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-30T00:45:20+08:00`
-- Base HEAD checked: `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`
+- Prepared at: `2026-05-30T01:04:48+08:00`
+- Base HEAD checked: `05844e89873ad4fc729dab87942ea80f81bde39a`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.244 mock data manager provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#396` merged at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`; G2.244 closes the provider/reset seam and selects `get_postgres_async` as the next no-source ownership decision | If accepted, start G2.245 no-source `get_postgres_async` ownership / provider decision; do not start source work from G2.244 |
+| P0 | Review G2.245 postgres async ownership / provider decision | G/#79 service lifecycle DI | PR `#397` merged at `05844e89873ad4fc729dab87942ea80f81bde39a`; G2.245 classifies `get_postgres_async` as an infrastructure-owned singleton accessor / compatibility facade with 21 active API route-body calls | If accepted, start G2.246 no-source postgres async provider authorization; do not start source work from G2.245 |
+| P0 | Preserve G2.244 mock data manager provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#397` merged at `05844e89873ad4fc729dab87942ea80f81bde39a`; G2.244 closed the provider/reset seam and selected `get_postgres_async` as the next no-source ownership decision | Do not start source work from G2.244 |
 | P0 | Preserve G2.243 mock data manager provider/reset seam implementation | G/#79 service lifecycle DI | PR `#396` merged at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`; provider/reset/test-double seam exists and focused tests pass | Do not migrate additional consumers from G2.243 |
 | P0 | Preserve G2.242 mock data manager provider/reset seam authorization | G/#79 service lifecycle DI | PR `#395` merged at `e7506af885ed635580f2ab765ec9e4fe279cc98b`; G2.242 authorized only the G2.243 path-limited source lane | Do not use G2.242 to start any consumer migration or adapter rewrite |
 | P0 | Preserve G2.241 mock data manager ownership / runtime seam decision | G/#79 service lifecycle DI | PR `#394` merged at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c`; `get_mock_data_manager` is a mock data runtime facade / compatibility accessor with CRITICAL impact | Do not start source work from G2.241; use G2.242 only for provider/reset seam authorization review |
@@ -69,9 +70,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.241 correctly treat PR `#393` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.241 classify `get_mock_data_manager` as a mock data runtime facade / compatibility accessor rather than a route provider or deletion candidate?
-- Does G2.241 preserve `get_mock_data_manager` compatibility and recommend only a future G2.242 authorization packet?
-- Does G2.241 keep API/helper consumers, adapters, tests, routes, OpenAPI, frontend, config, scripts, and OpenSpec out of source scope?
-- Does G2.241 stay no-source and update only governance evidence, steward files, and its task card?
+- Does G2.245 correctly treat PR `#397` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.245 classify `get_postgres_async` as infrastructure owned rather than route owned?
+- Does G2.245 preserve the public `postgresql_async_v3.py` import surface and singleton lifecycle helpers?
+- Does G2.245 correctly require a future no-source G2.246 authorization packet before any source lane?
+- Does G2.245 keep API route consumers, tests, runtime behavior, OpenAPI, frontend, config, scripts, and OpenSpec out of source scope?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
