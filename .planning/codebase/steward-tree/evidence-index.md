@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T17:30:00+08:00`
-- Base HEAD checked: `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`
+- Prepared at: `2026-05-29T18:05:00+08:00`
+- Base HEAD checked: `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -129,8 +129,10 @@ state transition.
 | `docs/reports/quality/backend-data-source-config-manager-provider-authorization-2026-05-29.md` | G2.232 human-readable authorization package | Accepted by PR `#385`; superseded for implementation evidence by G2.233 |
 | `.planning/codebase/generated/data-source-config-manager-provider-injection-2026-05-29.json` | G2.233 data-source config manager provider injection evidence | Accepted by PR `#386`; superseded for closeout evidence by G2.234 |
 | `docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md` | G2.233 human-readable implementation package | Accepted by PR `#386`; superseded for closeout evidence by G2.234 |
-| `.planning/codebase/generated/data-source-config-manager-provider-closeout-refresh-2026-05-29.json` | G2.234 data-source config manager provider closeout / residual refresh evidence | Review input until PR `#387` is accepted |
-| `docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md` | G2.234 human-readable closeout / residual refresh package | Review input until PR `#387` is accepted |
+| `.planning/codebase/generated/data-source-config-manager-provider-closeout-refresh-2026-05-29.json` | G2.234 data-source config manager provider closeout / residual refresh evidence | Accepted by PR `#387`; superseded for residual candidate selection by G2.235 |
+| `docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md` | G2.234 human-readable closeout / residual refresh package | Accepted by PR `#387`; superseded for residual candidate selection by G2.235 |
+| `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.json` | G2.235 service lifecycle residual candidate refresh after data-source config manager evidence | Review input until PR `#388` is accepted |
+| `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.md` | G2.235 human-readable residual candidate refresh package | Review input until PR `#388` is accepted |
 
 ## External State Inputs
 

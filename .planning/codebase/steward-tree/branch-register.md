@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T17:30:00+08:00`
-- Base HEAD checked: `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`
+- Prepared at: `2026-05-29T18:05:00+08:00`
+- Base HEAD checked: `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -71,12 +71,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#384` | `g2-231-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` | No-source residual refresh selecting G2.232 data-source config manager provider authorization |
 | `#385` | `g2-232-data-source-config-manager-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8` | No-source authorization selecting G2.233 data-source config manager provider injection |
 | `#386` | `g2-233-data-source-config-manager-provider-injection` | `wip/root-dirty-20260403` | `MERGED` at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f` | Path-limited provider injection closing active `data_source_config.py` route-body manager calls |
+| `#387` | `g2-234-data-source-config-manager-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5` | No-source closeout / residual refresh selecting G2.235 service lifecycle residual candidate refresh |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-234-data-source-config-manager-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f` | Close out the data-source config manager provider injection and select the next residual refresh gate | No |
+| `g2-235-service-lifecycle-residual-candidate-refresh` | `origin/wip/root-dirty-20260403` at `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5` | Refresh residual service lifecycle candidates after data-source config manager closeout and select the next no-source decision gate | No |
 
 ## OpenSpec Relationship
 
@@ -92,7 +93,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.234 is a no-source closeout / residual-refresh branch after PR `#386`
-merged G2.233. It confirms the active `data_source_config.py`
-`get_config_manager()` route-body calls are closed and selects G2.235 no-source
-residual candidate refresh as the next gate.
+G2.235 is a no-source residual candidate refresh branch after PR `#387`
+merged G2.234. It confirms the active `data_source_config.py`
+`get_config_manager()` route-body calls remain closed and selects G2.236
+monitoring calculator factory ownership / provider seam decision as the next
+no-source gate.

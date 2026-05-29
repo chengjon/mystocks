@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T17:30:00+08:00`
-- Base HEAD checked: `875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f`
+- Prepared at: `2026-05-29T18:05:00+08:00`
+- Base HEAD checked: `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1478,11 +1478,46 @@ migration. Do not reopen `data_source_config.py` source work unless current HEAD
 evidence contradicts this closeout. Select G2.235 no-source service lifecycle
 residual candidate refresh as the next gate before any new source lane starts.
 
+## G2.235 Service Lifecycle Residual Candidate Refresh After Data-Source Config Manager
+
+G2.235 is the no-source residual candidate refresh after PR `#387` merged G2.234
+at `659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5`.
+
+Refresh evidence:
+
+| Evidence | Value |
+|---|---:|
+| Python files scanned | 1500 |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+| Active route-body `get_config_manager()` calls | 0 |
+| `get_config_manager_dependency` backing calls | 1 |
+| Active `manager` dependency parameters | 9 |
+| Legacy `.old.py` direct call expressions | 8 |
+| `get_calculator_factory` active API call expressions | 8 |
+| `get_mock_data_manager` call expressions | 24 |
+| `get_monitoring_db` call expressions | 12 |
+| `get_postgres_async` call expressions | 30 |
+
+Candidate queue:
+
+| Rank | Candidate | Classification | Disposition |
+|---:|---|---|---|
+| 1 | `get_calculator_factory` | Monitoring portfolio domain factory ownership seam; GitNexus sample HIGH, 9 direct, 3 affected processes, 2 modules | Select G2.236 no-source monitoring calculator factory ownership / provider seam decision packet |
+| 2 | `get_mock_data_manager` | Cross-domain mock/runtime seam; GitNexus sample CRITICAL, 27 direct, 4 processes, 8 modules | Defer to separate design package |
+| 3 | `get_monitoring_db` | Multi-definition monitoring/risk/strategy seam | Defer until ownership classification |
+| 4 | `get_postgres_async` | Infrastructure data-access singleton | Defer outside direct service lifecycle pilot queue |
+
+Decision: select G2.236 as a no-source monitoring calculator factory ownership
+/ provider seam decision packet. G2.235 does not authorize source edits,
+route/OpenAPI changes, test edits, OpenSpec changes, issue label movement, or
+PM2 commands.
+
 ## Next Gates
 
-- Review G2.234 data-source config manager provider closeout / residual refresh.
-- If accepted, start G2.235 no-source service lifecycle residual candidate
-  refresh.
+- Review G2.235 service lifecycle residual candidate refresh after data-source
+  config manager.
+- If accepted, start G2.236 no-source monitoring calculator factory ownership /
+  provider seam decision packet.
 - Do not reopen cache prewarming source work without contradictory current-HEAD
   evidence.
 - Do not edit `data_source_config.old.py` from G2.234.
