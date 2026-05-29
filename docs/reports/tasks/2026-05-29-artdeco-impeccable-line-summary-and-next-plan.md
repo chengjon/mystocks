@@ -145,7 +145,7 @@ The three page pilots have converged on a useful Web ArtDeco page grammar:
 | Item | Status | Recommended action |
 |---|---|---|
 | Trade positions slice | Committed in this scoped batch | No further action in this slice |
-| OpenSpec change | Tasks complete, strict validation passed, archive ownership preflight completed | Do not archive from root until the existing `openspec/specs/artdeco-design-governance/` path owner confirms merge strategy |
+| OpenSpec change | Tasks complete, strict validation passed, archive ownership decision completed | Do not archive from root; root canonical spec belongs to earlier 2026-05-12 ArtDeco governance archives |
 | GitNexus staged detect | Repo index addressable again, but staged detect still times out | Keep `.gitnexusignore`; investigate GitNexus detect performance separately before relying on it as a blocking gate |
 | Shared component extraction | Deferred; documentation-only analysis completed | Use `docs/reports/tasks/2026-05-29-artdeco-page-pilot-extraction-analysis.md` as the approval boundary before any extraction proposal |
 | Next routed page | Not selected | Recommended next critique target: `web/frontend/src/views/trade/Signals.vue` |
@@ -195,7 +195,8 @@ Tasks:
 - [x] 1.2 Confirm `openspec/changes/add-artdeco-impeccable-design-gate/tasks.md` accurately reflects the completed governance-gate work.
 - [x] 1.3 Decide whether this OpenSpec change should include only the Realtime pilot or the full three-page governance pilot.
 - [x] 1.4 Run archive ownership preflight for the existing `openspec/specs/artdeco-design-governance/` path.
-- [ ] 1.5 Archive or merge the change only after the canonical spec owner confirms the strategy.
+- [x] 1.5 Decide root canonical spec ownership for `openspec/specs/artdeco-design-governance/spec.md`.
+- [ ] 1.6 Archive or merge the change only through a deliberate spec-merge task, not from the dirty root worktree.
 
 Decision point:
 
@@ -203,6 +204,8 @@ Decision point:
 - Archive is deferred because `openspec/specs/artdeco-design-governance/` already exists as an untracked canonical spec path in the dirty worktree.
 - Archive preflight report: `docs/reports/tasks/2026-05-29-artdeco-openspec-archive-ownership-preflight.md`.
 - A clean archive candidate already exists in `.worktrees/artdeco-archive-preflight-de0c5b8c9` at `efa776cf0 chore(openspec): archive ArtDeco design gate change`, but root has a different untracked canonical spec with nine ArtDeco governance requirements.
+- Ownership decision report: `docs/reports/tasks/2026-05-29-artdeco-spec-ownership-decision.md`.
+- Root `openspec/specs/artdeco-design-governance/spec.md` is the combined canonical output of `2026-05-12-align-business-route-status-and-tooltip-surfaces` and `2026-05-12-align-artdeco-stateful-primitives-with-design`, not the current impeccable gate change.
 
 ### Phase 2: Extract Pattern Analysis
 
@@ -294,10 +297,9 @@ Do not start a new route yet.
 
 The immediate next action should be:
 
-1. Track the remaining GitNexus staged-detect timeout separately from the page design slice.
-2. Confirm whether root `openspec/specs/artdeco-design-governance/spec.md` belongs to this line or another ArtDeco governance line.
-3. If it belongs here, deliberately merge the five impeccable gate requirements from the archive preflight branch into the nine root canonical requirements.
-4. If it belongs elsewhere, keep the archive isolated in `archive/artdeco-impeccable-design-gate` and do not archive from root.
-5. Use the extraction analysis as the approval boundary before any shared component proposal.
+1. Keep `add-artdeco-impeccable-design-gate` out of root archive mutation unless a separate spec-merge task is approved.
+2. Treat `.worktrees/artdeco-archive-preflight-de0c5b8c9` / `efa776cf0` as the isolated archive candidate for this line.
+3. Use the extraction analysis as the approval boundary before any shared component proposal.
+4. Select the next route for critique only after accepting that archive/merge remains a separate governance task.
 
 Only after that should the next page, likely `trade/Signals.vue`, enter critique and shape.
