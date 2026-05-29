@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T10:34:00+08:00`
-- Base HEAD checked: `5837b8af55499e8ee9d7ba14cf543abb9bc45e39`
+- Prepared at: `2026-05-29T10:56:00+08:00`
+- Base HEAD checked: `854878cd2e09384daddaa8547e8cebc970ec2b74`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1275,13 +1275,36 @@ Decision: G2.226 closes the industry/concept route cleanup target and selects
 G2.227 as a future no-source ownership decision for `get_prewarming_strategy`.
 It does not authorize cache prewarming source edits or route/OpenAPI changes.
 
+## G2.227 Cache Prewarming Strategy Ownership Decision
+
+G2.227 is a no-source ownership decision after PR `#379` merged G2.226 at
+`854878cd2e09384daddaa8547e8cebc970ec2b74`.
+
+Ownership evidence:
+
+| Evidence | Value |
+|---|---:|
+| Candidate symbol | `get_prewarming_strategy` |
+| Definition | `web/backend/app/core/cache_prewarming.py:306` |
+| Text hits | 9 |
+| Route-body direct getter calls | 3 |
+| GitNexus risk | LOW |
+| Direct callers | 3 |
+| Processes affected | 0 |
+| Focused cache tests | `54 passed` |
+| app.main / OpenAPI smoke | `routes=548`, `paths=500`, cache prewarming paths present |
+
+Decision: classify `get_prewarming_strategy` as a cache prewarming route/provider
+surface, not generic singleton deletion. Select G2.228 as a future no-source
+authorization package for a path-limited implementation candidate. G2.227 does
+not authorize cache prewarming source edits.
+
 ## Next Gates
 
-- Review G2.226 `industry_concept_analysis.py` cleanup closeout / residual
-  refresh.
-- If accepted, start G2.227 no-source ownership decision for
-  `get_prewarming_strategy`.
-- Do not start cache prewarming source implementation from G2.226.
+- Review G2.227 `get_prewarming_strategy` ownership decision.
+- If accepted, start G2.228 no-source cache prewarming strategy provider
+  authorization.
+- Do not start cache prewarming source implementation from G2.227.
 - Do not expand into route paths, response models, SQL queries, error-contract
   behavior, `get_unified_data_service`, or frontend code.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.

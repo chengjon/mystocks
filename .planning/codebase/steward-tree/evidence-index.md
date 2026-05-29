@@ -113,8 +113,10 @@ state transition.
 | `docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-authorization-2026-05-29.md` | G2.224 human-readable authorization package | Accepted by PR `#377`; superseded for implementation evidence by G2.225 |
 | `.planning/codebase/generated/industry-concept-unified-data-service-cleanup-implementation-2026-05-29.json` | G2.225 `industry_concept_analysis.py` direct `UnifiedDataService()` cleanup implementation evidence | Accepted by PR `#378`; superseded for closeout evidence by G2.226 |
 | `docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-implementation-2026-05-29.md` | G2.225 human-readable implementation package | Accepted by PR `#378`; superseded for closeout evidence by G2.226 |
-| `.planning/codebase/generated/industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.json` | G2.226 `industry_concept_analysis.py` cleanup closeout / residual-refresh evidence | Review input until PR `#379` is accepted |
-| `docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.md` | G2.226 human-readable closeout / residual-refresh package | Review input until PR `#379` is accepted |
+| `.planning/codebase/generated/industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.json` | G2.226 `industry_concept_analysis.py` cleanup closeout / residual-refresh evidence | Accepted by PR `#379`; superseded for ownership decision evidence by G2.227 |
+| `docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.md` | G2.226 human-readable closeout / residual-refresh package | Accepted by PR `#379`; superseded for ownership decision evidence by G2.227 |
+| `.planning/codebase/generated/cache-prewarming-strategy-ownership-decision-2026-05-29.json` | G2.227 `get_prewarming_strategy` ownership decision evidence | Review input until PR `#380` is accepted |
+| `docs/reports/quality/backend-cache-prewarming-strategy-ownership-decision-2026-05-29.md` | G2.227 human-readable ownership decision package | Review input until PR `#380` is accepted |
 
 ## External State Inputs
 
@@ -153,7 +155,8 @@ state transition.
 | GitHub PR `#376` | `MERGED` | G2.223 `get_unified_data_service` ownership decision merged by commit `5eef37a097d55d209a69485bc29e89dd3aeb4076` |
 | GitHub PR `#377` | `MERGED` | G2.224 `industry_concept_analysis.py` cleanup authorization merged by commit `36c38fbf233945b7e45ed67b50591665942d4b32` |
 | GitHub PR `#378` | `MERGED` | G2.225 `industry_concept_analysis.py` cleanup implementation merged by commit `5837b8af55499e8ee9d7ba14cf543abb9bc45e39` |
-| `origin/wip/root-dirty-20260403` | `5837b8af55499e8ee9d7ba14cf543abb9bc45e39` | Base used for this closeout branch |
+| GitHub PR `#379` | `MERGED` | G2.226 `industry_concept_analysis.py` cleanup closeout / residual refresh merged by commit `854878cd2e09384daddaa8547e8cebc970ec2b74` |
+| `origin/wip/root-dirty-20260403` | `854878cd2e09384daddaa8547e8cebc970ec2b74` | Base used for this ownership decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules
