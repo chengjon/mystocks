@@ -1,0 +1,68 @@
+{
+  "schema_version": "2026-05-29.g2-service-lifecycle-closeout-refresh.v1",
+  "g2_id": "G2.234",
+  "generated_at": "2026-05-29T17:30:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f",
+  "branch": "g2-234-data-source-config-manager-provider-closeout-refresh",
+  "parent": {
+    "g2_id": "G2.233",
+    "github_pr": 386,
+    "merge_commit": "875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f",
+    "implementation_commit": "053fc79fee0c95560799e5a8fa983c96d3810c35"
+  },
+  "scope": {
+    "source_edit_authority": false,
+    "allowed_paths": [
+      ".planning/codebase/generated/data-source-config-manager-provider-closeout-refresh-2026-05-29.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-data-source-config-manager-provider-closeout-refresh-2026-05-29.md",
+      "governance/mainline/task-cards/pr-387.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "closeout": {
+    "route_file": "web/backend/app/api/data_source_config.py",
+    "provider_wrapper": "get_config_manager_dependency",
+    "active_route_body_get_config_manager_calls": 0,
+    "active_manager_dependency_parameters": 9,
+    "provider_definition_count": 1,
+    "legacy_false_positive_file": "web/backend/app/api/data_source_config.old.py",
+    "legacy_false_positive_text_hits": 9,
+    "legacy_false_positive_registered": false,
+    "backing_getter_file": "web/backend/app/api/_data_source_config_responses.py",
+    "backing_getter_changed_by_closeout": false,
+    "data_source_config_manager_provider_migration_closed": true,
+    "source_reopen_allowed_without_contradiction": false
+  },
+  "verification": {
+    "focused_tests": "tests/api/file_tests/test_data_source_config_api.py + web/backend/tests/test_data_source_config_provider_injection.py: 12 passed",
+    "ruff": "passed",
+    "app_openapi_smoke": "routes=548, paths=500"
+  },
+  "decision": {
+    "selected_next_gate": "G2.235 no-source service lifecycle residual candidate refresh",
+    "reason": "The active data-source config manager route-body provider seam is closed; select the next candidate from current HEAD before authorizing another source lane."
+  },
+  "freshness": {
+    "current_head_checked": "875b57fd2b61dd3f4b5b26e95ea5b31ddc0b6d8f",
+    "stale_if_head_mismatch": true
+  }
+}
