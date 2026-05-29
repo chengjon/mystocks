@@ -1,0 +1,104 @@
+{
+  "schema_version": "steward-decision-evidence/v1",
+  "g2_id": "G2.228",
+  "status": "authorization_for_review",
+  "generated_at": "2026-05-29T11:32:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.227",
+    "github_pr": 380,
+    "merge_commit": "f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b",
+    "evidence_json": ".planning/codebase/generated/cache-prewarming-strategy-ownership-decision-2026-05-29.json",
+    "human_report": "docs/reports/quality/backend-cache-prewarming-strategy-ownership-decision-2026-05-29.md"
+  },
+  "candidate": {
+    "symbol": "get_prewarming_strategy",
+    "definition_file": "web/backend/app/core/cache_prewarming.py",
+    "definition_line": 306,
+    "classification": "cache prewarming route/provider dependency surface",
+    "current_text_hits": 9,
+    "current_hit_files": [
+      "web/backend/app/api/_cache_prewarming_routes.py",
+      "web/backend/app/core/cache_prewarming.py",
+      "web/backend/tests/test_cache_prewarming.py"
+    ]
+  },
+  "current_route_surface": {
+    "router_file": "web/backend/app/api/_cache_prewarming_routes.py",
+    "mounted_by": "web/backend/app/api/cache.py",
+    "prefix": "/api/cache",
+    "direct_route_callers": [
+      {
+        "function": "trigger_cache_prewarming",
+        "path": "/api/cache/prewarming/trigger",
+        "current_call": "get_prewarming_strategy().prewarm_cache()"
+      },
+      {
+        "function": "get_prewarming_status",
+        "path": "/api/cache/prewarming/status",
+        "current_call": "get_prewarming_strategy().get_prewarming_status()"
+      },
+      {
+        "function": "get_cache_health_status",
+        "path": "/api/cache/monitoring/health",
+        "current_call": "get_prewarming_strategy().get_health_status()"
+      }
+    ],
+    "non_target_route": {
+      "function": "get_cache_monitoring_metrics",
+      "path": "/api/cache/monitoring/metrics",
+      "reason": "uses get_cache_monitor, not get_prewarming_strategy"
+    }
+  },
+  "gitnexus_evidence": {
+    "context_status": "found",
+    "impact_risk": "LOW",
+    "impacted_count": 3,
+    "direct_callers": 3,
+    "processes_affected": 0,
+    "modules_affected": 1,
+    "affected_module": "Api"
+  },
+  "authorization_decision": {
+    "result": "authorize a future path-limited source implementation lane after review, without editing source in G2.228",
+    "future_source_lane": "G2.229 cache prewarming route dependency injection implementation",
+    "future_source_edit_authority_if_accepted": true,
+    "future_allowed_source_paths": [
+      "web/backend/app/api/_cache_prewarming_routes.py"
+    ],
+    "future_allowed_test_paths": [
+      "web/backend/tests/test_cache_api.py",
+      "web/backend/tests/test_cache_prewarming.py"
+    ],
+    "future_expected_implementation_shape": [
+      "Preserve get_prewarming_strategy as the default provider.",
+      "Inject CachePrewarmingStrategy into the three target route handlers via FastAPI Depends(get_prewarming_strategy) or an equivalent route-local provider parameter.",
+      "Replace route-body direct get_prewarming_strategy() calls with the injected strategy object.",
+      "Preserve current route paths, auth dependencies, response shapes, OpenAPI exposure, and CachePrewarmingStrategy behavior."
+    ]
+  },
+  "future_forbidden_scope": [
+    "web/backend/app/core/cache_prewarming.py unless a separate review approves core-provider changes",
+    "get_prewarming_strategy deletion or rename",
+    "CachePrewarmingStrategy behavior changes",
+    "get_cache_monitor or cache monitor changes",
+    "route path, OpenAPI exposure, response model, auth, SQL, PM2, frontend, or docs/api changes"
+  ],
+  "required_future_gates": [
+    "GitNexus context and impact before source edits",
+    "TDD red guard proving route-body direct get_prewarming_strategy() calls are not acceptable in target route handlers",
+    "Focused cache API and cache prewarming tests",
+    "Ruff target files",
+    "app.main/OpenAPI smoke with 548 route / 500 path snapshot unless HEAD has explicitly documented drift",
+    "OpenSpec strict validate",
+    "Mainline scope gate and GitNexus detect_changes before commit"
+  ],
+  "current_verification_inputs": {
+    "focused_cache_tests": "web/backend/tests/test_cache_prewarming.py + web/backend/tests/test_cache_api.py: 54 passed",
+    "ruff_targets": "web/backend/app/api/_cache_prewarming_routes.py web/backend/app/core/cache_prewarming.py web/backend/app/api/cache.py web/backend/tests/test_cache_api.py: passed",
+    "app_openapi_smoke": "routes=548, paths=500, required cache prewarming paths present"
+  },
+  "next_gate": "If G2.228 is accepted, start G2.229 as a separate path-limited source implementation lane. G2.228 itself remains no-source governance."
+}

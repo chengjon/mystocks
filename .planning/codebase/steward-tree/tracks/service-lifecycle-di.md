@@ -1299,12 +1299,42 @@ surface, not generic singleton deletion. Select G2.228 as a future no-source
 authorization package for a path-limited implementation candidate. G2.227 does
 not authorize cache prewarming source edits.
 
+## G2.228 Cache Prewarming Strategy Provider Authorization
+
+G2.228 is a no-source authorization package after PR `#380` merged G2.227 at
+`f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b`.
+
+Authorization evidence:
+
+| Evidence | Value |
+|---|---:|
+| Candidate symbol | `get_prewarming_strategy` |
+| Definition | `web/backend/app/core/cache_prewarming.py:306` |
+| Current hit files | 3 |
+| Route-body direct getter calls | 3 |
+| GitNexus risk | LOW |
+| Direct callers | 3 |
+| Processes affected | 0 |
+| Focused cache tests | `54 passed` |
+| app.main / OpenAPI smoke | `routes=548`, `paths=500`, cache prewarming paths present |
+
+Decision: authorize a future G2.229 path-limited implementation lane that may
+replace route-body direct `get_prewarming_strategy()` calls with an explicit
+route dependency/provider parameter in
+`web/backend/app/api/_cache_prewarming_routes.py`. G2.228 itself does not
+authorize source edits. Future tests, if G2.229 starts, are limited to
+`web/backend/tests/test_cache_api.py` and
+`web/backend/tests/test_cache_prewarming.py`.
+
 ## Next Gates
 
-- Review G2.227 `get_prewarming_strategy` ownership decision.
-- If accepted, start G2.228 no-source cache prewarming strategy provider
-  authorization.
-- Do not start cache prewarming source implementation from G2.227.
+- Review G2.228 cache prewarming strategy provider authorization.
+- If accepted, start G2.229 cache prewarming route dependency injection
+  implementation.
+- Do not start cache prewarming source implementation from G2.228.
+- Keep any future source lane limited to `web/backend/app/api/_cache_prewarming_routes.py`,
+  `web/backend/tests/test_cache_api.py`, and
+  `web/backend/tests/test_cache_prewarming.py` unless a separate review expands scope.
 - Do not expand into route paths, response models, SQL queries, error-contract
   behavior, `get_unified_data_service`, or frontend code.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
