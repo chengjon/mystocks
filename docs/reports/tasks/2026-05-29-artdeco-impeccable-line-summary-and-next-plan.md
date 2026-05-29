@@ -268,8 +268,9 @@ Planned sequence:
 - [x] 3.1 `$impeccable critique web/frontend/src/views/trade/Signals.vue`
 - [x] 3.2 Save critique report under `docs/reports/tasks/`.
 - [x] 3.3 `$impeccable shape trade signals ArtDeco signal trust desk`
-- [ ] 3.4 Wait for explicit approval before implementation.
-- [ ] 3.5 Implement only the approved slice.
+- [x] 3.4 Produce implementation approval packet and TDD acceptance plan.
+- [ ] 3.5 Wait for explicit approval before implementation.
+- [ ] 3.6 Implement only the approved slice.
 
 Critique report:
 
@@ -280,6 +281,12 @@ Shape brief:
 - `docs/reports/tasks/2026-05-29-artdeco-trade-signals-shape-brief.md`
 - status: awaiting explicit user approval
 - implementation gate: no Vue, SCSS, router, API, test, or shared component changes until approval
+
+Implementation approval packet:
+
+- `docs/reports/tasks/2026-05-29-artdeco-trade-signals-implementation-approval-packet.md`
+- status: awaiting explicit user approval
+- TDD gate: first implementation step should add failing route-level E2E assertions for trust strip / review lens / `data-test` hooks
 
 Critique verdict:
 
@@ -316,6 +323,12 @@ The immediate next action should be:
 1. Keep `add-artdeco-impeccable-design-gate` out of root archive mutation unless a separate spec-merge task is approved.
 2. Treat `.worktrees/artdeco-archive-preflight-de0c5b8c9` / `efa776cf0` as the isolated archive candidate for this line.
 3. Use the extraction analysis as the approval boundary before any shared component proposal.
-4. Draft the `trade/Signals.vue` shape brief only if the user wants to continue the next design-only step.
+4. Await explicit approval before `trade/Signals.vue` implementation.
 
-Only after the shape brief is explicitly approved should any `trade/Signals.vue` implementation begin.
+Required approval wording should include `批准`, `同意`, or `执行`, for example:
+
+```text
+批准实施 trade/Signals.vue shape brief，并包含 @media 清理；继续保持不改路由、不改 API 合同、不抽共享组件。
+```
+
+Only after explicit approval should any `trade/Signals.vue` implementation begin.
