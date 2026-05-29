@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-30T00:30:17+08:00`
-- Base HEAD checked: `e7506af885ed635580f2ab765ec9e4fe279cc98b`
+- Prepared at: `2026-05-30T00:45:20+08:00`
+- Base HEAD checked: `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -80,12 +80,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#393` | `g2-240-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc` | No-source residual candidate refresh selecting G2.241 mock data manager ownership decision |
 | `#394` | `g2-241-mock-data-manager-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `cb0e7cd605e2828c495e3f31433ad1b8b6a3d64c` | No-source ownership / runtime seam decision selecting G2.242 mock data manager provider/reset seam authorization |
 | `#395` | `g2-242-mock-data-manager-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `e7506af885ed635580f2ab765ec9e4fe279cc98b` | No-source provider/reset seam authorization selecting G2.243 path-limited implementation |
+| `#396` | `g2-243-mock-data-manager-provider-reset-seam` | `wip/root-dirty-20260403` | `MERGED` at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9` | Path-limited provider/reset seam implementation selecting G2.244 closeout refresh |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-243-mock-data-manager-provider-reset-seam` | `origin/wip/root-dirty-20260403` at `e7506af885ed635580f2ab765ec9e4fe279cc98b` | Implement the authorized `get_mock_data_manager` provider/reset/test-double seam after accepted G2.242 | Yes, limited to the task card |
+| `g2-244-mock-data-manager-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9` | Close out accepted `get_mock_data_manager` provider/reset seam and refresh residual service lifecycle candidates | No |
 
 ## OpenSpec Relationship
 

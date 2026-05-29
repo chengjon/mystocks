@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-30T00:30:17+08:00",
+  "generated_at": "2026-05-30T00:45:20+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
-  "split_branch": "g2-243-mock-data-manager-provider-reset-seam",
-  "scope": "mock_data_manager_provider_reset_seam",
+  "base_head": "a0eec8bea7077e59e25a6f4491d4c695b1e25ed9",
+  "split_branch": "g2-244-mock-data-manager-provider-closeout-refresh",
+  "scope": "mock_data_manager_provider_closeout_refresh",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -4631,10 +4631,12 @@
     {
       "id": "g2-243-mock-data-manager-provider-reset-seam",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.242 mock data manager provider/reset seam authorization",
       "source_edit_authority": true,
+      "github_pr": 396,
+      "merge_commit": "a0eec8bea7077e59e25a6f4491d4c695b1e25ed9",
       "parent_github_pr": 395,
       "parent_merge_commit": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
       "evidence": [
@@ -4685,7 +4687,7 @@
           "OpenSpec changes"
         ]
       },
-      "next_gate": "If accepted, start G2.244 no-source mock data manager provider/reset seam closeout and residual refresh.",
+      "next_gate": "Superseded by G2.244 no-source mock data manager provider/reset seam closeout and residual refresh. Do not migrate additional consumers from G2.243.",
       "allowed_scope": [
         "web/backend/app/mock/mock_data/factory.py",
         "web/backend/tests/test_mock_data_manager_configuration.py",
@@ -4715,7 +4717,94 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "e7506af885ed635580f2ab765ec9e4fe279cc98b",
+        "current_head_checked": "a0eec8bea7077e59e25a6f4491d4c695b1e25ed9",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-244-mock-data-manager-provider-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.243 mock data manager provider/reset seam implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 396,
+      "parent_merge_commit": "a0eec8bea7077e59e25a6f4491d4c695b1e25ed9",
+      "evidence": [
+        ".planning/codebase/generated/mock-data-manager-provider-closeout-refresh-2026-05-30.json",
+        "docs/reports/quality/backend-mock-data-manager-provider-closeout-refresh-2026-05-30.md",
+        "governance/mainline/task-cards/pr-397.yaml"
+      ],
+      "closeout_subject": {
+        "symbol": "get_mock_data_manager",
+        "primary_file": "web/backend/app/mock/mock_data/factory.py",
+        "result": "provider/reset/test-double seam implemented and verified",
+        "source_edit_authority": false
+      },
+      "current_head_evidence": {
+        "factory_file_lines": 190,
+        "has_set_mock_data_manager_provider": true,
+        "has_reset_mock_data_manager_provider": true,
+        "focused_tests": "14 passed",
+        "ruff": "All checks passed",
+        "app_routes": 548,
+        "openapi_paths": 500
+      },
+      "residual_candidate_refresh": [
+        {
+          "rank": 1,
+          "candidate": "get_postgres_async",
+          "classification": "single-definition infrastructure data-access singleton",
+          "definition_count": 1,
+          "import_lines": 28,
+          "call_expressions": 30,
+          "api_route_body_calls": 22,
+          "gitnexus_risk": "LOW",
+          "gitnexus_impacted_count": 4,
+          "gitnexus_direct": 3,
+          "gitnexus_processes_affected": 0,
+          "recommendation": "select G2.245 no-source ownership / provider decision"
+        },
+        {
+          "rank": 2,
+          "candidate": "get_monitoring_db",
+          "classification": "multi-definition monitoring/risk/strategy logging seam",
+          "definition_count": 3,
+          "import_lines": 2,
+          "call_expressions": 12,
+          "api_route_body_calls": 12,
+          "gitnexus_risk": "UNKNOWN",
+          "gitnexus_status": "ambiguous",
+          "recommendation": "defer until disambiguation and ownership classification"
+        }
+      ],
+      "next_gate": "If accepted, start G2.245 no-source get_postgres_async ownership / provider decision. Do not start source implementation from G2.244.",
+      "allowed_scope": [
+        ".planning/codebase/generated/mock-data-manager-provider-closeout-refresh-2026-05-30.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-mock-data-manager-provider-closeout-refresh-2026-05-30.md",
+        "governance/mainline/task-cards/pr-397.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "a0eec8bea7077e59e25a6f4491d4c695b1e25ed9",
         "stale_if_head_mismatch": true
       }
     },
