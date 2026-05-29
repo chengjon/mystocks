@@ -145,9 +145,9 @@ The three page pilots have converged on a useful Web ArtDeco page grammar:
 | Item | Status | Recommended action |
 |---|---|---|
 | Trade positions slice | Committed in this scoped batch | No further action in this slice |
-| OpenSpec change | Tasks complete but still active | Validate and archive after deciding whether the trade positions slice belongs in this change closeout |
+| OpenSpec change | Tasks complete and strict validation passed | Archive only after ownership of the existing `openspec/specs/artdeco-design-governance/` path is confirmed |
 | GitNexus staged detect | Repo index addressable again, but staged detect still times out | Keep `.gitnexusignore`; investigate GitNexus detect performance separately before relying on it as a blocking gate |
-| Shared component extraction | Deferred | Run documentation-only extraction analysis across Realtime / Alerts / Positions |
+| Shared component extraction | Deferred; documentation-only analysis completed | Use `docs/reports/tasks/2026-05-29-artdeco-page-pilot-extraction-analysis.md` as the approval boundary before any extraction proposal |
 | Next routed page | Not selected | Recommended next critique target: `web/frontend/src/views/trade/Signals.vue` |
 
 ## 5. Recommended Next Sequence
@@ -191,15 +191,15 @@ Priority: P0 after Phase 0.
 
 Tasks:
 
-- [ ] 1.1 Run `openspec validate add-artdeco-impeccable-design-gate --strict`.
-- [ ] 1.2 Confirm `openspec/changes/add-artdeco-impeccable-design-gate/tasks.md` accurately reflects all completed work.
-- [ ] 1.3 Decide whether this OpenSpec change should include only the Realtime pilot or the full three-page governance pilot.
-- [ ] 1.4 Archive the change only after the intended implementation set is committed or explicitly excluded.
+- [x] 1.1 Run `openspec validate add-artdeco-impeccable-design-gate --strict`.
+- [x] 1.2 Confirm `openspec/changes/add-artdeco-impeccable-design-gate/tasks.md` accurately reflects the completed governance-gate work.
+- [x] 1.3 Decide whether this OpenSpec change should include only the Realtime pilot or the full three-page governance pilot.
+- [ ] 1.4 Archive the change only after ownership of the existing `openspec/specs/artdeco-design-governance/` path is confirmed.
 
 Decision point:
 
-- If the OpenSpec change is meant as a governance gate only, archive it after validation.
-- If it is meant to cover the three-page pilot line, update closeout docs with Risk Alerts and Trade Positions evidence before archive.
+- Current decision: treat `add-artdeco-impeccable-design-gate` as the governance gate; keep the three-page pilot evidence in task reports.
+- Archive is deferred because `openspec/specs/artdeco-design-governance/` already exists as an untracked canonical spec path in the dirty worktree.
 
 ### Phase 2: Extract Pattern Analysis
 
@@ -215,10 +215,14 @@ $impeccable extract Realtime Alerts Positions ArtDeco runtime workbench patterns
 
 Tasks:
 
-- [ ] 2.1 Compare `market/Realtime.vue`, `risk/Alerts.vue`, and `trade/Center.vue`.
-- [ ] 2.2 Identify repeated structure across header bands, control rows, runtime strips, data panels, and table states.
-- [ ] 2.3 Decide which repetition is real enough to extract.
-- [ ] 2.4 Produce an extraction shape brief before touching shared components.
+- [x] 2.1 Compare `market/Realtime.vue`, `risk/Alerts.vue`, and `trade/Center.vue`.
+- [x] 2.2 Identify repeated structure across header bands, control rows, runtime strips, data panels, and table states.
+- [x] 2.3 Decide which repetition is real enough to extract.
+- [x] 2.4 Produce a documentation-only extraction analysis before touching shared components.
+
+Output:
+
+- `docs/reports/tasks/2026-05-29-artdeco-page-pilot-extraction-analysis.md`
 
 Candidate extraction assets:
 
@@ -288,8 +292,8 @@ Do not start a new route yet.
 The immediate next action should be:
 
 1. Track the remaining GitNexus staged-detect timeout separately from the page design slice.
-2. Validate and archive the completed OpenSpec change if no more governance tasks are needed in it.
-3. Run a documentation-only extraction analysis across the three completed page pilots.
-4. Select the next route for critique only after that comparison is complete.
+2. Confirm ownership of `openspec/specs/artdeco-design-governance/`, then archive the completed OpenSpec change if appropriate.
+3. Use the extraction analysis as the approval boundary before any shared component proposal.
+4. Select the next route for critique only after that ownership check is complete.
 
 Only after that should the next page, likely `trade/Signals.vue`, enter critique and shape.
