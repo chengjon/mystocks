@@ -1,0 +1,32 @@
+{
+  "schema_version": "steward-closeout-evidence/v1",
+  "g2_id": "G2.230",
+  "status": "closeout_for_review",
+  "generated_at": "2026-05-29T12:26:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "4a0e41eac399e052ed3ebc9facc7dbf08761ab0a",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.229",
+    "github_pr": 382,
+    "merge_commit": "4a0e41eac399e052ed3ebc9facc7dbf08761ab0a",
+    "evidence_json": ".planning/codebase/generated/cache-prewarming-route-di-implementation-2026-05-29.json",
+    "human_report": "docs/reports/quality/backend-cache-prewarming-route-di-implementation-2026-05-29.md"
+  },
+  "closeout_evidence": {
+    "route_file": "web/backend/app/api/_cache_prewarming_routes.py",
+    "route_body_direct_getter_calls": 0,
+    "dependency_uses": 3,
+    "typed_dependency_parameters": 3,
+    "focused_cache_tests": "55 passed",
+    "ruff_targets": "passed",
+    "app_openapi_smoke": "routes=548, paths=500, required cache prewarming paths present"
+  },
+  "decision": {
+    "cache_prewarming_route_di_closed": true,
+    "source_reopen_allowed_without_contradiction": false,
+    "selected_next_gate": "G2.231 no-source service lifecycle residual candidate refresh",
+    "next_gate_reason": "After closing the cache prewarming route/provider surface, refresh remaining service lifecycle residuals from current HEAD before selecting another source lane."
+  },
+  "next_gate": "If accepted, start G2.231 as a no-source residual candidate refresh. Do not open another cache prewarming source lane unless current HEAD evidence contradicts this closeout."
+}

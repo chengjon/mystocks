@@ -66,12 +66,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#379` | `g2-226-industry-concept-unified-data-service-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `854878cd2e09384daddaa8547e8cebc970ec2b74` | No-source closeout / residual refresh selecting G2.227 `get_prewarming_strategy` ownership decision |
 | `#380` | `g2-227-cache-prewarming-strategy-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `f2b528e5feaf7fd89f19a857e75a3c3442ba9c6b` | No-source ownership decision selecting G2.228 cache prewarming strategy provider authorization |
 | `#381` | `g2-228-cache-prewarming-strategy-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `4d77ee68a1a4a30516134b995c82fa777c3b44d6` | No-source authorization selecting G2.229 cache prewarming route DI implementation |
+| `#382` | `g2-229-cache-prewarming-route-di-implementation` | `wip/root-dirty-20260403` | `MERGED` at `4a0e41eac399e052ed3ebc9facc7dbf08761ab0a` | Path-limited cache prewarming route DI implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-229-cache-prewarming-route-di-implementation` | `origin/wip/root-dirty-20260403` at `4d77ee68a1a4a30516134b995c82fa777c3b44d6` | Implement cache prewarming route dependency injection within the G2.228 authorized path set | Yes |
+| `g2-230-cache-prewarming-route-di-closeout-refresh` | `origin/wip/root-dirty-20260403` at `4a0e41eac399e052ed3ebc9facc7dbf08761ab0a` | Close out cache prewarming route DI and select the next residual refresh gate | No |
 
 ## OpenSpec Relationship
 
@@ -87,7 +88,6 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.229 is a path-limited source implementation branch after PR `#381` merged
-G2.228. It is limited to `_cache_prewarming_routes.py`, one focused cache API
-test, generated evidence, steward-tree updates, and a task card. If accepted,
-the next gate is G2.230 no-source closeout / residual refresh.
+G2.230 is a no-source closeout branch after PR `#382` merged G2.229. It records
+current-HEAD residual evidence for cache prewarming route DI and selects G2.231
+no-source service lifecycle residual candidate refresh as the next gate.
