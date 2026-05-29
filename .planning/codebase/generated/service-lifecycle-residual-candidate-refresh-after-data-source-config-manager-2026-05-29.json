@@ -1,0 +1,192 @@
+{
+  "schema_version": "2026-05-29.service-lifecycle-residual-refresh.v2",
+  "g2_id": "G2.235",
+  "status": "candidate_refresh_for_review",
+  "generated_at": "2026-05-29T18:05:00+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "branch": "g2-235-service-lifecycle-residual-candidate-refresh",
+  "base_head": "659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.234",
+    "github_pr": 387,
+    "merge_commit": "659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5",
+    "decision": "data-source config manager route-body provider migration closed; refresh remaining service lifecycle residuals before selecting another source lane"
+  },
+  "scope": {
+    "mode": "governance_and_evidence_only",
+    "source_files_changed": false,
+    "test_files_changed": false,
+    "route_or_openapi_changes_authorized": false,
+    "openspec_changes_authorized": false,
+    "issue_label_changes_authorized": false,
+    "implementation_authorized": false
+  },
+  "scan_summary": {
+    "python_files_scanned": 1500,
+    "scan_roots": [
+      "web/backend/app/api",
+      "web/backend/app/services",
+      "web/backend/app/tasks",
+      "src/monitoring",
+      "web/backend/app/mock",
+      "web/backend/tests",
+      "tests"
+    ],
+    "app_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "status": "passed",
+      "environment": "non_sensitive_placeholder"
+    }
+  },
+  "closed_or_retained_surfaces": [
+    {
+      "symbol": "get_config_manager",
+      "disposition": "closed by G2.233/G2.234 for active route-body calls",
+      "current_head_evidence": {
+        "active_route_body_calls": 0,
+        "route_local_provider_wrapper_calls": 1,
+        "active_manager_dependency_parameters": 9,
+        "legacy_old_file_direct_call_expressions": 8,
+        "legacy_old_file_registered": false
+      },
+      "reopen_policy": "do not reopen data_source_config.py source work unless current HEAD evidence contradicts PR #386/#387 closeout"
+    },
+    {
+      "symbol": "get_data_service",
+      "disposition": "retained under indicator/data provider governance",
+      "current_head_evidence": {
+        "call_expressions": 8,
+        "definition_count": 1,
+        "primary_files": [
+          "web/backend/app/api/v1/strategy/indicators.py",
+          "web/backend/app/api/indicators/indicator_cache.py",
+          "web/backend/tests/test_data_service_singleton_provider.py",
+          "web/backend/tests/test_integration_e2e.py"
+        ]
+      }
+    },
+    {
+      "symbol": "get_strategy_service",
+      "disposition": "retained Strategy high-risk residual; not a generic next source lane",
+      "current_head_evidence": {
+        "call_expressions": 3,
+        "definition_count": 1,
+        "primary_files": [
+          "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+          "web/backend/app/services/adapters/strategy_adapter.py",
+          "web/backend/app/tasks/backtest_tasks.py"
+        ]
+      }
+    },
+    {
+      "symbol": "get_unified_data_service",
+      "disposition": "service-internal retained factory/facade residual",
+      "current_head_evidence": {
+        "call_expressions": 5,
+        "definition_count": 1,
+        "primary_files": [
+          "web/backend/app/services/unified_data_service.py"
+        ]
+      }
+    }
+  ],
+  "candidate_queue": [
+    {
+      "rank": 1,
+      "symbol": "get_calculator_factory",
+      "primary_file": "src/monitoring/domain/calculator_factory.py",
+      "active_api_call_expressions": 8,
+      "total_call_expressions_in_scan": 9,
+      "definition_count": 1,
+      "import_lines": 8,
+      "api_files": [
+        "web/backend/app/api/_monitoring_portfolio_router.py",
+        "web/backend/app/api/monitoring_analysis.py"
+      ],
+      "gitnexus_sample": {
+        "repo": "mystocks",
+        "index_status": "stale-but-symbol-sample-only",
+        "risk": "HIGH",
+        "direct": 9,
+        "processes_affected": 3,
+        "modules_affected": 2
+      },
+      "classification": "monitoring portfolio domain factory ownership seam",
+      "recommendation": "select a no-source G2.236 monitoring calculator factory ownership / provider seam decision packet before any source edits"
+    },
+    {
+      "rank": 2,
+      "symbol": "get_mock_data_manager",
+      "primary_file": "web/backend/app/mock/mock_data/factory.py",
+      "total_call_expressions_in_scan": 24,
+      "definition_count": 1,
+      "import_lines": 16,
+      "gitnexus_sample": {
+        "repo": "mystocks",
+        "index_status": "stale-but-symbol-sample-only",
+        "risk": "CRITICAL",
+        "direct": 27,
+        "processes_affected": 4,
+        "modules_affected": 8
+      },
+      "classification": "cross-domain mock/runtime seam",
+      "recommendation": "defer; requires separate design package and should not be batched with monitoring calculator factory"
+    },
+    {
+      "rank": 3,
+      "symbol": "get_monitoring_db",
+      "primary_files": [
+        "web/backend/app/api/risk/_shared.py",
+        "web/backend/app/api/strategy_management/_helpers.py"
+      ],
+      "total_call_expressions_in_scan": 12,
+      "definition_count": 2,
+      "gitnexus_sample": {
+        "repo": "mystocks",
+        "result": "ambiguous; multiple matching symbols"
+      },
+      "classification": "multi-definition monitoring/risk/strategy seam",
+      "recommendation": "defer; ownership classification must precede any authorization"
+    },
+    {
+      "rank": 4,
+      "symbol": "get_postgres_async",
+      "primary_file": "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+      "total_call_expressions_in_scan": 30,
+      "definition_count": 1,
+      "classification": "infrastructure data-access singleton",
+      "recommendation": "defer to infrastructure/control-plane ownership; not a service lifecycle pilot"
+    }
+  ],
+  "decision": {
+    "selected_next_gate": {
+      "g2_id": "G2.236",
+      "title": "monitoring calculator factory ownership / provider seam decision packet",
+      "source_edit_authority": false,
+      "scope": [
+        "classify get_calculator_factory ownership and active API consumers",
+        "separate monitoring portfolio route truth from domain factory internals",
+        "decide whether a future path-limited provider injection or provider-wrapper lane is warranted",
+        "define forbidden scope for get_mock_data_manager, get_monitoring_db, get_postgres_async, OpenAPI, frontend, config, scripts, and OpenSpec"
+      ]
+    },
+    "source_lane_authorized_now": false,
+    "rationale": [
+      "get_config_manager is closed for active route-body calls after PR #386/#387.",
+      "get_calculator_factory is the most bounded remaining high-risk candidate from the prior queue: two active API files plus one domain factory file.",
+      "get_mock_data_manager is broader and CRITICAL, so it should not be the next incremental implementation track.",
+      "get_monitoring_db and get_postgres_async require ownership classification outside a direct service lifecycle source lane."
+    ]
+  },
+  "verification_targets": {
+    "json_parse": "this artifact and steward-index.json must parse",
+    "markdown_governance": "0 errors for generated report and touched steward docs",
+    "app_openapi_smoke": "routes=548, paths=500 at current HEAD",
+    "openspec": "migrate-backend-singletons-to-lifecycle-di --strict",
+    "mainline_scope": "governance-only; no source or test files",
+    "gitnexus": "detect_changes staged/compare should report 0 affected processes and LOW risk for docs-only diff"
+  }
+}

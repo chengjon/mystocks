@@ -1,0 +1,124 @@
+version: "v0.2"
+
+task:
+  id: "pr-388"
+  title: "Refresh service lifecycle residual candidates after data-source config manager closeout"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-service-lifecycle-residual-candidate-refresh-after-data-source-config-manager"
+  objective: "confirm post-G2.234 residual service lifecycle candidate ordering and select the next no-source gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.235 is a no-source residual candidate refresh; no runtime route, test, OpenAPI, PM2, frontend, or product behavior changes are introduced."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-388.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test source edits in this PR"
+  - "route/OpenAPI contract changes"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+  - "issue label changes"
+  - "source implementation authorization"
+  - "get_calculator_factory implementation"
+  - "get_mock_data_manager implementation"
+  - "get_monitoring_db implementation"
+  - "get_postgres_async implementation"
+
+acceptance:
+  checks:
+    - id: "residual-candidate-scan"
+      command: "current HEAD scan records get_config_manager closed and selects G2.236 no-source monitoring calculator factory ownership / provider seam decision packet"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "artifact-parse"
+      command: "node parses .planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.json and .planning/codebase/steward-tree/steward-index.json"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-data-source-config-manager-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-388.yaml --base-sha 659a1dffb1d1306c8fe09ce2bdd9e17ab87dd8a5 --head-sha HEAD --report /tmp/pr388-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus detect_changes staged/compare"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Reviewers may mistake the G2.236 selection as source implementation authority; G2.235 is no-source only."
+    - "The GitNexus sample is stale relative to current HEAD and is directional only; current-HEAD text scan and app/OpenAPI smoke are the binding facts."
+    - "get_calculator_factory is HIGH risk and must go through a separate no-source ownership / provider seam decision packet before source work."
+  rollback_plan: "Revert this PR; no runtime source or test changes are present."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Refresh service lifecycle residual candidate ordering after data-source config manager closeout."
+    modified_scope: "Governance reports, generated evidence, steward tree, and task card only."
+    dependency_changes: "None."
+    legacy_logic_impact: "None; no source or test files are modified."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If current HEAD contradicts get_config_manager closure or OpenAPI route/path count, stop before G2.236."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T18:05:00+08:00"
+    approval_note: "Approved by steward sequence after PR #387 merge to run no-source G2.235 residual candidate refresh."
+    secondary_approved: false
