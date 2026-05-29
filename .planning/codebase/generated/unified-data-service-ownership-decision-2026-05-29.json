@@ -1,0 +1,128 @@
+{
+  "schema_version": "2026-05-29.steward-evidence.v1",
+  "g2": "G2.223",
+  "title": "Unified data service ownership decision",
+  "prepared_at": "2026-05-29T08:19:43+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "e7402fffe29bee5f7f2a4ada5a60a4bf26876969",
+  "branch": "g2-223-unified-data-service-ownership-decision",
+  "parent": {
+    "g2": "G2.222",
+    "github_pr": 375,
+    "merge_commit": "e7402fffe29bee5f7f2a4ada5a60a4bf26876969"
+  },
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "allowed_scope": [
+    ".planning/codebase/generated/unified-data-service-ownership-decision-2026-05-29.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-unified-data-service-ownership-decision-2026-05-29.md",
+    "governance/mainline/task-cards/pr-376.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "target": {
+    "symbol": "get_unified_data_service",
+    "file": "web/backend/app/services/unified_data_service.py",
+    "definition_line": 576,
+    "classification": "root facade / compatibility service surface"
+  },
+  "gitnexus_impact": {
+    "risk": "MEDIUM",
+    "impacted_count": 5,
+    "direct_callers": 5,
+    "processes_affected": 0,
+    "modules_affected": 1,
+    "affected_module": "Services",
+    "direct_caller_symbols": [
+      "get_stocks_basic",
+      "get_stocks_industries",
+      "get_stocks_concepts",
+      "get_market_overview",
+      "search_stocks"
+    ]
+  },
+  "static_source_scan": {
+    "scan_scope": [
+      "web/backend/app",
+      "web/backend/tests"
+    ],
+    "get_unified_data_service_or_unified_data_service_hits": 12,
+    "files_with_hits": [
+      "web/backend/app/api/industry_concept_analysis.py",
+      "web/backend/app/services/unified_data_service.py"
+    ],
+    "direct_imports_of_unified_data_service_module": 1,
+    "route_direct_unified_data_service_instantiations": [
+      {
+        "file": "web/backend/app/api/industry_concept_analysis.py",
+        "line": 224,
+        "shape": "UnifiedDataService() result is not assigned"
+      },
+      {
+        "file": "web/backend/app/api/industry_concept_analysis.py",
+        "line": 277,
+        "shape": "UnifiedDataService() result is not assigned"
+      }
+    ],
+    "route_body_direct_get_unified_data_service_calls": 0,
+    "same_file_facade_callers": 5
+  },
+  "ownership_classification": {
+    "service_facade": "web/backend/app/services/unified_data_service.py owns the lazy singleton and five same-file convenience wrappers.",
+    "route_surface": "web/backend/app/api/industry_concept_analysis.py owns two direct UnifiedDataService() no-op instantiations and must be handled as a route cleanup/contract lane, not as a same-file facade edit.",
+    "not_in_scope": [
+      "renaming or deleting get_unified_data_service",
+      "changing UnifiedDataService constructor behavior",
+      "changing industry/concept route response contracts",
+      "batching cache prewarming provider work",
+      "route/OpenAPI exposure changes"
+    ]
+  },
+  "decision": {
+    "source_lane_selected": false,
+    "implementation_authorized": false,
+    "retain_get_unified_data_service_for_now": true,
+    "reason": "The GitNexus impact is medium but all direct graph callers are same-file facade wrappers. The only route-level evidence is direct class instantiation in industry_concept_analysis.py, which is a separate route ownership/cleanup concern and needs its own authorization before source edits.",
+    "selected_follow_up": "G2.224 no-source authorization package for the industry_concept_analysis.py direct UnifiedDataService() instantiation cleanup candidate."
+  },
+  "next_gate": {
+    "id": "G2.224",
+    "name": "industry/concept UnifiedDataService direct instantiation authorization package",
+    "type": "authorization_package",
+    "source_edit_authority": false,
+    "purpose": "decide whether a future path-limited source lane may remove or replace the two unassigned UnifiedDataService() instantiations in industry_concept_analysis.py while preserving route contracts",
+    "candidate_source_paths_if_later_authorized": [
+      "web/backend/app/api/industry_concept_analysis.py",
+      "a focused existing or new route test for the industry/concept list endpoints"
+    ],
+    "must_not_batch": [
+      "get_unified_data_service deletion",
+      "UnifiedDataService constructor refactor",
+      "cache prewarming provider work",
+      "route/OpenAPI contract changes",
+      "frontend changes",
+      "data source behavior changes"
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "e7402fffe29bee5f7f2a4ada5a60a4bf26876969",
+    "stale_if_head_mismatch": true
+  }
+}

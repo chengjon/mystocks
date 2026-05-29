@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-29T07:53:38+08:00",
+  "generated_at": "2026-05-29T08:19:43+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "14339f44a8c4a145615fe35836dec8fc376ce75b",
-  "split_branch": "g2-222-execution-tracking-provider-closeout-refresh",
-  "scope": "execution_tracking_provider_closeout_refresh",
+  "base_head": "e7402fffe29bee5f7f2a4ada5a60a4bf26876969",
+  "split_branch": "g2-223-unified-data-service-ownership-decision",
+  "scope": "unified_data_service_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -2883,10 +2883,13 @@
     {
       "id": "g2-222-execution-tracking-provider-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + trade route/provider governance",
       "parent": "G2.221 execution tracking evidence provider injection",
       "source_edit_authority": false,
+      "github_pr": 375,
+      "head_ref": "g2-222-execution-tracking-provider-closeout-refresh",
+      "merge_commit": "e7402fffe29bee5f7f2a4ada5a60a4bf26876969",
       "parent_github_pr": 374,
       "parent_merge_commit": "14339f44a8c4a145615fe35836dec8fc376ce75b",
       "evidence": [
@@ -2928,7 +2931,7 @@
           "recommended_next_gate": "defer behind unified data service ownership decision"
         }
       },
-      "next_gate": "If accepted, start G2.223 no-source get_unified_data_service ownership decision; do not open source implementation directly from G2.222.",
+      "next_gate": "Superseded by G2.223 no-source get_unified_data_service ownership decision.",
       "allowed_scope": [
         ".planning/codebase/generated/execution-tracking-provider-closeout-refresh-2026-05-29.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -2954,7 +2957,80 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "14339f44a8c4a145615fe35836dec8fc376ce75b",
+        "current_head_checked": "e7402fffe29bee5f7f2a4ada5a60a4bf26876969",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-223-unified-data-service-ownership-decision",
+      "type": "ownership_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + unified data facade governance",
+      "parent": "G2.222 execution tracking provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "parent_github_pr": 375,
+      "parent_merge_commit": "e7402fffe29bee5f7f2a4ada5a60a4bf26876969",
+      "evidence": [
+        ".planning/codebase/generated/unified-data-service-ownership-decision-2026-05-29.json",
+        "docs/reports/quality/backend-unified-data-service-ownership-decision-2026-05-29.md",
+        "governance/mainline/task-cards/pr-376.yaml"
+      ],
+      "target": {
+        "symbol": "get_unified_data_service",
+        "file": "web/backend/app/services/unified_data_service.py",
+        "definition_line": 576,
+        "classification": "root facade / compatibility service surface"
+      },
+      "gitnexus_impact": {
+        "risk": "MEDIUM",
+        "impacted_count": 5,
+        "direct_callers": 5,
+        "processes_affected": 0,
+        "modules_affected": 1,
+        "affected_module": "Services"
+      },
+      "static_source_scan": {
+        "text_hits": 12,
+        "files_with_hits": [
+          "web/backend/app/api/industry_concept_analysis.py",
+          "web/backend/app/services/unified_data_service.py"
+        ],
+        "route_body_direct_get_unified_data_service_calls": 0,
+        "route_layer_direct_unified_data_service_instantiations": 2
+      },
+      "decision": {
+        "source_lane_selected": false,
+        "implementation_authorized": false,
+        "retain_get_unified_data_service_for_now": true,
+        "selected_follow_up": "G2.224 no-source authorization package for industry_concept_analysis.py direct UnifiedDataService() instantiation cleanup candidate"
+      },
+      "next_gate": "If accepted, start G2.224 no-source authorization for industry_concept_analysis.py direct UnifiedDataService() instantiation cleanup; do not implement directly.",
+      "allowed_scope": [
+        ".planning/codebase/generated/unified-data-service-ownership-decision-2026-05-29.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-unified-data-service-ownership-decision-2026-05-29.md",
+        "governance/mainline/task-cards/pr-376.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "e7402fffe29bee5f7f2a4ada5a60a4bf26876969",
         "stale_if_head_mismatch": true
       }
     },

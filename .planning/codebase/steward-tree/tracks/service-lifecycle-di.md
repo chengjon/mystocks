@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-28T17:58:00+08:00`
-- Base HEAD checked: `b4b34375eef0186b81be9a24491328dab72c2e21`
+- Prepared at: `2026-05-29T08:19:43+08:00`
+- Base HEAD checked: `e7402fffe29bee5f7f2a4ada5a60a4bf26876969`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1162,11 +1162,47 @@ Remaining provider queue after G2.222:
 | `get_unified_data_service` | MEDIUM | 5 | 0 | root facade / compatibility service surface | Select G2.223 no-source ownership decision |
 | `get_prewarming_strategy` | LOW | 3 | 0 | cache prewarming route/provider surface | Defer behind unified data service ownership decision |
 
+## G2.223 Unified Data Service Ownership Decision
+
+G2.223 is a no-source ownership decision after PR `#375` merged G2.222 at
+`e7402fffe29bee5f7f2a4ada5a60a4bf26876969`.
+
+Current-HEAD evidence:
+
+| Evidence | Value |
+|---|---:|
+| GitNexus risk | MEDIUM |
+| Direct graph callers | 5 |
+| Processes affected | 0 |
+| `get_unified_data_service` / `UnifiedDataService` text hits in `web/backend/app` | 12 |
+| Files with hits | 2 |
+| Route-body direct `get_unified_data_service()` calls | 0 |
+| Route-layer direct `UnifiedDataService()` instantiations | 2 |
+
+Classification:
+
+- `web/backend/app/services/unified_data_service.py` owns the lazy singleton and
+  five same-file facade helpers.
+- `web/backend/app/api/industry_concept_analysis.py` owns two direct
+  `UnifiedDataService()` instantiations where the result is not assigned.
+- Those route-layer instantiations are a separate route cleanup / contract
+  candidate, not a direct `get_unified_data_service` implementation lane.
+
+Decision: do not start a direct implementation lane for
+`get_unified_data_service`. Select G2.224 as a no-source authorization package
+for the `industry_concept_analysis.py` direct `UnifiedDataService()`
+instantiation cleanup candidate.
+
 ## Next Gates
 
-- Review G2.222 trade execution tracking provider closeout / residual refresh.
-- If accepted, start G2.223 no-source `get_unified_data_service` ownership decision.
-- Do not expand G2.223 directly into source edits or skip ownership classification.
+- Review G2.223 `get_unified_data_service` ownership decision.
+- If accepted, start G2.224 no-source authorization for
+  `industry_concept_analysis.py` direct `UnifiedDataService()` instantiation
+  cleanup.
+- Do not expand G2.224 directly into source edits or skip route contract
+  authorization.
+- Keep `get_prewarming_strategy` deferred until the unified data / industry
+  concept cleanup path is closed or explicitly bypassed.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.
