@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-30T01:38:57+08:00`
-- Base HEAD checked: `efeaaebc031844e8393e8ca1bff723a5900f1a61`
+- Prepared at: `2026-05-30T01:56:00+08:00`
+- Base HEAD checked: `76b1644fe925a8c0684a820aa58a0aa8e8170190`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,9 +21,12 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
-| `.planning/codebase/generated/postgres-async-provider-reset-seam-2026-05-30.json` | G2.247 `get_postgres_async` provider/reset seam implementation evidence | Review input for PR `#400`; current for HEAD `efeaaebc031844e8393e8ca1bff723a5900f1a61` plus branch changes |
-| `docs/reports/quality/backend-postgres-async-provider-reset-seam-2026-05-30.md` | G2.247 human-readable implementation report | Review input for PR `#400`; source authority limited to task-card paths |
-| `governance/mainline/task-cards/pr-400.yaml` | Path-limited implementation task card for G2.247 | Review input; forbids route/OpenAPI/consumer migration changes |
+| `.planning/codebase/generated/postgres-async-provider-closeout-refresh-2026-05-30.json` | G2.248 `get_postgres_async` provider closeout and residual-refresh evidence | Review input for PR `#401`; current for HEAD `76b1644fe925a8c0684a820aa58a0aa8e8170190` |
+| `docs/reports/quality/backend-postgres-async-provider-closeout-refresh-2026-05-30.md` | G2.248 human-readable closeout / residual-refresh report | Review input for PR `#401`; no-source governance only |
+| `governance/mainline/task-cards/pr-401.yaml` | Path-limited governance task card for G2.248 | Review input; forbids source/test/runtime/OpenSpec changes |
+| `.planning/codebase/generated/postgres-async-provider-reset-seam-2026-05-30.json` | G2.247 `get_postgres_async` provider/reset seam implementation evidence | Accepted by PR `#400`; merged at `76b1644fe925a8c0684a820aa58a0aa8e8170190` |
+| `docs/reports/quality/backend-postgres-async-provider-reset-seam-2026-05-30.md` | G2.247 human-readable implementation report | Accepted by PR `#400`; source authority was limited to task-card paths |
+| `governance/mainline/task-cards/pr-400.yaml` | Path-limited implementation task card for G2.247 | Accepted by PR `#400`; forbids route/OpenAPI/consumer migration changes |
 | `.planning/codebase/generated/postgres-async-provider-authorization-2026-05-30.json` | G2.246 `get_postgres_async` provider authorization evidence | Review input for PR `#399`; current for HEAD `6bb9104295c31eac0e5b99dcaa65264c79fda085` |
 | `docs/reports/quality/backend-postgres-async-provider-authorization-2026-05-30.md` | G2.246 human-readable provider authorization packet | Review input for PR `#399`; no-source governance only |
 | `governance/mainline/task-cards/pr-399.yaml` | Path-limited governance task card for G2.246 | Review input; forbids source/test/runtime/OpenSpec changes |

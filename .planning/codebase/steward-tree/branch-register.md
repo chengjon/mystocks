@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-30T00:45:20+08:00`
-- Base HEAD checked: `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9`
+- Prepared at: `2026-05-30T01:56:00+08:00`
+- Base HEAD checked: `76b1644fe925a8c0684a820aa58a0aa8e8170190`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -84,12 +84,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#397` | `g2-244-mock-data-manager-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `05844e89873ad4fc729dab87942ea80f81bde39a` | No-source mock data manager provider closeout / residual refresh selecting G2.245 postgres async ownership decision |
 | `#398` | `g2-245-postgres-async-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `6bb9104295c31eac0e5b99dcaa65264c79fda085` | No-source postgres async ownership decision selecting G2.246 provider authorization |
 | `#399` | `g2-246-postgres-async-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `efeaaebc031844e8393e8ca1bff723a5900f1a61` | No-source provider authorization selecting G2.247 postgres async provider/reset seam implementation |
+| `#400` | `g2-247-postgres-async-provider-reset-seam` | `wip/root-dirty-20260403` | `MERGED` at `76b1644fe925a8c0684a820aa58a0aa8e8170190` | Path-limited postgres async provider/reset seam implementation selecting G2.248 closeout refresh |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-247-postgres-async-provider-reset-seam` | `origin/wip/root-dirty-20260403` at `efeaaebc031844e8393e8ca1bff723a5900f1a61` | Implement the path-limited `get_postgres_async` provider/reset seam | Yes, limited to G2.246 allowed paths |
+| `g2-248-postgres-async-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `76b1644fe925a8c0684a820aa58a0aa8e8170190` | Close out the merged `get_postgres_async` provider/reset seam and refresh residual route consumers | No |
 
 ## OpenSpec Relationship
 
@@ -105,7 +106,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.247 is the path-limited source implementation after PR `#399` merged G2.246.
-It adds only the `get_postgres_async` provider/reset seam and focused tests. It
-must not migrate route consumers, change route contracts, OpenAPI, frontend,
-config, scripts, or OpenSpec.
+G2.248 is the no-source closeout after PR `#400` merged G2.247. It records the
+accepted `get_postgres_async` provider/reset seam, refreshes residual active API
+route-body consumers, and selects G2.249 as a no-source route consumer provider
+authorization gate. It must not migrate route consumers, change route contracts,
+OpenAPI, frontend, config, scripts, or OpenSpec.

@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-30T01:38:57+08:00",
+  "generated_at": "2026-05-30T01:56:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "efeaaebc031844e8393e8ca1bff723a5900f1a61",
-  "split_branch": "g2-247-postgres-async-provider-reset-seam",
-  "scope": "postgres_async_provider_reset_seam",
-  "source_edit_authority": true,
+  "base_head": "76b1644fe925a8c0684a820aa58a0aa8e8170190",
+  "split_branch": "g2-248-postgres-async-provider-closeout-refresh",
+  "scope": "postgres_async_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -4987,12 +4987,14 @@
     {
       "id": "g2-247-postgres-async-provider-reset-seam",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.246 postgres async provider authorization",
       "source_edit_authority": true,
       "parent_github_pr": 399,
       "parent_merge_commit": "efeaaebc031844e8393e8ca1bff723a5900f1a61",
+      "github_pr": 400,
+      "merge_commit": "76b1644fe925a8c0684a820aa58a0aa8e8170190",
       "evidence": [
         ".planning/codebase/generated/postgres-async-provider-reset-seam-2026-05-30.json",
         "docs/reports/quality/backend-postgres-async-provider-reset-seam-2026-05-30.md",
@@ -5042,7 +5044,7 @@
         "gitnexus_cli_processes_affected": 0,
         "gitnexus_cli_modules_affected": 2
       },
-      "next_gate": "If accepted, start G2.248 no-source postgres async provider closeout / residual refresh. Do not start route consumer migration from G2.247.",
+      "next_gate": "G2.248 no-source postgres async provider closeout / residual refresh is active after PR #400 merge. Do not start route consumer migration from G2.247.",
       "allowed_scope": [
         "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
         "src/monitoring/infrastructure/postgresql_async_v3.py",
@@ -5071,7 +5073,112 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "efeaaebc031844e8393e8ca1bff723a5900f1a61",
+        "current_head_checked": "76b1644fe925a8c0684a820aa58a0aa8e8170190",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-248-postgres-async-provider-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.247 postgres async provider/reset seam implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 400,
+      "parent_merge_commit": "76b1644fe925a8c0684a820aa58a0aa8e8170190",
+      "evidence": [
+        ".planning/codebase/generated/postgres-async-provider-closeout-refresh-2026-05-30.json",
+        "docs/reports/quality/backend-postgres-async-provider-closeout-refresh-2026-05-30.md",
+        "governance/mainline/task-cards/pr-401.yaml"
+      ],
+      "subject": {
+        "symbol": "get_postgres_async",
+        "primary_file": "src/monitoring/infrastructure/_postgresql_async_v3_singleton.py",
+        "reexport_file": "src/monitoring/infrastructure/postgresql_async_v3.py",
+        "closeout": "provider/reset seam accepted",
+        "residual": "active API route-body consumers remain",
+        "source_edit_authority": false
+      },
+      "closeout_evidence": {
+        "set_provider_def": true,
+        "reset_provider_def": true,
+        "provider_type_alias": true,
+        "facade_exports_set": true,
+        "facade_exports_reset": true,
+        "focused_tests": "3 passed",
+        "ruff": "All checks passed",
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "openspec_validate": "valid"
+      },
+      "residual_evidence": {
+        "files_with_refs": 70,
+        "definition_count": 1,
+        "import_lines": 31,
+        "actual_calls": 47,
+        "repository_depends_token_refs": 4,
+        "active_api_files_with_route_body_calls": 7,
+        "active_api_route_body_calls": 21,
+        "active_api_depends_get_postgres_async_calls": 0,
+        "historical_old_py_calls": 1
+      },
+      "active_api_route_body_consumers": [
+        {
+          "file": "web/backend/app/api/_data_source_config_responses.py",
+          "calls": 1
+        },
+        {
+          "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+          "calls": 3
+        },
+        {
+          "file": "web/backend/app/api/monitoring_analysis.py",
+          "calls": 2
+        },
+        {
+          "file": "web/backend/app/api/monitoring_watchlists.py",
+          "calls": 7
+        },
+        {
+          "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+          "calls": 3
+        },
+        {
+          "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+          "calls": 4
+        },
+        {
+          "file": "web/backend/app/api/v1/system/settings.py",
+          "calls": 1
+        }
+      ],
+      "next_gate": "If accepted, start G2.249 no-source postgres async route consumer provider authorization. Do not start route consumer migration from G2.248.",
+      "allowed_scope": [
+        ".planning/codebase/generated/postgres-async-provider-closeout-refresh-2026-05-30.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-postgres-async-provider-closeout-refresh-2026-05-30.md",
+        "governance/mainline/task-cards/pr-401.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "76b1644fe925a8c0684a820aa58a0aa8e8170190",
         "stale_if_head_mismatch": true
       }
     },

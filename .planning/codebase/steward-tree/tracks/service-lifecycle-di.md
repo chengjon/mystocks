@@ -2041,6 +2041,55 @@ Decision:
 - Do not migrate API route consumers from G2.247.
 - Keep `get_monitoring_db` deferred.
 
+Closeout status:
+
+- G2.247 was accepted by PR `#400` and merged at
+  `76b1644fe925a8c0684a820aa58a0aa8e8170190`.
+- G2.248 is the no-source closeout / residual refresh after this source lane.
+
+## G2.248 Postgres Async Provider Closeout / Residual Refresh
+
+G2.248 is the no-source closeout after PR `#400` merged G2.247 at
+`76b1644fe925a8c0684a820aa58a0aa8e8170190`.
+
+Closeout evidence:
+
+| Evidence | Value |
+|---|---:|
+| `set_postgres_async_provider(provider)` | present |
+| `reset_postgres_async_provider()` | present |
+| Public `postgresql_async_v3.py` re-export | present |
+| Focused provider tests | 3 passed |
+| Ruff on provider source/test files | All checks passed |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+| Active API route-body consumer files | 7 |
+| Active API route-body calls | 21 |
+| Active API `Depends(get_postgres_async)` calls | 0 |
+
+Residual active API route-body consumers:
+
+| File | Calls | Handling |
+|---|---:|---|
+| `web/backend/app/api/_data_source_config_responses.py` | 1 | Candidate for future route/provider authorization |
+| `web/backend/app/api/_monitoring_portfolio_router.py` | 3 | Candidate for future route/provider authorization |
+| `web/backend/app/api/monitoring_analysis.py` | 2 | Candidate for future route/provider authorization |
+| `web/backend/app/api/monitoring_watchlists.py` | 7 | Higher-call candidate; requires focused authorization |
+| `web/backend/app/api/signal_monitoring/get_signal_statistics.py` | 3 | Candidate for future route/provider authorization |
+| `web/backend/app/api/signal_monitoring/signal_history_response.py` | 4 | Candidate for future route/provider authorization |
+| `web/backend/app/api/v1/system/settings.py` | 1 | Candidate for future route/provider authorization |
+
+Decision:
+
+- Close the infrastructure provider/reset seam as accepted.
+- Keep route consumer migration open as a residual planning item.
+- Select G2.249 as a no-source postgres async route consumer provider
+  authorization package.
+- G2.249 may classify and authorize a future route-local provider pilot, but
+  G2.248 does not authorize source edits.
+- Keep historical `.old.py`, background monitoring runtime consumers,
+  `get_monitoring_db`, route paths, response contracts, and OpenAPI exposure
+  outside G2.248.
+
 ## Forbidden Scope
 
 This track summary forbids:

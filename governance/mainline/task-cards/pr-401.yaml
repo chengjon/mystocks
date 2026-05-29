@@ -1,0 +1,132 @@
+version: "v0.2"
+
+task:
+  id: "pr-401"
+  title: "Close out postgres async provider seam and refresh residual route consumers"
+  owner: "codex"
+  created_at: "2026-05-30"
+
+mainline:
+  id: "L1-postgres-async-provider-closeout-refresh"
+  objective: "record the accepted G2.247 provider/reset seam and route remaining get_postgres_async consumers to a future no-source authorization gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.248 is no-source governance closeout only; it changes no runtime entrypoints, route paths, OpenAPI exposure, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/postgres-async-provider-closeout-refresh-2026-05-30.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-postgres-async-provider-closeout-refresh-2026-05-30.md"
+    - "governance/mainline/task-cards/pr-401.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test source edits"
+  - "API route consumer migration"
+  - "route dependency/provider migration"
+  - "changing route paths"
+  - "OpenAPI schema exposure changes"
+  - "response model or response shape changes"
+  - "database connection semantic changes"
+  - "background monitoring task rewrite"
+  - "get_monitoring_db work"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+  - "issue label changes"
+
+acceptance:
+  checks:
+    - id: "closeout-evidence"
+      command: "PR #400 merge, provider/reset seam presence, focused tests, ruff, OpenAPI smoke, and OpenSpec validation recorded"
+      required: true
+    - id: "residual-refresh"
+      command: "7 active API route-body consumer files and 21 calls recorded without source migration"
+      required: true
+    - id: "focused-provider-tests"
+      command: "env PYTHONPATH=. pytest -q tests/unit/monitoring/test_postgres_async_provider.py -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff-provider-files"
+      command: "ruff check src/monitoring/infrastructure/_postgresql_async_v3_singleton.py src/monitoring/infrastructure/postgresql_async_v3.py tests/unit/monitoring/test_postgres_async_provider.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "env PYTHONPATH=web/backend:. APP_ENV=test ENVIRONMENT=test JWT_SECRET_KEY=test-secret JWT_ALGORITHM=HS256 POSTGRESQL_HOST=127.0.0.1 POSTGRESQL_USER=postgres POSTGRESQL_PASSWORD=dummy POSTGRESQL_PORT=5432 POSTGRESQL_DATABASE=mystocks BACKEND_HOST=0.0.0.0 BACKEND_PORT=8020 BACKEND_BACKUP_PORT=8021 python -c 'from app.main import app; schema = app.openapi(); print(f\"routes={len(app.routes)} paths={len(schema.get(\"paths\", {}))}\")'"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-postgres-async-provider-closeout-refresh-2026-05-30.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-401.yaml --base-sha 76b1644fe925a8c0684a820aa58a0aa8e8170190 --head-sha HEAD --report /tmp/pr401-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Residual route consumer counts are snapshots and stale if HEAD changes."
+    - "G2.248 must not be mistaken for route consumer migration authorization."
+    - "Repository-wide Depends token refs are not the same as active API route dependency bindings."
+  rollback_plan: "Revert PR #401; the steward tree returns to the post-G2.247 merge state and no runtime behavior changes."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close out G2.247 and refresh remaining get_postgres_async route consumer evidence."
+    modified_scope: "Governance evidence, steward tree, report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or legacy behavior changes."
+    rollback_ready: "Revert PR #401."
+    risk_and_rollback_point: "No-source governance PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-30T01:56:00+08:00"
+    approval_note: "Approved after PR #400 merge to run no-source G2.248 provider closeout / residual refresh."
+    secondary_approved: false

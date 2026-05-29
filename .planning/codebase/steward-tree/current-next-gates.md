@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-30T01:38:57+08:00`
-- Base HEAD checked: `efeaaebc031844e8393e8ca1bff723a5900f1a61`
+- Prepared at: `2026-05-30T01:56:00+08:00`
+- Base HEAD checked: `76b1644fe925a8c0684a820aa58a0aa8e8170190`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.247 postgres async provider/reset seam implementation | G/#79 service lifecycle DI | PR `#399` merged at `efeaaebc031844e8393e8ca1bff723a5900f1a61`; G2.247 adds provider/reset hooks for `get_postgres_async`, focused tests pass, OpenAPI remains `548/500` | If accepted, start G2.248 no-source closeout / residual refresh; do not start route consumer migration from G2.247 |
+| P0 | Review G2.248 postgres async provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#400` merged at `76b1644fe925a8c0684a820aa58a0aa8e8170190`; current HEAD confirms provider/reset seam, `3 passed`, OpenAPI `548/500`, and 7 active API files / 21 route-body residual calls remain | If accepted, start G2.249 no-source route consumer provider authorization; do not migrate route consumers from G2.248 |
+| P0 | Preserve G2.247 postgres async provider/reset seam implementation | G/#79 service lifecycle DI | PR `#400` merged at `76b1644fe925a8c0684a820aa58a0aa8e8170190`; provider/reset seam exists and focused tests pass | Do not migrate API route consumers from G2.247 |
 | P0 | Preserve G2.246 postgres async provider authorization | G/#79 service lifecycle DI | PR `#399` merged at `efeaaebc031844e8393e8ca1bff723a5900f1a61`; G2.246 authorized only the G2.247 path-limited provider/reset seam | Do not use G2.246 to migrate API route consumers |
 | P0 | Preserve G2.245 postgres async ownership / provider decision | G/#79 service lifecycle DI | PR `#398` merged at `6bb9104295c31eac0e5b99dcaa65264c79fda085`; G2.245 classified `get_postgres_async` as an infrastructure-owned singleton accessor / compatibility facade with 21 active API route-body calls | Do not start source work from G2.245 |
 | P0 | Preserve G2.244 mock data manager provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#397` merged at `05844e89873ad4fc729dab87942ea80f81bde39a`; G2.244 closed the provider/reset seam and selected `get_postgres_async` as the next no-source ownership decision | Do not start source work from G2.244 |
@@ -72,9 +73,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.247 correctly treat PR `#399` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.247 limit source changes to the authorized singleton module, public re-export module, and focused test?
-- Does G2.247 preserve lazy singleton fallback and lifecycle helpers?
-- Does G2.247 leave API route consumers, OpenAPI, background task code, and `get_monitoring_db` untouched?
-- Is G2.248 correctly selected as no-source closeout / residual refresh?
+- Does G2.248 correctly treat PR `#400` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.248 confirm the G2.247 provider/reset seam without reopening source work?
+- Does G2.248 preserve the 7 active API route-body consumer files / 21 calls as residual planning evidence?
+- Does G2.248 leave API route consumers, OpenAPI, background task code, and `get_monitoring_db` untouched?
+- Is G2.249 correctly selected as no-source route consumer provider authorization?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
