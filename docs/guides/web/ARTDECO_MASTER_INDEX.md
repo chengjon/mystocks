@@ -32,7 +32,7 @@
 | `[必读][架构]` | [ARTDECO_FINTECH_UNIFIED_SPEC](./ARTDECO_FINTECH_UNIFIED_SPEC.md) | 当前 ArtDeco Fintech 的统一规格：设计身份、目录边界、运行时承载模式 |
 | `[必读][设计契约]` | [DESIGN.md](../../../DESIGN.md) | 当前项目级设计系统契约，承载 ArtDeco 优化版的动效、密度、金融反馈和交互层级规则 |
 | `[必读][样式真值]` | [ARTDECO_SCSS_GOVERNANCE_BASELINE](./ARTDECO_SCSS_GOVERNANCE_BASELINE.md) | 令牌、Grid、兼容层、样式导入规范的事实源 |
-| `[必读][组件]` | [ARTDECO_COMPONENT_GUIDE](./ARTDECO_COMPONENT_GUIDE.md) | 组件目录治理、`*-tabs` 铁律、放置决策树 |
+| `[必读][组件]` | [ARTDECO_COMPONENT_GUIDE](./ARTDECO_COMPONENT_GUIDE.md) | 组件目录治理、`*-tabs` 铁律、route grammar、验证 hook、放置决策树 |
 | `[组件][目录]` | [ARTDECO_COMPONENTS_CATALOG](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md) | 当前组件全景目录，覆盖 reusable assets 与 page-level workbench blocks |
 | `[组件][运行时状态]` | [useHeaderSummary](../../../web/frontend/src/composables/useHeaderSummary.ts) | 当前共享头部摘要状态容器；将 Dashboard 摘要上提到 Layout header 的运行时桥接层 |
 | `[页面][模板]` | [ARTDECO_PAGE_TEMPLATE_GUIDE](./ARTDECO_PAGE_TEMPLATE_GUIDE.md) | 模板化工作台页面的承载方式 |
@@ -81,6 +81,7 @@
 | 判断共享头部摘要、Dashboard 到 Layout 的摘要桥接 | `web/frontend/src/composables/useHeaderSummary.ts` + `ArtDecoLayoutEnhanced.vue` + `useArtDecoDashboard.ts` |
 | 改 token / 字体 / 间距 / glow / Grid | `ARTDECO_SCSS_GOVERNANCE_BASELINE.md` |
 | 判断组件放哪里 | `ARTDECO_COMPONENT_GUIDE.md` |
+| 判断数据密集型路由页面 grammar / trust strip / E2E hook | `ARTDECO_COMPONENT_GUIDE.md` §8 |
 | 查现有组件与页面块存量 | `web/frontend/ARTDECO_COMPONENTS_CATALOG.md` |
 | 理解页面模板与工作台壳层 | `ARTDECO_PAGE_TEMPLATE_GUIDE.md` |
 | 理解当前运行时架构 | `ArtDeco_System_Architecture_Summary.md` |
@@ -115,8 +116,9 @@
 - `/strategy/signals` 仍由 `web/frontend/src/views/artdeco-pages/strategy-tabs/StrategySignalsTab.vue` 提供
 - `/strategy/pos` 仍由 `web/frontend/src/views/artdeco-pages/trading-tabs/ArtDecoTradingPositions.vue` 提供
 - `/risk/pnl` 仍由 `web/frontend/src/views/artdeco-pages/portfolio-tabs/PortfolioOverviewTab.vue` 提供
+- `/detail/graphics/:symbol` 仍由 `web/frontend/src/views/artdeco-pages/analysis-tabs/KLineAnalysis.vue` 提供
 
-因此，不能再把 `artdeco-pages/**` 直接写成“前端当前所有主业务页面入口”。
+因此，不能再把 `artdeco-pages/**` 直接写成”前端当前所有主业务页面入口”。
 
 ## 4.2 2026-04-19 新增对齐点
 
@@ -164,5 +166,6 @@
   - 本索引
   - `ARTDECO_FINTECH_UNIFIED_SPEC.md`
   - `ARTDECO_COMPONENTS_CATALOG.md`
+  - `ARTDECO_COMPONENT_GUIDE.md`
   - `ArtDeco_System_Architecture_Summary.md`
   - `ARTDECO_V3_COMPLETE_SUMMARY.md`

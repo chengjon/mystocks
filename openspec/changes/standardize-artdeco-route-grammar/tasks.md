@@ -4,14 +4,20 @@
 - [x] 1.2 Review existing `artdeco-design-governance` spec.
 - [x] 1.3 Create the OpenSpec proposal, design note, task list, and spec delta.
 - [x] 1.4 Run `openspec validate standardize-artdeco-route-grammar --strict`.
-- [ ] 1.5 Present the proposal for approval before implementation.
+- [x] 1.5 Present the proposal for approval before implementation.
+
+Approval record:
+
+- Date: 2026-05-29
+- User wording: `批准standardize-artdeco-route-grammar，请继续`
+- Approved scope: documentation implementation only; no route changes, no API contract changes, no Vue page-source changes, and no shared component extraction.
 
 ## 2. Documentation Implementation After Approval
 
-- [ ] 2.1 Add the route grammar to the appropriate ArtDeco guide or design-governance documentation.
-- [ ] 2.2 Add the route-level E2E hook standard to the page review checklist or verification guide.
-- [ ] 2.3 Update the impeccable line summary to point future route craft work at this standard.
-- [ ] 2.4 Keep documentation changes free of router, API, shared component, and page-source mutations unless separately approved.
+- [x] 2.1 Add the route grammar to the appropriate ArtDeco guide or design-governance documentation.
+- [x] 2.2 Add the route-level E2E hook standard to the page review checklist or verification guide.
+- [x] 2.3 Update the impeccable line summary to point future route craft work at this standard.
+- [x] 2.4 Keep documentation changes free of router, API, shared component, and page-source mutations unless separately approved.
 
 ## 3. Optional Page Alignment After Separate Approval
 

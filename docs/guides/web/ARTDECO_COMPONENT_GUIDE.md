@@ -187,7 +187,82 @@
 
 例外允许存在，但必须在 router 中明确声明，而不是靠目录习惯默认成立。
 
-## 8. 命名建议
+## 8. 业务路由页面 Grammar 与验证 Hook
+
+当 ArtDeco 工作从单个页面 craft 进入多页面治理时，先标准化 route grammar，再考虑共享组件。
+
+### 8.1 标准 Route Grammar
+
+数据密集型业务路由默认按这个顺序评审和实施：
+
+```text
+compact operational header
+-> first-level review/control lens
+-> runtime trust/status strip
+-> primary data surface
+-> secondary evidence panels
+```
+
+已验证试点包括：
+
+- `web/frontend/src/views/market/Realtime.vue`
+- `web/frontend/src/views/risk/Alerts.vue`
+- `web/frontend/src/views/trade/Center.vue`
+- `web/frontend/src/views/trade/Signals.vue`
+
+偏离该顺序时，必须在 critique、shape brief、implementation report 或路由设计文档中说明原因。这个 grammar 只定义页面结构和验证义务，不自动授权 router、API contract、frontend API client 或 shared component 改动。
+
+### 8.2 Runtime Trust / Status 词汇
+
+route-level trust/status strip 必须诚实暴露数据状态。可用词汇包括：
+
+- `loading` / `pending` / syncing
+- `verified`
+- `refreshing`
+- `stale`
+- `degraded`
+- `empty`
+- `unavailable`
+- `refresh-failed`
+
+如果刷新失败但页面仍有上次 verified snapshot，默认保留可见数据，并在 trust/status strip 中标明 stale 或 degraded。不要把 stale data 伪装成 live data，也不要把可用快照替换成无关 empty state。
+
+### 8.3 Route-Level E2E Hook 标准
+
+页面 craft slice 新增或调整以下可见面时，应优先提供 route-level hook，避免 E2E 依赖 nested shared component internals：
+
+| Surface | 建议后缀 |
+|---|---|
+| page root | `*-page` |
+| operational header | `*-header` |
+| primary refresh/action | `*-refresh` / `*-primary-action` |
+| review/control lens | `*-review-lens` / `*-control-lens` |
+| runtime trust/status strip | `*-trust-strip` / `*-status-strip` |
+| primary data surface | `*-table` / `*-list` / `*-primary-surface` |
+| runtime message | `*-runtime-message` |
+| empty state | `*-empty-state` |
+| unavailable/error state | `*-error-state` / `*-unavailable-state` |
+| retry action | `*-retry` |
+
+命名应以 route 语义为前缀，例如 `trade-signals-trust-strip`。旧试点如果还没有 hook，后续触达时应在批准范围内补齐，或在报告中记录 defer 理由。
+
+### 8.4 Shared Component Extraction Gate
+
+不要因为四页长得像就直接创建 `ArtDecoRouteHeaderBand`、`ArtDecoReviewLens` 或 `ArtDecoRuntimeTrustStrip`。
+
+抽共享组件前必须另起审批，并明确：
+
+- props / slots / events
+- 支持的 runtime state vocabulary
+- 哪些语义仍留在 route-local
+- token 使用规则
+- E2E hook 命名
+- migration order
+- rollback plan
+
+共享组件不得拥有 API orchestration、route metadata、router config、backend contract、frontend API client、金融行语义或页面专属 fallback copy。
+
+## 9. 命名建议
 
 当前仓库命名并不完全统一，因此本指南不强推机械改名；但新文件建议满足以下原则：
 
@@ -197,7 +272,7 @@
 
 比“统一成单一公式”更重要的是：目录边界正确、职责边界正确。
 
-## 9. 提交前检查
+## 10. 提交前检查
 
 至少确认：
 
@@ -205,6 +280,9 @@
 - 没有把页面专属逻辑提到 `base/core`
 - 没有把域内工作台块错误抽成全局组件
 - 没有把 canonical routed page 错放到 `artdeco-pages/**`
+- 数据密集型 route craft 已评估 route grammar 和 runtime trust/status strip
+- 新增页面可见面时，已优先提供 route-level E2E hook 或记录 defer 理由
+- 没有把 route-local stale snapshot / fallback copy / API orchestration 抽成共享组件
 - 没有新增硬编码视觉值
 - 新样式优先使用 `@use`
 - A 股语义没有写反
@@ -216,12 +294,12 @@
 - PM2 服务状态
 - 实际 E2E 执行结果
 
-## 10. 与其他文档的关系
+## 11. 与其他文档的关系
 
 - 先上手：`ARTDECO_START_HERE.md`
 - 看总目录：`ARTDECO_MASTER_INDEX.md`
 - 看运行时架构：`docs/api/ArtDeco_System_Architecture_Summary.md`
 - 看组件清单：`web/frontend/ARTDECO_COMPONENTS_CATALOG.md`
-- 看样式真值：`ARTDECO_SCSS_GOVERNANCE_BASELINE.md`
+- 看样式真值：`docs/guides/web/ARTDECO_SCSS_GOVERNANCE_BASELINE.md`
 - 看设计契约：`DESIGN.md`
 - 看当前前端路由目录真相：`docs/guides/frontend-structure.md`
