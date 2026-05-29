@@ -165,8 +165,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="trade-execution page-enter">
-    <section class="execution-hero artdeco-card-shell">
+  <div class="trade-execution page-enter" data-testid="trade-execution-page">
+    <section class="execution-hero artdeco-card-shell" data-testid="trade-execution-header">
       <div>
         <span class="hero-eyebrow">external trigger observation</span>
         <ArtDecoHeader
@@ -177,7 +177,13 @@ onMounted(() => {
           :status-type="errorMessage ? 'warning' : 'info'"
         >
           <template #actions>
-            <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="loadTracking">
+            <ArtDecoButton
+              variant="outline"
+              size="sm"
+              :loading="loading"
+              data-testid="trade-execution-refresh"
+              @click="loadTracking"
+            >
               <template #icon>
                 <ArtDecoIcon name="refresh" />
               </template>
@@ -188,14 +194,14 @@ onMounted(() => {
       </div>
     </section>
 
-    <section class="stats-strip artdeco-card-shell">
+    <section class="stats-strip artdeco-card-shell" data-testid="trade-execution-stats-strip">
       <ArtDecoStatCard label="跟踪链路" :value="summary.totalCount" :show-change="false" variant="gold" />
       <ArtDecoStatCard label="Bridge 接收" :value="summary.bridgeAcceptedCount" :show-change="false" variant="gold" />
       <ArtDecoStatCard label="券商身份" :value="summary.brokerAcknowledgedCount" :show-change="false" variant="rise" />
       <ArtDecoStatCard label="需复核" :value="summary.reviewRequiredCount" :show-change="false" variant="fall" />
     </section>
 
-    <section class="control-shell artdeco-card-shell">
+    <section class="control-shell artdeco-card-shell" data-testid="trade-execution-filter-row">
       <div class="filter-grid">
         <label class="field">
           <span>账户</span>
@@ -216,7 +222,7 @@ onMounted(() => {
       </div>
     </section>
 
-    <section class="trigger-shell artdeco-card-shell">
+    <section class="trigger-shell artdeco-card-shell" data-testid="trade-execution-trigger-row">
       <div class="filter-grid">
         <label class="field">
           <span>证券代码</span>
@@ -252,9 +258,11 @@ onMounted(() => {
       </div>
     </section>
 
-    <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+    <p v-if="runtimeMessage" class="runtime-message" aria-live="polite" data-testid="trade-execution-runtime-state">
+      {{ runtimeMessage }}
+    </p>
 
-    <ArtDecoCard title="执行链路">
+    <ArtDecoCard title="执行链路" data-testid="trade-execution-work-area">
       <div v-if="rows.length === 0" class="table-empty">暂无执行跟踪链路。</div>
       <div v-else class="table-shell">
         <table class="execution-table">
@@ -307,7 +315,7 @@ onMounted(() => {
       </div>
     </ArtDecoCard>
 
-    <aside v-if="selectedDetail" class="evidence-drawer" aria-label="执行证据详情">
+    <aside v-if="selectedDetail" class="evidence-drawer" aria-label="执行证据详情" data-testid="trade-execution-evidence-drawer">
       <div class="drawer-head">
         <div>
           <span class="hero-eyebrow">evidence timeline</span>

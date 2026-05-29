@@ -52,6 +52,15 @@ Additional alignment record:
 - Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
 - Note: this route was the first ArtDeco page pilot; this batch only adds route-level grammar hooks and targeted E2E coverage.
 
+Additional alignment record:
+
+- Date: 2026-05-30
+- User wording: `请继续`
+- Selected route: `web/frontend/src/views/trade/Execution.vue`
+- Report: `docs/reports/tasks/2026-05-30-artdeco-trade-execution-hook-alignment-report.md`
+- Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
+- Note: this batch adds route-level grammar hooks and a focused route hook E2E; existing execution-detail behavior assertions remain outside this grammar slice.
+
 ## 4. Shared Component Extraction Gate
 
 - [ ] 4.1 Draft a separate extraction proposal before creating shared Vue components.

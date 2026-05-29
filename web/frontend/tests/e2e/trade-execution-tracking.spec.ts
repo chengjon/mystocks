@@ -197,6 +197,19 @@ test.describe("Trade execution tracking workbench", () => {
     await mockExecutionTrackingApis(page)
   })
 
+  test("exposes route-level ArtDeco hooks for execution tracking", async ({ page }) => {
+    await page.goto(`${FRONTEND_BASE_URL}/trade/execution`, { waitUntil: "domcontentloaded" })
+
+    await expect(page.getByRole("heading", { name: "执行跟踪 / 外部触发观测台" })).toBeVisible()
+    await expect(page.getByTestId("trade-execution-page")).toBeVisible()
+    await expect(page.getByTestId("trade-execution-header")).toBeVisible()
+    await expect(page.getByTestId("trade-execution-refresh")).toBeVisible()
+    await expect(page.getByTestId("trade-execution-stats-strip")).toBeVisible()
+    await expect(page.getByTestId("trade-execution-filter-row")).toBeVisible()
+    await expect(page.getByTestId("trade-execution-trigger-row")).toBeVisible()
+    await expect(page.getByTestId("trade-execution-work-area")).toBeVisible()
+  })
+
   test("observes external triggers without promoting bridge evidence to broker truth", async ({ page }) => {
     await page.goto(`${FRONTEND_BASE_URL}/trade/execution`, { waitUntil: "domcontentloaded" })
 
