@@ -1,0 +1,136 @@
+version: "v0.2"
+
+task:
+  id: "pr-386"
+  title: "Implement data-source config manager provider injection"
+  owner: "codex"
+  created_at: "2026-05-29"
+
+mainline:
+  id: "L1-data-source-config-manager-provider-injection"
+  objective: "replace active data_source_config.py route-body get_config_manager calls with explicit FastAPI dependency injection"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.233 preserves route paths, response models, OpenAPI exposure, auth/current_user behavior, and the default backing config manager getter; it only moves active route-body manager lookup into FastAPI dependency injection."
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/data_source_config.py"
+    - "tests/api/file_tests/test_data_source_config_api.py"
+    - "web/backend/tests/test_data_source_config_provider_injection.py"
+    - ".planning/codebase/generated/data-source-config-manager-provider-injection-2026-05-29.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md"
+    - "governance/mainline/task-cards/pr-386.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/data_source_config.old.py"
+    - "web/backend/app/api/_data_source_config_responses.py"
+    - "web/backend/app/services/**"
+    - "web/backend/app/schemas/**"
+    - "web/backend/app/models/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/api/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "data_source_config.old.py edits or deletion"
+  - "_data_source_config_responses.py edits"
+  - "get_config_manager deletion or rename"
+  - "ConfigManager behavior changes"
+  - "route path changes"
+  - "OpenAPI schema exposure changes"
+  - "response model or response shape changes"
+  - "auth/current_user behavior changes"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+
+acceptance:
+  checks:
+    - id: "gitnexus-impact-before-edit"
+      command: "GitNexus impact for get_config_manager before source edits"
+      required: true
+    - id: "tdd-red"
+      command: "pytest -o addopts= web/backend/tests/test_data_source_config_provider_injection.py -q --no-cov --tb=short before implementation"
+      required: true
+    - id: "focused-data-source-config-tests"
+      command: "pytest -o addopts= tests/api/file_tests/test_data_source_config_api.py web/backend/tests/test_data_source_config_provider_injection.py -q --no-cov --tb=short"
+      required: true
+    - id: "ruff-current"
+      command: "ruff check web/backend/app/api/data_source_config.py web/backend/tests/test_data_source_config_provider_injection.py tests/api/file_tests/test_data_source_config_api.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "direct-getter-scan"
+      command: "direct active route-body get_config_manager calls = 0 and dependency parameters = 9"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-source-config-manager-provider-injection-2026-05-29.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-386.yaml --base-sha 1f63a46657858920a3df9799ffc0c45ccf3b3dd8 --head-sha HEAD --report /tmp/pr386-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "gitnexus detect_changes staged/compare"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "get_config_manager is HIGH risk, but direct impact is limited to 9 active route handlers in one module."
+    - "Dependency injection must preserve default backing getter behavior and auth dependency order."
+    - "data_source_config.old.py must remain out of scope as a legacy false-positive surface."
+  rollback_plan: "Revert this PR; active handlers return to direct get_config_manager() calls and the focused guard test is removed."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Move 9 active data-source config route-body manager lookups into FastAPI dependency injection."
+    modified_scope: "One active route module, two focused test files, generated evidence, steward tree, and task card."
+    dependency_changes: "No new package dependency; route handlers use a route-local get_config_manager_dependency wrapper around the existing backing getter."
+    legacy_logic_impact: "Preserves route paths, OpenAPI exposure, response shape, auth/current_user behavior, backing getter behavior, and leaves data_source_config.old.py untouched."
+    rollback_ready: "Yes; revert the PR."
+    risk_and_rollback_point: "If focused tests, app.main/OpenAPI smoke, or direct-getter scan regresses, revert before G2.234 closeout."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-29T16:50:00+08:00"
+    approval_note: "Authorized by accepted G2.232 / PR #385 to run path-limited data-source config manager provider injection."
+    secondary_approved: false

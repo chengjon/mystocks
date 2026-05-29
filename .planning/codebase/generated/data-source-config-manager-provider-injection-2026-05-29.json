@@ -1,0 +1,102 @@
+{
+  "schema_version": "2026-05-29.g2-service-lifecycle-implementation.v1",
+  "g2_id": "G2.233",
+  "generated_at": "2026-05-29T16:50:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
+  "branch": "g2-233-data-source-config-manager-provider-injection",
+  "parent": {
+    "g2_id": "G2.232",
+    "github_pr": 385,
+    "merge_commit": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
+    "authorization_result": "future G2.233 path-limited provider injection authorized"
+  },
+  "scope": {
+    "source_edit_authority": true,
+    "allowed_source_paths": [
+      "web/backend/app/api/data_source_config.py"
+    ],
+    "allowed_test_paths": [
+      "tests/api/file_tests/test_data_source_config_api.py",
+      "web/backend/tests/test_data_source_config_provider_injection.py"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/api/data_source_config.old.py",
+      "web/backend/app/api/_data_source_config_responses.py",
+      "web/backend/app/services/**",
+      "web/backend/app/schemas/**",
+      "web/frontend/**",
+      "src/**",
+      "docs/api/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "gitnexus": {
+    "impact_before_edit": {
+      "target": "get_config_manager",
+      "target_file": "web/backend/app/api/_data_source_config_responses.py",
+      "risk": "HIGH",
+      "impacted_count": 9,
+      "direct_callers": 9,
+      "processes_affected": 3,
+      "modules_affected": 1,
+      "affected_module": "Api"
+    }
+  },
+  "implementation": {
+    "route_file": "web/backend/app/api/data_source_config.py",
+    "backing_getter": "web/backend/app/api/_data_source_config_responses.py:get_config_manager",
+    "provider_wrapper": "get_config_manager_dependency",
+    "changed_route_handlers": [
+      "create_data_source",
+      "update_data_source",
+      "delete_data_source",
+      "get_data_source",
+      "list_data_sources",
+      "batch_operations",
+      "get_version_history",
+      "rollback_to_version",
+      "reload_config"
+    ],
+    "route_body_direct_getter_calls_before": 9,
+    "route_body_direct_getter_calls_after": 0,
+    "dependency_parameters_after": 9,
+    "legacy_old_file_calls": 8,
+    "legacy_old_file_edited": false,
+    "backing_getter_edited": false
+  },
+  "tdd": {
+    "red": "web/backend/tests/test_data_source_config_provider_injection.py: 2 failed before implementation",
+    "green": "web/backend/tests/test_data_source_config_provider_injection.py: 2 passed after implementation",
+    "focused_existing_contract": "tests/api/file_tests/test_data_source_config_api.py + web/backend/tests/test_data_source_config_provider_injection.py: 12 passed"
+  },
+  "verification": {
+    "ruff": "ruff check web/backend/app/api/data_source_config.py web/backend/tests/test_data_source_config_provider_injection.py tests/api/file_tests/test_data_source_config_api.py: passed",
+    "app_openapi_smoke": "routes=548, paths=500",
+    "direct_getter_scan": {
+      "route_body_direct_getter_calls": 0,
+      "dependency_parameters": 9,
+      "dependency_definition_count": 1
+    }
+  },
+  "preserved_invariants": [
+    "route paths",
+    "router registration",
+    "auth/current_user dependencies",
+    "response models and UnifiedResponse shape",
+    "OpenAPI exposure",
+    "default backing get_config_manager behavior"
+  ],
+  "next_gate": {
+    "g2_id": "G2.234",
+    "title": "data-source config manager provider injection closeout / residual refresh",
+    "source_edit_authority": false
+  },
+  "freshness": {
+    "current_head_checked": "1f63a46657858920a3df9799ffc0c45ccf3b3dd8",
+    "stale_if_head_mismatch": true
+  }
+}

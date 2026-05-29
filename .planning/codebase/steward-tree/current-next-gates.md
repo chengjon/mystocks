@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T15:24:12+08:00`
-- Base HEAD checked: `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184`
+- Prepared at: `2026-05-29T16:50:00+08:00`
+- Base HEAD checked: `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.232 data-source config manager provider authorization | G/#79 service lifecycle DI | PR `#384` merged at `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184`; authorizes future G2.233 path-limited provider injection for 9 active `get_config_manager()` route-body calls | If accepted, start G2.233 implementation limited to `data_source_config.py` plus focused tests; do not touch `data_source_config.old.py` |
+| P0 | Review G2.233 data-source config manager provider injection | G/#79 service lifecycle DI | PR `#385` merged at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`; G2.233 moves 9 active `data_source_config.py` route-body manager lookups into `Depends(get_config_manager_dependency)` | If accepted, start G2.234 no-source closeout / residual refresh; do not reopen `data_source_config.py` source without contradictory current-HEAD evidence |
+| P0 | Preserve G2.232 data-source config manager provider authorization | G/#79 service lifecycle DI | PR `#385` merged at `1f63a46657858920a3df9799ffc0c45ccf3b3dd8`; authorized only the G2.233 path-limited provider injection lane | Do not use G2.232 to edit `data_source_config.old.py`, `_data_source_config_responses.py`, route paths, OpenAPI, frontend, config, scripts, or OpenSpec |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +58,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.232 correctly treat PR `#384` as merged and accepted into `wip/root-dirty-20260403`?
-- Does the authorization limit future source work to active `data_source_config.py` route/provider injection plus focused tests?
-- Does G2.232 keep `data_source_config.old.py` as a legacy false-positive rather than an edit target?
-- Does G2.232 preserve route paths, auth/current_user behavior, response models, and OpenAPI exposure?
-- Does G2.232 remain no-source while authorizing only a future G2.233 implementation lane?
+- Does G2.233 correctly treat PR `#385` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.233 keep source edits limited to active `data_source_config.py` plus focused tests?
+- Does G2.233 keep `data_source_config.old.py` and `_data_source_config_responses.py` untouched?
+- Does G2.233 preserve route paths, auth/current_user behavior, response models, and OpenAPI exposure?
+- Does G2.233 reduce active route-body `get_config_manager()` calls from 9 to 0 while preserving the default backing getter?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

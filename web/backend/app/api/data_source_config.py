@@ -26,7 +26,7 @@ Contract Version: 1.0
 """
 
 import logging
-from typing import Optional
+from typing import Any, Optional
 
 from fastapi import Body, Depends, HTTPException, Path, Query, Request
 
@@ -98,6 +98,11 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
         )
 
 
+def get_config_manager_dependency() -> Any:
+    """FastAPI dependency wrapper for the data-source config manager."""
+    return get_config_manager()
+
+
 # ==================== API Endpoints ====================
 
 
@@ -105,6 +110,7 @@ def handle_config_error(error: str, request_id: Optional[str] = None) -> Unified
 async def create_data_source(
     request: Request,
     config: DataSourceCreate = Body(..., openapi_examples=DATA_SOURCE_CREATE_EXAMPLES),
+    manager: Any = Depends(get_config_manager_dependency),
     current_user: str = Depends(get_current_user),
 ):
     """
@@ -132,8 +138,6 @@ async def create_data_source(
     logger.info("Creating data source: {config.endpoint_name}", extra={"request_id": request_id})
 
     try:
-        manager = get_config_manager()
-
         result = manager.create_endpoint(
             endpoint_name=config.endpoint_name,
             source_name=config.source_name,
@@ -174,6 +178,7 @@ async def update_data_source(
     request: Request,
     endpoint_name: str = Path(..., description="需要更新的数据源端点名称。"),
     updates: DataSourceUpdate = Body(..., openapi_examples=DATA_SOURCE_UPDATE_EXAMPLES),
+    manager: Any = Depends(get_config_manager_dependency),
     current_user: str = Depends(get_current_user),
 ):
     """
@@ -198,8 +203,6 @@ async def update_data_source(
     logger.info("Updating data source: {endpoint_name}", extra={"request_id": request_id})
 
     try:
-        manager = get_config_manager()
-
         # 构建更新字典
         update_dict = {}
         if updates.priority is not None:
@@ -251,6 +254,7 @@ async def update_data_source(
 async def delete_data_source(
     request: Request,
     endpoint_name: str = Path(..., description="需要删除的数据源端点名称。"),
+    manager: Any = Depends(get_config_manager_dependency),
     current_user: str = Depends(get_current_user),
 ):
     """
@@ -268,8 +272,6 @@ async def delete_data_source(
     logger.info("Deleting data source: {endpoint_name}", extra={"request_id": request_id})
 
     try:
-        manager = get_config_manager()
-
         result = manager.delete_endpoint(endpoint_name=endpoint_name, changed_by=current_user)
 
         if not result.success:
@@ -298,6 +300,7 @@ async def delete_data_source(
 async def get_data_source(
     request: Request,
     endpoint_name: str = Path(..., description="需要查询详情的数据源端点名称。"),
+    manager: Any = Depends(get_config_manager_dependency),
 ):
     """
     获取单个数据源配置
@@ -315,7 +318,6 @@ async def get_data_source(
     request_id = getattr(request.state, "request_id", None)
 
     try:
-        manager = get_config_manager()
         config = manager.get_endpoint(endpoint_name)
 
         if not config:
@@ -343,6 +345,7 @@ async def list_data_sources(
     data_category: Optional[str] = Query(None, description="数据分类"),
     source_type: Optional[str] = Query(None, description="数据源类型"),
     status: Optional[str] = Query("active", description="状态（active, maintenance, deprecated）"),
+    manager: Any = Depends(get_config_manager_dependency),
 ):
     """
     列出数据源配置
@@ -360,7 +363,6 @@ async def list_data_sources(
     request_id = getattr(request.state, "request_id", None)
 
     try:
-        manager = get_config_manager()
         endpoints = manager.list_endpoints(data_category=data_category, source_type=source_type, status=status)
 
         return create_unified_success_response(
@@ -386,6 +388,7 @@ async def list_data_sources(
 async def batch_operations(
     request: Request,
     batch_request: BatchOperationRequest = Body(..., openapi_examples=BATCH_OPERATION_EXAMPLES),
+    manager: Any = Depends(get_config_manager_dependency),
     current_user: str = Depends(get_current_user),
 ):
     """
@@ -403,8 +406,6 @@ async def batch_operations(
     logger.info("Batch operations: {len(batch_request.operations)} items", extra={"request_id": request_id})
 
     try:
-        manager = get_config_manager()
-
         results = []
         succeeded = 0
         failed = 0
@@ -498,6 +499,7 @@ async def get_version_history(
     request: Request,
     endpoint_name: str = Path(..., description="需要查询版本历史的数据源端点名称。"),
     limit: int = Query(10, description="返回数量限制", ge=1, le=100),
+    manager: Any = Depends(get_config_manager_dependency),
 ):
     """
     获取数据源配置的版本历史
@@ -516,7 +518,6 @@ async def get_version_history(
     request_id = getattr(request.state, "request_id", None)
 
     try:
-        manager = get_config_manager()
         versions = manager.get_version_history(endpoint_name=endpoint_name, limit=limit)
 
         if not versions:
@@ -566,6 +567,7 @@ async def rollback_to_version(
     endpoint_name: str = Path(..., description="需要回滚的数据源端点名称。"),
     version: int = Path(..., description="目标回滚版本号。", ge=1),
     rollback_req: RollbackRequest = Body(..., openapi_examples=ROLLBACK_REQUEST_EXAMPLES),
+    manager: Any = Depends(get_config_manager_dependency),
     current_user: str = Depends(get_current_user),
 ):
     """
@@ -586,7 +588,6 @@ async def rollback_to_version(
     logger.info("Rolling back {endpoint_name} to version {version}", extra={"request_id": request_id})
 
     try:
-        manager = get_config_manager()
         result = manager.rollback_to_version(
             endpoint_name=endpoint_name, target_version=version, changed_by=current_user
         )
@@ -620,6 +621,7 @@ async def rollback_to_version(
 async def reload_config(
     request: Request,
     reload_req: ReloadRequest = Body(..., openapi_examples=RELOAD_REQUEST_EXAMPLES),
+    manager: Any = Depends(get_config_manager_dependency),
     current_user: str = Depends(get_current_user),
 ):
     """
@@ -634,7 +636,6 @@ async def reload_config(
     logger.info("Reloading data source configurations", extra={"request_id": request_id})
 
     try:
-        manager = get_config_manager()
         result = manager.reload_config(changed_by=current_user)
 
         return create_unified_success_response(
