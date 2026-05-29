@@ -12,6 +12,7 @@ from app.api.data import lhb as lhb_module
 from app.api.data import margin as margin_module
 from app.api.data import market as market_module
 from app.api.data import stocks as stocks_module
+from app.api import industry_concept_analysis as industry_concept_module
 from app.api.market import market_data_request as market_data_request_module
 from app.main import app
 
@@ -2871,6 +2872,11 @@ def test_industry_concept_analysis_endpoints_have_examples_and_error_responses()
             assert any(param["name"] == parameter_name and param.get("description") for param in parameters)
         assert "example" in success_json or "examples" in success_json
         assert any(code.startswith(("4", "5")) for code in operation["responses"])
+
+
+def test_industry_concept_list_endpoints_do_not_instantiate_unified_data_service_directly() -> None:
+    for handler in (industry_concept_module.get_industry_list, industry_concept_module.get_concept_list):
+        assert "UnifiedDataService(" not in inspect.getsource(handler)
 
 
 def test_monitoring_watchlist_endpoints_have_docs_examples_and_error_responses() -> None:

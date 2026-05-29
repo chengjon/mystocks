@@ -109,8 +109,10 @@ state transition.
 | `docs/reports/quality/backend-execution-tracking-provider-closeout-refresh-2026-05-29.md` | G2.222 human-readable closeout / residual refresh report | Accepted by PR `#375`; superseded for ownership routing by G2.223 |
 | `.planning/codebase/generated/unified-data-service-ownership-decision-2026-05-29.json` | G2.223 `get_unified_data_service` ownership decision evidence | Accepted by PR `#376`; superseded for source authorization by G2.224 |
 | `docs/reports/quality/backend-unified-data-service-ownership-decision-2026-05-29.md` | G2.223 human-readable ownership decision package | Accepted by PR `#376`; superseded for source authorization by G2.224 |
-| `.planning/codebase/generated/industry-concept-unified-data-service-cleanup-authorization-2026-05-29.json` | G2.224 `industry_concept_analysis.py` direct `UnifiedDataService()` cleanup authorization evidence | Review input until PR `#377` is accepted |
-| `docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-authorization-2026-05-29.md` | G2.224 human-readable authorization package | Review input until PR `#377` is accepted |
+| `.planning/codebase/generated/industry-concept-unified-data-service-cleanup-authorization-2026-05-29.json` | G2.224 `industry_concept_analysis.py` direct `UnifiedDataService()` cleanup authorization evidence | Accepted by PR `#377`; superseded for implementation evidence by G2.225 |
+| `docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-authorization-2026-05-29.md` | G2.224 human-readable authorization package | Accepted by PR `#377`; superseded for implementation evidence by G2.225 |
+| `.planning/codebase/generated/industry-concept-unified-data-service-cleanup-implementation-2026-05-29.json` | G2.225 `industry_concept_analysis.py` direct `UnifiedDataService()` cleanup implementation evidence | Review input until PR `#378` is accepted |
+| `docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-implementation-2026-05-29.md` | G2.225 human-readable implementation package | Review input until PR `#378` is accepted |
 
 ## External State Inputs
 
@@ -147,7 +149,8 @@ state transition.
 | GitHub PR `#374` | `MERGED` | G2.221 `get_execution_tracking_evidence_service` injection merged by commit `14339f44a8c4a145615fe35836dec8fc376ce75b` |
 | GitHub PR `#375` | `MERGED` | G2.222 `get_execution_tracking_evidence_service` closeout merged by commit `e7402fffe29bee5f7f2a4ada5a60a4bf26876969` |
 | GitHub PR `#376` | `MERGED` | G2.223 `get_unified_data_service` ownership decision merged by commit `5eef37a097d55d209a69485bc29e89dd3aeb4076` |
-| `origin/wip/root-dirty-20260403` | `5eef37a097d55d209a69485bc29e89dd3aeb4076` | Base used for this authorization branch |
+| GitHub PR `#377` | `MERGED` | G2.224 `industry_concept_analysis.py` cleanup authorization merged by commit `36c38fbf233945b7e45ed67b50591665942d4b32` |
+| `origin/wip/root-dirty-20260403` | `36c38fbf233945b7e45ed67b50591665942d4b32` | Base used for this implementation branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

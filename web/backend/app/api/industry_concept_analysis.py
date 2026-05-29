@@ -23,7 +23,6 @@ from app.models.schemas import (
     StockListResponse,
 )
 from app.openapi_config import COMMON_RESPONSES
-from app.services.unified_data_service import UnifiedDataService
 
 INDUSTRY_CONCEPT_ROUTE_RESPONSES = {
     500: COMMON_RESPONSES[500],
@@ -220,9 +219,6 @@ async def get_industry_list():
         IndustryListResponse: 行业列表
     """
     try:
-        # 使用统一数据服务获取行业数据
-        UnifiedDataService()
-
         # 从数据库查询行业分类数据
         query = """
             SELECT DISTINCT
@@ -273,9 +269,6 @@ async def get_concept_list():
         ConceptListResponse: 概念列表
     """
     try:
-        # 使用统一数据服务获取概念数据
-        UnifiedDataService()
-
         # 从数据库查询概念分类数据
         query = """
             SELECT DISTINCT

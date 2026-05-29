@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T08:42:47+08:00`
-- Base HEAD checked: `5eef37a097d55d209a69485bc29e89dd3aeb4076`
+- Prepared at: `2026-05-29T09:38:00+08:00`
+- Base HEAD checked: `36c38fbf233945b7e45ed67b50591665942d4b32`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1219,12 +1219,41 @@ paths, response models, OpenAPI exposure, SQL queries, `get_postgresql_engine`,
 error-contract behavior, `UnifiedDataService`, `get_unified_data_service`, and
 cache prewarming provider work.
 
+## G2.225 Industry/Concept UnifiedDataService Cleanup Implementation
+
+G2.225 is a path-limited source implementation after PR `#377` merged G2.224 at
+`36c38fbf233945b7e45ed67b50591665942d4b32`.
+
+Implementation evidence:
+
+| Evidence | Value |
+|---|---:|
+| Candidate source file | `web/backend/app/api/industry_concept_analysis.py` |
+| Direct unassigned `UnifiedDataService()` calls before | 2 |
+| Direct unassigned `UnifiedDataService()` calls after | 0 |
+| `UnifiedDataService` import after | removed |
+| `web/backend/app` text hits after | 9 |
+| Target routes | `/api/analysis/industry/list`, `/api/analysis/concept/list` |
+| Target response models | `IndustryListResponse`, `ConceptListResponse` |
+| GitNexus exact route graph incoming callers | 0 for both target route functions |
+| GitNexus file impact | LOW, 0 impacted symbols / 0 affected processes |
+| TDD red | failed before source edit on `UnifiedDataService()` |
+| TDD green | `1 passed` |
+| Focused endpoint tests | `2 passed` |
+| app.main / OpenAPI smoke | `routes=548`, `paths=500`, both target paths present |
+
+Decision: G2.225 implements only the G2.224-authorized no-op constructor cleanup
+and adds a focused regression test. It does not authorize edits to
+`get_unified_data_service`, cache prewarming, route paths, response models,
+OpenAPI exposure, SQL queries, error-contract behavior, frontend code, or
+OpenSpec specs.
+
 ## Next Gates
 
-- Review G2.224 `industry_concept_analysis.py` direct `UnifiedDataService()`
-  cleanup authorization.
-- If accepted, start G2.225 path-limited source implementation for the two
-  no-op calls plus now-unused import only.
+- Review G2.225 `industry_concept_analysis.py` direct `UnifiedDataService()`
+  cleanup implementation.
+- If accepted, merge G2.225 and run G2.226 closeout / residual refresh before
+  selecting another unified-data or cache provider candidate.
 - Do not expand G2.225 into route paths, response models, SQL queries,
   error-contract behavior, `UnifiedDataService`, `get_unified_data_service`, or
   cache prewarming provider work.
