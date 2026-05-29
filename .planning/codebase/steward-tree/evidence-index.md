@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-29T22:03:24+08:00`
-- Base HEAD checked: `d68c381d75cf9dffc601ef8390fbec9c85e55d18`
+- Prepared at: `2026-05-29T22:22:46+08:00`
+- Base HEAD checked: `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -141,8 +141,10 @@ state transition.
 | `docs/reports/quality/backend-monitoring-calculator-factory-provider-injection-2026-05-29.md` | G2.238 human-readable provider injection report | Accepted by PR `#391`; superseded for closeout evidence by G2.239 |
 | `.planning/codebase/generated/monitoring-calculator-factory-provider-closeout-refresh-2026-05-29.json` | G2.239 monitoring calculator factory provider closeout / residual refresh evidence | Accepted by PR `#392`; superseded for residual candidate refresh by G2.240 |
 | `docs/reports/quality/backend-monitoring-calculator-factory-provider-closeout-refresh-2026-05-29.md` | G2.239 human-readable closeout / residual refresh report | Accepted by PR `#392`; superseded for residual candidate refresh by G2.240 |
-| `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-monitoring-calculator-2026-05-29.json` | G2.240 service lifecycle residual candidate refresh after monitoring calculator evidence | Review input until PR `#393` is accepted |
-| `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-monitoring-calculator-2026-05-29.md` | G2.240 human-readable residual candidate refresh package | Review input until PR `#393` is accepted |
+| `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-monitoring-calculator-2026-05-29.json` | G2.240 service lifecycle residual candidate refresh after monitoring calculator evidence | Accepted by PR `#393`; superseded for ownership decision by G2.241 |
+| `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-monitoring-calculator-2026-05-29.md` | G2.240 human-readable residual candidate refresh package | Accepted by PR `#393`; superseded for ownership decision by G2.241 |
+| `.planning/codebase/generated/mock-data-manager-ownership-decision-2026-05-29.json` | G2.241 mock data manager ownership / runtime seam decision evidence | Review input until PR `#394` is accepted |
+| `docs/reports/quality/backend-mock-data-manager-ownership-decision-2026-05-29.md` | G2.241 human-readable ownership decision package | Review input until PR `#394` is accepted |
 
 ## External State Inputs
 
@@ -189,7 +191,8 @@ state transition.
 | GitHub PR `#384` | `MERGED` | G2.231 service lifecycle residual candidate refresh merged by commit `05c84d1f4f5e42d9db0ace21ef3ba110dacbc184` |
 | GitHub PR `#391` | `MERGED` | G2.238 monitoring calculator factory provider injection merged by commit `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea` |
 | GitHub PR `#392` | `MERGED` | G2.239 monitoring calculator factory provider closeout / residual refresh merged by commit `d68c381d75cf9dffc601ef8390fbec9c85e55d18` |
-| `origin/wip/root-dirty-20260403` | `d68c381d75cf9dffc601ef8390fbec9c85e55d18` | Base used for this candidate refresh branch |
+| GitHub PR `#393` | `MERGED` | G2.240 service lifecycle residual candidate refresh merged by commit `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc` |
+| `origin/wip/root-dirty-20260403` | `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc` | Base used for this ownership decision branch |
 | Root worktree | Dirty/stale relative to remote | Not used as the edit surface for this split |
 
 ## Evidence Recording Rules

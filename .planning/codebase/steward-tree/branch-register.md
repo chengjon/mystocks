@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T22:03:24+08:00`
-- Base HEAD checked: `d68c381d75cf9dffc601ef8390fbec9c85e55d18`
+- Prepared at: `2026-05-29T22:22:46+08:00`
+- Base HEAD checked: `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -77,12 +77,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#390` | `g2-237-monitoring-calculator-factory-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `ef11ae6577bf62d15b814af732ba291696e5b084` | No-source provider authorization selecting G2.238 monitoring calculator factory provider injection |
 | `#391` | `g2-238-monitoring-calculator-factory-provider-injection` | `wip/root-dirty-20260403` | `MERGED` at `fd9efeefc31cdbe5aa702b47f736b5bc8b9d4bea` | Path-limited monitoring calculator factory provider injection closing 8 active route-body factory calls |
 | `#392` | `g2-239-monitoring-calculator-factory-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `d68c381d75cf9dffc601ef8390fbec9c85e55d18` | No-source monitoring calculator factory provider closeout / residual refresh selecting G2.240 |
+| `#393` | `g2-240-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc` | No-source residual candidate refresh selecting G2.241 mock data manager ownership decision |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-240-service-lifecycle-residual-candidate-refresh` | `origin/wip/root-dirty-20260403` at `d68c381d75cf9dffc601ef8390fbec9c85e55d18` | Refresh remaining service lifecycle DI candidates after accepted G2.239 closeout | No |
+| `g2-241-mock-data-manager-ownership-decision` | `origin/wip/root-dirty-20260403` at `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc` | Classify `get_mock_data_manager` ownership and runtime seam after accepted G2.240 | No |
 
 ## OpenSpec Relationship
 
@@ -98,9 +99,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.240 is the no-source service lifecycle residual candidate refresh after PR
-`#392` merged G2.239. It records the accepted monitoring calculator factory
-closeout, refreshes remaining candidates, and recommends G2.241 as a no-source
-`get_mock_data_manager` ownership / runtime seam decision packet. It must not
-authorize source edits, tests, route contracts, OpenAPI, frontend, config,
-scripts, or OpenSpec.
+G2.241 is the no-source ownership / runtime seam decision after PR `#393`
+merged G2.240. It classifies `get_mock_data_manager` as a mock data runtime
+facade and compatibility accessor, and recommends G2.242 as a no-source
+provider/reset seam authorization package. It must not authorize source edits,
+tests, route contracts, OpenAPI, frontend, config, scripts, or OpenSpec.
