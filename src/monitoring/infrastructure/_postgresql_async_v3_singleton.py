@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from typing import TYPE_CHECKING, Optional
 
 
@@ -12,12 +13,30 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
+PostgresAsyncProvider = Callable[[], "MonitoringPostgreSQLAccess"]
+
 _postgres_async_instance: Optional["MonitoringPostgreSQLAccess"] = None
+_postgres_async_provider: Optional[PostgresAsyncProvider] = None
+
+
+def set_postgres_async_provider(provider: PostgresAsyncProvider) -> None:
+    """Install an explicit PostgreSQL async access provider."""
+    global _postgres_async_provider
+    _postgres_async_provider = provider
+
+
+def reset_postgres_async_provider() -> None:
+    """Clear explicit provider and cached singleton state."""
+    global _postgres_async_instance, _postgres_async_provider
+    _postgres_async_provider = None
+    _postgres_async_instance = None
 
 
 def get_postgres_async() -> "MonitoringPostgreSQLAccess":
     """获取全局单例实例。"""
     global _postgres_async_instance
+    if _postgres_async_provider is not None:
+        return _postgres_async_provider()
     if _postgres_async_instance is None:
         from src.monitoring.infrastructure.postgresql_async_v3 import MonitoringPostgreSQLAccess
 

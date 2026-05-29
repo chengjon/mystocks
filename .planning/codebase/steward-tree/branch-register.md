@@ -83,12 +83,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#396` | `g2-243-mock-data-manager-provider-reset-seam` | `wip/root-dirty-20260403` | `MERGED` at `a0eec8bea7077e59e25a6f4491d4c695b1e25ed9` | Path-limited provider/reset seam implementation selecting G2.244 closeout refresh |
 | `#397` | `g2-244-mock-data-manager-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `05844e89873ad4fc729dab87942ea80f81bde39a` | No-source mock data manager provider closeout / residual refresh selecting G2.245 postgres async ownership decision |
 | `#398` | `g2-245-postgres-async-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `6bb9104295c31eac0e5b99dcaa65264c79fda085` | No-source postgres async ownership decision selecting G2.246 provider authorization |
+| `#399` | `g2-246-postgres-async-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `efeaaebc031844e8393e8ca1bff723a5900f1a61` | No-source provider authorization selecting G2.247 postgres async provider/reset seam implementation |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-246-postgres-async-provider-authorization` | `origin/wip/root-dirty-20260403` at `6bb9104295c31eac0e5b99dcaa65264c79fda085` | Authorize the future path-limited `get_postgres_async` provider/reset seam implementation | No |
+| `g2-247-postgres-async-provider-reset-seam` | `origin/wip/root-dirty-20260403` at `efeaaebc031844e8393e8ca1bff723a5900f1a61` | Implement the path-limited `get_postgres_async` provider/reset seam | Yes, limited to G2.246 allowed paths |
 
 ## OpenSpec Relationship
 
@@ -104,7 +105,7 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.246 is the no-source provider authorization after PR `#398` merged G2.245.
-It authorizes only a future G2.247 path-limited provider/reset seam for
-`get_postgres_async`. It must not perform source edits, route consumer migration,
-route contracts, OpenAPI, frontend, config, scripts, or OpenSpec changes.
+G2.247 is the path-limited source implementation after PR `#399` merged G2.246.
+It adds only the `get_postgres_async` provider/reset seam and focused tests. It
+must not migrate route consumers, change route contracts, OpenAPI, frontend,
+config, scripts, or OpenSpec.

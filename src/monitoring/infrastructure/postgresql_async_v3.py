@@ -679,8 +679,10 @@ class MonitoringPostgreSQLAccess:
 
 
 # Re-export singleton helpers so callers can import from this module
-from src.monitoring.infrastructure._postgresql_async_v3_singleton import (  # noqa: E402
+from src.monitoring.infrastructure._postgresql_async_v3_singleton import (  # noqa: E402,F401
     close_postgres_async,
     get_postgres_async,
     initialize_postgres_async,
+    reset_postgres_async_provider,
+    set_postgres_async_provider,
 )
