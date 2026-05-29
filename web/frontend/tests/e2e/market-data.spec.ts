@@ -187,6 +187,15 @@ test.describe("Market Data Module - E2E Tests", () => {
 
     test("should display core realtime widgets", async ({ page }) => {
       await gotoRealtime(page)
+      await expect(page.getByTestId("market-realtime-page")).toBeVisible()
+      await expect(page.getByTestId("market-realtime-header")).toBeVisible()
+      await expect(page.getByTestId("market-realtime-refresh")).toBeVisible()
+      await expect(page.getByTestId("market-realtime-status-strip")).toContainText("TRACE")
+      await expect(page.getByTestId("market-realtime-control-row")).toBeVisible()
+      await expect(page.getByTestId("market-realtime-stats-strip")).toBeVisible()
+      await expect(page.getByTestId("market-realtime-work-area")).toBeVisible()
+      await expect(page.getByTestId("market-realtime-quotes-panel")).toBeVisible()
+      await expect(page.getByTestId("market-realtime-distribution-panel")).toBeVisible()
       await expect(page.locator(".toolbar")).toBeVisible()
       await expect(page.locator(".stats-strip")).toBeVisible()
       await expect(page.locator(".content-grid")).toBeVisible()

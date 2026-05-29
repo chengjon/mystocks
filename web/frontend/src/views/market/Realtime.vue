@@ -267,8 +267,8 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="market-realtime-tab page-enter" :class="pageToneClass">
-    <section class="route-header-shell artdeco-card-shell">
+  <div class="market-realtime-tab page-enter" :class="pageToneClass" data-testid="market-realtime-page">
+    <section class="route-header-shell artdeco-card-shell" data-testid="market-realtime-header">
       <ArtDecoHeader
         title="实时行情工作台"
         subtitle="跟踪当前样本报价、成交额与涨跌分布。"
@@ -276,7 +276,14 @@ onBeforeUnmount(() => {
         :status-text="pageStatusText"
       >
         <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" :disabled="loading" @click="fetchOverview">
+          <ArtDecoButton
+            variant="outline"
+            size="sm"
+            :loading="loading"
+            :disabled="loading"
+            data-testid="market-realtime-refresh"
+            @click="fetchOverview"
+          >
             <template #icon>
               <ArtDecoIcon name="refresh" />
             </template>
@@ -285,7 +292,13 @@ onBeforeUnmount(() => {
         </template>
       </ArtDecoHeader>
 
-      <div class="status-strip" :class="`status-strip--${runtimeState}`" role="status" aria-live="polite">
+      <div
+        class="status-strip"
+        :class="`status-strip--${runtimeState}`"
+        role="status"
+        aria-live="polite"
+        data-testid="market-realtime-status-strip"
+      >
         <div class="status-strip-main">
           <span class="status-pill">{{ runtimeStateText }}</span>
           <span>{{ runtimeStateDescription }}</span>
@@ -298,7 +311,7 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
-    <section class="control-row toolbar artdeco-card-shell">
+    <section class="control-row toolbar artdeco-card-shell" data-testid="market-realtime-control-row">
       <div class="control-row-main">
         <ArtDecoSelect v-model="activePreset" :options="presetOptions" label="观察样本" placeholder="选择样本" />
       </div>
@@ -310,14 +323,14 @@ onBeforeUnmount(() => {
       </div>
     </section>
 
-    <section class="stats-strip artdeco-card-shell" v-loading="loading">
+    <section class="stats-strip artdeco-card-shell" v-loading="loading" data-testid="market-realtime-stats-strip">
       <ArtDecoStatCard label="样本总成交" :value="topStats.totalTurnover" :show-change="false" />
       <ArtDecoStatCard label="样本情绪" :value="topStats.mood" :show-change="false" :variant="marketMood >= 50 ? 'rise' : 'fall'" />
       <ArtDecoStatCard label="观察样本" :value="topStats.preset" :show-change="false" />
       <ArtDecoStatCard label="样本数量" :value="topStats.sampleCount" :show-change="false" />
     </section>
 
-    <section class="workbench-shell artdeco-card-shell">
+    <section class="workbench-shell artdeco-card-shell" data-testid="market-realtime-work-area">
       <div class="workbench-header">
         <div class="content-shell-copy">
           <h2 class="content-shell-title">样本快照与分布面板</h2>
@@ -325,17 +338,24 @@ onBeforeUnmount(() => {
         </div>
       </div>
 
-      <div v-if="showStateBanner" class="state-banner" :class="stateBannerClass" :role="error ? 'alert' : 'status'" aria-live="polite">
+      <div
+        v-if="showStateBanner"
+        class="state-banner"
+        :class="stateBannerClass"
+        :role="error ? 'alert' : 'status'"
+        aria-live="polite"
+        data-testid="market-realtime-runtime-state"
+      >
         <span>{{ error ? errorBannerText : runtimeStateDescription }}</span>
         <ArtDecoButton variant="outline" size="sm" @click="fetchOverview">重试</ArtDecoButton>
       </div>
 
       <div class="content-grid">
-        <ArtDecoCard title="样本报价快照" :hoverable="false">
+        <ArtDecoCard title="样本报价快照" :hoverable="false" data-testid="market-realtime-quotes-panel">
           <ArtDecoTable :columns="quoteColumns" :data="quoteRows" />
         </ArtDecoCard>
 
-        <ArtDecoCard title="样本涨跌分布" :hoverable="false">
+        <ArtDecoCard title="样本涨跌分布" :hoverable="false" data-testid="market-realtime-distribution-panel">
           <div v-if="showDistributionPlaceholder" class="distribution-pending" role="status" aria-live="polite">
             {{ distributionStatusText }}
           </div>

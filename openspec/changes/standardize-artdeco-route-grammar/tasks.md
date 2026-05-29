@@ -43,6 +43,15 @@ Additional alignment record:
 - Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
 - Note: this route already contained control-level hooks; this batch added route-level grammar hooks and replaced page-local raw spacing/color literals with existing ArtDeco tokens.
 
+Additional alignment record:
+
+- Date: 2026-05-30
+- User wording: `请继续`
+- Selected route: `web/frontend/src/views/market/Realtime.vue`
+- Report: `docs/reports/tasks/2026-05-30-artdeco-market-realtime-hook-alignment-report.md`
+- Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
+- Note: this route was the first ArtDeco page pilot; this batch only adds route-level grammar hooks and targeted E2E coverage.
+
 ## 4. Shared Component Extraction Gate
 
 - [ ] 4.1 Draft a separate extraction proposal before creating shared Vue components.
