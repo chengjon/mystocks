@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-29T10:34:00+08:00`
-- Base HEAD checked: `5837b8af55499e8ee9d7ba14cf543abb9bc45e39`
+- Prepared at: `2026-05-29T10:56:00+08:00`
+- Base HEAD checked: `854878cd2e09384daddaa8547e8cebc970ec2b74`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -63,12 +63,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#376` | `g2-223-unified-data-service-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `5eef37a097d55d209a69485bc29e89dd3aeb4076` | No-source `get_unified_data_service` ownership decision selecting G2.224 authorization |
 | `#377` | `g2-224-industry-concept-unified-data-service-cleanup-authorization` | `wip/root-dirty-20260403` | `MERGED` at `36c38fbf233945b7e45ed67b50591665942d4b32` | No-source authorization selecting G2.225 `industry_concept_analysis.py` cleanup implementation |
 | `#378` | `g2-225-industry-concept-unified-data-service-cleanup` | `wip/root-dirty-20260403` | `MERGED` at `5837b8af55499e8ee9d7ba14cf543abb9bc45e39` | Path-limited implementation closing `industry_concept_analysis.py` direct `UnifiedDataService()` calls |
+| `#379` | `g2-226-industry-concept-unified-data-service-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `854878cd2e09384daddaa8547e8cebc970ec2b74` | No-source closeout / residual refresh selecting G2.227 `get_prewarming_strategy` ownership decision |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-226-industry-concept-unified-data-service-closeout-refresh` | `origin/wip/root-dirty-20260403` at `5837b8af55499e8ee9d7ba14cf543abb9bc45e39` | Close out the industry/concept cleanup and refresh residual provider candidates | No |
+| `g2-227-cache-prewarming-strategy-ownership-decision` | `origin/wip/root-dirty-20260403` at `854878cd2e09384daddaa8547e8cebc970ec2b74` | Decide `get_prewarming_strategy` ownership and next gate | No |
 
 ## OpenSpec Relationship
 
@@ -84,8 +85,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.226 is a no-source closeout / residual-refresh branch after PR `#378` merged
-G2.225. It is limited to closeout evidence, steward-tree updates, and a task
-card. If accepted, the next gate is G2.227 no-source `get_prewarming_strategy`
-ownership decision; cache prewarming source implementation is not authorized by
-G2.226.
+G2.227 is a no-source ownership decision branch after PR `#379` merged G2.226.
+It is limited to decision evidence, steward-tree updates, and a task card. If
+accepted, the next gate is G2.228 no-source cache prewarming strategy provider
+authorization; cache prewarming source implementation is not authorized by
+G2.227.

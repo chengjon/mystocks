@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-29T10:34:00+08:00`
-- Base HEAD checked: `5837b8af55499e8ee9d7ba14cf543abb9bc45e39`
+- Prepared at: `2026-05-29T10:56:00+08:00`
+- Base HEAD checked: `854878cd2e09384daddaa8547e8cebc970ec2b74`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.226 `industry_concept_analysis.py` cleanup closeout / residual refresh | G/#79 service lifecycle DI + unified data facade governance | PR `#378` merged at `5837b8af55499e8ee9d7ba14cf543abb9bc45e39`; G2.226 closes the industry/concept direct constructor cleanup and refreshes `get_prewarming_strategy` as the next no-source decision candidate | If accepted, start G2.227 no-source `get_prewarming_strategy` ownership decision; do not start cache prewarming source implementation from G2.226 |
+| P0 | Review G2.227 `get_prewarming_strategy` ownership decision | G/#79 service lifecycle DI + cache prewarming provider governance | PR `#379` merged at `854878cd2e09384daddaa8547e8cebc970ec2b74`; G2.227 classifies `get_prewarming_strategy` as a cache prewarming route/provider surface and selects G2.228 no-source authorization | If accepted, start G2.228 no-source cache prewarming strategy provider authorization; do not start cache prewarming source implementation from G2.227 |
 | P0 | Preserve G2.214 non-Strategy provider governance queue refresh / next-candidate selection | G/#79 service lifecycle DI | PR `#367` merged; G2.214 selected G2.215 indicator/data `get_data_service` current-HEAD contradiction decision as the next no-source gate | Do not reopen other non-Strategy candidates from G2.214 without fresh current-HEAD contradiction evidence |
 | P0 | Preserve G2.213 data-quality monitor singleton/backing API closeout / residual refresh | G/#79 service lifecycle DI | PR `#366` merged; data-quality monitor conveyor selects no new source lane | Do not reopen data-quality monitor source unless fresh current-HEAD evidence contradicts accepted closeout |
 | P0 | Preserve G2.212 data-quality monitor singleton/backing API compatibility implementation | G/#79 service lifecycle DI | PR `#365` merged; provider/reset hook is implemented and default singleton fallback is preserved | Do not reopen data-quality monitor singleton source unless fresh current-HEAD evidence contradicts G2.212/G2.213 |
@@ -57,9 +57,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.226 correctly treat PR `#378` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.226 correctly close the industry/concept target with `0` direct `UnifiedDataService()` calls and no target import?
-- Does G2.226 preserve G2.225 route paths, response models, OpenAPI exposure, SQL queries, `get_postgresql_engine`, and error contracts as closed invariants?
-- Is G2.227 correctly positioned as a no-source `get_prewarming_strategy` ownership decision, not a source implementation lane?
-- Does G2.226 keep `get_unified_data_service` and cache prewarming source edits out of this closeout lane?
+- Does G2.227 correctly treat PR `#379` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.227 correctly classify `get_prewarming_strategy` as a route/provider ownership surface, not generic singleton deletion?
+- Does G2.227 preserve cache route paths, OpenAPI exposure, `CachePrewarmingStrategy` behavior, and `get_prewarming_strategy` as invariants?
+- Is G2.228 correctly positioned as no-source authorization, not source implementation?
+- Does G2.227 keep cache prewarming source edits out of this decision lane?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

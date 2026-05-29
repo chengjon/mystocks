@@ -1,0 +1,117 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-05-29T10:56:00+08:00",
+  "g2_id": "G2.227",
+  "status": "ownership_decision_for_review",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "854878cd2e09384daddaa8547e8cebc970ec2b74",
+  "parent": {
+    "g2_id": "G2.226",
+    "github_pr": 379,
+    "merge_commit": "854878cd2e09384daddaa8547e8cebc970ec2b74",
+    "closeout_report": "docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-closeout-refresh-2026-05-29.md"
+  },
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "candidate": {
+    "symbol": "get_prewarming_strategy",
+    "definition_file": "web/backend/app/core/cache_prewarming.py",
+    "definition_line": 306,
+    "classification": "cache prewarming route/provider surface",
+    "text_hits": 9,
+    "hit_files": {
+      "web/backend/app/core/cache_prewarming.py": 1,
+      "web/backend/app/api/_cache_prewarming_routes.py": 4,
+      "web/backend/tests/test_cache_prewarming.py": 4
+    }
+  },
+  "route_surface": {
+    "route_file": "web/backend/app/api/_cache_prewarming_routes.py",
+    "public_router_file": "web/backend/app/api/cache.py",
+    "openapi_paths": [
+      "/api/cache/prewarming/trigger",
+      "/api/cache/prewarming/status",
+      "/api/cache/monitoring/metrics",
+      "/api/cache/monitoring/health"
+    ],
+    "direct_route_callers": [
+      "trigger_cache_prewarming",
+      "get_prewarming_status",
+      "get_cache_health_status"
+    ],
+    "route_body_direct_getter_calls": 3,
+    "route_dependency_context": "the same route handlers already use FastAPI Depends for current_user"
+  },
+  "gitnexus": {
+    "context": {
+      "definition_file": "web/backend/app/core/cache_prewarming.py",
+      "definition_line": 306,
+      "incoming_calls": [
+        "web/backend/app/api/_cache_prewarming_routes.py:trigger_cache_prewarming",
+        "web/backend/app/api/_cache_prewarming_routes.py:get_prewarming_status",
+        "web/backend/app/api/_cache_prewarming_routes.py:get_cache_health_status"
+      ],
+      "outgoing_calls": [],
+      "processes": []
+    },
+    "impact": {
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct_callers": 3,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "affected_module": "Api"
+    },
+    "route_file_impact": {
+      "target": "web/backend/app/api/_cache_prewarming_routes.py",
+      "risk": "LOW",
+      "direct_importer": "web/backend/app/api/cache.py",
+      "test_importer": "web/backend/tests/test_cache_api.py"
+    }
+  },
+  "verification": {
+    "focused_cache_tests": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_cache_prewarming.py web/backend/tests/test_cache_api.py -q --no-cov --tb=short",
+      "result": "54 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/_cache_prewarming_routes.py web/backend/app/core/cache_prewarming.py web/backend/app/api/cache.py web/backend/tests/test_cache_api.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "python -c import app.main and app.openapi() with transient non-secret placeholders",
+      "result": {
+        "routes": 548,
+        "paths": 500,
+        "cache_prewarming_paths_present": true
+      }
+    }
+  },
+  "decision": {
+    "result": "classify get_prewarming_strategy as a cache prewarming route/provider ownership surface, not generic singleton deletion",
+    "source_implementation_allowed_now": false,
+    "selected_next_gate": "G2.228 no-source cache prewarming strategy provider authorization",
+    "future_authorization_candidate_scope": {
+      "source_paths": [
+        "web/backend/app/api/_cache_prewarming_routes.py"
+      ],
+      "test_paths": [
+        "web/backend/tests/test_cache_api.py",
+        "web/backend/tests/test_cache_prewarming.py"
+      ],
+      "possible_pattern": "preserve get_prewarming_strategy as the default provider factory and inject the strategy into the three route handlers with FastAPI Depends"
+    }
+  },
+  "non_goals": [
+    "cache prewarming source edits",
+    "route path changes",
+    "response model or response envelope changes",
+    "CachePrewarmingStrategy behavior changes",
+    "get_prewarming_strategy deletion or rename",
+    "cache.py router changes",
+    "frontend changes",
+    "OpenSpec proposal or spec creation"
+  ],
+  "next_gate": "If accepted, start G2.228 no-source authorization for a path-limited cache prewarming provider implementation; do not implement from G2.227.",
+  "rollback": "Revert this decision PR; no runtime source or test changes are present."
+}
