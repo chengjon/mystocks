@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T09:38:00+08:00`
-- Base HEAD checked: `36c38fbf233945b7e45ed67b50591665942d4b32`
+- Prepared at: `2026-05-29T10:34:00+08:00`
+- Base HEAD checked: `5837b8af55499e8ee9d7ba14cf543abb9bc45e39`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -1248,17 +1248,42 @@ and adds a focused regression test. It does not authorize edits to
 OpenAPI exposure, SQL queries, error-contract behavior, frontend code, or
 OpenSpec specs.
 
+## G2.226 Industry/Concept UnifiedDataService Cleanup Closeout / Refresh
+
+G2.226 is a no-source closeout / residual refresh after PR `#378` merged G2.225
+at `5837b8af55499e8ee9d7ba14cf543abb9bc45e39`.
+
+Closeout evidence:
+
+| Evidence | Value |
+|---|---:|
+| Direct `UnifiedDataService()` calls in `industry_concept_analysis.py` | 0 |
+| `UnifiedDataService` import in `industry_concept_analysis.py` | absent |
+| Remaining unified-data hits in `web/backend/app` | 9 |
+| Remaining unified-data hit files | `web/backend/app/services/unified_data_service.py` only |
+| Focused regression test | `1 passed` |
+| Ruff target check | passed |
+| app.main / OpenAPI smoke | `routes=548`, `paths=500`, both target paths present |
+
+Residual refresh:
+
+| Candidate | Risk | Direct callers | Processes affected | Classification | Disposition |
+|---|---|---:|---:|---|---|
+| `get_prewarming_strategy` | LOW | 3 | 0 | cache prewarming route/provider surface | Select G2.227 no-source ownership decision |
+
+Decision: G2.226 closes the industry/concept route cleanup target and selects
+G2.227 as a future no-source ownership decision for `get_prewarming_strategy`.
+It does not authorize cache prewarming source edits or route/OpenAPI changes.
+
 ## Next Gates
 
-- Review G2.225 `industry_concept_analysis.py` direct `UnifiedDataService()`
-  cleanup implementation.
-- If accepted, merge G2.225 and run G2.226 closeout / residual refresh before
-  selecting another unified-data or cache provider candidate.
-- Do not expand G2.225 into route paths, response models, SQL queries,
-  error-contract behavior, `UnifiedDataService`, `get_unified_data_service`, or
-  cache prewarming provider work.
-- Keep `get_prewarming_strategy` deferred until the industry/concept cleanup
-  path is closed or explicitly bypassed.
+- Review G2.226 `industry_concept_analysis.py` cleanup closeout / residual
+  refresh.
+- If accepted, start G2.227 no-source ownership decision for
+  `get_prewarming_strategy`.
+- Do not start cache prewarming source implementation from G2.226.
+- Do not expand into route paths, response models, SQL queries, error-contract
+  behavior, `get_unified_data_service`, or frontend code.
 - Do not open another data-quality monitor source lane unless fresh current-HEAD evidence contradicts the accepted closeout.
 - Do not batch service adapters, legacy adapters, `market_data_adapter.py`, or
   singleton-wrapper migration with `adapter_split` constructor migration.

@@ -1,0 +1,93 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-05-29T10:34:00+08:00",
+  "g2_id": "G2.226",
+  "status": "closeout_refresh_for_review",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "5837b8af55499e8ee9d7ba14cf543abb9bc45e39",
+  "parent": {
+    "g2_id": "G2.225",
+    "github_pr": 378,
+    "merge_commit": "5837b8af55499e8ee9d7ba14cf543abb9bc45e39",
+    "implementation_report": "docs/reports/quality/backend-industry-concept-unified-data-service-cleanup-implementation-2026-05-29.md"
+  },
+  "openspec_lane": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "closeout": {
+    "target_file": "web/backend/app/api/industry_concept_analysis.py",
+    "target_direct_unified_data_service_calls": 0,
+    "target_unified_data_service_import_present": false,
+    "target_route_paths": [
+      "GET /api/analysis/industry/list",
+      "GET /api/analysis/concept/list"
+    ],
+    "route_paths_changed_by_closeout": false,
+    "response_models_changed_by_closeout": false,
+    "openapi_exposure_changed_by_closeout": false,
+    "runtime_source_changed_by_closeout": false
+  },
+  "residual_scan": {
+    "get_unified_data_service_or_unified_data_service_hits": 9,
+    "hit_files": {
+      "web/backend/app/services/unified_data_service.py": 9
+    },
+    "industry_concept_hits_after_g2_225": 0,
+    "classification": "industry/concept direct constructor cleanup closed; remaining hits are root facade / compatibility service surface"
+  },
+  "next_candidate_refresh": {
+    "selected_next_gate": "G2.227 get_prewarming_strategy ownership decision",
+    "source_edit_authority_for_next_gate": false,
+    "candidate": {
+      "symbol": "get_prewarming_strategy",
+      "definition_file": "web/backend/app/core/cache_prewarming.py",
+      "definition_line": 306,
+      "classification": "cache prewarming route/provider surface",
+      "text_hits": 5,
+      "hit_files": {
+        "web/backend/app/api/_cache_prewarming_routes.py": 4,
+        "web/backend/app/core/cache_prewarming.py": 1
+      }
+    },
+    "gitnexus": {
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct_callers": 3,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "affected_module": "Api",
+      "direct_callers_detail": [
+        "web/backend/app/api/_cache_prewarming_routes.py:trigger_cache_prewarming",
+        "web/backend/app/api/_cache_prewarming_routes.py:get_prewarming_status",
+        "web/backend/app/api/_cache_prewarming_routes.py:get_cache_health_status"
+      ],
+      "route_file_impact": {
+        "target": "web/backend/app/api/_cache_prewarming_routes.py",
+        "risk": "LOW",
+        "direct_importer": "web/backend/app/api/cache.py",
+        "test_importer": "web/backend/tests/test_cache_api.py"
+      }
+    },
+    "decision_boundary": "G2.226 selects only a future no-source ownership decision for get_prewarming_strategy; it does not authorize cache prewarming source edits."
+  },
+  "verification": {
+    "focused_regression_test": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_industry_concept_list_endpoints_do_not_instantiate_unified_data_service_directly -q --no-cov --tb=short",
+      "result": "1 passed"
+    },
+    "ruff_target_check": {
+      "command": "ruff check web/backend/app/api/industry_concept_analysis.py web/backend/tests/test_health_route_conflicts.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "python -c import app.main and app.openapi() with transient non-secret placeholders",
+      "result": {
+        "routes": 548,
+        "paths": 500,
+        "industry_path_present": true,
+        "concept_path_present": true
+      }
+    }
+  },
+  "next_gate": "If accepted, start G2.227 no-source ownership decision for get_prewarming_strategy; do not start cache prewarming source implementation from G2.226.",
+  "rollback": "Revert the closeout PR; no runtime source or test changes are present in G2.226."
+}
