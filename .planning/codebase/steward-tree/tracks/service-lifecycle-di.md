@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T00:15:00+08:00`
-- Base HEAD checked: `536b0634a51ea580f1a384d07a8ee605fbed8567`
+- Prepared at: `2026-05-31T00:45:00+08:00`
+- Base HEAD checked: `ad3cc58dbe0dc768488006d22de09085a1a8ee6f`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2521,3 +2521,55 @@ Next gate after acceptance:
   async provider authorization.
 - G2.258 should authorize or reject only a future source lane. It must not edit
   source code itself.
+
+## G2.258 Signal History Postgres Async Provider Authorization
+
+Status: for review in PR `#411`.
+
+Parent gate:
+
+- G2.257 closeout / residual refresh was accepted by PR `#410`.
+- PR `#410` merged into `wip/root-dirty-20260403` at
+  `ad3cc58dbe0dc768488006d22de09085a1a8ee6f`.
+
+Candidate snapshot:
+
+| Evidence | Result |
+|---|---:|
+| Candidate file | `web/backend/app/api/signal_monitoring/signal_history_response.py` |
+| Active app routes | 4 |
+| Route-body `get_postgres_async()` calls | 4 |
+| File tests | `13 passed` |
+| Candidate source ruff | `All checks passed!` |
+| App route table / OpenAPI smoke | `routes=548`, `paths=500` |
+| OpenSpec strict validate | `migrate-backend-singletons-to-lifecycle-di` valid |
+
+Authorized future G2.259 handlers:
+
+- `get_signal_history`
+- `get_signal_quality_report`
+- `get_strategy_realtime_monitoring`
+- `health_check`
+
+Known preconditions for future implementation:
+
+- `web/backend/tests/test_signal_history_response_regressions.py` currently
+  fails because it expects object attributes while the handler returns a dict.
+- `tests/api/file_tests/test_signal_monitoring_api.py` has existing `F811`
+  fixture-import lint debt when checked with `ruff --no-fix`.
+- G2.259 may resolve these only inside the allowed future test paths and only
+  to support the authorized provider implementation.
+
+Explicit exclusions:
+
+- `signal_monitoring/get_signal_statistics.py` remains deferred until
+  route-registration / ownership confirmation.
+- Other `signal_monitoring/*`, infrastructure, route contracts, OpenAPI
+  exposure, frontend, config, scripts, PM2, and OpenSpec remain out of scope.
+
+Next gate after acceptance:
+
+- G2.259 path-limited `signal_history_response.py` postgres async route
+  provider implementation.
+- G2.259 must rerun GitNexus impact/context before source edits and stop on
+  HIGH or CRITICAL risk.
