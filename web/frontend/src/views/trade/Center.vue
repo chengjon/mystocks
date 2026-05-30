@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, onMounted, ref } from 'vue'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
 import {
@@ -273,49 +274,41 @@ onMounted(() => {
     data-test="trade-positions-page"
     data-testid="trade-positions-page"
   >
-    <section
+    <ArtDecoRouteHeader
       v-if="!isEmbedded"
-      class="hero-shell artdeco-card-shell"
-      data-test="trade-positions-header"
-      data-testid="trade-positions-header"
+      title="持仓工作台"
+      subtitle="统一查看持仓结构、盈亏表现和仓位分布，形成交易域的头寸入口"
+      eyebrow="持仓审阅"
+      :show-status="true"
+      :status-text="pageStatusText"
+      :status-type="pageStatusType"
+      test-id="trade-positions-header"
+      legacy-test="trade-positions-header"
     >
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">持仓审阅</span>
-          <div class="hero-meta">
-            <span>请求: {{ displayRequestId }}</span>
-            <span>耗时: {{ displayProcessTime }}</span>
-            <span>行数: {{ displayRowCount }}</span>
-          </div>
-        </div>
-      </div>
+      <template #meta>
+        <span>请求: {{ displayRequestId }}</span>
+        <span>耗时: {{ displayProcessTime }}</span>
+        <span>行数: {{ displayRowCount }}</span>
+      </template>
 
-      <ArtDecoHeader
-        title="持仓工作台"
-        subtitle="统一查看持仓结构、盈亏表现和仓位分布，形成交易域的头寸入口"
-        :show-status="true"
-        :status-text="pageStatusText"
-        :status-type="pageStatusType"
-      >
-        <template #actions>
-          <ArtDecoButton
-            variant="solid"
-            priority="primary"
-            motion="data"
-            size="sm"
-            :loading="loading"
-            data-test="trade-positions-refresh"
-            data-testid="trade-positions-refresh"
-            @click="loadPositions"
-          >
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新持仓
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
-    </section>
+      <template #actions>
+        <ArtDecoButton
+          variant="solid"
+          priority="primary"
+          motion="data"
+          size="sm"
+          :loading="loading"
+          data-test="trade-positions-refresh"
+          data-testid="trade-positions-refresh"
+          @click="loadPositions"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新持仓
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell" data-testid="trade-positions-status-strip">
       <ArtDecoStatCard label="持仓标的" :value="displayRowCount" :show-change="false" variant="gold" />
