@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-30T18:37:32+08:00`
-- Base HEAD checked: `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`
+- Prepared at: `2026-05-30T19:10:19+08:00`
+- Base HEAD checked: `d6c98b1f0747f9be694451a2e8d4a49d6d67341f`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,9 +21,12 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
-| `.planning/codebase/generated/postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.json` | G2.251 monitoring portfolio provider closeout / residual-refresh evidence | Review input for PR `#404`; no-source governance only |
-| `docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.md` | G2.251 human-readable closeout / residual-refresh report | Review input for PR `#404`; selects G2.252 no-source authorization |
-| `governance/mainline/task-cards/pr-404.yaml` | Path-limited governance task card for G2.251 | Review input; forbids source/test/runtime/OpenSpec changes |
+| `.planning/codebase/generated/postgres-async-monitoring-analysis-provider-authorization-2026-05-30.json` | G2.252 `monitoring_analysis.py` postgres async provider authorization evidence | Review input for PR `#405`; no-source governance only |
+| `docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-authorization-2026-05-30.md` | G2.252 human-readable authorization packet | Review input for PR `#405`; authorizes only future G2.253 path-limited implementation |
+| `governance/mainline/task-cards/pr-405.yaml` | Path-limited governance task card for G2.252 | Review input; forbids source/test/runtime/OpenSpec changes |
+| `.planning/codebase/generated/postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.json` | G2.251 monitoring portfolio provider closeout / residual-refresh evidence | Accepted by PR `#404`; merged at `d6c98b1f0747f9be694451a2e8d4a49d6d67341f` |
+| `docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.md` | G2.251 human-readable closeout / residual-refresh report | Accepted by PR `#404`; selected G2.252 no-source authorization |
+| `governance/mainline/task-cards/pr-404.yaml` | Path-limited governance task card for G2.251 | Accepted by PR `#404`; forbids source/test/runtime/OpenSpec changes |
 | `.planning/codebase/generated/postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.json` | G2.250 monitoring portfolio route-local postgres async provider implementation evidence | Accepted by PR `#403`; merged at `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db` |
 | `docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.md` | G2.250 human-readable implementation report | Accepted by PR `#403`; source authority was limited to `_monitoring_portfolio_router.py` and focused file test |
 | `governance/mainline/task-cards/pr-403.yaml` | Path-limited implementation task card for G2.250 | Accepted by PR `#403`; forbids broader route consumer, infrastructure, OpenAPI, frontend, config, script, and OpenSpec changes |

@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-405"
+  title: "Authorize monitoring_analysis postgres async provider pilot"
+  owner: "codex"
+  created_at: "2026-05-30"
+
+mainline:
+  id: "L1-postgres-async-monitoring-analysis-provider-authorization"
+  objective: "authorize a future path-limited monitoring_analysis route-local postgres async provider implementation"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.252 is no-source authorization planning only; it changes no runtime entrypoints, route paths, OpenAPI exposure, source, tests, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/postgres-async-monitoring-analysis-provider-authorization-2026-05-30.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-authorization-2026-05-30.md"
+    - "governance/mainline/task-cards/pr-405.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route consumer migration"
+  - "OpenAPI schema exposure changes"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr404-merged"
+      command: "gh pr view 404 confirms MERGED at d6c98b1f0747f9be694451a2e8d4a49d6d67341f"
+      required: true
+    - id: "candidate-classification"
+      command: "monitoring_analysis.py recorded as 2-call route-decorated residual and selected for future G2.253 authorization"
+      required: true
+    - id: "future-scope-boundary"
+      command: "future G2.253 allowed paths and forbidden paths explicitly recorded"
+      required: true
+    - id: "focused-tests"
+      command: "env PYTHONPATH=. pytest -q tests/api/file_tests/test_monitoring_analysis_api.py -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff-current"
+      command: "ruff check web/backend/app/api/monitoring_analysis.py tests/api/file_tests/test_monitoring_analysis_api.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main, app.openapi(), and verify routes=548 paths=500"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-authorization-2026-05-30.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-405.yaml --base-sha d6c98b1f0747f9be694451a2e8d4a49d6d67341f --head-sha HEAD --report /tmp/pr405-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; timeout/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.252 must not be mistaken for source implementation authority."
+    - "Future G2.253 must preserve analyze_portfolio calculator_factory dependency."
+    - "Residual counts are snapshots and stale if HEAD changes."
+  rollback_plan: "Revert PR #405; the steward tree returns to the post-G2.251 merge state and no runtime behavior changes."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future monitoring_analysis postgres async provider pilot."
+    modified_scope: "Governance evidence, steward tree, report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or legacy behavior changes."
+    rollback_ready: "Revert PR #405."
+    risk_and_rollback_point: "No-source governance PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-30T19:10:19+08:00"
+    approval_note: "Approved after PR #404 merged G2.251; authorization limited to future monitoring_analysis.py provider pilot planning."
+    secondary_approved: false

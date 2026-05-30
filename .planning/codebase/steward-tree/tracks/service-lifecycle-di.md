@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-30T18:37:32+08:00`
-- Base HEAD checked: `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`
+- Prepared at: `2026-05-30T19:10:19+08:00`
+- Base HEAD checked: `d6c98b1f0747f9be694451a2e8d4a49d6d67341f`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2244,6 +2244,48 @@ Decision:
 - If accepted, start G2.252 no-source `monitoring_analysis.py` postgres async
   route consumer provider authorization.
 - Do not start source implementation from G2.251.
+- G2.251 was accepted by PR `#404` and merged at
+  `d6c98b1f0747f9be694451a2e8d4a49d6d67341f`.
+
+## G2.252 Monitoring Analysis Postgres Async Provider Authorization
+
+G2.252 is the no-source authorization after PR `#404` merged G2.251 at
+`d6c98b1f0747f9be694451a2e8d4a49d6d67341f`.
+
+Current evidence:
+
+| Evidence | Value |
+|---|---:|
+| Route-decorated residual files | 4 |
+| Route-decorated residual calls | 16 |
+| Route-adjacent residual files | 3 |
+| Route-adjacent residual calls | 3 |
+| `monitoring_analysis.py` route-body calls | 2 |
+
+Authorized future source lane:
+
+| Future item | Scope |
+|---|---|
+| G2 id | G2.253 |
+| Source file | `web/backend/app/api/monitoring_analysis.py` |
+| Focused test file | `tests/api/file_tests/test_monitoring_analysis_api.py` |
+| Candidate provider | `get_monitoring_analysis_postgres_async` |
+
+Target handlers:
+
+| Handler | Route | Existing dependency to preserve |
+|---|---|---|
+| `get_health_score_history` | `GET /results/{stock_code}` | none |
+| `analyze_portfolio` | `GET /portfolio/{watchlist_id}` | `calculator_factory=Depends(get_monitoring_calculator_factory)` |
+
+Decision:
+
+- If accepted, start G2.253 path-limited `monitoring_analysis.py` postgres async
+  route provider implementation.
+- Do not implement source changes from G2.252.
+- Do not migrate `monitoring_watchlists.py`, `signal_monitoring/*`,
+  `_data_source_config_responses.py`, `v1/system/settings.py`, infrastructure,
+  frontend, config, scripts, OpenSpec, or PM2 state from G2.252.
 
 ## Forbidden Scope
 
