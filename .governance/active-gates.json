@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "updated_at": "2026-05-30T17:37:49.016Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "route-header-shell-trade-portfolio",
+      "title": "Migrate /trade/portfolio route header shell",
+      "node_type": "implementation",
+      "owner_lane": "web-artdeco",
+      "parent": "",
+      "status": "approved-for-implementation",
+      "source_edits_authorized": true,
+      "current_blocker": "",
+      "next_allowed": "implement within allowed_paths",
+      "function_tree_ref": "docs/FUNCTION_TREE.md#domain-05-node-01",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "web/frontend/src/views/trade/Portfolio.vue",
+        "web/frontend/src/components/artdeco/route-shell/",
+        "web/frontend/tests/e2e/",
+        "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts",
+        "docs/reports/tasks/",
+        "openspec/"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-05-30T17:37:49.016Z"
+    }
+  ]
+}

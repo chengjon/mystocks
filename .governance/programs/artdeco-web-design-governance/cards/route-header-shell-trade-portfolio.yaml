@@ -1,0 +1,32 @@
+task:
+  id: "route-header-shell-trade-portfolio"
+  title: "Migrate /trade/portfolio route header shell"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/trade/Portfolio.vue"
+    - "web/frontend/src/components/artdeco/route-shell/"
+    - "web/frontend/tests/e2e/"
+    - "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts"
+    - "docs/reports/tasks/"
+    - "openspec/"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not change router configuration or route paths."
+  - "Do not change backend API contracts or frontend API clients."
+  - "Do not extract runtime status strips, review segments, table panels, or route business state in this node."
+
+acceptance:
+  commit_gate:
+    - "GitNexus impact before editing Portfolio.vue and GitNexus staged scope gate before commit."
+    - "Focused E2E for Trade-Portfolio or the nearest existing portfolio route suite must pass."
+    - "ArtDeco token check, npx impeccable --json, focused eslint, npm run type-check -- --pretty false, and OpenSpec/Function Tree validation must pass."
+  closeout_gate:
+    - "Publish a route-header-shell migration report under docs/reports/tasks/ before commit."
+    - "Confirm no router, API contract, frontend API client, or shared business state changes were made."
+
+evidence:
+  current_head: "0693629f9443587f21a93558d9441c5a3e7ff437"
+  notes: []
