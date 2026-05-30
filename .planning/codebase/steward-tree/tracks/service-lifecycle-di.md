@@ -2629,3 +2629,59 @@ Next gate after acceptance:
   app-route `get_postgres_async()` residuals, and choose the next authorization
   candidate or declare the queue closed.
 - G2.260 must not edit source.
+
+## G2.260 Signal History Postgres Async Provider Closeout / Residual Refresh
+
+Status: for review in PR `#413`.
+
+Parent gate:
+
+- G2.259 implementation was accepted by PR `#412`.
+- PR `#412` merged into `wip/root-dirty-20260403` at
+  `5dc148e0aa4653f0803eb6a088e90544b6c051e4`.
+
+Closeout evidence:
+
+| Evidence | Result |
+|---|---:|
+| `app.routes` | 548 |
+| OpenAPI paths | 500 |
+| Active API routes scanned | 513 |
+| `get_signal_history_postgres_async` exists | `true` |
+| Provider backing `get_postgres_async()` calls | 1 |
+| Target route-body direct `get_postgres_async()` calls | 0 |
+| Target dependency parameters | 4 |
+| Focused tests | `15 passed` |
+| Ruff on reference source/tests | `All checks passed!` |
+| OpenSpec strict validate | `migrate-backend-singletons-to-lifecycle-di` valid |
+
+Residual refresh:
+
+| Residual class | Count | Handling |
+|---|---:|---|
+| Active app-route body consumers | 0 | Closed at current HEAD |
+| Retained route-local provider seams | 4 | Keep as provider backing calls |
+| Legacy / compatibility surfaces | 3 | Do not migrate from G2.260 |
+| Static route-like but not app-registered | 3 | Route-registration / ownership decision required |
+
+Static route-like but not app-registered residuals:
+
+- `web/backend/app/api/signal_monitoring/get_signal_statistics.py::get_signal_statistics`
+- `web/backend/app/api/signal_monitoring/get_signal_statistics.py::get_active_signals`
+- `web/backend/app/api/signal_monitoring/get_signal_statistics.py::get_strategy_detailed_health`
+
+Decision:
+
+- The active app-route body `get_postgres_async()` migration queue is closed.
+- Do not open another source implementation lane directly from G2.260.
+- G2.261 should be a no-source `get_signal_statistics.py` route-registration /
+  ownership decision package.
+
+Next gate after acceptance:
+
+- G2.261 no-source route-registration / ownership decision for
+  `web/backend/app/api/signal_monitoring/get_signal_statistics.py`.
+- G2.261 must decide whether the three static route-like consumers are
+  intentionally unregistered, legacy/deferred, or candidates for a future
+  separately authorized route/provider lane.
+- G2.261 must not edit source.

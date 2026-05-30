@@ -1,0 +1,121 @@
+{
+  "schema_version": "2026-05-31.g2-service-lifecycle-closeout.v1",
+  "generated_at": "2026-05-31T02:09:47+08:00",
+  "change_id": "G2.260",
+  "title": "signal history postgres async provider closeout and residual refresh",
+  "status": "for_review",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
+  "worktree_branch": "g2-260-signal-history-provider-closeout-refresh",
+  "source_edit_authority": false,
+  "parent_implementation": {
+    "change_id": "G2.259",
+    "pull_request": 412,
+    "merge_commit": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
+    "implementation_commit": "f3a99422ea9407ad78a2a31deaeb5c3c857a08ee",
+    "evidence": [
+      ".planning/codebase/generated/postgres-async-signal-history-provider-implementation-2026-05-31.json",
+      "docs/reports/quality/backend-postgres-async-signal-history-provider-implementation-2026-05-31.md",
+      "governance/mainline/task-cards/pr-412.yaml"
+    ]
+  },
+  "closeout_evidence": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "active_api_routes": 513,
+    "target_provider_exists": true,
+    "target_provider_calls": 1,
+    "target_route_body_direct_get_postgres_async_calls": 0,
+    "target_dependency_parameters": 4,
+    "target_handlers": {
+      "get_signal_history": {
+        "direct_get_postgres_async_calls": 0,
+        "has_postgres_async_param": true
+      },
+      "get_signal_quality_report": {
+        "direct_get_postgres_async_calls": 0,
+        "has_postgres_async_param": true
+      },
+      "get_strategy_realtime_monitoring": {
+        "direct_get_postgres_async_calls": 0,
+        "has_postgres_async_param": true
+      },
+      "health_check": {
+        "direct_get_postgres_async_calls": 0,
+        "has_postgres_async_param": true
+      }
+    },
+    "focused_tests": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_signal_monitoring_api.py web/backend/tests/test_signal_history_response_regressions.py -n 0 --tb=short --no-cov",
+      "result": "15 passed"
+    },
+    "ruff": {
+      "command": "ruff check --no-fix web/backend/app/api/signal_monitoring/signal_history_response.py tests/api/file_tests/test_signal_monitoring_api.py web/backend/tests/test_signal_history_response_regressions.py",
+      "result": "All checks passed!"
+    },
+    "openspec": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid"
+    }
+  },
+  "residual_refresh": {
+    "api_py_files_scanned": 219,
+    "functions_with_direct_get_postgres_async_calls": 10,
+    "total_direct_get_postgres_async_calls": 10,
+    "active_app_route_body_call_sites": [],
+    "active_app_route_body_call_count": 0,
+    "residual_classification": {
+      "retained_route_local_provider_seams": [
+        "web/backend/app/api/_monitoring_portfolio_router.py::get_monitoring_postgres_async",
+        "web/backend/app/api/monitoring_analysis.py::get_monitoring_analysis_postgres_async",
+        "web/backend/app/api/monitoring_watchlists.py::get_monitoring_watchlists_postgres_async",
+        "web/backend/app/api/signal_monitoring/signal_history_response.py::get_signal_history_postgres_async"
+      ],
+      "legacy_or_compat_surfaces": [
+        "web/backend/app/api/_data_source_config_responses.py::get_config_manager",
+        "web/backend/app/api/data_source_config.old.py::get_config_manager",
+        "web/backend/app/api/v1/system/settings.py::__init__"
+      ],
+      "static_route_like_not_app_registered": [
+        "web/backend/app/api/signal_monitoring/get_signal_statistics.py::get_signal_statistics",
+        "web/backend/app/api/signal_monitoring/get_signal_statistics.py::get_active_signals",
+        "web/backend/app/api/signal_monitoring/get_signal_statistics.py::get_strategy_detailed_health"
+      ]
+    }
+  },
+  "decision": {
+    "summary": "The active app-route body get_postgres_async migration queue is closed at current HEAD. Do not open another source implementation lane directly from G2.260.",
+    "next_gate": {
+      "change_id": "G2.261",
+      "type": "no-source route-registration / ownership decision",
+      "candidate": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+      "purpose": "decide whether the three static route-like get_postgres_async consumers are intentionally unregistered, legacy/deferred, or candidates for a future separately authorized route/provider lane"
+    }
+  },
+  "staged_gitnexus": {
+    "mcp_status": "failed_transport_closed",
+    "cli_fallback": "ok_stale_index",
+    "command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-260-signal-history-provider-closeout-refresh --json",
+    "summary": {
+      "changed_count": 0,
+      "affected_count": 0,
+      "changed_files": 9,
+      "risk_level": "low"
+    },
+    "staleness": {
+      "indexed_commit": "00ca3a8c64a1ce6a4c1045d843d427309ef928da",
+      "current_commit": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
+      "stale": true,
+      "stale_reason": "current_commit_differs_from_indexed_commit",
+      "stale_severity": "warning"
+    }
+  },
+  "mainline_scope_gate": {
+    "command": "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-413.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha 5dc148e0aa4653f0803eb6a088e90544b6c051e4 --head-sha HEAD --report /tmp/pr413-mainline-governance-report.json",
+    "result": "pass=True",
+    "problem_count": 0,
+    "changed_files_count": 9,
+    "report": "/tmp/pr413-mainline-governance-report.json"
+  }
+}

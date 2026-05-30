@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T01:32:04+08:00`
-- Base HEAD checked: `a58cf6490af4e4cd51e9b98543fa286244fdb78f`
+- Prepared at: `2026-05-31T02:09:47+08:00`
+- Base HEAD checked: `5dc148e0aa4653f0803eb6a088e90544b6c051e4`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,6 +21,9 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
+| `.planning/codebase/generated/postgres-async-signal-history-provider-closeout-refresh-2026-05-31.json` | G2.260 signal history provider closeout / residual-refresh evidence | Review input for PR `#413`; active app-route body residual calls are `0` |
+| `docs/reports/quality/backend-postgres-async-signal-history-provider-closeout-refresh-2026-05-31.md` | G2.260 human-readable closeout / residual-refresh report | Review input for PR `#413`; selects G2.261 no-source `get_signal_statistics.py` ownership decision |
+| `governance/mainline/task-cards/pr-413.yaml` | Path-limited governance task card for G2.260 | Review input; forbids source/test/runtime/OpenSpec changes |
 | `.planning/codebase/generated/postgres-async-signal-history-provider-implementation-2026-05-31.json` | G2.259 `signal_history_response.py` postgres async provider implementation evidence | Review input for PR `#412`; target route-body direct calls reduced from 4 to 0 |
 | `docs/reports/quality/backend-postgres-async-signal-history-provider-implementation-2026-05-31.md` | G2.259 human-readable implementation report | Review input for PR `#412`; focused tests passed `15/15`, ruff passed, OpenAPI `548/500` |
 | `governance/mainline/task-cards/pr-412.yaml` | Path-limited implementation task card for G2.259 | Review input; forbids `get_signal_statistics.py`, broader `signal_monitoring/*`, infrastructure, route/OpenAPI, frontend, config, scripts, and OpenSpec changes |
