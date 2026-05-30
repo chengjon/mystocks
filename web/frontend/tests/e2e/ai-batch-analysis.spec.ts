@@ -116,6 +116,12 @@ test.describe('AI batch analysis workbench', () => {
     await page.goto(`${FRONTEND_BASE_URL}/ai/batch`)
 
     await expect(page.getByRole('heading', { name: '批量分析' })).toBeVisible({ timeout: 15000 })
+    await expect(page.getByTestId('ai-batch-page')).toBeVisible()
+    await expect(page.getByTestId('ai-batch-header')).toBeVisible()
+    await expect(page.getByTestId('ai-batch-refresh')).toBeVisible()
+    await expect(page.getByTestId('ai-batch-status-strip')).toBeVisible()
+    await expect(page.getByTestId('ai-batch-control-lens')).toBeVisible()
+    await expect(page.getByTestId('ai-batch-primary-surface')).toBeVisible()
     await expect(page.locator('.status-band')).toContainText('运行时可用')
     await expect(page.locator('.ai-batch-workbench')).toContainText('not automated trading')
     await expect(page.locator('[data-testid="batch-analysis-task-row"]')).toContainText('batch_abc')

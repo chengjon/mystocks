@@ -79,6 +79,15 @@ Additional alignment record:
 - Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
 - Note: this batch adds route-level `data-testid` hooks through the canonical AI route page and leaves AI child components unchanged.
 
+Additional alignment record:
+
+- Date: 2026-05-30
+- User wording: `请继续`
+- Selected route: `web/frontend/src/views/ai/BatchAnalysis.vue` (`/ai/batch`)
+- Report: `docs/reports/tasks/2026-05-30-artdeco-ai-batch-hook-alignment-report.md`
+- Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
+- Note: this batch adds route-level `data-testid` hooks and replaces pre-existing page-local hardcoded spacing/color values needed to satisfy the changed-file ArtDeco token gate.
+
 ## 4. Shared Component Extraction Gate
 
 - [ ] 4.1 Draft a separate extraction proposal before creating shared Vue components.

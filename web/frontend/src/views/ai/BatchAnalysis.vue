@@ -26,19 +26,25 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="ai-batch-workbench page-enter">
-    <header class="workbench-header">
+  <div class="ai-batch-workbench page-enter" data-testid="ai-batch-page">
+    <header class="workbench-header" data-testid="ai-batch-header">
       <div>
         <p class="eyebrow">AI batch workbench</p>
         <h1>批量分析</h1>
         <p class="subtitle">统一观察批量回测、批量选股与批量监控任务的运行时证据。</p>
       </div>
-      <button class="icon-button" type="button" :disabled="loading" @click="refreshRuntime">
+      <button
+        class="icon-button"
+        type="button"
+        :disabled="loading"
+        data-testid="ai-batch-refresh"
+        @click="refreshRuntime"
+      >
         刷新
       </button>
     </header>
 
-    <section class="status-band" :class="readinessClass">
+    <section class="status-band" :class="readinessClass" data-testid="ai-batch-status-strip">
       <div>
         <span class="status-label">{{ readinessLabel }}</span>
         <strong>{{ runtimeStatus?.runtime_backend || 'runtime_batch_registry' }}</strong>
@@ -52,10 +58,10 @@ onMounted(() => {
     <p class="safety-copy">
       Batch analysis outputs are analytical evidence, not automated trading or scheduler mutation.
     </p>
-    <p v-if="runtimeMessage" class="runtime-message">{{ runtimeMessage }}</p>
+    <p v-if="runtimeMessage" class="runtime-message" data-testid="ai-batch-runtime-message">{{ runtimeMessage }}</p>
 
-    <main class="workbench-grid">
-      <section class="panel">
+    <main class="workbench-grid" data-testid="ai-batch-primary-surface">
+      <section class="panel" data-testid="ai-batch-control-lens">
         <div class="panel-heading">
           <h2>任务配置</h2>
           <span>{{ submitting ? '提交中' : '待提交' }}</span>
@@ -172,24 +178,24 @@ onMounted(() => {
 .ai-batch-workbench {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 24px;
+  gap: var(--artdeco-spacing-4);
+  padding: var(--artdeco-spacing-6);
 }
 
 .workbench-header,
 .status-band,
 .panel {
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid var(--artdeco-border-default);
+  background: var(--artdeco-bg-card);
 }
 
 .workbench-header {
   display: flex;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--artdeco-spacing-4);
   align-items: flex-start;
-  padding: 20px;
-  border-radius: 8px;
+  padding: var(--artdeco-spacing-5);
+  border-radius: var(--artdeco-radius-md);
 }
 
 .eyebrow,
@@ -200,7 +206,7 @@ small,
 .safety-copy,
 .runtime-message,
 dt {
-  color: rgba(226, 232, 240, 0.72);
+  color: var(--artdeco-fg-muted);
 }
 
 h1,
@@ -210,50 +216,50 @@ p {
 }
 
 h1 {
-  font-size: 28px;
+  font-size: var(--artdeco-text-3xl);
   line-height: 1.2;
 }
 
 h2 {
-  font-size: 16px;
+  font-size: var(--artdeco-text-base);
 }
 
 .status-band {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
-  padding: 14px 16px;
-  border-radius: 8px;
+  gap: var(--artdeco-spacing-3);
+  padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+  border-radius: var(--artdeco-radius-md);
 }
 
 .status-band.is-ready {
-  border-color: rgba(34, 197, 94, 0.42);
+  border-color: var(--artdeco-info);
 }
 
 .status-label {
-  margin-right: 10px;
-  color: #86efac;
+  margin-right: var(--artdeco-spacing-2);
+  color: var(--artdeco-info);
 }
 
 .status-meta {
   display: flex;
-  gap: 12px;
+  gap: var(--artdeco-spacing-3);
   flex-wrap: wrap;
 }
 
 .workbench-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: var(--artdeco-spacing-4);
 }
 
 .panel {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--artdeco-spacing-3);
   min-width: 0;
-  padding: 16px;
-  border-radius: 8px;
+  padding: var(--artdeco-spacing-4);
+  border-radius: var(--artdeco-radius-md);
 }
 
 .panel-heading,
@@ -261,24 +267,24 @@ h2 {
 dl div {
   display: flex;
   justify-content: space-between;
-  gap: 12px;
+  gap: var(--artdeco-spacing-3);
 }
 
 label {
   display: grid;
-  gap: 6px;
-  color: rgba(226, 232, 240, 0.86);
+  gap: var(--artdeco-spacing-2);
+  color: var(--artdeco-fg-primary);
 }
 
 input,
 select,
 textarea {
-  min-height: 36px;
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  border-radius: 6px;
-  padding: 8px 10px;
-  color: #e2e8f0;
-  background: rgba(2, 6, 23, 0.72);
+  min-height: var(--artdeco-spacing-10);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-sm);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+  color: var(--artdeco-fg-primary);
+  background: var(--artdeco-bg-global);
 }
 
 textarea {
@@ -286,11 +292,11 @@ textarea {
 }
 
 button {
-  min-height: 36px;
-  border: 1px solid rgba(148, 163, 184, 0.32);
-  border-radius: 6px;
-  color: #e2e8f0;
-  background: rgba(30, 41, 59, 0.86);
+  min-height: var(--artdeco-spacing-10);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-sm);
+  color: var(--artdeco-fg-primary);
+  background: var(--artdeco-bg-elevated);
   cursor: pointer;
 }
 
@@ -300,57 +306,57 @@ button:disabled {
 }
 
 .primary-button {
-  background: #0f766e;
-  border-color: #14b8a6;
+  background: var(--artdeco-gold-opacity-20);
+  border-color: var(--artdeco-border-accent);
 }
 
 .task-row {
   display: grid;
-  gap: 4px;
-  padding: 10px;
+  gap: var(--artdeco-spacing-1);
+  padding: var(--artdeco-spacing-2);
   text-align: left;
 }
 
 .task-row.active {
-  border-color: #38bdf8;
+  border-color: var(--artdeco-info);
 }
 
 dl {
   display: grid;
-  gap: 10px;
+  gap: var(--artdeco-spacing-2);
   margin: 0;
 }
 
 dd {
   margin: 0;
-  color: #f8fafc;
+  color: var(--artdeco-fg-primary);
 }
 
 .result-table {
   display: grid;
-  gap: 8px;
+  gap: var(--artdeco-spacing-2);
 }
 
 .result-row {
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.14);
+  padding: var(--artdeco-spacing-2) 0;
+  border-bottom: 1px solid var(--artdeco-gold-opacity-15);
 }
 
 .result-row.header {
-  color: rgba(226, 232, 240, 0.72);
+  color: var(--artdeco-fg-muted);
 }
 
 .empty-state {
-  padding: 20px 0;
-  color: rgba(226, 232, 240, 0.62);
+  padding: var(--artdeco-spacing-5) 0;
+  color: var(--artdeco-fg-subtle);
 }
 
 .compact {
   margin-top: auto;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
   .workbench-header,
   .status-band {
     flex-direction: column;
