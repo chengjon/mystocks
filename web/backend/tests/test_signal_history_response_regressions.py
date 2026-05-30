@@ -1,8 +1,7 @@
 from __future__ import annotations
 
 import importlib
-import sys
-from types import ModuleType, SimpleNamespace
+from types import SimpleNamespace
 
 
 class _FakeAcquire:
@@ -58,11 +57,6 @@ class _FakePostgres:
 async def test_get_strategy_realtime_monitoring_uses_runtime_gpu_and_active_counts():
     module = importlib.import_module("app.api.signal_monitoring.signal_history_response")
 
-    fake_pg_module = ModuleType("src.monitoring.infrastructure.postgresql_async_v3")
-    fake_pg_module.get_postgres_async = lambda: _FakePostgres()
-    previous_pg = sys.modules.get("src.monitoring.infrastructure.postgresql_async_v3")
-    sys.modules["src.monitoring.infrastructure.postgresql_async_v3"] = fake_pg_module
-
     original_gpu_util = module._get_runtime_gpu_utilization
 
     async def fake_gpu_util():
@@ -74,16 +68,14 @@ async def test_get_strategy_realtime_monitoring_uses_runtime_gpu_and_active_coun
         response = await module.get_strategy_realtime_monitoring(
             strategy_id="macd_strategy",
             current_user=SimpleNamespace(id=1),
+            postgres_async=_FakePostgres(),
         )
     finally:
         module._get_runtime_gpu_utilization = original_gpu_util
-        if previous_pg is None:
-            sys.modules.pop("src.monitoring.infrastructure.postgresql_async_v3", None)
-        else:
-            sys.modules["src.monitoring.infrastructure.postgresql_async_v3"] = previous_pg
 
-    assert response.active_signals_count == 9
-    assert response.gpu_enabled is True
-    assert response.gpu_utilization == 66.6
-    assert response.signal_generation_rate == 0.8
-    assert response.recent_signals[0]["symbol"] == "600519.SH"
+    payload = response["data"]
+    assert payload["active_signals_count"] == 9
+    assert payload["gpu_enabled"] is True
+    assert payload["gpu_utilization"] == 66.6
+    assert payload["signal_generation_rate"] == 0.8
+    assert payload["recent_signals"][0]["symbol"] == "600519.SH"

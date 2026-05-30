@@ -37,6 +37,12 @@ logger = logging.getLogger(__name__)
 router = APIRouter(tags=["signal-monitoring"], responses=SIGNAL_MONITORING_ERROR_RESPONSES)
 
 
+def get_signal_history_postgres_async():
+    from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
+    return get_postgres_async()
+
+
 async def _get_runtime_gpu_utilization() -> Optional[float]:
     try:
         from src.gpu.core.hardware_abstraction.resource_manager import GPUResourceManager, NVML_AVAILABLE
@@ -84,6 +90,7 @@ async def get_signal_history(
     limit: int = Query(100, ge=1, le=1000, description="单次请求返回的最大记录数。"),
     offset: int = Query(0, ge=0, description="分页偏移量，用于配合 limit 顺序翻页。"),
     current_user: User = Depends(get_current_user),
+    postgres_async=Depends(get_signal_history_postgres_async),
 ):
     """
     获取信号历史记录
@@ -150,9 +157,7 @@ async def get_signal_history(
     - 执行结果需要信号已被执行才存在
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        pg = get_postgres_async()
+        pg = postgres_async
 
         if not pg.is_connected():
             raise BusinessException(status_code=503, detail="监控数据库未连接")
@@ -241,6 +246,7 @@ async def get_signal_quality_report(
     strategy_id: str = Query(..., description="需要生成质量报告的策略ID。"),
     period_days: int = Query(7, ge=1, le=90, description="统计周期（天）"),
     current_user: User = Depends(get_current_user),
+    postgres_async=Depends(get_signal_history_postgres_async),
 ):
     """
     获取信号质量报告
@@ -317,9 +323,7 @@ async def get_signal_quality_report(
     - GPU使用率 = 使用GPU的信号数 / 总信号数 * 100
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        pg = get_postgres_async()
+        pg = postgres_async
 
         if not pg.is_connected():
             raise BusinessException(status_code=503, detail="监控数据库未连接")
@@ -431,6 +435,7 @@ async def get_signal_quality_report(
 async def get_strategy_realtime_monitoring(
     strategy_id: str = Path(..., description="需要查看实时监控状态的策略ID。"),
     current_user: User = Depends(get_current_user),
+    postgres_async=Depends(get_signal_history_postgres_async),
 ):
     """
     获取策略实时监控数据
@@ -497,9 +502,7 @@ async def get_strategy_realtime_monitoring(
     - 最近信号返回最新5条
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        pg = get_postgres_async()
+        pg = postgres_async
 
         if not pg.is_connected():
             raise BusinessException(status_code=503, detail="监控数据库未连接")
@@ -623,7 +626,7 @@ async def get_strategy_realtime_monitoring(
         },
     },
 )
-async def health_check():
+async def health_check(postgres_async=Depends(get_signal_history_postgres_async)):
     """
     信号监控API健康检查
 
@@ -648,9 +651,7 @@ async def health_check():
     ```
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        pg = get_postgres_async()
+        pg = postgres_async
 
         db_status = "connected" if pg.is_connected() else "disconnected"
 

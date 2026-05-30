@@ -95,13 +95,15 @@ PRs, change issue labels, or authorize source implementation.
 | `#408` | `g2-255-monitoring-watchlists-postgres-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `8866cfe8ba081957714c8c51e948be9340fc45ac` | No-source monitoring watchlists provider authorization selecting G2.256 source implementation |
 | `#409` | `g2-256-monitoring-watchlists-postgres-provider` | `wip/root-dirty-20260403` | `MERGED` at `536b0634a51ea580f1a384d07a8ee605fbed8567` | Path-limited monitoring watchlists provider implementation selecting G2.257 closeout refresh |
 | `#410` | `g2-257-monitoring-watchlists-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `ad3cc58dbe0dc768488006d22de09085a1a8ee6f` | No-source monitoring watchlists provider closeout / residual refresh selecting G2.258 signal history authorization |
-| `#411` | `g2-258-signal-history-postgres-provider-authorization` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source signal history provider authorization selecting G2.259 source implementation |
+| `#411` | `g2-258-signal-history-postgres-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `a58cf6490af4e4cd51e9b98543fa286244fdb78f` | No-source signal history provider authorization selecting G2.259 source implementation |
+| `#412` | `g2-259-signal-history-postgres-provider` | `wip/root-dirty-20260403` | `FOR_REVIEW` | Path-limited `signal_history_response.py` postgres async provider implementation selecting G2.260 closeout refresh |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
 | `g2-258-signal-history-postgres-provider-authorization` | `origin/wip/root-dirty-20260403` at `ad3cc58dbe0dc768488006d22de09085a1a8ee6f` | Authorize future `signal_history_response.py` postgres async route provider implementation | No |
+| `g2-259-signal-history-postgres-provider` | `origin/wip/root-dirty-20260403` at `a58cf6490af4e4cd51e9b98543fa286244fdb78f` | Implement authorized `signal_history_response.py` postgres async route provider injection | Yes |
 
 ## OpenSpec Relationship
 
@@ -117,8 +119,9 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.258 is the no-source authorization after PR `#410` merged G2.257. It records
-that `signal_history_response.py` has four active app-route
-`get_postgres_async()` route-body calls and authorizes only a future
-path-limited G2.259 implementation after review. It must not edit source, tests,
-route contracts, OpenAPI exposure, frontend, config, scripts, or OpenSpec.
+G2.259 is the path-limited source implementation after PR `#411` merged G2.258.
+It moves the four authorized `signal_history_response.py` app-route
+`get_postgres_async()` consumers behind `Depends(get_signal_history_postgres_async)`
+without changing route paths, response models, OpenAPI exposure, frontend,
+config, scripts, PM2, or OpenSpec. It must not expand into
+`get_signal_statistics.py` or broader `signal_monitoring/*`.

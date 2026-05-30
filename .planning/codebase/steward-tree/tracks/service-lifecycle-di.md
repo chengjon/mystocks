@@ -2573,3 +2573,59 @@ Next gate after acceptance:
   provider implementation.
 - G2.259 must rerun GitNexus impact/context before source edits and stop on
   HIGH or CRITICAL risk.
+
+## G2.259 Signal History Postgres Async Provider Implementation
+
+Status: for review in PR `#412`.
+
+Parent gate:
+
+- G2.258 authorization was accepted by PR `#411`.
+- PR `#411` merged into `wip/root-dirty-20260403` at
+  `a58cf6490af4e4cd51e9b98543fa286244fdb78f`.
+
+Implementation summary:
+
+| Evidence | Result |
+|---|---:|
+| Provider added | `get_signal_history_postgres_async` |
+| Authorized handlers migrated | 4 |
+| Target route-body direct `get_postgres_async()` calls after | 0 |
+| Provider backing `get_postgres_async()` calls after | 1 |
+| Target dependency parameters after | 4 |
+| Focused tests | `15 passed` |
+| Ruff on touched source/tests | `All checks passed!` |
+| App route table / OpenAPI smoke | `routes=548`, `paths=500`, `target_route_count=4` |
+| OpenSpec strict validate | `migrate-backend-singletons-to-lifecycle-di` valid |
+
+Authorized handlers migrated:
+
+- `get_signal_history`
+- `get_signal_quality_report`
+- `get_strategy_realtime_monitoring`
+- `health_check`
+
+Route/OpenAPI contract boundary:
+
+- Route paths unchanged.
+- Response models unchanged.
+- OpenAPI exposure unchanged.
+- `get_signal_statistics.py` remains deferred.
+- Other `signal_monitoring/*`, infrastructure, frontend, config, scripts, PM2,
+  and OpenSpec remain out of scope.
+
+GitNexus note:
+
+- GitNexus MCP impact calls failed with `Transport closed` before source edits.
+- CLI impact/context fallback was used and recorded LOW / zero-flow evidence for
+  the uniquely resolved handlers.
+- `health_check` required exact UID context review because the symbol name is
+  ambiguous across the codebase.
+
+Next gate after acceptance:
+
+- G2.260 no-source signal history provider closeout / residual refresh.
+- G2.260 should verify the four migrated handlers remain closed, refresh active
+  app-route `get_postgres_async()` residuals, and choose the next authorization
+  candidate or declare the queue closed.
+- G2.260 must not edit source.

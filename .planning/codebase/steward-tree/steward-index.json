@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T00:45:00+08:00",
+  "generated_at": "2026-05-31T01:32:04+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "ad3cc58dbe0dc768488006d22de09085a1a8ee6f",
-  "split_branch": "g2-258-signal-history-postgres-provider-authorization",
-  "scope": "postgres_async_signal_history_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
+  "split_branch": "g2-259-signal-history-postgres-provider",
+  "scope": "postgres_async_signal_history_provider_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -6099,7 +6099,7 @@
     {
       "id": "g2-258-signal-history-postgres-provider-authorization",
       "type": "provider_authorization",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.257 monitoring_watchlists provider closeout / residual refresh",
       "source_edit_authority": false,
@@ -6176,7 +6176,7 @@
       "gitnexus": {
         "status": "G2.258 is no-source; future G2.259 must rerun GitNexus impact/context before editing and stop on HIGH or CRITICAL risk"
       },
-      "next_gate": "If accepted, merge PR #411 and start G2.259 path-limited signal_history_response.py postgres async route provider implementation. Do not implement source from G2.258.",
+      "next_gate": "Superseded by G2.259 path-limited signal_history_response.py postgres async route provider implementation.",
       "allowed_scope": [
         ".planning/codebase/generated/postgres-async-signal-history-provider-authorization-2026-05-31.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -6202,10 +6202,13 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "ad3cc58dbe0dc768488006d22de09085a1a8ee6f",
-        "generated_at": "2026-05-31T00:45:00+08:00",
+        "current_head_checked": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
+        "generated_at": "2026-05-31T01:32:04+08:00",
         "stale_if_head_mismatch": true
-      }
+      },
+      "github_pr": 411,
+      "merge_commit": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
+      "accepted_at": "2026-05-31T01:32:04+08:00"
     },
     {
       "id": "core-batch2-reconciliation",
@@ -6228,6 +6231,100 @@
         ".planning/codebase/steward-tree/tracks/route-openapi-governance.md"
       ],
       "next_gate": "Use route/OpenAPI governance for provider ownership, trading, control-plane, compatibility exposure, and duplicate operation ID decisions before route source edits."
+    },
+    {
+      "id": "g2-259-signal-history-postgres-provider",
+      "type": "provider_implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.258 signal_history_response.py postgres async provider authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 411,
+      "parent_merge_commit": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
+      "evidence": [
+        ".planning/codebase/generated/postgres-async-signal-history-provider-implementation-2026-05-31.json",
+        "docs/reports/quality/backend-postgres-async-signal-history-provider-implementation-2026-05-31.md",
+        "governance/mainline/task-cards/pr-412.yaml"
+      ],
+      "subject": {
+        "symbol": "get_postgres_async",
+        "provider": "get_signal_history_postgres_async",
+        "decision": "implement the G2.258-authorized signal_history_response.py route-local postgres async provider lane",
+        "source_file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "test_files": [
+          "tests/api/file_tests/test_signal_monitoring_api.py",
+          "web/backend/tests/test_signal_history_response_regressions.py"
+        ]
+      },
+      "implementation_evidence": {
+        "target_route_body_get_postgres_async_calls_before": 4,
+        "target_route_body_get_postgres_async_calls_after": 0,
+        "provider_delegate_calls_after": 1,
+        "handler_dependency_parameters_after": 4,
+        "focused_tests": "15 passed",
+        "ruff": "All checks passed",
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "target_routes": 4,
+        "openspec_validate": "migrate-backend-singletons-to-lifecycle-di valid"
+      },
+      "updated_handlers": [
+        "get_signal_history",
+        "get_signal_quality_report",
+        "get_strategy_realtime_monitoring",
+        "health_check"
+      ],
+      "excluded_scope": {
+        "files": [
+          "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+          "other web/backend/app/api/signal_monitoring/*",
+          "src/monitoring/infrastructure/**"
+        ],
+        "contracts": [
+          "route paths",
+          "HTTP methods",
+          "response models",
+          "summaries",
+          "tags",
+          "OpenAPI exposure"
+        ]
+      },
+      "gitnexus": {
+        "impact_before_edit": "MCP impact transport closed; CLI fallback recorded LOW/zero-flow evidence for uniquely resolved handlers and exact UID context review for ambiguous health_check.",
+        "status": "degraded; rely on path-limited authorization, TDD evidence, OpenAPI smoke, mainline scope gate, and staged detect_changes as review gates"
+      },
+      "next_gate": "If accepted, merge PR #412 and start G2.260 no-source signal history provider closeout / residual refresh. Do not edit source from G2.260.",
+      "allowed_scope": [
+        "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "tests/api/file_tests/test_signal_monitoring_api.py",
+        "web/backend/tests/test_signal_history_response_regressions.py",
+        ".planning/codebase/generated/postgres-async-signal-history-provider-implementation-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-postgres-async-signal-history-provider-implementation-2026-05-31.md",
+        "governance/mainline/task-cards/pr-412.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "src/**",
+        "web/frontend/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
+        "generated_at": "2026-05-31T01:32:04+08:00",
+        "stale_if_head_mismatch": true
+      }
     }
   ]
 }
