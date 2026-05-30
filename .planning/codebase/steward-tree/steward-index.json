@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-30T18:13:12+08:00",
+  "generated_at": "2026-05-30T18:37:32+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "db1a0653737c8239a937a97a5fd32730e2c25bc3",
-  "split_branch": "g2-250-postgres-async-monitoring-portfolio-provider",
-  "scope": "postgres_async_monitoring_portfolio_provider_implementation",
-  "source_edit_authority": true,
+  "base_head": "27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
+  "split_branch": "g2-251-monitoring-portfolio-provider-closeout-refresh",
+  "scope": "postgres_async_monitoring_portfolio_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -5291,12 +5291,14 @@
     {
       "id": "g2-250-postgres-async-monitoring-portfolio-provider",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.249 postgres async route consumer provider authorization",
       "source_edit_authority": true,
       "parent_github_pr": 402,
       "parent_merge_commit": "db1a0653737c8239a937a97a5fd32730e2c25bc3",
+      "github_pr": 403,
+      "merge_commit": "27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
       "evidence": [
         ".planning/codebase/generated/postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.json",
         "docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.md",
@@ -5331,7 +5333,7 @@
         "detect_changes": "MCP staged detect_changes transport closed; CLI verify-staged returned stale high-risk result because indexed_commit fdb91e614c28ee74db77c0fc13e74aff2bfd18bf differs from current_commit db1a0653737c8239a937a97a5fd32730e2c25bc3",
         "status": "degraded; do not treat as LOW-risk GitNexus evidence"
       },
-      "next_gate": "If accepted, start G2.251 no-source monitoring portfolio provider closeout / residual refresh. Do not migrate broader route consumers from G2.250.",
+      "next_gate": "G2.251 no-source monitoring portfolio provider closeout / residual refresh is active. Do not migrate broader route consumers from G2.250.",
       "allowed_scope": [
         "web/backend/app/api/_monitoring_portfolio_router.py",
         "tests/api/file_tests/test_monitoring_analysis_api.py",
@@ -5364,7 +5366,120 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "db1a0653737c8239a937a97a5fd32730e2c25bc3",
+        "current_head_checked": "27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-251-monitoring-portfolio-provider-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.250 postgres async monitoring portfolio provider implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 403,
+      "parent_merge_commit": "27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
+      "evidence": [
+        ".planning/codebase/generated/postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.json",
+        "docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.md",
+        "governance/mainline/task-cards/pr-404.yaml"
+      ],
+      "subject": {
+        "symbol": "get_postgres_async",
+        "closeout": "monitoring portfolio route-local provider accepted",
+        "residual_refresh": "remaining active API route consumer calls refreshed",
+        "selected_next_gate": "G2.252 no-source monitoring_analysis.py route consumer provider authorization"
+      },
+      "closeout_evidence": {
+        "provider": "get_monitoring_postgres_async",
+        "provider_file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "authorized_route_body_calls_after": 0,
+        "authorized_dependency_parameters_after": 3,
+        "focused_file_tests": "18 passed",
+        "ruff": "All checks passed",
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "target_routes": 3
+      },
+      "residual_evidence": {
+        "files_scanned": 218,
+        "import_lines": 19,
+        "actual_get_postgres_async_calls": 19,
+        "route_decorated_files": 4,
+        "route_decorated_calls": 16,
+        "route_adjacent_files": 3,
+        "route_adjacent_calls": 3,
+        "route_decorated_residuals": [
+          {
+            "file": "web/backend/app/api/monitoring_watchlists.py",
+            "calls": 7,
+            "handling": "defer as higher-call batch"
+          },
+          {
+            "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+            "calls": 4,
+            "handling": "defer as signal domain batch"
+          },
+          {
+            "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+            "calls": 3,
+            "handling": "defer as signal domain batch"
+          },
+          {
+            "file": "web/backend/app/api/monitoring_analysis.py",
+            "calls": 2,
+            "handling": "select for G2.252 no-source authorization"
+          }
+        ],
+        "route_adjacent_residuals": [
+          {
+            "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+            "calls": 1,
+            "handling": "intentional route-local provider seam"
+          },
+          {
+            "file": "web/backend/app/api/_data_source_config_responses.py",
+            "calls": 1,
+            "handling": "separate helper / facade ownership decision needed"
+          },
+          {
+            "file": "web/backend/app/api/v1/system/settings.py",
+            "calls": 1,
+            "handling": "separate repository constructor ownership decision needed"
+          }
+        ]
+      },
+      "gitnexus": {
+        "detect_changes": "MCP staged detect_changes transport closed; CLI verify-staged returned stale low-risk result with 9 changed files, 0 changed symbols, and 0 affected processes because indexed_commit 8bb84173873600c448354d18ac5f530848aaad72 differs from current_commit 27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
+        "status": "degraded; no-source scope also enforced by task card and mainline scope gate"
+      },
+      "next_gate": "If accepted, start G2.252 no-source monitoring_analysis.py postgres async route consumer provider authorization. Do not start source implementation from G2.251.",
+      "allowed_scope": [
+        ".planning/codebase/generated/postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.md",
+        "governance/mainline/task-cards/pr-404.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
         "stale_if_head_mismatch": true
       }
     },

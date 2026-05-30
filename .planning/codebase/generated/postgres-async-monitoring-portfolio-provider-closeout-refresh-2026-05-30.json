@@ -1,0 +1,172 @@
+{
+  "schema_version": "2026-05-30.g2-251.postgres-async-monitoring-portfolio-provider-closeout-refresh.v1",
+  "generated_at": "2026-05-30T18:37:32+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
+  "worktree_branch": "g2-251-monitoring-portfolio-provider-closeout-refresh",
+  "owner_lane": "G/#79 service lifecycle DI",
+  "openspec_change_id": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_250_pr": 403,
+    "g2_250_merge_commit": "27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
+    "closeout_subject": "monitoring portfolio route-local postgres async provider implementation"
+  },
+  "accepted_implementation_evidence": {
+    "provider": "get_monitoring_postgres_async",
+    "provider_file": "web/backend/app/api/_monitoring_portfolio_router.py",
+    "authorized_handlers": [
+      "get_portfolio_summary",
+      "get_portfolio_alerts",
+      "get_rebalance_suggestions"
+    ],
+    "authorized_route_body_get_postgres_async_calls_after": 0,
+    "authorized_dependency_parameters_after": 3,
+    "target_routes": [
+      "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary",
+      "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+      "GET /api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance"
+    ],
+    "route_contract_changes": "none",
+    "openapi_exposure_changes": "none"
+  },
+  "residual_refresh": {
+    "scan_root": "web/backend/app/api",
+    "files_scanned": 218,
+    "import_lines": 19,
+    "actual_get_postgres_async_calls": 19,
+    "files_with_function_calls": 7,
+    "route_decorated_files": 4,
+    "route_decorated_calls": 16,
+    "route_adjacent_files": 3,
+    "route_adjacent_calls": 3,
+    "route_decorated_residuals": [
+      {
+        "file": "web/backend/app/api/monitoring_watchlists.py",
+        "calls": 7,
+        "functions": [
+          "create_watchlist",
+          "list_watchlists",
+          "get_watchlist",
+          "delete_watchlist",
+          "add_stock_to_watchlist",
+          "list_watchlist_stocks",
+          "remove_stock_from_watchlist"
+        ],
+        "decision": "defer as higher-call batch"
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "calls": 4,
+        "functions": [
+          "get_signal_history",
+          "get_signal_quality_report",
+          "get_strategy_realtime_monitoring",
+          "health_check"
+        ],
+        "decision": "defer as signal domain batch"
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "calls": 3,
+        "functions": [
+          "get_signal_statistics",
+          "get_active_signals",
+          "get_strategy_detailed_health"
+        ],
+        "decision": "defer as signal domain batch"
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "calls": 2,
+        "functions": [
+          "get_health_score_history",
+          "analyze_portfolio"
+        ],
+        "decision": "select for next no-source authorization gate"
+      }
+    ],
+    "route_adjacent_residuals": [
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "calls": 1,
+        "functions": [
+          "get_monitoring_postgres_async"
+        ],
+        "decision": "intentionally retained route-local provider seam, not route-body debt"
+      },
+      {
+        "file": "web/backend/app/api/_data_source_config_responses.py",
+        "calls": 1,
+        "functions": [
+          "get_config_manager"
+        ],
+        "decision": "route-adjacent helper / facade; requires separate ownership decision"
+      },
+      {
+        "file": "web/backend/app/api/v1/system/settings.py",
+        "calls": 1,
+        "functions": [
+          "__init__"
+        ],
+        "decision": "repository constructor dependency; requires separate ownership decision"
+      }
+    ]
+  },
+  "verification": {
+    "focused_file_tests": {
+      "command": "env PYTHONPATH=. pytest -q tests/api/file_tests/test_monitoring_analysis_api.py -n 0 --tb=short --no-cov",
+      "result": "18 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/_monitoring_portfolio_router.py tests/api/file_tests/test_monitoring_analysis_api.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "import app.main, call app.openapi(), and verify monitoring portfolio route count",
+      "routes": 548,
+      "openapi_paths": 500,
+      "target_routes": 3
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid",
+      "note": "PostHog ECONNREFUSED telemetry noise may appear and is not an OpenSpec validation failure."
+    }
+  },
+  "gitnexus": {
+    "detect_changes": {
+      "mcp": "Attempted with scope=staged; MCP transport closed.",
+      "cli": {
+        "command": "gitnexus verify-staged -r mystocks --cwd <worktree> --json",
+        "status": "stale",
+        "risk_level": "low",
+        "changed_count": 0,
+        "affected_count": 0,
+        "changed_files": 9,
+        "changed_symbols": 0,
+        "affected_processes": 0,
+        "indexed_commit": "8bb84173873600c448354d18ac5f530848aaad72",
+        "current_commit": "27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db",
+        "stale_reason": "current_commit_differs_from_indexed_commit",
+        "next_action": "Refresh the GitNexus index before relying on this result."
+      },
+      "status": "degraded because index is stale; no symbols or processes reported for this no-source governance diff"
+    }
+  },
+  "decision": {
+    "close_g2_250": true,
+    "next_gate": "G2.252 no-source monitoring_analysis postgres async route consumer provider authorization",
+    "next_gate_source_authority": false,
+    "rationale": "monitoring_analysis.py is the smallest remaining route-decorated residual file with 2 route-body calls after the accepted portfolio pilot.",
+    "forbidden_from_g2_251": [
+      "source edits",
+      "test edits",
+      "broader route consumer migration",
+      "OpenAPI changes",
+      "frontend/config/script changes",
+      "OpenSpec proposal/spec edits"
+    ]
+  }
+}
