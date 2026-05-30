@@ -61,6 +61,15 @@ Additional alignment record:
 - Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
 - Note: this batch adds route-level grammar hooks and a focused route hook E2E; existing execution-detail behavior assertions remain outside this grammar slice.
 
+Additional alignment record:
+
+- Date: 2026-05-30
+- User wording: `请继续`
+- Selected route: `web/frontend/src/views/trade/Center.vue` (`/trade/positions`)
+- Report: `docs/reports/tasks/2026-05-30-artdeco-trade-positions-hook-alignment-report.md`
+- Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
+- Note: this batch preserves existing legacy `data-test` hooks and adds standard route-level `data-testid` hooks for Playwright `getByTestId` coverage.
+
 ## 4. Shared Component Extraction Gate
 
 - [ ] 4.1 Draft a separate extraction proposal before creating shared Vue components.

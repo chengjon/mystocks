@@ -1974,6 +1974,12 @@ test.describe("Phase 3 Mainline Matrix", () => {
     await page.goto(`${FRONTEND_BASE_URL}/trade/positions`)
 
     await expect(page.getByText("持仓工作台").first()).toBeVisible()
+    await expect(page.getByTestId("trade-positions-page")).toBeVisible()
+    await expect(page.getByTestId("trade-positions-header")).toBeVisible()
+    await expect(page.getByTestId("trade-positions-refresh")).toBeVisible()
+    await expect(page.getByTestId("trade-positions-status-strip")).toBeVisible()
+    await expect(page.getByTestId("trade-positions-control-lens")).toBeVisible()
+    await expect(page.getByTestId("trade-positions-primary-surface")).toBeVisible()
     await expect(page.locator(".artdeco-trading-positions__row")).toHaveCount(2)
     await expect(page.locator(".artdeco-trading-positions")).toContainText("宁德时代")
     expect(state.unhandledRequests).toEqual([])

@@ -271,8 +271,14 @@ onMounted(() => {
     class="artdeco-trading-positions"
     :class="{ 'is-embedded': isEmbedded }"
     data-test="trade-positions-page"
+    data-testid="trade-positions-page"
   >
-    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell" data-test="trade-positions-header">
+    <section
+      v-if="!isEmbedded"
+      class="hero-shell artdeco-card-shell"
+      data-test="trade-positions-header"
+      data-testid="trade-positions-header"
+    >
       <div class="hero-rail">
         <div class="hero-copy">
           <span class="hero-eyebrow">持仓审阅</span>
@@ -299,6 +305,7 @@ onMounted(() => {
             size="sm"
             :loading="loading"
             data-test="trade-positions-refresh"
+            data-testid="trade-positions-refresh"
             @click="loadPositions"
           >
             <template #icon>
@@ -310,14 +317,17 @@ onMounted(() => {
       </ArtDecoHeader>
     </section>
 
-    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
+    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell" data-testid="trade-positions-status-strip">
       <ArtDecoStatCard label="持仓标的" :value="displayRowCount" :show-change="false" variant="gold" />
       <ArtDecoStatCard label="盈利标的" :value="displayPositiveCount" :show-change="false" variant="rise" />
       <ArtDecoStatCard label="亏损标的" :value="displayNegativeCount" :show-change="false" variant="fall" />
       <ArtDecoStatCard label="组合市值" :value="displayTotalMarketValue" :show-change="false" variant="gold" />
     </section>
 
-    <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
+    <section
+      :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'"
+      data-testid="trade-positions-primary-surface"
+    >
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">仓位快照</span>
@@ -335,6 +345,7 @@ onMounted(() => {
         <div
           class="artdeco-trading-positions__controls"
           data-test="trade-positions-segments"
+          data-testid="trade-positions-control-lens"
           role="tablist"
           aria-label="持仓审阅视图"
         >
