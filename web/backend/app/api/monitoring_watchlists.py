@@ -20,7 +20,7 @@ import logging
 from copy import deepcopy
 from typing import Any, Dict, List, Optional
 
-from fastapi import Body, Path, Query
+from fastapi import Body, Depends, Path, Query
 
 from app.core.exception_handlers import handle_exceptions
 from app.core.exceptions import BusinessException, NotFoundException
@@ -64,6 +64,12 @@ from app.api._monitoring_watchlists_models import (
     _build_runtime_watchlist_stocks,
     _RUNTIME_FALLBACK_TIMESTAMP,
 )
+
+
+def get_monitoring_watchlists_postgres_async():
+    from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
+    return get_postgres_async()
 
 
 def _build_runtime_watchlists(user_id: int) -> List[WatchlistResponse]:
@@ -240,6 +246,7 @@ def _delete_runtime_watchlist(watchlist_id: int, user_id: int) -> bool:
 async def create_watchlist(
     request: CreateWatchlistRequest = Body(..., openapi_examples=CREATE_WATCHLIST_REQUEST_EXAMPLES),
     user_id: int = Query(1, description="用户ID"),
+    postgres_async=Depends(get_monitoring_watchlists_postgres_async),
 ) -> UnifiedResponse[WatchlistResponse]:
     """
     创建监控清单
@@ -249,10 +256,6 @@ async def create_watchlist(
     - **risk_profile**: 风控配置 (可选)
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        postgres_async = get_postgres_async()
-
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled():
                 return UnifiedResponse(data=_create_runtime_watchlist(request, user_id), message="创建清单成功")
@@ -304,15 +307,12 @@ async def create_watchlist(
 @handle_exceptions
 async def list_watchlists(
     user_id: int = Query(1, description="用户ID"),
+    postgres_async=Depends(get_monitoring_watchlists_postgres_async),
 ) -> UnifiedResponse[List[WatchlistResponse]]:
     """
     获取用户的所有监控清单
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        postgres_async = get_postgres_async()
-
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled():
                 return UnifiedResponse(data=_get_runtime_watchlists(user_id), message="获取清单列表成功")
@@ -363,15 +363,12 @@ async def list_watchlists(
 async def get_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
+    postgres_async=Depends(get_monitoring_watchlists_postgres_async),
 ) -> UnifiedResponse[WatchlistResponse]:
     """
     获取单个监控清单详情
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        postgres_async = get_postgres_async()
-
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled():
                 fallback_watchlist = _get_runtime_watchlist(watchlist_id=watchlist_id, user_id=user_id)
@@ -438,15 +435,12 @@ async def update_watchlist(
 async def delete_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
+    postgres_async=Depends(get_monitoring_watchlists_postgres_async),
 ) -> UnifiedResponse[None]:
     """
     删除监控清单（级联删除成员）
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        postgres_async = get_postgres_async()
-
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled():
                 if _delete_runtime_watchlist(watchlist_id=watchlist_id, user_id=user_id):
@@ -486,14 +480,13 @@ async def add_stock_to_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
     request: AddStockRequest = Body(..., openapi_examples=ADD_STOCK_REQUEST_EXAMPLES),
     user_id: int = Query(1, description="用户ID"),
+    postgres_async=Depends(get_monitoring_watchlists_postgres_async),
 ) -> UnifiedResponse[WatchlistStockResponse]:
     """
     添加股票到清单
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import StockToAdd, get_postgres_async
-
-        postgres_async = get_postgres_async()
+        from src.monitoring.infrastructure.postgresql_async_v3 import StockToAdd
 
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled():
@@ -567,15 +560,12 @@ async def add_stock_to_watchlist(
 async def list_watchlist_stocks(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
+    postgres_async=Depends(get_monitoring_watchlists_postgres_async),
 ) -> UnifiedResponse[List[WatchlistStockResponse]]:
     """
     获取清单中的所有股票
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        postgres_async = get_postgres_async()
-
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled():
                 fallback_rows = _get_runtime_watchlist_stocks(watchlist_id)
@@ -639,14 +629,12 @@ async def remove_stock_from_watchlist(
     watchlist_id: int = Path(..., description="清单ID"),
     stock_code: str = Path(..., description="股票代码"),
     user_id: int = Query(1, description="用户ID"),
+    postgres_async=Depends(get_monitoring_watchlists_postgres_async),
 ) -> UnifiedResponse[None]:
     """
     从清单中移除股票
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        postgres_async = get_postgres_async()
         if not postgres_async.is_connected():
             if _runtime_fallback_enabled() and _remove_runtime_stock_from_watchlist(watchlist_id, stock_code, user_id):
                 return UnifiedResponse(message="移除股票成功")

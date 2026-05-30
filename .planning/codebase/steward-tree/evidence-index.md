@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-30T21:06:00+08:00`
-- Base HEAD checked: `c64260f1795b39c82903fa7fd370b0ccaee3ac36`
+- Prepared at: `2026-05-30T22:07:00+08:00`
+- Base HEAD checked: `8866cfe8ba081957714c8c51e948be9340fc45ac`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,9 +21,12 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
-| `.planning/codebase/generated/postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.json` | G2.255 `monitoring_watchlists.py` postgres async provider authorization evidence | Review input for PR `#408`; no-source governance only |
-| `docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.md` | G2.255 human-readable authorization packet | Review input for PR `#408`; authorizes only future G2.256 path-limited implementation after acceptance |
-| `governance/mainline/task-cards/pr-408.yaml` | Path-limited governance task card for G2.255 | Review input; forbids source/test/runtime/OpenSpec changes |
+| `.planning/codebase/generated/postgres-async-monitoring-watchlists-provider-implementation-2026-05-30.json` | G2.256 `monitoring_watchlists.py` postgres async provider implementation evidence | Review input for PR `#409`; source authority limited to `monitoring_watchlists.py` and two focused tests |
+| `docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-implementation-2026-05-30.md` | G2.256 human-readable implementation report | Review input for PR `#409`; direct authorized route-body calls reduced from 7 to 0 |
+| `governance/mainline/task-cards/pr-409.yaml` | Path-limited implementation task card for G2.256 | Review input; forbids broader route consumer, infrastructure, OpenAPI, frontend, config, script, and OpenSpec changes |
+| `.planning/codebase/generated/postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.json` | G2.255 `monitoring_watchlists.py` postgres async provider authorization evidence | Accepted by PR `#408`; merged at `8866cfe8ba081957714c8c51e948be9340fc45ac` |
+| `docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.md` | G2.255 human-readable authorization packet | Accepted by PR `#408`; authorized only G2.256 path-limited implementation |
+| `governance/mainline/task-cards/pr-408.yaml` | Path-limited governance task card for G2.255 | Accepted by PR `#408`; forbids broader route consumer, infrastructure, OpenAPI, frontend, config, script, and OpenSpec changes |
 | `.planning/codebase/generated/postgres-async-monitoring-analysis-provider-closeout-refresh-2026-05-30.json` | G2.254 monitoring analysis provider closeout / residual-refresh evidence | Accepted by PR `#407`; merged at `c64260f1795b39c82903fa7fd370b0ccaee3ac36` |
 | `docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-closeout-refresh-2026-05-30.md` | G2.254 human-readable closeout / residual-refresh report | Accepted by PR `#407`; selected future G2.255 no-source `monitoring_watchlists.py` authorization |
 | `governance/mainline/task-cards/pr-407.yaml` | Path-limited governance task card for G2.254 | Accepted by PR `#407`; forbids source/test/runtime/OpenSpec changes |

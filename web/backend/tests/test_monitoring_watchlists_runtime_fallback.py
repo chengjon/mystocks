@@ -32,7 +32,8 @@ def _load_watchlists_api():
     module_path = BACKEND_APP_ROOT / "api/monitoring_watchlists.py"
     spec = spec_from_file_location(module_name, module_path)
     module = module_from_spec(spec)
-    assert spec is not None and spec.loader is not None
+    assert spec is not None
+    assert spec.loader is not None
     sys.modules[module_name] = module
     spec.loader.exec_module(module)
     return module
@@ -68,7 +69,7 @@ async def test_list_watchlists_returns_runtime_fallback_when_db_unavailable(monk
     monkeypatch.setenv("TESTING", "true")
     monkeypatch.setattr(postgres_module, "get_postgres_async", lambda: _DisconnectedPostgres())
 
-    result = await watchlists_api.list_watchlists(user_id=1)
+    result = await watchlists_api.list_watchlists(user_id=1, postgres_async=_DisconnectedPostgres())
     payload = _payload(result)
 
     assert len(payload["data"]) >= 1
@@ -84,6 +85,7 @@ async def test_create_watchlist_returns_runtime_fallback_when_db_unavailable(mon
     result = await watchlists_api.create_watchlist(
         request=watchlists_api.CreateWatchlistRequest(name="Route Test List", watchlist_type="manual"),
         user_id=1,
+        postgres_async=_DisconnectedPostgres(),
     )
     payload = _payload(result)
 
@@ -97,7 +99,11 @@ async def test_list_watchlist_stocks_returns_runtime_fallback_when_db_unavailabl
     monkeypatch.setenv("TESTING", "true")
     monkeypatch.setattr(postgres_module, "get_postgres_async", lambda: _DisconnectedPostgres())
 
-    result = await watchlists_api.list_watchlist_stocks(watchlist_id=1, user_id=1)
+    result = await watchlists_api.list_watchlist_stocks(
+        watchlist_id=1,
+        user_id=1,
+        postgres_async=_DisconnectedPostgres(),
+    )
     payload = _payload(result)
 
     assert len(payload["data"]) >= 1
@@ -110,7 +116,11 @@ async def test_get_watchlist_returns_runtime_fallback_when_db_unavailable(monkey
     monkeypatch.setenv("TESTING", "true")
     monkeypatch.setattr(postgres_module, "get_postgres_async", lambda: _DisconnectedPostgres())
 
-    result = await watchlists_api.get_watchlist(watchlist_id=1, user_id=1)
+    result = await watchlists_api.get_watchlist(
+        watchlist_id=1,
+        user_id=1,
+        postgres_async=_DisconnectedPostgres(),
+    )
     payload = _payload(result)
 
     assert payload["data"]["id"] == 1
@@ -133,6 +143,7 @@ async def test_add_stock_to_watchlist_uses_runtime_fallback_when_db_unavailable(
             weight=0.15,
         ),
         user_id=1,
+        postgres_async=_DisconnectedPostgres(),
     )
     payload = _payload(result)
 
@@ -156,18 +167,24 @@ async def test_remove_stock_from_watchlist_uses_runtime_fallback_when_db_unavail
             weight=0.15,
         ),
         user_id=1,
+        postgres_async=_DisconnectedPostgres(),
     )
 
     result = await watchlists_api.remove_stock_from_watchlist(
         watchlist_id=1,
         stock_code="300750.SZ",
         user_id=1,
+        postgres_async=_DisconnectedPostgres(),
     )
     payload = _payload(result)
 
     assert payload["message"] == "移除股票成功"
 
-    stock_rows = await watchlists_api.list_watchlist_stocks(watchlist_id=1, user_id=1)
+    stock_rows = await watchlists_api.list_watchlist_stocks(
+        watchlist_id=1,
+        user_id=1,
+        postgres_async=_DisconnectedPostgres(),
+    )
     stock_payload = _payload(stock_rows)
     assert all(item["stock_code"] != "300750.SZ" for item in stock_payload["data"])
 
@@ -177,12 +194,16 @@ async def test_delete_watchlist_uses_runtime_fallback_when_db_unavailable(monkey
     monkeypatch.setenv("TESTING", "true")
     monkeypatch.setattr(postgres_module, "get_postgres_async", lambda: _DisconnectedPostgres())
 
-    result = await watchlists_api.delete_watchlist(watchlist_id=1, user_id=1)
+    result = await watchlists_api.delete_watchlist(
+        watchlist_id=1,
+        user_id=1,
+        postgres_async=_DisconnectedPostgres(),
+    )
     payload = _payload(result)
 
     assert payload["message"] == "删除清单成功"
 
-    watchlists = await watchlists_api.list_watchlists(user_id=1)
+    watchlists = await watchlists_api.list_watchlists(user_id=1, postgres_async=_DisconnectedPostgres())
     watchlists_payload = _payload(watchlists)
     assert all(item["id"] != 1 for item in watchlists_payload["data"])
 
