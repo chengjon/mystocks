@@ -1,0 +1,190 @@
+{
+  "schema": "2026-05-31.g2-service-lifecycle-closeout.v1",
+  "generated_at": "2026-05-31T00:15:00+08:00",
+  "g2_id": "G2.257",
+  "title": "monitoring_watchlists postgres async provider closeout / residual refresh",
+  "status": "for_review",
+  "source_edit_authority": false,
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "536b0634a51ea580f1a384d07a8ee605fbed8567",
+  "worktree_branch": "g2-257-monitoring-watchlists-provider-closeout-refresh",
+  "parent": {
+    "g2_id": "G2.256",
+    "github_pr": 409,
+    "merge_commit": "536b0634a51ea580f1a384d07a8ee605fbed8567",
+    "summary": "monitoring_watchlists postgres async route provider implementation"
+  },
+  "closeout": {
+    "file": "web/backend/app/api/monitoring_watchlists.py",
+    "provider": "get_monitoring_watchlists_postgres_async",
+    "authorized_route_body_get_postgres_async_calls": 0,
+    "provider_delegate_calls": 1,
+    "authorized_handler_dependency_parameters": 7,
+    "watchlist_routes": 8,
+    "stock_to_add_preserved": true,
+    "closed_handlers": [
+      "create_watchlist",
+      "list_watchlists",
+      "get_watchlist",
+      "delete_watchlist",
+      "add_stock_to_watchlist",
+      "list_watchlist_stocks",
+      "remove_stock_from_watchlist"
+    ],
+    "excluded_handler": "update_watchlist"
+  },
+  "residual_refresh": {
+    "api_py_files_scanned": 219,
+    "get_postgres_async_import_lines": 13,
+    "get_postgres_async_calls": 13,
+    "active_app_route_residual_calls": 4,
+    "static_route_like_not_app_registered_calls": 3,
+    "retained_provider_seam_calls": 3,
+    "route_adjacent_or_legacy_calls": 3,
+    "distribution": [
+      {
+        "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "calls": 4,
+        "classification": "active_app_route_residual",
+        "app_routes": 4,
+        "functions": [
+          "get_signal_history",
+          "get_signal_quality_report",
+          "get_strategy_realtime_monitoring",
+          "health_check"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "calls": 3,
+        "classification": "static_route_like_not_app_registered",
+        "app_routes": 0,
+        "functions": [
+          "get_signal_statistics",
+          "get_active_signals",
+          "get_strategy_detailed_health"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/monitoring_watchlists.py",
+        "calls": 1,
+        "classification": "retained_route_local_provider_seam",
+        "functions": [
+          "get_monitoring_watchlists_postgres_async"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "calls": 1,
+        "classification": "retained_route_local_provider_seam",
+        "functions": [
+          "get_monitoring_analysis_postgres_async"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "calls": 1,
+        "classification": "retained_route_local_provider_seam",
+        "functions": [
+          "get_monitoring_postgres_async"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/_data_source_config_responses.py",
+        "calls": 1,
+        "classification": "route_adjacent_helper",
+        "functions": [
+          "get_config_manager"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/v1/system/settings.py",
+        "calls": 1,
+        "classification": "control_plane_route_adjacent_class",
+        "functions": [
+          "__init__"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data_source_config.old.py",
+        "calls": 1,
+        "classification": "legacy_old_file",
+        "functions": [
+          "get_config_manager"
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_watchlist_api.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -n 0 --tb=short --no-cov",
+      "result": "29 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/monitoring_watchlists.py tests/api/file_tests/test_watchlist_api.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "app.main import and app.openapi() using non-sensitive placeholder required environment variables",
+      "result": {
+        "routes": 548,
+        "paths": 500,
+        "watchlist_route_count": 8,
+        "signal_history_routes": 4,
+        "signal_statistics_routes": 0,
+        "settings_routes": 4
+      }
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid"
+    }
+  },
+  "gitnexus": {
+    "mcp_detect_changes": "transport closed",
+    "cli_command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-257-monitoring-watchlists-provider-closeout-refresh --json",
+    "cli_result": {
+      "ok": true,
+      "status": "stale",
+      "risk_level": "low",
+      "changed_files": 9,
+      "changed_count": 0,
+      "affected_count": 0,
+      "indexed_commit": "5f890d8b2e3ea183dd42e3d08d5b599c9582f3ab",
+      "current_commit": "536b0634a51ea580f1a384d07a8ee605fbed8567",
+      "stale_reason": "current_commit_differs_from_indexed_commit"
+    },
+    "interpretation": "stale-index warning, not current graph approval"
+  },
+  "next_gate": {
+    "g2_id": "G2.258",
+    "type": "no_source_authorization",
+    "candidate": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+    "rationale": "largest remaining active app-route get_postgres_async residual surface after watchlists closeout",
+    "source_edit_authority": false
+  },
+  "allowed_scope": [
+    ".planning/codebase/generated/postgres-async-monitoring-watchlists-provider-closeout-refresh-2026-05-31.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-closeout-refresh-2026-05-31.md",
+    "governance/mainline/task-cards/pr-410.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ]
+}

@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-30T22:07:00+08:00",
+  "generated_at": "2026-05-31T00:15:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "8866cfe8ba081957714c8c51e948be9340fc45ac",
-  "split_branch": "g2-256-monitoring-watchlists-postgres-provider",
-  "scope": "postgres_async_monitoring_watchlists_provider_implementation",
-  "source_edit_authority": true,
+  "base_head": "536b0634a51ea580f1a384d07a8ee605fbed8567",
+  "split_branch": "g2-257-monitoring-watchlists-provider-closeout-refresh",
+  "scope": "postgres_async_monitoring_watchlists_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -5895,7 +5895,7 @@
     {
       "id": "g2-256-monitoring-watchlists-postgres-provider",
       "type": "provider_implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.255 monitoring_watchlists postgres async provider authorization",
       "source_edit_authority": true,
@@ -5963,7 +5963,7 @@
         "impact_before_edit": "MCP impact/context transport closed; CLI context resolved exact add_stock_to_watchlist handler UID, but CLI impact was ambiguous/UNKNOWN for common handler names and root-path status could not prove worktree freshness.",
         "status": "degraded; use path-limited authorization, TDD evidence, OpenAPI smoke, mainline scope gate, and staged detect_changes as review gates"
       },
-      "next_gate": "If accepted, merge PR #409 and start G2.257 no-source monitoring watchlists provider closeout / residual refresh. Do not migrate signal_monitoring or infrastructure from G2.256.",
+      "next_gate": "Superseded by G2.257 no-source monitoring watchlists provider closeout / residual refresh.",
       "allowed_scope": [
         "web/backend/app/api/monitoring_watchlists.py",
         "tests/api/file_tests/test_watchlist_api.py",
@@ -5996,8 +5996,100 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "8866cfe8ba081957714c8c51e948be9340fc45ac",
+        "current_head_checked": "536b0634a51ea580f1a384d07a8ee605fbed8567",
         "generated_at": "2026-05-30T22:07:00+08:00",
+        "stale_if_head_mismatch": true
+      },
+      "github_pr": 409,
+      "merge_commit": "536b0634a51ea580f1a384d07a8ee605fbed8567",
+      "accepted_at": "2026-05-31T00:15:00+08:00"
+    },
+    {
+      "id": "g2-257-monitoring-watchlists-provider-closeout-refresh",
+      "type": "provider_closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.256 monitoring_watchlists postgres async provider implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 409,
+      "parent_merge_commit": "536b0634a51ea580f1a384d07a8ee605fbed8567",
+      "evidence": [
+        ".planning/codebase/generated/postgres-async-monitoring-watchlists-provider-closeout-refresh-2026-05-31.json",
+        "docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-closeout-refresh-2026-05-31.md",
+        "governance/mainline/task-cards/pr-410.yaml"
+      ],
+      "subject": {
+        "symbol": "get_postgres_async",
+        "decision": "close out the accepted monitoring_watchlists.py provider implementation and refresh residual route-consumer candidates",
+        "closed_file": "web/backend/app/api/monitoring_watchlists.py",
+        "next_candidate": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "source_edit_authority": false
+      },
+      "closeout_evidence": {
+        "authorized_route_body_get_postgres_async_calls_after": 0,
+        "provider_delegate_calls_after": 1,
+        "handler_dependency_parameters_after": 7,
+        "focused_tests": "29 passed",
+        "ruff": "All checks passed",
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "watchlist_routes": 8,
+        "stock_to_add_preserved": true,
+        "openspec_validate": "migrate-backend-singletons-to-lifecycle-di valid"
+      },
+      "residual_refresh": {
+        "api_py_files_scanned": 219,
+        "get_postgres_async_import_lines": 13,
+        "get_postgres_async_calls": 13,
+        "active_app_route_residual_calls": 4,
+        "static_route_like_not_app_registered_calls": 3,
+        "retained_route_local_provider_seam_calls": 3,
+        "route_adjacent_or_legacy_calls": 3,
+        "next_candidate": {
+          "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+          "active_app_routes": 4,
+          "functions": [
+            "get_signal_history",
+            "get_signal_quality_report",
+            "get_strategy_realtime_monitoring",
+            "health_check"
+          ]
+        },
+        "deferred_candidate": {
+          "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+          "static_route_like_calls": 3,
+          "app_routes_seen_in_smoke": 0,
+          "handling": "route-registration / ownership confirmation before any source lane"
+        }
+      },
+      "next_gate": "If accepted, merge PR #410 and start G2.258 no-source signal_history_response.py postgres async provider authorization. Do not implement source from G2.257.",
+      "allowed_scope": [
+        ".planning/codebase/generated/postgres-async-monitoring-watchlists-provider-closeout-refresh-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-closeout-refresh-2026-05-31.md",
+        "governance/mainline/task-cards/pr-410.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "536b0634a51ea580f1a384d07a8ee605fbed8567",
+        "generated_at": "2026-05-31T00:15:00+08:00",
         "stale_if_head_mismatch": true
       }
     },
