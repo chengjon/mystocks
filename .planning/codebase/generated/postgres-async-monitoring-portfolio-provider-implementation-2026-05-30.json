@@ -1,0 +1,143 @@
+{
+  "schema_version": "2026-05-30.g2-250.postgres-async-monitoring-portfolio-provider.v1",
+  "generated_at": "2026-05-30T18:13:12+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "db1a0653737c8239a937a97a5fd32730e2c25bc3",
+  "worktree_branch": "g2-250-postgres-async-monitoring-portfolio-provider",
+  "owner_lane": "G/#79 service lifecycle DI",
+  "openspec_change_id": "migrate-backend-singletons-to-lifecycle-di",
+  "parent": {
+    "g2_249_pr": 402,
+    "g2_249_merge_commit": "db1a0653737c8239a937a97a5fd32730e2c25bc3",
+    "authorization": "Path-limited source authority for monitoring portfolio route postgres async provider injection only."
+  },
+  "scope": {
+    "source_edit_authority": true,
+    "allowed_runtime_files": [
+      "web/backend/app/api/_monitoring_portfolio_router.py"
+    ],
+    "allowed_test_files": [
+      "tests/api/file_tests/test_monitoring_analysis_api.py"
+    ],
+    "allowed_governance_files": [
+      ".planning/codebase/generated/postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.md",
+      "governance/mainline/task-cards/pr-403.yaml"
+    ],
+    "forbidden_scope": [
+      "web/backend/app/api/monitoring_analysis.py",
+      "web/backend/app/api/monitoring_watchlists.py",
+      "web/backend/app/api/signal_monitoring/**",
+      "web/backend/app/api/_data_source_config_responses.py",
+      "web/backend/app/api/v1/system/settings.py",
+      "src/monitoring/infrastructure/**",
+      "web/backend/app/services/**",
+      "web/backend/app/tasks/**",
+      "web/frontend/**",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "implementation": {
+    "provider_added": "get_monitoring_postgres_async",
+    "provider_file": "web/backend/app/api/_monitoring_portfolio_router.py",
+    "provider_behavior": "Route-local FastAPI dependency provider delegates to src.monitoring.infrastructure.postgresql_async_v3.get_postgres_async().",
+    "handlers_updated": [
+      "get_portfolio_summary",
+      "get_portfolio_alerts",
+      "get_rebalance_suggestions"
+    ],
+    "route_body_get_postgres_async_calls_before": 3,
+    "route_body_get_postgres_async_calls_after": 0,
+    "dependency_parameters_after": 3,
+    "route_contract_changes": "none",
+    "openapi_exposure_changes": "none"
+  },
+  "tdd": {
+    "red": {
+      "command": "env PYTHONPATH=. pytest -q tests/api/file_tests/test_monitoring_analysis_api.py::TestMonitoringAnalysisAPIFile::test_monitoring_portfolio_postgres_async_uses_route_dependency_provider -n 0 --tb=short --no-cov",
+      "observed_failure": "AssertionError: get_monitoring_postgres_async not found in module"
+    },
+    "green": {
+      "command": "env PYTHONPATH=. pytest -q tests/api/file_tests/test_monitoring_analysis_api.py::TestMonitoringAnalysisAPIFile::test_monitoring_portfolio_postgres_async_uses_route_dependency_provider -n 0 --tb=short --no-cov",
+      "result": "1 passed"
+    },
+    "focused_file": {
+      "command": "env PYTHONPATH=. pytest -q tests/api/file_tests/test_monitoring_analysis_api.py -n 0 --tb=short --no-cov",
+      "result": "18 passed"
+    }
+  },
+  "verification": {
+    "standards_read": "architecture/STANDARDS.md governance and source-edit gates reviewed before implementation.",
+    "ruff": {
+      "command": "ruff check web/backend/app/api/_monitoring_portfolio_router.py tests/api/file_tests/test_monitoring_analysis_api.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "import app.main, call app.openapi(), and list app.api._monitoring_portfolio_router routes with transient test environment values",
+      "routes": 548,
+      "openapi_paths": 500,
+      "target_routes": [
+        {
+          "method": "GET",
+          "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary",
+          "include_in_schema": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+          "include_in_schema": true
+        },
+        {
+          "method": "GET",
+          "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance",
+          "include_in_schema": true
+        }
+      ]
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid",
+      "note": "PostHog ECONNREFUSED telemetry noise may appear and is not an OpenSpec validation failure."
+    }
+  },
+  "gitnexus": {
+    "impact_before_edit": {
+      "mcp": "Attempted for get_portfolio_summary, get_portfolio_alerts, and get_rebalance_suggestions; MCP transport closed.",
+      "cli": "Attempted bounded CLI impact fallback; command timed out / hung before a usable report.",
+      "status": "unavailable; recorded as gate degradation, not success"
+    },
+    "detect_changes": {
+      "mcp": "Attempted with scope=staged; MCP transport closed.",
+      "cli": {
+        "command": "gitnexus verify-staged -r mystocks --cwd <worktree> --json",
+        "status": "stale",
+        "risk_level": "high",
+        "changed_count": 19,
+        "affected_count": 9,
+        "changed_files": 11,
+        "indexed_commit": "fdb91e614c28ee74db77c0fc13e74aff2bfd18bf",
+        "current_commit": "db1a0653737c8239a937a97a5fd32730e2c25bc3",
+        "stale_reason": "current_commit_differs_from_indexed_commit",
+        "next_action": "Refresh the GitNexus index before relying on this result."
+      },
+      "status": "degraded; high-risk result is stale-index evidence, not a reliable current graph approval"
+    }
+  },
+  "residual_policy": {
+    "remaining_route_consumers": "Do not migrate broader route consumers from G2.250.",
+    "next_gate": "If PR #403 is accepted, start G2.251 no-source monitoring portfolio provider closeout / residual refresh."
+  }
+}

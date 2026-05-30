@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-29T22:22:46+08:00`
-- Base HEAD checked: `70d75e77fa28fa8b9931fcdc4e89688478f8f1fc`
+- Prepared at: `2026-05-30T18:13:12+08:00`
+- Base HEAD checked: `db1a0653737c8239a937a97a5fd32730e2c25bc3`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2151,6 +2151,51 @@ Decision:
 - If accepted, start G2.250 postgres async monitoring portfolio route provider
   implementation.
 - Do not start bulk route consumer migration from G2.249.
+- G2.249 was accepted by PR `#402` and merged at
+  `db1a0653737c8239a937a97a5fd32730e2c25bc3`.
+
+## G2.250 Postgres Async Monitoring Portfolio Provider Implementation
+
+G2.250 is the path-limited source lane after PR `#402` merged G2.249 at
+`db1a0653737c8239a937a97a5fd32730e2c25bc3`.
+
+Implementation evidence:
+
+| Evidence | Value |
+|---|---:|
+| Route-local provider added | `get_monitoring_postgres_async` |
+| Authorized handlers updated | 3 |
+| Authorized route-body `get_postgres_async()` calls | 0 |
+| Authorized handler dependency parameters | 3 |
+| Focused new test | 1 passed |
+| Focused file tests | 18 passed |
+| Ruff on touched source/test files | All checks passed |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+
+Updated handlers:
+
+| Handler | Route | Provider state |
+|---|---|---|
+| `get_portfolio_summary` | `GET /portfolio/{watchlist_id}/summary` | `postgres_async=Depends(get_monitoring_postgres_async)` |
+| `get_portfolio_alerts` | `GET /portfolio/{watchlist_id}/alerts` | `postgres_async=Depends(get_monitoring_postgres_async)` |
+| `get_rebalance_suggestions` | `GET /portfolio/{watchlist_id}/rebalance` | `postgres_async=Depends(get_monitoring_postgres_async)` |
+
+Gate degradation:
+
+- GitNexus MCP impact was attempted before edits and failed with transport
+  closure.
+- GitNexus CLI impact fallback was attempted and timed out / hung before a usable
+  report.
+- Treat this as degraded evidence, not a LOW-risk GitNexus result.
+
+Decision:
+
+- If accepted, start G2.251 no-source monitoring portfolio provider closeout /
+  residual refresh.
+- Do not migrate `monitoring_analysis.py`, `monitoring_watchlists.py`,
+  `signal_monitoring/*`, `_data_source_config_responses.py`,
+  `v1/system/settings.py`, infrastructure providers, frontend, config, scripts,
+  OpenSpec, or PM2 state from G2.250.
 
 ## Forbidden Scope
 

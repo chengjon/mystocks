@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-30T17:35:00+08:00`
-- Base HEAD checked: `89fb66f6ee21ab33d5e1f5c255a8d75af760033b`
+- Prepared at: `2026-05-30T18:13:12+08:00`
+- Base HEAD checked: `db1a0653737c8239a937a97a5fd32730e2c25bc3`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,9 +21,12 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
-| `.planning/codebase/generated/postgres-async-route-consumer-authorization-2026-05-30.json` | G2.249 `get_postgres_async` route consumer provider authorization evidence | Review input for PR `#402`; current for HEAD `89fb66f6ee21ab33d5e1f5c255a8d75af760033b` |
-| `docs/reports/quality/backend-postgres-async-route-consumer-authorization-2026-05-30.md` | G2.249 human-readable route consumer authorization packet | Review input for PR `#402`; no-source governance only |
-| `governance/mainline/task-cards/pr-402.yaml` | Path-limited governance task card for G2.249 | Review input; forbids source/test/runtime/OpenSpec changes |
+| `.planning/codebase/generated/postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.json` | G2.250 monitoring portfolio route-local postgres async provider implementation evidence | Review input for PR `#403`; source authority limited to `_monitoring_portfolio_router.py` and focused file test |
+| `docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.md` | G2.250 human-readable implementation report | Review input for PR `#403`; records GitNexus degradation and focused verification |
+| `governance/mainline/task-cards/pr-403.yaml` | Path-limited implementation task card for G2.250 | Review input; forbids broader route consumer, infrastructure, OpenAPI, frontend, config, script, and OpenSpec changes |
+| `.planning/codebase/generated/postgres-async-route-consumer-authorization-2026-05-30.json` | G2.249 `get_postgres_async` route consumer provider authorization evidence | Accepted by PR `#402`; merged at `db1a0653737c8239a937a97a5fd32730e2c25bc3` |
+| `docs/reports/quality/backend-postgres-async-route-consumer-authorization-2026-05-30.md` | G2.249 human-readable route consumer authorization packet | Accepted by PR `#402`; no-source governance only |
+| `governance/mainline/task-cards/pr-402.yaml` | Path-limited governance task card for G2.249 | Accepted by PR `#402`; authorized only G2.250 path-limited source/test paths |
 | `.planning/codebase/generated/postgres-async-provider-closeout-refresh-2026-05-30.json` | G2.248 `get_postgres_async` provider closeout and residual-refresh evidence | Accepted by PR `#401`; merged at `89fb66f6ee21ab33d5e1f5c255a8d75af760033b` |
 | `docs/reports/quality/backend-postgres-async-provider-closeout-refresh-2026-05-30.md` | G2.248 human-readable closeout / residual-refresh report | Accepted by PR `#401`; no-source governance only |
 | `governance/mainline/task-cards/pr-401.yaml` | Path-limited governance task card for G2.248 | Accepted by PR `#401`; forbids source/test/runtime/OpenSpec changes |
