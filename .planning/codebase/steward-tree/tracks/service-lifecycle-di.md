@@ -2090,6 +2090,68 @@ Decision:
   `get_monitoring_db`, route paths, response contracts, and OpenAPI exposure
   outside G2.248.
 
+Closeout status:
+
+- G2.248 was accepted by PR `#401` and merged at
+  `89fb66f6ee21ab33d5e1f5c255a8d75af760033b`.
+- G2.249 is the no-source route consumer provider authorization after this
+  closeout.
+
+## G2.249 Postgres Async Route Consumer Provider Authorization
+
+G2.249 is the no-source authorization packet after PR `#401` merged G2.248 at
+`89fb66f6ee21ab33d5e1f5c255a8d75af760033b`.
+
+Current evidence:
+
+| Evidence | Value |
+|---|---:|
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+| G2.248 residual files | 7 |
+| G2.248 residual calls | 21 |
+| Route-decorated files | 5 |
+| Route-decorated calls | 19 |
+| Route-adjacent helper / repository files | 2 |
+| Route-adjacent helper / repository calls | 2 |
+
+Route-decorated candidates:
+
+| File | Calls | Decision |
+|---|---:|---|
+| `web/backend/app/api/_monitoring_portfolio_router.py` | 3 | Authorize as future G2.250 pilot |
+| `web/backend/app/api/monitoring_analysis.py` | 2 | Defer until after pilot |
+| `web/backend/app/api/signal_monitoring/get_signal_statistics.py` | 3 | Defer until after pilot |
+| `web/backend/app/api/signal_monitoring/signal_history_response.py` | 4 | Larger batch; defer |
+| `web/backend/app/api/monitoring_watchlists.py` | 7 | Larger batch; defer |
+
+Route-adjacent exclusions:
+
+| File | Calls | Reason |
+|---|---:|---|
+| `web/backend/app/api/_data_source_config_responses.py` | 1 | Helper/facade function without route decorator |
+| `web/backend/app/api/v1/system/settings.py` | 1 | Repository constructor dependency, not route-body lookup |
+
+Authorization decision:
+
+- Authorize G2.250 as a path-limited source lane for
+  `web/backend/app/api/_monitoring_portfolio_router.py`.
+- The future lane may also touch `tests/api/file_tests/test_monitoring_analysis_api.py`
+  for focused structural or route/provider tests.
+- The future lane must preserve route paths, methods, `include_in_schema`,
+  response models, `UnifiedResponse` behavior, and existing
+  `calculator_factory=Depends(get_monitoring_calculator_factory)` parameters.
+- The future lane must not touch `monitoring_analysis.py`,
+  `monitoring_watchlists.py`, `signal_monitoring/*`,
+  `_data_source_config_responses.py`, `v1/system/settings.py`,
+  `src/monitoring/infrastructure/*`, `get_monitoring_db`, frontend, config,
+  scripts, OpenSpec specs/proposals, or PM2 state.
+
+Decision:
+
+- If accepted, start G2.250 postgres async monitoring portfolio route provider
+  implementation.
+- Do not start bulk route consumer migration from G2.249.
+
 ## Forbidden Scope
 
 This track summary forbids:

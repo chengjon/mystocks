@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-402"
+  title: "Authorize postgres async route consumer provider pilot"
+  owner: "codex"
+  created_at: "2026-05-30"
+
+mainline:
+  id: "L1-postgres-async-route-consumer-authorization"
+  objective: "classify get_postgres_async route consumers and authorize a single future monitoring portfolio provider pilot"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.249 is no-source authorization planning only; it records route consumer classification and selects a future path-limited pilot without changing runtime entrypoints."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/postgres-async-route-consumer-authorization-2026-05-30.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-postgres-async-route-consumer-authorization-2026-05-30.md"
+    - "governance/mainline/task-cards/pr-402.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test source edits"
+  - "API route consumer migration"
+  - "changing route paths"
+  - "OpenAPI schema exposure changes"
+  - "response model or response shape changes"
+  - "database connection semantic changes"
+  - "background monitoring task rewrite"
+  - "get_monitoring_db work"
+  - "settings repository provider work"
+  - "data-source config helper work"
+  - "frontend changes"
+  - "PM2 commands"
+  - "OpenSpec proposal or spec creation"
+  - "issue label changes"
+
+acceptance:
+  checks:
+    - id: "route-consumer-classification"
+      command: "5 route-decorated files / 19 calls and 2 route-adjacent exclusions recorded"
+      required: true
+    - id: "future-lane-authorization"
+      command: "G2.250 authorized only for _monitoring_portfolio_router.py plus focused test path"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main and app.openapi() with transient runtime environment"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-postgres-async-route-consumer-authorization-2026-05-30.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-402.yaml --base-sha 89fb66f6ee21ab33d5e1f5c255a8d75af760033b --head-sha HEAD --report /tmp/pr402-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted; timeout recorded if unavailable, with mainline scope gate as blocking no-source scope guard"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.249 must not be mistaken for immediate route consumer migration authorization beyond the future G2.250 pilot."
+    - "Route consumer counts are snapshots and stale if HEAD changes."
+    - "Route-adjacent helper/repository calls need separate ownership decisions if reopened."
+  rollback_plan: "Revert PR #402; the steward tree returns to the post-G2.248 state and no runtime behavior changes."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a single future postgres async route consumer provider pilot."
+    modified_scope: "Governance evidence, steward tree, report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or legacy behavior changes."
+    rollback_ready: "Revert PR #402."
+    risk_and_rollback_point: "No-source governance PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "current review thread human maintainer"
+    approved_at: "2026-05-30T17:35:00+08:00"
+    approval_note: "Approved after PR #401 merge to run no-source G2.249 route consumer provider authorization."
+    secondary_approved: false

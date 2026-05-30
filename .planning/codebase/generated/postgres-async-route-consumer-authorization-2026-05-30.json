@@ -1,0 +1,190 @@
+{
+  "schema_version": "2026-05-30.postgres-async-route-consumer-authorization.v1",
+  "artifact": "postgres-async-route-consumer-authorization-2026-05-30",
+  "g2_id": "G2.249",
+  "status": "for_review",
+  "generated_at": "2026-05-30T17:35:00+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "current_head": "89fb66f6ee21ab33d5e1f5c255a8d75af760033b",
+  "source_pr": {
+    "g2_id": "G2.248",
+    "github_pr": 401,
+    "state": "merged",
+    "merged_at": "2026-05-29T18:15:47Z",
+    "merge_commit": "89fb66f6ee21ab33d5e1f5c255a8d75af760033b"
+  },
+  "scope": {
+    "lane": "G/#79 service lifecycle DI",
+    "subject": "get_postgres_async",
+    "owned_object": "MonitoringPostgreSQLAccess",
+    "authorization_type": "no-source route consumer provider authorization",
+    "source_edit_authority": false
+  },
+  "current_head_evidence": {
+    "app_routes": 548,
+    "openapi_paths": 500,
+    "g248_residual_files": 7,
+    "g248_residual_calls": 21,
+    "route_decorated_files": 5,
+    "route_decorated_calls": 19,
+    "route_adjacent_helper_or_repository_files": 2,
+    "route_adjacent_helper_or_repository_calls": 2
+  },
+  "verification": {
+    "json_yaml_parse": "passed",
+    "markdown_governance": "6 checked files, 0 errors",
+    "app_openapi_smoke": "routes=548 paths=500",
+    "openspec_validate": "migrate-backend-singletons-to-lifecycle-di valid",
+    "mainline_scope_gate": "pass, 9 changed files, 0 violations",
+    "git_diff_check": "passed",
+    "gitnexus_mcp_detect_changes": "attempted with repo=mystocks; timed out after 120s",
+    "gitnexus_cli_detect_changes": "staged/compare fallback attempted; command hung and was terminated",
+    "gitnexus_handling": "recorded as tool unavailable for this no-source package; mainline scope gate is the blocking scope guard"
+  },
+  "route_decorated_candidates": [
+    {
+      "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+      "calls": 3,
+      "routes": [
+        "GET /portfolio/{watchlist_id}/summary",
+        "GET /portfolio/{watchlist_id}/alerts",
+        "GET /portfolio/{watchlist_id}/rebalance"
+      ],
+      "lines": 352,
+      "depends_tokens": 3,
+      "response_model_tokens": 3,
+      "unified_response_tokens": 10,
+      "classification": "authorized_future_pilot"
+    },
+    {
+      "file": "web/backend/app/api/monitoring_analysis.py",
+      "calls": 2,
+      "routes": [
+        "GET /results/{stock_code}",
+        "GET /portfolio/{watchlist_id}"
+      ],
+      "lines": 531,
+      "depends_tokens": 5,
+      "response_model_tokens": 6,
+      "unified_response_tokens": 19,
+      "classification": "defer_until_after_pilot"
+    },
+    {
+      "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+      "calls": 3,
+      "routes": [
+        "GET /signals/statistics",
+        "GET /signals/active",
+        "GET /strategies/{strategy_id}/health/detailed"
+      ],
+      "lines": 512,
+      "depends_tokens": 3,
+      "response_model_tokens": 3,
+      "unified_response_tokens": 0,
+      "classification": "defer_until_after_pilot"
+    },
+    {
+      "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+      "calls": 4,
+      "routes": [
+        "GET /signals/history",
+        "GET /signals/quality-report",
+        "GET /strategies/{strategy_id}/realtime",
+        "GET /signals/health"
+      ],
+      "lines": 675,
+      "depends_tokens": 3,
+      "response_model_tokens": 4,
+      "unified_response_tokens": 5,
+      "classification": "larger_batch_defer"
+    },
+    {
+      "file": "web/backend/app/api/monitoring_watchlists.py",
+      "calls": 7,
+      "routes": [
+        "POST /",
+        "GET /",
+        "GET /{watchlist_id}",
+        "DELETE /{watchlist_id}",
+        "POST /{watchlist_id}/stocks",
+        "GET /{watchlist_id}/stocks",
+        "DELETE /{watchlist_id}/stocks/{stock_code}"
+      ],
+      "lines": 667,
+      "depends_tokens": 0,
+      "response_model_tokens": 8,
+      "unified_response_tokens": 38,
+      "classification": "larger_batch_defer"
+    }
+  ],
+  "route_adjacent_exclusions": [
+    {
+      "file": "web/backend/app/api/_data_source_config_responses.py",
+      "calls": 1,
+      "function": "get_config_manager",
+      "reason": "helper/facade function without route decorator; not a route-body provider migration target"
+    },
+    {
+      "file": "web/backend/app/api/v1/system/settings.py",
+      "calls": 1,
+      "class": "PostgresSystemSettingsRepository",
+      "function": "__init__",
+      "reason": "repository constructor dependency, not route-body lookup; requires separate settings repository/provider decision if reopened"
+    }
+  ],
+  "authorized_future_lane": {
+    "g2_id": "G2.250",
+    "title": "postgres async monitoring portfolio route provider implementation",
+    "source_edit_authority_if_g249_accepted": true,
+    "allowed_source_paths": [
+      "web/backend/app/api/_monitoring_portfolio_router.py",
+      "tests/api/file_tests/test_monitoring_analysis_api.py"
+    ],
+    "allowed_future_governance_paths": [
+      ".planning/codebase/generated/postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-implementation-2026-05-30.md",
+      "governance/mainline/task-cards/pr-403.yaml"
+    ],
+    "required_behavior": [
+      "add or reuse a route-local postgres async provider dependency in _monitoring_portfolio_router.py",
+      "inject the provider into get_portfolio_summary, get_portfolio_alerts, and get_rebalance_suggestions",
+      "replace the three route-body get_postgres_async() calls with injected dependency usage",
+      "preserve route paths, methods, response models, summaries, response contracts, calculator_factory dependencies, and UnifiedResponse behavior",
+      "remove direct route-body imports if the implementation makes them redundant"
+    ],
+    "required_verification": [
+      "read architecture/STANDARDS.md before source edits",
+      "run GitNexus impact/context before source edits, with CLI fallback if MCP is unavailable",
+      "TDD red before implementation",
+      "focused tests for the three portfolio route handlers or structural file tests",
+      "ruff on touched source/test files",
+      "app/OpenAPI smoke remains routes=548 paths=500 unless current HEAD intentionally changes",
+      "route table diff confirms no path/method/include_in_schema changes",
+      "mainline scope gate passes"
+    ]
+  },
+  "forbidden_from_g249": [
+    "backend source edits",
+    "test source edits",
+    "API route consumer migration",
+    "route path changes",
+    "OpenAPI schema exposure changes",
+    "frontend changes",
+    "PM2 commands",
+    "OpenSpec proposal or spec creation",
+    "get_monitoring_db work",
+    "settings repository provider work",
+    "data_source_config helper work",
+    "issue label changes"
+  ],
+  "freshness": {
+    "current_head_checked": "89fb66f6ee21ab33d5e1f5c255a8d75af760033b",
+    "stale_if_head_mismatch": true
+  }
+}
