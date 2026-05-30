@@ -2269,6 +2269,7 @@ test.describe("Phase 3 Mainline Matrix", () => {
     await expect(page.getByText("组合资产工作台").first()).toBeVisible()
     await expect(page.getByTestId("trade-portfolio-page")).toBeVisible()
     await expect(page.getByTestId("trade-portfolio-header")).toBeVisible()
+    await expect(page.getByTestId("trade-portfolio-header")).toHaveClass(/artdeco-route-header/)
     await expect(page.getByTestId("trade-portfolio-refresh")).toBeVisible()
     await expect(page.getByTestId("trade-portfolio-status-strip")).toBeVisible()
     await expect(page.getByTestId("trade-portfolio-primary-surface")).toBeVisible()

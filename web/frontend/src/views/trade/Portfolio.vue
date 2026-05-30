@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import AttributionPanel from '@/components/shared/attribution/AttributionPanel.vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { useAttributionAnalysis } from '@/composables/attribution/useAttributionAnalysis.ts'
@@ -182,41 +183,37 @@ onMounted(() => {
     :class="{ 'is-embedded': isEmbedded }"
     data-testid="trade-portfolio-page"
   >
-    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell" data-testid="trade-portfolio-header">
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">portfolio assets desk</span>
-          <div class="hero-meta">
-            <span>REQ: {{ displayRequestId }}</span>
-            <span>POSITIONS: {{ displayPositionCount }}</span>
-            <span>REBALANCE: {{ displayRebalanceStatValue }}</span>
-          </div>
-        </div>
-      </div>
+    <ArtDecoRouteHeader
+      v-if="!isEmbedded"
+      title="组合资产工作台"
+      subtitle="统一查看资产规模、持仓分布、绩效归因和再平衡建议"
+      eyebrow="portfolio assets desk"
+      :show-status="true"
+      :status-text="pageStatusText"
+      :status-type="pageStatusType"
+      test-id="trade-portfolio-header"
+    >
+      <template #meta>
+        <span>REQ: {{ displayRequestId }}</span>
+        <span>POSITIONS: {{ displayPositionCount }}</span>
+        <span>REBALANCE: {{ displayRebalanceStatValue }}</span>
+      </template>
 
-      <ArtDecoHeader
-        title="组合资产工作台"
-        subtitle="统一查看资产规模、持仓分布、绩效归因和再平衡建议"
-        :show-status="true"
-        :status-text="pageStatusText"
-        :status-type="pageStatusType"
-      >
-        <template #actions>
-          <ArtDecoButton
-            variant="outline"
-            size="sm"
-            :loading="loading"
-            data-testid="trade-portfolio-refresh"
-            @click="fetchPortfolio"
-          >
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新资产
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
-    </section>
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          data-testid="trade-portfolio-refresh"
+          @click="fetchPortfolio"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新资产
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell" data-testid="trade-portfolio-status-strip">
       <ArtDecoStatCard label="总资产" :value="displayTotalAssetsLabel" :show-change="false" variant="gold" />
