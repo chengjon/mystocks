@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-30T22:07:00+08:00`
-- Base HEAD checked: `8866cfe8ba081957714c8c51e948be9340fc45ac`
+- Prepared at: `2026-05-31T00:15:00+08:00`
+- Base HEAD checked: `536b0634a51ea580f1a384d07a8ee605fbed8567`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -93,13 +93,14 @@ PRs, change issue labels, or authorize source implementation.
 | `#406` | `g2-253-monitoring-analysis-postgres-provider` | `wip/root-dirty-20260403` | `MERGED` at `767c92887348fe25eeaa92685ecb5343717fb326` | Path-limited monitoring analysis provider implementation selecting G2.254 closeout refresh |
 | `#407` | `g2-254-monitoring-analysis-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `c64260f1795b39c82903fa7fd370b0ccaee3ac36` | No-source monitoring analysis provider closeout / residual refresh selecting G2.255 monitoring watchlists authorization |
 | `#408` | `g2-255-monitoring-watchlists-postgres-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `8866cfe8ba081957714c8c51e948be9340fc45ac` | No-source monitoring watchlists provider authorization selecting G2.256 source implementation |
-| `#409` | `g2-256-monitoring-watchlists-postgres-provider` | `wip/root-dirty-20260403` | `FOR_REVIEW` | Path-limited monitoring watchlists provider implementation selecting G2.257 closeout refresh |
+| `#409` | `g2-256-monitoring-watchlists-postgres-provider` | `wip/root-dirty-20260403` | `MERGED` at `536b0634a51ea580f1a384d07a8ee605fbed8567` | Path-limited monitoring watchlists provider implementation selecting G2.257 closeout refresh |
+| `#410` | `g2-257-monitoring-watchlists-provider-closeout-refresh` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source monitoring watchlists provider closeout / residual refresh selecting G2.258 signal history authorization |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-256-monitoring-watchlists-postgres-provider` | `origin/wip/root-dirty-20260403` at `8866cfe8ba081957714c8c51e948be9340fc45ac` | Implement the authorized `monitoring_watchlists.py` postgres async route provider migration | Yes, limited to the G2.255 allowed paths |
+| `g2-257-monitoring-watchlists-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `536b0634a51ea580f1a384d07a8ee605fbed8567` | Close out the accepted `monitoring_watchlists.py` postgres async provider implementation and select the next residual gate | No |
 
 ## OpenSpec Relationship
 
@@ -115,8 +116,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.256 is the path-limited implementation after PR `#408` merged G2.255. It
-moves only the seven authorized `monitoring_watchlists.py` route-body
-`get_postgres_async()` calls behind a route-local FastAPI dependency provider.
-It must not migrate `signal_monitoring/*`, infrastructure, route contracts,
-OpenAPI exposure, frontend, config, scripts, or OpenSpec.
+G2.257 is the no-source closeout after PR `#409` merged G2.256. It records that
+`monitoring_watchlists.py` remains closed for the seven authorized route-body
+`get_postgres_async()` calls and selects only a future G2.258 no-source
+`signal_history_response.py` authorization. It must not edit source, tests,
+route contracts, OpenAPI exposure, frontend, config, scripts, or OpenSpec.

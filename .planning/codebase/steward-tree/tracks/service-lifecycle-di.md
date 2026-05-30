@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-30T22:07:00+08:00`
-- Base HEAD checked: `8866cfe8ba081957714c8c51e948be9340fc45ac`
+- Prepared at: `2026-05-31T00:15:00+08:00`
+- Base HEAD checked: `536b0634a51ea580f1a384d07a8ee605fbed8567`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2482,3 +2482,42 @@ Next gate after acceptance:
 - G2.257 should verify this provider migration remains closed, refresh residual
   `get_postgres_async()` route consumers, and select the next candidate without
   editing source code.
+
+## G2.257 Monitoring Watchlists Postgres Async Provider Closeout / Residual Refresh
+
+Status: for review in PR `#410`.
+
+Parent gate:
+
+- G2.256 implementation was accepted by PR `#409`.
+- PR `#409` merged into `wip/root-dirty-20260403` at
+  `536b0634a51ea580f1a384d07a8ee605fbed8567`.
+
+Closeout result:
+
+| Evidence | Result |
+|---|---:|
+| Authorized `monitoring_watchlists.py` route-body `get_postgres_async()` calls | 0 |
+| Retained `get_monitoring_watchlists_postgres_async()` provider calls | 1 |
+| Authorized handler dependency parameters | 7 |
+| Watchlist app routes | 8 |
+| App route table / OpenAPI smoke | `routes=548`, `paths=500` |
+| Focused tests | `29 passed` |
+| Ruff touched files | `All checks passed!` |
+| OpenSpec strict validate | `migrate-backend-singletons-to-lifecycle-di` valid |
+
+Residual refresh:
+
+| Residual class | Count | Next handling |
+|---|---:|---|
+| Active app-route residual calls | 4 | Select `signal_monitoring/signal_history_response.py` for G2.258 no-source authorization |
+| Static route-like calls not in current app route table | 3 | Keep pending route-registration / ownership confirmation |
+| Retained route-local provider seam calls | 3 | Do not treat as direct route-body residuals |
+| Route-adjacent / legacy calls | 3 | Keep out of provider implementation lanes until separately classified |
+
+Next gate after acceptance:
+
+- G2.258 no-source `signal_monitoring/signal_history_response.py` postgres
+  async provider authorization.
+- G2.258 should authorize or reject only a future source lane. It must not edit
+  source code itself.
