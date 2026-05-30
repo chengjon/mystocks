@@ -322,6 +322,7 @@ Tasks:
 - [x] 4.10 Apply the route-level E2E hook standard to `market/Realtime.vue`.
 - [x] 4.11 Apply the route-level E2E hook standard to `trade/Execution.vue`.
 - [x] 4.12 Apply the route-level E2E hook standard to `trade/Center.vue` (`/trade/positions`) while preserving existing legacy `data-test` hooks.
+- [x] 4.13 Apply the route-level E2E hook standard to `ai/Sentiment.vue` (`/ai/sentiment`).
 
 ## 6. Recommended Immediate Next Action
 
@@ -338,7 +339,8 @@ The immediate next action should be:
 7. Treat `market/Realtime.vue` as the third completed hook-alignment pilot; use `docs/reports/tasks/2026-05-30-artdeco-market-realtime-hook-alignment-report.md` as evidence.
 8. Treat `trade/Execution.vue` as the fourth completed hook-alignment pilot; use `docs/reports/tasks/2026-05-30-artdeco-trade-execution-hook-alignment-report.md` as evidence.
 9. Treat `trade/Center.vue` (`/trade/positions`) as the fifth completed hook-alignment pilot; use `docs/reports/tasks/2026-05-30-artdeco-trade-positions-hook-alignment-report.md` as evidence.
-10. Do not start shared component extraction until separately approved.
+10. Treat `ai/Sentiment.vue` (`/ai/sentiment`) as the sixth completed hook-alignment pilot; use `docs/reports/tasks/2026-05-30-artdeco-ai-sentiment-hook-alignment-report.md` as evidence.
+11. Do not start shared component extraction until separately approved.
 
 The previous approval gate has now been satisfied. Future implementation approval wording should still include `批准`, `同意`, or `执行`, for example:
 

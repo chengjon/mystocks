@@ -127,6 +127,11 @@ test.describe('AI sentiment workbench', () => {
     await page.goto(`${FRONTEND_BASE_URL}/ai/sentiment`)
 
     await expect(page.getByRole('heading', { name: '情感分析工作台' })).toBeVisible({ timeout: 15000 })
+    await expect(page.getByTestId('ai-sentiment-page')).toBeVisible()
+    await expect(page.getByTestId('ai-sentiment-header')).toBeVisible()
+    await expect(page.getByTestId('ai-sentiment-refresh')).toBeVisible()
+    await expect(page.getByTestId('ai-sentiment-status-strip')).toBeVisible()
+    await expect(page.getByTestId('ai-sentiment-primary-surface')).toBeVisible()
     await expect(page.locator('.hero-meta')).toContainText('REQ_ID: req-ai-sentiment-workbench-1')
     await expect(page.locator('.content-shell-title')).toContainText('AI 情感工作台')
     await expect(page.locator('.workspace-grid')).toContainText('年度报告披露')

@@ -50,7 +50,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="ai-sentiment-page page-enter">
+  <div class="ai-sentiment-page page-enter" data-testid="ai-sentiment-page">
     <AiSentimentHero
       eyebrow="AI sentiment workbench"
       title="情感分析工作台"
@@ -58,9 +58,16 @@ onMounted(() => {
       :request-id="displayRequestId"
       :status-text="pageStatusText"
       :status-type="pageStatusType"
+      data-testid="ai-sentiment-header"
     >
       <template #actions>
-        <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="refreshWorkbench">
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          data-testid="ai-sentiment-refresh"
+          @click="refreshWorkbench"
+        >
           <template #icon>
             <ArtDecoIcon name="refresh" />
           </template>
@@ -69,7 +76,7 @@ onMounted(() => {
       </template>
     </AiSentimentHero>
 
-    <AiSentimentSummaryCards :cards="summaryCards" />
+    <AiSentimentSummaryCards :cards="summaryCards" data-testid="ai-sentiment-status-strip" />
 
     <AiSentimentWorkbenchPanels
       :announcements="announcements"
@@ -89,6 +96,7 @@ onMounted(() => {
       :last-analysis="lastAnalysis"
       :format-publish-date="formatPublishDate"
       :open-announcement="openAnnouncement"
+      data-testid="ai-sentiment-primary-surface"
       @update:analysis-text="onAnalysisTextChange"
       @update:selected-symbol="onSelectSymbol"
       @update:analysis-source="onAnalysisSourceChange"

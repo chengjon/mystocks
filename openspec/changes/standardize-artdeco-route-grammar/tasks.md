@@ -70,6 +70,15 @@ Additional alignment record:
 - Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
 - Note: this batch preserves existing legacy `data-test` hooks and adds standard route-level `data-testid` hooks for Playwright `getByTestId` coverage.
 
+Additional alignment record:
+
+- Date: 2026-05-30
+- User wording: `请继续`
+- Selected route: `web/frontend/src/views/ai/Sentiment.vue` (`/ai/sentiment`)
+- Report: `docs/reports/tasks/2026-05-30-artdeco-ai-sentiment-hook-alignment-report.md`
+- Boundary: no route changes, no API contract changes, no shared component extraction, and no `web/frontend/src/views/artdeco-pages/**` changes.
+- Note: this batch adds route-level `data-testid` hooks through the canonical AI route page and leaves AI child components unchanged.
+
 ## 4. Shared Component Extraction Gate
 
 - [ ] 4.1 Draft a separate extraction proposal before creating shared Vue components.
