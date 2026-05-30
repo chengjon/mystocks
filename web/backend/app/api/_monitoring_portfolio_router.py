@@ -105,6 +105,12 @@ def get_monitoring_calculator_factory():
     return get_calculator_factory()
 
 
+def get_monitoring_postgres_async():
+    from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
+    return get_postgres_async()
+
+
 class PortfolioSummaryResponse(BaseModel):
     """组合摘要响应"""
 
@@ -155,13 +161,12 @@ async def get_portfolio_summary(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
     calculator_factory=Depends(get_monitoring_calculator_factory),
+    postgres_async=Depends(get_monitoring_postgres_async),
 ) -> UnifiedResponse[PortfolioSummaryResponse]:
     """获取组合分析摘要"""
     try:
         from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
-        postgres_async = get_postgres_async()
         factory = calculator_factory
         optimizer = get_portfolio_optimizer()
 
@@ -224,13 +229,12 @@ async def get_portfolio_alerts(
     user_id: int = Query(1, description="用户ID"),
     level: Optional[str] = Query(None, description="预警级别过滤: critical/warning/info"),
     calculator_factory=Depends(get_monitoring_calculator_factory),
+    postgres_async=Depends(get_monitoring_postgres_async),
 ) -> UnifiedResponse[List[AlertResponse]]:
     """获取组合预警列表"""
     try:
         from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
-        postgres_async = get_postgres_async()
         factory = calculator_factory
         optimizer = get_portfolio_optimizer()
 
@@ -295,13 +299,12 @@ async def get_rebalance_suggestions(
     watchlist_id: int = Path(..., description="清单ID"),
     user_id: int = Query(1, description="用户ID"),
     calculator_factory=Depends(get_monitoring_calculator_factory),
+    postgres_async=Depends(get_monitoring_postgres_async),
 ) -> UnifiedResponse[List[RebalanceSuggestionResponse]]:
     """获取再平衡建议"""
     try:
         from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
 
-        postgres_async = get_postgres_async()
         factory = calculator_factory
         optimizer = get_portfolio_optimizer()
 
