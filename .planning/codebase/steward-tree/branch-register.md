@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-30T20:12:49+08:00`
-- Base HEAD checked: `767c92887348fe25eeaa92685ecb5343717fb326`
+- Prepared at: `2026-05-30T21:06:00+08:00`
+- Base HEAD checked: `c64260f1795b39c82903fa7fd370b0ccaee3ac36`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -91,12 +91,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#404` | `g2-251-monitoring-portfolio-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `d6c98b1f0747f9be694451a2e8d4a49d6d67341f` | No-source monitoring portfolio provider closeout selecting G2.252 `monitoring_analysis.py` authorization |
 | `#405` | `g2-252-monitoring-analysis-postgres-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `c3e3452440455c8a7955b0779433219abee48c86` | No-source `monitoring_analysis.py` provider authorization selecting G2.253 source implementation |
 | `#406` | `g2-253-monitoring-analysis-postgres-provider` | `wip/root-dirty-20260403` | `MERGED` at `767c92887348fe25eeaa92685ecb5343717fb326` | Path-limited monitoring analysis provider implementation selecting G2.254 closeout refresh |
+| `#407` | `g2-254-monitoring-analysis-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `c64260f1795b39c82903fa7fd370b0ccaee3ac36` | No-source monitoring analysis provider closeout / residual refresh selecting G2.255 monitoring watchlists authorization |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-254-monitoring-analysis-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `767c92887348fe25eeaa92685ecb5343717fb326` | Close out the accepted `monitoring_analysis.py` postgres async provider and refresh residuals | No |
+| `g2-255-monitoring-watchlists-postgres-provider-authorization` | `origin/wip/root-dirty-20260403` at `c64260f1795b39c82903fa7fd370b0ccaee3ac36` | Authorize future `monitoring_watchlists.py` postgres async route provider implementation | No |
 
 ## OpenSpec Relationship
 
@@ -112,8 +113,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.254 is the no-source closeout after PR `#406` merged G2.253. It records that
-`monitoring_analysis.py` has 0 remaining route-body `get_postgres_async()`
-calls and refreshes the remaining route-consumer distribution. It must not edit
-source, tests, route contracts, OpenAPI exposure, frontend, config, scripts, or
-OpenSpec.
+G2.255 is the no-source authorization after PR `#407` merged G2.254. It records
+that `monitoring_watchlists.py` has 7 route-body `get_postgres_async()` calls
+across 7 handlers and authorizes only a future path-limited G2.256
+implementation after review. It must not edit source, tests, route contracts,
+OpenAPI exposure, frontend, config, scripts, or OpenSpec.

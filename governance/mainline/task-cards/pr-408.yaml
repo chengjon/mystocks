@@ -1,0 +1,128 @@
+version: "v0.2"
+
+task:
+  id: "pr-408"
+  title: "Authorize monitoring watchlists postgres provider"
+  owner: "codex"
+  created_at: "2026-05-30"
+
+mainline:
+  id: "L1-postgres-async-monitoring-watchlists-provider-authorization"
+  objective: "authorize a future path-limited monitoring_watchlists.py postgres async route provider implementation"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.255 is no-source authorization governance only; it changes no runtime entrypoints, route paths, OpenAPI exposure, source, tests, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.md"
+    - "governance/mainline/task-cards/pr-408.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route consumer migration implementation"
+  - "OpenAPI schema exposure changes"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr407-merged"
+      command: "gh pr view 407 confirms MERGED at c64260f1795b39c82903fa7fd370b0ccaee3ac36"
+      required: true
+    - id: "candidate-snapshot"
+      command: "monitoring_watchlists.py has 7 route-body get_postgres_async calls across 7 authorized handlers"
+      required: true
+    - id: "focused-tests"
+      command: "PYTHONPATH=. pytest -q tests/api/file_tests/test_watchlist_api.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff-candidate-source"
+      command: "ruff check web/backend/app/api/monitoring_watchlists.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main, app.openapi(), and verify routes=548 paths=500 watchlist_route_count=8"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-408.yaml --base-sha c64260f1795b39c82903fa7fd370b0ccaee3ac36 --head-sha HEAD --report /tmp/pr408-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; timeout/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.255 must not be mistaken for source implementation authority."
+    - "Future G2.256 still needs GitNexus impact before editing because G2.255 GitNexus MCP was degraded."
+    - "The future implementation must preserve watchlist runtime fallback behavior and the StockToAdd import/use."
+  rollback_plan: "Revert PR #408; the steward tree returns to the post-G2.254 merge state and no runtime behavior changes."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future monitoring_watchlists postgres async route provider implementation."
+    modified_scope: "Governance evidence, steward tree, report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or legacy behavior changes."
+    rollback_ready: "Revert PR #408."
+    risk_and_rollback_point: "No-source governance PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-30T21:06:00+08:00"
+    approval_note: "Approved to prepare G2.255 no-source authorization after PR #407 merged G2.254; no source or test edits are authorized by this task card."
+    secondary_approved: false

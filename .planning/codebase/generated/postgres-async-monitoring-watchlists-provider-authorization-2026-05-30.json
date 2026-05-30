@@ -1,0 +1,253 @@
+{
+  "schema_version": "2026-05-30.g2-service-lifecycle-authorization.v1",
+  "generated_at": "2026-05-30T21:06:00+08:00",
+  "g2_id": "G2.255",
+  "title": "monitoring_watchlists postgres async route provider authorization",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "worktree_branch": "g2-255-monitoring-watchlists-postgres-provider-authorization",
+  "git_head": "c64260f1795b39c82903fa7fd370b0ccaee3ac36",
+  "git_head_summary": "c64260f17 Merge pull request #407 from chengjon/g2-254-monitoring-analysis-provider-closeout-refresh",
+  "parent": {
+    "g2_id": "G2.254",
+    "github_pr": 407,
+    "merge_commit": "c64260f1795b39c82903fa7fd370b0ccaee3ac36",
+    "relationship": "G2.254 merged monitoring_analysis provider closeout / residual refresh and selected monitoring_watchlists.py for this no-source authorization"
+  },
+  "scope": {
+    "source_edit_authority": false,
+    "intent": "authorize a future path-limited implementation lane only after this governance package is accepted",
+    "allowed_paths": [
+      ".planning/codebase/generated/postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-authorization-2026-05-30.md",
+      "governance/mainline/task-cards/pr-408.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "candidate": {
+    "symbol": "get_postgres_async",
+    "source_file": "web/backend/app/api/monitoring_watchlists.py",
+    "route_handlers_total": 8,
+    "route_body_get_postgres_async_calls": 7,
+    "authorized_future_provider": "get_monitoring_watchlists_postgres_async",
+    "authorized_future_lane": {
+      "g2_id": "G2.256",
+      "title": "monitoring_watchlists postgres async route provider implementation",
+      "source_edit_authority": true,
+      "allowed_paths": [
+        "web/backend/app/api/monitoring_watchlists.py",
+        "tests/api/file_tests/test_watchlist_api.py",
+        "web/backend/tests/test_monitoring_watchlists_runtime_fallback.py"
+      ]
+    },
+    "authorized_handlers": [
+      {
+        "handler": "create_watchlist",
+        "line": 240,
+        "method": "POST",
+        "path": "/api/v1/monitoring/watchlists",
+        "response_model": "UnifiedResponse[WatchlistResponse]",
+        "route_body_get_postgres_async_calls": 1
+      },
+      {
+        "handler": "list_watchlists",
+        "line": 305,
+        "method": "GET",
+        "path": "/api/v1/monitoring/watchlists",
+        "response_model": "UnifiedResponse[List[WatchlistResponse]]",
+        "route_body_get_postgres_async_calls": 1
+      },
+      {
+        "handler": "get_watchlist",
+        "line": 363,
+        "method": "GET",
+        "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+        "response_model": "UnifiedResponse[WatchlistResponse]",
+        "route_body_get_postgres_async_calls": 1
+      },
+      {
+        "handler": "delete_watchlist",
+        "line": 438,
+        "method": "DELETE",
+        "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+        "response_model": "UnifiedResponse[None]",
+        "route_body_get_postgres_async_calls": 1
+      },
+      {
+        "handler": "add_stock_to_watchlist",
+        "line": 485,
+        "method": "POST",
+        "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks",
+        "response_model": "UnifiedResponse[WatchlistStockResponse]",
+        "route_body_get_postgres_async_calls": 1,
+        "special_preservation_note": "preserve StockToAdd import/use while moving only get_postgres_async lookup behind the route-local provider"
+      },
+      {
+        "handler": "list_watchlist_stocks",
+        "line": 567,
+        "method": "GET",
+        "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks",
+        "response_model": "UnifiedResponse[List[WatchlistStockResponse]]",
+        "route_body_get_postgres_async_calls": 1
+      },
+      {
+        "handler": "remove_stock_from_watchlist",
+        "line": 638,
+        "method": "DELETE",
+        "path": "/api/v1/monitoring/watchlists/{watchlist_id}/stocks/{stock_code}",
+        "response_model": "UnifiedResponse[None]",
+        "route_body_get_postgres_async_calls": 1
+      }
+    ],
+    "not_authorized_handlers": [
+      {
+        "handler": "update_watchlist",
+        "line": 419,
+        "method": "PUT",
+        "path": "/api/v1/monitoring/watchlists/{watchlist_id}",
+        "reason": "no direct get_postgres_async route-body call at current HEAD"
+      }
+    ]
+  },
+  "residual_snapshot": {
+    "current_api_get_postgres_async_calls": 19,
+    "route_decorated_direct_residual_files": [
+      {
+        "file": "web/backend/app/api/monitoring_watchlists.py",
+        "route_body_calls": 7,
+        "handling": "selected for this no-source authorization"
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "route_body_calls": 4,
+        "handling": "defer until after monitoring_watchlists.py implementation / closeout"
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "route_body_calls": 3,
+        "handling": "defer until after monitoring_watchlists.py implementation / closeout"
+      }
+    ],
+    "provider_or_route_adjacent_residuals": [
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "calls": 1,
+        "handling": "retained route-local provider seam after G2.253"
+      },
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "calls": 1,
+        "handling": "retained route-local provider seam after G2.250"
+      },
+      {
+        "file": "web/backend/app/api/_data_source_config_responses.py",
+        "calls": 1,
+        "handling": "helper/facade function, not a route-body consumer"
+      },
+      {
+        "file": "web/backend/app/api/v1/system/settings.py",
+        "calls": 1,
+        "handling": "repository constructor dependency, not a route-body consumer"
+      }
+    ],
+    "legacy_excluded": [
+      {
+        "file": "web/backend/app/api/data_source_config.old.py",
+        "calls": 1,
+        "handling": "legacy .old file excluded from active route-consumer selection"
+      }
+    ]
+  },
+  "future_implementation_contract": {
+    "must_preserve": [
+      "all route paths, methods, summaries, response models, and include_in_schema behavior",
+      "UnifiedResponse response contract for every watchlist route",
+      "runtime fallback behavior from _runtime_fallback_enabled() and runtime helper functions",
+      "StockToAdd import/use in add_stock_to_watchlist",
+      "route-local provider pattern established by G2.250 and G2.253",
+      "no direct route-body get_postgres_async() calls in the seven authorized handlers after implementation"
+    ],
+    "must_not_change": [
+      "watchlist business behavior",
+      "OpenAPI path count or endpoint exposure policy",
+      "src/monitoring/infrastructure/postgresql_async_v3.py",
+      "signal_monitoring routes",
+      "monitoring_analysis.py",
+      "_monitoring_portfolio_router.py",
+      "_data_source_config_responses.py",
+      "v1/system/settings.py",
+      "frontend/config/scripts/OpenSpec files",
+      "PM2 state"
+    ],
+    "future_required_verification": [
+      "GitNexus impact before editing monitoring_watchlists.py once GitNexus MCP/CLI disambiguation is available",
+      "red test that fails while route handlers still perform route-body get_postgres_async lookup",
+      "focused watchlist API tests",
+      "runtime fallback tests",
+      "ruff on touched source/test files without accidental no-source drift",
+      "app/OpenAPI smoke with routes=548 and paths=500 unless a separately approved route/OpenAPI change exists",
+      "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "GitNexus detect_changes before commit"
+    ]
+  },
+  "verification": {
+    "focused_pytest": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_watchlist_api.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -n 0 --tb=short --no-cov",
+      "result": "28 passed"
+    },
+    "ruff_candidate_source_only": {
+      "command": "ruff check web/backend/app/api/monitoring_watchlists.py",
+      "result": "All checks passed"
+    },
+    "ruff_touched_future_test_set": {
+      "command": "ruff check web/backend/app/api/monitoring_watchlists.py tests/api/file_tests/test_watchlist_api.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py",
+      "result": "failed on existing PT018 in web/backend/tests/test_monitoring_watchlists_runtime_fallback.py; ruff also attempted a safe-fix in tests/api/file_tests/test_watchlist_api.py and that tool side effect was restored before authoring this no-source package"
+    },
+    "app_openapi_smoke": {
+      "command": "app.main import and app.openapi() using non-sensitive placeholder required environment variables",
+      "result": {
+        "routes": 548,
+        "paths": 500,
+        "watchlist_route_count": 8
+      }
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid; PostHog ECONNREFUSED telemetry noise observed"
+    },
+    "git_status_before_edits": "clean after restoring ruff/pytest tool side effects"
+  },
+  "gitnexus": {
+    "mcp": "impact/context transport closed for create_watchlist and list_watchlists",
+    "cli_context": "npx gitnexus context create_watchlist -r mystocks -f web/backend/app/api/monitoring_watchlists.py resolved Function:web/backend/app/api/monitoring_watchlists.py:create_watchlist with no process membership",
+    "cli_impact": "npx gitnexus impact create_watchlist -r mystocks --summary-only --depth 2 returned ambiguous / risk UNKNOWN because CLI impact cannot accept file_path or UID disambiguation",
+    "status": "degraded; G2.255 is no-source, and any future G2.256 source lane must rerun GitNexus impact before editing"
+  },
+  "decision": {
+    "status": "for_review",
+    "approval_request": "approve G2.255 as no-source authorization for future G2.256 monitoring_watchlists postgres async route provider implementation",
+    "next_gate": "If accepted and merged, start G2.256 path-limited implementation; do not migrate signal_monitoring or route-adjacent residuals from G2.255."
+  },
+  "freshness": {
+    "current_head_checked_at_review": "c64260f1795b39c82903fa7fd370b0ccaee3ac36",
+    "stale_if_head_mismatch": true
+  }
+}
