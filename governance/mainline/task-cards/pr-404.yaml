@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-404"
+  title: "Close out monitoring portfolio postgres async provider and refresh residuals"
+  owner: "codex"
+  created_at: "2026-05-30"
+
+mainline:
+  id: "L1-postgres-async-monitoring-portfolio-provider-closeout-refresh"
+  objective: "record accepted G2.250 provider implementation and select the next no-source route consumer authorization gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.251 is no-source closeout / residual refresh only; it changes no runtime entrypoints, route paths, OpenAPI exposure, source, tests, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.md"
+    - "governance/mainline/task-cards/pr-404.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route consumer migration"
+  - "OpenAPI schema exposure changes"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr403-merged"
+      command: "gh pr view 403 confirms MERGED at 27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db"
+      required: true
+    - id: "residual-refresh"
+      command: "current HEAD scan records 4 route-decorated files / 16 calls and 3 route-adjacent files / 3 calls"
+      required: true
+    - id: "portfolio-closeout"
+      command: "_monitoring_portfolio_router.py route-body get_postgres_async calls remain 0 and provider seam is intentionally retained"
+      required: true
+    - id: "focused-tests"
+      command: "env PYTHONPATH=. pytest -q tests/api/file_tests/test_monitoring_analysis_api.py -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff-current"
+      command: "ruff check web/backend/app/api/_monitoring_portfolio_router.py tests/api/file_tests/test_monitoring_analysis_api.py"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "python -c import app.main, app.openapi(), and verify routes=548 paths=500 target_routes=3"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-postgres-async-monitoring-portfolio-provider-closeout-refresh-2026-05-30.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-404.yaml --base-sha 27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db --head-sha HEAD --report /tmp/pr404-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; timeout/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "Residual counts are snapshots and stale if HEAD changes."
+    - "G2.251 must not be mistaken for monitoring_analysis.py source implementation authority."
+    - "The retained provider seam in _monitoring_portfolio_router.py is intentional and should not be counted as route-body debt."
+  rollback_plan: "Revert PR #404; the steward tree returns to the post-G2.250 merge state and no runtime behavior changes."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close out G2.250 and refresh remaining get_postgres_async route consumer residuals."
+    modified_scope: "Governance evidence, steward tree, report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or legacy behavior changes."
+    rollback_ready: "Revert PR #404."
+    risk_and_rollback_point: "No-source governance PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-30T18:37:32+08:00"
+    approval_note: "Approved after PR #403 merged G2.250; closeout limited to no-source evidence and residual-refresh governance."
+    secondary_approved: false

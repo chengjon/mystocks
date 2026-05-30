@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-30T18:13:12+08:00`
-- Base HEAD checked: `db1a0653737c8239a937a97a5fd32730e2c25bc3`
+- Prepared at: `2026-05-30T18:37:32+08:00`
+- Base HEAD checked: `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -87,12 +87,13 @@ PRs, change issue labels, or authorize source implementation.
 | `#400` | `g2-247-postgres-async-provider-reset-seam` | `wip/root-dirty-20260403` | `MERGED` at `76b1644fe925a8c0684a820aa58a0aa8e8170190` | Path-limited postgres async provider/reset seam implementation selecting G2.248 closeout refresh |
 | `#401` | `g2-248-postgres-async-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `89fb66f6ee21ab33d5e1f5c255a8d75af760033b` | No-source postgres async provider closeout / residual refresh selecting G2.249 route consumer authorization |
 | `#402` | `g2-249-postgres-async-route-consumer-authorization` | `wip/root-dirty-20260403` | `MERGED` at `db1a0653737c8239a937a97a5fd32730e2c25bc3` | No-source route consumer authorization selecting G2.250 monitoring portfolio provider implementation |
+| `#403` | `g2-250-postgres-async-monitoring-portfolio-provider` | `wip/root-dirty-20260403` | `MERGED` at `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db` | Path-limited monitoring portfolio provider implementation selecting G2.251 closeout refresh |
 
 ## Steward Governance Branch
 
 | Branch | Base | Purpose | Source authority |
 |---|---|---|---|
-| `g2-250-postgres-async-monitoring-portfolio-provider` | `origin/wip/root-dirty-20260403` at `db1a0653737c8239a937a97a5fd32730e2c25bc3` | Implement the authorized monitoring portfolio route-local postgres async provider pilot | Yes, limited to PR `#403` task-card paths |
+| `g2-251-monitoring-portfolio-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db` | Close out the merged monitoring portfolio provider pilot and refresh remaining route consumers | No |
 
 ## OpenSpec Relationship
 
@@ -108,8 +109,8 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.250 is the path-limited source lane after PR `#402` merged G2.249. It may
-only add a route-local postgres async provider for the three authorized
-monitoring portfolio handlers in `web/backend/app/api/_monitoring_portfolio_router.py`
-and the matching focused file test. It must not migrate broader route consumers,
-change route contracts, OpenAPI, frontend, config, scripts, or OpenSpec.
+G2.251 is the no-source closeout after PR `#403` merged G2.250. It confirms the
+accepted monitoring portfolio provider seam, refreshes remaining
+`get_postgres_async` route consumer residuals, and selects G2.252 as a future
+no-source `monitoring_analysis.py` authorization gate. It must not edit source,
+tests, route contracts, OpenAPI, frontend, config, scripts, or OpenSpec.

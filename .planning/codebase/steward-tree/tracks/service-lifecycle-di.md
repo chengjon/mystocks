@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-30T18:13:12+08:00`
-- Base HEAD checked: `db1a0653737c8239a937a97a5fd32730e2c25bc3`
+- Prepared at: `2026-05-30T18:37:32+08:00`
+- Base HEAD checked: `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2196,6 +2196,54 @@ Decision:
   `signal_monitoring/*`, `_data_source_config_responses.py`,
   `v1/system/settings.py`, infrastructure providers, frontend, config, scripts,
   OpenSpec, or PM2 state from G2.250.
+- G2.250 was accepted by PR `#403` and merged at
+  `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`.
+
+## G2.251 Monitoring Portfolio Provider Closeout / Residual Refresh
+
+G2.251 is the no-source closeout after PR `#403` merged G2.250 at
+`27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`.
+
+Closeout evidence:
+
+| Evidence | Value |
+|---|---:|
+| `get_monitoring_postgres_async` provider seam | retained |
+| Authorized portfolio route-body `get_postgres_async()` calls | 0 |
+| Authorized handler dependency parameters | 3 |
+| Focused file tests | 18 passed |
+| Ruff on accepted source/test files | All checks passed |
+| app/OpenAPI smoke | `routes=548`, `paths=500` |
+
+Residual refresh:
+
+| Residual class | Files | Calls |
+|---|---:|---:|
+| Route-decorated residuals | 4 | 16 |
+| Route-adjacent residuals | 3 | 3 |
+
+Route-decorated residuals:
+
+| File | Calls | Handling |
+|---|---:|---|
+| `web/backend/app/api/monitoring_watchlists.py` | 7 | Defer as higher-call batch |
+| `web/backend/app/api/signal_monitoring/signal_history_response.py` | 4 | Defer as signal domain batch |
+| `web/backend/app/api/signal_monitoring/get_signal_statistics.py` | 3 | Defer as signal domain batch |
+| `web/backend/app/api/monitoring_analysis.py` | 2 | Select for next no-source authorization gate |
+
+Route-adjacent residuals:
+
+| File | Calls | Handling |
+|---|---:|---|
+| `web/backend/app/api/_monitoring_portfolio_router.py` | 1 | Intentional route-local provider seam |
+| `web/backend/app/api/_data_source_config_responses.py` | 1 | Helper / facade ownership decision needed |
+| `web/backend/app/api/v1/system/settings.py` | 1 | Repository constructor ownership decision needed |
+
+Decision:
+
+- If accepted, start G2.252 no-source `monitoring_analysis.py` postgres async
+  route consumer provider authorization.
+- Do not start source implementation from G2.251.
 
 ## Forbidden Scope
 

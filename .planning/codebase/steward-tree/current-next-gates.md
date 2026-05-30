@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-30T18:13:12+08:00`
-- Base HEAD checked: `db1a0653737c8239a937a97a5fd32730e2c25bc3`
+- Prepared at: `2026-05-30T18:37:32+08:00`
+- Base HEAD checked: `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.250 postgres async monitoring portfolio route provider implementation | G/#79 service lifecycle DI | PR `#402` merged at `db1a0653737c8239a937a97a5fd32730e2c25bc3`; current branch adds `get_monitoring_postgres_async`, moves 3 authorized portfolio handlers to `Depends(...)`, and keeps OpenAPI `548/500` | If accepted, start G2.251 no-source monitoring portfolio provider closeout / residual refresh; do not migrate broader route consumers from G2.250 |
+| P0 | Review G2.251 monitoring portfolio provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#403` merged at `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`; current HEAD confirms 0 portfolio route-body `get_postgres_async()` calls, retained provider seam, 4 route-decorated residual files / 16 calls, and OpenAPI `548/500` | If accepted, start G2.252 no-source `monitoring_analysis.py` route consumer provider authorization; do not implement from G2.251 |
+| P0 | Preserve G2.250 postgres async monitoring portfolio route provider implementation | G/#79 service lifecycle DI | PR `#403` merged at `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`; `get_monitoring_postgres_async` exists and 3 portfolio handlers use `Depends(...)` | Do not use G2.250 to migrate broader route consumers |
 | P0 | Preserve G2.249 postgres async route consumer provider authorization | G/#79 service lifecycle DI | PR `#402` merged at `db1a0653737c8239a937a97a5fd32730e2c25bc3`; G2.249 authorized only `_monitoring_portfolio_router.py` plus the focused file-test path for G2.250 | Do not use G2.249 to migrate broader route consumers |
 | P0 | Preserve G2.248 postgres async provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#401` merged at `89fb66f6ee21ab33d5e1f5c255a8d75af760033b`; G2.248 closed the provider/reset seam and selected G2.249 | Do not migrate route consumers from G2.248 |
 | P0 | Preserve G2.247 postgres async provider/reset seam implementation | G/#79 service lifecycle DI | PR `#400` merged at `76b1644fe925a8c0684a820aa58a0aa8e8170190`; provider/reset seam exists and focused tests pass | Do not migrate API route consumers from G2.247 |
