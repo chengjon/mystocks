@@ -49,6 +49,12 @@ def get_monitoring_calculator_factory():
     return get_calculator_factory()
 
 
+def get_monitoring_analysis_postgres_async():
+    from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
+
+    return get_postgres_async()
+
+
 # ==================== 请求模型 ====================
 
 
@@ -282,15 +288,12 @@ async def batch_calculate_health_scores(
 async def get_health_score_history(
     stock_code: str = Path(..., description="股票代码"),
     days: int = Query(30, description="查询天数", ge=1, le=365),
+    postgres_async=Depends(get_monitoring_analysis_postgres_async),
 ) -> UnifiedResponse[List[HealthScoreResponse]]:
     """
     获取股票健康度历史评分
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
-        postgres_async = get_postgres_async()
-
         if not postgres_async.is_connected():
             raise BusinessException(status_code=503, detail="数据库未连接")
 
@@ -346,15 +349,13 @@ async def analyze_portfolio(
     user_id: int = Query(1, description="用户ID"),
     include_risk_metrics: bool = Query(False, description="是否包含高级风险指标"),
     calculator_factory=Depends(get_monitoring_calculator_factory),
+    postgres_async=Depends(get_monitoring_analysis_postgres_async),
 ) -> UnifiedResponse[PortfolioAnalysisResponse]:
     """
     分析投资组合健康度
     """
     try:
-        from src.monitoring.infrastructure.postgresql_async_v3 import get_postgres_async
-
         factory = calculator_factory
-        postgres_async = get_postgres_async()
 
         if not postgres_async.is_connected():
             raise BusinessException(status_code=503, detail="数据库未连接")

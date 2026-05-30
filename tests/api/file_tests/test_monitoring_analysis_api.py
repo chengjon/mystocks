@@ -103,6 +103,21 @@ class TestMonitoringAnalysisAPIFile:
             assert _has_dependency_provider_param(handler, "get_monitoring_postgres_async"), handler_name
 
     @pytest.mark.file_test
+    def test_monitoring_analysis_postgres_async_uses_route_dependency_provider(self):
+        """G2.253 keeps postgres async lookup out of monitoring analysis route bodies."""
+        module = _parse_module(MONITORING_ANALYSIS_FILE)
+        provider = _function_by_name(module, "get_monitoring_analysis_postgres_async")
+        assert _calls_function(provider, "get_postgres_async")
+
+        for handler_name in {
+            "get_health_score_history",
+            "analyze_portfolio",
+        }:
+            handler = _function_by_name(module, handler_name)
+            assert not _calls_function(handler, "get_postgres_async"), handler_name
+            assert _has_dependency_provider_param(handler, "get_monitoring_analysis_postgres_async"), handler_name
+
+    @pytest.mark.file_test
     def test_calculate_health_endpoint(self, api_test_fixtures):
         """Test POST /monitoring/analysis/calculate - Calculate individual stock health score"""
         # Test individual stock health score calculation with market regime analysis

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-30T19:10:19+08:00`
-- Base HEAD checked: `d6c98b1f0747f9be694451a2e8d4a49d6d67341f`
+- Prepared at: `2026-05-30T19:38:06+08:00`
+- Base HEAD checked: `c3e3452440455c8a7955b0779433219abee48c86`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2280,12 +2280,50 @@ Target handlers:
 
 Decision:
 
-- If accepted, start G2.253 path-limited `monitoring_analysis.py` postgres async
+- G2.252 was accepted by PR `#405` and merged at
+  `c3e3452440455c8a7955b0779433219abee48c86`.
+- It authorized G2.253 path-limited `monitoring_analysis.py` postgres async
   route provider implementation.
 - Do not implement source changes from G2.252.
 - Do not migrate `monitoring_watchlists.py`, `signal_monitoring/*`,
   `_data_source_config_responses.py`, `v1/system/settings.py`, infrastructure,
   frontend, config, scripts, OpenSpec, or PM2 state from G2.252.
+
+## G2.253 Monitoring Analysis Postgres Async Provider Implementation
+
+G2.253 is the path-limited source lane after PR `#405` merged G2.252 at
+`c3e3452440455c8a7955b0779433219abee48c86`.
+
+Implementation evidence:
+
+| Evidence | Value |
+|---|---:|
+| Authorized route-body `get_postgres_async()` calls before | 2 |
+| Authorized route-body `get_postgres_async()` calls after | 0 |
+| New route-local provider | `get_monitoring_analysis_postgres_async` |
+| Updated handlers | `get_health_score_history`, `analyze_portfolio` |
+| Focused file tests | 19 passed |
+| OpenAPI smoke | 548 routes / 500 paths |
+
+Scope:
+
+- Modified only `web/backend/app/api/monitoring_analysis.py`, the focused
+  file-test path, and G2.253 governance evidence.
+- Preserved `analyze_portfolio`
+  `calculator_factory=Depends(get_monitoring_calculator_factory)`.
+- Preserved route paths, methods, response models, summaries, and
+  `include_in_schema` exposure.
+- Did not edit `src/monitoring/infrastructure/**`, broader route consumers,
+  frontend, config, scripts, OpenSpec, or PM2 state.
+
+Decision:
+
+- If accepted, merge PR `#406`.
+- After merge, start G2.254 no-source monitoring analysis provider closeout /
+  residual refresh.
+- Do not migrate `monitoring_watchlists.py`, `signal_monitoring/*`,
+  `_data_source_config_responses.py`, `v1/system/settings.py`, infrastructure,
+  frontend, config, scripts, OpenSpec, or PM2 state from G2.253.
 
 ## Forbidden Scope
 

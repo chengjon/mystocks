@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-30T19:10:19+08:00`
-- Base HEAD checked: `d6c98b1f0747f9be694451a2e8d4a49d6d67341f`
+- Prepared at: `2026-05-30T19:38:06+08:00`
+- Base HEAD checked: `c3e3452440455c8a7955b0779433219abee48c86`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,6 +21,9 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
+| `.planning/codebase/generated/postgres-async-monitoring-analysis-provider-implementation-2026-05-30.json` | G2.253 monitoring analysis route-local postgres async provider implementation evidence | Review input for PR `#406`; source authority limited to `monitoring_analysis.py` and focused file test |
+| `docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-implementation-2026-05-30.md` | G2.253 human-readable implementation report | Review input for PR `#406`; direct authorized route-body calls reduced from 2 to 0 |
+| `governance/mainline/task-cards/pr-406.yaml` | Path-limited implementation task card for G2.253 | Review input; forbids broader route consumer, infrastructure, OpenAPI, frontend, config, script, and OpenSpec changes |
 | `.planning/codebase/generated/postgres-async-monitoring-analysis-provider-authorization-2026-05-30.json` | G2.252 `monitoring_analysis.py` postgres async provider authorization evidence | Review input for PR `#405`; no-source governance only |
 | `docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-authorization-2026-05-30.md` | G2.252 human-readable authorization packet | Review input for PR `#405`; authorizes only future G2.253 path-limited implementation |
 | `governance/mainline/task-cards/pr-405.yaml` | Path-limited governance task card for G2.252 | Review input; forbids source/test/runtime/OpenSpec changes |

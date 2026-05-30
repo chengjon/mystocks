@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-30T19:10:19+08:00",
+  "generated_at": "2026-05-30T19:38:06+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "d6c98b1f0747f9be694451a2e8d4a49d6d67341f",
-  "split_branch": "g2-252-monitoring-analysis-postgres-provider-authorization",
-  "scope": "postgres_async_monitoring_analysis_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "c3e3452440455c8a7955b0779433219abee48c86",
+  "split_branch": "g2-253-monitoring-analysis-postgres-provider",
+  "scope": "postgres_async_monitoring_analysis_provider_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -5488,12 +5488,14 @@
     {
       "id": "g2-252-monitoring-analysis-postgres-provider-authorization",
       "type": "provider_authorization",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.251 monitoring portfolio provider closeout / residual refresh",
       "source_edit_authority": false,
       "parent_github_pr": 404,
       "parent_merge_commit": "d6c98b1f0747f9be694451a2e8d4a49d6d67341f",
+      "github_pr": 405,
+      "merge_commit": "c3e3452440455c8a7955b0779433219abee48c86",
       "evidence": [
         ".planning/codebase/generated/postgres-async-monitoring-analysis-provider-authorization-2026-05-30.json",
         "docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-authorization-2026-05-30.md",
@@ -5569,7 +5571,7 @@
         "detect_changes": "MCP staged detect_changes transport closed; CLI verify-staged returned blocked because LadybugDB was unavailable for mystocks with read-only shadow page replay failure",
         "status": "degraded; no-source scope also enforced by task card and mainline scope gate"
       },
-      "next_gate": "If accepted, start G2.253 path-limited monitoring_analysis postgres async route provider implementation. Do not start source implementation from G2.252.",
+      "next_gate": "Superseded by G2.253 path-limited monitoring_analysis postgres async route provider implementation. Do not start broader route consumer migration from G2.252.",
       "allowed_scope": [
         ".planning/codebase/generated/postgres-async-monitoring-analysis-provider-authorization-2026-05-30.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -5595,7 +5597,87 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "d6c98b1f0747f9be694451a2e8d4a49d6d67341f",
+        "current_head_checked": "c3e3452440455c8a7955b0779433219abee48c86",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-253-monitoring-analysis-postgres-provider",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.252 monitoring_analysis.py postgres async provider authorization",
+      "source_edit_authority": true,
+      "parent_github_pr": 405,
+      "parent_merge_commit": "c3e3452440455c8a7955b0779433219abee48c86",
+      "evidence": [
+        ".planning/codebase/generated/postgres-async-monitoring-analysis-provider-implementation-2026-05-30.json",
+        "docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-implementation-2026-05-30.md",
+        "governance/mainline/task-cards/pr-406.yaml"
+      ],
+      "subject": {
+        "symbol": "get_postgres_async",
+        "provider": "get_monitoring_analysis_postgres_async",
+        "source_file": "web/backend/app/api/monitoring_analysis.py",
+        "test_file": "tests/api/file_tests/test_monitoring_analysis_api.py",
+        "decision": "move the two authorized monitoring_analysis route-body lookups behind a route-local dependency provider"
+      },
+      "implementation_evidence": {
+        "provider_added": true,
+        "handlers_updated": [
+          "get_health_score_history",
+          "analyze_portfolio"
+        ],
+        "route_body_get_postgres_async_calls_after": 0,
+        "dependency_parameters_after": 2,
+        "focused_new_test": "1 passed",
+        "focused_file_tests": "19 passed",
+        "ruff": "All checks passed",
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "monitoring_analysis_routes": 6,
+        "route_contract_changes": "none",
+        "openapi_exposure_changes": "none"
+      },
+      "gitnexus": {
+        "impact_before_edit": "MCP impact transport closed; CLI context resolved exact handler UIDs but CLI impact returned ambiguous risk UNKNOWN because it lacks file-path/uid disambiguation.",
+        "detect_changes": "MCP staged detect_changes transport closed; CLI verify-staged returned ok=true, status=stale, risk_level=low, changed_files=11, changed_count=19, affected_count=0 because indexed_commit 2ccaf3e5e21f5715c39c1a20642d0271521f9727 differs from current_commit c3e3452440455c8a7955b0779433219abee48c86.",
+        "status": "degraded; stale-index result is useful as a bounded warning but not current graph approval"
+      },
+      "next_gate": "If accepted, merge PR #406 and start G2.254 no-source monitoring_analysis provider closeout / residual refresh. Do not migrate broader route consumers from G2.253.",
+      "allowed_scope": [
+        "web/backend/app/api/monitoring_analysis.py",
+        "tests/api/file_tests/test_monitoring_analysis_api.py",
+        ".planning/codebase/generated/postgres-async-monitoring-analysis-provider-implementation-2026-05-30.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-implementation-2026-05-30.md",
+        "governance/mainline/task-cards/pr-406.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/app/api/_monitoring_portfolio_router.py",
+        "web/backend/app/api/monitoring_watchlists.py",
+        "web/backend/app/api/signal_monitoring/**",
+        "web/backend/app/api/_data_source_config_responses.py",
+        "web/backend/app/api/v1/system/settings.py",
+        "src/monitoring/infrastructure/**",
+        "web/backend/app/services/**",
+        "web/backend/app/tasks/**",
+        "web/frontend/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "c3e3452440455c8a7955b0779433219abee48c86",
         "stale_if_head_mismatch": true
       }
     },

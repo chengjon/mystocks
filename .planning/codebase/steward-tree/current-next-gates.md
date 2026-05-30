@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-30T19:10:19+08:00`
-- Base HEAD checked: `d6c98b1f0747f9be694451a2e8d4a49d6d67341f`
+- Prepared at: `2026-05-30T19:38:06+08:00`
+- Base HEAD checked: `c3e3452440455c8a7955b0779433219abee48c86`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.252 `monitoring_analysis.py` postgres async provider authorization | G/#79 service lifecycle DI | PR `#404` merged at `d6c98b1f0747f9be694451a2e8d4a49d6d67341f`; current HEAD confirms `monitoring_analysis.py` has 2 route-body `get_postgres_async()` calls in `get_health_score_history` and `analyze_portfolio` | If accepted, start G2.253 path-limited `monitoring_analysis.py` provider implementation; do not implement from G2.252 |
+| P0 | Review G2.253 `monitoring_analysis.py` postgres async provider implementation | G/#79 service lifecycle DI | PR `#405` merged at `c3e3452440455c8a7955b0779433219abee48c86`; this branch moved 2 authorized route-body `get_postgres_async()` calls behind `get_monitoring_analysis_postgres_async`; focused TDD, 19 file tests, ruff, and OpenAPI `548/500` smoke passed; GitNexus impact is degraded, not LOW | If accepted, merge PR `#406`, then start G2.254 no-source monitoring analysis provider closeout / residual refresh; do not migrate broader route consumers from G2.253 |
+| P0 | Preserve G2.252 `monitoring_analysis.py` postgres async provider authorization | G/#79 service lifecycle DI | PR `#405` merged at `c3e3452440455c8a7955b0779433219abee48c86`; authorized only `monitoring_analysis.py` and the focused file-test path for G2.253 | Do not use G2.252 to migrate `monitoring_watchlists.py`, `signal_monitoring`, infrastructure, frontend, config, scripts, or OpenSpec |
 | P0 | Preserve G2.251 monitoring portfolio provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#404` merged at `d6c98b1f0747f9be694451a2e8d4a49d6d67341f`; G2.251 closed G2.250 and selected `monitoring_analysis.py` as the next authorization candidate | Do not use G2.251 as source implementation authority |
 | P0 | Preserve G2.250 postgres async monitoring portfolio route provider implementation | G/#79 service lifecycle DI | PR `#403` merged at `27b3fbe5dbf5bb9c941490e9d921fedc5b38f8db`; `get_monitoring_postgres_async` exists and 3 portfolio handlers use `Depends(...)` | Do not use G2.250 to migrate broader route consumers |
 | P0 | Preserve G2.249 postgres async route consumer provider authorization | G/#79 service lifecycle DI | PR `#402` merged at `db1a0653737c8239a937a97a5fd32730e2c25bc3`; G2.249 authorized only `_monitoring_portfolio_router.py` plus the focused file-test path for G2.250 | Do not use G2.249 to migrate broader route consumers |
