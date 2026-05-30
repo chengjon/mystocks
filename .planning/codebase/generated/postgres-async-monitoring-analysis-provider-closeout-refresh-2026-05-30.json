@@ -1,0 +1,183 @@
+{
+  "schema_version": "2026-05-30.g2-service-lifecycle-closeout-refresh.v1",
+  "generated_at": "2026-05-30T20:12:49+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "767c92887348fe25eeaa92685ecb5343717fb326",
+  "worktree_branch": "g2-254-monitoring-analysis-provider-closeout-refresh",
+  "owner_lane": "G/#79 service lifecycle DI",
+  "openspec_change_id": "migrate-backend-singletons-to-lifecycle-di",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_253_pr": 406,
+    "g2_253_merge_commit": "767c92887348fe25eeaa92685ecb5343717fb326",
+    "closeout_subject": "monitoring_analysis route-local postgres async provider implementation"
+  },
+  "accepted_implementation_evidence": {
+    "implementation_commit": "b6e38b78b2a205a96775e07ff9366bd8d3adf6be",
+    "implementation_report": "docs/reports/quality/backend-postgres-async-monitoring-analysis-provider-implementation-2026-05-30.md",
+    "generated_artifact": ".planning/codebase/generated/postgres-async-monitoring-analysis-provider-implementation-2026-05-30.json",
+    "task_card": "governance/mainline/task-cards/pr-406.yaml",
+    "closed_route_body_calls": 2,
+    "closed_handlers": [
+      "get_health_score_history",
+      "analyze_portfolio"
+    ]
+  },
+  "closeout": {
+    "provider": "get_monitoring_analysis_postgres_async",
+    "provider_file": "web/backend/app/api/monitoring_analysis.py",
+    "route_body_get_postgres_async_calls_after_merge": 0,
+    "provider_get_postgres_async_calls_after_merge": 1,
+    "dependency_parameters_after_merge": 2,
+    "route_contract_changes": "none",
+    "openapi_exposure_changes": "none",
+    "status": "closed for the two G2.253 authorized handlers"
+  },
+  "residual_refresh": {
+    "files_scanned": 219,
+    "import_lines": 19,
+    "actual_get_postgres_async_calls": 19,
+    "route_decorated_files": 3,
+    "route_decorated_calls": 14,
+    "route_adjacent_files": 5,
+    "route_adjacent_calls": 5,
+    "rows": [
+      {
+        "file": "web/backend/app/api/monitoring_watchlists.py",
+        "total": 7,
+        "route_decorated": 7,
+        "route_adjacent": 0,
+        "functions": [
+          "create_watchlist",
+          "list_watchlists",
+          "get_watchlist",
+          "delete_watchlist",
+          "add_stock_to_watchlist",
+          "list_watchlist_stocks",
+          "remove_stock_from_watchlist"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "total": 4,
+        "route_decorated": 4,
+        "route_adjacent": 0,
+        "functions": [
+          "get_signal_history",
+          "get_signal_quality_report",
+          "get_strategy_realtime_monitoring",
+          "health_check"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "total": 3,
+        "route_decorated": 3,
+        "route_adjacent": 0,
+        "functions": [
+          "get_signal_statistics",
+          "get_active_signals",
+          "get_strategy_detailed_health"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/_data_source_config_responses.py",
+        "total": 1,
+        "route_decorated": 0,
+        "route_adjacent": 1,
+        "functions": [
+          "get_config_manager"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "total": 1,
+        "route_decorated": 0,
+        "route_adjacent": 1,
+        "functions": [
+          "get_monitoring_postgres_async"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/data_source_config.old.py",
+        "total": 1,
+        "route_decorated": 0,
+        "route_adjacent": 1,
+        "functions": [
+          "get_config_manager"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "total": 1,
+        "route_decorated": 0,
+        "route_adjacent": 1,
+        "functions": [
+          "get_monitoring_analysis_postgres_async"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/v1/system/settings.py",
+        "total": 1,
+        "route_decorated": 0,
+        "route_adjacent": 1,
+        "functions": [
+          "__init__"
+        ]
+      }
+    ],
+    "recommended_next_gate": {
+      "g2_id": "G2.255",
+      "type": "no-source provider authorization",
+      "target": "web/backend/app/api/monitoring_watchlists.py",
+      "reason": "largest remaining route-decorated get_postgres_async residual with 7 calls; needs authorization before any source lane because it includes runtime fallback behavior and multiple CRUD surfaces"
+    }
+  },
+  "verification": {
+    "focused_file_tests": {
+      "command": "env PYTHONPATH=. pytest -q tests/api/file_tests/test_monitoring_analysis_api.py -n 0 --tb=short --no-cov",
+      "result": "19 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/monitoring_analysis.py tests/api/file_tests/test_monitoring_analysis_api.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "import app.main, call app.openapi(), and verify monitoring_analysis route count",
+      "routes": 548,
+      "openapi_paths": 500,
+      "monitoring_analysis_routes": 6
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid",
+      "note": "PostHog ECONNREFUSED telemetry noise may appear and is not an OpenSpec validation failure."
+    }
+  },
+  "gitnexus": {
+    "detect_changes": {
+      "mcp": "Attempted with scope=staged; MCP transport closed.",
+      "cli": {
+        "command": "gitnexus verify-staged -r mystocks --cwd <worktree> --json",
+        "ok": true,
+        "status": "stale",
+        "risk_level": "low",
+        "changed_count": 0,
+        "affected_count": 0,
+        "changed_files": 9,
+        "indexed_commit": "2ccaf3e5e21f5715c39c1a20642d0271521f9727",
+        "current_commit": "767c92887348fe25eeaa92685ecb5343717fb326",
+        "stale_reason": "current_commit_differs_from_indexed_commit",
+        "stale_severity": "warning"
+      },
+      "status": "degraded; stale-index result is useful as a bounded warning but not current graph approval"
+    }
+  },
+  "decision": {
+    "g2_253_closed": true,
+    "next_gate": "G2.255 no-source monitoring_watchlists postgres async route provider authorization",
+    "bulk_migration_authority": false,
+    "source_edit_authority": false
+  }
+}

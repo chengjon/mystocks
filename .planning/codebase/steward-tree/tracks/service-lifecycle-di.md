@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-30T19:38:06+08:00`
-- Base HEAD checked: `c3e3452440455c8a7955b0779433219abee48c86`
+- Prepared at: `2026-05-30T20:12:49+08:00`
+- Base HEAD checked: `767c92887348fe25eeaa92685ecb5343717fb326`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2318,12 +2318,45 @@ Scope:
 
 Decision:
 
-- If accepted, merge PR `#406`.
+- G2.253 was accepted by PR `#406` and merged at
+  `767c92887348fe25eeaa92685ecb5343717fb326`.
 - After merge, start G2.254 no-source monitoring analysis provider closeout /
   residual refresh.
 - Do not migrate `monitoring_watchlists.py`, `signal_monitoring/*`,
   `_data_source_config_responses.py`, `v1/system/settings.py`, infrastructure,
   frontend, config, scripts, OpenSpec, or PM2 state from G2.253.
+
+## G2.254 Monitoring Analysis Provider Closeout / Residual Refresh
+
+G2.254 is the no-source closeout after PR `#406` merged G2.253 at
+`767c92887348fe25eeaa92685ecb5343717fb326`.
+
+Current closeout evidence:
+
+| Evidence | Value |
+|---|---:|
+| `monitoring_analysis.py` route-body `get_postgres_async()` calls | 0 |
+| Retained `get_monitoring_analysis_postgres_async` provider calls | 1 |
+| Focused file tests | 19 passed |
+| OpenAPI smoke | 548 routes / 500 paths |
+
+Residual refresh:
+
+| File | Route-decorated calls | Handling |
+|---|---:|---|
+| `web/backend/app/api/monitoring_watchlists.py` | 7 | Select for G2.255 no-source authorization |
+| `web/backend/app/api/signal_monitoring/signal_history_response.py` | 4 | Defer behind `monitoring_watchlists.py` |
+| `web/backend/app/api/signal_monitoring/get_signal_statistics.py` | 3 | Defer behind `monitoring_watchlists.py` |
+
+Decision:
+
+- If accepted, merge PR `#407`.
+- After merge, start G2.255 no-source `monitoring_watchlists.py` postgres async
+  route provider authorization.
+- Do not implement source changes from G2.254.
+- Do not migrate `signal_monitoring/*`, `_data_source_config_responses.py`,
+  `v1/system/settings.py`, infrastructure, frontend, config, scripts, OpenSpec,
+  or PM2 state from G2.254.
 
 ## Forbidden Scope
 
