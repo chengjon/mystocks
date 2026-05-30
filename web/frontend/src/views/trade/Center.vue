@@ -358,6 +358,7 @@ onMounted(() => {
             role="tab"
             :aria-selected="activeSegment === segment.key"
             :data-segment="segment.key"
+            :data-testid="`trade-positions-segment-${segment.key}`"
             @click="selectPositionSegment(segment.key)"
           >
             <span>{{ segment.label }}</span>
@@ -369,6 +370,7 @@ onMounted(() => {
           :class="`is-${runtimeStatus.tone}`"
           :data-state="runtimeStatus.label"
           data-test="trade-positions-runtime"
+          data-testid="trade-positions-runtime-state"
         >
           <span class="artdeco-trading-positions__runtime-label">{{ runtimeStatus.label }}</span>
           <p class="artdeco-trading-positions__status" aria-live="polite">
@@ -408,7 +410,12 @@ onMounted(() => {
           <div v-else-if="displayPositions.length === 0" class="artdeco-trading-positions__empty" data-test="trade-positions-empty">
             {{ loading ? '持仓数据同步中...' : '暂无持仓数据' }}
           </div>
-          <div v-else-if="filteredPositions.length === 0" class="artdeco-trading-positions__empty" data-test="trade-positions-filtered-empty">
+          <div
+            v-else-if="filteredPositions.length === 0"
+            class="artdeco-trading-positions__empty"
+            data-test="trade-positions-filtered-empty"
+            data-testid="trade-positions-filtered-empty"
+          >
             {{ filteredEmptyMessage }}
           </div>
           <div v-else class="artdeco-trading-positions__body" role="rowgroup">
@@ -423,6 +430,7 @@ onMounted(() => {
               }"
               role="row"
               data-test="trade-positions-row"
+              data-testid="trade-positions-row"
             >
               <div class="artdeco-trading-positions__col artdeco-trading-positions__col--symbol" role="cell">
                 <div class="artdeco-trading-positions__symbol-name">{{ position.name }}</div>

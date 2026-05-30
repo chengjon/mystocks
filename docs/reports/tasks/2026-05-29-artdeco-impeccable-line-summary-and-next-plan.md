@@ -310,10 +310,10 @@ Priority: P1/P2.
 
 Tasks:
 
-- [ ] 4.1 Add targeted Playwright coverage for new Trade Positions segment filters and filtered-empty state.
-- [ ] 4.2 Add a route-level ArtDeco verification checklist for critique/shape/craft reports.
-- [ ] 4.3 Define minimum `data-test` hooks expected on data-heavy pages.
-- [ ] 4.4 Track `npx impeccable --json <page>` output in each implementation report.
+- [x] 4.1 Add targeted Playwright coverage for new Trade Positions segment filters and filtered-empty state.
+- [x] 4.2 Add a route-level ArtDeco verification checklist for critique/shape/craft reports.
+- [x] 4.3 Define minimum `data-test` hooks expected on data-heavy pages.
+- [x] 4.4 Track `npx impeccable --json <page>` output in each implementation report.
 - [x] 4.5 Refresh `2026-05-29-artdeco-page-pilot-extraction-analysis.md` with `trade/Signals.vue` as the fourth completed pilot.
 - [x] 4.6 Draft and validate OpenSpec proposal `standardize-artdeco-route-grammar`.
 - [x] 4.7 Implement approved route grammar documentation in `ARTDECO_COMPONENT_GUIDE.md` and `ARTDECO_MASTER_INDEX.md`.
@@ -325,6 +325,9 @@ Tasks:
 - [x] 4.13 Apply the route-level E2E hook standard to `ai/Sentiment.vue` (`/ai/sentiment`).
 - [x] 4.14 Apply the route-level E2E hook standard to `ai/BatchAnalysis.vue` (`/ai/batch`) and satisfy the changed-file ArtDeco token gate with page-local cleanup.
 - [x] 4.15 Apply the route-level E2E hook standard to `trade/Portfolio.vue` (`/trade/portfolio`) while preserving attribution control hooks and API orchestration.
+- [x] 4.16 Close out the route grammar line with `2026-05-30-artdeco-route-grammar-closeout-checklist.md`.
+- [x] 4.17 Create and validate the follow-up OpenSpec proposal `extract-artdeco-route-shell-components` without implementing shared Vue components.
+- [x] 4.18 Archive `standardize-artdeco-route-grammar` into the current `artdeco-design-governance` spec.
 
 ## 6. Recommended Immediate Next Action
 
@@ -333,8 +336,8 @@ Do not start shared component extraction yet.
 The immediate next action should be:
 
 1. Keep `add-artdeco-impeccable-design-gate` out of root archive mutation unless a separate spec-merge task is approved.
-2. Treat `.worktrees/artdeco-archive-preflight-de0c5b8c9` / `efa776cf0` as the isolated archive candidate for this line.
-3. Use the refreshed extraction analysis as the approval boundary before any shared component proposal.
+2. Treat `.worktrees/artdeco-archive-preflight-de0c5b8c9` / `efa776cf0` as the isolated archive candidate for that separate line.
+3. Use `docs/reports/tasks/2026-05-30-artdeco-route-grammar-closeout-checklist.md` as the approval boundary before any shared component implementation.
 4. Use `ARTDECO_COMPONENT_GUIDE.md` §8 as the route grammar / runtime trust strip / route-level E2E hook standard for future page craft work.
 5. Treat `risk/Alerts.vue` as the first completed hook-alignment pilot; use `docs/reports/tasks/2026-05-29-artdeco-risk-alerts-hook-alignment-report.md` as evidence.
 6. Treat `trade/Reconciliation.vue` as the second completed hook-alignment pilot; use `docs/reports/tasks/2026-05-29-artdeco-trade-reconciliation-hook-alignment-report.md` as evidence.
@@ -344,7 +347,9 @@ The immediate next action should be:
 10. Treat `ai/Sentiment.vue` (`/ai/sentiment`) as the sixth completed hook-alignment pilot; use `docs/reports/tasks/2026-05-30-artdeco-ai-sentiment-hook-alignment-report.md` as evidence.
 11. Treat `ai/BatchAnalysis.vue` (`/ai/batch`) as the seventh completed hook-alignment pilot; use `docs/reports/tasks/2026-05-30-artdeco-ai-batch-hook-alignment-report.md` as evidence.
 12. Treat `trade/Portfolio.vue` (`/trade/portfolio`) as the eighth completed hook-alignment pilot; use `docs/reports/tasks/2026-05-30-artdeco-trade-portfolio-hook-alignment-report.md` as evidence.
-13. Do not start shared component extraction until separately approved.
+13. Treat archived `openspec/changes/archive/2026-05-30-standardize-artdeco-route-grammar/` as the completed route grammar change.
+14. Treat `extract-artdeco-route-shell-components` as proposal-only until separately approved.
+15. Do not start shared component extraction implementation until separately approved.
 
 The previous approval gate has now been satisfied. Future implementation approval wording should still include `批准`, `同意`, or `执行`, for example:
 

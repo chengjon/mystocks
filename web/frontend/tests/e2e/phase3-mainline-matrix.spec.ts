@@ -1985,6 +1985,24 @@ test.describe("Phase 3 Mainline Matrix", () => {
     expect(state.unhandledRequests).toEqual([])
   })
 
+  test("Trade-Positions filters segment tabs and exposes filtered-empty state", async ({ page }) => {
+    const state = await setupPhase3Mock(page)
+
+    await page.goto(`${FRONTEND_BASE_URL}/trade/positions`)
+
+    await expect(page.getByTestId("trade-positions-page")).toBeVisible()
+    await expect(page.getByTestId("trade-positions-segment-gain")).toContainText("盈利")
+    await page.getByTestId("trade-positions-segment-gain").click()
+    await expect(page.getByTestId("trade-positions-row")).toHaveCount(2)
+    await expect(page.getByTestId("trade-positions-runtime-state")).toContainText("当前显示 盈利 持仓 2 条")
+
+    await page.getByTestId("trade-positions-segment-loss").click()
+    await expect(page.getByTestId("trade-positions-row")).toHaveCount(0)
+    await expect(page.getByTestId("trade-positions-filtered-empty")).toContainText("当前「亏损」视图没有匹配持仓。")
+    await expect(page.getByTestId("trade-positions-runtime-state")).toContainText("当前显示 亏损 持仓 0 条")
+    expect(state.unhandledRequests).toEqual([])
+  })
+
   test("Trade-Positions keeps honest pending placeholders while the first positions payload is still unresolved", async ({ page }) => {
     const state = await setupPhase3Mock(page)
     state.hangPositions = true

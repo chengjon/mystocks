@@ -99,6 +99,14 @@ Additional alignment record:
 
 ## 4. Shared Component Extraction Gate
 
-- [ ] 4.1 Draft a separate extraction proposal before creating shared Vue components.
-- [ ] 4.2 Define component props, slots, events, state vocabulary, token rules, hook names, migration order, and rollback plan.
-- [ ] 4.3 Confirm the candidate does not own API orchestration, route metadata, backend contracts, frontend API clients, or financial row semantics.
+- [x] 4.1 Draft a separate extraction proposal before creating shared Vue components.
+- [x] 4.2 Define component props, slots, events, state vocabulary, token rules, hook names, migration order, and rollback plan.
+- [x] 4.3 Confirm the candidate does not own API orchestration, route metadata, backend contracts, frontend API clients, or financial row semantics.
+
+Closeout record:
+
+- Date: 2026-05-30
+- Checklist: `docs/reports/tasks/2026-05-30-artdeco-route-grammar-closeout-checklist.md`
+- Follow-up proposal: `openspec/changes/extract-artdeco-route-shell-components/`
+- Validation: `openspec validate standardize-artdeco-route-grammar --strict` and `openspec validate extract-artdeco-route-shell-components --strict`
+- Boundary: no shared Vue components were created by this change; extraction remains blocked until the follow-up proposal is explicitly approved.
