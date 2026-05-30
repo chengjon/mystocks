@@ -14,13 +14,60 @@ Priority: P2 (Utility)
 Coverage: 70% functional + smoke testing
 """
 
+import ast
+from pathlib import Path
+
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures
+SIGNAL_HISTORY_API_PATH = (
+    Path(__file__).resolve().parents[3] / "web/backend/app/api/signal_monitoring/signal_history_response.py"
+)
+
+SIGNAL_HISTORY_POSTGRES_PROVIDER_HANDLERS = {
+    "get_signal_history",
+    "get_signal_quality_report",
+    "get_strategy_realtime_monitoring",
+    "health_check",
+}
 
 
 class TestSignalMonitoringAPIFile:
     """Test suite for signal_monitoring.py API file"""
+
+    @pytest.mark.file_test
+    def test_signal_history_handlers_use_postgres_dependency_provider(self):
+        """Signal history route handlers should use the route-local postgres provider."""
+        module = ast.parse(SIGNAL_HISTORY_API_PATH.read_text(encoding="utf-8"))
+        functions = {
+            node.name: node
+            for node in module.body
+            if isinstance(node, (ast.AsyncFunctionDef, ast.FunctionDef))
+        }
+
+        assert "get_signal_history_postgres_async" in functions
+
+        provider_calls = [
+            node
+            for node in ast.walk(functions["get_signal_history_postgres_async"])
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "get_postgres_async"
+        ]
+        assert len(provider_calls) == 1
+
+        for handler_name in SIGNAL_HISTORY_POSTGRES_PROVIDER_HANDLERS:
+            handler = functions[handler_name]
+            arg_names = [arg.arg for arg in handler.args.args + handler.args.kwonlyargs]
+
+            assert "postgres_async" in arg_names
+            direct_calls = [
+                node
+                for node in ast.walk(handler)
+                if isinstance(node, ast.Call)
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "get_postgres_async"
+            ]
+            assert direct_calls == []
 
     @pytest.mark.file_test
     def test_signals_history_endpoint(self, api_test_fixtures):

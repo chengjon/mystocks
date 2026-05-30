@@ -1,0 +1,156 @@
+{
+  "schema_version": "2026-05-31.g2-service-lifecycle-implementation.v1",
+  "generated_at": "2026-05-31T01:32:04+08:00",
+  "change_id": "G2.259",
+  "title": "signal_history_response postgres async route provider implementation",
+  "status": "for_review",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
+  "worktree_branch": "g2-259-signal-history-postgres-provider",
+  "parent_authorization": {
+    "change_id": "G2.258",
+    "pull_request": 411,
+    "merge_commit": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
+    "evidence": [
+      ".planning/codebase/generated/postgres-async-signal-history-provider-authorization-2026-05-31.json",
+      "docs/reports/quality/backend-postgres-async-signal-history-provider-authorization-2026-05-31.md",
+      "governance/mainline/task-cards/pr-411.yaml"
+    ]
+  },
+  "authorized_scope": {
+    "source_paths": [
+      "web/backend/app/api/signal_monitoring/signal_history_response.py"
+    ],
+    "test_paths": [
+      "tests/api/file_tests/test_signal_monitoring_api.py",
+      "web/backend/tests/test_signal_history_response_regressions.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/generated/postgres-async-signal-history-provider-implementation-2026-05-31.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-postgres-async-signal-history-provider-implementation-2026-05-31.md",
+      "governance/mainline/task-cards/pr-412.yaml"
+    ],
+    "explicit_exclusions": [
+      "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+      "other web/backend/app/api/signal_monitoring/* files",
+      "src/** infrastructure provider implementation",
+      "route paths",
+      "OpenAPI exposure policy",
+      "frontend",
+      "config",
+      "scripts",
+      "OpenSpec source/spec edits",
+      "PM2 stateful commands"
+    ]
+  },
+  "implementation_summary": {
+    "provider_added": "get_signal_history_postgres_async",
+    "provider_backing_call": "src.monitoring.infrastructure.postgresql_async_v3.get_postgres_async",
+    "target_handlers": [
+      "get_signal_history",
+      "get_signal_quality_report",
+      "get_strategy_realtime_monitoring",
+      "health_check"
+    ],
+    "dependency_parameters_added": 4,
+    "target_route_body_direct_get_postgres_async_calls_after": 0,
+    "provider_get_postgres_async_calls_after": 1,
+    "route_contract_changes": "none",
+    "openapi_exposure_changes": "none"
+  },
+  "gitnexus_pre_edit": {
+    "mcp_status": "failed_transport_closed",
+    "cli_fallback": "used",
+    "risk": {
+      "get_signal_history": "LOW",
+      "get_signal_quality_report": "LOW",
+      "get_strategy_realtime_monitoring": "LOW",
+      "health_check": "context-only exact UID review; named impact ambiguous because multiple health_check symbols exist"
+    },
+    "affected_processes": 0,
+    "notes": [
+      "GitNexus MCP impact returned Transport closed before source edits.",
+      "CLI impact fallback found LOW risk and zero impacted execution flows for the three uniquely resolved handlers.",
+      "health_check required exact UID context review because the symbol name is ambiguous across the codebase."
+    ]
+  },
+  "verification": {
+    "tdd_red": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_signal_monitoring_api.py::TestSignalMonitoringAPIFile::test_signal_history_handlers_use_postgres_dependency_provider -n 0 --tb=short --no-cov",
+      "result": "failed_as_expected",
+      "failure_reason": "missing get_signal_history_postgres_async provider"
+    },
+    "tdd_green": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_signal_monitoring_api.py::TestSignalMonitoringAPIFile::test_signal_history_handlers_use_postgres_dependency_provider -n 0 --tb=short --no-cov",
+      "result": "1 passed"
+    },
+    "focused_tests": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_signal_monitoring_api.py web/backend/tests/test_signal_history_response_regressions.py -n 0 --tb=short --no-cov",
+      "result": "15 passed"
+    },
+    "ruff": {
+      "command": "ruff check --no-fix web/backend/app/api/signal_monitoring/signal_history_response.py tests/api/file_tests/test_signal_monitoring_api.py web/backend/tests/test_signal_history_response_regressions.py",
+      "result": "All checks passed!"
+    },
+    "residual_scan": {
+      "provider_get_postgres_async_calls": 1,
+      "target_direct_get_postgres_async_calls": 0,
+      "target_postgres_async_dependency_parameters": 4
+    },
+    "openapi_smoke": {
+      "command": "placeholder-env import app.main, run app.openapi(), and inspect target routes",
+      "first_attempt": "failed because BACKEND_BACKUP_PORT placeholder was missing",
+      "result": {
+        "routes": 548,
+        "openapi_paths": 500,
+        "target_route_count": 4,
+        "target_paths_present": true,
+        "include_in_schema": true
+      },
+      "non_blocking_warnings": [
+        "GPU backtest dependencies unavailable: Numba needs NumPy 2.2 or less. Got NumPy 2.4."
+      ]
+    },
+    "openspec": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid"
+    },
+    "staged_gitnexus": {
+      "mcp_status": "failed_transport_closed",
+      "cli_fallback": "ok_stale_index",
+      "command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-259-signal-history-postgres-provider --json",
+      "summary": {
+        "changed_count": 13,
+        "affected_count": 0,
+        "changed_files": 12,
+        "risk_level": "low"
+      },
+      "staleness": {
+        "indexed_commit": "69210efb539686c22af457ce1e1fa96d43fd6f7d",
+        "current_commit": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
+        "stale": true,
+        "stale_reason": "current_commit_differs_from_indexed_commit",
+        "stale_severity": "warning"
+      }
+    },
+    "mainline_scope_gate": {
+      "command": "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-412.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha a58cf6490af4e4cd51e9b98543fa286244fdb78f --head-sha HEAD --report /tmp/pr412-mainline-governance-report.json",
+      "result": "pass=True",
+      "problem_count": 0,
+      "changed_files_count": 12,
+      "report": "/tmp/pr412-mainline-governance-report.json"
+    }
+  },
+  "next_gate": {
+    "change_id": "G2.260",
+    "type": "no-source closeout / residual refresh",
+    "purpose": "verify G2.259 is closed, refresh remaining active app-route postgres async route-body consumers, and choose the next authorization candidate without source edits"
+  }
+}

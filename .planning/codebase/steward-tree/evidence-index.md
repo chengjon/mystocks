@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T00:45:00+08:00`
-- Base HEAD checked: `ad3cc58dbe0dc768488006d22de09085a1a8ee6f`
+- Prepared at: `2026-05-31T01:32:04+08:00`
+- Base HEAD checked: `a58cf6490af4e4cd51e9b98543fa286244fdb78f`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,6 +21,9 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
+| `.planning/codebase/generated/postgres-async-signal-history-provider-implementation-2026-05-31.json` | G2.259 `signal_history_response.py` postgres async provider implementation evidence | Review input for PR `#412`; target route-body direct calls reduced from 4 to 0 |
+| `docs/reports/quality/backend-postgres-async-signal-history-provider-implementation-2026-05-31.md` | G2.259 human-readable implementation report | Review input for PR `#412`; focused tests passed `15/15`, ruff passed, OpenAPI `548/500` |
+| `governance/mainline/task-cards/pr-412.yaml` | Path-limited implementation task card for G2.259 | Review input; forbids `get_signal_statistics.py`, broader `signal_monitoring/*`, infrastructure, route/OpenAPI, frontend, config, scripts, and OpenSpec changes |
 | `.planning/codebase/generated/postgres-async-signal-history-provider-authorization-2026-05-31.json` | G2.258 `signal_history_response.py` postgres async provider authorization evidence | Review input for PR `#411`; no-source governance only |
 | `docs/reports/quality/backend-postgres-async-signal-history-provider-authorization-2026-05-31.md` | G2.258 human-readable authorization packet | Review input for PR `#411`; authorizes only future G2.259 path-limited implementation after acceptance |
 | `governance/mainline/task-cards/pr-411.yaml` | Path-limited governance task card for G2.258 | Review input; forbids source/test/runtime/OpenSpec changes |

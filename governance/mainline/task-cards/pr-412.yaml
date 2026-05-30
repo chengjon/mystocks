@@ -1,0 +1,140 @@
+version: "v0.2"
+
+task:
+  id: "pr-412"
+  title: "Inject signal history postgres provider"
+  owner: "codex"
+  created_at: "2026-05-31"
+
+mainline:
+  id: "L1-postgres-async-signal-history-provider-implementation"
+  objective: "move authorized signal_history_response.py postgres async route consumers behind a route-local FastAPI dependency provider"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.259 changes route-local dependency injection only; route paths, route registration, OpenAPI exposure, response models, and public entrypoint catalog semantics remain unchanged."
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/signal_monitoring/signal_history_response.py"
+    - "tests/api/file_tests/test_signal_monitoring_api.py"
+    - "web/backend/tests/test_signal_history_response_regressions.py"
+    - ".planning/codebase/generated/postgres-async-signal-history-provider-implementation-2026-05-31.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-postgres-async-signal-history-provider-implementation-2026-05-31.md"
+    - "governance/mainline/task-cards/pr-412.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/signal_monitoring/get_signal_statistics.py"
+    - "src/**"
+    - "web/frontend/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "get_signal_statistics.py migration"
+  - "broader signal_monitoring package migration"
+  - "infrastructure provider implementation changes"
+  - "route path or response contract changes"
+  - "OpenAPI schema exposure changes"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr411-merged"
+      command: "gh pr view 411 confirms MERGED at a58cf6490af4e4cd51e9b98543fa286244fdb78f"
+      required: true
+    - id: "gitnexus-pre-edit"
+      command: "GitNexus impact/context attempted before source edits; MCP Transport closed recorded and CLI fallback showed LOW/zero-flow impact for uniquely resolved handlers"
+      required: true
+    - id: "tdd-red"
+      command: "PYTHONPATH=. pytest -q tests/api/file_tests/test_signal_monitoring_api.py::TestSignalMonitoringAPIFile::test_signal_history_handlers_use_postgres_dependency_provider -n 0 --tb=short --no-cov failed before source edits because provider was missing"
+      required: true
+    - id: "focused-tests"
+      command: "PYTHONPATH=. pytest -q tests/api/file_tests/test_signal_monitoring_api.py web/backend/tests/test_signal_history_response_regressions.py -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff"
+      command: "ruff check --no-fix web/backend/app/api/signal_monitoring/signal_history_response.py tests/api/file_tests/test_signal_monitoring_api.py web/backend/tests/test_signal_history_response_regressions.py"
+      required: true
+    - id: "residual-scan"
+      command: "provider get_postgres_async calls=1, target route-body direct get_postgres_async calls=0, dependency params=4"
+      required: true
+    - id: "app-openapi-smoke"
+      command: "placeholder-env python import app.main, app.openapi(), and verify routes=548 paths=500 target_route_count=4"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "json-parse"
+      command: "python -m json.tool .planning/codebase/generated/postgres-async-signal-history-provider-implementation-2026-05-31.json and steward-index.json"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-postgres-async-signal-history-provider-implementation-2026-05-31.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-412.yaml --base-sha a58cf6490af4e4cd51e9b98543fa286244fdb78f --head-sha HEAD --report /tmp/pr412-mainline-governance-report.json"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI staged change detection attempted before commit; transport degradation recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.259 must not expand into get_signal_statistics.py or broader signal_monitoring migration."
+    - "The provider must remain route-local and preserve the existing infrastructure singleton backing call."
+    - "OpenAPI and route contracts must remain unchanged."
+  rollback_plan: "Revert PR #412; this restores direct route-body get_postgres_async calls in signal_history_response.py and removes only the focused tests and governance evidence from this implementation lane."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Inject a route-local postgres async provider into four authorized signal history handlers."
+    modified_scope: "One backend route module, two focused test files, governance evidence, steward tree, and task card."
+    dependency_changes: "No package or infrastructure dependency changes."
+    legacy_logic_impact: "No route path, response model, OpenAPI exposure, or backend infrastructure behavior changes."
+    rollback_ready: "Revert PR #412."
+    risk_and_rollback_point: "Path-limited provider injection; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-31T01:32:04+08:00"
+    approval_note: "Approved to implement G2.259 after PR #411 merged G2.258; source authority is limited to signal_history_response.py and the two focused test paths."
+    secondary_approved: true
