@@ -1,0 +1,190 @@
+{
+  "schema_version": "2026-05-30.g2-service-lifecycle-implementation.v1",
+  "generated_at": "2026-05-30T22:07:00+08:00",
+  "g2_id": "G2.256",
+  "title": "monitoring_watchlists postgres async route provider implementation",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "worktree_branch": "g2-256-monitoring-watchlists-postgres-provider",
+  "base_head": "8866cfe8ba081957714c8c51e948be9340fc45ac",
+  "base_head_summary": "8866cfe8b Merge pull request #408 from chengjon/g2-255-monitoring-watchlists-postgres-provider-authorization",
+  "parent": {
+    "g2_id": "G2.255",
+    "github_pr": 408,
+    "merge_commit": "8866cfe8ba081957714c8c51e948be9340fc45ac",
+    "relationship": "G2.255 authorized this path-limited implementation after PR #408 merged"
+  },
+  "scope": {
+    "source_edit_authority": true,
+    "allowed_paths": [
+      "web/backend/app/api/monitoring_watchlists.py",
+      "tests/api/file_tests/test_watchlist_api.py",
+      "web/backend/tests/test_monitoring_watchlists_runtime_fallback.py",
+      ".planning/codebase/generated/postgres-async-monitoring-watchlists-provider-implementation-2026-05-30.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-postgres-async-monitoring-watchlists-provider-implementation-2026-05-30.md",
+      "governance/mainline/task-cards/pr-409.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/api/signal_monitoring/**",
+      "web/backend/app/api/monitoring_analysis.py",
+      "web/backend/app/api/_monitoring_portfolio_router.py",
+      "web/backend/app/api/_data_source_config_responses.py",
+      "web/backend/app/api/v1/system/settings.py",
+      "src/monitoring/infrastructure/**",
+      "web/backend/app/services/**",
+      "web/backend/app/tasks/**",
+      "web/frontend/**",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "implementation": {
+    "provider_added": "get_monitoring_watchlists_postgres_async",
+    "source_file": "web/backend/app/api/monitoring_watchlists.py",
+    "provider_get_postgres_async_calls_after": 1,
+    "route_body_get_postgres_async_calls_before": 7,
+    "route_body_get_postgres_async_calls_after": 0,
+    "dependency_parameters_after": 7,
+    "stock_to_add_import_preserved": true,
+    "route_handlers_total": 8,
+    "updated_handlers": [
+      "create_watchlist",
+      "list_watchlists",
+      "get_watchlist",
+      "delete_watchlist",
+      "add_stock_to_watchlist",
+      "list_watchlist_stocks",
+      "remove_stock_from_watchlist"
+    ],
+    "excluded_handler": {
+      "handler": "update_watchlist",
+      "reason": "no direct get_postgres_async route-body call before implementation"
+    },
+    "handler_results": {
+      "create_watchlist": {
+        "direct_get_postgres_async_calls_after": 0,
+        "has_dependency": true
+      },
+      "list_watchlists": {
+        "direct_get_postgres_async_calls_after": 0,
+        "has_dependency": true
+      },
+      "get_watchlist": {
+        "direct_get_postgres_async_calls_after": 0,
+        "has_dependency": true
+      },
+      "delete_watchlist": {
+        "direct_get_postgres_async_calls_after": 0,
+        "has_dependency": true
+      },
+      "add_stock_to_watchlist": {
+        "direct_get_postgres_async_calls_after": 0,
+        "has_dependency": true,
+        "stock_to_add_import_preserved": true
+      },
+      "list_watchlist_stocks": {
+        "direct_get_postgres_async_calls_after": 0,
+        "has_dependency": true
+      },
+      "remove_stock_from_watchlist": {
+        "direct_get_postgres_async_calls_after": 0,
+        "has_dependency": true
+      }
+    },
+    "tests_updated": [
+      {
+        "path": "tests/api/file_tests/test_watchlist_api.py",
+        "purpose": "red/green structural regression proving provider exists, seven handlers accept postgres_async dependency, and handler bodies no longer call get_postgres_async directly"
+      },
+      {
+        "path": "web/backend/tests/test_monitoring_watchlists_runtime_fallback.py",
+        "purpose": "direct-call runtime fallback tests now pass explicit disconnected postgres_async test doubles"
+      }
+    ]
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_watchlist_api.py::test_watchlist_handlers_use_postgres_dependency_provider -n 0 --tb=short --no-cov",
+      "result": "failed before source change because get_monitoring_watchlists_postgres_async was missing"
+    },
+    "green": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_watchlist_api.py::test_watchlist_handlers_use_postgres_dependency_provider -n 0 --tb=short --no-cov",
+      "result": "1 passed after provider implementation"
+    }
+  },
+  "verification": {
+    "focused_tests": {
+      "command": "PYTHONPATH=. pytest -q tests/api/file_tests/test_watchlist_api.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py -n 0 --tb=short --no-cov",
+      "result": "29 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/monitoring_watchlists.py tests/api/file_tests/test_watchlist_api.py web/backend/tests/test_monitoring_watchlists_runtime_fallback.py",
+      "result": "All checks passed"
+    },
+    "app_openapi_smoke": {
+      "command": "app.main import and app.openapi() using non-sensitive placeholder required environment variables",
+      "result": {
+        "routes": 548,
+        "paths": 500,
+        "watchlist_route_count": 8
+      }
+    },
+    "residual_scan": {
+      "provider_get_postgres_async_calls": 1,
+      "authorized_handler_direct_get_postgres_async_calls": 0,
+      "authorized_handler_dependency_parameters": 7
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid; PostHog ECONNREFUSED telemetry noise observed"
+    }
+  },
+  "gitnexus": {
+    "mcp": "impact/context transport closed before source edits",
+    "cli_context": "npx gitnexus context add_stock_to_watchlist -r mystocks -f web/backend/app/api/monitoring_watchlists.py resolved Function:web/backend/app/api/monitoring_watchlists.py:add_stock_to_watchlist with no process membership",
+    "cli_impact": "npx gitnexus impact create_watchlist -r mystocks --summary-only --depth 2 --include-tests returned ambiguous / risk UNKNOWN because CLI impact cannot accept file_path or UID disambiguation",
+    "status": "degraded before edit; staged detect_changes attempted before commit",
+    "staged_detect_changes": {
+      "mcp": "transport closed",
+      "cli_command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-256-monitoring-watchlists-postgres-provider --json",
+      "cli_result": {
+        "ok": true,
+        "status": "stale",
+        "risk_level": "low",
+        "changed_files": 12,
+        "changed_count": 23,
+        "affected_count": 0,
+        "indexed_commit": "5f890d8b2e3ea183dd42e3d08d5b599c9582f3ab",
+        "current_commit": "8866cfe8ba081957714c8c51e948be9340fc45ac",
+        "stale_reason": "current_commit_differs_from_indexed_commit"
+      },
+      "interpretation": "stale-index warning, not current graph approval"
+    }
+  },
+  "contract_preservation": {
+    "route_contract_changes": "none intended",
+    "openapi_exposure_changes": "none intended",
+    "watchlist_routes": 8,
+    "runtime_fallback_preserved": true,
+    "stock_to_add_import_preserved": true
+  },
+  "decision": {
+    "status": "for_review",
+    "next_gate": "If accepted, merge PR #409 and start G2.257 no-source monitoring_watchlists provider closeout / residual refresh. Do not migrate signal_monitoring from G2.256."
+  },
+  "freshness": {
+    "current_head_checked_at_review": "8866cfe8ba081957714c8c51e948be9340fc45ac",
+    "stale_if_head_mismatch": true
+  }
+}

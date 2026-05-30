@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-30T20:12:49+08:00`
-- Base HEAD checked: `767c92887348fe25eeaa92685ecb5343717fb326`
+- Prepared at: `2026-05-30T22:07:00+08:00`
+- Base HEAD checked: `8866cfe8ba081957714c8c51e948be9340fc45ac`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2424,3 +2424,61 @@ This track summary forbids:
 - issue label changes
 - moving another service candidate directly to implementation
 - treating service inventory counts as implementation backlogs
+
+## G2.256 Monitoring Watchlists Postgres Async Provider Implementation
+
+Status: for review in PR `#409`.
+
+Parent gate:
+
+- G2.255 no-source authorization was accepted by PR `#408`.
+- PR `#408` merged into `wip/root-dirty-20260403` at
+  `8866cfe8ba081957714c8c51e948be9340fc45ac`.
+
+Authorized implementation scope:
+
+- `web/backend/app/api/monitoring_watchlists.py`
+- `tests/api/file_tests/test_watchlist_api.py`
+- `web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`
+
+Implementation result:
+
+| Evidence | Result |
+|---|---|
+| Route-local provider | `get_monitoring_watchlists_postgres_async()` added |
+| Authorized route-body `get_postgres_async()` calls | `7 -> 0` |
+| Provider delegate call | `1` module-level provider call remains |
+| Authorized handler dependency parameters | `7` |
+| Watchlist app routes | `8` |
+| App route table / OpenAPI smoke | `routes=548`, `paths=500` |
+| Focused tests | `29 passed` |
+| Ruff touched files | `All checks passed!` |
+| OpenSpec strict validate | `migrate-backend-singletons-to-lifecycle-di` valid |
+
+Updated handlers:
+
+- `create_watchlist`
+- `list_watchlists`
+- `get_watchlist`
+- `delete_watchlist`
+- `add_stock_to_watchlist`
+- `list_watchlist_stocks`
+- `remove_stock_from_watchlist`
+
+Explicit exclusions:
+
+- `update_watchlist` remains untouched because G2.255 did not identify a direct
+  route-body `get_postgres_async()` call there.
+- `signal_monitoring/*`, `monitoring_analysis.py`,
+  `_monitoring_portfolio_router.py`, `_data_source_config_responses.py`,
+  `v1/system/settings.py`, and `src/monitoring/infrastructure/**` remain out of
+  scope.
+- Route paths, response models, summaries, tags, and OpenAPI exposure remain
+  unchanged by intent.
+
+Next gate after acceptance:
+
+- G2.257 no-source monitoring watchlists provider closeout / residual refresh.
+- G2.257 should verify this provider migration remains closed, refresh residual
+  `get_postgres_async()` route consumers, and select the next candidate without
+  editing source code.

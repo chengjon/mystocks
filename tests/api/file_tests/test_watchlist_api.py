@@ -14,9 +14,53 @@ Priority: P2 (Utility)
 Coverage: 70% functional + smoke testing
 """
 
+import ast
+from pathlib import Path
+
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures
+
+
+WATCHLIST_API_PATH = Path(__file__).resolve().parents[3] / "web/backend/app/api/monitoring_watchlists.py"
+AUTHORIZED_POSTGRES_PROVIDER_HANDLERS = {
+    "create_watchlist",
+    "list_watchlists",
+    "get_watchlist",
+    "delete_watchlist",
+    "add_stock_to_watchlist",
+    "list_watchlist_stocks",
+    "remove_stock_from_watchlist",
+}
+
+
+def test_watchlist_handlers_use_postgres_dependency_provider():
+    tree = ast.parse(WATCHLIST_API_PATH.read_text(encoding="utf-8"))
+    async_functions = {
+        node.name: node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.AsyncFunctionDef)
+    }
+    function_defs = {
+        node.name
+        for node in ast.walk(tree)
+        if isinstance(node, ast.FunctionDef)
+    }
+
+    assert "get_monitoring_watchlists_postgres_async" in function_defs
+
+    for handler_name in AUTHORIZED_POSTGRES_PROVIDER_HANDLERS:
+        handler = async_functions[handler_name]
+        parameter_names = [arg.arg for arg in [*handler.args.args, *handler.args.kwonlyargs]]
+        direct_calls = [
+            node
+            for node in ast.walk(handler)
+            if isinstance(node, ast.Call)
+            and isinstance(node.func, ast.Name)
+            and node.func.id == "get_postgres_async"
+        ]
+
+        assert "postgres_async" in parameter_names
+        assert direct_calls == []
 
 
 class TestWatchlistAPIFile:

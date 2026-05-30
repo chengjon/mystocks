@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-30T21:06:00+08:00`
-- Base HEAD checked: `c64260f1795b39c82903fa7fd370b0ccaee3ac36`
+- Prepared at: `2026-05-30T22:07:00+08:00`
+- Base HEAD checked: `8866cfe8ba081957714c8c51e948be9340fc45ac`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.255 monitoring watchlists postgres async provider authorization | G/#79 service lifecycle DI | PR `#407` merged at `c64260f1795b39c82903fa7fd370b0ccaee3ac36`; current HEAD confirms `monitoring_watchlists.py` has 8 route handlers and 7 route-body `get_postgres_async()` calls; focused watchlist tests passed `28/28`, source ruff passed, and OpenAPI remains `548/500` with 8 watchlist routes | If accepted, merge PR `#408`, then start G2.256 path-limited `monitoring_watchlists.py` postgres async route provider implementation; do not implement from G2.255 |
+| P0 | Review G2.256 monitoring watchlists postgres async provider implementation | G/#79 service lifecycle DI | PR `#408` merged at `8866cfe8ba081957714c8c51e948be9340fc45ac`; current branch moves the seven authorized `monitoring_watchlists.py` route-body `get_postgres_async()` calls behind `Depends(get_monitoring_watchlists_postgres_async)`, preserves `StockToAdd`, focused tests passed `29/29`, ruff passed, and OpenAPI remains `548/500` with 8 watchlist routes | If accepted, merge PR `#409`, then start G2.257 no-source closeout / residual refresh; do not migrate `signal_monitoring/*` or infrastructure from G2.256 |
+| P0 | Preserve G2.255 monitoring watchlists postgres async provider authorization | G/#79 service lifecycle DI | PR `#408` merged at `8866cfe8ba081957714c8c51e948be9340fc45ac`; authorized only the future G2.256 path-limited `monitoring_watchlists.py` provider implementation and focused tests | Do not use G2.255 to migrate `signal_monitoring/*`, infrastructure, frontend, config, scripts, OpenSpec, or route/OpenAPI contracts |
 | P0 | Preserve G2.254 monitoring analysis provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#407` merged at `c64260f1795b39c82903fa7fd370b0ccaee3ac36`; `monitoring_analysis.py` remains closed for route-body `get_postgres_async()` and selected `monitoring_watchlists.py` as the next no-source authorization | Do not use G2.254 to migrate source directly or touch `signal_monitoring/*` |
 | P0 | Preserve G2.253 monitoring analysis postgres async route provider implementation | G/#79 service lifecycle DI | PR `#406` merged at `767c92887348fe25eeaa92685ecb5343717fb326`; `get_monitoring_analysis_postgres_async` exists and 2 monitoring_analysis handlers use `Depends(...)` | Do not use G2.253 to migrate broader route consumers |
 | P0 | Preserve G2.252 `monitoring_analysis.py` postgres async provider authorization | G/#79 service lifecycle DI | PR `#405` merged at `c3e3452440455c8a7955b0779433219abee48c86`; authorized only `monitoring_analysis.py` and the focused file-test path for G2.253 | Do not use G2.252 to migrate `monitoring_watchlists.py`, `signal_monitoring`, infrastructure, frontend, config, scripts, or OpenSpec |
@@ -80,9 +81,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.255 correctly treat PR `#407` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.255 correctly identify only seven `monitoring_watchlists.py` handlers as future provider candidates while excluding `update_watchlist`?
-- Does G2.255 preserve `StockToAdd` import/use and runtime fallback behavior as explicit future G2.256 constraints?
-- Does G2.255 keep all source, tests, OpenAPI, frontend, config, scripts, PM2, and OpenSpec files untouched?
-- Is G2.256 correctly selected as a path-limited source implementation, not a bulk route migration?
+- Does G2.256 correctly treat PR `#408` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.256 correctly migrate only the seven authorized `monitoring_watchlists.py` handlers while excluding `update_watchlist`?
+- Does G2.256 preserve `StockToAdd` import/use, runtime fallback behavior, and all watchlist route/OpenAPI contracts?
+- Does G2.256 keep `signal_monitoring/*`, infrastructure, frontend, config, scripts, PM2, and OpenSpec files untouched?
+- Is G2.257 correctly selected as a no-source closeout / residual refresh, not a bulk route migration?
 - Are implementation, authorization, decision, and evidence lanes still distinct?
