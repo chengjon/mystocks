@@ -2249,6 +2249,12 @@ test.describe("Phase 3 Mainline Matrix", () => {
     await page.goto(`${FRONTEND_BASE_URL}/trade/portfolio`)
 
     await expect(page.getByText("组合资产工作台").first()).toBeVisible()
+    await expect(page.getByTestId("trade-portfolio-page")).toBeVisible()
+    await expect(page.getByTestId("trade-portfolio-header")).toBeVisible()
+    await expect(page.getByTestId("trade-portfolio-refresh")).toBeVisible()
+    await expect(page.getByTestId("trade-portfolio-status-strip")).toBeVisible()
+    await expect(page.getByTestId("trade-portfolio-primary-surface")).toBeVisible()
+    await expect(page.getByTestId("trade-portfolio-control-lens")).toBeVisible()
     await expect(page.locator(".hero-meta")).toContainText("POSITIONS: 2")
     await expect(page.locator(".hero-meta")).toContainText("REBALANCE: 待接入")
     await expect(page.locator(".stats-strip .artdeco-stat-value")).toHaveText(["372,664.00", "+6,844", "2", "待接入"])

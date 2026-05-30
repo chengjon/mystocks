@@ -177,8 +177,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="portfolio-overview-tab page-enter" :class="{ 'is-embedded': isEmbedded }">
-    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
+  <div
+    class="portfolio-overview-tab page-enter"
+    :class="{ 'is-embedded': isEmbedded }"
+    data-testid="trade-portfolio-page"
+  >
+    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell" data-testid="trade-portfolio-header">
       <div class="hero-rail">
         <div class="hero-copy">
           <span class="hero-eyebrow">portfolio assets desk</span>
@@ -198,7 +202,13 @@ onMounted(() => {
         :status-type="pageStatusType"
       >
         <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" @click="fetchPortfolio">
+          <ArtDecoButton
+            variant="outline"
+            size="sm"
+            :loading="loading"
+            data-testid="trade-portfolio-refresh"
+            @click="fetchPortfolio"
+          >
             <template #icon>
               <ArtDecoIcon name="refresh" />
             </template>
@@ -208,7 +218,7 @@ onMounted(() => {
       </ArtDecoHeader>
     </section>
 
-    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
+    <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell" data-testid="trade-portfolio-status-strip">
       <ArtDecoStatCard label="总资产" :value="displayTotalAssetsLabel" :show-change="false" variant="gold" />
       <ArtDecoStatCard
         label="今日盈亏"
@@ -220,7 +230,7 @@ onMounted(() => {
       <ArtDecoStatCard label="再平衡建议" :value="displayRebalanceStatValue" :show-change="false" variant="gold" />
     </section>
 
-    <div class="assets-hero artdeco-card" v-loading="loading">
+    <div class="assets-hero artdeco-card" v-loading="loading" data-testid="trade-portfolio-primary-surface">
       <div class="hero-content">
         <div class="asset-main">
           <span class="asset-label">Total Assets (CNY)</span>
@@ -237,9 +247,11 @@ onMounted(() => {
       <div class="hero-decoration"></div>
     </div>
 
-    <p v-if="runtimeMessage" class="runtime-message" aria-live="polite">{{ runtimeMessage }}</p>
+    <p v-if="runtimeMessage" class="runtime-message" aria-live="polite" data-testid="trade-portfolio-runtime-state">
+      {{ runtimeMessage }}
+    </p>
 
-    <div class="position-list-section">
+    <div class="position-list-section" data-testid="trade-portfolio-position-surface">
       <h3 class="subsection-title">Top Positions</h3>
       <div v-if="isPendingFirstPortfolioLoad" class="section-empty artdeco-card">持仓明细同步中，正在等待真实组合返回。</div>
       <div v-else-if="isUnavailableFirstPortfolioLoad" class="section-empty artdeco-card">组合资产不可用，暂无可展示的持仓快照。</div>
@@ -265,7 +277,7 @@ onMounted(() => {
     </div>
 
     <div class="attribution-section">
-      <div class="attribution-controls artdeco-card">
+      <div class="attribution-controls artdeco-card" data-testid="trade-portfolio-control-lens">
         <div class="attribution-controls__group" role="group" aria-label="归因口径">
           <button
             type="button"
@@ -306,7 +318,7 @@ onMounted(() => {
       />
     </div>
 
-    <div class="rebalance-section">
+    <div class="rebalance-section" data-testid="trade-portfolio-rebalance-surface">
       <h3 class="subsection-title">自动再平衡建议</h3>
       <div class="rebalance-list artdeco-card">
         <div v-if="isPendingFirstPortfolioLoad" class="rebalance-empty">
