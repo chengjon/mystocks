@@ -2358,6 +2358,61 @@ Decision:
   `v1/system/settings.py`, infrastructure, frontend, config, scripts, OpenSpec,
   or PM2 state from G2.254.
 
+Closeout status:
+
+- G2.254 was accepted by PR `#407` and merged at
+  `c64260f1795b39c82903fa7fd370b0ccaee3ac36`.
+- G2.255 is the no-source `monitoring_watchlists.py` postgres async route
+  provider authorization after this closeout.
+
+## G2.255 Monitoring Watchlists Postgres Async Provider Authorization
+
+G2.255 is the no-source authorization packet after PR `#407` merged G2.254 at
+`c64260f1795b39c82903fa7fd370b0ccaee3ac36`.
+
+Authorization evidence:
+
+| Evidence | Value |
+|---|---:|
+| `monitoring_watchlists.py` route handlers | 8 |
+| Route-body `get_postgres_async()` calls | 7 |
+| Focused watchlist tests | 28 passed |
+| Candidate source ruff | All checks passed |
+| OpenAPI smoke | 548 routes / 500 paths |
+| Watchlist OpenAPI routes | 8 |
+
+Authorized future G2.256 handlers:
+
+| Handler | Route | Calls | Handling |
+|---|---|---:|---|
+| `create_watchlist` | `POST /api/v1/monitoring/watchlists` | 1 | Move lookup behind route-local provider |
+| `list_watchlists` | `GET /api/v1/monitoring/watchlists` | 1 | Move lookup behind route-local provider |
+| `get_watchlist` | `GET /api/v1/monitoring/watchlists/{watchlist_id}` | 1 | Move lookup behind route-local provider |
+| `delete_watchlist` | `DELETE /api/v1/monitoring/watchlists/{watchlist_id}` | 1 | Move lookup behind route-local provider |
+| `add_stock_to_watchlist` | `POST /api/v1/monitoring/watchlists/{watchlist_id}/stocks` | 1 | Preserve `StockToAdd` import/use while moving lookup |
+| `list_watchlist_stocks` | `GET /api/v1/monitoring/watchlists/{watchlist_id}/stocks` | 1 | Move lookup behind route-local provider |
+| `remove_stock_from_watchlist` | `DELETE /api/v1/monitoring/watchlists/{watchlist_id}/stocks/{stock_code}` | 1 | Move lookup behind route-local provider |
+
+Excluded handler:
+
+| Handler | Reason |
+|---|---|
+| `update_watchlist` | No direct route-body `get_postgres_async()` call at current HEAD |
+
+Decision:
+
+- If accepted, merge PR `#408`.
+- After merge, start G2.256 path-limited `monitoring_watchlists.py` postgres
+  async route provider implementation.
+- G2.256 may touch only `web/backend/app/api/monitoring_watchlists.py`,
+  `tests/api/file_tests/test_watchlist_api.py`, and
+  `web/backend/tests/test_monitoring_watchlists_runtime_fallback.py`.
+- G2.256 must rerun GitNexus impact before editing because G2.255 GitNexus MCP
+  was degraded.
+- Do not migrate `signal_monitoring/*`, retained provider seams, route-adjacent
+  helper/repository residuals, infrastructure, frontend, config, scripts,
+  OpenSpec, or PM2 state from G2.255.
+
 ## Forbidden Scope
 
 This track summary forbids:
