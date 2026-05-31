@@ -1,0 +1,229 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-01T01:32:16+08:00",
+  "gate": "G2.280",
+  "title": "Service lifecycle residual candidate refresh after get_monitoring_db closeout",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "fcead56344110e33041319271c122e71d2b763a0",
+  "worktree": ".worktrees/g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db",
+  "source_edit_authority": false,
+  "parent": {
+    "gate": "G2.279",
+    "pr": 432,
+    "state": "MERGED",
+    "merged_at": "2026-05-31T17:26:19Z",
+    "merge_commit": "fcead56344110e33041319271c122e71d2b763a0",
+    "summary": "No-source strategy get_monitoring_db provider closeout accepted and merged."
+  },
+  "scan": {
+    "roots": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "python_files_scanned": 371,
+    "getter_names_seen": 572,
+    "active_interesting_candidates": 31,
+    "method_calls_excluded": true,
+    "known_closed_surfaces_excluded": [
+      "get_monitoring_db",
+      "get_risk_monitoring_db",
+      "get_strategy_monitoring_db",
+      "get_monitoring_portfolio_optimizer",
+      "get_monitoring_analysis_postgres_async",
+      "get_monitoring_watchlists_postgres_async",
+      "get_signal_history_postgres_async",
+      "get_monitoring_postgres_async",
+      "get_data_service_dependency",
+      "get_config_manager_dependency",
+      "get_calculator_factory",
+      "get_prewarming_strategy",
+      "get_execution_tracking_evidence_service",
+      "get_unified_data_service",
+      "get_stop_loss_service",
+      "get_data_quality_monitor",
+      "get_data_adapter",
+      "get_strategy_service",
+      "get_strategy_adapter",
+      "get_postgres_async",
+      "get_mock_data_manager"
+    ],
+    "top_candidates": [
+      {
+        "name": "get_integrated_services",
+        "api_bare_calls": 0,
+        "service_bare_calls": 7,
+        "defs": 1,
+        "files": [
+          "web/backend/app/services/__init__.py"
+        ],
+        "classification": "root facade compatibility surface",
+        "disposition": "defer to separate root facade compatibility decision"
+      },
+      {
+        "name": "get_indicator_registry",
+        "api_bare_calls": 0,
+        "service_bare_calls": 5,
+        "defs": 2,
+        "files": [
+          "web/backend/app/services/indicator_calculator.py",
+          "web/backend/app/services/indicator_registry.py",
+          "web/backend/app/services/indicators/talib_adapter.py",
+          "web/backend/app/services/indicators/indicator_registry.py",
+          "web/backend/app/services/indicators/defaults.py"
+        ],
+        "classification": "ambiguous registry surface",
+        "disposition": "defer until registry ownership is disambiguated"
+      },
+      {
+        "name": "get_lineage_tracker",
+        "api_bare_calls": 5,
+        "service_bare_calls": 0,
+        "defs": 1,
+        "files": [
+          "web/backend/app/api/data_lineage.py"
+        ],
+        "classification": "bounded active API route helper / provider candidate",
+        "disposition": "selected for next no-source ownership / route-provider decision"
+      },
+      {
+        "name": "get_postgres_connection",
+        "api_bare_calls": 5,
+        "service_bare_calls": 0,
+        "defs": 1,
+        "files": [
+          "web/backend/app/api/governance_dashboard.py"
+        ],
+        "classification": "control-plane DB connection helper",
+        "disposition": "defer to control-plane route/OpenAPI ownership decision"
+      },
+      {
+        "name": "get_redis_client",
+        "api_bare_calls": 0,
+        "service_bare_calls": 4,
+        "defs": 0,
+        "files": [
+          "web/backend/app/services/system_resource_metrics.py",
+          "web/backend/app/services/redis/redis_pubsub.py",
+          "web/backend/app/services/redis/redis_lock.py",
+          "web/backend/app/services/redis/redis_cache.py"
+        ],
+        "classification": "infrastructure cache/client helper",
+        "disposition": "defer to infrastructure/cache ownership lane"
+      },
+      {
+        "name": "get_cache_integration",
+        "api_bare_calls": 0,
+        "service_bare_calls": 4,
+        "defs": 0,
+        "files": [
+          "web/backend/app/services/unified_data_service.py",
+          "web/backend/app/services/market_data_service/market_data_service_methods/part1.py",
+          "web/backend/app/services/data_service_enhanced.py",
+          "web/backend/app/services/data_service.py"
+        ],
+        "classification": "cache integration infrastructure surface",
+        "disposition": "defer to infrastructure/cache ownership lane"
+      },
+      {
+        "name": "get_cache_manager",
+        "api_bare_calls": 1,
+        "service_bare_calls": 0,
+        "defs": 1,
+        "provider_like": 6,
+        "files": [
+          "web/backend/app/api/dashboard.py",
+          "web/backend/app/api/_cache_basic_routes.py",
+          "web/backend/app/api/cache.py"
+        ],
+        "classification": "ambiguous dashboard/cache helper",
+        "disposition": "defer until dashboard/core cache ownership is disambiguated"
+      }
+    ]
+  },
+  "gitnexus_evidence": {
+    "mcp": {
+      "get_integrated_services_context": "Transport closed"
+    },
+    "cli": {
+      "index_status": "stale warning on sampled candidates",
+      "sampled_candidates": [
+        {
+          "name": "get_integrated_services",
+          "risk": "MEDIUM",
+          "impacted_count": 13,
+          "direct": 13,
+          "processes_affected": 0,
+          "disposition": "defer as root facade compatibility surface"
+        },
+        {
+          "name": "get_indicator_registry",
+          "risk": "UNKNOWN",
+          "status": "ambiguous",
+          "candidates": [
+            "web/backend/app/services/indicator_registry.py",
+            "web/backend/app/services/indicators/indicator_registry.py"
+          ],
+          "disposition": "defer until disambiguated"
+        },
+        {
+          "name": "get_lineage_tracker",
+          "risk": "MEDIUM",
+          "impacted_count": 5,
+          "direct": 5,
+          "processes_affected": 0,
+          "disposition": "selected for next no-source decision"
+        },
+        {
+          "name": "get_postgres_connection",
+          "risk": "MEDIUM",
+          "impacted_count": 6,
+          "direct": 5,
+          "processes_affected": 0,
+          "disposition": "defer to control-plane route/OpenAPI ownership"
+        },
+        {
+          "name": "get_cache_manager",
+          "risk": "UNKNOWN",
+          "status": "ambiguous",
+          "candidates": [
+            "web/backend/app/api/dashboard.py",
+            "web/backend/app/core/cache_manager.py"
+          ],
+          "disposition": "defer until dashboard/core cache ownership is disambiguated"
+        }
+      ]
+    }
+  },
+  "runtime_openapi_smoke": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0
+  },
+  "gitnexus_staged_verification": {
+    "mcp_detect_changes": "Transport closed",
+    "cli_command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db --json",
+    "ok": true,
+    "status": "stale",
+    "risk_level": "low",
+    "changed_files": 9,
+    "changed_symbols": 0,
+    "affected_processes": 0,
+    "indexed_commit": "13321ab73166afc0990b097503294a883842a941",
+    "current_commit": "fcead56344110e33041319271c122e71d2b763a0",
+    "stale_reason": "current_commit_differs_from_indexed_commit",
+    "next_action": "Refresh the GitNexus index before relying on graph freshness."
+  },
+  "decision": {
+    "classification": "residual-candidate-refresh-complete-no-source-lane",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-280",
+    "selected_next_governance_target": "G2.281 no-source data_lineage get_lineage_tracker ownership / route-provider decision",
+    "reason": "get_lineage_tracker is the most bounded active API route helper candidate after get_monitoring_db closeout: five active bare calls in one route module, non-ambiguous GitNexus target, MEDIUM sampled risk, and zero affected processes. Broader root facade, registry, control-plane DB, and cache candidates require separate ownership decisions before any source authorization."
+  },
+  "freshness": {
+    "current_head_checked": "fcead56344110e33041319271c122e71d2b763a0",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_candidate_scan_changes": true
+  }
+}

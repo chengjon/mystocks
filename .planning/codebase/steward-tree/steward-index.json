@@ -1,10 +1,10 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T01:06:12+08:00",
+  "generated_at": "2026-06-01T01:32:16+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "c5496cab0a4213f74636af1c48772dc96c90bd1b",
-  "split_branch": "g2-279-strategy-get-monitoring-db-provider-closeout-refresh",
+  "base_head": "fcead56344110e33041319271c122e71d2b763a0",
+  "split_branch": "g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db",
   "scope": "strategy_get_monitoring_db_provider_implementation",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
@@ -8123,15 +8123,17 @@
     {
       "id": "g2-279-strategy-get-monitoring-db-provider-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.278 strategy get_monitoring_db provider implementation",
       "source_edit_authority": false,
       "github_pr": {
         "number": 432,
         "url": "https://github.com/chengjon/mystocks/pull/432",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-279-strategy-get-monitoring-db-provider-closeout-refresh"
+        "state": "MERGED",
+        "head_ref": "g2-279-strategy-get-monitoring-db-provider-closeout-refresh",
+        "merge_commit": "fcead56344110e33041319271c122e71d2b763a0",
+        "merged_at": "2026-05-31T17:26:19Z"
       },
       "evidence": [
         ".planning/codebase/generated/strategy-get-monitoring-db-provider-closeout-refresh-2026-06-01.json",
@@ -8191,12 +8193,106 @@
         "recommended_next_work_item": "G2.280 no-source service lifecycle residual candidate refresh after get_monitoring_db closeout"
       },
       "freshness": {
-        "current_head_checked": "c5496cab0a4213f74636af1c48772dc96c90bd1b",
+        "current_head_checked": "fcead56344110e33041319271c122e71d2b763a0",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_strategy_or_risk_get_monitoring_db_call_sites_change": true
       },
-      "next_gate": "If accepted, start G2.280 no-source service lifecycle residual candidate refresh after get_monitoring_db closeout."
+      "next_gate": "Superseded by G2.280 no-source service lifecycle residual candidate refresh after get_monitoring_db closeout."
+    },
+    {
+      "id": "g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db",
+      "type": "candidate_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.279 strategy get_monitoring_db provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "github_pr": {
+        "number": 433,
+        "url": "https://github.com/chengjon/mystocks/pull/433",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db"
+      },
+      "evidence": [
+        ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-monitoring-db-2026-06-01.json",
+        "docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-monitoring-db-2026-06-01.md",
+        "governance/mainline/task-cards/pr-433.yaml"
+      ],
+      "closed_parent": {
+        "pr": 432,
+        "state": "MERGED",
+        "merge_commit": "fcead56344110e33041319271c122e71d2b763a0",
+        "merged_at": "2026-05-31T17:26:19Z"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-monitoring-db-2026-06-01.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-monitoring-db-2026-06-01.md",
+        "governance/mainline/task-cards/pr-433.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "scan": {
+        "python_files_scanned": 371,
+        "getter_names_seen": 572,
+        "active_interesting_candidates": 31,
+        "runtime_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0
+      },
+      "candidate_disposition": {
+        "selected_next": "get_lineage_tracker",
+        "selected_next_reason": "bounded active API route helper: five bare calls in one data_lineage route module, MEDIUM sampled risk, zero affected processes",
+        "deferred": [
+          "get_integrated_services root facade compatibility",
+          "get_indicator_registry ambiguous registry surface",
+          "get_postgres_connection control-plane DB helper",
+          "get_redis_client infrastructure cache/client helper",
+          "get_cache_integration cache integration infrastructure surface",
+          "get_cache_manager ambiguous dashboard/cache helper"
+        ]
+      },
+      "gitnexus_evidence": {
+        "mcp": "Transport closed for get_integrated_services context",
+        "cli": "sampled impact checks used; stale-index warning recorded",
+        "staged": "MCP detect_changes returned Transport closed; CLI fallback ok=true, status=stale, risk=low, changed symbols 0, affected processes 0",
+        "selected_candidate": {
+          "name": "get_lineage_tracker",
+          "risk": "MEDIUM",
+          "impacted_count": 5,
+          "direct": 5,
+          "processes_affected": 0
+        }
+      },
+      "decision": {
+        "classification": "residual-candidate-refresh-for-review",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-280",
+        "selected_next_governance_target": "data_lineage-get-lineage-tracker-ownership-route-provider-decision",
+        "recommended_next_work_item": "G2.281 no-source data_lineage get_lineage_tracker ownership / route-provider decision"
+      },
+      "freshness": {
+        "current_head_checked": "fcead56344110e33041319271c122e71d2b763a0",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_candidate_scan_changes": true
+      },
+      "next_gate": "If accepted, start G2.281 no-source data_lineage get_lineage_tracker ownership / route-provider decision."
     }
   ]
 }
