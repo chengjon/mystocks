@@ -926,11 +926,11 @@
     "node_type": "implementation",
     "owner_lane": "web-artdeco",
     "parent": "",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
     "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -989,11 +989,11 @@
       "No batch-analysis runtime state, task submission, task selection, result semantics, or E2E mock payload changes",
       "No shared AI batch component extraction or full page redesign"
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-05-31T15:51:53.907Z",
-    "updated_at": "2026-05-31T15:51:54.256Z",
+    "updated_at": "2026-05-31T16:05:57.997Z",
     "acceptance": {
       "commit_gate": [
         "GitNexus impact before editing BatchAnalysis.vue",
@@ -1019,7 +1019,30 @@
         "note": "",
         "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
         "transitioned_at": "2026-05-31T15:51:54.256Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "39c8a3b2d7ca4a85f66ccaacb17894f52451602e",
+        "transitioned_at": "2026-05-31T16:02:38.242Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "39c8a3b2d7ca4a85f66ccaacb17894f52451602e",
+        "transitioned_at": "2026-05-31T16:05:57.996Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-05-31-artdeco-ai-batch-route-header-shell-report.md",
+      "compatibility": "No router path, route metadata, backend API contract, frontend API client, E2E mock payload, batch runtime state owner, task submission, selected task, result rendering, or shared component extraction changes.",
+      "gates": [
+        "RED/GREEN focused ai-batch E2E passed; full ai-batch Chromium E2E 1/1 passed; ESLint, ArtDeco token check, impeccable JSON, type-check, OpenSpec validate, Function Tree validate, GitNexus staged scope gate completed."
+      ],
+      "current_head": "39c8a3b2d7ca4a85f66ccaacb17894f52451602e",
+      "prepared_at": "2026-05-31T16:05:57.957Z"
+    }
   }
 ]

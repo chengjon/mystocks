@@ -406,5 +406,6 @@ Do not claim completion until the verification commands have actually run and th
 | `/trade/reconciliation` | `web/frontend/src/views/trade/Reconciliation.vue` | migrated |
 | `/trade/signals` | `web/frontend/src/views/trade/Signals.vue` | migrated |
 | `/ai/sentiment` | `web/frontend/src/views/ai/components/AiSentimentHero.vue` | migrated |
+| `/ai/batch` | `web/frontend/src/views/ai/BatchAnalysis.vue` | migrated |
 
 Future migrations should append to this ledger only after implementation and closeout are complete.
