@@ -384,11 +384,11 @@
     "node_type": "implementation",
     "owner_lane": "web-artdeco",
     "parent": "route-header-shell-migration",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#domain-01-node-03",
     "current_head": "b73998b7f2bd87791e98bc4203a204fe4b63a1c9",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -412,11 +412,11 @@
       "Do not change reconciliation account selection, CSV import, statement/result rows, status strip, broker acknowledgement, diff semantics, request-id semantics, or execution context navigation.",
       "Do not extract shared trade reconciliation business components or redesign control/status/work-area surfaces."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-05-31T06:40:18.141Z",
-    "updated_at": "2026-05-31T06:41:46.819Z",
+    "updated_at": "2026-05-31T10:45:12.401Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -438,6 +438,20 @@
         "note": "Implementation bound to current HEAD with baseline evidence and LOW GitNexus impact.",
         "current_head": "b73998b7f2bd87791e98bc4203a204fe4b63a1c9",
         "transitioned_at": "2026-05-31T06:41:46.818Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit ffb399c69 feat(web): migrate trade reconciliation route header shell.",
+        "current_head": "ffb399c697cf0f5d2390daca9e914d40b4d2442d",
+        "transitioned_at": "2026-05-31T10:44:51.581Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout accepted after commit ffb399c69 and report publication.",
+        "current_head": "ffb399c697cf0f5d2390daca9e914d40b4d2442d",
+        "transitioned_at": "2026-05-31T10:45:12.401Z"
       }
     ],
     "acceptance": {
@@ -449,6 +463,17 @@
       "closeout_gate": [
         "Closeout report records compatibility boundaries, verification evidence, no router/API/client changes, and ledger update after implementation."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-05-31-artdeco-trade-reconciliation-route-header-shell-report.md",
+      "compatibility": "No router/API/client/shared reconciliation state/status strip/account selection/import/result-row/diff semantics changes; existing route, hero metadata, refresh/export actions, and stale snapshot clearing behavior preserved.",
+      "gates": [
+        "TDD RED failed on missing artdeco-route-header before implementation.",
+        "Focused trade reconciliation E2E passed: 1 Chromium test passed.",
+        "eslint, ArtDeco token check, impeccable, type-check, OpenSpec validate, PM2 status, and GitNexus staged scope gate completed."
+      ],
+      "current_head": "ffb399c697cf0f5d2390daca9e914d40b4d2442d",
+      "prepared_at": "2026-05-31T10:45:02.517Z"
     }
   }
 ]

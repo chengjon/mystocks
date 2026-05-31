@@ -1,29 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-05-31T06:41:46.820Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "route-header-shell-trade-reconciliation",
-      "title": "Migrate /trade/reconciliation route header shell",
-      "node_type": "implementation",
-      "owner_lane": "web-artdeco",
-      "parent": "route-header-shell-migration",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "docs/FUNCTION_TREE.md#domain-01-node-03",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/frontend/src/views/trade/Reconciliation.vue",
-        "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts",
-        "web/frontend/src/components/artdeco/route-shell/",
-        "docs/reports/tasks/",
-        "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-05-31T06:41:46.819Z"
-    }
-  ]
+  "updated_at": "2026-05-31T10:45:12.402Z",
+  "gates": []
 }

@@ -403,5 +403,6 @@ Do not claim completion until the verification commands have actually run and th
 | `/risk/alerts` | `web/frontend/src/views/risk/Alerts.vue` | migrated |
 | `/market/realtime` | `web/frontend/src/views/market/Realtime.vue` | migrated |
 | `/trade/execution` | `web/frontend/src/views/trade/Execution.vue` | migrated |
+| `/trade/reconciliation` | `web/frontend/src/views/trade/Reconciliation.vue` | migrated |
 
 Future migrations should append to this ledger only after implementation and closeout are complete.
