@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T01:56:44+08:00",
+  "generated_at": "2026-06-01T02:16:40+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "1707284bceeef8992641290d86790c1699975f5a",
-  "split_branch": "g2-281-data-lineage-tracker-ownership-decision",
-  "scope": "strategy_get_monitoring_db_provider_implementation",
+  "base_head": "b8ba6ca75c573913d7b10553620e5d308c0d13f3",
+  "split_branch": "g2-282-data-lineage-tracker-provider-authorization",
+  "scope": "data_lineage_tracker_provider_authorization",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -8299,7 +8299,7 @@
     {
       "id": "g2-281-data-lineage-tracker-ownership-decision",
       "type": "ownership_decision",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.280 service lifecycle residual candidate refresh after get_monitoring_db",
       "source_edit_authority": false,
@@ -8308,7 +8308,7 @@
       "github_pr": {
         "number": 434,
         "url": "https://github.com/chengjon/mystocks/pull/434",
-        "state": "PLANNED_FOR_REVIEW",
+        "state": "MERGED",
         "head_ref": "g2-281-data-lineage-tracker-ownership-decision"
       },
       "evidence": [
@@ -8388,7 +8388,118 @@
         "stale_if_data_lineage_call_sites_change": true,
         "stale_if_gitnexus_risk_changes": true
       },
-      "next_gate": "Stop for human review. If accepted, decide whether to start G2.282 no-source data_lineage get_lineage_tracker provider authorization package."
+      "next_gate": "Superseded by G2.282 no-source data_lineage get_lineage_tracker provider authorization package."
+    },
+    {
+      "id": "g2-282-data-lineage-tracker-provider-authorization",
+      "type": "authorization_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.281 data_lineage get_lineage_tracker ownership / route-provider decision",
+      "source_edit_authority": false,
+      "autopilot_status": "stop_at_pr_review_gate",
+      "autopilot_stop_reason": "G2.282 authorizes future source work and GitNexus sampled impact for get_lineage_tracker is MEDIUM",
+      "github_pr": {
+        "number": 435,
+        "url": "https://github.com/chengjon/mystocks/pull/435",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-282-data-lineage-tracker-provider-authorization"
+      },
+      "evidence": [
+        ".planning/codebase/generated/data-lineage-tracker-provider-authorization-2026-06-01.json",
+        "docs/reports/quality/backend-data-lineage-tracker-provider-authorization-2026-06-01.md",
+        "governance/mainline/task-cards/pr-435.yaml"
+      ],
+      "closed_parent": {
+        "pr": 434,
+        "state": "MERGED",
+        "merge_commit": "b8ba6ca75c573913d7b10553620e5d308c0d13f3",
+        "merged_at": "2026-05-31T18:11:33Z"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/data-lineage-tracker-provider-authorization-2026-06-01.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-data-lineage-tracker-provider-authorization-2026-06-01.md",
+        "governance/mainline/task-cards/pr-435.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "surface": {
+        "module": "web/backend/app/api/data_lineage.py",
+        "helper": "get_lineage_tracker",
+        "definition_line": 92,
+        "active_direct_calls": 5,
+        "cleanup_sites": 5,
+        "route_handlers": [
+          "record_lineage",
+          "get_upstream_lineage",
+          "get_downstream_lineage",
+          "get_lineage_graph",
+          "analyze_impact"
+        ],
+        "runtime_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0
+      },
+      "gitnexus_evidence": {
+        "mcp_context": "tool call failed: Transport closed",
+        "mcp_impact": "tool call failed: Transport closed",
+        "staged": "MCP detect_changes returned Transport closed; CLI fallback ok=true, status=stale, risk=low, changed files 9, changed symbols 0, affected processes 0",
+        "cli_context": "found one Function:web/backend/app/api/data_lineage.py:get_lineage_tracker symbol with five incoming calls",
+        "cli_impact": {
+          "risk": "MEDIUM",
+          "impacted_count": 5,
+          "direct": 5,
+          "processes_affected": 0,
+          "index_status": "stale warning"
+        }
+      },
+      "decision": {
+        "classification": "provider-authorization-for-review",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-282-before-pr-435-human-acceptance",
+        "autopilot_continue_allowed": false,
+        "selected_next_governance_target": "data_lineage-get-lineage-tracker-provider-implementation",
+        "recommended_next_work_item": "G2.283 path-limited data_lineage get_lineage_tracker route-provider implementation only after PR #435 human acceptance"
+      },
+      "future_authorized_shape": {
+        "allowed_source_paths_after_acceptance": [
+          "web/backend/app/api/data_lineage.py"
+        ],
+        "allowed_test_paths_after_acceptance": [
+          "tests/api/file_tests/test_data_lineage_api.py",
+          "web/backend/tests/test_data_lineage_regressions.py"
+        ],
+        "required_constraints": [
+          "preserve connection cleanup semantics",
+          "preserve route paths, methods, response models, and OpenAPI exposure",
+          "rerun GitNexus before source edits and stop on HIGH or CRITICAL risk"
+        ]
+      },
+      "freshness": {
+        "current_head_checked": "b8ba6ca75c573913d7b10553620e5d308c0d13f3",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_data_lineage_call_sites_change": true,
+        "stale_if_gitnexus_risk_changes": true,
+        "stale_if_test_inventory_changes": true
+      },
+      "next_gate": "Stop for human review. If accepted, decide whether to start G2.283 path-limited data_lineage get_lineage_tracker route-provider implementation."
     }
   ]
 }

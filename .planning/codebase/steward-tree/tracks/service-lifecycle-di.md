@@ -2997,13 +2997,27 @@ Status: accepted/merged by PR `#433` at `1707284bceeef8992641290d86790c1699975f5
 
 ## G2.281 data_lineage get_lineage_tracker Ownership / Route-Provider Decision
 
-Status: for review in future PR `#434`.
+Status: accepted/merged by PR `#434` at `b8ba6ca75c573913d7b10553620e5d308c0d13f3`.
 
 - Parent PR `#433` merged at `1707284bceeef8992641290d86790c1699975f5a`.
 - `get_lineage_tracker` is defined in `web/backend/app/api/data_lineage.py` and returns a `LineageTracker` plus connection adapter created from an `asyncpg` raw connection.
 - Active direct callers are `record_lineage`, `get_upstream_lineage`, `get_downstream_lineage`, `get_lineage_graph`, and `analyze_impact`.
 - Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and the five `/api/v1/lineage` paths present.
 - GitNexus CLI context found one symbol and five incoming calls; impact is MEDIUM with `5` impacted / direct callers and `0` affected processes.
-- Limited autopilot must stop at this PR review gate because GitNexus risk is MEDIUM.
-- Recommended next gate after human acceptance: decide whether to create `G2.282 no-source data_lineage get_lineage_tracker provider authorization package`.
+- Limited autopilot stopped at this PR review gate because GitNexus risk is MEDIUM; human maintainer approved continuing into G2.282.
+- Next gate after acceptance: `G2.282 no-source data_lineage get_lineage_tracker provider authorization package`.
 - G2.281 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.282 data_lineage get_lineage_tracker Provider Authorization
+
+Status: for review in future PR `#435`.
+
+- Parent PR `#434` merged at `b8ba6ca75c573913d7b10553620e5d308c0d13f3`.
+- G2.282 is a no-source authorization package only. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- GitNexus MCP context / impact returned `Transport closed`; CLI fallback using `Function:web/backend/app/api/data_lineage.py:get_lineage_tracker` returned MEDIUM risk with `5` impacted / direct symbols and `0` affected processes.
+- The current route-local lifecycle is explicit: all five active handlers call `get_lineage_tracker()` and all five close the returned connection adapter with `await conn.close()`.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and the five `/api/v1/lineage` paths present.
+- Focused existing test inventory includes `tests/api/file_tests/test_data_lineage_api.py`, `tests/integration/test_data_lineage_tracker_integration.py`, `tests/unit/test_governance/test_data_lineage_tracker.py`, `tests/unit/test_governance/test_lineage.py`, and `web/backend/tests/test_data_lineage_regressions.py`.
+- Authorized next gate after human acceptance: G2.283 path-limited `web/backend/app/api/data_lineage.py` route-provider implementation.
+- Future G2.283 must preserve route paths, response models, OpenAPI shape, and connection cleanup semantics; it must rerun GitNexus before source edits and stop on HIGH or CRITICAL risk.
+- G2.282 must stop at PR `#435` review and must not be auto-merged under limited autopilot because it authorizes future source work and the target helper has MEDIUM impact.
