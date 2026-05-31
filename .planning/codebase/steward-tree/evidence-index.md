@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T12:01:59+08:00`
-- Base HEAD checked: `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`
+- Prepared at: `2026-05-31T12:27:16+08:00`
+- Base HEAD checked: `772e4a3ac8e05edaa243d660d67c7e5df18158f9`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/monitoring-signal-residual-classification-refresh-2026-05-31.json` | G2.267 monitoring/signal residual classification evidence | Review input for PR `#420`; selects G2.268 no-source monitoring portfolio optimizer route provider authorization |
-| `docs/reports/quality/backend-monitoring-signal-residual-classification-refresh-2026-05-31.md` | G2.267 human-readable classification report | Review input for PR `#420`; no source, route, test, docs/api, or OpenSpec edits authorized |
-| `governance/mainline/task-cards/pr-420.yaml` | Path-limited governance task card for G2.267 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/monitoring-portfolio-optimizer-provider-authorization-2026-05-31.json` | G2.268 monitoring portfolio optimizer provider authorization evidence | Review input for PR `#421`; authorizes only future G2.269 path-limited source lane after acceptance |
+| `docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-authorization-2026-05-31.md` | G2.268 human-readable authorization report | Review input for PR `#421`; no source, route, test, docs/api, or OpenSpec edits authorized in G2.268 |
+| `governance/mainline/task-cards/pr-421.yaml` | Path-limited governance task card for G2.268 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/monitoring-signal-residual-classification-refresh-2026-05-31.json` | G2.267 monitoring/signal residual classification evidence | Accepted by PR `#420`, merged at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`; selects G2.268 no-source monitoring portfolio optimizer route provider authorization |
+| `docs/reports/quality/backend-monitoring-signal-residual-classification-refresh-2026-05-31.md` | G2.267 human-readable classification report | Accepted by PR `#420`; no source, route, test, docs/api, or OpenSpec edits authorized |
+| `governance/mainline/task-cards/pr-420.yaml` | Path-limited governance task card for G2.267 | Accepted by PR `#420`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/signal-statistics-dormant-contract-closeout-refresh-2026-05-31.json` | G2.266 signal statistics dormant contract closeout / residual-refresh evidence | Review input for PR `#419`; records PR `#418` accepted/merged and selects G2.267 no-source residual classification |
 | `docs/reports/quality/backend-signal-statistics-dormant-contract-closeout-refresh-2026-05-31.md` | G2.266 human-readable closeout / residual-refresh report | Review input for PR `#419`; no source, route, OpenAPI artifact, or test edits authorized |
 | `governance/mainline/task-cards/pr-419.yaml` | Path-limited governance task card for G2.266 | Review input; allows only steward tree, generated evidence, report, and task card updates |

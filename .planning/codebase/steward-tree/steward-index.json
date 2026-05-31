@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T12:01:59+08:00",
+  "generated_at": "2026-05-31T12:27:16+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "eec68bb47a4ee98508480ef0ac2cdd3716e04b05",
-  "split_branch": "g2-267-monitoring-signal-residual-classification-refresh",
-  "scope": "monitoring_signal_residual_classification_refresh",
+  "base_head": "772e4a3ac8e05edaa243d660d67c7e5df18158f9",
+  "split_branch": "g2-268-monitoring-portfolio-optimizer-provider-authorization",
+  "scope": "monitoring_portfolio_optimizer_provider_authorization",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -6976,15 +6976,17 @@
     {
       "id": "g2-267-monitoring-signal-residual-classification-refresh",
       "type": "decision_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.266 signal statistics dormant contract closeout / residual refresh",
       "source_edit_authority": false,
       "github_pr": {
         "number": 420,
         "url": "https://github.com/chengjon/mystocks/pull/420",
-        "state": "FOR_REVIEW",
-        "head_ref": "g2-267-monitoring-signal-residual-classification-refresh"
+        "state": "MERGED",
+        "head_ref": "g2-267-monitoring-signal-residual-classification-refresh",
+        "merge_commit": "772e4a3ac8e05edaa243d660d67c7e5df18158f9",
+        "merged_at": "2026-05-31T04:21:42Z"
       },
       "evidence": [
         ".planning/codebase/generated/monitoring-signal-residual-classification-refresh-2026-05-31.json",
@@ -7020,10 +7022,100 @@
         "reason": "get_portfolio_optimizer is the only concentrated active route-body provider candidate in this refresh."
       },
       "freshness": {
-        "current_head_checked": "eec68bb47a4ee98508480ef0ac2cdd3716e04b05",
+        "current_head_checked": "772e4a3ac8e05edaa243d660d67c7e5df18158f9",
         "stale_if_head_or_pr_state_changes": true
       },
-      "next_gate": "If accepted, start G2.268 no-source monitoring portfolio optimizer route provider authorization; do not directly open source implementation."
+      "next_gate": "Superseded by G2.268 no-source monitoring portfolio optimizer route provider authorization."
+    },
+    {
+      "id": "g2-268-monitoring-portfolio-optimizer-provider-authorization",
+      "type": "authorization_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.267 monitoring/signal residual provider classification refresh",
+      "source_edit_authority": false,
+      "github_pr": {
+        "number": 421,
+        "url": "https://github.com/chengjon/mystocks/pull/421",
+        "state": "FOR_REVIEW",
+        "head_ref": "g2-268-monitoring-portfolio-optimizer-provider-authorization"
+      },
+      "evidence": [
+        ".planning/codebase/generated/monitoring-portfolio-optimizer-provider-authorization-2026-05-31.json",
+        "docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-authorization-2026-05-31.md",
+        "governance/mainline/task-cards/pr-421.yaml"
+      ],
+      "candidate": {
+        "symbol": "get_portfolio_optimizer",
+        "definition": "src/monitoring/domain/portfolio_optimizer.py:383",
+        "definition_count": 1,
+        "active_route_body_call_sites": [
+          "web/backend/app/api/_monitoring_portfolio_router.py:171",
+          "web/backend/app/api/_monitoring_portfolio_router.py:239",
+          "web/backend/app/api/_monitoring_portfolio_router.py:309"
+        ],
+        "target_handlers": [
+          "get_portfolio_summary",
+          "get_portfolio_alerts",
+          "get_rebalance_suggestions"
+        ]
+      },
+      "runtime_openapi": {
+        "routes": 548,
+        "paths": 500,
+        "duplicate_operation_ids": 0,
+        "target_module_routes": 3,
+        "portfolio_openapi_paths": 4,
+        "related_non_target_route": "app.api.monitoring_analysis::analyze_portfolio"
+      },
+      "gitnexus": {
+        "context_get_portfolio_optimizer": "tool call failed: Transport closed",
+        "impact_get_portfolio_optimizer": "tool call failed: Transport closed",
+        "verify_staged_cli": "exit 0; 0 changed symbols; 0 affected processes; stale index 41c18309a555 -> 772e4a3ac8e0",
+        "future_source_gate": "retry GitNexus or record CLI fallback before editing"
+      },
+      "authorization": {
+        "selected_next_governance_target": "G2.269 path-limited monitoring portfolio optimizer route provider implementation",
+        "authorized_after_acceptance_only": true,
+        "authorized_future_source_paths": [
+          "web/backend/app/api/_monitoring_portfolio_router.py"
+        ],
+        "authorized_future_test_paths": [
+          "tests/api/file_tests/test_monitoring_analysis_api.py",
+          "web/backend/tests/test_health_route_conflicts.py"
+        ],
+        "source_lane_recommendation": "do-not-start-source-implementation-until-g2-268-is-accepted"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/monitoring-portfolio-optimizer-provider-authorization-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-authorization-2026-05-31.md",
+        "governance/mainline/task-cards/pr-421.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "772e4a3ac8e05edaa243d660d67c7e5df18158f9",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true
+      },
+      "next_gate": "If accepted, start G2.269 path-limited monitoring portfolio optimizer route provider implementation; do not edit source from G2.268."
     }
   ]
 }

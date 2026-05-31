@@ -1,0 +1,129 @@
+version: "v0.2"
+
+task:
+  id: "pr-421"
+  title: "Authorize monitoring portfolio optimizer provider lane"
+  owner: "codex"
+  created_at: "2026-05-31"
+
+mainline:
+  id: "L1-monitoring-portfolio-optimizer-provider-authorization"
+  objective: "authorize a future path-limited provider implementation for portfolio optimizer route handlers"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.268 updates only steward tree state, generated evidence, a quality report, and this task card. It changes no runtime entrypoints, route paths, backend source, tests, frontend, OpenAPI generation code, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/monitoring-portfolio-optimizer-provider-authorization-2026-05-31.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-authorization-2026-05-31.md"
+    - "governance/mainline/task-cards/pr-421.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route registration changes"
+  - "provider injection implementation"
+  - "source retirement or archive"
+  - "OpenAPI artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr420-merged"
+      command: "gh pr view 420 confirms MERGED at 772e4a3ac8e05edaa243d660d67c7e5df18158f9"
+      required: true
+    - id: "gitnexus-precheck"
+      command: "GitNexus MCP context/impact for get_portfolio_optimizer retried; Transport closed result recorded"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main import and app.openapi() snapshot records 548 routes, 500 OpenAPI paths, duplicate operation IDs 0, and 3 target module routes"
+      required: true
+    - id: "static-candidate-grep"
+      command: "static scan finds one get_portfolio_optimizer definition and three active route-body call sites in _monitoring_portfolio_router.py"
+      required: true
+    - id: "test-anchor-map"
+      command: "focused test anchors recorded for tests/api/file_tests/test_monitoring_analysis_api.py and web/backend/tests/test_health_route_conflicts.py"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-authorization-2026-05-31.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-421.yaml --base-sha 772e4a3ac8e05edaa243d660d67c7e5df18158f9 --head-sha HEAD --report /tmp/pr421-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; timeout/stale-index/transport failures recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.268 must not be mistaken for source implementation, route registration, provider injection, or source retirement authorization."
+    - "GitNexus MCP returned Transport closed for get_portfolio_optimizer; future G2.269 source work must retry impact/context or record CLI fallback before editing."
+  rollback_plan: "Revert PR #421; this restores the steward tree to the immediate post-PR #420 state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize the next path-limited monitoring portfolio optimizer route provider implementation lane."
+    modified_scope: "Steward tree, generated evidence, quality report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or backend behavior changes."
+    rollback_ready: "Revert PR #421."
+    risk_and_rollback_point: "Pure governance authorization; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-31T12:27:16+08:00"
+    approval_note: "Human maintainer approved continuing after PR #420 merge into G2.268 no-source portfolio optimizer provider authorization. No source implementation is authorized."
+    secondary_approved: false

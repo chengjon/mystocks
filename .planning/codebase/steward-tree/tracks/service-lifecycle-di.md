@@ -2796,7 +2796,7 @@ Status: accepted/merged by PR `#419` at `eec68bb47a4ee98508480ef0ac2cdd3716e04b0
 
 ## G2.267 Monitoring / Signal Residual Provider Classification Refresh
 
-Status: for review in PR `#420`.
+Status: accepted/merged by PR `#420` at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`.
 
 - Parent PR `#419` merged at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`.
 - Classified monitoring/signal getter-shaped residuals without source edits.
@@ -2804,6 +2804,19 @@ Status: for review in PR `#420`.
 - Retained wrapper surfaces: monitoring calculator/postgres wrapper functions and signal history postgres provider backing wrapper.
 - False positives: `monitoring.py::analyze_monitoring` route-helper call and dormant `get_signal_statistics.py`.
 - Control-plane residual: `web/backend/app/api/v1/pool_monitoring.py` pool accessors require route/OpenAPI/control-plane governance, not service DI implementation.
-- GitNexus `context` and `impact` for `get_portfolio_optimizer` timed out; G2.268 must re-check before authorizing source.
-- Next gate: G2.268 no-source monitoring portfolio optimizer route provider authorization.
+- GitNexus `context` and `impact` for `get_portfolio_optimizer` timed out; G2.268 rechecked and recorded MCP `Transport closed`.
+- Superseded by G2.268 no-source monitoring portfolio optimizer route provider authorization.
 - G2.267 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, or PM2 state.
+
+## G2.268 Monitoring Portfolio Optimizer Provider Authorization
+
+Status: for review in PR `#421`.
+
+- Parent PR `#420` merged at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`.
+- Selected candidate: `get_portfolio_optimizer()` has one definition in `src/monitoring/domain/portfolio_optimizer.py` and three active route-body call sites in `web/backend/app/api/_monitoring_portfolio_router.py`.
+- Target handlers: `get_portfolio_summary`, `get_portfolio_alerts`, and `get_rebalance_suggestions`.
+- Runtime/OpenAPI snapshot: `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and `3` target module routes.
+- GitNexus MCP context/impact retried and returned `Transport closed`; future source work must retry GitNexus or record CLI fallback before editing.
+- Authorized next gate after acceptance: G2.269 path-limited monitoring portfolio optimizer route provider implementation.
+- Future G2.269 may touch only `web/backend/app/api/_monitoring_portfolio_router.py` plus focused tests in `tests/api/file_tests/test_monitoring_analysis_api.py` and `web/backend/tests/test_health_route_conflicts.py`.
+- G2.268 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, or PM2 state.
