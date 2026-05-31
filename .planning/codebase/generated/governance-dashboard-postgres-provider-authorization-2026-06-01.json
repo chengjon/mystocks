@@ -1,0 +1,152 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-01T07:48:42+08:00",
+  "gate": "G2.286",
+  "title": "governance_dashboard get_postgres_connection provider authorization",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "bdfdeb353f725f9e875ab50ee4e8ed22902a5818",
+  "worktree": ".worktrees/g2-286-governance-dashboard-postgres-provider-authorization",
+  "source_edit_authority": false,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "G2.286 authorizes future source work and the selected target has GitNexus MEDIUM impact.",
+  "parent": {
+    "gate": "G2.285",
+    "pr": 438,
+    "state": "MERGED",
+    "merged_at": "2026-05-31T23:45:27Z",
+    "merge_commit": "bdfdeb353f725f9e875ab50ee4e8ed22902a5818",
+    "summary": "No-source governance_dashboard get_postgres_connection ownership decision accepted and merged."
+  },
+  "target": {
+    "symbol": "get_postgres_connection",
+    "file": "web/backend/app/api/governance_dashboard.py",
+    "definition_line": 124,
+    "classification": "bounded-active-control-plane-route-helper",
+    "router_prefix": "/api/v1/governance",
+    "direct_route_body_calls": 5,
+    "manual_conn_close_lines": 9,
+    "route_handlers": [
+      "get_quality_overview",
+      "get_lineage_stats",
+      "get_assets_catalog",
+      "get_compliance_metrics",
+      "get_dashboard_summary"
+    ]
+  },
+  "authorization": {
+    "selected_next_gate": "G2.287 path-limited governance_dashboard get_postgres_connection route-provider implementation",
+    "future_source_edit_authority_after_acceptance": true,
+    "future_allowed_source_paths": [
+      "web/backend/app/api/governance_dashboard.py"
+    ],
+    "future_allowed_test_paths": [
+      "tests/api/file_tests/test_governance_dashboard_api.py",
+      "web/backend/tests/test_governance_dashboard_postgres_provider.py"
+    ],
+    "future_allowed_governance_paths": [
+      ".planning/codebase/generated/governance-dashboard-postgres-provider-implementation-2026-06-01.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-governance-dashboard-postgres-provider-implementation-2026-06-01.md",
+      "governance/mainline/task-cards/pr-440.yaml"
+    ],
+    "required_future_implementation_shape": [
+      "add a route-local async generator provider in web/backend/app/api/governance_dashboard.py",
+      "move only the five current governance dashboard handlers to Depends(provider)",
+      "move connection cleanup into the provider finalizer",
+      "preserve route paths, response_model declarations, responses metadata, OpenAPI exposure, and operation IDs",
+      "preserve current UnifiedResponse behavior and error handling shape"
+    ],
+    "explicitly_forbidden_future_scope": [
+      "shared PostgreSQL provider or infrastructure rewrite",
+      "app-wide database/session abstraction changes",
+      "route registration changes",
+      "route path, method, response model, or generated OpenAPI artifact changes",
+      "docs/api artifact edits",
+      "frontend/config/script changes",
+      "OpenSpec proposal or spec edits",
+      "PM2 commands or runtime state changes",
+      "source retirement or archive"
+    ]
+  },
+  "route_openapi_smoke": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "governance_paths": [
+      "/api/v1/governance/assets/catalog",
+      "/api/v1/governance/compliance/metrics",
+      "/api/v1/governance/dashboard/summary",
+      "/api/v1/governance/lineage/stats",
+      "/api/v1/governance/quality/overview"
+    ],
+    "known_warning_noise": "Mock backtest NotImplementedError fallback and service initialization logs only; route/OpenAPI smoke exited with status 0."
+  },
+  "gitnexus_evidence": {
+    "cli_context": {
+      "status": "found",
+      "uid": "Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection",
+      "incoming_calls_from_index": [
+        "get_quality_overview",
+        "get_lineage_stats",
+        "get_assets_catalog",
+        "get_compliance_metrics",
+        "fetch_all_data"
+      ],
+      "current_code_correction": "current HEAD route handler is get_dashboard_summary, not fetch_all_data; GitNexus index is stale",
+      "processes": [],
+      "index_status": "stale warning"
+    },
+    "cli_impact": {
+      "risk": "MEDIUM",
+      "impacted_count": 6,
+      "direct": 5,
+      "processes_affected": 0,
+      "affected_processes": [],
+      "index_status": "stale warning"
+    }
+  },
+  "future_required_verification": {
+    "pre_edit": [
+      "rerun GitNexus context/impact for Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection",
+      "stop before source edits if GitNexus returns HIGH or CRITICAL risk",
+      "record current route/OpenAPI smoke before editing"
+    ],
+    "tdd": [
+      "write failing provider regression proving the five target handlers use Depends(provider)",
+      "write failing cleanup regression proving provider finalizer closes the connection",
+      "turn tests green with the minimal route-local provider implementation"
+    ],
+    "post_edit": [
+      "pytest focused governance dashboard provider test",
+      "pytest tests/api/file_tests/test_governance_dashboard_api.py -q -n 0 --tb=short --no-cov",
+      "pytest web/backend/tests/test_health_route_conflicts.py -q -n 0 --tb=short --no-cov",
+      "ruff check web/backend/app/api/governance_dashboard.py tests/api/file_tests/test_governance_dashboard_api.py web/backend/tests/test_governance_dashboard_postgres_provider.py",
+      "app.main route/OpenAPI smoke: 548 routes, 500 paths, duplicate operation IDs 0, no provider parameter leak",
+      "mainline_scope_gate",
+      "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "git diff --check and git diff --cached --check",
+      "GitNexus detect/verify staged changes"
+    ]
+  },
+  "decision": {
+    "classification": "authorization-package-no-source",
+    "source_lane_authorized_now": false,
+    "future_source_lane_authorized_after_acceptance": true,
+    "recommended_next_governance_target": "G2.287 path-limited governance_dashboard get_postgres_connection route-provider implementation",
+    "autopilot_continue_allowed": false,
+    "reason": "The future source lane would change route handler dependency injection and the target has GitNexus MEDIUM impact. Human review is required before implementation."
+  },
+  "freshness": {
+    "current_head_checked": "bdfdeb353f725f9e875ab50ee4e8ed22902a5818",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_governance_dashboard_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}

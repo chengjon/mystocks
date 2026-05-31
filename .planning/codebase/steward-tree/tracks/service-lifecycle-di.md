@@ -3052,7 +3052,7 @@ Status: accepted/merged by PR `#437` at `d34774837a0582f0e33d47425bb017b44e5aacd
 
 ## G2.285 governance_dashboard get_postgres_connection Ownership / Control-Plane Route-Provider Decision
 
-Status: for review in future PR `#438`.
+Status: accepted/merged by PR `#438` at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`.
 
 - Parent PR `#437` merged at `d34774837a0582f0e33d47425bb017b44e5aacd9`.
 - G2.285 is a no-source ownership decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3062,5 +3062,19 @@ Status: for review in future PR `#438`.
 - Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and the five governance dashboard paths present.
 - GitNexus CLI fallback returned MEDIUM risk with `6` impacted symbols, `5` direct callers, `0` affected processes, and a stale-index warning. The stale index names one caller as `fetch_all_data`; current code truth is `get_dashboard_summary`.
 - Decision: classify this as a bounded active control-plane route helper owned by `governance_dashboard.py`, not as a shared service facade, app-wide PostgreSQL provider, or route-registration issue.
-- Recommended next gate after human acceptance: G2.286 no-source `governance_dashboard.get_postgres_connection` provider authorization package.
-- G2.285 must stop at PR `#438` review and must not auto-merge because the selected target has GitNexus MEDIUM impact.
+- Recommended next gate after acceptance: G2.286 no-source `governance_dashboard.get_postgres_connection` provider authorization package.
+- G2.285 must not be used as source implementation authorization; G2.286 is the only current authorization package for this surface.
+
+## G2.286 governance_dashboard get_postgres_connection Provider Authorization
+
+Status: for review in future PR `#439`.
+
+- Parent PR `#438` merged at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`.
+- G2.286 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- It authorizes only a future G2.287 path-limited implementation after human acceptance.
+- Future G2.287 may touch only `web/backend/app/api/governance_dashboard.py` plus focused governance dashboard tests: `tests/api/file_tests/test_governance_dashboard_api.py` and `web/backend/tests/test_governance_dashboard_postgres_provider.py`.
+- Future G2.287 shape: add a route-local async generator provider, move only the five current governance dashboard handlers to `Depends(provider)`, and move connection cleanup into the provider finalizer.
+- Future G2.287 must preserve route paths, `response_model` declarations, response metadata, OpenAPI exposure, operation IDs, current `UnifiedResponse` behavior, and error handling shape.
+- Current route/OpenAPI smoke with placeholder import-time environment values records `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and the five governance dashboard paths present.
+- GitNexus CLI fallback still reports MEDIUM risk with `6` impacted symbols, `5` direct callers, `0` affected processes, and a stale-index warning.
+- PR `#439` must stop for human review and must not auto-merge because it authorizes future source work and the selected target has GitNexus MEDIUM impact.
