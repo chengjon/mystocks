@@ -584,5 +584,82 @@
       "current_head": "81e9db3bedd3558d2c07b0e41e4c6c912a52f34f",
       "prepared_at": "2026-05-31T12:05:56.040Z"
     }
+  },
+  {
+    "id": "ai-sentiment-shape-test-hardening",
+    "title": "Shape and harden /ai/sentiment route header readiness",
+    "node_type": "implementation",
+    "owner_lane": "web",
+    "parent": "",
+    "status": "approved-for-implementation",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
+    "current_head": "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/tasks/2026-05-31-artdeco-route-header-shell-next-batch-plan.md",
+        "note": "",
+        "current_head": "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb",
+        "recorded_at": "2026-05-31T12:19:25.980Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/tasks/2026-05-30-artdeco-ai-sentiment-hook-alignment-report.md",
+        "note": "",
+        "current_head": "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb",
+        "recorded_at": "2026-05-31T12:19:39.926Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "PRODUCT.md",
+        "note": "",
+        "current_head": "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb",
+        "recorded_at": "2026-05-31T12:19:51.256Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "DESIGN.md",
+        "note": "",
+        "current_head": "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb",
+        "recorded_at": "2026-05-31T12:20:00.448Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/tests/e2e/ai-sentiment-workbench.spec.ts",
+      "docs/reports/tasks/",
+      "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not migrate /ai/sentiment to ArtDecoRouteHeader in this node; this node only prepares shape and hardens tests.",
+      "Do not modify router paths, route aliases, redirects, guards, menu entries, or canonical route ownership.",
+      "Do not modify backend API contracts, OpenAPI/Pydantic schemas, frontend API clients, request URLs, stores, composables, or child component behavior.",
+      "Do not extract shared AI sentiment business components or redesign KPI cards, workbench panels, text analysis behavior, announcement feed behavior, or risk/news wrapper behavior."
+    ],
+    "next_gate": "implement within allowed_paths",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T12:19:14.935Z",
+    "updated_at": "2026-05-31T12:20:31.064Z",
+    "acceptance": {
+      "commit_gate": [
+        "Create an /ai/sentiment route header readiness shape brief and harden existing E2E assertions for header metadata/status without changing runtime semantics.",
+        "Focused ai-sentiment E2E, eslint, Function Tree scope-check, OpenSpec validation, and GitNexus staged scope gate must pass or be explicitly reported."
+      ],
+      "closeout_gate": [
+        "Closeout records that route/API/client/component behavior stayed unchanged and whether a later ArtDecoRouteHeader migration is safe to propose."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing with Batch B shape/test hardening for /ai/sentiment; no route header shell migration in this node.",
+        "current_head": "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb",
+        "transitioned_at": "2026-05-31T12:20:31.064Z"
+      }
+    ]
   }
 ]

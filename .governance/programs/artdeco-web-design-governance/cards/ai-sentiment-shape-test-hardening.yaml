@@ -1,0 +1,28 @@
+task:
+  id: "ai-sentiment-shape-test-hardening"
+  title: "Shape and harden /ai/sentiment route header readiness"
+
+scope:
+  allowed_paths:
+    - "web/frontend/tests/e2e/ai-sentiment-workbench.spec.ts"
+    - "docs/reports/tasks/"
+    - "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not migrate /ai/sentiment to ArtDecoRouteHeader in this node; this node only prepares shape and hardens tests."
+  - "Do not modify router paths, route aliases, redirects, guards, menu entries, or canonical route ownership."
+  - "Do not modify backend API contracts, OpenAPI/Pydantic schemas, frontend API clients, request URLs, stores, composables, or child component behavior."
+  - "Do not extract shared AI sentiment business components or redesign KPI cards, workbench panels, text analysis behavior, announcement feed behavior, or risk/news wrapper behavior."
+
+acceptance:
+  commit_gate:
+    - "Create an /ai/sentiment route header readiness shape brief and harden existing E2E assertions for header metadata/status without changing runtime semantics."
+    - "Focused ai-sentiment E2E, eslint, Function Tree scope-check, OpenSpec validation, and GitNexus staged scope gate must pass or be explicitly reported."
+  closeout_gate:
+    - "Closeout records that route/API/client/component behavior stayed unchanged and whether a later ArtDecoRouteHeader migration is safe to propose."
+
+evidence:
+  current_head: "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb"
+  notes: []
