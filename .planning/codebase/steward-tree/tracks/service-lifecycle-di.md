@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T20:12:35+08:00`
-- Base HEAD checked: `bcf28e4668391f91ea97ee252b4da4eea64faf74`
+- Prepared at: `2026-05-31T20:39:29+08:00`
+- Base HEAD checked: `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2880,7 +2880,7 @@ Status: accepted/merged by PR `#425` at `bcf28e4668391f91ea97ee252b4da4eea64faf7
 
 ## G2.273 get_monitoring_db Ownership / Route-Provider Decision
 
-Status: for review in future PR `#426`.
+Status: accepted/merged by PR `#426` at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`.
 
 - Parent PR `#425` merged at `bcf28e4668391f91ea97ee252b4da4eea64faf74`.
 - GitNexus MCP impact returned `Transport closed`; CLI impact returned an ambiguous result for three same-name symbols.
@@ -2891,3 +2891,18 @@ Status: for review in future PR `#426`.
 - Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation IDs.
 - Decision: do not create one combined `get_monitoring_db` implementation lane. Select `G2.274 no-source risk get_monitoring_db route-provider authorization` as the next gate.
 - G2.273 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.274 Risk get_monitoring_db Provider Authorization
+
+Status: for review in future PR `#427`.
+
+- Parent PR `#426` merged at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`.
+- GitNexus MCP impact returned `Transport closed`; CLI impact using `Function:web/backend/app/api/risk/_shared.py:get_monitoring_db` returned LOW risk with 3 direct risk handlers.
+- Direct affected symbols are `create_risk_alert`, `calculate_var_cvar`, and `calculate_beta`.
+- Risk target files are `web/backend/app/api/risk/_shared.py`, `web/backend/app/api/risk/alerts.py`, and `web/backend/app/api/risk/metrics.py`.
+- Current route-body risk call sites remain 6 across the three authorized handlers.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation IDs.
+- Target endpoint parameter counts are unchanged at authorization time: `POST /api/v1/risk/alerts` has `0`, `POST /api/v1/risk/var-cvar` has `0`, and `POST /api/v1/risk/beta` has `0`.
+- Authorized next gate after acceptance: G2.275 path-limited risk `get_monitoring_db` route-provider implementation.
+- Future G2.275 may touch only the three risk source paths plus focused risk tests named in the authorization report.
+- G2.274 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

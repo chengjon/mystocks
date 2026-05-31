@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T20:12:35+08:00`
-- Base HEAD checked: `bcf28e4668391f91ea97ee252b4da4eea64faf74`
+- Prepared at: `2026-05-31T20:39:29+08:00`
+- Base HEAD checked: `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/get-monitoring-db-ownership-decision-2026-05-31.json` | G2.273 `get_monitoring_db` ownership decision evidence | Review input for PR `#426`; no-source split ownership decision |
-| `docs/reports/quality/backend-get-monitoring-db-ownership-decision-2026-05-31.md` | G2.273 human-readable ownership decision report | Review input for PR `#426`; selects G2.274 no-source risk route-provider authorization |
-| `governance/mainline/task-cards/pr-426.yaml` | Path-limited governance task card for G2.273 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/risk-get-monitoring-db-provider-authorization-2026-05-31.json` | G2.274 risk `get_monitoring_db` provider authorization evidence | Review input for PR `#427`; no-source authorization package |
+| `docs/reports/quality/backend-risk-get-monitoring-db-provider-authorization-2026-05-31.md` | G2.274 human-readable authorization report | Review input for PR `#427`; authorizes only future risk-source G2.275 after acceptance |
+| `governance/mainline/task-cards/pr-427.yaml` | Path-limited governance task card for G2.274 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/get-monitoring-db-ownership-decision-2026-05-31.json` | G2.273 `get_monitoring_db` ownership decision evidence | Accepted by PR `#426`, merged at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`; no-source split ownership decision |
+| `docs/reports/quality/backend-get-monitoring-db-ownership-decision-2026-05-31.md` | G2.273 human-readable ownership decision report | Accepted by PR `#426`; selects G2.274 no-source risk route-provider authorization |
+| `governance/mainline/task-cards/pr-426.yaml` | Path-limited governance task card for G2.273 | Accepted by PR `#426`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-2026-05-31.json` | G2.272 service lifecycle residual candidate refresh evidence | Accepted by PR `#425`, merged at `bcf28e4668391f91ea97ee252b4da4eea64faf74`; no-source candidate queue refresh |
 | `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-2026-05-31.md` | G2.272 human-readable residual candidate refresh report | Accepted by PR `#425`; selects `get_monitoring_db` only as no-source G2.273 decision target |
 | `governance/mainline/task-cards/pr-425.yaml` | Path-limited governance task card for G2.272 | Accepted by PR `#425`; allowed only steward tree, generated evidence, report, and task card updates |
