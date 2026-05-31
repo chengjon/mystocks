@@ -1,0 +1,201 @@
+{
+  "id": "g2-273-get-monitoring-db-ownership-decision",
+  "type": "ownership_decision",
+  "prepared_at": "2026-05-31T20:12:35+08:00",
+  "base_head": "bcf28e4668391f91ea97ee252b4da4eea64faf74",
+  "parent": {
+    "id": "g2-272-service-lifecycle-residual-candidate-refresh",
+    "github_pr": 425,
+    "merge_commit": "bcf28e4668391f91ea97ee252b4da4eea64faf74",
+    "selected_target": "get_monitoring_db"
+  },
+  "scope": {
+    "source_edit_authority": false,
+    "changed_runtime": false,
+    "changed_routes": false,
+    "changed_openapi": false,
+    "allowed_next_action": "review this no-source decision package before any authorization package"
+  },
+  "gitnexus": {
+    "mcp_impact_get_monitoring_db": "tool call failed: Transport closed",
+    "cli_impact_get_monitoring_db": {
+      "status": "ambiguous",
+      "risk": "UNKNOWN",
+      "impacted_count": 0,
+      "message": "Found 3 symbols matching 'get_monitoring_db'. Use target_uid, file_path, or kind to disambiguate.",
+      "candidates": [
+        {
+          "uid": "Function:web/backend/app/api/risk/_shared.py:get_monitoring_db",
+          "file_path": "web/backend/app/api/risk/_shared.py",
+          "line": 127,
+          "score": 0.56
+        },
+        {
+          "uid": "Function:web/backend/app/utils/risk_utils.py:get_monitoring_db",
+          "file_path": "web/backend/app/utils/risk_utils.py",
+          "line": 22,
+          "score": 0.56
+        },
+        {
+          "uid": "Function:web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db",
+          "file_path": "web/backend/app/api/strategy_management/_helpers.py",
+          "line": 419,
+          "score": 0.56
+        }
+      ],
+      "index_status": {
+        "stale": true,
+        "commits_behind": 0,
+        "has_embeddings": false
+      }
+    }
+  },
+  "static_ownership": {
+    "risk_route_helper": {
+      "definition": "web/backend/app/api/risk/_shared.py:128",
+      "module_state": [
+        "web/backend/app/api/risk/_shared.py:125",
+        "web/backend/app/api/risk/_shared.py:169",
+        "web/backend/app/api/risk/_shared.py:178"
+      ],
+      "active_route_body_calls": 6,
+      "call_sites": [
+        "web/backend/app/api/risk/alerts.py:395 create_risk_alert",
+        "web/backend/app/api/risk/alerts.py:412 create_risk_alert",
+        "web/backend/app/api/risk/metrics.py:301 calculate_var_cvar",
+        "web/backend/app/api/risk/metrics.py:327 calculate_var_cvar",
+        "web/backend/app/api/risk/metrics.py:401 calculate_beta",
+        "web/backend/app/api/risk/metrics.py:420 calculate_beta"
+      ]
+    },
+    "strategy_route_helper": {
+      "definition": "web/backend/app/api/strategy_management/_helpers.py:420",
+      "module_state": [
+        "web/backend/app/api/strategy_management/_helpers.py:58",
+        "web/backend/app/api/strategy_management/_helpers.py:427",
+        "web/backend/app/api/strategy_management/_helpers.py:432"
+      ],
+      "active_route_body_calls": 4,
+      "route_call_sites": [
+        "web/backend/app/api/strategy_management/_strategy_crud_router.py:157 list_strategies",
+        "web/backend/app/api/strategy_management/_strategy_crud_router.py:174 list_strategies",
+        "web/backend/app/api/strategy_management/_strategy_crud_router.py:254 create_strategy",
+        "web/backend/app/api/strategy_management/_strategy_crud_router.py:271 create_strategy"
+      ],
+      "internal_helper_calls": [
+        "web/backend/app/api/strategy_management/_helpers.py:393 _handle_strategy_lifecycle_action",
+        "web/backend/app/api/strategy_management/_helpers.py:409 _handle_strategy_lifecycle_action"
+      ]
+    },
+    "utility_same_name_helper": {
+      "definition": "web/backend/app/utils/risk_utils.py:23",
+      "module_state": [
+        "web/backend/app/utils/risk_utils.py:21",
+        "web/backend/app/utils/risk_utils.py:67",
+        "web/backend/app/utils/risk_utils.py:77"
+      ],
+      "active_target_route_calls_found_in_g2_273_scan": 0
+    }
+  },
+  "route_openapi_smoke": {
+    "command_context": "app.main import with temporary placeholder environment values; no PM2 or stateful database gate",
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "target_routes": [
+      {
+        "path": "/api/v1/risk/alerts",
+        "methods": [
+          "POST"
+        ],
+        "endpoint": "create_risk_alert",
+        "module": "app.api.risk.alerts",
+        "include_in_schema": true
+      },
+      {
+        "path": "/api/v1/risk/var-cvar",
+        "methods": [
+          "POST"
+        ],
+        "endpoint": "calculate_var_cvar",
+        "module": "app.api.risk.metrics",
+        "include_in_schema": true
+      },
+      {
+        "path": "/api/v1/risk/beta",
+        "methods": [
+          "POST"
+        ],
+        "endpoint": "calculate_beta",
+        "module": "app.api.risk.metrics",
+        "include_in_schema": true
+      },
+      {
+        "path": "/api/v1/strategy/strategies",
+        "methods": [
+          "GET"
+        ],
+        "endpoint": "list_strategies",
+        "module": "app.api.strategy_management._strategy_crud_router",
+        "include_in_schema": true
+      },
+      {
+        "path": "/api/v1/strategy/strategies",
+        "methods": [
+          "POST"
+        ],
+        "endpoint": "create_strategy",
+        "module": "app.api.strategy_management._strategy_crud_router",
+        "include_in_schema": true
+      }
+    ]
+  },
+  "decision": {
+    "classification": "split ownership surface, not one implementation seam",
+    "source_implementation_authorized": false,
+    "combined_risk_strategy_lane_authorized": false,
+    "risk_surface_recommended_first": true,
+    "selected_next_gate": "G2.274 no-source risk get_monitoring_db route-provider authorization",
+    "rationale": [
+      "GitNexus resolves get_monitoring_db as three ambiguous symbols.",
+      "Risk has one helper owner and six active route-body calls across create_risk_alert, calculate_var_cvar, and calculate_beta.",
+      "Strategy has a separate helper owner, four route-body CRUD calls, and internal lifecycle helper calls.",
+      "The utils/risk_utils same-name helper has no active target route call in this G2.273 scan.",
+      "A combined implementation lane would mix route ownership, risk helper ownership, strategy helper ownership, and utility compatibility concerns."
+    ],
+    "deferred_surfaces": [
+      "web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db",
+      "web/backend/app/api/strategy_management/_strategy_crud_router.py route-body calls",
+      "web/backend/app/utils/risk_utils.py:get_monitoring_db"
+    ],
+    "blocked_actions": [
+      "backend source edits from G2.273",
+      "risk and strategy provider injection in one source lane",
+      "route registration changes",
+      "OpenAPI artifact edits",
+      "test contract edits",
+      "source retirement",
+      "PM2 or stateful runtime gates"
+    ]
+  },
+  "future_g2_274_acceptance_shape": {
+    "lane_type": "no-source authorization package before any implementation",
+    "recommended_target_files": [
+      "web/backend/app/api/risk/_shared.py",
+      "web/backend/app/api/risk/alerts.py",
+      "web/backend/app/api/risk/metrics.py"
+    ],
+    "required_before_source": [
+      "disambiguated GitNexus impact by target_uid or file_path for risk/_shared.py:get_monitoring_db",
+      "explicit test path selection for risk alerts and risk metrics",
+      "route/OpenAPI no-contract-change acceptance criteria",
+      "rollback rule preserving current risk helper fallback behavior"
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "bcf28e4668391f91ea97ee252b4da4eea64faf74",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_get_monitoring_db_call_sites_change": true
+  }
+}
