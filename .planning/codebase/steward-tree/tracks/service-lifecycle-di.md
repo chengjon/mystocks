@@ -2970,7 +2970,7 @@ Status: accepted/merged by PR `#431` at `c5496cab0a4213f74636af1c48772dc96c90bd1
 
 ## G2.279 Strategy get_monitoring_db Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#432`.
+Status: accepted/merged by PR `#432` at `fcead56344110e33041319271c122e71d2b763a0`.
 
 - Parent PR `#431` merged at `c5496cab0a4213f74636af1c48772dc96c90bd1b`.
 - Strategy direct `get_monitoring_db().log_operation(...)` calls in the target files are `0`; active strategy dependency parameters remain `6`; `monitoring_db.log_operation(...)` calls remain `6`.
@@ -2980,3 +2980,17 @@ Status: for review in future PR `#432`.
 - Focused strategy provider test remains green at `1/1`; touched strategy ruff remains clean.
 - Selected next gate after acceptance: G2.280 no-source service lifecycle residual candidate refresh after `get_monitoring_db` closeout.
 - G2.279 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.280 Service Lifecycle Residual Candidate Refresh After get_monitoring_db
+
+Status: for review in future PR `#433`.
+
+- Parent PR `#432` merged at `fcead56344110e33041319271c122e71d2b763a0`.
+- Current scan covered `371` Python files under `web/backend/app/api` and `web/backend/app/services`.
+- The scan found `572` getter-like names and `31` active interesting candidates after excluding method calls and known-closed surfaces.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation IDs.
+- Highest service-only candidate is `get_integrated_services`, classified as root facade compatibility and deferred to a separate root facade decision.
+- `get_indicator_registry` and `get_cache_manager` are ambiguous and deferred until ownership is disambiguated.
+- `get_postgres_connection` is a control-plane DB helper and deferred to route/OpenAPI/control-plane ownership.
+- Selected next gate after acceptance: G2.281 no-source data_lineage `get_lineage_tracker` ownership / route-provider decision.
+- G2.280 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
