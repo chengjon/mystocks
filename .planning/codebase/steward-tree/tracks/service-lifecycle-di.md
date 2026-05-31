@@ -2759,3 +2759,12 @@ Status: for review in PR `#416`.
 - Route registration, provider injection, source retirement, docs/api edits, tests, frontend, OpenSpec, and PM2 remain unauthorized.
 - Product consumer matrix excluding governance artifacts: `/api/signals/statistics` refs 10, `/api/signals/active` refs 7, strategy detailed health refs 0; exact frontend/backend consumers are 0.
 - Next gate: G2.264 no-source stale signal statistics contract cleanup authorization.
+
+## G2.264 Signal Statistics Stale Contract Cleanup Authorization
+
+Status: for review in PR `#417`.
+
+- Parent PR `#416` merged at `795d2b9f50c3e483876f1b4ec484fbf9c1d9e513`.
+- Authorized future lane: G2.265 path-limited docs/test stale contract cleanup implementation.
+- Future allowed paths: `docs/api/openapi.yaml`, `docs/api/task_plan_signal_monitoring_phase2_extended.md`, `docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md`, `docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md`, `tests/unit/test_signal_monitoring_integration.py`.
+- Source, route registration, provider injection, source retirement, frontend, OpenSpec, scripts, config, and PM2 remain unauthorized.

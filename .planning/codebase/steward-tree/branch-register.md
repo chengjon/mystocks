@@ -100,7 +100,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#413` | `g2-260-signal-history-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `efc579ad8558314568b6f03e97f1c12341105fa0` | No-source signal history provider closeout / residual refresh selecting G2.261 route-registration ownership decision |
 | `#414` | `g2-261-get-signal-statistics-route-ownership` | `wip/root-dirty-20260403` | `MERGED` at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4` | No-source `get_signal_statistics.py` route-registration / ownership decision selecting G2.262 route/OpenAPI reconciliation authorization |
 | `#415` | `g2-262-signal-statistics-route-openapi-reconciliation` | `wip/root-dirty-20260403` | `MERGED` at `15bebd4de48059fb5bf35efef81aabb9040cf6ea` | No-source signal statistics route/OpenAPI reconciliation authorization selecting G2.263 route contract disposition decision |
-| `#416` | `g2-263-signal-statistics-route-contract-disposition` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source signal statistics route contract disposition decision selecting G2.264 stale contract cleanup authorization |
+| `#416` | `g2-263-signal-statistics-route-contract-disposition` | `wip/root-dirty-20260403` | `MERGED` at `795d2b9f50c3e483876f1b4ec484fbf9c1d9e513` | No-source signal statistics route contract disposition decision selecting G2.264 stale contract cleanup authorization |
+| `#417` | `g2-264-signal-statistics-stale-contract-cleanup-authorization` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source stale signal statistics contract cleanup authorization selecting G2.265 path-limited cleanup implementation |
 
 ## Steward Governance Branch
 
@@ -129,3 +130,5 @@ owning OpenSpec branch or an approved implementation authorization package.
 G2.261 was the no-source route-registration / ownership decision after PR `#413` merged G2.260. PR `#414` merged G2.261 at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4`. G2.262 is the no-source route/OpenAPI reconciliation authorization after PR `#414`. It must not edit source, route registration, OpenAPI exposure, docs/api, tests, frontend, config, scripts, PM2, or OpenSpec.
 
 G2.263 is the no-source route contract disposition decision after PR `#415` merged G2.262. It selects dormant source retention plus stale contract artifact reconciliation and must not edit source, route registration, OpenAPI exposure, docs/api, tests, frontend, config, scripts, PM2, or OpenSpec.
+
+G2.264 is the no-source stale contract cleanup authorization after PR `#416` merged G2.263. It authorizes only a future path-limited docs/test cleanup lane and must not edit source, route registration, provider injection, source retirement, frontend, OpenSpec, config, scripts, PM2, or runtime state.

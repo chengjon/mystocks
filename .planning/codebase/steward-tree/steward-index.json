@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T10:26:58+08:00",
+  "generated_at": "2026-05-31T10:43:44+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "15bebd4de48059fb5bf35efef81aabb9040cf6ea",
-  "split_branch": "g2-263-signal-statistics-route-contract-disposition",
-  "scope": "signal_statistics_route_contract_disposition_decision",
+  "base_head": "795d2b9f50c3e483876f1b4ec484fbf9c1d9e513",
+  "split_branch": "g2-264-signal-statistics-stale-contract-cleanup-authorization",
+  "scope": "signal_statistics_stale_contract_cleanup_authorization",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -6589,7 +6589,7 @@
     {
       "id": "g2-263-signal-statistics-route-contract-disposition-decision",
       "type": "governance",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.262 signal statistics route/OpenAPI reconciliation authorization",
       "github_pr": 416,
@@ -6672,7 +6672,144 @@
         "openspec/changes/**",
         "openspec/specs/**"
       ],
-      "next_gate": "If accepted, merge PR #416 and start G2.264 no-source stale signal statistics contract cleanup authorization; do not edit docs/api, tests, source, OpenSpec, or route registration from G2.263."
+      "next_gate": "Superseded by G2.264 no-source stale signal statistics contract cleanup authorization.",
+      "merge_commit": "795d2b9f50c3e483876f1b4ec484fbf9c1d9e513",
+      "accepted_at": "2026-05-31T10:43:44+08:00"
+    },
+    {
+      "id": "g2-264-signal-statistics-stale-contract-cleanup-authorization",
+      "type": "governance",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.263 signal statistics route contract disposition decision",
+      "github_pr": 417,
+      "branch": "g2-264-signal-statistics-stale-contract-cleanup-authorization",
+      "base_head": "795d2b9f50c3e483876f1b4ec484fbf9c1d9e513",
+      "evidence": [
+        ".planning/codebase/generated/signal-statistics-stale-contract-cleanup-authorization-2026-05-31.json",
+        "docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-authorization-2026-05-31.md",
+        "governance/mainline/task-cards/pr-417.yaml"
+      ],
+      "target": {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "paths": [
+          "/api/signals/statistics",
+          "/api/signals/active",
+          "/api/strategies/{strategy_id}/health/detailed"
+        ],
+        "artifacts": [
+          "docs/api/openapi.yaml",
+          "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+          "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+          "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+          "tests/unit/test_signal_monitoring_integration.py"
+        ]
+      },
+      "facts": {
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "target_openapi_paths": 0,
+        "duplicate_operation_ids": 0,
+        "artifact_counts": {
+          "docs/api/openapi.yaml": {
+            "line_count": 249,
+            "counts": {
+              "/api/signals/statistics": 1,
+              "/api/signals/active": 1,
+              "/api/strategies/{strategy_id}/health/detailed": 0
+            }
+          },
+          "docs/api/task_plan_signal_monitoring_phase2_extended.md": {
+            "line_count": 68,
+            "counts": {
+              "/api/signals/statistics": 1,
+              "/api/signals/active": 1,
+              "/api/strategies/{strategy_id}/health/detailed": 0
+            }
+          },
+          "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md": {
+            "line_count": 906,
+            "counts": {
+              "/api/signals/statistics": 5,
+              "/api/signals/active": 4,
+              "/api/strategies/{strategy_id}/health/detailed": 0
+            }
+          },
+          "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md": {
+            "line_count": 1057,
+            "counts": {
+              "/api/signals/statistics": 2,
+              "/api/signals/active": 0,
+              "/api/strategies/{strategy_id}/health/detailed": 0
+            }
+          },
+          "tests/unit/test_signal_monitoring_integration.py": {
+            "line_count": 662,
+            "counts": {
+              "/api/signals/statistics": 1,
+              "/api/signals/active": 1,
+              "/api/strategies/{strategy_id}/health/detailed": 0
+            }
+          }
+        }
+      },
+      "authorization": {
+        "selected_next_gate": "G2.265 path-limited stale signal statistics contract cleanup implementation",
+        "authorized_future_lane_type": "docs_and_test_contract_cleanup_only",
+        "authorized_future_paths": [
+          "docs/api/openapi.yaml",
+          "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+          "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+          "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+          "tests/unit/test_signal_monitoring_integration.py"
+        ],
+        "future_lane_allowed_actions": [
+          "remove or annotate stale docs/api entries for /api/signals/statistics and /api/signals/active that are absent from current app.openapi()",
+          "mark historical design/operations references as historical/deferred instead of runtime truth",
+          "update tests/unit/test_signal_monitoring_integration.py so dormant paths are not asserted as active runtime endpoints unless explicitly marked historical"
+        ],
+        "future_lane_forbidden_actions": [
+          "web/backend source edits",
+          "route registration",
+          "provider injection",
+          "source retirement",
+          "frontend edits",
+          "OpenSpec edits",
+          "PM2/runtime stateful commands",
+          "broad docs rewrite outside exact stale references"
+        ],
+        "acceptance_for_future_lane": [
+          "no target paths in current app.openapi() after cleanup unless a separate route registration lane is approved",
+          "no duplicate operation IDs",
+          "focused documentation/test diff limited to authorized paths",
+          "all stale claims explicitly distinguish historical docs from runtime truth"
+        ]
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/signal-statistics-stale-contract-cleanup-authorization-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-authorization-2026-05-31.md",
+        "governance/mainline/task-cards/pr-417.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "next_gate": "If accepted, merge PR #417 and start G2.265 path-limited stale signal statistics contract cleanup implementation; do not edit source, register routes, inject providers, or modify OpenSpec."
     }
   ]
 }

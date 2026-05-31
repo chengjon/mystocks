@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-31T10:26:58+08:00`
-- Base HEAD checked: `15bebd4de48059fb5bf35efef81aabb9040cf6ea`
+- Prepared at: `2026-05-31T10:43:44+08:00`
+- Base HEAD checked: `795d2b9f50c3e483876f1b4ec484fbf9c1d9e513`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.263 signal statistics route contract disposition decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#415` merged at `15bebd4de48059fb5bf35efef81aabb9040cf6ea`; target module remains dormant with 3 route-decorated handlers and 3 direct `get_postgres_async()` calls; product matrix has 0 exact frontend/backend consumers, docs/api stale refs for two signal paths, and one stale test file | If accepted, merge PR `#416`, then start G2.264 no-source stale signal statistics contract cleanup authorization; do not edit docs/api, tests, source, OpenSpec, or route registration from G2.263 |
+| P0 | Review G2.264 signal statistics stale contract cleanup authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#416` merged at `795d2b9f50c3e483876f1b4ec484fbf9c1d9e513`; five candidate stale artifacts exist; target OpenAPI paths remain `0`; authorized future lane is docs/test stale contract cleanup only | If accepted, merge PR `#417`, then start G2.265 path-limited stale signal statistics contract cleanup implementation; do not edit source, register routes, inject providers, or modify OpenSpec |
+| P0 | Preserve G2.263 signal statistics route contract disposition decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#416` merged at `795d2b9f50c3e483876f1b4ec484fbf9c1d9e513`; selected dormant source retention plus stale contract artifact reconciliation | Do not register routes, retire source, or migrate provider calls from dormant `get_signal_statistics.py` without a separate future decision |
 | P0 | Preserve G2.262 signal statistics route/OpenAPI reconciliation authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#415` merged at `15bebd4de48059fb5bf35efef81aabb9040cf6ea`; current runtime/OpenAPI snapshot remains `548/500`, target runtime routes `0`, target OpenAPI paths `0`, duplicate operation IDs `0` | Do not start route registration, provider injection, docs/api cleanup, tests, or retirement without G2.263/G2.264 review gates |
 | P0 | Preserve G2.261 `get_signal_statistics.py` ownership decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#414` merged at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4`; G2.261 classified the file as dormant route module / route ownership gap, not an active route-body provider residual | Do not inject a provider, register routes, edit docs/api, or retire the module without a separate route/OpenAPI disposition gate |
 | P0 | Preserve G2.260 signal history provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#413` merged at `efc579ad8558314568b6f03e97f1c12341105fa0`; active app-route body `get_postgres_async()` residuals are `0`; `get_signal_statistics.py` was selected only for no-source route-registration / ownership decision | Do not use G2.260 to open a source lane |
@@ -88,7 +89,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.263 correctly treat PR `#415` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.263 correctly reject route registration, provider injection, and source retirement for the current sequence?
-- Does G2.263 correctly select dormant source retention plus stale contract artifact reconciliation?
-- Is G2.264 correctly selected as no-source cleanup authorization, not direct docs/api or test editing?
+- Does G2.264 correctly treat PR `#416` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.264 correctly limit future G2.265 to exact stale docs/test contract cleanup paths?
+- Does G2.264 correctly keep source, route registration, provider injection, OpenSpec, frontend, and PM2 out of scope?
+- Is G2.265 correctly selected as path-limited cleanup implementation, not broad route governance?
