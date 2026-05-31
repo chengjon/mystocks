@@ -2810,7 +2810,7 @@ Status: accepted/merged by PR `#420` at `772e4a3ac8e05edaa243d660d67c7e5df18158f
 
 ## G2.268 Monitoring Portfolio Optimizer Provider Authorization
 
-Status: for review in PR `#421`.
+Status: accepted/merged by PR `#421` at `1cb885e8267d76e47e0d08977002a80fafb56092`.
 
 - Parent PR `#420` merged at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`.
 - Selected candidate: `get_portfolio_optimizer()` has one definition in `src/monitoring/domain/portfolio_optimizer.py` and three active route-body call sites in `web/backend/app/api/_monitoring_portfolio_router.py`.
@@ -2819,4 +2819,19 @@ Status: for review in PR `#421`.
 - GitNexus MCP context/impact retried and returned `Transport closed`; future source work must retry GitNexus or record CLI fallback before editing.
 - Authorized next gate after acceptance: G2.269 path-limited monitoring portfolio optimizer route provider implementation.
 - Future G2.269 may touch only `web/backend/app/api/_monitoring_portfolio_router.py` plus focused tests in `tests/api/file_tests/test_monitoring_analysis_api.py` and `web/backend/tests/test_health_route_conflicts.py`.
+- Superseded by G2.269 path-limited monitoring portfolio optimizer route provider implementation.
 - G2.268 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, or PM2 state.
+
+## G2.269 Monitoring Portfolio Optimizer Provider Implementation
+
+Status: for review in PR `#422`.
+
+- Parent PR `#421` merged at `1cb885e8267d76e47e0d08977002a80fafb56092`.
+- GitNexus MCP context/impact returned `Transport closed`; CLI impact returned `HIGH` with exactly the three authorized target route handlers affected.
+- Added route-local `get_monitoring_portfolio_optimizer()` in `web/backend/app/api/_monitoring_portfolio_router.py`.
+- Moved `get_portfolio_summary`, `get_portfolio_alerts`, and `get_rebalance_suggestions` to `Depends(get_monitoring_portfolio_optimizer)`.
+- Direct route-body `get_portfolio_optimizer()` calls are `0`; provider backing call remains `1`; dependency parameters are `3`.
+- TDD red/green completed for `test_monitoring_portfolio_optimizer_uses_route_dependency_provider`.
+- Focused verification: `tests/api/file_tests/test_monitoring_analysis_api.py` passed `20/20`; monitoring analysis OpenAPI/parameter guard passed `1/1`; ruff passed.
+- Runtime/OpenAPI snapshot remains `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and `3` target module routes.
+- Next gate after acceptance: G2.270 no-source monitoring portfolio optimizer provider closeout / residual refresh.

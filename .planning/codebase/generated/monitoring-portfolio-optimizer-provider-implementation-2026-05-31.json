@@ -1,0 +1,152 @@
+{
+  "schema_version": "2026-05-31.g2-implementation.v1",
+  "generated_at": "2026-05-31T13:53:26+08:00",
+  "g2_item": "G2.269",
+  "title": "monitoring portfolio optimizer route provider implementation",
+  "branch": "g2-269-monitoring-portfolio-optimizer-provider",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "1cb885e8267d76e47e0d08977002a80fafb56092",
+  "current_head_checked": "1cb885e8267d76e47e0d08977002a80fafb56092",
+  "parent": {
+    "g2_item": "G2.268",
+    "pr": 421,
+    "state": "MERGED",
+    "merge_commit": "1cb885e8267d76e47e0d08977002a80fafb56092",
+    "merged_at": "2026-05-31T05:45:36Z",
+    "authorization": "future G2.269 path-limited source lane for _monitoring_portfolio_router.py plus focused tests"
+  },
+  "source_edit_authority": true,
+  "authorized_scope": {
+    "source_paths": [
+      "web/backend/app/api/_monitoring_portfolio_router.py"
+    ],
+    "test_paths": [
+      "tests/api/file_tests/test_monitoring_analysis_api.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/generated/monitoring-portfolio-optimizer-provider-implementation-2026-05-31.json",
+      "docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-implementation-2026-05-31.md",
+      "governance/mainline/task-cards/pr-422.yaml",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md"
+    ]
+  },
+  "gitnexus_pre_edit": {
+    "mcp_context": "tool call failed: Transport closed",
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_command": "npx gitnexus impact get_portfolio_optimizer -r mystocks -d upstream --depth 2 --summary-only",
+    "cli_exit_code": 0,
+    "risk": "HIGH",
+    "impacted_count": 3,
+    "summary": {
+      "direct": 3,
+      "processes_affected": 3,
+      "modules_affected": 1
+    },
+    "affected_processes": [
+      "get_portfolio_alerts",
+      "get_rebalance_suggestions",
+      "get_portfolio_summary"
+    ],
+    "affected_module": "Api",
+    "index_status": {
+      "stale": true,
+      "commits_behind": 0,
+      "has_embeddings": false
+    },
+    "risk_interpretation": "HIGH is accepted for this lane because the affected direct processes are exactly the three G2.268-authorized target handlers."
+  },
+  "tdd": {
+    "red": {
+      "command": "pytest -o addopts= tests/api/file_tests/test_monitoring_analysis_api.py::TestMonitoringAnalysisAPIFile::test_monitoring_portfolio_optimizer_uses_route_dependency_provider -q --no-cov",
+      "exit_code": 1,
+      "expected_failure": "AssertionError: get_monitoring_portfolio_optimizer not found in module"
+    },
+    "green": {
+      "command": "pytest -o addopts= tests/api/file_tests/test_monitoring_analysis_api.py::TestMonitoringAnalysisAPIFile::test_monitoring_portfolio_optimizer_uses_route_dependency_provider -q --no-cov",
+      "exit_code": 0,
+      "result": "1 passed"
+    }
+  },
+  "implementation": {
+    "provider_added": "get_monitoring_portfolio_optimizer",
+    "provider_backing_call": "get_portfolio_optimizer()",
+    "target_handlers": [
+      "get_portfolio_summary",
+      "get_portfolio_alerts",
+      "get_rebalance_suggestions"
+    ],
+    "handler_dependency_parameters_after": 3,
+    "handler_optimizer_assignments_after": 3,
+    "direct_route_body_get_portfolio_optimizer_calls_after": 0,
+    "provider_get_portfolio_optimizer_calls_after": 1,
+    "route_contract_changes": false,
+    "openapi_artifact_changes": false
+  },
+  "verification": {
+    "focused_file_tests": {
+      "command": "pytest -o addopts= tests/api/file_tests/test_monitoring_analysis_api.py -q --no-cov",
+      "result": "20 passed"
+    },
+    "health_route_conflicts": {
+      "command": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py::test_monitoring_analysis_endpoints_have_docs_examples_and_error_responses -q --no-cov",
+      "result": "1 passed"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/_monitoring_portfolio_router.py tests/api/file_tests/test_monitoring_analysis_api.py",
+      "result": "All checks passed"
+    },
+    "gitnexus_staged_fallback": {
+      "command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-269-monitoring-portfolio-optimizer-provider --json",
+      "exit_code": 0,
+      "ok": true,
+      "status": "stale",
+      "changed_symbols": 10,
+      "affected_processes": 9,
+      "indexed_commit": "41c18309a55594bdc57f56531a12433dfeb61219",
+      "current_commit": "1cb885e8267d76e47e0d08977002a80fafb56092",
+      "next_action": "Refresh the GitNexus index before relying on this result."
+    },
+    "runtime_openapi_smoke": {
+      "routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "target_module_routes": 3,
+      "target_parameters": {
+        "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary": [
+          "watchlist_id",
+          "user_id"
+        ],
+        "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts": [
+          "watchlist_id",
+          "user_id",
+          "level"
+        ],
+        "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance": [
+          "watchlist_id",
+          "user_id"
+        ]
+      }
+    }
+  },
+  "forbidden_actions_not_performed": [
+    "editing src/monitoring/domain/portfolio_optimizer.py",
+    "editing non-target backend API modules",
+    "route registration changes",
+    "OpenAPI artifact edits",
+    "frontend/config/script changes",
+    "OpenSpec edits",
+    "PM2/runtime stateful commands"
+  ],
+  "next_gate": "G2.270 no-source monitoring portfolio optimizer provider closeout / residual refresh",
+  "stale_policy": {
+    "stale_if_head_mismatch": true,
+    "stale_if_pr_421_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true
+  }
+}

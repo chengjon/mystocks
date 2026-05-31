@@ -103,6 +103,22 @@ class TestMonitoringAnalysisAPIFile:
             assert _has_dependency_provider_param(handler, "get_monitoring_postgres_async"), handler_name
 
     @pytest.mark.file_test
+    def test_monitoring_portfolio_optimizer_uses_route_dependency_provider(self):
+        """G2.269 keeps portfolio optimizer lookup out of monitoring portfolio route bodies."""
+        module = _parse_module(MONITORING_PORTFOLIO_FILE)
+        provider = _function_by_name(module, "get_monitoring_portfolio_optimizer")
+        assert _calls_function(provider, "get_portfolio_optimizer")
+
+        for handler_name in {
+            "get_portfolio_summary",
+            "get_portfolio_alerts",
+            "get_rebalance_suggestions",
+        }:
+            handler = _function_by_name(module, handler_name)
+            assert not _calls_function(handler, "get_portfolio_optimizer"), handler_name
+            assert _has_dependency_provider_param(handler, "get_monitoring_portfolio_optimizer"), handler_name
+
+    @pytest.mark.file_test
     def test_monitoring_analysis_postgres_async_uses_route_dependency_provider(self):
         """G2.253 keeps postgres async lookup out of monitoring analysis route bodies."""
         module = _parse_module(MONITORING_ANALYSIS_FILE)
