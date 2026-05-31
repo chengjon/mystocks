@@ -1,0 +1,29 @@
+task:
+  id: "market-technical-header-readiness"
+  title: "Harden /market/technical route header readiness"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/market/Technical.vue"
+    - "web/frontend/tests/e2e/market-data.spec.ts"
+    - "docs/reports/tasks/"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No ArtDecoRouteHeader migration in this readiness node"
+  - "No router path, route metadata, backend API contract, frontend API client, K-line API request, chart, table, or runtime state changes"
+  - "No shared component extraction or full page redesign"
+
+acceptance:
+  commit_gate:
+    - "GitNexus impact for Technical.vue is LOW or documented"
+    - "RED E2E assertion proves market-technical header hook is absent"
+    - "GREEN focused market technical E2E passes after hook hardening"
+    - "Target ESLint, ArtDeco token check, type-check"
+  closeout_gate:
+    - "Task report published, Function Tree validation passes, active gates closed, GitNexus staged scope low risk"
+
+evidence:
+  current_head: "20cb37ace841beeb0079b191a8a564c03029b36a"
+  notes: []

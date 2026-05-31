@@ -1,5 +1,27 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-05-31T16:05:57.998Z",
-  "gates": []
+  "updated_at": "2026-05-31T16:25:57.598Z",
+  "gates": [
+    {
+      "program": "artdeco-web-design-governance",
+      "id": "market-technical-header-readiness",
+      "title": "Harden /market/technical route header readiness",
+      "node_type": "implementation",
+      "owner_lane": "web-artdeco",
+      "parent": "",
+      "status": "implementation-ready",
+      "source_edits_authorized": true,
+      "current_blocker": "",
+      "next_allowed": "land implementation with Git evidence",
+      "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
+      "freshness": "current-head",
+      "allowed_paths": [
+        "web/frontend/src/views/market/Technical.vue",
+        "web/frontend/tests/e2e/market-data.spec.ts",
+        "docs/reports/tasks/"
+      ],
+      "forbidden_paths": [],
+      "updated_at": "2026-05-31T16:25:57.597Z"
+    }
+  ]
 }

@@ -250,6 +250,9 @@ test.describe("Market Data Module - E2E Tests", () => {
     test("should open market technical page", async ({ page }) => {
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.technical}`)
       await expect(page.locator(".market-kline-tab")).toBeVisible()
+      await expect(page.getByTestId("market-technical-page")).toBeVisible({ timeout: 10000 })
+      await expect(page.getByTestId("market-technical-header")).toBeVisible()
+      await expect(page.getByTestId("market-technical-refresh")).toBeVisible()
       await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible({ timeout: 10000 })
     })
 

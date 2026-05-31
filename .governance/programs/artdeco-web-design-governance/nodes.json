@@ -1044,5 +1044,97 @@
       "current_head": "39c8a3b2d7ca4a85f66ccaacb17894f52451602e",
       "prepared_at": "2026-05-31T16:05:57.957Z"
     }
+  },
+  {
+    "id": "market-technical-header-readiness",
+    "title": "Harden /market/technical route header readiness",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "implementation-ready",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
+    "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/tasks/2026-05-31-artdeco-route-header-shell-next-batch-plan.md",
+        "note": "",
+        "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
+        "recorded_at": "2026-05-31T16:25:57.298Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "web/frontend/src/views/market/Technical.vue",
+        "note": "",
+        "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
+        "recorded_at": "2026-05-31T16:25:57.339Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "web/frontend/tests/e2e/market-data.spec.ts",
+        "note": "",
+        "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
+        "recorded_at": "2026-05-31T16:25:57.382Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "PRODUCT.md",
+        "note": "",
+        "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
+        "recorded_at": "2026-05-31T16:25:57.427Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "DESIGN.md",
+        "note": "",
+        "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
+        "recorded_at": "2026-05-31T16:25:57.468Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/market/Technical.vue",
+      "web/frontend/tests/e2e/market-data.spec.ts",
+      "docs/reports/tasks/"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No ArtDecoRouteHeader migration in this readiness node",
+      "No router path, route metadata, backend API contract, frontend API client, K-line API request, chart, table, or runtime state changes",
+      "No shared component extraction or full page redesign"
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T16:25:57.246Z",
+    "updated_at": "2026-05-31T16:25:57.597Z",
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus impact for Technical.vue is LOW or documented",
+        "RED E2E assertion proves market-technical header hook is absent",
+        "GREEN focused market technical E2E passes after hook hardening",
+        "Target ESLint, ArtDeco token check, type-check"
+      ],
+      "closeout_gate": [
+        "Task report published, Function Tree validation passes, active gates closed, GitNexus staged scope low risk"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
+        "transitioned_at": "2026-05-31T16:25:57.558Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
+        "transitioned_at": "2026-05-31T16:25:57.597Z"
+      }
+    ]
   }
 ]

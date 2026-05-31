@@ -47,8 +47,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="market-kline-tab page-enter" :class="pageToneClass">
-    <section class="hero-shell artdeco-card-shell">
+  <section class="market-kline-tab page-enter" :class="pageToneClass" data-testid="market-technical-page">
+    <section class="hero-shell artdeco-card-shell" data-testid="market-technical-header">
       <div class="hero-rail">
         <div class="hero-copy">
           <span class="hero-eyebrow">k-line analysis desk</span>
@@ -67,7 +67,7 @@ onMounted(() => {
         :status-text="pageStatusText"
       >
         <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" :disabled="loading" @click="fetchKLine">
+          <ArtDecoButton variant="outline" size="sm" :loading="loading" :disabled="loading" data-testid="market-technical-refresh" @click="fetchKLine">
             <template #icon>
               <ArtDecoIcon name="refresh" />
             </template>
