@@ -2685,3 +2685,57 @@ Next gate after acceptance:
   intentionally unregistered, legacy/deferred, or candidates for a future
   separately authorized route/provider lane.
 - G2.261 must not edit source.
+
+## G2.261 Get Signal Statistics Route-Registration / Ownership Decision
+
+Status: for review in PR `#414`.
+
+Parent gate:
+
+- G2.260 closeout / residual refresh was accepted by PR `#413`.
+- PR `#413` merged into `wip/root-dirty-20260403` at
+  `efc579ad8558314568b6f03e97f1c12341105fa0`.
+
+Candidate evidence:
+
+| Evidence | Result |
+|---|---:|
+| Candidate file | `web/backend/app/api/signal_monitoring/get_signal_statistics.py` |
+| File lines | 511 |
+| Module-local `APIRouter` | `true` |
+| Route-decorated handlers | 3 |
+| Direct `get_postgres_async()` calls in decorated handlers | 3 |
+| Registered app routes from this file | 0 |
+| Current `app.routes` | 548 |
+| Current OpenAPI paths | 500 |
+
+Runtime smoke:
+
+| Intended path | Status |
+|---|---:|
+| `/api/signals/statistics` | 404 |
+| `/api/signals/active` | 404 |
+| `/api/strategies/test_strategy/health/detailed` | 404 |
+
+Ownership decision:
+
+- Classify `get_signal_statistics.py` as dormant route module / route ownership
+  gap.
+- It is not an active app-route body provider residual at current HEAD.
+- Do not inject a postgres provider before deciding route registration,
+  OpenAPI exposure, and historical docs/test references.
+
+Consumer matrix summary:
+
+| Path | References | Primary location | Exact frontend refs |
+|---|---:|---|---:|
+| `/api/signals/statistics` | 18 | docs + one test | 0 |
+| `/api/signals/active` | 14 | docs + one test | 0 |
+| `/api/strategies/{strategy_id}/health/detailed` | 2 | docs | 0 |
+
+Next gate after acceptance:
+
+- G2.262 no-source route/OpenAPI reconciliation authorization.
+- G2.262 should decide whether to register, keep dormant, or retire/archive the
+  route-shaped module and stale docs/tests.
+- G2.262 must not edit source.

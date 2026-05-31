@@ -1,0 +1,182 @@
+{
+  "schema_version": "2026-05-31.g2-service-lifecycle-decision.v1",
+  "generated_at": "2026-05-31T09:48:19+08:00",
+  "change_id": "G2.261",
+  "title": "get_signal_statistics route-registration and ownership decision",
+  "status": "for_review",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "efc579ad8558314568b6f03e97f1c12341105fa0",
+  "worktree_branch": "g2-261-get-signal-statistics-route-ownership",
+  "source_edit_authority": false,
+  "parent_closeout": {
+    "change_id": "G2.260",
+    "pull_request": 413,
+    "merge_commit": "efc579ad8558314568b6f03e97f1c12341105fa0",
+    "evidence": [
+      ".planning/codebase/generated/postgres-async-signal-history-provider-closeout-refresh-2026-05-31.json",
+      "docs/reports/quality/backend-postgres-async-signal-history-provider-closeout-refresh-2026-05-31.md",
+      "governance/mainline/task-cards/pr-413.yaml"
+    ]
+  },
+  "candidate": {
+    "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+    "line_count": 511,
+    "module_has_router_assignment": true,
+    "decorated_route_functions": [
+      {
+        "name": "get_signal_statistics",
+        "decorator": "router.get('/signals/statistics', response_model=List[SignalStatisticsResponse])",
+        "direct_get_postgres_async_calls": 1,
+        "line": 114
+      },
+      {
+        "name": "get_active_signals",
+        "decorator": "router.get('/signals/active', response_model=ActiveSignalsResponse)",
+        "direct_get_postgres_async_calls": 1,
+        "line": 231
+      },
+      {
+        "name": "get_strategy_detailed_health",
+        "decorator": "router.get('/strategies/{strategy_id}/health/detailed', response_model=StrategyDetailedHealthResponse)",
+        "direct_get_postgres_async_calls": 1,
+        "line": 365
+      }
+    ],
+    "app_registration": {
+      "registered_app_routes_for_file": 0,
+      "registered_app_routes": [],
+      "total_app_routes": 548,
+      "openapi_paths": 500,
+      "runtime_smoke": [
+        {
+          "path": "/api/signals/statistics",
+          "status_code": 404
+        },
+        {
+          "path": "/api/signals/active",
+          "status_code": 404
+        },
+        {
+          "path": "/api/strategies/test_strategy/health/detailed",
+          "status_code": 404
+        }
+      ]
+    },
+    "registration_root_cause": {
+      "signal_monitoring_package_exports_router_from": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+      "signal_monitoring_package_imports_get_signal_statistics_functions": true,
+      "signal_monitoring_package_exports_get_signal_statistics_router": false,
+      "summary": "The module owns a router and route decorators, but the registered package router is signal_history_response.router; importing handler functions from get_signal_statistics.py does not register that module-local router."
+    }
+  },
+  "consumer_matrix": {
+    "/api/signals/statistics": {
+      "total_references": 18,
+      "by_area": {
+        "docs": 17,
+        "tests": 1
+      },
+      "frontend_exact_references": 0,
+      "notable_references": [
+        "docs/api/openapi.yaml",
+        "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+        "docs/reports/SIGNAL_MONITORING_PHASE2_OPTIMIZATION_REPORT.md"
+      ]
+    },
+    "/api/signals/active": {
+      "total_references": 14,
+      "by_area": {
+        "docs": 13,
+        "tests": 1
+      },
+      "frontend_exact_references": 0,
+      "notable_references": [
+        "docs/api/openapi.yaml",
+        "tests/unit/test_signal_monitoring_integration.py",
+        "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md"
+      ]
+    },
+    "/api/strategies/{strategy_id}/health/detailed": {
+      "total_references": 2,
+      "by_area": {
+        "docs": 2
+      },
+      "frontend_exact_references": 0,
+      "notable_references": [
+        "docs/reports/SIGNAL_MONITORING_PHASE2_OPTIMIZATION_REPORT.md",
+        "docs/reports/SIGNAL_MONITORING_PHASE2_EXTENDED_COMPLETION_REPORT.md"
+      ]
+    },
+    "notes": [
+      "Broad health/detailed references exist in frontend/docs/tests, but they are generic health surfaces and not exact references to /api/strategies/{strategy_id}/health/detailed.",
+      "docs/api/openapi.yaml contains historical paths that are absent from the current app.openapi() snapshot."
+    ]
+  },
+  "decision": {
+    "classification": "dormant route module / route ownership gap",
+    "active_route_body_provider_residual": false,
+    "source_implementation_authorized": false,
+    "rationale": [
+      "The module has three route-decorated handlers and three direct get_postgres_async() calls.",
+      "The module has zero registered app routes at current HEAD.",
+      "The runtime app returns 404 for the three intended public paths.",
+      "The current active app-route body get_postgres_async() queue remains closed.",
+      "Provider injection would be premature before deciding route registration, OpenAPI exposure, and stale docs/test contract handling."
+    ],
+    "allowed_future_options_after_separate_authorization": [
+      "Register the router and expose the endpoints with route/OpenAPI contract evidence, then migrate provider acquisition.",
+      "Keep the module dormant and mark docs/tests as historical or deferred.",
+      "Retire or archive the dormant module and stale docs/tests if current product requirements reject the surface."
+    ]
+  },
+  "verification": {
+    "route_registration_smoke": {
+      "result": "three intended paths returned 404"
+    },
+    "openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "registered_routes_for_candidate_file": 0
+    },
+    "focused_reference_checks": {
+      "consumer_matrix": "complete",
+      "runtime_404_smoke": "complete",
+      "markdown_governance": "6 checked files, 0 errors"
+    },
+    "openspec": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid"
+    }
+  },
+  "next_gate": {
+    "change_id": "G2.262",
+    "type": "no-source route/OpenAPI reconciliation authorization",
+    "purpose": "authorize or reject a future route registration / OpenAPI / provider implementation path for get_signal_statistics.py after reviewing runtime, docs/api, tests, and product ownership evidence"
+  },
+  "staged_gitnexus": {
+    "mcp_status": "failed_transport_closed",
+    "cli_fallback": "ok_stale_index",
+    "command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-261-get-signal-statistics-route-ownership --json",
+    "summary": {
+      "changed_count": 0,
+      "affected_count": 0,
+      "changed_files": 9,
+      "risk_level": "low"
+    },
+    "staleness": {
+      "indexed_commit": "00ca3a8c64a1ce6a4c1045d843d427309ef928da",
+      "current_commit": "efc579ad8558314568b6f03e97f1c12341105fa0",
+      "stale": true,
+      "stale_reason": "current_commit_differs_from_indexed_commit",
+      "stale_severity": "warning"
+    }
+  },
+  "mainline_scope_gate": {
+    "command": "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-414.yaml --schema governance/mainline/schemas/ai-task-card.schema.json --base-sha efc579ad8558314568b6f03e97f1c12341105fa0 --head-sha HEAD --report /tmp/pr414-mainline-governance-report.json",
+    "result": "pass=True",
+    "problem_count": 0,
+    "changed_files_count": 9,
+    "report": "/tmp/pr414-mainline-governance-report.json"
+  }
+}
