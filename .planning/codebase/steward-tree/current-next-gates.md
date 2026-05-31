@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-31T19:34:41+08:00`
-- Base HEAD checked: `5b3ffd1f114b612810e96c463c651befeb005222`
+- Prepared at: `2026-05-31T19:54:53+08:00`
+- Base HEAD checked: `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.271 pool monitoring control-plane accessor ownership / route governance decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#423` merged at `5b3ffd1f114b612810e96c463c651befeb005222`; G2.270 accepted/merged; `pool_monitoring.py` has 4 active documented OpenAPI routes; pool accessors are classified as control-plane route/OpenAPI ownership, not ordinary service DI source candidates | Review PR `#424` when opened; if accepted, start `G2.272 no-source service lifecycle residual candidate refresh after pool-monitoring deferral`; do not start backend source from G2.271 |
+| P0 | Review G2.272 service lifecycle residual candidate refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#424` merged at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`; G2.271 accepted/merged; residual scan selected `get_monitoring_db` only for no-source ownership / route-provider decision; GitNexus reports ambiguous symbols across risk/shared, risk_utils, and strategy helpers | Review PR `#425` when opened; if accepted, start `G2.273 no-source get_monitoring_db ownership / route-provider decision`; do not start backend source from G2.272 |
+| P0 | Preserve G2.271 pool monitoring control-plane ownership decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#424` merged at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`; `pool_monitoring.py` has 4 active documented OpenAPI routes; pool accessors are classified as control-plane route/OpenAPI ownership, not ordinary service DI source candidates | Do not use G2.271 as authority for backend source edits, route registration, provider injection, source retirement, tests, docs/api, frontend, OpenSpec, config, scripts, or PM2 |
 | P0 | Preserve G2.270 monitoring portfolio optimizer provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#423` merged at `5b3ffd1f114b612810e96c463c651befeb005222`; G2.269 accepted/merged; direct route-body `get_portfolio_optimizer()` calls are `0`; runtime OpenAPI remains `548/500`, duplicate operation IDs `0`; remaining monitoring/signal residuals are retained wrappers, false positives, dormant source, or control-plane accessors | Do not use G2.270 as authority for backend source edits, route registration, provider injection, source retirement, tests, docs/api, frontend, OpenSpec, config, scripts, or PM2 |
 | P0 | Preserve G2.269 monitoring portfolio optimizer provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#422` merged at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`; implementation moved 3 target handlers to `Depends(get_monitoring_portfolio_optimizer)`; focused tests `20/20` and OpenAPI guard `1/1` passed; runtime OpenAPI remains `548/500`, duplicate operation IDs `0` | Do not use G2.269 as authority for domain optimizer edits, non-target API modules, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source |
 | P0 | Preserve G2.268 monitoring portfolio optimizer provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#421` merged at `1cb885e8267d76e47e0d08977002a80fafb56092`; authorized only future G2.269 path-limited implementation for `_monitoring_portfolio_router.py` plus focused tests | Do not use G2.268 as authority for broader backend source edits, route registration, source retirement, docs/api, frontend, OpenSpec, config, scripts, or PM2 |

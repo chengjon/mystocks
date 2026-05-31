@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T19:34:41+08:00`
-- Base HEAD checked: `5b3ffd1f114b612810e96c463c651befeb005222`
+- Prepared at: `2026-05-31T19:54:53+08:00`
+- Base HEAD checked: `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/pool-monitoring-control-plane-ownership-decision-2026-05-31.json` | G2.271 pool monitoring control-plane ownership decision evidence | Review input for PR `#424`; no-source ownership decision |
-| `docs/reports/quality/backend-pool-monitoring-control-plane-ownership-decision-2026-05-31.md` | G2.271 human-readable ownership decision report | Review input for PR `#424`; classifies pool monitoring as active control-plane route/OpenAPI ownership |
-| `governance/mainline/task-cards/pr-424.yaml` | Path-limited governance task card for G2.271 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-2026-05-31.json` | G2.272 service lifecycle residual candidate refresh evidence | Review input for PR `#425`; no-source candidate queue refresh |
+| `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-2026-05-31.md` | G2.272 human-readable residual candidate refresh report | Review input for PR `#425`; selects `get_monitoring_db` only as no-source G2.273 decision target |
+| `governance/mainline/task-cards/pr-425.yaml` | Path-limited governance task card for G2.272 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/pool-monitoring-control-plane-ownership-decision-2026-05-31.json` | G2.271 pool monitoring control-plane ownership decision evidence | Accepted by PR `#424`, merged at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`; no-source ownership decision |
+| `docs/reports/quality/backend-pool-monitoring-control-plane-ownership-decision-2026-05-31.md` | G2.271 human-readable ownership decision report | Accepted by PR `#424`; classifies pool monitoring as active control-plane route/OpenAPI ownership |
+| `governance/mainline/task-cards/pr-424.yaml` | Path-limited governance task card for G2.271 | Accepted by PR `#424`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/monitoring-portfolio-optimizer-provider-closeout-refresh-2026-05-31.json` | G2.270 monitoring portfolio optimizer provider closeout / residual-refresh evidence | Accepted by PR `#423`, merged at `5b3ffd1f114b612810e96c463c651befeb005222`; no-source closeout and next-gate classification |
 | `docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-closeout-refresh-2026-05-31.md` | G2.270 human-readable closeout / residual-refresh report | Accepted by PR `#423`; records PR `#422` accepted/merged and selects next no-source control-plane decision |
 | `governance/mainline/task-cards/pr-423.yaml` | Path-limited governance task card for G2.270 | Accepted by PR `#423`; allowed only steward tree, generated evidence, report, and task card updates |

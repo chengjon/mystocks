@@ -1,0 +1,174 @@
+{
+  "id": "g2-272-service-lifecycle-residual-candidate-refresh",
+  "generated_at": "2026-05-31T19:54:53+08:00",
+  "branch": "g2-272-service-lifecycle-residual-candidate-refresh",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "8e0fcd6738c4e3a889b4851d058f8121f32b8ce8",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.271",
+    "pr": 424,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/424",
+    "merge_commit": "8e0fcd6738c4e3a889b4851d058f8121f32b8ce8",
+    "merged_at": "2026-05-31T11:49:57Z"
+  },
+  "scan_scope": {
+    "paths": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "python_files_scanned": 371,
+    "call_shape": "AST Call nodes where function or attribute name starts with get_",
+    "filters": [
+      "exclude common non-candidate helpers such as get_logger, get_data, get_settings, get_current_user",
+      "separate provider/dependency backing functions",
+      "separate known-deferred pool_monitoring.py and dormant get_signal_statistics.py",
+      "bucket active FastAPI route handlers separately from service-body calls"
+    ]
+  },
+  "bucket_counts": {
+    "active_route_body_candidate": 113,
+    "provider_backing_or_dependency": 362,
+    "api_helper_or_module_candidate": 70,
+    "deferred_known": 12,
+    "service_body_candidate": 169
+  },
+  "top_active_route_body_candidates": [
+    {
+      "call": "get_monitoring_db",
+      "calls": 10,
+      "files": [
+        "web/backend/app/api/risk/alerts.py",
+        "web/backend/app/api/risk/metrics.py",
+        "web/backend/app/api/strategy_management/_strategy_crud_router.py"
+      ],
+      "functions": [
+        "calculate_beta",
+        "calculate_var_cvar",
+        "create_risk_alert",
+        "create_strategy",
+        "list_strategies"
+      ],
+      "decision": "select as G2.273 no-source ownership / route-provider decision target"
+    },
+    {
+      "call": "get_data_source",
+      "calls": 7,
+      "files": [
+        "web/backend/app/api/strategy_management/_strategy_execution_router.py",
+        "web/backend/app/api/watchlist.py"
+      ],
+      "decision": "defer until after get_monitoring_db ownership decision"
+    },
+    {
+      "call": "get_config_manager",
+      "calls": 6,
+      "files": [
+        "web/backend/app/api/data_source_config.old.py"
+      ],
+      "decision": "legacy/old route surface; requires separate stale-source/compatibility decision"
+    },
+    {
+      "call": "get_manager",
+      "calls": 5,
+      "files": [
+        "web/backend/app/api/data_source_registry.py"
+      ],
+      "decision": "data-source registry ownership candidate; defer"
+    },
+    {
+      "call": "get_stock_data",
+      "calls": 5,
+      "files": [
+        "web/backend/app/api/ml.py"
+      ],
+      "decision": "ML route data access candidate; defer"
+    },
+    {
+      "call": "get_cache_manager",
+      "calls": 4,
+      "files": [
+        "web/backend/app/api/_cache_basic_routes.py",
+        "web/backend/app/api/cache.py"
+      ],
+      "decision": "cache/control-plane ownership candidate; defer"
+    }
+  ],
+  "service_body_clusters": [
+    {
+      "call": "get_session",
+      "calls": 9,
+      "files": [
+        "web/backend/app/services/monitoring_market_data_service.py",
+        "web/backend/app/services/monitoring_service.py"
+      ],
+      "decision": "service internal session ownership; not next route-provider target"
+    },
+    {
+      "call": "get_mock_data_manager",
+      "calls": 6,
+      "files": [
+        "web/backend/app/services/adapters/strategy_adapter.py",
+        "web/backend/app/services/adapters/technical_analysis_adapter.py",
+        "web/backend/app/services/adapters/watchlist_adapter.py",
+        "web/backend/app/services/data_adapters/technical_analysis.py",
+        "web/backend/app/services/market_data_adapter.py"
+      ],
+      "decision": "previously governed compatibility/runtime facade class; do not reopen without contradiction"
+    },
+    {
+      "call": "get_data_quality_monitor",
+      "calls": 5,
+      "files": [
+        "web/backend/app/services/_data_quality_monitor_singleton.py",
+        "web/backend/app/services/adapters/dashboard_adapter.py",
+        "web/backend/app/services/adapters/data_adapter.py",
+        "web/backend/app/services/adapters_split/base_adapter.py"
+      ],
+      "decision": "previously governed data-quality track; do not reopen without contradiction"
+    }
+  ],
+  "deferred_known": [
+    {
+      "file": "web/backend/app/api/v1/pool_monitoring.py",
+      "reason": "deferred by G2.271 as active control-plane route/OpenAPI ownership, not service DI implementation"
+    },
+    {
+      "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+      "reason": "dormant route-shaped source governed by G2.261-G2.266"
+    }
+  ],
+  "gitnexus": {
+    "impact_get_monitoring_db": "CLI returned ambiguous because three get_monitoring_db symbols exist",
+    "candidates": [
+      "web/backend/app/api/risk/_shared.py:get_monitoring_db",
+      "web/backend/app/utils/risk_utils.py:get_monitoring_db",
+      "web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db"
+    ],
+    "index_status": "stale warning; commits_behind 0; has_embeddings false",
+    "next_gate_requirement": "G2.273 must disambiguate these symbols before any authorization package can select implementation scope"
+  },
+  "decision": {
+    "classification": "residual-candidate-refresh-complete-no-source-lane",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-272",
+    "selected_next_governance_target": "G2.273 no-source get_monitoring_db ownership / route-provider decision",
+    "reason": "get_monitoring_db is the most concentrated remaining active route-body candidate and spans risk plus strategy route surfaces. Its symbol identity is ambiguous in GitNexus and must be decided before any authorization or source lane."
+  },
+  "forbidden_actions": [
+    "backend source edits",
+    "route registration changes",
+    "provider injection implementation",
+    "source retirement",
+    "test contract edits",
+    "docs/api contract edits",
+    "OpenSpec mutation",
+    "frontend/config/script changes",
+    "PM2 or stateful runtime commands"
+  ],
+  "stale_policy": {
+    "current_head_checked_at_review": "8e0fcd6738c4e3a889b4851d058f8121f32b8ce8",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_scan_filters_change": true
+  }
+}
