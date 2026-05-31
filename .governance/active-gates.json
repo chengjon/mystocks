@@ -1,29 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-05-31T02:58:23.273Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "route-header-shell-market-realtime",
-      "title": "Migrate /market/realtime route header shell",
-      "node_type": "implementation",
-      "owner_lane": "web-artdeco",
-      "parent": "",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "docs/FUNCTION_TREE.md#domain-01-node-03",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/frontend/src/views/market/Realtime.vue",
-        "web/frontend/src/components/artdeco/route-shell/",
-        "web/frontend/tests/e2e/market-data.spec.ts",
-        "docs/reports/tasks/",
-        "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-05-31T02:58:23.272Z"
-    }
-  ]
+  "updated_at": "2026-05-31T03:49:18.179Z",
+  "gates": []
 }

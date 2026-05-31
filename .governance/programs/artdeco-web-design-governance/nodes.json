@@ -194,11 +194,11 @@
     "node_type": "implementation",
     "owner_lane": "web-artdeco",
     "parent": "",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#domain-01-node-03",
     "current_head": "f5b767a3675c1e5363efe57f2d9490ea281b35e9",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -221,11 +221,11 @@
       "Do not change backend API contracts or frontend API clients.",
       "Do not extract runtime status strips, control rows, table panels, chart panels, market quote state, stale snapshot state, or A-share market semantics in this node."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-05-31T02:57:32.791Z",
-    "updated_at": "2026-05-31T02:58:23.272Z",
+    "updated_at": "2026-05-31T03:49:18.179Z",
     "acceptance": {
       "commit_gate": [
         "GitNexus impact before editing Realtime.vue and GitNexus staged scope gate before commit.",
@@ -251,7 +251,32 @@
         "note": "Start implementation within approved /market/realtime header-shell-only scope.",
         "current_head": "f5b767a3675c1e5363efe57f2d9490ea281b35e9",
         "transitioned_at": "2026-05-31T02:58:23.272Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit eb6e166ac feat(web): migrate market realtime route header shell.",
+        "current_head": "eb6e166acb7bbad660947f133979ac5dbe671941",
+        "transitioned_at": "2026-05-31T03:46:59.302Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout accepted after commit eb6e166ac and report publication.",
+        "current_head": "eb6e166acb7bbad660947f133979ac5dbe671941",
+        "transitioned_at": "2026-05-31T03:49:18.178Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-05-31-artdeco-market-realtime-route-header-shell-report.md",
+      "compatibility": "No router/API/client/shared market state/stale snapshot/A-share semantic changes; route hooks, refresh behavior, status strip, hero meta, and content meta preserved.",
+      "gates": [
+        "Focused Market Realtime E2E: 3 passed.",
+        "Realtime unit test: 6 passed.",
+        "eslint, ArtDeco token check, impeccable, type-check, OpenSpec validate, Function Tree validate, PM2 status, and GitNexus staged scope gate completed."
+      ],
+      "current_head": "eb6e166acb7bbad660947f133979ac5dbe671941",
+      "prepared_at": "2026-05-31T03:47:13.906Z"
+    }
   }
 ]
