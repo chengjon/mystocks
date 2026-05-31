@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-31T20:39:29+08:00`
-- Base HEAD checked: `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`
+- Prepared at: `2026-05-31T21:34:35+08:00`
+- Base HEAD checked: `16df80c30eb4fceec78a13630e40167f0e4037ca`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.274 risk `get_monitoring_db` route-provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#426` merged at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`; G2.274 records disambiguated GitNexus UID impact for `risk/_shared.py:get_monitoring_db` as LOW with 3 direct risk handlers, and authorizes only future risk-surface implementation after PR `#427` acceptance | Review PR `#427` when opened; if accepted, start `G2.275 path-limited risk get_monitoring_db route-provider implementation`; do not start backend source from G2.274 before PR `#427` is accepted |
+| P0 | Review G2.275 risk `get_monitoring_db` route-provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#427` merged at `16df80c30eb4fceec78a13630e40167f0e4037ca`; G2.275 moves the three authorized risk handlers to `Depends(get_risk_monitoring_db)`, leaving direct route-body `get_monitoring_db()` calls in `alerts.py` / `metrics.py` at `0` | Review PR `#428` when opened; if accepted, start `G2.276 no-source risk get_monitoring_db provider closeout / residual refresh`; do not start the next source lane from G2.275 before PR `#428` is accepted |
+| P0 | Preserve G2.274 risk `get_monitoring_db` route-provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#427` merged at `16df80c30eb4fceec78a13630e40167f0e4037ca`; G2.274 authorized only the three risk source files plus focused tests for G2.275 | Do not use G2.274 as authority for strategy-management helper changes, utility helper changes, route registration, OpenAPI artifact edits, frontend, config, scripts, OpenSpec, PM2, or broader backend source |
 | P0 | Preserve G2.273 `get_monitoring_db` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#426` merged at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`; `get_monitoring_db` is split across risk helper, strategy helper, and utility same-name helper surfaces | Do not use G2.273 as authority for backend source edits, combined risk/strategy migration, route registration, source retirement, tests, docs/api, frontend, OpenSpec, config, scripts, or PM2 |
 | P0 | Preserve G2.272 service lifecycle residual candidate refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#425` merged at `bcf28e4668391f91ea97ee252b4da4eea64faf74`; residual scan selected `get_monitoring_db` only for no-source ownership / route-provider decision; GitNexus reported ambiguous symbols across risk/shared, risk_utils, and strategy helpers | Do not use G2.272 as authority for backend source edits, route registration, provider injection, source retirement, tests, docs/api, frontend, OpenSpec, config, scripts, or PM2 |
 | P0 | Preserve G2.271 pool monitoring control-plane ownership decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#424` merged at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`; `pool_monitoring.py` has 4 active documented OpenAPI routes; pool accessors are classified as control-plane route/OpenAPI ownership, not ordinary service DI source candidates | Do not use G2.271 as authority for backend source edits, route registration, provider injection, source retirement, tests, docs/api, frontend, OpenSpec, config, scripts, or PM2 |

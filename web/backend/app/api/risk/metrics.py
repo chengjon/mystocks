@@ -3,7 +3,7 @@ from typing import Any, Dict, List
 
 import numpy as np
 import pandas as pd
-from fastapi import APIRouter, Body, Query
+from fastapi import APIRouter, Body, Depends, Query
 
 from app.core.exceptions import BusinessException
 from app.openapi_config import COMMON_RESPONSES
@@ -13,7 +13,7 @@ from app.api.risk._shared import (
     RiskCalculator,
     RiskMetrics,
     RISK_METRICS_AVAILABLE,
-    get_monitoring_db,
+    get_risk_monitoring_db,
     logger,
     BetaRequest,
     BetaResult,
@@ -251,7 +251,8 @@ POSITION_RISK_ASSESS_RESPONSES = _success_response_spec(
     responses=VAR_CVAR_RESPONSES,
 )
 async def calculate_var_cvar(
-    request: VaRCVaRRequest = Body(..., openapi_examples=VAR_CVAR_REQUEST_EXAMPLES)
+    request: VaRCVaRRequest = Body(..., openapi_examples=VAR_CVAR_REQUEST_EXAMPLES),
+    monitoring_db: Any = Depends(get_risk_monitoring_db),
 ) -> VaRCVaRResult:
     operation_start = datetime.now()
     try:
@@ -298,7 +299,7 @@ async def calculate_var_cvar(
         )
 
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
+        monitoring_db.log_operation(
             operation_type="RISK_CALCULATION",
             table_name="risk_metrics",
             operation_name="calculate_var_cvar",
@@ -324,7 +325,7 @@ async def calculate_var_cvar(
 
     except Exception as e:
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
+        monitoring_db.log_operation(
             operation_type="RISK_CALCULATION",
             table_name="risk_metrics",
             operation_name="calculate_var_cvar",
@@ -345,7 +346,10 @@ async def calculate_var_cvar(
     description="计算指定实体相对市场基准的 Beta 系数与收益相关性。",
     responses=BETA_RESPONSES,
 )
-async def calculate_beta(request: BetaRequest = Body(..., openapi_examples=BETA_REQUEST_EXAMPLES)) -> BetaResult:
+async def calculate_beta(
+    request: BetaRequest = Body(..., openapi_examples=BETA_REQUEST_EXAMPLES),
+    monitoring_db: Any = Depends(get_risk_monitoring_db),
+) -> BetaResult:
     operation_start = datetime.now()
     try:
         manager = MyStocksUnifiedManager()
@@ -398,7 +402,7 @@ async def calculate_beta(request: BetaRequest = Body(..., openapi_examples=BETA_
         )
 
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
+        monitoring_db.log_operation(
             operation_type="RISK_CALCULATION",
             table_name="risk_metrics",
             operation_name="calculate_beta",
@@ -417,7 +421,7 @@ async def calculate_beta(request: BetaRequest = Body(..., openapi_examples=BETA_
 
     except Exception as e:
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
+        monitoring_db.log_operation(
             operation_type="RISK_CALCULATION",
             table_name="risk_metrics",
             operation_name="calculate_beta",

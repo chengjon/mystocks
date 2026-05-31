@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T20:39:29+08:00`
-- Base HEAD checked: `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`
+- Prepared at: `2026-05-31T21:34:35+08:00`
+- Base HEAD checked: `16df80c30eb4fceec78a13630e40167f0e4037ca`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/risk-get-monitoring-db-provider-authorization-2026-05-31.json` | G2.274 risk `get_monitoring_db` provider authorization evidence | Review input for PR `#427`; no-source authorization package |
-| `docs/reports/quality/backend-risk-get-monitoring-db-provider-authorization-2026-05-31.md` | G2.274 human-readable authorization report | Review input for PR `#427`; authorizes only future risk-source G2.275 after acceptance |
-| `governance/mainline/task-cards/pr-427.yaml` | Path-limited governance task card for G2.274 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/risk-get-monitoring-db-provider-implementation-2026-05-31.json` | G2.275 risk `get_monitoring_db` provider implementation evidence | Review input for future PR `#428`; path-limited source implementation |
+| `docs/reports/quality/backend-risk-get-monitoring-db-provider-implementation-2026-05-31.md` | G2.275 human-readable implementation report | Review input for future PR `#428`; records TDD, source/test verification, OpenAPI smoke, and known week1 risk test debt |
+| `governance/mainline/task-cards/pr-428.yaml` | Path-limited implementation task card for G2.275 | Review input; allows only three risk source files, focused provider test, steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/risk-get-monitoring-db-provider-authorization-2026-05-31.json` | G2.274 risk `get_monitoring_db` provider authorization evidence | Accepted by PR `#427`, merged at `16df80c30eb4fceec78a13630e40167f0e4037ca`; no-source authorization package |
+| `docs/reports/quality/backend-risk-get-monitoring-db-provider-authorization-2026-05-31.md` | G2.274 human-readable authorization report | Accepted by PR `#427`; authorizes only risk-source G2.275 after acceptance |
+| `governance/mainline/task-cards/pr-427.yaml` | Path-limited governance task card for G2.274 | Accepted by PR `#427`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/get-monitoring-db-ownership-decision-2026-05-31.json` | G2.273 `get_monitoring_db` ownership decision evidence | Accepted by PR `#426`, merged at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`; no-source split ownership decision |
 | `docs/reports/quality/backend-get-monitoring-db-ownership-decision-2026-05-31.md` | G2.273 human-readable ownership decision report | Accepted by PR `#426`; selects G2.274 no-source risk route-provider authorization |
 | `governance/mainline/task-cards/pr-426.yaml` | Path-limited governance task card for G2.273 | Accepted by PR `#426`; allowed only steward tree, generated evidence, report, and task card updates |

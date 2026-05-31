@@ -1,0 +1,178 @@
+{
+  "schema_version": "2026-05-31.g2-implementation.v1",
+  "generated_at": "2026-05-31T21:34:35+08:00",
+  "g2_item": "G2.275",
+  "title": "risk get_monitoring_db route provider implementation",
+  "branch": "g2-275-risk-get-monitoring-db-provider",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "16df80c30eb4fceec78a13630e40167f0e4037ca",
+  "current_head_checked": "16df80c30eb4fceec78a13630e40167f0e4037ca",
+  "parent": {
+    "g2_item": "G2.274",
+    "pr": 427,
+    "state": "MERGED",
+    "merge_commit": "16df80c30eb4fceec78a13630e40167f0e4037ca",
+    "merged_at": "2026-05-31T13:02:29Z",
+    "authorization": "future G2.275 path-limited risk source lane for risk/_shared.py, risk/alerts.py, risk/metrics.py, and focused risk tests"
+  },
+  "source_edit_authority": true,
+  "authorized_scope": {
+    "source_paths": [
+      "web/backend/app/api/risk/_shared.py",
+      "web/backend/app/api/risk/alerts.py",
+      "web/backend/app/api/risk/metrics.py"
+    ],
+    "test_paths": [
+      "tests/api/file_tests/test_risk_management_api.py",
+      "web/backend/tests/test_week1_risk_api.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/generated/risk-get-monitoring-db-provider-implementation-2026-05-31.json",
+      "docs/reports/quality/backend-risk-get-monitoring-db-provider-implementation-2026-05-31.md",
+      "governance/mainline/task-cards/pr-428.yaml",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md"
+    ]
+  },
+  "gitnexus_pre_edit": {
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_command": "npx gitnexus impact Function:web/backend/app/api/risk/_shared.py:get_monitoring_db -r mystocks -d upstream --depth 2 --summary-only",
+    "cli_exit_code": 0,
+    "risk": "LOW",
+    "impacted_count": 3,
+    "summary": {
+      "direct": 3,
+      "processes_affected": 0,
+      "modules_affected": 1
+    },
+    "direct_symbols": [
+      "web/backend/app/api/risk/alerts.py:create_risk_alert",
+      "web/backend/app/api/risk/metrics.py:calculate_var_cvar",
+      "web/backend/app/api/risk/metrics.py:calculate_beta"
+    ],
+    "index_status": {
+      "stale": true,
+      "commits_behind": 0,
+      "has_embeddings": false
+    },
+    "risk_interpretation": "LOW risk and the direct symbols are exactly the G2.274-authorized target handlers."
+  },
+  "tdd": {
+    "red": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_risk_management_api.py::TestRiskManagementAPIFile::test_risk_monitoring_db_uses_route_dependency_provider -q -n 0 --tb=short --no-cov",
+      "exit_code": 1,
+      "expected_failure": "AssertionError because app.api.risk._shared did not yet expose get_risk_monitoring_db"
+    },
+    "green": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_risk_management_api.py::TestRiskManagementAPIFile::test_risk_monitoring_db_uses_route_dependency_provider -q -n 0 --tb=short --no-cov",
+      "exit_code": 0,
+      "result": "1 passed"
+    }
+  },
+  "implementation": {
+    "provider_added": "get_risk_monitoring_db",
+    "provider_backing_call": "get_monitoring_db()",
+    "target_handlers": [
+      "create_risk_alert",
+      "calculate_var_cvar",
+      "calculate_beta"
+    ],
+    "handler_dependency_parameters_after": 3,
+    "handler_monitoring_db_log_operation_calls_after": 6,
+    "direct_route_body_get_monitoring_db_calls_after": 0,
+    "provider_get_monitoring_db_calls_after": 1,
+    "route_contract_changes": false,
+    "openapi_artifact_changes": false,
+    "lint_seam_note": "alerts.py companion helper imports and a route-name pytest-style false positive were repaired locally so touched-file ruff has a clean result."
+  },
+  "verification": {
+    "focused_provider_test": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_risk_management_api.py::TestRiskManagementAPIFile::test_risk_monitoring_db_uses_route_dependency_provider -q -n 0 --tb=short --no-cov",
+      "result": "1 passed"
+    },
+    "focused_health_route_conflicts": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_risk_management_api.py::TestRiskManagementAPIFile::test_risk_monitoring_db_uses_route_dependency_provider web/backend/tests/test_health_route_conflicts.py -q -n 0 --tb=short --no-cov",
+      "result": "122 passed",
+      "note": "A prior combined attempt produced one OpenAPI schema generation failure in test_risk_v31_stop_loss_write_endpoints_have_docs_and_request_examples; the single test then passed and the full combined target rerun passed."
+    },
+    "week1_risk_api_attempt": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= web/backend/tests/test_week1_risk_api.py -q -n 0 --tb=short --no-cov",
+      "exit_code": 1,
+      "result": "4 failed, 11 passed, 4 errors",
+      "known_debt": [
+        "fixture 'sample_portfolio_positions' not found",
+        "fixture 'sample_risk_alert_data' not found",
+        "GET/POST method expectation drift returns 405 on several risk metric tests",
+        "local PostgreSQL connection refused for monitoring database side effects"
+      ]
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/risk/_shared.py web/backend/app/api/risk/alerts.py web/backend/app/api/risk/metrics.py tests/api/file_tests/test_risk_management_api.py",
+      "result": "All checks passed"
+    },
+    "gitnexus_staged_fallback": {
+      "command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-275-risk-get-monitoring-db-provider --json",
+      "exit_code": 0,
+      "ok": true,
+      "status": "stale",
+      "changed_count": 13,
+      "affected_count": 0,
+      "changed_files": 13,
+      "risk_level": "low",
+      "indexed_commit": "7832a6d4adc44c4dd71697142c76fbd860f4964b",
+      "current_commit": "16df80c30eb4fceec78a13630e40167f0e4037ca",
+      "next_action": "Refresh the GitNexus index before relying on this result."
+    },
+    "static_source_check": {
+      "direct_get_monitoring_db_log_operation_calls": 0,
+      "direct_get_monitoring_db_calls_in_target_route_modules": 0,
+      "depends_get_risk_monitoring_db_calls": 3,
+      "monitoring_db_log_operation_calls": 6
+    },
+    "runtime_openapi_smoke": {
+      "routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "target_operations": {
+        "POST /api/v1/risk/alerts": {
+          "parameters": 0,
+          "has_request_body": true,
+          "operation_id": "create_risk_alert_api_v1_risk_alerts_post"
+        },
+        "POST /api/v1/risk/var-cvar": {
+          "parameters": 0,
+          "has_request_body": true,
+          "operation_id": "calculate_var_cvar_api_v1_risk_var_cvar_post"
+        },
+        "POST /api/v1/risk/beta": {
+          "parameters": 0,
+          "has_request_body": true,
+          "operation_id": "calculate_beta_api_v1_risk_beta_post"
+        }
+      }
+    }
+  },
+  "forbidden_actions_not_performed": [
+    "editing web/backend/app/api/strategy_management/**",
+    "editing web/backend/app/utils/risk_utils.py",
+    "route registration changes",
+    "route path or response model changes",
+    "OpenAPI artifact edits",
+    "docs/api edits",
+    "frontend/config/script changes",
+    "OpenSpec edits",
+    "PM2/runtime stateful commands"
+  ],
+  "next_gate": "G2.276 no-source risk get_monitoring_db provider closeout / residual refresh",
+  "stale_policy": {
+    "stale_if_head_mismatch": true,
+    "stale_if_pr_427_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_risk_get_monitoring_db_call_sites_change": true
+  }
+}

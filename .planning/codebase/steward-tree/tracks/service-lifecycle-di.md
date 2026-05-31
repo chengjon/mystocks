@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T20:39:29+08:00`
-- Base HEAD checked: `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`
+- Prepared at: `2026-05-31T21:34:35+08:00`
+- Base HEAD checked: `16df80c30eb4fceec78a13630e40167f0e4037ca`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2894,7 +2894,7 @@ Status: accepted/merged by PR `#426` at `0de77f3d05b1b6242515f2b86fce03c0eba37aa
 
 ## G2.274 Risk get_monitoring_db Provider Authorization
 
-Status: for review in future PR `#427`.
+Status: accepted/merged by PR `#427` at `16df80c30eb4fceec78a13630e40167f0e4037ca`.
 
 - Parent PR `#426` merged at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`.
 - GitNexus MCP impact returned `Transport closed`; CLI impact using `Function:web/backend/app/api/risk/_shared.py:get_monitoring_db` returned LOW risk with 3 direct risk handlers.
@@ -2906,3 +2906,19 @@ Status: for review in future PR `#427`.
 - Authorized next gate after acceptance: G2.275 path-limited risk `get_monitoring_db` route-provider implementation.
 - Future G2.275 may touch only the three risk source paths plus focused risk tests named in the authorization report.
 - G2.274 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.275 Risk get_monitoring_db Provider Implementation
+
+Status: for review in future PR `#428`.
+
+- Parent PR `#427` merged at `16df80c30eb4fceec78a13630e40167f0e4037ca`.
+- GitNexus MCP impact returned `Transport closed`; CLI impact using `Function:web/backend/app/api/risk/_shared.py:get_monitoring_db` returned LOW risk with 3 direct risk handlers and 0 affected processes.
+- Added `get_risk_monitoring_db()` in `web/backend/app/api/risk/_shared.py` as the route-provider backing wrapper for the existing risk monitoring database helper.
+- Moved `create_risk_alert`, `calculate_var_cvar`, and `calculate_beta` to `Depends(get_risk_monitoring_db)`.
+- Direct route-body `get_monitoring_db()` calls in `risk/alerts.py` and `risk/metrics.py` are `0`; provider backing call remains `1`; dependency parameters are `3`; `monitoring_db.log_operation(...)` calls are `6`.
+- TDD red/green completed for `test_risk_monitoring_db_uses_route_dependency_provider`.
+- Focused verification: provider test + `web/backend/tests/test_health_route_conflicts.py` passed `122/122`; ruff passed on touched source/test files.
+- `web/backend/tests/test_week1_risk_api.py` remains existing test debt: `4 failed, 11 passed, 4 errors` from missing fixtures, method expectation drift, and local monitoring DB side-effect connection errors.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and unchanged target endpoint parameter counts.
+- Next gate after acceptance: G2.276 no-source risk `get_monitoring_db` provider closeout / residual refresh.
+- G2.275 must not be used as authority for strategy-management helper changes, `web/backend/app/utils/risk_utils.py`, route registration, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source.
