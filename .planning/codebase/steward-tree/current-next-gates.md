@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-31T10:58:01+08:00`
-- Base HEAD checked: `fe1927818309efb2c1de3a9c1e1128e9b456053e`
+- Prepared at: `2026-05-31T11:45:58+08:00`
+- Base HEAD checked: `2b53352d6869f66147ce3892b1b0a7174ba064b4`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.265 signal statistics stale contract cleanup implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#417` merged at `fe1927818309efb2c1de3a9c1e1128e9b456053e`; stale docs/test contract cleanup is path-limited to 5 authorized artifacts; targeted tests now pass `2/2`; runtime OpenAPI remains `548/500` with target paths `0` and duplicate operation IDs `0` | If accepted, merge PR `#418`, then start G2.266 no-source signal statistics dormant contract closeout / residual refresh; do not register routes, inject providers, retire source, or modify OpenSpec |
+| P0 | Review G2.266 signal statistics dormant contract closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#418` merged at `2b53352d6869f66147ce3892b1b0a7174ba064b4`; G2.265 accepted/merged; stale signal statistics docs/test contract mismatch is closed; residual scan refreshed monitoring/signal getter-shaped surfaces | Review PR `#419` when opened; keep no-source; if accepted, start `G2.267 no-source monitoring/signal residual provider classification refresh`; do not register routes, inject providers, retire source, or modify OpenSpec |
+| P0 | Preserve G2.265 signal statistics stale contract cleanup implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#418` merged at `2b53352d6869f66147ce3892b1b0a7174ba064b4`; path-limited docs/test stale contract cleanup accepted; targeted tests `2/2`; runtime OpenAPI `548/500`, target paths `0`, duplicate operation IDs `0` | Do not use G2.265 as authority for backend source edits, route registration, provider injection, source retirement, frontend, OpenSpec, or PM2 |
 | P0 | Preserve G2.264 signal statistics stale contract cleanup authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#417` merged at `fe1927818309efb2c1de3a9c1e1128e9b456053e`; authorized only future G2.265 path-limited docs/test cleanup | Do not use G2.264 as authority for backend source edits, route registration, provider injection, source retirement, frontend, OpenSpec, or PM2 |
 | P0 | Preserve G2.263 signal statistics route contract disposition decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#416` merged at `795d2b9f50c3e483876f1b4ec484fbf9c1d9e513`; selected dormant source retention plus stale contract artifact reconciliation | Do not register routes, retire source, or migrate provider calls from dormant `get_signal_statistics.py` without a separate future decision |
 | P0 | Preserve G2.262 signal statistics route/OpenAPI reconciliation authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#415` merged at `15bebd4de48059fb5bf35efef81aabb9040cf6ea`; current runtime/OpenAPI snapshot remains `548/500`, target runtime routes `0`, target OpenAPI paths `0`, duplicate operation IDs `0` | Do not start route registration, provider injection, docs/api cleanup, tests, or retirement without G2.263/G2.264 review gates |

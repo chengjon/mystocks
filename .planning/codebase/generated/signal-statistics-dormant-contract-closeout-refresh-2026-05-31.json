@@ -1,0 +1,110 @@
+{
+  "id": "g2-266-signal-statistics-dormant-contract-closeout-refresh",
+  "generated_at": "2026-05-31T11:45:58+08:00",
+  "branch": "g2-266-signal-statistics-dormant-closeout-refresh",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "2b53352d6869f66147ce3892b1b0a7174ba064b4",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.265",
+    "pr": 418,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/418",
+    "merge_commit": "2b53352d6869f66147ce3892b1b0a7174ba064b4",
+    "merged_at": "2026-05-31T03:33:31Z"
+  },
+  "closeout_result": {
+    "g2_265_state": "accepted/merged",
+    "docs_api_openapi_target_path_counts": {
+      "/api/signals/statistics": 0,
+      "/api/signals/active": 0
+    },
+    "runtime_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "target_paths": [],
+      "duplicate_operation_ids": 0,
+      "warning_count": 119
+    },
+    "targeted_tests": "2 passed; both dormant endpoint tests assert 404 Not Found",
+    "dormant_source_policy": "retain web/backend/app/api/signal_monitoring/get_signal_statistics.py as dormant source; do not register routes, inject providers, or retire source from G2.266"
+  },
+  "reference_counts": {
+    "docs/api/openapi.yaml": {
+      "/api/signals/statistics": 0,
+      "/api/signals/active": 0
+    },
+    "docs/api/task_plan_signal_monitoring_phase2_extended.md": {
+      "/api/signals/statistics": 1,
+      "/api/signals/active": 1
+    },
+    "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md": {
+      "/api/signals/statistics": 5,
+      "/api/signals/active": 4
+    },
+    "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md": {
+      "/api/signals/statistics": 3,
+      "/api/signals/active": 0
+    },
+    "tests/unit/test_signal_monitoring_integration.py": {
+      "/api/signals/statistics": 1,
+      "/api/signals/active": 1
+    },
+    "web/backend/app/api/signal_monitoring/get_signal_statistics.py": {
+      "/api/signals/statistics": 0,
+      "/api/signals/active": 0
+    }
+  },
+  "residual_refresh": {
+    "files_with_getter_calls_under_web_backend_app_api": 57,
+    "interesting_monitoring_or_signal_files": {
+      "web/backend/app/api/_monitoring_portfolio_router.py": {
+        "get_calculator_factory": 1,
+        "get_portfolio_optimizer": 3,
+        "get_postgres_async": 1
+      },
+      "web/backend/app/api/monitoring.py": {
+        "get_monitoring_summary": 1
+      },
+      "web/backend/app/api/monitoring_analysis.py": {
+        "get_calculator_factory": 1,
+        "get_postgres_async": 1
+      },
+      "web/backend/app/api/monitoring_watchlists.py": {
+        "get_postgres_async": 1
+      },
+      "web/backend/app/api/signal_monitoring/get_signal_statistics.py": {
+        "get_postgres_async": 3,
+        "get_signal_result_tracker": 1
+      },
+      "web/backend/app/api/signal_monitoring/signal_history_response.py": {
+        "get_postgres_async": 1
+      },
+      "web/backend/app/api/v1/pool_monitoring.py": {
+        "get_postgresql_engine": 1,
+        "get_postgresql_pool_stats": 2,
+        "get_tdengine_manager": 1,
+        "get_tdengine_pool_stats": 2
+      }
+    }
+  },
+  "decision": {
+    "classification": "dormant-contract-cleanup-closed-with-retained-dormant-source",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-266",
+    "selected_next_governance_target": "G2.267 no-source monitoring/signal residual provider classification refresh",
+    "reason": "G2.265 closed the stale docs/test contract mismatch. Remaining monitoring/signal getter-shaped residuals mix active provider backing, retained control-plane accessors, and the dormant get_signal_statistics.py source, so the next step must classify residual ownership before any source lane."
+  },
+  "forbidden_actions": [
+    "backend source edits",
+    "route registration",
+    "provider injection",
+    "dormant source retirement",
+    "OpenSpec mutation",
+    "frontend/config/script changes",
+    "PM2 or stateful runtime commands"
+  ],
+  "stale_policy": {
+    "current_head_checked_at_review": "2b53352d6869f66147ce3892b1b0a7174ba064b4",
+    "stale_if_head_or_pr_state_changes": true
+  }
+}

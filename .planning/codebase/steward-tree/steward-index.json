@@ -1,10 +1,10 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T10:58:01+08:00",
+  "generated_at": "2026-05-31T11:45:58+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "fe1927818309efb2c1de3a9c1e1128e9b456053e",
-  "split_branch": "g2-265-signal-statistics-stale-contract-cleanup",
+  "base_head": "2b53352d6869f66147ce3892b1b0a7174ba064b4",
+  "split_branch": "g2-266-signal-statistics-dormant-closeout-refresh",
   "scope": "signal_statistics_stale_contract_cleanup_implementation",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
@@ -6816,10 +6816,17 @@
     {
       "id": "g2-265-signal-statistics-stale-contract-cleanup-implementation",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.264 signal statistics stale contract cleanup authorization",
-      "github_pr": 418,
+      "github_pr": {
+        "number": 418,
+        "url": "https://github.com/chengjon/mystocks/pull/418",
+        "state_at_closeout": "MERGED",
+        "head_ref": "g2-265-signal-statistics-stale-contract-cleanup",
+        "merge_commit": "2b53352d6869f66147ce3892b1b0a7174ba064b4",
+        "merged_at": "2026-05-31T03:33:31Z"
+      },
       "branch": "g2-265-signal-statistics-stale-contract-cleanup",
       "base_head": "fe1927818309efb2c1de3a9c1e1128e9b456053e",
       "source_edit_authority": "docs_and_test_contract_cleanup_only",
@@ -6879,7 +6886,90 @@
         "openspec/changes/**",
         "openspec/specs/**"
       ],
-      "next_gate": "If accepted, merge PR #418 and start G2.266 no-source signal statistics dormant contract closeout / residual refresh."
+      "next_gate": "Superseded by G2.266 no-source signal statistics dormant contract closeout / residual refresh.",
+      "freshness": {
+        "current_head_checked": "2b53352d6869f66147ce3892b1b0a7174ba064b4",
+        "stale_if_head_mismatch": true
+      }
+    },
+    {
+      "id": "g2-266-signal-statistics-dormant-contract-closeout-refresh",
+      "type": "closeout_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.265 signal statistics stale contract cleanup implementation",
+      "source_edit_authority": false,
+      "github_pr": {
+        "number": 419,
+        "url": "https://github.com/chengjon/mystocks/pull/419",
+        "state": "FOR_REVIEW",
+        "head_ref": "g2-266-signal-statistics-dormant-closeout-refresh"
+      },
+      "evidence": [
+        ".planning/codebase/generated/signal-statistics-dormant-contract-closeout-refresh-2026-05-31.json",
+        "docs/reports/quality/backend-signal-statistics-dormant-contract-closeout-refresh-2026-05-31.md",
+        "governance/mainline/task-cards/pr-419.yaml"
+      ],
+      "closeout_result": {
+        "g2_265_state": "accepted/merged",
+        "docs_api_openapi_target_path_counts": {
+          "/api/signals/statistics": 0,
+          "/api/signals/active": 0
+        },
+        "runtime_openapi_smoke": {
+          "routes": 548,
+          "paths": 500,
+          "target_paths": [],
+          "duplicate_operation_ids": 0,
+          "warning_count": 119
+        },
+        "targeted_tests": "2 passed; both dormant endpoint tests assert 404 Not Found",
+        "dormant_source_policy": "retain web/backend/app/api/signal_monitoring/get_signal_statistics.py as dormant source; do not register routes, inject providers, or retire source from G2.266"
+      },
+      "residual_refresh": {
+        "files_with_getter_calls_under_web_backend_app_api": 57,
+        "interesting_monitoring_or_signal_files": {
+          "web/backend/app/api/_monitoring_portfolio_router.py": {
+            "get_calculator_factory": 1,
+            "get_portfolio_optimizer": 3,
+            "get_postgres_async": 1
+          },
+          "web/backend/app/api/monitoring.py": {
+            "get_monitoring_summary": 1
+          },
+          "web/backend/app/api/monitoring_analysis.py": {
+            "get_calculator_factory": 1,
+            "get_postgres_async": 1
+          },
+          "web/backend/app/api/monitoring_watchlists.py": {
+            "get_postgres_async": 1
+          },
+          "web/backend/app/api/signal_monitoring/get_signal_statistics.py": {
+            "get_postgres_async": 3,
+            "get_signal_result_tracker": 1
+          },
+          "web/backend/app/api/signal_monitoring/signal_history_response.py": {
+            "get_postgres_async": 1
+          },
+          "web/backend/app/api/v1/pool_monitoring.py": {
+            "get_postgresql_engine": 1,
+            "get_postgresql_pool_stats": 2,
+            "get_tdengine_manager": 1,
+            "get_tdengine_pool_stats": 2
+          }
+        }
+      },
+      "decision": {
+        "classification": "dormant-contract-cleanup-closed-with-retained-dormant-source",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-266",
+        "selected_next_governance_target": "G2.267 no-source monitoring/signal residual provider classification refresh",
+        "reason": "G2.265 closed the stale docs/test contract mismatch. Remaining monitoring/signal getter-shaped residuals mix active provider backing, retained control-plane accessors, and the dormant get_signal_statistics.py source, so the next step must classify residual ownership before any source lane."
+      },
+      "freshness": {
+        "current_head_checked": "2b53352d6869f66147ce3892b1b0a7174ba064b4",
+        "stale_if_head_or_pr_state_changes": true
+      },
+      "next_gate": "If accepted, start G2.267 no-source monitoring/signal residual provider classification refresh; do not directly open source implementation."
     }
   ]
 }
