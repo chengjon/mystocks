@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-01T03:11:52+08:00",
+  "gate": "G2.284",
+  "title": "data_lineage get_lineage_tracker provider closeout / residual refresh",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "511e9d091bc2b29777c522c595a9f1454f50b973",
+  "worktree": ".worktrees/g2-284-lineage-tracker-provider-closeout",
+  "source_edit_authority": false,
+  "autopilot_status": "eligible_for_limited_autopilot_after_gates_pass",
+  "parent": {
+    "gate": "G2.283",
+    "pr": 436,
+    "state": "MERGED",
+    "merged_at": "2026-05-31T19:05:43Z",
+    "merge_commit": "511e9d091bc2b29777c522c595a9f1454f50b973",
+    "summary": "Path-limited data_lineage get_lineage_tracker route-provider implementation accepted and merged."
+  },
+  "closeout": {
+    "route_module": "web/backend/app/api/data_lineage.py",
+    "helper": "get_lineage_tracker",
+    "provider": "get_lineage_tracker_dependency",
+    "route_handlers": [
+      "record_lineage",
+      "get_upstream_lineage",
+      "get_downstream_lineage",
+      "get_lineage_graph",
+      "analyze_impact"
+    ],
+    "direct_route_body_getter_calls": 0,
+    "provider_backing_getter_calls": 1,
+    "manual_conn_close_calls": 0,
+    "depends_provider_bindings": 5,
+    "provider_definitions": 1,
+    "lineage_provider_migration_closed": true,
+    "source_reopen_allowed_without_contradiction": false
+  },
+  "residual_refresh": {
+    "scan_roots": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "python_files_scanned": 371,
+    "current_raw_getter_names_seen_after_known_closed_exclusions": 101,
+    "known_closed_surfaces_extended": [
+      "get_config_manager",
+      "get_config_manager_dependency",
+      "get_data_adapter",
+      "get_data_quality_monitor",
+      "get_data_service_dependency",
+      "get_execution_tracking_evidence_service",
+      "get_lineage_tracker",
+      "get_mock_data_manager",
+      "get_monitoring_analysis_postgres_async",
+      "get_monitoring_db",
+      "get_monitoring_portfolio_optimizer",
+      "get_monitoring_postgres_async",
+      "get_monitoring_watchlists_postgres_async",
+      "get_postgres_async",
+      "get_prewarming_strategy",
+      "get_risk_monitoring_db",
+      "get_signal_history_postgres_async",
+      "get_stop_loss_service",
+      "get_strategy_adapter",
+      "get_strategy_monitoring_db",
+      "get_strategy_service",
+      "get_unified_data_service"
+    ],
+    "deferred_surfaces": [
+      {
+        "name": "get_integrated_services",
+        "classification": "root facade compatibility surface",
+        "disposition": "defer to separate root facade compatibility decision"
+      },
+      {
+        "name": "get_indicator_registry",
+        "classification": "ambiguous registry surface",
+        "disposition": "defer until registry ownership is disambiguated"
+      },
+      {
+        "name": "get_cache_manager",
+        "classification": "ambiguous dashboard/cache helper",
+        "disposition": "defer until dashboard/core cache ownership is disambiguated"
+      },
+      {
+        "name": "get_redis_client",
+        "classification": "infrastructure cache/client helper",
+        "disposition": "defer to infrastructure/cache ownership lane"
+      },
+      {
+        "name": "get_cache_integration",
+        "classification": "cache integration infrastructure surface",
+        "disposition": "defer to infrastructure/cache ownership lane"
+      }
+    ],
+    "selected_next_governance_target": {
+      "gate": "G2.285",
+      "title": "no-source governance_dashboard get_postgres_connection ownership / control-plane route-provider decision",
+      "symbol": "get_postgres_connection",
+      "file": "web/backend/app/api/governance_dashboard.py",
+      "active_route_body_calls": 5,
+      "classification": "control-plane DB connection helper",
+      "reason": "After the lineage helper closeout, this is the most bounded single-route-module active helper from the prior deferred control-plane group. It must be classified under route/OpenAPI/control-plane ownership before any source authorization."
+    }
+  },
+  "route_openapi_smoke": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "lineage_paths": [
+      "/api/v1/governance/lineage/stats",
+      "/api/v1/lineage/graph",
+      "/api/v1/lineage/impact",
+      "/api/v1/lineage/record",
+      "/api/v1/lineage/{node_id}/downstream",
+      "/api/v1/lineage/{node_id}/upstream"
+    ],
+    "known_warning_noise": "Pydantic v1/v2 deprecation and FastAPI import-time service initialization warnings only; route/OpenAPI smoke exited with status 0."
+  },
+  "gitnexus_evidence": {
+    "selected_next_target": "Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection",
+    "cli_context": {
+      "status": "found",
+      "incoming_calls": [
+        "get_quality_overview",
+        "get_lineage_stats",
+        "get_assets_catalog",
+        "get_compliance_metrics",
+        "fetch_all_data"
+      ],
+      "processes": [],
+      "index_status": "stale warning"
+    },
+    "cli_impact": {
+      "risk": "MEDIUM",
+      "impacted_count": 6,
+      "direct": 5,
+      "processes_affected": 0,
+      "affected_processes": [],
+      "index_status": "stale warning"
+    },
+    "interpretation": "MEDIUM applies to the future decision target only. G2.284 is no-source and does not authorize implementation."
+  },
+  "decision": {
+    "classification": "closeout-refresh-complete-no-source-lane",
+    "lineage_provider_status": "closed",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-284",
+    "selected_next_governance_target": "G2.285 no-source governance_dashboard get_postgres_connection ownership / control-plane route-provider decision",
+    "reason": "Lineage route-provider migration is accepted/merged and closed. Remaining direct helper surfaces need ownership classification; governance_dashboard get_postgres_connection is the next bounded control-plane candidate but must start as no-source decision only."
+  },
+  "freshness": {
+    "current_head_checked": "511e9d091bc2b29777c522c595a9f1454f50b973",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_lineage_call_sites_change": true,
+    "stale_if_candidate_scan_changes": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}

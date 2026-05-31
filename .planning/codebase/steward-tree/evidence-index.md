@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T02:47:10+08:00`
-- Base HEAD checked: `891593d2dc4896f909333033a0b454529b9be38c`
+- Prepared at: `2026-06-01T03:11:52+08:00`
+- Base HEAD checked: `511e9d091bc2b29777c522c595a9f1454f50b973`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/data-lineage-tracker-provider-implementation-2026-06-01.json` | G2.283 data_lineage `get_lineage_tracker` provider implementation evidence | Review input for future PR `#436`; path-limited source implementation; must stop because source implementation PR and GitNexus risk is MEDIUM |
-| `docs/reports/quality/backend-data-lineage-tracker-provider-implementation-2026-06-01.md` | G2.283 human-readable provider implementation report | Review input for future PR `#436`; records PR `#435` accepted/merged, TDD, route-local provider implementation, focused tests, OpenAPI smoke, and next G2.284 closeout recommendation |
-| `governance/mainline/task-cards/pr-436.yaml` | Path-limited implementation task card for G2.283 | Review input; allows only `data_lineage.py`, focused regression test, steward tree, generated evidence, report, and task card updates; no auto-merge |
+| `.planning/codebase/generated/data-lineage-tracker-provider-closeout-refresh-2026-06-01.json` | G2.284 data_lineage `get_lineage_tracker` provider closeout / residual refresh evidence | Review input for future PR `#437`; no-source closeout; selects G2.285 no-source `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision |
+| `docs/reports/quality/backend-data-lineage-tracker-provider-closeout-refresh-2026-06-01.md` | G2.284 human-readable closeout / residual refresh report | Review input for future PR `#437`; records PR `#436` accepted/merged, lineage closeout scan, runtime/OpenAPI smoke, residual refresh, and next G2.285 recommendation |
+| `governance/mainline/task-cards/pr-437.yaml` | No-source governance task card for G2.284 | Review input; allows only steward tree, generated evidence, report, and task card updates; no backend source/test/runtime/OpenSpec edits |
+| `.planning/codebase/generated/data-lineage-tracker-provider-implementation-2026-06-01.json` | G2.283 data_lineage `get_lineage_tracker` provider implementation evidence | Accepted by PR `#436`, merged at `511e9d091bc2b29777c522c595a9f1454f50b973`; path-limited source implementation; superseded for closeout by G2.284 |
+| `docs/reports/quality/backend-data-lineage-tracker-provider-implementation-2026-06-01.md` | G2.283 human-readable provider implementation report | Accepted by PR `#436`; records PR `#435` accepted/merged, TDD, route-local provider implementation, focused tests, OpenAPI smoke, and next G2.284 closeout recommendation |
+| `governance/mainline/task-cards/pr-436.yaml` | Path-limited implementation task card for G2.283 | Accepted by PR `#436`; allowed only `data_lineage.py`, focused regression test, steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/data-lineage-tracker-provider-authorization-2026-06-01.json` | G2.282 data_lineage `get_lineage_tracker` provider authorization evidence | Accepted by PR `#435`, merged at `891593d2dc4896f909333033a0b454529b9be38c`; no-source authorization package; stopped because it authorized future source work and GitNexus risk is MEDIUM |
 | `docs/reports/quality/backend-data-lineage-tracker-provider-authorization-2026-06-01.md` | G2.282 human-readable provider authorization report | Accepted by PR `#435`; records PR `#434` accepted/merged, target source boundary, cleanup lifecycle, GitNexus MEDIUM risk, OpenAPI smoke, and future G2.283 guardrails |
 | `governance/mainline/task-cards/pr-435.yaml` | No-source governance task card for G2.282 | Accepted by PR `#435`; allowed only steward tree, generated evidence, report, and task card updates; no auto-merge |
