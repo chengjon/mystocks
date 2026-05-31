@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-01T01:56:44+08:00",
+  "gate": "G2.281",
+  "title": "data_lineage get_lineage_tracker ownership / route-provider decision",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "1707284bceeef8992641290d86790c1699975f5a",
+  "worktree": ".worktrees/g2-281-data-lineage-tracker-ownership-decision",
+  "source_edit_authority": false,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "GitNexus sampled impact for get_lineage_tracker is MEDIUM. This triggers the maintainer's limited-autopilot stop rule even though affected processes are 0.",
+  "parent": {
+    "gate": "G2.280",
+    "pr": 433,
+    "state": "MERGED",
+    "merged_at": "2026-05-31T17:53:44Z",
+    "merge_commit": "1707284bceeef8992641290d86790c1699975f5a",
+    "summary": "No-source service lifecycle residual candidate refresh accepted and merged."
+  },
+  "surface": {
+    "route_module": "web/backend/app/api/data_lineage.py",
+    "line_count": 567,
+    "provider_candidate": {
+      "name": "get_lineage_tracker",
+      "definition_line": 92,
+      "returns": [
+        "LineageTracker",
+        "_AsyncpgLineageConnectionAdapter"
+      ],
+      "creates_raw_connection": true,
+      "uses_asyncpg_connect": true,
+      "uses_settings_postgresql_config": true
+    },
+    "route_handlers": [
+      {
+        "name": "record_lineage",
+        "line": 129,
+        "method": "POST",
+        "path": "/api/v1/lineage/record",
+        "call_line": 149
+      },
+      {
+        "name": "get_upstream_lineage",
+        "line": 204,
+        "method": "GET",
+        "path": "/api/v1/lineage/{node_id}/upstream",
+        "call_line": 226
+      },
+      {
+        "name": "get_downstream_lineage",
+        "line": 314,
+        "method": "GET",
+        "path": "/api/v1/lineage/{node_id}/downstream",
+        "call_line": 336
+      },
+      {
+        "name": "get_lineage_graph",
+        "line": 401,
+        "method": "POST",
+        "path": "/api/v1/lineage/graph",
+        "call_line": 424
+      },
+      {
+        "name": "analyze_impact",
+        "line": 517,
+        "method": "POST",
+        "path": "/api/v1/lineage/impact",
+        "call_line": 540
+      }
+    ],
+    "active_bare_calls": 5,
+    "files_touched_if_future_provider_lane": [
+      "web/backend/app/api/data_lineage.py",
+      "focused data_lineage file tests if an existing or new focused test path is authorized later"
+    ]
+  },
+  "route_openapi_smoke": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "lineage_paths": [
+      "/api/v1/lineage/graph",
+      "/api/v1/lineage/impact",
+      "/api/v1/lineage/record",
+      "/api/v1/lineage/{node_id}/downstream",
+      "/api/v1/lineage/{node_id}/upstream",
+      "/api/v1/governance/lineage/stats"
+    ],
+    "known_log_noise": "mock backtest NotImplementedError during app import smoke"
+  },
+  "gitnexus_evidence": {
+    "mcp": "not relied on for this gate; prior MCP detect/context calls have been returning Transport closed",
+    "cli_context": {
+      "status": "found",
+      "uid": "Function:web/backend/app/api/data_lineage.py:get_lineage_tracker",
+      "incoming_calls": [
+        "record_lineage",
+        "get_upstream_lineage",
+        "get_downstream_lineage",
+        "get_lineage_graph",
+        "analyze_impact"
+      ],
+      "processes": [],
+      "index_status": "stale warning"
+    },
+    "cli_impact": {
+      "risk": "MEDIUM",
+      "impacted_count": 5,
+      "direct": 5,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "affected_module": "Api",
+      "index_status": "stale warning"
+    }
+  },
+  "gitnexus_staged_verification": {
+    "mcp_detect_changes": "Transport closed",
+    "cli_command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-281-data-lineage-tracker-ownership-decision --json",
+    "ok": true,
+    "status": "stale",
+    "risk_level": "low",
+    "changed_files": 9,
+    "changed_symbols": 0,
+    "affected_processes": 0,
+    "indexed_commit": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+    "current_commit": "1707284bceeef8992641290d86790c1699975f5a",
+    "stale_reason": "current_commit_differs_from_indexed_commit",
+    "next_action": "Refresh the GitNexus index before relying on graph freshness."
+  },
+  "decision": {
+    "classification": "bounded-active-api-route-helper",
+    "ownership": "data_lineage route module owns current helper; it is not a cross-module service facade and not a control-plane route registry issue",
+    "route_provider_recommendation": "A future lane may convert the five direct await get_lineage_tracker() calls into a route-local provider/dependency seam, but only after human review because GitNexus risk is MEDIUM.",
+    "recommended_next_governance_target": "G2.282 no-source data_lineage get_lineage_tracker provider authorization package",
+    "source_lane_authorized_now": false,
+    "autopilot_continue_allowed": false
+  },
+  "freshness": {
+    "current_head_checked": "1707284bceeef8992641290d86790c1699975f5a",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_data_lineage_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}

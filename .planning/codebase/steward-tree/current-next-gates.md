@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T01:32:16+08:00`
-- Base HEAD checked: `fcead56344110e33041319271c122e71d2b763a0`
+- Prepared at: `2026-06-01T01:56:44+08:00`
+- Base HEAD checked: `1707284bceeef8992641290d86790c1699975f5a`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.280 service lifecycle residual candidate refresh after `get_monitoring_db` | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#432` merged at `fcead56344110e33041319271c122e71d2b763a0`; G2.280 scans `371` API/service Python files, records `31` active interesting residual candidates, keeps root facade / registry / control-plane / cache surfaces deferred, and selects `get_lineage_tracker` only for no-source ownership / route-provider decision | Review PR `#433` when opened; if accepted, start `G2.281 no-source data_lineage get_lineage_tracker ownership / route-provider decision`; do not start source implementation from G2.280 |
+| P0 | Review G2.281 data_lineage `get_lineage_tracker` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#433` merged at `1707284bceeef8992641290d86790c1699975f5a`; G2.281 classifies `get_lineage_tracker` as a bounded active API route helper with five direct callers in `data_lineage.py`; GitNexus CLI sampled impact is MEDIUM, direct callers `5`, affected processes `0` | Review PR `#434` when opened; do not auto-merge under limited-autopilot because GitNexus risk is MEDIUM; if human-accepted, decide whether to start G2.282 no-source authorization package |
+| P0 | Preserve G2.280 service lifecycle residual candidate refresh after `get_monitoring_db` | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#433` merged at `1707284bceeef8992641290d86790c1699975f5a`; G2.280 scanned `371` API/service Python files, recorded `31` active interesting residual candidates, deferred root facade / registry / control-plane / cache surfaces, and selected `get_lineage_tracker` only for no-source ownership / route-provider decision | Do not use G2.280 as authority for backend source edits, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.279 strategy `get_monitoring_db` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#432` merged at `fcead56344110e33041319271c122e71d2b763a0`; strategy direct `get_monitoring_db().log_operation(...)` calls are `0`, risk route-body direct calls are `0`, runtime/OpenAPI remains `548/500/0`, utility helper remains deferred | Do not use G2.279 as authority for backend source edits, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.278 strategy `get_monitoring_db` route-provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#431` merged at `c5496cab0a4213f74636af1c48772dc96c90bd1b`; strategy-management logging moved to `Depends(get_strategy_monitoring_db)` in the authorized path-limited source files while preserving route/OpenAPI shape | Do not use G2.278 as authority for risk helper changes, utility helper changes, route registration, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source |
 | P0 | Preserve G2.277 strategy `get_monitoring_db` route-provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#430` merged at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`; G2.277 authorized only `_helpers.py`, `_strategy_crud_router.py`, and focused strategy tests for G2.278 | Do not use G2.277 as authority for risk helper edits, utility helper edits, non-strategy migrations, route registration, OpenAPI artifact edits, frontend, config, scripts, OpenSpec, PM2, or source retirement |
