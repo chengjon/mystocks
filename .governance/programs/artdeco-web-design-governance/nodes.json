@@ -919,5 +919,107 @@
       "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
       "prepared_at": "2026-05-31T15:39:03.664Z"
     }
+  },
+  {
+    "id": "route-header-shell-ai-batch",
+    "title": "Migrate /ai/batch route header shell",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "implementation-ready",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
+    "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/tasks/2026-05-31-artdeco-ai-batch-route-header-readiness-shape-brief.md",
+        "note": "",
+        "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+        "recorded_at": "2026-05-31T15:51:53.950Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md",
+        "note": "",
+        "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+        "recorded_at": "2026-05-31T15:51:53.987Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "web/frontend/src/views/ai/BatchAnalysis.vue",
+        "note": "",
+        "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+        "recorded_at": "2026-05-31T15:51:54.027Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "web/frontend/tests/e2e/ai-batch-analysis.spec.ts",
+        "note": "",
+        "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+        "recorded_at": "2026-05-31T15:51:54.064Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "PRODUCT.md",
+        "note": "",
+        "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+        "recorded_at": "2026-05-31T15:51:54.104Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "DESIGN.md",
+        "note": "",
+        "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+        "recorded_at": "2026-05-31T15:51:54.140Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/ai/BatchAnalysis.vue",
+      "web/frontend/tests/e2e/ai-batch-analysis.spec.ts",
+      "docs/reports/tasks/",
+      "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md",
+      "web/frontend/src/components/artdeco/route-shell/"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No router path, route metadata, route alias, redirect, or menu rewiring changes",
+      "No backend API contract, OpenAPI, or frontend API client changes",
+      "No batch-analysis runtime state, task submission, task selection, result semantics, or E2E mock payload changes",
+      "No shared AI batch component extraction or full page redesign"
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T15:51:53.907Z",
+    "updated_at": "2026-05-31T15:51:54.256Z",
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus impact before editing BatchAnalysis.vue",
+        "RED E2E assertion for ai-batch-header artdeco-route-header class",
+        "GREEN ai-batch Chromium E2E",
+        "Target ESLint, ArtDeco token check, impeccable JSON, type-check"
+      ],
+      "closeout_gate": [
+        "Task report published, Function Tree validation passes, active gates closed, GitNexus staged scope low risk"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+        "transitioned_at": "2026-05-31T15:51:54.217Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "f322e397d3355575dab9e46a33bc53dbb916ead0",
+        "transitioned_at": "2026-05-31T15:51:54.256Z"
+      }
+    ]
   }
 ]

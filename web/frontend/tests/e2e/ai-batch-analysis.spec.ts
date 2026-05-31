@@ -118,6 +118,7 @@ test.describe('AI batch analysis workbench', () => {
     await expect(page.getByRole('heading', { name: '批量分析' })).toBeVisible({ timeout: 15000 })
     await expect(page.getByTestId('ai-batch-page')).toBeVisible()
     await expect(page.getByTestId('ai-batch-header')).toBeVisible()
+    await expect(page.getByTestId('ai-batch-header')).toHaveClass(/artdeco-route-header/)
     await expect(page.getByTestId('ai-batch-refresh')).toBeVisible()
     await expect(page.getByTestId('ai-batch-status-strip')).toBeVisible()
     await expect(page.getByTestId('ai-batch-control-lens')).toBeVisible()

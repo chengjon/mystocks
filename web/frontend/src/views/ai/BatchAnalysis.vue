@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
+
 import { useBatchAnalysisWorkbench } from './composables/useBatchAnalysisWorkbench'
 
 const {
@@ -27,12 +29,13 @@ onMounted(() => {
 
 <template>
   <div class="ai-batch-workbench page-enter" data-testid="ai-batch-page">
-    <header class="workbench-header" data-testid="ai-batch-header">
-      <div>
-        <p class="eyebrow">AI batch workbench</p>
-        <h1>批量分析</h1>
-        <p class="subtitle">统一观察批量回测、批量选股与批量监控任务的运行时证据。</p>
-      </div>
+    <ArtDecoRouteHeader
+      title="批量分析"
+      subtitle="统一观察批量回测、批量选股与批量监控任务的运行时证据。"
+      eyebrow="AI batch workbench"
+      test-id="ai-batch-header"
+    >
+      <template #actions>
       <button
         class="icon-button"
         type="button"
@@ -42,7 +45,8 @@ onMounted(() => {
       >
         刷新
       </button>
-    </header>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section class="status-band" :class="readinessClass" data-testid="ai-batch-status-strip">
       <div>
@@ -182,24 +186,12 @@ onMounted(() => {
   padding: var(--artdeco-spacing-6);
 }
 
-.workbench-header,
 .status-band,
 .panel {
   border: 1px solid var(--artdeco-border-default);
   background: var(--artdeco-bg-card);
 }
 
-.workbench-header {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--artdeco-spacing-4);
-  align-items: flex-start;
-  padding: var(--artdeco-spacing-5);
-  border-radius: var(--artdeco-radius-md);
-}
-
-.eyebrow,
-.subtitle,
 .status-meta,
 .panel-heading span,
 small,
@@ -357,7 +349,6 @@ dd {
 }
 
 @media (max-width: 56.25rem) {
-  .workbench-header,
   .status-band {
     flex-direction: column;
   }
