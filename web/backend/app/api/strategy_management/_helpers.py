@@ -327,8 +327,10 @@ async def _handle_strategy_lifecycle_action(
     status: str,
     action_name: str,
     success_message: str,
+    monitoring_db: Any = None,
 ) -> Any:
     operation_start = datetime.now()
+    monitoring_db = monitoring_db or get_strategy_monitoring_db()
     source = "database"
     updated_strategy: Optional[Dict[str, Any]] = None
 
@@ -390,7 +392,7 @@ async def _handle_strategy_lifecycle_action(
             logger.warning("策略生命周期动作降级到 runtime fallback: %(e)s", e=str(db_error))
 
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
+        monitoring_db.log_operation(
             operation_type="UPDATE",
             table_name="strategies",
             operation_name=action_name,
@@ -406,7 +408,7 @@ async def _handle_strategy_lifecycle_action(
         raise
     except Exception as e:
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
+        monitoring_db.log_operation(
             operation_type="UPDATE",
             table_name="strategies",
             operation_name=action_name,
@@ -431,3 +433,8 @@ def get_monitoring_db():
 
             monitoring_db = MonitoringFallback()
     return monitoring_db
+
+
+def get_strategy_monitoring_db() -> Any:
+    """Route dependency provider for strategy monitoring database access."""
+    return get_monitoring_db()
