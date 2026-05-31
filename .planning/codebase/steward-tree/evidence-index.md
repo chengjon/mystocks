@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T11:45:58+08:00`
-- Base HEAD checked: `2b53352d6869f66147ce3892b1b0a7174ba064b4`
+- Prepared at: `2026-05-31T12:01:59+08:00`
+- Base HEAD checked: `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,6 +16,9 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
+| `.planning/codebase/generated/monitoring-signal-residual-classification-refresh-2026-05-31.json` | G2.267 monitoring/signal residual classification evidence | Review input for PR `#420`; selects G2.268 no-source monitoring portfolio optimizer route provider authorization |
+| `docs/reports/quality/backend-monitoring-signal-residual-classification-refresh-2026-05-31.md` | G2.267 human-readable classification report | Review input for PR `#420`; no source, route, test, docs/api, or OpenSpec edits authorized |
+| `governance/mainline/task-cards/pr-420.yaml` | Path-limited governance task card for G2.267 | Review input; allows only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/signal-statistics-dormant-contract-closeout-refresh-2026-05-31.json` | G2.266 signal statistics dormant contract closeout / residual-refresh evidence | Review input for PR `#419`; records PR `#418` accepted/merged and selects G2.267 no-source residual classification |
 | `docs/reports/quality/backend-signal-statistics-dormant-contract-closeout-refresh-2026-05-31.md` | G2.266 human-readable closeout / residual-refresh report | Review input for PR `#419`; no source, route, OpenAPI artifact, or test edits authorized |
 | `governance/mainline/task-cards/pr-419.yaml` | Path-limited governance task card for G2.266 | Review input; allows only steward tree, generated evidence, report, and task card updates |
