@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T10:12:02+08:00`
-- Base HEAD checked: `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4`
+- Prepared at: `2026-05-31T10:26:58+08:00`
+- Base HEAD checked: `15bebd4de48059fb5bf35efef81aabb9040cf6ea`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,8 +16,11 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.json` | G2.262 signal statistics route/OpenAPI reconciliation authorization evidence | Review input for PR `#415`; keeps dormant route-shaped module out of source/provider lanes until route contract disposition is approved |
-| `docs/reports/quality/backend-signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.md` | G2.262 human-readable route/OpenAPI reconciliation authorization report | Review input for PR `#415`; selects G2.263 no-source route contract disposition decision |
+| `.planning/codebase/generated/signal-statistics-route-contract-disposition-decision-2026-05-31.json` | G2.263 signal statistics route contract disposition evidence | Review input for PR `#416`; selects dormant source retention plus stale contract artifact reconciliation |
+| `docs/reports/quality/backend-signal-statistics-route-contract-disposition-decision-2026-05-31.md` | G2.263 human-readable route contract disposition report | Review input for PR `#416`; selects G2.264 no-source cleanup authorization |
+| `governance/mainline/task-cards/pr-416.yaml` | Path-limited governance task card for G2.263 | Review input; forbids source/test/docs/api/runtime/OpenSpec changes |
+| `.planning/codebase/generated/signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.json` | G2.262 signal statistics route/OpenAPI reconciliation authorization evidence | Accepted by PR `#415`; keeps dormant route-shaped module out of source/provider lanes until route contract disposition is approved |
+| `docs/reports/quality/backend-signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.md` | G2.262 human-readable route/OpenAPI reconciliation authorization report | Accepted by PR `#415`; selects G2.263 no-source route contract disposition decision |
 | `governance/mainline/task-cards/pr-415.yaml` | Path-limited governance task card for G2.262 | Review input; forbids source/test/docs/api/runtime/OpenSpec changes |
 | `.planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md` | Full historical steward snapshot | Historical; refresh current state before using as execution truth |
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-RETROSPECTIVE-2026-05-22.md` | Lessons and improvement opportunities | Historical; use as rationale for this split |
