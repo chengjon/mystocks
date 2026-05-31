@@ -1051,11 +1051,11 @@
     "node_type": "implementation",
     "owner_lane": "web-artdeco",
     "parent": "",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
     "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -1104,11 +1104,11 @@
       "No router path, route metadata, backend API contract, frontend API client, K-line API request, chart, table, or runtime state changes",
       "No shared component extraction or full page redesign"
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-05-31T16:25:57.246Z",
-    "updated_at": "2026-05-31T16:25:57.597Z",
+    "updated_at": "2026-05-31T17:15:37.173Z",
     "acceptance": {
       "commit_gate": [
         "GitNexus impact for Technical.vue is LOW or documented",
@@ -1134,7 +1134,30 @@
         "note": "",
         "current_head": "20cb37ace841beeb0079b191a8a564c03029b36a",
         "transitioned_at": "2026-05-31T16:25:57.597Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "13321ab73166afc0990b097503294a883842a941",
+        "transitioned_at": "2026-05-31T17:07:51.484Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "13321ab73166afc0990b097503294a883842a941",
+        "transitioned_at": "2026-05-31T17:15:37.173Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-market-technical-header-readiness-report.md",
+      "compatibility": "Readiness/test hardening only. No ArtDecoRouteHeader migration, router path, route metadata, backend API contract, frontend API client, K-line API request, chart, table, runtime state, or shared component extraction changes.",
+      "gates": [
+        "RED/GREEN focused market technical E2E passed; ESLint, ArtDeco token check, type-check, Function Tree validate, and GitNexus staged scope gate completed."
+      ],
+      "current_head": "13321ab73166afc0990b097503294a883842a941",
+      "prepared_at": "2026-05-31T17:15:37.136Z"
+    }
   }
 ]
