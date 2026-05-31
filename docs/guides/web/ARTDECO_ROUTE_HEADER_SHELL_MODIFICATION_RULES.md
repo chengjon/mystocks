@@ -178,6 +178,23 @@ When migrating a page header:
 6. Preserve legacy `data-test` through `legacy-test` if the route has one.
 7. Preserve `hero-meta` content and ordering.
 8. Preserve embedded mode behavior such as `v-if="!isEmbedded"` or equivalent.
+9. If the legacy header shell contains a route-local runtime strip, keep it as the `ArtDecoRouteHeader` default slot so the strip remains inside the same page header shell:
+
+   ```vue
+   <ArtDecoRouteHeader
+     title="..."
+     test-id="..."
+     shell-class="route-header-shell artdeco-card-shell"
+   >
+     <template #actions>
+       ...
+     </template>
+
+     <div class="status-strip" data-testid="...">
+       ...
+     </div>
+   </ArtDecoRouteHeader>
+   ```
 
 ## What Must Not Change Without Explicit Approval
 

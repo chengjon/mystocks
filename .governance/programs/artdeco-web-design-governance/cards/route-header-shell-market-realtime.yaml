@@ -1,0 +1,31 @@
+task:
+  id: "route-header-shell-market-realtime"
+  title: "Migrate /market/realtime route header shell"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/market/Realtime.vue"
+    - "web/frontend/src/components/artdeco/route-shell/"
+    - "web/frontend/tests/e2e/market-data.spec.ts"
+    - "docs/reports/tasks/"
+    - "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not change router configuration or route paths."
+  - "Do not change backend API contracts or frontend API clients."
+  - "Do not extract runtime status strips, control rows, table panels, chart panels, market quote state, stale snapshot state, or A-share market semantics in this node."
+
+acceptance:
+  commit_gate:
+    - "GitNexus impact before editing Realtime.vue and GitNexus staged scope gate before commit."
+    - "Focused Market Realtime E2E must pass."
+    - "ArtDeco token check, npx impeccable --json, focused eslint, npm run type-check -- --pretty false, OpenSpec validate, and Function Tree validation must pass."
+  closeout_gate:
+    - "Publish a route-header-shell migration report under docs/reports/tasks/ before commit."
+    - "Confirm no router, API contract, frontend API client, shared market state, stale snapshot state, or A-share semantic changes were made."
+
+evidence:
+  current_head: "f5b767a3675c1e5363efe57f2d9490ea281b35e9"
+  notes: []

@@ -187,5 +187,71 @@
       "current_head": "822c4df3d2615c12d265ae1c403b3059813b35f1",
       "prepared_at": "2026-05-31T02:26:00.348Z"
     }
+  },
+  {
+    "id": "route-header-shell-market-realtime",
+    "title": "Migrate /market/realtime route header shell",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "implementation-ready",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-01-node-03",
+    "current_head": "f5b767a3675c1e5363efe57f2d9490ea281b35e9",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md",
+        "note": "Continue route header shell migration after risk/Alerts closeout; use the documented ArtDecoRouteHeader migration rules.",
+        "current_head": "f5b767a3675c1e5363efe57f2d9490ea281b35e9",
+        "recorded_at": "2026-05-31T02:57:42.256Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/market/Realtime.vue",
+      "web/frontend/src/components/artdeco/route-shell/",
+      "web/frontend/tests/e2e/market-data.spec.ts",
+      "docs/reports/tasks/",
+      "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not change router configuration or route paths.",
+      "Do not change backend API contracts or frontend API clients.",
+      "Do not extract runtime status strips, control rows, table panels, chart panels, market quote state, stale snapshot state, or A-share market semantics in this node."
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T02:57:32.791Z",
+    "updated_at": "2026-05-31T02:58:23.272Z",
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus impact before editing Realtime.vue and GitNexus staged scope gate before commit.",
+        "Focused Market Realtime E2E must pass.",
+        "ArtDeco token check, npx impeccable --json, focused eslint, npm run type-check -- --pretty false, OpenSpec validate, and Function Tree validation must pass."
+      ],
+      "closeout_gate": [
+        "Publish a route-header-shell migration report under docs/reports/tasks/ before commit.",
+        "Confirm no router, API contract, frontend API client, shared market state, stale snapshot state, or A-share semantic changes were made."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User requested continuation after risk/Alerts closeout; scope is limited to /market/realtime header-shell-only migration.",
+        "current_head": "f5b767a3675c1e5363efe57f2d9490ea281b35e9",
+        "transitioned_at": "2026-05-31T02:58:10.101Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Start implementation within approved /market/realtime header-shell-only scope.",
+        "current_head": "f5b767a3675c1e5363efe57f2d9490ea281b35e9",
+        "transitioned_at": "2026-05-31T02:58:23.272Z"
+      }
+    ]
   }
 ]

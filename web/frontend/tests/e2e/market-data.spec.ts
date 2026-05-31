@@ -189,6 +189,7 @@ test.describe("Market Data Module - E2E Tests", () => {
       await gotoRealtime(page)
       await expect(page.getByTestId("market-realtime-page")).toBeVisible()
       await expect(page.getByTestId("market-realtime-header")).toBeVisible()
+      await expect(page.getByTestId("market-realtime-header")).toHaveClass(/artdeco-route-header/)
       await expect(page.getByTestId("market-realtime-refresh")).toBeVisible()
       await expect(page.getByTestId("market-realtime-status-strip")).toContainText("TRACE")
       await expect(page.getByTestId("market-realtime-control-row")).toBeVisible()

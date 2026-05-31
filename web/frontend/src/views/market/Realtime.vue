@@ -2,7 +2,8 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoIcon, ArtDecoSelect, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import { extractRealtimeMarketOverview, type RealtimeMarketOverview } from './marketRealtimeData'
 
 const { loading, error, lastRequestId, exec } = useArtDecoApi()
@@ -268,29 +269,41 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="market-realtime-tab page-enter" :class="pageToneClass" data-testid="market-realtime-page">
-    <section class="route-header-shell artdeco-card-shell" data-testid="market-realtime-header">
-      <ArtDecoHeader
-        title="实时行情工作台"
-        subtitle="跟踪当前样本报价、成交额与涨跌分布。"
-        :show-status="true"
-        :status-text="pageStatusText"
-      >
-        <template #actions>
-          <ArtDecoButton
-            variant="outline"
-            size="sm"
-            :loading="loading"
-            :disabled="loading"
-            data-testid="market-realtime-refresh"
-            @click="fetchOverview"
-          >
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新行情
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
+    <ArtDecoRouteHeader
+      title="实时行情工作台"
+      subtitle="跟踪当前样本报价、成交额与涨跌分布。"
+      :show-status="true"
+      :status-text="pageStatusText"
+      test-id="market-realtime-header"
+      shell-class="route-header-shell artdeco-card-shell"
+    >
+      <template #meta>
+        <span>SAMPLE: {{ topStats.sampleCount }}</span>
+        <span>TRACE_ID: {{ displayRequestId }}</span>
+        <span>PRESET: {{ topStats.preset }}</span>
+      </template>
+
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          :disabled="loading"
+          data-testid="market-realtime-refresh"
+          @click="fetchOverview"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新行情
+        </ArtDecoButton>
+      </template>
+
+      <div class="content-shell-meta" aria-label="实时行情摘要">
+        <span>MOOD: {{ contentShellMeta.mood }}</span>
+        <span>UP: {{ contentShellMeta.up }}</span>
+        <span>DOWN: {{ contentShellMeta.down }}</span>
+      </div>
 
       <div
         class="status-strip"
@@ -309,7 +322,7 @@ onBeforeUnmount(() => {
           <span>TRACE {{ displayRequestId }}</span>
         </div>
       </div>
-    </section>
+    </ArtDecoRouteHeader>
 
     <section class="control-row toolbar artdeco-card-shell" data-testid="market-realtime-control-row">
       <div class="control-row-main">

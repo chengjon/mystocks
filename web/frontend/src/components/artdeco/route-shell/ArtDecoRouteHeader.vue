@@ -25,6 +25,8 @@
         <slot name="actions" />
       </template>
     </ArtDecoHeader>
+
+    <slot />
   </section>
 </template>
 
