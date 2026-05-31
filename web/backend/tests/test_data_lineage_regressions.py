@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 import importlib
+import inspect
 import sys
 from pathlib import Path
 from types import ModuleType
+
+from fastapi.params import Depends as DependsParam
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -71,3 +74,54 @@ async def test_get_lineage_tracker_wraps_asyncpg_connection_for_storage():
 
     await connection_adapter.close()
     assert raw_connection.closed is True
+
+
+async def test_lineage_tracker_dependency_closes_connection_after_use(monkeypatch):
+    module = _load_module()
+
+    class FakeConnectionAdapter:
+        def __init__(self):
+            self.closed = False
+
+        async def close(self):
+            self.closed = True
+
+    tracker = object()
+    connection_adapter = FakeConnectionAdapter()
+
+    async def fake_get_lineage_tracker():
+        return tracker, connection_adapter
+
+    monkeypatch.setattr(module, "get_lineage_tracker", fake_get_lineage_tracker)
+
+    dependency = module.get_lineage_tracker_dependency()
+    resolved_tracker, resolved_connection = await dependency.__anext__()
+
+    assert resolved_tracker is tracker
+    assert resolved_connection is connection_adapter
+    assert connection_adapter.closed is False
+
+    await dependency.aclose()
+
+    assert connection_adapter.closed is True
+
+
+def test_lineage_route_handlers_use_tracker_dependency_provider():
+    module = _load_module()
+
+    for handler_name in (
+        "record_lineage",
+        "get_upstream_lineage",
+        "get_downstream_lineage",
+        "get_lineage_graph",
+        "analyze_impact",
+    ):
+        signature = inspect.signature(getattr(module, handler_name))
+        dependency_params = [
+            param
+            for param in signature.parameters.values()
+            if isinstance(param.default, DependsParam)
+            and param.default.dependency is module.get_lineage_tracker_dependency
+        ]
+
+        assert len(dependency_params) == 1, handler_name

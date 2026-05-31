@@ -1,0 +1,179 @@
+{
+  "id": "g2-283-data-lineage-tracker-provider-implementation",
+  "type": "implementation_package",
+  "prepared_at": "2026-06-01T02:47:10+08:00",
+  "base_head": "891593d2dc4896f909333033a0b454529b9be38c",
+  "parent": {
+    "id": "g2-282-data-lineage-tracker-provider-authorization",
+    "github_pr": 435,
+    "merge_commit": "891593d2dc4896f909333033a0b454529b9be38c",
+    "merged_at": "2026-05-31T18:37:07Z",
+    "decision": "authorized a future path-limited data_lineage.py route-provider implementation after human acceptance"
+  },
+  "scope": {
+    "source_edit_authority": true,
+    "changed_runtime": false,
+    "changed_routes": false,
+    "changed_openapi": false,
+    "path_limited_source": true,
+    "autopilot_allowed_to_merge": false,
+    "autopilot_stop_reason": "G2.283 is a source implementation PR and target impact is GitNexus MEDIUM"
+  },
+  "changed_paths": [
+    "web/backend/app/api/data_lineage.py",
+    "web/backend/tests/test_data_lineage_regressions.py",
+    ".planning/codebase/generated/data-lineage-tracker-provider-implementation-2026-06-01.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-data-lineage-tracker-provider-implementation-2026-06-01.md",
+    "governance/mainline/task-cards/pr-436.yaml"
+  ],
+  "gitnexus": {
+    "pre_edit": {
+      "mcp_context": "tool call failed: Transport closed",
+      "mcp_impact": "tool call failed: Transport closed",
+      "cli_context": {
+        "target_uid": "Function:web/backend/app/api/data_lineage.py:get_lineage_tracker",
+        "incoming_calls": 5,
+        "processes": 0,
+        "index_status": {
+          "stale": true,
+          "commits_behind": 0,
+          "has_embeddings": false
+        }
+      },
+      "cli_impact": {
+        "target_uid": "Function:web/backend/app/api/data_lineage.py:get_lineage_tracker",
+        "risk": "MEDIUM",
+        "impacted_count": 5,
+        "direct": 5,
+        "processes_affected": 0,
+        "modules_affected": 1,
+        "affected_module": "Api",
+        "index_status": {
+          "stale": true,
+          "commits_behind": 0,
+          "has_embeddings": false
+        }
+      }
+    },
+    "staged_verification": {
+      "mcp_detect_changes": "tool call failed: Transport closed",
+      "cli_verify_staged": {
+        "ok": true,
+        "status": "stale",
+        "risk_level": "low",
+        "changed_files": 11,
+        "changed_symbols": 8,
+        "affected_processes": 0,
+        "indexed_commit": "f894d77d7cd710a6766921ec8a51256ba4de3428",
+        "current_commit": "891593d2dc4896f909333033a0b454529b9be38c",
+        "stale_reason": "current_commit_differs_from_indexed_commit",
+        "changed_symbol_names": [
+          "from_node",
+          "edges",
+          "record_lineage",
+          "get_upstream_lineage",
+          "get_downstream_lineage",
+          "get_lineage_graph",
+          "analyze_impact",
+          "BACKEND_ROOT"
+        ]
+      }
+    }
+  },
+  "implementation": {
+    "source_file": "web/backend/app/api/data_lineage.py",
+    "test_file": "web/backend/tests/test_data_lineage_regressions.py",
+    "added_provider": "get_lineage_tracker_dependency",
+    "provider_behavior": "async generator yields the existing tracker plus connection adapter and closes the adapter in finally",
+    "direct_route_body_get_lineage_tracker_calls_before": 5,
+    "direct_route_body_get_lineage_tracker_calls_after": 0,
+    "manual_conn_close_calls_before": 5,
+    "manual_conn_close_calls_after": 0,
+    "depends_provider_bindings_after": 5,
+    "route_handlers_migrated": [
+      "record_lineage",
+      "get_upstream_lineage",
+      "get_downstream_lineage",
+      "get_lineage_graph",
+      "analyze_impact"
+    ],
+    "contract_preservation": {
+      "route_registration_changed": false,
+      "route_paths_changed": false,
+      "response_model_changed": false,
+      "openapi_artifacts_changed": false,
+      "frontend_changed": false,
+      "config_scripts_pm2_changed": false
+    }
+  },
+  "tdd": {
+    "red": {
+      "command": "pytest -q web/backend/tests/test_data_lineage_regressions.py -q -n 0 --tb=short --no-cov",
+      "result": "2 failed, 1 passed",
+      "expected_failures": [
+        "module 'app.api.data_lineage' has no attribute 'get_lineage_tracker_dependency'",
+        "record_lineage had no Depends(get_lineage_tracker_dependency) parameter"
+      ]
+    },
+    "green": {
+      "command": "pytest -q web/backend/tests/test_data_lineage_regressions.py -q -n 0 --tb=short --no-cov",
+      "result": "3 passed in 0.66s"
+    }
+  },
+  "verification": {
+    "focused_data_lineage": {
+      "command": "pytest -q tests/api/file_tests/test_data_lineage_api.py web/backend/tests/test_data_lineage_regressions.py -q -n 0 --tb=short --no-cov",
+      "result": "15 passed in 0.60s"
+    },
+    "health_route_conflicts": {
+      "command": "pytest -q web/backend/tests/test_health_route_conflicts.py -q -n 0 --tb=short --no-cov",
+      "result": "121 passed in 237.08s"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/data_lineage.py web/backend/tests/test_data_lineage_regressions.py",
+      "result": "All checks passed"
+    },
+    "route_openapi_smoke": {
+      "runtime_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "lineage_param_leaks": {},
+      "lineage_paths": [
+        "/api/v1/governance/lineage/stats",
+        "/api/v1/lineage/graph",
+        "/api/v1/lineage/impact",
+        "/api/v1/lineage/record",
+        "/api/v1/lineage/{node_id}/downstream",
+        "/api/v1/lineage/{node_id}/upstream"
+      ]
+    },
+    "static_scan": {
+      "direct_get_lineage_tracker_calls": 0,
+      "manual_conn_close_calls": 0,
+      "depends_provider_bindings": 5
+    },
+    "markdown_governance_gate": {
+      "checked_files": 6,
+      "errors": 0
+    },
+    "openspec_strict_validate": "Change 'migrate-backend-singletons-to-lifecycle-di' is valid",
+    "git_diff_check": "passed with no output",
+    "git_diff_cached_check": "passed with no output",
+    "mainline_scope_gate": "pass after task card metadata correction"
+  },
+  "stale_policy": {
+    "current_head_checked": "891593d2dc4896f909333033a0b454529b9be38c",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_data_lineage_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_test_inventory_changes": true
+  },
+  "next_gate": "G2.284 no-source data_lineage get_lineage_tracker provider closeout / residual refresh after PR #436 human acceptance"
+}
