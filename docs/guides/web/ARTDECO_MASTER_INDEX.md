@@ -35,6 +35,7 @@
 | `[必读][组件]` | [ARTDECO_COMPONENT_GUIDE](./ARTDECO_COMPONENT_GUIDE.md) | 组件目录治理、`*-tabs` 铁律、route grammar、验证 hook、放置决策树 |
 | `[组件][目录]` | [ARTDECO_COMPONENTS_CATALOG](../../../web/frontend/ARTDECO_COMPONENTS_CATALOG.md) | 当前组件全景目录，覆盖 reusable assets 与 page-level workbench blocks |
 | `[组件][运行时状态]` | [useHeaderSummary](../../../web/frontend/src/composables/useHeaderSummary.ts) | 当前共享头部摘要状态容器；将 Dashboard 摘要上提到 Layout header 的运行时桥接层 |
+| `[页面][路由壳层]` | [ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES](./ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md) | 后续迁移 routed page header shell 时的 Function Tree、impeccable、TDD、验证与提交规则 |
 | `[页面][模板]` | [ARTDECO_PAGE_TEMPLATE_GUIDE](./ARTDECO_PAGE_TEMPLATE_GUIDE.md) | 模板化工作台页面的承载方式 |
 | `[页面][验证]` | [ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT](./ARTDECO_FINTECH_PAGE_COMPOSITION_AUDIT.md) | 页面骨架、一致性与工作台化收敛的审计记录 |
 | `[验证]` | [ARTDECO_FINTECH_IMPLEMENTATION_AUDIT](./ARTDECO_FINTECH_IMPLEMENTATION_AUDIT.md) | 活跃实现与统一规格的对账文档 |
@@ -82,6 +83,7 @@
 | 改 token / 字体 / 间距 / glow / Grid | `ARTDECO_SCSS_GOVERNANCE_BASELINE.md` |
 | 判断组件放哪里 | `ARTDECO_COMPONENT_GUIDE.md` |
 | 判断数据密集型路由页面 grammar / trust strip / E2E hook | `ARTDECO_COMPONENT_GUIDE.md` §8 |
+| 迁移 routed page header shell / 复用 `ArtDecoRouteHeader` | `ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md` |
 | 查现有组件与页面块存量 | `web/frontend/ARTDECO_COMPONENTS_CATALOG.md` |
 | 理解页面模板与工作台壳层 | `ARTDECO_PAGE_TEMPLATE_GUIDE.md` |
 | 理解当前运行时架构 | `ArtDeco_System_Architecture_Summary.md` |
