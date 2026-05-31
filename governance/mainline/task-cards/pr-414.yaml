@@ -1,0 +1,126 @@
+version: "v0.2"
+
+task:
+  id: "pr-414"
+  title: "Decide get_signal_statistics route ownership"
+  owner: "codex"
+  created_at: "2026-05-31"
+
+mainline:
+  id: "L1-get-signal-statistics-route-ownership-decision"
+  objective: "classify get_signal_statistics.py as dormant route module, active route/provider candidate, or retirement candidate before any source lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.261 is no-source route-registration and ownership decision evidence only; it changes no runtime entrypoints, route paths, OpenAPI exposure, source, tests, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/get-signal-statistics-route-ownership-decision-2026-05-31.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md"
+    - "governance/mainline/task-cards/pr-414.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "docs/api openapi.yaml edits"
+  - "route registration changes"
+  - "provider injection implementation"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr413-merged"
+      command: "gh pr view 413 confirms MERGED at efc579ad8558314568b6f03e97f1c12341105fa0"
+      required: true
+    - id: "route-registration-evidence"
+      command: "get_signal_statistics.py has 3 decorated handlers but 0 registered app routes and intended paths return 404"
+      required: true
+    - id: "consumer-matrix"
+      command: "record exact docs/tests/frontend references for /api/signals/statistics, /api/signals/active, and /api/strategies/{strategy_id}/health/detailed"
+      required: true
+    - id: "decision"
+      command: "classify get_signal_statistics.py as dormant route module / route ownership gap, not active route-body provider residual"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-414.yaml --base-sha efc579ad8558314568b6f03e97f1c12341105fa0 --head-sha HEAD --report /tmp/pr414-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; timeout/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.261 must not be mistaken for route registration or provider implementation authorization."
+    - "Historical docs/api references must not be treated as current runtime OpenAPI truth without app.openapi() evidence."
+    - "The closed active route-body provider queue must not be reopened by dormant-route evidence alone."
+  rollback_plan: "Revert PR #414; this removes only no-source governance evidence and returns the steward tree to the post-G2.260 merge state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Decide ownership status for dormant get_signal_statistics.py route-shaped module."
+    modified_scope: "Governance evidence, steward tree, report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or legacy behavior changes."
+    rollback_ready: "Revert PR #414."
+    risk_and_rollback_point: "No-source governance PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-31T09:48:19+08:00"
+    approval_note: "Approved to prepare G2.261 no-source get_signal_statistics.py route-registration / ownership decision after PR #413 merged G2.260; no source or test edits are authorized by this task card."
+    secondary_approved: false

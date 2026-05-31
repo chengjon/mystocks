@@ -97,7 +97,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#410` | `g2-257-monitoring-watchlists-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `ad3cc58dbe0dc768488006d22de09085a1a8ee6f` | No-source monitoring watchlists provider closeout / residual refresh selecting G2.258 signal history authorization |
 | `#411` | `g2-258-signal-history-postgres-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `a58cf6490af4e4cd51e9b98543fa286244fdb78f` | No-source signal history provider authorization selecting G2.259 source implementation |
 | `#412` | `g2-259-signal-history-postgres-provider` | `wip/root-dirty-20260403` | `MERGED` at `5dc148e0aa4653f0803eb6a088e90544b6c051e4` | Path-limited `signal_history_response.py` postgres async provider implementation selecting G2.260 closeout refresh |
-| `#413` | `g2-260-signal-history-provider-closeout-refresh` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source signal history provider closeout / residual refresh selecting G2.261 route-registration ownership decision |
+| `#413` | `g2-260-signal-history-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `efc579ad8558314568b6f03e97f1c12341105fa0` | No-source signal history provider closeout / residual refresh selecting G2.261 route-registration ownership decision |
+| `#414` | `g2-261-get-signal-statistics-route-ownership` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source `get_signal_statistics.py` route-registration / ownership decision selecting G2.262 route/OpenAPI reconciliation authorization |
 
 ## Steward Governance Branch
 
@@ -106,6 +107,7 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-258-signal-history-postgres-provider-authorization` | `origin/wip/root-dirty-20260403` at `ad3cc58dbe0dc768488006d22de09085a1a8ee6f` | Authorize future `signal_history_response.py` postgres async route provider implementation | No |
 | `g2-259-signal-history-postgres-provider` | `origin/wip/root-dirty-20260403` at `a58cf6490af4e4cd51e9b98543fa286244fdb78f` | Implement authorized `signal_history_response.py` postgres async route provider injection | Yes |
 | `g2-260-signal-history-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `5dc148e0aa4653f0803eb6a088e90544b6c051e4` | Close out G2.259 and refresh remaining postgres async residuals | No |
+| `g2-261-get-signal-statistics-route-ownership` | `origin/wip/root-dirty-20260403` at `efc579ad8558314568b6f03e97f1c12341105fa0` | Decide ownership for dormant `get_signal_statistics.py` route-shaped module | No |
 
 ## OpenSpec Relationship
 
@@ -121,9 +123,10 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.260 is the no-source closeout / residual refresh after PR `#412` merged
-G2.259. It verifies that `signal_history_response.py` remains closed and that
-active app-route body `get_postgres_async()` residuals are now `0`. It selects
-G2.261 as a no-source `get_signal_statistics.py` route-registration / ownership
-decision and must not edit source, route registration, OpenAPI exposure,
-frontend, config, scripts, PM2, or OpenSpec.
+G2.261 is the no-source route-registration / ownership decision after PR `#413`
+merged G2.260. It classifies `get_signal_statistics.py` as a dormant route
+module / route ownership gap: the file has three route-decorated handlers, but
+zero registered app routes and 404 runtime smoke for the intended paths. It
+selects G2.262 as route/OpenAPI reconciliation authorization and must not edit
+source, route registration, OpenAPI exposure, docs/api, tests, frontend, config,
+scripts, PM2, or OpenSpec.

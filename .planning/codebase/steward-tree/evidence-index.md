@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T02:09:47+08:00`
-- Base HEAD checked: `5dc148e0aa4653f0803eb6a088e90544b6c051e4`
+- Prepared at: `2026-05-31T09:48:19+08:00`
+- Base HEAD checked: `efc579ad8558314568b6f03e97f1c12341105fa0`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -21,6 +21,9 @@ state transition.
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
+| `.planning/codebase/generated/get-signal-statistics-route-ownership-decision-2026-05-31.json` | G2.261 `get_signal_statistics.py` route-registration / ownership decision evidence | Review input for PR `#414`; classifies the file as dormant route module / route ownership gap |
+| `docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md` | G2.261 human-readable ownership decision report | Review input for PR `#414`; selects G2.262 no-source route/OpenAPI reconciliation authorization |
+| `governance/mainline/task-cards/pr-414.yaml` | Path-limited governance task card for G2.261 | Review input; forbids source/test/docs/api/runtime/OpenSpec changes |
 | `.planning/codebase/generated/postgres-async-signal-history-provider-closeout-refresh-2026-05-31.json` | G2.260 signal history provider closeout / residual-refresh evidence | Review input for PR `#413`; active app-route body residual calls are `0` |
 | `docs/reports/quality/backend-postgres-async-signal-history-provider-closeout-refresh-2026-05-31.md` | G2.260 human-readable closeout / residual-refresh report | Review input for PR `#413`; selects G2.261 no-source `get_signal_statistics.py` ownership decision |
 | `governance/mainline/task-cards/pr-413.yaml` | Path-limited governance task card for G2.260 | Review input; forbids source/test/runtime/OpenSpec changes |

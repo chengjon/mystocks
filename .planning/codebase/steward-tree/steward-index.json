@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T02:09:47+08:00",
+  "generated_at": "2026-05-31T09:48:19+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
-  "split_branch": "g2-260-signal-history-provider-closeout-refresh",
-  "scope": "postgres_async_signal_history_provider_closeout_refresh",
+  "base_head": "efc579ad8558314568b6f03e97f1c12341105fa0",
+  "split_branch": "g2-261-get-signal-statistics-route-ownership",
+  "scope": "get_signal_statistics_route_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -6332,7 +6332,7 @@
     {
       "id": "g2-260-signal-history-provider-closeout-refresh",
       "type": "provider_closeout_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.259 signal_history_response.py postgres async provider implementation",
       "source_edit_authority": false,
@@ -6380,7 +6380,7 @@
           "handling": "G2.261 no-source route-registration / ownership decision before any source lane"
         }
       },
-      "next_gate": "If accepted, merge PR #413 and start G2.261 no-source get_signal_statistics.py route-registration / ownership decision. Do not edit source from G2.261.",
+      "next_gate": "Superseded by G2.261 no-source get_signal_statistics.py route-registration / ownership decision.",
       "allowed_scope": [
         ".planning/codebase/generated/postgres-async-signal-history-provider-closeout-refresh-2026-05-31.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -6406,8 +6406,101 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
-        "generated_at": "2026-05-31T02:09:47+08:00",
+        "current_head_checked": "efc579ad8558314568b6f03e97f1c12341105fa0",
+        "generated_at": "2026-05-31T09:48:19+08:00",
+        "stale_if_head_mismatch": true
+      },
+      "github_pr": 413,
+      "merge_commit": "efc579ad8558314568b6f03e97f1c12341105fa0",
+      "accepted_at": "2026-05-31T09:48:19+08:00"
+    },
+    {
+      "id": "g2-261-get-signal-statistics-route-ownership",
+      "type": "route_registration_ownership_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.260 signal history provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "parent_github_pr": 413,
+      "parent_merge_commit": "efc579ad8558314568b6f03e97f1c12341105fa0",
+      "evidence": [
+        ".planning/codebase/generated/get-signal-statistics-route-ownership-decision-2026-05-31.json",
+        "docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md",
+        "governance/mainline/task-cards/pr-414.yaml"
+      ],
+      "subject": {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "decision": "classify dormant route-shaped module before any provider or route registration source lane",
+        "source_edit_authority": false
+      },
+      "candidate_evidence": {
+        "line_count": 511,
+        "module_local_router": true,
+        "route_decorated_handlers": 3,
+        "direct_get_postgres_async_calls_in_decorated_handlers": 3,
+        "registered_app_routes_from_file": 0,
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "runtime_smoke": {
+          "/api/signals/statistics": 404,
+          "/api/signals/active": 404,
+          "/api/strategies/test_strategy/health/detailed": 404
+        }
+      },
+      "decision": {
+        "classification": "dormant route module / route ownership gap",
+        "active_route_body_provider_residual": false,
+        "source_implementation_authorized": false,
+        "rationale": "Provider injection is premature until route registration, OpenAPI exposure, and historical docs/test references are reconciled."
+      },
+      "consumer_matrix": {
+        "/api/signals/statistics": {
+          "total_references": 18,
+          "docs": 17,
+          "tests": 1,
+          "exact_frontend_refs": 0
+        },
+        "/api/signals/active": {
+          "total_references": 14,
+          "docs": 13,
+          "tests": 1,
+          "exact_frontend_refs": 0
+        },
+        "/api/strategies/{strategy_id}/health/detailed": {
+          "total_references": 2,
+          "docs": 2,
+          "tests": 0,
+          "exact_frontend_refs": 0
+        }
+      },
+      "next_gate": "If accepted, merge PR #414 and start G2.262 no-source route/OpenAPI reconciliation authorization. Do not edit source from G2.262.",
+      "allowed_scope": [
+        ".planning/codebase/generated/get-signal-statistics-route-ownership-decision-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md",
+        "governance/mainline/task-cards/pr-414.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "efc579ad8558314568b6f03e97f1c12341105fa0",
+        "generated_at": "2026-05-31T09:48:19+08:00",
         "stale_if_head_mismatch": true
       }
     }
