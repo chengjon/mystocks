@@ -1,29 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-05-31T02:16:55.202Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "route-header-shell-risk-alerts",
-      "title": "Migrate /risk/alerts route header shell",
-      "node_type": "implementation",
-      "owner_lane": "web-artdeco",
-      "parent": "",
-      "status": "implementation-ready",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "land implementation with Git evidence",
-      "function_tree_ref": "docs/FUNCTION_TREE.md#domain-06-node-03",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/frontend/src/views/risk/Alerts.vue",
-        "web/frontend/src/components/artdeco/route-shell/",
-        "web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts",
-        "docs/reports/tasks/",
-        "openspec/"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-05-31T01:47:33.974Z"
-    }
-  ]
+  "updated_at": "2026-05-31T02:26:08.364Z",
+  "gates": []
 }
