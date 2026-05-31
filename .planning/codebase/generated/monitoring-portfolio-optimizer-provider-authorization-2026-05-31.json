@@ -1,0 +1,161 @@
+{
+  "schema_version": "2026-05-31.g2-authorization.v1",
+  "generated_at": "2026-05-31T12:27:16+08:00",
+  "g2_item": "G2.268",
+  "title": "monitoring portfolio optimizer route provider authorization",
+  "branch": "g2-268-monitoring-portfolio-optimizer-provider-authorization",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "772e4a3ac8e05edaa243d660d67c7e5df18158f9",
+  "current_head_checked": "772e4a3ac8e05edaa243d660d67c7e5df18158f9",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_item": "G2.267",
+    "pr": 420,
+    "state": "MERGED",
+    "merge_commit": "772e4a3ac8e05edaa243d660d67c7e5df18158f9",
+    "merged_at": "2026-05-31T04:21:42Z",
+    "decision": "selected G2.268 no-source monitoring portfolio optimizer route provider authorization"
+  },
+  "candidate": {
+    "symbol": "get_portfolio_optimizer",
+    "definition": "src/monitoring/domain/portfolio_optimizer.py:383",
+    "classification": "active route-body provider candidate",
+    "definition_count": 1,
+    "active_route_call_sites": [
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "line": 171,
+        "function": "get_portfolio_summary",
+        "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary",
+        "method": "GET"
+      },
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "line": 239,
+        "function": "get_portfolio_alerts",
+        "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+        "method": "GET"
+      },
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "line": 309,
+        "function": "get_rebalance_suggestions",
+        "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance",
+        "method": "GET"
+      }
+    ]
+  },
+  "runtime_route_evidence": {
+    "app_import": "passed with local runtime environment injected into subprocess; secrets were not written to artifacts",
+    "route_count_total": 548,
+    "openapi_path_count": 500,
+    "duplicate_operation_id_count": 0,
+    "target_module": "app.api._monitoring_portfolio_router",
+    "target_module_route_count": 3,
+    "target_module_routes": [
+      {
+        "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary",
+        "methods": [
+          "GET"
+        ],
+        "endpoint": "get_portfolio_summary",
+        "include_in_schema": true
+      },
+      {
+        "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+        "methods": [
+          "GET"
+        ],
+        "endpoint": "get_portfolio_alerts",
+        "include_in_schema": true
+      },
+      {
+        "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance",
+        "methods": [
+          "GET"
+        ],
+        "endpoint": "get_rebalance_suggestions",
+        "include_in_schema": true
+      }
+    ],
+    "portfolio_openapi_paths": [
+      "/api/v1/monitoring/analysis/portfolio/{watchlist_id}",
+      "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/alerts",
+      "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/rebalance",
+      "/api/v1/monitoring/analysis/portfolio/{watchlist_id}/summary"
+    ],
+    "related_non_target_route": {
+      "path": "/api/v1/monitoring/analysis/portfolio/{watchlist_id}",
+      "endpoint": "analyze_portfolio",
+      "module": "app.api.monitoring_analysis",
+      "handling": "not part of the future G2.269 portfolio optimizer provider source lane"
+    }
+  },
+  "test_and_contract_evidence": {
+    "existing_provider_pattern_file_test": "tests/api/file_tests/test_monitoring_analysis_api.py currently checks route dependency-provider patterns for monitoring calculator and postgres async providers",
+    "portfolio_endpoint_file_tests": [
+      "tests/api/file_tests/test_monitoring_analysis_api.py::test_portfolio_summary_endpoint",
+      "tests/api/file_tests/test_monitoring_analysis_api.py::test_portfolio_alerts_endpoint",
+      "tests/api/file_tests/test_monitoring_analysis_api.py::test_portfolio_rebalance_endpoint"
+    ],
+    "openapi_parameter_guard": "web/backend/tests/test_health_route_conflicts.py covers the three selected portfolio paths and their query parameters",
+    "future_test_expectation": "G2.269 should add or update focused file-level tests proving selected route handlers no longer call get_portfolio_optimizer() directly and use a route-local dependency provider instead"
+  },
+  "gitnexus": {
+    "mcp_context_result": "tool call failed: Transport closed",
+    "mcp_impact_result": "tool call failed: Transport closed",
+    "previous_g2_267_result": "context and impact timed out after 120 seconds",
+    "cli_verify_staged_result": {
+      "command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-268-monitoring-portfolio-optimizer-provider-authorization --json",
+      "exit_code": 0,
+      "changed_symbols": 0,
+      "affected_processes": 0,
+      "stale": true,
+      "indexed_commit": "41c18309a55594bdc57f56531a12433dfeb61219",
+      "current_commit": "772e4a3ac8e05edaa243d660d67c7e5df18158f9",
+      "stale_reason": "current_commit_differs_from_indexed_commit"
+    },
+    "decision": "Do not block this no-source authorization package on GitNexus MCP availability; future source implementation must retry GitNexus impact/context or record a CLI fallback before editing.",
+    "risk_limit": "Because GitNexus did not return a blast radius, G2.268 authorizes only a future path-limited lane, not source edits in this PR."
+  },
+  "authorization_decision": {
+    "selected_next_gate": "G2.269 path-limited monitoring portfolio optimizer route provider implementation",
+    "authorized_after_acceptance_only": true,
+    "authorized_future_source_paths": [
+      "web/backend/app/api/_monitoring_portfolio_router.py"
+    ],
+    "authorized_future_test_paths": [
+      "tests/api/file_tests/test_monitoring_analysis_api.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "required_future_preflight": [
+      "confirm current branch contains PR #421 accepted/merged state",
+      "retry GitNexus context/impact for get_portfolio_optimizer and _monitoring_portfolio_router.py, or record CLI fallback failure before editing",
+      "confirm static call sites remain exactly three in _monitoring_portfolio_router.py",
+      "confirm route/OpenAPI baseline remains 548 routes, 500 paths, duplicate operation IDs 0 unless current HEAD legitimately changed"
+    ],
+    "required_future_acceptance": [
+      "three selected route handlers acquire optimizer through a route-local FastAPI dependency provider",
+      "route/OpenAPI path, method, parameter, response, and operationId contracts remain unchanged",
+      "no source edits outside web/backend/app/api/_monitoring_portfolio_router.py",
+      "focused tests prove direct route-body get_portfolio_optimizer calls are removed",
+      "health route conflict/OpenAPI parameter guard remains green"
+    ]
+  },
+  "forbidden_scope": [
+    "src/**",
+    "web/backend/app/api/** except web/backend/app/api/_monitoring_portfolio_router.py in future G2.269 only",
+    "web/frontend/**",
+    "docs/api/**",
+    "openspec/changes/**",
+    "openspec/specs/**",
+    "config/**",
+    "scripts/**",
+    "PM2 or other stateful runtime commands"
+  ],
+  "stale_policy": {
+    "stale_if_head_mismatch": true,
+    "stale_if_pr_420_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true
+  }
+}

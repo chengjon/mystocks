@@ -104,6 +104,7 @@ PRs, change issue labels, or authorize source implementation.
 | `#417` | `g2-264-signal-statistics-stale-contract-cleanup-authorization` | `wip/root-dirty-20260403` | `MERGED` at `fe1927818309efb2c1de3a9c1e1128e9b456053e` | No-source stale signal statistics contract cleanup authorization selecting G2.265 path-limited cleanup implementation |
 | `#418` | `g2-265-signal-statistics-stale-contract-cleanup` | `wip/root-dirty-20260403` | `MERGED` at `2b53352d6869f66147ce3892b1b0a7174ba064b4` | Path-limited stale signal statistics docs/test contract cleanup selecting G2.266 closeout / residual refresh |
 | `#419` | `g2-266-signal-statistics-dormant-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05` | No-source signal statistics dormant contract closeout selecting G2.267 residual classification refresh |
+| `#420` | `g2-267-monitoring-signal-residual-classification-refresh` | `wip/root-dirty-20260403` | `MERGED` at `772e4a3ac8e05edaa243d660d67c7e5df18158f9` | No-source monitoring/signal residual classification selecting G2.268 portfolio optimizer provider authorization |
 
 ## Steward Governance Branch
 
@@ -117,6 +118,7 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-265-signal-statistics-stale-contract-cleanup` | `origin/wip/root-dirty-20260403` at `fe1927818309efb2c1de3a9c1e1128e9b456053e` | Clean stale docs/test contract artifacts for dormant signal statistics paths | Yes, docs/test only |
 | `g2-266-signal-statistics-dormant-closeout-refresh` | `origin/wip/root-dirty-20260403` at `2b53352d6869f66147ce3892b1b0a7174ba064b4` | Close out G2.265, refresh monitoring/signal residual classification, and select G2.267 no-source gate | No |
 | `g2-267-monitoring-signal-residual-classification-refresh` | `origin/wip/root-dirty-20260403` at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05` | Classify monitoring/signal residual provider surfaces and select G2.268 no-source authorization gate | No |
+| `g2-268-monitoring-portfolio-optimizer-provider-authorization` | `origin/wip/root-dirty-20260403` at `772e4a3ac8e05edaa243d660d67c7e5df18158f9` | Authorize the next path-limited monitoring portfolio optimizer route provider implementation lane | No |
 
 ## OpenSpec Relationship
 
@@ -143,3 +145,5 @@ G2.265 is the path-limited stale contract cleanup implementation after PR `#417`
 G2.266 is the no-source signal statistics dormant contract closeout / residual refresh after PR `#418` merged G2.265 at `2b53352d6869f66147ce3892b1b0a7174ba064b4`. It records G2.265 accepted/merged, keeps dormant `get_signal_statistics.py` out of source lanes, and selects `G2.267 no-source monitoring/signal residual provider classification refresh`. It must not edit backend source, tests, route contracts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 
 G2.267 is the no-source monitoring/signal residual provider classification refresh after PR `#419` merged G2.266 at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`. It classifies residual surfaces and selects `G2.268 no-source monitoring portfolio optimizer route provider authorization`. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+G2.268 is the no-source monitoring portfolio optimizer route provider authorization after PR `#420` merged G2.267 at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`. It authorizes only a future G2.269 path-limited source lane for `web/backend/app/api/_monitoring_portfolio_router.py` plus focused tests after G2.268 is accepted. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
