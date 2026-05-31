@@ -11,8 +11,90 @@ The current rollout pattern was proven on:
 - `/trade/positions`
 - `/trade/portfolio`
 - `/risk/alerts`
+- `/market/realtime`
 
 The goal is not to beautify pages opportunistically. The goal is to standardize the route-level header grammar while preserving each page's business behavior, API contracts, runtime state, test hooks, and domain semantics.
+
+## What The Route Header Shell Implements
+
+`ArtDecoRouteHeader` is a visual route-header shell. It standardizes how an already-routed page renders its top-level title, subtitle, status, metadata, actions, and route-local header content.
+
+It provides:
+
+- a shared `artdeco-route-header` class for visual grammar, linting, and E2E assertions
+- a stable `test-id` mapping so existing page-level test hooks remain addressable
+- standard title, subtitle, eyebrow, status text, status type, action, and meta slots
+- an optional default slot for route-local runtime strips or page-specific header content
+- a reusable shell that keeps ArtDeco token usage and header layout consistent across routed pages
+
+It does not provide:
+
+- route registration
+- route redirection
+- navigation menu wiring
+- API request construction
+- backend response parsing
+- polling, retry, stale snapshot, or business-state ownership
+- table, chart, filter, risk, market, or trade-domain behavior
+
+The intended layering is:
+
+```text
+router/index.ts -> selects the existing page component
+page component -> owns API calls, stores, runtime state, and domain behavior
+ArtDecoRouteHeader -> renders the page header shell only
+```
+
+## Why This Is Not Router Or API Work
+
+Route header shell migration happens inside an existing Vue page component. The same URL still resolves to the same page file, and the page continues to use the same stores, composables, handlers, and API clients.
+
+The migration must therefore preserve this contract:
+
+```text
+same route path
+same router entry
+same page component
+same frontend API client
+same backend API contract
+same runtime state ownership
+different header rendering shell
+```
+
+Do not modify `web/frontend/src/router/index.ts` for a route header shell migration. Router changes require their own approved scope because they can affect active route truth, redirects, guards, navigation, embedded modes, and canonical route ownership.
+
+Do not modify backend API contracts for a route header shell migration. The shell accepts already-computed display props and slots; it must not require new backend fields, changed response shapes, or changed OpenAPI/Pydantic schemas.
+
+Do not modify frontend API clients for a route header shell migration. The page may continue passing existing computed status, request id, sample count, refresh handlers, and error/loading state into the header, but the shell must not construct requests or own data-fetching behavior.
+
+## Route Fork Prevention
+
+The current migration pattern must reduce route grammar drift, not create a second route system.
+
+Allowed shape:
+
+```text
+/market/realtime -> web/frontend/src/views/market/Realtime.vue -> ArtDecoRouteHeader
+```
+
+Forbidden shape:
+
+```text
+/market/realtime -> legacy page
+/artdeco/market/realtime -> redesigned page
+```
+
+Do not introduce:
+
+- parallel ArtDeco routes
+- wrapper routes for migrated pages
+- legacy/canonical dual entries
+- route aliases to a second implementation
+- menu links that point to a new route for the same business page
+- feature flags that switch between two routed page implementations
+- embedded ArtDeco pages that become a competing source of route truth
+
+The correct migration keeps one URL, one router entry, one page file, one set of API calls, and one business-state owner. Only the page-header rendering shell changes.
 
 ## When This Applies
 
