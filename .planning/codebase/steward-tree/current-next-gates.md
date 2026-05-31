@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-31T01:32:04+08:00`
-- Base HEAD checked: `a58cf6490af4e4cd51e9b98543fa286244fdb78f`
+- Prepared at: `2026-05-31T02:09:47+08:00`
+- Base HEAD checked: `5dc148e0aa4653f0803eb6a088e90544b6c051e4`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.259 signal history postgres async provider implementation | G/#79 service lifecycle DI | PR `#411` merged at `a58cf6490af4e4cd51e9b98543fa286244fdb78f`; G2.259 added `get_signal_history_postgres_async`, moved four authorized handlers behind `Depends(...)`, reduced target route-body direct `get_postgres_async()` calls from 4 to 0, focused tests passed `15/15`, ruff passed, OpenAPI remains `548/500` | If accepted, merge PR `#412`, then start G2.260 no-source closeout / residual refresh; do not expand into `get_signal_statistics.py` or broader `signal_monitoring/*` |
+| P0 | Review G2.260 signal history provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#412` merged at `5dc148e0aa4653f0803eb6a088e90544b6c051e4`; G2.259 remains closed with provider calls `1`, target direct route-body calls `0`, dependency params `4`, focused tests `15/15`, OpenAPI `548/500`; active app-route body `get_postgres_async()` residuals are `0` | If accepted, merge PR `#413`, then start G2.261 no-source `get_signal_statistics.py` route-registration / ownership decision; do not open a source lane from G2.260 |
+| P0 | Preserve G2.259 signal history postgres async provider implementation | G/#79 service lifecycle DI | PR `#412` merged at `5dc148e0aa4653f0803eb6a088e90544b6c051e4`; four authorized handlers use `Depends(get_signal_history_postgres_async)` and route/OpenAPI contracts remain unchanged | Do not use G2.259 to migrate `get_signal_statistics.py`, broader `signal_monitoring/*`, infrastructure, frontend, config, scripts, or OpenSpec |
 | P0 | Preserve G2.258 signal history postgres async provider authorization | G/#79 service lifecycle DI | PR `#411` merged at `a58cf6490af4e4cd51e9b98543fa286244fdb78f`; authorized only G2.259 path-limited source implementation for `signal_history_response.py` and two focused test paths | Do not use G2.258 to migrate `get_signal_statistics.py`, broader `signal_monitoring/*`, infrastructure, route contracts, frontend, config, scripts, or OpenSpec |
 | P0 | Preserve G2.257 monitoring watchlists postgres async provider closeout / residual refresh | G/#79 service lifecycle DI | PR `#410` merged at `ad3cc58dbe0dc768488006d22de09085a1a8ee6f`; selected `signal_history_response.py` as the next no-source authorization target | Do not use G2.257 to edit source, tests, route contracts, frontend, config, scripts, or OpenSpec |
 | P0 | Preserve G2.256 monitoring watchlists postgres async provider implementation | G/#79 service lifecycle DI | PR `#409` merged at `536b0634a51ea580f1a384d07a8ee605fbed8567`; moved seven authorized `monitoring_watchlists.py` handlers behind `Depends(get_monitoring_watchlists_postgres_async)` and preserved route/OpenAPI contracts | Do not use G2.256 to migrate `signal_monitoring/*`, infrastructure, route contracts, frontend, config, scripts, or OpenSpec |
@@ -84,9 +85,9 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.259 correctly treat PR `#411` as merged and accepted into `wip/root-dirty-20260403`?
-- Does G2.259 correctly limit source edits to `signal_history_response.py` plus the two focused test files?
-- Does G2.259 correctly preserve route/OpenAPI contracts while moving the four authorized handlers behind a provider dependency?
-- Does G2.259 correctly keep `get_signal_statistics.py` deferred until a later no-source ownership / route-registration gate?
-- Is G2.260 correctly selected as the future no-source closeout / residual-refresh lane, not opened as source implementation by this PR?
+- Does G2.260 correctly treat PR `#412` as merged and accepted into `wip/root-dirty-20260403`?
+- Does G2.260 correctly verify G2.259 remains closed with zero target direct route-body calls?
+- Does G2.260 correctly classify retained provider backing calls separately from active app-route body residuals?
+- Does G2.260 correctly select G2.261 as a no-source `get_signal_statistics.py` route-registration / ownership decision?
+- Does G2.260 avoid authorizing source edits, route registration changes, or OpenAPI changes?
 - Are implementation, authorization, decision, and evidence lanes still distinct?

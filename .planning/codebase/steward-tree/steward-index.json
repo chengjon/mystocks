@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T01:32:04+08:00",
+  "generated_at": "2026-05-31T02:09:47+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
-  "split_branch": "g2-259-signal-history-postgres-provider",
-  "scope": "postgres_async_signal_history_provider_implementation",
-  "source_edit_authority": true,
+  "base_head": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
+  "split_branch": "g2-260-signal-history-provider-closeout-refresh",
+  "scope": "postgres_async_signal_history_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -6235,7 +6235,7 @@
     {
       "id": "g2-259-signal-history-postgres-provider",
       "type": "provider_implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI",
       "parent": "G2.258 signal_history_response.py postgres async provider authorization",
       "source_edit_authority": true,
@@ -6293,7 +6293,7 @@
         "impact_before_edit": "MCP impact transport closed; CLI fallback recorded LOW/zero-flow evidence for uniquely resolved handlers and exact UID context review for ambiguous health_check.",
         "status": "degraded; rely on path-limited authorization, TDD evidence, OpenAPI smoke, mainline scope gate, and staged detect_changes as review gates"
       },
-      "next_gate": "If accepted, merge PR #412 and start G2.260 no-source signal history provider closeout / residual refresh. Do not edit source from G2.260.",
+      "next_gate": "Superseded by G2.260 no-source signal history provider closeout / residual refresh.",
       "allowed_scope": [
         "web/backend/app/api/signal_monitoring/signal_history_response.py",
         "tests/api/file_tests/test_signal_monitoring_api.py",
@@ -6321,8 +6321,93 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "a58cf6490af4e4cd51e9b98543fa286244fdb78f",
-        "generated_at": "2026-05-31T01:32:04+08:00",
+        "current_head_checked": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
+        "generated_at": "2026-05-31T02:09:47+08:00",
+        "stale_if_head_mismatch": true
+      },
+      "github_pr": 412,
+      "merge_commit": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
+      "accepted_at": "2026-05-31T02:09:47+08:00"
+    },
+    {
+      "id": "g2-260-signal-history-provider-closeout-refresh",
+      "type": "provider_closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI",
+      "parent": "G2.259 signal_history_response.py postgres async provider implementation",
+      "source_edit_authority": false,
+      "parent_github_pr": 412,
+      "parent_merge_commit": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
+      "evidence": [
+        ".planning/codebase/generated/postgres-async-signal-history-provider-closeout-refresh-2026-05-31.json",
+        "docs/reports/quality/backend-postgres-async-signal-history-provider-closeout-refresh-2026-05-31.md",
+        "governance/mainline/task-cards/pr-413.yaml"
+      ],
+      "subject": {
+        "symbol": "get_postgres_async",
+        "decision": "close out the accepted signal_history_response.py provider implementation and refresh remaining active route-body residuals",
+        "closed_file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "next_candidate": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "source_edit_authority": false
+      },
+      "closeout_evidence": {
+        "provider_exists": true,
+        "provider_delegate_calls_after": 1,
+        "target_route_body_get_postgres_async_calls_after": 0,
+        "handler_dependency_parameters_after": 4,
+        "focused_tests": "15 passed",
+        "ruff": "All checks passed",
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "active_api_routes_scanned": 513,
+        "openspec_validate": "migrate-backend-singletons-to-lifecycle-di valid"
+      },
+      "residual_refresh": {
+        "api_py_files_scanned": 219,
+        "functions_with_direct_get_postgres_async_calls": 10,
+        "total_direct_get_postgres_async_calls": 10,
+        "active_app_route_body_call_sites": 0,
+        "retained_route_local_provider_seams": 4,
+        "legacy_or_compat_surfaces": 3,
+        "static_route_like_not_app_registered": 3,
+        "next_candidate": {
+          "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+          "functions": [
+            "get_signal_statistics",
+            "get_active_signals",
+            "get_strategy_detailed_health"
+          ],
+          "handling": "G2.261 no-source route-registration / ownership decision before any source lane"
+        }
+      },
+      "next_gate": "If accepted, merge PR #413 and start G2.261 no-source get_signal_statistics.py route-registration / ownership decision. Do not edit source from G2.261.",
+      "allowed_scope": [
+        ".planning/codebase/generated/postgres-async-signal-history-provider-closeout-refresh-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-postgres-async-signal-history-provider-closeout-refresh-2026-05-31.md",
+        "governance/mainline/task-cards/pr-413.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "5dc148e0aa4653f0803eb6a088e90544b6c051e4",
+        "generated_at": "2026-05-31T02:09:47+08:00",
         "stale_if_head_mismatch": true
       }
     }
