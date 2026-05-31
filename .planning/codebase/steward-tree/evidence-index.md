@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T09:48:19+08:00`
-- Base HEAD checked: `efc579ad8558314568b6f03e97f1c12341105fa0`
+- Prepared at: `2026-05-31T10:12:02+08:00`
+- Base HEAD checked: `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,13 +16,16 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
+| `.planning/codebase/generated/signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.json` | G2.262 signal statistics route/OpenAPI reconciliation authorization evidence | Review input for PR `#415`; keeps dormant route-shaped module out of source/provider lanes until route contract disposition is approved |
+| `docs/reports/quality/backend-signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.md` | G2.262 human-readable route/OpenAPI reconciliation authorization report | Review input for PR `#415`; selects G2.263 no-source route contract disposition decision |
+| `governance/mainline/task-cards/pr-415.yaml` | Path-limited governance task card for G2.262 | Review input; forbids source/test/docs/api/runtime/OpenSpec changes |
 | `.planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md` | Full historical steward snapshot | Historical; refresh current state before using as execution truth |
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-RETROSPECTIVE-2026-05-22.md` | Lessons and improvement opportunities | Historical; use as rationale for this split |
 | `.planning/codebase/CODEBASE-MAP-STEWARD-TREE-PRACTICE-GUIDE-2026-05-24.md` | Reusable operating model for other projects | Historical; superseded for this repo by `steward-tree/README.md` |
 | `.planning/codebase/steward-tree/steward-index.json` | Machine-readable active steward state | Current for this branch; stale if base HEAD or PR state changes |
 | `.planning/codebase/steward-tree/current-next-gates.md` | Human-readable active gates | Current for this branch; stale if base HEAD changes |
-| `.planning/codebase/generated/get-signal-statistics-route-ownership-decision-2026-05-31.json` | G2.261 `get_signal_statistics.py` route-registration / ownership decision evidence | Review input for PR `#414`; classifies the file as dormant route module / route ownership gap |
-| `docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md` | G2.261 human-readable ownership decision report | Review input for PR `#414`; selects G2.262 no-source route/OpenAPI reconciliation authorization |
+| `.planning/codebase/generated/get-signal-statistics-route-ownership-decision-2026-05-31.json` | G2.261 `get_signal_statistics.py` route-registration / ownership decision evidence | Accepted by PR `#414`; classifies the file as dormant route module / route ownership gap |
+| `docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md` | G2.261 human-readable ownership decision report | Accepted by PR `#414`; selects G2.262 no-source route/OpenAPI reconciliation authorization |
 | `governance/mainline/task-cards/pr-414.yaml` | Path-limited governance task card for G2.261 | Review input; forbids source/test/docs/api/runtime/OpenSpec changes |
 | `.planning/codebase/generated/postgres-async-signal-history-provider-closeout-refresh-2026-05-31.json` | G2.260 signal history provider closeout / residual-refresh evidence | Review input for PR `#413`; active app-route body residual calls are `0` |
 | `docs/reports/quality/backend-postgres-async-signal-history-provider-closeout-refresh-2026-05-31.md` | G2.260 human-readable closeout / residual-refresh report | Review input for PR `#413`; selects G2.261 no-source `get_signal_statistics.py` ownership decision |

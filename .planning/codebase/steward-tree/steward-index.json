@@ -1,9 +1,9 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T09:48:19+08:00",
+  "generated_at": "2026-05-31T10:12:02+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "efc579ad8558314568b6f03e97f1c12341105fa0",
+  "base_head": "1d492cbad2aa849b21df1028f5fea1a3bd9c30c4",
   "split_branch": "g2-261-get-signal-statistics-route-ownership",
   "scope": "get_signal_statistics_route_ownership_decision",
   "source_edit_authority": false,
@@ -6417,7 +6417,7 @@
     {
       "id": "g2-261-get-signal-statistics-route-ownership",
       "type": "route_registration_ownership_decision",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.260 signal history provider closeout / residual refresh",
       "source_edit_authority": false,
@@ -6473,7 +6473,7 @@
           "exact_frontend_refs": 0
         }
       },
-      "next_gate": "If accepted, merge PR #414 and start G2.262 no-source route/OpenAPI reconciliation authorization. Do not edit source from G2.262.",
+      "next_gate": "Superseded by G2.262 no-source signal statistics route/OpenAPI reconciliation authorization.",
       "allowed_scope": [
         ".planning/codebase/generated/get-signal-statistics-route-ownership-decision-2026-05-31.json",
         ".planning/codebase/steward-tree/current-next-gates.md",
@@ -6502,7 +6502,87 @@
         "current_head_checked": "efc579ad8558314568b6f03e97f1c12341105fa0",
         "generated_at": "2026-05-31T09:48:19+08:00",
         "stale_if_head_mismatch": true
-      }
+      },
+      "github_pr": 414,
+      "merge_commit": "1d492cbad2aa849b21df1028f5fea1a3bd9c30c4",
+      "accepted_at": "2026-05-31T10:12:02+08:00"
+    },
+    {
+      "id": "g2-262-signal-statistics-route-openapi-reconciliation-authorization",
+      "type": "governance",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.261 get_signal_statistics.py route-registration / ownership decision",
+      "github_pr": 415,
+      "branch": "g2-262-signal-statistics-route-openapi-reconciliation",
+      "base_head": "1d492cbad2aa849b21df1028f5fea1a3bd9c30c4",
+      "evidence": [
+        ".planning/codebase/generated/signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.json",
+        "docs/reports/quality/backend-signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.md",
+        "governance/mainline/task-cards/pr-415.yaml"
+      ],
+      "target": {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "paths": [
+          "/api/signals/statistics",
+          "/api/signals/active",
+          "/api/strategies/{strategy_id}/health/detailed"
+        ]
+      },
+      "facts": {
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "exact_runtime_routes": 0,
+        "exact_openapi_paths": 0,
+        "router_get_handlers": 3,
+        "direct_get_postgres_async_calls": 3,
+        "exact_frontend_refs": 0
+      },
+      "decision": {
+        "classification": "route_openapi_ownership_gap",
+        "recommended_disposition": "Do not register or retire routes from G2.262. Keep get_signal_statistics.py outside service-provider implementation lanes until a separate route/OpenAPI product ownership decision authorizes registration, stale docs/test cleanup, or retirement.",
+        "selected_next_gate": "G2.263 no-source signal statistics route contract disposition decision",
+        "allowed_future_options": [
+          "register runtime API surface and then migrate provider acquisition in a later source lane",
+          "keep module dormant and mark docs/tests as historical or deferred",
+          "retire/archive dormant module and stale docs/tests after product ownership approval"
+        ],
+        "blocked_actions": [
+          "provider injection in a dormant route module",
+          "route registration",
+          "docs/api openapi.yaml edits",
+          "test edits",
+          "frontend edits",
+          "OpenSpec changes",
+          "PM2/runtime stateful commands"
+        ]
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.md",
+        "governance/mainline/task-cards/pr-415.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "next_gate": "If accepted, merge PR #415 and start G2.263 no-source signal statistics route contract disposition decision; do not implement route registration, docs/api cleanup, tests, or provider injection from G2.262."
     }
   ]
 }

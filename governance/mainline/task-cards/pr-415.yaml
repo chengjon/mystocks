@@ -1,0 +1,126 @@
+version: "v0.2"
+
+task:
+  id: "pr-415"
+  title: "Authorize signal statistics route/OpenAPI reconciliation disposition"
+  owner: "codex"
+  created_at: "2026-05-31"
+
+mainline:
+  id: "L1-signal-statistics-route-openapi-reconciliation-authorization"
+  objective: "decide the next governance gate for dormant get_signal_statistics.py route/OpenAPI drift before any source lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.262 is no-source route/OpenAPI reconciliation authorization evidence only; it changes no runtime entrypoints, route paths, OpenAPI exposure, source, tests, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.md"
+    - "governance/mainline/task-cards/pr-415.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "docs/api openapi.yaml edits"
+  - "route registration changes"
+  - "provider injection implementation"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr414-merged"
+      command: "gh pr view 414 confirms MERGED at 1d492cbad2aa849b21df1028f5fea1a3bd9c30c4"
+      required: true
+    - id: "runtime-openapi-snapshot"
+      command: "app.main imports, route table is 548, app.openapi paths is 500, duplicate operation IDs is 0, and target paths are absent"
+      required: true
+    - id: "consumer-matrix"
+      command: "record docs/api, docs, tests, frontend, and backend exact references for the three target paths"
+      required: true
+    - id: "decision"
+      command: "classify the issue as route/OpenAPI ownership gap and select a future disposition gate before any source lane"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-signal-statistics-route-openapi-reconciliation-authorization-2026-05-31.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-415.yaml --base-sha 1d492cbad2aa849b21df1028f5fea1a3bd9c30c4 --head-sha HEAD --report /tmp/pr415-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; transport/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.262 must not be mistaken for route registration, provider injection, docs/api cleanup, or test cleanup authorization."
+    - "Historical docs/api entries must not be treated as current runtime OpenAPI truth without app.openapi() evidence."
+    - "Dormant route-shaped code must not be counted as active service lifecycle residual implementation work."
+  rollback_plan: "Revert PR #415; this removes only no-source governance evidence and returns the steward tree to the post-G2.261 merge state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize the next governance gate for dormant signal statistics route/OpenAPI drift."
+    modified_scope: "Governance evidence, steward tree, report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or legacy behavior changes."
+    rollback_ready: "Revert PR #415."
+    risk_and_rollback_point: "No-source governance PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-31T10:12:02+08:00"
+    approval_note: "Approved to prepare G2.262 no-source route/OpenAPI reconciliation authorization after PR #414 merged G2.261; no source, test, docs/api, or OpenSpec edits are authorized by this task card."
+    secondary_approved: false
