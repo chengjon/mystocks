@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T03:11:52+08:00`
-- Base HEAD checked: `511e9d091bc2b29777c522c595a9f1454f50b973`
+- Prepared at: `2026-06-01T03:25:19+08:00`
+- Base HEAD checked: `d34774837a0582f0e33d47425bb017b44e5aacd9`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/data-lineage-tracker-provider-closeout-refresh-2026-06-01.json` | G2.284 data_lineage `get_lineage_tracker` provider closeout / residual refresh evidence | Review input for future PR `#437`; no-source closeout; selects G2.285 no-source `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision |
-| `docs/reports/quality/backend-data-lineage-tracker-provider-closeout-refresh-2026-06-01.md` | G2.284 human-readable closeout / residual refresh report | Review input for future PR `#437`; records PR `#436` accepted/merged, lineage closeout scan, runtime/OpenAPI smoke, residual refresh, and next G2.285 recommendation |
-| `governance/mainline/task-cards/pr-437.yaml` | No-source governance task card for G2.284 | Review input; allows only steward tree, generated evidence, report, and task card updates; no backend source/test/runtime/OpenSpec edits |
+| `.planning/codebase/generated/governance-dashboard-postgres-connection-ownership-decision-2026-06-01.json` | G2.285 `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision evidence | Review input for future PR `#438`; no-source decision package; must stop because GitNexus target impact is MEDIUM |
+| `docs/reports/quality/backend-governance-dashboard-postgres-connection-ownership-decision-2026-06-01.md` | G2.285 human-readable ownership decision report | Review input for future PR `#438`; records PR `#437` accepted/merged, control-plane route helper surface, GitNexus MEDIUM risk, OpenAPI smoke, and G2.286 recommendation |
+| `governance/mainline/task-cards/pr-438.yaml` | No-source governance task card for G2.285 | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge because target impact is MEDIUM |
+| `.planning/codebase/generated/data-lineage-tracker-provider-closeout-refresh-2026-06-01.json` | G2.284 data_lineage `get_lineage_tracker` provider closeout / residual refresh evidence | Accepted by PR `#437`, merged at `d34774837a0582f0e33d47425bb017b44e5aacd9`; no-source closeout; selected G2.285 no-source `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision |
+| `docs/reports/quality/backend-data-lineage-tracker-provider-closeout-refresh-2026-06-01.md` | G2.284 human-readable closeout / residual refresh report | Accepted by PR `#437`; records PR `#436` accepted/merged, lineage closeout scan, runtime/OpenAPI smoke, residual refresh, and next G2.285 recommendation |
+| `governance/mainline/task-cards/pr-437.yaml` | No-source governance task card for G2.284 | Accepted by PR `#437`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/data-lineage-tracker-provider-implementation-2026-06-01.json` | G2.283 data_lineage `get_lineage_tracker` provider implementation evidence | Accepted by PR `#436`, merged at `511e9d091bc2b29777c522c595a9f1454f50b973`; path-limited source implementation; superseded for closeout by G2.284 |
 | `docs/reports/quality/backend-data-lineage-tracker-provider-implementation-2026-06-01.md` | G2.283 human-readable provider implementation report | Accepted by PR `#436`; records PR `#435` accepted/merged, TDD, route-local provider implementation, focused tests, OpenAPI smoke, and next G2.284 closeout recommendation |
 | `governance/mainline/task-cards/pr-436.yaml` | Path-limited implementation task card for G2.283 | Accepted by PR `#436`; allowed only `data_lineage.py`, focused regression test, steward tree, generated evidence, report, and task card updates |

@@ -1,0 +1,148 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-01T03:25:19+08:00",
+  "gate": "G2.285",
+  "title": "governance_dashboard get_postgres_connection ownership / control-plane route-provider decision",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "d34774837a0582f0e33d47425bb017b44e5aacd9",
+  "worktree": ".worktrees/g2-285-governance-dashboard-postgres-connection-ownership",
+  "source_edit_authority": false,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "GitNexus sampled impact for get_postgres_connection is MEDIUM; limited autopilot must stop even though G2.285 is no-source.",
+  "parent": {
+    "gate": "G2.284",
+    "pr": 437,
+    "state": "MERGED",
+    "merged_at": "2026-05-31T19:22:05Z",
+    "merge_commit": "d34774837a0582f0e33d47425bb017b44e5aacd9",
+    "summary": "No-source lineage provider closeout accepted and merged; selected governance_dashboard get_postgres_connection for ownership decision."
+  },
+  "surface": {
+    "route_module": "web/backend/app/api/governance_dashboard.py",
+    "line_count": 701,
+    "router_prefix": "/api/v1/governance",
+    "provider_candidate": {
+      "name": "get_postgres_connection",
+      "definition_line": 124,
+      "creates_raw_connection": true,
+      "uses_asyncpg_connect": true,
+      "classification": "control-plane route-local DB connection helper"
+    },
+    "route_handlers": [
+      {
+        "name": "get_quality_overview",
+        "line": 173,
+        "method": "GET",
+        "path": "/api/v1/governance/quality/overview",
+        "call_line": 193,
+        "close_lines": [
+          260,
+          276
+        ]
+      },
+      {
+        "name": "get_lineage_stats",
+        "line": 285,
+        "method": "GET",
+        "path": "/api/v1/governance/lineage/stats",
+        "call_line": 309,
+        "close_lines": [
+          380,
+          397
+        ]
+      },
+      {
+        "name": "get_assets_catalog",
+        "line": 406,
+        "method": "GET",
+        "path": "/api/v1/governance/assets/catalog",
+        "call_line": 433,
+        "close_lines": [
+          490,
+          507
+        ]
+      },
+      {
+        "name": "get_compliance_metrics",
+        "line": 516,
+        "method": "GET",
+        "path": "/api/v1/governance/compliance/metrics",
+        "call_line": 544,
+        "close_lines": [
+          602,
+          620
+        ]
+      },
+      {
+        "name": "get_dashboard_summary",
+        "line": 633,
+        "method": "GET",
+        "path": "/api/v1/governance/dashboard/summary",
+        "call_line": 661,
+        "close_lines": [
+          671
+        ]
+      }
+    ],
+    "active_route_body_calls": 5,
+    "manual_conn_close_lines": 9,
+    "files_touched_if_future_provider_lane": [
+      "web/backend/app/api/governance_dashboard.py",
+      "focused governance_dashboard route/provider regression test"
+    ]
+  },
+  "route_openapi_smoke": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "governance_paths": [
+      "/api/v1/governance/assets/catalog",
+      "/api/v1/governance/compliance/metrics",
+      "/api/v1/governance/dashboard/summary",
+      "/api/v1/governance/lineage/stats",
+      "/api/v1/governance/quality/overview"
+    ],
+    "known_warning_noise": "Pydantic/FastAPI deprecation warnings and service initialization logs only; route/OpenAPI smoke exited with status 0."
+  },
+  "gitnexus_evidence": {
+    "mcp": "not relied on for this gate; recent MCP calls have intermittently returned Transport closed",
+    "cli_context": {
+      "status": "found",
+      "uid": "Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection",
+      "incoming_calls_from_index": [
+        "get_quality_overview",
+        "get_lineage_stats",
+        "get_assets_catalog",
+        "get_compliance_metrics",
+        "fetch_all_data"
+      ],
+      "current_code_correction": "current HEAD route handler is get_dashboard_summary, not fetch_all_data; GitNexus index is stale",
+      "processes": [],
+      "index_status": "stale warning"
+    },
+    "cli_impact": {
+      "risk": "MEDIUM",
+      "impacted_count": 6,
+      "direct": 5,
+      "processes_affected": 0,
+      "affected_processes": [],
+      "index_status": "stale warning"
+    }
+  },
+  "decision": {
+    "classification": "bounded-active-control-plane-route-helper",
+    "ownership": "governance_dashboard route module owns the current helper; it is not a shared service facade, not the app-wide postgres provider, and not a route-registration issue",
+    "route_provider_recommendation": "A future lane may convert the five direct await get_postgres_connection() calls into a route-local async generator provider/dependency seam, but only after human review because GitNexus risk is MEDIUM and this is a control-plane surface.",
+    "recommended_next_governance_target": "G2.286 no-source governance_dashboard get_postgres_connection provider authorization package",
+    "source_lane_authorized_now": false,
+    "autopilot_continue_allowed": false
+  },
+  "freshness": {
+    "current_head_checked": "d34774837a0582f0e33d47425bb017b44e5aacd9",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_governance_dashboard_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}
