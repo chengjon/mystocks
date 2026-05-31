@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T02:16:40+08:00`
-- Base HEAD checked: `b8ba6ca75c573913d7b10553620e5d308c0d13f3`
+- Prepared at: `2026-06-01T02:47:10+08:00`
+- Base HEAD checked: `891593d2dc4896f909333033a0b454529b9be38c`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.282 data_lineage `get_lineage_tracker` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#434` merged at `b8ba6ca75c573913d7b10553620e5d308c0d13f3`; G2.282 authorizes only a future path-limited `data_lineage.py` route-provider implementation and records the current cleanup lifecycle; GitNexus CLI sampled impact remains MEDIUM, direct callers `5`, affected processes `0` | Review future PR `#435`; do not auto-merge under limited-autopilot because this package authorizes future source work and GitNexus risk is MEDIUM; if human-accepted, decide whether to start G2.283 path-limited implementation |
+| P0 | Review G2.283 data_lineage `get_lineage_tracker` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#435` merged at `891593d2dc4896f909333033a0b454529b9be38c`; G2.283 moves five `data_lineage.py` route handlers to `Depends(get_lineage_tracker_dependency)`, closes direct route-body calls to `0`, keeps OpenAPI at `548/500/0`, and preserves cleanup through the dependency finalizer | Review future PR `#436`; do not auto-merge because this is a source implementation PR and the target helper has GitNexus MEDIUM impact; if human-accepted, start G2.284 no-source closeout / residual refresh |
+| P0 | Preserve G2.282 data_lineage `get_lineage_tracker` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#435` merged at `891593d2dc4896f909333033a0b454529b9be38c`; G2.282 authorized only the path-limited `data_lineage.py` route-provider implementation lane and recorded the cleanup lifecycle requirement | Do not use G2.282 as authority for non-data-lineage source edits, route/OpenAPI changes, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.281 data_lineage `get_lineage_tracker` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#434` merged at `b8ba6ca75c573913d7b10553620e5d308c0d13f3`; G2.281 classified `get_lineage_tracker` as a bounded active API route helper with five direct callers in `data_lineage.py`; GitNexus CLI sampled impact was MEDIUM, direct callers `5`, affected processes `0` | Do not use G2.281 as authority for backend source edits, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.280 service lifecycle residual candidate refresh after `get_monitoring_db` | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#433` merged at `1707284bceeef8992641290d86790c1699975f5a`; G2.280 scanned `371` API/service Python files, recorded `31` active interesting residual candidates, deferred root facade / registry / control-plane / cache surfaces, and selected `get_lineage_tracker` only for no-source ownership / route-provider decision | Do not use G2.280 as authority for backend source edits, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.279 strategy `get_monitoring_db` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#432` merged at `fcead56344110e33041319271c122e71d2b763a0`; strategy direct `get_monitoring_db().log_operation(...)` calls are `0`, risk route-body direct calls are `0`, runtime/OpenAPI remains `548/500/0`, utility helper remains deferred | Do not use G2.279 as authority for backend source edits, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
@@ -107,7 +108,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.282 correctly authorize only a future path-limited `web/backend/app/api/data_lineage.py` implementation lane?
-- Does G2.282 preserve the current `get_lineage_tracker` cleanup lifecycle as a required G2.283 verification point?
-- Does G2.282 keep route registration, route/OpenAPI contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, and runtime state out of scope?
-- Does PR `#435` stop for human review instead of auto-merging under limited autopilot?
+- Does G2.283 correctly limit source changes to `web/backend/app/api/data_lineage.py` and the focused regression test?
+- Does G2.283 prove the route-local provider closes the connection adapter through the dependency finalizer?
+- Does G2.283 preserve route registration, route/OpenAPI contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, and runtime state?
+- Does PR `#436` stop for human review instead of auto-merging under limited autopilot?

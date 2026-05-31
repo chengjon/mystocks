@@ -16,9 +16,9 @@ Date: 2026-01-09
 
 import logging
 from datetime import datetime
-from typing import Optional
+from typing import Any, Optional
 
-from fastapi import APIRouter, Body, Path, Query, Request
+from fastapi import APIRouter, Body, Depends, Path, Query, Request
 
 from app.core.exceptions import BusinessException
 
@@ -120,6 +120,14 @@ async def get_lineage_tracker():
         )
 
 
+async def get_lineage_tracker_dependency():
+    tracker, connection_adapter = await get_lineage_tracker()
+    try:
+        yield tracker, connection_adapter
+    finally:
+        await connection_adapter.close()
+
+
 # =============================================================================
 # API Endpoints
 # =============================================================================
@@ -129,6 +137,7 @@ async def get_lineage_tracker():
 async def record_lineage(
     http_request: Request,
     request: LineageRecordRequest = Body(..., example=LINEAGE_RECORD_REQUEST_EXAMPLE),
+    lineage_tracker_context: tuple[Any, Any] = Depends(get_lineage_tracker_dependency),
 ):
     """
     记录血缘关系
@@ -146,7 +155,7 @@ async def record_lineage(
     logger.info("Recording lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id})
 
     try:
-        tracker, conn = await get_lineage_tracker()
+        tracker, _connection_adapter = lineage_tracker_context
 
         # 使用tracker记录血缘关系
         from src.data_governance.lineage import LineageEdge, LineageNode, NodeType, OperationType
@@ -178,8 +187,6 @@ async def record_lineage(
         await tracker._storage.save_node(to_node)
         await tracker._storage.save_edge(edge)
 
-        await conn.close()
-
         logger.info(
             f"Successfully recorded lineage: {request.from_node} -> {request.to_node}", extra={"request_id": request_id}
         )
@@ -205,6 +212,7 @@ async def get_upstream_lineage(
     node_id: str = Path(..., description="要查询血缘关系的节点 ID。"),
     max_depth: int = Query(3, description="向上游追溯的最大层级深度。", ge=1, le=10),
     http_request: Request = None,
+    lineage_tracker_context: tuple[Any, Any] = Depends(get_lineage_tracker_dependency),
 ):
     """
     查询上游血缘
@@ -223,7 +231,7 @@ async def get_upstream_lineage(
     logger.info("Querying upstream lineage for node: {node_id}", extra={"request_id": request_id})
 
     try:
-        tracker, conn = await get_lineage_tracker()
+        tracker, _connection_adapter = lineage_tracker_context
 
         # 使用BFS迭代查询上游血缘（避免递归和异步嵌套）
         visited = set()
@@ -263,8 +271,6 @@ async def get_upstream_lineage(
 
                     # 将上游节点加入队列继续遍历
                     queue.append((edge.from_node, depth + 1))
-
-        await conn.close()
 
         # 构建响应数据
         nodes_response = [
@@ -315,6 +321,7 @@ async def get_downstream_lineage(
     node_id: str = Path(..., description="要分析影响范围的节点 ID。"),
     max_depth: int = Query(3, description="向下游扩散查询的最大层级深度。", ge=1, le=10),
     http_request: Request = None,
+    lineage_tracker_context: tuple[Any, Any] = Depends(get_lineage_tracker_dependency),
 ):
     """
     查询下游血缘
@@ -333,7 +340,7 @@ async def get_downstream_lineage(
     logger.info("Querying downstream lineage for node: {node_id}", extra={"request_id": request_id})
 
     try:
-        tracker, conn = await get_lineage_tracker()
+        tracker, _connection_adapter = lineage_tracker_context
 
         # 获取下游血缘
         impacted_nodes = await tracker.get_downstream_impact(node_id, max_levels=max_depth)
@@ -346,8 +353,6 @@ async def get_downstream_lineage(
             nodes, edges = await tracker._storage.get_lineage(impacted_id)
             all_nodes.extend(nodes)
             all_edges.extend(edges)
-
-        await conn.close()
 
         # 去重
         unique_nodes = {n.node_id: n for n in all_nodes}
@@ -401,6 +406,7 @@ async def get_downstream_lineage(
 async def get_lineage_graph(
     http_request: Request,
     request: LineageGraphRequest = Body(..., example=LINEAGE_GRAPH_REQUEST_EXAMPLE),
+    lineage_tracker_context: tuple[Any, Any] = Depends(get_lineage_tracker_dependency),
 ):
     """
     查询完整血缘图
@@ -421,7 +427,7 @@ async def get_lineage_graph(
     )
 
     try:
-        tracker, conn = await get_lineage_tracker()
+        tracker, _connection_adapter = lineage_tracker_context
 
         # 获取完整血缘图
         graph = await tracker.get_lineage(request.node_id)
@@ -462,8 +468,6 @@ async def get_lineage_graph(
             node_ids.add(edge.to_node)
 
         included_nodes = [n for n in graph.nodes if n.node_id in node_ids]
-
-        await conn.close()
 
         # 构建响应数据
         nodes_response = [
@@ -517,6 +521,7 @@ async def get_lineage_graph(
 async def analyze_impact(
     http_request_obj: Request,
     request: ImpactAnalysisRequest = Body(..., example=LINEAGE_IMPACT_REQUEST_EXAMPLE),
+    lineage_tracker_context: tuple[Any, Any] = Depends(get_lineage_tracker_dependency),
 ):
     """
     影响分析
@@ -537,12 +542,10 @@ async def analyze_impact(
     )
 
     try:
-        tracker, conn = await get_lineage_tracker()
+        tracker, _connection_adapter = lineage_tracker_context
 
         impacted_node_ids = await tracker.get_downstream_impact(request.node_id, max_levels=request.max_levels)
         impacted_nodes = await build_impacted_nodes(tracker, request.node_id, impacted_node_ids)
-
-        await conn.close()
 
         logger.info(
             f"Impact analysis complete: {len(impacted_nodes)} nodes impacted",

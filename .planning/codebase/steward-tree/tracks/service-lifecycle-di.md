@@ -3010,7 +3010,7 @@ Status: accepted/merged by PR `#434` at `b8ba6ca75c573913d7b10553620e5d308c0d13f
 
 ## G2.282 data_lineage get_lineage_tracker Provider Authorization
 
-Status: for review in future PR `#435`.
+Status: accepted/merged by PR `#435` at `891593d2dc4896f909333033a0b454529b9be38c`.
 
 - Parent PR `#434` merged at `b8ba6ca75c573913d7b10553620e5d308c0d13f3`.
 - G2.282 is a no-source authorization package only. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3020,4 +3020,18 @@ Status: for review in future PR `#435`.
 - Focused existing test inventory includes `tests/api/file_tests/test_data_lineage_api.py`, `tests/integration/test_data_lineage_tracker_integration.py`, `tests/unit/test_governance/test_data_lineage_tracker.py`, `tests/unit/test_governance/test_lineage.py`, and `web/backend/tests/test_data_lineage_regressions.py`.
 - Authorized next gate after human acceptance: G2.283 path-limited `web/backend/app/api/data_lineage.py` route-provider implementation.
 - Future G2.283 must preserve route paths, response models, OpenAPI shape, and connection cleanup semantics; it must rerun GitNexus before source edits and stop on HIGH or CRITICAL risk.
-- G2.282 must stop at PR `#435` review and must not be auto-merged under limited autopilot because it authorizes future source work and the target helper has MEDIUM impact.
+- G2.282 stopped at PR `#435` review and was human accepted because it authorized future source work and the target helper has MEDIUM impact.
+
+## G2.283 data_lineage get_lineage_tracker Provider Implementation
+
+Status: for review in future PR `#436`.
+
+- Parent PR `#435` merged at `891593d2dc4896f909333033a0b454529b9be38c`.
+- GitNexus MCP context / impact returned `Transport closed`; CLI fallback using `Function:web/backend/app/api/data_lineage.py:get_lineage_tracker` returned MEDIUM risk with `5` impacted / direct symbols and `0` affected processes.
+- Added `get_lineage_tracker_dependency()` in `web/backend/app/api/data_lineage.py` as a route-local async generator provider that yields the existing tracker / connection adapter pair and closes the adapter in `finally`.
+- Moved `record_lineage`, `get_upstream_lineage`, `get_downstream_lineage`, `get_lineage_graph`, and `analyze_impact` to `Depends(get_lineage_tracker_dependency)`.
+- Direct route-body `get_lineage_tracker()` calls are `0`; manual route-body `await conn.close()` calls are `0`; dependency provider bindings are `5`.
+- TDD RED recorded `2 failed, 1 passed`; GREEN recorded `3 passed`; focused data-lineage tests passed `15/15`; health route conflict regression passed `121/121`; ruff passed on touched files.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, lineage paths present, and no lineage provider parameter leaks.
+- Next gate after human acceptance: G2.284 no-source data_lineage `get_lineage_tracker` provider closeout / residual refresh.
+- G2.283 must stop at PR `#436` review and must not auto-merge because it is a source implementation PR with MEDIUM target impact.
