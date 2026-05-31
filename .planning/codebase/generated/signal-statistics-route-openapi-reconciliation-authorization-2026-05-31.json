@@ -1,0 +1,209 @@
+{
+  "id": "G2.262",
+  "title": "Signal statistics route/OpenAPI reconciliation authorization",
+  "status": "review_input",
+  "generated_at": "2026-05-31T10:12:02+08:00",
+  "git_head": "1d492cbad2aa849b21df1028f5fea1a3bd9c30c4",
+  "current_head_checked_at_review": "1d492cbad2aa849b21df1028f5fea1a3bd9c30c4",
+  "stale_if_head_mismatch": true,
+  "parent": {
+    "id": "G2.261",
+    "github_pr": 414,
+    "merge_commit": "1d492cbad2aa849b21df1028f5fea1a3bd9c30c4"
+  },
+  "branch": "g2-262-signal-statistics-route-openapi-reconciliation",
+  "assumed_github_pr": 415,
+  "source_edit_authority": "none",
+  "target_file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+  "target_paths": [
+    "/api/signals/statistics",
+    "/api/signals/active",
+    "/api/strategies/{strategy_id}/health/detailed"
+  ],
+  "static_evidence": {
+    "line_count": 512,
+    "router_get_handlers": 3,
+    "direct_get_postgres_async_calls": 3,
+    "get_postgres_async_import_lines": 0,
+    "handlers": [
+      {
+        "name": "get_signal_statistics",
+        "decorator": "@router.get(\"/signals/statistics\", response_model=List[SignalStatisticsResponse])",
+        "decorator_line": 113,
+        "function_line": 114,
+        "direct_get_postgres_async_calls": 1
+      },
+      {
+        "name": "get_active_signals",
+        "decorator": "@router.get(\"/signals/active\", response_model=ActiveSignalsResponse)",
+        "decorator_line": 230,
+        "function_line": 231,
+        "direct_get_postgres_async_calls": 1
+      },
+      {
+        "name": "get_strategy_detailed_health",
+        "decorator": "@router.get(\"/strategies/{strategy_id}/health/detailed\", response_model=StrategyDetailedHealthResponse)",
+        "decorator_line": 364,
+        "function_line": 365,
+        "direct_get_postgres_async_calls": 1
+      }
+    ]
+  },
+  "runtime_evidence": {
+    "app_routes": 548,
+    "openapi_paths": 500,
+    "exact_runtime_routes": [],
+    "exact_openapi_paths": [],
+    "registered_routes_from_get_signal_statistics_module": [],
+    "duplicate_operation_ids": 0,
+    "warning_count": 119
+  },
+  "docs_api_openapi_yaml_presence": {
+    "/api/signals/statistics": true,
+    "/api/signals/active": true,
+    "/api/strategies/{strategy_id}/health/detailed": false
+  },
+  "consumer_matrix": {
+    "/api/signals/statistics": {
+      "total_references": 21,
+      "docs": 20,
+      "tests": 1,
+      "exact_frontend_refs": 0,
+      "backend": 0,
+      "files": [
+        {
+          "file": "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+          "count": 5
+        },
+        {
+          "file": "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+          "count": 2
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_PHASE2_OPTIMIZATION_REPORT.md",
+          "count": 2
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_SYSTEM_INVENTORY_20260108.md",
+          "count": 3
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_PHASE2_DEPLOYMENT_TEST_REPORT.md",
+          "count": 1
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_PHASE2_EXTENDED_COMPLETION_REPORT.md",
+          "count": 2
+        },
+        {
+          "file": "docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md",
+          "count": 3
+        },
+        {
+          "file": "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+          "count": 1
+        },
+        {
+          "file": "docs/api/openapi.yaml",
+          "count": 1
+        },
+        {
+          "file": "tests/unit/test_signal_monitoring_integration.py",
+          "count": 1
+        }
+      ]
+    },
+    "/api/signals/active": {
+      "total_references": 18,
+      "docs": 17,
+      "tests": 1,
+      "exact_frontend_refs": 0,
+      "backend": 0,
+      "files": [
+        {
+          "file": "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+          "count": 4
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_PHASE2_OPTIMIZATION_REPORT.md",
+          "count": 2
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_SYSTEM_INVENTORY_20260108.md",
+          "count": 2
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_PHASE2_DEPLOYMENT_TEST_REPORT.md",
+          "count": 1
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_PHASE2_EXTENDED_COMPLETION_REPORT.md",
+          "count": 2
+        },
+        {
+          "file": "docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md",
+          "count": 4
+        },
+        {
+          "file": "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+          "count": 1
+        },
+        {
+          "file": "docs/api/openapi.yaml",
+          "count": 1
+        },
+        {
+          "file": "tests/unit/test_signal_monitoring_integration.py",
+          "count": 1
+        }
+      ]
+    },
+    "/api/strategies/{strategy_id}/health/detailed": {
+      "total_references": 4,
+      "docs": 4,
+      "tests": 0,
+      "exact_frontend_refs": 0,
+      "backend": 0,
+      "files": [
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_PHASE2_OPTIMIZATION_REPORT.md",
+          "count": 1
+        },
+        {
+          "file": "docs/reports/SIGNAL_MONITORING_PHASE2_EXTENDED_COMPLETION_REPORT.md",
+          "count": 1
+        },
+        {
+          "file": "docs/reports/quality/backend-get-signal-statistics-route-ownership-decision-2026-05-31.md",
+          "count": 2
+        }
+      ]
+    }
+  },
+  "decision": {
+    "classification": "route_openapi_ownership_gap",
+    "recommended_disposition": "Do not register or retire routes from G2.262. Keep get_signal_statistics.py outside service-provider implementation lanes until a separate route/OpenAPI product ownership decision authorizes registration, stale docs/test cleanup, or retirement.",
+    "selected_next_gate": "G2.263 no-source signal statistics route contract disposition decision",
+    "allowed_future_options": [
+      "register runtime API surface and then migrate provider acquisition in a later source lane",
+      "keep module dormant and mark docs/tests as historical or deferred",
+      "retire/archive dormant module and stale docs/tests after product ownership approval"
+    ],
+    "blocked_actions": [
+      "provider injection in a dormant route module",
+      "route registration",
+      "docs/api openapi.yaml edits",
+      "test edits",
+      "frontend edits",
+      "OpenSpec changes",
+      "PM2/runtime stateful commands"
+    ]
+  },
+  "validation_planned": [
+    "markdown_governance_gate",
+    "mainline_scope_gate",
+    "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+    "git diff --check",
+    "gitnexus_detect_changes or CLI fallback"
+  ]
+}

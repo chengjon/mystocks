@@ -98,7 +98,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#411` | `g2-258-signal-history-postgres-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `a58cf6490af4e4cd51e9b98543fa286244fdb78f` | No-source signal history provider authorization selecting G2.259 source implementation |
 | `#412` | `g2-259-signal-history-postgres-provider` | `wip/root-dirty-20260403` | `MERGED` at `5dc148e0aa4653f0803eb6a088e90544b6c051e4` | Path-limited `signal_history_response.py` postgres async provider implementation selecting G2.260 closeout refresh |
 | `#413` | `g2-260-signal-history-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `efc579ad8558314568b6f03e97f1c12341105fa0` | No-source signal history provider closeout / residual refresh selecting G2.261 route-registration ownership decision |
-| `#414` | `g2-261-get-signal-statistics-route-ownership` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source `get_signal_statistics.py` route-registration / ownership decision selecting G2.262 route/OpenAPI reconciliation authorization |
+| `#414` | `g2-261-get-signal-statistics-route-ownership` | `wip/root-dirty-20260403` | `MERGED` at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4` | No-source `get_signal_statistics.py` route-registration / ownership decision selecting G2.262 route/OpenAPI reconciliation authorization |
+| `#415` | `g2-262-signal-statistics-route-openapi-reconciliation` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source signal statistics route/OpenAPI reconciliation authorization selecting G2.263 route contract disposition decision |
 
 ## Steward Governance Branch
 
@@ -107,7 +108,8 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-258-signal-history-postgres-provider-authorization` | `origin/wip/root-dirty-20260403` at `ad3cc58dbe0dc768488006d22de09085a1a8ee6f` | Authorize future `signal_history_response.py` postgres async route provider implementation | No |
 | `g2-259-signal-history-postgres-provider` | `origin/wip/root-dirty-20260403` at `a58cf6490af4e4cd51e9b98543fa286244fdb78f` | Implement authorized `signal_history_response.py` postgres async route provider injection | Yes |
 | `g2-260-signal-history-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `5dc148e0aa4653f0803eb6a088e90544b6c051e4` | Close out G2.259 and refresh remaining postgres async residuals | No |
-| `g2-261-get-signal-statistics-route-ownership` | `origin/wip/root-dirty-20260403` at `efc579ad8558314568b6f03e97f1c12341105fa0` | Decide ownership for dormant `get_signal_statistics.py` route-shaped module | No |
+| `g2-261-get-signal-statistics-route-ownership` | `origin/wip/root-dirty-20260403` at `efc579ad8558314568b6f03e97f1c12341105fa0` | Decide ownership for dormant `get_signal_statistics.py` route-shaped module; merged by PR `#414` at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4` | No |
+| `g2-262-signal-statistics-route-openapi-reconciliation` | `origin/wip/root-dirty-20260403` at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4` | Authorize route/OpenAPI reconciliation disposition for dormant `get_signal_statistics.py` | No |
 
 ## OpenSpec Relationship
 
@@ -123,10 +125,4 @@ owning OpenSpec branch or an approved implementation authorization package.
 
 ## Merge Ordering Note
 
-G2.261 is the no-source route-registration / ownership decision after PR `#413`
-merged G2.260. It classifies `get_signal_statistics.py` as a dormant route
-module / route ownership gap: the file has three route-decorated handlers, but
-zero registered app routes and 404 runtime smoke for the intended paths. It
-selects G2.262 as route/OpenAPI reconciliation authorization and must not edit
-source, route registration, OpenAPI exposure, docs/api, tests, frontend, config,
-scripts, PM2, or OpenSpec.
+G2.261 was the no-source route-registration / ownership decision after PR `#413` merged G2.260. PR `#414` merged G2.261 at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4`. G2.262 is the no-source route/OpenAPI reconciliation authorization after PR `#414`. It must not edit source, route registration, OpenAPI exposure, docs/api, tests, frontend, config, scripts, PM2, or OpenSpec.

@@ -2739,3 +2739,13 @@ Next gate after acceptance:
 - G2.262 should decide whether to register, keep dormant, or retire/archive the
   route-shaped module and stale docs/tests.
 - G2.262 must not edit source.
+
+## G2.262 Signal Statistics Route/OpenAPI Reconciliation Authorization
+
+Status: for review in PR `#415`.
+
+- Parent PR `#414` merged at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4`.
+- `web/backend/app/api/signal_monitoring/get_signal_statistics.py` remains dormant at current HEAD `1d492cbad`: 3 route-decorated handlers, 3 direct `get_postgres_async()` calls, 0 registered target routes, and 0 current `app.openapi()` target paths.
+- `docs/api/openapi.yaml` still has historical entries for target paths that are absent from generated OpenAPI.
+- G2.262 does not authorize source edits, route registration, docs/api cleanup, tests, OpenSpec changes, or provider injection.
+- Next gate: G2.263 no-source signal statistics route contract disposition decision.
