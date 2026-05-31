@@ -398,7 +398,7 @@ Do not claim completion until the verification commands have actually run and th
 
 | Route | Page file | Status |
 |---|---|---|
-| `/trade/positions` | `web/frontend/src/views/trade/Positions.vue` | migrated |
+| `/trade/positions` | `web/frontend/src/views/trade/Center.vue` | migrated |
 | `/trade/portfolio` | `web/frontend/src/views/trade/Portfolio.vue` | migrated |
 | `/risk/alerts` | `web/frontend/src/views/risk/Alerts.vue` | migrated |
 | `/market/realtime` | `web/frontend/src/views/market/Realtime.vue` | migrated |
