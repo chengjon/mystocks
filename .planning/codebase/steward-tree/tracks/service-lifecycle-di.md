@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T21:34:35+08:00`
-- Base HEAD checked: `16df80c30eb4fceec78a13630e40167f0e4037ca`
+- Prepared at: `2026-05-31T23:34:18+08:00`
+- Base HEAD checked: `daa4f22a557b054ab76042d4990b6e91d9faa7a7`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2909,7 +2909,7 @@ Status: accepted/merged by PR `#427` at `16df80c30eb4fceec78a13630e40167f0e4037c
 
 ## G2.275 Risk get_monitoring_db Provider Implementation
 
-Status: for review in future PR `#428`.
+Status: accepted/merged by PR `#428` at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`.
 
 - Parent PR `#427` merged at `16df80c30eb4fceec78a13630e40167f0e4037ca`.
 - GitNexus MCP impact returned `Transport closed`; CLI impact using `Function:web/backend/app/api/risk/_shared.py:get_monitoring_db` returned LOW risk with 3 direct risk handlers and 0 affected processes.
@@ -2922,3 +2922,16 @@ Status: for review in future PR `#428`.
 - Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and unchanged target endpoint parameter counts.
 - Next gate after acceptance: G2.276 no-source risk `get_monitoring_db` provider closeout / residual refresh.
 - G2.275 must not be used as authority for strategy-management helper changes, `web/backend/app/utils/risk_utils.py`, route registration, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source.
+
+## G2.276 Risk get_monitoring_db Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#429`.
+
+- Parent PR `#428` merged at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`.
+- Risk route-body `get_monitoring_db()` calls are closed: `risk/alerts.py` and `risk/metrics.py` both have `0`; risk provider backing call remains in `_shared.py`.
+- Current API residual scan finds strategy-management as the only active API route-body residual: `_strategy_crud_router.py` has `4` direct log calls and `_helpers.py` has helper-level ownership calls.
+- `web/backend/app/utils/risk_utils.py` remains a deferred utility same-name helper with `0` active API route-body calls in this scan.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation IDs.
+- Focused risk provider test remains green at `1/1`; ruff remains clean on the G2.275 touched risk source/test paths.
+- Selected next gate after acceptance: G2.277 no-source strategy `get_monitoring_db` route-provider authorization.
+- G2.276 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
