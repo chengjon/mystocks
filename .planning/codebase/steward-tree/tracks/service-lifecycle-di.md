@@ -3038,7 +3038,7 @@ Status: accepted/merged by PR `#436` at `511e9d091bc2b29777c522c595a9f1454f50b97
 
 ## G2.284 data_lineage get_lineage_tracker Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#437`.
+Status: accepted/merged by PR `#437` at `d34774837a0582f0e33d47425bb017b44e5aacd9`.
 
 - Parent PR `#436` merged at `511e9d091bc2b29777c522c595a9f1454f50b973`.
 - G2.284 is a no-source closeout / residual refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3049,3 +3049,18 @@ Status: for review in future PR `#437`.
 - GitNexus CLI fallback for the selected next target `Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection` returned MEDIUM risk with `5` direct callers, `6` impacted symbols, `0` affected processes, and a stale-index warning.
 - Selected next gate after acceptance: G2.285 no-source `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision.
 - G2.284 must not be used as source implementation authorization; G2.285 must classify control-plane ownership before any future source lane.
+
+## G2.285 governance_dashboard get_postgres_connection Ownership / Control-Plane Route-Provider Decision
+
+Status: for review in future PR `#438`.
+
+- Parent PR `#437` merged at `d34774837a0582f0e33d47425bb017b44e5aacd9`.
+- G2.285 is a no-source ownership decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- `get_postgres_connection` is defined in `web/backend/app/api/governance_dashboard.py` at line `124` and currently belongs to the `/api/v1/governance` control-plane route module.
+- Active direct route-body callers are `get_quality_overview`, `get_lineage_stats`, `get_assets_catalog`, `get_compliance_metrics`, and `get_dashboard_summary`.
+- Current code has `5` direct `await get_postgres_connection()` route-body calls and `9` manual `await conn.close()` cleanup lines across the five handlers.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and the five governance dashboard paths present.
+- GitNexus CLI fallback returned MEDIUM risk with `6` impacted symbols, `5` direct callers, `0` affected processes, and a stale-index warning. The stale index names one caller as `fetch_all_data`; current code truth is `get_dashboard_summary`.
+- Decision: classify this as a bounded active control-plane route helper owned by `governance_dashboard.py`, not as a shared service facade, app-wide PostgreSQL provider, or route-registration issue.
+- Recommended next gate after human acceptance: G2.286 no-source `governance_dashboard.get_postgres_connection` provider authorization package.
+- G2.285 must stop at PR `#438` review and must not auto-merge because the selected target has GitNexus MEDIUM impact.
