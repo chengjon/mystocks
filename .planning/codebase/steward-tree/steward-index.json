@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T10:43:44+08:00",
+  "generated_at": "2026-05-31T10:58:01+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "795d2b9f50c3e483876f1b4ec484fbf9c1d9e513",
-  "split_branch": "g2-264-signal-statistics-stale-contract-cleanup-authorization",
-  "scope": "signal_statistics_stale_contract_cleanup_authorization",
+  "base_head": "fe1927818309efb2c1de3a9c1e1128e9b456053e",
+  "split_branch": "g2-265-signal-statistics-stale-contract-cleanup",
+  "scope": "signal_statistics_stale_contract_cleanup_implementation",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -6679,7 +6679,7 @@
     {
       "id": "g2-264-signal-statistics-stale-contract-cleanup-authorization",
       "type": "governance",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.263 signal statistics route contract disposition decision",
       "github_pr": 417,
@@ -6809,7 +6809,77 @@
         "openspec/changes/**",
         "openspec/specs/**"
       ],
-      "next_gate": "If accepted, merge PR #417 and start G2.265 path-limited stale signal statistics contract cleanup implementation; do not edit source, register routes, inject providers, or modify OpenSpec."
+      "next_gate": "Superseded by G2.265 path-limited stale signal statistics contract cleanup implementation.",
+      "merge_commit": "fe1927818309efb2c1de3a9c1e1128e9b456053e",
+      "accepted_at": "2026-05-31T10:58:01+08:00"
+    },
+    {
+      "id": "g2-265-signal-statistics-stale-contract-cleanup-implementation",
+      "type": "implementation",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.264 signal statistics stale contract cleanup authorization",
+      "github_pr": 418,
+      "branch": "g2-265-signal-statistics-stale-contract-cleanup",
+      "base_head": "fe1927818309efb2c1de3a9c1e1128e9b456053e",
+      "source_edit_authority": "docs_and_test_contract_cleanup_only",
+      "evidence": [
+        ".planning/codebase/generated/signal-statistics-stale-contract-cleanup-implementation-2026-05-31.json",
+        "docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-implementation-2026-05-31.md",
+        "governance/mainline/task-cards/pr-418.yaml"
+      ],
+      "touched_paths": [
+        "docs/api/openapi.yaml",
+        "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+        "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+        "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+        "tests/unit/test_signal_monitoring_integration.py"
+      ],
+      "facts_after": {
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "target_openapi_paths": 0,
+        "duplicate_operation_ids": 0,
+        "docs_api_openapi_target_refs": 0,
+        "targeted_tests": "2 passed"
+      },
+      "forbidden_runtime_actions_not_performed": [
+        "web/backend source edits",
+        "route registration",
+        "provider injection",
+        "source retirement",
+        "frontend edits",
+        "OpenSpec edits",
+        "PM2/runtime stateful commands"
+      ],
+      "allowed_scope": [
+        "docs/api/openapi.yaml",
+        "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+        "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+        "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+        "tests/unit/test_signal_monitoring_integration.py",
+        ".planning/codebase/generated/signal-statistics-stale-contract-cleanup-implementation-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-implementation-2026-05-31.md",
+        "governance/mainline/task-cards/pr-418.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "next_gate": "If accepted, merge PR #418 and start G2.266 no-source signal statistics dormant contract closeout / residual refresh."
     }
   ]
 }

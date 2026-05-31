@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T10:43:44+08:00`
-- Base HEAD checked: `795d2b9f50c3e483876f1b4ec484fbf9c1d9e513`
+- Prepared at: `2026-05-31T10:58:01+08:00`
+- Base HEAD checked: `fe1927818309efb2c1de3a9c1e1128e9b456053e`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/signal-statistics-stale-contract-cleanup-authorization-2026-05-31.json` | G2.264 signal statistics stale contract cleanup authorization evidence | Review input for PR `#417`; authorizes future G2.265 path-limited docs/test cleanup only |
-| `docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-authorization-2026-05-31.md` | G2.264 human-readable stale contract cleanup authorization report | Review input for PR `#417`; keeps runtime/source/OpenSpec out of scope |
-| `governance/mainline/task-cards/pr-417.yaml` | Path-limited governance task card for G2.264 | Review input; forbids source/test/docs/api/runtime/OpenSpec changes in this PR |
+| `.planning/codebase/generated/signal-statistics-stale-contract-cleanup-implementation-2026-05-31.json` | G2.265 stale signal statistics contract cleanup implementation evidence | Review input for PR `#418`; documents path-limited docs/test cleanup and selected G2.266 closeout |
+| `docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-implementation-2026-05-31.md` | G2.265 human-readable stale contract cleanup implementation report | Review input for PR `#418`; records red/green test evidence and runtime OpenAPI truth |
+| `governance/mainline/task-cards/pr-418.yaml` | Path-limited governance task card for G2.265 | Review input; allows only five docs/test artifacts plus governance records |
+| `.planning/codebase/generated/signal-statistics-stale-contract-cleanup-authorization-2026-05-31.json` | G2.264 signal statistics stale contract cleanup authorization evidence | Accepted by PR `#417`; authorizes future G2.265 path-limited docs/test cleanup only |
+| `docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-authorization-2026-05-31.md` | G2.264 human-readable stale contract cleanup authorization report | Accepted by PR `#417`; keeps runtime/source/OpenSpec out of scope |
+| `governance/mainline/task-cards/pr-417.yaml` | Path-limited governance task card for G2.264 | Accepted by PR `#417`; forbids source/test/docs/api/runtime/OpenSpec changes in that PR |
 | `.planning/codebase/generated/signal-statistics-route-contract-disposition-decision-2026-05-31.json` | G2.263 signal statistics route contract disposition evidence | Accepted by PR `#416`; selects dormant source retention plus stale contract artifact reconciliation |
 | `docs/reports/quality/backend-signal-statistics-route-contract-disposition-decision-2026-05-31.md` | G2.263 human-readable route contract disposition report | Accepted by PR `#416`; selects G2.264 no-source cleanup authorization |
 | `governance/mainline/task-cards/pr-416.yaml` | Path-limited governance task card for G2.263 | Review input; forbids source/test/docs/api/runtime/OpenSpec changes |

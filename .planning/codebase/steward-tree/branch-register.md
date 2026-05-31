@@ -101,7 +101,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#414` | `g2-261-get-signal-statistics-route-ownership` | `wip/root-dirty-20260403` | `MERGED` at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4` | No-source `get_signal_statistics.py` route-registration / ownership decision selecting G2.262 route/OpenAPI reconciliation authorization |
 | `#415` | `g2-262-signal-statistics-route-openapi-reconciliation` | `wip/root-dirty-20260403` | `MERGED` at `15bebd4de48059fb5bf35efef81aabb9040cf6ea` | No-source signal statistics route/OpenAPI reconciliation authorization selecting G2.263 route contract disposition decision |
 | `#416` | `g2-263-signal-statistics-route-contract-disposition` | `wip/root-dirty-20260403` | `MERGED` at `795d2b9f50c3e483876f1b4ec484fbf9c1d9e513` | No-source signal statistics route contract disposition decision selecting G2.264 stale contract cleanup authorization |
-| `#417` | `g2-264-signal-statistics-stale-contract-cleanup-authorization` | `wip/root-dirty-20260403` | `FOR_REVIEW` | No-source stale signal statistics contract cleanup authorization selecting G2.265 path-limited cleanup implementation |
+| `#417` | `g2-264-signal-statistics-stale-contract-cleanup-authorization` | `wip/root-dirty-20260403` | `MERGED` at `fe1927818309efb2c1de3a9c1e1128e9b456053e` | No-source stale signal statistics contract cleanup authorization selecting G2.265 path-limited cleanup implementation |
+| `#418` | `g2-265-signal-statistics-stale-contract-cleanup` | `wip/root-dirty-20260403` | `FOR_REVIEW` | Path-limited stale signal statistics docs/test contract cleanup selecting G2.266 closeout / residual refresh |
 
 ## Steward Governance Branch
 
@@ -112,6 +113,7 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-260-signal-history-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `5dc148e0aa4653f0803eb6a088e90544b6c051e4` | Close out G2.259 and refresh remaining postgres async residuals | No |
 | `g2-261-get-signal-statistics-route-ownership` | `origin/wip/root-dirty-20260403` at `efc579ad8558314568b6f03e97f1c12341105fa0` | Decide ownership for dormant `get_signal_statistics.py` route-shaped module; merged by PR `#414` at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4` | No |
 | `g2-262-signal-statistics-route-openapi-reconciliation` | `origin/wip/root-dirty-20260403` at `1d492cbad2aa849b21df1028f5fea1a3bd9c30c4` | Authorize route/OpenAPI reconciliation disposition for dormant `get_signal_statistics.py` | No |
+| `g2-265-signal-statistics-stale-contract-cleanup` | `origin/wip/root-dirty-20260403` at `fe1927818309efb2c1de3a9c1e1128e9b456053e` | Clean stale docs/test contract artifacts for dormant signal statistics paths | Yes, docs/test only |
 
 ## OpenSpec Relationship
 
@@ -132,3 +134,5 @@ G2.261 was the no-source route-registration / ownership decision after PR `#413`
 G2.263 is the no-source route contract disposition decision after PR `#415` merged G2.262. It selects dormant source retention plus stale contract artifact reconciliation and must not edit source, route registration, OpenAPI exposure, docs/api, tests, frontend, config, scripts, PM2, or OpenSpec.
 
 G2.264 is the no-source stale contract cleanup authorization after PR `#416` merged G2.263. It authorizes only a future path-limited docs/test cleanup lane and must not edit source, route registration, provider injection, source retirement, frontend, OpenSpec, config, scripts, PM2, or runtime state.
+
+G2.265 is the path-limited stale contract cleanup implementation after PR `#417` merged G2.264. It may touch only the five authorized docs/test artifacts plus governance records; it must not edit backend source, register routes, inject providers, retire source, modify OpenSpec, or run PM2/stateful gates.

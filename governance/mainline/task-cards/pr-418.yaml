@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-418"
+  title: "Clean stale signal statistics contract artifacts"
+  owner: "codex"
+  created_at: "2026-05-31"
+
+mainline:
+  id: "L1-signal-statistics-stale-contract-cleanup-implementation"
+  objective: "make authorized docs/test artifacts distinguish dormant signal statistics endpoints from current runtime OpenAPI truth"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.265 changes only docs/test stale contract artifacts and governance records; it changes no runtime entrypoints, route paths, backend source, OpenAPI generation code, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - "docs/api/openapi.yaml"
+    - "docs/api/task_plan_signal_monitoring_phase2_extended.md"
+    - "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md"
+    - "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md"
+    - "tests/unit/test_signal_monitoring_integration.py"
+    - ".planning/codebase/generated/signal-statistics-stale-contract-cleanup-implementation-2026-05-31.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-implementation-2026-05-31.md"
+    - "governance/mainline/task-cards/pr-418.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "route registration changes"
+  - "provider injection implementation"
+  - "source retirement or archive"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+  - "broad docs rewrite outside exact stale references"
+
+acceptance:
+  checks:
+    - id: "pr417-merged"
+      command: "gh pr view 417 confirms MERGED at fe1927818309efb2c1de3a9c1e1128e9b456053e"
+      required: true
+    - id: "red-before-cleanup"
+      command: "targeted tests failed before cleanup because dormant endpoints returned 404 while stale tests expected 200"
+      required: true
+    - id: "targeted-tests"
+      command: "pytest -o addopts= -q --no-cov --tb=short tests/unit/test_signal_monitoring_integration.py::TestSignalMonitoringAPI::test_signal_statistics_endpoint tests/unit/test_signal_monitoring_integration.py::TestSignalMonitoringAPI::test_active_signals_endpoint"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.main imports; app.openapi has 500 paths, target paths absent, duplicate operation IDs 0"
+      required: true
+    - id: "yaml-parse"
+      command: "python -c 'import yaml; yaml.safe_load(open(\"docs/api/openapi.yaml\", encoding=\"utf-8\")); print(\"yaml ok\")'"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-signal-statistics-stale-contract-cleanup-implementation-2026-05-31.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-418.yaml --base-sha fe1927818309efb2c1de3a9c1e1128e9b456053e --head-sha HEAD --report /tmp/pr418-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; transport/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.265 must not be mistaken for route registration, provider injection, source retirement, or OpenSpec authorization."
+    - "Remaining references in design docs must remain clearly historical/deferred."
+  rollback_plan: "Revert PR #418; this restores the previous stale docs/test contract artifacts and steward tree state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Clean stale docs/test contract artifacts for dormant signal statistics endpoints."
+    modified_scope: "Five authorized docs/test artifacts plus governance evidence, steward tree, report, and task card."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or backend behavior changes."
+    rollback_ready: "Revert PR #418."
+    risk_and_rollback_point: "Path-limited cleanup PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-31T10:58:01+08:00"
+    approval_note: "Approved by PR #417 / G2.264 to perform path-limited stale signal statistics contract cleanup; no backend source, route registration, provider injection, source retirement, frontend, OpenSpec, or PM2 changes are authorized."
+    secondary_approved: false

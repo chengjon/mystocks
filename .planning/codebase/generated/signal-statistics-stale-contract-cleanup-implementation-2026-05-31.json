@@ -1,0 +1,87 @@
+{
+  "id": "G2.265",
+  "title": "Signal statistics stale contract cleanup implementation",
+  "status": "review_input",
+  "generated_at": "2026-05-31T10:58:01+08:00",
+  "git_head": "fe1927818309efb2c1de3a9c1e1128e9b456053e",
+  "current_head_checked_at_review": "fe1927818309efb2c1de3a9c1e1128e9b456053e",
+  "stale_if_head_mismatch": true,
+  "parent": {
+    "id": "G2.264",
+    "github_pr": 417,
+    "merge_commit": "fe1927818309efb2c1de3a9c1e1128e9b456053e"
+  },
+  "branch": "g2-265-signal-statistics-stale-contract-cleanup",
+  "assumed_github_pr": 418,
+  "source_edit_authority": "docs_and_test_contract_cleanup_only",
+  "runtime_snapshot_after": {
+    "app_routes": 548,
+    "openapi_paths": 500,
+    "target_openapi_paths": [],
+    "duplicate_operation_ids": 0,
+    "warning_count": 119
+  },
+  "authorized_paths_touched": [
+    "docs/api/openapi.yaml",
+    "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+    "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+    "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+    "tests/unit/test_signal_monitoring_integration.py"
+  ],
+  "forbidden_runtime_actions_not_performed": [
+    "web/backend source edits",
+    "route registration",
+    "provider injection",
+    "source retirement",
+    "frontend edits",
+    "OpenSpec edits",
+    "PM2/runtime stateful commands"
+  ],
+  "cleanup_summary": {
+    "docs_api_openapi_yaml": "Removed stale active path blocks for dormant signal statistics endpoints from the hand-maintained OpenAPI snapshot.",
+    "planning_and_design_docs": "Marked remaining endpoint references as historical/deferred rather than current runtime truth.",
+    "tests": "Changed dormant endpoint tests from active 200 assertions to explicit 404 runtime-truth assertions."
+  },
+  "exact_reference_counts_after": {
+    "docs/api/openapi.yaml": {
+      "/api/signals/statistics": 0,
+      "/api/signals/active": 0,
+      "/api/strategies/{strategy_id}/health/detailed": 0
+    },
+    "docs/api/task_plan_signal_monitoring_phase2_extended.md": {
+      "/api/signals/statistics": 1,
+      "/api/signals/active": 1,
+      "/api/strategies/{strategy_id}/health/detailed": 0
+    },
+    "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md": {
+      "/api/signals/statistics": 5,
+      "/api/signals/active": 4,
+      "/api/strategies/{strategy_id}/health/detailed": 0
+    },
+    "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md": {
+      "/api/signals/statistics": 3,
+      "/api/signals/active": 0,
+      "/api/strategies/{strategy_id}/health/detailed": 0
+    },
+    "tests/unit/test_signal_monitoring_integration.py": {
+      "/api/signals/statistics": 1,
+      "/api/signals/active": 1,
+      "/api/strategies/{strategy_id}/health/detailed": 0
+    }
+  },
+  "verification_completed": {
+    "red_before_cleanup": {
+      "test_signal_statistics_endpoint": "failed with 404 expected 200",
+      "test_active_signals_endpoint": "failed with 404 expected 200"
+    },
+    "targeted_tests_after_cleanup": "2 passed",
+    "docs_api_yaml_parse": "passed",
+    "runtime_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "target_openapi_paths": [],
+      "duplicate_operation_ids": 0
+    }
+  },
+  "selected_next_gate": "G2.266 no-source signal statistics dormant contract closeout / residual refresh"
+}
