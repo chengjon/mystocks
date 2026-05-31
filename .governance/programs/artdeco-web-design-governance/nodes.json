@@ -278,5 +278,78 @@
       "current_head": "eb6e166acb7bbad660947f133979ac5dbe671941",
       "prepared_at": "2026-05-31T03:47:13.906Z"
     }
+  },
+  {
+    "id": "route-header-shell-trade-execution",
+    "title": "Migrate /trade/execution route header shell",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "route-header-shell-migration",
+    "status": "implementation-ready",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-01-node-03",
+    "current_head": "8c850cff54e286ec8b94589ebc4aa0152533fc2b",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Baseline: Execution.vue uses local ArtDecoHeader at trade-execution-header; trade-execution-tracking.spec.ts has route-level hook test; GitNexus impact LOW, direct=1, affected_processes=0; active gates were none before node creation.",
+        "note": "Prepare /trade/execution route header shell migration.",
+        "current_head": "8c850cff54e286ec8b94589ebc4aa0152533fc2b",
+        "recorded_at": "2026-05-31T05:47:38.541Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/trade/Execution.vue",
+      "web/frontend/tests/e2e/trade-execution-tracking.spec.ts",
+      "web/frontend/src/components/artdeco/route-shell/",
+      "docs/reports/tasks/",
+      "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify router paths, route aliases, redirects, guards, menu entries, or canonical route ownership.",
+      "Do not modify backend API contracts, OpenAPI/Pydantic schemas, or frontend API clients/request URLs.",
+      "Do not change trade execution, broker acknowledgement, bridge evidence, reconciliation navigation, polling, retry, stale, filter, table, or trigger semantics.",
+      "Do not extract shared business components or redesign stats/filter/trigger/work-area surfaces."
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T05:46:43.380Z",
+    "updated_at": "2026-05-31T05:49:20.806Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision: use established ArtDecoRouteHeader route-header-shell-only pattern for /trade/execution.",
+        "current_head": "8c850cff54e286ec8b94589ebc4aa0152533fc2b",
+        "transitioned_at": "2026-05-31T05:47:49.264Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing with recommended next route; scope is route-header-shell-only for /trade/execution.",
+        "current_head": "8c850cff54e286ec8b94589ebc4aa0152533fc2b",
+        "transitioned_at": "2026-05-31T05:49:11.272Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation bound to current HEAD with baseline evidence and LOW GitNexus impact.",
+        "current_head": "8c850cff54e286ec8b94589ebc4aa0152533fc2b",
+        "transitioned_at": "2026-05-31T05:49:20.806Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "TDD RED must fail on trade-execution-header lacking artdeco-route-header before implementation.",
+        "GREEN focused trade execution E2E must pass after implementation.",
+        "eslint, ArtDeco token check, impeccable, type-check, Function Tree scope-check, and GitNexus staged scope gate must pass or be reported."
+      ],
+      "closeout_gate": [
+        "Closeout report records compatibility boundaries, verification evidence, no router/API/client changes, and ledger update after implementation."
+      ]
+    }
   }
 ]

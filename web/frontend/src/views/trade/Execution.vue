@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import { tradeApi } from '@/api/trade'
 import type { ExecutionTrackingDetailPayload, ExecutionTrackingItem } from '@/api/tradeExecutionTracking.ts'
 
@@ -166,33 +167,31 @@ onMounted(() => {
 
 <template>
   <div class="trade-execution page-enter" data-testid="trade-execution-page">
-    <section class="execution-hero artdeco-card-shell" data-testid="trade-execution-header">
-      <div>
-        <span class="hero-eyebrow">external trigger observation</span>
-        <ArtDecoHeader
-          title="执行跟踪 / 外部触发观测台"
-          subtitle="实际交易由 miniQMT、TdxQuant 或其他外部程序完成；本系统只记录触发、回执、证据和对账线索"
-          :show-status="true"
-          :status-text="pageStatusText"
-          :status-type="errorMessage ? 'warning' : 'info'"
+    <ArtDecoRouteHeader
+      title="执行跟踪 / 外部触发观测台"
+      subtitle="实际交易由 miniQMT、TdxQuant 或其他外部程序完成；本系统只记录触发、回执、证据和对账线索"
+      eyebrow="external trigger observation"
+      :show-status="true"
+      :status-text="pageStatusText"
+      :status-type="errorMessage ? 'warning' : 'info'"
+      test-id="trade-execution-header"
+      shell-class="execution-hero artdeco-card-shell"
+    >
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          data-testid="trade-execution-refresh"
+          @click="loadTracking"
         >
-          <template #actions>
-            <ArtDecoButton
-              variant="outline"
-              size="sm"
-              :loading="loading"
-              data-testid="trade-execution-refresh"
-              @click="loadTracking"
-            >
-              <template #icon>
-                <ArtDecoIcon name="refresh" />
-              </template>
-              刷新
-            </ArtDecoButton>
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
           </template>
-        </ArtDecoHeader>
-      </div>
-    </section>
+          刷新
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section class="stats-strip artdeco-card-shell" data-testid="trade-execution-stats-strip">
       <ArtDecoStatCard label="跟踪链路" :value="summary.totalCount" :show-change="false" variant="gold" />

@@ -1,0 +1,31 @@
+task:
+  id: "route-header-shell-trade-execution"
+  title: "Migrate /trade/execution route header shell"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/trade/Execution.vue"
+    - "web/frontend/tests/e2e/trade-execution-tracking.spec.ts"
+    - "web/frontend/src/components/artdeco/route-shell/"
+    - "docs/reports/tasks/"
+    - "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify router paths, route aliases, redirects, guards, menu entries, or canonical route ownership."
+  - "Do not modify backend API contracts, OpenAPI/Pydantic schemas, or frontend API clients/request URLs."
+  - "Do not change trade execution, broker acknowledgement, bridge evidence, reconciliation navigation, polling, retry, stale, filter, table, or trigger semantics."
+  - "Do not extract shared business components or redesign stats/filter/trigger/work-area surfaces."
+
+acceptance:
+  commit_gate:
+    - "TDD RED must fail on trade-execution-header lacking artdeco-route-header before implementation."
+    - "GREEN focused trade execution E2E must pass after implementation."
+    - "eslint, ArtDeco token check, impeccable, type-check, Function Tree scope-check, and GitNexus staged scope gate must pass or be reported."
+  closeout_gate:
+    - "Closeout report records compatibility boundaries, verification evidence, no router/API/client changes, and ledger update after implementation."
+
+evidence:
+  current_head: "8c850cff54e286ec8b94589ebc4aa0152533fc2b"
+  notes: []

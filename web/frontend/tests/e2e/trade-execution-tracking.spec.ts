@@ -203,6 +203,7 @@ test.describe("Trade execution tracking workbench", () => {
     await expect(page.getByRole("heading", { name: "执行跟踪 / 外部触发观测台" })).toBeVisible()
     await expect(page.getByTestId("trade-execution-page")).toBeVisible()
     await expect(page.getByTestId("trade-execution-header")).toBeVisible()
+    await expect(page.getByTestId("trade-execution-header")).toHaveClass(/artdeco-route-header/)
     await expect(page.getByTestId("trade-execution-refresh")).toBeVisible()
     await expect(page.getByTestId("trade-execution-stats-strip")).toBeVisible()
     await expect(page.getByTestId("trade-execution-filter-row")).toBeVisible()
