@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T00:37:55+08:00`
-- Base HEAD checked: `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`
+- Prepared at: `2026-06-01T01:06:12+08:00`
+- Base HEAD checked: `c5496cab0a4213f74636af1c48772dc96c90bd1b`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/strategy-get-monitoring-db-provider-implementation-2026-06-01.json` | G2.278 strategy `get_monitoring_db` provider implementation evidence | Review input for future PR `#431`; path-limited source implementation |
-| `docs/reports/quality/backend-strategy-get-monitoring-db-provider-implementation-2026-06-01.md` | G2.278 human-readable implementation report | Review input for future PR `#431`; records TDD, source/test verification, OpenAPI smoke, and known strategy file-test debt |
-| `governance/mainline/task-cards/pr-431.yaml` | Path-limited implementation task card for G2.278 | Review input; allows only two strategy source files, focused tests, steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/strategy-get-monitoring-db-provider-closeout-refresh-2026-06-01.json` | G2.279 strategy `get_monitoring_db` provider closeout / residual-refresh evidence | Review input for future PR `#432`; no-source closeout and next-gate selection |
+| `docs/reports/quality/backend-strategy-get-monitoring-db-provider-closeout-refresh-2026-06-01.md` | G2.279 human-readable closeout / residual-refresh report | Review input for future PR `#432`; records PR `#431` accepted/merged, current residual scan, OpenAPI smoke, and G2.280 recommendation |
+| `governance/mainline/task-cards/pr-432.yaml` | No-source governance task card for G2.279 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/strategy-get-monitoring-db-provider-implementation-2026-06-01.json` | G2.278 strategy `get_monitoring_db` provider implementation evidence | Accepted by PR `#431`, merged at `c5496cab0a4213f74636af1c48772dc96c90bd1b`; path-limited source implementation |
+| `docs/reports/quality/backend-strategy-get-monitoring-db-provider-implementation-2026-06-01.md` | G2.278 human-readable implementation report | Accepted by PR `#431`; records TDD, source/test verification, OpenAPI smoke, and known strategy file-test debt |
+| `governance/mainline/task-cards/pr-431.yaml` | Path-limited implementation task card for G2.278 | Accepted by PR `#431`; allowed only two strategy source files, focused tests, steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/strategy-get-monitoring-db-provider-authorization-2026-05-31.json` | G2.277 strategy `get_monitoring_db` provider authorization evidence | Accepted by PR `#430`, merged at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`; no-source authorization package only |
 | `docs/reports/quality/backend-strategy-get-monitoring-db-provider-authorization-2026-05-31.md` | G2.277 human-readable authorization report | Accepted by PR `#430`; authorizes only a future strategy-management source lane after acceptance |
 | `governance/mainline/task-cards/pr-430.yaml` | Path-limited governance task card for G2.277 | Accepted by PR `#430`; allowed only steward tree, generated evidence, report, and task card updates |

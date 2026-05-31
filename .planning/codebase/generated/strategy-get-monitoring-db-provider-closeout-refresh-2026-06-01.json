@@ -1,0 +1,199 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-01T01:06:12+08:00",
+  "gate": "G2.279",
+  "title": "Strategy get_monitoring_db provider closeout and residual refresh",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "c5496cab0a4213f74636af1c48772dc96c90bd1b",
+  "worktree": ".worktrees/g2-279-strategy-get-monitoring-db-provider-closeout-refresh",
+  "source_edit_authority": false,
+  "parent": {
+    "gate": "G2.278",
+    "pr": 431,
+    "state": "MERGED",
+    "merged_at": "2026-05-31T16:57:57Z",
+    "merge_commit": "c5496cab0a4213f74636af1c48772dc96c90bd1b",
+    "summary": "Path-limited strategy get_monitoring_db provider implementation accepted and merged."
+  },
+  "static_residual_scan": {
+    "scanned_paths": [
+      "web/backend/app/api/strategy_management/_helpers.py",
+      "web/backend/app/api/strategy_management/_strategy_crud_router.py",
+      "web/backend/app/api/risk/_shared.py",
+      "web/backend/app/api/risk/alerts.py",
+      "web/backend/app/api/risk/metrics.py",
+      "web/backend/app/utils/risk_utils.py"
+    ],
+    "results": {
+      "web/backend/app/api/strategy_management/_helpers.py": {
+        "occurrences": 2,
+        "direct_log_calls": 0,
+        "provider_depends": 0,
+        "provider_defs": 2,
+        "monitoring_db_log_calls": 2,
+        "call_lines": []
+      },
+      "web/backend/app/api/strategy_management/_strategy_crud_router.py": {
+        "occurrences": 1,
+        "direct_log_calls": 0,
+        "provider_depends": 6,
+        "provider_defs": 0,
+        "monitoring_db_log_calls": 4,
+        "call_lines": []
+      },
+      "web/backend/app/api/risk/_shared.py": {
+        "occurrences": 3,
+        "direct_log_calls": 0,
+        "provider_depends": 0,
+        "provider_defs": 2,
+        "monitoring_db_log_calls": 0,
+        "call_lines": []
+      },
+      "web/backend/app/api/risk/alerts.py": {
+        "occurrences": 0,
+        "direct_log_calls": 0,
+        "provider_depends": 1,
+        "provider_defs": 0,
+        "monitoring_db_log_calls": 2,
+        "call_lines": []
+      },
+      "web/backend/app/api/risk/metrics.py": {
+        "occurrences": 0,
+        "direct_log_calls": 0,
+        "provider_depends": 2,
+        "provider_defs": 0,
+        "monitoring_db_log_calls": 4,
+        "call_lines": []
+      },
+      "web/backend/app/utils/risk_utils.py": {
+        "occurrences": 1,
+        "direct_log_calls": 0,
+        "provider_depends": 0,
+        "provider_defs": 1,
+        "monitoring_db_log_calls": 0,
+        "call_lines": []
+      }
+    },
+    "interpretation": {
+      "strategy_direct_get_monitoring_db_log_calls": 0,
+      "strategy_depends_parameters": 6,
+      "risk_route_body_direct_get_monitoring_db_calls": 0,
+      "utility_same_name_helper_status": "deferred utility helper with no active API route-body log calls in this scan",
+      "docstring_or_definition_occurrences_are_not_call_sites": true
+    }
+  },
+  "runtime_openapi_smoke": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "strategy_and_risk_monitoring_db_parameter_leaks": false,
+    "target_operations": {
+      "GET /api/v1/strategy/strategies": {
+        "params": 4,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "list_strategies_api_v1_strategy_strategies_get"
+      },
+      "POST /api/v1/strategy/strategies": {
+        "params": 0,
+        "request_body": true,
+        "monitoring_db_leaks": false,
+        "operation_id": "create_strategy_api_v1_strategy_strategies_post"
+      },
+      "POST /api/v1/strategy/{strategy_id}/start": {
+        "params": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "start_strategy_api_v1_strategy__strategy_id__start_post"
+      },
+      "POST /api/v1/strategy/{strategy_id}/pause": {
+        "params": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "pause_strategy_api_v1_strategy__strategy_id__pause_post"
+      },
+      "POST /api/v1/strategy/{strategy_id}/resume": {
+        "params": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "resume_strategy_api_v1_strategy__strategy_id__resume_post"
+      },
+      "POST /api/v1/strategy/{strategy_id}/stop": {
+        "params": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "stop_strategy_api_v1_strategy__strategy_id__stop_post"
+      },
+      "GET /api/v1/risk/alerts": {
+        "params": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "list_risk_alerts_api_v1_risk_alerts_get"
+      },
+      "POST /api/v1/risk/alerts": {
+        "params": 0,
+        "request_body": true,
+        "monitoring_db_leaks": false,
+        "operation_id": "create_risk_alert_api_v1_risk_alerts_post"
+      },
+      "POST /api/v1/risk/var-cvar": {
+        "params": 0,
+        "request_body": true,
+        "monitoring_db_leaks": false,
+        "operation_id": "calculate_var_cvar_api_v1_risk_var_cvar_post"
+      },
+      "POST /api/v1/risk/beta": {
+        "params": 0,
+        "request_body": true,
+        "monitoring_db_leaks": false,
+        "operation_id": "calculate_beta_api_v1_risk_beta_post"
+      }
+    }
+  },
+  "verification": {
+    "focused_provider_test": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_strategy_management_api.py::TestStrategyManagementAPIFile::test_strategy_monitoring_db_uses_route_dependency_provider -q -n 0 --tb=short --no-cov",
+      "result": "1 passed, 1 warning in 2.62s"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/strategy_management/_helpers.py web/backend/app/api/strategy_management/_strategy_crud_router.py tests/api/file_tests/test_strategy_management_api.py",
+      "result": "All checks passed"
+    },
+    "runtime_openapi": "548 routes, 500 paths, duplicate operation IDs 0, no monitoring_db parameter leaks on target strategy/risk endpoints"
+  },
+  "gitnexus_staged_verification": {
+    "mcp_detect_changes": "Transport closed",
+    "cli_command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-279-strategy-get-monitoring-db-provider-closeout-refresh --json",
+    "ok": true,
+    "status": "stale",
+    "risk_level": "low",
+    "changed_files": 9,
+    "changed_symbols": 0,
+    "affected_processes": 0,
+    "indexed_commit": "20cb37ace841beeb0079b191a8a564c03029b36a",
+    "current_commit": "c5496cab0a4213f74636af1c48772dc96c90bd1b",
+    "stale_reason": "current_commit_differs_from_indexed_commit",
+    "next_action": "Refresh the GitNexus index before relying on graph freshness."
+  },
+  "decision": {
+    "classification": "closeout-refresh-for-review",
+    "closed_surfaces": [
+      "strategy route-body direct get_monitoring_db().log_operation calls",
+      "risk route-body direct get_monitoring_db().log_operation calls"
+    ],
+    "retained_surfaces": [
+      "strategy route-local provider wrappers",
+      "risk route-local provider wrappers",
+      "utility same-name helper in web/backend/app/utils/risk_utils.py"
+    ],
+    "selected_next_governance_target": "service-lifecycle-residual-candidate-refresh-after-get-monitoring-db",
+    "recommended_next_work_item": "G2.280 no-source service lifecycle residual candidate refresh after get_monitoring_db closeout"
+  },
+  "freshness": {
+    "current_head_checked": "c5496cab0a4213f74636af1c48772dc96c90bd1b",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_strategy_or_risk_get_monitoring_db_call_sites_change": true
+  }
+}

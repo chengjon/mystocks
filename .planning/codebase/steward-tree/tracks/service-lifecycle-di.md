@@ -2954,7 +2954,7 @@ Status: accepted/merged by PR `#430` at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d044
 
 ## G2.278 Strategy get_monitoring_db Provider Implementation
 
-Status: for review in future PR `#431`.
+Status: accepted/merged by PR `#431` at `c5496cab0a4213f74636af1c48772dc96c90bd1b`.
 
 - Parent PR `#430` merged at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`.
 - GitNexus MCP impact/context returned `Transport closed`; CLI fallback reported LOW risk for `get_monitoring_db`, `list_strategies`, `create_strategy`, and `_handle_strategy_lifecycle_action`, with `0` affected processes.
@@ -2967,3 +2967,16 @@ Status: for review in future PR `#431`.
 - Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and no `monitoring_db` parameter leak on target strategy endpoints.
 - Next gate after acceptance: G2.279 no-source strategy `get_monitoring_db` provider closeout / residual refresh.
 - G2.278 must not be used as authority for risk helper changes, `web/backend/app/utils/risk_utils.py`, route registration, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source.
+
+## G2.279 Strategy get_monitoring_db Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#432`.
+
+- Parent PR `#431` merged at `c5496cab0a4213f74636af1c48772dc96c90bd1b`.
+- Strategy direct `get_monitoring_db().log_operation(...)` calls in the target files are `0`; active strategy dependency parameters remain `6`; `monitoring_db.log_operation(...)` calls remain `6`.
+- Risk route-body direct `get_monitoring_db().log_operation(...)` calls remain closed at `0`; risk provider wrappers remain retained.
+- `web/backend/app/utils/risk_utils.py` remains a deferred utility same-name helper with `0` active API route-body log calls in this scan.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and no `monitoring_db` parameter leak on target strategy/risk endpoints.
+- Focused strategy provider test remains green at `1/1`; touched strategy ruff remains clean.
+- Selected next gate after acceptance: G2.280 no-source service lifecycle residual candidate refresh after `get_monitoring_db` closeout.
+- G2.279 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
