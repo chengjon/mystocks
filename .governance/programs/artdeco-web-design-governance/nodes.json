@@ -285,11 +285,11 @@
     "node_type": "implementation",
     "owner_lane": "web-artdeco",
     "parent": "route-header-shell-migration",
-    "status": "implementation-ready",
+    "status": "closed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#domain-01-node-03",
     "current_head": "8c850cff54e286ec8b94589ebc4aa0152533fc2b",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -313,11 +313,11 @@
       "Do not change trade execution, broker acknowledgement, bridge evidence, reconciliation navigation, polling, retry, stale, filter, table, or trigger semantics.",
       "Do not extract shared business components or redesign stats/filter/trigger/work-area surfaces."
     ],
-    "next_gate": "land implementation with Git evidence",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-05-31T05:46:43.380Z",
-    "updated_at": "2026-05-31T05:49:20.806Z",
+    "updated_at": "2026-05-31T06:22:33.929Z",
     "transitions": [
       {
         "from": "evidence-prepared",
@@ -339,6 +339,20 @@
         "note": "Implementation bound to current HEAD with baseline evidence and LOW GitNexus impact.",
         "current_head": "8c850cff54e286ec8b94589ebc4aa0152533fc2b",
         "transitioned_at": "2026-05-31T05:49:20.806Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation landed in commit ee32a75ed feat(web): migrate trade execution route header shell.",
+        "current_head": "ee32a75ed87b3e15c11962b1e6a30a89fa72b6c3",
+        "transitioned_at": "2026-05-31T06:22:06.119Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout accepted after commit ee32a75ed and report publication.",
+        "current_head": "ee32a75ed87b3e15c11962b1e6a30a89fa72b6c3",
+        "transitioned_at": "2026-05-31T06:22:33.929Z"
       }
     ],
     "acceptance": {
@@ -350,6 +364,18 @@
       "closeout_gate": [
         "Closeout report records compatibility boundaries, verification evidence, no router/API/client changes, and ledger update after implementation."
       ]
+    },
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-05-31-artdeco-trade-execution-route-header-shell-report.md",
+      "compatibility": "No router/API/client/shared trade state/detail drawer/reconciliation semantics changes; existing route, refresh behavior, status text, and execution tracking hooks preserved.",
+      "gates": [
+        "TDD RED failed on missing artdeco-route-header before implementation.",
+        "Focused trade execution header E2E passed: 1 Chromium test passed.",
+        "eslint, ArtDeco token check, impeccable, type-check, OpenSpec validate, PM2 status, and GitNexus staged scope gate completed.",
+        "Full trade-execution spec recorded one existing non-scope detail drawer failure; no repair was made under this header-shell node."
+      ],
+      "current_head": "ee32a75ed87b3e15c11962b1e6a30a89fa72b6c3",
+      "prepared_at": "2026-05-31T06:22:19.084Z"
     }
   }
 ]
