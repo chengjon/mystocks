@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T19:34:41+08:00`
-- Base HEAD checked: `5b3ffd1f114b612810e96c463c651befeb005222`
+- Prepared at: `2026-05-31T19:54:53+08:00`
+- Base HEAD checked: `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2852,7 +2852,7 @@ Status: accepted/merged by PR `#423` at `5b3ffd1f114b612810e96c463c651befeb00522
 
 ## G2.271 Pool Monitoring Control-Plane Ownership Decision
 
-Status: for review in future PR `#424`.
+Status: accepted/merged by PR `#424` at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`.
 
 - Parent PR `#423` merged at `5b3ffd1f114b612810e96c463c651befeb005222`.
 - `web/backend/app/api/v1/pool_monitoring.py` is classified as an active control-plane route contract, not an ordinary service lifecycle DI source candidate.
@@ -2862,5 +2862,18 @@ Status: for review in future PR `#424`.
 - Residual accessors `get_postgresql_engine()` and `get_tdengine_manager()` are infrastructure pool accessors used by control-plane routes.
 - Route-local stats helpers `get_postgresql_pool_stats()` and `get_tdengine_pool_stats()` remain under route/OpenAPI/control-plane ownership.
 - GitNexus MCP route/context calls timed out after `120s`; G2.271 records AST, route table, OpenAPI, and static artifact fallback evidence.
-- Selected next gate after acceptance: G2.272 no-source service lifecycle residual candidate refresh after pool-monitoring deferral.
+- Superseded by G2.272 no-source service lifecycle residual candidate refresh after pool-monitoring deferral.
 - G2.271 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.272 Service Lifecycle Residual Candidate Refresh
+
+Status: for review in future PR `#425`.
+
+- Parent PR `#424` merged at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`.
+- Current scan covered `371` Python files under `web/backend/app/api` and `web/backend/app/services`.
+- Filtered AST call buckets: `113` active route-body candidates, `362` provider/dependency backing calls, `70` API helper/module candidates, `12` known-deferred calls, and `169` service-body candidates.
+- Known-deferred surfaces remain excluded: `pool_monitoring.py` from G2.271 and dormant `get_signal_statistics.py` from G2.261-G2.266.
+- Top active route-body candidate is `get_monitoring_db` with `10` calls across `risk/alerts.py`, `risk/metrics.py`, and `strategy_management/_strategy_crud_router.py`.
+- GitNexus CLI reports `get_monitoring_db` is ambiguous across `risk/_shared.py`, `utils/risk_utils.py`, and `strategy_management/_helpers.py`.
+- Selected next gate after acceptance: G2.273 no-source `get_monitoring_db` ownership / route-provider decision.
+- G2.272 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
