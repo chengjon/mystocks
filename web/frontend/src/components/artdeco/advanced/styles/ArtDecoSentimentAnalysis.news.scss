@@ -1,0 +1,299 @@
+
+    // ============================================
+    //   NEWS SENTIMENT - 新闻情绪分析
+    // ============================================
+
+    .news-sentiment {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+        }
+
+        .news-analysis {
+            .sentiment-distribution {
+                display: grid;
+                grid-template-columns: 300px 1fr;
+                gap: var(--artdeco-spacing-5);
+                margin-bottom: var(--artdeco-spacing-5);
+
+                .distribution-chart {
+                    .pie-chart-placeholder {
+                        height: 300px;
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        position: relative;
+                        overflow: hidden;
+
+                        // 几何装饰
+                        @include artdeco-geometric-corners(
+                            $color: var(--artdeco-gold-primary),
+                            $size: 16px,
+                            $border-width: 1px
+                        );
+
+                        .pie-chart-visualization {
+                            position: relative;
+                            width: 200px;
+                            height: 200px;
+
+                            .pie-segments {
+                                position: absolute;
+                                width: 100%;
+                                height: 100%;
+                                border-radius: 50%;
+
+                                .pie-segment {
+                                    position: absolute;
+                                    width: 100%;
+                                    height: 100%;
+                                    clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+
+                                    .segment-label {
+                                        position: absolute;
+                                        top: 40%;
+                                        left: 50%;
+                                        transform: translate(-50%, -50%);
+                                        text-align: center;
+                                        color: var(--artdeco-fg-primary);
+                                        font-size: var(--artdeco-font-size-xs);
+                                        font-weight: 600;
+                                        text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-dark) 50%, transparent);
+
+                                        .type {
+                                            display: block;
+                                            font-size: var(--artdeco-font-size-xs);
+                                            margin-bottom: 2px;
+                                        }
+
+                                        .percentage {
+                                            display: block;
+                                            font-size: var(--artdeco-font-size-xs);
+                                            opacity: 90%;
+                                        }
+                                    }
+                                }
+                            }
+
+                            .pie-center {
+                                position: absolute;
+                                top: 50%;
+                                left: 50%;
+                                transform: translate(-50%, -50%);
+                                text-align: center;
+
+                                .center-text {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-muted);
+                                    margin-bottom: var(--artdeco-spacing-1);
+                                }
+
+                                .center-value {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-lg);
+                                    font-weight: 600;
+                                    color: var(--artdeco-gold-primary);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                .sentiment-details {
+                    .sentiment-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: var(--artdeco-spacing-3);
+
+                        .sentiment-item {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: var(--artdeco-spacing-3);
+                            background: var(--artdeco-bg-card);
+                            border: 1px solid var(--artdeco-border-default);
+                            border-radius: 6px;
+                            transition: all var(--artdeco-transition-base);
+
+                            &:hover {
+                                border-color: var(--artdeco-gold-primary);
+                                box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
+                            }
+
+                            .sentiment-info {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--artdeco-spacing-3);
+
+                                .sentiment-color {
+                                    width: 16px;
+                                    height: 16px;
+                                    border-radius: 3px;
+                                }
+
+                                .sentiment-name {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    font-weight: 600;
+                                    color: var(--artdeco-fg-primary);
+                                }
+                            }
+
+                            .sentiment-stats {
+                                text-align: right;
+
+                                .stat-count {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    font-weight: 600;
+                                    color: var(--artdeco-fg-primary);
+                                    display: block;
+                                }
+
+                                .stat-percentage {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    display: block;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .news-timeline {
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .timeline-container {
+                    .timeline {
+                        position: relative;
+                        padding-left: var(--artdeco-spacing-4);
+
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            left: 8px;
+                            top: 0;
+                            bottom: 0;
+                            width: 2px;
+                            background: var(--artdeco-gold-primary);
+                        }
+
+                        .timeline-item {
+                            position: relative;
+                            margin-bottom: var(--artdeco-spacing-4);
+                            padding-left: var(--artdeco-spacing-4);
+
+                            .timeline-dot {
+                                position: absolute;
+                                left: -20px;
+                                top: 8px;
+                                width: 12px;
+                                height: 12px;
+                                border-radius: 50%;
+                                border: 2px solid var(--artdeco-fg-primary);
+                                box-shadow: 0 0 6px color-mix(in srgb, var(--artdeco-bg-dark) 30%, transparent);
+                            }
+
+                            .timeline-content {
+                                background: var(--artdeco-bg-card);
+                                border: 1px solid var(--artdeco-border-default);
+                                border-radius: 6px;
+                                padding: var(--artdeco-spacing-3);
+
+                                &:hover {
+                                    border-color: var(--artdeco-gold-primary);
+                                    box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
+                                }
+
+                                .news-title {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    font-weight: 600;
+                                    color: var(--artdeco-fg-primary);
+                                    margin-bottom: var(--artdeco-spacing-2);
+                                    line-height: 1.4;
+                                }
+
+                                .news-meta {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+
+                                    .news-source {
+                                        font-family: var(--artdeco-font-body);
+                                        font-size: var(--artdeco-font-size-xs);
+                                        color: var(--artdeco-fg-muted);
+                                        font-weight: 600;
+                                    }
+
+                                    .news-time {
+                                        font-family: var(--artdeco-font-mono);
+                                        font-size: var(--artdeco-font-size-xs);
+                                        color: var(--artdeco-fg-muted);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }

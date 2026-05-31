@@ -1,0 +1,76 @@
+
+    // ============================================
+    //   RESPONSIVE DESIGN - 响应式设计
+    // ============================================
+
+    @media (width <= 768px) {
+        .artdeco-sentiment-analysis {
+            gap: var(--artdeco-spacing-4);
+        }
+
+        .sentiment-overview {
+            grid-template-columns: 1fr;
+        }
+
+        .sentiment-radar {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--artdeco-spacing-3);
+
+                .header-content {
+                    margin-left: 0;
+                }
+
+                .radar-controls {
+                    width: 100%;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+            }
+        }
+
+        .research-reports {
+            .reports-analysis {
+                .reports-summary {
+                    .summary-stats {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                .reports-list {
+                    .reports-table {
+                        .table-header,
+                        .table-row {
+                            grid-template-columns: 1fr;
+                            gap: var(--artdeco-spacing-2);
+                        }
+                    }
+                }
+            }
+        }
+
+        .news-sentiment {
+            .news-analysis {
+                .sentiment-distribution {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+
+        .popularity-indicators {
+            .popularity-analysis {
+                .popularity-metrics {
+                    .metrics-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                .popularity-insights {
+                    .insights-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            }
+        }
+    }
