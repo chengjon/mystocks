@@ -1,0 +1,126 @@
+version: "v0.2"
+
+task:
+  id: "pr-432"
+  title: "Close strategy get_monitoring_db provider lane"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-strategy-get-monitoring-db-provider-closeout-refresh"
+  objective: "record G2.278 acceptance, close the strategy get_monitoring_db provider lane, and select the next no-source residual refresh gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.279 is a no-source governance closeout and residual refresh. It changes no runtime entrypoint, route path, route registration, generated OpenAPI artifact, frontend route, or FUNCTION_TREE catalog entry."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/strategy-get-monitoring-db-provider-closeout-refresh-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-strategy-get-monitoring-db-provider-closeout-refresh-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-432.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+
+acceptance:
+  checks:
+    - id: "pr431-merged"
+      command: "gh pr view 431 confirms MERGED at c5496cab0a4213f74636af1c48772dc96c90bd1b"
+      required: true
+    - id: "static-residual-scan"
+      command: "current HEAD scan records strategy direct get_monitoring_db().log_operation calls at 0 and risk route-body direct calls at 0"
+      required: true
+    - id: "runtime-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0, and no monitoring_db parameter leak on target endpoints"
+      required: true
+    - id: "focused-provider-test"
+      command: "env PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_strategy_management_api.py::TestStrategyManagementAPIFile::test_strategy_monitoring_db_uses_route_dependency_provider -q -n 0 --tb=short --no-cov"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/strategy_management/_helpers.py web/backend/app/api/strategy_management/_strategy_crud_router.py tests/api/file_tests/test_strategy_management_api.py"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-432.yaml --base-sha c5496cab0a4213f74636af1c48772dc96c90bd1b --head-sha HEAD --report /tmp/pr432-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus staged verification attempted before commit; stale-index warning recorded if present"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A future worker may treat this closeout as source implementation authorization; the report and steward tree explicitly forbid that."
+    - "Utility same-name helper in web/backend/app/utils/risk_utils.py remains deferred and must not be removed from G2.279."
+  rollback_plan: "Revert PR #432; this removes only governance evidence and restores the previous steward tree state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close the accepted strategy get_monitoring_db provider lane."
+    modified_scope: "Governance evidence, steward tree indexes, human-readable report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime, route, OpenAPI, frontend, config, script, or OpenSpec changes."
+    rollback_ready: "Revert PR #432."
+    risk_and_rollback_point: "No-source closeout; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T01:06:12+08:00"
+    approval_note: "Human maintainer approved continuing after PR #431 acceptance into G2.279 no-source closeout / residual refresh. Scope remains limited to governance artifacts."
+    secondary_approved: false
