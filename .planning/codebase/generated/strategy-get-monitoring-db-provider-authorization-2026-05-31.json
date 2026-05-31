@@ -1,0 +1,217 @@
+{
+  "id": "g2-277-strategy-get-monitoring-db-provider-authorization",
+  "type": "authorization_package",
+  "prepared_at": "2026-06-01T00:01:42+08:00",
+  "base_head": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
+  "parent": {
+    "id": "g2-276-risk-get-monitoring-db-provider-closeout-refresh",
+    "github_pr": 429,
+    "merge_commit": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
+    "decision": "risk get_monitoring_db route-provider lane closed; strategy-management residual selected for no-source authorization"
+  },
+  "scope": {
+    "source_edit_authority": false,
+    "changed_runtime": false,
+    "changed_routes": false,
+    "changed_openapi": false,
+    "authorization_only": true
+  },
+  "gitnexus": {
+    "mcp_context": "tool call failed: Transport closed",
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_impact_uid": {
+      "target_uid": "Function:web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db",
+      "direction": "upstream",
+      "risk": "LOW",
+      "impacted_count": 7,
+      "direct": 3,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "affected_module": "Strategy_management",
+      "direct_symbols": [
+        "Function:web/backend/app/api/strategy_management/_helpers.py:_handle_strategy_lifecycle_action",
+        "Function:web/backend/app/api/strategy_management/_strategy_crud_router.py:list_strategies",
+        "Function:web/backend/app/api/strategy_management/_strategy_crud_router.py:create_strategy"
+      ],
+      "depth_2_symbols": [
+        "Function:web/backend/app/api/strategy_management/_strategy_execution_router.py:start_strategy",
+        "Function:web/backend/app/api/strategy_management/_strategy_execution_router.py:pause_strategy",
+        "Function:web/backend/app/api/strategy_management/_strategy_execution_router.py:resume_strategy",
+        "Function:web/backend/app/api/strategy_management/_strategy_execution_router.py:stop_strategy"
+      ],
+      "index_status": {
+        "stale": true,
+        "commits_behind": 0,
+        "has_embeddings": false
+      }
+    }
+  },
+  "strategy_surface": {
+    "definition": "web/backend/app/api/strategy_management/_helpers.py:420",
+    "candidate_files": {
+      "web/backend/app/api/strategy_management/_helpers.py": {
+        "occurrences": 3,
+        "direct_log_calls": 2,
+        "direct_call_sites": [
+          "line 393 in _handle_strategy_lifecycle_action",
+          "line 409 in _handle_strategy_lifecycle_action"
+        ],
+        "classification": "strategy helper owns lifecycle log_operation calls behind helper-level action handling"
+      },
+      "web/backend/app/api/strategy_management/_strategy_crud_router.py": {
+        "occurrences": 4,
+        "direct_log_calls": 4,
+        "import_line": 20,
+        "direct_call_sites": [
+          "line 157 in list_strategies",
+          "line 174 in list_strategies",
+          "line 254 in create_strategy",
+          "line 271 in create_strategy"
+        ],
+        "classification": "active route-body residual candidate for future route-provider implementation"
+      },
+      "web/backend/app/utils/risk_utils.py": {
+        "definitions": 1,
+        "active_api_route_body_calls": 0,
+        "classification": "deferred utility same-name helper; not authorized by G2.277"
+      }
+    },
+    "target_handlers": [
+      "_handle_strategy_lifecycle_action",
+      "list_strategies",
+      "create_strategy"
+    ]
+  },
+  "route_openapi": {
+    "command_context": "app.main import with temporary placeholder environment values; no PM2 or stateful database gate",
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "target_routes": [
+      {
+        "path": "/api/v1/strategy/strategies",
+        "method": "GET",
+        "endpoint": "list_strategies",
+        "module": "app.api.strategy_management._strategy_crud_router",
+        "include_in_schema": true,
+        "parameter_count": 4,
+        "request_body": false,
+        "response_codes": [
+          "200",
+          "400",
+          "404",
+          "422",
+          "500"
+        ]
+      },
+      {
+        "path": "/api/v1/strategy/strategies",
+        "method": "POST",
+        "endpoint": "create_strategy",
+        "module": "app.api.strategy_management._strategy_crud_router",
+        "include_in_schema": true,
+        "parameter_count": 0,
+        "request_body": true,
+        "response_codes": [
+          "200",
+          "400",
+          "404",
+          "422",
+          "500"
+        ]
+      },
+      {
+        "path": "/api/v1/strategy/strategies/{strategy_id}",
+        "method": "GET",
+        "endpoint": "get_strategy",
+        "module": "app.api.strategy_management._strategy_crud_router",
+        "include_in_schema": true,
+        "parameter_count": 1,
+        "request_body": false,
+        "response_codes": [
+          "200",
+          "400",
+          "404",
+          "422",
+          "500"
+        ]
+      }
+    ]
+  },
+  "test_inventory": {
+    "focused_test_attempt": {
+      "command": "env PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_strategy_management_api.py -q -n 0 --tb=short --no-cov",
+      "result": "3 failed, 7 passed, 1 warning",
+      "classification": "existing strategy file-test drift; not caused by G2.277 no-source authorization",
+      "failures": [
+        "test_router_registers_expected_strategy_routes expects router.prefix /api/v1/strategy but current package router prefix is empty",
+        "test_router_contains_expected_number_of_route_method_pairs expects 16 route/method pairs but current count is 23",
+        "test_chart_data_function_is_exported_but_not_wired_into_package_router expects chart-data path to be unwired but current router includes it"
+      ]
+    },
+    "focused_future_test_paths": [
+      "tests/api/file_tests/test_strategy_management_api.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "known_debt_not_authorized_for_edit_by_g2_277": [
+      "strategy file-test route count and router prefix expectations",
+      "strategy chart-data wiring expectation drift"
+    ]
+  },
+  "governance_verification": {
+    "gitnexus_verify_staged": {
+      "ok": true,
+      "status": "stale",
+      "changed_files": 9,
+      "changed_symbols": 0,
+      "affected_processes": 0,
+      "risk_level": "low",
+      "indexed_commit": "39c8a3b2d7ca4a85f66ccaacb17894f52451602e",
+      "current_commit": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
+      "stale_reason": "current_commit_differs_from_indexed_commit"
+    }
+  },
+  "authorization": {
+    "selected_next_gate": "G2.278 path-limited strategy get_monitoring_db route-provider implementation",
+    "authorized_after_acceptance_only": true,
+    "authorized_future_source_paths": [
+      "web/backend/app/api/strategy_management/_helpers.py",
+      "web/backend/app/api/strategy_management/_strategy_crud_router.py"
+    ],
+    "authorized_future_test_paths": [
+      "tests/api/file_tests/test_strategy_management_api.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "future_lane_allowed_actions": [
+      "add a strategy-management-local dependency provider or equivalent route-provider seam for the strategy monitoring database helper",
+      "move list_strategies and create_strategy away from direct route-body get_monitoring_db().log_operation(...) calls",
+      "route _handle_strategy_lifecycle_action logging through the same explicit strategy monitoring database seam where practical without changing public route contracts",
+      "preserve current MonitoringDatabase fallback and log_operation behavior",
+      "add focused assertions that no FastAPI dependency parameter leaks into OpenAPI for the target strategy endpoints"
+    ],
+    "future_lane_forbidden_actions": [
+      "risk helper or risk route edits",
+      "web/backend/app/utils/risk_utils.py edits",
+      "non-strategy route/provider migrations",
+      "route path/method/response shape changes",
+      "OpenAPI artifact edits",
+      "frontend/config/script/OpenSpec edits",
+      "PM2 or stateful runtime gates",
+      "source retirement"
+    ],
+    "acceptance_for_future_lane": [
+      "GitNexus impact re-run before source edits using the strategy helper UID",
+      "focused TDD red/green or equivalent regression proof for strategy route-provider usage",
+      "targeted strategy API/file tests either pass or record pre-existing route expectation drift without widening scope",
+      "ruff passes for touched backend files",
+      "app.openapi() remains 500 paths with duplicate operation IDs 0",
+      "target endpoint parameter counts do not gain dependency artifacts"
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_strategy_get_monitoring_db_call_sites_change": true
+  }
+}

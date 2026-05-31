@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T23:34:18+08:00",
+  "generated_at": "2026-06-01T00:01:42+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
-  "split_branch": "g2-276-risk-get-monitoring-db-provider-closeout-refresh",
-  "scope": "risk_get_monitoring_db_provider_closeout_refresh",
+  "base_head": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
+  "split_branch": "g2-277-strategy-get-monitoring-db-provider-authorization",
+  "scope": "strategy_get_monitoring_db_provider_authorization",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -7806,15 +7806,17 @@
     {
       "id": "g2-276-risk-get-monitoring-db-provider-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.275 risk get_monitoring_db route-provider implementation",
       "source_edit_authority": false,
       "github_pr": {
         "number": 429,
         "url": "https://github.com/chengjon/mystocks/pull/429",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-276-risk-get-monitoring-db-provider-closeout-refresh"
+        "state": "MERGED",
+        "merged_at": "2026-05-31T15:51:40Z",
+        "head_ref": "g2-276-risk-get-monitoring-db-provider-closeout-refresh",
+        "merge_commit": "f48ede2ce2202318efa3411fe22fb83a8d4d920b"
       },
       "evidence": [
         ".planning/codebase/generated/risk-get-monitoring-db-provider-closeout-refresh-2026-05-31.json",
@@ -7893,12 +7895,112 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+        "current_head_checked": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_get_monitoring_db_call_sites_change": true
       },
-      "next_gate": "If accepted, start G2.277 no-source strategy get_monitoring_db route-provider authorization."
+      "next_gate": "Superseded by G2.277 no-source strategy get_monitoring_db route-provider authorization."
+    },
+    {
+      "id": "g2-277-strategy-get-monitoring-db-provider-authorization",
+      "type": "authorization_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.276 risk get_monitoring_db provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "future_source_edit_authority_if_accepted": true,
+      "github_pr": {
+        "number": 430,
+        "url": "https://github.com/chengjon/mystocks/pull/430",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-277-strategy-get-monitoring-db-provider-authorization"
+      },
+      "evidence": [
+        ".planning/codebase/generated/strategy-get-monitoring-db-provider-authorization-2026-05-31.json",
+        "docs/reports/quality/backend-strategy-get-monitoring-db-provider-authorization-2026-05-31.md",
+        "governance/mainline/task-cards/pr-430.yaml"
+      ],
+      "gitnexus_evidence": {
+        "mcp": "Transport closed for context / impact",
+        "cli_uid": "Function:web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db",
+        "risk": "LOW",
+        "impacted_count": 7,
+        "direct": 3,
+        "processes_affected": 0,
+        "modules_affected": 1,
+        "affected_module": "Strategy_management"
+      },
+      "authorization_scope": {
+        "future_lane": "G2.278 path-limited strategy get_monitoring_db route-provider implementation",
+        "allowed_source_paths": [
+          "web/backend/app/api/strategy_management/_helpers.py",
+          "web/backend/app/api/strategy_management/_strategy_crud_router.py"
+        ],
+        "allowed_test_paths": [
+          "tests/api/file_tests/test_strategy_management_api.py",
+          "web/backend/tests/test_health_route_conflicts.py"
+        ],
+        "forbidden_paths": [
+          "web/backend/app/api/risk/**",
+          "web/backend/app/utils/risk_utils.py",
+          "non-strategy route/provider migrations",
+          "web/frontend/**",
+          "docs/api/**",
+          "openspec/changes/**",
+          "openspec/specs/**",
+          "config/**",
+          "scripts/**"
+        ]
+      },
+      "strategy_surface": {
+        "helper_file": {
+          "path": "web/backend/app/api/strategy_management/_helpers.py",
+          "definition_line": 420,
+          "helper_level_log_calls": 2,
+          "target_function": "_handle_strategy_lifecycle_action"
+        },
+        "crud_router_file": {
+          "path": "web/backend/app/api/strategy_management/_strategy_crud_router.py",
+          "route_body_direct_log_calls": 4,
+          "target_handlers": [
+            "list_strategies",
+            "create_strategy"
+          ]
+        },
+        "deferred_utility_same_name_helper": {
+          "path": "web/backend/app/utils/risk_utils.py",
+          "active_api_route_body_calls": 0
+        }
+      },
+      "route_openapi": {
+        "routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "target_endpoint_parameter_counts": {
+          "GET /api/v1/strategy/strategies": 4,
+          "POST /api/v1/strategy/strategies": 0,
+          "GET /api/v1/strategy/strategies/{strategy_id}": 1
+        }
+      },
+      "known_test_debt": {
+        "focused_command": "env PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_strategy_management_api.py -q -n 0 --tb=short --no-cov",
+        "result": "3 failed, 7 passed, 1 warning",
+        "classification": "existing strategy file-test route expectation drift"
+      },
+      "decision": {
+        "classification": "authorization-package-for-review",
+        "source_lane_recommendation": "do-not-start-source-implementation-before-pr-430-acceptance",
+        "selected_next_governance_target": "strategy-get-monitoring-db-route-provider-implementation",
+        "recommended_next_work_item": "G2.278 path-limited strategy get_monitoring_db route-provider implementation"
+      },
+      "freshness": {
+        "current_head_checked": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_strategy_get_monitoring_db_call_sites_change": true
+      },
+      "next_gate": "If accepted, start G2.278 path-limited strategy get_monitoring_db route-provider implementation."
     }
   ]
 }

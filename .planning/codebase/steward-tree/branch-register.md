@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-31T20:39:29+08:00`
-- Base HEAD checked: `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`
+- Prepared at: `2026-06-01T00:01:42+08:00`
+- Base HEAD checked: `f48ede2ce2202318efa3411fe22fb83a8d4d920b`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -111,6 +111,10 @@ PRs, change issue labels, or authorize source implementation.
 | `#424` | `g2-271-pool-monitoring-control-plane-ownership` | `wip/root-dirty-20260403` | `MERGED` at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8` | No-source pool monitoring control-plane ownership decision selecting G2.272 residual candidate refresh |
 | `#425` | `g2-272-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `bcf28e4668391f91ea97ee252b4da4eea64faf74` | No-source residual candidate refresh selecting G2.273 `get_monitoring_db` ownership decision |
 | `#426` | `g2-273-get-monitoring-db-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa` | No-source ownership decision selecting G2.274 risk `get_monitoring_db` authorization |
+| `#427` | `g2-274-risk-get-monitoring-db-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `16df80c30eb4fceec78a13630e40167f0e4037ca` | No-source authorization package for G2.275 risk `get_monitoring_db` provider implementation |
+| `#428` | `g2-275-risk-get-monitoring-db-provider` | `wip/root-dirty-20260403` | `MERGED` at `daa4f22a557b054ab76042d4990b6e91d9faa7a7` | Path-limited risk `get_monitoring_db` provider implementation |
+| `#429` | `g2-276-risk-get-monitoring-db-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `f48ede2ce2202318efa3411fe22fb83a8d4d920b` | No-source risk provider closeout selecting G2.277 strategy authorization |
+| `#430` | `g2-277-strategy-get-monitoring-db-provider-authorization` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source authorization package for future G2.278 strategy `get_monitoring_db` provider implementation |
 
 ## Steward Governance Branch
 
@@ -131,6 +135,9 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-272-service-lifecycle-residual-candidate-refresh` | `origin/wip/root-dirty-20260403` at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8` | Refresh service lifecycle residual candidates after pool-monitoring deferral | No |
 | `g2-273-get-monitoring-db-ownership-decision` | `origin/wip/root-dirty-20260403` at `bcf28e4668391f91ea97ee252b4da4eea64faf74` | Decide split `get_monitoring_db` ownership before any route-provider authorization | No |
 | `g2-274-risk-get-monitoring-db-provider-authorization` | `origin/wip/root-dirty-20260403` at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa` | Authorize a future path-limited risk `get_monitoring_db` route-provider implementation | No |
+| `g2-275-risk-get-monitoring-db-provider` | `origin/wip/root-dirty-20260403` at `16df80c30eb4fceec78a13630e40167f0e4037ca` | Implement the authorized risk `get_monitoring_db` route-provider lane | Yes, path-limited |
+| `g2-276-risk-get-monitoring-db-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `daa4f22a557b054ab76042d4990b6e91d9faa7a7` | Close out G2.275 and select strategy-management residual authorization | No |
+| `g2-277-strategy-get-monitoring-db-provider-authorization` | `origin/wip/root-dirty-20260403` at `f48ede2ce2202318efa3411fe22fb83a8d4d920b` | Authorize a future path-limited strategy `get_monitoring_db` route-provider implementation | No |
 
 ## OpenSpec Relationship
 
@@ -175,3 +182,5 @@ G2.274 is the no-source risk `get_monitoring_db` route-provider authorization af
 G2.275 is the path-limited risk `get_monitoring_db` route-provider implementation after PR `#427` merged G2.274 at `16df80c30eb4fceec78a13630e40167f0e4037ca`. It may touch only `web/backend/app/api/risk/_shared.py`, `web/backend/app/api/risk/alerts.py`, `web/backend/app/api/risk/metrics.py`, the focused risk file test, and governance evidence. It must not edit strategy-management helpers, `web/backend/app/utils/risk_utils.py`, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 
 G2.276 is the no-source risk `get_monitoring_db` provider closeout / residual refresh after PR `#428` merged G2.275 at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`. It records the risk route-provider lane as closed, refreshes remaining strategy-management and utility same-name helper residuals, and selects G2.277 no-source strategy authorization. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+G2.277 is the no-source strategy `get_monitoring_db` route-provider authorization after PR `#429` merged G2.276 at `f48ede2ce2202318efa3411fe22fb83a8d4d920b`. It authorizes only a future G2.278 path-limited strategy source lane for `strategy_management/_helpers.py` and `strategy_management/_strategy_crud_router.py` after PR `#430` acceptance. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

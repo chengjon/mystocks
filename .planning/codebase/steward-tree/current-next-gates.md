@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-31T23:34:18+08:00`
-- Base HEAD checked: `daa4f22a557b054ab76042d4990b6e91d9faa7a7`
+- Prepared at: `2026-06-01T00:01:42+08:00`
+- Base HEAD checked: `f48ede2ce2202318efa3411fe22fb83a8d4d920b`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.276 risk `get_monitoring_db` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#428` merged at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`; G2.276 records risk route-body `get_monitoring_db()` calls as `0` and selects strategy-management `get_monitoring_db` as the next no-source authorization target | Review PR `#429` when opened; if accepted, start `G2.277 no-source strategy get_monitoring_db route-provider authorization`; do not start strategy source implementation from G2.276 |
+| P0 | Review G2.277 strategy `get_monitoring_db` route-provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#429` merged at `f48ede2ce2202318efa3411fe22fb83a8d4d920b`; G2.277 records strategy-management `_helpers.py` / `_strategy_crud_router.py` as the next path-limited candidate and keeps risk plus utility helpers out of scope | Review PR `#430` when opened; if accepted, start `G2.278 path-limited strategy get_monitoring_db route-provider implementation`; do not start strategy source implementation from G2.277 before acceptance |
+| P0 | Preserve G2.276 risk `get_monitoring_db` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#429` merged at `f48ede2ce2202318efa3411fe22fb83a8d4d920b`; risk route-body `get_monitoring_db()` calls remain closed at `0`, strategy-management residual selected for no-source authorization | Do not use G2.276 as authority for backend source edits, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.275 risk `get_monitoring_db` route-provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#428` merged at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`; G2.275 moved `create_risk_alert`, `calculate_var_cvar`, and `calculate_beta` to `Depends(get_risk_monitoring_db)` | Do not use G2.275 as authority for strategy-management helper changes, utility helper changes, route registration, OpenAPI artifact edits, frontend, config, scripts, OpenSpec, PM2, or broader backend source |
 | P0 | Preserve G2.274 risk `get_monitoring_db` route-provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#427` merged at `16df80c30eb4fceec78a13630e40167f0e4037ca`; G2.274 authorized only the three risk source files plus focused tests for G2.275 | Do not use G2.274 as authority for strategy-management helper changes, utility helper changes, route registration, OpenAPI artifact edits, frontend, config, scripts, OpenSpec, PM2, or broader backend source |
 | P0 | Preserve G2.273 `get_monitoring_db` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#426` merged at `0de77f3d05b1b6242515f2b86fce03c0eba37aaa`; `get_monitoring_db` is split across risk helper, strategy helper, and utility same-name helper surfaces | Do not use G2.273 as authority for backend source edits, combined risk/strategy migration, route registration, source retirement, tests, docs/api, frontend, OpenSpec, config, scripts, or PM2 |
