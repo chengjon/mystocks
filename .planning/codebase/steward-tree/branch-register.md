@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-05-31T19:54:53+08:00`
-- Base HEAD checked: `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`
+- Prepared at: `2026-05-31T20:12:35+08:00`
+- Base HEAD checked: `bcf28e4668391f91ea97ee252b4da4eea64faf74`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -109,6 +109,7 @@ PRs, change issue labels, or authorize source implementation.
 | `#422` | `g2-269-monitoring-portfolio-optimizer-provider` | `wip/root-dirty-20260403` | `MERGED` at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da` | Path-limited monitoring portfolio optimizer provider implementation selecting G2.270 closeout / residual refresh |
 | `#423` | `g2-270-monitoring-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `5b3ffd1f114b612810e96c463c651befeb005222` | No-source monitoring portfolio optimizer provider closeout selecting G2.271 control-plane ownership decision |
 | `#424` | `g2-271-pool-monitoring-control-plane-ownership` | `wip/root-dirty-20260403` | `MERGED` at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8` | No-source pool monitoring control-plane ownership decision selecting G2.272 residual candidate refresh |
+| `#425` | `g2-272-service-lifecycle-residual-candidate-refresh` | `wip/root-dirty-20260403` | `MERGED` at `bcf28e4668391f91ea97ee252b4da4eea64faf74` | No-source residual candidate refresh selecting G2.273 `get_monitoring_db` ownership decision |
 
 ## Steward Governance Branch
 
@@ -127,6 +128,7 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-270-monitoring-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da` | Close out G2.269 and refresh remaining monitoring/signal residuals | No |
 | `g2-271-pool-monitoring-control-plane-ownership` | `origin/wip/root-dirty-20260403` at `5b3ffd1f114b612810e96c463c651befeb005222` | Decide pool monitoring control-plane route/OpenAPI ownership | No |
 | `g2-272-service-lifecycle-residual-candidate-refresh` | `origin/wip/root-dirty-20260403` at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8` | Refresh service lifecycle residual candidates after pool-monitoring deferral | No |
+| `g2-273-get-monitoring-db-ownership-decision` | `origin/wip/root-dirty-20260403` at `bcf28e4668391f91ea97ee252b4da4eea64faf74` | Decide split `get_monitoring_db` ownership before any route-provider authorization | No |
 
 ## OpenSpec Relationship
 
@@ -163,3 +165,5 @@ G2.270 is the no-source monitoring portfolio optimizer provider closeout / resid
 G2.271 is the no-source pool monitoring control-plane accessor ownership / route governance decision after PR `#423` merged G2.270 at `5b3ffd1f114b612810e96c463c651befeb005222`. It classifies `web/backend/app/api/v1/pool_monitoring.py` as an active documented control-plane route contract, not a service DI implementation candidate. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 
 G2.272 is the no-source service lifecycle residual candidate refresh after PR `#424` merged G2.271 at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`. It refreshes current API/service getter-shaped residuals and selects `G2.273 no-source get_monitoring_db ownership / route-provider decision`. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+G2.273 is the no-source `get_monitoring_db` ownership / route-provider decision after PR `#425` merged G2.272 at `bcf28e4668391f91ea97ee252b4da4eea64faf74`. It disambiguates risk, strategy, and utility same-name helper ownership and selects `G2.274 no-source risk get_monitoring_db route-provider authorization` as the next gate. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

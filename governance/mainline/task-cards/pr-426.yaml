@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-426"
+  title: "Decide get_monitoring_db ownership"
+  owner: "codex"
+  created_at: "2026-05-31"
+
+mainline:
+  id: "L1-get-monitoring-db-ownership-decision"
+  objective: "disambiguate get_monitoring_db ownership before any route-provider authorization"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.273 updates only steward tree state, generated evidence, a quality report, and this task card. It changes no runtime entrypoints, route paths, backend source, tests, frontend, OpenAPI generation code, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/get-monitoring-db-ownership-decision-2026-05-31.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-get-monitoring-db-ownership-decision-2026-05-31.md"
+    - "governance/mainline/task-cards/pr-426.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "provider injection implementation"
+  - "combined risk and strategy migration"
+  - "route registration changes"
+  - "source retirement or archive"
+  - "test contract edits"
+  - "OpenAPI artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr425-merged"
+      command: "gh pr view 425 confirms MERGED at bcf28e4668391f91ea97ee252b4da4eea64faf74"
+      required: true
+    - id: "gitnexus-ambiguity-recorded"
+      command: "GitNexus impact for get_monitoring_db ambiguity is recorded with risk, strategy, and utils candidate symbol paths"
+      required: true
+    - id: "ownership-split-recorded"
+      command: "Static scan records risk helper, strategy helper, and utility same-name helper ownership split"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, and duplicate operation IDs 0"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-get-monitoring-db-ownership-decision-2026-05-31.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-426.yaml --base-sha bcf28e4668391f91ea97ee252b4da4eea64faf74 --head-sha HEAD --report /tmp/pr426-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus staged verification attempted before commit; timeout/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.273 must not be mistaken for backend source implementation or route-provider injection authorization."
+    - "The get_monitoring_db name spans risk, strategy, and utility helper surfaces; batching them would mix ownership boundaries."
+  rollback_plan: "Revert PR #426; this restores the steward tree to the immediate post-PR #425 state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Disambiguate get_monitoring_db ownership before any provider authorization."
+    modified_scope: "Steward tree, generated evidence, quality report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or backend behavior changes."
+    rollback_ready: "Revert PR #426."
+    risk_and_rollback_point: "Pure governance decision; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-31T20:12:35+08:00"
+    approval_note: "Human maintainer approved continuing after PR #425 merge into G2.273 no-source get_monitoring_db ownership decision. No source implementation is authorized."
+    secondary_approved: false

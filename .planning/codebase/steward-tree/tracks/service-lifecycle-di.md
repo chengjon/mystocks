@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T19:54:53+08:00`
-- Base HEAD checked: `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`
+- Prepared at: `2026-05-31T20:12:35+08:00`
+- Base HEAD checked: `bcf28e4668391f91ea97ee252b4da4eea64faf74`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2867,7 +2867,7 @@ Status: accepted/merged by PR `#424` at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce
 
 ## G2.272 Service Lifecycle Residual Candidate Refresh
 
-Status: for review in future PR `#425`.
+Status: accepted/merged by PR `#425` at `bcf28e4668391f91ea97ee252b4da4eea64faf74`.
 
 - Parent PR `#424` merged at `8e0fcd6738c4e3a889b4851d058f8121f32b8ce8`.
 - Current scan covered `371` Python files under `web/backend/app/api` and `web/backend/app/services`.
@@ -2877,3 +2877,17 @@ Status: for review in future PR `#425`.
 - GitNexus CLI reports `get_monitoring_db` is ambiguous across `risk/_shared.py`, `utils/risk_utils.py`, and `strategy_management/_helpers.py`.
 - Selected next gate after acceptance: G2.273 no-source `get_monitoring_db` ownership / route-provider decision.
 - G2.272 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.273 get_monitoring_db Ownership / Route-Provider Decision
+
+Status: for review in future PR `#426`.
+
+- Parent PR `#425` merged at `bcf28e4668391f91ea97ee252b4da4eea64faf74`.
+- GitNexus MCP impact returned `Transport closed`; CLI impact returned an ambiguous result for three same-name symbols.
+- Candidate symbols are `web/backend/app/api/risk/_shared.py:get_monitoring_db`, `web/backend/app/utils/risk_utils.py:get_monitoring_db`, and `web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db`.
+- Risk surface: `risk/_shared.py` defines the helper and `risk/alerts.py` plus `risk/metrics.py` have `6` active route-body calls.
+- Strategy surface: `strategy_management/_helpers.py` defines the helper and `_strategy_crud_router.py` has `4` active route-body calls plus helper-level lifecycle calls.
+- Utility same-name surface: `utils/risk_utils.py` defines another helper but G2.273 found `0` active target route calls in the scoped scan.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation IDs.
+- Decision: do not create one combined `get_monitoring_db` implementation lane. Select `G2.274 no-source risk get_monitoring_db route-provider authorization` as the next gate.
+- G2.273 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

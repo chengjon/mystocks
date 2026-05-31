@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T19:54:53+08:00",
+  "generated_at": "2026-05-31T20:12:35+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "8e0fcd6738c4e3a889b4851d058f8121f32b8ce8",
-  "split_branch": "g2-272-service-lifecycle-residual-candidate-refresh",
-  "scope": "service_lifecycle_residual_candidate_refresh",
+  "base_head": "bcf28e4668391f91ea97ee252b4da4eea64faf74",
+  "split_branch": "g2-273-get-monitoring-db-ownership-decision",
+  "scope": "get_monitoring_db_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -7407,15 +7407,17 @@
     {
       "id": "g2-272-service-lifecycle-residual-candidate-refresh",
       "type": "residual_refresh",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.271 pool monitoring control-plane ownership decision",
       "source_edit_authority": false,
       "github_pr": {
         "number": 425,
         "url": "https://github.com/chengjon/mystocks/pull/425",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-272-service-lifecycle-residual-candidate-refresh"
+        "state": "MERGED",
+        "head_ref": "g2-272-service-lifecycle-residual-candidate-refresh",
+        "merge_commit": "bcf28e4668391f91ea97ee252b4da4eea64faf74",
+        "merged_at": "2026-05-31T12:06:14Z"
       },
       "evidence": [
         ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-2026-05-31.json",
@@ -7493,7 +7495,108 @@
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_scan_filters_change": true
       },
-      "next_gate": "If accepted, start G2.273 no-source get_monitoring_db ownership / route-provider decision."
+      "next_gate": "Superseded by G2.273 no-source get_monitoring_db ownership / route-provider decision."
+    },
+    {
+      "id": "g2-273-get-monitoring-db-ownership-decision",
+      "type": "ownership_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.272 service lifecycle residual candidate refresh",
+      "source_edit_authority": false,
+      "github_pr": {
+        "number": 426,
+        "url": "https://github.com/chengjon/mystocks/pull/426",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-273-get-monitoring-db-ownership-decision"
+      },
+      "evidence": [
+        ".planning/codebase/generated/get-monitoring-db-ownership-decision-2026-05-31.json",
+        "docs/reports/quality/backend-get-monitoring-db-ownership-decision-2026-05-31.md",
+        "governance/mainline/task-cards/pr-426.yaml"
+      ],
+      "gitnexus": {
+        "mcp_impact_get_monitoring_db": "tool call failed: Transport closed",
+        "cli_impact_get_monitoring_db": "ambiguous across risk/_shared.py, utils/risk_utils.py, and strategy_management/_helpers.py",
+        "index_status": "stale warning; commits_behind 0; has_embeddings false",
+        "future_source_gate": "disambiguate by target_uid or file_path before any source authorization"
+      },
+      "ownership_split": {
+        "risk_route_helper": {
+          "definition": "web/backend/app/api/risk/_shared.py:128",
+          "active_route_body_calls": 6,
+          "files": [
+            "web/backend/app/api/risk/alerts.py",
+            "web/backend/app/api/risk/metrics.py"
+          ]
+        },
+        "strategy_route_helper": {
+          "definition": "web/backend/app/api/strategy_management/_helpers.py:420",
+          "active_route_body_calls": 4,
+          "internal_helper_calls": 2,
+          "files": [
+            "web/backend/app/api/strategy_management/_strategy_crud_router.py",
+            "web/backend/app/api/strategy_management/_helpers.py"
+          ]
+        },
+        "utility_same_name_helper": {
+          "definition": "web/backend/app/utils/risk_utils.py:23",
+          "active_target_route_calls_found_in_g2_273_scan": 0
+        }
+      },
+      "route_openapi": {
+        "routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "target_routes_in_schema": [
+          "/api/v1/risk/alerts",
+          "/api/v1/risk/var-cvar",
+          "/api/v1/risk/beta",
+          "/api/v1/strategy/strategies"
+        ]
+      },
+      "decision": {
+        "classification": "split ownership surface, not one implementation seam",
+        "source_implementation_authorized": false,
+        "combined_risk_strategy_lane_authorized": false,
+        "selected_next_gate": "G2.274 no-source risk get_monitoring_db route-provider authorization",
+        "deferred_surfaces": [
+          "web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db",
+          "web/backend/app/api/strategy_management/_strategy_crud_router.py route-body calls",
+          "web/backend/app/utils/risk_utils.py:get_monitoring_db"
+        ]
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/get-monitoring-db-ownership-decision-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-get-monitoring-db-ownership-decision-2026-05-31.md",
+        "governance/mainline/task-cards/pr-426.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "bcf28e4668391f91ea97ee252b4da4eea64faf74",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_get_monitoring_db_call_sites_change": true
+      },
+      "next_gate": "If accepted, start G2.274 no-source risk get_monitoring_db route-provider authorization."
     }
   ]
 }
