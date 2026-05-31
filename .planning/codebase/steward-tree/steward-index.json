@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T21:34:35+08:00",
+  "generated_at": "2026-05-31T23:34:18+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "16df80c30eb4fceec78a13630e40167f0e4037ca",
-  "split_branch": "g2-275-risk-get-monitoring-db-provider",
-  "scope": "risk_get_monitoring_db_provider_implementation",
-  "source_edit_authority": true,
+  "base_head": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+  "split_branch": "g2-276-risk-get-monitoring-db-provider-closeout-refresh",
+  "scope": "risk_get_monitoring_db_provider_closeout_refresh",
+  "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -7695,15 +7695,17 @@
     {
       "id": "g2-275-risk-get-monitoring-db-provider-implementation",
       "type": "implementation",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.274 risk get_monitoring_db route-provider authorization",
       "source_edit_authority": true,
       "github_pr": {
         "number": 428,
         "url": "https://github.com/chengjon/mystocks/pull/428",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-275-risk-get-monitoring-db-provider"
+        "state": "MERGED",
+        "head_ref": "g2-275-risk-get-monitoring-db-provider",
+        "merge_commit": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+        "merged_at": "2026-05-31T15:31:17Z"
       },
       "evidence": [
         ".planning/codebase/generated/risk-get-monitoring-db-provider-implementation-2026-05-31.json",
@@ -7794,12 +7796,109 @@
         "openspec/specs/**"
       ],
       "freshness": {
-        "current_head_checked": "16df80c30eb4fceec78a13630e40167f0e4037ca",
+        "current_head_checked": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_risk_get_monitoring_db_call_sites_change": true
       },
-      "next_gate": "If accepted, start G2.276 no-source risk get_monitoring_db provider closeout / residual refresh."
+      "next_gate": "Superseded by G2.276 no-source risk get_monitoring_db provider closeout / residual refresh."
+    },
+    {
+      "id": "g2-276-risk-get-monitoring-db-provider-closeout-refresh",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.275 risk get_monitoring_db route-provider implementation",
+      "source_edit_authority": false,
+      "github_pr": {
+        "number": 429,
+        "url": "https://github.com/chengjon/mystocks/pull/429",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-276-risk-get-monitoring-db-provider-closeout-refresh"
+      },
+      "evidence": [
+        ".planning/codebase/generated/risk-get-monitoring-db-provider-closeout-refresh-2026-05-31.json",
+        "docs/reports/quality/backend-risk-get-monitoring-db-provider-closeout-refresh-2026-05-31.md",
+        "governance/mainline/task-cards/pr-429.yaml"
+      ],
+      "closed_parent": {
+        "pr": 428,
+        "merge_commit": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+        "risk_route_body_get_monitoring_db_calls_after": 0,
+        "risk_depends_get_risk_monitoring_db_after": 3,
+        "risk_provider_backing_get_monitoring_db_calls_after": 1,
+        "route_contract_changes": false
+      },
+      "residual_refresh": {
+        "risk_shared": {
+          "classification": "retained risk provider backing wrapper and helper definition",
+          "get_monitoring_db_calls": 2,
+          "direct_log_calls": 0
+        },
+        "strategy_management": {
+          "classification": "next no-source route-provider authorization candidate",
+          "helper_calls": 3,
+          "route_body_direct_log_calls": 4,
+          "files": [
+            "web/backend/app/api/strategy_management/_helpers.py",
+            "web/backend/app/api/strategy_management/_strategy_crud_router.py"
+          ]
+        },
+        "utility_same_name_helper": {
+          "file": "web/backend/app/utils/risk_utils.py",
+          "active_api_route_body_calls": 0,
+          "classification": "deferred utility same-name helper"
+        },
+        "selected_next_gate": "G2.277 no-source strategy get_monitoring_db route-provider authorization"
+      },
+      "route_openapi": {
+        "routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "target_endpoint_parameter_counts": {
+          "POST /api/v1/risk/alerts": 0,
+          "POST /api/v1/risk/var-cvar": 0,
+          "POST /api/v1/risk/beta": 0,
+          "POST /api/v1/strategy/strategies": 0
+        }
+      },
+      "verification": {
+        "focused_provider_test": "1 passed",
+        "ruff": "All checks passed",
+        "openspec_validate": "migrate-backend-singletons-to-lifecycle-di valid",
+        "runtime_openapi": "548 routes, 500 paths, duplicate operation IDs 0"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/risk-get-monitoring-db-provider-closeout-refresh-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-risk-get-monitoring-db-provider-closeout-refresh-2026-05-31.md",
+        "governance/mainline/task-cards/pr-429.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "freshness": {
+        "current_head_checked": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_get_monitoring_db_call_sites_change": true
+      },
+      "next_gate": "If accepted, start G2.277 no-source strategy get_monitoring_db route-provider authorization."
     }
   ]
 }

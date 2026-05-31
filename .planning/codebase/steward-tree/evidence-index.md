@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T21:34:35+08:00`
-- Base HEAD checked: `16df80c30eb4fceec78a13630e40167f0e4037ca`
+- Prepared at: `2026-05-31T23:34:18+08:00`
+- Base HEAD checked: `daa4f22a557b054ab76042d4990b6e91d9faa7a7`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/risk-get-monitoring-db-provider-implementation-2026-05-31.json` | G2.275 risk `get_monitoring_db` provider implementation evidence | Review input for future PR `#428`; path-limited source implementation |
-| `docs/reports/quality/backend-risk-get-monitoring-db-provider-implementation-2026-05-31.md` | G2.275 human-readable implementation report | Review input for future PR `#428`; records TDD, source/test verification, OpenAPI smoke, and known week1 risk test debt |
-| `governance/mainline/task-cards/pr-428.yaml` | Path-limited implementation task card for G2.275 | Review input; allows only three risk source files, focused provider test, steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/risk-get-monitoring-db-provider-closeout-refresh-2026-05-31.json` | G2.276 risk `get_monitoring_db` provider closeout / residual-refresh evidence | Review input for future PR `#429`; no-source closeout and next-gate selection |
+| `docs/reports/quality/backend-risk-get-monitoring-db-provider-closeout-refresh-2026-05-31.md` | G2.276 human-readable closeout / residual-refresh report | Review input for future PR `#429`; records PR `#428` accepted/merged and selects G2.277 |
+| `governance/mainline/task-cards/pr-429.yaml` | Path-limited governance task card for G2.276 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/risk-get-monitoring-db-provider-implementation-2026-05-31.json` | G2.275 risk `get_monitoring_db` provider implementation evidence | Accepted by PR `#428`, merged at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`; path-limited source implementation |
+| `docs/reports/quality/backend-risk-get-monitoring-db-provider-implementation-2026-05-31.md` | G2.275 human-readable implementation report | Accepted by PR `#428`; records TDD, source/test verification, OpenAPI smoke, and known week1 risk test debt |
+| `governance/mainline/task-cards/pr-428.yaml` | Path-limited implementation task card for G2.275 | Accepted by PR `#428`; allowed only three risk source files, focused provider test, steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/risk-get-monitoring-db-provider-authorization-2026-05-31.json` | G2.274 risk `get_monitoring_db` provider authorization evidence | Accepted by PR `#427`, merged at `16df80c30eb4fceec78a13630e40167f0e4037ca`; no-source authorization package |
 | `docs/reports/quality/backend-risk-get-monitoring-db-provider-authorization-2026-05-31.md` | G2.274 human-readable authorization report | Accepted by PR `#427`; authorizes only risk-source G2.275 after acceptance |
 | `governance/mainline/task-cards/pr-427.yaml` | Path-limited governance task card for G2.274 | Accepted by PR `#427`; allowed only steward tree, generated evidence, report, and task card updates |

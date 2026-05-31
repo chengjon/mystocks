@@ -1,0 +1,140 @@
+{
+  "schema_version": "2026-05-31.g2-closeout-refresh.v1",
+  "generated_at": "2026-05-31T23:34:18+08:00",
+  "g2_item": "G2.276",
+  "title": "risk get_monitoring_db provider closeout and residual refresh",
+  "branch": "g2-276-risk-get-monitoring-db-provider-closeout-refresh",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+  "current_head_checked": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+  "parent": {
+    "g2_item": "G2.275",
+    "pr": 428,
+    "state": "MERGED",
+    "merge_commit": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+    "merged_at": "2026-05-31T15:31:17Z",
+    "implementation": "risk get_monitoring_db route provider implementation"
+  },
+  "source_edit_authority": false,
+  "closed_parent": {
+    "risk_route_body_get_monitoring_db_calls_after": 0,
+    "risk_depends_get_risk_monitoring_db_after": 3,
+    "risk_provider_backing_get_monitoring_db_calls_after": 1,
+    "route_contract_changes": false,
+    "openapi_artifact_changes": false
+  },
+  "residual_refresh": {
+    "api_get_monitoring_db_call_sites": [
+      {
+        "file": "web/backend/app/api/risk/_shared.py",
+        "classification": "retained risk provider backing wrapper and helper definition",
+        "get_monitoring_db_calls": 2,
+        "direct_log_calls": 0,
+        "next_action": "closed for route-body migration by G2.275"
+      },
+      {
+        "file": "web/backend/app/api/strategy_management/_helpers.py",
+        "classification": "strategy helper ownership surface",
+        "get_monitoring_db_calls": 3,
+        "direct_log_calls": 2,
+        "next_action": "feed future no-source strategy get_monitoring_db authorization"
+      },
+      {
+        "file": "web/backend/app/api/strategy_management/_strategy_crud_router.py",
+        "classification": "strategy route-body residual candidate",
+        "get_monitoring_db_calls": 4,
+        "direct_log_calls": 4,
+        "next_action": "feed future no-source strategy get_monitoring_db authorization"
+      }
+    ],
+    "utility_same_name_helper": {
+      "file": "web/backend/app/utils/risk_utils.py",
+      "get_monitoring_db_calls": 1,
+      "active_api_route_body_calls": 0,
+      "classification": "deferred utility same-name helper, not part of G2.276 source authority"
+    },
+    "selected_next_gate": "G2.277 no-source strategy get_monitoring_db route-provider authorization",
+    "source_implementation_authorized": false
+  },
+  "route_openapi": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "target_operations": {
+      "POST /api/v1/risk/alerts": {
+        "parameters": 0,
+        "has_request_body": true,
+        "operation_id": "create_risk_alert_api_v1_risk_alerts_post"
+      },
+      "POST /api/v1/risk/var-cvar": {
+        "parameters": 0,
+        "has_request_body": true,
+        "operation_id": "calculate_var_cvar_api_v1_risk_var_cvar_post"
+      },
+      "POST /api/v1/risk/beta": {
+        "parameters": 0,
+        "has_request_body": true,
+        "operation_id": "calculate_beta_api_v1_risk_beta_post"
+      },
+      "POST /api/v1/strategy/strategies": {
+        "parameters": 0,
+        "has_request_body": true,
+        "operation_id": "create_strategy_api_v1_strategy_strategies_post"
+      }
+    }
+  },
+  "verification": {
+    "focused_provider_test": {
+      "command": "PYTHONPATH=web/backend pytest -o addopts= tests/api/file_tests/test_risk_management_api.py::TestRiskManagementAPIFile::test_risk_monitoring_db_uses_route_dependency_provider -q -n 0 --tb=short --no-cov",
+      "result": "1 passed"
+    },
+    "ruff": {
+      "command": "ruff check tests/api/file_tests/test_risk_management_api.py web/backend/app/api/risk/_shared.py web/backend/app/api/risk/alerts.py web/backend/app/api/risk/metrics.py",
+      "result": "All checks passed"
+    },
+    "openspec_validate": {
+      "command": "openspec validate migrate-backend-singletons-to-lifecycle-di --strict",
+      "result": "valid"
+    },
+    "runtime_openapi_smoke": {
+      "routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0
+    },
+    "mainline_scope_gate": {
+      "command": "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-429.yaml --base-sha daa4f22a557b054ab76042d4990b6e91d9faa7a7 --head-sha HEAD --report /tmp/pr429-mainline-governance-report.json",
+      "result": "pass=True"
+    },
+    "gitnexus_staged_fallback": {
+      "command": "npx gitnexus verify-staged -r mystocks --cwd /opt/claude/mystocks_spec/.worktrees/g2-276-risk-get-monitoring-db-provider-closeout-refresh --json",
+      "exit_code": 0,
+      "ok": true,
+      "status": "stale",
+      "changed_count": 0,
+      "affected_count": 0,
+      "changed_files": 9,
+      "risk_level": "low",
+      "indexed_commit": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+      "current_commit": "daa4f22a557b054ab76042d4990b6e91d9faa7a7",
+      "next_action": "Refresh the GitNexus index before relying on this result."
+    }
+  },
+  "forbidden_actions_not_performed": [
+    "backend source edits",
+    "tests edits",
+    "route registration changes",
+    "route path or response model changes",
+    "OpenAPI artifact edits",
+    "docs/api edits",
+    "frontend/config/script changes",
+    "OpenSpec edits",
+    "PM2/runtime stateful commands"
+  ],
+  "next_gate": "G2.277 no-source strategy get_monitoring_db route-provider authorization",
+  "stale_policy": {
+    "stale_if_head_mismatch": true,
+    "stale_if_pr_428_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_get_monitoring_db_call_sites_change": true
+  }
+}
