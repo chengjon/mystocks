@@ -1,0 +1,149 @@
+{
+  "id": "G2.263",
+  "title": "Signal statistics route contract disposition decision",
+  "status": "review_input",
+  "generated_at": "2026-05-31T10:26:58+08:00",
+  "git_head": "15bebd4de48059fb5bf35efef81aabb9040cf6ea",
+  "current_head_checked_at_review": "15bebd4de48059fb5bf35efef81aabb9040cf6ea",
+  "stale_if_head_mismatch": true,
+  "parent": {
+    "id": "G2.262",
+    "github_pr": 415,
+    "merge_commit": "15bebd4de48059fb5bf35efef81aabb9040cf6ea"
+  },
+  "branch": "g2-263-signal-statistics-route-contract-disposition",
+  "assumed_github_pr": 416,
+  "source_edit_authority": "none",
+  "target_file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+  "target_paths": [
+    "/api/signals/statistics",
+    "/api/signals/active",
+    "/api/strategies/{strategy_id}/health/detailed"
+  ],
+  "runtime_evidence": {
+    "routes": 548,
+    "paths": 500,
+    "exact_runtime_routes": 0,
+    "exact_openapi_paths": 0,
+    "registered_routes_from_get_signal_statistics_module": 0,
+    "duplicate_operation_ids": 0,
+    "warning_count": 119
+  },
+  "static_evidence": {
+    "line_count": 512,
+    "router_get_handlers": 3,
+    "direct_get_postgres_async_calls": 3,
+    "handlers": [
+      {
+        "name": "get_signal_statistics",
+        "decorator": "@router.get(\"/signals/statistics\", response_model=List[SignalStatisticsResponse])",
+        "line": 113,
+        "direct_get_postgres_async_calls": 1
+      },
+      {
+        "name": "get_active_signals",
+        "decorator": "@router.get(\"/signals/active\", response_model=ActiveSignalsResponse)",
+        "line": 230,
+        "direct_get_postgres_async_calls": 1
+      },
+      {
+        "name": "get_strategy_detailed_health",
+        "decorator": "@router.get(\"/strategies/{strategy_id}/health/detailed\", response_model=StrategyDetailedHealthResponse)",
+        "line": 364,
+        "direct_get_postgres_async_calls": 1
+      }
+    ]
+  },
+  "product_consumer_matrix": {
+    "/api/signals/statistics": {
+      "total": 10,
+      "docs_api": 2,
+      "docs_other": 7,
+      "tests": 1,
+      "frontend": 0,
+      "backend": 0,
+      "files": [
+        {
+          "file": "docs/api/openapi.yaml",
+          "count": 1
+        },
+        {
+          "file": "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+          "count": 1
+        },
+        {
+          "file": "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+          "count": 2
+        },
+        {
+          "file": "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+          "count": 5
+        },
+        {
+          "file": "tests/unit/test_signal_monitoring_integration.py",
+          "count": 1
+        }
+      ]
+    },
+    "/api/signals/active": {
+      "total": 7,
+      "docs_api": 2,
+      "docs_other": 4,
+      "tests": 1,
+      "frontend": 0,
+      "backend": 0,
+      "files": [
+        {
+          "file": "docs/api/openapi.yaml",
+          "count": 1
+        },
+        {
+          "file": "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+          "count": 1
+        },
+        {
+          "file": "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+          "count": 4
+        },
+        {
+          "file": "tests/unit/test_signal_monitoring_integration.py",
+          "count": 1
+        }
+      ]
+    },
+    "/api/strategies/{strategy_id}/health/detailed": {
+      "total": 0,
+      "docs_api": 0,
+      "docs_other": 0,
+      "tests": 0,
+      "frontend": 0,
+      "backend": 0,
+      "files": []
+    }
+  },
+  "disposition": {
+    "selected": "retain_dormant_source_and_reconcile_stale_contract_artifacts",
+    "register_runtime_routes_now": false,
+    "retire_source_now": false,
+    "provider_migration_authorized": false,
+    "rationale": "No exact frontend or backend runtime consumers were found, the target paths are absent from current runtime routes and app.openapi(), and docs/api/test references are stale contract artifacts. Registering routes would expand API surface prematurely; deleting source requires separate product ownership approval.",
+    "stale_contract_artifacts": [
+      "docs/api/openapi.yaml",
+      "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+      "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+      "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+      "tests/unit/test_signal_monitoring_integration.py"
+    ],
+    "selected_next_gate": "G2.264 no-source stale signal statistics contract cleanup authorization",
+    "blocked_actions": [
+      "route registration",
+      "provider injection",
+      "source retirement",
+      "docs/api edits",
+      "test edits",
+      "frontend edits",
+      "OpenSpec edits",
+      "PM2/runtime stateful commands"
+    ]
+  }
+}

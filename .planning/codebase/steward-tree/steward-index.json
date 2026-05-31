@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-05-31T10:12:02+08:00",
+  "generated_at": "2026-05-31T10:26:58+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "1d492cbad2aa849b21df1028f5fea1a3bd9c30c4",
-  "split_branch": "g2-261-get-signal-statistics-route-ownership",
-  "scope": "get_signal_statistics_route_ownership_decision",
+  "base_head": "15bebd4de48059fb5bf35efef81aabb9040cf6ea",
+  "split_branch": "g2-263-signal-statistics-route-contract-disposition",
+  "scope": "signal_statistics_route_contract_disposition_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -6510,7 +6510,7 @@
     {
       "id": "g2-262-signal-statistics-route-openapi-reconciliation-authorization",
       "type": "governance",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.261 get_signal_statistics.py route-registration / ownership decision",
       "github_pr": 415,
@@ -6582,7 +6582,97 @@
         "openspec/changes/**",
         "openspec/specs/**"
       ],
-      "next_gate": "If accepted, merge PR #415 and start G2.263 no-source signal statistics route contract disposition decision; do not implement route registration, docs/api cleanup, tests, or provider injection from G2.262."
+      "next_gate": "Superseded by G2.263 no-source signal statistics route contract disposition decision.",
+      "merge_commit": "15bebd4de48059fb5bf35efef81aabb9040cf6ea",
+      "accepted_at": "2026-05-31T10:26:58+08:00"
+    },
+    {
+      "id": "g2-263-signal-statistics-route-contract-disposition-decision",
+      "type": "governance",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.262 signal statistics route/OpenAPI reconciliation authorization",
+      "github_pr": 416,
+      "branch": "g2-263-signal-statistics-route-contract-disposition",
+      "base_head": "15bebd4de48059fb5bf35efef81aabb9040cf6ea",
+      "evidence": [
+        ".planning/codebase/generated/signal-statistics-route-contract-disposition-decision-2026-05-31.json",
+        "docs/reports/quality/backend-signal-statistics-route-contract-disposition-decision-2026-05-31.md",
+        "governance/mainline/task-cards/pr-416.yaml"
+      ],
+      "target": {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "paths": [
+          "/api/signals/statistics",
+          "/api/signals/active",
+          "/api/strategies/{strategy_id}/health/detailed"
+        ]
+      },
+      "facts": {
+        "app_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "exact_runtime_routes": 0,
+        "exact_openapi_paths": 0,
+        "router_get_handlers": 3,
+        "direct_get_postgres_async_calls": 3,
+        "exact_frontend_refs": 0,
+        "product_consumer_refs": {
+          "/api/signals/statistics": 10,
+          "/api/signals/active": 7,
+          "/api/strategies/{strategy_id}/health/detailed": 0
+        }
+      },
+      "disposition": {
+        "selected": "retain_dormant_source_and_reconcile_stale_contract_artifacts",
+        "register_runtime_routes_now": false,
+        "retire_source_now": false,
+        "provider_migration_authorized": false,
+        "rationale": "No exact frontend or backend runtime consumers were found, the target paths are absent from current runtime routes and app.openapi(), and docs/api/test references are stale contract artifacts. Registering routes would expand API surface prematurely; deleting source requires separate product ownership approval.",
+        "stale_contract_artifacts": [
+          "docs/api/openapi.yaml",
+          "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+          "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+          "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+          "tests/unit/test_signal_monitoring_integration.py"
+        ],
+        "selected_next_gate": "G2.264 no-source stale signal statistics contract cleanup authorization",
+        "blocked_actions": [
+          "route registration",
+          "provider injection",
+          "source retirement",
+          "docs/api edits",
+          "test edits",
+          "frontend edits",
+          "OpenSpec edits",
+          "PM2/runtime stateful commands"
+        ]
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/signal-statistics-route-contract-disposition-decision-2026-05-31.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-signal-statistics-route-contract-disposition-decision-2026-05-31.md",
+        "governance/mainline/task-cards/pr-416.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "next_gate": "If accepted, merge PR #416 and start G2.264 no-source stale signal statistics contract cleanup authorization; do not edit docs/api, tests, source, OpenSpec, or route registration from G2.263."
     }
   ]
 }

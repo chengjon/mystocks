@@ -2749,3 +2749,13 @@ Status: for review in PR `#415`.
 - `docs/api/openapi.yaml` still has historical entries for target paths that are absent from generated OpenAPI.
 - G2.262 does not authorize source edits, route registration, docs/api cleanup, tests, OpenSpec changes, or provider injection.
 - Next gate: G2.263 no-source signal statistics route contract disposition decision.
+
+## G2.263 Signal Statistics Route Contract Disposition Decision
+
+Status: for review in PR `#416`.
+
+- Parent PR `#415` merged at `15bebd4de48059fb5bf35efef81aabb9040cf6ea`.
+- Disposition: retain dormant source and reconcile stale contract artifacts.
+- Route registration, provider injection, source retirement, docs/api edits, tests, frontend, OpenSpec, and PM2 remain unauthorized.
+- Product consumer matrix excluding governance artifacts: `/api/signals/statistics` refs 10, `/api/signals/active` refs 7, strategy detailed health refs 0; exact frontend/backend consumers are 0.
+- Next gate: G2.264 no-source stale signal statistics contract cleanup authorization.

@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-416"
+  title: "Decide signal statistics route contract disposition"
+  owner: "codex"
+  created_at: "2026-05-31"
+
+mainline:
+  id: "L1-signal-statistics-route-contract-disposition-decision"
+  objective: "decide whether dormant signal statistics route-shaped code should be registered, retained dormant, or retired before any source or docs/api cleanup lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.263 is no-source route contract disposition evidence only; it changes no runtime entrypoints, route paths, OpenAPI exposure, source, tests, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/signal-statistics-route-contract-disposition-decision-2026-05-31.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-signal-statistics-route-contract-disposition-decision-2026-05-31.md"
+    - "governance/mainline/task-cards/pr-416.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "docs/api openapi.yaml edits"
+  - "route registration changes"
+  - "provider injection implementation"
+  - "source retirement or archive"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr415-merged"
+      command: "gh pr view 415 confirms MERGED at 15bebd4de48059fb5bf35efef81aabb9040cf6ea"
+      required: true
+    - id: "runtime-contract-snapshot"
+      command: "app.main imports, route table is 548, app.openapi paths is 500, duplicate operation IDs is 0, and target paths are absent"
+      required: true
+    - id: "consumer-matrix"
+      command: "record product consumer matrix excluding governance artifacts"
+      required: true
+    - id: "disposition"
+      command: "select retain dormant source and reconcile stale contract artifacts; reject current route registration, source retirement, and provider migration"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-signal-statistics-route-contract-disposition-decision-2026-05-31.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-416.yaml --base-sha 15bebd4de48059fb5bf35efef81aabb9040cf6ea --head-sha HEAD --report /tmp/pr416-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; transport/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.263 must not be mistaken for route registration, docs/api cleanup, test cleanup, source retirement, or provider injection authorization."
+    - "Stale docs/api entries must not be treated as current runtime OpenAPI truth without app.openapi() evidence."
+    - "Dormant route-shaped code must not be counted as active service lifecycle residual implementation work."
+  rollback_plan: "Revert PR #416; this removes only no-source governance evidence and returns the steward tree to the post-G2.262 merge state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Decide signal statistics route contract disposition before any source or docs/api cleanup lane."
+    modified_scope: "Governance evidence, steward tree, report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or legacy behavior changes."
+    rollback_ready: "Revert PR #416."
+    risk_and_rollback_point: "No-source governance PR; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-31T10:26:58+08:00"
+    approval_note: "Approved to prepare G2.263 no-source signal statistics route contract disposition decision after PR #415 merged G2.262; no source, test, docs/api, or OpenSpec edits are authorized by this task card."
+    secondary_approved: false
