@@ -2938,7 +2938,7 @@ Status: accepted/merged by PR `#429` at `f48ede2ce2202318efa3411fe22fb83a8d4d920
 
 ## G2.277 Strategy get_monitoring_db Provider Authorization
 
-Status: for review in future PR `#430`.
+Status: accepted/merged by PR `#430` at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`.
 
 - Parent PR `#429` merged at `f48ede2ce2202318efa3411fe22fb83a8d4d920b`.
 - GitNexus MCP context / impact returned `Transport closed`; CLI fallback using `Function:web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db` returned LOW risk with `7` impacted symbols, `3` direct symbols, and `0` affected processes.
@@ -2951,3 +2951,19 @@ Status: for review in future PR `#430`.
 - Authorized next gate after acceptance: G2.278 path-limited strategy `get_monitoring_db` route-provider implementation.
 - Future G2.278 may touch only the two strategy-management source paths plus focused strategy tests named in the authorization report.
 - G2.277 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.278 Strategy get_monitoring_db Provider Implementation
+
+Status: for review in future PR `#431`.
+
+- Parent PR `#430` merged at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`.
+- GitNexus MCP impact/context returned `Transport closed`; CLI fallback reported LOW risk for `get_monitoring_db`, `list_strategies`, `create_strategy`, and `_handle_strategy_lifecycle_action`, with `0` affected processes.
+- Added `get_strategy_monitoring_db()` in `web/backend/app/api/strategy_management/_helpers.py` as the route-provider backing wrapper for the existing strategy monitoring database helper.
+- Moved `list_strategies`, `create_strategy`, `start_strategy`, `pause_strategy`, `resume_strategy`, and `stop_strategy` to `Depends(get_strategy_monitoring_db)`.
+- `_handle_strategy_lifecycle_action` now accepts a monitoring database object and falls back to `get_strategy_monitoring_db()` when called without one.
+- Direct `get_monitoring_db().log_operation(...)` calls in the target strategy files are `0`; dependency parameters are `6`; `monitoring_db.log_operation(...)` calls remain `6`.
+- Focused provider TDD passed `1/1`; health route conflicts passed `121/121`; ruff passed on touched source/test files.
+- Full strategy file test still reports the known pre-existing drift: `3 failed, 8 passed, 1 warning` for router prefix, route pair count, and chart-data wiring expectations.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and no `monitoring_db` parameter leak on target strategy endpoints.
+- Next gate after acceptance: G2.279 no-source strategy `get_monitoring_db` provider closeout / residual refresh.
+- G2.278 must not be used as authority for risk helper changes, `web/backend/app/utils/risk_utils.py`, route registration, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source.

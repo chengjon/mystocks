@@ -1,0 +1,185 @@
+{
+  "id": "g2-278-strategy-get-monitoring-db-provider-implementation",
+  "type": "implementation_package",
+  "prepared_at": "2026-06-01T00:37:55+08:00",
+  "base_head": "2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441",
+  "parent": {
+    "id": "g2-277-strategy-get-monitoring-db-provider-authorization",
+    "github_pr": 430,
+    "merge_commit": "2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441",
+    "decision": "authorize only a future strategy-management route-provider implementation for get_monitoring_db"
+  },
+  "scope": {
+    "source_edit_authority": true,
+    "path_limited": true,
+    "changed_routes": false,
+    "changed_openapi_artifacts": false,
+    "changed_frontend": false,
+    "changed_config": false,
+    "changed_openspec": false,
+    "changed_pm2_state": false
+  },
+  "authorized_paths": {
+    "source": [
+      "web/backend/app/api/strategy_management/_helpers.py",
+      "web/backend/app/api/strategy_management/_strategy_crud_router.py"
+    ],
+    "tests": [
+      "tests/api/file_tests/test_strategy_management_api.py",
+      "web/backend/tests/test_health_route_conflicts.py"
+    ],
+    "governance": [
+      ".planning/codebase/generated/strategy-get-monitoring-db-provider-implementation-2026-06-01.json",
+      "docs/reports/quality/backend-strategy-get-monitoring-db-provider-implementation-2026-06-01.md",
+      "governance/mainline/task-cards/pr-431.yaml",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md"
+    ]
+  },
+  "gitnexus_pre_edit": {
+    "mcp": "impact/context calls failed with Transport closed",
+    "cli_impacts": {
+      "Function:web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db": {
+        "risk": "LOW",
+        "impacted_count": 7,
+        "direct": 3,
+        "processes_affected": 0,
+        "modules_affected": 1,
+        "affected_module": "Strategy_management"
+      },
+      "Function:web/backend/app/api/strategy_management/_strategy_crud_router.py:list_strategies": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0
+      },
+      "Function:web/backend/app/api/strategy_management/_strategy_crud_router.py:create_strategy": {
+        "risk": "LOW",
+        "impacted_count": 0,
+        "direct": 0,
+        "processes_affected": 0
+      },
+      "Function:web/backend/app/api/strategy_management/_helpers.py:_handle_strategy_lifecycle_action": {
+        "risk": "LOW",
+        "impacted_count": 4,
+        "direct": 4,
+        "processes_affected": 0
+      }
+    },
+    "index_status": {
+      "stale": true,
+      "commits_behind": 0,
+      "has_embeddings": false
+    }
+  },
+  "implementation": {
+    "provider": {
+      "file": "web/backend/app/api/strategy_management/_helpers.py",
+      "name": "get_strategy_monitoring_db",
+      "backing_call": "get_monitoring_db()",
+      "provider_definitions": 1
+    },
+    "route_dependency_parameters": {
+      "file": "web/backend/app/api/strategy_management/_strategy_crud_router.py",
+      "depends_get_strategy_monitoring_db": 6,
+      "handlers": [
+        "list_strategies",
+        "create_strategy",
+        "start_strategy",
+        "pause_strategy",
+        "resume_strategy",
+        "stop_strategy"
+      ]
+    },
+    "static_counts": {
+      "direct_get_monitoring_db_log_operation_calls_in_target_files": 0,
+      "helpers_monitoring_db_log_operation_calls": 2,
+      "crud_router_monitoring_db_log_operation_calls": 4
+    }
+  },
+  "route_openapi": {
+    "command_context": "app.main import with temporary placeholder environment values; no PM2 or stateful database gate",
+    "routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "target_operations": [
+      {
+        "path": "/api/v1/strategy/strategies",
+        "method": "GET",
+        "parameters": 4,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "list_strategies_api_v1_strategy_strategies_get"
+      },
+      {
+        "path": "/api/v1/strategy/strategies",
+        "method": "POST",
+        "parameters": 0,
+        "request_body": true,
+        "monitoring_db_leaks": false,
+        "operation_id": "create_strategy_api_v1_strategy_strategies_post"
+      },
+      {
+        "path": "/api/v1/strategy/{strategy_id}/start",
+        "method": "POST",
+        "parameters": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "start_strategy_api_v1_strategy__strategy_id__start_post"
+      },
+      {
+        "path": "/api/v1/strategy/{strategy_id}/pause",
+        "method": "POST",
+        "parameters": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "pause_strategy_api_v1_strategy__strategy_id__pause_post"
+      },
+      {
+        "path": "/api/v1/strategy/{strategy_id}/resume",
+        "method": "POST",
+        "parameters": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "resume_strategy_api_v1_strategy__strategy_id__resume_post"
+      },
+      {
+        "path": "/api/v1/strategy/{strategy_id}/stop",
+        "method": "POST",
+        "parameters": 1,
+        "request_body": false,
+        "monitoring_db_leaks": false,
+        "operation_id": "stop_strategy_api_v1_strategy__strategy_id__stop_post"
+      }
+    ]
+  },
+  "verification": {
+    "tdd_red": "focused provider test failed before implementation because _helpers did not expose get_strategy_monitoring_db",
+    "tdd_green": "focused provider test passed: 1 passed, 1 warning",
+    "strategy_file_test_full": "3 failed, 8 passed, 1 warning; three failures match pre-existing route prefix/count/chart-data expectation drift recorded by G2.277",
+    "health_route_conflicts": "121 passed",
+    "ruff": "All checks passed for touched source/test files",
+    "gitnexus_verify_staged": "ok=true; status=stale; changed_count=14; changed_files=12; affected_count=0; risk_level=low; indexed_commit=39c8a3b2d7ca4a85f66ccaacb17894f52451602e; current_commit=2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441",
+    "static_source_check": "direct get_monitoring_db().log_operation calls in target files: 0; Depends(get_strategy_monitoring_db): 6",
+    "runtime_openapi": "548 routes, 500 paths, duplicate operation IDs 0; monitoring_db parameter leaks false for target operations"
+  },
+  "known_debt": [
+    "tests/api/file_tests/test_strategy_management_api.py has pre-existing router prefix expectation drift",
+    "tests/api/file_tests/test_strategy_management_api.py has pre-existing route pair count expectation drift",
+    "tests/api/file_tests/test_strategy_management_api.py has pre-existing chart-data wiring expectation drift"
+  ],
+  "next_gate": {
+    "selected": "G2.279 no-source strategy get_monitoring_db provider closeout / residual refresh",
+    "source_edit_authority": false
+  },
+  "freshness": {
+    "current_head_checked": "2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_strategy_get_monitoring_db_call_sites_change": true
+  }
+}

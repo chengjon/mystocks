@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-01T00:01:42+08:00`
-- Base HEAD checked: `f48ede2ce2202318efa3411fe22fb83a8d4d920b`
+- Prepared at: `2026-06-01T00:37:55+08:00`
+- Base HEAD checked: `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -114,7 +114,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#427` | `g2-274-risk-get-monitoring-db-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `16df80c30eb4fceec78a13630e40167f0e4037ca` | No-source authorization package for G2.275 risk `get_monitoring_db` provider implementation |
 | `#428` | `g2-275-risk-get-monitoring-db-provider` | `wip/root-dirty-20260403` | `MERGED` at `daa4f22a557b054ab76042d4990b6e91d9faa7a7` | Path-limited risk `get_monitoring_db` provider implementation |
 | `#429` | `g2-276-risk-get-monitoring-db-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `f48ede2ce2202318efa3411fe22fb83a8d4d920b` | No-source risk provider closeout selecting G2.277 strategy authorization |
-| `#430` | `g2-277-strategy-get-monitoring-db-provider-authorization` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source authorization package for future G2.278 strategy `get_monitoring_db` provider implementation |
+| `#430` | `g2-277-strategy-get-monitoring-db-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441` | No-source authorization package for G2.278 strategy `get_monitoring_db` provider implementation |
+| `#431` | `g2-278-strategy-get-monitoring-db-provider` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | Path-limited strategy `get_monitoring_db` provider implementation |
 
 ## Steward Governance Branch
 
@@ -138,6 +139,7 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-275-risk-get-monitoring-db-provider` | `origin/wip/root-dirty-20260403` at `16df80c30eb4fceec78a13630e40167f0e4037ca` | Implement the authorized risk `get_monitoring_db` route-provider lane | Yes, path-limited |
 | `g2-276-risk-get-monitoring-db-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `daa4f22a557b054ab76042d4990b6e91d9faa7a7` | Close out G2.275 and select strategy-management residual authorization | No |
 | `g2-277-strategy-get-monitoring-db-provider-authorization` | `origin/wip/root-dirty-20260403` at `f48ede2ce2202318efa3411fe22fb83a8d4d920b` | Authorize a future path-limited strategy `get_monitoring_db` route-provider implementation | No |
+| `g2-278-strategy-get-monitoring-db-provider` | `origin/wip/root-dirty-20260403` at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441` | Implement the authorized strategy `get_monitoring_db` route-provider lane | Yes, path-limited |
 
 ## OpenSpec Relationship
 
@@ -184,3 +186,5 @@ G2.275 is the path-limited risk `get_monitoring_db` route-provider implementatio
 G2.276 is the no-source risk `get_monitoring_db` provider closeout / residual refresh after PR `#428` merged G2.275 at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`. It records the risk route-provider lane as closed, refreshes remaining strategy-management and utility same-name helper residuals, and selects G2.277 no-source strategy authorization. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 
 G2.277 is the no-source strategy `get_monitoring_db` route-provider authorization after PR `#429` merged G2.276 at `f48ede2ce2202318efa3411fe22fb83a8d4d920b`. It authorizes only a future G2.278 path-limited strategy source lane for `strategy_management/_helpers.py` and `strategy_management/_strategy_crud_router.py` after PR `#430` acceptance. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+G2.278 is the path-limited strategy `get_monitoring_db` provider implementation after PR `#430` merged G2.277 at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`. It may touch only `web/backend/app/api/strategy_management/_helpers.py`, `web/backend/app/api/strategy_management/_strategy_crud_router.py`, the focused strategy file test, and governance evidence. It must not edit risk helpers, `web/backend/app/utils/risk_utils.py`, non-strategy routes, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

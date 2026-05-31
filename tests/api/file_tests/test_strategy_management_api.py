@@ -7,6 +7,7 @@ File-level route and export contract tests for strategy_management package.
 
 from __future__ import annotations
 
+import inspect
 import importlib
 import sys
 from pathlib import Path
@@ -101,6 +102,38 @@ class TestStrategyManagementAPIFile:
     @pytest.mark.file_test
     def test_strategy_router_prefix_is_shared_by_all_paths(self, strategy_module):
         assert all(route.path.startswith("/api/v1/strategy") for route in strategy_module.router.routes)
+
+    @pytest.mark.file_test
+    def test_strategy_monitoring_db_uses_route_dependency_provider(self, strategy_module):
+        helpers_module = importlib.import_module("app.api.strategy_management._helpers")
+        crud_module = importlib.import_module("app.api.strategy_management._strategy_crud_router")
+
+        provider = helpers_module.get_strategy_monitoring_db
+
+        for handler_name in (
+            "list_strategies",
+            "create_strategy",
+            "start_strategy",
+            "pause_strategy",
+            "resume_strategy",
+            "stop_strategy",
+        ):
+            signature = inspect.signature(getattr(crud_module, handler_name))
+            dependency = signature.parameters["monitoring_db"].default
+
+            assert getattr(dependency, "dependency", None) is provider
+
+        for route in strategy_module.router.routes:
+            if route.name in {
+                "list_strategies",
+                "create_strategy",
+                "start_strategy",
+                "pause_strategy",
+                "resume_strategy",
+                "stop_strategy",
+            }:
+                query_param_names = {param.name for param in route.dependant.query_params}
+                assert "monitoring_db" not in query_param_names
 
     @pytest.mark.file_test
     def test_strategy_package_docstring_and_exports_indicate_split_package(self, strategy_module):

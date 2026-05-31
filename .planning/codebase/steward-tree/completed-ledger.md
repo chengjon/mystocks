@@ -19,9 +19,9 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.276 accepted/merged by PR `#429` at `f48ede2c` | Continue with G2.277 strategy `get_monitoring_db` provider authorization review, then G2.278 path-limited strategy implementation only if accepted |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.277 accepted/merged by PR `#430` at `2d1d2c28` | Continue with G2.278 strategy `get_monitoring_db` provider implementation review, then G2.279 no-source closeout only if accepted |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.276 have progressed through PR `#337`-`#429`; current review target is G2.277 strategy authorization in future PR `#430` |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.277 have progressed through PR `#337`-`#430`; current review target is G2.278 strategy implementation in future PR `#431` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Recent Closeouts
@@ -40,6 +40,7 @@ exact verification output.
 | G2.274 risk get_monitoring_db provider authorization | PR `#427` merged at `16df80c30eb4fceec78a13630e40167f0e4037ca`; path-limited risk source lane authorized | G2.275 implements only the three authorized risk handlers and focused provider test |
 | G2.275 risk get_monitoring_db provider implementation | PR `#428` merged at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`; direct risk route-body calls are `0` and route/OpenAPI contracts stayed stable | G2.276 records closeout and selects the strategy-management residual for a no-source authorization gate |
 | G2.276 risk get_monitoring_db provider closeout / residual refresh | PR `#429` merged at `f48ede2ce2202318efa3411fe22fb83a8d4d920b`; risk lane closed and strategy-management residual selected | G2.277 authorizes only the strategy-management route/helper surface before any G2.278 implementation |
+| G2.277 strategy get_monitoring_db provider authorization | PR `#430` merged at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`; path-limited strategy source lane authorized | G2.278 implements only the two authorized strategy source files and focused strategy test |
 
 ## Closeout Rule
 

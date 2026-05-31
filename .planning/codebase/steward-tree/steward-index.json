@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T00:01:42+08:00",
+  "generated_at": "2026-06-01T00:37:55+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
-  "split_branch": "g2-277-strategy-get-monitoring-db-provider-authorization",
-  "scope": "strategy_get_monitoring_db_provider_authorization",
+  "base_head": "2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441",
+  "split_branch": "g2-278-strategy-get-monitoring-db-provider",
+  "scope": "strategy_get_monitoring_db_provider_implementation",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -7905,7 +7905,7 @@
     {
       "id": "g2-277-strategy-get-monitoring-db-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.276 risk get_monitoring_db provider closeout / residual refresh",
       "source_edit_authority": false,
@@ -7913,8 +7913,10 @@
       "github_pr": {
         "number": 430,
         "url": "https://github.com/chengjon/mystocks/pull/430",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-277-strategy-get-monitoring-db-provider-authorization"
+        "state": "MERGED",
+        "merged_at": "2026-05-31T16:22:44Z",
+        "head_ref": "g2-277-strategy-get-monitoring-db-provider-authorization",
+        "merge_commit": "2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441"
       },
       "evidence": [
         ".planning/codebase/generated/strategy-get-monitoring-db-provider-authorization-2026-05-31.json",
@@ -7989,18 +7991,132 @@
         "classification": "existing strategy file-test route expectation drift"
       },
       "decision": {
-        "classification": "authorization-package-for-review",
-        "source_lane_recommendation": "do-not-start-source-implementation-before-pr-430-acceptance",
+        "classification": "authorization-package-accepted",
+        "source_lane_recommendation": "g2-278-started-after-human-acceptance",
         "selected_next_governance_target": "strategy-get-monitoring-db-route-provider-implementation",
         "recommended_next_work_item": "G2.278 path-limited strategy get_monitoring_db route-provider implementation"
       },
       "freshness": {
-        "current_head_checked": "f48ede2ce2202318efa3411fe22fb83a8d4d920b",
+        "current_head_checked": "2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_strategy_get_monitoring_db_call_sites_change": true
       },
-      "next_gate": "If accepted, start G2.278 path-limited strategy get_monitoring_db route-provider implementation."
+      "next_gate": "Superseded by G2.278 path-limited strategy get_monitoring_db route-provider implementation."
+    },
+    {
+      "id": "g2-278-strategy-get-monitoring-db-provider-implementation",
+      "type": "implementation_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.277 strategy get_monitoring_db route-provider authorization",
+      "source_edit_authority": true,
+      "github_pr": {
+        "number": 431,
+        "url": "https://github.com/chengjon/mystocks/pull/431",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-278-strategy-get-monitoring-db-provider"
+      },
+      "evidence": [
+        ".planning/codebase/generated/strategy-get-monitoring-db-provider-implementation-2026-06-01.json",
+        "docs/reports/quality/backend-strategy-get-monitoring-db-provider-implementation-2026-06-01.md",
+        "governance/mainline/task-cards/pr-431.yaml"
+      ],
+      "authorized_scope": {
+        "source_paths": [
+          "web/backend/app/api/strategy_management/_helpers.py",
+          "web/backend/app/api/strategy_management/_strategy_crud_router.py"
+        ],
+        "test_paths": [
+          "tests/api/file_tests/test_strategy_management_api.py",
+          "web/backend/tests/test_health_route_conflicts.py"
+        ],
+        "governance_paths": [
+          ".planning/codebase/generated/strategy-get-monitoring-db-provider-implementation-2026-06-01.json",
+          "docs/reports/quality/backend-strategy-get-monitoring-db-provider-implementation-2026-06-01.md",
+          "governance/mainline/task-cards/pr-431.yaml",
+          ".planning/codebase/steward-tree/current-next-gates.md",
+          ".planning/codebase/steward-tree/steward-index.json",
+          ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+          ".planning/codebase/steward-tree/branch-register.md",
+          ".planning/codebase/steward-tree/evidence-index.md",
+          ".planning/codebase/steward-tree/completed-ledger.md"
+        ],
+        "forbidden_paths": [
+          "web/backend/app/api/risk/**",
+          "web/backend/app/utils/risk_utils.py",
+          "web/frontend/**",
+          "src/**",
+          "docs/api/**",
+          "openspec/changes/**",
+          "openspec/specs/**",
+          "config/**",
+          "scripts/**"
+        ]
+      },
+      "implementation": {
+        "provider": "get_strategy_monitoring_db",
+        "provider_backing": "get_monitoring_db()",
+        "depends_parameters": 6,
+        "handlers": [
+          "list_strategies",
+          "create_strategy",
+          "start_strategy",
+          "pause_strategy",
+          "resume_strategy",
+          "stop_strategy"
+        ],
+        "direct_get_monitoring_db_log_operation_calls_in_target_files": 0,
+        "monitoring_db_log_operation_calls": 6
+      },
+      "gitnexus_evidence": {
+        "mcp": "Transport closed for context / impact",
+        "cli": {
+          "risk": "LOW",
+          "target_get_monitoring_db_impacted_count": 7,
+          "target_get_monitoring_db_direct": 3,
+          "processes_affected": 0
+        }
+      },
+      "route_openapi": {
+        "routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "monitoring_db_parameter_leaks": false,
+        "target_endpoint_parameter_counts": {
+          "GET /api/v1/strategy/strategies": 4,
+          "POST /api/v1/strategy/strategies": 0,
+          "POST /api/v1/strategy/{strategy_id}/start": 1,
+          "POST /api/v1/strategy/{strategy_id}/pause": 1,
+          "POST /api/v1/strategy/{strategy_id}/resume": 1,
+          "POST /api/v1/strategy/{strategy_id}/stop": 1
+        }
+      },
+      "verification": {
+        "focused_provider_test": "1 passed, 1 warning",
+        "full_strategy_file_test": "3 failed, 8 passed, 1 warning; failures match pre-existing route expectation drift",
+        "health_route_conflicts": "121 passed",
+        "ruff": "All checks passed",
+        "runtime_openapi": "548 routes, 500 paths, duplicate operation IDs 0"
+      },
+      "known_out_of_scope_failures": [
+        "strategy router prefix expectation drift",
+        "strategy route pair count expectation drift",
+        "strategy chart-data wiring expectation drift"
+      ],
+      "decision": {
+        "classification": "implementation-for-review",
+        "source_lane_recommendation": "do-not-expand-before-pr-431-acceptance",
+        "selected_next_governance_target": "strategy-get-monitoring-db-provider-closeout-refresh",
+        "recommended_next_work_item": "G2.279 no-source strategy get_monitoring_db provider closeout / residual refresh"
+      },
+      "freshness": {
+        "current_head_checked": "2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_strategy_get_monitoring_db_call_sites_change": true
+      },
+      "next_gate": "If accepted, start G2.279 no-source strategy get_monitoring_db provider closeout / residual refresh."
     }
   ]
 }
