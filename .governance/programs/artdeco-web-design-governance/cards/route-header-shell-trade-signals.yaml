@@ -1,0 +1,30 @@
+task:
+  id: "route-header-shell-trade-signals"
+  title: "Migrate /trade/signals route header shell"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/trade/Signals.vue"
+    - "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts"
+    - "web/frontend/src/components/artdeco/route-shell/"
+    - "docs/reports/tasks/"
+    - "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify router paths, route aliases, redirects, guards, menu entries, or canonical route ownership."
+  - "Do not modify backend API contracts, OpenAPI/Pydantic schemas, frontend API clients, request URLs, stores, or transport wrappers."
+  - "Do not change signal list semantics, confidence/review lens, trust strip, execution history, pending state, failed-first-load handling, mock-data behavior, sample copy, or route-level runtime state semantics."
+  - "Do not extract shared signal business components or redesign filters, data panels, tables, or signal workflow surfaces outside the route header shell."
+
+acceptance:
+  commit_gate:
+    - "Focused Playwright RED/GREEN for Trade-Signals route header class assertion must pass."
+    - "eslint, ArtDeco token check, impeccable JSON, type-check, Function Tree scope-check, and GitNexus staged scope gate must pass or be explicitly reported."
+  closeout_gate:
+    - "Closeout report records compatibility boundaries, verification evidence, no router/API/client changes, and ledger update after implementation."
+
+evidence:
+  current_head: "731c9fec702d728d2c59cc5595e9d54c3e00549c"
+  notes: []

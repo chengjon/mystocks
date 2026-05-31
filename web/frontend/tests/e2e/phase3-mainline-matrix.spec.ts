@@ -2135,6 +2135,7 @@ test.describe("Phase 3 Mainline Matrix", () => {
     await expect(page.getByText("交易信号工作台").first()).toBeVisible()
     await expect(page.getByTestId("trade-signals-page")).toBeVisible()
     await expect(page.getByTestId("trade-signals-header")).toBeVisible()
+    await expect(page.getByTestId("trade-signals-header")).toHaveClass(/artdeco-route-header/)
     await expect(page.getByTestId("trade-signals-review-lens")).toBeVisible()
     await expect(page.getByTestId("trade-signals-trust-strip")).toContainText("已验证")
     await expect(page.getByTestId("trade-signals-trust-strip")).toContainText("信号在线")

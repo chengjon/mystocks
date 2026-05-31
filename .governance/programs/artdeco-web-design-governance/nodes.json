@@ -475,5 +475,84 @@
       "current_head": "ffb399c697cf0f5d2390daca9e914d40b4d2442d",
       "prepared_at": "2026-05-31T10:45:02.517Z"
     }
+  },
+  {
+    "id": "route-header-shell-trade-signals",
+    "title": "Migrate /trade/signals route header shell",
+    "node_type": "implementation",
+    "owner_lane": "web",
+    "parent": "",
+    "status": "approved-for-implementation",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-05",
+    "current_head": "731c9fec702d728d2c59cc5595e9d54c3e00549c",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "DESIGN.md",
+        "note": "",
+        "current_head": "731c9fec702d728d2c59cc5595e9d54c3e00549c",
+        "recorded_at": "2026-05-31T11:42:10.860Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/reports/tasks/2026-05-31-artdeco-route-header-shell-next-batch-plan.md",
+        "note": "",
+        "current_head": "731c9fec702d728d2c59cc5595e9d54c3e00549c",
+        "recorded_at": "2026-05-31T11:42:44.408Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md",
+        "note": "",
+        "current_head": "731c9fec702d728d2c59cc5595e9d54c3e00549c",
+        "recorded_at": "2026-05-31T11:42:51.567Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "PRODUCT.md",
+        "note": "",
+        "current_head": "731c9fec702d728d2c59cc5595e9d54c3e00549c",
+        "recorded_at": "2026-05-31T11:42:59.356Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/trade/Signals.vue",
+      "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts",
+      "web/frontend/src/components/artdeco/route-shell/",
+      "docs/reports/tasks/",
+      "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify router paths, route aliases, redirects, guards, menu entries, or canonical route ownership.",
+      "Do not modify backend API contracts, OpenAPI/Pydantic schemas, frontend API clients, request URLs, stores, or transport wrappers.",
+      "Do not change signal list semantics, confidence/review lens, trust strip, execution history, pending state, failed-first-load handling, mock-data behavior, sample copy, or route-level runtime state semantics.",
+      "Do not extract shared signal business components or redesign filters, data panels, tables, or signal workflow surfaces outside the route header shell."
+    ],
+    "next_gate": "implement within allowed_paths",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T11:41:56.853Z",
+    "updated_at": "2026-05-31T11:43:49.818Z",
+    "acceptance": {
+      "commit_gate": [
+        "Focused Playwright RED/GREEN for Trade-Signals route header class assertion must pass.",
+        "eslint, ArtDeco token check, impeccable JSON, type-check, Function Tree scope-check, and GitNexus staged scope gate must pass or be explicitly reported."
+      ],
+      "closeout_gate": [
+        "Closeout report records compatibility boundaries, verification evidence, no router/API/client changes, and ledger update after implementation."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing with the next route-header-shell batch; implementation scope remains /trade/signals header shell only.",
+        "current_head": "731c9fec702d728d2c59cc5595e9d54c3e00549c",
+        "transitioned_at": "2026-05-31T11:43:49.818Z"
+      }
+    ]
   }
 ]

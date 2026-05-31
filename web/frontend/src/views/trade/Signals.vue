@@ -2,7 +2,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import { useTradingSignalsStore } from '@/stores/apiStores'
 import {
   createStrategySignalsFromResponse,
@@ -458,42 +459,38 @@ onMounted(() => {
 
 <template>
   <div class="signals-view" :class="{ 'is-embedded': isEmbedded }" data-testid="trade-signals-page">
-    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell" data-testid="trade-signals-header">
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">信号复核</span>
-          <div class="hero-meta">
-            <span>COUNT: {{ displayVisibleCount }}</span>
-            <span>DATA: {{ dataSource }}</span>
-            <span>REQ_ID: {{ displayRequestId }}</span>
-            <span>TIME: {{ displayProcessTime }}</span>
-          </div>
-        </div>
-      </div>
+    <ArtDecoRouteHeader
+      v-if="!isEmbedded"
+      title="交易信号工作台"
+      subtitle="统一查看实时信号主表；执行质量、历史追踪与胜率统计在缺少运行结果时降级为待接入面板"
+      eyebrow="信号复核"
+      :show-status="true"
+      :status-text="pageStatusText"
+      :status-type="pageStatusType"
+      test-id="trade-signals-header"
+    >
+      <template #meta>
+        <span>COUNT: {{ displayVisibleCount }}</span>
+        <span>DATA: {{ dataSource }}</span>
+        <span>REQ_ID: {{ displayRequestId }}</span>
+        <span>TIME: {{ displayProcessTime }}</span>
+      </template>
 
-      <ArtDecoHeader
-        title="交易信号工作台"
-        subtitle="统一查看实时信号主表；执行质量、历史追踪与胜率统计在缺少运行结果时降级为待接入面板"
-        :show-status="true"
-        :status-text="pageStatusText"
-        :status-type="pageStatusType"
-      >
-        <template #actions>
-          <ArtDecoButton
-            variant="outline"
-            size="sm"
-            :loading="loading"
-            data-testid="trade-signals-refresh"
-            @click="loadSignals"
-          >
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新信号
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
-    </section>
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          data-testid="trade-signals-refresh"
+          @click="loadSignals"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新信号
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
       <ArtDecoStatCard label="可见信号" :value="displayVisibleCount" variant="gold" :show-change="false" />
