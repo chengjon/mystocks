@@ -1,0 +1,123 @@
+version: "v0.2"
+
+task:
+  id: "pr-419"
+  title: "Close signal statistics dormant contract cleanup and refresh residuals"
+  owner: "codex"
+  created_at: "2026-05-31"
+
+mainline:
+  id: "L1-signal-statistics-dormant-contract-closeout-refresh"
+  objective: "record G2.265 accepted/merged and select the next no-source residual classification gate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.266 updates only steward tree state, generated evidence, a quality report, and this task card. It changes no runtime entrypoints, route paths, backend source, frontend, OpenAPI generation code, or FUNCTION_TREE catalog entries."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/signal-statistics-dormant-contract-closeout-refresh-2026-05-31.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-signal-statistics-dormant-contract-closeout-refresh-2026-05-31.md"
+    - "governance/mainline/task-cards/pr-419.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "route registration changes"
+  - "provider injection implementation"
+  - "source retirement or archive"
+  - "test contract edits"
+  - "OpenAPI artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands"
+
+acceptance:
+  checks:
+    - id: "pr418-merged"
+      command: "gh pr view 418 confirms MERGED at 2b53352d6869f66147ce3892b1b0a7174ba064b4"
+      required: true
+    - id: "targeted-tests"
+      command: "pytest -o addopts= -q --no-cov --tb=short tests/unit/test_signal_monitoring_integration.py::TestSignalMonitoringAPI::test_signal_statistics_endpoint tests/unit/test_signal_monitoring_integration.py::TestSignalMonitoringAPI::test_active_signals_endpoint"
+      required: true
+    - id: "openapi-smoke"
+      command: "app.main imports; app.openapi has 500 paths, target paths absent, duplicate operation IDs 0"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-signal-statistics-dormant-contract-closeout-refresh-2026-05-31.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-419.yaml --base-sha 2b53352d6869f66147ce3892b1b0a7174ba064b4 --head-sha HEAD --report /tmp/pr419-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus MCP/CLI detect_changes attempted before commit; transport/stale-index recorded if unavailable"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "G2.266 must not be mistaken for source implementation, route registration, provider injection, or source retirement authorization."
+    - "Residual scan mixes active providers, retained control-plane accessors, earlier-lane closeouts, and dormant source; G2.267 must classify before selecting any source lane."
+  rollback_plan: "Revert PR #419; this restores the steward tree to the immediate post-PR #418 state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Record G2.265 accepted/merged and open the next no-source residual classification gate."
+    modified_scope: "Steward tree, generated evidence, quality report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime or backend behavior changes."
+    rollback_ready: "Revert PR #419."
+    risk_and_rollback_point: "Pure governance closeout; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-05-31T11:33:31+08:00"
+    approval_note: "Human maintainer approved merging PR #418 and starting the next no-source/governance node without jumping into source implementation."
+    secondary_approved: false

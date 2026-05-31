@@ -2771,11 +2771,25 @@ Status: for review in PR `#417`.
 
 ## G2.265 Signal Statistics Stale Contract Cleanup Implementation
 
-Status: for review in PR `#418`.
+Status: accepted/merged by PR `#418` at `2b53352d6869f66147ce3892b1b0a7174ba064b4`.
 
-- Parent PR `#417` merged at `fe1927818309efb2c1de3a9c1e1128e9b456053e`.
+- Parent PR `#417` merged at `fe1927818309efb2c1de3a9c1e1128e9b456053e`; implementation PR `#418` merged at `2b53352d6869f66147ce3892b1b0a7174ba064b4`.
 - Cleaned only the five authorized docs/test stale contract artifacts.
 - `docs/api/openapi.yaml` no longer presents the dormant signal statistics paths as active hand-maintained OpenAPI paths.
 - `tests/unit/test_signal_monitoring_integration.py` now asserts explicit dormant-route `404` behavior for the two stale endpoints.
 - Runtime OpenAPI remains `548/500`, target OpenAPI paths remain `0`, duplicate operation IDs remain `0`.
-- Next gate: G2.266 no-source signal statistics dormant contract closeout / residual refresh.
+- Superseded by G2.266 no-source signal statistics dormant contract closeout / residual refresh.
+
+
+## G2.266 Signal Statistics Dormant Contract Closeout / Residual Refresh
+
+Status: for review in PR `#419`.
+
+- Parent PR `#418` merged at `2b53352d6869f66147ce3892b1b0a7174ba064b4`.
+- G2.265 is recorded as accepted/merged; stale signal statistics docs/test contract mismatch is closed.
+- Current runtime OpenAPI remains `548/500`; `/api/signals/statistics` and `/api/signals/active` remain absent from generated OpenAPI.
+- Targeted dormant endpoint tests remain green at `2/2` and assert `404 Not Found`.
+- `web/backend/app/api/signal_monitoring/get_signal_statistics.py` remains retained dormant source and is excluded from provider injection or source retirement.
+- Residual refresh found mixed monitoring/signal getter-shaped surfaces; they require classification before source authorization.
+- Next gate: G2.267 no-source monitoring/signal residual provider classification refresh.
+- G2.266 must not edit backend source, tests, route contracts, frontend, config, scripts, OpenSpec, or PM2 state.
