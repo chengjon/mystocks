@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-05-31T13:53:26+08:00`
-- Base HEAD checked: `1cb885e8267d76e47e0d08977002a80fafb56092`
+- Prepared at: `2026-05-31T18:44:47+08:00`
+- Base HEAD checked: `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/monitoring-portfolio-optimizer-provider-implementation-2026-05-31.json` | G2.269 monitoring portfolio optimizer provider implementation evidence | Review input for PR `#422`; path-limited implementation evidence |
-| `docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-implementation-2026-05-31.md` | G2.269 human-readable implementation report | Review input for PR `#422`; records source/test verification and next G2.270 closeout gate |
-| `governance/mainline/task-cards/pr-422.yaml` | Path-limited implementation task card for G2.269 | Review input; allows only target route module, focused test, steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/monitoring-portfolio-optimizer-provider-closeout-refresh-2026-05-31.json` | G2.270 monitoring portfolio optimizer provider closeout / residual-refresh evidence | Review input for PR `#423`; no-source closeout and next-gate classification |
+| `docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-closeout-refresh-2026-05-31.md` | G2.270 human-readable closeout / residual-refresh report | Review input for PR `#423`; records PR `#422` accepted/merged and selects next no-source control-plane decision |
+| `governance/mainline/task-cards/pr-423.yaml` | Path-limited governance task card for G2.270 | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/monitoring-portfolio-optimizer-provider-implementation-2026-05-31.json` | G2.269 monitoring portfolio optimizer provider implementation evidence | Accepted by PR `#422`, merged at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`; path-limited implementation evidence |
+| `docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-implementation-2026-05-31.md` | G2.269 human-readable implementation report | Accepted by PR `#422`; records source/test verification and next G2.270 closeout gate |
+| `governance/mainline/task-cards/pr-422.yaml` | Path-limited implementation task card for G2.269 | Accepted by PR `#422`; allowed only target route module, focused test, steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/monitoring-portfolio-optimizer-provider-authorization-2026-05-31.json` | G2.268 monitoring portfolio optimizer provider authorization evidence | Accepted by PR `#421`, merged at `1cb885e8267d76e47e0d08977002a80fafb56092`; authorized only G2.269 path-limited source lane |
 | `docs/reports/quality/backend-monitoring-portfolio-optimizer-provider-authorization-2026-05-31.md` | G2.268 human-readable authorization report | Accepted by PR `#421`; no source, route, test, docs/api, or OpenSpec edits were authorized in G2.268 |
 | `governance/mainline/task-cards/pr-421.yaml` | Path-limited governance task card for G2.268 | Accepted by PR `#421`; allowed only steward tree, generated evidence, report, and task card updates |

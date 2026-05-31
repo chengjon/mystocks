@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T00:45:00+08:00`
-- Base HEAD checked: `ad3cc58dbe0dc768488006d22de09085a1a8ee6f`
+- Prepared at: `2026-05-31T18:44:47+08:00`
+- Base HEAD checked: `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2824,7 +2824,7 @@ Status: accepted/merged by PR `#421` at `1cb885e8267d76e47e0d08977002a80fafb5609
 
 ## G2.269 Monitoring Portfolio Optimizer Provider Implementation
 
-Status: for review in PR `#422`.
+Status: accepted/merged by PR `#422` at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`.
 
 - Parent PR `#421` merged at `1cb885e8267d76e47e0d08977002a80fafb56092`.
 - GitNexus MCP context/impact returned `Transport closed`; CLI impact returned `HIGH` with exactly the three authorized target route handlers affected.
@@ -2834,4 +2834,18 @@ Status: for review in PR `#422`.
 - TDD red/green completed for `test_monitoring_portfolio_optimizer_uses_route_dependency_provider`.
 - Focused verification: `tests/api/file_tests/test_monitoring_analysis_api.py` passed `20/20`; monitoring analysis OpenAPI/parameter guard passed `1/1`; ruff passed.
 - Runtime/OpenAPI snapshot remains `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and `3` target module routes.
-- Next gate after acceptance: G2.270 no-source monitoring portfolio optimizer provider closeout / residual refresh.
+- Superseded by G2.270 no-source monitoring portfolio optimizer provider closeout / residual refresh.
+- G2.269 must not be used as authority for domain optimizer edits, non-target API modules, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source.
+
+## G2.270 Monitoring Portfolio Optimizer Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#423`.
+
+- Parent PR `#422` merged at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`.
+- G2.269 is recorded as accepted/merged; direct route-body `get_portfolio_optimizer()` calls are `0`.
+- Runtime/OpenAPI snapshot remains `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation IDs.
+- Retained wrapper residuals remain provider backing calls, not source-lane candidates.
+- `signal_monitoring/get_signal_statistics.py` remains dormant with `0` active routes and stays under prior G2.261-G2.266 decisions.
+- `web/backend/app/api/v1/pool_monitoring.py` has `4` active routes and remaining pool accessors; classify this as route/OpenAPI/control-plane ownership work, not service DI implementation.
+- Selected next gate after acceptance: G2.271 no-source pool monitoring control-plane accessor ownership / route governance decision.
+- G2.270 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-31T13:53:26+08:00`
-- Base HEAD checked: `1cb885e8267d76e47e0d08977002a80fafb56092`
+- Prepared at: `2026-05-31T18:44:47+08:00`
+- Base HEAD checked: `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.269 monitoring portfolio optimizer provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#421` merged at `1cb885e8267d76e47e0d08977002a80fafb56092`; G2.268 accepted/merged; implementation moved 3 target handlers to `Depends(get_monitoring_portfolio_optimizer)`; focused tests `20/20` and OpenAPI guard `1/1` passed; runtime OpenAPI remains `548/500`, duplicate operation IDs `0` | Review PR `#422` when opened; if accepted, start `G2.270 no-source monitoring portfolio optimizer provider closeout / residual refresh`; do not expand source scope from G2.269 |
+| P0 | Review G2.270 monitoring portfolio optimizer provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#422` merged at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`; G2.269 accepted/merged; direct route-body `get_portfolio_optimizer()` calls are `0`; runtime OpenAPI remains `548/500`, duplicate operation IDs `0`; remaining monitoring/signal residuals are retained wrappers, false positives, dormant source, or control-plane accessors | Review PR `#423` when opened; if accepted, start `G2.271 no-source pool monitoring control-plane accessor ownership / route governance decision`; do not start backend source from G2.270 |
+| P0 | Preserve G2.269 monitoring portfolio optimizer provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#422` merged at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`; implementation moved 3 target handlers to `Depends(get_monitoring_portfolio_optimizer)`; focused tests `20/20` and OpenAPI guard `1/1` passed; runtime OpenAPI remains `548/500`, duplicate operation IDs `0` | Do not use G2.269 as authority for domain optimizer edits, non-target API modules, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source |
 | P0 | Preserve G2.268 monitoring portfolio optimizer provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#421` merged at `1cb885e8267d76e47e0d08977002a80fafb56092`; authorized only future G2.269 path-limited implementation for `_monitoring_portfolio_router.py` plus focused tests | Do not use G2.268 as authority for broader backend source edits, route registration, source retirement, docs/api, frontend, OpenSpec, config, scripts, or PM2 |
 | P0 | Preserve G2.267 monitoring/signal residual provider classification refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#420` merged at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`; residuals classified into active route-body candidate, retained wrappers, control-plane accessors, helper false positive, and dormant false positive | Do not use G2.267 as authority for backend source edits, route registration, provider injection, source retirement, tests, docs/api, frontend, OpenSpec, or PM2 |
 | P0 | Preserve G2.266 signal statistics dormant contract closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#419` merged at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`; G2.265 accepted/merged and dormant contract cleanup branch is closed | Do not use G2.266 as authority for backend source edits, route registration, provider injection, source retirement, tests, docs/api, frontend, OpenSpec, or PM2 |
