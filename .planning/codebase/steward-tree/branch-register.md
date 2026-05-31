@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-01T01:32:16+08:00`
-- Base HEAD checked: `fcead56344110e33041319271c122e71d2b763a0`
+- Prepared at: `2026-06-01T01:56:44+08:00`
+- Base HEAD checked: `1707284bceeef8992641290d86790c1699975f5a`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -117,7 +117,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#430` | `g2-277-strategy-get-monitoring-db-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441` | No-source authorization package for G2.278 strategy `get_monitoring_db` provider implementation |
 | `#431` | `g2-278-strategy-get-monitoring-db-provider` | `wip/root-dirty-20260403` | `MERGED` at `c5496cab0a4213f74636af1c48772dc96c90bd1b` | Path-limited strategy `get_monitoring_db` provider implementation selecting G2.279 closeout / residual refresh |
 | `#432` | `g2-279-strategy-get-monitoring-db-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `fcead56344110e33041319271c122e71d2b763a0` | No-source strategy `get_monitoring_db` provider closeout selecting G2.280 residual candidate refresh |
-| `#433` | `g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source residual candidate refresh selecting G2.281 data_lineage `get_lineage_tracker` decision |
+| `#433` | `g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db` | `wip/root-dirty-20260403` | `MERGED` at `1707284bceeef8992641290d86790c1699975f5a` | No-source residual candidate refresh selecting G2.281 data_lineage `get_lineage_tracker` decision |
+| `#434` | `g2-281-data-lineage-tracker-ownership-decision` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source data_lineage `get_lineage_tracker` ownership decision; auto-merge paused due GitNexus MEDIUM risk |
 
 ## Steward Governance Branch
 
@@ -144,6 +145,7 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-278-strategy-get-monitoring-db-provider` | `origin/wip/root-dirty-20260403` at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441` | Implement the authorized strategy `get_monitoring_db` route-provider lane | Yes, path-limited |
 | `g2-279-strategy-get-monitoring-db-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `c5496cab0a4213f74636af1c48772dc96c90bd1b` | Close out G2.278, refresh `get_monitoring_db` residuals, and select G2.280 no-source residual candidate refresh | No |
 | `g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db` | `origin/wip/root-dirty-20260403` at `fcead56344110e33041319271c122e71d2b763a0` | Refresh service lifecycle residual candidates after `get_monitoring_db` closeout and select G2.281 no-source `get_lineage_tracker` decision | No |
+| `g2-281-data-lineage-tracker-ownership-decision` | `origin/wip/root-dirty-20260403` at `1707284bceeef8992641290d86790c1699975f5a` | Decide data_lineage `get_lineage_tracker` ownership / route-provider disposition; stop auto-merge due GitNexus MEDIUM risk | No |
 
 ## OpenSpec Relationship
 
@@ -195,4 +197,6 @@ G2.278 is the path-limited strategy `get_monitoring_db` provider implementation 
 
 G2.279 is the no-source strategy `get_monitoring_db` provider closeout / residual refresh after PR `#431` merged G2.278 at `c5496cab0a4213f74636af1c48772dc96c90bd1b`. It merged by PR `#432` at `fcead56344110e33041319271c122e71d2b763a0`. It records strategy direct `get_monitoring_db().log_operation(...)` calls as `0`, risk route-body direct calls as `0`, runtime/OpenAPI smoke as `548` routes, `500` paths, duplicate operation IDs `0`, and selects `G2.280 no-source service lifecycle residual candidate refresh after get_monitoring_db closeout`. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 
-G2.280 is the no-source service lifecycle residual candidate refresh after PR `#432` merged G2.279 at `fcead56344110e33041319271c122e71d2b763a0`. It scans `371` API/service Python files, records `31` active interesting residual candidates after known-closed exclusions, defers root facade / registry / control-plane / cache surfaces, and selects `G2.281 no-source data_lineage get_lineage_tracker ownership / route-provider decision`. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+G2.280 is the no-source service lifecycle residual candidate refresh after PR `#432` merged G2.279 at `fcead56344110e33041319271c122e71d2b763a0`. It merged by PR `#433` at `1707284bceeef8992641290d86790c1699975f5a`. It scans `371` API/service Python files, records `31` active interesting residual candidates after known-closed exclusions, defers root facade / registry / control-plane / cache surfaces, and selects `G2.281 no-source data_lineage get_lineage_tracker ownership / route-provider decision`. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+G2.281 is the no-source data_lineage `get_lineage_tracker` ownership / route-provider decision after PR `#433` merged G2.280 at `1707284bceeef8992641290d86790c1699975f5a`. It classifies `get_lineage_tracker` as a bounded active API route helper with five direct callers in `web/backend/app/api/data_lineage.py`, records runtime/OpenAPI smoke as `548` routes, `500` paths, duplicate operation IDs `0`, and recommends a possible G2.282 no-source authorization package only after human review. Limited autopilot must stop at this PR because GitNexus CLI sampled impact is MEDIUM. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

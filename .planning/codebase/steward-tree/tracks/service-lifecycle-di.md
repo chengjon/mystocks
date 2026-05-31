@@ -2983,7 +2983,7 @@ Status: accepted/merged by PR `#432` at `fcead56344110e33041319271c122e71d2b763a
 
 ## G2.280 Service Lifecycle Residual Candidate Refresh After get_monitoring_db
 
-Status: for review in future PR `#433`.
+Status: accepted/merged by PR `#433` at `1707284bceeef8992641290d86790c1699975f5a`.
 
 - Parent PR `#432` merged at `fcead56344110e33041319271c122e71d2b763a0`.
 - Current scan covered `371` Python files under `web/backend/app/api` and `web/backend/app/services`.
@@ -2994,3 +2994,16 @@ Status: for review in future PR `#433`.
 - `get_postgres_connection` is a control-plane DB helper and deferred to route/OpenAPI/control-plane ownership.
 - Selected next gate after acceptance: G2.281 no-source data_lineage `get_lineage_tracker` ownership / route-provider decision.
 - G2.280 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.281 data_lineage get_lineage_tracker Ownership / Route-Provider Decision
+
+Status: for review in future PR `#434`.
+
+- Parent PR `#433` merged at `1707284bceeef8992641290d86790c1699975f5a`.
+- `get_lineage_tracker` is defined in `web/backend/app/api/data_lineage.py` and returns a `LineageTracker` plus connection adapter created from an `asyncpg` raw connection.
+- Active direct callers are `record_lineage`, `get_upstream_lineage`, `get_downstream_lineage`, `get_lineage_graph`, and `analyze_impact`.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and the five `/api/v1/lineage` paths present.
+- GitNexus CLI context found one symbol and five incoming calls; impact is MEDIUM with `5` impacted / direct callers and `0` affected processes.
+- Limited autopilot must stop at this PR review gate because GitNexus risk is MEDIUM.
+- Recommended next gate after human acceptance: decide whether to create `G2.282 no-source data_lineage get_lineage_tracker provider authorization package`.
+- G2.281 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

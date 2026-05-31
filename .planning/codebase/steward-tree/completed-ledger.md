@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-01T01:32:16+08:00`
-- Base HEAD checked: `fcead56344110e33041319271c122e71d2b763a0`
+- Prepared at: `2026-06-01T01:56:44+08:00`
+- Base HEAD checked: `1707284bceeef8992641290d86790c1699975f5a`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,9 +19,9 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.279 accepted/merged by PR `#432` at `fcead563` | Continue with G2.280 service lifecycle residual candidate refresh review, then G2.281 no-source data_lineage `get_lineage_tracker` decision only if accepted |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.280 accepted/merged by PR `#433` at `1707284b` | Continue with G2.281 data_lineage `get_lineage_tracker` decision review; auto-merge is paused because GitNexus risk is MEDIUM |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.279 have progressed through PR `#337`-`#432`; current review target is G2.280 candidate refresh in future PR `#433` |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.280 have progressed through PR `#337`-`#433`; current review target is G2.281 decision in future PR `#434` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Recent Closeouts
@@ -43,6 +43,7 @@ exact verification output.
 | G2.277 strategy get_monitoring_db provider authorization | PR `#430` merged at `2d1d2c28fe59bd7b98f63a41b9a0ff4c343d0441`; path-limited strategy source lane authorized | G2.278 implements only the two authorized strategy source files and focused strategy test |
 | G2.278 strategy get_monitoring_db provider implementation | PR `#431` merged at `c5496cab0a4213f74636af1c48772dc96c90bd1b`; direct strategy target calls are `0`, dependency parameters are `6`, route/OpenAPI contracts stayed stable | G2.279 records closeout, confirms risk route-body calls remain closed, and selects the next no-source residual candidate refresh |
 | G2.279 strategy get_monitoring_db provider closeout / residual refresh | PR `#432` merged at `fcead56344110e33041319271c122e71d2b763a0`; strategy/risk direct calls remain closed and utility helper remains deferred | G2.280 refreshes residual candidates before any new authorization or source lane |
+| G2.280 service lifecycle residual candidate refresh after get_monitoring_db | PR `#433` merged at `1707284bceeef8992641290d86790c1699975f5a`; `371` files scanned, `31` active interesting candidates recorded, and `get_lineage_tracker` selected | G2.281 decides data_lineage ownership but must stop at review because GitNexus risk is MEDIUM |
 
 ## Closeout Rule
 
