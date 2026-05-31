@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import { ArtDecoHeader } from '@/components/artdeco'
+import { computed, useAttrs } from 'vue'
+
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
+
+defineOptions({
+  inheritAttrs: false,
+})
 
 defineProps<{
   eyebrow: string
@@ -13,31 +19,37 @@ defineProps<{
 defineEmits<{
   refresh: []
 }>()
+
+const attrs = useAttrs()
+const routeHeaderTestId = computed(() => {
+  const value = attrs['data-testid']
+  return typeof value === 'string' ? value : ''
+})
+const forwardedAttrs = computed(() => {
+  const { ['data-testid']: _dataTestId, ...rest } = attrs
+  return rest
+})
 </script>
 
 <template>
-  <section class="hero-shell artdeco-card-shell">
-    <div class="hero-rail">
-      <div class="hero-copy">
-        <span class="hero-eyebrow">{{ eyebrow }}</span>
-        <div class="hero-meta">
-          <span>REQ_ID: {{ requestId }}</span>
-          <span>DOMAIN: AI</span>
-          <span>ENTRY: sentiment</span>
-        </div>
-      </div>
-    </div>
+  <ArtDecoRouteHeader
+    v-bind="forwardedAttrs"
+    :title="title"
+    :subtitle="subtitle"
+    :eyebrow="eyebrow"
+    :show-status="true"
+    :status-text="statusText"
+    :status-type="statusType"
+    :test-id="routeHeaderTestId"
+  >
+    <template #meta>
+      <span>REQ_ID: {{ requestId }}</span>
+      <span>DOMAIN: AI</span>
+      <span>ENTRY: sentiment</span>
+    </template>
 
-    <ArtDecoHeader
-      :title="title"
-      :subtitle="subtitle"
-      :show-status="true"
-      :status-text="statusText"
-      :status-type="statusType"
-    >
-      <template #actions>
-        <slot name="actions" />
-      </template>
-    </ArtDecoHeader>
-  </section>
+    <template #actions>
+      <slot name="actions" />
+    </template>
+  </ArtDecoRouteHeader>
 </template>

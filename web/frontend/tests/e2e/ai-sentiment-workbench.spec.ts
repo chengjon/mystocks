@@ -129,6 +129,7 @@ test.describe('AI sentiment workbench', () => {
     await expect(page.getByRole('heading', { name: '情感分析工作台' })).toBeVisible({ timeout: 15000 })
     await expect(page.getByTestId('ai-sentiment-page')).toBeVisible()
     await expect(page.getByTestId('ai-sentiment-header')).toBeVisible()
+    await expect(page.getByTestId('ai-sentiment-header')).toHaveClass(/artdeco-route-header/)
     await expect(page.getByTestId('ai-sentiment-header')).toContainText('REQ_ID: req-ai-sentiment-workbench-1')
     await expect(page.getByTestId('ai-sentiment-header')).toContainText('DOMAIN: AI')
     await expect(page.getByTestId('ai-sentiment-header')).toContainText('ENTRY: sentiment')

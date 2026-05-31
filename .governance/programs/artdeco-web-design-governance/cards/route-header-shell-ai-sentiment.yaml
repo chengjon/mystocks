@@ -1,0 +1,30 @@
+task:
+  id: "route-header-shell-ai-sentiment"
+  title: "Migrate /ai/sentiment route header shell"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/ai/components/AiSentimentHero.vue"
+    - "web/frontend/tests/e2e/ai-sentiment-workbench.spec.ts"
+    - "docs/reports/tasks/"
+    - "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+    - "web/frontend/src/components/artdeco/route-shell/"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify web/frontend/src/router/index.ts, route paths, aliases, redirects, guards, menu entries, or canonical route ownership."
+  - "Do not modify backend API contracts, OpenAPI/Pydantic schemas, frontend API clients, request URLs, stores, composables, or transport wrappers."
+  - "Do not modify Sentiment.vue, useAiSentimentWorkbench, AI sentiment workbench panels, summary cards, text analysis behavior, announcement feed behavior, or /risk/news wrapper behavior."
+  - "Do not extract shared AI sentiment business components or redesign the page beyond replacing the header visual shell with ArtDecoRouteHeader."
+
+acceptance:
+  commit_gate:
+    - "Focused RED/GREEN E2E proves ai-sentiment-header gains artdeco-route-header while preserving metadata/status/refresh assertions."
+    - "Focused ai-sentiment E2E, eslint, ArtDeco token check, impeccable JSON, type-check, OpenSpec validation, Function Tree scope-check, and GitNexus staged scope gate must pass or be explicitly reported."
+  closeout_gate:
+    - "Closeout records compatibility boundaries, verification evidence, no router/API/client/composable/page behavior changes, and ledger update after implementation."
+
+evidence:
+  current_head: "7832a6d4adc44c4dd71697142c76fbd860f4964b"
+  notes: []
