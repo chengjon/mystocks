@@ -1,0 +1,135 @@
+{
+  "id": "g2-270-monitoring-portfolio-optimizer-provider-closeout-refresh",
+  "generated_at": "2026-05-31T18:44:47+08:00",
+  "branch": "g2-270-monitoring-provider-closeout-refresh",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "7ed8f8e352f29c9c48bc4a45ea77661b08de89da",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.269",
+    "pr": 422,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/422",
+    "merge_commit": "7ed8f8e352f29c9c48bc4a45ea77661b08de89da",
+    "merged_at": "2026-05-31T06:33:12Z"
+  },
+  "closed_implementation": {
+    "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+    "provider_added_by_parent": "get_monitoring_portfolio_optimizer",
+    "target_handlers": [
+      "get_portfolio_summary",
+      "get_portfolio_alerts",
+      "get_rebalance_suggestions"
+    ],
+    "direct_get_portfolio_optimizer_route_body_calls_after": 0,
+    "provider_backing_get_portfolio_optimizer_calls_after": 1,
+    "dependency_params_after": 3,
+    "route_contract_changes": false
+  },
+  "runtime_openapi_smoke": {
+    "command_role": "app.main import plus app.routes/app.openapi() snapshot",
+    "routes": 548,
+    "paths": 500,
+    "duplicate_operation_ids": 0,
+    "module_counts": {
+      "app.api._monitoring_portfolio_router": 3,
+      "app.api.monitoring": 13,
+      "app.api.monitoring_analysis": 6,
+      "app.api.monitoring_watchlists": 8,
+      "app.api.signal_monitoring.get_signal_statistics": 0,
+      "app.api.signal_monitoring.signal_history_response": 4,
+      "app.api.v1.pool_monitoring": 4
+    },
+    "warning_count": 119,
+    "notes": [
+      "The smoke used local non-production test environment values and did not write secrets to repository files.",
+      "GPU backtest dependency warning remains unrelated to this no-source closeout."
+    ]
+  },
+  "static_residual_refresh": {
+    "target_get_portfolio_optimizer_grep": [
+      "src/monitoring/domain/portfolio_optimizer.py:383:def get_portfolio_optimizer(...)",
+      "web/backend/app/api/_monitoring_portfolio_router.py:115: import get_portfolio_optimizer inside provider",
+      "web/backend/app/api/_monitoring_portfolio_router.py:117: return get_portfolio_optimizer() inside provider"
+    ],
+    "retained_provider_backing_wrappers": [
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "residual": "get_postgres_async",
+        "calls": 1,
+        "decision": "retained provider backing wrapper; no source lane from G2.270"
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "residual": "get_postgres_async",
+        "calls": 1,
+        "decision": "retained provider backing wrapper; no source lane from G2.270"
+      },
+      {
+        "file": "web/backend/app/api/monitoring_watchlists.py",
+        "residual": "get_postgres_async",
+        "calls": 1,
+        "decision": "retained provider backing wrapper; no source lane from G2.270"
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "residual": "get_postgres_async",
+        "calls": 1,
+        "decision": "retained provider backing wrapper; no source lane from G2.270"
+      }
+    ],
+    "false_positive_or_retained_surfaces": [
+      {
+        "file": "web/backend/app/api/monitoring.py",
+        "residual": "get_monitoring_summary",
+        "calls": 1,
+        "decision": "route helper/self-call false positive"
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "residuals": {
+          "get_signal_result_tracker": 1,
+          "get_postgres_async": 3
+        },
+        "active_route_count": 0,
+        "decision": "retained dormant route-shaped source; already governed by G2.261-G2.266"
+      }
+    ],
+    "control_plane_route_openapi_candidate": [
+      {
+        "file": "web/backend/app/api/v1/pool_monitoring.py",
+        "active_route_count": 4,
+        "residuals": {
+          "get_postgresql_engine": 1,
+          "get_tdengine_manager": 1,
+          "get_postgresql_pool_stats": 2,
+          "get_tdengine_pool_stats": 2
+        },
+        "decision": "route/OpenAPI/control-plane ownership decision candidate, not a service DI implementation lane"
+      }
+    ]
+  },
+  "decision": {
+    "classification": "implementation-closeout-and-residual-refresh-complete-no-source-lane",
+    "g2_269_status": "accepted_merged",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-270",
+    "selected_next_governance_target": "G2.271 no-source pool monitoring control-plane accessor ownership / route governance decision",
+    "reason": "G2.269 closed the only concentrated active monitoring portfolio optimizer route-body candidate. Remaining monitoring/signal residuals are retained provider backing wrappers, false positives, dormant route-shaped source, or control-plane pool accessors requiring route/OpenAPI ownership classification."
+  },
+  "forbidden_actions": [
+    "backend source edits",
+    "route registration changes",
+    "provider injection implementation",
+    "source retirement",
+    "test contract edits",
+    "docs/api contract edits",
+    "OpenSpec mutation",
+    "frontend/config/script changes",
+    "PM2 or stateful runtime commands"
+  ],
+  "stale_policy": {
+    "current_head_checked_at_review": "7ed8f8e352f29c9c48bc4a45ea77661b08de89da",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true
+  }
+}
