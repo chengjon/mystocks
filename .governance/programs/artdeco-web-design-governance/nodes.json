@@ -591,11 +591,11 @@
     "node_type": "implementation",
     "owner_lane": "web",
     "parent": "",
-    "status": "approved-for-implementation",
+    "status": "closed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
     "current_head": "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -638,11 +638,11 @@
       "Do not modify backend API contracts, OpenAPI/Pydantic schemas, frontend API clients, request URLs, stores, composables, or child component behavior.",
       "Do not extract shared AI sentiment business components or redesign KPI cards, workbench panels, text analysis behavior, announcement feed behavior, or risk/news wrapper behavior."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-05-31T12:19:14.935Z",
-    "updated_at": "2026-05-31T12:20:31.064Z",
+    "updated_at": "2026-05-31T13:01:50.442Z",
     "acceptance": {
       "commit_gate": [
         "Create an /ai/sentiment route header readiness shape brief and harden existing E2E assertions for header metadata/status without changing runtime semantics.",
@@ -659,7 +659,37 @@
         "note": "User approved continuing with Batch B shape/test hardening for /ai/sentiment; no route header shell migration in this node.",
         "current_head": "65403e7b383cbc72e9e2631fe4ff7b7dad91d8bb",
         "transitioned_at": "2026-05-31T12:20:31.064Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Shape brief and ai-sentiment E2E header-readiness assertions implemented in commit 99cdd453f.",
+        "current_head": "99cdd453f7b857fc82ad43a2c026aa013996e137",
+        "transitioned_at": "2026-05-31T12:43:54.015Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation commit 99cdd453f records /ai/sentiment route header readiness and keeps runtime/API/router behavior unchanged.",
+        "current_head": "99cdd453f7b857fc82ad43a2c026aa013996e137",
+        "transitioned_at": "2026-05-31T12:44:06.213Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout reviewed: /ai/sentiment readiness shape and test hardening recorded; future shell migration requires separate approval.",
+        "current_head": "99cdd453f7b857fc82ad43a2c026aa013996e137",
+        "transitioned_at": "2026-05-31T13:01:50.442Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-05-31-artdeco-ai-sentiment-shape-test-hardening-report.md",
+      "compatibility": "No route header shell migration; no router, API contract, frontend client, composable, child panel, or runtime-state behavior changes.",
+      "gates": [
+        "AI sentiment focused E2E 1/1 passed; full ai-sentiment E2E file 2/2 passed; eslint, type-check, OpenSpec validate, Function Tree validate, PM2, and GitNexus staged scope gate completed."
+      ],
+      "current_head": "99cdd453f7b857fc82ad43a2c026aa013996e137",
+      "prepared_at": "2026-05-31T13:01:40.350Z"
+    }
   }
 ]
