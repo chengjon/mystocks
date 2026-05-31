@@ -97,5 +97,71 @@
       "current_head": "44b53ebf22e9b640f9fe5b7365fb8d5526ffb029",
       "prepared_at": "2026-05-30T18:14:28.008Z"
     }
+  },
+  {
+    "id": "route-header-shell-risk-alerts",
+    "title": "Migrate /risk/alerts route header shell",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "implementation-ready",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-06-node-03",
+    "current_head": "f33f26e60670b4d5ada39ee58666385e7a849654",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/tasks/2026-05-31-artdeco-trade-portfolio-route-header-shell-report.md",
+        "note": "Continue cross-domain route header shell migration after /trade/positions and /trade/portfolio proved ArtDecoRouteHeader.",
+        "current_head": "f33f26e60670b4d5ada39ee58666385e7a849654",
+        "recorded_at": "2026-05-31T01:47:13.691Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/risk/Alerts.vue",
+      "web/frontend/src/components/artdeco/route-shell/",
+      "web/frontend/tests/e2e/phase4-mainline-matrix.spec.ts",
+      "docs/reports/tasks/",
+      "openspec/"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not change router configuration or route paths.",
+      "Do not change backend API contracts or frontend API clients.",
+      "Do not extract runtime status strips, review segments, table panels, alert business state, or risk severity semantics in this node."
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T01:47:07.814Z",
+    "updated_at": "2026-05-31T01:47:33.974Z",
+    "acceptance": {
+      "commit_gate": [
+        "GitNexus impact before editing Alerts.vue and GitNexus staged scope gate before commit.",
+        "Focused E2E for Risk-Alerts must pass.",
+        "ArtDeco token check, npx impeccable --json, focused eslint, npm run type-check -- --pretty false, OpenSpec validate, and Function Tree validation must pass."
+      ],
+      "closeout_gate": [
+        "Publish a route-header-shell migration report under docs/reports/tasks/ before commit.",
+        "Confirm no router, API contract, frontend API client, shared alert state, or risk severity semantic changes were made."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User requested continuation after /trade/portfolio closeout; scope is limited to /risk/alerts header-shell-only migration.",
+        "current_head": "f33f26e60670b4d5ada39ee58666385e7a849654",
+        "transitioned_at": "2026-05-31T01:47:28.694Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Start implementation within approved /risk/alerts header-shell-only scope.",
+        "current_head": "f33f26e60670b4d5ada39ee58666385e7a849654",
+        "transitioned_at": "2026-05-31T01:47:33.974Z"
+      }
+    ]
   }
 ]

@@ -1387,6 +1387,7 @@ test.describe("Phase 4 Mainline Matrix", () => {
     await expect(page.getByText("风险告警工作台").first()).toBeVisible()
     await expect(page.getByTestId("risk-alerts-page")).toBeVisible()
     await expect(page.getByTestId("risk-alerts-header")).toBeVisible()
+    await expect(page.getByTestId("risk-alerts-header")).toHaveClass(/artdeco-route-header/)
     await expect(page.getByTestId("risk-alerts-refresh")).toBeVisible()
     await expect(page.getByTestId("risk-alerts-review-lens")).toBeVisible()
     await expect(page.getByTestId("risk-alerts-status-strip")).toContainText("存在未读告警")

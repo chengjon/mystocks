@@ -1,40 +1,36 @@
 <template>
   <div class="risk-alerts page-enter" :class="{ 'is-embedded': isEmbedded }" data-testid="risk-alerts-page">
-    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell" data-testid="risk-alerts-header">
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">风险告警审阅</span>
-          <div class="hero-meta">
-            <span>REQ_ID: {{ displayRequestId }}</span>
-            <span>UNREAD: {{ displayUnreadAlertCount }}</span>
-            <span>FOCUS: triage</span>
-          </div>
-        </div>
-      </div>
+    <ArtDecoRouteHeader
+      v-if="!isEmbedded"
+      title="风险告警工作台"
+      subtitle="优先审阅未读和高优先级告警，保留规则配置作为次级治理入口"
+      eyebrow="风险告警审阅"
+      :show-status="true"
+      :status-text="pageStatusText"
+      :status-type="pageStatusType"
+      test-id="risk-alerts-header"
+    >
+      <template #meta>
+        <span>REQ_ID: {{ displayRequestId }}</span>
+        <span>UNREAD: {{ displayUnreadAlertCount }}</span>
+        <span>FOCUS: triage</span>
+      </template>
 
-      <ArtDecoHeader
-        title="风险告警工作台"
-        subtitle="优先审阅未读和高优先级告警，保留规则配置作为次级治理入口"
-        :show-status="true"
-        :status-text="pageStatusText"
-        :status-type="pageStatusType"
-      >
-        <template #actions>
-          <ArtDecoButton
-            variant="outline"
-            size="sm"
-            :loading="loading"
-            data-testid="risk-alerts-refresh"
-            @click="fetchRiskAlerts"
-          >
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新告警
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
-    </section>
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          data-testid="risk-alerts-refresh"
+          @click="fetchRiskAlerts"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新告警
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell" aria-label="告警摘要">
       <div v-for="item in summaryStats" :key="item.label" class="compact-stat">
@@ -164,7 +160,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { monitoringApi } from '@/api/index'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoIcon } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import type { AlertRecordResponse, AlertRuleResponse } from '@/api/types/common'
 import AlertRuleManagementPanel from './AlertRuleManagementPanel.vue'
 
