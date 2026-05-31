@@ -1,0 +1,40 @@
+task:
+  id: "artdeco-scss-sentiment-token-cleanup"
+  title: "Tokenize ArtDeco sentiment SCSS dimensions"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoSentimentAnalysis.layout.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoSentimentAnalysis.radar.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoSentimentAnalysis.reports.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoSentimentAnalysis.news.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoSentimentAnalysis.popularity.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoSentimentAnalysis.responsive.scss"
+    - "docs/reports/tasks/2026-06-01-artdeco-scss-sentiment-token-cleanup-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-sentiment-token-cleanup.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue, TypeScript, router, backend API, API contract, or frontend API client changes"
+  - "No shared component extraction or global token semantic changes"
+  - "No layout redesign; preserve existing dimensions through ArtDeco tokens or equivalent calc expressions"
+  - "No baseline update or legacy file deletion"
+
+acceptance:
+  commit_gate:
+    - "Focused ArtDeco token checks pass for all sentiment SCSS partials"
+    - "All changed sentiment SCSS partials remain below 500 lines"
+    - "Vite build:no-types passes"
+    - "No non-SCSS source files are staged"
+  closeout_gate:
+    - "Function Tree node is closed with implementation report"
+    - "Active gates return none after closeout"
+    - "GitNexus staged detect_changes reports low or no affected runtime processes"
+
+evidence:
+  current_head: "77398069db7b347708119b457e127996a40e1260"
+  notes: []

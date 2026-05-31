@@ -11,18 +11,18 @@
             margin-bottom: var(--artdeco-spacing-4);
 
             .header-icon {
-                width: 48px;
-                height: 48px;
+                width: var(--artdeco-spacing-12);
+                height: var(--artdeco-spacing-12);
                 background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
-                border-radius: 8px;
+                border-radius: var(--artdeco-radius-md);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--artdeco-bg-dark);
 
                 svg {
-                    width: 24px;
-                    height: 24px;
+                    width: var(--artdeco-spacing-6);
+                    height: var(--artdeco-spacing-6);
                 }
             }
 
@@ -58,10 +58,10 @@
 
         .radar-container {
             .radar-placeholder {
-                height: 400px;
+                height: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-32) + var(--artdeco-spacing-32) + var(--artdeco-spacing-4));
                 background: var(--artdeco-bg-card);
                 border: 1px solid var(--artdeco-border-default);
-                border-radius: 8px;
+                border-radius: var(--artdeco-radius-md);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -71,7 +71,7 @@
                 // 几何装饰
                 @include artdeco-geometric-corners(
                     $color: var(--artdeco-gold-primary),
-                    $size: 16px,
+                    $size: var(--artdeco-spacing-4),
                     $border-width: 1px
                 );
 
@@ -100,8 +100,8 @@
                             gap: var(--artdeco-spacing-2);
                             background: color-mix(in srgb, var(--artdeco-bg-dark) 80%, transparent);
                             padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
-                            border-radius: 6px;
-                            backdrop-filter: blur(10px);
+                            border-radius: calc(var(--artdeco-radius-md) - var(--artdeco-radius-sm));
+                            backdrop-filter: blur(calc(var(--artdeco-spacing-2) + var(--artdeco-radius-sm)));
 
                             .legend-item {
                                 display: flex;
@@ -111,9 +111,9 @@
                                 color: var(--artdeco-fg-secondary);
 
                                 .legend-color {
-                                    width: 12px;
-                                    height: 12px;
-                                    border-radius: 2px;
+                                    width: var(--artdeco-spacing-3);
+                                    height: var(--artdeco-spacing-3);
+                                    border-radius: var(--artdeco-radius-sm);
 
                                     &.current {
                                         background: var(--artdeco-gold-primary);

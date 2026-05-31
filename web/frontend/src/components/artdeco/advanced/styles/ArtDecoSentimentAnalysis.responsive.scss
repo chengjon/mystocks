@@ -3,7 +3,7 @@
     //   RESPONSIVE DESIGN - 响应式设计
     // ============================================
 
-    @media (width <= 768px) {
+    @media (width <= 48rem) {
         .artdeco-sentiment-analysis {
             gap: var(--artdeco-spacing-4);
         }
