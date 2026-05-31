@@ -1,0 +1,34 @@
+task:
+  id: "artdeco-file-size-debt-triage"
+  title: "Plan ArtDeco file-size debt remediation"
+
+scope:
+  allowed_paths:
+    - "docs/reports/tasks/2026-06-01-artdeco-file-size-debt-remediation-plan.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-file-size-debt-triage.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No SCSS/Vue/TS/Python source refactor in this node"
+  - "No router changes, API contract changes, backend API changes, or frontend API client changes"
+  - "No shared component extraction or global design-system extraction"
+  - "No file deletion, archive movement, or baseline update"
+  - "No OpenSpec change files in this docs-only node"
+
+acceptance:
+  commit_gate:
+    - "Plan documents measured/baseline/inferred/target categories separately"
+    - "Plan defines SCSS and Vue remediation order without mechanical part splits"
+    - "Staged diff contains only the plan document and Function Tree governance metadata"
+  closeout_gate:
+    - "Function Tree node is closed with the plan path as summary"
+    - "Active gates return none after closeout"
+    - "No source files are included in the staged diff"
+
+evidence:
+  current_head: "bf65ba60483469d5a973543a3ed3b421434ae1da"
+  notes: []

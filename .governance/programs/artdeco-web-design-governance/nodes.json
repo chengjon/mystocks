@@ -1159,5 +1159,109 @@
       "current_head": "13321ab73166afc0990b097503294a883842a941",
       "prepared_at": "2026-05-31T17:15:37.136Z"
     }
+  },
+  {
+    "id": "artdeco-file-size-debt-triage",
+    "title": "Plan ArtDeco file-size debt remediation",
+    "node_type": "implementation",
+    "owner_lane": "web-frontend",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
+    "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/standards/technical-debt-governance-charter-v1.md",
+        "note": "",
+        "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+        "recorded_at": "2026-05-31T17:34:38.325Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "reports/analysis/file-size-guard-report-2026-06-01.md",
+        "note": "",
+        "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+        "recorded_at": "2026-05-31T17:40:16.748Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "architecture/STANDARDS.md",
+        "note": "",
+        "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+        "recorded_at": "2026-05-31T17:40:23.008Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/reports/tasks/2026-06-01-artdeco-file-size-debt-remediation-plan.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-file-size-debt-triage.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No SCSS/Vue/TS/Python source refactor in this node",
+      "No router changes, API contract changes, backend API changes, or frontend API client changes",
+      "No shared component extraction or global design-system extraction",
+      "No file deletion, archive movement, or baseline update",
+      "No OpenSpec change files in this docs-only node"
+    ],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T17:34:31.462Z",
+    "updated_at": "2026-05-31T17:40:23.008Z",
+    "acceptance": {
+      "commit_gate": [
+        "Plan documents measured/baseline/inferred/target categories separately",
+        "Plan defines SCSS and Vue remediation order without mechanical part splits",
+        "Staged diff contains only the plan document and Function Tree governance metadata"
+      ],
+      "closeout_gate": [
+        "Function Tree node is closed with the plan path as summary",
+        "Active gates return none after closeout",
+        "No source files are included in the staged diff"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+        "transitioned_at": "2026-05-31T17:35:15.636Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+        "transitioned_at": "2026-05-31T17:35:24.293Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+        "transitioned_at": "2026-05-31T17:39:02.902Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+        "transitioned_at": "2026-05-31T17:39:20.549Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-file-size-debt-remediation-plan.md",
+      "compatibility": "Docs-only plan. No router, API contract, backend API, frontend API client, SCSS, Vue, TS, or shared component changes.",
+      "gates": [],
+      "current_head": "bf65ba60483469d5a973543a3ed3b421434ae1da",
+      "prepared_at": "2026-05-31T17:39:12.480Z"
+    }
   }
 ]
