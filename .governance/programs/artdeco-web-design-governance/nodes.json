@@ -482,11 +482,11 @@
     "node_type": "implementation",
     "owner_lane": "web",
     "parent": "",
-    "status": "approved-for-implementation",
+    "status": "closed",
     "function_tree_ref": "docs/FUNCTION_TREE.md#domain-05",
     "current_head": "731c9fec702d728d2c59cc5595e9d54c3e00549c",
     "freshness": "current-head",
-    "source_edits_authorized": true,
+    "source_edits_authorized": false,
     "evidence": [
       {
         "kind": "baseline",
@@ -531,11 +531,11 @@
       "Do not change signal list semantics, confidence/review lens, trust strip, execution history, pending state, failed-first-load handling, mock-data behavior, sample copy, or route-level runtime state semantics.",
       "Do not extract shared signal business components or redesign filters, data panels, tables, or signal workflow surfaces outside the route header shell."
     ],
-    "next_gate": "implement within allowed_paths",
+    "next_gate": "none",
     "blocker_reason": null,
     "unblock_target_state": null,
     "created_at": "2026-05-31T11:41:56.853Z",
-    "updated_at": "2026-05-31T11:43:49.818Z",
+    "updated_at": "2026-05-31T12:06:18.433Z",
     "acceptance": {
       "commit_gate": [
         "Focused Playwright RED/GREEN for Trade-Signals route header class assertion must pass.",
@@ -552,7 +552,37 @@
         "note": "User approved continuing with the next route-header-shell batch; implementation scope remains /trade/signals header shell only.",
         "current_head": "731c9fec702d728d2c59cc5595e9d54c3e00549c",
         "transitioned_at": "2026-05-31T11:43:49.818Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation work started and verified within authorized /trade/signals route header scope.",
+        "current_head": "81e9db3bedd3558d2c07b0e41e4c6c912a52f34f",
+        "transitioned_at": "2026-05-31T12:04:36.065Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation commit 81e9db3be migrated /trade/signals to ArtDecoRouteHeader with focused RED/GREEN and Trade-Signals E2E passing.",
+        "current_head": "81e9db3bedd3558d2c07b0e41e4c6c912a52f34f",
+        "transitioned_at": "2026-05-31T12:04:44.791Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout reviewed: route header shell migration recorded in report and ledger; node closed.",
+        "current_head": "81e9db3bedd3558d2c07b0e41e4c6c912a52f34f",
+        "transitioned_at": "2026-05-31T12:06:18.433Z"
       }
-    ]
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-05-31-artdeco-trade-signals-route-header-shell-report.md",
+      "compatibility": "No router path, route ownership, backend API contract, frontend API client, store, transport wrapper, or signal runtime-state semantic changes.",
+      "gates": [
+        "Focused RED/GREEN passed; Trade-Signals Chromium E2E 4/4 passed; eslint page gate, ArtDeco token check, impeccable JSON, type-check, OpenSpec validate, Function Tree validate, PM2, and GitNexus staged scope gate completed."
+      ],
+      "current_head": "81e9db3bedd3558d2c07b0e41e4c6c912a52f34f",
+      "prepared_at": "2026-05-31T12:05:56.040Z"
+    }
   }
 ]

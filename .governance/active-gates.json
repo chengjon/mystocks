@@ -1,29 +1,5 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-05-31T11:43:49.819Z",
-  "gates": [
-    {
-      "program": "artdeco-web-design-governance",
-      "id": "route-header-shell-trade-signals",
-      "title": "Migrate /trade/signals route header shell",
-      "node_type": "implementation",
-      "owner_lane": "web",
-      "parent": "",
-      "status": "approved-for-implementation",
-      "source_edits_authorized": true,
-      "current_blocker": "",
-      "next_allowed": "implement within allowed_paths",
-      "function_tree_ref": "docs/FUNCTION_TREE.md#domain-05",
-      "freshness": "current-head",
-      "allowed_paths": [
-        "web/frontend/src/views/trade/Signals.vue",
-        "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts",
-        "web/frontend/src/components/artdeco/route-shell/",
-        "docs/reports/tasks/",
-        "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
-      ],
-      "forbidden_paths": [],
-      "updated_at": "2026-05-31T11:43:49.818Z"
-    }
-  ]
+  "updated_at": "2026-05-31T12:06:18.434Z",
+  "gates": []
 }
