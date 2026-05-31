@@ -1,0 +1,125 @@
+{
+  "id": "g2-271-pool-monitoring-control-plane-ownership-decision",
+  "generated_at": "2026-05-31T19:34:41+08:00",
+  "branch": "g2-271-pool-monitoring-control-plane-ownership",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "5b3ffd1f114b612810e96c463c651befeb005222",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.270",
+    "pr": 423,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/423",
+    "merge_commit": "5b3ffd1f114b612810e96c463c651befeb005222",
+    "merged_at": "2026-05-31T11:29:10Z"
+  },
+  "target": {
+    "file": "web/backend/app/api/v1/pool_monitoring.py",
+    "classification": "active-control-plane-route-contract",
+    "active_route_count": 4,
+    "include_in_schema": true,
+    "route_prefix": "/api/pool-monitoring",
+    "router_prefix_in_module": "/pool-monitoring",
+    "tags": [
+      "pool-monitoring",
+      "Connection Pool Monitoring"
+    ]
+  },
+  "routes": [
+    {
+      "method": "GET",
+      "path": "/api/pool-monitoring/postgresql/stats",
+      "endpoint": "get_postgresql_pool_stats",
+      "operation_id": "get_postgresql_pool_stats_api_pool_monitoring_postgresql_stats_get",
+      "summary": "PostgreSQL连接池统计"
+    },
+    {
+      "method": "GET",
+      "path": "/api/pool-monitoring/tdengine/stats",
+      "endpoint": "get_tdengine_pool_stats",
+      "operation_id": "get_tdengine_pool_stats_api_pool_monitoring_tdengine_stats_get",
+      "summary": "TDengine连接池统计"
+    },
+    {
+      "method": "GET",
+      "path": "/api/pool-monitoring/health",
+      "endpoint": "connection_pools_health_check",
+      "operation_id": "connection_pools_health_check_api_pool_monitoring_health_get",
+      "summary": "连接池综合健康检查"
+    },
+    {
+      "method": "GET",
+      "path": "/api/pool-monitoring/alerts",
+      "endpoint": "check_connection_pool_alerts",
+      "operation_id": "check_connection_pool_alerts_api_pool_monitoring_alerts_get",
+      "summary": "连接池告警检测"
+    }
+  ],
+  "runtime_openapi_smoke": {
+    "routes": 548,
+    "paths": 500,
+    "duplicate_operation_ids": 0,
+    "pool_monitoring_routes": 4,
+    "pool_monitoring_openapi_paths": 4,
+    "warnings": 119,
+    "notes": [
+      "The smoke used local non-production test environment values and did not write secrets to repository files.",
+      "GPU backtest dependency warning remains unrelated to this no-source decision."
+    ]
+  },
+  "accessor_inventory": {
+    "get_postgresql_engine": {
+      "calls": 1,
+      "import_line": 18,
+      "decision": "infrastructure pool accessor used by active control-plane route; not a service DI candidate from G2.271"
+    },
+    "get_tdengine_manager": {
+      "calls": 1,
+      "import_line": 19,
+      "decision": "infrastructure pool accessor used by active control-plane route; not a service DI candidate from G2.271"
+    },
+    "get_postgresql_pool_stats": {
+      "calls": 2,
+      "decision": "route-local stats function and endpoint share name; keep under route/OpenAPI/control-plane ownership"
+    },
+    "get_tdengine_pool_stats": {
+      "calls": 2,
+      "decision": "route-local stats function and endpoint share name; keep under route/OpenAPI/control-plane ownership"
+    }
+  },
+  "consumer_artifacts": [
+    "docs/api/openapi.json references the four /api/pool-monitoring paths",
+    "docs/api/openapi/market-data-api-full.json references the four /api/pool-monitoring paths",
+    "docs/api/API_ARCHITECTURE_DATA_2025-11-30.json references v1.pool_monitoring",
+    "docs/api/API_ARCHITECTURE_COMPREHENSIVE_SUMMARY_2025-11-30.md references v1/pool_monitoring.py"
+  ],
+  "gitnexus": {
+    "route_map_pool_monitoring": "MCP timed out after 120s",
+    "context_get_postgresql_pool_stats": "MCP timed out after 120s",
+    "context_get_tdengine_pool_stats": "MCP timed out after 120s",
+    "fallback_static_and_runtime_evidence": "AST/function inventory plus FastAPI route table and app.openapi() smoke"
+  },
+  "decision": {
+    "classification": "active-control-plane-route-contract-not-service-di-candidate",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-271",
+    "selected_next_governance_target": "G2.272 no-source service lifecycle residual candidate refresh after pool-monitoring deferral",
+    "route_openapi_followup": "If pool monitoring changes are needed later, create a separate route/OpenAPI/control-plane authorization package before any source, docs/api, or OpenAPI artifact edits.",
+    "reason": "The pool monitoring residuals are active documented control-plane endpoints with OpenAPI exposure and infrastructure pool accessors. Treating them as a plain service lifecycle DI implementation target would mix route contracts, health/control-plane semantics, and database pool ownership."
+  },
+  "forbidden_actions": [
+    "backend source edits",
+    "route registration changes",
+    "provider injection implementation",
+    "source retirement",
+    "test contract edits",
+    "docs/api contract edits",
+    "OpenSpec mutation",
+    "frontend/config/script changes",
+    "PM2 or stateful runtime commands"
+  ],
+  "stale_policy": {
+    "current_head_checked_at_review": "5b3ffd1f114b612810e96c463c651befeb005222",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true
+  }
+}
