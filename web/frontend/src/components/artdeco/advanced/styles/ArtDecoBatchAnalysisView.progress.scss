@@ -1,0 +1,310 @@
+
+    // ============================================
+    //   BATCH PROGRESS - 批量进度
+    // ============================================
+
+    .batch-progress {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: var(--batch-section-icon-size);
+                height: var(--batch-section-icon-size);
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: var(--batch-section-icon-radius);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: var(--batch-section-icon-glyph);
+                    height: var(--batch-section-icon-glyph);
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+
+            .progress-controls {
+                display: flex;
+                gap: var(--artdeco-spacing-3);
+                align-items: center;
+            }
+        }
+
+        .progress-dashboard {
+            display: grid;
+            grid-template-columns: var(--batch-dashboard-side) 1fr;
+            gap: var(--artdeco-spacing-5);
+
+            .overall-progress {
+                display: grid;
+                grid-template-columns: var(--batch-summary-side) 1fr;
+                gap: var(--artdeco-spacing-4);
+
+                .progress-gauge {
+                    .gauge-container {
+                        position: relative;
+                        width: var(--batch-gauge-size);
+                        height: var(--batch-gauge-size);
+                        margin: 0 auto;
+
+                        .gauge-background {
+                            position: relative;
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 50%;
+                            background: conic-gradient(
+                                from 0deg,
+                                color-mix(in srgb, var(--artdeco-down) 20%, transparent) 0deg,
+                                color-mix(in srgb, var(--artdeco-warning) 40%, transparent) 45deg,
+                                color-mix(in srgb, var(--artdeco-up) 60%, transparent) 90deg,
+                                color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg,
+                                color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg
+                            );
+
+                            .gauge-fill {
+                                position: absolute;
+                                top: 0;
+                                left: 0;
+                                width: 100%;
+                                height: 100%;
+                                border-radius: 50%;
+                                background: conic-gradient(
+                                    from 0deg,
+                                    transparent 0deg,
+                                    transparent 180deg,
+                                    color-mix(in srgb, var(--artdeco-up) 90%, transparent) 180deg,
+                                    color-mix(in srgb, var(--artdeco-up) 90%, transparent) 360deg
+                                );
+                                clip-path: polygon(50% 50%, 50% 50%, 50% 0%, 100% 0%, 100% 100%, 50% 100%);
+                                transition: transform var(--artdeco-transition-base);
+
+                                &.completed {
+                                    background: conic-gradient(
+                                        from 0deg,
+                                        transparent 0deg,
+                                        transparent 180deg,
+                                        color-mix(in srgb, var(--artdeco-up) 90%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-up) 90%, transparent) 360deg
+                                    );
+                                }
+
+                                &.in-progress {
+                                    background: conic-gradient(
+                                        from 0deg,
+                                        transparent 0deg,
+                                        transparent 180deg,
+                                        color-mix(in srgb, var(--artdeco-warning) 90%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-warning) 90%, transparent) 360deg
+                                    );
+                                }
+
+                                &.starting {
+                                    background: conic-gradient(
+                                        from 0deg,
+                                        transparent 0deg,
+                                        transparent 180deg,
+                                        color-mix(in srgb, var(--artdeco-down) 90%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-down) 90%, transparent) 360deg
+                                    );
+                                }
+                            }
+                        }
+
+                        .gauge-center {
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            text-align: center;
+
+                            .gauge-value {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-xl);
+                                font-weight: 600;
+                                color: var(--artdeco-up);
+                                display: block;
+                                margin-bottom: var(--artdeco-spacing-1);
+                            }
+
+                            .gauge-label {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-xs);
+                                color: var(--artdeco-fg-muted);
+                                text-transform: uppercase;
+                                letter-spacing: var(--artdeco-tracking-wide);
+                            }
+                        }
+                    }
+                }
+
+                .progress-details {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--artdeco-spacing-2);
+
+                    .detail-item {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding: var(--artdeco-spacing-2);
+                        background: var(--artdeco-bg-muted);
+                        border-radius: var(--batch-radius-sm);
+
+                        .label {
+                            font-family: var(--artdeco-font-body);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-muted);
+                            font-weight: 600;
+                        }
+
+                        .value {
+                            font-family: var(--artdeco-font-mono);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-primary);
+                            font-weight: 600;
+                        }
+                    }
+                }
+            }
+
+            .task-breakdown {
+                .breakdown-charts {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: var(--artdeco-spacing-4);
+
+                    .chart-item {
+                        .chart-title {
+                            font-family: var(--artdeco-font-display);
+                            font-size: var(--artdeco-font-size-md);
+                            font-weight: 600;
+                            color: var(--artdeco-gold-primary);
+                            text-transform: uppercase;
+                            letter-spacing: var(--artdeco-tracking-wide);
+                            margin: 0 0 var(--artdeco-spacing-3) 0;
+                        }
+
+                        .status-pie {
+                            height: var(--batch-card-min);
+                            position: relative;
+
+                            .pie-chart {
+                                position: relative;
+                                width: var(--batch-summary-side);
+                                height: var(--batch-summary-side);
+                                margin: 0 auto;
+                                border-radius: 50%;
+
+                                .pie-segment {
+                                    position: absolute;
+                                    width: 100%;
+                                    height: 100%;
+                                    border-radius: 50%;
+                                    clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 0%);
+                                }
+
+                                .pie-center {
+                                    position: absolute;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: translate(-50%, -50%);
+                                    text-align: center;
+
+                                    .center-text {
+                                        font-family: var(--artdeco-font-mono);
+                                        font-size: var(--artdeco-font-size-lg);
+                                        font-weight: 600;
+                                        color: var(--artdeco-gold-primary);
+                                        display: block;
+                                        margin-bottom: var(--artdeco-spacing-1);
+                                    }
+
+                                    .center-label {
+                                        font-family: var(--artdeco-font-body);
+                                        font-size: var(--artdeco-font-size-xs);
+                                        color: var(--artdeco-fg-muted);
+                                        text-transform: uppercase;
+                                        letter-spacing: var(--artdeco-tracking-wide);
+                                    }
+                                }
+                            }
+                        }
+
+                        .type-bars {
+                            display: flex;
+                            flex-direction: column;
+                            gap: var(--artdeco-spacing-2);
+
+                            .type-bar {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--artdeco-spacing-3);
+
+                                .bar-label {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-primary);
+                                    font-weight: 600;
+                                    min-width: var(--batch-label-min);
+                                }
+
+                                .bar-container {
+                                    flex: 1;
+                                    height: var(--artdeco-spacing-3);
+                                    background: var(--artdeco-bg-muted);
+                                    border-radius: var(--batch-radius-sm);
+                                    overflow: hidden;
+
+                                    .bar-fill {
+                                        height: 100%;
+                                        background: linear-gradient(
+                                            90deg,
+                                            var(--artdeco-gold-primary),
+                                            var(--artdeco-gold-secondary)
+                                        );
+                                        border-radius: var(--batch-radius-sm);
+                                        transition: width var(--artdeco-transition-base);
+                                    }
+                                }
+
+                                .bar-value {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                    min-width: var(--artdeco-spacing-10);
+                                    text-align: right;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }

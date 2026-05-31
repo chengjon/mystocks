@@ -1,0 +1,40 @@
+task:
+  id: "artdeco-scss-batch-analysis-style-split"
+  title: "Split ArtDeco batch analysis SCSS facade"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.layout.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.progress.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.results.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.report.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.responsive.scss"
+    - "docs/reports/tasks/2026-06-01-artdeco-scss-batch-analysis-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-batch-analysis-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue, TypeScript, router, backend API, API contract, or frontend API client changes"
+  - "No shared component extraction or design token changes"
+  - "No visual redesign; preserve existing selector order and rendered behavior"
+  - "No baseline update or legacy file deletion"
+
+acceptance:
+  commit_gate:
+    - "Original SCSS becomes a facade and drops below 500 lines"
+    - "Each new SCSS partial remains below 500 lines and follows semantic section boundaries"
+    - "No non-SCSS source files are staged"
+    - "Focused frontend style/build validation is attempted and reported"
+  closeout_gate:
+    - "Function Tree node is closed with implementation report"
+    - "Active gates return none after closeout"
+    - "GitNexus staged detect_changes reports low or no affected runtime processes"
+
+evidence:
+  current_head: "e8a933ed7684240569a19d6a586236ea48886e26"
+  notes: []
