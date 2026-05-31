@@ -1,0 +1,103 @@
+{
+  "id": "G2.264",
+  "title": "Signal statistics stale contract cleanup authorization",
+  "status": "review_input",
+  "generated_at": "2026-05-31T10:43:44+08:00",
+  "git_head": "795d2b9f50c3e483876f1b4ec484fbf9c1d9e513",
+  "current_head_checked_at_review": "795d2b9f50c3e483876f1b4ec484fbf9c1d9e513",
+  "stale_if_head_mismatch": true,
+  "parent": {
+    "id": "G2.263",
+    "github_pr": 416,
+    "merge_commit": "795d2b9f50c3e483876f1b4ec484fbf9c1d9e513"
+  },
+  "branch": "g2-264-signal-statistics-stale-contract-cleanup-authorization",
+  "assumed_github_pr": 417,
+  "source_edit_authority": "none",
+  "runtime_snapshot": {
+    "routes": 548,
+    "openapi_paths": 500,
+    "target_openapi_paths": [],
+    "duplicate_operation_ids": 0
+  },
+  "target_file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+  "target_paths": [
+    "/api/signals/statistics",
+    "/api/signals/active",
+    "/api/strategies/{strategy_id}/health/detailed"
+  ],
+  "artifact_counts": {
+    "docs/api/openapi.yaml": {
+      "line_count": 249,
+      "counts": {
+        "/api/signals/statistics": 1,
+        "/api/signals/active": 1,
+        "/api/strategies/{strategy_id}/health/detailed": 0
+      }
+    },
+    "docs/api/task_plan_signal_monitoring_phase2_extended.md": {
+      "line_count": 68,
+      "counts": {
+        "/api/signals/statistics": 1,
+        "/api/signals/active": 1,
+        "/api/strategies/{strategy_id}/health/detailed": 0
+      }
+    },
+    "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md": {
+      "line_count": 906,
+      "counts": {
+        "/api/signals/statistics": 5,
+        "/api/signals/active": 4,
+        "/api/strategies/{strategy_id}/health/detailed": 0
+      }
+    },
+    "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md": {
+      "line_count": 1057,
+      "counts": {
+        "/api/signals/statistics": 2,
+        "/api/signals/active": 0,
+        "/api/strategies/{strategy_id}/health/detailed": 0
+      }
+    },
+    "tests/unit/test_signal_monitoring_integration.py": {
+      "line_count": 662,
+      "counts": {
+        "/api/signals/statistics": 1,
+        "/api/signals/active": 1,
+        "/api/strategies/{strategy_id}/health/detailed": 0
+      }
+    }
+  },
+  "authorization": {
+    "selected_next_gate": "G2.265 path-limited stale signal statistics contract cleanup implementation",
+    "authorized_future_lane_type": "docs_and_test_contract_cleanup_only",
+    "authorized_future_paths": [
+      "docs/api/openapi.yaml",
+      "docs/api/task_plan_signal_monitoring_phase2_extended.md",
+      "docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md",
+      "docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md",
+      "tests/unit/test_signal_monitoring_integration.py"
+    ],
+    "future_lane_allowed_actions": [
+      "remove or annotate stale docs/api entries for /api/signals/statistics and /api/signals/active that are absent from current app.openapi()",
+      "mark historical design/operations references as historical/deferred instead of runtime truth",
+      "update tests/unit/test_signal_monitoring_integration.py so dormant paths are not asserted as active runtime endpoints unless explicitly marked historical"
+    ],
+    "future_lane_forbidden_actions": [
+      "web/backend source edits",
+      "route registration",
+      "provider injection",
+      "source retirement",
+      "frontend edits",
+      "OpenSpec edits",
+      "PM2/runtime stateful commands",
+      "broad docs rewrite outside exact stale references"
+    ],
+    "acceptance_for_future_lane": [
+      "no target paths in current app.openapi() after cleanup unless a separate route registration lane is approved",
+      "no duplicate operation IDs",
+      "focused documentation/test diff limited to authorized paths",
+      "all stale claims explicitly distinguish historical docs from runtime truth"
+    ]
+  }
+}
