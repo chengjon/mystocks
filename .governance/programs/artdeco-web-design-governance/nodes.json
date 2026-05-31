@@ -807,5 +807,117 @@
       "current_head": "50a91d20bf0814dd55886eb33c5ec7c384676f03",
       "prepared_at": "2026-05-31T15:04:14.477Z"
     }
+  },
+  {
+    "id": "ai-batch-shape-readiness",
+    "title": "Shape /ai/batch route header readiness",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-07",
+    "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "docs/reports/tasks/2026-05-31-artdeco-route-header-shell-next-batch-plan.md",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "recorded_at": "2026-05-31T15:37:03.919Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "web/frontend/src/views/ai/BatchAnalysis.vue",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "recorded_at": "2026-05-31T15:37:03.963Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "web/frontend/tests/e2e/ai-batch-analysis.spec.ts",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "recorded_at": "2026-05-31T15:37:04.002Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "PRODUCT.md",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "recorded_at": "2026-05-31T15:37:04.040Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "DESIGN.md",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "recorded_at": "2026-05-31T15:37:04.080Z"
+      }
+    ],
+    "allowed_paths": [
+      "docs/reports/tasks/2026-05-31-artdeco-ai-batch-route-header-readiness-shape-brief.md",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No page implementation changes in this readiness node",
+      "No router path, route metadata, backend API contract, frontend API client, runtime state owner, or shared component extraction"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T15:37:03.875Z",
+    "updated_at": "2026-05-31T15:39:03.701Z",
+    "acceptance": {
+      "commit_gate": [
+        "Publish /ai/batch shape brief only"
+      ],
+      "closeout_gate": [
+        "Function Tree validate passes and active gates are closed after readiness report"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "transitioned_at": "2026-05-31T15:37:04.167Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "transitioned_at": "2026-05-31T15:37:04.207Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "transitioned_at": "2026-05-31T15:39:03.626Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+        "transitioned_at": "2026-05-31T15:39:03.701Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-05-31-artdeco-ai-batch-route-header-readiness-shape-brief.md",
+      "compatibility": "Docs-only readiness brief. No page implementation, router path, route metadata, backend API contract, frontend API client, runtime state owner, E2E mock payload, or shared component extraction changes.",
+      "gates": [
+        "Shape brief published; future /ai/batch route-header-shell implementation requires explicit user approval before code changes."
+      ],
+      "current_head": "7688380f1e5b10b0fe3582da4aecdd11822d459e",
+      "prepared_at": "2026-05-31T15:39:03.664Z"
+    }
   }
 ]
