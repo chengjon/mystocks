@@ -3024,7 +3024,7 @@ Status: accepted/merged by PR `#435` at `891593d2dc4896f909333033a0b454529b9be38
 
 ## G2.283 data_lineage get_lineage_tracker Provider Implementation
 
-Status: for review in future PR `#436`.
+Status: accepted/merged by PR `#436` at `511e9d091bc2b29777c522c595a9f1454f50b973`.
 
 - Parent PR `#435` merged at `891593d2dc4896f909333033a0b454529b9be38c`.
 - GitNexus MCP context / impact returned `Transport closed`; CLI fallback using `Function:web/backend/app/api/data_lineage.py:get_lineage_tracker` returned MEDIUM risk with `5` impacted / direct symbols and `0` affected processes.
@@ -3033,5 +3033,19 @@ Status: for review in future PR `#436`.
 - Direct route-body `get_lineage_tracker()` calls are `0`; manual route-body `await conn.close()` calls are `0`; dependency provider bindings are `5`.
 - TDD RED recorded `2 failed, 1 passed`; GREEN recorded `3 passed`; focused data-lineage tests passed `15/15`; health route conflict regression passed `121/121`; ruff passed on touched files.
 - Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, lineage paths present, and no lineage provider parameter leaks.
-- Next gate after human acceptance: G2.284 no-source data_lineage `get_lineage_tracker` provider closeout / residual refresh.
-- G2.283 must stop at PR `#436` review and must not auto-merge because it is a source implementation PR with MEDIUM target impact.
+- Next gate after acceptance: G2.284 no-source data_lineage `get_lineage_tracker` provider closeout / residual refresh.
+- G2.283 must not be used as authority for non-data-lineage source edits, route registration, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or broader backend source.
+
+## G2.284 data_lineage get_lineage_tracker Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#437`.
+
+- Parent PR `#436` merged at `511e9d091bc2b29777c522c595a9f1454f50b973`.
+- G2.284 is a no-source closeout / residual refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Current static closeout scan records direct route-body `get_lineage_tracker()` calls at `0`, provider backing call at `1`, manual route-body `await conn.close()` calls at `0`, `Depends(get_lineage_tracker_dependency)` bindings at `5`, and provider definition count at `1`.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and the lineage paths present.
+- Residual refresh keeps accepted closed surfaces out of the source candidate queue, including `get_config_manager`, `get_monitoring_db`, `get_postgres_async`, `get_data_quality_monitor`, and `get_lineage_tracker`.
+- Root facade, registry, dashboard/cache, Redis client, and cache integration surfaces remain deferred to their respective ownership lanes.
+- GitNexus CLI fallback for the selected next target `Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection` returned MEDIUM risk with `5` direct callers, `6` impacted symbols, `0` affected processes, and a stale-index warning.
+- Selected next gate after acceptance: G2.285 no-source `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision.
+- G2.284 must not be used as source implementation authorization; G2.285 must classify control-plane ownership before any future source lane.

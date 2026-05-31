@@ -1,0 +1,126 @@
+version: "v0.2"
+
+task:
+  id: "pr-437"
+  title: "Close data_lineage get_lineage_tracker provider lane"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-data-lineage-tracker-provider-closeout-refresh"
+  objective: "record G2.283 acceptance, close the data_lineage get_lineage_tracker provider lane, and select the next no-source ownership decision"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.284 is a no-source governance closeout and residual refresh. It changes no runtime entrypoint, route path, route registration, generated OpenAPI artifact, frontend route, or FUNCTION_TREE catalog entry."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-lineage-tracker-provider-closeout-refresh-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-lineage-tracker-provider-closeout-refresh-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-437.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+
+acceptance:
+  checks:
+    - id: "pr436-merged"
+      command: "gh pr view 436 confirms MERGED at 511e9d091bc2b29777c522c595a9f1454f50b973"
+      required: true
+    - id: "static-lineage-closeout-scan"
+      command: "current HEAD scan records direct route-body get_lineage_tracker calls at 0, provider backing call at 1, manual conn.close calls at 0, Depends bindings at 5, and provider definition count at 1"
+      required: true
+    - id: "runtime-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0, and lineage paths present"
+      required: true
+    - id: "next-candidate-gitnexus"
+      command: "GitNexus CLI fallback for Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection records MEDIUM risk, 5 direct callers, 0 affected processes, and stale-index warning"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-lineage-tracker-provider-closeout-refresh-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-437.yaml --base-sha 511e9d091bc2b29777c522c595a9f1454f50b973 --head-sha HEAD --report /tmp/pr437-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus staged verification attempted before commit; stale-index warning recorded if present"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A future worker may treat this closeout as source implementation authorization; the report and steward tree explicitly forbid that."
+    - "The selected G2.285 target has MEDIUM GitNexus impact and must start as no-source ownership decision only."
+  rollback_plan: "Revert PR #437; this removes only governance evidence and restores the previous steward tree state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close the accepted data_lineage get_lineage_tracker provider lane."
+    modified_scope: "Governance evidence, steward tree indexes, human-readable report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime, route, OpenAPI, frontend, config, script, or OpenSpec changes."
+    rollback_ready: "Revert PR #437."
+    risk_and_rollback_point: "No-source closeout; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T03:11:52+08:00"
+    approval_note: "Human maintainer approved continuing after PR #436 merge into G2.284 no-source closeout / residual refresh. Scope remains limited to governance artifacts."
+    secondary_approved: false
