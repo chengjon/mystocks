@@ -2768,3 +2768,14 @@ Status: for review in PR `#417`.
 - Authorized future lane: G2.265 path-limited docs/test stale contract cleanup implementation.
 - Future allowed paths: `docs/api/openapi.yaml`, `docs/api/task_plan_signal_monitoring_phase2_extended.md`, `docs/operations/monitoring/SIGNAL_MONITORING_METRICS_DESIGN.md`, `docs/architecture/DESIGN_METHODOLOGY_AND_TOOLCHAIN_ANALYSIS.md`, `tests/unit/test_signal_monitoring_integration.py`.
 - Source, route registration, provider injection, source retirement, frontend, OpenSpec, scripts, config, and PM2 remain unauthorized.
+
+## G2.265 Signal Statistics Stale Contract Cleanup Implementation
+
+Status: for review in PR `#418`.
+
+- Parent PR `#417` merged at `fe1927818309efb2c1de3a9c1e1128e9b456053e`.
+- Cleaned only the five authorized docs/test stale contract artifacts.
+- `docs/api/openapi.yaml` no longer presents the dormant signal statistics paths as active hand-maintained OpenAPI paths.
+- `tests/unit/test_signal_monitoring_integration.py` now asserts explicit dormant-route `404` behavior for the two stale endpoints.
+- Runtime OpenAPI remains `548/500`, target OpenAPI paths remain `0`, duplicate operation IDs remain `0`.
+- Next gate: G2.266 no-source signal statistics dormant contract closeout / residual refresh.

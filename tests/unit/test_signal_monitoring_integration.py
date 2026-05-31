@@ -372,29 +372,25 @@ class TestSignalMonitoringAPI:
 
     @pytest.mark.asyncio
     async def test_signal_statistics_endpoint(self, test_api_client):
-        """测试信号统计端点（小时级）"""
+        """历史/延期端点当前未注册为 runtime route"""
         response = await test_api_client.get(f"/api/signals/statistics?strategy_id={TEST_STRATEGY_ID}&hours=24")
 
-        # 端点应该返回200（即使没有数据）
-        assert response.status_code == 200
+        # G2.265: keep dormant contract explicit until a route registration lane is approved.
+        assert response.status_code == 404
 
         data = response.json()
-        # 应该返回列表（可能为空）
-        assert isinstance(data, list)
+        assert data["detail"] == "Not Found"
 
     @pytest.mark.asyncio
     async def test_active_signals_endpoint(self, test_api_client):
-        """测试活跃信号列表端点"""
+        """历史/延期端点当前未注册为 runtime route"""
         response = await test_api_client.get("/api/signals/active?limit=10")
 
-        # 端点应该返回200
-        assert response.status_code == 200
+        # G2.265: keep dormant contract explicit until a route registration lane is approved.
+        assert response.status_code == 404
 
         data = response.json()
-        assert "signals" in data
-        assert "total_count" in data
-        assert isinstance(data["signals"], list)
-        assert isinstance(data["total_count"], int)
+        assert data["detail"] == "Not Found"
 
     @pytest.mark.asyncio
     async def test_strategy_detailed_health_endpoint(self, test_api_client):

@@ -483,6 +483,7 @@ async def get_signal_statistics(
 
     ## 示例
     ```bash
+    # Historical/deferred example: not exposed by current app.openapi() at G2.265.
     curl /api/signals/statistics?strategy_id=test&hours=24
     ```
     """
@@ -799,16 +800,17 @@ def api_client():
     return TestClient(app)
 
 def test_signal_statistics_contract(api_client):
-    """测试API契约符合OpenAPI规范"""
+    """历史/延期路径示例：当前生成 OpenAPI 不暴露该端点"""
     schema = api_client.app.openapi()
+    assert "/api/signals/statistics" not in schema["paths"]
 
     response = api_client.get(
         "/api/signals/statistics",
         params={"strategy_id": "test", "hours": 24}
     )
 
-    assert response.status_code == 200
-    # schemathesis会自动验证响应是否符合schema
+    assert response.status_code == 404
+    # 路由未注册时不得把历史示例当成当前 runtime contract。
 ```
 
 **3. API版本管理**

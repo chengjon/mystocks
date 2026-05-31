@@ -30,10 +30,11 @@
   - [ ] 实现 SignalAggregationTask
   - [ ] 配置定时调度
 
-- [ ] **Phase 2.4**: API补充（P1 - 重要）
-  - [ ] GET /api/signals/statistics
-  - [ ] GET /api/signals/active
-  - [ ] GET /api/strategies/{strategy_id}/health (detailed)
+- [ ] **Phase 2.4**: API补充（P1 - 重要，历史/延期规划）
+  - [ ] Historical/deferred: `GET /api/signals/statistics`
+  - [ ] Historical/deferred: `GET /api/signals/active`
+  - [ ] Historical/deferred: `GET /api/strategies/{strategy_id}/health` (detailed)
+  - 备注：截至 G2.265，以上路径不在当前 FastAPI `app.openapi()` 中，不得作为现行 runtime contract。
 
 - [ ] **Phase 2.5**: 告警通知（P2 - 增强）
   - [ ] 配置 Alertmanager

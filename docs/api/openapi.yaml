@@ -111,36 +111,9 @@ paths:
                 $ref: '#/components/schemas/StopLossOverview'
 
   # --- 信号监控模块 (Phase 2) ---
-  /api/signals/statistics:
-    get:
-      tags: [SignalMonitoring]
-      summary: 获取小时级信号统计
-      parameters:
-        - name: strategy_id
-          in: query
-          schema: { type: string }
-        - name: hours
-          in: query
-          schema: { type: integer, default: 24 }
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SignalStatsList'
-
-  /api/signals/active:
-    get:
-      tags: [SignalMonitoring]
-      summary: 获取当前活跃信号
-      responses:
-        '200':
-          description: 成功
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ActiveSignalsResponse'
+  # G2.265: dormant signal statistics endpoints are intentionally omitted from
+  # this hand-maintained snapshot because current FastAPI app.openapi() does not
+  # expose them. Keep runtime truth anchored to generated OpenAPI.
 
 components:
   securitySchemes:

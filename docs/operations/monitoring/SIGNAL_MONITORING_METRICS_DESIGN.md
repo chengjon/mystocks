@@ -119,10 +119,10 @@
 ❌ signal_statistics_hourly -- 信号统计汇总表
 ```
 
-#### API端点
+#### API端点（历史/延期规划，不是当前 runtime contract）
 ```
-❌ GET /api/signals/statistics -- 信号统计
-❌ GET /api/signals/active -- 活跃信号
+🕓 GET /api/signals/statistics -- 信号统计（G2.265: 当前 app.openapi() 未暴露）
+🕓 GET /api/signals/active -- 活跃信号（G2.265: 当前 app.openapi() 未暴露）
 ❌ GET /api/strategies/{id}/health -- 策略健康
 ```
 
@@ -527,7 +527,7 @@ CREATE INDEX idx_stats_hourly_timestamp ON signal_statistics_hourly(hour_timesta
 ```yaml
 # 文件: web/backend/app/api/signal_statistics.py
 
-GET /api/signals/statistics
+Historical/deferred example: GET /api/signals/statistics
   Query Parameters:
     - strategy_id: str (optional)
     - symbol: str (optional)
@@ -548,7 +548,7 @@ GET /api/signals/statistics
       }
     }
 
-GET /api/signals/active
+Historical/deferred example: GET /api/signals/active
   Response:
     {
       "data": {
@@ -660,10 +660,10 @@ GET /api/strategies/{strategy_id}/health
 
 **预计工作量**: 1天
 
-### Phase 4: API层 📋 (待开始 - 优先级P0)
-- [ ] **实现信号统计API**
-  - [ ] `GET /api/signals/statistics`
-  - [ ] `GET /api/signals/active`
+### Phase 4: API层 📋 (历史/延期 - 优先级P0)
+- [ ] **实现信号统计API（G2.265: 以下路径不是当前 runtime contract）**
+  - [ ] Historical/deferred: `GET /api/signals/statistics`
+  - [ ] Historical/deferred: `GET /api/signals/active`
   - [ ] 查询 `signal_execution_results` 和 `signal_statistics_hourly`
 - [ ] **实现策略健康API**
   - [ ] `GET /api/strategies/{id}/health`
@@ -847,9 +847,9 @@ groups:
    - 修改 `SignalGenerationService` 使用 `MonitoredStrategyExecutor`
    - 修改 `SignalPushService` 使用 `@monitor_signal_push`
 
-3. **实现API端点** (1天)
-   - `/api/signals/statistics`
-   - `/api/signals/active`
+3. **实现API端点** (1天，历史/延期规划；G2.265: 当前 runtime 未暴露)
+   - Historical/deferred: `/api/signals/statistics`
+   - Historical/deferred: `/api/signals/active`
    - `/api/strategies/{id}/health`
 
 ### P1 - 增强功能（推荐完成）
