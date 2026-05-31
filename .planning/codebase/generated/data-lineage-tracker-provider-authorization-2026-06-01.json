@@ -1,0 +1,209 @@
+{
+  "id": "g2-282-data-lineage-tracker-provider-authorization",
+  "type": "authorization_package",
+  "prepared_at": "2026-06-01T02:16:40+08:00",
+  "base_head": "b8ba6ca75c573913d7b10553620e5d308c0d13f3",
+  "parent": {
+    "id": "g2-281-data-lineage-tracker-ownership-decision",
+    "github_pr": 434,
+    "merge_commit": "b8ba6ca75c573913d7b10553620e5d308c0d13f3",
+    "merged_at": "2026-05-31T18:11:33Z",
+    "decision": "data_lineage get_lineage_tracker is a bounded active API route helper; future source work requires a path-limited authorization package"
+  },
+  "scope": {
+    "source_edit_authority": false,
+    "changed_runtime": false,
+    "changed_routes": false,
+    "changed_openapi": false,
+    "authorization_only": true,
+    "autopilot_allowed_to_merge": false,
+    "autopilot_stop_reason": "G2.282 authorizes a future source implementation lane and the target helper has GitNexus MEDIUM impact"
+  },
+  "gitnexus": {
+    "mcp_context": "tool call failed: Transport closed",
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_context": {
+      "status": "found",
+      "target_uid": "Function:web/backend/app/api/data_lineage.py:get_lineage_tracker",
+      "start_line": 91,
+      "end_line": 119,
+      "incoming_calls": [
+        "Function:web/backend/app/api/data_lineage.py:record_lineage",
+        "Function:web/backend/app/api/data_lineage.py:get_upstream_lineage",
+        "Function:web/backend/app/api/data_lineage.py:get_downstream_lineage",
+        "Function:web/backend/app/api/data_lineage.py:get_lineage_graph",
+        "Function:web/backend/app/api/data_lineage.py:analyze_impact"
+      ],
+      "processes": [],
+      "index_status": {
+        "stale": true,
+        "commits_behind": 0,
+        "has_embeddings": false
+      }
+    },
+    "cli_impact": {
+      "target_uid": "Function:web/backend/app/api/data_lineage.py:get_lineage_tracker",
+      "direction": "upstream",
+      "risk": "MEDIUM",
+      "impacted_count": 5,
+      "direct": 5,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "affected_modules": [
+        {
+          "name": "Api",
+          "hits": 5,
+          "impact": "direct"
+        }
+      ],
+      "index_status": {
+        "stale": true,
+        "commits_behind": 0,
+        "has_embeddings": false
+      }
+    },
+    "staged_verification": {
+      "mcp_detect_changes": "tool call failed: Transport closed",
+      "cli_verify_staged": {
+        "ok": true,
+        "status": "stale",
+        "risk_level": "low",
+        "changed_files": 9,
+        "changed_symbols": 0,
+        "affected_processes": 0,
+        "indexed_commit": "f894d77d7cd710a6766921ec8a51256ba4de3428",
+        "current_commit": "b8ba6ca75c573913d7b10553620e5d308c0d13f3",
+        "stale_reason": "current_commit_differs_from_indexed_commit"
+      }
+    }
+  },
+  "data_lineage_surface": {
+    "module": "web/backend/app/api/data_lineage.py",
+    "helper": "get_lineage_tracker",
+    "definition_line": 92,
+    "current_behavior": "creates an asyncpg raw connection, wraps it in _AsyncpgLineageConnectionAdapter, and returns it with a LineageTracker",
+    "current_cleanup_contract": "each of the five active route handlers awaits conn.close() after using the tracker",
+    "direct_call_sites": [
+      {
+        "line": 149,
+        "handler": "record_lineage"
+      },
+      {
+        "line": 226,
+        "handler": "get_upstream_lineage"
+      },
+      {
+        "line": 336,
+        "handler": "get_downstream_lineage"
+      },
+      {
+        "line": 424,
+        "handler": "get_lineage_graph"
+      },
+      {
+        "line": 540,
+        "handler": "analyze_impact"
+      }
+    ],
+    "cleanup_sites": [
+      {
+        "line": 181,
+        "handler": "record_lineage"
+      },
+      {
+        "line": 267,
+        "handler": "get_upstream_lineage"
+      },
+      {
+        "line": 350,
+        "handler": "get_downstream_lineage"
+      },
+      {
+        "line": 466,
+        "handler": "get_lineage_graph"
+      },
+      {
+        "line": 545,
+        "handler": "analyze_impact"
+      }
+    ]
+  },
+  "route_openapi": {
+    "command_context": "app.main import with temporary placeholder import-time environment values; no PM2 or stateful database workflow",
+    "runtime_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "lineage_paths": [
+      "/api/v1/governance/lineage/stats",
+      "/api/v1/lineage/graph",
+      "/api/v1/lineage/impact",
+      "/api/v1/lineage/record",
+      "/api/v1/lineage/{node_id}/downstream",
+      "/api/v1/lineage/{node_id}/upstream"
+    ],
+    "stability_requirement": "future implementation must preserve route paths, methods, response_model=UnifiedResponse, documented response codes, and duplicate operation ID count 0"
+  },
+  "focused_test_inventory": {
+    "existing_test_files": [
+      "tests/api/file_tests/test_data_lineage_api.py",
+      "tests/integration/test_data_lineage_tracker_integration.py",
+      "tests/unit/test_governance/test_data_lineage_tracker.py",
+      "tests/unit/test_governance/test_lineage.py",
+      "web/backend/tests/test_data_lineage_regressions.py"
+    ],
+    "future_test_requirement": "G2.283 must use TDD or focused regression coverage to prove route dependency/provider injection preserves tracker behavior and connection cleanup"
+  },
+  "future_authorized_shape": {
+    "next_candidate": "G2.283 path-limited data_lineage get_lineage_tracker route-provider implementation",
+    "allowed_source_paths_after_human_acceptance": [
+      "web/backend/app/api/data_lineage.py"
+    ],
+    "allowed_test_paths_after_human_acceptance": [
+      "tests/api/file_tests/test_data_lineage_api.py",
+      "web/backend/tests/test_data_lineage_regressions.py"
+    ],
+    "required_design_constraints": [
+      "preserve the existing LineageTracker plus connection adapter lifecycle",
+      "preserve explicit connection close behavior or replace it with an equivalent dependency finalizer with focused tests",
+      "keep implementation route-local; do not move this into a shared infrastructure singleton in G2.283",
+      "do not change route registration, path strings, response models, OpenAPI artifacts, docs/api examples, frontend code, config, scripts, PM2, or OpenSpec specs",
+      "rerun GitNexus impact/context before editing and stop on HIGH or CRITICAL risk"
+    ]
+  },
+  "non_goals": [
+    "backend source edits in G2.282",
+    "test edits in G2.282",
+    "route registration changes",
+    "route path, method, response shape, or OpenAPI artifact changes",
+    "LineageTracker domain rewrite",
+    "database/session infrastructure refactor",
+    "frontend/config/script/OpenSpec/PM2 changes",
+    "source retirement or compatibility deletion"
+  ],
+  "verification": {
+    "route_openapi_smoke": {
+      "exit_code": 0,
+      "runtime_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0
+    },
+    "warnings": [
+      "GPU dependency warning and FastAPI example deprecation warnings observed during import smoke; smoke completed successfully"
+    ],
+    "markdown_governance_gate": {
+      "checked_files": 6,
+      "errors": 0
+    },
+    "openspec_strict_validate": "Change 'migrate-backend-singletons-to-lifecycle-di' is valid",
+    "git_diff_check": "passed with no output",
+    "git_diff_cached_check": "passed with no output"
+  },
+  "stale_policy": {
+    "current_head_checked": "b8ba6ca75c573913d7b10553620e5d308c0d13f3",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_data_lineage_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_test_inventory_changes": true
+  }
+}

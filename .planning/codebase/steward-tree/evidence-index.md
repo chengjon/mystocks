@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T01:56:44+08:00`
-- Base HEAD checked: `1707284bceeef8992641290d86790c1699975f5a`
+- Prepared at: `2026-06-01T02:16:40+08:00`
+- Base HEAD checked: `b8ba6ca75c573913d7b10553620e5d308c0d13f3`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/data-lineage-tracker-ownership-decision-2026-06-01.json` | G2.281 data_lineage `get_lineage_tracker` ownership / route-provider decision evidence | Review input for future PR `#434`; no-source decision package; limited-autopilot must stop because GitNexus risk is MEDIUM |
-| `docs/reports/quality/backend-data-lineage-tracker-ownership-decision-2026-06-01.md` | G2.281 human-readable ownership decision report | Review input for future PR `#434`; records PR `#433` accepted/merged, route helper surface, GitNexus MEDIUM risk, OpenAPI smoke, and G2.282 recommendation |
-| `governance/mainline/task-cards/pr-434.yaml` | No-source governance task card for G2.281 | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge |
+| `.planning/codebase/generated/data-lineage-tracker-provider-authorization-2026-06-01.json` | G2.282 data_lineage `get_lineage_tracker` provider authorization evidence | Review input for future PR `#435`; no-source authorization package; must stop because it authorizes future source work and GitNexus risk is MEDIUM |
+| `docs/reports/quality/backend-data-lineage-tracker-provider-authorization-2026-06-01.md` | G2.282 human-readable provider authorization report | Review input for future PR `#435`; records PR `#434` accepted/merged, target source boundary, cleanup lifecycle, GitNexus MEDIUM risk, OpenAPI smoke, and future G2.283 guardrails |
+| `governance/mainline/task-cards/pr-435.yaml` | No-source governance task card for G2.282 | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge |
+| `.planning/codebase/generated/data-lineage-tracker-ownership-decision-2026-06-01.json` | G2.281 data_lineage `get_lineage_tracker` ownership / route-provider decision evidence | Accepted by PR `#434`, merged at `b8ba6ca75c573913d7b10553620e5d308c0d13f3`; no-source decision package; limited-autopilot stopped because GitNexus risk is MEDIUM |
+| `docs/reports/quality/backend-data-lineage-tracker-ownership-decision-2026-06-01.md` | G2.281 human-readable ownership decision report | Accepted by PR `#434`; records PR `#433` accepted/merged, route helper surface, GitNexus MEDIUM risk, OpenAPI smoke, and G2.282 recommendation |
+| `governance/mainline/task-cards/pr-434.yaml` | No-source governance task card for G2.281 | Accepted by PR `#434`; allowed only steward tree, generated evidence, report, and task card updates; no auto-merge |
 | `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-monitoring-db-2026-06-01.json` | G2.280 service lifecycle residual candidate refresh evidence | Accepted by PR `#433`, merged at `1707284bceeef8992641290d86790c1699975f5a`; no-source candidate refresh and next-gate selection |
 | `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-monitoring-db-2026-06-01.md` | G2.280 human-readable residual candidate refresh report | Accepted by PR `#433`; records PR `#432` accepted/merged, current candidate scan, GitNexus sampling, OpenAPI smoke, and G2.281 recommendation |
 | `governance/mainline/task-cards/pr-433.yaml` | No-source governance task card for G2.280 | Accepted by PR `#433`; allowed only steward tree, generated evidence, report, and task card updates |
