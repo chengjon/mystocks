@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-05-31T12:27:16+08:00`
-- Base HEAD checked: `772e4a3ac8e05edaa243d660d67c7e5df18158f9`
+- Prepared at: `2026-05-31T13:53:26+08:00`
+- Base HEAD checked: `1cb885e8267d76e47e0d08977002a80fafb56092`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.268 monitoring portfolio optimizer provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#420` merged at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`; G2.267 accepted/merged; `get_portfolio_optimizer()` has 1 definition and 3 active route-body call sites in `_monitoring_portfolio_router.py`; GitNexus MCP returned `Transport closed` for context/impact | Review PR `#421` when opened; keep no-source; if accepted, start `G2.269 path-limited monitoring portfolio optimizer route provider implementation`; do not edit source, tests, route contracts, OpenSpec, or PM2 from G2.268 |
+| P0 | Review G2.269 monitoring portfolio optimizer provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#421` merged at `1cb885e8267d76e47e0d08977002a80fafb56092`; G2.268 accepted/merged; implementation moved 3 target handlers to `Depends(get_monitoring_portfolio_optimizer)`; focused tests `20/20` and OpenAPI guard `1/1` passed; runtime OpenAPI remains `548/500`, duplicate operation IDs `0` | Review PR `#422` when opened; if accepted, start `G2.270 no-source monitoring portfolio optimizer provider closeout / residual refresh`; do not expand source scope from G2.269 |
+| P0 | Preserve G2.268 monitoring portfolio optimizer provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#421` merged at `1cb885e8267d76e47e0d08977002a80fafb56092`; authorized only future G2.269 path-limited implementation for `_monitoring_portfolio_router.py` plus focused tests | Do not use G2.268 as authority for broader backend source edits, route registration, source retirement, docs/api, frontend, OpenSpec, config, scripts, or PM2 |
 | P0 | Preserve G2.267 monitoring/signal residual provider classification refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#420` merged at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`; residuals classified into active route-body candidate, retained wrappers, control-plane accessors, helper false positive, and dormant false positive | Do not use G2.267 as authority for backend source edits, route registration, provider injection, source retirement, tests, docs/api, frontend, OpenSpec, or PM2 |
 | P0 | Preserve G2.266 signal statistics dormant contract closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#419` merged at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`; G2.265 accepted/merged and dormant contract cleanup branch is closed | Do not use G2.266 as authority for backend source edits, route registration, provider injection, source retirement, tests, docs/api, frontend, OpenSpec, or PM2 |
 | P0 | Preserve G2.265 signal statistics stale contract cleanup implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#418` merged at `2b53352d6869f66147ce3892b1b0a7174ba064b4`; path-limited docs/test stale contract cleanup accepted; targeted tests `2/2`; runtime OpenAPI `548/500`, target paths `0`, duplicate operation IDs `0` | Do not use G2.265 as authority for backend source edits, route registration, provider injection, source retirement, frontend, OpenSpec, or PM2 |

@@ -105,6 +105,7 @@ PRs, change issue labels, or authorize source implementation.
 | `#418` | `g2-265-signal-statistics-stale-contract-cleanup` | `wip/root-dirty-20260403` | `MERGED` at `2b53352d6869f66147ce3892b1b0a7174ba064b4` | Path-limited stale signal statistics docs/test contract cleanup selecting G2.266 closeout / residual refresh |
 | `#419` | `g2-266-signal-statistics-dormant-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05` | No-source signal statistics dormant contract closeout selecting G2.267 residual classification refresh |
 | `#420` | `g2-267-monitoring-signal-residual-classification-refresh` | `wip/root-dirty-20260403` | `MERGED` at `772e4a3ac8e05edaa243d660d67c7e5df18158f9` | No-source monitoring/signal residual classification selecting G2.268 portfolio optimizer provider authorization |
+| `#421` | `g2-268-monitoring-portfolio-optimizer-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `1cb885e8267d76e47e0d08977002a80fafb56092` | No-source portfolio optimizer provider authorization selecting G2.269 path-limited implementation |
 
 ## Steward Governance Branch
 
@@ -119,6 +120,7 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-266-signal-statistics-dormant-closeout-refresh` | `origin/wip/root-dirty-20260403` at `2b53352d6869f66147ce3892b1b0a7174ba064b4` | Close out G2.265, refresh monitoring/signal residual classification, and select G2.267 no-source gate | No |
 | `g2-267-monitoring-signal-residual-classification-refresh` | `origin/wip/root-dirty-20260403` at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05` | Classify monitoring/signal residual provider surfaces and select G2.268 no-source authorization gate | No |
 | `g2-268-monitoring-portfolio-optimizer-provider-authorization` | `origin/wip/root-dirty-20260403` at `772e4a3ac8e05edaa243d660d67c7e5df18158f9` | Authorize the next path-limited monitoring portfolio optimizer route provider implementation lane | No |
+| `g2-269-monitoring-portfolio-optimizer-provider` | `origin/wip/root-dirty-20260403` at `1cb885e8267d76e47e0d08977002a80fafb56092` | Implement the authorized monitoring portfolio optimizer route-local provider injection | Yes, path-limited |
 
 ## OpenSpec Relationship
 
@@ -147,3 +149,5 @@ G2.266 is the no-source signal statistics dormant contract closeout / residual r
 G2.267 is the no-source monitoring/signal residual provider classification refresh after PR `#419` merged G2.266 at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`. It classifies residual surfaces and selects `G2.268 no-source monitoring portfolio optimizer route provider authorization`. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 
 G2.268 is the no-source monitoring portfolio optimizer route provider authorization after PR `#420` merged G2.267 at `772e4a3ac8e05edaa243d660d67c7e5df18158f9`. It authorizes only a future G2.269 path-limited source lane for `web/backend/app/api/_monitoring_portfolio_router.py` plus focused tests after G2.268 is accepted. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+G2.269 is the path-limited monitoring portfolio optimizer route provider implementation after PR `#421` merged G2.268 at `1cb885e8267d76e47e0d08977002a80fafb56092`. It may touch only `web/backend/app/api/_monitoring_portfolio_router.py`, focused tests, and governance evidence. It must not edit the domain optimizer, non-target API modules, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.

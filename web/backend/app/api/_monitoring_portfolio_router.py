@@ -111,6 +111,12 @@ def get_monitoring_postgres_async():
     return get_postgres_async()
 
 
+def get_monitoring_portfolio_optimizer():
+    from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
+
+    return get_portfolio_optimizer()
+
+
 class PortfolioSummaryResponse(BaseModel):
     """组合摘要响应"""
 
@@ -162,13 +168,12 @@ async def get_portfolio_summary(
     user_id: int = Query(1, description="用户ID"),
     calculator_factory=Depends(get_monitoring_calculator_factory),
     postgres_async=Depends(get_monitoring_postgres_async),
+    portfolio_optimizer=Depends(get_monitoring_portfolio_optimizer),
 ) -> UnifiedResponse[PortfolioSummaryResponse]:
     """获取组合分析摘要"""
     try:
-        from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
-
         factory = calculator_factory
-        optimizer = get_portfolio_optimizer()
+        optimizer = portfolio_optimizer
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
         watchlist = next((watchlist for watchlist in watchlists if watchlist["id"] == watchlist_id), None)
@@ -230,13 +235,12 @@ async def get_portfolio_alerts(
     level: Optional[str] = Query(None, description="预警级别过滤: critical/warning/info"),
     calculator_factory=Depends(get_monitoring_calculator_factory),
     postgres_async=Depends(get_monitoring_postgres_async),
+    portfolio_optimizer=Depends(get_monitoring_portfolio_optimizer),
 ) -> UnifiedResponse[List[AlertResponse]]:
     """获取组合预警列表"""
     try:
-        from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
-
         factory = calculator_factory
-        optimizer = get_portfolio_optimizer()
+        optimizer = portfolio_optimizer
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
         watchlist = next((watchlist for watchlist in watchlists if watchlist["id"] == watchlist_id), None)
@@ -300,13 +304,12 @@ async def get_rebalance_suggestions(
     user_id: int = Query(1, description="用户ID"),
     calculator_factory=Depends(get_monitoring_calculator_factory),
     postgres_async=Depends(get_monitoring_postgres_async),
+    portfolio_optimizer=Depends(get_monitoring_portfolio_optimizer),
 ) -> UnifiedResponse[List[RebalanceSuggestionResponse]]:
     """获取再平衡建议"""
     try:
-        from src.monitoring.domain.portfolio_optimizer import get_portfolio_optimizer
-
         factory = calculator_factory
-        optimizer = get_portfolio_optimizer()
+        optimizer = portfolio_optimizer
 
         watchlists = await postgres_async.get_user_watchlists(user_id)
         watchlist = next((watchlist for watchlist in watchlists if watchlist["id"] == watchlist_id), None)
