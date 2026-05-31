@@ -179,6 +179,10 @@ def get_monitoring_db():
     return monitoring_db
 
 
+def get_risk_monitoring_db():
+    return get_monitoring_db()
+
+
 __all__ = [
     "AlertContext",
     "BetaRequest",
@@ -201,6 +205,7 @@ __all__ = [
     "VaRCVaRResult",
     "get_alert_rule_engine",
     "get_monitoring_db",
+    "get_risk_monitoring_db",
     "get_risk_alert_notification_manager",
     "get_risk_management_core",
     "get_stop_loss_execution_service",

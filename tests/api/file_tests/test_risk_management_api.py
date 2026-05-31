@@ -8,11 +8,13 @@ File-level compatibility contract tests for risk_management.py.
 from __future__ import annotations
 
 import importlib
+import inspect
 import sys
 import warnings
 from pathlib import Path
 
 import pytest
+from fastapi.params import Depends as DependsParam
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -115,6 +117,26 @@ class TestRiskManagementAPIFile:
         assert response_models[("/api/v1/risk/beta", ("POST",))].__name__ == "BetaResult"
         assert response_models[("/api/v1/risk/dashboard", ("GET",))].__name__ == "RiskDashboardResponse"
         assert response_models[("/api/v1/risk/alerts", ("POST",))].__name__ == "RiskAlertResponse"
+
+    @pytest.mark.file_test
+    def test_risk_monitoring_db_uses_route_dependency_provider(self):
+        from app.api.risk import _shared, alerts, metrics
+
+        assert hasattr(_shared, "get_risk_monitoring_db")
+        provider = _shared.get_risk_monitoring_db
+
+        target_handlers = [
+            alerts.create_risk_alert,
+            metrics.calculate_var_cvar,
+            metrics.calculate_beta,
+        ]
+
+        for handler in target_handlers:
+            signature = inspect.signature(handler)
+            dependency = signature.parameters["monitoring_db"].default
+            assert isinstance(dependency, DependsParam)
+            assert dependency.dependency is provider
+            assert "get_monitoring_db()" not in inspect.getsource(handler)
 
     @pytest.mark.file_test
     def test_module_docstring_describes_compatibility_shim_and_split_targets(self, risk_management_module):

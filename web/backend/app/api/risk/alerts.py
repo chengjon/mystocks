@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from fastapi import APIRouter, Body, Path, Query
+from fastapi import APIRouter, Body, Depends, Path, Query
 
 from app.core.exceptions import BusinessException, NotFoundException, ValidationException
 from app.openapi_config import COMMON_RESPONSES
@@ -13,10 +13,7 @@ from app.api.risk._shared import (
     AlertContext,
     MyStocksUnifiedManager,
     NotificationManager,
-    get_alert_rule_engine,
-    get_monitoring_db,
-    get_risk_alert_notification_manager,
-    get_risk_management_core,
+    get_risk_monitoring_db,
     logger,
     NotificationTestRequest,
     NotificationTestResponse,
@@ -41,6 +38,10 @@ _acknowledged_v31_alerts: dict[int, dict[str, Any]] = {}
 
 from web.backend.app.api.risk._alerts_responses import (
     _success_response_spec,
+    _build_active_alerts_payload,
+    _resolve_notification_manager,
+    _resolve_rule_engine,
+    _resolve_runtime_alert_service,
     RISK_ALERT_UPDATE_EXAMPLES,
     RISK_ALERT_ACKNOWLEDGE_EXAMPLES,
     RISK_ALERT_SEND_EXAMPLES,
@@ -375,7 +376,8 @@ async def list_risk_alerts(
     responses=RISK_ALERT_CREATE_RESPONSES,
 )
 async def create_risk_alert(
-    alert_data: RiskAlertCreate = Body(..., openapi_examples=RISK_ALERT_CREATE_EXAMPLES)
+    alert_data: RiskAlertCreate = Body(..., openapi_examples=RISK_ALERT_CREATE_EXAMPLES),
+    monitoring_db: Any = Depends(get_risk_monitoring_db),
 ) -> RiskAlertResponse:
     operation_start = datetime.now()
     try:
@@ -392,7 +394,7 @@ async def create_risk_alert(
         )
 
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
+        monitoring_db.log_operation(
             operation_type="INSERT",
             table_name="risk_alerts",
             operation_name="create_risk_alert",
@@ -409,7 +411,7 @@ async def create_risk_alert(
 
     except Exception as e:
         operation_time = (datetime.now() - operation_start).total_seconds() * 1000
-        get_monitoring_db().log_operation(
+        monitoring_db.log_operation(
             operation_type="INSERT",
             table_name="risk_alerts",
             operation_name="create_risk_alert",
@@ -494,7 +496,7 @@ async def delete_risk_alert(alert_id: int = Path(..., description="需要禁用�
     responses=RISK_ALERT_NOTIFICATION_TEST_RESPONSES,
 )
 async def test_notification(
-    request: NotificationTestRequest = Body(..., openapi_examples=RISK_ALERT_NOTIFICATION_TEST_EXAMPLES)
+    request: NotificationTestRequest = Body(..., openapi_examples=RISK_ALERT_NOTIFICATION_TEST_EXAMPLES)  # noqa: PT028
 ) -> NotificationTestResponse:
     try:
         notifier = NotificationManager()
