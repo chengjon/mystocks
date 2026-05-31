@@ -1,0 +1,151 @@
+{
+  "id": "g2-267-monitoring-signal-residual-classification-refresh",
+  "generated_at": "2026-05-31T12:01:59+08:00",
+  "branch": "g2-267-monitoring-signal-residual-classification-refresh",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "eec68bb47a4ee98508480ef0ac2cdd3716e04b05",
+  "source_edit_authority": false,
+  "parent": {
+    "g2_id": "G2.266",
+    "pr": 419,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/419",
+    "merge_commit": "eec68bb47a4ee98508480ef0ac2cdd3716e04b05",
+    "merged_at": "2026-05-31T03:53:23Z"
+  },
+  "route_module_map": {
+    "app.api._monitoring_portfolio_router": {
+      "active_route_count": 3,
+      "endpoints": [
+        "get_portfolio_summary",
+        "get_portfolio_alerts",
+        "get_rebalance_suggestions"
+      ]
+    },
+    "app.api.monitoring": {
+      "active_route_count": 13
+    },
+    "app.api.monitoring_analysis": {
+      "active_route_count": 6
+    },
+    "app.api.monitoring_watchlists": {
+      "active_route_count": 8
+    },
+    "app.api.signal_monitoring.get_signal_statistics": {
+      "active_route_count": 0,
+      "classification": "dormant_source_false_positive_for_active_route_provider_work"
+    },
+    "app.api.signal_monitoring.signal_history_response": {
+      "active_route_count": 4
+    },
+    "app.api.v1.pool_monitoring": {
+      "active_route_count": 4
+    }
+  },
+  "residual_classification": {
+    "active_route_body_authorization_candidate": [
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "symbol": "get_portfolio_optimizer",
+        "calls": 3,
+        "route_functions": [
+          "get_portfolio_summary",
+          "get_portfolio_alerts",
+          "get_rebalance_suggestions"
+        ],
+        "definition": "src/monitoring/domain/portfolio_optimizer.py",
+        "static_call_sites": [
+          "web/backend/app/api/_monitoring_portfolio_router.py:171",
+          "web/backend/app/api/_monitoring_portfolio_router.py:239",
+          "web/backend/app/api/_monitoring_portfolio_router.py:309"
+        ],
+        "recommended_next_gate": "G2.268 no-source monitoring portfolio optimizer route provider authorization"
+      }
+    ],
+    "retained_provider_backing_wrappers": [
+      {
+        "file": "web/backend/app/api/_monitoring_portfolio_router.py",
+        "wrappers": [
+          "get_monitoring_calculator_factory",
+          "get_monitoring_postgres_async"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/monitoring_analysis.py",
+        "wrappers": [
+          "get_monitoring_calculator_factory",
+          "get_monitoring_analysis_postgres_async"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/monitoring_watchlists.py",
+        "wrappers": [
+          "get_monitoring_watchlists_postgres_async"
+        ]
+      },
+      {
+        "file": "web/backend/app/api/signal_monitoring/signal_history_response.py",
+        "wrappers": [
+          "get_signal_history_postgres_async"
+        ]
+      }
+    ],
+    "route_helper_or_self_call_false_positive": [
+      {
+        "file": "web/backend/app/api/monitoring.py",
+        "route_function": "analyze_monitoring",
+        "call": "get_monitoring_summary",
+        "reason": "local route/helper call, not a service singleton provider candidate"
+      }
+    ],
+    "control_plane_pool_accessors": [
+      {
+        "file": "web/backend/app/api/v1/pool_monitoring.py",
+        "calls": [
+          "get_postgresql_engine",
+          "get_tdengine_manager",
+          "get_postgresql_pool_stats",
+          "get_tdengine_pool_stats"
+        ],
+        "reason": "control-plane pool monitoring accessor path; classify under route/OpenAPI/control-plane governance before any service DI lane"
+      }
+    ],
+    "dormant_false_positive": [
+      {
+        "file": "web/backend/app/api/signal_monitoring/get_signal_statistics.py",
+        "route_module_active_routes": 0,
+        "getter_calls": {
+          "get_postgres_async": 3,
+          "get_signal_result_tracker": 1
+        },
+        "reason": "route-shaped source is retained dormant and absent from current FastAPI route table"
+      }
+    ]
+  },
+  "gitnexus": {
+    "context_get_portfolio_optimizer": "timed out after 120s",
+    "impact_get_portfolio_optimizer": "timed out after 120s",
+    "fallback_static_evidence": "git grep found one definition and three active route call sites"
+  },
+  "decision": {
+    "classification": "residual-classification-complete-no-source-lane",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-267",
+    "selected_next_governance_target": "G2.268 no-source monitoring portfolio optimizer route provider authorization",
+    "reason": "Only get_portfolio_optimizer appears as a concentrated active route-body provider candidate with three active route call sites. Other residuals are retained wrappers, control-plane accessors, route-helper false positives, or dormant source."
+  },
+  "forbidden_actions": [
+    "backend source edits",
+    "route registration",
+    "provider injection",
+    "source retirement",
+    "test contract edits",
+    "docs/api contract edits",
+    "OpenSpec mutation",
+    "frontend/config/script changes",
+    "PM2 or stateful runtime commands"
+  ],
+  "stale_policy": {
+    "current_head_checked_at_review": "eec68bb47a4ee98508480ef0ac2cdd3716e04b05",
+    "stale_if_head_or_pr_state_changes": true
+  }
+}

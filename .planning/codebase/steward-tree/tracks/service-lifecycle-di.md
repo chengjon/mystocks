@@ -2783,7 +2783,7 @@ Status: accepted/merged by PR `#418` at `2b53352d6869f66147ce3892b1b0a7174ba064b
 
 ## G2.266 Signal Statistics Dormant Contract Closeout / Residual Refresh
 
-Status: for review in PR `#419`.
+Status: accepted/merged by PR `#419` at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`.
 
 - Parent PR `#418` merged at `2b53352d6869f66147ce3892b1b0a7174ba064b4`.
 - G2.265 is recorded as accepted/merged; stale signal statistics docs/test contract mismatch is closed.
@@ -2791,5 +2791,19 @@ Status: for review in PR `#419`.
 - Targeted dormant endpoint tests remain green at `2/2` and assert `404 Not Found`.
 - `web/backend/app/api/signal_monitoring/get_signal_statistics.py` remains retained dormant source and is excluded from provider injection or source retirement.
 - Residual refresh found mixed monitoring/signal getter-shaped surfaces; they require classification before source authorization.
-- Next gate: G2.267 no-source monitoring/signal residual provider classification refresh.
+- Superseded by G2.267 no-source monitoring/signal residual provider classification refresh.
 - G2.266 must not edit backend source, tests, route contracts, frontend, config, scripts, OpenSpec, or PM2 state.
+
+## G2.267 Monitoring / Signal Residual Provider Classification Refresh
+
+Status: for review in PR `#420`.
+
+- Parent PR `#419` merged at `eec68bb47a4ee98508480ef0ac2cdd3716e04b05`.
+- Classified monitoring/signal getter-shaped residuals without source edits.
+- Active route-body authorization candidate: `_monitoring_portfolio_router.py` calls `get_portfolio_optimizer()` in three active route handlers.
+- Retained wrapper surfaces: monitoring calculator/postgres wrapper functions and signal history postgres provider backing wrapper.
+- False positives: `monitoring.py::analyze_monitoring` route-helper call and dormant `get_signal_statistics.py`.
+- Control-plane residual: `web/backend/app/api/v1/pool_monitoring.py` pool accessors require route/OpenAPI/control-plane governance, not service DI implementation.
+- GitNexus `context` and `impact` for `get_portfolio_optimizer` timed out; G2.268 must re-check before authorizing source.
+- Next gate: G2.268 no-source monitoring portfolio optimizer route provider authorization.
+- G2.267 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, or PM2 state.
