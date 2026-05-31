@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T18:44:47+08:00`
-- Base HEAD checked: `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`
+- Prepared at: `2026-05-31T19:34:41+08:00`
+- Base HEAD checked: `5b3ffd1f114b612810e96c463c651befeb005222`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -2839,7 +2839,7 @@ Status: accepted/merged by PR `#422` at `7ed8f8e352f29c9c48bc4a45ea77661b08de89d
 
 ## G2.270 Monitoring Portfolio Optimizer Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#423`.
+Status: accepted/merged by PR `#423` at `5b3ffd1f114b612810e96c463c651befeb005222`.
 
 - Parent PR `#422` merged at `7ed8f8e352f29c9c48bc4a45ea77661b08de89da`.
 - G2.269 is recorded as accepted/merged; direct route-body `get_portfolio_optimizer()` calls are `0`.
@@ -2847,5 +2847,20 @@ Status: for review in future PR `#423`.
 - Retained wrapper residuals remain provider backing calls, not source-lane candidates.
 - `signal_monitoring/get_signal_statistics.py` remains dormant with `0` active routes and stays under prior G2.261-G2.266 decisions.
 - `web/backend/app/api/v1/pool_monitoring.py` has `4` active routes and remaining pool accessors; classify this as route/OpenAPI/control-plane ownership work, not service DI implementation.
-- Selected next gate after acceptance: G2.271 no-source pool monitoring control-plane accessor ownership / route governance decision.
+- Superseded by G2.271 no-source pool monitoring control-plane accessor ownership / route governance decision.
 - G2.270 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.271 Pool Monitoring Control-Plane Ownership Decision
+
+Status: for review in future PR `#424`.
+
+- Parent PR `#423` merged at `5b3ffd1f114b612810e96c463c651befeb005222`.
+- `web/backend/app/api/v1/pool_monitoring.py` is classified as an active control-plane route contract, not an ordinary service lifecycle DI source candidate.
+- Runtime/OpenAPI snapshot remains `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation IDs.
+- Pool monitoring has `4` active routes and `4` OpenAPI paths, all `include_in_schema=true`.
+- The active paths are `/api/pool-monitoring/postgresql/stats`, `/api/pool-monitoring/tdengine/stats`, `/api/pool-monitoring/health`, and `/api/pool-monitoring/alerts`.
+- Residual accessors `get_postgresql_engine()` and `get_tdengine_manager()` are infrastructure pool accessors used by control-plane routes.
+- Route-local stats helpers `get_postgresql_pool_stats()` and `get_tdengine_pool_stats()` remain under route/OpenAPI/control-plane ownership.
+- GitNexus MCP route/context calls timed out after `120s`; G2.271 records AST, route table, OpenAPI, and static artifact fallback evidence.
+- Selected next gate after acceptance: G2.272 no-source service lifecycle residual candidate refresh after pool-monitoring deferral.
+- G2.271 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
