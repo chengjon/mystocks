@@ -2925,7 +2925,7 @@ Status: accepted/merged by PR `#428` at `daa4f22a557b054ab76042d4990b6e91d9faa7a
 
 ## G2.276 Risk get_monitoring_db Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#429`.
+Status: accepted/merged by PR `#429` at `f48ede2ce2202318efa3411fe22fb83a8d4d920b`.
 
 - Parent PR `#428` merged at `daa4f22a557b054ab76042d4990b6e91d9faa7a7`.
 - Risk route-body `get_monitoring_db()` calls are closed: `risk/alerts.py` and `risk/metrics.py` both have `0`; risk provider backing call remains in `_shared.py`.
@@ -2935,3 +2935,19 @@ Status: for review in future PR `#429`.
 - Focused risk provider test remains green at `1/1`; ruff remains clean on the G2.275 touched risk source/test paths.
 - Selected next gate after acceptance: G2.277 no-source strategy `get_monitoring_db` route-provider authorization.
 - G2.276 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.277 Strategy get_monitoring_db Provider Authorization
+
+Status: for review in future PR `#430`.
+
+- Parent PR `#429` merged at `f48ede2ce2202318efa3411fe22fb83a8d4d920b`.
+- GitNexus MCP context / impact returned `Transport closed`; CLI fallback using `Function:web/backend/app/api/strategy_management/_helpers.py:get_monitoring_db` returned LOW risk with `7` impacted symbols, `3` direct symbols, and `0` affected processes.
+- Direct affected symbols are `_handle_strategy_lifecycle_action`, `list_strategies`, and `create_strategy`.
+- Strategy target files are `web/backend/app/api/strategy_management/_helpers.py` and `web/backend/app/api/strategy_management/_strategy_crud_router.py`.
+- Current strategy call sites are `2` helper-level lifecycle log calls in `_helpers.py` and `4` active route-body log calls in `_strategy_crud_router.py`.
+- `web/backend/app/utils/risk_utils.py` remains a deferred utility same-name helper with `0` active API route-body calls in this scan.
+- Runtime/OpenAPI smoke with placeholder import-time environment values recorded `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation IDs.
+- Focused strategy file-test attempt currently reports `3 failed, 7 passed, 1 warning`; failures are existing route prefix/count/chart-data wiring expectation drift and are not caused by this no-source authorization package.
+- Authorized next gate after acceptance: G2.278 path-limited strategy `get_monitoring_db` route-provider implementation.
+- Future G2.278 may touch only the two strategy-management source paths plus focused strategy tests named in the authorization report.
+- G2.277 must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
