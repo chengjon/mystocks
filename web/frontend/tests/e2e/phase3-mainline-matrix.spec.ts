@@ -2527,6 +2527,7 @@ test.describe("Phase 3 Mainline Matrix", () => {
     await expect(page.getByText("对账单工作台").first()).toBeVisible()
     await expect(page.getByTestId("trade-reconciliation-page")).toBeVisible()
     await expect(page.getByTestId("trade-reconciliation-header")).toBeVisible()
+    await expect(page.getByTestId("trade-reconciliation-header")).toHaveClass(/artdeco-route-header/)
     await expect(page.getByTestId("trade-reconciliation-refresh")).toBeVisible()
     await expect(page.getByTestId("trade-reconciliation-control-row")).toBeVisible()
     await expect(page.getByTestId("trade-reconciliation-status-strip")).toContainText("总笔数")

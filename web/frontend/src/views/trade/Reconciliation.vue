@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import { useTradeReconciliation } from './composables/useTradeReconciliation'
 
 const {
@@ -101,50 +102,52 @@ const onAccountChange = async (event: Event) => {
 
 <template>
   <div class="trade-reconciliation page-enter" data-testid="trade-reconciliation-page">
-    <section class="hero-shell artdeco-card-shell" data-testid="trade-reconciliation-header">
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">trade reconciliation desk</span>
-          <div class="hero-meta">
-            <span>ACCOUNT: {{ selectedAccountId || 'N/A' }}</span>
-            <span>REQ_ID: {{ currentSnapshotRequestId || 'N/A' }}</span>
-            <span>UPDATED: {{ currentSnapshotUpdatedAt }}</span>
-            <span>IMPORT_BATCH: {{ importBatchId || '未导入' }}</span>
-            <span>ROWS: {{ importRowCount || 0 }}</span>
-          </div>
-        </div>
-      </div>
+    <ArtDecoRouteHeader
+      title="对账单工作台"
+      subtitle="统一查看内部账单、券商 CSV 导入结果和只读差异状态"
+      eyebrow="trade reconciliation desk"
+      :show-status="true"
+      :status-text="pageStatusText"
+      :status-type="pageStatusType"
+      test-id="trade-reconciliation-header"
+      shell-class="hero-shell artdeco-card-shell"
+    >
+      <template #meta>
+        <span>ACCOUNT: {{ selectedAccountId || 'N/A' }}</span>
+        <span>REQ_ID: {{ currentSnapshotRequestId || 'N/A' }}</span>
+        <span>UPDATED: {{ currentSnapshotUpdatedAt }}</span>
+        <span>IMPORT_BATCH: {{ importBatchId || '未导入' }}</span>
+        <span>ROWS: {{ importRowCount || 0 }}</span>
+      </template>
 
-      <ArtDecoHeader
-        title="对账单工作台"
-        subtitle="统一查看内部账单、券商 CSV 导入结果和只读差异状态"
-        :show-status="true"
-        :status-text="pageStatusText"
-        :status-type="pageStatusType"
-      >
-        <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" data-testid="trade-reconciliation-refresh" @click="refresh">
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新账单
-          </ArtDecoButton>
-          <ArtDecoButton
-            variant="outline"
-            size="sm"
-            :disabled="!hasImportBatch || exporting"
-            :loading="exporting"
-            data-testid="reconciliation-export-button"
-            @click="exportResults"
-          >
-            <template #icon>
-              <ArtDecoIcon name="download" />
-            </template>
-            导出 CSV
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
-    </section>
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          data-testid="trade-reconciliation-refresh"
+          @click="refresh"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新账单
+        </ArtDecoButton>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :disabled="!hasImportBatch || exporting"
+          :loading="exporting"
+          data-testid="reconciliation-export-button"
+          @click="exportResults"
+        >
+          <template #icon>
+            <ArtDecoIcon name="download" />
+          </template>
+          导出 CSV
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section class="control-shell artdeco-card-shell" data-testid="trade-reconciliation-control-row">
       <div class="control-grid">

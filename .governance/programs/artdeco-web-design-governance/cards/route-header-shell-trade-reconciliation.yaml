@@ -1,0 +1,31 @@
+task:
+  id: "route-header-shell-trade-reconciliation"
+  title: "Migrate /trade/reconciliation route header shell"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/trade/Reconciliation.vue"
+    - "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts"
+    - "web/frontend/src/components/artdeco/route-shell/"
+    - "docs/reports/tasks/"
+    - "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify router paths, route aliases, redirects, guards, menu entries, or canonical route ownership."
+  - "Do not modify backend API contracts, OpenAPI/Pydantic schemas, or frontend API clients/request URLs."
+  - "Do not change reconciliation account selection, CSV import, statement/result rows, status strip, broker acknowledgement, diff semantics, request-id semantics, or execution context navigation."
+  - "Do not extract shared trade reconciliation business components or redesign control/status/work-area surfaces."
+
+acceptance:
+  commit_gate:
+    - "TDD RED must fail on trade-reconciliation-header lacking artdeco-route-header before implementation."
+    - "GREEN focused trade reconciliation E2E must pass after implementation."
+    - "eslint, ArtDeco token check, impeccable, type-check, Function Tree scope-check, and GitNexus staged scope gate must pass or be reported."
+  closeout_gate:
+    - "Closeout report records compatibility boundaries, verification evidence, no router/API/client changes, and ledger update after implementation."
+
+evidence:
+  current_head: "b73998b7f2bd87791e98bc4203a204fe4b63a1c9"
+  notes: []

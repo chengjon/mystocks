@@ -377,5 +377,78 @@
       "current_head": "ee32a75ed87b3e15c11962b1e6a30a89fa72b6c3",
       "prepared_at": "2026-05-31T06:22:19.084Z"
     }
+  },
+  {
+    "id": "route-header-shell-trade-reconciliation",
+    "title": "Migrate /trade/reconciliation route header shell",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "route-header-shell-migration",
+    "status": "implementation-ready",
+    "function_tree_ref": "docs/FUNCTION_TREE.md#domain-01-node-03",
+    "current_head": "b73998b7f2bd87791e98bc4203a204fe4b63a1c9",
+    "freshness": "current-head",
+    "source_edits_authorized": true,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Baseline: Reconciliation.vue uses local ArtDecoHeader under trade-reconciliation-header; phase3-mainline-matrix.spec.ts has reconciliation route test; GitNexus impact LOW, direct=0, affected_processes=0; active gates were none before node creation.",
+        "note": "Prepare /trade/reconciliation route header shell migration.",
+        "current_head": "b73998b7f2bd87791e98bc4203a204fe4b63a1c9",
+        "recorded_at": "2026-05-31T06:40:29.254Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/trade/Reconciliation.vue",
+      "web/frontend/tests/e2e/phase3-mainline-matrix.spec.ts",
+      "web/frontend/src/components/artdeco/route-shell/",
+      "docs/reports/tasks/",
+      "docs/guides/web/ARTDECO_ROUTE_HEADER_SHELL_MODIFICATION_RULES.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify router paths, route aliases, redirects, guards, menu entries, or canonical route ownership.",
+      "Do not modify backend API contracts, OpenAPI/Pydantic schemas, or frontend API clients/request URLs.",
+      "Do not change reconciliation account selection, CSV import, statement/result rows, status strip, broker acknowledgement, diff semantics, request-id semantics, or execution context navigation.",
+      "Do not extract shared trade reconciliation business components or redesign control/status/work-area surfaces."
+    ],
+    "next_gate": "land implementation with Git evidence",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-05-31T06:40:18.141Z",
+    "updated_at": "2026-05-31T06:41:46.819Z",
+    "transitions": [
+      {
+        "from": "evidence-prepared",
+        "to": "decision-prepared",
+        "note": "Decision: use established ArtDecoRouteHeader route-header-shell-only pattern for /trade/reconciliation.",
+        "current_head": "b73998b7f2bd87791e98bc4203a204fe4b63a1c9",
+        "transitioned_at": "2026-05-31T06:40:40.993Z"
+      },
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing with recommended next route; scope is route-header-shell-only for /trade/reconciliation.",
+        "current_head": "b73998b7f2bd87791e98bc4203a204fe4b63a1c9",
+        "transitioned_at": "2026-05-31T06:41:12.692Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation bound to current HEAD with baseline evidence and LOW GitNexus impact.",
+        "current_head": "b73998b7f2bd87791e98bc4203a204fe4b63a1c9",
+        "transitioned_at": "2026-05-31T06:41:46.818Z"
+      }
+    ],
+    "acceptance": {
+      "commit_gate": [
+        "TDD RED must fail on trade-reconciliation-header lacking artdeco-route-header before implementation.",
+        "GREEN focused trade reconciliation E2E must pass after implementation.",
+        "eslint, ArtDeco token check, impeccable, type-check, Function Tree scope-check, and GitNexus staged scope gate must pass or be reported."
+      ],
+      "closeout_gate": [
+        "Closeout report records compatibility boundaries, verification evidence, no router/API/client changes, and ledger update after implementation."
+      ]
+    }
   }
 ]
