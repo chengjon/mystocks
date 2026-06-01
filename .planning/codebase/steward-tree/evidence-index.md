@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T08:12:57+08:00`
-- Base HEAD checked: `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`
+- Prepared at: `2026-06-01T08:49:27+08:00`
+- Base HEAD checked: `67ef9b9d8f9dd420de80995f624fa54e41493415`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/governance-dashboard-postgres-provider-implementation-2026-06-01.json` | G2.287 `governance_dashboard.get_postgres_connection` provider implementation evidence | Review input for future PR `#440`; path-limited source implementation; must stop because it edits backend source and GitNexus target impact is MEDIUM |
-| `docs/reports/quality/backend-governance-dashboard-postgres-provider-implementation-2026-06-01.md` | G2.287 human-readable provider implementation report | Review input for future PR `#440`; records PR `#439` accepted/merged, TDD, route-local provider implementation, focused tests, OpenAPI smoke, and next G2.288 closeout recommendation |
-| `governance/mainline/task-cards/pr-440.yaml` | Path-limited implementation task card for G2.287 | Review input; allows only `governance_dashboard.py`, focused regression test, steward tree, generated evidence, report, and task card updates; no auto-merge |
+| `.planning/codebase/generated/governance-dashboard-postgres-provider-closeout-refresh-2026-06-01.json` | G2.288 `governance_dashboard.get_postgres_connection` provider closeout / residual refresh evidence | Review input for future PR `#441`; no-source closeout package; must stop because the selected next target has GitNexus MEDIUM impact and one affected process |
+| `docs/reports/quality/backend-governance-dashboard-postgres-provider-closeout-refresh-2026-06-01.md` | G2.288 human-readable closeout / residual refresh report | Review input for future PR `#441`; records PR `#440` accepted/merged, governance dashboard closeout scan, OpenAPI smoke, residual refresh, and G2.289 recommendation |
+| `governance/mainline/task-cards/pr-441.yaml` | No-source governance task card for G2.288 | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge because selected next target impact is MEDIUM |
+| `.planning/codebase/generated/governance-dashboard-postgres-provider-implementation-2026-06-01.json` | G2.287 `governance_dashboard.get_postgres_connection` provider implementation evidence | Accepted by PR `#440`, merged at `67ef9b9d8f9dd420de80995f624fa54e41493415`; path-limited source implementation; superseded for closeout by G2.288 |
+| `docs/reports/quality/backend-governance-dashboard-postgres-provider-implementation-2026-06-01.md` | G2.287 human-readable provider implementation report | Accepted by PR `#440`; records PR `#439` accepted/merged, TDD, route-local provider implementation, focused tests, OpenAPI smoke, and next G2.288 closeout recommendation |
+| `governance/mainline/task-cards/pr-440.yaml` | Path-limited implementation task card for G2.287 | Accepted by PR `#440`; allowed only `governance_dashboard.py`, focused regression test, steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/governance-dashboard-postgres-provider-authorization-2026-06-01.json` | G2.286 `governance_dashboard.get_postgres_connection` provider authorization evidence | Accepted by PR `#439`, merged at `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`; no-source authorization package; superseded for implementation by G2.287 |
 | `docs/reports/quality/backend-governance-dashboard-postgres-provider-authorization-2026-06-01.md` | G2.286 human-readable provider authorization report | Accepted by PR `#439`; records PR `#438` accepted/merged, future path-limited implementation envelope, required tests, OpenAPI smoke, and stop rule |
 | `governance/mainline/task-cards/pr-439.yaml` | No-source governance task card for G2.286 | Accepted by PR `#439`; allowed only steward tree, generated evidence, report, and task card updates; no auto-merge because it authorized future source work and target impact was MEDIUM |

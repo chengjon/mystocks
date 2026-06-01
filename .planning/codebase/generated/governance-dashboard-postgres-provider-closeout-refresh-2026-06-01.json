@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-01T08:49:27+08:00",
+  "gate": "G2.288",
+  "title": "governance_dashboard get_postgres_connection provider closeout / residual refresh",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "67ef9b9d8f9dd420de80995f624fa54e41493415",
+  "worktree": ".worktrees/g2-288-governance-dashboard-postgres-provider-closeout",
+  "source_edit_authority": false,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "G2.288 selects a next target with GitNexus MEDIUM impact; it must stop for human review.",
+  "parent": {
+    "gate": "G2.287",
+    "pr": 440,
+    "state": "MERGED",
+    "merged_at": "2026-06-01T00:44:27Z",
+    "merge_commit": "67ef9b9d8f9dd420de80995f624fa54e41493415",
+    "summary": "Path-limited governance_dashboard provider implementation accepted/merged."
+  },
+  "closeout": {
+    "module": "web/backend/app/api/governance_dashboard.py",
+    "helper": "get_postgres_connection",
+    "provider": "get_governance_dashboard_postgres_connection",
+    "provider_present": true,
+    "provider_backing_calls_after": 1,
+    "direct_route_body_calls_after": 0,
+    "manual_conn_close_calls_after": 0,
+    "depends_provider_bindings_after": 5,
+    "route_handlers": [
+      "get_quality_overview",
+      "get_lineage_stats",
+      "get_assets_catalog",
+      "get_compliance_metrics",
+      "get_dashboard_summary"
+    ],
+    "runtime_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "provider_param_leaks": []
+  },
+  "residual_refresh": {
+    "active_route_getter_matches": 47,
+    "selected_next_target": {
+      "gate": "G2.289",
+      "symbol": "get_manager",
+      "uid": "Function:web/backend/app/api/data_source_registry.py:get_manager",
+      "file": "web/backend/app/api/data_source_registry.py",
+      "classification": "active data-source registry route helper requiring no-source ownership / route-provider decision first",
+      "direct_route_body_calls": 7,
+      "route_handlers": [
+        "search_data_sources",
+        "get_category_stats",
+        "get_data_source",
+        "update_data_source",
+        "test_data_source",
+        "health_check_data_source",
+        "health_check_all_data_sources"
+      ],
+      "runtime_route_prefix": "/api/v1/data-sources",
+      "gitnexus_risk": "MEDIUM",
+      "gitnexus_direct_callers": 7,
+      "gitnexus_impacted_symbols": 7,
+      "gitnexus_affected_processes": 1
+    },
+    "deferred_or_excluded": [
+      {
+        "candidate": "web/backend/app/api/data_source_config.old.py:get_config_manager",
+        "reason": "not selected from active FastAPI route-handler scan; old file requires separate historical/compatibility classification before any source lane"
+      },
+      {
+        "candidate": "web/backend/app/services/__init__.py:get_integrated_services",
+        "reason": "root facade compatibility / service seam; not a route-body provider candidate"
+      },
+      {
+        "candidate": "web/backend/app/api/_cache_basic_routes.py:get_cache_manager",
+        "reason": "active route helper remains in residual pool but ranked after data_source_registry because current top active route-body count is lower"
+      }
+    ]
+  },
+  "gitnexus_evidence": {
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_context": "found Function:web/backend/app/api/data_source_registry.py:get_manager with seven incoming calls",
+    "cli_impact_uid": {
+      "target": "Function:web/backend/app/api/data_source_registry.py:get_manager",
+      "risk": "MEDIUM",
+      "impacted_count": 7,
+      "direct": 7,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "index_status": "stale warning"
+    },
+    "staged": "MCP detect_changes returned Transport closed; CLI verify-staged fallback ok=true, index status stale, risk=low, changed files 9, changed symbols 0, affected processes 0"
+  },
+  "verification": {
+    "closeout_scan": "provider present; direct route-body get_postgres_connection calls 0; route-body manual conn.close calls 0; Depends provider bindings 5",
+    "route_openapi_smoke": "548 routes, 500 OpenAPI paths, duplicate operation IDs 0, five governance dashboard paths present, provider parameter leaks []"
+  },
+  "decision": {
+    "classification": "closeout-refresh-complete-no-source-lane",
+    "governance_dashboard_provider_status": "closed",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-288",
+    "autopilot_continue_allowed": false,
+    "selected_next_governance_target": "G2.289 no-source data_source_registry.get_manager ownership / route-provider decision",
+    "reason": "G2.287 is accepted/merged and the governance dashboard provider lane is closed. Remaining active route getter surfaces still require ownership classification; data_source_registry.get_manager is the next highest active route-body residual and has MEDIUM GitNexus impact, so it must start as no-source decision only."
+  },
+  "freshness": {
+    "current_head_checked": "67ef9b9d8f9dd420de80995f624fa54e41493415",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_governance_dashboard_call_sites_change": true,
+    "stale_if_candidate_scan_changes": true,
+    "stale_if_gitnexus_risk_changes": true
+  },
+  "next_gate": "Stop for human review in PR #441. If accepted, start G2.289 no-source data_source_registry.get_manager ownership / route-provider decision."
+}
