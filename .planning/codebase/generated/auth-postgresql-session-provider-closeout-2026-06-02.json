@@ -1,0 +1,116 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-02T00:20:00+08:00",
+  "g_node": "G2.308",
+  "title": "Auth.py get_postgresql_session provider closeout / residual refresh",
+  "branch": "g2-308-auth-postgresql-session-provider-closeout",
+  "parent_pr": {
+    "number": 460,
+    "url": "https://github.com/chengjon/mystocks/pull/460",
+    "state": "MERGED",
+    "merged_at": "2026-06-01T16:13:22Z",
+    "merge_commit": "833856a526c3083aa4c21a28d31b36ee2a82e9bd",
+    "head_ref": "g2-307-auth-postgresql-session-provider-implementation"
+  },
+  "base_head": "833856a526c3083aa4c21a28d31b36ee2a82e9bd",
+  "source_edit_authority": false,
+  "allowed_scope": [
+    ".planning/codebase/generated/auth-postgresql-session-provider-closeout-2026-06-02.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-auth-postgresql-session-provider-closeout-2026-06-02.md",
+    "governance/mainline/task-cards/pr-461.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**",
+    "PM2/runtime state"
+  ],
+  "closeout": {
+    "auth_provider_status": "closed",
+    "provider": "get_auth_postgresql_session_factory",
+    "direct_route_body_get_postgresql_session_calls": 0,
+    "provider_backing_get_postgresql_session_calls": 1,
+    "dependency_bindings": 4,
+    "affected_handlers": [
+      "get_users",
+      "register_user",
+      "request_password_reset",
+      "confirm_password_reset"
+    ],
+    "cleanup_semantics": "session.close() in finally preserved",
+    "transaction_semantics": "confirm_password_reset commit/rollback preserved",
+    "compatibility_exports_retained": [
+      "verify_token",
+      "get_current_active_user"
+    ]
+  },
+  "residual_scan": {
+    "active_route_body_direct_get_postgresql_session_calls": 0,
+    "provider_backing_calls": 2,
+    "import_only_residual_files": [
+      "web/backend/app/api/market/market_data_request.py",
+      "web/backend/app/api/v1/admin/audit.py"
+    ],
+    "files": {
+      "web/backend/app/api/auth.py": {
+        "calls": 1,
+        "imports_or_mentions": 2,
+        "classification": "closed provider backing call"
+      },
+      "web/backend/app/api/v1/admin/optimization.py": {
+        "calls": 1,
+        "imports_or_mentions": 2,
+        "classification": "closed provider backing call"
+      },
+      "web/backend/app/api/market/market_data_request.py": {
+        "calls": 0,
+        "imports_or_mentions": 2,
+        "classification": "import-only residual"
+      },
+      "web/backend/app/api/v1/admin/audit.py": {
+        "calls": 0,
+        "imports_or_mentions": 3,
+        "classification": "import-only residual"
+      }
+    }
+  },
+  "verification": {
+    "focused_auth_tests": "web/backend/tests/test_auth.py web/backend/tests/test_auth_login_contract.py: 11 passed, 18 skipped in 14.54s",
+    "ruff": "ruff check --no-fix web/backend/app/api/auth.py web/backend/tests/test_auth.py web/backend/tests/test_auth_login_contract.py: all checks passed",
+    "route_openapi": {
+      "runtime_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "warning_count": 119,
+      "note": "Smoke used non-secret test-only environment values and did not start PM2."
+    }
+  },
+  "decision": {
+    "classification": "auth-postgresql-session-provider-closed-no-source-closeout",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-308",
+    "core_database_get_postgresql_session_route_body_status": "no active route-body direct residuals remain in the tracked auth/admin/market/admin-audit route-domain set",
+    "recommended_next_work_item": "G2.309 no-source service lifecycle residual candidate refresh after auth provider closeout",
+    "autopilot_continue_allowed": true
+  },
+  "freshness": {
+    "current_head_checked": "833856a526c3083aa4c21a28d31b36ee2a82e9bd",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_auth_provider_shape_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_residual_scan_changes": true
+  }
+}

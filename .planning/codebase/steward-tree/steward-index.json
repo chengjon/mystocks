@@ -1,9 +1,9 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T21:38:00+08:00",
+  "generated_at": "2026-06-02T00:20:00+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "702816e7aa23378b2acd5dbc27de449fc74a3af5",
+  "base_head": "833856a526c3083aa4c21a28d31b36ee2a82e9bd",
   "split_branch": "g2-302-admin-optimization-postgresql-session-provider-authorization",
   "scope": "admin_optimization_postgresql_session_provider_authorization",
   "source_edit_authority": false,
@@ -11339,17 +11339,19 @@
     {
       "id": "g2-307-auth-postgresql-session-provider-implementation",
       "type": "implementation",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.306 auth.py get_postgresql_session provider authorization",
       "source_edit_authority": true,
-      "autopilot_status": "stop_at_source_pr_review",
-      "autopilot_stop_reason": "G2.307 changes backend source/tests under an auth/security-sensitive surface and must not auto-merge.",
+      "autopilot_status": "source_pr_human_accepted_merged",
+      "autopilot_stop_reason": "PR #460 changed backend source/tests under an auth/security-sensitive surface and was merged only after human approval.",
       "github_pr": {
         "number": 460,
         "url": "https://github.com/chengjon/mystocks/pull/460",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-307-auth-postgresql-session-provider-implementation"
+        "state": "MERGED",
+        "merged_at": "2026-06-01T16:13:22Z",
+        "head_ref": "g2-307-auth-postgresql-session-provider-implementation",
+        "merge_commit": "833856a526c3083aa4c21a28d31b36ee2a82e9bd"
       },
       "evidence": [
         ".planning/codebase/generated/auth-postgresql-session-provider-implementation-2026-06-01.json",
@@ -11422,14 +11424,97 @@
         }
       },
       "freshness": {
-        "current_head_checked": "702816e7aa23378b2acd5dbc27de449fc74a3af5",
+        "current_head_checked": "833856a526c3083aa4c21a28d31b36ee2a82e9bd",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_auth_session_call_sites_change": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_auth_tests_change": true,
         "stale_if_gitnexus_risk_changes": true
       },
-      "next_gate": "Review PR #460. If human accepted and merged, start G2.308 no-source auth provider closeout / residual refresh."
+      "next_gate": "Superseded by G2.308 no-source auth provider closeout / residual refresh."
+    },
+    {
+      "id": "g2-308-auth-postgresql-session-provider-closeout",
+      "type": "closeout_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.307 auth.py get_postgresql_session provider implementation",
+      "source_edit_authority": false,
+      "autopilot_status": "review_gate",
+      "autopilot_stop_reason": "G2.308 is no-source and may be auto-merged if checks pass; it selects only a future no-source residual candidate refresh.",
+      "github_pr": {
+        "number": 461,
+        "url": "https://github.com/chengjon/mystocks/pull/461",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-308-auth-postgresql-session-provider-closeout"
+      },
+      "evidence": [
+        ".planning/codebase/generated/auth-postgresql-session-provider-closeout-2026-06-02.json",
+        "docs/reports/quality/backend-auth-postgresql-session-provider-closeout-2026-06-02.md",
+        "governance/mainline/task-cards/pr-461.yaml"
+      ],
+      "closed_parent": {
+        "pr": 460,
+        "state": "MERGED",
+        "merge_commit": "833856a526c3083aa4c21a28d31b36ee2a82e9bd",
+        "merged_at": "2026-06-01T16:13:22Z"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/auth-postgresql-session-provider-closeout-2026-06-02.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-auth-postgresql-session-provider-closeout-2026-06-02.md",
+        "governance/mainline/task-cards/pr-461.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "closeout": {
+        "auth_provider_status": "closed",
+        "provider": "get_auth_postgresql_session_factory",
+        "direct_route_body_get_postgresql_session_calls": 0,
+        "provider_backing_get_postgresql_session_calls": 1,
+        "dependency_bindings": 4,
+        "focused_auth_tests": "11 passed, 18 skipped",
+        "ruff": "all checks passed",
+        "route_openapi": "548/500/0"
+      },
+      "residual_scan": {
+        "active_route_body_direct_get_postgresql_session_calls": 0,
+        "provider_backing_calls": 2,
+        "import_only_residual_files": [
+          "web/backend/app/api/market/market_data_request.py",
+          "web/backend/app/api/v1/admin/audit.py"
+        ]
+      },
+      "decision": {
+        "classification": "auth-postgresql-session-provider-closed-no-source-lane",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-308",
+        "recommended_next_work_item": "G2.309 no-source service lifecycle residual candidate refresh after auth provider closeout",
+        "autopilot_continue_allowed": true
+      },
+      "freshness": {
+        "current_head_checked": "833856a526c3083aa4c21a28d31b36ee2a82e9bd",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_auth_provider_shape_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_residual_scan_changes": true
+      },
+      "next_gate": "Review PR #461. If accepted and merged, start G2.309 no-source service lifecycle residual candidate refresh after auth provider closeout."
     }
   ]
 }
