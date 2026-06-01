@@ -1,11 +1,13 @@
-"""数据源注册表管理 API 路由。"""
+"""数据源注册表管理 API 路由."""
+
+# ruff: noqa: PT028
 
 import logging
 import os
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
-from fastapi import APIRouter, Body, Header, Path, Query
+from fastapi import APIRouter, Body, Depends, Header, Path, Query
 
 from app.core.config import settings
 from app.core.exceptions import BusinessException
@@ -65,6 +67,18 @@ def get_manager():
     return DataSourceManagerV2()
 
 
+def get_data_source_registry_manager():
+    """FastAPI dependency provider for the data source registry manager."""
+    return get_manager()
+
+
+def _resolve_data_source_registry_manager(manager: Any) -> Any:
+    """Keep direct unit-call compatibility while FastAPI injects the manager."""
+    if getattr(manager, "dependency", None) is get_data_source_registry_manager:
+        return get_data_source_registry_manager()
+    return manager
+
+
 def _require_write_auth(authorization: Optional[str]) -> None:
     """写操作鉴权：测试环境放行，非测试环境要求有效Bearer Token。"""
     if settings.testing:
@@ -101,10 +115,11 @@ async def search_data_sources(
     only_healthy: Optional[bool] = Query(False, description="仅返回健康的数据源"),
     keyword: Optional[str] = Query(None, description="模糊搜索关键词"),
     status: str = Query("active", description="数据源状态（active/maintenance/deprecated）"),
+    manager: Any = Depends(get_data_source_registry_manager),
 ) -> UnifiedResponse[DataSourceSearchResponse]:
     """按分类、类型、健康状态和关键词搜索数据源接口。"""
     try:
-        manager = get_manager()
+        manager = _resolve_data_source_registry_manager(manager)
 
         # 使用V2管理器的查询功能
         endpoints = manager.find_endpoints(
@@ -144,10 +159,12 @@ async def search_data_sources(
     description="汇总所有五层数据分类的接口规模、健康状态、平均质量评分和平均响应时间。",
     responses=DATA_SOURCE_CATEGORY_STATS_RESPONSES,
 )
-async def get_category_stats() -> UnifiedResponse[List[CategoryStatsResponse]]:
+async def get_category_stats(
+    manager: Any = Depends(get_data_source_registry_manager),
+) -> UnifiedResponse[List[CategoryStatsResponse]]:
     """获取所有 5 层数据分类的统计信息。"""
     try:
-        manager = get_manager()
+        manager = _resolve_data_source_registry_manager(manager)
 
         # 按分类分组统计
         categories = {}
@@ -221,10 +238,11 @@ async def get_category_stats() -> UnifiedResponse[List[CategoryStatsResponse]]:
 )
 async def get_data_source(
     endpoint_name: str = Path(..., description="需要查询详情的数据源接口名称。"),
+    manager: Any = Depends(get_data_source_registry_manager),
 ) -> UnifiedResponse[Dict[str, Any]]:
     """获取单个数据源的详细信息。"""
     try:
-        manager = get_manager()
+        manager = _resolve_data_source_registry_manager(manager)
 
         if endpoint_name not in manager.registry:
             raise BusinessException(status_code=404, detail=f"接口不存在: {endpoint_name}")
@@ -254,16 +272,17 @@ async def get_data_source(
 async def update_data_source(
     endpoint_name: str = Path(..., description="需要更新配置的数据源接口名称。"),
     update: DataSourceUpdate = Body(..., openapi_examples=DATA_SOURCE_UPDATE_EXAMPLES),
-    authorization: Optional[str] = Header(
+    authorization: Optional[str] = Header(  # noqa: PT028
         default=None,
         alias="Authorization",
         description="Bearer Token。非测试环境下写操作必须提供有效认证凭据。",
     ),
+    manager: Any = Depends(get_data_source_registry_manager),
 ) -> UnifiedResponse[Dict[str, Any]]:
     """更新数据源配置。"""
     try:
         _require_write_auth(authorization)
-        manager = get_manager()
+        manager = _resolve_data_source_registry_manager(manager)
 
         if endpoint_name not in manager.registry:
             raise BusinessException(status_code=404, detail=f"接口不存在: {endpoint_name}")
@@ -328,11 +347,12 @@ async def test_data_source(
         alias="Authorization",
         description="Bearer Token。非测试环境下手动测试操作必须提供有效认证凭据。",
     ),
+    manager: Any = Depends(get_data_source_registry_manager),
 ) -> UnifiedResponse[TestResponse]:
     """手动测试数据源。"""
     try:
         _require_write_auth(authorization)
-        manager = get_manager()
+        manager = _resolve_data_source_registry_manager(manager)
 
         if endpoint_name not in manager.registry:
             raise BusinessException(status_code=404, detail=f"接口不存在: {endpoint_name}")
@@ -407,11 +427,12 @@ async def health_check_data_source(
         alias="Authorization",
         description="Bearer Token。非测试环境下健康检查操作必须提供有效认证凭据。",
     ),
+    manager: Any = Depends(get_data_source_registry_manager),
 ) -> UnifiedResponse[Dict[str, Any]]:
     """健康检查单个数据源。"""
     try:
         _require_write_auth(authorization)
-        manager = get_manager()
+        manager = _resolve_data_source_registry_manager(manager)
 
         if endpoint_name not in manager.registry:
             raise BusinessException(status_code=404, detail=f"接口不存在: {endpoint_name}")
@@ -452,11 +473,12 @@ async def health_check_all_data_sources(
         alias="Authorization",
         description="Bearer Token。非测试环境下批量健康检查必须提供有效认证凭据。",
     ),
+    manager: Any = Depends(get_data_source_registry_manager),
 ) -> UnifiedResponse[Dict[str, Any]]:
     """健康检查所有数据源。"""
     try:
         _require_write_auth(authorization)
-        manager = get_manager()
+        manager = _resolve_data_source_registry_manager(manager)
 
         health_result = manager.health_check()
 
