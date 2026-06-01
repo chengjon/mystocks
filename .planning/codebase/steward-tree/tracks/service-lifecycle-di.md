@@ -3415,7 +3415,7 @@ Status: accepted/merged by PR `#462`.
 
 ## G2.310 get_mysql_session Ownership / Route-Provider Decision
 
-Status: for review in future PR `#463`.
+Status: accepted/merged by PR `#463`.
 
 - Parent PR `#462` merged at `5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18`.
 - G2.310 is a no-source ownership decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3424,4 +3424,17 @@ Status: for review in future PR `#463`.
 - GitNexus MCP impact returned `Transport closed`; CLI fallback reports `Function:web/backend/app/core/database.py:get_mysql_session` as `MEDIUM` risk with direct `5`, affected processes `0`, affected modules `0`, stale index with commits behind `0`.
 - Decision: do not authorize a provider implementation lane yet; first decide whether the indicator configuration CRUD router should be registered, retired, or retained dormant.
 - Recommended next gate: G2.311 no-source indicator config router ownership / registration-retirement decision.
+- PR `#463` merged at `67083d40808fea9963137e3e128c0c6cb0683e57`.
 - Stop rule: G2.310 must not be used as source implementation authority or as authorization to edit `get_mysql_session`, `create_indicator_config.py`, route registration, OpenAPI artifacts, tests, or runtime state.
+
+## G2.311 Indicator Config Router Ownership / Registration-Retirement Decision
+
+Status: for review in future PR `#464`.
+
+- Parent PR `#463` merged at `67083d40808fea9963137e3e128c0c6cb0683e57`.
+- G2.311 is a no-source route ownership decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- `create_indicator_config.py` is classified as retained dormant route code: it defines `/configs` CRUD handlers, but route-table smoke records `0` registered handlers from that module and `0` OpenAPI `/configs` CRUD paths from that module.
+- Current route/OpenAPI snapshot remains `548` FastAPI routes, `500` OpenAPI paths, duplicate operation IDs `0`, with `13` indicator-related active routes.
+- Decision: do not register the dormant router and do not retire/delete it from G2.311; exclude it from the active service lifecycle provider implementation candidate queue.
+- Recommended next gate: G2.312 no-source service lifecycle residual candidate refresh after dormant indicator-config exclusion.
+- Stop rule: G2.311 must not be used as source implementation authority or as authorization to edit route registration, OpenAPI artifacts, tests, `create_indicator_config.py`, or `get_mysql_session`.
