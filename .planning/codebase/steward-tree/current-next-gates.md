@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T11:08:00+08:00`
-- Base HEAD checked: `e517163385e96a6c7115e14b77fb89819b4cead4`
+- Prepared at: `2026-06-01T11:52:20+08:00`
+- Base HEAD checked: `3d161e90547720f4ce95111ea511d3f8dc3174dc`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.291 `data_source_registry.get_manager` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#443` merged at `e517163385e96a6c7115e14b77fb89819b4cead4`; G2.291 adds route-local `get_data_source_registry_manager`, moves 7 target handlers to `Depends(...)`, keeps `get_manager()` as compatibility/backing seam, and preserves runtime/OpenAPI `548/500/0` | Review future PR `#444`; do not auto-merge because it changes backend source/tests and the target has GitNexus MEDIUM impact with one affected process |
+| P0 | Review G2.292 `data_source_registry.get_manager` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#444` merged at `3d161e90547720f4ce95111ea511d3f8dc3174dc`; G2.292 closes the data-source registry provider lane with direct route-body `get_manager()` calls `0`, provider backing calls `1`, provider bindings `7`, focused regression `3 passed`, and runtime/OpenAPI `548/500/0` | Review future PR `#445`; do not auto-merge because it selects `get_postgresql_session` only for no-source ownership decision and the underlying `app.core.database.get_postgresql_session` impact is CRITICAL |
+| P0 | Preserve G2.291 `data_source_registry.get_manager` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#444` merged at `3d161e90547720f4ce95111ea511d3f8dc3174dc`; G2.291 added route-local `get_data_source_registry_manager`, moved 7 target handlers to `Depends(...)`, kept `get_manager()` as compatibility/backing seam, and preserved runtime/OpenAPI `548/500/0` | Do not use G2.291 as authority for non-data-source-registry source edits, route/OpenAPI changes, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.290 `data_source_registry.get_manager` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#443` merged at `e517163385e96a6c7115e14b77fb89819b4cead4`; G2.290 authorized only the path-limited G2.291 source lane now represented by this worktree | Do not use G2.290 to expand scope beyond `web/backend/app/api/data_source_registry.py` plus focused data-source registry tests |
 | P0 | Preserve G2.289 `data_source_registry.get_manager` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#442` merged at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf`; G2.289 classified `get_manager` as a bounded active data-source registry route helper with `7` direct route-body callers, runtime/OpenAPI `548/500/0`, and GitNexus MEDIUM impact with one affected process | Do not use G2.289 as source implementation authorization; use G2.290 only as no-source provider authorization after review |
 | P0 | Preserve G2.288 `governance_dashboard.get_postgres_connection` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#441` merged at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`; G2.288 closed the governance dashboard provider lane, confirmed direct route-body calls `0`, manual close calls `0`, provider bindings `5`, and selected `data_source_registry.get_manager` only for no-source ownership / route-provider decision | Do not use G2.288 as source implementation authorization; use G2.289 only for no-source ownership / route-provider decision |

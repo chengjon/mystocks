@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T11:08:00+08:00`
-- Base HEAD checked: `e517163385e96a6c7115e14b77fb89819b4cead4`
+- Prepared at: `2026-06-01T11:52:20+08:00`
+- Base HEAD checked: `3d161e90547720f4ce95111ea511d3f8dc3174dc`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/data-source-registry-manager-provider-implementation-2026-06-01.json` | G2.291 `data_source_registry.get_manager` provider implementation evidence | Review input for future PR `#444`; path-limited source implementation package; must stop because it changes backend source/tests and the target has GitNexus MEDIUM impact with one affected process |
-| `docs/reports/quality/backend-data-source-registry-manager-provider-implementation-2026-06-01.md` | G2.291 human-readable provider implementation report | Review input for future PR `#444`; records PR `#443` accepted/merged, implementation envelope, tests, and stop rule |
-| `governance/mainline/task-cards/pr-444.yaml` | Governance task card for G2.291 source implementation | Review input; allows only steward tree, generated evidence, report, source file, and focused test updates; no auto-merge because it changes backend source work |
+| `.planning/codebase/generated/data-source-registry-provider-closeout-refresh-2026-06-01.json` | G2.292 `data_source_registry.get_manager` provider closeout / residual refresh evidence | Review input for future PR `#445`; no-source package; must stop because it selects next `get_postgresql_session` decision target with CRITICAL GitNexus impact on `app.core.database.get_postgresql_session` |
+| `docs/reports/quality/backend-data-source-registry-provider-closeout-refresh-2026-06-01.md` | G2.292 human-readable provider closeout / residual refresh report | Review input for future PR `#445`; records PR `#444` accepted/merged, provider closeout, route/OpenAPI smoke, residual scan, and stop rule |
+| `governance/mainline/task-cards/pr-445.yaml` | Governance task card for G2.292 no-source closeout / residual refresh | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge because the selected next target has CRITICAL impact |
+| `.planning/codebase/generated/data-source-registry-manager-provider-implementation-2026-06-01.json` | G2.291 `data_source_registry.get_manager` provider implementation evidence | Accepted by PR `#444`, merged at `3d161e90547720f4ce95111ea511d3f8dc3174dc`; superseded for next-gate decision by G2.292 |
+| `docs/reports/quality/backend-data-source-registry-manager-provider-implementation-2026-06-01.md` | G2.291 human-readable provider implementation report | Accepted by PR `#444`; records PR `#443` accepted/merged, implementation envelope, tests, and stop rule |
+| `governance/mainline/task-cards/pr-444.yaml` | Governance task card for G2.291 source implementation | Accepted by PR `#444`; allowed only steward tree, generated evidence, report, source file, and focused test updates |
 | `.planning/codebase/generated/data-source-registry-manager-provider-authorization-2026-06-01.json` | G2.290 `data_source_registry.get_manager` provider authorization evidence | Accepted by PR `#443`; historical no-source authorization package that led to the current source implementation lane |
 | `docs/reports/quality/backend-data-source-registry-manager-provider-authorization-2026-06-01.md` | G2.290 human-readable provider authorization report | Accepted by PR `#443`; records PR `#442` accepted/merged and the future path-limited implementation envelope |
 | `governance/mainline/task-cards/pr-443.yaml` | Governance task card for G2.290 | Accepted by PR `#443`; historical no-source authorization record |
