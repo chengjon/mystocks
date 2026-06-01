@@ -1,4 +1,20 @@
     .artdeco-time-series-analysis {
+        --time-series-icon-size: var(--artdeco-spacing-12);
+        --time-series-icon-glyph-size: var(--artdeco-spacing-6);
+        --time-series-card-min-width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-16) + var(--artdeco-spacing-2));
+        --time-series-overview-min-width: calc(var(--time-series-card-min-width) + var(--artdeco-spacing-16) + var(--artdeco-spacing-4));
+        --time-series-compact-min-width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+        --time-series-chart-height-lg: calc((var(--artdeco-spacing-32) * 3) + var(--artdeco-spacing-4));
+        --time-series-chart-height-md: calc((var(--artdeco-spacing-32) * 2) + var(--artdeco-spacing-10) + var(--artdeco-spacing-1));
+        --time-series-chart-height-sm: var(--time-series-card-min-width);
+        --time-series-corner-sm: calc(var(--artdeco-spacing-px) * 6);
+        --time-series-blur: calc(var(--artdeco-spacing-px) * 10);
+        --time-series-dot-size: var(--artdeco-spacing-3);
+        --time-series-glow-radius: calc(var(--artdeco-spacing-px) * 15);
+        --time-series-bar-width: var(--artdeco-spacing-10);
+        --time-series-bar-min-height: calc(var(--artdeco-spacing-px) * 10);
+        --time-series-insight-accent-width: var(--artdeco-spacing-px);
+
         display: grid;
         gap: var(--artdeco-spacing-6);
     }
@@ -9,6 +25,6 @@
 
     .analysis-overview {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(var(--time-series-overview-min-width), 1fr));
         gap: var(--artdeco-spacing-4);
     }

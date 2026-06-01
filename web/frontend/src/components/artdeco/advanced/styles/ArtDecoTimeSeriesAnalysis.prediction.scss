@@ -10,18 +10,18 @@
             margin-bottom: var(--artdeco-spacing-4);
 
             .header-icon {
-                width: 48px;
-                height: 48px;
+                width: var(--time-series-icon-size);
+                height: var(--time-series-icon-size);
                 background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
-                border-radius: 8px;
+                border-radius: var(--artdeco-radius-md);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--artdeco-bg-dark);
 
                 svg {
-                    width: 24px;
-                    height: 24px;
+                    width: var(--time-series-icon-glyph-size);
+                    height: var(--time-series-icon-glyph-size);
                 }
             }
 
@@ -61,7 +61,7 @@
 
                 .metric-grid {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    grid-template-columns: repeat(auto-fit, minmax(var(--time-series-card-min-width), 1fr));
                     gap: var(--artdeco-spacing-4);
 
                     .metric-item {
@@ -69,7 +69,7 @@
                         padding: var(--artdeco-spacing-3);
                         background: var(--artdeco-bg-card);
                         border: 1px solid var(--artdeco-border-default);
-                        border-radius: 6px;
+                        border-radius: var(--time-series-corner-sm);
 
                         .metric-label {
                             font-family: var(--artdeco-font-body);
@@ -97,10 +97,10 @@
 
                 .prediction-chart {
                     .prediction-visualization {
-                        height: 300px;
+                        height: var(--time-series-chart-height-md);
                         background: var(--artdeco-bg-card);
                         border: 1px solid var(--artdeco-border-default);
-                        border-radius: 8px;
+                        border-radius: var(--artdeco-radius-md);
                         display: flex;
                         align-items: center;
                         justify-content: center;
@@ -110,7 +110,7 @@
                         // 几何装饰
                         @include artdeco-geometric-corners(
                             $color: var(--artdeco-gold-primary),
-                            $size: 12px,
+                            $size: var(--time-series-dot-size),
                             $border-width: 1px
                         );
 
@@ -131,7 +131,7 @@
                                     transparent 80%
                                 );
                                 margin-bottom: var(--artdeco-spacing-2);
-                                border-radius: 2px;
+                                border-radius: var(--artdeco-radius-sm);
                             }
 
                             .prediction-line {
@@ -143,12 +143,12 @@
                                     var(--artdeco-down) 100%
                                 );
                                 margin-bottom: var(--artdeco-spacing-2);
-                                border-radius: 2px;
+                                border-radius: var(--artdeco-radius-sm);
                                 opacity: 70%;
                             }
 
                             .confidence-interval {
-                                height: 40px;
+                                height: var(--time-series-bar-width);
                                 background: linear-gradient(
                                     90deg,
                                     transparent 75%,
@@ -156,7 +156,7 @@
                                     color-mix(in srgb, var(--artdeco-info, var(--artdeco-gold-primary)) 30%, transparent) 85%,
                                     transparent 85%
                                 );
-                                border-radius: 2px;
+                                border-radius: var(--artdeco-radius-sm);
                             }
                         }
                     }
@@ -184,30 +184,30 @@
                             padding: var(--artdeco-spacing-3);
                             background: var(--artdeco-bg-card);
                             border: 1px solid var(--artdeco-border-default);
-                            border-radius: 6px;
+                            border-radius: var(--time-series-corner-sm);
                             transition: all var(--artdeco-transition-base);
 
                             &:hover {
                                 border-color: var(--artdeco-gold-primary);
-                                box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
+                                box-shadow: 0 0 var(--time-series-glow-radius) var(--artdeco-gold-opacity-10);
                             }
 
                             &.bullish {
-                                border-left: 3px solid var(--artdeco-up);
+                                border-left: var(--time-series-insight-accent-width) solid var(--artdeco-up);
                             }
 
                             &.bearish {
-                                border-left: 3px solid var(--artdeco-down);
+                                border-left: var(--time-series-insight-accent-width) solid var(--artdeco-down);
                             }
 
                             &.neutral {
-                                border-left: 3px solid var(--artdeco-fg-muted);
+                                border-left: var(--time-series-insight-accent-width) solid var(--artdeco-fg-muted);
                             }
 
                             .insight-icon {
                                 flex-shrink: 0;
-                                width: 24px;
-                                height: 24px;
+                                width: var(--time-series-icon-glyph-size);
+                                height: var(--time-series-icon-glyph-size);
                                 display: flex;
                                 align-items: center;
                                 justify-content: center;

@@ -10,18 +10,18 @@
             margin-bottom: var(--artdeco-spacing-4);
 
             .header-icon {
-                width: 48px;
-                height: 48px;
+                width: var(--time-series-icon-size);
+                height: var(--time-series-icon-size);
                 background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
-                border-radius: 8px;
+                border-radius: var(--artdeco-radius-md);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--artdeco-bg-dark);
 
                 svg {
-                    width: 24px;
-                    height: 24px;
+                    width: var(--time-series-icon-glyph-size);
+                    height: var(--time-series-icon-glyph-size);
                 }
             }
 
@@ -66,7 +66,7 @@
 
                     .periods-grid {
                         display: grid;
-                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        grid-template-columns: repeat(auto-fit, minmax(var(--time-series-card-min-width), 1fr));
                         gap: var(--artdeco-spacing-3);
 
                         .period-item {
@@ -76,12 +76,12 @@
                             padding: var(--artdeco-spacing-3);
                             background: var(--artdeco-bg-card);
                             border: 1px solid var(--artdeco-border-default);
-                            border-radius: 6px;
+                            border-radius: var(--time-series-corner-sm);
                             transition: all var(--artdeco-transition-base);
 
                             &:hover {
                                 border-color: var(--artdeco-gold-primary);
-                                box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
+                                box-shadow: 0 0 var(--time-series-glow-radius) var(--artdeco-gold-opacity-10);
                             }
 
                             .period-frequency {
@@ -99,14 +99,14 @@
 
                                 .strength-bar {
                                     flex: 1;
-                                    height: 8px;
+                                    height: var(--artdeco-spacing-2);
                                     background: var(--artdeco-bg-muted);
-                                    border-radius: 4px;
+                                    border-radius: var(--artdeco-spacing-1);
                                     overflow: hidden;
 
                                     .strength-fill {
                                         height: 100%;
-                                        border-radius: 4px;
+                                        border-radius: var(--artdeco-spacing-1);
                                         background: linear-gradient(
                                             90deg,
                                             var(--artdeco-gold-primary),
@@ -121,7 +121,7 @@
                                     font-size: var(--artdeco-font-size-xs);
                                     color: var(--artdeco-fg-muted);
                                     font-weight: 600;
-                                    min-width: 40px;
+                                    min-width: var(--time-series-bar-width);
                                     text-align: right;
                                 }
                             }
@@ -132,10 +132,10 @@
 
             .periodicity-chart {
                 .chart-placeholder {
-                    height: 200px;
+                    height: var(--time-series-chart-height-sm);
                     background: var(--artdeco-bg-card);
                     border: 1px solid var(--artdeco-border-default);
-                    border-radius: 8px;
+                    border-radius: var(--artdeco-radius-md);
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -145,7 +145,7 @@
                     // 几何装饰
                     @include artdeco-geometric-corners(
                         $color: var(--artdeco-gold-primary),
-                        $size: 12px,
+                        $size: var(--time-series-dot-size),
                         $border-width: 1px
                     );
 
@@ -164,9 +164,9 @@
                             gap: var(--artdeco-spacing-2);
 
                             .spectrum-bar {
-                                width: 40px;
-                                min-height: 10px;
-                                border-radius: 4px 4px 0 0;
+                                width: var(--time-series-bar-width);
+                                min-height: var(--time-series-bar-min-height);
+                                border-radius: var(--artdeco-spacing-1) var(--artdeco-spacing-1) 0 0;
                                 transition: all var(--artdeco-transition-base);
 
                                 &:hover {

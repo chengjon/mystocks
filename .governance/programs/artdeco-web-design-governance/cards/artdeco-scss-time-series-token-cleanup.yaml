@@ -1,0 +1,42 @@
+task:
+  id: "artdeco-scss-time-series-token-cleanup"
+  title: "Tokenize ArtDeco time series analysis SCSS dimensions"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.layout.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.chart.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.inflection.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.periodicity.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.prediction.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.responsive.scss"
+    - "docs/reports/tasks/2026-06-01-artdeco-scss-time-series-token-cleanup-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-time-series-token-cleanup.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue or TypeScript logic changes"
+  - "No router route changes"
+  - "No backend API contract changes"
+  - "No frontend API client changes"
+  - "No shared component extraction"
+  - "No global token or baseline changes"
+  - "No visual redesign beyond equivalent token substitution"
+
+acceptance:
+  commit_gate:
+    - "Disallowed hardcoded px count in target partials is reduced to zero or only allowed 1px literals remain"
+    - "Focused ArtDeco token check passes for all target partials"
+    - "npm run build:no-types passes"
+    - "gitnexus detect_changes on staged diff is reviewed before commit"
+    - "No router/API/frontend API client/Vue/TS/shared component files are staged"
+  closeout_gate:
+    - "Function Tree closeout recorded with report path and validation summary"
+
+evidence:
+  current_head: "977e8f9189fc62fa5c51a41f60aaa2f316124c22"
+  notes: []

@@ -1754,5 +1754,103 @@
       "current_head": "fea12af695244e1d5c4f34101a3a75cc5d30da17",
       "prepared_at": "2026-06-01T00:47:47.472Z"
     }
+  },
+  {
+    "id": "artdeco-scss-time-series-token-cleanup",
+    "title": "Tokenize ArtDeco time series analysis SCSS dimensions",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "docs/reports/tasks/2026-06-01-artdeco-scss-time-series-style-split-report.md",
+    "current_head": "977e8f9189fc62fa5c51a41f60aaa2f316124c22",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Baseline after split commit 977e8f918: ArtDecoTimeSeriesAnalysis partials contain 66 disallowed hardcoded px literals; no Vue/TS/router/API/client files required; target is token-only SCSS cleanup.",
+        "note": "",
+        "current_head": "977e8f9189fc62fa5c51a41f60aaa2f316124c22",
+        "recorded_at": "2026-06-01T00:53:49.763Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.layout.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.chart.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.inflection.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.periodicity.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.prediction.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.responsive.scss",
+      "docs/reports/tasks/2026-06-01-artdeco-scss-time-series-token-cleanup-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-time-series-token-cleanup.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript logic changes",
+      "No router route changes",
+      "No backend API contract changes",
+      "No frontend API client changes",
+      "No shared component extraction",
+      "No global token or baseline changes",
+      "No visual redesign beyond equivalent token substitution"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T00:53:34.142Z",
+    "updated_at": "2026-06-01T01:11:47.838Z",
+    "acceptance": {
+      "commit_gate": [
+        "Disallowed hardcoded px count in target partials is reduced to zero or only allowed 1px literals remain",
+        "Focused ArtDeco token check passes for all target partials",
+        "npm run build:no-types passes",
+        "gitnexus detect_changes on staged diff is reviewed before commit",
+        "No router/API/frontend API client/Vue/TS/shared component files are staged"
+      ],
+      "closeout_gate": [
+        "Function Tree closeout recorded with report path and validation summary"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "977e8f9189fc62fa5c51a41f60aaa2f316124c22",
+        "transitioned_at": "2026-06-01T00:54:15.327Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "977e8f9189fc62fa5c51a41f60aaa2f316124c22",
+        "transitioned_at": "2026-06-01T01:11:25.504Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "977e8f9189fc62fa5c51a41f60aaa2f316124c22",
+        "transitioned_at": "2026-06-01T01:11:32.215Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "977e8f9189fc62fa5c51a41f60aaa2f316124c22",
+        "transitioned_at": "2026-06-01T01:11:47.838Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-scss-time-series-token-cleanup-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "977e8f9189fc62fa5c51a41f60aaa2f316124c22",
+      "prepared_at": "2026-06-01T01:11:40.246Z"
+    }
   }
 ]

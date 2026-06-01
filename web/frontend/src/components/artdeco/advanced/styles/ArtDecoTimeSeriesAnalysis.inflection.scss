@@ -10,18 +10,18 @@
             margin-bottom: var(--artdeco-spacing-4);
 
             .header-icon {
-                width: 48px;
-                height: 48px;
+                width: var(--time-series-icon-size);
+                height: var(--time-series-icon-size);
                 background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
-                border-radius: 8px;
+                border-radius: var(--artdeco-radius-md);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--artdeco-bg-dark);
 
                 svg {
-                    width: 24px;
-                    height: 24px;
+                    width: var(--time-series-icon-glyph-size);
+                    height: var(--time-series-icon-glyph-size);
                 }
             }
 
@@ -55,7 +55,7 @@
 
                 .summary-stats {
                     display: grid;
-                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    grid-template-columns: repeat(auto-fit, minmax(var(--time-series-card-min-width), 1fr));
                     gap: var(--artdeco-spacing-4);
 
                     .stat-item {
@@ -63,7 +63,7 @@
                         padding: var(--artdeco-spacing-3);
                         background: var(--artdeco-bg-card);
                         border: 1px solid var(--artdeco-border-default);
-                        border-radius: 6px;
+                        border-radius: var(--time-series-corner-sm);
 
                         .stat-label {
                             font-family: var(--artdeco-font-body);
@@ -90,7 +90,7 @@
                 gap: var(--artdeco-spacing-3);
 
                 .inflection-item {
-                    @include artdeco-stepped-corners(6px);
+                    @include artdeco-stepped-corners(var(--time-series-corner-sm));
 
                     background: var(--artdeco-bg-card);
                     border: 1px solid var(--artdeco-border-default);
@@ -102,7 +102,7 @@
                     // 几何角落装饰
                     @include artdeco-geometric-corners(
                         $color: var(--artdeco-gold-primary),
-                        $size: 12px,
+                        $size: var(--time-series-dot-size),
                         $border-width: 1px
                     );
 
@@ -128,7 +128,7 @@
                         .point-type {
                             span {
                                 padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
-                                border-radius: 4px;
+                                border-radius: var(--artdeco-spacing-1);
                                 font-size: var(--artdeco-font-size-sm);
                                 font-weight: 600;
                                 text-transform: uppercase;
@@ -162,7 +162,7 @@
 
                     .inflection-details {
                         display: grid;
-                        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                        grid-template-columns: repeat(auto-fit, minmax(var(--time-series-compact-min-width), 1fr));
                         gap: var(--artdeco-spacing-3);
                         margin-bottom: var(--artdeco-spacing-3);
 
