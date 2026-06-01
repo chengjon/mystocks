@@ -1,0 +1,91 @@
+
+  .chart-btn {
+    min-width: calc(var(--spacing-8) + var(--spacing-8) + var(--spacing-4));
+  }
+
+  .select-sm,
+  .period-select {
+    select {
+      padding: calc(var(--spacing-2) - var(--radius-md)) calc(var(--spacing-2) + var(--radius-md));
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--fg-primary);
+      background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+      border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+      border-radius: calc(var(--spacing-2) - var(--radius-md) - var(--radius-md));
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        border-color: var(--accent-gold);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: var(--accent-gold);
+        box-shadow: 0 0 0 var(--radius-md) color-mix(in srgb, var(--accent-gold) 20%, transparent);
+      }
+
+      option {
+        background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+        color: var(--fg-primary);
+      }
+    }
+  }
+
+  .trade-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+  }
+
+  .form-row {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-3);
+  }
+
+  .form-label {
+    min-width: calc(var(--spacing-8) + var(--spacing-8) + var(--spacing-4));
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fg-muted);
+  }
+
+  .form-select {
+    padding: var(--spacing-2) var(--spacing-3);
+    background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+    border-radius: calc(var(--spacing-2) - var(--radius-md));
+    color: var(--fg-primary);
+    font-family: var(--font-mono);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+
+    &:focus {
+      outline: none;
+      border-color: var(--accent-gold);
+      box-shadow: 0 0 0 var(--radius-md) color-mix(in srgb, var(--accent-gold) 20%, transparent);
+    }
+
+    option {
+      background: color-mix(in srgb, var(--bg-card) 80%, transparent);
+      color: var(--fg-primary);
+    }
+  }
+
+  .form-input {
+    flex: 1;
+  }
+
+  .trade-btn {
+    margin-left: auto;
+  }
+}

@@ -1,0 +1,59 @@
+
+  .badge {
+    display: inline-block;
+    padding: calc(var(--spacing-2) - var(--radius-md) - var(--radius-md)) var(--spacing-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wider);
+    border-radius: var(--radius-none);
+  }
+
+  .badge-gold {
+    background: color-mix(in srgb, var(--accent-gold) 10%, transparent);
+    color: var(--accent-gold);
+    border: 1px solid var(--accent-gold);
+  }
+
+  .badge-blue {
+    background: color-mix(in srgb, var(--color-info) 10%, transparent);
+    color: var(--color-info);
+    border: 1px solid var(--color-info);
+  }
+
+  .profit-up {
+    color: var(--color-up) !important;
+  }
+
+  .profit-down {
+    color: var(--color-down) !important;
+  }
+
+  .gold {
+    color: var(--accent-gold) !important;
+  }
+
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-2);
+    padding: var(--spacing-3) var(--spacing-6);
+    font-family: var(--font-display);
+    font-size: var(--font-size-body);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    border: var(--radius-md) solid var(--accent-gold);
+    border-radius: var(--radius-none);
+    background: transparent;
+    color: var(--accent-gold);
+    cursor: pointer;
+    transition: all var(--transition-base);
+
+    &:hover:not(:disabled) {
+      background: var(--accent-gold-light);
+      box-shadow: var(--glow-medium);
+    }
+  }

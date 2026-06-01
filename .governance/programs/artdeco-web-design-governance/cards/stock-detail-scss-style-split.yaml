@@ -1,0 +1,39 @@
+task:
+  id: "stock-detail-scss-style-split"
+  title: "Split StockDetail SCSS by visual concern"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/styles/StockDetail.scss"
+    - "web/frontend/src/views/styles/StockDetail.layout.scss"
+    - "web/frontend/src/views/styles/StockDetail.cards.scss"
+    - "web/frontend/src/views/styles/StockDetail.controls.scss"
+    - "web/frontend/src/views/styles/StockDetail.sections.scss"
+    - "web/frontend/src/views/styles/StockDetail.forms.scss"
+    - "docs/reports/tasks/2026-06-01-stock-detail-scss-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/stock-detail-scss-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue, TypeScript, runtime logic, router, backend API contract, OpenAPI, or frontend API client changes."
+  - "Do not stage or alter existing dirty StockDetail.vue, BacktestGPU.vue, useBacktestGPU.ts, BacktestGPU.scss, Architecture.vue, or generated tree.md."
+  - "No shared component extraction, route shell migration, visual redesign, or global token/baseline edits."
+  - "No token cleanup batch; source file already has zero disallowed px by focused check."
+
+acceptance:
+  commit_gate:
+    - "Split must preserve the original .stock-detail inner style body exactly when partials are concatenated."
+    - "Each created StockDetail SCSS partial remains under 500 lines."
+    - "Focused ArtDeco token check for StockDetail SCSS files passes."
+    - "npm run build:no-types passes."
+    - "git diff --cached --check passes and staged files remain within the authorized allow-list; generated tree.md and dirty Vue/TS files are not staged."
+  closeout_gate:
+    - "Function Tree closeout records split report, validation evidence, compatibility boundaries, and active gates return to none."
+
+evidence:
+  current_head: "8b923ca0d07a7bde8f9b42ea40ea545073c80521"
+  notes: []

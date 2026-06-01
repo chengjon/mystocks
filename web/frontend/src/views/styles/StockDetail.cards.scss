@@ -1,0 +1,153 @@
+
+  .card {
+    background: var(--bg-card);
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+    border-radius: var(--radius-none);
+    padding: var(--spacing-6);
+    margin-bottom: var(--spacing-6);
+    transition: all var(--transition-slow);
+
+    &:hover {
+      border-color: var(--accent-gold);
+      box-shadow: var(--glow-medium);
+      transform: translateY(calc(var(--radius-md) * -1));
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--spacing-4);
+      padding-bottom: var(--spacing-3);
+      border-bottom: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+
+      .card-title {
+        font-family: var(--font-mono);
+        font-size: var(--font-size-small);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent-gold);
+      }
+
+      .section-title {
+        font-family: var(--font-mono);
+        font-size: var(--font-size-body);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--accent-gold);
+        margin: 0;
+      }
+
+      .header-with-select {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: var(--spacing-4);
+      }
+    }
+
+    .chart-controls {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-4);
+    }
+
+    .kline-chart-wrapper,
+    .intraday-chart {
+      position: relative;
+      border: 1px solid color-mix(in srgb, var(--accent-gold) 20%, transparent);
+      border-radius: var(--radius-none);
+      padding: var(--spacing-2);
+    }
+
+    .intraday-chart {
+      height: calc(var(--spacing-8) * 12 + var(--spacing-4));
+    }
+
+    .analysis-content {
+      .indicator-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-3) 0;
+        border-bottom: 1px solid color-mix(in srgb, var(--accent-gold) 20%, transparent);
+
+        &:last-child {
+          border-bottom: none;
+        }
+
+        .indicator-label {
+          font-family: var(--font-display);
+          font-size: var(--font-size-small);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-wider);
+          color: var(--fg-muted);
+        }
+
+        .indicator-value {
+          font-family: var(--font-mono);
+          font-size: var(--font-size-body);
+          font-weight: 600;
+
+          &.gold {
+            color: var(--accent-gold);
+          }
+        }
+      }
+    }
+
+    .summary-content {
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--spacing-4);
+        margin-bottom: var(--spacing-4);
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        .summary-item {
+          flex: 1;
+          text-align: center;
+          padding: var(--spacing-3);
+          border: 1px solid color-mix(in srgb, var(--accent-gold) 20%, transparent);
+          background: color-mix(in srgb, var(--accent-gold) 5%, transparent);
+
+          .label {
+            display: block;
+            font-family: var(--font-display);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: var(--tracking-wider);
+            color: var(--fg-muted);
+            margin-bottom: var(--spacing-2);
+          }
+
+          .value {
+            display: block;
+            font-family: var(--font-mono);
+            font-size: var(--font-size-body);
+            font-weight: 600;
+            color: var(--fg-primary);
+
+            &.gold {
+              color: var(--accent-gold);
+            }
+          }
+        }
+      }
+    }
+
+    .trading-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--spacing-6);
+    }
+  }

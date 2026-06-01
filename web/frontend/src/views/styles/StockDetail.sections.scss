@@ -1,0 +1,83 @@
+
+  .info-section {
+    :deep(.el-descriptions__label) {
+      background: color-mix(in srgb, var(--accent-gold) 10%, transparent) !important;
+      color: var(--fg-muted) !important;
+      font-family: var(--font-display);
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-wider);
+      border-color: color-mix(in srgb, var(--accent-gold) 30%, transparent) !important;
+    }
+
+    :deep(.el-descriptions__content) {
+      background: transparent !important;
+      color: var(--fg-primary) !important;
+      font-family: var(--font-body);
+      border-color: color-mix(in srgb, var(--accent-gold) 30%, transparent) !important;
+    }
+  }
+
+  .content-grid {
+    display: grid;
+    grid-template-columns: 1fr calc(var(--spacing-8) * 10 + var(--spacing-5));
+    gap: var(--spacing-6);
+    position: relative;
+    z-index: 1;
+    margin-bottom: var(--spacing-6);
+  }
+
+  .grid-item {
+    min-width: 0;
+  }
+
+  .content-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-6);
+  }
+
+  .card-wrapper {
+    position: relative;
+    z-index: 1;
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+      border-radius: var(--radius-none);
+      padding: var(--spacing-6);
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-6);
+        padding-bottom: var(--spacing-4);
+        border-bottom: 1px solid color-mix(in srgb, var(--accent-gold) 20%, transparent);
+
+        .section-title {
+          font-family: var(--font-display);
+          font-size: var(--font-size-h4);
+          font-weight: 600;
+          text-transform: uppercase;
+          letter-spacing: var(--tracking-widest);
+          color: var(--accent-gold);
+          margin: 0;
+        }
+      }
+
+      .trading-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--spacing-6);
+      }
+    }
+  }
+
+  display: inline-flex;
+  background: color-mix(in srgb, var(--accent-gold) 5%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent-gold) 30%, transparent);
+  border-radius: calc(var(--spacing-2) - var(--radius-md));
+  padding: var(--radius-md);
