@@ -3255,7 +3255,7 @@ Status: accepted/merged by PR `#451` at `79a4fe5ae9f763e3e836b76c051bddbed270a93
 
 ## G2.299 Market Stock List PostgreSQL Session Provider Implementation
 
-Status: for review in future PR `#452`.
+Status: accepted/merged by PR `#452` at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`.
 
 - Parent PR `#451` merged at `79a4fe5ae9f763e3e836b76c051bddbed270a930`.
 - G2.299 is a path-limited source implementation. It edits only `web/backend/app/api/market/market_data_request.py`, `web/backend/tests/test_market_stock_list_mock_configuration.py`, and governance evidence.
@@ -3263,5 +3263,17 @@ Status: for review in future PR `#452`.
 - Verification: TDD red `3 failed, 2 passed`; focused regression `5 passed`; ruff passed; runtime/OpenAPI remained `548/500/0` with one target market route.
 - Residual state after implementation: market stock list direct `get_postgresql_session()` calls `0`; auth direct calls `4`; admin optimization direct calls `2`; admin audit remains closed with direct calls `0`.
 - GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports `get_stock_list` LOW risk and shared `app.core.database.get_postgresql_session` CRITICAL risk, both with stale-index warnings. The index refresh attempt exceeded five minutes and later aborted in a native worker path, so it is recorded as a tooling limitation.
-- Stop rule: PR `#452` must stop for human review because G2.299 changes backend source/tests.
+- Stop rule satisfied by PR `#452` human review and merge; G2.299 must not be used to expand source scope beyond the accepted market stock list provider seam.
 - Recommended next gate after human acceptance and merge: G2.300 no-source market stock list provider closeout / residual refresh.
+
+## G2.300 Market Stock List PostgreSQL Session Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#453`.
+
+- Parent PR `#452` merged at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`.
+- G2.300 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Market stock list provider lane is closed: direct `get_postgresql_session()` calls are `0`, `Depends(get_market_stock_list_postgresql_session_factory)` bindings are `1`, focused regression is `5 passed`, and runtime/OpenAPI remains `548/500/0`.
+- Remaining `app.core.database.get_postgresql_session` residuals after market closeout: `auth.py` direct calls `4`; `v1/admin/optimization.py` direct calls `2`; admin audit remains closed with direct calls `0`.
+- Decision: select only G2.301 no-source admin optimization `get_postgresql_session` ownership / provider-shape decision. Do not directly authorize source from G2.300 because the remaining admin optimization calls live in module helpers (`_run_maintenance`, `_database_status_payload`) that back multiple control-plane routes.
+- GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports LOW risk for the two admin optimization helper symbols and CRITICAL risk for shared `app.core.database.get_postgresql_session`, all with stale-index warnings.
+- Stop rule: PR `#453` must stop for human review because it selects the next target inside a CRITICAL shared helper family.

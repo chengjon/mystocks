@@ -1,0 +1,158 @@
+{
+  "id": "g2-300-market-stock-list-postgresql-session-provider-closeout-refresh",
+  "type": "closeout_refresh",
+  "state": "for_review",
+  "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+  "parent": "G2.299 market stock list get_postgresql_session provider implementation",
+  "source_edit_authority": false,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "G2.300 selects the next CRITICAL shared-helper-family target for ownership classification; stop for human review before G2.301.",
+  "github_pr": {
+    "number": 453,
+    "url": "https://github.com/chengjon/mystocks/pull/453",
+    "state": "PLANNED_FOR_REVIEW",
+    "head_ref": "g2-300-market-stock-list-provider-closeout-refresh"
+  },
+  "closed_parent": {
+    "pr": 452,
+    "state": "MERGED",
+    "merge_commit": "3d89c7e64a93c7f2ca074dc502762ad203f15bdc",
+    "merged_at": "2026-06-01T10:16:28Z"
+  },
+  "allowed_scope": [
+    ".planning/codebase/generated/market-stock-list-postgresql-session-provider-closeout-2026-06-01.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-market-stock-list-postgresql-session-provider-closeout-2026-06-01.md",
+    "governance/mainline/task-cards/pr-453.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**",
+    "PM2/runtime state",
+    "source retirement"
+  ],
+  "closeout": {
+    "market_stock_list_provider_status": "closed",
+    "direct_route_body_get_postgresql_session_calls": 0,
+    "depends_provider_bindings": 1,
+    "focused_regression": "5 passed in 2.21s",
+    "ruff": "All checks passed",
+    "runtime_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "target_route": "GET /api/v1/market/stocks"
+  },
+  "remaining_residuals": {
+    "symbol_family": "app.core.database.get_postgresql_session",
+    "active_direct_calls_after_market_closeout": 6,
+    "files": [
+      {
+        "path": "web/backend/app/api/auth.py",
+        "references": 8,
+        "direct_calls": 4,
+        "classification": "auth-account-password route-domain residual",
+        "disposition": "defer behind admin optimization because auth has security/session semantics and a wider route surface"
+      },
+      {
+        "path": "web/backend/app/api/v1/admin/optimization.py",
+        "references": 3,
+        "direct_calls": 2,
+        "classification": "admin optimization control-plane helper residual",
+        "disposition": "selected for G2.301 no-source ownership / provider-shape decision"
+      },
+      {
+        "path": "web/backend/app/api/market/market_data_request.py",
+        "references": 2,
+        "direct_calls": 0,
+        "provider_bindings": 1,
+        "classification": "closed provider lane"
+      },
+      {
+        "path": "web/backend/app/api/v1/admin/audit.py",
+        "references": 3,
+        "direct_calls": 0,
+        "provider_bindings": 3,
+        "classification": "closed provider lane"
+      }
+    ]
+  },
+  "route_openapi_snapshot": {
+    "app_import": "ok",
+    "routes": 548,
+    "paths": 500,
+    "duplicate_operation_ids": 0,
+    "target_routes": [
+      {
+        "path": "/api/v1/market/stocks",
+        "methods": [
+          "GET"
+        ]
+      }
+    ]
+  },
+  "gitnexus_evidence": {
+    "mcp_status": "Transport closed in this session; CLI fallback used",
+    "cli_impact_admin_optimization_run_maintenance": {
+      "risk": "LOW",
+      "direct": 3,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "index_status": "stale warning"
+    },
+    "cli_impact_admin_optimization_database_status_payload": {
+      "risk": "LOW",
+      "direct": 1,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "index_status": "stale warning"
+    },
+    "cli_impact_core_database_get_postgresql_session": {
+      "risk": "CRITICAL",
+      "direct": 15,
+      "processes_affected": 54,
+      "modules_affected": 13,
+      "index_status": "stale warning"
+    },
+    "cli_staged_verification": {
+      "risk": "low",
+      "files": 9,
+      "symbols": 0,
+      "affected_processes": 0,
+      "index_status": "stale warning"
+    }
+  },
+  "decision": {
+    "classification": "market-stock-list-provider-closeout-complete-no-source-lane",
+    "market_stock_list_provider_status": "closed",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-300",
+    "autopilot_continue_allowed": false,
+    "selected_next_governance_target": "admin-optimization-postgresql-session-ownership-provider-shape-decision",
+    "recommended_next_work_item": "G2.301 no-source admin optimization get_postgresql_session ownership / provider-shape decision after PR #453 human acceptance",
+    "reason": "Market stock list is closed. The next smallest remaining non-auth route-domain surface is admin optimization with two direct calls inside module helpers; because it is not a direct route-body-only pattern, a no-source decision must precede any authorization."
+  },
+  "freshness": {
+    "current_head_checked": "3d89c7e64a93c7f2ca074dc502762ad203f15bdc",
+    "generated_at": "2026-06-01T18:20:26+08:00",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_market_request_call_sites_change": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_admin_optimization_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true
+  },
+  "next_gate": "Stop for human review in PR #453. If accepted and merged, start G2.301 no-source admin optimization get_postgresql_session ownership / provider-shape decision."
+}
