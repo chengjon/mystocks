@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-01T07:48:42+08:00`
-- Base HEAD checked: `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`
+- Prepared at: `2026-06-01T08:12:57+08:00`
+- Base HEAD checked: `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,9 +19,9 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.285 accepted/merged by PR `#438` at `bdfdeb35` | Continue with G2.286 `governance_dashboard.get_postgres_connection` provider authorization; no source implementation is authorized until that package is human accepted |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.286 accepted/merged by PR `#439` at `e7c78892` | Continue with G2.287 `governance_dashboard.get_postgres_connection` provider implementation review; do not auto-merge source implementation PRs |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.285 have progressed through PR `#337`-`#438`; current review target is G2.286 authorization in future PR `#439` |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.286 have progressed through PR `#337`-`#439`; current review target is G2.287 implementation in future PR `#440` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Recent Closeouts
@@ -49,6 +49,7 @@ exact verification output.
 | G2.283 data_lineage get_lineage_tracker provider implementation | PR `#436` merged at `511e9d091bc2b29777c522c595a9f1454f50b973`; direct route-body `get_lineage_tracker()` calls are `0`, dependency bindings are `5`, focused tests and route/OpenAPI smoke passed | G2.284 records closeout, refreshes residual candidates, and selects the next no-source ownership decision |
 | G2.284 data_lineage get_lineage_tracker provider closeout / residual refresh | PR `#437` merged at `d34774837a0582f0e33d47425bb017b44e5aacd9`; lineage provider lane closed and runtime/OpenAPI remains `548/500/0` | G2.285 classifies `governance_dashboard.get_postgres_connection` ownership and must stop at PR `#438` review because GitNexus risk is MEDIUM |
 | G2.285 governance_dashboard get_postgres_connection ownership decision | PR `#438` merged at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`; helper classified as a bounded active control-plane route helper with five direct route-body callers and MEDIUM GitNexus risk | G2.286 authorizes only a future path-limited provider implementation and must stop at PR `#439` review |
+| G2.286 governance_dashboard get_postgres_connection provider authorization | PR `#439` merged at `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`; path-limited `governance_dashboard.py` implementation lane authorized after human review | G2.287 implements only the authorized route-local provider seam and must stop at PR `#440` review |
 
 ## Closeout Rule
 

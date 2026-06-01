@@ -3067,7 +3067,7 @@ Status: accepted/merged by PR `#438` at `bdfdeb353f725f9e875ab50ee4e8ed22902a581
 
 ## G2.286 governance_dashboard get_postgres_connection Provider Authorization
 
-Status: for review in future PR `#439`.
+Status: accepted/merged by PR `#439` at `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`.
 
 - Parent PR `#438` merged at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`.
 - G2.286 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3077,4 +3077,21 @@ Status: for review in future PR `#439`.
 - Future G2.287 must preserve route paths, `response_model` declarations, response metadata, OpenAPI exposure, operation IDs, current `UnifiedResponse` behavior, and error handling shape.
 - Current route/OpenAPI smoke with placeholder import-time environment values records `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and the five governance dashboard paths present.
 - GitNexus CLI fallback still reports MEDIUM risk with `6` impacted symbols, `5` direct callers, `0` affected processes, and a stale-index warning.
-- PR `#439` must stop for human review and must not auto-merge because it authorizes future source work and the selected target has GitNexus MEDIUM impact.
+- PR `#439` stopped for human review, was accepted, and merged at `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`.
+- G2.286 is superseded by G2.287 path-limited implementation.
+
+## G2.287 governance_dashboard get_postgres_connection Provider Implementation
+
+Status: for review in future PR `#440`.
+
+- Parent PR `#439` merged at `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`.
+- G2.287 is a path-limited source implementation package. It edits only `web/backend/app/api/governance_dashboard.py`, focused governance dashboard tests, steward evidence, this track, and the PR task card.
+- It adds route-local async generator provider `get_governance_dashboard_postgres_connection`.
+- It moves the five current governance dashboard handlers to `Depends(get_governance_dashboard_postgres_connection)`: `get_quality_overview`, `get_lineage_stats`, `get_assets_catalog`, `get_compliance_metrics`, and `get_dashboard_summary`.
+- Post-change scan records direct route-body `await get_postgres_connection()` calls `0`, route-body manual `conn.close()` calls `0`, provider backing calls `1`, and dependency bindings `5`.
+- TDD evidence: focused provider test failed `2/2` before implementation for missing provider, then passed `2/2` after implementation.
+- Focused existing + new governance dashboard tests passed `14/14`; health route conflict regression passed `121/121`.
+- Runtime/OpenAPI smoke with placeholder import-time environment values remains `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, five governance dashboard paths present, and no provider parameter leaks.
+- GitNexus MCP still returned `Transport closed`; CLI fallback before source edit reported MEDIUM risk with `6` impacted symbols, `5` direct callers, `0` affected processes, and stale-index warning.
+- PR `#440` must stop for human review and must not auto-merge because it edits backend source and the selected target has GitNexus MEDIUM impact.
+- Recommended next gate after human acceptance and merge: G2.288 no-source `governance_dashboard.get_postgres_connection` provider closeout / residual refresh.

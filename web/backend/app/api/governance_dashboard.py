@@ -16,9 +16,9 @@ Date: 2026-01-09
 
 import logging
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncGenerator, Dict, List, Optional
 
-from fastapi import APIRouter, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 from pydantic import BaseModel, Field
 
 from app.core.responses import (
@@ -37,8 +37,6 @@ router = APIRouter(
 
 
 from web.backend.app.api._governance_dashboard_responses import (
-    GOVERNANCE_INTERNAL_ERROR_RESPONSE,
-    _success_response_spec,
     GOVERNANCE_QUALITY_OVERVIEW_RESPONSES,
     GOVERNANCE_LINEAGE_STATS_RESPONSES,
     GOVERNANCE_ASSETS_CATALOG_RESPONSES,
@@ -141,6 +139,14 @@ async def get_postgres_connection():
     )
 
 
+async def get_governance_dashboard_postgres_connection() -> AsyncGenerator[Any, None]:
+    connection = await get_postgres_connection()
+    try:
+        yield connection
+    finally:
+        await connection.close()
+
+
 def handle_governance_error(error: str, request_id: Optional[str] = None) -> UnifiedResponse:
     """
     处理治理API错误
@@ -170,7 +176,10 @@ def handle_governance_error(error: str, request_id: Optional[str] = None) -> Uni
     response_model=UnifiedResponse,
     responses=GOVERNANCE_QUALITY_OVERVIEW_RESPONSES,
 )
-async def get_quality_overview(http_request: Request):
+async def get_quality_overview(
+    http_request: Request,
+    conn: Any = Depends(get_governance_dashboard_postgres_connection),
+):
     """
     数据质量总览
 
@@ -190,8 +199,6 @@ async def get_quality_overview(http_request: Request):
     logger.info("Fetching quality overview", extra={"request_id": request_id})
 
     try:
-        conn = await get_postgres_connection()
-
         try:
             # 查询总资产数和平均质量评分
             total_assets_row = await conn.fetchrow(
@@ -257,8 +264,6 @@ async def get_quality_overview(http_request: Request):
                 for row in top_assets_rows
             ]
 
-            await conn.close()
-
             response_data = QualityOverviewResponse(
                 total_assets=total_assets,
                 avg_quality_score=avg_quality_score,
@@ -273,7 +278,6 @@ async def get_quality_overview(http_request: Request):
             )
 
         except Exception as e:
-            await conn.close()
             raise e
 
     except Exception as e:
@@ -285,6 +289,7 @@ async def get_quality_overview(http_request: Request):
 async def get_lineage_stats(
     days: int = Query(7, ge=1, le=90, description="Number of recent days to include in the lineage trend window."),
     http_request: Request = None,
+    conn: Any = Depends(get_governance_dashboard_postgres_connection),
 ):
     """
     数据血缘统计
@@ -306,8 +311,6 @@ async def get_lineage_stats(
     logger.info("Fetching lineage stats for last {days} days", extra={"request_id": request_id})
 
     try:
-        conn = await get_postgres_connection()
-
         try:
             # 查询总节点数和边数
             nodes_count = await conn.fetchval("SELECT COUNT(*) FROM data_lineage_nodes")
@@ -377,8 +380,6 @@ async def get_lineage_stats(
                 "edges": edges_trend,
             }
 
-            await conn.close()
-
             response_data = LineageStatsResponse(
                 total_nodes=nodes_count,
                 total_edges=edges_count,
@@ -394,7 +395,6 @@ async def get_lineage_stats(
             )
 
         except Exception as e:
-            await conn.close()
             raise e
 
     except Exception as e:
@@ -408,6 +408,7 @@ async def get_assets_catalog(
     page_size: int = Query(20, ge=1, le=100, description="Maximum number of catalog items returned per page."),
     asset_type: Optional[str] = Query(None, description="Optional asset type filter for narrowing the catalog view."),
     http_request: Request = None,
+    conn: Any = Depends(get_governance_dashboard_postgres_connection),
 ):
     """
     数据资产目录
@@ -430,8 +431,6 @@ async def get_assets_catalog(
     )
 
     try:
-        conn = await get_postgres_connection()
-
         try:
             # 构建查询条件
             where_clause = ""
@@ -487,8 +486,6 @@ async def get_assets_catalog(
                 for row in assets_rows
             ]
 
-            await conn.close()
-
             response_data = AssetCatalogResponse(
                 total_assets=total_assets,
                 assets=[asset.dict() for asset in assets],
@@ -504,7 +501,6 @@ async def get_assets_catalog(
             )
 
         except Exception as e:
-            await conn.close()
             raise e
 
     except Exception as e:
@@ -517,6 +513,7 @@ async def get_compliance_metrics(
     days: int = Query(30, ge=1, le=365, description="Number of recent days covered by governance compliance metrics."),
     limit: int = Query(20, ge=1, le=100, description="Maximum number of recent governance change records to return."),
     http_request: Request = None,
+    conn: Any = Depends(get_governance_dashboard_postgres_connection),
 ):
     """
     治理合规指标
@@ -541,8 +538,6 @@ async def get_compliance_metrics(
     logger.info("Fetching compliance metrics: {days} days, {limit} changes", extra={"request_id": request_id})
 
     try:
-        conn = await get_postgres_connection()
-
         try:
             # 查询已配置数据源数
             total_data_sources = await conn.fetchval("SELECT COUNT(DISTINCT endpoint_name) FROM data_source_versions")
@@ -599,8 +594,6 @@ async def get_compliance_metrics(
 
             operation_stats = {row["action"]: row["count"] for row in operation_stats_rows}
 
-            await conn.close()
-
             response_data = ComplianceMetricsResponse(
                 total_data_sources=total_data_sources,
                 total_config_versions=total_config_versions,
@@ -617,7 +610,6 @@ async def get_compliance_metrics(
             )
 
         except Exception as e:
-            await conn.close()
             raise e
 
     except Exception as e:
@@ -630,7 +622,10 @@ async def get_compliance_metrics(
     response_model=UnifiedResponse,
     responses=GOVERNANCE_DASHBOARD_SUMMARY_RESPONSES,
 )
-async def get_dashboard_summary(http_request: Request):
+async def get_dashboard_summary(
+    http_request: Request,
+    conn: Any = Depends(get_governance_dashboard_postgres_connection),
+):
     """
     仪表板摘要
 
@@ -650,25 +645,20 @@ async def get_dashboard_summary(http_request: Request):
 
         async def fetch_all_data():
             # 获取数据质量总览
-            quality_response = await get_quality_overview(http_request)
+            quality_response = await get_quality_overview(http_request, conn)
             quality_data = QualityOverviewResponse(**quality_response.data)
 
             # 获取血缘统计
-            lineage_response = await get_lineage_stats(7, http_request)
+            lineage_response = await get_lineage_stats(7, http_request, conn)
             lineage_data = LineageStatsResponse(**lineage_response.data)
 
             # 获取资产目录摘要
-            conn = await get_postgres_connection()
-            try:
-                total_assets = await conn.fetchval("SELECT COUNT(*) FROM data_assets")
+            total_assets = await conn.fetchval("SELECT COUNT(*) FROM data_assets")
 
-                assets_by_type_rows = await conn.fetch(
-                    "SELECT asset_type, COUNT(*) as count FROM data_assets GROUP BY asset_type"
-                )
-                assets_by_type = {row["asset_type"]: row["count"] for row in assets_by_type_rows}
-
-            finally:
-                await conn.close()
+            assets_by_type_rows = await conn.fetch(
+                "SELECT asset_type, COUNT(*) as count FROM data_assets GROUP BY asset_type"
+            )
+            assets_by_type = {row["asset_type"]: row["count"] for row in assets_by_type_rows}
 
             asset_catalog_summary = {
                 "total_assets": total_assets,
@@ -676,7 +666,7 @@ async def get_dashboard_summary(http_request: Request):
             }
 
             # 获取治理合规指标
-            compliance_response = await get_compliance_metrics(30, 20, http_request)
+            compliance_response = await get_compliance_metrics(30, 20, http_request, conn)
             compliance_data = ComplianceMetricsResponse(**compliance_response.data)
 
             return {

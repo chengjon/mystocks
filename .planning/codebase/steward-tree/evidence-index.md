@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T07:48:42+08:00`
-- Base HEAD checked: `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`
+- Prepared at: `2026-06-01T08:12:57+08:00`
+- Base HEAD checked: `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/governance-dashboard-postgres-provider-authorization-2026-06-01.json` | G2.286 `governance_dashboard.get_postgres_connection` provider authorization evidence | Review input for future PR `#439`; no-source authorization package; must stop because it authorizes future source work and GitNexus target impact is MEDIUM |
-| `docs/reports/quality/backend-governance-dashboard-postgres-provider-authorization-2026-06-01.md` | G2.286 human-readable provider authorization report | Review input for future PR `#439`; records PR `#438` accepted/merged, future path-limited implementation envelope, required tests, OpenAPI smoke, and stop rule |
-| `governance/mainline/task-cards/pr-439.yaml` | No-source governance task card for G2.286 | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge because it authorizes future source work and target impact is MEDIUM |
+| `.planning/codebase/generated/governance-dashboard-postgres-provider-implementation-2026-06-01.json` | G2.287 `governance_dashboard.get_postgres_connection` provider implementation evidence | Review input for future PR `#440`; path-limited source implementation; must stop because it edits backend source and GitNexus target impact is MEDIUM |
+| `docs/reports/quality/backend-governance-dashboard-postgres-provider-implementation-2026-06-01.md` | G2.287 human-readable provider implementation report | Review input for future PR `#440`; records PR `#439` accepted/merged, TDD, route-local provider implementation, focused tests, OpenAPI smoke, and next G2.288 closeout recommendation |
+| `governance/mainline/task-cards/pr-440.yaml` | Path-limited implementation task card for G2.287 | Review input; allows only `governance_dashboard.py`, focused regression test, steward tree, generated evidence, report, and task card updates; no auto-merge |
+| `.planning/codebase/generated/governance-dashboard-postgres-provider-authorization-2026-06-01.json` | G2.286 `governance_dashboard.get_postgres_connection` provider authorization evidence | Accepted by PR `#439`, merged at `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`; no-source authorization package; superseded for implementation by G2.287 |
+| `docs/reports/quality/backend-governance-dashboard-postgres-provider-authorization-2026-06-01.md` | G2.286 human-readable provider authorization report | Accepted by PR `#439`; records PR `#438` accepted/merged, future path-limited implementation envelope, required tests, OpenAPI smoke, and stop rule |
+| `governance/mainline/task-cards/pr-439.yaml` | No-source governance task card for G2.286 | Accepted by PR `#439`; allowed only steward tree, generated evidence, report, and task card updates; no auto-merge because it authorized future source work and target impact was MEDIUM |
 | `.planning/codebase/generated/governance-dashboard-postgres-connection-ownership-decision-2026-06-01.json` | G2.285 `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision evidence | Accepted by PR `#438`, merged at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`; no-source decision package; superseded for authorization by G2.286 |
 | `docs/reports/quality/backend-governance-dashboard-postgres-connection-ownership-decision-2026-06-01.md` | G2.285 human-readable ownership decision report | Accepted by PR `#438`; records PR `#437` accepted/merged, control-plane route helper surface, GitNexus MEDIUM risk, OpenAPI smoke, and G2.286 recommendation |
 | `governance/mainline/task-cards/pr-438.yaml` | No-source governance task card for G2.285 | Accepted by PR `#438`; allowed only steward tree, generated evidence, report, and task card updates |
