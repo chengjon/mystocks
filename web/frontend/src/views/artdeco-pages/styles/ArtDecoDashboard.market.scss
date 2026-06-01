@@ -1,0 +1,179 @@
+
+// 市场热度板块 - 使用Grid布局（与HTML对齐）
+.heat-map {
+    // Grid布局由.heatmap-section类提供
+    // 该类定义在artdeco-grid.scss中
+}
+
+.heat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--artdeco-spacing-4);
+    background: var(--artdeco-bg-card);
+    border: 1px solid var(--artdeco-gold-opacity-10);
+    border-radius: var(--artdeco-radius-none);
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base),
+        transform var(--artdeco-transition-base);
+    min-height: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
+    text-align: center;
+
+    &:hover {
+        border-color: var(--artdeco-gold-primary);
+        box-shadow: var(--artdeco-glow-subtle);
+        transform: translateY(calc(var(--artdeco-spacing-1) / -2));
+    }
+
+    .sector-name {
+        font-family: var(--artdeco-font-body);
+        font-weight: 600;
+        font-size: var(--artdeco-text-sm);
+        color: var(--artdeco-fg-primary);
+        margin-bottom: var(--artdeco-spacing-2);
+        word-break: keep-all;
+    }
+
+    .sector-change {
+        font-family: var(--artdeco-font-mono);
+        font-weight: 700;
+        font-size: var(--artdeco-text-lg);
+        margin-bottom: var(--artdeco-spacing-2);
+
+        &.rise {
+            color: var(--artdeco-up);
+        }
+
+        &.fall {
+            color: var(--artdeco-down);
+        }
+    }
+
+    .heat-bar {
+        width: 100%;
+        height: calc(var(--artdeco-spacing-3) / 2);
+        background: var(--artdeco-bg-base);
+        border-radius: var(--artdeco-radius-sm);
+        overflow: hidden;
+
+        .heat-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--artdeco-up), var(--artdeco-gold-primary));
+            border-radius: var(--artdeco-radius-sm);
+            transition: width var(--artdeco-transition-base);
+        }
+    }
+}
+
+// 资金流向
+.flow-tabs {
+    display: flex;
+    gap: var(--artdeco-spacing-2);
+    margin-bottom: var(--artdeco-spacing-4);
+    border-bottom: 1px solid var(--artdeco-gold-opacity-20);
+    padding-bottom: var(--artdeco-spacing-2);
+}
+
+.flow-tab {
+    background: transparent;
+    border: none;
+    color: var(--artdeco-fg-muted);
+    padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+    font-family: var(--artdeco-font-body);
+    font-size: var(--artdeco-text-sm);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+    cursor: pointer;
+    transition: color var(--artdeco-transition-base);
+    position: relative;
+
+    &::after {
+        content: '';
+        position: absolute;
+        bottom: calc(var(--artdeco-spacing-px) * -3);
+        left: 0;
+        width: 100%;
+        height: calc(var(--artdeco-spacing-1) / 2);
+        background: var(--artdeco-gold-primary);
+        transform: scaleX(0);
+        transition: transform var(--artdeco-transition-base);
+    }
+
+    &:hover {
+        color: var(--artdeco-gold-primary);
+    }
+
+    &.active {
+        color: var(--artdeco-gold-primary);
+
+        &::after {
+            transform: scaleX(1);
+        }
+    }
+}
+
+.flow-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--artdeco-spacing-2);
+}
+
+.flow-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--artdeco-spacing-3);
+    background: var(--artdeco-bg-card);
+    border: 1px solid var(--artdeco-gold-opacity-10);
+    border-radius: var(--artdeco-radius-none);
+
+    .item-info {
+        flex: 1;
+
+        .item-name {
+            font-family: var(--artdeco-font-body);
+            font-weight: 600;
+            color: var(--artdeco-fg-primary);
+            margin-bottom: calc(var(--artdeco-spacing-1) / 2);
+        }
+
+        .item-code {
+            font-family: var(--artdeco-font-mono);
+            font-size: var(--artdeco-text-sm);
+            color: var(--artdeco-fg-muted);
+        }
+    }
+
+    .item-flow {
+        font-family: var(--artdeco-font-mono);
+        font-weight: 700;
+        margin-right: var(--artdeco-spacing-4);
+        min-width: var(--artdeco-spacing-20);
+        text-align: right;
+
+        &.inflow {
+            color: var(--artdeco-up);
+        }
+
+        &.outflow {
+            color: var(--artdeco-down);
+        }
+    }
+
+    .item-change {
+        font-family: var(--artdeco-font-mono);
+        font-weight: 600;
+        min-width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+        text-align: right;
+
+        &.rise {
+            color: var(--artdeco-up);
+        }
+
+        &.fall {
+            color: var(--artdeco-down);
+        }
+    }
+}

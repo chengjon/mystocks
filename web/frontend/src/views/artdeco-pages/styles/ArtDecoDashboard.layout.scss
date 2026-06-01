@@ -1,0 +1,165 @@
+// ============================================
+// 废弃标记 - DEPRECATED STYLES
+// ============================================
+// 以下自定义Grid类已被语义化Grid类替换，保留仅作为后备
+// - .fund-flow-grid → 使用 .summary-section
+// - .indicators-grid → 使用 .charts-section
+// - .monitoring-grid → 使用 .charts-section
+// - .market-sentiment-grid → 使用 .flow-section
+// - .nav-grid → 使用 .nav-section
+// ============================================
+.artdeco-dashboard {
+    min-height: 100vh;
+    padding: var(--artdeco-spacing-8);
+    max-width: calc(var(--artdeco-spacing-32) * 14 + var(--artdeco-spacing-2));
+    margin: 0 auto;
+    position: relative;
+
+    // ============================================
+    // 新增: 错误消息样式
+    // ============================================
+    .error-message {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--artdeco-spacing-2);
+        padding: var(--artdeco-spacing-8);
+        color: var(--artdeco-fg-muted);
+        font-size: var(--artdeco-text-sm);
+    }
+
+    // 渐变覆盖层已移除：数据关键页面不使用装饰性背景
+    // 如需恢复，参考 git history 中此位置的 ::before 规则
+
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+        height: var(--artdeco-spacing-px);
+        background: var(--artdeco-gold-primary);
+        opacity: 28%;
+    }
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--artdeco-spacing-8);
+    padding-bottom: var(--artdeco-spacing-4);
+    border-bottom: 1px solid var(--artdeco-gold-opacity-20);
+}
+
+.header-content {
+    .page-title {
+        font-family: var(--artdeco-font-display);
+        font-size: var(--artdeco-text-4xl);
+        font-weight: 700;
+        color: var(--artdeco-gold-primary);
+        text-transform: uppercase;
+        letter-spacing: var(--artdeco-tracking-wider);
+        margin: 0 0 var(--artdeco-spacing-2) 0;
+    }
+
+    .page-subtitle {
+        font-family: var(--artdeco-font-body);
+        font-size: var(--artdeco-text-lg);
+        color: var(--artdeco-fg-muted);
+        margin: 0;
+    }
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--artdeco-spacing-4);
+
+    .time-display {
+        text-align: right;
+
+        .time-label {
+            font-family: var(--artdeco-font-body);
+            font-size: var(--artdeco-text-sm);
+            color: var(--artdeco-fg-muted);
+            text-transform: uppercase;
+            letter-spacing: var(--artdeco-tracking-wide);
+            display: block;
+        }
+
+        .time-value {
+            font-family: var(--artdeco-font-mono);
+            font-size: var(--artdeco-text-base);
+            color: var(--artdeco-gold-primary);
+            font-weight: 600;
+        }
+    }
+}
+
+.stats-section {
+    margin-bottom: var(--artdeco-spacing-8);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-6)), 1fr));
+    gap: var(--artdeco-spacing-6);
+}
+
+.content-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-areas:
+        'heat heat capital'
+        'sector stress ranking'
+        'long block ranking'
+        'stock stock quick';
+    gap: var(--artdeco-dense-gap-sm);
+
+    .heat-map-card {
+        grid-area: heat;
+    }
+
+    .capital-heatmap-card {
+        grid-area: capital;
+    }
+
+    .sector-radar-card {
+        grid-area: sector;
+    }
+
+    .stress-test-card {
+        grid-area: stress;
+    }
+
+    .capital-flow-card {
+        grid-area: ranking;
+    }
+
+    .long-hu-bang-card {
+        grid-area: long;
+    }
+
+    .block-trading-card {
+        grid-area: block;
+    }
+
+    .stock-pool-card {
+        grid-area: stock;
+    }
+
+    .quick-nav-card {
+        grid-area: quick;
+    }
+}
+
+.heat-map-card,
+.long-hu-bang-card,      // 新增: 龙虎榜卡片
+.block-trading-card,    // 新增: 大宗交易卡片
+.capital-flow-card,
+.stock-pool-card,
+.quick-nav-card {
+    height: fit-content;
+}

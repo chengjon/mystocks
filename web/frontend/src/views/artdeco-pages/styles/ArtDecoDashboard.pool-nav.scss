@@ -1,0 +1,162 @@
+
+// 股票池表现
+.pool-tabs {
+    display: flex;
+    gap: var(--artdeco-spacing-2);
+    margin-bottom: var(--artdeco-spacing-4);
+}
+
+.pool-tab {
+    @extend .flow-tab;
+}
+
+.pool-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--artdeco-spacing-4);
+    margin-bottom: var(--artdeco-spacing-6);
+}
+
+.pool-stat {
+    text-align: center;
+    padding: var(--artdeco-spacing-4);
+    background: var(--artdeco-bg-card);
+    border: 1px solid var(--artdeco-gold-opacity-10);
+    border-radius: var(--artdeco-radius-none);
+
+    .stat-label {
+        font-family: var(--artdeco-font-body);
+        font-size: var(--artdeco-text-sm);
+        color: var(--artdeco-fg-muted);
+        text-transform: uppercase;
+        letter-spacing: var(--artdeco-tracking-wide);
+        margin-bottom: var(--artdeco-spacing-2);
+    }
+
+    .stat-value {
+        font-family: var(--artdeco-font-mono);
+        font-size: var(--artdeco-text-xl);
+        font-weight: 700;
+
+        &.rise {
+            color: var(--artdeco-up);
+        }
+
+        &.fall {
+            color: var(--artdeco-down);
+        }
+    }
+}
+
+.pool-stocks {
+    // Grid布局由.pool-section类提供
+    // 该类定义在artdeco-grid.scss中
+}
+
+.stock-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: var(--artdeco-spacing-4);
+    background: var(--artdeco-bg-card);
+    border: 1px solid var(--artdeco-gold-opacity-10);
+    border-radius: var(--artdeco-radius-none);
+    text-align: left;
+
+    .stock-info {
+        .stock-name {
+            font-family: var(--artdeco-font-body);
+            font-weight: 600;
+            color: var(--artdeco-fg-primary);
+            margin-bottom: calc(var(--artdeco-spacing-1) / 2);
+        }
+
+        .stock-code {
+            font-family: var(--artdeco-font-mono);
+            font-size: var(--artdeco-text-sm);
+            color: var(--artdeco-fg-muted);
+        }
+    }
+
+    .stock-performance {
+        margin-top: var(--artdeco-spacing-2);
+        width: 100%;
+
+        .stock-price {
+            font-family: var(--artdeco-font-mono);
+            font-weight: 600;
+            color: var(--artdeco-fg-primary);
+            margin-bottom: calc(var(--artdeco-spacing-1) / 2);
+        }
+
+        .stock-change {
+            font-family: var(--artdeco-font-mono);
+            font-weight: 700;
+            font-size: var(--artdeco-text-sm);
+
+            &.rise {
+                color: var(--artdeco-up);
+            }
+
+            &.fall {
+                color: var(--artdeco-down);
+            }
+        }
+    }
+}
+
+// 快速导航
+.nav-grid {
+    // Grid布局由.nav-section类提供
+    // 该类定义在artdeco-grid.scss中
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: var(--artdeco-spacing-6);
+    background: var(--artdeco-bg-card);
+    border: 1px solid var(--artdeco-gold-opacity-10);
+    border-radius: var(--artdeco-radius-none);
+    text-decoration: none;
+    transition:
+        border-color var(--artdeco-transition-base),
+        box-shadow var(--artdeco-transition-base),
+        transform var(--artdeco-transition-base);
+    text-align: center;
+
+    &:hover {
+        border-color: var(--artdeco-gold-primary);
+        box-shadow: var(--artdeco-glow-subtle);
+        transform: translateY(calc(var(--artdeco-spacing-1) / -2));
+    }
+
+    &:focus-visible {
+        outline: none;
+        border-color: var(--artdeco-gold-primary);
+        box-shadow: 0 0 0 1px var(--artdeco-gold-primary), var(--artdeco-glow-subtle);
+    }
+
+    .nav-icon {
+        margin-bottom: var(--artdeco-spacing-3);
+        display: block;
+    }
+
+    .nav-label {
+        font-family: var(--artdeco-font-body);
+        font-size: var(--artdeco-text-lg);
+        font-weight: 700;
+        color: var(--artdeco-gold-primary);
+        text-transform: uppercase;
+        letter-spacing: var(--artdeco-tracking-wide);
+        margin-bottom: var(--artdeco-spacing-2);
+    }
+
+    .nav-desc {
+        font-family: var(--artdeco-font-body);
+        font-size: var(--artdeco-text-sm);
+        color: var(--artdeco-fg-muted);
+        line-height: 1.4;
+    }
+}
