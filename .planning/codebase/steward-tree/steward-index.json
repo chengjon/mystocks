@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T18:20:26+08:00",
+  "generated_at": "2026-06-01T18:53:01+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "3d89c7e64a93c7f2ca074dc502762ad203f15bdc",
-  "split_branch": "g2-300-market-stock-list-provider-closeout-refresh",
-  "scope": "market_stock_list_postgresql_session_provider_closeout_refresh",
+  "base_head": "d407acdd207271274aeb6614afdedbf139f640ae",
+  "split_branch": "g2-301-admin-optimization-postgresql-session-ownership-decision",
+  "scope": "admin_optimization_postgresql_session_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -10468,17 +10468,19 @@
     {
       "id": "g2-300-market-stock-list-postgresql-session-provider-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.299 market stock list get_postgresql_session provider implementation",
       "source_edit_authority": false,
-      "autopilot_status": "stop_at_pr_review_gate",
-      "autopilot_stop_reason": "G2.300 selects the next CRITICAL shared-helper-family target for ownership classification; stop for human review before G2.301.",
+      "autopilot_status": "stop_satisfied_by_human_review_and_merge",
+      "autopilot_stop_reason": "G2.300 selected the next CRITICAL shared-helper-family target for ownership classification; PR #453 human review and merge satisfied the stop rule.",
       "github_pr": {
         "number": 453,
         "url": "https://github.com/chengjon/mystocks/pull/453",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-300-market-stock-list-provider-closeout-refresh"
+        "state": "MERGED",
+        "head_ref": "g2-300-market-stock-list-provider-closeout-refresh",
+        "merged_at": "2026-06-01T10:47:06Z",
+        "merge_commit": "d407acdd207271274aeb6614afdedbf139f640ae"
       },
       "evidence": [
         ".planning/codebase/generated/market-stock-list-postgresql-session-provider-closeout-2026-06-01.json",
@@ -10566,7 +10568,7 @@
         "recommended_next_work_item": "G2.301 no-source admin optimization get_postgresql_session ownership / provider-shape decision after PR #453 acceptance"
       },
       "freshness": {
-        "current_head_checked": "3d89c7e64a93c7f2ca074dc502762ad203f15bdc",
+        "current_head_checked": "d407acdd207271274aeb6614afdedbf139f640ae",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_market_request_call_sites_change": true,
@@ -10574,7 +10576,140 @@
         "stale_if_admin_optimization_call_sites_change": true,
         "stale_if_gitnexus_risk_changes": true
       },
-      "next_gate": "Stop for human review in PR #453. If accepted and merged, start G2.301 no-source admin optimization get_postgresql_session ownership / provider-shape decision."
+      "next_gate": "Superseded by G2.301 no-source admin optimization get_postgresql_session ownership / provider-shape decision."
+    },
+    {
+      "id": "g2-301-admin-optimization-postgresql-session-ownership-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.300 market stock list provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "autopilot_status": "stop_at_pr_review_gate",
+      "autopilot_stop_reason": "G2.301 selects future G2.302 authorization under the CRITICAL app.core.database.get_postgresql_session helper family; stop for human review before any authorization or source lane.",
+      "github_pr": {
+        "number": 454,
+        "url": "https://github.com/chengjon/mystocks/pull/454",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-301-admin-optimization-postgresql-session-ownership-decision"
+      },
+      "evidence": [
+        ".planning/codebase/generated/admin-optimization-postgresql-session-ownership-decision-2026-06-01.json",
+        "docs/reports/quality/backend-admin-optimization-postgresql-session-ownership-decision-2026-06-01.md",
+        "governance/mainline/task-cards/pr-454.yaml"
+      ],
+      "closed_parent": {
+        "pr": 453,
+        "state": "MERGED",
+        "merge_commit": "d407acdd207271274aeb6614afdedbf139f640ae",
+        "merged_at": "2026-06-01T10:47:06Z"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/admin-optimization-postgresql-session-ownership-decision-2026-06-01.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-admin-optimization-postgresql-session-ownership-decision-2026-06-01.md",
+        "governance/mainline/task-cards/pr-454.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "current_call_surface": {
+        "file": "web/backend/app/api/v1/admin/optimization.py",
+        "helper_origin": "app.core.database.get_postgresql_session",
+        "import_line": 18,
+        "direct_session_calls": 2,
+        "direct_call_lines": [
+          169,
+          198
+        ],
+        "helper_functions": [
+          "_run_maintenance",
+          "_database_status_payload"
+        ],
+        "affected_route_handlers": [
+          "vacuum_database",
+          "analyze_database",
+          "reindex_database",
+          "get_database_status"
+        ],
+        "excluded_route_handlers": [
+          "get_slow_queries"
+        ]
+      },
+      "route_openapi": {
+        "runtime_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "target_routes": [
+          "POST /api/v1/optimization/vacuum",
+          "POST /api/v1/optimization/analyze",
+          "POST /api/v1/optimization/reindex",
+          "GET /api/v1/optimization/status",
+          "GET /api/v1/optimization/slow-queries"
+        ]
+      },
+      "verification": {
+        "focused_regression": "web/backend/tests/test_v1_optimization_regressions.py: 5 passed in 1.74s",
+        "ruff": "All checks passed"
+      },
+      "gitnexus_evidence": {
+        "mcp_status": "Transport closed in this session; CLI fallback used",
+        "cli_impact_admin_optimization_run_maintenance": {
+          "risk": "LOW",
+          "direct": 3,
+          "processes_affected": 0,
+          "modules_affected": 0,
+          "index_status": "stale warning"
+        },
+        "cli_impact_admin_optimization_database_status_payload": {
+          "risk": "LOW",
+          "direct": 1,
+          "processes_affected": 0,
+          "modules_affected": 0,
+          "index_status": "stale warning"
+        },
+        "cli_impact_core_database": {
+          "risk": "CRITICAL",
+          "direct": 15,
+          "processes_affected": 54,
+          "modules_affected": 12,
+          "index_status": "stale warning"
+        }
+      },
+      "decision": {
+        "classification": "bounded-admin-optimization-control-plane-route-helper-residual",
+        "source_lane_authorized": false,
+        "shared_helper_definition_edits_allowed": false,
+        "route_contract_changes_allowed": false,
+        "future_provider_shape_candidate": "route-local session-factory dependency passed into the four affected handlers and two helper functions while preserving close/finally cleanup semantics",
+        "autopilot_continue_allowed": false,
+        "recommended_next_work_item": "G2.302 no-source admin optimization PostgreSQL session provider authorization package after PR #454 acceptance"
+      },
+      "freshness": {
+        "current_head_checked": "d407acdd207271274aeb6614afdedbf139f640ae",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_admin_optimization_call_sites_change": true,
+        "stale_if_auth_session_call_sites_change": true,
+        "stale_if_gitnexus_risk_changes": true,
+        "stale_if_focused_tests_change": true
+      },
+      "next_gate": "Stop for human review in PR #454. If accepted and merged, start only G2.302 no-source admin optimization PostgreSQL session provider authorization."
     }
   ]
 }

@@ -3268,7 +3268,7 @@ Status: accepted/merged by PR `#452` at `3d89c7e64a93c7f2ca074dc502762ad203f15bd
 
 ## G2.300 Market Stock List PostgreSQL Session Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#453`.
+Status: accepted/merged by PR `#453` at `d407acdd207271274aeb6614afdedbf139f640ae`.
 
 - Parent PR `#452` merged at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`.
 - G2.300 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3276,4 +3276,22 @@ Status: for review in future PR `#453`.
 - Remaining `app.core.database.get_postgresql_session` residuals after market closeout: `auth.py` direct calls `4`; `v1/admin/optimization.py` direct calls `2`; admin audit remains closed with direct calls `0`.
 - Decision: select only G2.301 no-source admin optimization `get_postgresql_session` ownership / provider-shape decision. Do not directly authorize source from G2.300 because the remaining admin optimization calls live in module helpers (`_run_maintenance`, `_database_status_payload`) that back multiple control-plane routes.
 - GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports LOW risk for the two admin optimization helper symbols and CRITICAL risk for shared `app.core.database.get_postgresql_session`, all with stale-index warnings.
-- Stop rule: PR `#453` must stop for human review because it selects the next target inside a CRITICAL shared helper family.
+- Stop rule satisfied by PR `#453` human review and merge; G2.300 must not be used as source implementation authority.
+- Recommended next gate after human acceptance and merge: G2.301 no-source admin optimization `get_postgresql_session` ownership / provider-shape decision.
+
+## G2.301 Admin Optimization PostgreSQL Session Ownership / Provider-Shape Decision
+
+Status: for review in future PR `#454`.
+
+- Parent PR `#453` merged at `d407acdd207271274aeb6614afdedbf139f640ae`.
+- G2.301 is a no-source ownership / provider-shape decision package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Target file is `web/backend/app/api/v1/admin/optimization.py`, helper origin `app.core.database.get_postgresql_session`.
+- Current active direct calls are `2`: one in `_run_maintenance` and one in `_database_status_payload`.
+- The session helper path backs four OpenAPI-exposed handlers: `vacuum_database`, `analyze_database`, `reindex_database`, and `get_database_status`. `get_slow_queries` remains in the module but does not call the session helper and is excluded from the future provider scope.
+- Focused current-behavior regression `web/backend/tests/test_v1_optimization_regressions.py` passes `5/5`; ruff passes on the route module and focused test.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with all five `/api/v1/optimization/*` routes present and schema-visible.
+- GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports LOW risk for `_run_maintenance` and `_database_status_payload`, while `Function:web/backend/app/core/database.py:get_postgresql_session` remains CRITICAL with `15` direct dependants and `54` affected processes.
+- Decision: classify admin optimization as a bounded control-plane route helper surface inside a CRITICAL shared helper family. Do not edit the shared helper definition or start source from G2.301.
+- Candidate future provider shape: a route-local session-factory dependency such as `get_admin_optimization_postgresql_session_factory`, passed into the four affected handlers and then into the two helpers while preserving existing close/finally cleanup semantics.
+- Recommended next gate after human acceptance and merge: G2.302 no-source admin optimization PostgreSQL session provider authorization.
+- Stop rule: PR `#454` must stop for human review because it selects a future source authorization under a CRITICAL shared helper family.

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T18:20:26+08:00`
-- Base HEAD checked: `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`
+- Prepared at: `2026-06-01T18:53:01+08:00`
+- Base HEAD checked: `d407acdd207271274aeb6614afdedbf139f640ae`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.300 market stock list provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#452` merged at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`; G2.300 records market stock list direct calls `0`, provider binding `1`, focused test `5 passed`, runtime/OpenAPI `548/500/0`, and remaining residuals auth `4` / admin optimization `2` | Review future PR `#453`; do not auto-merge because it selects G2.301 under a CRITICAL shared helper family |
+| P0 | Review G2.301 admin optimization PostgreSQL session ownership / provider-shape decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#453` merged at `d407acdd207271274aeb6614afdedbf139f640ae`; G2.301 records admin optimization direct calls `2`, four affected route handlers, focused optimization regression `5 passed`, runtime/OpenAPI `548/500/0`, and CRITICAL shared helper-family risk | Review future PR `#454`; do not auto-merge because it selects G2.302 authorization under a CRITICAL shared helper family |
+| P0 | Preserve G2.300 market stock list provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#453` merged at `d407acdd207271274aeb6614afdedbf139f640ae`; G2.300 records market stock list direct calls `0`, provider binding `1`, focused test `5 passed`, runtime/OpenAPI `548/500/0`, and remaining residuals auth `4` / admin optimization `2` | Do not use G2.300 as source implementation authorization; use G2.301 only for no-source admin optimization ownership / provider-shape decision after review |
 | P0 | Preserve G2.299 market stock list `get_postgresql_session` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#452` merged at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`; G2.299 moved `GET /api/v1/market/stocks` real-branch session creation behind `Depends(get_market_stock_list_postgresql_session_factory)` and kept runtime/OpenAPI `548/500/0` | Do not use G2.299 as authority for core helper edits, auth, admin optimization, route contract changes, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.298 market stock list `get_postgresql_session` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#451` merged at `79a4fe5ae9f763e3e836b76c051bddbed270a930`; G2.298 authorized only path-limited G2.299 edits to `market_data_request.py` and `test_market_stock_list_mock_configuration.py` | Do not use G2.298 to edit core database helpers, auth, admin optimization, admin audit, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.297 core database `get_postgresql_session` residual route-domain decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#450` merged at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`; G2.297 splits remaining direct calls into auth `4`, admin optimization `2`, and market stock list `1`, keeps runtime/OpenAPI `548/500/0`, and selects only a no-source market stock list authorization candidate | Do not use G2.297 as source implementation authorization; use G2.298 only as no-source market stock list authorization after review |
@@ -125,7 +126,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.288 correctly record PR `#440` as accepted/merged at `67ef9b9d8f9dd420de80995f624fa54e41493415`?
-- Does G2.288 confirm the governance dashboard provider lane is closed with direct route-body calls `0`, manual close calls `0`, and provider bindings `5`?
-- Does G2.288 preserve route/OpenAPI `548/500/0` and keep the five governance dashboard paths present?
-- Does PR `#441` stop for human review because the selected next target `data_source_registry.get_manager` has GitNexus MEDIUM impact and one affected process?
+- Does G2.301 correctly record PR `#453` as accepted/merged at `d407acdd207271274aeb6614afdedbf139f640ae`?
+- Does G2.301 correctly classify admin optimization as a bounded control-plane route helper surface with two direct `get_postgresql_session()` calls behind four affected route handlers?
+- Does G2.301 preserve route/OpenAPI `548/500/0` and keep all five `/api/v1/optimization/*` routes documented as current surface?
+- Does PR `#454` stop for human review because the next selected gate is G2.302 authorization under the CRITICAL `app.core.database.get_postgresql_session` helper family?
