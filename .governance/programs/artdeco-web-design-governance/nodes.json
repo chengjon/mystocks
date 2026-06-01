@@ -1648,5 +1648,111 @@
       "current_head": "10187433b9dab07d81db0490502cf802809b4922",
       "prepared_at": "2026-06-01T00:02:51.416Z"
     }
+  },
+  {
+    "id": "artdeco-scss-time-series-style-split",
+    "title": "Split ArtDeco time series analysis SCSS by semantic sections",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "docs/reports/analysis/file-size-guard-report-2026-06-01.md",
+    "current_head": "fea12af695244e1d5c4f34101a3a75cc5d30da17",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "File-size guard follow-up: ArtDecoTimeSeriesAnalysis.scss has 880 lines with semantic blocks overview/chart/inflection/periodicity/prediction/responsive; import path is used by ArtDecoTimeSeriesAnalysis.vue only; local head de39a4487; gitnexus impact target not found for SFC symbol so staged detect_changes will be closeout gate.",
+        "note": "",
+        "current_head": "de39a44879bc8ae08b93632f1565661bea7d5e90",
+        "recorded_at": "2026-06-01T00:10:18.937Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "HEAD advanced externally to fea12af69 during implementation; staged diff was revalidated on current HEAD with exact reconstruction true, build:no-types EXIT_STATUS=0, staged GitNexus risk low and affected_processes empty.",
+        "note": "",
+        "current_head": "fea12af695244e1d5c4f34101a3a75cc5d30da17",
+        "recorded_at": "2026-06-01T00:45:29.877Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.layout.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.chart.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.inflection.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.periodicity.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.prediction.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.responsive.scss",
+      "docs/reports/tasks/2026-06-01-artdeco-scss-time-series-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-time-series-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript logic changes",
+      "No router route changes",
+      "No backend API contract changes",
+      "No frontend API client changes",
+      "No shared component extraction",
+      "No global token or baseline changes",
+      "No deletion or visual redesign"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T00:10:11.544Z",
+    "updated_at": "2026-06-01T00:47:55.729Z",
+    "acceptance": {
+      "commit_gate": [
+        "Exact concatenation of split SCSS partials matches original content",
+        "Focused ArtDeco token check passes or documented existing token debt is unchanged",
+        "npm run build:no-types passes",
+        "gitnexus detect_changes on staged diff is reviewed before commit",
+        "No router/API/frontend API client/Vue/TS/shared component files are staged"
+      ],
+      "closeout_gate": [
+        "Function Tree closeout recorded with report path and validation summary"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "de39a44879bc8ae08b93632f1565661bea7d5e90",
+        "transitioned_at": "2026-06-01T00:12:42.591Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "fea12af695244e1d5c4f34101a3a75cc5d30da17",
+        "transitioned_at": "2026-06-01T00:44:00.665Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "fea12af695244e1d5c4f34101a3a75cc5d30da17",
+        "transitioned_at": "2026-06-01T00:47:40.603Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "fea12af695244e1d5c4f34101a3a75cc5d30da17",
+        "transitioned_at": "2026-06-01T00:47:55.729Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-scss-time-series-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "fea12af695244e1d5c4f34101a3a75cc5d30da17",
+      "prepared_at": "2026-06-01T00:47:47.472Z"
+    }
   }
 ]

@@ -1,0 +1,193 @@
+    // ============================================
+    //   PERIODICITY ANALYSIS - 周期性分析
+    // ============================================
+
+    .periodicity-analysis {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+        }
+
+        .periodicity-content {
+            .periodicity-summary {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                .dominant-periods {
+                    h5 {
+                        font-family: var(--artdeco-font-display);
+                        font-size: var(--artdeco-font-size-md);
+                        font-weight: 600;
+                        color: var(--artdeco-gold-primary);
+                        text-transform: uppercase;
+                        letter-spacing: var(--artdeco-tracking-wide);
+                        margin: 0 0 var(--artdeco-spacing-4) 0;
+                    }
+
+                    .periods-grid {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        gap: var(--artdeco-spacing-3);
+
+                        .period-item {
+                            display: flex;
+                            flex-direction: column;
+                            gap: var(--artdeco-spacing-2);
+                            padding: var(--artdeco-spacing-3);
+                            background: var(--artdeco-bg-card);
+                            border: 1px solid var(--artdeco-border-default);
+                            border-radius: 6px;
+                            transition: all var(--artdeco-transition-base);
+
+                            &:hover {
+                                border-color: var(--artdeco-gold-primary);
+                                box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
+                            }
+
+                            .period-frequency {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-lg);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                                text-align: center;
+                            }
+
+                            .period-strength {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--artdeco-spacing-2);
+
+                                .strength-bar {
+                                    flex: 1;
+                                    height: 8px;
+                                    background: var(--artdeco-bg-muted);
+                                    border-radius: 4px;
+                                    overflow: hidden;
+
+                                    .strength-fill {
+                                        height: 100%;
+                                        border-radius: 4px;
+                                        background: linear-gradient(
+                                            90deg,
+                                            var(--artdeco-gold-primary),
+                                            var(--artdeco-gold-secondary)
+                                        );
+                                        transition: width var(--artdeco-transition-base);
+                                    }
+                                }
+
+                                .strength-text {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                    min-width: 40px;
+                                    text-align: right;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            .periodicity-chart {
+                .chart-placeholder {
+                    height: 200px;
+                    background: var(--artdeco-bg-card);
+                    border: 1px solid var(--artdeco-border-default);
+                    border-radius: 8px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    overflow: hidden;
+
+                    // 几何装饰
+                    @include artdeco-geometric-corners(
+                        $color: var(--artdeco-gold-primary),
+                        $size: 12px,
+                        $border-width: 1px
+                    );
+
+                    .spectrum-visualization {
+                        width: 100%;
+                        height: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        padding: var(--artdeco-spacing-4);
+
+                        .spectrum-bars {
+                            flex: 1;
+                            display: flex;
+                            align-items: end;
+                            justify-content: space-around;
+                            gap: var(--artdeco-spacing-2);
+
+                            .spectrum-bar {
+                                width: 40px;
+                                min-height: 10px;
+                                border-radius: 4px 4px 0 0;
+                                transition: all var(--artdeco-transition-base);
+
+                                &:hover {
+                                    transform: scale(1.05);
+                                    filter: brightness(1.2);
+                                }
+                            }
+                        }
+
+                        .spectrum-labels {
+                            display: flex;
+                            justify-content: space-around;
+                            margin-top: var(--artdeco-spacing-2);
+                            font-family: var(--artdeco-font-body);
+                            font-size: var(--artdeco-font-size-xs);
+                            color: var(--artdeco-fg-muted);
+                            text-transform: uppercase;
+                            letter-spacing: var(--artdeco-tracking-wide);
+                        }
+                    }
+                }
+            }
+        }
+    }

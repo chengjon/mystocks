@@ -1,0 +1,83 @@
+    // ============================================
+    //   RESPONSIVE DESIGN - 响应式设计
+    // ============================================
+
+    @media (width <= 768px) {
+        .artdeco-time-series-analysis {
+            gap: var(--artdeco-spacing-4);
+        }
+
+        .analysis-overview {
+            grid-template-columns: 1fr;
+        }
+
+        .time-series-chart {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--artdeco-spacing-3);
+
+                .header-content {
+                    margin-left: 0;
+                }
+
+                .chart-controls {
+                    width: 100%;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+            }
+        }
+
+        .inflection-analysis {
+            .inflection-content {
+                .inflection-summary {
+                    .summary-stats {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                .inflection-item {
+                    .inflection-header {
+                        flex-direction: column;
+                        align-items: flex-start;
+                        gap: var(--artdeco-spacing-2);
+                    }
+
+                    .inflection-details {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            }
+        }
+
+        .periodicity-analysis {
+            .periodicity-content {
+                .periodicity-summary {
+                    .dominant-periods {
+                        .periods-grid {
+                            grid-template-columns: 1fr;
+                        }
+                    }
+                }
+            }
+        }
+
+        .prediction-analysis {
+            .prediction-content {
+                .prediction-metrics {
+                    .metric-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                .prediction-results {
+                    grid-template-columns: 1fr;
+
+                    .prediction-insights {
+                        margin-top: var(--artdeco-spacing-4);
+                    }
+                }
+            }
+        }
+    }

@@ -1,0 +1,43 @@
+task:
+  id: "artdeco-scss-time-series-style-split"
+  title: "Split ArtDeco time series analysis SCSS by semantic sections"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.layout.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.chart.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.inflection.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.periodicity.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.prediction.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoTimeSeriesAnalysis.responsive.scss"
+    - "docs/reports/tasks/2026-06-01-artdeco-scss-time-series-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-time-series-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue or TypeScript logic changes"
+  - "No router route changes"
+  - "No backend API contract changes"
+  - "No frontend API client changes"
+  - "No shared component extraction"
+  - "No global token or baseline changes"
+  - "No deletion or visual redesign"
+
+acceptance:
+  commit_gate:
+    - "Exact concatenation of split SCSS partials matches original content"
+    - "Focused ArtDeco token check passes or documented existing token debt is unchanged"
+    - "npm run build:no-types passes"
+    - "gitnexus detect_changes on staged diff is reviewed before commit"
+    - "No router/API/frontend API client/Vue/TS/shared component files are staged"
+  closeout_gate:
+    - "Function Tree closeout recorded with report path and validation summary"
+
+evidence:
+  current_head: "de39a44879bc8ae08b93632f1565661bea7d5e90"
+  notes: []

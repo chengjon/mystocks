@@ -1,0 +1,199 @@
+    // ============================================
+    //   INFLECTION ANALYSIS - 拐点分析
+    // ============================================
+
+    .inflection-analysis {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+        }
+
+        .inflection-content {
+            .inflection-summary {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                .summary-stats {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .stat-item {
+                        text-align: center;
+                        padding: var(--artdeco-spacing-3);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+
+                        .stat-label {
+                            font-family: var(--artdeco-font-body);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-muted);
+                            text-transform: uppercase;
+                            letter-spacing: var(--artdeco-tracking-wide);
+                            margin-bottom: var(--artdeco-spacing-2);
+                        }
+
+                        .stat-value {
+                            font-family: var(--artdeco-font-mono);
+                            font-size: var(--artdeco-font-size-xl);
+                            font-weight: 600;
+                            color: var(--artdeco-gold-primary);
+                        }
+                    }
+                }
+            }
+
+            .inflection-list {
+                display: flex;
+                flex-direction: column;
+                gap: var(--artdeco-spacing-3);
+
+                .inflection-item {
+                    @include artdeco-stepped-corners(6px);
+
+                    background: var(--artdeco-bg-card);
+                    border: 1px solid var(--artdeco-border-default);
+                    padding: var(--artdeco-spacing-4);
+                    position: relative;
+                    overflow: hidden;
+                    transition: all var(--artdeco-transition-base);
+
+                    // 几何角落装饰
+                    @include artdeco-geometric-corners(
+                        $color: var(--artdeco-gold-primary),
+                        $size: 12px,
+                        $border-width: 1px
+                    );
+
+                    // 悬停效果
+                    @include artdeco-hover-lift-glow;
+
+                    &.peak {
+                        border-color: var(--artdeco-up);
+                        background: linear-gradient(135deg, color-mix(in srgb, var(--artdeco-up) 5%, transparent), transparent);
+                    }
+
+                    &.valley {
+                        border-color: var(--artdeco-down);
+                        background: linear-gradient(135deg, color-mix(in srgb, var(--artdeco-down) 5%, transparent), transparent);
+                    }
+
+                    .inflection-header {
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        margin-bottom: var(--artdeco-spacing-3);
+
+                        .point-type {
+                            span {
+                                padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+                                border-radius: 4px;
+                                font-size: var(--artdeco-font-size-sm);
+                                font-weight: 600;
+                                text-transform: uppercase;
+                                letter-spacing: var(--artdeco-tracking-wide);
+
+                                &.peak {
+                                    background: var(--artdeco-up);
+                                    color: var(--artdeco-fg-primary);
+                                }
+
+                                &.valley {
+                                    background: var(--artdeco-down);
+                                    color: var(--artdeco-fg-primary);
+                                }
+                            }
+                        }
+
+                        .point-time {
+                            font-family: var(--artdeco-font-mono);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-muted);
+                        }
+
+                        .point-value {
+                            font-family: var(--artdeco-font-mono);
+                            font-size: var(--artdeco-font-size-lg);
+                            font-weight: 600;
+                            color: var(--artdeco-fg-primary);
+                        }
+                    }
+
+                    .inflection-details {
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                        gap: var(--artdeco-spacing-3);
+                        margin-bottom: var(--artdeco-spacing-3);
+
+                        .detail-item {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+
+                            .label {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-xs);
+                                color: var(--artdeco-fg-muted);
+                                font-weight: 600;
+                            }
+
+                            .value {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-sm);
+                                color: var(--artdeco-fg-primary);
+                                font-weight: 600;
+                            }
+                        }
+                    }
+
+                    .inflection-description {
+                        font-family: var(--artdeco-font-body);
+                        font-size: var(--artdeco-font-size-sm);
+                        color: var(--artdeco-fg-secondary);
+                        line-height: 1.5;
+                    }
+                }
+            }
+        }
+    }
