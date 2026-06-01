@@ -1,0 +1,33 @@
+    @import '@/styles/artdeco-tokens';
+
+    .artdeco-trading-signals {
+        display: grid;
+        gap: var(--artdeco-spacing-6);
+        --signals-overview-min: calc(var(--artdeco-spacing-20) * 3 + calc(var(--artdeco-spacing-5) * 2));
+        --signals-header-icon-size: var(--artdeco-spacing-12);
+        --signals-header-icon-radius: var(--artdeco-spacing-2);
+        --signals-icon-size: var(--artdeco-spacing-6);
+        --signals-card-step: calc(var(--artdeco-spacing-3) / 2);
+        --signals-card-corner: var(--artdeco-spacing-3);
+        --signals-card-inset: var(--artdeco-spacing-1);
+        --signals-card-glow-high: var(--artdeco-spacing-5);
+        --signals-card-glow-medium: calc(var(--artdeco-spacing-5) - calc(var(--artdeco-spacing-5) / 4));
+        --signals-strength-width: var(--artdeco-spacing-20);
+        --signals-strength-height: calc(var(--artdeco-spacing-3) / 2);
+        --signals-strength-radius: calc(var(--artdeco-spacing-px) * 3);
+        --signals-history-col-wide: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
+        --signals-history-col-mid: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
+        --signals-history-col-tight: var(--artdeco-spacing-20);
+        --signals-config-item-min: calc(var(--artdeco-spacing-20) * 3 + calc(var(--artdeco-spacing-px) * 60));
+        --signals-type-item-min: calc(var(--artdeco-spacing-20) * 3 + calc(var(--artdeco-spacing-5) / 2));
+    }
+
+    // ============================================
+    //   SIGNALS OVERVIEW - 信号概览
+    // ============================================
+
+    .signals-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(var(--signals-overview-min), 1fr));
+        gap: var(--artdeco-spacing-4);
+    }
