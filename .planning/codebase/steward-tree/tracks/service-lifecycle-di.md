@@ -3299,7 +3299,7 @@ Status: accepted/merged by PR `#454` at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93
 
 ## G2.302 Admin Optimization PostgreSQL Session Provider Authorization
 
-Status: for review in future PR `#455`.
+Status: accepted/merged by PR `#455` at `4af141da7411d30b31b972ace51d104ae28606ed`.
 
 - Parent PR `#454` merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`.
 - G2.302 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3311,3 +3311,21 @@ Status: for review in future PR `#455`.
 - GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports LOW risk for `_run_maintenance` and `_database_status_payload`, while `Function:web/backend/app/core/database.py:get_postgresql_session` remains CRITICAL with `15` direct dependants and `54` affected processes.
 - Decision: authorize only future G2.303 path-limited implementation after PR `#455` human acceptance. Do not edit the shared helper definition, auth, market, admin audit, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - Stop rule: PR `#455` must stop for human review because it authorizes backend source/test edits under a CRITICAL shared helper family.
+
+
+## G2.303 Admin Optimization PostgreSQL Session Provider Implementation
+
+Status: for review in future PR `#456`.
+
+- Parent PR `#455` merged at `4af141da7411d30b31b972ace51d104ae28606ed`.
+- G2.303 is a path-limited backend source/test implementation package for `web/backend/app/api/v1/admin/optimization.py` and `web/backend/tests/test_v1_optimization_regressions.py`.
+- Added route-local `get_admin_optimization_postgresql_session_factory` and injected it into `vacuum_database`, `analyze_database`, `reindex_database`, and `get_database_status`.
+- Passed the injected factory into `_run_maintenance` and `_database_status_payload`; preserved existing `session.close()` in `finally` cleanup semantics.
+- Kept `get_slow_queries` out of scope and did not edit shared `app.core.database.get_postgresql_session`.
+- TDD RED recorded `2 failed, 5 passed`; GREEN focused regression records `7 passed`.
+- Ruff passes on the target route module and focused test.
+- Provider scan records `Depends` bindings `4`, provider backing calls `1`, helper direct `get_postgresql_session()` calls `0`.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with five `/api/v1/optimization/*` routes present and schema-visible.
+- GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports LOW risk for target helpers/handlers and CRITICAL risk for shared `Function:web/backend/app/core/database.py:get_postgresql_session`.
+- Stop rule: PR `#456` must stop for human review because it changes backend source/tests under a CRITICAL shared helper family.
+- Recommended next gate after human acceptance and merge: G2.304 no-source admin optimization provider closeout / residual refresh.

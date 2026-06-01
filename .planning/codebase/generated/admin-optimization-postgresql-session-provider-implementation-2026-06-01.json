@@ -1,0 +1,164 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-01T20:08:00+08:00",
+  "g_node": "G2.303",
+  "title": "Admin optimization PostgreSQL session provider implementation",
+  "branch": "g2-303-admin-optimization-postgresql-session-provider-implementation",
+  "parent_pr": {
+    "number": 455,
+    "url": "https://github.com/chengjon/mystocks/pull/455",
+    "state": "MERGED",
+    "merged_at": "2026-06-01T11:58:09Z",
+    "head_ref": "g2-302-admin-optimization-postgresql-session-provider-authorization",
+    "merge_commit": "4af141da7411d30b31b972ace51d104ae28606ed"
+  },
+  "base_head": "4af141da7411d30b31b972ace51d104ae28606ed",
+  "source_edit_authority": true,
+  "authorized_by": "G2.302 accepted/merged by PR #455",
+  "allowed_scope": [
+    "web/backend/app/api/v1/admin/optimization.py",
+    "web/backend/tests/test_v1_optimization_regressions.py",
+    ".planning/codebase/generated/admin-optimization-postgresql-session-provider-implementation-2026-06-01.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-admin-optimization-postgresql-session-provider-implementation-2026-06-01.md",
+    "governance/mainline/task-cards/pr-456.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/app/core/database.py",
+    "web/backend/app/core/database_factory.py",
+    "web/backend/app/api/auth.py",
+    "web/backend/app/api/market/market_data_request.py",
+    "web/backend/app/api/v1/admin/audit.py",
+    "route path/method/response model/include_in_schema changes",
+    "generated OpenAPI artifacts",
+    "docs/api artifacts",
+    "frontend/config/scripts/OpenSpec/PM2/runtime state",
+    "source retirement"
+  ],
+  "implementation": {
+    "provider": "get_admin_optimization_postgresql_session_factory",
+    "affected_handlers": [
+      "vacuum_database",
+      "analyze_database",
+      "reindex_database",
+      "get_database_status"
+    ],
+    "excluded_handler": "get_slow_queries",
+    "helper_functions": [
+      "_run_maintenance",
+      "_database_status_payload"
+    ],
+    "direct_helper_body_get_postgresql_session_calls_after": 0,
+    "provider_backing_get_postgresql_session_calls_after": 1,
+    "depends_provider_bindings_after": 4,
+    "session_close_finally_semantics": "preserved in both helper functions"
+  },
+  "verification": {
+    "tdd_red": "2 failed, 5 passed: missing session_factory dependency and missing provider symbol",
+    "focused_regression": "web/backend/tests/test_v1_optimization_regressions.py: 7 passed in 1.78s",
+    "ruff": "ruff check web/backend/app/api/v1/admin/optimization.py web/backend/tests/test_v1_optimization_regressions.py: All checks passed",
+    "residual_scan": {
+      "depends_bindings": 4,
+      "all_get_postgresql_session_calls": 1,
+      "provider_backing_calls": 1,
+      "helper_direct_get_postgresql_session_calls": 0
+    },
+    "route_openapi": {
+      "runtime_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "target_routes": [
+        "POST /api/v1/optimization/vacuum",
+        "POST /api/v1/optimization/analyze",
+        "POST /api/v1/optimization/reindex",
+        "GET /api/v1/optimization/status",
+        "GET /api/v1/optimization/slow-queries"
+      ]
+    },
+    "route_openapi_note": "Target route paths remain schema-visible and route/OpenAPI counts remain 548/500/0; no generated OpenAPI artifact was edited."
+  },
+  "gitnexus": {
+    "mcp_status": "Transport closed for impact calls in this session; CLI fallback used before source edits",
+    "cli_impact": {
+      "_run_maintenance": {
+        "risk": "LOW",
+        "direct": 3,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "_database_status_payload": {
+        "risk": "LOW",
+        "direct": 1,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "vacuum_database": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "analyze_database": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "reindex_database": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "get_database_status": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "Function:web/backend/app/core/database.py:get_postgresql_session": {
+        "risk": "CRITICAL",
+        "direct": 15,
+        "processes_affected": 54,
+        "modules_affected": 12,
+        "index_status": "stale warning"
+      }
+    },
+    "decision": "Shared helper definition was not edited because impact is CRITICAL.",
+    "cli_staged_verification": {
+      "risk": "low",
+      "files": 11,
+      "symbols": 18,
+      "affected_processes": 0,
+      "index_status": "stale warning",
+      "note": "MCP detect_changes failed with Transport closed; npx gitnexus verify-staged -r mystocks used as fallback."
+    }
+  },
+  "decision": {
+    "classification": "path-limited-admin-optimization-postgresql-session-provider-implementation",
+    "source_lane_status": "implemented_pending_pr_review",
+    "autopilot_continue_allowed": false,
+    "stop_rule": "source/test implementation PR must stop for human review",
+    "recommended_next_work_item": "G2.304 no-source admin optimization provider closeout / residual refresh after PR #456 human acceptance"
+  },
+  "freshness": {
+    "current_head_checked": "4af141da7411d30b31b972ace51d104ae28606ed",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_admin_optimization_call_sites_change": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_focused_tests_change": true
+  }
+}

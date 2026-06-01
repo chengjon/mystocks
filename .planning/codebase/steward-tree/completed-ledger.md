@@ -76,3 +76,5 @@ when one of these exists:
 - a new PR or issue introduces a conflicting implementation
 - an OpenSpec task explicitly reopens the capability
 - the human maintainer approves a new decision package
+
+- G2.302 admin optimization PostgreSQL session provider authorization accepted/merged by PR `#455` at `4af141da7411d30b31b972ace51d104ae28606ed`; it is superseded by the G2.303 source implementation review gate.
