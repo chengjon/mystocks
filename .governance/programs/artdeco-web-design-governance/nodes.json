@@ -2526,5 +2526,100 @@
       "current_head": "8b923ca0d07a7bde8f9b42ea40ea545073c80521",
       "prepared_at": "2026-06-01T05:06:14.124Z"
     }
+  },
+  {
+    "id": "architecture-scss-style-split",
+    "title": "Split Architecture SCSS by visual concern",
+    "node_type": "implementation",
+    "owner_lane": "frontend-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/views/system/styles/Architecture.scss",
+    "current_head": "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Current Architecture.scss is 501 lines and 0 disallowed px. Architecture.vue and Architecture.spec.ts already have unrelated dirty edits; target is mechanical SCSS split only. GitNexus impact target Architecture was not found with the Vue file path, so scope is file-governed.",
+        "note": "",
+        "current_head": "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f",
+        "recorded_at": "2026-06-01T05:58:00.177Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/system/styles/Architecture.scss",
+      "web/frontend/src/views/system/styles/Architecture.layout.scss",
+      "web/frontend/src/views/system/styles/Architecture.cards.scss",
+      "web/frontend/src/views/system/styles/Architecture.databases.scss",
+      "web/frontend/src/views/system/styles/Architecture.routing.scss",
+      "web/frontend/src/views/system/styles/Architecture.tech-responsive.scss",
+      "docs/reports/tasks/2026-06-01-architecture-scss-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/architecture-scss-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue, TypeScript, runtime logic, router, backend API contract, OpenAPI, or frontend API client changes.",
+      "Do not stage or alter existing dirty Architecture.vue, Architecture.spec.ts, BacktestGPU files, StockDetail.vue, generated tree.md, or docs/api summary changes.",
+      "No shared component extraction, route shell migration, visual redesign, or global token/baseline edits.",
+      "No token cleanup batch; source file already has zero disallowed px by focused check."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T05:58:00.131Z",
+    "updated_at": "2026-06-01T06:14:53.370Z",
+    "acceptance": {
+      "commit_gate": [
+        "Split must preserve the original post-@use style body exactly when partials are concatenated.",
+        "Each created Architecture SCSS partial remains under 500 lines.",
+        "Focused ArtDeco token check for Architecture SCSS files passes.",
+        "npm run build:no-types passes.",
+        "git diff --cached --check passes and staged files remain within the authorized allow-list; generated tree.md and dirty Vue/TS files are not staged."
+      ],
+      "closeout_gate": [
+        "Function Tree closeout records split report, validation evidence, compatibility boundaries, and active gates return to none."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f",
+        "transitioned_at": "2026-06-01T05:58:00.260Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f",
+        "transitioned_at": "2026-06-01T05:58:00.302Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f",
+        "transitioned_at": "2026-06-01T06:14:53.292Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f",
+        "transitioned_at": "2026-06-01T06:14:53.370Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-architecture-scss-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f",
+      "prepared_at": "2026-06-01T06:14:53.332Z"
+    }
   }
 ]

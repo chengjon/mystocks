@@ -1,0 +1,39 @@
+task:
+  id: "architecture-scss-style-split"
+  title: "Split Architecture SCSS by visual concern"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/system/styles/Architecture.scss"
+    - "web/frontend/src/views/system/styles/Architecture.layout.scss"
+    - "web/frontend/src/views/system/styles/Architecture.cards.scss"
+    - "web/frontend/src/views/system/styles/Architecture.databases.scss"
+    - "web/frontend/src/views/system/styles/Architecture.routing.scss"
+    - "web/frontend/src/views/system/styles/Architecture.tech-responsive.scss"
+    - "docs/reports/tasks/2026-06-01-architecture-scss-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/architecture-scss-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue, TypeScript, runtime logic, router, backend API contract, OpenAPI, or frontend API client changes."
+  - "Do not stage or alter existing dirty Architecture.vue, Architecture.spec.ts, BacktestGPU files, StockDetail.vue, generated tree.md, or docs/api summary changes."
+  - "No shared component extraction, route shell migration, visual redesign, or global token/baseline edits."
+  - "No token cleanup batch; source file already has zero disallowed px by focused check."
+
+acceptance:
+  commit_gate:
+    - "Split must preserve the original post-@use style body exactly when partials are concatenated."
+    - "Each created Architecture SCSS partial remains under 500 lines."
+    - "Focused ArtDeco token check for Architecture SCSS files passes."
+    - "npm run build:no-types passes."
+    - "git diff --cached --check passes and staged files remain within the authorized allow-list; generated tree.md and dirty Vue/TS files are not staged."
+  closeout_gate:
+    - "Function Tree closeout records split report, validation evidence, compatibility boundaries, and active gates return to none."
+
+evidence:
+  current_head: "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f"
+  notes: []

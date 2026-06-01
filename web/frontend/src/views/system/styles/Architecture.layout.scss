@@ -1,0 +1,97 @@
+.architecture-container {
+  --gold-primary: var(--artdeco-gold-primary);
+  --gold-dim: var(--artdeco-gold-dim);
+  --gold-muted: var(--artdeco-fg-muted);
+  --bg-primary: var(--artdeco-bg-global);
+  --bg-secondary: var(--artdeco-bg-card);
+  --text-primary: var(--artdeco-fg-primary);
+  --text-muted: var(--artdeco-fg-muted);
+  --rise: var(--artdeco-rise);
+  --fall: var(--artdeco-down);
+
+  padding: var(--artdeco-spacing-5);
+  min-height: 100vh;
+  background: var(--artdeco-bg-global);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent var(--artdeco-spacing-5),
+    var(--artdeco-gold-opacity-05) var(--artdeco-spacing-5),
+    var(--artdeco-gold-opacity-05) calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-px))
+  );
+}
+
+.background-pattern {
+  position: fixed;
+  inset: 0 0 0 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 4%;
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      var(--artdeco-gold-primary) 0,
+      var(--artdeco-gold-primary) var(--artdeco-spacing-px),
+      transparent var(--artdeco-spacing-px),
+      transparent var(--artdeco-spacing-5)
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      var(--artdeco-gold-primary) 0,
+      var(--artdeco-gold-primary) var(--artdeco-spacing-px),
+      transparent var(--artdeco-spacing-px),
+      transparent var(--artdeco-spacing-5)
+    );
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: var(--artdeco-spacing-8);
+  padding: var(--artdeco-spacing-8) 0;
+  position: relative;
+
+  .page-title {
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-size: var(--artdeco-text-4xl);
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-spacing-1);
+    margin: 0 0 var(--artdeco-spacing-2) 0;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .version-badge {
+    display: inline-block;
+    vertical-align: middle;
+    margin-left: var(--artdeco-spacing-5);
+    padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+    background: color-mix(in srgb, var(--artdeco-down) 15%, var(--artdeco-bg-card));
+    border: 1px solid var(--artdeco-down);
+    color: var(--artdeco-down);
+    font-family: var(--artdeco-font-heading, var(--font-display));
+    font-size: var(--artdeco-text-compact-xs);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-spacing-px);
+  }
+
+  .decorative-line {
+    display: block;
+    width: calc((var(--artdeco-spacing-20) * 2) + var(--artdeco-spacing-10));
+    height: calc(var(--artdeco-spacing-px) * 2);
+    background: linear-gradient(90deg, transparent, var(--artdeco-gold-primary), transparent);
+    margin: var(--artdeco-spacing-5) auto 0;
+    position: relative;
+
+    &::before {
+      content: '';
+      position: absolute;
+      bottom: calc(var(--artdeco-spacing-3) * -1);
+      left: 50%;
+      transform: translateX(-50%);
+      width: calc(var(--artdeco-spacing-20) - var(--artdeco-spacing-5));
+      height: var(--artdeco-spacing-px);
+      background: linear-gradient(90deg, transparent, var(--artdeco-gold-dim), transparent);
+    }
+  }
+}
