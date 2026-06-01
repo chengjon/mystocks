@@ -1,0 +1,100 @@
+
+// ========== Tables (ArtDeco Data Grid) ==========
+
+.el-table {
+  background-color: var(--artdeco-bg-card);
+  color: var(--artdeco-fg-primary);
+
+  th.el-table__cell {
+    background-color: var(--artdeco-bg-elevated);
+    color: var(--artdeco-gold-primary);
+    font-family: var(--artdeco-font-heading);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wider);
+    border-bottom: 1px solid var(--artdeco-border-default);
+  }
+
+  td.el-table__cell {
+    border-bottom: 1px solid rgb(212 175 55 / 10%);
+  }
+
+  tr:hover > td {
+    background-color: rgb(212 175 55 / 5%) !important;
+  }
+
+  .el-table__body tr.current-row > td {
+    background-color: rgb(212 175 55 / 10%) !important;
+  }
+}
+
+// ========== Select Dropdown ==========
+
+.el-select-dropdown {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+
+  .el-select-dropdown__item {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+
+    &:hover {
+      background-color: rgb(212 175 55 / 10%);
+      color: var(--artdeco-gold-primary);
+    }
+
+    &.is-selected {
+      color: var(--artdeco-gold-primary);
+      background-color: rgb(212 175 55 / 15%);
+    }
+  }
+}
+
+// ========== Dialog/Modal ==========
+
+.el-dialog {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none) !important;
+  box-shadow: var(--artdeco-glow-intense);
+
+  .el-dialog__header {
+    border-bottom: 1px solid var(--artdeco-border-default);
+    font-family: var(--artdeco-font-heading);
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wider);
+  }
+
+  .el-dialog__title {
+    color: var(--artdeco-gold-primary);
+  }
+
+  .el-dialog__body {
+    color: var(--artdeco-fg-primary);
+  }
+}
+
+// ========== Tabs ==========
+
+.el-tabs {
+  .el-tabs__item {
+    color: var(--artdeco-fg-muted);
+    font-family: var(--artdeco-font-heading);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wide);
+    border-bottom: 2px solid transparent;
+
+    &:hover {
+      color: var(--artdeco-gold-primary);
+    }
+
+    &.is-active {
+      color: var(--artdeco-gold-primary);
+      border-bottom-color: var(--artdeco-gold-primary);
+    }
+  }
+
+  .el-tabs__active-bar {
+    background-color: var(--artdeco-gold-primary);
+  }
+}

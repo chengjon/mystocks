@@ -1,0 +1,102 @@
+
+// ========== Tags/Labels ==========
+
+.el-tag {
+  border-radius: var(--artdeco-radius-none) !important;
+  font-family: var(--artdeco-font-accent);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wide);
+  border: 1px solid;
+
+  &.el-tag--success {
+    background-color: rgb(0 230 118 / 10%);
+    border-color: var(--artdeco-success);
+    color: var(--artdeco-success);
+  }
+
+  &.el-tag--warning {
+    background-color: rgb(255 215 0 / 10%);
+    border-color: var(--artdeco-warning);
+    color: var(--artdeco-warning);
+  }
+
+  &.el-tag--danger {
+    background-color: rgb(255 82 82 / 10%);
+    border-color: var(--artdeco-error);
+    color: var(--artdeco-error);
+  }
+
+  &.el-tag--info {
+    background-color: rgb(79 195 247 / 10%);
+    border-color: var(--artdeco-info);
+    color: var(--artdeco-info);
+  }
+}
+
+// ========== Progress Bars ==========
+
+.el-progress {
+  .el-progress-bar__outer {
+    background-color: var(--artdeco-bg-elevated);
+    border-radius: var(--artdeco-radius-none) !important;
+  }
+
+  .el-progress-bar__inner {
+    background: linear-gradient(
+      90deg,
+      var(--artdeco-gold-primary),
+      var(--artdeco-gold-hover)
+    );
+    border-radius: var(--artdeco-radius-none) !important;
+    box-shadow: var(--artdeco-glow-subtle);
+  }
+
+  &.is-success .el-progress-bar__inner {
+    background: var(--artdeco-success);
+  }
+
+  &.is-warning .el-progress-bar__inner {
+    background: var(--artdeco-warning);
+  }
+
+  &.is-exception .el-progress-bar__inner {
+    background: var(--artdeco-error);
+  }
+}
+
+// ========== Switch ==========
+
+.el-switch {
+  &.is-checked .el-switch__core {
+    background-color: var(--artdeco-gold-primary);
+    border-color: var(--artdeco-gold-primary);
+  }
+}
+
+// ========== Checkbox ==========
+
+.el-checkbox {
+  .el-checkbox__input.is-checked .el-checkbox__inner {
+    background-color: var(--artdeco-gold-primary);
+    border-color: var(--artdeco-gold-primary);
+  }
+
+  .el-checkbox__label {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+  }
+}
+
+// ========== Radio ==========
+
+.el-radio {
+  .el-radio__input.is-checked .el-radio__inner {
+    background-color: var(--artdeco-gold-primary);
+    border-color: var(--artdeco-gold-primary);
+  }
+
+  .el-radio__label {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+  }
+}

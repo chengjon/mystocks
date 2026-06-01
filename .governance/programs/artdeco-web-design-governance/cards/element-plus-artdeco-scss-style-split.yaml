@@ -1,0 +1,38 @@
+task:
+  id: "element-plus-artdeco-scss-style-split"
+  title: "Split Element Plus ArtDeco SCSS by visual concern"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/styles/element-plus-artdeco.scss"
+    - "web/frontend/src/styles/element-plus-artdeco.variables.scss"
+    - "web/frontend/src/styles/element-plus-artdeco.core-components.scss"
+    - "web/frontend/src/styles/element-plus-artdeco.data-overlays.scss"
+    - "web/frontend/src/styles/element-plus-artdeco.indicators-controls.scss"
+    - "web/frontend/src/styles/element-plus-artdeco.feedback-states.scss"
+    - "docs/reports/tasks/2026-06-02-element-plus-artdeco-scss-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/element-plus-artdeco-scss-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue or TypeScript runtime logic changes"
+  - "No router, backend API, OpenAPI, schema, or frontend API client changes"
+  - "No shared component extraction or route shell changes"
+  - "No visual redesign, token value changes, or global token baseline changes"
+
+acceptance:
+  commit_gate:
+    - "Split preserves original post-import SCSS body exactly"
+    - "Every resulting partial stays below 500 lines"
+    - "Function Tree scope-check passes before closeout"
+    - "Frontend build:no-types passes"
+  closeout_gate:
+    - "Report records split ranges, preservation evidence, validation, compatibility boundaries, and next candidates"
+
+evidence:
+  current_head: "1b4a826525b486911a8b9f9866692e6407867b0e"
+  notes: []

@@ -1,0 +1,110 @@
+
+// ========== Alert ==========
+
+.el-alert {
+  border-radius: var(--artdeco-radius-none) !important;
+  border: 1px solid;
+
+  &.el-alert--success {
+    background-color: rgb(0 230 118 / 10%);
+    border-color: var(--artdeco-success);
+    color: var(--artdeco-success);
+  }
+
+  &.el-alert--warning {
+    background-color: rgb(255 215 0 / 10%);
+    border-color: var(--artdeco-warning);
+    color: var(--artdeco-warning);
+  }
+
+  &.el-alert--error {
+    background-color: rgb(255 82 82 / 10%);
+    border-color: var(--artdeco-error);
+    color: var(--artdeco-error);
+  }
+
+  &.el-alert--info {
+    background-color: rgb(79 195 247 / 10%);
+    border-color: var(--artdeco-info);
+    color: var(--artdeco-info);
+  }
+}
+
+// ========== Tooltip ==========
+
+.el-tooltip__popper {
+  background-color: var(--artdeco-bg-elevated);
+  border: 1px solid var(--artdeco-border-default);
+  color: var(--artdeco-fg-primary);
+
+  .el-tooltip__arrow::before {
+    border: 1px solid var(--artdeco-border-default);
+    background-color: var(--artdeco-bg-elevated);
+  }
+}
+
+// ========== Notification ==========
+
+.el-notification {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none) !important;
+  color: var(--artdeco-fg-primary);
+  box-shadow: var(--artdeco-glow-intense);
+
+  .el-notification__title {
+    font-family: var(--artdeco-font-heading);
+    color: var(--artdeco-gold-primary);
+  }
+
+  .el-notification__closeBtn {
+    color: var(--artdeco-fg-muted);
+
+    &:hover {
+      color: var(--artdeco-gold-primary);
+    }
+  }
+}
+
+// ========== Loading ==========
+
+.el-loading-mask {
+  background-color: rgb(10 10 10 / 80%);
+
+  .el-loading-spinner {
+    .path {
+      stroke: var(--artdeco-gold-primary);
+    }
+
+    .el-loading-text {
+      color: var(--artdeco-gold-primary);
+      font-family: var(--artdeco-font-heading);
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wider);
+    }
+  }
+}
+
+// ========== Message ==========
+
+.el-message {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none) !important;
+  color: var(--artdeco-fg-primary);
+
+  &.el-message--success {
+    background-color: rgb(0 230 118 / 10%);
+    border-color: var(--artdeco-success);
+  }
+
+  &.el-message--warning {
+    background-color: rgb(255 215 0 / 10%);
+    border-color: var(--artdeco-warning);
+  }
+
+  &.el-message--error {
+    background-color: rgb(255 82 82 / 10%);
+    border-color: var(--artdeco-error);
+  }
+}

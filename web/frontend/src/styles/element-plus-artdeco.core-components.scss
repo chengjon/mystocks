@@ -1,0 +1,93 @@
+
+// ============================================================
+// Component-Specific Overrides
+// ============================================================
+
+// ========== Buttons (ArtDeco Geometric Precision) ==========
+
+.el-button {
+  border-radius: var(--artdeco-radius-none) !important;
+  font-family: var(--artdeco-font-body);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-wider);
+  transition: all var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &.el-button--primary {
+    background-color: transparent;
+    border-color: var(--artdeco-gold-primary);
+    color: var(--artdeco-gold-primary);
+
+    &:hover,
+    &:focus {
+      background-color: var(--artdeco-gold-primary);
+      color: var(--artdeco-bg-global);
+      box-shadow: var(--artdeco-glow-intense);
+    }
+  }
+
+  &.el-button--success {
+    background-color: transparent;
+    border-color: var(--artdeco-success);
+    color: var(--artdeco-success);
+  }
+
+  &.el-button--warning {
+    background-color: transparent;
+    border-color: var(--artdeco-warning);
+    color: var(--artdeco-warning);
+  }
+
+  &.el-button--danger {
+    background-color: transparent;
+    border-color: var(--artdeco-error);
+    color: var(--artdeco-error);
+  }
+}
+
+// ========== Cards (ArtDeco Framed Exhibits) ==========
+
+.el-card {
+  background-color: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none) !important;
+  box-shadow: var(--artdeco-glow-subtle);
+
+  .el-card__header {
+    border-bottom: 1px solid var(--artdeco-border-default);
+    font-family: var(--artdeco-font-heading);
+    color: var(--artdeco-gold-primary);
+    text-transform: uppercase;
+    letter-spacing: var(--artdeco-tracking-wider);
+  }
+}
+
+// ========== Inputs (ArtDeco Underlined Elegance) ==========
+
+.el-input {
+  .el-input__wrapper {
+    background-color: transparent;
+    border-radius: var(--artdeco-radius-none) !important;
+    border: none;
+    border-bottom: 2px solid var(--artdeco-border-default);
+    box-shadow: none !important;
+    padding: 0;
+
+    &:hover {
+      border-bottom-color: var(--artdeco-border-hover);
+    }
+
+    &.is-focus {
+      border-bottom-color: var(--artdeco-gold-primary);
+      box-shadow: var(--artdeco-glow-subtle) !important;
+    }
+  }
+
+  .el-input__inner {
+    color: var(--artdeco-fg-primary);
+    font-family: var(--artdeco-font-body);
+
+    &::placeholder {
+      color: var(--artdeco-fg-subtle);
+    }
+  }
+}

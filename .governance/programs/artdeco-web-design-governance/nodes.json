@@ -3191,5 +3191,99 @@
       "current_head": "3fe7dc6e2c0ef34daf74e29e5edc0db250c11f8c",
       "prepared_at": "2026-06-01T16:35:47.049Z"
     }
+  },
+  {
+    "id": "element-plus-artdeco-scss-style-split",
+    "title": "Split Element Plus ArtDeco SCSS by visual concern",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/styles/element-plus-artdeco.scss",
+    "current_head": "1b4a826525b486911a8b9f9866692e6407867b0e",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "reports/analysis/file-size-guard-report-2026-06-01.md",
+        "note": "",
+        "current_head": "1b4a826525b486911a8b9f9866692e6407867b0e",
+        "recorded_at": "2026-06-01T16:48:40.431Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/styles/element-plus-artdeco.scss",
+      "web/frontend/src/styles/element-plus-artdeco.variables.scss",
+      "web/frontend/src/styles/element-plus-artdeco.core-components.scss",
+      "web/frontend/src/styles/element-plus-artdeco.data-overlays.scss",
+      "web/frontend/src/styles/element-plus-artdeco.indicators-controls.scss",
+      "web/frontend/src/styles/element-plus-artdeco.feedback-states.scss",
+      "docs/reports/tasks/2026-06-02-element-plus-artdeco-scss-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/element-plus-artdeco-scss-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript runtime logic changes",
+      "No router, backend API, OpenAPI, schema, or frontend API client changes",
+      "No shared component extraction or route shell changes",
+      "No visual redesign, token value changes, or global token baseline changes"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T16:48:31.378Z",
+    "updated_at": "2026-06-01T17:00:50.704Z",
+    "acceptance": {
+      "commit_gate": [
+        "Split preserves original post-import SCSS body exactly",
+        "Every resulting partial stays below 500 lines",
+        "Function Tree scope-check passes before closeout",
+        "Frontend build:no-types passes"
+      ],
+      "closeout_gate": [
+        "Report records split ranges, preservation evidence, validation, compatibility boundaries, and next candidates"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "1b4a826525b486911a8b9f9866692e6407867b0e",
+        "transitioned_at": "2026-06-01T16:49:02.992Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "1b4a826525b486911a8b9f9866692e6407867b0e",
+        "transitioned_at": "2026-06-01T16:49:15.412Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "1b4a826525b486911a8b9f9866692e6407867b0e",
+        "transitioned_at": "2026-06-01T17:00:31.083Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "1b4a826525b486911a8b9f9866692e6407867b0e",
+        "transitioned_at": "2026-06-01T17:00:50.704Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-02-element-plus-artdeco-scss-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "1b4a826525b486911a8b9f9866692e6407867b0e",
+      "prepared_at": "2026-06-01T17:00:39.838Z"
+    }
   }
 ]
