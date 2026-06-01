@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T13:02:37+08:00`
-- Base HEAD checked: `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`
+- Prepared at: `2026-06-01T13:54:13+08:00`
+- Base HEAD checked: `a31fd3ede177d5851c2394b8cea2fe42188a4021`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/admin-audit-postgresql-session-provider-authorization-2026-06-01.json` | G2.294 admin audit `database_factory.get_postgresql_session` provider authorization evidence | Review input for future PR `#447`; no-source authorization package; must stop because it authorizes future backend source work and the selected helper participates in one affected execution process |
-| `docs/reports/quality/backend-admin-audit-postgresql-session-provider-authorization-2026-06-01.md` | G2.294 human-readable provider authorization report | Review input for future PR `#447`; records PR `#446` accepted/merged, admin audit call sites, cleanup semantics, route/OpenAPI smoke, GitNexus fallback, and G2.295 source-lane envelope |
-| `governance/mainline/task-cards/pr-447.yaml` | Governance task card for G2.294 no-source authorization | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge because the package authorizes future backend source work |
+| `.planning/codebase/generated/admin-audit-postgresql-session-provider-implementation-2026-06-01.json` | G2.295 admin audit `database_factory.get_postgresql_session` provider implementation evidence | Review input for future PR `#448`; path-limited source implementation; must stop because it changes backend source/tests |
+| `docs/reports/quality/backend-admin-audit-postgresql-session-provider-implementation-2026-06-01.md` | G2.295 human-readable provider implementation report | Review input for future PR `#448`; records PR `#447` accepted/merged, TDD red/green, focused tests, ruff, route/OpenAPI smoke, GitNexus fallback, and stop rule |
+| `governance/mainline/task-cards/pr-448.yaml` | Governance task card for G2.295 source implementation | Review input; allows only path-limited admin audit source/test and governance evidence updates |
+| `.planning/codebase/generated/admin-audit-postgresql-session-provider-authorization-2026-06-01.json` | G2.294 admin audit `database_factory.get_postgresql_session` provider authorization evidence | Accepted by PR `#447`, merged at `a31fd3ede177d5851c2394b8cea2fe42188a4021`; no-source authorization package; superseded for implementation evidence by G2.295 |
+| `docs/reports/quality/backend-admin-audit-postgresql-session-provider-authorization-2026-06-01.md` | G2.294 human-readable provider authorization report | Accepted by PR `#447`; records PR `#446` accepted/merged, admin audit call sites, cleanup semantics, route/OpenAPI smoke, GitNexus fallback, and G2.295 source-lane envelope |
+| `governance/mainline/task-cards/pr-447.yaml` | Governance task card for G2.294 no-source authorization | Accepted by PR `#447`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/postgresql-session-ownership-decision-2026-06-01.json` | G2.293 `get_postgresql_session` ownership / route-provider decision evidence | Accepted by PR `#446`, merged at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`; no-source package; superseded for bounded admin audit authorization by G2.294 |
 | `docs/reports/quality/backend-postgresql-session-ownership-decision-2026-06-01.md` | G2.293 human-readable ownership / route-provider decision report | Accepted by PR `#446`; records PR `#445` accepted/merged, call-site groups, route/OpenAPI smoke, GitNexus fallback, split decision, and stop rule |
 | `governance/mainline/task-cards/pr-446.yaml` | Governance task card for G2.293 no-source decision | Accepted by PR `#446`; allowed only steward tree, generated evidence, report, and task card updates; no source implementation authority |

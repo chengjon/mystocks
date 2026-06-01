@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T13:02:37+08:00",
+  "generated_at": "2026-06-01T13:54:13+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "a62d5e3fa4e9efbbe388e4bd317ae0cfae371319",
-  "split_branch": "g2-294-admin-audit-postgresql-session-provider-authorization",
-  "scope": "admin_audit_postgresql_session_provider_authorization",
+  "base_head": "a31fd3ede177d5851c2394b8cea2fe42188a4021",
+  "split_branch": "g2-295-admin-audit-postgresql-session-provider",
+  "scope": "admin_audit_postgresql_session_provider_implementation",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -9573,6 +9573,14 @@
           "processes_affected": 1,
           "modules_affected": 1,
           "index_status": "stale warning"
+        },
+        "cli_verify_staged": {
+          "risk": "medium",
+          "changed_files": 11,
+          "changed_symbols": 14,
+          "affected_processes": 1,
+          "affected_flow": "Get_audit_statistics -> _is_dev_like_environment",
+          "index_status": "stale warning"
         }
       },
       "decision": {
@@ -9709,7 +9717,7 @@
     {
       "id": "g2-294-admin-audit-postgresql-session-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.293 get_postgresql_session ownership / route-provider decision",
       "source_edit_authority": false,
@@ -9718,8 +9726,10 @@
       "github_pr": {
         "number": 447,
         "url": "https://github.com/chengjon/mystocks/pull/447",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-294-admin-audit-postgresql-session-provider-authorization"
+        "state": "MERGED",
+        "merged_at": "2026-06-01T05:47:32Z",
+        "head_ref": "g2-294-admin-audit-postgresql-session-provider-authorization",
+        "merge_commit": "a31fd3ede177d5851c2394b8cea2fe42188a4021"
       },
       "evidence": [
         ".planning/codebase/generated/admin-audit-postgresql-session-provider-authorization-2026-06-01.json",
@@ -9815,14 +9825,125 @@
         ]
       },
       "freshness": {
-        "current_head_checked": "a62d5e3fa4e9efbbe388e4bd317ae0cfae371319",
+        "current_head_checked": "a31fd3ede177d5851c2394b8cea2fe42188a4021",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_admin_audit_call_sites_change": true,
         "stale_if_gitnexus_risk_changes": true,
         "stale_if_test_inventory_changes": true
       },
-      "next_gate": "Stop for human review in PR #447. If accepted, start G2.295 path-limited admin audit database_factory get_postgresql_session provider implementation."
+      "next_gate": "Superseded by G2.295 path-limited admin audit database_factory get_postgresql_session provider implementation."
+    },
+    {
+      "id": "g2-295-admin-audit-postgresql-session-provider-implementation",
+      "type": "implementation_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.294 admin audit database_factory get_postgresql_session provider authorization",
+      "source_edit_authority": true,
+      "autopilot_status": "stop_at_pr_review_gate",
+      "autopilot_stop_reason": "G2.295 changes backend source/tests and is outside the limited no-source autopilot lane",
+      "github_pr": {
+        "number": 448,
+        "url": "https://github.com/chengjon/mystocks/pull/448",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-295-admin-audit-postgresql-session-provider"
+      },
+      "evidence": [
+        ".planning/codebase/generated/admin-audit-postgresql-session-provider-implementation-2026-06-01.json",
+        "docs/reports/quality/backend-admin-audit-postgresql-session-provider-implementation-2026-06-01.md",
+        "governance/mainline/task-cards/pr-448.yaml"
+      ],
+      "closed_parent": {
+        "pr": 447,
+        "state": "MERGED",
+        "merge_commit": "a31fd3ede177d5851c2394b8cea2fe42188a4021",
+        "merged_at": "2026-06-01T05:47:32Z"
+      },
+      "allowed_scope": [
+        "web/backend/app/api/v1/admin/audit.py",
+        "web/backend/tests/test_v1_audit_regressions.py",
+        "web/backend/tests/test_v1_admin_exports.py",
+        ".planning/codebase/generated/admin-audit-postgresql-session-provider-implementation-2026-06-01.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-admin-audit-postgresql-session-provider-implementation-2026-06-01.md",
+        "governance/mainline/task-cards/pr-448.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/app/core/database.py",
+        "web/backend/app/core/database_factory.py",
+        "web/backend/app/api/auth.py",
+        "web/backend/app/api/v1/admin/optimization.py",
+        "web/backend/app/api/market/market_data_request.py",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "implementation": {
+        "provider": "get_admin_audit_postgresql_session_factory",
+        "direct_route_body_get_postgresql_session_calls_after": 0,
+        "depends_provider_bindings_after": 3,
+        "session_close_finally_blocks_after": 2,
+        "focused_regression": "6 passed in 1.86s",
+        "ruff": "All checks passed",
+        "runtime_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "audit_routes": 3
+      },
+      "gitnexus_evidence": {
+        "mcp_impact": "tool call failed: Transport closed",
+        "cli_impact_load_audit_logs": {
+          "risk": "LOW",
+          "impacted_count": 3,
+          "direct": 3,
+          "processes_affected": 1,
+          "modules_affected": 1,
+          "index_status": "stale warning"
+        },
+        "cli_impact_get_audit_statistics": {
+          "risk": "LOW",
+          "impacted_count": 0,
+          "direct": 0,
+          "processes_affected": 0,
+          "modules_affected": 0,
+          "index_status": "stale warning"
+        },
+        "cli_impact_database_factory": {
+          "risk": "LOW",
+          "impacted_count": 4,
+          "direct": 2,
+          "processes_affected": 1,
+          "modules_affected": 1,
+          "index_status": "stale warning"
+        }
+      },
+      "decision": {
+        "classification": "path-limited-admin-audit-provider-implementation",
+        "source_lane_status": "implemented-for-review",
+        "autopilot_continue_allowed": false,
+        "recommended_next_work_item": "G2.296 no-source admin audit provider closeout / residual refresh after PR #448 human acceptance"
+      },
+      "freshness": {
+        "current_head_checked": "a31fd3ede177d5851c2394b8cea2fe42188a4021",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_admin_audit_call_sites_change": true,
+        "stale_if_gitnexus_risk_changes": true,
+        "stale_if_focused_tests_change": true
+      },
+      "next_gate": "Stop for human review in PR #448. If accepted, start G2.296 no-source admin audit provider closeout / residual refresh."
     }
   ]
 }
