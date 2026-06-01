@@ -1,0 +1,14 @@
+    .artdeco-chip-distribution {
+        display: grid;
+        gap: var(--artdeco-spacing-6);
+    }
+
+    // ============================================
+    //   DISTRIBUTION OVERVIEW - 分布概览
+    // ============================================
+
+    .distribution-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--artdeco-spacing-4);
+    }

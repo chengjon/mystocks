@@ -1,0 +1,173 @@
+    // ============================================
+    //   CHIP DISTRIBUTION CHART - 筹码分布图表
+    // ============================================
+
+    .chip-distribution-chart {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+
+            .chart-controls {
+                display: flex;
+                gap: var(--artdeco-spacing-3);
+                align-items: center;
+            }
+        }
+
+        .chart-container {
+            .chart-placeholder {
+                height: 400px;
+                background: var(--artdeco-bg-card);
+                border: 1px solid var(--artdeco-border-default);
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                position: relative;
+                overflow: hidden;
+
+                // 几何装饰
+                @include artdeco-geometric-corners(
+                    $color: var(--artdeco-gold-primary),
+                    $size: 16px,
+                    $border-width: 1px
+                );
+
+                .chip-distribution-visualization {
+                    width: 100%;
+                    height: 100%;
+                    position: relative;
+
+                    .distribution-canvas {
+                        width: 100% !important;
+                        height: 100% !important;
+                        background: transparent;
+                    }
+
+                    .chart-overlay {
+                        position: absolute;
+                        inset: var(--artdeco-spacing-4) var(--artdeco-spacing-4) var(--artdeco-spacing-4) var(--artdeco-spacing-4);
+                        pointer-events: none;
+
+                        .current-price-line {
+                            position: absolute;
+                            left: 0;
+                            right: 0;
+                            z-index: 10;
+
+                            .price-line {
+                                position: absolute;
+                                left: 0;
+                                right: 0;
+                                height: 2px;
+                                background: linear-gradient(90deg, transparent, var(--artdeco-up), transparent);
+                                box-shadow: 0 0 10px color-mix(in srgb, var(--artdeco-up) 50%, transparent);
+                            }
+
+                            .price-label {
+                                position: absolute;
+                                right: var(--artdeco-spacing-2);
+                                transform: translateY(-50%);
+                                background: var(--artdeco-bg-card);
+                                padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
+                                border-radius: 4px;
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-xs);
+                                font-weight: 600;
+                                color: var(--artdeco-up);
+                                border: 1px solid var(--artdeco-up);
+                                white-space: nowrap;
+                            }
+                        }
+
+                        .distribution-legend {
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            display: flex;
+                            gap: var(--artdeco-spacing-4);
+                            background: color-mix(in srgb, var(--artdeco-bg-dark) 80%, transparent);
+                            padding: var(--artdeco-spacing-2) var(--artdeco-spacing-3);
+                            border-radius: 6px;
+                            backdrop-filter: blur(10px);
+
+                            .legend-item {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--artdeco-spacing-2);
+                                font-size: var(--artdeco-font-size-xs);
+                                color: var(--artdeco-fg-secondary);
+
+                                .legend-color {
+                                    width: 12px;
+                                    height: 12px;
+                                    border-radius: 2px;
+
+                                    &.profit {
+                                        background: linear-gradient(135deg, var(--artdeco-up), color-mix(in srgb, var(--artdeco-up) 60%, transparent));
+                                    }
+
+                                    &.loss {
+                                        background: linear-gradient(
+                                            135deg,
+                                            var(--artdeco-down),
+                                            color-mix(in srgb, var(--artdeco-down) 60%, transparent)
+                                        );
+                                    }
+
+                                    &.cost {
+                                        background: linear-gradient(
+                                            135deg,
+                                            var(--artdeco-gold-primary),
+                                            color-mix(in srgb, var(--artdeco-warning) 60%, transparent)
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }

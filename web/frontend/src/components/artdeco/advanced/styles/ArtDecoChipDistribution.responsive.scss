@@ -1,0 +1,71 @@
+    // ============================================
+    //   RESPONSIVE DESIGN - 响应式设计
+    // ============================================
+
+    @media (width <= 768px) {
+        .artdeco-chip-distribution {
+            gap: var(--artdeco-spacing-4);
+        }
+
+        .distribution-overview {
+            grid-template-columns: 1fr;
+        }
+
+        .chip-distribution-chart {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--artdeco-spacing-3);
+
+                .header-content {
+                    margin-left: 0;
+                }
+
+                .chart-controls {
+                    width: 100%;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+            }
+        }
+
+        .cost-distribution {
+            .cost-analysis {
+                .cost-zones {
+                    .zone-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                .cost-insights {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+
+        .chip-profit-analysis {
+            .profit-analysis {
+                .profit-metrics {
+                    .metric-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            }
+        }
+
+        .chip-stability-analysis {
+            .stability-analysis {
+                .stability-metrics {
+                    .metric-grid {
+                        grid-template-columns: 1fr;
+                    }
+                }
+
+                .stability-insights {
+                    .insights-list {
+                        grid-template-columns: 1fr;
+                    }
+                }
+            }
+        }
+    }

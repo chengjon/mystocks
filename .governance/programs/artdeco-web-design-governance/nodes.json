@@ -1852,5 +1852,105 @@
       "current_head": "977e8f9189fc62fa5c51a41f60aaa2f316124c22",
       "prepared_at": "2026-06-01T01:11:40.246Z"
     }
+  },
+  {
+    "id": "artdeco-scss-chip-distribution-style-split",
+    "title": "Split ArtDeco chip distribution SCSS by semantic sections",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "docs/reports/analysis/file-size-guard-report-2026-06-01.md",
+    "current_head": "a287c66c53521d782f1c072a51811c0f2d6bc241",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Baseline: ArtDecoChipDistribution.scss has 1063 lines and 81 disallowed hardcoded px literals. Existing semantic sections: distribution overview, chip distribution chart, cost distribution, chip profit analysis, chip stability analysis, responsive. Existing import path is ArtDecoChipDistribution.vue -> ./styles/ArtDecoChipDistribution. gitnexus impact target not found for SFC symbol; staged detect_changes will be commit gate.",
+        "note": "",
+        "current_head": "a287c66c53521d782f1c072a51811c0f2d6bc241",
+        "recorded_at": "2026-06-01T01:18:49.060Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.layout.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.chart.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.cost.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.profit.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.stability.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.responsive.scss",
+      "docs/reports/tasks/2026-06-01-artdeco-scss-chip-distribution-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-chip-distribution-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript logic changes",
+      "No router route changes",
+      "No backend API contract changes",
+      "No frontend API client changes",
+      "No shared component extraction",
+      "No global token or baseline changes",
+      "No token cleanup in this split commit",
+      "No visual redesign or deletion"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T01:18:39.605Z",
+    "updated_at": "2026-06-01T02:32:08.244Z",
+    "acceptance": {
+      "commit_gate": [
+        "Exact concatenation of split SCSS partials matches original content",
+        "Focused ArtDeco token check result is documented; existing token debt is not changed",
+        "npm run build:no-types passes",
+        "gitnexus detect_changes on staged diff is reviewed before commit",
+        "No router/API/frontend API client/Vue/TS/shared component files are staged"
+      ],
+      "closeout_gate": [
+        "Function Tree closeout recorded with report path and validation summary"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "a287c66c53521d782f1c072a51811c0f2d6bc241",
+        "transitioned_at": "2026-06-01T01:19:21.887Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "a287c66c53521d782f1c072a51811c0f2d6bc241",
+        "transitioned_at": "2026-06-01T02:30:00.452Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "a287c66c53521d782f1c072a51811c0f2d6bc241",
+        "transitioned_at": "2026-06-01T02:31:52.635Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "a287c66c53521d782f1c072a51811c0f2d6bc241",
+        "transitioned_at": "2026-06-01T02:32:08.244Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-scss-chip-distribution-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "a287c66c53521d782f1c072a51811c0f2d6bc241",
+      "prepared_at": "2026-06-01T02:32:01.135Z"
+    }
   }
 ]
