@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-01T12:19:25+08:00`
-- Base HEAD checked: `05cdf04f646d844c11e90e7c453ed4f985c8d382`
+- Prepared at: `2026-06-01T13:02:37+08:00`
+- Base HEAD checked: `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,15 +19,16 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.292 accepted/merged by PR `#445` at `05cdf04` | Continue with G2.293 `get_postgresql_session` ownership / route-provider decision review; do not auto-merge because the family includes a CRITICAL shared database helper |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.293 accepted/merged by PR `#446` at `a62d5e3` | Continue with G2.294 admin audit `database_factory.get_postgresql_session` provider authorization review; do not auto-merge because the package authorizes future backend source work |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.292 have progressed through PR `#337`-`#445`; current review target is G2.293 `get_postgresql_session` ownership / route-provider decision in future PR `#446` |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.293 have progressed through PR `#337`-`#446`; current review target is G2.294 admin audit provider authorization in future PR `#447` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Recent Closeouts
 
 | Item | Accepted evidence | Follow-up |
 |---|---|---|
+| G2.293 `get_postgresql_session` ownership / route-provider decision | PR `#446` merged at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`; helper family split across auth, admin audit, admin optimization, and market route modules; shared `app.core.database.get_postgresql_session` marked CRITICAL impact | G2.294 authorizes only the bounded admin audit `database_factory` subgroup and must stop at PR `#447` review |
 | G2.292 data_source_registry get_manager provider closeout | PR `#445` merged at `05cdf04f646d844c11e90e7c453ed4f985c8d382`; direct route-body `get_manager()` calls `0`, provider backing `1`, provider bindings `7`, runtime/OpenAPI `548/500/0` | G2.293 classifies `get_postgresql_session` ownership and splits future provider work by route domain/helper origin |
 | G2.291 data_source_registry get_manager provider implementation | PR `#444` merged at `3d161e90547720f4ce95111ea511d3f8dc3174dc`; direct route-body `get_manager()` calls `0`, provider bindings `7`, focused regression `3/3`, runtime/OpenAPI `548/500/0` | G2.292 closes the provider lane and selects only a no-source `get_postgresql_session` ownership decision |
 | G2.290 data_source_registry get_manager provider authorization | PR `#443` merged at `e517163385e96a6c7115e14b77fb89819b4cead4`; authorized only a path-limited G2.291 implementation lane | Superseded by the accepted/merged G2.291 provider implementation and G2.292 closeout review |

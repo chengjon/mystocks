@@ -1,0 +1,137 @@
+version: "v0.2"
+
+task:
+  id: "pr-447"
+  title: "Authorize admin audit PostgreSQL session provider lane"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-admin-audit-postgresql-session-provider-authorization"
+  objective: "authorize a future path-limited admin audit database_factory get_postgresql_session provider implementation without editing source"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.294 is a no-source authorization package. It changes no runtime entrypoint, route path, route registration, generated OpenAPI artifact, frontend route, or FUNCTION_TREE catalog entry."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/admin-audit-postgresql-session-provider-authorization-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-admin-audit-postgresql-session-provider-authorization-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-447.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "immediate implementation of admin audit provider injection"
+  - "modification of app.core.database.py or app.core.database_factory.py helper definitions"
+  - "migration of auth, admin optimization, or market request get_postgresql_session call sites"
+
+acceptance:
+  checks:
+    - id: "pr446-merged"
+      command: "gh pr view 446 confirms MERGED at a62d5e3fa4e9efbbe388e4bd317ae0cfae371319"
+      required: true
+    - id: "admin-audit-call-site-inventory"
+      command: "current scan records 2 direct app.core.database_factory get_postgresql_session occurrences in web/backend/app/api/v1/admin/audit.py at _load_audit_logs and get_audit_statistics"
+      required: true
+    - id: "cleanup-semantics"
+      command: "current scan records both admin audit helper paths close sessions through session.close() in finally blocks; future implementation must preserve equivalent cleanup lifecycle"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0, and 3 admin audit runtime/OpenAPI routes"
+      required: true
+    - id: "gitnexus-impact"
+      command: "GitNexus MCP returned Transport closed; CLI impact records LOW risk, 4 impacted symbols, 2 direct callers, 1 affected process, and 1 affected module for Function:web/backend/app/core/database_factory.py:get_postgresql_session"
+      required: true
+    - id: "authorization-boundary"
+      command: "G2.294 authorizes only a future G2.295 path-limited source lane after human acceptance; PR #447 itself edits no source"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-admin-audit-postgresql-session-provider-authorization-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-447.yaml --base-sha a62d5e3fa4e9efbbe388e4bd317ae0cfae371319 --head-sha HEAD --report /tmp/pr447-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus staged verification attempted before commit; stale-index warning recorded if present"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A future worker may treat this authorization as immediate source authority; this package requires human acceptance before G2.295 can start."
+    - "The selected helper has LOW GitNexus risk but participates in one affected execution process, so PR #447 must stop for review."
+    - "The current admin audit code closes sessions manually in finally blocks; any future provider implementation must preserve cleanup semantics."
+    - "GitNexus index is stale; current route/helper scan is the source for active admin audit call-site counts."
+  rollback_plan: "Revert PR #447; this removes only governance evidence and restores the previous steward tree state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future path-limited admin audit database_factory get_postgresql_session provider lane."
+    modified_scope: "Governance evidence, steward tree indexes, human-readable report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime, route, OpenAPI, frontend, config, script, or OpenSpec changes."
+    rollback_ready: "Revert PR #447."
+    risk_and_rollback_point: "No-source authorization, but future source work must preserve session cleanup and stop for human review."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T13:02:37+08:00"
+    approval_note: "Human maintainer approved continuing after PR #446 merge into G2.294 no-source admin audit database_factory get_postgresql_session provider authorization. PR #447 must stop for review because it authorizes future backend source implementation and the selected helper participates in one affected execution process."
+    secondary_approved: false

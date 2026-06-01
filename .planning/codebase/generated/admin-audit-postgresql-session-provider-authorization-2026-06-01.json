@@ -1,0 +1,152 @@
+{
+  "schema_version": "2026-05-27.steward-evidence.v1",
+  "generated_at": "2026-06-01T13:02:37+08:00",
+  "git_head": "a62d5e3fa4e9efbbe388e4bd317ae0cfae371319",
+  "base_branch": "wip/root-dirty-20260403",
+  "node": {
+    "id": "g2-294-admin-audit-postgresql-session-provider-authorization",
+    "label": "G2.294 admin audit database_factory get_postgresql_session provider authorization",
+    "type": "authorization_package",
+    "state": "for_review",
+    "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+    "parent": "G2.293 get_postgresql_session ownership / route-provider decision",
+    "source_edit_authority": false,
+    "autopilot_status": "stop_at_pr_review_gate",
+    "autopilot_stop_reason": "G2.294 is no-source, but it authorizes a future backend source implementation lane and the selected helper participates in one affected execution process."
+  },
+  "closed_parent": {
+    "pr": 446,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/446",
+    "merge_commit": "a62d5e3fa4e9efbbe388e4bd317ae0cfae371319",
+    "merged_at": "2026-06-01T04:43:16Z"
+  },
+  "target_surface": {
+    "file": "web/backend/app/api/v1/admin/audit.py",
+    "helper_origin": "app.core.database_factory.get_postgresql_session",
+    "direct_helper_occurrences": 2,
+    "helper_occurrences": [
+      {
+        "line": 225,
+        "function": "_load_audit_logs",
+        "route_handler": false,
+        "cleanup_semantics": "session.close() in finally"
+      },
+      {
+        "line": 365,
+        "function": "get_audit_statistics",
+        "route_handler": true,
+        "cleanup_semantics": "session.close() in finally"
+      }
+    ],
+    "route_surface": [
+      {
+        "path": "/api/v1/audit/logs",
+        "methods": [
+          "GET"
+        ],
+        "endpoint": "list_audit_logs",
+        "include_in_schema": true
+      },
+      {
+        "path": "/api/v1/audit/logs/{log_id}",
+        "methods": [
+          "GET"
+        ],
+        "endpoint": "get_audit_log",
+        "include_in_schema": true
+      },
+      {
+        "path": "/api/v1/audit/statistics",
+        "methods": [
+          "GET"
+        ],
+        "endpoint": "get_audit_statistics",
+        "include_in_schema": true
+      }
+    ],
+    "effective_endpoint_surface": 3
+  },
+  "route_openapi_smoke": {
+    "routes": 548,
+    "paths": 500,
+    "duplicate_operation_ids": 0,
+    "audit_routes": 3,
+    "captured_at": "2026-06-01T12:46:10+08:00",
+    "freshness_policy": "Stale if HEAD, route registration, include_in_schema policy, or audit route module changes."
+  },
+  "gitnexus_evidence": {
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_impact_database_factory_get_postgresql_session": {
+      "command": "npx gitnexus impact -r mystocks -d upstream --depth 2 --include-tests --summary-only Function:web/backend/app/core/database_factory.py:get_postgresql_session",
+      "risk": "LOW",
+      "impacted_count": 4,
+      "direct": 2,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "affected_processes": [
+        {
+          "name": "get_audit_statistics",
+          "type": "Function",
+          "filePath": "web/backend/app/api/v1/admin/audit.py",
+          "earliest_broken_step": 1
+        }
+      ],
+      "affected_modules": [
+        {
+          "name": "Admin",
+          "hits": 4,
+          "impact": "direct"
+        }
+      ],
+      "index_status": "stale warning, commits_behind=0"
+    },
+    "cli_query": {
+      "command": "npx gitnexus query -r mystocks -l 5 \"admin audit get_postgresql_session database_factory\"",
+      "matched_primary_process": "proc_22_get_audit_statistics",
+      "matched_symbols": [
+        "Function:web/backend/app/api/v1/admin/audit.py:_load_audit_logs",
+        "Function:web/backend/app/api/v1/admin/audit.py:get_audit_statistics"
+      ],
+      "index_status": "stale warning, commits_behind=0"
+    }
+  },
+  "authorization_decision": {
+    "classification": "bounded-admin-audit-database-factory-session-provider-candidate",
+    "approved_future_lane_if_reviewed": "G2.295 path-limited admin audit database_factory get_postgresql_session provider implementation",
+    "future_source_authority": "Requires human acceptance of PR #447 / G2.294 before any source lane starts.",
+    "allowed_future_source_paths": [
+      "web/backend/app/api/v1/admin/audit.py"
+    ],
+    "allowed_future_test_paths": [
+      "web/backend/tests/test_v1_audit_regressions.py",
+      "web/backend/tests/test_v1_admin_exports.py"
+    ],
+    "required_future_shape": [
+      "Add or use a route-local provider dependency for the admin audit database_factory PostgreSQL session.",
+      "Move only the admin audit helper uses behind dependency/provider wiring.",
+      "Preserve existing session.close() cleanup semantics for both _load_audit_logs and get_audit_statistics paths.",
+      "Keep route paths, methods, response models, OpenAPI exposure, and response contracts unchanged.",
+      "Run focused audit regression/export tests and route/OpenAPI smoke before any implementation PR is reviewed."
+    ],
+    "forbidden_future_scope": [
+      "app.core.database.py",
+      "app.core.database_factory.py helper definitions",
+      "web/backend/app/api/auth.py",
+      "web/backend/app/api/v1/admin/optimization.py",
+      "web/backend/app/api/market/market_data_request.py",
+      "route registration changes",
+      "generated OpenAPI artifacts",
+      "frontend/config/scripts/OpenSpec/PM2/runtime state"
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "a62d5e3fa4e9efbbe388e4bd317ae0cfae371319",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_admin_audit_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_test_inventory_changes": true
+  },
+  "next_gate": "Stop for human review in PR #447. If accepted, start G2.295 path-limited admin audit database_factory get_postgresql_session provider implementation."
+}
