@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-06-02T01:35:43+08:00`
-- Base HEAD checked: `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`
+- Prepared at: `2026-06-02T01:46:33+08:00`
+- Base HEAD checked: `75f6c63023bec35453892f63aaeaf193023e4881`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -29,6 +29,7 @@ It proved a repeatable conveyor:
 
 | Node | State | Notes |
 |---|---|---|
+| G2.314 indicator_registry `get_factory` provider authorization | Future PR `#467` review target | Authorizes only future G2.315 path-limited source/test lane and requires human review before source merge; no source edits in G2.314 |
 | G2.313 indicator_registry `get_factory` ownership / route-provider decision | Future PR `#466` review target | Classifies active route-local singleton factory helper with 3 route-body calls, route/OpenAPI `548/500/0`, GitNexus CLI `LOW`, and selects only G2.314 no-source provider authorization |
 | G2.312 residual refresh after dormant indicator-config exclusion | Merged by PR `#465` | Excludes dormant `create_indicator_config.py` / `get_mysql_session`, records `371` Python files scanned, `663` getter names, `53` active interesting candidates, and selects G2.313 |
 | Steward split | Merged by PR `#332` | Root task tree is now a short entrypoint; active state belongs in this split track and `steward-index.json` |
@@ -3455,7 +3456,7 @@ Status: accepted / merged by PR `#465`.
 
 ## G2.313 Indicator Registry `get_factory` Ownership / Route-Provider Decision
 
-Status: for review in future PR `#466`.
+Status: accepted / merged by PR `#466`.
 
 - Parent PR `#465` merged at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`.
 - G2.313 is a no-source ownership decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3464,3 +3465,13 @@ Status: for review in future PR `#466`.
 - GitNexus MCP impact failed with `Transport closed`; CLI fallback records `LOW` risk, `3` direct callers, `0` affected processes, and stale index with `commits_behind=0`.
 - G2.313 selects only G2.314 no-source `indicator_registry.get_factory` provider authorization package. If G2.314 is accepted, any future source implementation lane must stop at human review before merge.
 - Stop rule: G2.313 must not be used as source implementation authority or as authorization to edit `indicator_registry.py`, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.314 Indicator Registry `get_factory` Provider Authorization
+
+Status: for review in future PR `#467`.
+
+- Parent PR `#466` merged at `75f6c63023bec35453892f63aaeaf193023e4881`.
+- G2.314 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- G2.314 authorizes only a future G2.315 source implementation lane limited to `web/backend/app/api/indicator_registry.py` and `tests/api/file_tests/test_indicator_registry_api.py`.
+- Required future shape: route-local provider dependency for `IndicatorFactory`, no route/OpenAPI contract drift, three handlers moved away from route-body `get_factory()`, and `get_factory()` retained as backing compatibility seam unless separately retired.
+- Stop rule: G2.315 must stop at human review before merge and must not be auto-merged under the no-source autopilot rule.
