@@ -1,0 +1,89 @@
+{
+  "schema_version": "g2-route-ownership-decision.v1",
+  "generated_at": "2026-06-02T01:00:09+08:00",
+  "gate": "G2.311",
+  "title": "indicator config router ownership / registration-retirement decision",
+  "base_head": "67083d40808fea9963137e3e128c0c6cb0683e57",
+  "parent_gate": {
+    "gate": "G2.310",
+    "pr": 463,
+    "state": "MERGED",
+    "merge_commit": "67083d40808fea9963137e3e128c0c6cb0683e57",
+    "merged_at": "2026-06-01T16:57:18Z"
+  },
+  "source_edit_authority": false,
+  "route_surface": {
+    "module": "web/backend/app/api/indicators/create_indicator_config.py",
+    "defines_router": true,
+    "handlers": [
+      "create_indicator_config",
+      "list_indicator_configs",
+      "get_indicator_config",
+      "update_indicator_config",
+      "delete_indicator_config"
+    ],
+    "get_mysql_session_calls": 5,
+    "get_mysql_session_lines": [
+      60,
+      129,
+      189,
+      251,
+      331
+    ],
+    "registered_in_app_routes": false,
+    "openapi_exposed": false,
+    "current_route_table": {
+      "total_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "indicator_related_routes": 13,
+      "matching_create_indicator_handlers": 0,
+      "matching_config_crud_openapi_paths": []
+    }
+  },
+  "ownership_decision": {
+    "classification": "retained-dormant-indicator-config-router",
+    "active_provider_candidate": false,
+    "register_now": false,
+    "retire_now": false,
+    "reason": "The router is not part of the current runtime/OpenAPI contract. Registering it would introduce API surface; retiring it would be source-affecting and needs a separate route/source retirement package. For the service lifecycle provider queue, it should be excluded as dormant route code.",
+    "service_lifecycle_handling": "closed_as_dormant_route_surface",
+    "route_governance_handling": "may be reopened only by a dedicated route registration or route retirement decision package"
+  },
+  "test_inventory": [
+    {
+      "path": "tests/api/file_tests/test_indicators_api.py",
+      "finding": "contains fixture-based endpoint expectation tests for /configs, but does not prove FastAPI registration"
+    },
+    {
+      "path": "tests/ddd/test_architecture_validation.py",
+      "finding": "domain IndicatorConfig validation; not a route registration proof"
+    },
+    {
+      "path": "web/backend/tests/unit/services/indicators/test_indicator_registry.py",
+      "finding": "indicator registry and metadata tests; not a create_indicator_config router proof"
+    }
+  ],
+  "next_gate": {
+    "gate": "G2.312",
+    "title": "service lifecycle residual candidate refresh after dormant indicator-config exclusion",
+    "type": "no-source candidate refresh",
+    "purpose": "refresh the active provider candidate queue after classifying create_indicator_config.py as dormant and excluded from active implementation candidacy"
+  },
+  "not_authorized": [
+    "source implementation",
+    "test edits",
+    "route registration",
+    "OpenAPI exposure changes",
+    "module deletion",
+    "MySQL helper edits",
+    "PM2/runtime commands"
+  ],
+  "freshness": {
+    "current_head_checked": "67083d40808fea9963137e3e128c0c6cb0683e57",
+    "stale_if_head_changes": true,
+    "stale_if_indicator_router_registration_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_tests_start_exercising_runtime_config_routes": true
+  }
+}

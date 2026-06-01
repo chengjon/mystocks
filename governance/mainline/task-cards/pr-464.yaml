@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-464"
+  title: "Decide indicator config router ownership"
+  owner: "codex"
+  created_at: "2026-06-02"
+
+mainline:
+  id: "L1-indicator-config-router-ownership-decision"
+  objective: "classify create_indicator_config.py route ownership and decide whether it remains in the active provider candidate queue"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.311 is a no-source route ownership decision. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/indicator-config-router-ownership-decision-2026-06-02.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-indicator-config-router-ownership-decision-2026-06-02.md"
+    - "governance/mainline/task-cards/pr-464.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "editing create_indicator_config.py or indicator router exports"
+  - "authorizing a source implementation lane"
+
+acceptance:
+  checks:
+    - id: "pr463-merged"
+      command: "gh pr view 463 confirms MERGED at 67083d40808fea9963137e3e128c0c6cb0683e57"
+      required: true
+    - id: "route-ownership-classification"
+      command: "report classifies create_indicator_config.py as retained dormant route code and excludes it from active provider implementation candidacy"
+      required: true
+    - id: "route-openapi-truth"
+      command: "route-table smoke records 548 routes, 500 OpenAPI paths, duplicate operation IDs 0, 13 indicator-related routes, and 0 registered create_indicator_config.py handlers"
+      required: true
+    - id: "next-gate-selection"
+      command: "report selects only G2.312 no-source service lifecycle residual candidate refresh after dormant indicator-config exclusion"
+      required: true
+    - id: "no-source-boundary"
+      command: "PR #464 edits no backend source, tests, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-indicator-config-router-ownership-decision-2026-06-02.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-464.yaml --base-sha 67083d40808fea9963137e3e128c0c6cb0683e57 --head-sha HEAD --report /tmp/pr464-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The dormant router classification becomes stale if create_indicator_config.py is registered later."
+    - "Future route registration or source retirement would be source-affecting and must stop at human review."
+  rollback_plan: "Revert PR #464; this removes only G2.311 decision evidence and restores the prior G2.310 next gate."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Classify indicator config router ownership and active provider candidacy."
+    modified_scope: "Governance evidence, steward tree indexes, report, and task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime behavior, route contract, OpenAPI, or source changes."
+    rollback_ready: "Revert PR #464."
+    risk_and_rollback_point: "No-source route ownership decision; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer-autopilot"
+    approved_at: "2026-06-02T01:00:09+08:00"
+    approval_note: "Human maintainer previously authorized automatic no-source governance continuation; G2.311 remains no-source and does not authorize route registration, retirement, or provider implementation."
+    secondary_approved: false

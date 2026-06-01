@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-02T00:49:10+08:00",
+  "generated_at": "2026-06-02T01:00:09+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18",
-  "split_branch": "g2-310-mysql-session-ownership-decision",
-  "scope": "mysql_session_ownership_decision",
+  "base_head": "67083d40808fea9963137e3e128c0c6cb0683e57",
+  "split_branch": "g2-311-indicator-config-router-ownership-decision",
+  "scope": "indicator_config_router_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -11620,16 +11620,18 @@
     {
       "id": "g2-310-mysql-session-ownership-decision",
       "type": "ownership_decision",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.309 service lifecycle residual candidate refresh after auth provider closeout",
       "source_edit_authority": false,
-      "autopilot_status": "review_gate",
-      "autopilot_stop_reason": "G2.310 is no-source and may be auto-merged if checks pass; it does not authorize provider implementation.",
+      "autopilot_status": "merged",
+      "autopilot_stop_reason": "G2.310 was a no-source ownership decision and PR #463 merged after checks passed; it does not authorize provider implementation.",
       "github_pr": {
         "number": 463,
         "url": "https://github.com/chengjon/mystocks/pull/463",
-        "state": "PLANNED_FOR_REVIEW",
+        "state": "MERGED",
+        "merge_commit": "67083d40808fea9963137e3e128c0c6cb0683e57",
+        "merged_at": "2026-06-01T16:57:18Z",
         "head_ref": "g2-310-mysql-session-ownership-decision"
       },
       "evidence": [
@@ -11719,7 +11721,89 @@
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_get_mysql_session_impact_changes": true
       },
-      "next_gate": "Review PR #463. If accepted and merged, start G2.311 no-source indicator config router ownership / registration-retirement decision."
+      "next_gate": "Superseded by G2.311 no-source indicator config router ownership / registration-retirement decision."
+    },
+    {
+      "id": "g2-311-indicator-config-router-ownership-decision",
+      "type": "route_ownership_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.310 get_mysql_session ownership / route-provider decision",
+      "source_edit_authority": false,
+      "autopilot_status": "review_gate",
+      "autopilot_stop_reason": "G2.311 is no-source and may be auto-merged if checks pass; it does not authorize route registration, retirement, or provider implementation.",
+      "github_pr": {
+        "number": 464,
+        "url": "https://github.com/chengjon/mystocks/pull/464",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-311-indicator-config-router-ownership-decision"
+      },
+      "evidence": [
+        ".planning/codebase/generated/indicator-config-router-ownership-decision-2026-06-02.json",
+        "docs/reports/quality/backend-indicator-config-router-ownership-decision-2026-06-02.md",
+        "governance/mainline/task-cards/pr-464.yaml"
+      ],
+      "closed_parent": {
+        "pr": 463,
+        "state": "MERGED",
+        "merge_commit": "67083d40808fea9963137e3e128c0c6cb0683e57",
+        "merged_at": "2026-06-01T16:57:18Z"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/indicator-config-router-ownership-decision-2026-06-02.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-indicator-config-router-ownership-decision-2026-06-02.md",
+        "governance/mainline/task-cards/pr-464.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "route_surface": {
+        "module": "web/backend/app/api/indicators/create_indicator_config.py",
+        "defines_router": true,
+        "get_mysql_session_calls": 5,
+        "registered_in_app_routes": false,
+        "openapi_exposed": false,
+        "route_table_total_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "indicator_related_routes": 13,
+        "registered_create_indicator_config_handlers": 0
+      },
+      "decision": {
+        "classification": "retained-dormant-indicator-config-router",
+        "active_provider_candidate": false,
+        "register_now": false,
+        "retire_now": false,
+        "service_lifecycle_handling": "closed_as_dormant_route_surface",
+        "route_governance_handling": "may be reopened only by a dedicated route registration or route retirement decision package",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-311",
+        "recommended_next_work_item": "G2.312 no-source service lifecycle residual candidate refresh after dormant indicator-config exclusion",
+        "autopilot_continue_allowed": true
+      },
+      "freshness": {
+        "current_head_checked": "67083d40808fea9963137e3e128c0c6cb0683e57",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_indicator_router_registration_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_tests_start_exercising_runtime_config_routes": true
+      },
+      "next_gate": "Review PR #464. If accepted and merged, start G2.312 no-source service lifecycle residual candidate refresh after dormant indicator-config exclusion."
     }
   ]
 }

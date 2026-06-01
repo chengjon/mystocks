@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-02T00:49:10+08:00`
-- Base HEAD checked: `5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18`
+- Prepared at: `2026-06-02T01:00:09+08:00`
+- Base HEAD checked: `67083d40808fea9963137e3e128c0c6cb0683e57`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/mysql-session-ownership-decision-2026-06-02.json` | G2.310 `get_mysql_session` ownership / route-provider decision evidence | Review input for future PR `#463`; no-source decision; blocks provider implementation and selects only G2.311 indicator config router ownership / registration-retirement decision |
-| `docs/reports/quality/backend-mysql-session-ownership-decision-2026-06-02.md` | G2.310 human-readable ownership decision report | Review input for future PR `#463`; records PR `#462` accepted/merged, route registration truth, route/OpenAPI smoke, GitNexus fallback impact, and next gate |
-| `governance/mainline/task-cards/pr-463.yaml` | Governance task card for G2.310 no-source decision | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/indicator-config-router-ownership-decision-2026-06-02.json` | G2.311 indicator config router ownership / registration-retirement decision evidence | Review input for future PR `#464`; no-source decision; classifies dormant route code and selects only G2.312 residual candidate refresh |
+| `docs/reports/quality/backend-indicator-config-router-ownership-decision-2026-06-02.md` | G2.311 human-readable route ownership decision report | Review input for future PR `#464`; records PR `#463` accepted/merged, runtime route truth, test inventory, and next gate |
+| `governance/mainline/task-cards/pr-464.yaml` | Governance task card for G2.311 no-source decision | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/mysql-session-ownership-decision-2026-06-02.json` | G2.310 `get_mysql_session` ownership / route-provider decision evidence | Accepted by PR `#463`, merged at `67083d40808fea9963137e3e128c0c6cb0683e57`; no-source decision; superseded for route ownership by G2.311 |
+| `docs/reports/quality/backend-mysql-session-ownership-decision-2026-06-02.md` | G2.310 human-readable ownership decision report | Accepted by PR `#463`; records PR `#462` accepted/merged, route registration truth, route/OpenAPI smoke, GitNexus fallback impact, and next gate |
+| `governance/mainline/task-cards/pr-463.yaml` | Governance task card for G2.310 no-source decision | Accepted by PR `#463`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.json` | G2.309 service lifecycle residual candidate refresh evidence | Accepted by PR `#462`, merged at `5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18`; no-source candidate refresh; superseded for `get_mysql_session` ownership by G2.310 |
 | `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.md` | G2.309 human-readable candidate refresh report | Accepted by PR `#462`; records PR `#461` accepted/merged, residual getter/provider scanner counts, candidate ranking, and next gate |
 | `governance/mainline/task-cards/pr-462.yaml` | Governance task card for G2.309 no-source candidate refresh | Accepted by PR `#462`; allowed only steward tree, generated evidence, report, and task card updates |
