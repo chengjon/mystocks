@@ -1,0 +1,178 @@
+{
+  "gate": "G2.293",
+  "prepared_at": "2026-06-01T12:19:25+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "05cdf04f646d844c11e90e7c453ed4f985c8d382",
+  "parent": {
+    "gate": "G2.292",
+    "pr": 445,
+    "state": "MERGED",
+    "merged_at": "2026-06-01T04:11:52Z",
+    "merge_commit": "05cdf04f646d844c11e90e7c453ed4f985c8d382",
+    "summary": "No-source data_source_registry provider closeout / residual refresh accepted and merged."
+  },
+  "scope": {
+    "source_edit_authority": false,
+    "allowed_change_type": "no-source ownership / route-provider decision",
+    "forbidden": [
+      "backend source edits",
+      "test edits",
+      "route registration changes",
+      "route path/method/response model changes",
+      "generated OpenAPI artifact edits",
+      "docs/api edits",
+      "frontend/config/script changes",
+      "OpenSpec proposal/spec edits",
+      "PM2 commands or runtime state changes",
+      "source retirement",
+      "implementation authorization for get_postgresql_session"
+    ]
+  },
+  "surface": {
+    "symbol_family": "get_postgresql_session",
+    "direct_helper_occurrences": 9,
+    "openapi_endpoint_surface": 12,
+    "helper_definitions": [
+      {
+        "uid": "Function:web/backend/app/core/database.py:get_postgresql_session",
+        "owner": "core database session helper",
+        "route_occurrences": 7,
+        "route_files": [
+          "web/backend/app/api/auth.py",
+          "web/backend/app/api/v1/admin/optimization.py",
+          "web/backend/app/api/market/market_data_request.py"
+        ],
+        "classification": "CRITICAL shared core helper; must not be modified by a route-provider lane"
+      },
+      {
+        "uid": "Function:web/backend/app/core/database_factory.py:get_postgresql_session",
+        "owner": "database_factory session helper",
+        "route_occurrences": 2,
+        "route_files": [
+          "web/backend/app/api/v1/admin/audit.py"
+        ],
+        "classification": "LOW-impact admin audit helper origin; candidate for the first split authorization package"
+      }
+    ],
+    "call_site_groups": [
+      {
+        "group": "auth-core-database",
+        "file": "web/backend/app/api/auth.py",
+        "import_origin": "app.core.database",
+        "direct_occurrences": 4,
+        "route_handlers": [
+          "get_users",
+          "register_user",
+          "request_password_reset",
+          "confirm_password_reset"
+        ],
+        "paths": [
+          "/api/v1/auth/users",
+          "/api/v1/auth/register",
+          "/api/v1/auth/reset-password/request",
+          "/api/v1/auth/reset-password/confirm"
+        ],
+        "classification": "security-sensitive auth/session route group; separate auth-specific decision required"
+      },
+      {
+        "group": "admin-audit-database-factory",
+        "file": "web/backend/app/api/v1/admin/audit.py",
+        "import_origin": "app.core.database_factory",
+        "direct_occurrences": 2,
+        "route_handlers": [
+          "list_audit_logs",
+          "get_audit_log",
+          "get_audit_statistics"
+        ],
+        "paths": [
+          "/api/v1/audit/logs",
+          "/api/v1/audit/logs/{log_id}",
+          "/api/v1/audit/statistics"
+        ],
+        "classification": "bounded admin audit group; selected for next no-source authorization package"
+      },
+      {
+        "group": "admin-optimization-core-database",
+        "file": "web/backend/app/api/v1/admin/optimization.py",
+        "import_origin": "app.core.database",
+        "direct_occurrences": 2,
+        "route_handlers": [
+          "vacuum_database",
+          "analyze_database",
+          "reindex_database",
+          "get_database_status"
+        ],
+        "paths": [
+          "/api/v1/optimization/vacuum",
+          "/api/v1/optimization/analyze",
+          "/api/v1/optimization/reindex",
+          "/api/v1/optimization/status"
+        ],
+        "classification": "admin maintenance group; separate database-operation decision required"
+      },
+      {
+        "group": "market-stock-list-core-database",
+        "file": "web/backend/app/api/market/market_data_request.py",
+        "import_origin": "app.core.database",
+        "direct_occurrences": 1,
+        "route_handlers": [
+          "get_stock_list"
+        ],
+        "paths": [
+          "/api/v1/market/stocks"
+        ],
+        "classification": "market-data request group; separate business route decision required"
+      }
+    ],
+    "runtime_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0
+  },
+  "gitnexus_evidence": {
+    "mcp_context": "tool call failed: Transport closed",
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_query": "npx gitnexus query -r mystocks -l 5 get_postgresql_session found both core/database.py and core/database_factory.py definitions plus auth/admin execution flows",
+    "cli_impact_core_database": {
+      "uid": "Function:web/backend/app/core/database.py:get_postgresql_session",
+      "risk": "CRITICAL",
+      "impacted_count": 67,
+      "direct": 15,
+      "processes_affected": 54,
+      "modules_affected": 12,
+      "index_status": "stale warning"
+    },
+    "cli_impact_database_factory": {
+      "uid": "Function:web/backend/app/core/database_factory.py:get_postgresql_session",
+      "risk": "LOW",
+      "impacted_count": 4,
+      "direct": 2,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "index_status": "stale warning"
+    }
+  },
+  "verification": {
+    "route_openapi_smoke": "Correct-worktree app.main smoke records 548 routes, 500 OpenAPI paths, duplicate operation IDs 0",
+    "route_openapi_notes": "Smoke emitted expected import-time service logs and historical GPU NumPy fallback warning; counts were produced successfully.",
+    "call_site_inventory": "9 get_postgresql_session direct helper occurrences across 4 route files; exposed endpoint surface 12 routes"
+  },
+  "decision": {
+    "classification": "cross-domain-postgresql-session-helper-family",
+    "ownership": "Split by route domain and helper origin; do not treat get_postgresql_session as a single implementation target.",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-293",
+    "autopilot_continue_allowed": false,
+    "selected_next_governance_target": "admin-audit-postgresql-session-provider-authorization",
+    "recommended_next_work_item": "G2.294 no-source admin audit database_factory get_postgresql_session provider authorization after PR #446 human acceptance",
+    "reason": "The full get_postgresql_session family includes CRITICAL shared core database impact. The admin audit subgroup is the only currently bounded LOW-impact helper-origin subgroup and should be authorized separately before any source lane."
+  },
+  "freshness": {
+    "current_head_checked": "05cdf04f646d844c11e90e7c453ed4f985c8d382",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_admin_audit_call_sites_change": true,
+    "stale_if_admin_optimization_call_sites_change": true,
+    "stale_if_market_request_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}
