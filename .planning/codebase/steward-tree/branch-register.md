@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-01T18:20:26+08:00`
-- Base HEAD checked: `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`
+- Prepared at: `2026-06-01T21:10:00+08:00`
+- Base HEAD checked: `8a6cfa615f472f23643a13ab18ab02dd0853ad96`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -274,3 +274,5 @@ G2.303 is the path-limited admin optimization PostgreSQL session provider implem
 G2.304 is the no-source admin optimization PostgreSQL session provider closeout / residual refresh after PR `#456` merged G2.303 at `1cc89b285cd265bce96991b8dc4c7e8bd71d85d0`. It records admin optimization helper-body direct `get_postgresql_session()` calls `0`, provider backing calls `1`, `Depends` bindings `4`, focused optimization regression `7/7`, ruff clean, runtime/OpenAPI `548/500/0`, and remaining active direct residuals concentrated in `web/backend/app/api/auth.py` with `4` calls. It selects only `G2.305 no-source auth.py get_postgresql_session ownership / provider-shape decision`; it must not edit auth source or shared helper definitions.
 
 G2.305 is the no-source auth.py `get_postgresql_session` ownership / provider-shape decision after PR `#457` merged G2.304 at `d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9`. It records four active auth residual calls across `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`, focused auth tests `10 passed / 18 skipped`, route/OpenAPI `548/500/0`, and existing ruff no-fix findings `6`. It selects only G2.306 no-source auth provider authorization and must not authorize auth source edits.
+
+G2.306 is the no-source auth.py `get_postgresql_session` provider authorization after PR `#458` merged G2.305 at `8a6cfa615f472f23643a13ab18ab02dd0853ad96`. It authorizes only a future G2.307 path-limited source lane for `web/backend/app/api/auth.py` plus focused auth tests, requiring a route-local auth PostgreSQL session factory provider, injection into the four affected handlers, preservation of close/finally cleanup, and preservation of `confirm_password_reset` commit/rollback semantics. It records focused auth tests `10 passed / 18 skipped`, route/OpenAPI `548/500/0`, ruff no-fix findings `6`, and shared helper GitNexus CLI impact `CRITICAL` with `15` direct dependants and `54` affected processes. It must not edit source in PR `#459`, and G2.307 must stop at human review before merge.

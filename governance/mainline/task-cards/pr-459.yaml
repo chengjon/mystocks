@@ -1,0 +1,133 @@
+version: "v0.2"
+
+task:
+  id: "pr-459"
+  title: "Authorize auth PostgreSQL session provider lane"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-auth-postgresql-session-provider-authorization"
+  objective: "authorize a future path-limited auth.py get_postgresql_session provider implementation lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.306 is a no-source authorization package. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/auth-postgresql-session-provider-authorization-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-auth-postgresql-session-provider-authorization-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-459.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "editing app.core.database.get_postgresql_session"
+  - "editing auth.py"
+
+acceptance:
+  checks:
+    - id: "pr458-merged"
+      command: "gh pr view 458 confirms MERGED at 8a6cfa615f472f23643a13ab18ab02dd0853ad96"
+      required: true
+    - id: "auth-surface"
+      command: "current scan records 4 auth.py get_postgresql_session calls across get_users, register_user, request_password_reset, and confirm_password_reset"
+      required: true
+    - id: "focused-auth-tests"
+      command: "pytest -q web/backend/tests/test_auth.py web/backend/tests/test_auth_login_contract.py --tb=short --no-cov -n 0 records 10 passed, 18 skipped"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0"
+      required: true
+    - id: "ruff-no-fix"
+      command: "ruff check --no-fix records 6 existing auth.py F401/F811 findings and this PR does not fix them"
+      required: true
+    - id: "future-source-boundary"
+      command: "report authorizes only future G2.307 path-limited auth.py provider implementation and requires human review before source PR merge"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-auth-postgresql-session-provider-authorization-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-459.yaml --base-sha 8a6cfa615f472f23643a13ab18ab02dd0853ad96 --head-sha HEAD --report /tmp/pr459-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The future G2.307 source PR is auth/security-sensitive and must stop for human review before merge."
+  rollback_plan: "Revert PR #459; this removes only G2.306 authorization evidence and restores the prior G2.305 gate text."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future path-limited auth PostgreSQL session provider implementation lane."
+    modified_scope: "Governance evidence, steward tree indexes, report, and task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime behavior, route contract, OpenAPI, or source changes."
+    rollback_ready: "Revert PR #459."
+    risk_and_rollback_point: "No-source authorization; rollback is single-PR revert. Future source PR requires human review."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T21:00:00+08:00"
+    approval_note: "Human maintainer approved continuing after PR #458 merge into G2.306 no-source auth provider authorization."
+    secondary_approved: false

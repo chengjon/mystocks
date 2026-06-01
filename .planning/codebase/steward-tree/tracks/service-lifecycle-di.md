@@ -3347,7 +3347,7 @@ Status: accepted/merged by PR `#457` at `d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f
 
 ## G2.305 Auth.py PostgreSQL Session Ownership / Provider-Shape Decision
 
-Status: for review in future PR `#458`.
+Status: accepted/merged by PR `#458` at `8a6cfa615f472f23643a13ab18ab02dd0853ad96`.
 
 - Parent PR `#457` merged at `d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9`.
 - G2.305 is a no-source ownership / provider-shape decision package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3358,3 +3358,17 @@ Status: for review in future PR `#458`.
 - Decision: classify auth as a security-sensitive route-domain surface inside the CRITICAL shared `app.core.database.get_postgresql_session` helper family.
 - Recommended next gate after PR `#458` acceptance: G2.306 no-source auth.py `get_postgresql_session` provider authorization.
 - Stop rule: G2.305 must not be used as auth source implementation authority.
+
+## G2.306 Auth.py PostgreSQL Session Provider Authorization
+
+Status: for review in future PR `#459`.
+
+- Parent PR `#458` merged at `8a6cfa615f472f23643a13ab18ab02dd0853ad96`.
+- G2.306 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Current auth surface remains `4` direct `get_postgresql_session()` calls across `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`.
+- Future G2.307 may only add a route-local auth PostgreSQL session factory provider, inject it into the four affected handlers, and preserve close/finally plus `confirm_password_reset` commit/rollback semantics.
+- Focused auth tests record `10 passed, 18 skipped`; route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`.
+- `ruff check --no-fix` records `6` existing F401/F811 issues in `auth.py`; they were not fixed because G2.306 is no-source.
+- GitNexus MCP impact returned `Transport closed`; CLI fallback keeps the shared `Function:web/backend/app/core/database.py:get_postgresql_session` family at `CRITICAL` with `15` direct dependants and `54` affected processes.
+- Recommended next gate after PR `#459` acceptance: G2.307 path-limited auth PostgreSQL session provider implementation.
+- Stop rule: G2.307 is a source implementation PR and must stop at human review before merge.

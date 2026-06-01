@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T19:28:21+08:00`
-- Base HEAD checked: `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`
+- Prepared at: `2026-06-01T21:10:00+08:00`
+- Base HEAD checked: `8a6cfa615f472f23643a13ab18ab02dd0853ad96`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,6 +16,9 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
+| `.planning/codebase/generated/auth-postgresql-session-provider-authorization-2026-06-01.json` | G2.306 auth.py PostgreSQL session provider authorization evidence | Review input for future PR `#459`; no-source authorization package; authorizes only future G2.307 path-limited source implementation and requires human review before source PR merge |
+| `docs/reports/quality/backend-auth-postgresql-session-provider-authorization-2026-06-01.md` | G2.306 human-readable authorization report | Review input for future PR `#459`; records PR `#458` accepted/merged, auth call surface, focused tests, route/OpenAPI smoke, ruff no-fix findings, GitNexus fallback impact, and next gate |
+| `governance/mainline/task-cards/pr-459.yaml` | Governance task card for G2.306 no-source authorization | Review input; allows only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/auth-postgresql-session-ownership-decision-2026-06-01.json` | G2.305 auth.py PostgreSQL session ownership / provider-shape decision evidence | Review input for future PR `#458`; no-source decision package; selects only G2.306 no-source auth provider authorization |
 | `docs/reports/quality/backend-auth-postgresql-session-ownership-decision-2026-06-01.md` | G2.305 human-readable ownership / provider-shape report | Review input for future PR `#458`; records PR `#457` accepted/merged, auth call surface, focused tests, route/OpenAPI smoke, ruff no-fix findings, and next gate |
 | `governance/mainline/task-cards/pr-458.yaml` | Governance task card for G2.305 no-source decision | Review input; allows only steward tree, generated evidence, report, and task card updates |
