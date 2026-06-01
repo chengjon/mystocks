@@ -3142,7 +3142,7 @@ Status: for review in future PR `#443`.
 
 ## G2.291 data_source_registry get_manager Provider Implementation
 
-- PR state: planned future PR `#444` for review.
+- PR state: accepted/merged by PR `#444` at `3d161e90547720f4ce95111ea511d3f8dc3174dc`.
 - Parent state: PR `#443` merged G2.290 at `e517163385e96a6c7115e14b77fb89819b4cead4`.
 - G2.291 is a path-limited source implementation package. It edits only `web/backend/app/api/data_source_registry.py`, focused data-source registry tests, steward evidence, this track, and the PR task card.
 - Implementation shape: add route-local provider `get_data_source_registry_manager` delegating to existing `get_manager()`, keep `get_manager()` as backing compatibility / monkeypatch seam, and move the seven active data-source registry handlers to `Depends(get_data_source_registry_manager)`.
@@ -3153,3 +3153,16 @@ Status: for review in future PR `#443`.
 - GitNexus: MCP `context` and `impact` returned `Transport closed`; CLI fallback reports MEDIUM risk, `7` direct callers, `7` impacted symbols, `1` affected process, and stale-index warning for `Function:web/backend/app/api/data_source_registry.py:get_manager`.
 - Stop rule: PR `#444` must stop for human review because it changes backend source/tests and the target has GitNexus MEDIUM impact with one affected process.
 - Recommended next gate after human acceptance and merge: G2.292 no-source `data_source_registry.get_manager` provider closeout / residual refresh.
+
+## G2.292 data_source_registry get_manager Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#445`.
+
+- Parent PR `#444` merged at `3d161e90547720f4ce95111ea511d3f8dc3174dc`.
+- G2.292 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- It records the `data_source_registry.get_manager` provider lane as closed: direct route-body `get_manager()` calls are `0`, provider backing `get_manager()` calls are `1`, and `Depends(get_data_source_registry_manager)` bindings are `7`.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, and `16` data-source runtime routes.
+- Residual scan keeps `get_postgresql_session` as the next no-source ownership decision candidate because it spans auth, admin, and market route modules and resolves to a CRITICAL-impact core database helper.
+- GitNexus MCP returned `Transport closed`; CLI fallback reports CRITICAL risk for `Function:web/backend/app/core/database.py:get_postgresql_session`.
+- Stop rule: PR `#445` must stop for human review because the next selected target includes CRITICAL GitNexus impact.
+- Recommended next gate after human acceptance and merge: G2.293 no-source `get_postgresql_session` ownership / route-provider decision.

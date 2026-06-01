@@ -1,0 +1,196 @@
+{
+  "gate": "G2.292",
+  "prepared_at": "2026-06-01T11:52:20+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "3d161e90547720f4ce95111ea511d3f8dc3174dc",
+  "parent": {
+    "gate": "G2.291",
+    "pr": 444,
+    "state": "MERGED",
+    "merged_at": "2026-06-01T03:40:06Z",
+    "merge_commit": "3d161e90547720f4ce95111ea511d3f8dc3174dc",
+    "summary": "Path-limited data_source_registry get_manager provider implementation accepted and merged."
+  },
+  "scope": {
+    "source_edit_authority": false,
+    "allowed_change_type": "no-source closeout and residual candidate refresh",
+    "forbidden": [
+      "backend source edits",
+      "test edits",
+      "route registration changes",
+      "route path/method/response model changes",
+      "generated OpenAPI artifact edits",
+      "docs/api edits",
+      "frontend/config/script changes",
+      "OpenSpec proposal/spec edits",
+      "PM2 commands or runtime state changes",
+      "source retirement",
+      "implementation authorization for the next candidate"
+    ]
+  },
+  "closeout": {
+    "module": "web/backend/app/api/data_source_registry.py",
+    "helper": "get_manager",
+    "provider": "get_data_source_registry_manager",
+    "route_handlers": {
+      "search_data_sources": {
+        "direct_get_manager_calls": 0,
+        "depends_get_data_source_registry_manager": 1
+      },
+      "get_category_stats": {
+        "direct_get_manager_calls": 0,
+        "depends_get_data_source_registry_manager": 1
+      },
+      "get_data_source": {
+        "direct_get_manager_calls": 0,
+        "depends_get_data_source_registry_manager": 1
+      },
+      "update_data_source": {
+        "direct_get_manager_calls": 0,
+        "depends_get_data_source_registry_manager": 1
+      },
+      "test_data_source": {
+        "direct_get_manager_calls": 0,
+        "depends_get_data_source_registry_manager": 1
+      },
+      "health_check_data_source": {
+        "direct_get_manager_calls": 0,
+        "depends_get_data_source_registry_manager": 1
+      },
+      "health_check_all_data_sources": {
+        "direct_get_manager_calls": 0,
+        "depends_get_data_source_registry_manager": 1
+      }
+    },
+    "direct_route_body_get_manager_calls_after": 0,
+    "provider_backing_get_manager_calls_after": 1,
+    "depends_provider_bindings_after": 7,
+    "data_source_runtime_routes": 16,
+    "runtime_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0
+  },
+  "verification": {
+    "parent_pr": "gh pr view 444 records MERGED at 2026-06-01T03:40:06Z with merge commit 3d161e90547720f4ce95111ea511d3f8dc3174dc",
+    "focused_regression": "PYTHONPATH=web/backend pytest -q web/backend/tests/test_data_source_registry_manager_provider.py --tb=short --no-cov: 3 passed in 6.74s",
+    "route_openapi_smoke": "app.main smoke records 548 routes, 500 OpenAPI paths, duplicate operation IDs 0, data-source runtime routes 16",
+    "route_openapi_smoke_notes": "Smoke emitted expected import-time service logs and historical GPU NumPy fallback warning; counts were produced successfully."
+  },
+  "residual_scan": {
+    "scan_roots": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "exclusions": [
+      "known closed G2 service lifecycle provider surfaces",
+      "data_source_config.old.py historical compatibility file",
+      "data_source_registry.get_manager just-closed provider surface",
+      "data_source_config.get_config_manager active provider backing surface"
+    ],
+    "active_interesting_candidates": 58,
+    "top_candidates": [
+      {
+        "name": "get_postgresql_session",
+        "api_bare_calls": 9,
+        "service_bare_calls": 0,
+        "files": [
+          "web/backend/app/api/auth.py",
+          "web/backend/app/api/market/market_data_request.py",
+          "web/backend/app/api/v1/admin/audit.py",
+          "web/backend/app/api/v1/admin/optimization.py"
+        ],
+        "classification": "cross-domain PostgreSQL session route helper family requiring ownership decision before implementation"
+      },
+      {
+        "name": "get_cache_manager",
+        "api_bare_calls": 7,
+        "service_bare_calls": 0,
+        "files": [
+          "web/backend/app/api/_cache_basic_routes.py",
+          "web/backend/app/api/cache.py",
+          "web/backend/app/api/dashboard.py"
+        ],
+        "classification": "ambiguous dashboard/cache helper; defer until cache ownership is disambiguated"
+      },
+      {
+        "name": "get_postgresql_engine",
+        "api_bare_calls": 6,
+        "service_bare_calls": 0,
+        "files": [
+          "web/backend/app/api/industry_concept_analysis.py",
+          "web/backend/app/api/v1/pool_monitoring.py"
+        ],
+        "classification": "mixed business/control-plane PostgreSQL engine helper; defer behind ownership split"
+      },
+      {
+        "name": "get_risk_management_core",
+        "api_bare_calls": 6,
+        "service_bare_calls": 0,
+        "files": [
+          "web/backend/app/api/risk/_alerts_responses.py",
+          "web/backend/app/api/risk/stop_loss.py",
+          "web/backend/app/api/risk/v31.py"
+        ],
+        "classification": "risk-domain core helper; separate risk ownership decision required"
+      },
+      {
+        "name": "get_mtm_engine",
+        "api_bare_calls": 5,
+        "service_bare_calls": 0,
+        "files": [
+          "web/backend/app/api/realtime_market.py"
+        ],
+        "classification": "realtime MTM helper; defer to realtime/streaming lane"
+      },
+      {
+        "name": "get_mysql_session",
+        "api_bare_calls": 5,
+        "service_bare_calls": 0,
+        "files": [
+          "web/backend/app/api/indicators/create_indicator_config.py"
+        ],
+        "classification": "indicator config database session helper; separate ownership decision required"
+      }
+    ]
+  },
+  "gitnexus_evidence": {
+    "mcp_context": "tool call failed: Transport closed",
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_query": "npx gitnexus query -r mystocks -l 5 get_postgresql_session found core/database.py and core/database_factory.py definitions plus affected auth/admin flows; index status stale warning",
+    "cli_impact_core_database": {
+      "uid": "Function:web/backend/app/core/database.py:get_postgresql_session",
+      "risk": "CRITICAL",
+      "impacted_count": 67,
+      "direct": 15,
+      "processes_affected": 54,
+      "modules_affected": 12,
+      "index_status": "stale warning"
+    },
+    "cli_impact_database_factory": {
+      "uid": "Function:web/backend/app/core/database_factory.py:get_postgresql_session",
+      "risk": "LOW",
+      "impacted_count": 4,
+      "direct": 2,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "index_status": "stale warning"
+    }
+  },
+  "decision": {
+    "classification": "closeout-refresh-complete-no-source-lane",
+    "data_source_registry_provider_status": "closed",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-292",
+    "autopilot_continue_allowed": false,
+    "selected_next_governance_target": "postgresql-session-route-helper-ownership-decision",
+    "recommended_next_work_item": "G2.293 no-source get_postgresql_session ownership / route-provider decision after PR #445 human review",
+    "reason": "G2.291 is merged and the data_source_registry provider lane is closed. The highest remaining active non-closed route/helper surface is get_postgresql_session across auth, admin, and market modules. It resolves to two underlying database helper definitions, including a CRITICAL-impact core/database.py target, so only a no-source ownership decision is selected and PR #445 must stop for human review."
+  },
+  "freshness": {
+    "current_head_checked": "3d161e90547720f4ce95111ea511d3f8dc3174dc",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_data_source_registry_call_sites_change": true,
+    "stale_if_candidate_scan_changes": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}
