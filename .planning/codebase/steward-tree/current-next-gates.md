@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T08:49:27+08:00`
-- Base HEAD checked: `67ef9b9d8f9dd420de80995f624fa54e41493415`
+- Prepared at: `2026-06-01T09:22:30+08:00`
+- Base HEAD checked: `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.288 `governance_dashboard.get_postgres_connection` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#440` merged at `67ef9b9d8f9dd420de80995f624fa54e41493415`; G2.288 closes the governance dashboard provider lane, confirms direct route-body calls `0`, manual close calls `0`, provider bindings `5`, and selects `data_source_registry.get_manager` only for no-source ownership / route-provider decision | Review future PR `#441`; do not auto-merge because the selected next target has GitNexus MEDIUM impact and one affected process |
+| P0 | Review G2.289 `data_source_registry.get_manager` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#441` merged at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`; G2.289 classifies `get_manager` as a bounded active data-source registry route helper with `7` direct route-body callers, runtime/OpenAPI `548/500/0`, and GitNexus MEDIUM impact with one affected process | Review future PR `#442`; do not auto-merge because G2.289 itself is a MEDIUM-risk target decision and recommends only a separate G2.290 no-source authorization package |
+| P0 | Preserve G2.288 `governance_dashboard.get_postgres_connection` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#441` merged at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`; G2.288 closed the governance dashboard provider lane, confirmed direct route-body calls `0`, manual close calls `0`, provider bindings `5`, and selected `data_source_registry.get_manager` only for no-source ownership / route-provider decision | Do not use G2.288 as source implementation authorization; use G2.289 only for no-source ownership / route-provider decision |
 | P0 | Preserve G2.287 `governance_dashboard.get_postgres_connection` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#440` merged at `67ef9b9d8f9dd420de80995f624fa54e41493415`; G2.287 moved five governance dashboard handlers to `Depends(get_governance_dashboard_postgres_connection)` and preserved runtime/OpenAPI `548/500/0` | Do not use G2.287 as authority for non-governance-dashboard source edits, route registration, route/OpenAPI contract changes, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.286 `governance_dashboard.get_postgres_connection` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#439` merged at `e7c78892e1928d86fabecbe4135e7ce68fd0f01e`; G2.286 authorized only the path-limited `governance_dashboard.py` route-provider implementation lane and focused governance dashboard tests | Do not use G2.286 as authority for non-governance-dashboard source edits, route registration, OpenAPI artifacts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.285 `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#438` merged at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`; G2.285 classified the five direct `governance_dashboard.py` control-plane route-body connection calls, recorded runtime/OpenAPI `548/500/0`, and sampled GitNexus MEDIUM risk with `5` direct callers and `0` affected processes | Do not start source implementation from G2.285; use G2.286 only as no-source authorization package |

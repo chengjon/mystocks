@@ -1,9 +1,9 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T08:49:27+08:00",
+  "generated_at": "2026-06-01T09:22:30+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "67ef9b9d8f9dd420de80995f624fa54e41493415",
+  "base_head": "75ce550ceaf9f77b7659193b9cbd3c9ab2181c37",
   "split_branch": "g2-288-governance-dashboard-postgres-provider-closeout",
   "scope": "governance_dashboard_postgres_provider_closeout_refresh",
   "source_edit_authority": false,
@@ -9016,7 +9016,7 @@
     {
       "id": "g2-288-governance-dashboard-postgres-provider-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.287 governance_dashboard get_postgres_connection provider implementation",
       "source_edit_authority": false,
@@ -9025,8 +9025,10 @@
       "github_pr": {
         "number": 441,
         "url": "https://github.com/chengjon/mystocks/pull/441",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-288-governance-dashboard-postgres-provider-closeout"
+        "state": "MERGED",
+        "merged_at": "2026-06-01T01:14:22Z",
+        "head_ref": "g2-288-governance-dashboard-postgres-provider-closeout",
+        "merge_commit": "75ce550ceaf9f77b7659193b9cbd3c9ab2181c37"
       },
       "evidence": [
         ".planning/codebase/generated/governance-dashboard-postgres-provider-closeout-refresh-2026-06-01.json",
@@ -9109,14 +9111,117 @@
         "recommended_next_work_item": "G2.289 no-source data_source_registry.get_manager ownership / route-provider decision after human acceptance"
       },
       "freshness": {
-        "current_head_checked": "67ef9b9d8f9dd420de80995f624fa54e41493415",
+        "current_head_checked": "75ce550ceaf9f77b7659193b9cbd3c9ab2181c37",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_governance_dashboard_call_sites_change": true,
         "stale_if_candidate_scan_changes": true,
         "stale_if_gitnexus_risk_changes": true
       },
-      "next_gate": "Stop for human review in PR #441. If accepted, start G2.289 no-source data_source_registry.get_manager ownership / route-provider decision."
+      "next_gate": "Superseded by G2.289 no-source data_source_registry.get_manager ownership / route-provider decision."
+    },
+    {
+      "id": "g2-289-data-source-registry-manager-ownership-decision",
+      "type": "ownership_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.288 governance_dashboard get_postgres_connection provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "autopilot_status": "stop_at_pr_review_gate",
+      "autopilot_stop_reason": "The current target has GitNexus MEDIUM impact and one affected process",
+      "github_pr": {
+        "number": 442,
+        "url": "https://github.com/chengjon/mystocks/pull/442",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-289-data-source-registry-manager-ownership"
+      },
+      "evidence": [
+        ".planning/codebase/generated/data-source-registry-manager-ownership-decision-2026-06-01.json",
+        "docs/reports/quality/backend-data-source-registry-manager-ownership-decision-2026-06-01.md",
+        "governance/mainline/task-cards/pr-442.yaml"
+      ],
+      "closed_parent": {
+        "pr": 441,
+        "state": "MERGED",
+        "merge_commit": "75ce550ceaf9f77b7659193b9cbd3c9ab2181c37",
+        "merged_at": "2026-06-01T01:14:22Z"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/data-source-registry-manager-ownership-decision-2026-06-01.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-data-source-registry-manager-ownership-decision-2026-06-01.md",
+        "governance/mainline/task-cards/pr-442.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "surface": {
+        "module": "web/backend/app/api/data_source_registry.py",
+        "helper": "get_manager",
+        "uid": "Function:web/backend/app/api/data_source_registry.py:get_manager",
+        "backing_class": "src.core.data_source.base.DataSourceManagerV2",
+        "router_prefix": "/api/v1/data-sources",
+        "route_handlers": [
+          "search_data_sources",
+          "get_category_stats",
+          "get_data_source",
+          "update_data_source",
+          "test_data_source",
+          "health_check_data_source",
+          "health_check_all_data_sources"
+        ],
+        "direct_route_body_calls": 7,
+        "depends_bindings": 0,
+        "runtime_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "target_runtime_route_count": 7
+      },
+      "gitnexus_evidence": {
+        "mcp_context": "tool call failed: Transport closed",
+        "mcp_impact": "tool call failed: Transport closed",
+        "cli_context": "found Function:web/backend/app/api/data_source_registry.py:get_manager with seven incoming calls",
+        "cli_impact_uid": {
+          "risk": "MEDIUM",
+          "impacted_count": 7,
+          "direct": 7,
+          "processes_affected": 1,
+          "modules_affected": 1,
+          "index_status": "stale warning"
+        }
+      },
+      "decision": {
+        "classification": "bounded-active-data-source-registry-route-helper",
+        "ownership": "data_source_registry route module owns the current helper and route-provider seam",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-289",
+        "autopilot_continue_allowed": false,
+        "selected_next_governance_target": "data-source-registry-manager-provider-authorization",
+        "recommended_next_work_item": "G2.290 no-source data_source_registry.get_manager provider authorization package after human acceptance"
+      },
+      "freshness": {
+        "current_head_checked": "75ce550ceaf9f77b7659193b9cbd3c9ab2181c37",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_data_source_registry_call_sites_change": true,
+        "stale_if_data_source_manager_contract_changes": true,
+        "stale_if_gitnexus_risk_changes": true
+      },
+      "next_gate": "Stop for human review in PR #442. If accepted, create G2.290 no-source authorization; do not edit source from G2.289."
     }
   ]
 }
