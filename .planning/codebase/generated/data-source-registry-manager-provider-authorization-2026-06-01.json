@@ -1,0 +1,150 @@
+{
+  "schema_version": "steward-evidence.v1",
+  "gate": "G2.290",
+  "title": "data_source_registry get_manager provider authorization",
+  "generated_at": "2026-06-01T10:36:04+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "1f0a909355f5db9002cfc2d0fcbba21e366dc0bf",
+  "worktree": ".worktrees/g2-290-data-source-registry-manager-provider-authorization",
+  "source_edit_authority": false,
+  "future_source_edit_authority_after_acceptance": true,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "This package authorizes a future source implementation lane and the target has GitNexus MEDIUM impact with one affected process.",
+  "parent": {
+    "gate": "G2.289",
+    "pr": 442,
+    "state": "MERGED",
+    "merge_commit": "1f0a909355f5db9002cfc2d0fcbba21e366dc0bf",
+    "merged_at": "2026-06-01T02:32:44Z",
+    "summary": "data_source_registry.get_manager ownership decision accepted and merged."
+  },
+  "authorization": {
+    "selected_next_gate": "G2.291 path-limited data_source_registry get_manager route-provider implementation",
+    "future_allowed_source_paths": [
+      "web/backend/app/api/data_source_registry.py"
+    ],
+    "future_allowed_test_paths": [
+      "web/backend/tests/test_data_source_registry_manager_provider.py",
+      "tests/api/file_tests/test_data_source_registry_api.py",
+      "web/backend/tests/test_data_source_registry_error_contract.py",
+      "web/backend/tests/test_data_source_auth_hardening.py",
+      "tests/unit/test_data_source_metrics_integration.py"
+    ],
+    "future_allowed_governance_paths": [
+      ".planning/codebase/generated/data-source-registry-manager-provider-implementation-2026-06-01.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-data-source-registry-manager-provider-implementation-2026-06-01.md",
+      "governance/mainline/task-cards/pr-444.yaml"
+    ],
+    "future_forbidden_paths": [
+      "web/backend/app/api/data_source_config.py",
+      "src/core/data_source/**",
+      "src/core/data_source_manager_v2.py",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "web/frontend/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "required_future_shape": {
+    "provider_name": "get_data_source_registry_manager",
+    "provider_behavior": "route-local dependency provider delegating to existing get_manager()",
+    "compatibility_requirement": "keep get_manager() as the backing compatibility and monkeypatch seam",
+    "target_handlers": [
+      "search_data_sources",
+      "get_category_stats",
+      "get_data_source",
+      "update_data_source",
+      "test_data_source",
+      "health_check_data_source",
+      "health_check_all_data_sources"
+    ],
+    "target_handler_count": 7,
+    "handler_change": "move only the seven target handlers from route-body manager = get_manager() calls to manager dependency parameters",
+    "import_change_allowed": "add Depends to the existing fastapi import if needed",
+    "construction_semantics": "preserve fresh DataSourceManagerV2 construction through get_manager(); do not introduce a process-level singleton in this lane",
+    "route_contracts_to_preserve": [
+      "path",
+      "method",
+      "response_model",
+      "responses metadata",
+      "OpenAPI exposure",
+      "operationId stability",
+      "Authorization behavior",
+      "UnifiedResponse behavior",
+      "BusinessException / error-contract shape"
+    ]
+  },
+  "current_surface_evidence": {
+    "module": "web/backend/app/api/data_source_registry.py",
+    "helper": "get_manager",
+    "uid": "Function:web/backend/app/api/data_source_registry.py:get_manager",
+    "backing_class": "src.core.data_source.base.DataSourceManagerV2",
+    "direct_route_body_calls": 7,
+    "current_depends_bindings": 0,
+    "runtime_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "target_runtime_route_count": 7
+  },
+  "gitnexus_evidence": {
+    "mcp_context": "tool call failed: Transport closed",
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_context": "found Function:web/backend/app/api/data_source_registry.py:get_manager with seven incoming calls",
+    "cli_impact_uid": {
+      "risk": "MEDIUM",
+      "impacted_count": 7,
+      "direct": 7,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "affected_processes": [
+        "test_data_source"
+      ],
+      "index_status": "stale warning"
+    }
+  },
+  "future_required_verification": {
+    "pre_edit": [
+      "Read architecture/STANDARDS.md and openspec/AGENTS.md",
+      "Run GitNexus impact/context for Function:web/backend/app/api/data_source_registry.py:get_manager; stop if HIGH or CRITICAL",
+      "Confirm current route/OpenAPI baseline remains 548 routes, 500 paths, duplicate operation IDs 0"
+    ],
+    "tdd_red": [
+      "Add focused provider regression proving expected provider name, seven target handlers using Depends, zero direct route-body get_manager calls, and preserved get_manager backing seam",
+      "Run the new focused test before implementation and confirm it fails for the expected missing provider/direct-call reason"
+    ],
+    "tdd_green": [
+      "Run the new focused provider test after implementation",
+      "Run data-source registry API/error/auth/metrics focused tests",
+      "Run ruff check on touched backend files",
+      "Run route/OpenAPI smoke confirming 548 routes, 500 paths, duplicate operation IDs 0, and no provider parameter leaks",
+      "Run GitNexus detect/verify staged fallback before commit"
+    ]
+  },
+  "decision": {
+    "classification": "provider-authorization-for-review",
+    "source_lane_recommendation": "stop-at-pr-443-human-review-before-g2-291-source",
+    "autopilot_continue_allowed": false,
+    "selected_next_governance_target": "data-source-registry-manager-provider-implementation",
+    "recommended_next_work_item": "G2.291 path-limited data_source_registry.get_manager provider implementation after PR #443 human acceptance"
+  },
+  "freshness": {
+    "current_head_checked": "1f0a909355f5db9002cfc2d0fcbba21e366dc0bf",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_data_source_registry_call_sites_change": true,
+    "stale_if_data_source_manager_contract_changes": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_test_inventory_changes": true
+  },
+  "next_gate": "Stop for human review in PR #443. If accepted, start G2.291 path-limited source implementation; do not edit source from G2.290."
+}
