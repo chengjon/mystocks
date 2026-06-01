@@ -1,0 +1,292 @@
+    // ============================================
+    //   OPPORTUNITY DIAGNOSIS - 风口位置诊断
+    // ============================================
+
+    .opportunity-diagnosis {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: 48px;
+                height: 48px;
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: 24px;
+                    height: 24px;
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+        }
+
+        .diagnosis-content {
+            .opportunity-overview {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                .opportunity-indicators {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .indicator-item {
+                        text-align: center;
+                        padding: var(--artdeco-spacing-3);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+
+                        .indicator-label {
+                            font-family: var(--artdeco-font-body);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-muted);
+                            text-transform: uppercase;
+                            letter-spacing: var(--artdeco-tracking-wide);
+                            margin-bottom: var(--artdeco-spacing-2);
+                        }
+
+                        .indicator-value {
+                            font-family: var(--artdeco-font-mono);
+                            font-size: var(--artdeco-font-size-xl);
+                            font-weight: 600;
+                            margin-bottom: var(--artdeco-spacing-1);
+
+                            &.positive {
+                                color: var(--artdeco-up);
+                            }
+
+                            &.negative {
+                                color: var(--artdeco-down);
+                            }
+
+                            &.neutral {
+                                color: var(--artdeco-gold-primary);
+                            }
+
+                            &.warning {
+                                color: var(--artdeco-warning);
+                            }
+                        }
+                    }
+                }
+            }
+
+            .sector-opportunities {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .sector-opportunities {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .sector-opportunity {
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+                        padding: var(--artdeco-spacing-4);
+                        transition: all var(--artdeco-transition-base);
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
+                        }
+
+                        .sector-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: var(--artdeco-spacing-3);
+
+                            .sector-name {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-lg);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                            }
+
+                            .sector-score {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--artdeco-spacing-2);
+
+                                .score-bar {
+                                    width: 80px;
+                                    height: 8px;
+                                    background: var(--artdeco-bg-muted);
+                                    border-radius: 4px;
+                                    overflow: hidden;
+
+                                    .score-fill {
+                                        height: 100%;
+                                        background: linear-gradient(
+                                            90deg,
+                                            var(--artdeco-gold-primary),
+                                            var(--artdeco-gold-secondary)
+                                        );
+                                        border-radius: 4px;
+                                        transition: width var(--artdeco-transition-base);
+                                    }
+                                }
+
+                                .score-value {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                }
+                            }
+                        }
+
+                        .sector-details {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr 1fr;
+                            gap: var(--artdeco-spacing-2);
+                            margin-bottom: var(--artdeco-spacing-3);
+
+                            .detail-item {
+                                display: flex;
+                                flex-direction: column;
+                                gap: var(--artdeco-spacing-1);
+
+                                .label {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                }
+
+                                .value {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-primary);
+                                    font-weight: 600;
+                                }
+                            }
+                        }
+
+                        .sector-reason {
+                            font-family: var(--artdeco-font-body);
+                            font-size: var(--artdeco-font-size-sm);
+                            color: var(--artdeco-fg-secondary);
+                            line-height: 1.5;
+                            padding-top: var(--artdeco-spacing-2);
+                            border-top: 1px solid var(--artdeco-gold-opacity-10);
+                        }
+                    }
+                }
+            }
+
+            .diagnosis-insights {
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .insights-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .insight-card {
+                        display: flex;
+                        gap: var(--artdeco-spacing-3);
+                        padding: var(--artdeco-spacing-4);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: 6px;
+                        transition: all var(--artdeco-transition-base);
+
+                        &.bullish {
+                            border-left: 3px solid var(--artdeco-up);
+                        }
+
+                        &.bearish {
+                            border-left: 3px solid var(--artdeco-down);
+                        }
+
+                        &.neutral {
+                            border-left: 3px solid var(--artdeco-fg-muted);
+                        }
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 15px var(--artdeco-gold-opacity-10);
+                        }
+
+                        .insight-icon {
+                            flex-shrink: 0;
+                            width: 24px;
+                            height: 24px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--artdeco-fg-primary);
+                        }
+
+                        .insight-content {
+                            flex: 1;
+
+                            .insight-title {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-md);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                                margin-bottom: var(--artdeco-spacing-1);
+                            }
+
+                            .insight-description {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-sm);
+                                color: var(--artdeco-fg-secondary);
+                                line-height: 1.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }

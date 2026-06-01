@@ -2050,5 +2050,105 @@
       "current_head": "1ef19def4321bb1921f0db5bc47503f0a9b8afd7",
       "prepared_at": "2026-06-01T02:47:32.958Z"
     }
+  },
+  {
+    "id": "artdeco-scss-capital-flow-style-split",
+    "title": "Split ArtDeco capital flow SCSS by semantic sections",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "docs/reports/analysis/file-size-guard-report-2026-06-01.md",
+    "current_head": "2fb2220d5d84934dc7efcb39673c91fdec645cd6",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Baseline: ArtDecoCapitalFlow.scss has 1120 lines and 83 disallowed hardcoded px literals. Existing semantic sections: flow overview, capital heatmap, clustering analysis, main force control, opportunity diagnosis, responsive. Existing import path is ArtDecoCapitalFlow.vue -> ./styles/ArtDecoCapitalFlow. gitnexus impact target not found for SFC symbol; staged detect_changes will be commit gate.",
+        "note": "",
+        "current_head": "2fb2220d5d84934dc7efcb39673c91fdec645cd6",
+        "recorded_at": "2026-06-01T02:54:07.839Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.layout.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.heatmap.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.clustering.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.control.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.opportunity.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.responsive.scss",
+      "docs/reports/tasks/2026-06-01-artdeco-scss-capital-flow-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-capital-flow-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript logic changes",
+      "No router route changes",
+      "No backend API contract changes",
+      "No frontend API client changes",
+      "No shared component extraction",
+      "No global token or baseline changes",
+      "No token cleanup in this split commit",
+      "No visual redesign or deletion"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T02:53:57.619Z",
+    "updated_at": "2026-06-01T03:09:23.480Z",
+    "acceptance": {
+      "commit_gate": [
+        "Exact concatenation of split SCSS partials matches original content",
+        "Focused ArtDeco token check result is documented; existing token debt is not changed",
+        "npm run build:no-types passes",
+        "gitnexus detect_changes on staged diff is reviewed before commit",
+        "No router/API/frontend API client/Vue/TS/shared component files are staged"
+      ],
+      "closeout_gate": [
+        "Function Tree closeout recorded with report path and validation summary"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "2fb2220d5d84934dc7efcb39673c91fdec645cd6",
+        "transitioned_at": "2026-06-01T02:54:45.725Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "2fb2220d5d84934dc7efcb39673c91fdec645cd6",
+        "transitioned_at": "2026-06-01T03:08:42.875Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "2fb2220d5d84934dc7efcb39673c91fdec645cd6",
+        "transitioned_at": "2026-06-01T03:08:53.668Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "2fb2220d5d84934dc7efcb39673c91fdec645cd6",
+        "transitioned_at": "2026-06-01T03:09:23.479Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-scss-capital-flow-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "2fb2220d5d84934dc7efcb39673c91fdec645cd6",
+      "prepared_at": "2026-06-01T03:09:05.269Z"
+    }
   }
 ]

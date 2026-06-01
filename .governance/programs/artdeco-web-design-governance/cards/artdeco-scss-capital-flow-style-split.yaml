@@ -1,0 +1,44 @@
+task:
+  id: "artdeco-scss-capital-flow-style-split"
+  title: "Split ArtDeco capital flow SCSS by semantic sections"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.layout.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.heatmap.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.clustering.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.control.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.opportunity.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.responsive.scss"
+    - "docs/reports/tasks/2026-06-01-artdeco-scss-capital-flow-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-capital-flow-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue or TypeScript logic changes"
+  - "No router route changes"
+  - "No backend API contract changes"
+  - "No frontend API client changes"
+  - "No shared component extraction"
+  - "No global token or baseline changes"
+  - "No token cleanup in this split commit"
+  - "No visual redesign or deletion"
+
+acceptance:
+  commit_gate:
+    - "Exact concatenation of split SCSS partials matches original content"
+    - "Focused ArtDeco token check result is documented; existing token debt is not changed"
+    - "npm run build:no-types passes"
+    - "gitnexus detect_changes on staged diff is reviewed before commit"
+    - "No router/API/frontend API client/Vue/TS/shared component files are staged"
+  closeout_gate:
+    - "Function Tree closeout recorded with report path and validation summary"
+
+evidence:
+  current_head: "2fb2220d5d84934dc7efcb39673c91fdec645cd6"
+  notes: []

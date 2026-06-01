@@ -1,0 +1,73 @@
+    // ============================================
+    //   RESPONSIVE DESIGN - 响应式设计
+    // ============================================
+
+    @media (width <= 768px) {
+        .artdeco-capital-flow {
+            gap: var(--artdeco-spacing-4);
+        }
+
+        .flow-overview {
+            grid-template-columns: 1fr;
+        }
+
+        .capital-heatmap {
+            .section-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--artdeco-spacing-3);
+
+                .header-content {
+                    margin-left: 0;
+                }
+
+                .heatmap-controls {
+                    width: 100%;
+                    justify-content: space-between;
+                    flex-wrap: wrap;
+                }
+            }
+
+            .heatmap-container {
+                .capital-heatmap-visualization {
+                    .heatmap-grid {
+                        grid-template-columns: repeat(2, 1fr);
+                    }
+                }
+            }
+        }
+
+        .clustering-analysis {
+            .cluster-visualization {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .control-analysis {
+            .control-metrics {
+                .metric-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+
+        .opportunity-diagnosis {
+            .opportunity-overview {
+                .opportunity-indicators {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .sector-opportunities {
+                .sector-opportunities {
+                    grid-template-columns: 1fr;
+                }
+            }
+
+            .diagnosis-insights {
+                .insights-grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+    }

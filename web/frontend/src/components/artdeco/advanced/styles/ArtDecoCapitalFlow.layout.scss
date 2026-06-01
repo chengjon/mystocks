@@ -1,0 +1,14 @@
+    .artdeco-capital-flow {
+        display: grid;
+        gap: var(--artdeco-spacing-6);
+    }
+
+    // ============================================
+    //   FLOW OVERVIEW - 资金流向概览
+    // ============================================
+
+    .flow-overview {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: var(--artdeco-spacing-4);
+    }
