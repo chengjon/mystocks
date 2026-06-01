@@ -1,0 +1,130 @@
+version: "v0.2"
+
+task:
+  id: "pr-451"
+  title: "Authorize market stock list PostgreSQL session provider"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-market-stock-list-postgresql-session-provider-authorization"
+  objective: "authorize a future path-limited market stock list get_postgresql_session provider implementation"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.298 is no-source authorization only. It changes no runtime route, handler, contract, or source entrypoint."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/market-stock-list-postgresql-session-provider-authorization-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-market-stock-list-postgresql-session-provider-authorization-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-451.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "implementation of the future G2.299 provider lane"
+
+acceptance:
+  checks:
+    - id: "pr450-merged"
+      command: "gh pr view 450 confirms MERGED at 555ff35e0c82e172b4312c59bc67d3674bd6f0ab"
+      required: true
+    - id: "target-callsite-scan"
+      command: "current scan records 1 direct get_postgresql_session call in web/backend/app/api/market/market_data_request.py get_stock_list"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0, and one target route GET /api/v1/market/stocks"
+      required: true
+    - id: "focused-existing-test"
+      command: "env PYTHONPATH=web/backend pytest -q web/backend/tests/test_market_stock_list_mock_configuration.py --tb=short --no-cov -n 0 records 2 passed"
+      required: true
+    - id: "gitnexus-risk"
+      command: "npx gitnexus impact samples record shared helper HIGH/CRITICAL family risk and get_stock_list LOW route-handler risk"
+      required: true
+    - id: "future-envelope"
+      command: "report authorizes only future G2.299 path-limited market stock list implementation after PR #451 human acceptance"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-market-stock-list-postgresql-session-provider-authorization-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-451.yaml --base-sha 555ff35e0c82e172b4312c59bc67d3674bd6f0ab --head-sha HEAD --report /tmp/pr451-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The shared core database helper is HIGH/CRITICAL-impact; future implementation must stay route-domain scoped and must not edit the helper definition."
+  rollback_plan: "Revert PR #451; this removes only G2.298 governance evidence and restores the prior G2.297 decision gate text."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future market stock list PostgreSQL session provider implementation lane."
+    modified_scope: "Steward tree, generated authorization evidence, quality report, and mainline task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime logic impact; backend source and tests are untouched."
+    rollback_ready: "Revert PR #451."
+    risk_and_rollback_point: "No-source authorization; future source implementation remains blocked behind human review."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T16:01:41+08:00"
+    approval_note: "Human maintainer approved continuing after PR #450 merge into G2.298 no-source market stock list provider authorization. PR #451 must stop for review because it authorizes future backend source/test edits."
+    secondary_approved: false
