@@ -1,0 +1,72 @@
+
+/* ============================================
+   统计卡片 - 数据展示优化
+   ============================================ */
+
+.stat-card,
+.stats-card,
+.metric-card {
+  background: linear-gradient(135deg, #0F1115 0%, #141A24 100%) !important;
+  border: 1px solid #1E293B !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+  transition: all 200ms ease !important;
+}
+
+.stat-card:hover,
+.stats-card:hover,
+.metric-card:hover {
+  border-color: #0080FF !important;
+  box-shadow: 0 0 20px rgb(0 128 255 / 20%) !important;
+  transform: translateY(-2px) !important;
+}
+
+.stat-value {
+  font-family: 'Roboto Mono', 'Courier New', monospace !important;
+  font-size: 24px !important;
+  font-weight: 700 !important;
+  color: #FFF !important;
+  line-height: 1.2 !important;
+}
+
+.stat-label {
+  font-size: 12px !important;
+  color: #94A3B8 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  margin-bottom: 8px !important;
+}
+
+/* ============================================
+   涨跌颜色 - A股标准（红涨绿跌）
+   ============================================ */
+
+.price-up { color: #FF3B30 !important; }
+.price-down { color: #00E676 !important; }
+.price-flat { color: #989B9E !important; }
+
+.change-up {
+  color: #FF3B30 !important;
+  background: rgb(255 59 48 / 15%) !important;
+  padding: 2px 6px !important;
+  border-radius: 2px !important;
+}
+
+.change-down {
+  color: #00E676 !important;
+  background: rgb(0 230 118 / 15%) !important;
+  padding: 2px 6px !important;
+  border-radius: 2px !important;
+}
+
+/* ============================================
+   图表容器优化
+   ============================================ */
+
+.chart-container,
+.kline-container {
+  background: #000 !important;
+  border: 1px solid #1E293B !important;
+  border-radius: 6px !important;
+  padding: 16px !important;
+}

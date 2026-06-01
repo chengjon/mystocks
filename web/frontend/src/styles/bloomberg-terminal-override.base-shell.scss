@@ -1,0 +1,50 @@
+
+/* ============================================
+   全局背景强制应用
+   ============================================ */
+
+body,
+#app {
+  background-color: #000 !important;
+  background-image: none !important;
+}
+
+/* 主容器背景 */
+.el-container,
+.el-main,
+.app-main,
+.app-container,
+.page-container,
+.view-container {
+  background-color: #000 !important;
+  background-image: none !important;
+}
+
+/* ============================================
+   侧边栏优化 - 深邃专业
+   ============================================ */
+
+.el-aside,
+.el-menu,
+.el-menu-vertical,
+.sidebar,
+aside {
+  background: linear-gradient(180deg, #000 0%, #0A0E27 100%) !important;
+  border-right: 1px solid #1E293B !important;
+}
+
+.el-menu-item {
+  color: #94A3B8 !important;
+  transition: all 200ms ease !important;
+}
+
+.el-menu-item:hover {
+  background-color: #1A1F2E !important;
+  color: #FFF !important;
+}
+
+.el-menu-item.is-active {
+  background-color: #0F172A !important;
+  color: #0080FF !important;
+  border-right: 2px solid #0080FF !important;
+}

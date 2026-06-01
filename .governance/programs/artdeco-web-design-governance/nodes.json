@@ -3094,5 +3094,102 @@
       "current_head": "a26394f3e1c7377d2eb044848f8a1d8b733dd5ba",
       "prepared_at": "2026-06-01T12:32:05.357Z"
     }
+  },
+  {
+    "id": "bloomberg-terminal-override-scss-style-split",
+    "title": "Split Bloomberg terminal override SCSS by visual concern",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/styles/bloomberg-terminal-override.scss",
+    "current_head": "3fe7dc6e2c0ef34daf74e29e5edc0db250c11f8c",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "reports/analysis/file-size-guard-report-2026-06-01.md",
+        "note": "",
+        "current_head": "3fe7dc6e2c0ef34daf74e29e5edc0db250c11f8c",
+        "recorded_at": "2026-06-01T16:14:09.311Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/styles/bloomberg-terminal-override.scss",
+      "web/frontend/src/styles/bloomberg-terminal-override.tokens.scss",
+      "web/frontend/src/styles/bloomberg-terminal-override.base-shell.scss",
+      "web/frontend/src/styles/bloomberg-terminal-override.surfaces-data.scss",
+      "web/frontend/src/styles/bloomberg-terminal-override.controls-forms.scss",
+      "web/frontend/src/styles/bloomberg-terminal-override.metrics-charts.scss",
+      "web/frontend/src/styles/bloomberg-terminal-override.navigation-overlays.scss",
+      "web/frontend/src/styles/bloomberg-terminal-override.data-display-responsive.scss",
+      "web/frontend/src/styles/bloomberg-terminal-override.motion-final-overrides.scss",
+      "docs/reports/tasks/2026-06-02-bloomberg-terminal-override-scss-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/bloomberg-terminal-override-scss-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript runtime logic changes",
+      "No router, backend API, OpenAPI, schema, or frontend API client changes",
+      "No shared component extraction or route shell changes",
+      "No visual redesign, token value changes, or global token baseline changes"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T16:14:00.836Z",
+    "updated_at": "2026-06-01T16:35:54.411Z",
+    "acceptance": {
+      "commit_gate": [
+        "Split preserves original post-header SCSS body exactly",
+        "Every resulting partial stays below 500 lines",
+        "Function Tree scope-check passes before closeout",
+        "Frontend build:no-types passes"
+      ],
+      "closeout_gate": [
+        "Report records split ranges, preservation evidence, validation, compatibility boundaries, and next candidates"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "3fe7dc6e2c0ef34daf74e29e5edc0db250c11f8c",
+        "transitioned_at": "2026-06-01T16:14:36.781Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "3fe7dc6e2c0ef34daf74e29e5edc0db250c11f8c",
+        "transitioned_at": "2026-06-01T16:14:50.269Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "3fe7dc6e2c0ef34daf74e29e5edc0db250c11f8c",
+        "transitioned_at": "2026-06-01T16:35:36.912Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "3fe7dc6e2c0ef34daf74e29e5edc0db250c11f8c",
+        "transitioned_at": "2026-06-01T16:35:54.411Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-02-bloomberg-terminal-override-scss-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "3fe7dc6e2c0ef34daf74e29e5edc0db250c11f8c",
+      "prepared_at": "2026-06-01T16:35:47.049Z"
+    }
   }
 ]

@@ -1,0 +1,80 @@
+
+/* ============================================
+   专用的数据展示类
+   ============================================ */
+
+/* 专业的数据卡片网格 */
+.data-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* 微光效果 - 悬停时发光 */
+.glow-hover {
+  transition: all 200ms ease;
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 20px rgb(0 128 255 / 30%) !important;
+}
+
+/* 数据高亮 */
+.data-highlight {
+  color: #FFF !important;
+  font-family: 'Roboto Mono', monospace !important;
+  font-weight: 600 !important;
+}
+
+/* 次要文本 */
+.text-muted {
+  color: #64748B !important;
+}
+
+/* 主要文本 */
+.text-primary {
+  color: #F8FAFC !important;
+}
+
+/* 成功状态文本 */
+.text-success {
+  color: #22C55E !important;
+}
+
+/* 警告状态文本 */
+.text-warning {
+  color: #F59E0B !important;
+}
+
+/* 错误状态文本 */
+.text-danger {
+  color: #EF4444 !important;
+}
+
+/* ============================================
+   响应式调整
+   ============================================ */
+
+@media (width <= 1366px) {
+  .el-card__body {
+    padding: 12px !important;
+  }
+
+  .stat-value {
+    font-size: 20px !important;
+  }
+}
+
+/* ============================================
+   强制覆盖VitePress和其他样式
+   ============================================ */
+
+.vitepress {
+  --c-bg: #000 !important;
+  --c-bg-soft: #0A0E27 !important;
+  --c-bg-light: #1A1F2E !important;
+  --c-divider-light: #1E293B !important;
+  --c-text-1: #F8FAFC !important;
+  --c-text-2: #CBD5E0 !important;
+  --c-text-3: #94A3B8 !important;
+}

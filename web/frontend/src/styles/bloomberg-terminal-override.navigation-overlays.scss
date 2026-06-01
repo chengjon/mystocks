@@ -1,0 +1,92 @@
+
+/* ============================================
+   标签页组件
+   ============================================ */
+
+.el-tabs__nav-wrap::after {
+  background-color: #1E293B !important;
+}
+
+.el-tabs__item {
+  color: #94A3B8 !important;
+}
+
+.el-tabs__item:hover {
+  color: #F8FAFC !important;
+}
+
+.el-tabs__item.is-active {
+  color: #0080FF !important;
+}
+
+.el-tabs__active-bar {
+  background-color: #0080FF !important;
+}
+
+/* ============================================
+   下拉菜单
+   ============================================ */
+
+.el-dropdown-menu {
+  background-color: #0F1115 !important;
+  border: 1px solid #1E293B !important;
+  box-shadow: 0 8px 24px rgb(0 0 0 / 70%) !important;
+}
+
+.el-dropdown-menu__item:hover {
+  background-color: #1A1F2E !important;
+  color: #FFF !important;
+}
+
+/* ============================================
+   对话框
+   ============================================ */
+
+.el-dialog {
+  background-color: #0F1115 !important;
+  border: 1px solid #1E293B !important;
+}
+
+.el-dialog__header {
+  background: linear-gradient(135deg, #14171C 0%, #1A1F2E 100%) !important;
+  border-bottom: 1px solid #1E293B !important;
+}
+
+/* ============================================
+   进度条
+   ============================================ */
+
+.el-progress-bar__inner {
+  background: linear-gradient(90deg, #0080FF 0%, #06C 100%) !important;
+}
+
+/* ============================================
+   开关
+   ============================================ */
+
+.el-switch.is-checked .el-switch__core {
+  background-color: #0080FF !important;
+  border-color: #0080FF !important;
+}
+
+/* ============================================
+   滚动条自定义
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px !important;
+  height: 8px !important;
+}
+
+::-webkit-scrollbar-track {
+  background: #0A0E27 !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #334155 !important;
+  border-radius: 4px !important;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #475569 !important;
+}

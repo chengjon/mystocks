@@ -1,0 +1,59 @@
+/* ============================================
+   强制应用OLED深色背景
+   ============================================ */
+
+:root {
+  /* 纯黑OLED背景 - 更深、更专业 */
+  --el-bg-color: #000 !important;
+  --el-fill-color-light: #0A0E27 !important;
+  --el-fill-color-lighter: #141824 !important;
+  --el-fill-color-extra-light: #1A1F2E !important;
+  --el-fill-color-blank: #000 !important;
+  --el-fill-color: #0A0E27 !important;
+
+  /* 文字颜色 - 高对比度 */
+  --el-text-color-primary: #FFF !important;
+  --el-text-color-regular: #E2E8F0 !important;
+  --el-text-color-secondary: #94A3B8 !important;
+  --el-text-color-placeholder: #64748B !important;
+
+  /* 边框颜色 - 微妙但可见 */
+  --el-border-color: #1E293B !important;
+  --el-border-color-light: #334155 !important;
+  --el-border-color-lighter: #475569 !important;
+  --el-border-color-extra-light: #64748B !important;
+
+  /* 专业的金融蓝色 */
+  --el-color-primary: #0080FF !important;
+  --el-color-primary-light-3: #3395FF !important;
+  --el-color-primary-light-5: #66B3FF !important;
+  --el-color-primary-light-7: #99D1FF !important;
+  --el-color-primary-light-8: #B3DEFF !important;
+  --el-color-primary-light-9: #CCE7FF !important;
+  --el-color-primary-dark-2: #06C !important;
+
+  /* 成功色 - 绿色（中国习惯：涨） */
+  --el-color-success: #22C55E !important;
+  --el-color-success-light-3: #4ADE80 !important;
+  --el-color-success-light-5: #86EFAC !important;
+  --el-color-success-light-7: #BBF7D0 !important;
+  --el-color-success-dark-2: #16A34A !important;
+
+  /* 警告色 - 橙色 */
+  --el-color-warning: #F59E0B !important;
+  --el-color-warning-light-3: #FBBF24 !important;
+  --el-color-warning-light-5: #FCD34D !important;
+  --el-color-warning-dark-2: #D97706 !important;
+
+  /* 错误色 - 红色（中国习惯：跌） */
+  --el-color-danger: #EF4444 !important;
+  --el-color-danger-light-3: #F87171 !important;
+  --el-color-danger-light-5: #FCA5A5 !important;
+  --el-color-danger-dark-2: #DC2626 !important;
+
+  /* 信息色 - 青色 */
+  --el-color-info: #06B6D4 !important;
+  --el-color-info-light-3: #67E8F9 !important;
+  --el-color-info-light-5: #A5F3FC !important;
+  --el-color-info-dark-2: #0891B2 !important;
+}

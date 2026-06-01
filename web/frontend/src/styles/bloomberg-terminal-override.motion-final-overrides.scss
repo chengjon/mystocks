@@ -1,0 +1,58 @@
+
+/* ============================================
+   动画效果
+   ============================================ */
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 5px rgb(0 128 255 / 20%);
+  }
+  50% {
+    box-shadow: 0 0 20px rgb(0 128 255 / 40%);
+  }
+}
+
+.animate-glow {
+  animation: glow 2s ease-in-out infinite;
+}
+
+/* 数据加载动画 */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 100%;
+  }
+  50% {
+    opacity: 60%;
+  }
+}
+
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* ============================================
+   最终强制覆盖 - 确保样式生效
+   ============================================ */
+
+/* 强制所有容器使用深色背景 */
+* [class*="container"],
+* [class*="layout"],
+* [class*="page"],
+* [class*="view"],
+* [class*="dashboard"],
+* [class*="main"] {
+  background-color: #000 !important;
+}
+
+/* 强制所有文本使用高对比度颜色 */
+* {
+  text-shadow: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #FFF !important;
+}
+
+p, span, div {
+  color: #CBD5E0 !important;
+}
