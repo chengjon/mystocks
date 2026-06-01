@@ -1,0 +1,147 @@
+
+/* ============================================
+   2. 卡片比例规范 (P1 - 次优先级)
+   Card Proportion Specification
+   ============================================ */
+
+/**
+ * 问题: 卡片padding、圆角、边框不统一
+ * 解决: 定义4种标准卡片类型，强制统一样式
+ */
+
+// Element Plus卡片全局覆盖 (Element Plus Card Override)
+.el-card {
+  // 基础样式统一
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+  border-radius: var(--radius-lg) !important;  // 8px统一
+  box-shadow: var(--shadow-1) !important;
+
+  // 卡片头部统一
+  .el-card__header {
+    background-color: var(--bg-secondary) !important;
+    border-bottom: 1px solid var(--border-base) !important;
+    padding: var(--spacing-md) !important;  // 16px统一上下左右
+    color: var(--text-primary) !important;
+    font-weight: var(--font-weight-semibold) !important;
+    font-size: var(--font-size-lg) !important;  // 18px
+  }
+
+  // 卡片内容区统一
+  .el-card__body {
+    padding: var(--spacing-md) !important;  // 16px统一
+    color: var(--text-secondary) !important;
+  }
+
+  // 悬停效果
+  &:hover {
+    border-color: var(--border-light) !important;
+    box-shadow: var(--shadow-2) !important;
+  }
+}
+
+// 数据展示卡片 (Data Display Card)
+.card-data,
+.stat-card,
+[class*="stat-card"],
+[class*="data-card"] {
+  // 尺寸比例
+  width: 100%;
+  min-height: 120px;  // 宽高比约 4:1 到 5:1
+
+  // 内边距
+  padding: var(--spacing-md) !important;  // 16px
+
+  // 圆角
+  border-radius: var(--radius-lg) !important;  // 8px
+
+  // 边框
+  border: 1px solid var(--border-base) !important;
+
+  // 阴影
+  box-shadow: var(--shadow-1) !important;
+
+  // 背景
+  background: var(--bg-card) !important;
+
+  // 过渡
+  transition: all var(--transition-base) !important;
+
+  // 悬停
+  &:hover {
+    border-color: var(--border-light) !important;
+    box-shadow: var(--shadow-2) !important;
+  }
+}
+
+// 内容容器卡片 (Content Container Card)
+.card-content,
+[class*="content-card"],
+[class*="chart-card"],
+[class*="table-card"] {
+  // 尺寸
+  width: 100%;
+  min-height: 300px;
+
+  // 内边距 (宽松)
+  padding: var(--spacing-lg) !important;  // 24px
+
+  // 圆角
+  border-radius: var(--radius-lg) !important;  // 8px
+
+  // 边框
+  border: 1px solid var(--border-base) !important;
+
+  // 阴影
+  box-shadow: var(--shadow-1) !important;
+
+  // 背景
+  background: var(--bg-card) !important;
+}
+
+// 操作卡片 (Action Card)
+.card-action,
+[class*="action-card"],
+[class*="quick-card"] {
+  // 尺寸
+  width: 100%;
+  min-height: 80px;
+  aspect-ratio: 6 / 1;
+
+  // 内边距 (紧凑)
+  padding: var(--spacing-sm) var(--spacing-md) !important;  // 8px 16px
+
+  // 圆角
+  border-radius: var(--radius-md) !important;  // 4px
+
+  // 边框
+  border: 1px solid var(--border-base) !important;
+
+  // 阴影
+  box-shadow: var(--shadow-1) !important;
+
+  // 背景
+  background: var(--bg-card) !important;
+
+  // 交互
+  cursor: pointer !important;
+
+  &:hover {
+    border-color: var(--color-primary) !important;
+    box-shadow: var(--shadow-glow) !important;
+  }
+}
+
+// 响应式适配 (1366x768)
+@media (width <= 1366px) {
+  .card-data,
+  .stat-card {
+    min-height: 100px !important;
+    padding: var(--spacing-sm) !important;  // 12px
+  }
+
+  .card-content {
+    min-height: 250px !important;
+    padding: var(--spacing-md) !important;  // 16px
+  }
+}

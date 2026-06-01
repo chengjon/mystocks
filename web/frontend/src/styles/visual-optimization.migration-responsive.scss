@@ -1,0 +1,106 @@
+
+/* ============================================
+   6. 迁移辅助类 (Migration Helper Classes)
+   用于逐步迁移到新规范
+   ============================================ */
+
+// 标记需要迁移的组件
+.migration-needed {
+  outline: 2px dashed var(--color-warning) !important;
+  position: relative;
+
+  &::after {
+    content: "需迁移到新视觉规范";
+    position: absolute;
+    top: -20px;
+    left: 0;
+    background: var(--color-warning);
+    color: var(--text-primary);
+    font-size: 10px;
+    padding: 2px 4px;
+    border-radius: 2px;
+  }
+}
+
+// 调试模式 (开发阶段使用)
+.debug-spacing * {
+  outline: 1px solid rgb(255 0 0 / 30%) !important;
+}
+
+.debug-spacing *::before {
+  content: attr(class);
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgb(255 0 0 / 80%);
+  color: white;
+  font-size: 10px;
+  padding: 2px;
+  z-index: 9999;
+}
+
+/* ============================================
+   7. 响应式断点 (Responsive Breakpoints)
+   ============================================ */
+
+// 小屏幕 (1366x768及以下)
+@media (width <= 1366px) {
+  // 减小页面容器padding
+  .page-container,
+  .dashboard-container,
+  .market-container,
+  .analysis-container {
+    padding: var(--spacing-md) !important;  // 16px
+  }
+
+  // 减小卡片padding
+  .card-data,
+  .stat-card {
+    padding: var(--spacing-sm) !important;  // 12px
+    min-height: 100px !important;
+  }
+
+  .card-content {
+    padding: var(--spacing-md) !important;  // 16px
+    min-height: 250px !important;
+  }
+
+  // 减小模块间距
+  .module-section + .module-section {
+    margin-top: var(--spacing-xl) !important;  // 32px (而非48px)
+  }
+
+  // 调整按钮尺寸
+  .btn-primary,
+  .btn-secondary,
+  .el-button {
+    height: 36px !important;
+    padding: 0 var(--spacing-md) !important;  // 0 16px
+  }
+}
+
+// 标准屏幕 (1920x1080)
+@media (width >= 1367px) and (width <= 1920px) {
+  // 使用标准规范（无需调整）
+}
+
+// 大屏幕 (2560x1440及以上)
+@media (width >= 1921px) {
+  // 增大页面容器padding
+  .page-container,
+  .dashboard-container,
+  .market-container,
+  .analysis-container {
+    padding: var(--spacing-xl) !important;  // 32px
+  }
+
+  // 增大卡片尺寸
+  .card-data,
+  .stat-card {
+    min-height: 140px !important;
+  }
+}
+
+/* ============================================
+   END: Visual Optimization Stylesheet
+   ============================================ */

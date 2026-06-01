@@ -1,0 +1,101 @@
+/* ============================================
+   1. 按钮文字对齐规范 (P0 - 最高优先级)
+   Button Text Alignment Specification
+   ============================================ */
+
+/**
+ * 问题: 按钮文字偏移，padding混乱
+ * 解决: 强制所有按钮使用统一的padding和对齐方式
+ */
+
+// 全局按钮重置 (Global Button Reset)
+button,
+.el-button,
+.btn,
+[class*="btn-"],
+[class*="button"] {
+  // 文字对齐核心 (Core alignment - MUST HAVE)
+  display: inline-flex !important;
+  align-items: center !important;        // 垂直居中
+  justify-content: center !important;    // 水平居中
+  text-align: center !important;         // 文字居中
+  line-height: 1 !important;             // 消除行高影响
+
+  // 内边距统一 (Unified padding)
+  padding: 0 var(--spacing-md) !important;  // 0 16px (标准按钮)
+
+  // 尺寸统一
+  height: 40px !important;
+  min-width: 100px !important;
+
+  // 字体统一
+  font-size: var(--font-size-base) !important;    // 14px
+  font-weight: var(--font-weight-normal) !important;  // 400
+
+  // 圆角统一
+  border-radius: var(--radius-md) !important;     // 4px
+
+  // 过渡效果
+  transition: all var(--transition-base) !important;  // 250ms
+
+  // 禁用默认样式覆盖
+  box-sizing: border-box !important;
+}
+
+// 小按钮 (Small Button)
+.el-button--small,
+.btn-small,
+[class*="btn-sm"],
+[class*="button-small"] {
+  height: 32px !important;
+  padding: 0 var(--spacing-sm) !important;  // 0 8px
+  min-width: 80px !important;
+  font-size: var(--font-size-sm) !important;  // 13px
+}
+
+// 大按钮 (Large Button)
+.el-button--large,
+.btn-large,
+[class*="btn-lg"],
+[class*="button-large"] {
+  height: 48px !important;
+  padding: 0 var(--spacing-xl) !important;  // 0 32px
+  min-width: 140px !important;
+  font-size: var(--font-size-md) !important;  // 16px
+}
+
+// 图标按钮 (Icon Button)
+.el-button.is-circle,
+.btn-icon,
+[class*="btn-icon"] {
+  width: 36px !important;
+  height: 36px !important;
+  padding: 0 !important;
+  min-width: auto !important;
+  border-radius: var(--radius-round) !important;  // 50%
+
+  svg {
+    width: 18px !important;
+    height: 18px !important;
+  }
+}
+
+// 按钮组内按钮间距 (Button Group Spacing)
+.el-button-group {
+  display: inline-flex !important;
+  gap: var(--spacing-xs) !important;  // 4px
+
+  .el-button {
+    margin: 0 !important;
+  }
+}
+
+// 图标+文字组合 (Icon + Text)
+.el-button .el-icon,
+.btn .btn-icon {
+  margin-right: var(--spacing-sm) !important;  // 8px
+
+  & + span {
+    margin-left: var(--spacing-sm) !important;  // 8px
+  }
+}

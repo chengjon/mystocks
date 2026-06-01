@@ -1,0 +1,108 @@
+
+/* ============================================
+   3. 组件间距规范 (P2 - 标准优先级)
+   Component Spacing Specification
+   ============================================ */
+
+/**
+ * 问题: 间距混乱，不遵循8px网格系统
+ * 解决: 定义间距层级，强制使用8的倍数
+ */
+
+// 页面容器间距 (Page Container Spacing)
+.page-container,
+.dashboard-container,
+.market-container,
+.analysis-container,
+[class*="-container"] {
+  // 标准内边距
+  padding: var(--spacing-lg) !important;  // 24px
+
+  // 1366x768适配
+  @media (width <= 1366px) {
+    padding: var(--spacing-md) !important;  // 16px
+  }
+}
+
+// 卡片网格间距 (Card Grid Spacing)
+.stats-grid,
+.cards-grid,
+.card-grid,
+[class*="grid"] {
+  display: grid !important;
+  gap: var(--spacing-md) !important;  // 16px (标准卡片间距)
+
+  // 或使用flex布局
+  &.flex-grid {
+    display: flex !important;
+    flex-wrap: wrap !important;
+
+    > * {
+      margin-right: var(--spacing-md) !important;  // 16px
+      margin-bottom: var(--spacing-md) !important;  // 16px
+    }
+  }
+}
+
+// 页面头部间距 (Page Header Spacing)
+.page-header,
+.section-header,
+[class*="-header"] {
+  margin-bottom: var(--spacing-xl) !important;  // 32px
+
+  &.compact {
+    margin-bottom: var(--spacing-lg) !important;  // 24px
+  }
+}
+
+// 模块间距 (Module Spacing)
+.module-section,
+.content-section,
+[class*="-section"] {
+  & + & {
+    margin-top: var(--spacing-xxl) !important;  // 48px (模块间间距)
+  }
+}
+
+// 表单间距 (Form Spacing)
+.form-group,
+.el-form {
+  .el-form-item {
+    margin-bottom: var(--spacing-md) !important;  // 16px (表单项之间)
+  }
+
+  .form-label,
+  .el-form-item__label {
+    margin-bottom: var(--spacing-sm) !important;  // 8px (标签与输入框)
+  }
+}
+
+// 表格间距 (Table Spacing)
+.el-table {
+  margin-bottom: var(--spacing-lg) !important;  // 24px (表格与分页器)
+
+  th,
+  td {
+    padding: var(--spacing-sm) var(--spacing-md) !important;  // 8px 16px
+  }
+}
+
+// 分页器间距 (Pagination Spacing)
+.el-pagination {
+  margin-top: var(--spacing-md) !important;  // 16px
+}
+
+// 按钮组间距 (Button Group Spacing)
+.card-actions,
+.button-group,
+[class*="-actions"] {
+  display: flex !important;
+  gap: var(--spacing-sm) !important;  // 8px (按钮之间)
+  margin-top: var(--spacing-md) !important;  // 16px (与上方内容)
+}
+
+// Tab内容间距 (Tab Content Spacing)
+.tab-content,
+.el-tab-pane {
+  padding: var(--spacing-md) 0 !important;  // 16px 0
+}
