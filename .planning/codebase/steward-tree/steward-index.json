@@ -1,9 +1,9 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T16:01:41+08:00",
+  "generated_at": "2026-06-01T16:58:34+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "555ff35e0c82e172b4312c59bc67d3674bd6f0ab",
+  "base_head": "79a4fe5ae9f763e3e836b76c051bddbed270a930",
   "split_branch": "g2-295-admin-audit-postgresql-session-provider",
   "scope": "admin_audit_postgresql_session_provider_implementation",
   "source_edit_authority": false,
@@ -10217,17 +10217,19 @@
     {
       "id": "g2-298-market-stock-list-postgresql-session-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.297 core database get_postgresql_session residual route-domain decision",
       "source_edit_authority": false,
-      "autopilot_status": "stop_at_pr_review_gate",
-      "autopilot_stop_reason": "G2.298 authorizes future backend source/test edits under a HIGH/CRITICAL shared helper family.",
+      "autopilot_status": "stop_rule_satisfied_by_human_review",
+      "autopilot_stop_reason": "PR #451 was human-approved and merged; authorization is closed and superseded by G2.299 source implementation review.",
       "github_pr": {
         "number": 451,
         "url": "https://github.com/chengjon/mystocks/pull/451",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-298-market-stock-list-postgresql-session-provider-authorization"
+        "state": "MERGED",
+        "merged_at": "2026-06-01T08:38:01Z",
+        "head_ref": "g2-298-market-stock-list-postgresql-session-provider-authorization",
+        "merge_commit": "79a4fe5ae9f763e3e836b76c051bddbed270a930"
       },
       "evidence": [
         ".planning/codebase/generated/market-stock-list-postgresql-session-provider-authorization-2026-06-01.json",
@@ -10327,7 +10329,7 @@
         "reason": "The target is one file, one route, and one direct call, but future source implementation must stay bounded because the shared helper family is HIGH/CRITICAL risk."
       },
       "freshness": {
-        "current_head_checked": "555ff35e0c82e172b4312c59bc67d3674bd6f0ab",
+        "current_head_checked": "79a4fe5ae9f763e3e836b76c051bddbed270a930",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_market_request_call_sites_change": true,
@@ -10336,7 +10338,123 @@
         "stale_if_gitnexus_risk_changes": true,
         "stale_if_focused_test_inventory_changes": true
       },
-      "next_gate": "Stop for human review in PR #451. If accepted, start G2.299 path-limited market stock list get_postgresql_session provider implementation."
+      "next_gate": "Superseded by G2.299 path-limited market stock list get_postgresql_session provider implementation."
+    },
+    {
+      "id": "g2-299-market-stock-list-postgresql-session-provider-implementation",
+      "type": "implementation_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.298 market stock list get_postgresql_session provider authorization",
+      "source_edit_authority": true,
+      "autopilot_status": "stop_at_pr_review_gate",
+      "autopilot_stop_reason": "G2.299 changes backend source and focused tests; source implementation PRs require human review and must not auto-merge.",
+      "github_pr": {
+        "number": 452,
+        "url": "https://github.com/chengjon/mystocks/pull/452",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-299-market-stock-list-postgresql-session-provider-implementation"
+      },
+      "evidence": [
+        ".planning/codebase/generated/market-stock-list-postgresql-session-provider-implementation-2026-06-01.json",
+        "docs/reports/quality/backend-market-stock-list-postgresql-session-provider-implementation-2026-06-01.md",
+        "governance/mainline/task-cards/pr-452.yaml"
+      ],
+      "closed_parent": {
+        "pr": 451,
+        "state": "MERGED",
+        "merge_commit": "79a4fe5ae9f763e3e836b76c051bddbed270a930",
+        "merged_at": "2026-06-01T08:38:01Z"
+      },
+      "allowed_scope": [
+        "web/backend/app/api/market/market_data_request.py",
+        "web/backend/tests/test_market_stock_list_mock_configuration.py",
+        ".planning/codebase/generated/market-stock-list-postgresql-session-provider-implementation-2026-06-01.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-market-stock-list-postgresql-session-provider-implementation-2026-06-01.md",
+        "governance/mainline/task-cards/pr-452.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/app/core/database.py",
+        "web/backend/app/core/database_factory.py",
+        "web/backend/app/api/auth.py",
+        "web/backend/app/api/v1/admin/optimization.py",
+        "web/backend/app/api/v1/admin/audit.py",
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "implementation": {
+        "provider": "get_market_stock_list_postgresql_session_factory",
+        "direct_route_body_get_postgresql_session_calls_after": 0,
+        "depends_provider_bindings_after": 1,
+        "session_close_finally_blocks_after": 1,
+        "focused_regression": "5 passed in 2.93s",
+        "ruff": "All checks passed",
+        "runtime_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0,
+        "target_route": "GET /api/v1/market/stocks"
+      },
+      "residual_scan": {
+        "auth_py_direct_calls": 4,
+        "admin_optimization_direct_calls": 2,
+        "market_stock_list_direct_calls": 0,
+        "admin_audit_direct_calls": 0
+      },
+      "gitnexus_evidence": {
+        "mcp_impact": "tool call failed: Transport closed",
+        "cli_impact_get_stock_list": {
+          "risk": "LOW",
+          "direct": 0,
+          "processes_affected": 0,
+          "modules_affected": 0,
+          "index_status": "stale warning"
+        },
+        "cli_impact_core_database": {
+          "risk": "CRITICAL",
+          "direct": 15,
+          "processes_affected": 54,
+          "modules_affected": 13,
+          "index_status": "stale warning"
+        },
+      "index_refresh_attempt": "exceeded five minutes and later aborted in a native worker path",
+        "cli_staged_verification": {
+          "risk": "low",
+          "files": 11,
+          "symbols": 4,
+          "affected_processes": 0,
+          "index_status": "stale warning"
+        }
+      },
+      "decision": {
+        "classification": "path-limited-market-stock-list-provider-implementation",
+        "source_lane_status": "for_review",
+        "autopilot_continue_allowed": false,
+        "recommended_next_work_item": "G2.300 no-source market stock list provider closeout / residual refresh after PR #452 acceptance"
+      },
+      "freshness": {
+        "current_head_checked": "79a4fe5ae9f763e3e836b76c051bddbed270a930",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_market_request_call_sites_change": true,
+        "stale_if_auth_session_call_sites_change": true,
+        "stale_if_admin_optimization_call_sites_change": true,
+        "stale_if_gitnexus_risk_changes": true,
+        "stale_if_focused_tests_change": true
+      },
+      "next_gate": "Stop for human review in PR #452. If accepted and merged, start G2.300 no-source market stock list provider closeout / residual refresh."
     }
   ]
 }

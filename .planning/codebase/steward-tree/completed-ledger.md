@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-01T16:01:41+08:00`
-- Base HEAD checked: `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`
+- Prepared at: `2026-06-01T16:58:34+08:00`
+- Base HEAD checked: `79a4fe5ae9f763e3e836b76c051bddbed270a930`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,16 +19,17 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.297 accepted/merged by PR `#450` at `555ff3` | Continue with G2.298 market stock list provider authorization; do not auto-merge because the package authorizes future source/test edits |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.298 accepted/merged by PR `#451` at `79a4fe5a` | Continue with G2.299 market stock list provider implementation review; do not auto-merge because the package changes backend source/tests |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.297 have progressed through PR `#337`-`#450`; current review target is G2.298 market stock list provider authorization in future PR `#451` |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.298 have progressed through PR `#337`-`#451`; current review target is G2.299 market stock list provider implementation in future PR `#452` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Recent Closeouts
 
 | Item | Accepted evidence | Follow-up |
 |---|---|---|
-| G2.298 market stock list `get_postgresql_session` provider authorization | Generated authorization evidence records PR `#450` merged at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`, target route `GET /api/v1/market/stocks`, one direct helper call, focused test `2/2`, and route/OpenAPI `548/500/0` | G2.299 may be path-limited implementation only after PR `#451` human acceptance |
+| G2.299 market stock list `get_postgresql_session` provider implementation | Generated implementation evidence records PR `#451` merged at `79a4fe5ae9f763e3e836b76c051bddbed270a930`, target route `GET /api/v1/market/stocks`, direct helper calls `0`, provider binding `1`, focused test `5/5`, and route/OpenAPI `548/500/0` | G2.300 may close out and refresh residuals only after PR `#452` human acceptance |
+| G2.298 market stock list `get_postgresql_session` provider authorization | PR `#451` merged at `79a4fe5ae9f763e3e836b76c051bddbed270a930`; authorization limited G2.299 to `market_data_request.py` and focused market stock list tests | Superseded by G2.299 path-limited implementation review |
 | G2.297 core database `get_postgresql_session` route-domain decision | PR `#450` merged at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`; remaining direct calls split as auth `4`, admin optimization `2`, market stock list `1`, and runtime/OpenAPI `548/500/0` | G2.298 authorizes only the market stock list route-domain candidate; auth and admin optimization remain separate future tracks |
 | G2.296 admin audit provider closeout / residual refresh | PR `#449` merged at `030545a24b4a8c9a4df36d2f126eb4597685e0c0`; admin audit direct route-body calls `0`, provider bindings `3`, and runtime/OpenAPI `548/500/0` | G2.297 splits remaining core-database helper residuals by route domain |
 | G2.295 admin audit `database_factory.get_postgresql_session` provider implementation | PR `#448` merged at `48cf7e12637341451d8d77370306774df9c48729`; moved 3 admin audit handlers to provider wiring, retained cleanup semantics, and kept route/OpenAPI stable | G2.296 records closeout and refreshes remaining core-database helper residuals |
