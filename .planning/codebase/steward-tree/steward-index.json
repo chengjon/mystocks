@@ -11045,17 +11045,19 @@
     {
       "id": "g2-304-admin-optimization-postgresql-session-provider-closeout-refresh",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.303 admin optimization PostgreSQL session provider implementation",
       "source_edit_authority": false,
-      "autopilot_status": "review_gate",
-      "autopilot_stop_reason": "G2.304 is no-source, but it selects the next target in the CRITICAL app.core.database.get_postgresql_session helper family; keep next work no-source.",
+      "autopilot_status": "no_source_automerge_completed",
+      "autopilot_stop_reason": "PR #457 was no-source, checks passed, and it was merged under the limited no-source governance autopilot.",
       "github_pr": {
         "number": 457,
         "url": "https://github.com/chengjon/mystocks/pull/457",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-304-admin-optimization-provider-closeout-refresh"
+        "state": "MERGED",
+        "merged_at": "2026-06-01T12:45:15Z",
+        "head_ref": "g2-304-admin-optimization-provider-closeout-refresh",
+        "merge_commit": "d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9"
       },
       "evidence": [
         ".planning/codebase/generated/admin-optimization-postgresql-session-provider-closeout-2026-06-01.json",
@@ -11128,7 +11130,7 @@
         }
       },
       "freshness": {
-        "current_head_checked": "1cc89b285cd265bce96991b8dc4c7e8bd71d85d0",
+        "current_head_checked": "d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_admin_optimization_call_sites_change": true,
@@ -11136,7 +11138,96 @@
         "stale_if_gitnexus_risk_changes": true,
         "stale_if_focused_tests_change": true
       },
-      "next_gate": "Review PR #457. If accepted and merged, start G2.305 no-source auth.py get_postgresql_session ownership / provider-shape decision."
+      "next_gate": "Superseded by G2.305 no-source auth.py get_postgresql_session ownership / provider-shape decision."
+    },
+    {
+      "id": "g2-305-auth-postgresql-session-ownership-decision",
+      "type": "decision_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.304 admin optimization provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "autopilot_status": "review_gate",
+      "autopilot_stop_reason": "Auth is security-sensitive and remains under the CRITICAL shared app.core.database.get_postgresql_session helper family; G2.305 selects only a future no-source authorization package.",
+      "github_pr": {
+        "number": 458,
+        "url": "https://github.com/chengjon/mystocks/pull/458",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-305-auth-postgresql-session-ownership-decision"
+      },
+      "evidence": [
+        ".planning/codebase/generated/auth-postgresql-session-ownership-decision-2026-06-01.json",
+        "docs/reports/quality/backend-auth-postgresql-session-ownership-decision-2026-06-01.md",
+        "governance/mainline/task-cards/pr-458.yaml"
+      ],
+      "closed_parent": {
+        "pr": 457,
+        "state": "MERGED",
+        "merge_commit": "d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9",
+        "merged_at": "2026-06-01T12:45:15Z"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/auth-postgresql-session-ownership-decision-2026-06-01.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-auth-postgresql-session-ownership-decision-2026-06-01.md",
+        "governance/mainline/task-cards/pr-458.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "current_surface": {
+        "file": "web/backend/app/api/auth.py",
+        "direct_calls": 4,
+        "affected_handlers": [
+          "get_users",
+          "register_user",
+          "request_password_reset",
+          "confirm_password_reset"
+        ],
+        "focused_auth_tests": "10 passed, 18 skipped",
+        "route_openapi": "548/500/0",
+        "ruff_no_fix": "6 existing F401/F811 findings retained due no-source boundary"
+      },
+      "decision": {
+        "classification": "auth-route-domain-control-plane-security-surface-inside-critical-shared-helper-family",
+        "source_lane_authorized": false,
+        "recommended_next_work_item": "G2.306 no-source auth.py get_postgresql_session provider authorization after PR #458 acceptance",
+        "autopilot_continue_allowed": false
+      },
+      "gitnexus_evidence": {
+        "mcp_detect_changes": "Transport closed",
+        "cli_staged_verification": {
+          "risk": "low",
+          "files": 9,
+          "symbols": 0,
+          "affected_processes": 0,
+          "index_status": "stale warning"
+        }
+      },
+      "freshness": {
+        "current_head_checked": "d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_auth_session_call_sites_change": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_auth_tests_change": true,
+        "stale_if_gitnexus_risk_changes": true
+      },
+      "next_gate": "Review PR #458. If accepted and merged, start G2.306 no-source auth.py get_postgresql_session provider authorization."
     }
   ]
 }
