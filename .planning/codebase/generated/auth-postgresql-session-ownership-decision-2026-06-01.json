@@ -1,0 +1,138 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-01T20:52:00+08:00",
+  "g_node": "G2.305",
+  "title": "Auth.py get_postgresql_session ownership / provider-shape decision",
+  "branch": "g2-305-auth-postgresql-session-ownership-decision",
+  "parent_pr": {
+    "number": 457,
+    "url": "https://github.com/chengjon/mystocks/pull/457",
+    "state": "MERGED",
+    "merged_at": "2026-06-01T12:45:15Z",
+    "merge_commit": "d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9",
+    "head_ref": "g2-304-admin-optimization-provider-closeout-refresh"
+  },
+  "base_head": "d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9",
+  "source_edit_authority": false,
+  "allowed_scope": [
+    ".planning/codebase/generated/auth-postgresql-session-ownership-decision-2026-06-01.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-auth-postgresql-session-ownership-decision-2026-06-01.md",
+    "governance/mainline/task-cards/pr-458.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**",
+    "PM2/runtime state"
+  ],
+  "current_surface": {
+    "file": "web/backend/app/api/auth.py",
+    "helper_origin": "app.core.database.get_postgresql_session",
+    "direct_calls": 4,
+    "import_lines": 4,
+    "affected_handlers": [
+      "get_users",
+      "register_user",
+      "request_password_reset",
+      "confirm_password_reset"
+    ],
+    "cleanup_semantics": "all four affected blocks retain session.close() in finally; confirm_password_reset also performs commit/rollback",
+    "auth_like_openapi_paths": [
+      "/api/auth/login",
+      "/api/v1/auth/csrf/token",
+      "/api/v1/auth/login",
+      "/api/v1/auth/logout",
+      "/api/v1/auth/me",
+      "/api/v1/auth/refresh",
+      "/api/v1/auth/register",
+      "/api/v1/auth/reset-password/confirm",
+      "/api/v1/auth/reset-password/request",
+      "/api/v1/auth/users"
+    ]
+  },
+  "verification": {
+    "focused_auth_tests": "web/backend/tests/test_auth.py web/backend/tests/test_auth_login_contract.py: 10 passed, 18 skipped in 19.13s",
+    "route_openapi": {
+      "runtime_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0
+    },
+    "ruff_no_fix": "ruff check --no-fix reports 6 existing F401/F811 issues in auth.py; not fixed in this no-source decision package"
+  },
+  "gitnexus_evidence": {
+    "cli_impact_samples": {
+      "get_users": {
+        "risk": "UNKNOWN",
+        "index_status": "stale warning"
+      },
+      "register_user": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "request_password_reset": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "confirm_password_reset": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "Function:web/backend/app/core/database.py:get_postgresql_session": {
+        "risk": "CRITICAL",
+        "direct": 15,
+        "processes_affected": 54,
+        "modules_affected": 13,
+        "index_status": "stale warning"
+      }
+    },
+    "cli_staged_verification": {
+      "risk": "low",
+      "files": 9,
+      "symbols": 0,
+      "affected_processes": 0,
+      "index_status": "stale warning",
+      "note": "MCP detect_changes failed with Transport closed; npx gitnexus verify-staged -r mystocks used as fallback."
+    }
+  },
+  "decision": {
+    "classification": "auth-route-domain-control-plane-security-surface-inside-critical-shared-helper-family",
+    "source_lane_authorized": false,
+    "shared_helper_definition_edits_allowed": false,
+    "route_contract_changes_allowed": false,
+    "candidate_future_provider_shape": "route-local auth PostgreSQL session factory dependency passed into the four affected handlers while preserving close/finally and confirm_password_reset transaction semantics",
+    "recommended_next_work_item": "G2.306 no-source auth.py get_postgresql_session provider authorization after PR #458 acceptance",
+    "autopilot_continue_allowed": false,
+    "stop_reason": "Auth is a security-sensitive route domain and the shared helper family remains CRITICAL; require authorization before source work."
+  },
+  "freshness": {
+    "current_head_checked": "d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_auth_tests_change": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}

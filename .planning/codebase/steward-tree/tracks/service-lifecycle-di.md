@@ -3332,7 +3332,7 @@ Status: accepted/merged by PR `#456` at `1cc89b285cd265bce96991b8dc4c7e8bd71d85d
 
 ## G2.304 Admin Optimization PostgreSQL Session Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#457`.
+Status: accepted/merged by PR `#457` at `d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9`.
 
 - Parent PR `#456` merged at `1cc89b285cd265bce96991b8dc4c7e8bd71d85d0`.
 - G2.304 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3344,3 +3344,17 @@ Status: for review in future PR `#457`.
 - GitNexus CLI sampling keeps shared `Function:web/backend/app/core/database.py:get_postgresql_session` at CRITICAL risk with `15` direct dependants and `54` affected processes; auth source work remains forbidden from G2.304.
 - Decision: close admin optimization and select only G2.305 no-source `auth.py get_postgresql_session` ownership / provider-shape decision after PR `#457` acceptance.
 - Stop rule: G2.304 must not be used as auth source implementation authority.
+
+## G2.305 Auth.py PostgreSQL Session Ownership / Provider-Shape Decision
+
+Status: for review in future PR `#458`.
+
+- Parent PR `#457` merged at `d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9`.
+- G2.305 is a no-source ownership / provider-shape decision package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Current auth surface has `4` direct `get_postgresql_session()` calls across `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`.
+- All four affected blocks retain `session.close()` in `finally`; `confirm_password_reset` also carries commit/rollback semantics that any future implementation must preserve.
+- Focused auth tests record `10 passed, 18 skipped`; route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`.
+- `ruff check --no-fix` records `6` existing F401/F811 issues in `auth.py`; they were not fixed because G2.305 is no-source.
+- Decision: classify auth as a security-sensitive route-domain surface inside the CRITICAL shared `app.core.database.get_postgresql_session` helper family.
+- Recommended next gate after PR `#458` acceptance: G2.306 no-source auth.py `get_postgresql_session` provider authorization.
+- Stop rule: G2.305 must not be used as auth source implementation authority.
