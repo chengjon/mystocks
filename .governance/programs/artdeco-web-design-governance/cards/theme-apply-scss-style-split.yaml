@@ -1,0 +1,37 @@
+task:
+  id: "theme-apply-scss-style-split"
+  title: "Split global theme apply SCSS by visual concern"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/styles/theme-apply.scss"
+    - "web/frontend/src/styles/theme-apply.base-market.scss"
+    - "web/frontend/src/styles/theme-apply.element-plus.scss"
+    - "web/frontend/src/styles/theme-apply.routes.scss"
+    - "web/frontend/src/styles/theme-apply.surfaces-utilities.scss"
+    - "web/frontend/src/styles/theme-apply.motion-media-print.scss"
+    - "docs/reports/tasks/2026-06-01-theme-apply-scss-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/theme-apply-scss-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue, TypeScript, runtime logic, router, backend API contract, OpenAPI, or frontend API client changes."
+  - "No visual redesign, no token value changes, no global token/baseline edits, and no cleanup of existing hardcoded dimensions in this node."
+  - "Do not stage or alter existing dirty tree.md, OpenSpec deletions/edits, ArtDeco page/component edits, BacktestGPU files, StockDetail.vue, Architecture.vue, or API docs."
+
+acceptance:
+  commit_gate:
+    - "Split must preserve the original post-header style body exactly when partials are concatenated."
+    - "Each created theme-apply SCSS partial remains under 500 lines."
+    - "npm run build:no-types passes; git diff --cached --check passes; staged files stay within the authorized allow-list."
+    - "GitNexus staged scope gate is low risk with no unexpected affected processes."
+  closeout_gate:
+    - "Function Tree closeout records split report, validation evidence, compatibility boundaries, and active gates return to none."
+
+evidence:
+  current_head: "6e73e983abd1a60994068d04f125ac729c5c4e0d"
+  notes: []

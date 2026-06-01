@@ -1,0 +1,88 @@
+
+/* ============================================
+   Chart Styles - 图表样式
+   ECharts 主题应用
+   ============================================ */
+
+/* ECharts tooltip */
+ echarts-tooltip {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   Custom Scrollbar - 自定义滚动条
+   ============================================ */
+
+/* Webkit browsers (Chrome, Safari, Edge) */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary) !important;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-base) !important;
+  border-radius: var(--radius-md);
+
+  &:hover {
+    background: var(--border-light) !important;
+  }
+
+  &:active {
+    background: var(--border-focus) !important;
+  }
+}
+
+/* Firefox */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-base) var(--bg-primary);
+}
+
+/* ============================================
+   Utility Classes - 通用工具类
+   ============================================ */
+
+/* Text Colors */
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-tertiary { color: var(--text-tertiary) !important; }
+.text-disabled { color: var(--text-disabled) !important; }
+.text-link { color: var(--text-link) !important; }
+
+/* Background Colors */
+.bg-primary { background-color: var(--bg-primary) !important; }
+.bg-secondary { background-color: var(--bg-secondary) !important; }
+.bg-card { background-color: var(--bg-card) !important; }
+.bg-hover { background-color: var(--bg-hover) !important; }
+.bg-active { background-color: var(--bg-active) !important; }
+
+/* Border Colors */
+.border-base { border-color: var(--border-base) !important; }
+.border-light { border-color: var(--border-light) !important; }
+.border-dark { border-color: var(--border-dark) !important; }
+.border-focus { border-color: var(--border-focus) !important; }
+
+/* Font Weights */
+.font-normal { font-weight: var(--font-weight-normal) !important; }
+.font-medium { font-weight: var(--font-weight-medium) !important; }
+.font-semibold { font-weight: var(--font-weight-semibold) !important; }
+.font-bold { font-weight: var(--font-weight-bold) !important; }
+
+/* Spacing Utilities */
+.m-0 { margin: 0 !important; }
+.m-1 { margin: var(--spacing-xs) !important; }
+.m-2 { margin: var(--spacing-sm) !important; }
+.m-3 { margin: var(--spacing-md) !important; }
+.m-4 { margin: var(--spacing-lg) !important; }
+
+.p-0 { padding: 0 !important; }
+.p-1 { padding: var(--spacing-xs) !important; }
+.p-2 { padding: var(--spacing-sm) !important; }
+.p-3 { padding: var(--spacing-md) !important; }
+.p-4 { padding: var(--spacing-lg) !important; }

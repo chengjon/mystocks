@@ -1,0 +1,88 @@
+
+/* ============================================
+   Page-Specific Styles - 页面专用样式
+   ============================================ */
+
+/* Dashboard 仪表盘 */
+.dashboard {
+  .dashboard-header {
+    border-bottom: 1px solid var(--border-base) !important;
+  }
+
+  .page-title {
+    color: var(--text-primary) !important;
+  }
+
+  .page-subtitle {
+    color: var(--text-secondary) !important;
+  }
+
+  .stat-card {
+    &:hover {
+      box-shadow: var(--shadow-2) !important;
+    }
+  }
+
+  .stat-title {
+    color: var(--text-secondary) !important;
+  }
+
+  .stat-value {
+    color: var(--text-primary) !important;
+  }
+}
+
+/* Stocks 股票列表 */
+.stocks {
+  .header-section {
+    h2 {
+      color: var(--text-primary) !important;
+    }
+  }
+
+  .filter-section {
+    background-color: var(--bg-secondary) !important;
+    border: 1px solid var(--border-base) !important;
+  }
+
+  .total-info {
+    color: var(--text-secondary) !important;
+  }
+
+  .price {
+    color: var(--text-primary) !important;
+    font-weight: var(--font-weight-semibold);
+  }
+}
+
+/* Strategy Management 策略管理 */
+.strategy-list {
+  .header h1 {
+    color: var(--text-primary) !important;
+  }
+
+  .subtitle {
+    color: var(--text-secondary) !important;
+  }
+
+  .error-state h3,
+  .empty-state h3 {
+    color: var(--text-primary) !important;
+  }
+
+  .error-state p,
+  .empty-state p {
+    color: var(--text-secondary) !important;
+  }
+}
+
+/* Technical Analysis 技术分析 */
+.technical-analysis {
+  .chart-header {
+    border-bottom: 1px solid var(--border-base) !important;
+  }
+
+  .chart-title {
+    color: var(--text-primary) !important;
+  }
+}

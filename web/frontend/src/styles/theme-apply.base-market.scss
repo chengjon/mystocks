@@ -1,0 +1,69 @@
+/* ============================================
+   Global Body Styles - 全局基础样式
+   ============================================ */
+
+body {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-base);
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* ============================================
+   Page Container Styles - 页面容器样式
+   ============================================ */
+
+#app {
+  background-color: var(--bg-primary);
+  min-height: 100vh;
+}
+
+/* ============================================
+   A股市场颜色工具类 - A-Share Market Color Utilities
+   红涨绿跌 - 中国市场标准约定
+   ============================================ */
+
+/* 价格涨跌颜色 */
+.text-up,
+.price-up,
+.change-up {
+  color: var(--color-up) !important;
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-down,
+.price-down,
+.change-down {
+  color: var(--color-down) !important;
+  font-weight: var(--font-weight-semibold);
+}
+
+.text-flat,
+.price-flat,
+.change-flat {
+  color: var(--color-flat) !important;
+}
+
+/* 背景色 */
+.bg-up {
+  background-color: var(--color-up-bg) !important;
+}
+
+.bg-down {
+  background-color: var(--color-down-bg) !important;
+}
+
+.bg-flat {
+  background-color: var(--color-flat-bg) !important;
+}
+
+/* 边框色 */
+.border-up {
+  border-color: var(--color-up) !important;
+}
+
+.border-down {
+  border-color: var(--color-down) !important;
+}

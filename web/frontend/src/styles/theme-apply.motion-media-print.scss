@@ -1,0 +1,76 @@
+
+/* ============================================
+   Animations - 动画效果
+   ============================================ */
+
+@keyframes fade-in {
+  from {
+    opacity: 0%;
+  }
+  to {
+    opacity: 100%;
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0%;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 100%;
+  }
+}
+
+.fade-in {
+  animation: fade-in var(--transition-base);
+}
+
+.slide-in-up {
+  animation: slide-in-up var(--transition-base);
+}
+
+/* ============================================
+   Responsive Design - 响应式设计
+   移动端适配
+   ============================================ */
+
+@media (width <= 768px) {
+  /* Mobile - 减小阴影 */
+  .el-card,
+  .chart-card {
+    box-shadow: none !important;
+    border: 1px solid var(--border-dark) !important;
+  }
+
+  /* Mobile - 调整间距 */
+  .dashboard,
+  .stocks,
+  .strategy-list {
+    padding: var(--spacing-sm) !important;
+  }
+}
+
+/* ============================================
+   Print Styles - 打印样式
+   ============================================ */
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  body {
+    background-color: white !important;
+    color: black !important;
+  }
+}
+
+/* ============================================
+   END: theme-apply.scss
+   MyStocks Dark Theme Application
+   ============================================ */
