@@ -1,0 +1,129 @@
+{
+  "schema_version": "g2-service-lifecycle-residual-candidate-refresh.v1",
+  "generated_at": "2026-06-02T01:10:22+08:00",
+  "gate": "G2.312",
+  "title": "service lifecycle residual candidate refresh after dormant indicator-config exclusion",
+  "base_head": "0f5382cea875d2983ada5d9c63548b0530861002",
+  "parent_gate": {
+    "gate": "G2.311",
+    "pr": 464,
+    "state": "MERGED",
+    "merge_commit": "0f5382cea875d2983ada5d9c63548b0530861002",
+    "merged_at": "2026-06-01T17:07:50Z"
+  },
+  "source_edit_authority": false,
+  "scanner": {
+    "roots": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "python_files_scanned": 371,
+    "getter_names_seen": 663,
+    "active_interesting_candidates": 53,
+    "new_exclusion": {
+      "helper": "get_mysql_session",
+      "file": "web/backend/app/api/indicators/create_indicator_config.py",
+      "classification": "retained dormant route surface from G2.311"
+    }
+  },
+  "top_candidates": [
+    {
+      "name": "get_config_manager",
+      "api_bare_calls": 9,
+      "files": [
+        "web/backend/app/api/_data_source_config_responses.py",
+        "web/backend/app/api/data_source_config.old.py",
+        "web/backend/app/api/data_source_config.py"
+      ],
+      "handling": "defer; data-source-config legacy/compat surface"
+    },
+    {
+      "name": "get_cache_data",
+      "api_bare_calls": 7,
+      "files": [
+        "web/backend/app/api/data/kline.py",
+        "web/backend/app/api/data/market.py",
+        "web/backend/app/api/data/stocks.py"
+      ],
+      "handling": "defer; data/cache helper family"
+    },
+    {
+      "name": "get_cache_manager",
+      "api_bare_calls": 7,
+      "files": [
+        "web/backend/app/api/_cache_basic_routes.py",
+        "web/backend/app/api/cache.py",
+        "web/backend/app/api/dashboard.py"
+      ],
+      "handling": "defer; dashboard/cache cross-route helper"
+    },
+    {
+      "name": "get_postgresql_engine",
+      "api_bare_calls": 6,
+      "files": [
+        "web/backend/app/api/industry_concept_analysis.py",
+        "web/backend/app/api/v1/pool_monitoring.py"
+      ],
+      "handling": "defer; control-plane / DB engine helper"
+    },
+    {
+      "name": "get_risk_management_core",
+      "api_bare_calls": 6,
+      "files": [
+        "web/backend/app/api/risk/_alerts_responses.py",
+        "web/backend/app/api/risk/stop_loss.py",
+        "web/backend/app/api/risk/v31.py"
+      ],
+      "handling": "defer; risk core helper"
+    },
+    {
+      "name": "get_mtm_engine",
+      "api_bare_calls": 5,
+      "files": [
+        "web/backend/app/api/realtime_market.py",
+        "web/backend/app/api/realtime_mtm_adapter.py"
+      ],
+      "handling": "defer; realtime MTM / streaming-adjacent surface"
+    },
+    {
+      "name": "get_factory",
+      "api_bare_calls": 3,
+      "defs": 1,
+      "imports": 0,
+      "files": [
+        "web/backend/app/api/indicator_registry.py"
+      ],
+      "samples": [
+        {
+          "line": 159,
+          "text": "factory = get_factory()"
+        },
+        {
+          "line": 186,
+          "text": "factory = get_factory()"
+        },
+        {
+          "line": 201,
+          "text": "factory = get_factory()"
+        }
+      ],
+      "handling": "select for next no-source ownership / route-provider decision"
+    }
+  ],
+  "selected_next_gate": {
+    "gate": "G2.313",
+    "title": "indicator_registry get_factory ownership / route-provider decision",
+    "type": "no-source decision",
+    "candidate": "get_factory",
+    "target_files": [
+      "web/backend/app/api/indicator_registry.py"
+    ],
+    "reason": "After excluding the dormant indicator-config router, get_factory is a bounded one-file API route helper with three bare route-body calls and lower ambiguity than data-source-config, dashboard/cache, risk core, realtime MTM, and control-plane DB surfaces."
+  },
+  "freshness": {
+    "current_head_checked": "0f5382cea875d2983ada5d9c63548b0530861002",
+    "stale_if_head_changes": true,
+    "stale_if_getter_scan_changes": true,
+    "stale_if_indicator_config_route_state_changes": true
+  }
+}

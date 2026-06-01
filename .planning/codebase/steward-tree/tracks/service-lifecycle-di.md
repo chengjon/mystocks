@@ -3429,7 +3429,7 @@ Status: accepted/merged by PR `#463`.
 
 ## G2.311 Indicator Config Router Ownership / Registration-Retirement Decision
 
-Status: for review in future PR `#464`.
+Status: accepted/merged by PR `#464`.
 
 - Parent PR `#463` merged at `67083d40808fea9963137e3e128c0c6cb0683e57`.
 - G2.311 is a no-source route ownership decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3437,4 +3437,16 @@ Status: for review in future PR `#464`.
 - Current route/OpenAPI snapshot remains `548` FastAPI routes, `500` OpenAPI paths, duplicate operation IDs `0`, with `13` indicator-related active routes.
 - Decision: do not register the dormant router and do not retire/delete it from G2.311; exclude it from the active service lifecycle provider implementation candidate queue.
 - Recommended next gate: G2.312 no-source service lifecycle residual candidate refresh after dormant indicator-config exclusion.
+- PR `#464` merged at `0f5382cea875d2983ada5d9c63548b0530861002`.
 - Stop rule: G2.311 must not be used as source implementation authority or as authorization to edit route registration, OpenAPI artifacts, tests, `create_indicator_config.py`, or `get_mysql_session`.
+
+## G2.312 Service Lifecycle Residual Candidate Refresh After Dormant Indicator-Config Exclusion
+
+Status: for review in future PR `#465`.
+
+- Parent PR `#464` merged at `0f5382cea875d2983ada5d9c63548b0530861002`.
+- G2.312 is a no-source residual candidate refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- The refreshed scanner covered `371` Python files under `web/backend/app/api` and `web/backend/app/services`, saw `663` getter-like names, and retained `53` active interesting candidates after excluding closed G2 provider seams plus dormant `create_indicator_config.py` / `get_mysql_session`.
+- Top deferred surfaces include data-source-config, data/cache, dashboard/cache, control-plane DB engine, risk core, realtime MTM, circuit breaker, algorithms module loader, Kronos client, and system routing helpers.
+- G2.312 selects only G2.313 no-source `indicator_registry.get_factory` ownership / route-provider decision for `web/backend/app/api/indicator_registry.py`, where three bare route-body calls remain at lines `159`, `186`, and `201`.
+- Stop rule: G2.312 must not be used as source implementation authority or as authorization to edit `indicator_registry.py`, `get_factory`, route contracts, OpenAPI artifacts, tests, or runtime state.
