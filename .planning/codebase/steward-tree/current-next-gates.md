@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T18:53:01+08:00`
-- Base HEAD checked: `d407acdd207271274aeb6614afdedbf139f640ae`
+- Prepared at: `2026-06-01T19:28:21+08:00`
+- Base HEAD checked: `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.301 admin optimization PostgreSQL session ownership / provider-shape decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#453` merged at `d407acdd207271274aeb6614afdedbf139f640ae`; G2.301 records admin optimization direct calls `2`, four affected route handlers, focused optimization regression `5 passed`, runtime/OpenAPI `548/500/0`, and CRITICAL shared helper-family risk | Review future PR `#454`; do not auto-merge because it selects G2.302 authorization under a CRITICAL shared helper family |
+| P0 | Review G2.302 admin optimization PostgreSQL session provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#454` merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`; G2.302 authorizes only future G2.303 path-limited source implementation for `optimization.py` and focused optimization tests, with route/OpenAPI `548/500/0` | Review future PR `#455`; do not auto-merge because it authorizes backend source/test edits under a CRITICAL shared helper family |
+| P0 | Preserve G2.301 admin optimization PostgreSQL session ownership / provider-shape decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#454` merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`; G2.301 records admin optimization direct calls `2`, four affected route handlers, focused optimization regression `5 passed`, runtime/OpenAPI `548/500/0`, and CRITICAL shared helper-family risk | Do not use G2.301 as source implementation authorization; use G2.302 only as no-source provider authorization after review |
 | P0 | Preserve G2.300 market stock list provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#453` merged at `d407acdd207271274aeb6614afdedbf139f640ae`; G2.300 records market stock list direct calls `0`, provider binding `1`, focused test `5 passed`, runtime/OpenAPI `548/500/0`, and remaining residuals auth `4` / admin optimization `2` | Do not use G2.300 as source implementation authorization; use G2.301 only for no-source admin optimization ownership / provider-shape decision after review |
 | P0 | Preserve G2.299 market stock list `get_postgresql_session` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#452` merged at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`; G2.299 moved `GET /api/v1/market/stocks` real-branch session creation behind `Depends(get_market_stock_list_postgresql_session_factory)` and kept runtime/OpenAPI `548/500/0` | Do not use G2.299 as authority for core helper edits, auth, admin optimization, route contract changes, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.298 market stock list `get_postgresql_session` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#451` merged at `79a4fe5ae9f763e3e836b76c051bddbed270a930`; G2.298 authorized only path-limited G2.299 edits to `market_data_request.py` and `test_market_stock_list_mock_configuration.py` | Do not use G2.298 to edit core database helpers, auth, admin optimization, admin audit, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state |
@@ -126,7 +127,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.301 correctly record PR `#453` as accepted/merged at `d407acdd207271274aeb6614afdedbf139f640ae`?
-- Does G2.301 correctly classify admin optimization as a bounded control-plane route helper surface with two direct `get_postgresql_session()` calls behind four affected route handlers?
-- Does G2.301 preserve route/OpenAPI `548/500/0` and keep all five `/api/v1/optimization/*` routes documented as current surface?
-- Does PR `#454` stop for human review because the next selected gate is G2.302 authorization under the CRITICAL `app.core.database.get_postgresql_session` helper family?
+- Does G2.302 correctly record PR `#454` as accepted/merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`?
+- Does G2.302 authorize only future G2.303 path-limited edits to `web/backend/app/api/v1/admin/optimization.py` and `web/backend/tests/test_v1_optimization_regressions.py`?
+- Does G2.302 preserve route/OpenAPI `548/500/0` and keep all five `/api/v1/optimization/*` routes as current surface?
+- Does PR `#455` stop for human review because it authorizes source/test edits under the CRITICAL `app.core.database.get_postgresql_session` helper family?

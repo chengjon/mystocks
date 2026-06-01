@@ -1,0 +1,167 @@
+{
+  "schema_version": "2026-06-01.g2-service-lifecycle-evidence.v1",
+  "generated_at": "2026-06-01T19:28:21+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "git_head": "13a81aec15fc8e98e7e4e927abe6d27e3e16f93d",
+  "worktree": ".worktrees/g2-302-admin-optimization-postgresql-session-provider-authorization",
+  "g_node": "G2.302",
+  "package_type": "no-source provider authorization",
+  "source_edit_authority": false,
+  "parent": {
+    "g_node": "G2.301",
+    "pr": 454,
+    "state": "MERGED",
+    "merge_commit": "13a81aec15fc8e98e7e4e927abe6d27e3e16f93d",
+    "merged_at": "2026-06-01T11:23:17Z"
+  },
+  "authorization": {
+    "future_g_node": "G2.303",
+    "future_package_type": "path-limited source implementation",
+    "authorized_after": "PR #455 human acceptance and merge",
+    "allowed_future_paths": [
+      "web/backend/app/api/v1/admin/optimization.py",
+      "web/backend/tests/test_v1_optimization_regressions.py",
+      ".planning/codebase/generated/admin-optimization-postgresql-session-provider-implementation-2026-06-01.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-admin-optimization-postgresql-session-provider-implementation-2026-06-01.md",
+      "governance/mainline/task-cards/pr-456.yaml"
+    ],
+    "forbidden_future_scope": [
+      "app.core.database.get_postgresql_session implementation",
+      "web/backend/app/api/auth.py",
+      "web/backend/app/api/market/market_data_request.py",
+      "web/backend/app/api/v1/admin/audit.py",
+      "route path/method/response_model/include_in_schema changes",
+      "generated OpenAPI artifact edits",
+      "docs/api/**",
+      "web/frontend/**",
+      "src/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**",
+      "PM2 or stateful runtime commands",
+      "source retirement"
+    ],
+    "required_future_shape": {
+      "provider_name": "get_admin_optimization_postgresql_session_factory",
+      "provider_kind": "route-local dependency returning a session factory",
+      "target_handlers": [
+        "vacuum_database",
+        "analyze_database",
+        "reindex_database",
+        "get_database_status"
+      ],
+      "target_helpers": [
+        "_run_maintenance",
+        "_database_status_payload"
+      ],
+      "cleanup_requirement": "preserve existing session.close() in finally semantics for both helper paths",
+      "excluded_handlers": [
+        "get_slow_queries"
+      ],
+      "expected_residual_after_future_implementation": {
+        "direct_route_helper_calls_in_optimization": 0,
+        "provider_backing_calls": 1,
+        "affected_handler_dependency_bindings": 4
+      }
+    }
+  },
+  "current_surface": {
+    "target_file": "web/backend/app/api/v1/admin/optimization.py",
+    "helper_origin": "app.core.database.get_postgresql_session",
+    "direct_session_calls": 2,
+    "direct_call_lines": [
+      169,
+      198
+    ],
+    "cleanup_lines": [
+      177,
+      217
+    ],
+    "affected_route_handlers": [
+      "vacuum_database",
+      "analyze_database",
+      "reindex_database",
+      "get_database_status"
+    ],
+    "excluded_route_handlers": [
+      "get_slow_queries"
+    ]
+  },
+  "route_openapi_snapshot": {
+    "fastapi_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_id_count": 0,
+    "target_routes": [
+      "POST /api/v1/optimization/vacuum",
+      "POST /api/v1/optimization/analyze",
+      "POST /api/v1/optimization/reindex",
+      "GET /api/v1/optimization/status",
+      "GET /api/v1/optimization/slow-queries"
+    ],
+    "warning_count": 119
+  },
+  "verification": {
+    "focused_regression": {
+      "command": "env PYTHONPATH=web/backend ... pytest -q web/backend/tests/test_v1_optimization_regressions.py --tb=short --no-cov -n 0",
+      "result": "5 passed in 1.89s",
+      "environment_note": "temporary non-persisted environment variables were used only to satisfy app configuration validation"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/v1/admin/optimization.py web/backend/tests/test_v1_optimization_regressions.py",
+      "result": "All checks passed"
+    }
+  },
+  "gitnexus": {
+    "mcp_status": "Transport closed for sampled helper impact calls",
+    "cli_fallback": {
+      "_run_maintenance": {
+        "risk": "LOW",
+        "direct": 3,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "_database_status_payload": {
+        "risk": "LOW",
+        "direct": 1,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "Function:web/backend/app/core/database.py:get_postgresql_session": {
+        "risk": "CRITICAL",
+        "direct": 15,
+        "processes_affected": 54,
+        "modules_affected": 12,
+        "index_status": "stale warning"
+      }
+    }
+  },
+  "decision": {
+    "classification": "path-limited admin optimization provider implementation authorized for future G2.303 only",
+    "source_lane_authorized_now": false,
+    "future_source_lane_authorized_after_review": "G2.303 only after PR #455 human acceptance",
+    "shared_helper_definition_edits_allowed": false,
+    "route_contract_changes_allowed": false,
+    "autopilot_continue_allowed": false,
+    "recommended_next_work_item": "G2.303 path-limited admin optimization PostgreSQL session provider implementation after PR #455 human acceptance",
+    "stop_reason": "this no-source package authorizes future backend source/test edits under a CRITICAL shared helper family"
+  },
+  "freshness": {
+    "current_head_checked": "13a81aec15fc8e98e7e4e927abe6d27e3e16f93d",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_admin_optimization_call_sites_change": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_focused_tests_change": true
+  }
+}
