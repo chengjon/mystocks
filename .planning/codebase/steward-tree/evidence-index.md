@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T09:22:30+08:00`
-- Base HEAD checked: `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`
+- Prepared at: `2026-06-01T10:36:04+08:00`
+- Base HEAD checked: `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/data-source-registry-manager-ownership-decision-2026-06-01.json` | G2.289 `data_source_registry.get_manager` ownership / route-provider decision evidence | Review input for future PR `#442`; no-source decision package; must stop because the current target has GitNexus MEDIUM impact and one affected process |
-| `docs/reports/quality/backend-data-source-registry-manager-ownership-decision-2026-06-01.md` | G2.289 human-readable ownership / route-provider decision report | Review input for future PR `#442`; records PR `#441` accepted/merged, seven route-body consumers, OpenAPI smoke, GitNexus fallback, and G2.290 recommendation |
-| `governance/mainline/task-cards/pr-442.yaml` | No-source governance task card for G2.289 | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge because target impact is MEDIUM and one process is affected |
+| `.planning/codebase/generated/data-source-registry-manager-provider-authorization-2026-06-01.json` | G2.290 `data_source_registry.get_manager` provider authorization evidence | Review input for future PR `#443`; no-source authorization package; must stop because it authorizes future source work and the target has GitNexus MEDIUM impact with one affected process |
+| `docs/reports/quality/backend-data-source-registry-manager-provider-authorization-2026-06-01.md` | G2.290 human-readable provider authorization report | Review input for future PR `#443`; records PR `#442` accepted/merged, future path-limited implementation envelope, tests, and stop rule |
+| `governance/mainline/task-cards/pr-443.yaml` | No-source governance task card for G2.290 | Review input; allows only steward tree, generated evidence, report, and task card updates; no auto-merge because it authorizes future source work |
+| `.planning/codebase/generated/data-source-registry-manager-ownership-decision-2026-06-01.json` | G2.289 `data_source_registry.get_manager` ownership / route-provider decision evidence | Accepted by PR `#442`, merged at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf`; no-source decision package; superseded for authorization by G2.290 |
+| `docs/reports/quality/backend-data-source-registry-manager-ownership-decision-2026-06-01.md` | G2.289 human-readable ownership / route-provider decision report | Accepted by PR `#442`; records PR `#441` accepted/merged, seven route-body consumers, OpenAPI smoke, GitNexus fallback, and G2.290 recommendation |
+| `governance/mainline/task-cards/pr-442.yaml` | No-source governance task card for G2.289 | Accepted by PR `#442`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/governance-dashboard-postgres-provider-closeout-refresh-2026-06-01.json` | G2.288 `governance_dashboard.get_postgres_connection` provider closeout / residual refresh evidence | Accepted by PR `#441`, merged at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`; no-source closeout package; superseded for next-gate decision by G2.289 |
 | `docs/reports/quality/backend-governance-dashboard-postgres-provider-closeout-refresh-2026-06-01.md` | G2.288 human-readable closeout / residual refresh report | Accepted by PR `#441`; records PR `#440` accepted/merged, governance dashboard closeout scan, OpenAPI smoke, residual refresh, and G2.289 recommendation |
 | `governance/mainline/task-cards/pr-441.yaml` | No-source governance task card for G2.288 | Accepted by PR `#441`; allowed only steward tree, generated evidence, report, and task card updates |

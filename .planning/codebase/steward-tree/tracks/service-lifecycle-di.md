@@ -3113,7 +3113,7 @@ Status: accepted/merged by PR `#441` at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c3
 
 ## G2.289 data_source_registry get_manager Ownership / Route-Provider Decision
 
-Status: for review in future PR `#442`.
+Status: accepted/merged by PR `#442` at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf`.
 
 - Parent PR `#441` merged at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`.
 - G2.289 is a no-source ownership / route-provider decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3124,3 +3124,18 @@ Status: for review in future PR `#442`.
 - Decision: classify this as a bounded active data-source registry route helper owned by `data_source_registry.py`, not as app-wide singleton lifecycle implementation, shared service facade retirement, route registration work, OpenAPI exposure work, or data-source schema migration.
 - Recommended next gate after human acceptance: G2.290 no-source `data_source_registry.get_manager` provider authorization package.
 - G2.289 must not be used as source implementation authorization; G2.290 should define exact implementation envelope and tests before any source lane starts.
+
+## G2.290 data_source_registry get_manager Provider Authorization
+
+Status: for review in future PR `#443`.
+
+- Parent PR `#442` merged at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf`.
+- G2.290 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- It authorizes only a future G2.291 path-limited implementation after human acceptance.
+- Future G2.291 may touch only `web/backend/app/api/data_source_registry.py`, focused data-source registry tests, steward evidence, and the future PR task card.
+- Future G2.291 shape: add route-local provider `get_data_source_registry_manager` delegating to existing `get_manager()`, keep `get_manager()` as backing compatibility / monkeypatch seam, and move only the seven active data-source registry handlers to dependency parameters.
+- Future G2.291 must preserve fresh `DataSourceManagerV2()` construction through `get_manager()` and must not introduce a process-level singleton.
+- Current route/OpenAPI smoke with repo `.env` loaded into the subprocess records `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and `7` data-source registry runtime routes.
+- GitNexus MCP returned `Transport closed`; CLI fallback reports MEDIUM risk, `7` impacted symbols, `7` direct callers, `1` affected process, `1` affected module, and stale-index warning.
+- PR `#443` must stop for human review and must not auto-merge because it authorizes future source work and the target has GitNexus MEDIUM impact with one affected process.
+- G2.290 is superseded only after a reviewed G2.291 implementation lane is accepted.

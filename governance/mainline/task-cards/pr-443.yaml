@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-443"
+  title: "Authorize data_source_registry manager provider lane"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-data-source-registry-manager-provider-authorization"
+  objective: "authorize a future path-limited data_source_registry get_manager provider implementation without editing source in this PR"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.290 is a no-source authorization package. It changes no runtime entrypoint, route path, route registration, generated OpenAPI artifact, frontend route, or FUNCTION_TREE catalog entry."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-source-registry-manager-provider-authorization-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-source-registry-manager-provider-authorization-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-443.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "implementation before PR #443 human acceptance"
+
+acceptance:
+  checks:
+    - id: "pr442-merged"
+      command: "gh pr view 442 confirms MERGED at 1f0a909355f5db9002cfc2d0fcbba21e366dc0bf"
+      required: true
+    - id: "authorization-boundary"
+      command: "G2.290 authorizes only a future G2.291 path-limited source lane after human acceptance; current PR edits governance files only"
+      required: true
+    - id: "future-scope"
+      command: "future G2.291 source scope is limited to web/backend/app/api/data_source_registry.py plus focused data-source registry tests and governance evidence"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0, and seven data_source_registry runtime routes"
+      required: true
+    - id: "gitnexus-target-impact"
+      command: "GitNexus MCP impact returned Transport closed; CLI UID impact records MEDIUM risk, 7 direct callers, 7 impacted symbols, 1 affected process, stale-index warning for Function:web/backend/app/api/data_source_registry.py:get_manager"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-source-registry-manager-provider-authorization-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-443.yaml --base-sha 1f0a909355f5db9002cfc2d0fcbba21e366dc0bf --head-sha HEAD --report /tmp/pr443-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus staged verification attempted before commit; stale-index warning recorded if present"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "A future worker may start implementation before PR #443 acceptance; this package authorizes only after human acceptance."
+    - "The selected target has MEDIUM GitNexus impact and one affected process, so PR #443 must stop for review."
+    - "Existing tests monkeypatch data_source_registry.get_manager directly; future source work must preserve that seam."
+  rollback_plan: "Revert PR #443; this removes only governance authorization evidence and restores the previous steward tree state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Authorize a future path-limited data_source_registry get_manager route-provider source lane."
+    modified_scope: "Governance evidence, steward tree indexes, human-readable report, and task card only."
+    dependency_changes: "No dependency changes."
+    legacy_logic_impact: "No runtime, route, OpenAPI, frontend, config, script, or OpenSpec changes in this PR."
+    rollback_ready: "Revert PR #443."
+    risk_and_rollback_point: "No-source authorization, but future source target impact is MEDIUM; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T10:36:04+08:00"
+    approval_note: "Human maintainer approved continuing after PR #442 merge into G2.290 no-source provider authorization. PR #443 must stop for review because it authorizes future backend source implementation and the target has GitNexus MEDIUM impact with one affected process."
+    secondary_approved: false
