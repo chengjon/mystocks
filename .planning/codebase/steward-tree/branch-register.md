@@ -118,7 +118,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#431` | `g2-278-strategy-get-monitoring-db-provider` | `wip/root-dirty-20260403` | `MERGED` at `c5496cab0a4213f74636af1c48772dc96c90bd1b` | Path-limited strategy `get_monitoring_db` provider implementation selecting G2.279 closeout / residual refresh |
 | `#432` | `g2-279-strategy-get-monitoring-db-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `fcead56344110e33041319271c122e71d2b763a0` | No-source strategy `get_monitoring_db` provider closeout selecting G2.280 residual candidate refresh |
 | `#433` | `g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db` | `wip/root-dirty-20260403` | `MERGED` at `1707284bceeef8992641290d86790c1699975f5a` | No-source residual candidate refresh selecting G2.281 data_lineage `get_lineage_tracker` decision |
-| `#434` | `g2-281-data-lineage-tracker-ownership-decision` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source data_lineage `get_lineage_tracker` ownership decision; auto-merge paused due GitNexus MEDIUM risk |
+| `#441` | `g2-288-governance-dashboard-postgres-provider-closeout` | `wip/root-dirty-20260403` | `MERGED` at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37` | No-source governance dashboard provider closeout selecting G2.289 data_source_registry ownership decision |
+| `#442` | `g2-289-data-source-registry-manager-ownership` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source data_source_registry `get_manager` ownership decision; auto-merge paused due GitNexus MEDIUM risk and one affected process |
 
 ## Steward Governance Branch
 
@@ -148,6 +149,12 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-281-data-lineage-tracker-ownership-decision` | `origin/wip/root-dirty-20260403` at `1707284bceeef8992641290d86790c1699975f5a` | Decide data_lineage `get_lineage_tracker` ownership / route-provider disposition; stop auto-merge due GitNexus MEDIUM risk | No |
 | `g2-282-data-lineage-tracker-provider-authorization` | `origin/wip/root-dirty-20260403` at `b8ba6ca75c573913d7b10553620e5d308c0d13f3` | Authorize a future path-limited data_lineage `get_lineage_tracker` route-provider implementation; stop auto-merge due future source authorization and GitNexus MEDIUM risk | No |
 | `g2-283-data-lineage-tracker-provider` | `origin/wip/root-dirty-20260403` at `891593d2dc4896f909333033a0b454529b9be38c` | Implement the authorized data_lineage `get_lineage_tracker` route-provider seam; stop auto-merge due source implementation and GitNexus MEDIUM risk | Yes, path-limited |
+| `g2-284-lineage-tracker-provider-closeout` | `origin/wip/root-dirty-20260403` at `511e9d091bc2b29777c522c595a9f1454f50b973` | Close out data_lineage provider implementation and select governance_dashboard ownership decision | No |
+| `g2-285-governance-dashboard-postgres-connection-ownership` | `origin/wip/root-dirty-20260403` at `d34774837a0582f0e33d47425bb017b44e5aacd9` | Decide governance_dashboard postgres helper ownership / control-plane route-provider disposition | No |
+| `g2-286-governance-dashboard-postgres-provider-authorization` | `origin/wip/root-dirty-20260403` at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818` | Authorize a future path-limited governance_dashboard postgres provider implementation | No |
+| `g2-287-governance-dashboard-postgres-provider-implementation` | `origin/wip/root-dirty-20260403` at `e7c78892e1928d86fabecbe4135e7ce68fd0f01e` | Implement authorized governance_dashboard postgres route-provider seam | Yes, path-limited |
+| `g2-288-governance-dashboard-postgres-provider-closeout` | `origin/wip/root-dirty-20260403` at `67ef9b9d8f9dd420de80995f624fa54e41493415` | Close out governance_dashboard provider implementation and select G2.289 data_source_registry ownership decision | No |
+| `g2-289-data-source-registry-manager-ownership` | `origin/wip/root-dirty-20260403` at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37` | Decide data_source_registry `get_manager` ownership / route-provider disposition; stop auto-merge due GitNexus MEDIUM risk and one affected process | No |
 
 ## OpenSpec Relationship
 

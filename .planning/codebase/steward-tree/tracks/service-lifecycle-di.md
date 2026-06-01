@@ -3098,7 +3098,7 @@ Status: accepted/merged by PR `#440` at `67ef9b9d8f9dd420de80995f624fa54e4149341
 
 ## G2.288 governance_dashboard get_postgres_connection Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#441`.
+Status: accepted/merged by PR `#441` at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`.
 
 - Parent PR `#440` merged at `67ef9b9d8f9dd420de80995f624fa54e41493415`.
 - G2.288 is a no-source closeout / residual refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3110,3 +3110,17 @@ Status: for review in future PR `#441`.
 - GitNexus MCP impact returned `Transport closed`; CLI UID impact reports MEDIUM risk, `7` direct callers, `7` impacted symbols, `1` affected process, `1` affected module, and stale-index warning.
 - PR `#441` must stop for human review and must not auto-merge because the selected next target has GitNexus MEDIUM impact and one affected process.
 - G2.288 must not be used as source implementation authorization; G2.289 must classify ownership, route/OpenAPI exposure, lifecycle shape, and consumer-contract boundaries before any future authorization package.
+
+## G2.289 data_source_registry get_manager Ownership / Route-Provider Decision
+
+Status: for review in future PR `#442`.
+
+- Parent PR `#441` merged at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`.
+- G2.289 is a no-source ownership / route-provider decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- `get_manager` is defined in `web/backend/app/api/data_source_registry.py` at lines `61-65` and currently returns a fresh `DataSourceManagerV2()` instance.
+- Active route-body callers are `search_data_sources`, `get_category_stats`, `get_data_source`, `update_data_source`, `test_data_source`, `health_check_data_source`, and `health_check_all_data_sources`.
+- Current route/OpenAPI smoke with repo `.env` loaded into the subprocess records `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and `7` data-source registry runtime routes.
+- GitNexus MCP returned `Transport closed`; CLI fallback reports MEDIUM risk, `7` impacted symbols, `7` direct callers, `1` affected process, `1` affected module, and stale-index warning for `Function:web/backend/app/api/data_source_registry.py:get_manager`.
+- Decision: classify this as a bounded active data-source registry route helper owned by `data_source_registry.py`, not as app-wide singleton lifecycle implementation, shared service facade retirement, route registration work, OpenAPI exposure work, or data-source schema migration.
+- Recommended next gate after human acceptance: G2.290 no-source `data_source_registry.get_manager` provider authorization package.
+- G2.289 must not be used as source implementation authorization; G2.290 should define exact implementation envelope and tests before any source lane starts.

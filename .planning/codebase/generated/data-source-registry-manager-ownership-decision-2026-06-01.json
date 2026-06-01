@@ -1,0 +1,180 @@
+{
+  "schema_version": "steward-evidence.v1",
+  "gate": "G2.289",
+  "title": "data_source_registry get_manager ownership / route-provider decision",
+  "generated_at": "2026-06-01T09:22:30+08:00",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "75ce550ceaf9f77b7659193b9cbd3c9ab2181c37",
+  "worktree": ".worktrees/g2-289-data-source-registry-manager-ownership",
+  "source_edit_authority": false,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "The current target has GitNexus MEDIUM impact and one affected process; this package is no-source decision evidence only.",
+  "parent": {
+    "gate": "G2.288",
+    "pr": 441,
+    "state": "MERGED",
+    "merge_commit": "75ce550ceaf9f77b7659193b9cbd3c9ab2181c37",
+    "merged_at": "2026-06-01T01:14:22Z",
+    "summary": "Governance dashboard postgres provider closeout accepted and merged."
+  },
+  "surface": {
+    "module": "web/backend/app/api/data_source_registry.py",
+    "symbol": "get_manager",
+    "uid": "Function:web/backend/app/api/data_source_registry.py:get_manager",
+    "definition_lines": "61-65",
+    "current_shape": "module-local helper returning a fresh DataSourceManagerV2() instance",
+    "backing_class": "src.core.data_source.base.DataSourceManagerV2",
+    "router_prefix": "/api/v1/data-sources",
+    "active_route_body_call_count": 7,
+    "depends_bindings": 0,
+    "route_handlers": [
+      {
+        "name": "search_data_sources",
+        "method": "GET",
+        "path": "/api/v1/data-sources/",
+        "line": 97
+      },
+      {
+        "name": "get_category_stats",
+        "method": "GET",
+        "path": "/api/v1/data-sources/categories",
+        "line": 147
+      },
+      {
+        "name": "get_data_source",
+        "method": "GET",
+        "path": "/api/v1/data-sources/{endpoint_name}",
+        "line": 222
+      },
+      {
+        "name": "update_data_source",
+        "method": "PUT",
+        "path": "/api/v1/data-sources/{endpoint_name}",
+        "line": 254
+      },
+      {
+        "name": "test_data_source",
+        "method": "POST",
+        "path": "/api/v1/data-sources/{endpoint_name}/test",
+        "line": 323
+      },
+      {
+        "name": "health_check_data_source",
+        "method": "POST",
+        "path": "/api/v1/data-sources/{endpoint_name}/health-check",
+        "line": 403
+      },
+      {
+        "name": "health_check_all_data_sources",
+        "method": "POST",
+        "path": "/api/v1/data-sources/health-check/all",
+        "line": 449
+      }
+    ]
+  },
+  "route_openapi_evidence": {
+    "runtime_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "target_route_count": 7,
+    "target_openapi_paths": [
+      "/api/v1/data-sources/",
+      "/api/v1/data-sources/categories",
+      "/api/v1/data-sources/{endpoint_name}",
+      "/api/v1/data-sources/{endpoint_name}/test",
+      "/api/v1/data-sources/{endpoint_name}/health-check",
+      "/api/v1/data-sources/health-check/all"
+    ],
+    "config_sibling_paths_present": true,
+    "collection_notes": "app.main import and app.openapi() were run with repo .env loaded into the subprocess; values were not written to artifacts."
+  },
+  "consumer_contract_evidence": {
+    "focused_tests_or_consumers": [
+      "tests/api/file_tests/test_data_source_registry_api.py",
+      "web/backend/tests/test_data_source_registry_error_contract.py",
+      "web/backend/tests/test_data_source_auth_hardening.py",
+      "tests/unit/test_data_source_metrics_integration.py",
+      "web/backend/tests/test_health_route_conflicts.py",
+      "web/backend/tests/test_runtime_logging_wave2.py"
+    ],
+    "monkeypatch_dependency_points": [
+      "web/backend/tests/test_data_source_registry_error_contract.py patches data_source_registry.get_manager",
+      "tests/unit/test_data_source_metrics_integration.py patches registry_module.get_manager"
+    ],
+    "notable_contracts": [
+      "route paths, methods, response_model declarations, and OpenAPI exposure must remain stable",
+      "write endpoints retain _require_write_auth behavior",
+      "manual test and health-check endpoints may call external handlers through DataSourceManagerV2 registry data"
+    ]
+  },
+  "gitnexus_evidence": {
+    "mcp_context": "tool call failed: Transport closed",
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_context": {
+      "status": "found",
+      "uid": "Function:web/backend/app/api/data_source_registry.py:get_manager",
+      "incoming_callers": [
+        "search_data_sources",
+        "get_category_stats",
+        "get_data_source",
+        "update_data_source",
+        "test_data_source",
+        "health_check_data_source",
+        "health_check_all_data_sources"
+      ],
+      "index_status": "stale warning"
+    },
+    "cli_impact_uid": {
+      "risk": "MEDIUM",
+      "impacted_count": 7,
+      "direct": 7,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "affected_processes": [
+        "test_data_source"
+      ],
+      "index_status": "stale warning"
+    }
+  },
+  "decision": {
+    "classification": "bounded-active-data-source-registry-route-helper",
+    "ownership": "web/backend/app/api/data_source_registry.py owns the current helper and route-provider seam",
+    "not_classified_as": [
+      "app-wide singleton lifecycle implementation",
+      "shared service facade retirement",
+      "route registration or OpenAPI exposure change",
+      "data source registry schema migration"
+    ],
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-289",
+    "selected_next_governance_target": "data-source-registry-manager-provider-authorization",
+    "recommended_next_work_item": "G2.290 no-source data_source_registry.get_manager provider authorization package after human acceptance",
+    "autopilot_continue_allowed": false
+  },
+  "future_authorization_guardrails": {
+    "allowed_only_after_g2_289_acceptance": true,
+    "likely_future_shape": [
+      "keep get_manager compatibility/backing surface unless a separate compatibility-retirement gate says otherwise",
+      "add or select an explicit route-local dependency provider for DataSourceManagerV2",
+      "move only the seven active route handlers to dependency parameters",
+      "preserve per-request construction semantics; do not introduce a process-level singleton in the first implementation lane",
+      "preserve route paths, response models, OpenAPI exposure, auth behavior, UnifiedResponse behavior, and existing monkeypatch seams"
+    ],
+    "future_required_tests": [
+      "new focused route-provider regression for the seven handlers",
+      "tests/api/file_tests/test_data_source_registry_api.py",
+      "web/backend/tests/test_data_source_registry_error_contract.py",
+      "web/backend/tests/test_data_source_auth_hardening.py",
+      "tests/unit/test_data_source_metrics_integration.py",
+      "web/backend/tests/test_health_route_conflicts.py --collect-only or targeted data-source registry OpenAPI assertions"
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "75ce550ceaf9f77b7659193b9cbd3c9ab2181c37",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_data_source_registry_call_sites_change": true,
+    "stale_if_data_source_manager_contract_changes": true,
+    "stale_if_gitnexus_risk_changes": true
+  },
+  "next_gate": "Stop for human review in PR #442. If accepted, create G2.290 no-source authorization; do not edit source from G2.289."
+}
