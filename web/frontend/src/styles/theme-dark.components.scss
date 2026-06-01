@@ -1,0 +1,115 @@
+
+/* ============================================
+   Usage Examples / 使用示例
+   ============================================ */
+
+/*
+  Example 1: 股票价格涨跌样式 (Stock Price Up/Down)
+  -------------------------------------------------
+  .stock-price {
+    color: var(--text-primary);
+    font-weight: var(--font-weight-bold);
+
+    &.up {
+      color: var(--color-up);  // 红色 - 涨
+      background: var(--color-up-bg);
+    }
+
+    &.down {
+      color: var(--color-down);  // 绿色 - 跌
+      background: var(--color-down-bg);
+    }
+
+    &.flat {
+      color: var(--color-flat);  // 灰色 - 平
+      background: var(--color-flat-bg);
+    }
+  }
+
+  Example 2: 卡片样式 (Card Component)
+  -------------------------------------------------
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-base);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-1);
+    padding: var(--spacing-lg);
+
+    &:hover {
+      border-color: var(--border-light);
+      box-shadow: var(--shadow-2);
+    }
+  }
+
+  Example 3: 按钮样式 (Button Component)
+  -------------------------------------------------
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--text-primary);
+    border: none;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-sm) var(--spacing-md);
+    transition: all var(--transition-base);
+
+    &:hover {
+      background: var(--color-primary-hover);
+      box-shadow: var(--shadow-glow);
+    }
+
+    &:active {
+      background: var(--color-primary-active);
+    }
+  }
+
+  Example 4: 输入框样式 (Input Component)
+  -------------------------------------------------
+  .input {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-base);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    padding: var(--spacing-sm) var(--spacing-md);
+
+    &::placeholder {
+      color: var(--text-tertiary);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--border-focus);
+      box-shadow: var(--shadow-glow);
+    }
+
+    &:disabled {
+      background: var(--bg-primary);
+      color: var(--text-disabled);
+      cursor: not-allowed;
+    }
+  }
+
+  Example 5: 表格样式 (Table Component)
+  -------------------------------------------------
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      font-weight: var(--font-weight-semibold);
+      text-align: left;
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: 2px solid var(--border-base);
+    }
+
+    td {
+      color: var(--text-primary);
+      padding: var(--spacing-sm) var(--spacing-md);
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    tr:hover {
+      background: var(--bg-hover);
+    }
+  }
+*/

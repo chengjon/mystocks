@@ -2621,5 +2621,100 @@
       "current_head": "1be1b2b1cf6ff896a8cf44da14dd8402027ace6f",
       "prepared_at": "2026-06-01T06:14:53.332Z"
     }
+  },
+  {
+    "id": "theme-dark-scss-style-split",
+    "title": "Split global dark theme SCSS by visual concern",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/styles/theme-dark.scss",
+    "current_head": "0920c4e65aa410c2ced7f9d5db7ae0399ad0c5bf",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "file-size-report",
+        "path": "reports/analysis/file-size-guard-report-2026-06-01.md",
+        "note": "Report lists SCSS as largest violation category and theme-dark.scss remains over the 500-line SCSS guard at current HEAD.",
+        "current_head": "0920c4e65aa410c2ced7f9d5db7ae0399ad0c5bf",
+        "recorded_at": "2026-06-01T06:40:09.475Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/styles/theme-dark.scss",
+      "web/frontend/src/styles/theme-dark.variables.scss",
+      "web/frontend/src/styles/theme-dark.components.scss",
+      "web/frontend/src/styles/theme-dark.utilities.scss",
+      "web/frontend/src/styles/theme-dark.element-plus.scss",
+      "web/frontend/src/styles/theme-dark.media-motion-debug.scss",
+      "docs/reports/tasks/2026-06-01-theme-dark-scss-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/theme-dark-scss-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue, TypeScript, runtime logic, router, backend API contract, OpenAPI, or frontend API client changes.",
+      "No visual redesign, no token value changes, no global token/baseline edits, and no cleanup of existing hardcoded dimensions in this node.",
+      "Do not stage or alter existing dirty tree.md, OpenSpec deletions, ArtDeco page/component edits, BacktestGPU files, StockDetail.vue, Architecture.vue, or API docs."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T06:40:00.958Z",
+    "updated_at": "2026-06-01T07:11:09.823Z",
+    "acceptance": {
+      "commit_gate": [
+        "Split must preserve the original post-header style body exactly when partials are concatenated.",
+        "Each created theme-dark SCSS partial remains under 500 lines.",
+        "npm run build:no-types passes; git diff --cached --check passes; staged files stay within the authorized allow-list.",
+        "GitNexus staged scope gate is low risk with no unexpected affected processes."
+      ],
+      "closeout_gate": [
+        "Function Tree closeout records split report, validation evidence, compatibility boundaries, and active gates return to none."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing the SCSS file-size guard sequence; implementation scope is the authorized exact-body dark theme SCSS split.",
+        "current_head": "0920c4e65aa410c2ced7f9d5db7ae0399ad0c5bf",
+        "transitioned_at": "2026-06-01T06:41:08.087Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Start implementation after refreshed current-HEAD evidence; source edits remain limited to authorized theme-dark SCSS paths.",
+        "current_head": "0920c4e65aa410c2ced7f9d5db7ae0399ad0c5bf",
+        "transitioned_at": "2026-06-01T06:41:20.456Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Mechanically split theme-dark.scss into five partials and preserved the original post-header style body exactly.",
+        "current_head": "0920c4e65aa410c2ced7f9d5db7ae0399ad0c5bf",
+        "transitioned_at": "2026-06-01T07:07:30.456Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout accepted with report and validation evidence; active gate can be cleared.",
+        "current_head": "0920c4e65aa410c2ced7f9d5db7ae0399ad0c5bf",
+        "transitioned_at": "2026-06-01T07:11:09.823Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-theme-dark-scss-style-split-report.md",
+      "compatibility": "No Vue/TypeScript/router/API/OpenAPI/frontend API client/shared component/token value changes; existing token literals preserved for a separate cleanup gate.",
+      "gates": [
+        "raw_match true for partial reconstruction; all partials under 500 lines; npm run build:no-types passed; scope-check passed."
+      ],
+      "current_head": "0920c4e65aa410c2ced7f9d5db7ae0399ad0c5bf",
+      "prepared_at": "2026-06-01T07:10:25.084Z"
+    }
   }
 ]

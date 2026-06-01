@@ -1,0 +1,108 @@
+
+/* ============================================
+   Component Overrides - 组件样式覆盖
+   Element Plus Theme Overrides
+   ============================================ */
+
+/*
+  Element Plus 组件样式自定义示例
+  需要在组件中覆盖 Element Plus 默认样式时使用
+*/
+
+/* Button 按钮覆盖 */
+.el-button--primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+
+  &:hover {
+    background-color: var(--color-primary-hover) !important;
+  }
+
+  &:active {
+    background-color: var(--color-primary-active) !important;
+  }
+}
+
+/* Input 输入框覆盖 */
+.el-input__wrapper {
+  background-color: var(--bg-secondary) !important;
+  border: 1px solid var(--border-base) !important;
+  box-shadow: none !important;
+
+  &:hover {
+    border-color: var(--border-light) !important;
+  }
+
+  &.is-focus {
+    border-color: var(--border-focus) !important;
+  }
+}
+
+.el-input__inner {
+  color: var(--text-primary) !important;
+
+  &::placeholder {
+    color: var(--text-tertiary) !important;
+  }
+}
+
+/* Table 表格覆盖 */
+.el-table {
+  background-color: var(--bg-primary) !important;
+  color: var(--text-primary) !important;
+
+  th {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-secondary) !important;
+    border-color: var(--border-base) !important;
+  }
+
+  tr:hover > td {
+    background-color: var(--bg-hover) !important;
+  }
+
+  td {
+    border-color: var(--border-dark) !important;
+  }
+}
+
+/* Card 卡片覆盖 */
+.el-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+}
+
+.el-card__header {
+  background-color: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-base) !important;
+}
+
+/* Dialog 对话框覆盖 */
+.el-dialog {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+}
+
+.el-dialog__title {
+  color: var(--text-primary) !important;
+}
+
+.el-dialog__body {
+  color: var(--text-secondary) !important;
+}
+
+/* Dropdown 下拉菜单覆盖 */
+.el-dropdown-menu {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-base) !important;
+}
+
+.el-dropdown-menu__item {
+  color: var(--text-secondary) !important;
+
+  &:hover {
+    background-color: var(--bg-hover) !important;
+    color: var(--text-primary) !important;
+  }
+}

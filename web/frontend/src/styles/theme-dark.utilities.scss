@@ -1,0 +1,34 @@
+
+/* ============================================
+   Utility Classes - 工具类
+   快速应用常用样式
+   ============================================ */
+
+/* Text Colors - 文本颜色 */
+.text-up { color: var(--color-up) !important; }
+.text-down { color: var(--color-down) !important; }
+.text-flat { color: var(--color-flat) !important; }
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-tertiary { color: var(--text-tertiary) !important; }
+.text-disabled { color: var(--text-disabled) !important; }
+
+/* Background Colors - 背景颜色 */
+.bg-up { background-color: var(--color-up-bg) !important; }
+.bg-down { background-color: var(--color-down-bg) !important; }
+.bg-flat { background-color: var(--color-flat-bg) !important; }
+.bg-primary { background-color: var(--bg-primary) !important; }
+.bg-secondary { background-color: var(--bg-secondary) !important; }
+.bg-card { background-color: var(--bg-card) !important; }
+
+/* Border Colors - 边框颜色 */
+.border-up { border-color: var(--color-up) !important; }
+.border-down { border-color: var(--color-down) !important; }
+.border-base { border-color: var(--border-base) !important; }
+.border-focus { border-color: var(--border-focus) !important; }
+
+/* Font Weights - 字重 */
+.font-normal { font-weight: var(--font-weight-normal) !important; }
+.font-medium { font-weight: var(--font-weight-medium) !important; }
+.font-semibold { font-weight: var(--font-weight-semibold) !important; }
+.font-bold { font-weight: var(--font-weight-bold) !important; }

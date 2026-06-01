@@ -1,0 +1,238 @@
+/* ============================================
+   CSS Variables Root Definition
+   CSS 变量根定义
+   ============================================ */
+:root {
+  /* ------------------------------------------
+     Background Colors - 深蓝色系背景
+     Deep Blue-Black Palette (专业金融终端风格)
+     ------------------------------------------ */
+
+  /// Main background - 极深蓝黑色
+  /// 用于主页面背景、应用整体背景
+  --bg-primary: #0B0F19;
+
+  /// Secondary background - 深蓝灰色
+  /// 用于次级区域、嵌套容器
+  --bg-secondary: #1A1F2E;
+
+  /// Card background - 中蓝色
+  /// 用于卡片、面板、对话框
+  --bg-card: #232936;
+
+  /// Hover state - 交互悬停状态
+  /// 用于按钮悬停、列表项悬停
+  --bg-hover: #2D3446;
+
+  /// Active state - 激活状态
+  /// 用于选中项、激活标签页
+  --bg-active: #343A4D;
+
+  /// Overlay/Mask background - 遮罩层
+  /// 用于模态框背景、加载遮罩
+  --bg-overlay: rgb(11 15 25 / 85%);
+
+  /* ------------------------------------------
+     A-Share Market Colors - A股市场颜色 (CRITICAL)
+     红涨绿跌 - 中国市场标准约定
+     ------------------------------------------ */
+
+  /// UP color - 红色 (上涨)
+  /// 用于: 价格上涨、正值、收益增加、买入信号
+  /// RGB: 255, 82, 82 | HSL: 4, 100%, 66%
+  --color-up: #FF5252;
+
+  /// UP background - 红色背景（淡化）
+  /// 用于: 上涨趋势背景、买入按钮
+  --color-up-bg: rgb(255 82 82 / 15%);
+
+  /// DOWN color - 绿色 (下跌)
+  /// 用于: 价格下跌、负值、收益减少、卖出信号
+  /// RGB: 0, 230, 118 | HSL: 152, 100%, 45%
+  --color-down: #00E676;
+
+  /// DOWN background - 绿色背景（淡化）
+  /// 用于: 下跌趋势背景、卖出按钮
+  --color-down-bg: rgb(0 230 118 / 15%);
+
+  /// FLAT color - 灰色 (平盘)
+  /// 用于: 价格不变、零值、持平状态
+  --color-flat: #B0B3B8;
+
+  /// FLAT background - 灰色背景（淡化）
+  --color-flat-bg: rgb(176 179 184 / 15%);
+
+  /* ------------------------------------------
+     Accent Colors - 功能强调色
+     Semantic Colors (功能性颜色)
+     ------------------------------------------ */
+
+  /// Primary color - 专业蓝
+  /// 用于: 主要操作、导航高亮、品牌色
+  --color-primary: #2979FF;
+
+  /// Primary hover - 悬停状态
+  --color-primary-hover: #5393FF;
+
+  /// Primary active - 激活状态
+  --color-primary-active: #1E5CBF;
+
+  /// Success color - 成功绿
+  /// 用于: 操作成功、正常状态
+  --color-success: #00C853;
+
+  /// Warning color - 警告橙
+  /// 用于: 警告提示、注意信息
+  --color-warning: #FFAB00;
+
+  /// Danger color - 危险红
+  /// 用于: 错误提示、删除操作、风险警告
+  --color-danger: #FF1744;
+
+  /// Info color - 信息蓝
+  /// 用于: 信息提示、帮助说明
+  --color-info: #00B0FF;
+
+  /* ------------------------------------------
+     Text Colors - 文本颜色系统
+     Typography Colors (确保可读性)
+     ------------------------------------------ */
+
+  /// Primary text - 纯白
+  /// 用于: 标题、重要文本、主要信息
+  --text-primary: #FFF;
+
+  /// Secondary text - 浅灰色
+  /// 用于: 正文、描述文本、次要信息
+  --text-secondary: #B0B3B8;
+
+  /// Tertiary text - 深灰色
+  /// 用于: 辅助文本、标签、占位符
+  --text-tertiary: #7A7E85;
+
+  /// Disabled text - 更深灰色
+  /// 用于: 禁用状态、不可操作文本
+  --text-disabled: #4A4E55;
+
+  /// Link text - 链接色
+  /// 用于: 超链接、可点击文本
+  --text-link: #5393FF;
+
+  /// Code text - 代码文本
+  /// 用于: 代码块、命令行、数据展示
+  --text-code: #00E676;
+
+  /* ------------------------------------------
+     Border Colors - 边框颜色系统
+     Border & Divider Colors (分隔与层次)
+     ------------------------------------------ */
+
+  /// Base border - 基础边框
+  /// 用于: 输入框边框、卡片边框
+  --border-base: #3A3E45;
+
+  /// Light border - 浅色边框
+  /// 用于: 分隔线、次要边框
+  --border-light: #4A4E55;
+
+  /// Dark border - 深色边框
+  /// 用于: 内嵌边框、弱化分隔
+  --border-dark: #2A2E35;
+
+  /// Focus border - 聚焦边框
+  /// 用于: 输入框聚焦、键盘导航
+  --border-focus: #2979FF;
+
+  /// Error border - 错误边框
+  /// 用于: 表单验证错误、危险操作
+  --border-error: #FF1744;
+
+  /* ------------------------------------------
+     Shadow System - 阴影系统
+     Box Shadows (层次与深度)
+     ------------------------------------------ */
+
+  /// Level 1 shadow - 轻微阴影
+  /// 用于: 卡片默认状态、按钮
+  --shadow-1: 0 2px 8px rgb(0 0 0 / 30%);
+
+  /// Level 2 shadow - 中等阴影
+  /// 用于: 下拉菜单、弹出框
+  --shadow-2: 0 4px 16px rgb(0 0 0 / 40%);
+
+  /// Level 3 shadow - 深度阴影
+  /// 用于: 模态框、对话框
+  --shadow-3: 0 8px 32px rgb(0 0 0 / 50%);
+
+  /// Glow effect - 发光效果
+  /// 用于: 重要元素高亮、聚焦状态
+  --shadow-glow: 0 0 20px rgb(41 121 255 / 40%);
+
+  /* ------------------------------------------
+     Spacing Scale - 间距系统
+     Spacing (一致性间距规范)
+     ------------------------------------------ */
+
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+
+  /* ------------------------------------------
+     Border Radius - 圆角系统
+     Radius (圆角规范)
+     ------------------------------------------ */
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-round: 50%;
+
+  /* ------------------------------------------
+     Typography - 字体系统
+     Font Sizes & Weights
+     ------------------------------------------ */
+
+  --font-family-base: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', '微软雅黑', Arial, sans-serif;
+  --font-family-mono: 'Consolas', 'Monaco', 'Courier New', monospace;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-xxl: 24px;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --line-height-tight: 1.25;
+  --line-height-base: 1.5;
+  --line-height-loose: 1.75;
+
+  /* ------------------------------------------
+     Transitions - 过渡动画
+     Animation Timing (流畅交互体验)
+     ------------------------------------------ */
+
+  --transition-fast: 150ms ease-in-out;
+  --transition-base: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+
+  /* ------------------------------------------
+     Z-Index Scale - 层级系统
+     Z-Index Layers (堆叠上下文)
+     ------------------------------------------ */
+
+  --z-index-dropdown: 1000;
+  --z-index-sticky: 1020;
+  --z-index-fixed: 1030;
+  --z-index-modal-backdrop: 1040;
+  --z-index-modal: 1050;
+  --z-index-popover: 1060;
+  --z-index-tooltip: 1070;
+}

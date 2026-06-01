@@ -1,0 +1,263 @@
+
+/* ============================================
+   Accessibility - 无障碍访问
+   WCAG 2.1 AA Compliance
+   ============================================ */
+
+/*
+  Focus Visible - 清晰的键盘导航焦点
+  对于只用键盘导航的用户至关重要
+*/
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/*
+  Skip Link - 跳过导航链接
+  允许屏幕阅读器用户跳过重复导航
+*/
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--color-primary);
+  color: var(--text-primary);
+  padding: var(--spacing-sm) var(--spacing-md);
+  text-decoration: none;
+  z-index: var(--z-index-tooltip);
+
+  &:focus {
+    top: 0;
+  }
+}
+
+/*
+  Screen Reader Only - 仅屏幕阅读器可见
+  用于辅助技术但不影响视觉设计
+*/
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ============================================
+   Print Styles - 打印样式
+   优化打印输出
+   ============================================ */
+
+@media print {
+  * {
+    background: transparent !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  a,
+  a:visited {
+    text-decoration: underline;
+  }
+
+  pre,
+  blockquote {
+    border: 1px solid #999;
+    break-inside: avoid;
+  }
+
+  img {
+    break-inside: avoid;
+  }
+
+  h1,
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+}
+
+/* ============================================
+   Responsive Design - 响应式设计
+   移动端优化
+   ============================================ */
+
+@media (width <= 768px) {
+  :root {
+    /* Mobile - 调整间距 */
+    --spacing-md: 12px;
+    --spacing-lg: 16px;
+    --spacing-xl: 24px;
+
+    /* Mobile - 调整字体 */
+    --font-size-base: 13px;
+    --font-size-md: 15px;
+    --font-size-lg: 17px;
+  }
+
+  /* 移动端减小阴影强度 */
+  .card,
+  .el-card {
+    box-shadow: none !important;
+    border: 1px solid var(--border-dark) !important;
+  }
+}
+
+/* ============================================
+   Dark Mode Transitions - 深色模式过渡
+   防止主题切换时的闪烁
+   ============================================ */
+
+/*
+  如果需要支持深色/浅色模式切换，
+  可以在 body 上添加此类以实现平滑过渡
+*/
+.theme-transition {
+  transition-property: background-color, border-color, color;
+  transition-duration: var(--transition-base);
+  transition-timing-function: ease-in-out;
+}
+
+/* ============================================
+   Custom Scrollbar - 自定义滚动条
+   与深色主题保持一致的滚动条样式
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-base);
+  border-radius: var(--radius-md);
+
+  &:hover {
+    background: var(--border-light);
+  }
+
+  &:active {
+    background: var(--border-focus);
+  }
+}
+
+/* Firefox 滚动条样式 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-base) var(--bg-primary);
+}
+
+/* ============================================
+   Animation Keyframes - 动画关键帧
+   微交互动画
+   ============================================ */
+
+@keyframes fade-in {
+  from {
+    opacity: 0%;
+  }
+  to {
+    opacity: 100%;
+  }
+}
+
+@keyframes slide-in-up {
+  from {
+    transform: translateY(20px);
+    opacity: 0%;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 100%;
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 100%;
+  }
+  50% {
+    opacity: 50%;
+  }
+}
+
+/* 动画工具类 */
+.animate-fade-in {
+  animation: fade-in var(--transition-base);
+}
+
+.animate-slide-in-up {
+  animation: slide-in-up var(--transition-base);
+}
+
+.animate-pulse {
+  animation: pulse 2s ease-in-out infinite;
+}
+
+/* ============================================
+   Theme Validation & Debug - 主题验证与调试
+   开发阶段使用的工具类
+   ============================================ */
+
+/*
+  开发阶段使用，验证 CSS 变量是否正确加载
+  Usage: <div class="debug-theme">Theme Debug</div>
+*/
+.debug-theme {
+  &::before {
+    content: "Theme Variables Loaded";
+    display: block;
+    background: var(--color-success);
+    color: var(--text-primary);
+    padding: var(--spacing-sm);
+    margin: var(--spacing-md);
+    border-radius: var(--radius-md);
+  }
+}
+
+/*
+  颜色对比度检查工具
+  验证文本与背景的对比度是否符合 WCAG 标准
+*/
+.debug-contrast {
+  .contrast-test {
+    padding: var(--spacing-md);
+    margin: var(--spacing-md);
+    border: 1px solid var(--border-base);
+  }
+
+  .contrast-primary {
+    background: var(--bg-primary);
+    color: var(--text-primary);
+  }
+
+  .contrast-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+  }
+
+  .contrast-up {
+    background: var(--color-up-bg);
+    color: var(--color-up);
+  }
+
+  .contrast-down {
+    background: var(--color-down-bg);
+    color: var(--color-down);
+  }
+}
+
+/* ============================================
+   END: theme-dark.scss
+   MyStocks Professional Dark Theme
+   ============================================ */
