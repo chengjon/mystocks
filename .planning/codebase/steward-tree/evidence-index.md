@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-02T00:20:00+08:00`
-- Base HEAD checked: `833856a526c3083aa4c21a28d31b36ee2a82e9bd`
+- Prepared at: `2026-06-02T00:35:04+08:00`
+- Base HEAD checked: `03ec65d765a72f131609e28d5121ec498dd6b54e`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/auth-postgresql-session-provider-closeout-2026-06-02.json` | G2.308 auth.py PostgreSQL session provider closeout / residual refresh evidence | Review input for future PR `#461`; no-source closeout package; closes auth provider lane and selects only G2.309 no-source residual candidate refresh |
-| `docs/reports/quality/backend-auth-postgresql-session-provider-closeout-2026-06-02.md` | G2.308 human-readable closeout / residual refresh report | Review input for future PR `#461`; records PR `#460` accepted/merged, auth closeout counts, residual refresh, focused tests, ruff, and route/OpenAPI smoke |
-| `governance/mainline/task-cards/pr-461.yaml` | Governance task card for G2.308 no-source closeout | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.json` | G2.309 service lifecycle residual candidate refresh evidence | Review input for future PR `#462`; no-source candidate refresh; selects only G2.310 no-source `get_mysql_session` ownership / route-provider decision |
+| `docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.md` | G2.309 human-readable candidate refresh report | Review input for future PR `#462`; records PR `#461` accepted/merged, residual getter/provider scanner counts, candidate ranking, and next gate |
+| `governance/mainline/task-cards/pr-462.yaml` | Governance task card for G2.309 no-source candidate refresh | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/auth-postgresql-session-provider-closeout-2026-06-02.json` | G2.308 auth.py PostgreSQL session provider closeout / residual refresh evidence | Accepted by PR `#461`, merged at `03ec65d765a72f131609e28d5121ec498dd6b54e`; no-source closeout package; superseded for residual queue selection by G2.309 |
+| `docs/reports/quality/backend-auth-postgresql-session-provider-closeout-2026-06-02.md` | G2.308 human-readable closeout / residual refresh report | Accepted by PR `#461`; records PR `#460` accepted/merged, auth closeout counts, residual refresh, focused tests, ruff, and route/OpenAPI smoke |
+| `governance/mainline/task-cards/pr-461.yaml` | Governance task card for G2.308 no-source closeout | Accepted by PR `#461`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/auth-postgresql-session-provider-implementation-2026-06-01.json` | G2.307 auth.py PostgreSQL session provider implementation evidence | Review input for future PR `#460`; source implementation package; must stop at human review before merge |
 | `docs/reports/quality/backend-auth-postgresql-session-provider-implementation-2026-06-01.md` | G2.307 human-readable implementation report | Review input for future PR `#460`; records TDD RED/GREEN, provider scan, focused tests, route/OpenAPI smoke, ruff, and GitNexus fallback |
 | `governance/mainline/task-cards/pr-460.yaml` | Governance task card for G2.307 source implementation | Review input; allows only path-limited auth source/test plus steward tree, generated evidence, report, and task card updates |
