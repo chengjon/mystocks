@@ -1,0 +1,146 @@
+
+// ========== Tag Component ==========
+
+.el-tag {
+  --el-tag-bg-color: var(--color-bg-tertiary);
+  --el-tag-border-color: var(--color-border);
+  --el-tag-text-color: var(--color-text-primary);
+  --el-tag-font-size: var(--font-size-xs);
+
+  background-color: var(--el-tag-bg-color);
+  border: 1px solid var(--el-tag-border-color);
+  color: var(--el-tag-text-color);
+  font-size: var(--el-tag-font-size);
+  border-radius: var(--el-border-radius-small) !important; // Force square design
+  padding: 4px var(--spacing-sm);
+
+  // Success tag (stock UP - RED for China market)
+  &.el-tag--success {
+    --el-tag-bg-color: var(--color-stock-up-alpha-80);  // Red with low opacity
+    --el-tag-border-color: var(--color-stock-up);       // Red border
+    --el-tag-text-color: var(--color-stock-up);        // Red text
+  }
+
+  // Warning tag
+  &.el-tag--warning {
+    --el-tag-bg-color: var(--color-warning-alpha-80);
+    --el-tag-border-color: var(--color-warning);
+    --el-tag-text-color: var(--color-warning);
+  }
+
+  // Danger tag (stock DOWN - GREEN for China market)
+  &.el-tag--danger {
+    --el-tag-bg-color: var(--color-stock-down-alpha-80);  // Green with low opacity
+    --el-tag-border-color: var(--color-stock-down);       // Green border
+    --el-tag-text-color: var(--color-stock-down);        // Green text
+  }
+
+  // Info tag
+  &.el-tag--info {
+    --el-tag-bg-color: var(--color-info-alpha-80);
+    --el-tag-border-color: var(--color-info);
+    --el-tag-text-color: var(--color-info);
+  }
+}
+
+// ========== Form Component ==========
+
+.el-form {
+  .el-form-item__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+  }
+
+  .el-form-item__error {
+    color: var(--color-danger);
+    font-size: var(--font-size-xs);
+  }
+}
+
+// ========== Menu/Navigation Component ==========
+
+.el-menu {
+  background-color: var(--color-bg-secondary);
+  border-right: 1px solid var(--color-border);
+
+  .el-menu-item,
+  .el-sub-menu__title {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+
+    &.is-active {
+      color: var(--color-accent);
+      background-color: var(--color-bg-tertiary);
+      font-weight: 600;
+      border-right: 3px solid var(--color-accent);
+    }
+  }
+}
+
+// ========== Tabs Component ==========
+
+.el-tabs {
+  .el-tabs__nav-wrap::after {
+    background-color: var(--color-border);
+  }
+
+  .el-tabs__item {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      color: var(--color-text-primary);
+    }
+
+    &.is-active {
+      color: var(--color-accent);
+      font-weight: 600;
+    }
+  }
+
+  .el-tabs__active-bar {
+    background-color: var(--color-accent);
+  }
+
+  .el-tabs__content {
+    color: var(--color-text-secondary);
+  }
+}
+
+// ========== Pagination Component ==========
+
+.el-pagination {
+  .el-pager li {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-secondary);
+    border: 1px solid var(--color-border);
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+
+    &.is-active {
+      background-color: var(--color-accent);
+      color: #fff;
+      border-color: var(--color-accent);
+    }
+  }
+
+  .btn-prev,
+  .btn-next {
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-secondary);
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+  }
+}

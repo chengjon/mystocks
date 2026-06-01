@@ -1,0 +1,132 @@
+
+// ============================================================
+// Component-Specific Overrides
+// ============================================================
+
+// ========== Button Component ==========
+
+.el-button {
+  --el-button-bg-color: var(--color-bg-tertiary);
+  --el-button-border-color: var(--color-border);
+  --el-button-text-color: var(--color-text-primary);
+  --el-button-hover-bg-color: var(--color-bg-elevated);
+  --el-button-hover-border-color: var(--color-border-light);
+  --el-button-hover-text-color: var(--color-text-primary);
+  --el-button-active-bg-color: var(--color-bg-secondary);
+  --el-button-active-border-color: var(--color-accent);
+  --el-button-active-text-color: var(--color-text-primary);
+  --el-button-disabled-bg-color: var(--color-bg-primary);
+  --el-button-disabled-border-color: var(--color-border-dark);
+  --el-button-disabled-text-color: var(--color-text-disabled);
+
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  border-radius: var(--radius-sm) !important; // Force square design
+
+  // Primary button
+  &.el-button--primary {
+    --el-button-bg-color: var(--color-accent);
+    --el-button-border-color: var(--color-accent);
+    --el-button-text-color: #fff;
+    --el-button-hover-bg-color: var(--color-accent-hover);
+    --el-button-hover-border-color: var(--color-accent-hover);
+    --el-button-active-bg-color: var(--color-accent-active);
+    --el-button-active-border-color: var(--color-accent-active);
+  }
+
+  // Success button (stock UP - RED for China market)
+  &.el-button--success {
+    --el-button-bg-color: var(--color-stock-up);    // RED for up
+    --el-button-border-color: var(--color-stock-up);
+    --el-button-text-color: #fff;
+  }
+
+  // Danger button (stock DOWN - GREEN for China market)
+  &.el-button--danger {
+    --el-button-bg-color: var(--color-stock-down);  // GREEN for down
+    --el-button-border-color: var(--color-stock-down);
+    --el-button-text-color: #000;
+  }
+
+  // Warning button
+  &.el-button--warning {
+    --el-button-bg-color: var(--color-warning);
+    --el-button-border-color: var(--color-warning);
+    --el-button-text-color: #000;
+  }
+
+  // Info button
+  &.el-button--info {
+    --el-button-bg-color: var(--color-info);
+    --el-button-border-color: var(--color-info);
+    --el-button-text-color: #fff;
+  }
+}
+
+// ========== Table Component ==========
+
+.el-table {
+  --el-table-border-color: var(--color-border);
+  --el-table-bg-color: var(--color-bg-primary);
+  --el-table-header-bg-color: var(--color-bg-secondary);
+  --el-table-row-hover-bg-color: var(--color-bg-tertiary);
+  --el-table-text-color: var(--color-text-primary);
+  --el-table-header-text-color: var(--color-text-primary);
+  --el-table-current-row-bg-color: var(--color-bg-tertiary);
+  --el-table-border: 1px solid var(--color-border);
+  --el-table-header-font-size: var(--font-size-xs);
+  --el-table-font-size: var(--font-size-sm);
+
+  font-family: var(--font-family-sans);
+  font-size: var(--el-table-font-size);
+
+  // Compact cell padding
+  .el-table__cell {
+    padding: var(--spacing-sm) var(--spacing-sm);
+  }
+
+  th.el-table__cell {
+    padding: var(--spacing-sm) var(--spacing-sm);
+    font-weight: 600;
+    background-color: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  // Stock market colors (China: Red = Up/涨, Green = Down/跌)
+  .row-rise {
+    color: var(--color-stock-up);    // RED for rise
+    font-weight: 600;
+  }
+
+  .row-fall {
+    color: var(--color-stock-down);  // GREEN for fall
+    font-weight: 600;
+  }
+
+  .row-flat {
+    color: var(--color-stock-flat);
+  }
+
+  .cell-rise {
+    color: var(--color-stock-up);    // RED for rise
+  }
+
+  .cell-fall {
+    color: var(--color-stock-down);  // GREEN for fall
+  }
+
+  .cell-flat {
+    color: var(--color-stock-flat);
+  }
+
+  // Hover effect
+  tr:hover > td {
+    background-color: var(--color-bg-tertiary);
+  }
+
+  // Current row
+  .el-table__row.current-row > td {
+    background-color: var(--color-bg-tertiary);
+  }
+}

@@ -1,0 +1,75 @@
+
+// ========== Checkbox Component ==========
+
+.el-checkbox {
+  .el-checkbox__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  &.is-checked {
+    .el-checkbox__label {
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+// ========== Radio Component ==========
+
+.el-radio {
+  .el-radio__label {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+  }
+
+  &.is-checked {
+    .el-radio__label {
+      color: var(--color-text-primary);
+    }
+  }
+}
+
+// ========== Switch Component ==========
+
+.el-switch {
+  --el-switch-on-color: var(--color-accent);
+  --el-switch-off-color: var(--color-bg-tertiary);
+  --el-switch-border-color: var(--color-border);
+
+  &.is-checked {
+    .el-switch__core {
+      background-color: var(--el-switch-on-color);
+    }
+  }
+}
+
+// ========== Tooltip Component ==========
+
+.el-tooltip__popper {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  font-size: var(--font-size-xs);
+
+  .el-tooltip__arrow::before {
+    border: 1px solid var(--color-border);
+    background-color: var(--color-bg-tertiary);
+  }
+}
+
+// ========== Dropdown Component ==========
+
+.el-dropdown-menu {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+
+  .el-dropdown-menu__item {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+
+    &:hover {
+      background-color: var(--color-bg-tertiary);
+      color: var(--color-text-primary);
+    }
+  }
+}

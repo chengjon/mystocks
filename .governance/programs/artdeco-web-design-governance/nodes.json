@@ -2906,5 +2906,98 @@
       "current_head": "23025bed91352c7cd55f1a625b12decbfe2b3adc",
       "prepared_at": "2026-06-01T10:46:24.416Z"
     }
+  },
+  {
+    "id": "element-plus-override-scss-style-split",
+    "title": "Split Element Plus override SCSS by visual concern",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/styles/element-plus-override.scss",
+    "current_head": "d35022a10581207be8f6ed87d0c8f53257ad0c55",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "file-size-report",
+        "path": "reports/analysis/file-size-guard-report-2026-06-01.md",
+        "note": "Report lists element-plus-override.scss above the 500-line SCSS guard; current inspection shows 619 lines and existing token debt to preserve for a separate gate.",
+        "current_head": "d35022a10581207be8f6ed87d0c8f53257ad0c55",
+        "recorded_at": "2026-06-01T10:57:41.392Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/styles/element-plus-override.scss",
+      "web/frontend/src/styles/element-plus-override.variables.scss",
+      "web/frontend/src/styles/element-plus-override.buttons-tables.scss",
+      "web/frontend/src/styles/element-plus-override.forms-surfaces.scss",
+      "web/frontend/src/styles/element-plus-override.feedback-navigation.scss",
+      "web/frontend/src/styles/element-plus-override.selection-overlays.scss",
+      "docs/reports/tasks/2026-06-01-element-plus-override-scss-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/element-plus-override-scss-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue, TypeScript, runtime logic, router, backend API contract, OpenAPI, or frontend API client changes.",
+      "No visual redesign, no token value changes, no global token/baseline edits, and no cleanup of existing hardcoded dimensions in this node.",
+      "Do not stage or alter existing dirty tree.md, OpenSpec deletions/edits, ArtDeco page/component edits, BacktestGPU files, StockDetail.vue, Architecture.vue, or API docs."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T10:57:29.311Z",
+    "updated_at": "2026-06-01T11:38:11.750Z",
+    "acceptance": {
+      "commit_gate": [
+        "Split must preserve the original post-import style body exactly when partials are concatenated.",
+        "Each created element-plus-override SCSS partial remains under 500 lines.",
+        "npm run build:no-types passes; git diff --cached --check passes; staged files stay within the authorized allow-list.",
+        "GitNexus staged scope gate is low risk with no unexpected affected processes."
+      ],
+      "closeout_gate": [
+        "Function Tree closeout records split report, validation evidence, compatibility boundaries, and active gates return to none."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing the SCSS file-size guard sequence; implementation scope is the authorized exact-body element-plus-override SCSS split.",
+        "current_head": "d35022a10581207be8f6ed87d0c8f53257ad0c55",
+        "transitioned_at": "2026-06-01T10:58:14.844Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Start implementation after current-HEAD evidence; source edits remain limited to authorized element-plus-override SCSS paths.",
+        "current_head": "d35022a10581207be8f6ed87d0c8f53257ad0c55",
+        "transitioned_at": "2026-06-01T10:58:29.059Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "d35022a10581207be8f6ed87d0c8f53257ad0c55",
+        "transitioned_at": "2026-06-01T11:38:11.677Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "d35022a10581207be8f6ed87d0c8f53257ad0c55",
+        "transitioned_at": "2026-06-01T11:38:11.750Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-element-plus-override-scss-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "d35022a10581207be8f6ed87d0c8f53257ad0c55",
+      "prepared_at": "2026-06-01T11:38:11.714Z"
+    }
   }
 ]
