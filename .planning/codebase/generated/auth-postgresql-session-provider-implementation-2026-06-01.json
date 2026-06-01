@@ -1,0 +1,158 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-01T21:38:00+08:00",
+  "g_node": "G2.307",
+  "title": "Auth.py get_postgresql_session provider implementation",
+  "branch": "g2-307-auth-postgresql-session-provider-implementation",
+  "parent_pr": {
+    "number": 459,
+    "url": "https://github.com/chengjon/mystocks/pull/459",
+    "state": "MERGED",
+    "merged_at": "2026-06-01T13:21:45Z",
+    "merge_commit": "702816e7aa23378b2acd5dbc27de449fc74a3af5",
+    "head_ref": "g2-306-auth-postgresql-session-provider-authorization"
+  },
+  "base_head": "702816e7aa23378b2acd5dbc27de449fc74a3af5",
+  "source_edit_authority": true,
+  "automerge_allowed": false,
+  "allowed_scope": [
+    "web/backend/app/api/auth.py",
+    "web/backend/tests/test_auth_login_contract.py",
+    ".planning/codebase/generated/auth-postgresql-session-provider-implementation-2026-06-01.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-auth-postgresql-session-provider-implementation-2026-06-01.md",
+    "governance/mainline/task-cards/pr-460.yaml"
+  ],
+  "forbidden_scope": [
+    "app.core.database.get_postgresql_session definition edits",
+    "login/logout/me/refresh/csrf handler changes",
+    "route path, method, response model, or OpenAPI exposure changes",
+    "docs/api/**",
+    "web/frontend/**",
+    "src/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**",
+    "PM2/runtime state"
+  ],
+  "implementation": {
+    "provider": "get_auth_postgresql_session_factory",
+    "provider_line": 41,
+    "provider_backing_get_postgresql_session_calls": 1,
+    "route_body_direct_get_postgresql_session_calls": 0,
+    "dependency_bindings": 4,
+    "affected_handlers": {
+      "get_users": {
+        "dependency_line": 197,
+        "call_line": 210
+      },
+      "register_user": {
+        "dependency_line": 338,
+        "call_line": 398
+      },
+      "request_password_reset": {
+        "dependency_line": 481,
+        "call_line": 520
+      },
+      "confirm_password_reset": {
+        "dependency_line": 582,
+        "call_line": 658,
+        "transaction_semantics": "commit/rollback preserved"
+      }
+    },
+    "compatibility_exports_retained": [
+      "verify_token",
+      "get_current_active_user"
+    ]
+  },
+  "tdd": {
+    "red": "test_auth_db_handlers_use_route_local_session_factory_dependency failed with AttributeError because get_auth_postgresql_session_factory did not exist",
+    "red_result": "1 failed in 0.95s",
+    "green_target": "test_auth_db_handlers_use_route_local_session_factory_dependency passed",
+    "green_result": "1 passed in 0.93s",
+    "focused_regression": "web/backend/tests/test_auth.py web/backend/tests/test_auth_login_contract.py: 11 passed, 18 skipped in 12.24s"
+  },
+  "verification": {
+    "ruff": "ruff check --no-fix web/backend/app/api/auth.py web/backend/tests/test_auth.py web/backend/tests/test_auth_login_contract.py: all checks passed",
+    "provider_scan": "provider present, direct_calls_source=1, all four target handlers use Depends(get_auth_postgresql_session_factory)",
+    "route_openapi": {
+      "runtime_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "warning_count": 119,
+      "note": "Smoke used non-secret test-only environment values and did not start PM2."
+    }
+  },
+  "gitnexus_evidence": {
+    "mcp_impact": "Transport closed",
+    "cli_pre_edit_impact": {
+      "Function:web/backend/app/core/database.py:get_postgresql_session": {
+        "risk": "CRITICAL",
+        "direct": 15,
+        "processes_affected": 54,
+        "modules_affected": 8,
+        "index_status": "stale warning"
+      },
+      "get_users": {
+        "risk": "UNKNOWN",
+        "index_status": "stale warning"
+      },
+      "register_user": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "request_password_reset": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "confirm_password_reset": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      }
+    },
+    "cli_staged_verification": {
+      "risk": "medium",
+      "files": 11,
+      "symbols": 6,
+      "affected_processes": 5,
+      "changed_symbols": [
+        "repository",
+        "users_list",
+        "get_users",
+        "register_user",
+        "request_password_reset",
+        "confirm_password_reset"
+      ],
+      "index_status": "stale warning",
+      "note": "Medium risk confirms PR #460 must stop at human review before merge."
+    }
+  },
+  "next_gate": {
+    "human_review_required": true,
+    "recommended_after_acceptance": "G2.308 no-source auth provider closeout / residual refresh",
+    "autopilot_stop_reason": "This PR changes backend source and tests under an auth/security-sensitive surface."
+  },
+  "freshness": {
+    "current_head_checked": "702816e7aa23378b2acd5dbc27de449fc74a3af5",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_auth_tests_change": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}

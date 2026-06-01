@@ -3361,7 +3361,7 @@ Status: accepted/merged by PR `#458` at `8a6cfa615f472f23643a13ab18ab02dd0853ad9
 
 ## G2.306 Auth.py PostgreSQL Session Provider Authorization
 
-Status: for review in future PR `#459`.
+Status: accepted/merged by PR `#459` at `702816e7aa23378b2acd5dbc27de449fc74a3af5`.
 
 - Parent PR `#458` merged at `8a6cfa615f472f23643a13ab18ab02dd0853ad96`.
 - G2.306 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3372,3 +3372,17 @@ Status: for review in future PR `#459`.
 - GitNexus MCP impact returned `Transport closed`; CLI fallback keeps the shared `Function:web/backend/app/core/database.py:get_postgresql_session` family at `CRITICAL` with `15` direct dependants and `54` affected processes.
 - Recommended next gate after PR `#459` acceptance: G2.307 path-limited auth PostgreSQL session provider implementation.
 - Stop rule: G2.307 is a source implementation PR and must stop at human review before merge.
+
+## G2.307 Auth.py PostgreSQL Session Provider Implementation
+
+Status: for review in future PR `#460`.
+
+- Parent PR `#459` merged at `702816e7aa23378b2acd5dbc27de449fc74a3af5`.
+- G2.307 is a path-limited source implementation package. It edits only `web/backend/app/api/auth.py`, `web/backend/tests/test_auth_login_contract.py`, and governance evidence records.
+- Implementation adds `get_auth_postgresql_session_factory`, injects it into `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`, and reduces route-body direct `get_postgresql_session()` calls in those handlers to `0`.
+- Provider backing `get_postgresql_session()` calls are `1`; route/OpenAPI remains `548` routes, `500` paths, duplicate operation IDs `0`.
+- TDD RED: new provider dependency test failed with missing `get_auth_postgresql_session_factory`. GREEN: target test passed, focused auth regression records `11 passed, 18 skipped`.
+- Ruff is clean for `auth.py` and focused auth tests. Compatibility exports `verify_token` and `get_current_active_user` remain available from `app.api.auth`.
+- GitNexus MCP impact returned `Transport closed`; CLI fallback keeps shared `Function:web/backend/app/core/database.py:get_postgresql_session` at `CRITICAL`, and the shared helper definition is intentionally untouched.
+- Recommended next gate after human acceptance and merge: G2.308 no-source auth provider closeout / residual refresh.
+- Stop rule: PR `#460` changes backend source/tests and must not auto-merge.
