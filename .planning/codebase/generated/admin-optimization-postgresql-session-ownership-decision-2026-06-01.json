@@ -1,0 +1,178 @@
+{
+  "schema_version": "2026-06-01.g2-service-lifecycle-evidence.v1",
+  "generated_at": "2026-06-01T18:53:01+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "git_head": "d407acdd207271274aeb6614afdedbf139f640ae",
+  "worktree": ".worktrees/g2-301-admin-optimization-postgresql-session-ownership-decision",
+  "g_node": "G2.301",
+  "package_type": "no-source ownership / provider-shape decision",
+  "source_edit_authority": false,
+  "parent": {
+    "g_node": "G2.300",
+    "pr": 453,
+    "state": "MERGED",
+    "merge_commit": "d407acdd207271274aeb6614afdedbf139f640ae",
+    "merged_at": "2026-06-01T10:47:06Z"
+  },
+  "scope": {
+    "target_file": "web/backend/app/api/v1/admin/optimization.py",
+    "helper_origin": "app.core.database.get_postgresql_session",
+    "shared_helper_impact_family": "CRITICAL",
+    "decision_boundary": "classify admin optimization ownership and provider shape only; do not edit backend source or tests"
+  },
+  "current_call_surface": {
+    "import_line": 18,
+    "direct_session_calls": 2,
+    "direct_call_lines": [
+      169,
+      198
+    ],
+    "helper_functions": [
+      {
+        "name": "_run_maintenance",
+        "line": 160,
+        "direct_session_call_line": 169,
+        "called_by": [
+          "vacuum_database",
+          "analyze_database",
+          "reindex_database"
+        ]
+      },
+      {
+        "name": "_database_status_payload",
+        "line": 193,
+        "direct_session_call_line": 198,
+        "called_by": [
+          "get_database_status"
+        ]
+      }
+    ],
+    "excluded_route_handlers": [
+      {
+        "name": "get_slow_queries",
+        "reason": "does not call get_postgresql_session"
+      }
+    ]
+  },
+  "route_surface": [
+    {
+      "method": "POST",
+      "path": "/api/v1/optimization/vacuum",
+      "handler": "vacuum_database",
+      "include_in_schema": true,
+      "session_helper_path": "_run_maintenance"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/optimization/analyze",
+      "handler": "analyze_database",
+      "include_in_schema": true,
+      "session_helper_path": "_run_maintenance"
+    },
+    {
+      "method": "POST",
+      "path": "/api/v1/optimization/reindex",
+      "handler": "reindex_database",
+      "include_in_schema": true,
+      "session_helper_path": "_run_maintenance"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/optimization/status",
+      "handler": "get_database_status",
+      "include_in_schema": true,
+      "session_helper_path": "_database_status_payload"
+    },
+    {
+      "method": "GET",
+      "path": "/api/v1/optimization/slow-queries",
+      "handler": "get_slow_queries",
+      "include_in_schema": true,
+      "session_helper_path": "none"
+    }
+  ],
+  "residual_summary_after_g2_300": {
+    "auth_py_direct_calls": 4,
+    "admin_optimization_direct_calls": 2,
+    "market_stock_list_direct_calls": 0,
+    "admin_audit_direct_calls": 0
+  },
+  "verification": {
+    "focused_regression": {
+      "command": "env PYTHONPATH=web/backend ... pytest -q web/backend/tests/test_v1_optimization_regressions.py --tb=short --no-cov -n 0",
+      "result": "5 passed in 1.74s",
+      "secret_handling": "environment values were injected only for the subprocess; no secret values are stored in this artifact"
+    },
+    "ruff": {
+      "command": "ruff check web/backend/app/api/v1/admin/optimization.py web/backend/tests/test_v1_optimization_regressions.py",
+      "result": "All checks passed"
+    },
+    "route_openapi_smoke": {
+      "fastapi_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_id_count": 0,
+      "warning_count": 119,
+      "environment_note": "app.main import required runtime environment variables; secret values are not persisted"
+    }
+  },
+  "gitnexus": {
+    "mcp_status": "Transport closed for both sampled helper impact calls",
+    "cli_fallback": {
+      "_run_maintenance": {
+        "risk": "LOW",
+        "direct": 3,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "_database_status_payload": {
+        "risk": "LOW",
+        "direct": 1,
+        "processes_affected": 0,
+        "modules_affected": 0,
+        "index_status": "stale warning"
+      },
+      "Function:web/backend/app/core/database.py:get_postgresql_session": {
+        "risk": "CRITICAL",
+        "direct": 15,
+        "processes_affected": 54,
+        "modules_affected": 12,
+        "index_status": "stale warning"
+      }
+    }
+  },
+  "decision": {
+    "classification": "bounded admin optimization control-plane route helper residual inside CRITICAL shared helper family",
+    "source_lane_authorized": false,
+    "shared_helper_definition_edits_allowed": false,
+    "route_contract_changes_allowed": false,
+    "future_provider_shape_candidate": {
+      "status": "candidate only; requires separate authorization",
+      "local_provider_name": "get_admin_optimization_postgresql_session_factory",
+      "shape": "route-local dependency returning a session factory; route handlers pass the factory into helper functions that keep existing close/finally cleanup semantics",
+      "target_handlers": [
+        "vacuum_database",
+        "analyze_database",
+        "reindex_database",
+        "get_database_status"
+      ],
+      "excluded_handlers": [
+        "get_slow_queries"
+      ],
+      "focused_test_candidate": "web/backend/tests/test_v1_optimization_regressions.py"
+    },
+    "recommended_next_work_item": "G2.302 no-source admin optimization PostgreSQL session provider authorization package after PR #454 human acceptance",
+    "autopilot_continue_allowed": false,
+    "stop_reason": "future source authorization would target a route module that depends on CRITICAL shared helper-family evidence"
+  },
+  "freshness": {
+    "current_head_checked": "d407acdd207271274aeb6614afdedbf139f640ae",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_admin_optimization_call_sites_change": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_focused_tests_change": true
+  }
+}

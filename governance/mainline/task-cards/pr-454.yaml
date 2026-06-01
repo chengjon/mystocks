@@ -1,0 +1,134 @@
+version: "v0.2"
+
+task:
+  id: "pr-454"
+  title: "Decide admin optimization PostgreSQL session provider shape"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-admin-optimization-postgresql-session-ownership-decision"
+  objective: "classify admin optimization get_postgresql_session ownership and provider-shape before any source authorization"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.301 is a no-source ownership / provider-shape decision. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/admin-optimization-postgresql-session-ownership-decision-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-admin-optimization-postgresql-session-ownership-decision-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-454.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "authorization or implementation of the future G2.302 lane"
+  - "editing app.core.database.get_postgresql_session"
+
+acceptance:
+  checks:
+    - id: "pr453-merged"
+      command: "gh pr view 453 confirms MERGED at d407acdd207271274aeb6614afdedbf139f640ae"
+      required: true
+    - id: "admin-optimization-surface"
+      command: "current scan records 2 direct get_postgresql_session calls in web/backend/app/api/v1/admin/optimization.py and 4 route handlers using those helper paths"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0, and five /api/v1/optimization routes"
+      required: true
+    - id: "focused-existing-test"
+      command: "env PYTHONPATH=web/backend ... pytest -q web/backend/tests/test_v1_optimization_regressions.py --tb=short --no-cov -n 0 records 5 passed"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/v1/admin/optimization.py web/backend/tests/test_v1_optimization_regressions.py records All checks passed"
+      required: true
+    - id: "gitnexus-risk"
+      command: "GitNexus MCP returned Transport closed; CLI impact records admin optimization helper LOW risks and shared app.core.database.get_postgresql_session CRITICAL risk"
+      required: true
+    - id: "next-gate"
+      command: "report selects only G2.302 no-source admin optimization provider authorization after PR #454 human acceptance"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-admin-optimization-postgresql-session-ownership-decision-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-454.yaml --base-sha d407acdd207271274aeb6614afdedbf139f640ae --head-sha HEAD --report /tmp/pr454-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The future source lane would target a route module using a CRITICAL shared helper family; PR #454 must stop for human review."
+  rollback_plan: "Revert PR #454; this removes only G2.301 governance evidence and restores the prior G2.300 review gate text."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Decide admin optimization PostgreSQL session ownership and provider shape before any implementation."
+    modified_scope: "Steward tree, generated decision evidence, quality report, and mainline task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime logic impact; backend source and tests are untouched."
+    rollback_ready: "Revert PR #454."
+    risk_and_rollback_point: "No-source decision; future G2.302 authorization remains blocked behind human review."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T18:47:06+08:00"
+    approval_note: "Human maintainer approved continuing after PR #453 merge into G2.301 no-source admin optimization ownership / provider-shape decision. PR #454 must stop for review because it selects a future source authorization under a CRITICAL shared helper family."
+    secondary_approved: false
