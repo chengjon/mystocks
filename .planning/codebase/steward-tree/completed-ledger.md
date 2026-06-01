@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-01T18:53:01+08:00`
-- Base HEAD checked: `d407acdd207271274aeb6614afdedbf139f640ae`
+- Prepared at: `2026-06-01T19:28:21+08:00`
+- Base HEAD checked: `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,16 +19,17 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.300 accepted/merged by PR `#453` at `d407acdd` | Continue with G2.301 admin optimization ownership / provider-shape decision; do not auto-merge because it selects a future authorization under the CRITICAL shared-helper-family target |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.301 accepted/merged by PR `#454` at `13a81aec` | Continue with G2.302 admin optimization provider authorization; do not auto-merge because it authorizes future source/test edits under the CRITICAL shared-helper-family target |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.300 have progressed through PR `#337`-`#453`; current review target is G2.301 admin optimization ownership decision in future PR `#454` |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.301 have progressed through PR `#337`-`#454`; current review target is G2.302 admin optimization provider authorization in future PR `#455` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Recent Closeouts
 
 | Item | Accepted evidence | Follow-up |
 |---|---|---|
-| G2.301 admin optimization PostgreSQL session ownership / provider-shape decision | Generated decision evidence records PR `#453` merged at `d407acdd207271274aeb6614afdedbf139f640ae`, admin optimization direct calls `2`, four affected route handlers, focused test `5/5`, route/OpenAPI `548/500/0`, and CRITICAL shared helper-family risk | G2.302 may only start as no-source admin optimization provider authorization after PR `#454` human acceptance |
+| G2.302 admin optimization PostgreSQL session provider authorization | Generated authorization evidence records PR `#454` merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`, future G2.303 scope limited to `optimization.py` and focused optimization tests, route/OpenAPI `548/500/0`, focused test `5/5`, and CRITICAL shared helper-family risk | G2.303 may only start as path-limited source implementation after PR `#455` human acceptance |
+| G2.301 admin optimization PostgreSQL session ownership / provider-shape decision | PR `#454` merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`; generated decision evidence records admin optimization direct calls `2`, four affected route handlers, focused test `5/5`, route/OpenAPI `548/500/0`, and CRITICAL shared helper-family risk | Superseded by G2.302 no-source provider authorization |
 | G2.300 market stock list provider closeout / residual refresh | PR `#453` merged at `d407acdd207271274aeb6614afdedbf139f640ae`; generated closeout evidence records market stock list direct calls `0`, provider binding `1`, focused test `5/5`, route/OpenAPI `548/500/0`, and remaining residuals auth `4` / admin optimization `2` | Superseded by G2.301 admin optimization ownership / provider-shape decision |
 | G2.299 market stock list `get_postgresql_session` provider implementation | PR `#452` merged at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`; target route `GET /api/v1/market/stocks`, direct helper calls `0`, provider binding `1`, focused test `5/5`, and route/OpenAPI `548/500/0` | Superseded by G2.300 closeout / residual refresh |
 | G2.298 market stock list `get_postgresql_session` provider authorization | PR `#451` merged at `79a4fe5ae9f763e3e836b76c051bddbed270a930`; authorization limited G2.299 to `market_data_request.py` and focused market stock list tests | Superseded by G2.299 path-limited implementation review |

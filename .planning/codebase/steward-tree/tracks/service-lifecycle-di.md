@@ -3281,7 +3281,7 @@ Status: accepted/merged by PR `#453` at `d407acdd207271274aeb6614afdedbf139f640a
 
 ## G2.301 Admin Optimization PostgreSQL Session Ownership / Provider-Shape Decision
 
-Status: for review in future PR `#454`.
+Status: accepted/merged by PR `#454` at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`.
 
 - Parent PR `#453` merged at `d407acdd207271274aeb6614afdedbf139f640ae`.
 - G2.301 is a no-source ownership / provider-shape decision package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3294,4 +3294,20 @@ Status: for review in future PR `#454`.
 - Decision: classify admin optimization as a bounded control-plane route helper surface inside a CRITICAL shared helper family. Do not edit the shared helper definition or start source from G2.301.
 - Candidate future provider shape: a route-local session-factory dependency such as `get_admin_optimization_postgresql_session_factory`, passed into the four affected handlers and then into the two helpers while preserving existing close/finally cleanup semantics.
 - Recommended next gate after human acceptance and merge: G2.302 no-source admin optimization PostgreSQL session provider authorization.
-- Stop rule: PR `#454` must stop for human review because it selects a future source authorization under a CRITICAL shared helper family.
+- Stop rule satisfied by PR `#454` human review and merge; G2.301 must not be used as source implementation authority.
+- Recommended next gate after human acceptance and merge: G2.302 no-source admin optimization PostgreSQL session provider authorization.
+
+## G2.302 Admin Optimization PostgreSQL Session Provider Authorization
+
+Status: for review in future PR `#455`.
+
+- Parent PR `#454` merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`.
+- G2.302 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Authorized future source scope after PR `#455` human acceptance is limited to `web/backend/app/api/v1/admin/optimization.py` and `web/backend/tests/test_v1_optimization_regressions.py`, plus G2.303 governance evidence.
+- Future implementation shape is route-local `get_admin_optimization_postgresql_session_factory`, injected into `vacuum_database`, `analyze_database`, `reindex_database`, and `get_database_status`, then passed into `_run_maintenance` and `_database_status_payload`.
+- Future implementation must preserve existing `session.close()` in `finally` cleanup semantics and must keep `get_slow_queries` out of scope.
+- Existing focused regression passes `5/5`; ruff passes on the target route module and focused test.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with five `/api/v1/optimization/*` routes present and schema-visible.
+- GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports LOW risk for `_run_maintenance` and `_database_status_payload`, while `Function:web/backend/app/core/database.py:get_postgresql_session` remains CRITICAL with `15` direct dependants and `54` affected processes.
+- Decision: authorize only future G2.303 path-limited implementation after PR `#455` human acceptance. Do not edit the shared helper definition, auth, market, admin audit, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Stop rule: PR `#455` must stop for human review because it authorizes backend source/test edits under a CRITICAL shared helper family.

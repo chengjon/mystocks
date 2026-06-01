@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T18:53:01+08:00`
-- Base HEAD checked: `d407acdd207271274aeb6614afdedbf139f640ae`
+- Prepared at: `2026-06-01T19:28:21+08:00`
+- Base HEAD checked: `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/admin-optimization-postgresql-session-ownership-decision-2026-06-01.json` | G2.301 admin optimization PostgreSQL session ownership / provider-shape decision evidence | Review input for future PR `#454`; no-source decision package; selects only G2.302 admin optimization provider authorization after review |
-| `docs/reports/quality/backend-admin-optimization-postgresql-session-ownership-decision-2026-06-01.md` | G2.301 human-readable ownership / provider-shape report | Review input for future PR `#454`; records PR `#453` accepted/merged, call surface, route/OpenAPI smoke, focused regression, GitNexus fallback, and next gate |
-| `governance/mainline/task-cards/pr-454.yaml` | Governance task card for G2.301 no-source decision | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/admin-optimization-postgresql-session-provider-authorization-2026-06-01.json` | G2.302 admin optimization PostgreSQL session provider authorization evidence | Review input for future PR `#455`; no-source authorization package; authorizes only future G2.303 path-limited source implementation after review |
+| `docs/reports/quality/backend-admin-optimization-postgresql-session-provider-authorization-2026-06-01.md` | G2.302 human-readable provider authorization report | Review input for future PR `#455`; records PR `#454` accepted/merged, future source envelope, current call surface, route/OpenAPI smoke, focused regression, GitNexus fallback, and stop rule |
+| `governance/mainline/task-cards/pr-455.yaml` | Governance task card for G2.302 no-source authorization | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/admin-optimization-postgresql-session-ownership-decision-2026-06-01.json` | G2.301 admin optimization PostgreSQL session ownership / provider-shape decision evidence | Accepted by PR `#454`, merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`; no-source decision package; superseded for provider authorization by G2.302 |
+| `docs/reports/quality/backend-admin-optimization-postgresql-session-ownership-decision-2026-06-01.md` | G2.301 human-readable ownership / provider-shape report | Accepted by PR `#454`; records PR `#453` accepted/merged, call surface, route/OpenAPI smoke, focused regression, GitNexus fallback, and next gate |
+| `governance/mainline/task-cards/pr-454.yaml` | Governance task card for G2.301 no-source decision | Accepted by PR `#454`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/market-stock-list-postgresql-session-provider-closeout-2026-06-01.json` | G2.300 market stock list provider closeout / residual refresh evidence | Accepted by PR `#453`, merged at `d407acdd207271274aeb6614afdedbf139f640ae`; no-source closeout package; superseded for admin optimization ownership by G2.301 |
 | `docs/reports/quality/backend-market-stock-list-postgresql-session-provider-closeout-2026-06-01.md` | G2.300 human-readable closeout / residual refresh report | Accepted by PR `#453`; records PR `#452` accepted/merged, market closeout, remaining residuals, route/OpenAPI smoke, GitNexus fallback, and next gate |
 | `governance/mainline/task-cards/pr-453.yaml` | Governance task card for G2.300 no-source closeout | Accepted by PR `#453`; allowed only steward tree, generated evidence, report, and task card updates |
