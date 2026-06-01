@@ -11436,16 +11436,18 @@
     {
       "id": "g2-308-auth-postgresql-session-provider-closeout",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.307 auth.py get_postgresql_session provider implementation",
       "source_edit_authority": false,
-      "autopilot_status": "review_gate",
-      "autopilot_stop_reason": "G2.308 is no-source and may be auto-merged if checks pass; it selects only a future no-source residual candidate refresh.",
+      "autopilot_status": "merged",
+      "autopilot_stop_reason": "G2.308 was a no-source closeout and PR #461 merged after checks passed; it selects only a future no-source residual candidate refresh.",
       "github_pr": {
         "number": 461,
         "url": "https://github.com/chengjon/mystocks/pull/461",
-        "state": "PLANNED_FOR_REVIEW",
+        "state": "MERGED",
+        "merge_commit": "03ec65d765a72f131609e28d5121ec498dd6b54e",
+        "merged_at": "2026-06-01T16:25:54Z",
         "head_ref": "g2-308-auth-postgresql-session-provider-closeout"
       },
       "evidence": [
@@ -11514,7 +11516,104 @@
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_residual_scan_changes": true
       },
-      "next_gate": "Review PR #461. If accepted and merged, start G2.309 no-source service lifecycle residual candidate refresh after auth provider closeout."
+      "next_gate": "Superseded by G2.309 no-source service lifecycle residual candidate refresh after auth provider closeout."
+    },
+    {
+      "id": "g2-309-service-lifecycle-residual-candidate-refresh-after-auth-provider",
+      "type": "candidate_refresh",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.308 auth.py get_postgresql_session provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "autopilot_status": "review_gate",
+      "autopilot_stop_reason": "G2.309 is no-source and may be auto-merged if checks pass; it selects only a future no-source decision gate.",
+      "github_pr": {
+        "number": 462,
+        "url": "https://github.com/chengjon/mystocks/pull/462",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-309-service-lifecycle-residual-candidate-refresh"
+      },
+      "evidence": [
+        ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.json",
+        "docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.md",
+        "governance/mainline/task-cards/pr-462.yaml"
+      ],
+      "closed_parent": {
+        "pr": 461,
+        "state": "MERGED",
+        "merge_commit": "03ec65d765a72f131609e28d5121ec498dd6b54e",
+        "merged_at": "2026-06-01T16:25:54Z"
+      },
+      "allowed_scope": [
+        ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.md",
+        "governance/mainline/task-cards/pr-462.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "candidate_refresh": {
+        "scan_roots": [
+          "web/backend/app/api",
+          "web/backend/app/services"
+        ],
+        "python_files_scanned": 371,
+        "getter_names_seen": 663,
+        "active_interesting_candidates": 54,
+        "selected_next_candidate": "get_mysql_session",
+        "selected_next_file": "web/backend/app/api/indicators/create_indicator_config.py",
+        "selected_next_api_bare_calls": 5,
+        "selected_next_lines": [
+          60,
+          129,
+          189,
+          251,
+          331
+        ],
+        "deferred_surfaces": [
+          "get_config_manager",
+          "get_cache_data",
+          "get_cache_manager",
+          "get_postgresql_engine",
+          "get_risk_management_core",
+          "get_mtm_engine",
+          "get_circuit_breaker",
+          "get_algorithms_module",
+          "get_factory",
+          "get_kronos_client",
+          "get_target_database"
+        ]
+      },
+      "decision": {
+        "classification": "service-lifecycle-residual-candidate-refresh-no-source-lane",
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-309",
+        "recommended_next_work_item": "G2.310 no-source get_mysql_session ownership / route-provider decision",
+        "autopilot_continue_allowed": true
+      },
+      "freshness": {
+        "current_head_checked": "03ec65d765a72f131609e28d5121ec498dd6b54e",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_getter_scan_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_selected_candidate_changes": true
+      },
+      "next_gate": "Review PR #462. If accepted and merged, start G2.310 no-source get_mysql_session ownership / route-provider decision."
     }
   ]
 }

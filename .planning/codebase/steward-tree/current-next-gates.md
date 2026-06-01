@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-02T00:20:00+08:00`
-- Base HEAD checked: `833856a526c3083aa4c21a28d31b36ee2a82e9bd`
+- Prepared at: `2026-06-02T00:35:04+08:00`
+- Base HEAD checked: `03ec65d765a72f131609e28d5121ec498dd6b54e`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.308 auth.py `get_postgresql_session` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#460` merged at `833856a526c3083aa4c21a28d31b36ee2a82e9bd`; G2.308 records auth route-body direct calls `0`, auth provider backing `1`, tracked route-domain active direct residuals `0`, focused auth tests `11 passed / 18 skipped`, route/OpenAPI `548/500/0` | Review future PR `#461`; if accepted, start G2.309 no-source service lifecycle residual candidate refresh after auth closeout |
+| P0 | Review G2.309 service lifecycle residual candidate refresh after auth closeout | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#461` merged at `03ec65d765a72f131609e28d5121ec498dd6b54e`; G2.309 refreshes the getter/provider residual queue after auth closeout, records `371` Python files scanned, `663` getter names, and `54` active interesting candidates after exclusions | Review future PR `#462`; if accepted, start G2.310 no-source `get_mysql_session` ownership / route-provider decision |
+| P0 | Preserve G2.308 auth.py `get_postgresql_session` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#461` merged at `03ec65d765a72f131609e28d5121ec498dd6b54e`; G2.308 records auth route-body direct calls `0`, auth provider backing `1`, tracked route-domain active direct residuals `0`, focused auth tests `11 passed / 18 skipped`, route/OpenAPI `548/500/0` | Do not use G2.308 as source implementation authority; use G2.309 only as no-source residual candidate refresh |
 | P0 | Preserve G2.307 auth.py `get_postgresql_session` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#460` merged at `833856a526c3083aa4c21a28d31b36ee2a82e9bd`; G2.307 added `get_auth_postgresql_session_factory`, moved four auth handlers to provider injection, kept provider backing calls `1`, route-body direct calls `0`, focused auth tests `11 passed / 18 skipped`, route/OpenAPI `548/500/0` | Do not use G2.307 as authority for shared helper definitions, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.306 auth.py `get_postgresql_session` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#459` merged at `702816e7aa23378b2acd5dbc27de449fc74a3af5`; G2.306 authorized only the bounded G2.307 auth implementation lane | Do not use G2.306 to expand beyond `auth.py` and focused auth contract tests |
 | P0 | Preserve G2.305 auth.py `get_postgresql_session` ownership / provider-shape decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#458` merged at `8a6cfa615f472f23643a13ab18ab02dd0853ad96`; G2.305 classified four active auth direct calls across `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`, focused auth tests `10 passed / 18 skipped`, route/OpenAPI `548/500/0` | Do not use G2.305 as source implementation authority; use G2.306 only as no-source authorization package |

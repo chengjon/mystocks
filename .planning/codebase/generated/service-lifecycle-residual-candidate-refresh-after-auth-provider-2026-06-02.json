@@ -1,0 +1,256 @@
+{
+  "schema_version": "g2-service-lifecycle-residual-candidate-refresh.v1",
+  "generated_at": "2026-06-02T00:35:04+08:00",
+  "gate": "G2.309",
+  "title": "Service lifecycle residual candidate refresh after auth provider closeout",
+  "base_head": "03ec65d765a72f131609e28d5121ec498dd6b54e",
+  "parent_gate": {
+    "gate": "G2.308",
+    "pr": 461,
+    "state": "MERGED",
+    "merge_commit": "03ec65d765a72f131609e28d5121ec498dd6b54e",
+    "merged_at": "2026-06-01T16:25:54Z"
+  },
+  "source_edit_authority": false,
+  "no_source_boundary": {
+    "allowed": [
+      ".planning/codebase/generated/service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-service-lifecycle-residual-candidate-refresh-after-auth-provider-2026-06-02.md",
+      "governance/mainline/task-cards/pr-462.yaml"
+    ],
+    "forbidden": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "scanner": {
+    "roots": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "method": "Node.js static scan of Python files for getter-like symbols; closed G2 provider seams are excluded; generic route-handler names are filtered by singleton/provider naming tokens.",
+    "python_files_scanned": 371,
+    "getter_names_seen": 663,
+    "active_interesting_candidates": 54,
+    "closed_or_excluded_family_examples": [
+      "get_monitoring_db",
+      "get_data_service_dependency",
+      "get_config_manager_dependency",
+      "get_calculator_factory",
+      "get_unified_data_service",
+      "get_stop_loss_service",
+      "get_data_quality_monitor",
+      "get_strategy_service",
+      "get_lineage_tracker",
+      "get_data_source_registry_manager",
+      "get_manager",
+      "get_admin_audit_postgresql_session_factory",
+      "get_market_stock_list_postgresql_session_factory",
+      "get_admin_optimization_postgresql_session_factory",
+      "get_auth_postgresql_session_factory",
+      "get_postgresql_session"
+    ]
+  },
+  "top_candidates": [
+    {
+      "name": "get_config_manager",
+      "api_bare_calls": 9,
+      "defs": 2,
+      "imports": 0,
+      "files": [
+        "web/backend/app/api/_data_source_config_responses.py",
+        "web/backend/app/api/data_source_config.old.py",
+        "web/backend/app/api/data_source_config.py"
+      ],
+      "classification": "legacy/compat data-source-config surface; prior get_config_manager_dependency lane is closed, so do not select directly without a dedicated ownership decision"
+    },
+    {
+      "name": "get_cache_data",
+      "api_bare_calls": 7,
+      "defs": 0,
+      "imports": 0,
+      "files": [
+        "web/backend/app/api/data/kline.py",
+        "web/backend/app/api/data/market.py",
+        "web/backend/app/api/data/stocks.py"
+      ],
+      "classification": "data/cache helper family; requires data route ownership decision before implementation"
+    },
+    {
+      "name": "get_cache_manager",
+      "api_bare_calls": 7,
+      "defs": 1,
+      "imports": 2,
+      "files": [
+        "web/backend/app/api/_cache_basic_routes.py",
+        "web/backend/app/api/cache.py",
+        "web/backend/app/api/dashboard.py"
+      ],
+      "classification": "dashboard/cache cross-route helper; defer to dashboard/cache ownership decision"
+    },
+    {
+      "name": "get_postgresql_engine",
+      "api_bare_calls": 6,
+      "defs": 0,
+      "imports": 2,
+      "files": [
+        "web/backend/app/api/industry_concept_analysis.py",
+        "web/backend/app/api/v1/pool_monitoring.py"
+      ],
+      "classification": "control-plane / DB engine helper; defer to route/control-plane ownership decision"
+    },
+    {
+      "name": "get_risk_management_core",
+      "api_bare_calls": 6,
+      "defs": 0,
+      "imports": 0,
+      "files": [
+        "web/backend/app/api/risk/_alerts_responses.py",
+        "web/backend/app/api/risk/stop_loss.py",
+        "web/backend/app/api/risk/v31.py"
+      ],
+      "classification": "risk core helper; do not combine with previously closed stop-loss provider lane"
+    },
+    {
+      "name": "get_mtm_engine",
+      "api_bare_calls": 5,
+      "defs": 1,
+      "imports": 1,
+      "files": [
+        "web/backend/app/api/realtime_market.py",
+        "web/backend/app/api/realtime_mtm_adapter.py"
+      ],
+      "classification": "realtime MTM / streaming-adjacent surface; high-risk decision track, not a next narrow source lane"
+    },
+    {
+      "name": "get_mysql_session",
+      "api_bare_calls": 5,
+      "defs": 0,
+      "imports": 5,
+      "files": [
+        "web/backend/app/api/indicators/create_indicator_config.py"
+      ],
+      "samples": [
+        {
+          "file": "web/backend/app/api/indicators/create_indicator_config.py",
+          "line": 60,
+          "text": "session = get_mysql_session()"
+        },
+        {
+          "file": "web/backend/app/api/indicators/create_indicator_config.py",
+          "line": 129,
+          "text": "session = get_mysql_session()"
+        },
+        {
+          "file": "web/backend/app/api/indicators/create_indicator_config.py",
+          "line": 189,
+          "text": "session = get_mysql_session()"
+        },
+        {
+          "file": "web/backend/app/api/indicators/create_indicator_config.py",
+          "line": 251,
+          "text": "session = get_mysql_session()"
+        },
+        {
+          "file": "web/backend/app/api/indicators/create_indicator_config.py",
+          "line": 331,
+          "text": "session = get_mysql_session()"
+        }
+      ],
+      "classification": "bounded one-module indicator-config session helper; selected only for next no-source ownership / route-provider decision"
+    },
+    {
+      "name": "get_circuit_breaker",
+      "api_bare_calls": 4,
+      "defs": 0,
+      "imports": 3,
+      "files": [
+        "web/backend/app/api/market/market_data_request.py",
+        "web/backend/app/api/stock_search/stock_search_result.py",
+        "web/backend/app/api/technical_analysis.py"
+      ],
+      "classification": "cross-route resilience helper; defer to route dependency/provider governance"
+    },
+    {
+      "name": "get_algorithms_module",
+      "api_bare_calls": 3,
+      "defs": 1,
+      "imports": 23,
+      "files": [
+        "web/backend/app/api/algorithms/__init__.py",
+        "web/backend/app/api/algorithms/get_algorithms_module.py"
+      ],
+      "classification": "algorithms module loader; likely package ownership decision, not direct implementation"
+    },
+    {
+      "name": "get_factory",
+      "api_bare_calls": 3,
+      "defs": 1,
+      "imports": 0,
+      "files": [
+        "web/backend/app/api/indicator_registry.py"
+      ],
+      "classification": "indicator registry factory; requires indicator route ownership decision"
+    },
+    {
+      "name": "get_kronos_client",
+      "api_bare_calls": 3,
+      "defs": 1,
+      "imports": 1,
+      "files": [
+        "web/backend/app/api/v1/analysis/kronos.py",
+        "web/backend/app/services/external/kronos_client.py"
+      ],
+      "classification": "bounded external client helper; viable later no-source decision candidate"
+    },
+    {
+      "name": "get_target_database",
+      "api_bare_calls": 3,
+      "defs": 0,
+      "imports": 0,
+      "files": [
+        "web/backend/app/api/v1/system/health.py",
+        "web/backend/app/api/v1/system/routing.py"
+      ],
+      "classification": "system routing/control-plane helper; defer to control-plane route governance"
+    }
+  ],
+  "selected_next_gate": {
+    "gate": "G2.310",
+    "title": "get_mysql_session ownership / route-provider decision",
+    "type": "no-source decision",
+    "candidate": "get_mysql_session",
+    "target_files": [
+      "web/backend/app/api/indicators/create_indicator_config.py"
+    ],
+    "reason": "The helper is bounded to one API module with five bare route-body calls and has lower cross-domain ambiguity than dashboard/cache, risk core, realtime MTM, postgresql_engine, or data_source_config legacy surfaces.",
+    "not_authorized": [
+      "source implementation",
+      "test edits",
+      "route/OpenAPI edits",
+      "MySQL helper deletion or behavior changes"
+    ]
+  },
+  "freshness": {
+    "current_head_checked": "03ec65d765a72f131609e28d5121ec498dd6b54e",
+    "stale_if_head_changes": true,
+    "stale_if_getter_scan_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_g2_308_pr_state_changes": true
+  }
+}

@@ -3389,7 +3389,7 @@ Status: accepted/merged by PR `#460` at `833856a526c3083aa4c21a28d31b36ee2a82e9b
 
 ## G2.308 Auth.py PostgreSQL Session Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#461`.
+Status: accepted/merged by PR `#461`.
 
 - Parent PR `#460` merged at `833856a526c3083aa4c21a28d31b36ee2a82e9bd`.
 - G2.308 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3397,5 +3397,17 @@ Status: for review in future PR `#461`.
 - Focused auth tests record `11 passed, 18 skipped`; ruff is clean; route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`.
 - Tracked auth / admin optimization / market stock-list / admin audit route-domain active route-body direct `get_postgresql_session()` residuals are now `0`.
 - Provider backing calls remain by design in `auth.py` and admin optimization; import-only residuals remain in market stock-list and admin audit files.
+- PR `#461` merged at `03ec65d765a72f131609e28d5121ec498dd6b54e`.
 - Recommended next gate after PR `#461` acceptance: G2.309 no-source service lifecycle residual candidate refresh after auth provider closeout.
 - Stop rule: G2.308 must not be used as source implementation authority.
+
+## G2.309 Service Lifecycle Residual Candidate Refresh After Auth Provider Closeout
+
+Status: for review in future PR `#462`.
+
+- Parent PR `#461` merged at `03ec65d765a72f131609e28d5121ec498dd6b54e`.
+- G2.309 is a no-source residual candidate refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- The refreshed scanner covered `371` Python files under `web/backend/app/api` and `web/backend/app/services`, saw `663` getter-like names, and retained `54` active interesting candidates after excluding closed G2 provider seams.
+- Top deferred surfaces include data-source-config, dashboard/cache, control-plane DB engine, risk core, realtime MTM, circuit breaker, algorithms module loader, indicator registry factory, Kronos client, and system routing helpers.
+- G2.309 selects only G2.310 no-source `get_mysql_session` ownership / route-provider decision for `web/backend/app/api/indicators/create_indicator_config.py`, where five bare route-body calls remain at lines `60`, `129`, `189`, `251`, and `331`.
+- Stop rule: G2.309 must not be used as source implementation authority or as authorization to edit `get_mysql_session`, `create_indicator_config.py`, route contracts, OpenAPI artifacts, tests, or runtime state.
