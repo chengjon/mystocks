@@ -1,4 +1,29 @@
     .artdeco-chip-distribution {
+        --chip-icon-size: var(--artdeco-spacing-12);
+        --chip-icon-glyph-size: var(--artdeco-spacing-6);
+        --chip-icon-md-size: var(--artdeco-spacing-8);
+        --chip-overview-min-width: calc((var(--artdeco-spacing-32) * 2) + var(--artdeco-spacing-6));
+        --chip-card-min-width: calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-16) + var(--artdeco-spacing-2));
+        --chip-wide-min-width: calc((var(--artdeco-spacing-32) * 2) + var(--artdeco-spacing-10) + var(--artdeco-spacing-1));
+        --chip-compact-min-width: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+        --chip-chart-height-lg: calc((var(--artdeco-spacing-32) * 3) + var(--artdeco-spacing-4));
+        --chip-chart-height-md: var(--chip-wide-min-width);
+        --chip-chart-height-sm: var(--chip-card-min-width);
+        --chip-gauge-size: var(--chip-compact-min-width);
+        --chip-label-min-width: var(--artdeco-spacing-20);
+        --chip-value-min-width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-2) + (var(--artdeco-spacing-px) * 2));
+        --chip-radius-xs: var(--artdeco-radius-sm);
+        --chip-radius-sm: calc(var(--artdeco-spacing-px) * 6);
+        --chip-line-thin: calc(var(--artdeco-spacing-px) * 2);
+        --chip-blur: calc(var(--artdeco-spacing-px) * 10);
+        --chip-glow-sm: calc(var(--artdeco-spacing-px) * 10);
+        --chip-glow-md: calc(var(--artdeco-spacing-px) * 15);
+        --chip-progress-height: var(--artdeco-spacing-3);
+        --chip-bar-height: var(--artdeco-spacing-2);
+        --chip-marker-sm: var(--artdeco-spacing-2);
+        --chip-marker-md: var(--artdeco-spacing-3);
+        --chip-accent-width: var(--artdeco-spacing-px);
+
         display: grid;
         gap: var(--artdeco-spacing-6);
     }
@@ -9,6 +34,6 @@
 
     .distribution-overview {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(var(--chip-overview-min-width), 1fr));
         gap: var(--artdeco-spacing-4);
     }

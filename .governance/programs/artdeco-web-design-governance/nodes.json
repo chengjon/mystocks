@@ -1952,5 +1952,103 @@
       "current_head": "a287c66c53521d782f1c072a51811c0f2d6bc241",
       "prepared_at": "2026-06-01T02:32:01.135Z"
     }
+  },
+  {
+    "id": "artdeco-scss-chip-distribution-token-cleanup",
+    "title": "Tokenize ArtDeco chip distribution SCSS dimensions",
+    "node_type": "implementation",
+    "owner_lane": "web-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "docs/reports/tasks/2026-06-01-artdeco-scss-chip-distribution-style-split-report.md",
+    "current_head": "1ef19def4321bb1921f0db5bc47503f0a9b8afd7",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Baseline after split commit 1ef19def4: ArtDecoChipDistribution partials contain 81 disallowed hardcoded px literals across layout/chart/cost/profit/stability/responsive. Scope is token-only SCSS cleanup; no Vue/TS/router/API/client/shared component changes.",
+        "note": "",
+        "current_head": "1ef19def4321bb1921f0db5bc47503f0a9b8afd7",
+        "recorded_at": "2026-06-01T02:39:31.874Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.layout.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.chart.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.cost.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.profit.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.stability.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoChipDistribution.responsive.scss",
+      "docs/reports/tasks/2026-06-01-artdeco-scss-chip-distribution-token-cleanup-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-chip-distribution-token-cleanup.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript logic changes",
+      "No router route changes",
+      "No backend API contract changes",
+      "No frontend API client changes",
+      "No shared component extraction",
+      "No global token or baseline changes",
+      "No visual redesign beyond equivalent token substitution"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T02:39:23.486Z",
+    "updated_at": "2026-06-01T02:47:42.623Z",
+    "acceptance": {
+      "commit_gate": [
+        "Disallowed hardcoded px count in target partials is reduced to zero or only allowed 1px literals remain",
+        "Focused ArtDeco token check passes for all target partials",
+        "npm run build:no-types passes",
+        "gitnexus detect_changes on staged diff is reviewed before commit",
+        "No router/API/frontend API client/Vue/TS/shared component files are staged"
+      ],
+      "closeout_gate": [
+        "Function Tree closeout recorded with report path and validation summary"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "1ef19def4321bb1921f0db5bc47503f0a9b8afd7",
+        "transitioned_at": "2026-06-01T02:39:56.671Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "1ef19def4321bb1921f0db5bc47503f0a9b8afd7",
+        "transitioned_at": "2026-06-01T02:47:02.673Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "1ef19def4321bb1921f0db5bc47503f0a9b8afd7",
+        "transitioned_at": "2026-06-01T02:47:22.089Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "1ef19def4321bb1921f0db5bc47503f0a9b8afd7",
+        "transitioned_at": "2026-06-01T02:47:42.623Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-scss-chip-distribution-token-cleanup-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "1ef19def4321bb1921f0db5bc47503f0a9b8afd7",
+      "prepared_at": "2026-06-01T02:47:32.958Z"
+    }
   }
 ]
