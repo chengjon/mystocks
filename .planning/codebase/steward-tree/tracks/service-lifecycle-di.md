@@ -3375,7 +3375,7 @@ Status: accepted/merged by PR `#459` at `702816e7aa23378b2acd5dbc27de449fc74a3af
 
 ## G2.307 Auth.py PostgreSQL Session Provider Implementation
 
-Status: for review in future PR `#460`.
+Status: accepted/merged by PR `#460` at `833856a526c3083aa4c21a28d31b36ee2a82e9bd`.
 
 - Parent PR `#459` merged at `702816e7aa23378b2acd5dbc27de449fc74a3af5`.
 - G2.307 is a path-limited source implementation package. It edits only `web/backend/app/api/auth.py`, `web/backend/tests/test_auth_login_contract.py`, and governance evidence records.
@@ -3386,3 +3386,16 @@ Status: for review in future PR `#460`.
 - GitNexus MCP impact returned `Transport closed`; CLI fallback keeps shared `Function:web/backend/app/core/database.py:get_postgresql_session` at `CRITICAL`, and the shared helper definition is intentionally untouched.
 - Recommended next gate after human acceptance and merge: G2.308 no-source auth provider closeout / residual refresh.
 - Stop rule: PR `#460` changes backend source/tests and must not auto-merge.
+
+## G2.308 Auth.py PostgreSQL Session Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#461`.
+
+- Parent PR `#460` merged at `833856a526c3083aa4c21a28d31b36ee2a82e9bd`.
+- G2.308 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Auth provider lane is closed: route-body direct `get_postgresql_session()` calls are `0`, provider backing call is `1`, and dependency bindings are `4`.
+- Focused auth tests record `11 passed, 18 skipped`; ruff is clean; route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`.
+- Tracked auth / admin optimization / market stock-list / admin audit route-domain active route-body direct `get_postgresql_session()` residuals are now `0`.
+- Provider backing calls remain by design in `auth.py` and admin optimization; import-only residuals remain in market stock-list and admin audit files.
+- Recommended next gate after PR `#461` acceptance: G2.309 no-source service lifecycle residual candidate refresh after auth provider closeout.
+- Stop rule: G2.308 must not be used as source implementation authority.

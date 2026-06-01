@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-01T21:38:00+08:00`
-- Base HEAD checked: `702816e7aa23378b2acd5dbc27de449fc74a3af5`
+- Prepared at: `2026-06-02T00:20:00+08:00`
+- Base HEAD checked: `833856a526c3083aa4c21a28d31b36ee2a82e9bd`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -278,3 +278,5 @@ G2.305 is the no-source auth.py `get_postgresql_session` ownership / provider-sh
 G2.306 is the no-source auth.py `get_postgresql_session` provider authorization after PR `#458` merged G2.305 at `8a6cfa615f472f23643a13ab18ab02dd0853ad96`. It authorizes only a future G2.307 path-limited source lane for `web/backend/app/api/auth.py` plus focused auth tests, requiring a route-local auth PostgreSQL session factory provider, injection into the four affected handlers, preservation of close/finally cleanup, and preservation of `confirm_password_reset` commit/rollback semantics. It records focused auth tests `10 passed / 18 skipped`, route/OpenAPI `548/500/0`, ruff no-fix findings `6`, and shared helper GitNexus CLI impact `CRITICAL` with `15` direct dependants and `54` affected processes. It must not edit source in PR `#459`, and G2.307 must stop at human review before merge.
 
 G2.307 is the path-limited auth.py `get_postgresql_session` provider implementation after PR `#459` merged G2.306 at `702816e7aa23378b2acd5dbc27de449fc74a3af5`. It adds `get_auth_postgresql_session_factory`, injects it into `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`, preserves close/finally cleanup and password reset commit/rollback semantics, and keeps route/OpenAPI at `548/500/0`. It records TDD RED `1 failed`, GREEN target `1 passed`, focused auth regression `11 passed / 18 skipped`, ruff clean, provider backing calls `1`, and route-body direct calls `0`. It changes backend source/tests and must stop at future PR `#460` review; if accepted, the next gate is G2.308 no-source auth provider closeout / residual refresh.
+
+G2.308 is the no-source auth.py `get_postgresql_session` provider closeout / residual refresh after PR `#460` merged G2.307 at `833856a526c3083aa4c21a28d31b36ee2a82e9bd`. It records auth route-body direct calls `0`, auth provider backing call `1`, dependency bindings `4`, focused auth tests `11 passed / 18 skipped`, ruff clean, route/OpenAPI `548/500/0`, and tracked route-domain active direct residuals `0`. It classifies remaining calls as provider backing or import-only residuals and selects only G2.309 no-source service lifecycle residual candidate refresh after auth closeout.

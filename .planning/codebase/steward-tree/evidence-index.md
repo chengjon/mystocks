@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T21:38:00+08:00`
-- Base HEAD checked: `702816e7aa23378b2acd5dbc27de449fc74a3af5`
+- Prepared at: `2026-06-02T00:20:00+08:00`
+- Base HEAD checked: `833856a526c3083aa4c21a28d31b36ee2a82e9bd`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,6 +16,9 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
+| `.planning/codebase/generated/auth-postgresql-session-provider-closeout-2026-06-02.json` | G2.308 auth.py PostgreSQL session provider closeout / residual refresh evidence | Review input for future PR `#461`; no-source closeout package; closes auth provider lane and selects only G2.309 no-source residual candidate refresh |
+| `docs/reports/quality/backend-auth-postgresql-session-provider-closeout-2026-06-02.md` | G2.308 human-readable closeout / residual refresh report | Review input for future PR `#461`; records PR `#460` accepted/merged, auth closeout counts, residual refresh, focused tests, ruff, and route/OpenAPI smoke |
+| `governance/mainline/task-cards/pr-461.yaml` | Governance task card for G2.308 no-source closeout | Review input; allows only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/auth-postgresql-session-provider-implementation-2026-06-01.json` | G2.307 auth.py PostgreSQL session provider implementation evidence | Review input for future PR `#460`; source implementation package; must stop at human review before merge |
 | `docs/reports/quality/backend-auth-postgresql-session-provider-implementation-2026-06-01.md` | G2.307 human-readable implementation report | Review input for future PR `#460`; records TDD RED/GREEN, provider scan, focused tests, route/OpenAPI smoke, ruff, and GitNexus fallback |
 | `governance/mainline/task-cards/pr-460.yaml` | Governance task card for G2.307 source implementation | Review input; allows only path-limited auth source/test plus steward tree, generated evidence, report, and task card updates |
