@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-02T00:20:00+08:00`
-- Base HEAD checked: `833856a526c3083aa4c21a28d31b36ee2a82e9bd`
+- Prepared at: `2026-06-02T01:35:43+08:00`
+- Base HEAD checked: `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -288,3 +288,5 @@ G2.310 is the no-source `get_mysql_session` ownership / route-provider decision 
 G2.311 is the no-source indicator config router ownership / registration-retirement decision after PR `#463` merged G2.310 at `67083d40808fea9963137e3e128c0c6cb0683e57`. PR `#464` merged G2.311 at `0f5382cea875d2983ada5d9c63548b0530861002`. It classifies `web/backend/app/api/indicators/create_indicator_config.py` as retained dormant route code, keeps it out of the active provider implementation queue, and records route/OpenAPI `548/500/0`, `13` indicator-related active routes, `0` registered handlers from that module, and `0` OpenAPI `/configs` CRUD paths from that module. It selects only G2.312 no-source residual candidate refresh after dormant indicator-config exclusion.
 
 G2.312 is the no-source service lifecycle residual candidate refresh after PR `#464` merged G2.311 at `0f5382cea875d2983ada5d9c63548b0530861002`. It excludes dormant `create_indicator_config.py` / `get_mysql_session`, records `371` Python files scanned, `663` getter-like names, and `53` active interesting candidates, and selects only G2.313 no-source `indicator_registry.get_factory` ownership / route-provider decision for `web/backend/app/api/indicator_registry.py`.
+
+G2.313 is the no-source `indicator_registry.get_factory` ownership / route-provider decision after PR `#465` merged G2.312 at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`. It records `web/backend/app/api/indicator_registry.py` as an active registered route module with three `get_factory()` route-body calls at lines `159`, `186`, and `201`, route/OpenAPI `548/500/0`, and GitNexus CLI `LOW` risk with `3` direct callers and `0` affected processes. It does not authorize source implementation and selects only G2.314 no-source `indicator_registry.get_factory` provider authorization after future PR `#466` acceptance.

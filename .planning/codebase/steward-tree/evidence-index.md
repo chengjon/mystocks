@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-02T01:10:22+08:00`
-- Base HEAD checked: `0f5382cea875d2983ada5d9c63548b0530861002`
+- Prepared at: `2026-06-02T01:35:43+08:00`
+- Base HEAD checked: `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/service-lifecycle-residual-refresh-after-indicator-config-2026-06-02.json` | G2.312 service lifecycle residual refresh evidence | Review input for future PR `#465`; no-source candidate refresh; excludes dormant indicator-config route code and selects only G2.313 `get_factory` decision |
-| `docs/reports/quality/backend-service-lifecycle-residual-refresh-after-indicator-config-2026-06-02.md` | G2.312 human-readable residual refresh report | Review input for future PR `#465`; records PR `#464` accepted/merged, refreshed scanner counts, and next gate |
-| `governance/mainline/task-cards/pr-465.yaml` | Governance task card for G2.312 no-source refresh | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/indicator-registry-factory-ownership-decision-2026-06-02.json` | G2.313 `indicator_registry.get_factory` ownership / route-provider decision evidence | Review input for future PR `#466`; no-source decision package; route/OpenAPI `548/500/0`, GitNexus CLI `LOW`, and selects G2.314 authorization only |
+| `docs/reports/quality/backend-indicator-registry-factory-ownership-decision-2026-06-02.md` | G2.313 human-readable ownership decision report | Review input for future PR `#466`; records PR `#465` accepted/merged, active indicator-registry route surface, GitNexus fallback impact, and next gate |
+| `governance/mainline/task-cards/pr-466.yaml` | Governance task card for G2.313 no-source decision | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/service-lifecycle-residual-refresh-after-indicator-config-2026-06-02.json` | G2.312 service lifecycle residual refresh evidence | Accepted by PR `#465`, merged at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`; no-source candidate refresh; superseded for ownership decision by G2.313 |
+| `docs/reports/quality/backend-service-lifecycle-residual-refresh-after-indicator-config-2026-06-02.md` | G2.312 human-readable residual refresh report | Accepted by PR `#465`; records PR `#464` accepted/merged, refreshed scanner counts, and next gate |
+| `governance/mainline/task-cards/pr-465.yaml` | Governance task card for G2.312 no-source refresh | Accepted by PR `#465`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/indicator-config-router-ownership-decision-2026-06-02.json` | G2.311 indicator config router ownership / registration-retirement decision evidence | Accepted by PR `#464`, merged at `0f5382cea875d2983ada5d9c63548b0530861002`; no-source decision; superseded for residual refresh by G2.312 |
 | `docs/reports/quality/backend-indicator-config-router-ownership-decision-2026-06-02.md` | G2.311 human-readable route ownership decision report | Accepted by PR `#464`; records PR `#463` accepted/merged, runtime route truth, test inventory, and next gate |
 | `governance/mainline/task-cards/pr-464.yaml` | Governance task card for G2.311 no-source decision | Accepted by PR `#464`; allowed only steward tree, generated evidence, report, and task card updates |

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-02T01:10:22+08:00`
-- Base HEAD checked: `0f5382cea875d2983ada5d9c63548b0530861002`
+- Prepared at: `2026-06-02T01:35:43+08:00`
+- Base HEAD checked: `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.312 service lifecycle residual candidate refresh after dormant indicator-config exclusion | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#464` merged at `0f5382cea875d2983ada5d9c63548b0530861002`; G2.312 excludes dormant `create_indicator_config.py` / `get_mysql_session`, records `371` Python files scanned, `663` getter names, and `53` active interesting candidates | Review future PR `#465`; if accepted, start G2.313 no-source `indicator_registry.get_factory` ownership / route-provider decision |
+| P0 | Review G2.313 `indicator_registry.get_factory` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#465` merged at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`; G2.313 classifies active route-local singleton factory calls at lines `159`, `186`, and `201`, route/OpenAPI `548/500/0`, and GitNexus CLI `LOW` / direct `3` / affected processes `0` | Review future PR `#466`; if accepted, start G2.314 no-source `indicator_registry.get_factory` provider authorization package |
+| P0 | Preserve G2.312 service lifecycle residual candidate refresh after dormant indicator-config exclusion | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#465` merged at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`; G2.312 excludes dormant `create_indicator_config.py` / `get_mysql_session`, records `371` Python files scanned, `663` getter names, and `53` active interesting candidates | Do not use G2.312 as source implementation authority; use G2.313 only as no-source `indicator_registry.get_factory` ownership / route-provider decision |
 | P0 | Preserve G2.311 indicator config router ownership / registration-retirement decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#464` merged at `0f5382cea875d2983ada5d9c63548b0530861002`; G2.311 classifies `create_indicator_config.py` as retained dormant route code, records `548/500/0`, `13` indicator-related routes, and `0` registered handlers from that module | Do not use G2.311 as source implementation authority; use G2.312 only as no-source residual candidate refresh |
 | P0 | Preserve G2.310 `get_mysql_session` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#463` merged at `67083d40808fea9963137e3e128c0c6cb0683e57`; G2.310 classifies the five `get_mysql_session()` calls in `create_indicator_config.py` as an unregistered indicator-config router surface; route/OpenAPI remains `548/500/0`; GitNexus CLI risk is `MEDIUM` with direct `5` and affected processes `0` | Do not use G2.310 as provider implementation authority; use G2.311 only as no-source route ownership decision |
 | P0 | Preserve G2.309 service lifecycle residual candidate refresh after auth closeout | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#462` merged at `5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18`; G2.309 refreshes the getter/provider residual queue after auth closeout, records `371` Python files scanned, `663` getter names, and `54` active interesting candidates after exclusions | Do not use G2.309 as source implementation authority; use G2.310 only as no-source `get_mysql_session` ownership / route-provider decision |

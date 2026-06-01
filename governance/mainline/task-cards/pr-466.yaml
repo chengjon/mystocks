@@ -1,0 +1,133 @@
+version: "v0.2"
+
+task:
+  id: "pr-466"
+  title: "Decide indicator_registry get_factory ownership and route-provider path"
+  owner: "codex"
+  created_at: "2026-06-02"
+
+mainline:
+  id: "L1-indicator-registry-factory-ownership-decision"
+  objective: "classify indicator_registry.get_factory and decide whether it can enter a future provider authorization lane"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.313 is a no-source ownership decision. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/indicator-registry-factory-ownership-decision-2026-06-02.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-indicator-registry-factory-ownership-decision-2026-06-02.md"
+    - "governance/mainline/task-cards/pr-466.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "editing indicator_registry.py or get_factory"
+  - "authorizing source implementation directly from G2.313"
+
+acceptance:
+  checks:
+    - id: "pr465-merged"
+      command: "gh pr view 465 confirms MERGED at ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18"
+      required: true
+    - id: "ownership-decision"
+      command: "generated evidence classifies indicator_registry.get_factory as an active route-local singleton factory helper with 3 route-body calls"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "route/OpenAPI smoke records 548 routes, 500 OpenAPI paths, 0 duplicate operation ID warnings, and 3 registered indicator-registry routes"
+      required: true
+    - id: "gitnexus-fallback-impact"
+      command: "GitNexus CLI fallback records LOW risk, 3 direct callers, 0 affected processes"
+      required: true
+    - id: "next-gate-selection"
+      command: "report selects only G2.314 no-source indicator_registry get_factory provider authorization package"
+      required: true
+    - id: "no-source-boundary"
+      command: "PR #466 edits no backend source, tests, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-indicator-registry-factory-ownership-decision-2026-06-02.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-466.yaml --base-sha ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18 --head-sha HEAD --report /tmp/pr466-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The decision can become stale if indicator-registry route registration, get_factory calls, or GitNexus impact changes."
+  rollback_plan: "Revert PR #466; this removes only G2.313 ownership decision evidence and restores the prior G2.312 next gate."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Classify indicator_registry.get_factory and select the next provider authorization gate."
+    modified_scope: "Governance evidence, steward tree indexes, report, and task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime behavior, route contract, OpenAPI, or source changes."
+    rollback_ready: "Revert PR #466."
+    risk_and_rollback_point: "No-source ownership decision; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer-autopilot"
+    approved_at: "2026-06-02T01:35:43+08:00"
+    approval_note: "Human maintainer previously authorized automatic no-source governance continuation; G2.313 remains no-source and selects only a future no-source authorization gate."
+    secondary_approved: false

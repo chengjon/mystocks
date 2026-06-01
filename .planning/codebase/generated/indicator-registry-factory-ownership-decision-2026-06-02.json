@@ -1,0 +1,166 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-02T01:35:43+08:00",
+  "node": "G2.313",
+  "title": "indicator_registry get_factory ownership / route-provider decision",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18",
+  "parent_gate": {
+    "node": "G2.312",
+    "github_pr": {
+      "number": 465,
+      "url": "https://github.com/chengjon/mystocks/pull/465",
+      "state": "MERGED",
+      "merge_commit": "ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18",
+      "merged_at": "2026-06-01T17:18:02Z",
+      "head_ref": "g2-312-service-lifecycle-residual-refresh-after-indicator-config"
+    },
+    "decision": "service lifecycle residual refresh after dormant indicator-config exclusion selected indicator_registry.get_factory"
+  },
+  "source_edit_authority": false,
+  "autopilot_classification": "no-source governance decision package",
+  "target": {
+    "file": "web/backend/app/api/indicator_registry.py",
+    "symbol": "get_factory",
+    "line": 99,
+    "global_state": "_factory",
+    "factory_class": "IndicatorFactory",
+    "direct_route_body_call_lines": [
+      159,
+      186,
+      201
+    ]
+  },
+  "route_truth": {
+    "total_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_id_warnings": 0,
+    "route_module": "app.api.indicator_registry",
+    "registered_routes": [
+      {
+        "method": "GET",
+        "path": "/api/indicator-registry/indicators",
+        "endpoint": "list_indicators",
+        "line": 157,
+        "direct_call_line": 159
+      },
+      {
+        "method": "GET",
+        "path": "/api/indicator-registry/indicators/{indicator_id}",
+        "endpoint": "get_indicator_details",
+        "line": 182,
+        "direct_call_line": 186
+      },
+      {
+        "method": "POST",
+        "path": "/api/indicator-registry/calculate",
+        "endpoint": "calculate_indicator",
+        "line": 199,
+        "direct_call_line": 201
+      }
+    ]
+  },
+  "gitnexus": {
+    "mcp_impact": {
+      "status": "failed",
+      "tool": "mcp__gitnexus.impact",
+      "error": "Transport closed"
+    },
+    "cli_fallback": {
+      "command": "npx gitnexus impact get_factory -r mystocks --direction upstream --summary-only",
+      "target": {
+        "id": "Function:web/backend/app/api/indicator_registry.py:get_factory",
+        "name": "get_factory",
+        "type": "Function",
+        "filePath": "web/backend/app/api/indicator_registry.py"
+      },
+      "direction": "upstream",
+      "impactedCount": 3,
+      "risk": "LOW",
+      "summary": {
+        "direct": 3,
+        "processes_affected": 0,
+        "modules_affected": 1
+      },
+      "byDepthCounts": {
+        "1": 3
+      },
+      "affected_processes": [],
+      "affected_modules": [
+        {
+          "name": "Api",
+          "hits": 3,
+          "impact": "direct"
+        }
+      ],
+      "index_status": {
+        "stale": true,
+        "commits_behind": 0,
+        "has_embeddings": false
+      }
+    }
+  },
+  "test_inventory": {
+    "status": "reference-only-no-tests-edited",
+    "files": [
+      "web/backend/tests/test_data_quality_mock_configuration.py",
+      "web/backend/tests/test_health_route_conflicts.py",
+      "web/backend/tests/test_indicator_registry_v1.py",
+      "web/backend/tests/test_indicators.py",
+      "web/backend/tests/test_indicator_registry_route_provider.py",
+      "web/backend/tests/unit/services/indicators/test_dependency.py",
+      "web/backend/tests/unit/services/indicators/test_indicator_registry.py",
+      "tests/file_level/core.py",
+      "tests/api/test_indicator_registry_file.py",
+      "tests/ai/test_data_analyzer/pattern_recognizer.py",
+      "tests/api/file_tests/test_indicator_registry_api.py",
+      "tests/api/file_tests/test_indicators_api.py"
+    ],
+    "notes": [
+      "test_indicator_registry_route_provider.py is provider-governance precedent for indicator registry services, but it does not directly cover app.api.indicator_registry.get_factory."
+    ]
+  },
+  "decision": {
+    "classification": "active-route-local-singleton-factory-helper",
+    "active_route_module": true,
+    "provider_implementation_authorized": false,
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-313",
+    "recommended_next_work_item": "G2.314 no-source indicator_registry get_factory provider authorization package",
+    "future_source_stop_rule": "If G2.314 is accepted, any G2.315 source implementation PR must stop for human review before merge.",
+    "autopilot_continue_allowed": true
+  },
+  "allowed_scope": [
+    ".planning/codebase/generated/indicator-registry-factory-ownership-decision-2026-06-02.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-indicator-registry-factory-ownership-decision-2026-06-02.md",
+    "governance/mainline/task-cards/pr-466.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "freshness": {
+    "current_head_checked": "ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_indicator_registry_routes_change": true,
+    "stale_if_get_factory_call_surface_changes": true,
+    "stale_if_gitnexus_index_refresh_changes_risk": true
+  },
+  "next_gate": "Review future PR #466. If accepted and merged, start G2.314 no-source indicator_registry get_factory provider authorization package."
+}
