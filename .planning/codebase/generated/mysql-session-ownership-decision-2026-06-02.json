@@ -1,0 +1,154 @@
+{
+  "schema_version": "g2-service-lifecycle-ownership-decision.v1",
+  "generated_at": "2026-06-02T00:49:10+08:00",
+  "gate": "G2.310",
+  "title": "get_mysql_session ownership / route-provider decision",
+  "base_head": "5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18",
+  "parent_gate": {
+    "gate": "G2.309",
+    "pr": 462,
+    "state": "MERGED",
+    "merge_commit": "5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18",
+    "merged_at": "2026-06-01T16:44:52Z"
+  },
+  "source_edit_authority": false,
+  "no_source_boundary": {
+    "allowed": [
+      ".planning/codebase/generated/mysql-session-ownership-decision-2026-06-02.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-mysql-session-ownership-decision-2026-06-02.md",
+      "governance/mainline/task-cards/pr-463.yaml"
+    ],
+    "forbidden": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "target": {
+    "helper": "get_mysql_session",
+    "helper_origin": "app.core.database.get_mysql_session",
+    "route_module": "web/backend/app/api/indicators/create_indicator_config.py",
+    "route_module_lines": 363,
+    "api_bare_calls": [
+      {
+        "line": 60,
+        "text": "session = get_mysql_session()"
+      },
+      {
+        "line": 129,
+        "text": "session = get_mysql_session()"
+      },
+      {
+        "line": 189,
+        "text": "session = get_mysql_session()"
+      },
+      {
+        "line": 251,
+        "text": "session = get_mysql_session()"
+      },
+      {
+        "line": 331,
+        "text": "session = get_mysql_session()"
+      }
+    ],
+    "handlers": [
+      "create_indicator_config",
+      "list_indicator_configs",
+      "get_indicator_config",
+      "update_indicator_config",
+      "delete_indicator_config"
+    ],
+    "session_cleanup": {
+      "session_close_lines": [
+        107,
+        165,
+        223,
+        309,
+        355
+      ],
+      "commit_lines": [
+        86,
+        207,
+        293,
+        348
+      ]
+    }
+  },
+  "route_registration_truth": {
+    "module_defines_router": true,
+    "registered_router": "web/backend/app/api/indicators/indicator_cache.py router exported from web/backend/app/api/indicators/__init__.py",
+    "create_indicator_config_router_registered_in_app": false,
+    "route_table_total_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "matching_create_indicator_config_routes": 0,
+    "matching_openapi_config_crud_paths": 0,
+    "observed_current_indicator_paths": [
+      "/api/v1/indicators/registry",
+      "/api/v1/indicators/registry/{category}",
+      "/api/v1/indicators/calculate",
+      "/api/v1/indicators/calculate/batch",
+      "/api/v1/indicators/cache/stats",
+      "/api/v1/indicators/cache/clear",
+      "/api/indicator-registry/indicators",
+      "/api/indicator-registry/indicators/{indicator_id}",
+      "/api/indicator-registry/calculate"
+    ]
+  },
+  "test_inventory": [
+    "tests/api/file_tests/test_indicators_api.py",
+    "tests/ddd/test_architecture_validation.py",
+    "web/backend/tests/unit/services/indicators/test_indicator_registry.py"
+  ],
+  "gitnexus": {
+    "mcp_impact": "Transport closed",
+    "cli_impact": {
+      "target": "Function:web/backend/app/core/database.py:get_mysql_session",
+      "risk": "MEDIUM",
+      "direct": 5,
+      "impacted_count": 5,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "index_status": "stale; commits_behind=0; has_embeddings=false"
+    }
+  },
+  "decision": {
+    "classification": "unregistered-indicator-config-router-session-helper",
+    "provider_implementation_authorized": false,
+    "reason": "All five get_mysql_session call sites are inside a route module whose router is not currently registered in app.routes or OpenAPI. Migrating the helper before route ownership is decided would optimize dormant code and could mask the real route-registration / retirement decision.",
+    "selected_next_gate": {
+      "gate": "G2.311",
+      "title": "indicator config router ownership / registration-retirement decision",
+      "type": "no-source decision",
+      "not_authorized": [
+        "source implementation",
+        "test edits",
+        "route registration changes",
+        "OpenAPI changes",
+        "MySQL helper changes",
+        "module deletion"
+      ]
+    }
+  },
+  "freshness": {
+    "current_head_checked": "5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18",
+    "stale_if_head_changes": true,
+    "stale_if_create_indicator_config_router_registration_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_get_mysql_session_impact_changes": true
+  }
+}

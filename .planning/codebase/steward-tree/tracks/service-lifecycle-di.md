@@ -3403,11 +3403,25 @@ Status: accepted/merged by PR `#461`.
 
 ## G2.309 Service Lifecycle Residual Candidate Refresh After Auth Provider Closeout
 
-Status: for review in future PR `#462`.
+Status: accepted/merged by PR `#462`.
 
 - Parent PR `#461` merged at `03ec65d765a72f131609e28d5121ec498dd6b54e`.
 - G2.309 is a no-source residual candidate refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - The refreshed scanner covered `371` Python files under `web/backend/app/api` and `web/backend/app/services`, saw `663` getter-like names, and retained `54` active interesting candidates after excluding closed G2 provider seams.
 - Top deferred surfaces include data-source-config, dashboard/cache, control-plane DB engine, risk core, realtime MTM, circuit breaker, algorithms module loader, indicator registry factory, Kronos client, and system routing helpers.
 - G2.309 selects only G2.310 no-source `get_mysql_session` ownership / route-provider decision for `web/backend/app/api/indicators/create_indicator_config.py`, where five bare route-body calls remain at lines `60`, `129`, `189`, `251`, and `331`.
+- PR `#462` merged at `5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18`.
 - Stop rule: G2.309 must not be used as source implementation authority or as authorization to edit `get_mysql_session`, `create_indicator_config.py`, route contracts, OpenAPI artifacts, tests, or runtime state.
+
+## G2.310 get_mysql_session Ownership / Route-Provider Decision
+
+Status: for review in future PR `#463`.
+
+- Parent PR `#462` merged at `5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18`.
+- G2.310 is a no-source ownership decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- The five bare `get_mysql_session()` calls are all in `web/backend/app/api/indicators/create_indicator_config.py` at lines `60`, `129`, `189`, `251`, and `331`.
+- `create_indicator_config.py` defines an `APIRouter`, but the current registered `indicators.router` comes from `indicator_cache.py`; route-table smoke records `0` registered `create_indicator_config.py` handlers, `548` FastAPI routes, `500` OpenAPI paths, and duplicate operation IDs `0`.
+- GitNexus MCP impact returned `Transport closed`; CLI fallback reports `Function:web/backend/app/core/database.py:get_mysql_session` as `MEDIUM` risk with direct `5`, affected processes `0`, affected modules `0`, stale index with commits behind `0`.
+- Decision: do not authorize a provider implementation lane yet; first decide whether the indicator configuration CRUD router should be registered, retired, or retained dormant.
+- Recommended next gate: G2.311 no-source indicator config router ownership / registration-retirement decision.
+- Stop rule: G2.310 must not be used as source implementation authority or as authorization to edit `get_mysql_session`, `create_indicator_config.py`, route registration, OpenAPI artifacts, tests, or runtime state.

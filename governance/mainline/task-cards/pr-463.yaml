@@ -1,0 +1,131 @@
+version: "v0.2"
+
+task:
+  id: "pr-463"
+  title: "Decide get_mysql_session ownership for indicator config router"
+  owner: "codex"
+  created_at: "2026-06-02"
+
+mainline:
+  id: "L1-mysql-session-ownership-decision"
+  objective: "classify get_mysql_session calls in create_indicator_config.py and decide whether provider implementation is authorized"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.310 is a no-source ownership decision. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/mysql-session-ownership-decision-2026-06-02.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-mysql-session-ownership-decision-2026-06-02.md"
+    - "governance/mainline/task-cards/pr-463.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "editing get_mysql_session or create_indicator_config.py"
+  - "authorizing a source implementation lane"
+
+acceptance:
+  checks:
+    - id: "pr462-merged"
+      command: "gh pr view 462 confirms MERGED at 5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18"
+      required: true
+    - id: "target-classification"
+      command: "report records five get_mysql_session calls in create_indicator_config.py and classifies the module as currently unregistered"
+      required: true
+    - id: "route-openapi-truth"
+      command: "route-table smoke records 548 routes, 500 OpenAPI paths, duplicate operation IDs 0, and 0 registered create_indicator_config.py handlers"
+      required: true
+    - id: "next-gate-selection"
+      command: "report selects only G2.311 no-source indicator config router ownership / registration-retirement decision"
+      required: true
+    - id: "no-source-boundary"
+      command: "PR #463 edits no backend source, tests, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-mysql-session-ownership-decision-2026-06-02.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-463.yaml --base-sha 5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18 --head-sha HEAD --report /tmp/pr463-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "Route registration truth can become stale if indicator config router wiring changes."
+    - "A future route-retirement or registration lane would be source-affecting and must stop at human review."
+  rollback_plan: "Revert PR #463; this removes only G2.310 decision evidence and restores the prior G2.309 next gate."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Classify get_mysql_session calls in the indicator config router surface."
+    modified_scope: "Governance evidence, steward tree indexes, report, and task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime behavior, route contract, OpenAPI, or source changes."
+    rollback_ready: "Revert PR #463."
+    risk_and_rollback_point: "No-source ownership decision; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer-autopilot"
+    approved_at: "2026-06-02T00:49:10+08:00"
+    approval_note: "Human maintainer previously authorized automatic no-source governance continuation; G2.310 remains no-source and does not authorize provider implementation."
+    secondary_approved: false
