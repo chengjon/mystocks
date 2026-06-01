@@ -10,18 +10,18 @@
             margin-bottom: var(--artdeco-spacing-4);
 
             .header-icon {
-                width: 48px;
-                height: 48px;
+                width: var(--capital-flow-section-icon-size);
+                height: var(--capital-flow-section-icon-size);
                 background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
-                border-radius: 8px;
+                border-radius: var(--capital-flow-panel-radius);
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 color: var(--artdeco-bg-dark);
 
                 svg {
-                    width: 24px;
-                    height: 24px;
+                    width: var(--capital-flow-section-icon-glyph-size);
+                    height: var(--capital-flow-section-icon-glyph-size);
                 }
             }
 
@@ -57,10 +57,10 @@
 
         .heatmap-container {
             .heatmap-placeholder {
-                height: 400px;
+                height: var(--capital-flow-heatmap-height);
                 background: var(--artdeco-bg-card);
                 border: 1px solid var(--artdeco-border-default);
-                border-radius: 8px;
+                border-radius: var(--capital-flow-panel-radius);
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -70,7 +70,7 @@
                 // 几何装饰
                 @include artdeco-geometric-corners(
                     $color: var(--artdeco-gold-primary),
-                    $size: 16px,
+                    $size: var(--artdeco-spacing-4),
                     $border-width: 1px
                 );
 
@@ -84,24 +84,24 @@
                     .heatmap-grid {
                         flex: 1;
                         display: grid;
-                        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                        grid-template-columns: repeat(auto-fit, minmax(var(--capital-flow-metric-min-width), 1fr));
                         gap: var(--artdeco-spacing-3);
 
                         .heatmap-cell {
-                            @include artdeco-stepped-corners(4px);
+                            @include artdeco-stepped-corners(var(--capital-flow-step-corner-size));
 
                             border: 1px solid var(--artdeco-border-default);
                             position: relative;
                             overflow: hidden;
                             transition: all var(--artdeco-transition-base);
-                            min-height: 80px;
+                            min-height: var(--capital-flow-stat-min-height);
                             display: flex;
                             align-items: center;
                             justify-content: center;
 
                             &:hover {
-                                transform: translateY(-2px);
-                                box-shadow: 0 4px 12px var(--artdeco-gold-opacity-20);
+                                transform: translateY(var(--capital-flow-hover-lift));
+                                box-shadow: 0 var(--capital-flow-shadow-y) var(--capital-flow-shadow-blur-sm) var(--artdeco-gold-opacity-20);
                             }
 
                             .cell-label {
@@ -111,7 +111,7 @@
                                 gap: var(--artdeco-spacing-1);
                                 text-align: center;
                                 color: var(--artdeco-fg-primary);
-                                text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-dark) 50%, transparent);
+                                text-shadow: 0 var(--artdeco-spacing-px) var(--capital-flow-text-shadow-blur) color-mix(in srgb, var(--artdeco-bg-dark) 50%, transparent);
 
                                 .sector-name {
                                     font-family: var(--artdeco-font-body);
@@ -131,7 +131,7 @@
                                     font-size: var(--artdeco-font-size-lg);
                                     font-weight: 600;
                                     color: var(--artdeco-fg-primary);
-                                    text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-dark) 50%, transparent);
+                                    text-shadow: 0 var(--artdeco-spacing-px) var(--capital-flow-text-shadow-blur) color-mix(in srgb, var(--artdeco-bg-dark) 50%, transparent);
                                 }
                             }
                         }
@@ -157,22 +157,22 @@
                             }
 
                             .legend-gradient {
-                                width: 200px;
-                                height: 12px;
+                                width: var(--capital-flow-legend-width);
+                                height: var(--capital-flow-legend-height);
                                 background: linear-gradient(
                                     90deg,
                                     color-mix(in srgb, var(--artdeco-down) 80%, transparent) 0%,
                                     color-mix(in srgb, var(--artdeco-fg-muted) 30%, transparent) 50%,
                                     color-mix(in srgb, var(--artdeco-up) 80%, transparent) 100%
                                 );
-                                border-radius: 6px;
+                                border-radius: var(--capital-flow-corner-sm);
                             }
                         }
 
                         .legend-values {
                             display: flex;
                             justify-content: space-between;
-                            width: 200px;
+                            width: var(--capital-flow-legend-width);
 
                             span {
                                 font-family: var(--artdeco-font-mono);

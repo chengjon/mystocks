@@ -1,0 +1,37 @@
+task:
+  id: "artdeco-scss-capital-flow-token-cleanup"
+  title: "Tokenize ArtDecoCapitalFlow SCSS dimensions"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.layout.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.heatmap.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.clustering.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.control.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.opportunity.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.responsive.scss"
+    - "docs/reports/tasks/2026-06-01-artdeco-scss-capital-flow-token-cleanup-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-capital-flow-token-cleanup.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue or TypeScript runtime changes."
+  - "No router, backend API contract, OpenAPI, or frontend API client changes."
+  - "No shared component extraction, route shell changes, visual redesign, or global token/baseline edits."
+
+acceptance:
+  commit_gate:
+    - "Focused ArtDeco token check for the six ArtDecoCapitalFlow partials passes with zero disallowed hardcoded px."
+    - "npm run build:no-types passes after SCSS cleanup."
+    - "git diff --cached --check passes and staged files remain within the authorized allow-list; generated tree.md is not staged."
+    - "Local gitnexus analyze is run if index refresh is needed; staged detect_changes reports only expected low-risk style files."
+  closeout_gate:
+    - "Function Tree closeout records token cleanup report, validation evidence, compatibility boundaries, and active gates return to none."
+
+evidence:
+  current_head: "3ecbeaabf34b7f13fa0cdf2af367ff1462246f21"
+  notes: []

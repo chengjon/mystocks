@@ -2150,5 +2150,98 @@
       "current_head": "2fb2220d5d84934dc7efcb39673c91fdec645cd6",
       "prepared_at": "2026-06-01T03:09:05.269Z"
     }
+  },
+  {
+    "id": "artdeco-scss-capital-flow-token-cleanup",
+    "title": "Tokenize ArtDecoCapitalFlow SCSS dimensions",
+    "node_type": "implementation",
+    "owner_lane": "frontend-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.scss",
+    "current_head": "3ecbeaabf34b7f13fa0cdf2af367ff1462246f21",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Commit 3ecbeaabf split ArtDecoCapitalFlow into exact-reconstruction partials; current cleanup targets hardcoded px debt only.",
+        "note": "",
+        "current_head": "3ecbeaabf34b7f13fa0cdf2af367ff1462246f21",
+        "recorded_at": "2026-06-01T03:15:55.743Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.layout.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.heatmap.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.clustering.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.control.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.opportunity.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoCapitalFlow.responsive.scss",
+      "docs/reports/tasks/2026-06-01-artdeco-scss-capital-flow-token-cleanup-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-scss-capital-flow-token-cleanup.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript runtime changes.",
+      "No router, backend API contract, OpenAPI, or frontend API client changes.",
+      "No shared component extraction, route shell changes, visual redesign, or global token/baseline edits."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T03:15:55.697Z",
+    "updated_at": "2026-06-01T03:25:19.460Z",
+    "acceptance": {
+      "commit_gate": [
+        "Focused ArtDeco token check for the six ArtDecoCapitalFlow partials passes with zero disallowed hardcoded px.",
+        "npm run build:no-types passes after SCSS cleanup.",
+        "git diff --cached --check passes and staged files remain within the authorized allow-list; generated tree.md is not staged.",
+        "Local gitnexus analyze is run if index refresh is needed; staged detect_changes reports only expected low-risk style files."
+      ],
+      "closeout_gate": [
+        "Function Tree closeout records token cleanup report, validation evidence, compatibility boundaries, and active gates return to none."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "3ecbeaabf34b7f13fa0cdf2af367ff1462246f21",
+        "transitioned_at": "2026-06-01T03:15:55.841Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "3ecbeaabf34b7f13fa0cdf2af367ff1462246f21",
+        "transitioned_at": "2026-06-01T03:15:55.887Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "3ecbeaabf34b7f13fa0cdf2af367ff1462246f21",
+        "transitioned_at": "2026-06-01T03:25:19.372Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "3ecbeaabf34b7f13fa0cdf2af367ff1462246f21",
+        "transitioned_at": "2026-06-01T03:25:19.460Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-scss-capital-flow-token-cleanup-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "3ecbeaabf34b7f13fa0cdf2af367ff1462246f21",
+      "prepared_at": "2026-06-01T03:25:19.413Z"
+    }
   }
 ]
