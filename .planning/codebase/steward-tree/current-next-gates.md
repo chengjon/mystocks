@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T15:00:25+08:00`
-- Base HEAD checked: `030545a24b4a8c9a4df36d2f126eb4597685e0c0`
+- Prepared at: `2026-06-01T16:01:41+08:00`
+- Base HEAD checked: `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.297 core database `get_postgresql_session` residual route-domain decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#449` merged at `030545a24b4a8c9a4df36d2f126eb4597685e0c0`; G2.297 splits remaining direct calls into auth `4`, admin optimization `2`, and market stock list `1`, keeps runtime/OpenAPI `548/500/0`, and selects only a no-source market stock list authorization candidate | Review future PR `#450`; do not auto-merge because the selected next candidate belongs to a CRITICAL shared helper family |
+| P0 | Review G2.298 market stock list `get_postgresql_session` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#450` merged at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`; G2.298 authorizes only future path-limited `GET /api/v1/market/stocks` provider implementation after review, keeps runtime/OpenAPI `548/500/0`, and records focused test `2 passed` | Review future PR `#451`; do not auto-merge because this package authorizes future backend source/test edits under a HIGH/CRITICAL shared helper family |
+| P0 | Preserve G2.297 core database `get_postgresql_session` residual route-domain decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#450` merged at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`; G2.297 splits remaining direct calls into auth `4`, admin optimization `2`, and market stock list `1`, keeps runtime/OpenAPI `548/500/0`, and selects only a no-source market stock list authorization candidate | Do not use G2.297 as source implementation authorization; use G2.298 only as no-source market stock list authorization after review |
 | P0 | Preserve G2.296 admin audit provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#449` merged at `030545a24b4a8c9a4df36d2f126eb4597685e0c0`; G2.296 records admin audit direct route-body `get_postgresql_session()` calls `0`, provider bindings `3`, runtime/OpenAPI `548/500/0`, and remaining core-database helper direct calls `7` | Do not use G2.296 as source implementation authorization; use G2.297 only for no-source residual route-domain decision |
 | P0 | Preserve G2.295 admin audit `database_factory.get_postgresql_session` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#448` merged at `48cf7e12637341451d8d77370306774df9c48729`; G2.295 moved 3 admin audit handlers to explicit provider dependency wiring, preserved cleanup semantics, and kept runtime/OpenAPI `548/500/0` | Do not use G2.295 as authority for auth, admin optimization, market request, helper-definition, route/OpenAPI, docs/api, frontend, config, script, OpenSpec, PM2, or runtime changes |
 | P0 | Preserve G2.294 admin audit `database_factory.get_postgresql_session` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#447` merged at `a31fd3ede177d5851c2394b8cea2fe42188a4021`; G2.294 authorized only the path-limited G2.295 admin audit implementation lane | Do not use G2.294 to expand scope beyond `web/backend/app/api/v1/admin/audit.py` plus focused audit tests |

@@ -3239,3 +3239,16 @@ Status: for review in future PR `#450`.
 - GitNexus MCP remains unreliable (`Transport closed` in this session); CLI fallback for `Function:web/backend/app/core/database.py:get_postgresql_session` reports CRITICAL risk, `15` direct dependants, `54` affected processes, and `13` affected modules with a stale-index warning.
 - Decision: do not start source implementation from G2.297. Select only G2.298 no-source market stock list `get_postgresql_session` provider authorization because it is the smallest remaining route-domain surface.
 - Stop rule: PR `#450` must stop for human review because the selected next candidate belongs to a CRITICAL shared helper family.
+
+## G2.298 Market Stock List PostgreSQL Session Provider Authorization
+
+Status: for review in future PR `#451`.
+
+- Parent PR `#450` merged at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`.
+- G2.298 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Target is only `web/backend/app/api/market/market_data_request.py` route `GET /api/v1/market/stocks`, handler `get_stock_list`, with one direct `get_postgresql_session()` call.
+- Existing focused test `web/backend/tests/test_market_stock_list_mock_configuration.py` passes `2/2`.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with one target market stock route.
+- GitNexus MCP remains unreliable (`Transport closed` in this session); CLI fallback reports current shared helper sample as HIGH risk and `get_stock_list` as LOW risk, both with stale-index warning. G2.297 previously recorded CRITICAL for the shared helper, so the family remains treated as HIGH/CRITICAL.
+- Decision: authorize only future G2.299 path-limited market stock list provider implementation after PR `#451` human acceptance.
+- Stop rule: PR `#451` must stop for human review because it authorizes future backend source/test edits.
