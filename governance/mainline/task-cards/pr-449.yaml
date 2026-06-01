@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-449"
+  title: "Close out admin audit PostgreSQL session provider lane"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-admin-audit-postgresql-session-provider-closeout"
+  objective: "record G2.295 accepted/merged and refresh remaining get_postgresql_session residual routing"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.296 is no-source governance closeout only. It changes no runtime route, handler, contract, or source entrypoint."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/admin-audit-postgresql-session-provider-closeout-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-admin-audit-postgresql-session-provider-closeout-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-449.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "authorization of a G2.297 source implementation lane"
+
+acceptance:
+  checks:
+    - id: "pr448-merged"
+      command: "gh pr view 448 confirms MERGED at 48cf7e12637341451d8d77370306774df9c48729"
+      required: true
+    - id: "admin-audit-residual-scan"
+      command: "current scan records 0 admin audit direct route-body get_postgresql_session() calls and 3 Depends(get_admin_audit_postgresql_session_factory) bindings"
+      required: true
+    - id: "remaining-family-scan"
+      command: "current scan records remaining active direct app.core.database get_postgresql_session calls across auth.py, admin/optimization.py, and market/market_data_request.py"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, and duplicate operation IDs 0"
+      required: true
+    - id: "gitnexus-next-target-risk"
+      command: "npx gitnexus impact -r mystocks --summary-only Function:web/backend/app/core/database.py:get_postgresql_session records CRITICAL risk"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-admin-audit-postgresql-session-provider-closeout-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-449.yaml --base-sha 48cf7e12637341451d8d77370306774df9c48729 --head-sha HEAD --report /tmp/pr449-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The selected next residual target is CRITICAL-impact, so future work must not jump directly to source implementation."
+  rollback_plan: "Revert PR #449; this removes only G2.296 governance evidence and restores the prior G2.295 review gate text."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close out the accepted admin audit PostgreSQL session provider lane."
+    modified_scope: "Steward tree, generated closeout evidence, quality report, and mainline task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime logic impact; backend source and tests are untouched."
+    rollback_ready: "Revert PR #449."
+    risk_and_rollback_point: "No-source closeout; next selected core database helper family is CRITICAL and must stop for human review."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T14:31:45+08:00"
+    approval_note: "Human maintainer approved continuing after PR #448 merge into G2.296 no-source closeout / residual refresh. PR #449 must stop for review because the selected next residual target has CRITICAL GitNexus impact."
+    secondary_approved: false
