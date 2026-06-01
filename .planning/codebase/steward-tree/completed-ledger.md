@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-01T11:52:20+08:00`
-- Base HEAD checked: `3d161e90547720f4ce95111ea511d3f8dc3174dc`
+- Prepared at: `2026-06-01T12:19:25+08:00`
+- Base HEAD checked: `05cdf04f646d844c11e90e7c453ed4f985c8d382`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,15 +19,16 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.291 accepted/merged by PR `#444` at `3d161e9` | Continue with G2.292 `data_source_registry.get_manager` provider closeout / residual refresh review; do not auto-merge because it selects a next CRITICAL-impact database-session candidate |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.292 accepted/merged by PR `#445` at `05cdf04` | Continue with G2.293 `get_postgresql_session` ownership / route-provider decision review; do not auto-merge because the family includes a CRITICAL shared database helper |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.291 have progressed through PR `#337`-`#444`; current review target is G2.292 provider closeout / residual refresh in future PR `#445` |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.292 have progressed through PR `#337`-`#445`; current review target is G2.293 `get_postgresql_session` ownership / route-provider decision in future PR `#446` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Recent Closeouts
 
 | Item | Accepted evidence | Follow-up |
 |---|---|---|
+| G2.292 data_source_registry get_manager provider closeout | PR `#445` merged at `05cdf04f646d844c11e90e7c453ed4f985c8d382`; direct route-body `get_manager()` calls `0`, provider backing `1`, provider bindings `7`, runtime/OpenAPI `548/500/0` | G2.293 classifies `get_postgresql_session` ownership and splits future provider work by route domain/helper origin |
 | G2.291 data_source_registry get_manager provider implementation | PR `#444` merged at `3d161e90547720f4ce95111ea511d3f8dc3174dc`; direct route-body `get_manager()` calls `0`, provider bindings `7`, focused regression `3/3`, runtime/OpenAPI `548/500/0` | G2.292 closes the provider lane and selects only a no-source `get_postgresql_session` ownership decision |
 | G2.290 data_source_registry get_manager provider authorization | PR `#443` merged at `e517163385e96a6c7115e14b77fb89819b4cead4`; authorized only a path-limited G2.291 implementation lane | Superseded by the accepted/merged G2.291 provider implementation and G2.292 closeout review |
 | G2.265 signal statistics stale contract cleanup | PR `#418` merged at `2b53352d6869f66147ce3892b1b0a7174ba064b4`; targeted tests `2/2`; runtime OpenAPI target paths `0` | G2.266 records closeout and selects `G2.267 no-source monitoring/signal residual provider classification refresh` |

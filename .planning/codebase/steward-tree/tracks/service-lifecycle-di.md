@@ -3156,7 +3156,7 @@ Status: for review in future PR `#443`.
 
 ## G2.292 data_source_registry get_manager Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#445`.
+Status: accepted/merged by PR `#445` at `05cdf04f646d844c11e90e7c453ed4f985c8d382`.
 
 - Parent PR `#444` merged at `3d161e90547720f4ce95111ea511d3f8dc3174dc`.
 - G2.292 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3166,3 +3166,18 @@ Status: for review in future PR `#445`.
 - GitNexus MCP returned `Transport closed`; CLI fallback reports CRITICAL risk for `Function:web/backend/app/core/database.py:get_postgresql_session`.
 - Stop rule: PR `#445` must stop for human review because the next selected target includes CRITICAL GitNexus impact.
 - Recommended next gate after human acceptance and merge: G2.293 no-source `get_postgresql_session` ownership / route-provider decision.
+
+## G2.293 get_postgresql_session Ownership / Route-Provider Decision
+
+Status: for review in future PR `#446`.
+
+- Parent PR `#445` merged at `05cdf04f646d844c11e90e7c453ed4f985c8d382`.
+- G2.293 is a no-source ownership / route-provider decision package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- It classifies `get_postgresql_session` as a cross-domain helper family, not a single implementation target.
+- Current scan records `9` direct helper occurrences across `auth.py`, `v1/admin/audit.py`, `v1/admin/optimization.py`, and `market/market_data_request.py`; effective OpenAPI endpoint surface is `12`.
+- Helper origins are split between `app.core.database.get_postgresql_session` and `app.core.database_factory.get_postgresql_session`.
+- GitNexus MCP returned `Transport closed`; CLI fallback reports CRITICAL risk for `Function:web/backend/app/core/database.py:get_postgresql_session` and LOW risk for `Function:web/backend/app/core/database_factory.py:get_postgresql_session`.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`.
+- Decision: do not modify shared helper definitions; split future route-provider work by route domain/helper origin.
+- Recommended next gate after human acceptance and merge: G2.294 no-source admin audit database_factory `get_postgresql_session` provider authorization.
+- Stop rule: PR `#446` must stop for human review because the target family includes CRITICAL GitNexus impact.
