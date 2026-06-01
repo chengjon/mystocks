@@ -1,8 +1,11 @@
 from __future__ import annotations
 
 import importlib
+import inspect
 import sys
 from pathlib import Path
+
+from fastapi.params import Depends as DependsParam
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -16,9 +19,37 @@ def _load_module():
     return importlib.import_module("app.api.v1.admin.optimization")
 
 
+def test_v1_optimization_handlers_use_postgresql_session_factory_dependency():
+    module = _load_module()
+
+    for handler_name in (
+        "vacuum_database",
+        "analyze_database",
+        "reindex_database",
+        "get_database_status",
+    ):
+        parameter = inspect.signature(getattr(module, handler_name)).parameters.get("session_factory")
+
+        assert parameter is not None, handler_name
+        assert isinstance(parameter.default, DependsParam), handler_name
+        assert parameter.default.dependency is module.get_admin_optimization_postgresql_session_factory
+
+
+def test_v1_optimization_postgresql_provider_returns_session_factory(monkeypatch):
+    module = _load_module()
+    sentinel = object()
+
+    monkeypatch.setattr(module, "get_postgresql_session", lambda: sentinel)
+
+    session_factory = module.get_admin_optimization_postgresql_session_factory()
+
+    assert session_factory() is sentinel
+
+
 async def test_v1_vacuum_returns_runtime_response():
     module = _load_module()
-    async def _stub(operation: str):
+
+    async def _stub(operation: str, session_factory=None):
         return module.OptimizationResponse(
             operation=operation,
             status="completed",
@@ -37,7 +68,8 @@ async def test_v1_vacuum_returns_runtime_response():
 
 async def test_v1_analyze_returns_runtime_response():
     module = _load_module()
-    async def _stub(operation: str):
+
+    async def _stub(operation: str, session_factory=None):
         return module.OptimizationResponse(
             operation=operation,
             status="completed",
@@ -55,7 +87,8 @@ async def test_v1_analyze_returns_runtime_response():
 
 async def test_v1_reindex_returns_runtime_response():
     module = _load_module()
-    async def _stub(operation: str):
+
+    async def _stub(operation: str, session_factory=None):
         return module.OptimizationResponse(
             operation=operation,
             status="completed",
@@ -73,7 +106,7 @@ async def test_v1_reindex_returns_runtime_response():
 
 async def test_v1_optimization_status_returns_runtime_response():
     module = _load_module()
-    module._database_status_payload = lambda: {
+    module._database_status_payload = lambda session_factory=None: {
         "database": "mystocks",
         "pool": {"size": 20, "in_use": 1, "idle": 19, "status": "ok"},
         "performance_monitor": {"total_queries": 3, "total_slow_queries": 1},

@@ -389,3 +389,11 @@ state transition.
   available, `current_head_checked_at_review`, and a stale policy.
 - Graphiti entries should record accepted milestone summaries after the repo or
   GitHub artifact exists.
+
+## G2.303 Admin Optimization PostgreSQL Session Provider Implementation
+
+- JSON: `.planning/codebase/generated/admin-optimization-postgresql-session-provider-implementation-2026-06-01.json`
+- Report: `docs/reports/quality/backend-admin-optimization-postgresql-session-provider-implementation-2026-06-01.md`
+- Task card: `governance/mainline/task-cards/pr-456.yaml`
+- Verification: focused regression `7 passed`; ruff all checks passed; provider scan `Depends=4`, provider backing calls `1`, helper direct calls `0`; route/OpenAPI `548/500/0`.
+- Stop rule: future PR `#456` requires human review because G2.303 changes backend source/tests under a CRITICAL shared helper family.

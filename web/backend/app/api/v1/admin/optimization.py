@@ -7,11 +7,12 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Callable
 from datetime import datetime, timezone
 from typing import Any, Dict
 from uuid import uuid4
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Depends, Query
 from pydantic import BaseModel, Field
 from sqlalchemy import text
 
@@ -44,6 +45,7 @@ router = APIRouter(
     tags=["Database Optimization"],
     responses=OPTIMIZATION_ROUTE_RESPONSES,
 )
+SessionFactory = Callable[[], Any]
 
 
 class OptimizationResponse(BaseModel):
@@ -157,7 +159,14 @@ def _record_operation(entry: dict[str, Any]) -> None:
     del _OPERATION_HISTORY[:-20]
 
 
-async def _run_maintenance(operation: str) -> OptimizationResponse:
+def get_admin_optimization_postgresql_session_factory() -> SessionFactory:
+    def _session_factory() -> Any:
+        return get_postgresql_session()
+
+    return _session_factory
+
+
+async def _run_maintenance(operation: str, session_factory: SessionFactory) -> OptimizationResponse:
     sql = _OPERATION_SQL[operation]
     task_id = f"opt_{uuid4().hex[:12]}"
     started_at = datetime.now(timezone.utc)
@@ -166,7 +175,7 @@ async def _run_maintenance(operation: str) -> OptimizationResponse:
     status = "completed"
     error = None
     try:
-        session = get_postgresql_session()
+        session = session_factory()
         connection = session.connection().execution_options(isolation_level="AUTOCOMMIT")
         connection.execute(text(sql))
     except Exception as exc:
@@ -190,12 +199,12 @@ async def _run_maintenance(operation: str) -> OptimizationResponse:
     return OptimizationResponse(operation=operation, status=status, duration_ms=duration_ms, result=entry)
 
 
-def _database_status_payload() -> dict[str, Any]:
+def _database_status_payload(session_factory: SessionFactory) -> dict[str, Any]:
     collector = get_metrics_collector("mystocks")
     monitor = get_performance_monitor()
     session = None
     try:
-        session = get_postgresql_session()
+        session = session_factory()
         pool = session.get_bind().pool
         pool_status = pool.status()
         pool_metrics = collector.get_pool_metrics()
@@ -241,8 +250,10 @@ def _resolve_query_value(value: Any) -> Any:
     description="执行数据库 Vacuum 操作，当前实现会尝试对 PostgreSQL 连接执行真实维护命令并记录任务结果。",
     responses=VACUUM_RESPONSES,
 )
-async def vacuum_database():
-    response = await _run_maintenance("vacuum")
+async def vacuum_database(
+    session_factory: SessionFactory = Depends(get_admin_optimization_postgresql_session_factory),
+):
+    response = await _run_maintenance("vacuum", session_factory)
     return UnifiedResponse(
         success=response.status == "completed",
         code=200 if response.status == "completed" else 503,
@@ -258,8 +269,10 @@ async def vacuum_database():
     description="执行数据库 Analyze 操作，当前实现会尝试刷新 PostgreSQL 统计信息并记录执行状态。",
     responses=ANALYZE_RESPONSES,
 )
-async def analyze_database():
-    response = await _run_maintenance("analyze")
+async def analyze_database(
+    session_factory: SessionFactory = Depends(get_admin_optimization_postgresql_session_factory),
+):
+    response = await _run_maintenance("analyze", session_factory)
     return UnifiedResponse(
         success=response.status == "completed",
         code=200 if response.status == "completed" else 503,
@@ -275,8 +288,10 @@ async def analyze_database():
     description="执行数据库 Reindex 操作，当前实现会尝试对 PostgreSQL 执行真实索引重建命令并记录结果。",
     responses=REINDEX_RESPONSES,
 )
-async def reindex_database():
-    response = await _run_maintenance("reindex")
+async def reindex_database(
+    session_factory: SessionFactory = Depends(get_admin_optimization_postgresql_session_factory),
+):
+    response = await _run_maintenance("reindex", session_factory)
     return UnifiedResponse(
         success=response.status == "completed",
         code=200 if response.status == "completed" else 503,
@@ -292,12 +307,14 @@ async def reindex_database():
     description="获取数据库优化状态，当前实现返回连接池状态、性能监控摘要和最近维护任务。",
     responses=DATABASE_STATUS_RESPONSES,
 )
-async def get_database_status():
+async def get_database_status(
+    session_factory: SessionFactory = Depends(get_admin_optimization_postgresql_session_factory),
+):
     return UnifiedResponse(
         success=True,
         code=200,
         message="Database optimization status retrieved",
-        data=_database_status_payload(),
+        data=_database_status_payload(session_factory),
     )
 
 
