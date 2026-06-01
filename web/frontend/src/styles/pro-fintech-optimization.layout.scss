@@ -1,0 +1,43 @@
+
+/* ============================================
+   GLOBAL APPLICATION
+   全局应用
+   ============================================ */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ============================================
+   DATA-DENSE LAYOUT UTILITIES
+   数据密集型布局工具类
+   ============================================ */
+
+.data-dense {
+  --spacing-base: 6px; /* 紧凑间距 */
+}
+
+.data-dense .el-card {
+  margin-bottom: var(--spacing-sm);
+}
+
+.data-dense .el-table {
+  font-size: var(--font-size-sm);
+}
+
+.data-dense .el-table th,
+.data-dense .el-table td {
+  padding: var(--spacing-xs) var(--spacing-sm);
+}

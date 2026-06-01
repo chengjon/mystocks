@@ -1,0 +1,85 @@
+
+/* ============================================
+   BUTTON ENHANCEMENTS
+   按钮增强
+   ============================================ */
+
+.el-button {
+  font-family: var(--font-family-base) !important;
+  font-weight: var(--font-weight-medium) !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-base) ease !important;
+}
+
+.el-button--primary {
+  background-color: var(--color-primary) !important;
+  border-color: var(--color-primary) !important;
+}
+
+.el-button--primary:hover {
+  background-color: var(--color-primary-hover) !important;
+  box-shadow: var(--shadow-glow-primary) !important;
+}
+
+/* 涨跌按钮 */
+.el-button--success {
+  background-color: var(--color-down) !important; /* 绿=跌，但在买入语境用绿 */
+  border-color: var(--color-down) !important;
+}
+
+.el-button--danger {
+  background-color: var(--color-up) !important; /* 红=涨，但在卖出语境用红 */
+  border-color: var(--color-up) !important;
+}
+
+/* ============================================
+   INPUT & FORM ELEMENTS
+   输入和表单元素
+   ============================================ */
+
+.el-input__wrapper {
+  background-color: var(--bg-elevated) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-sm) !important;
+  transition: all var(--transition-base) ease !important;
+}
+
+.el-input__wrapper:hover {
+  border-color: var(--border-light) !important;
+}
+
+.el-input__wrapper.is-focus {
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 0 2px rgb(0 128 255 / 10%) !important;
+}
+
+.el-input__inner {
+  color: var(--text-primary) !important;
+  font-family: var(--font-family-mono) !important; /* 数字用等宽字体 */
+}
+
+/* ============================================
+   NAVIGATION OPTIMIZATION
+   导航优化
+   ============================================ */
+
+.el-menu {
+  background-color: var(--bg-secondary) !important;
+  border-right: 1px solid var(--border-default) !important;
+}
+
+.el-menu-item {
+  color: var(--text-secondary) !important;
+  transition: all var(--transition-base) ease !important;
+}
+
+.el-menu-item:hover {
+  background-color: var(--bg-hover) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-menu-item.is-active {
+  background-color: var(--bg-active) !important;
+  color: var(--color-primary) !important;
+  border-right: 2px solid var(--color-primary) !important;
+}

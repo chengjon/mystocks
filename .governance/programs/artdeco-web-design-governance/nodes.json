@@ -2999,5 +2999,100 @@
       "current_head": "d35022a10581207be8f6ed87d0c8f53257ad0c55",
       "prepared_at": "2026-06-01T11:38:11.714Z"
     }
+  },
+  {
+    "id": "pro-fintech-optimization-scss-style-split",
+    "title": "Split pro fintech optimization SCSS by visual concern",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/styles/pro-fintech-optimization.scss",
+    "current_head": "a26394f3e1c7377d2eb044848f8a1d8b733dd5ba",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "reports/analysis/file-size-guard-report-2026-06-01.md",
+        "note": "",
+        "current_head": "a26394f3e1c7377d2eb044848f8a1d8b733dd5ba",
+        "recorded_at": "2026-06-01T11:59:29.691Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/styles/pro-fintech-optimization.scss",
+      "web/frontend/src/styles/pro-fintech-optimization.tokens.scss",
+      "web/frontend/src/styles/pro-fintech-optimization.layout.scss",
+      "web/frontend/src/styles/pro-fintech-optimization.surfaces-tables.scss",
+      "web/frontend/src/styles/pro-fintech-optimization.controls-navigation.scss",
+      "web/frontend/src/styles/pro-fintech-optimization.metrics-charts.scss",
+      "web/frontend/src/styles/pro-fintech-optimization.interactions-accessibility.scss",
+      "docs/reports/tasks/2026-06-01-pro-fintech-optimization-scss-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/pro-fintech-optimization-scss-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript runtime logic changes",
+      "No router, backend API, OpenAPI, schema, or frontend API client changes",
+      "No shared component extraction or route shell changes",
+      "No visual redesign, token value changes, or global token baseline changes"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T11:59:22.099Z",
+    "updated_at": "2026-06-01T12:32:12.024Z",
+    "acceptance": {
+      "commit_gate": [
+        "Split preserves original post-header SCSS body exactly",
+        "Every resulting partial stays below 500 lines",
+        "Function Tree scope-check passes before closeout",
+        "Frontend build:no-types passes"
+      ],
+      "closeout_gate": [
+        "Report records split ranges, preservation evidence, validation, compatibility boundaries, and next candidates"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "a26394f3e1c7377d2eb044848f8a1d8b733dd5ba",
+        "transitioned_at": "2026-06-01T11:59:50.698Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "a26394f3e1c7377d2eb044848f8a1d8b733dd5ba",
+        "transitioned_at": "2026-06-01T11:59:58.323Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "a26394f3e1c7377d2eb044848f8a1d8b733dd5ba",
+        "transitioned_at": "2026-06-01T12:31:57.996Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "a26394f3e1c7377d2eb044848f8a1d8b733dd5ba",
+        "transitioned_at": "2026-06-01T12:32:12.023Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-pro-fintech-optimization-scss-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "a26394f3e1c7377d2eb044848f8a1d8b733dd5ba",
+      "prepared_at": "2026-06-01T12:32:05.357Z"
+    }
   }
 ]

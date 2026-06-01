@@ -1,0 +1,67 @@
+
+/* ============================================
+   PROFESSIONAL CARD STYLES
+   专业卡片样式
+   ============================================ */
+
+.el-card {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: all var(--transition-base) ease !important;
+}
+
+.el-card:hover {
+  border-color: var(--border-light) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.el-card__header {
+  background-color: var(--bg-elevated) !important;
+  border-bottom: 1px solid var(--border-default) !important;
+  padding: var(--spacing-sm) var(--spacing-md) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  font-size: var(--font-size-md) !important;
+  color: var(--text-primary) !important;
+}
+
+.el-card__body {
+  padding: var(--spacing-md) !important;
+  color: var(--text-secondary) !important;
+}
+
+/* ============================================
+   DATA TABLE OPTIMIZATION
+   数据表格优化
+   ============================================ */
+
+.el-table {
+  background-color: var(--bg-card) !important;
+  border: 1px solid var(--border-default) !important;
+}
+
+.el-table th.el-table__cell {
+  background-color: var(--bg-elevated) !important;
+  color: var(--text-primary) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  font-size: var(--font-size-sm) !important;
+  border-bottom: 1px solid var(--border-light) !important;
+}
+
+.el-table td.el-table__cell {
+  color: var(--text-secondary) !important;
+  border-bottom: 1px solid var(--border-default) !important;
+}
+
+.el-table--enable-row-hover .el-table__body tr:hover > td {
+  background-color: var(--bg-hover) !important;
+}
+
+/* 数据颜色应用 */
+.text-up { color: var(--color-up) !important; }
+.text-down { color: var(--color-down) !important; }
+.text-flat { color: var(--color-flat) !important; }
+
+.bg-up { background-color: var(--color-up-bg) !important; }
+.bg-down { background-color: var(--color-down-bg) !important; }

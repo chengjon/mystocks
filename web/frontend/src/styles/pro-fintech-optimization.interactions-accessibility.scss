@@ -1,0 +1,102 @@
+
+/* ============================================
+   MICRO-INTERACTIONS
+   微交互
+   ============================================ */
+
+.hover-lift {
+  transition: transform var(--transition-base) ease, box-shadow var(--transition-base) ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.hover-glow {
+  transition: all var(--transition-base) ease;
+}
+
+.hover-glow:hover {
+  box-shadow: var(--shadow-glow-primary);
+}
+
+/* ============================================
+   SCROLLBAR CUSTOMIZATION
+   滚动条自定义 (保持专业感)
+   ============================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: var(--radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-tertiary);
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   响应式调整
+   ============================================ */
+
+@media (width <= 1366px) {
+  :root {
+    --font-size-xs: 10px;
+    --font-size-sm: 11px;
+    --font-size-base: 12px;
+  }
+
+  .data-dense .el-table th,
+  .data-dense .el-table td {
+    padding: 2px var(--spacing-xs);
+  }
+}
+
+@media (width >= 1920px) {
+  :root {
+    --font-size-xs: 12px;
+    --font-size-sm: 13px;
+    --font-size-base: 14px;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   无障碍访问
+   ============================================ */
+
+/* Focus visible for keyboard navigation */
+*:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Reduced motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  :root {
+    --text-primary: #FFF;
+    --text-secondary: #E2E8F0;
+    --border-default: #475569;
+  }
+}

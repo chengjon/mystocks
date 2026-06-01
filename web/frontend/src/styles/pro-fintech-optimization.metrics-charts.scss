@@ -1,0 +1,71 @@
+
+/* ============================================
+   STAT CARD & METRIC DISPLAY
+   统计卡片和指标显示
+   ============================================ */
+
+.stat-card {
+  background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-elevated) 100%);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-md);
+  transition: all var(--transition-base) ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--border-light);
+}
+
+.stat-value {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--text-primary);
+}
+
+.stat-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-change {
+  font-family: var(--font-family-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+
+.stat-change.positive {
+  color: var(--color-up);
+  background-color: var(--color-up-bg);
+}
+
+.stat-change.negative {
+  color: var(--color-down);
+  background-color: var(--color-down-bg);
+}
+
+/* ============================================
+   CHART COLOR PALETTE
+   图表调色板
+   ============================================ */
+
+.chart-primary { color: #0080FF; }
+.chart-success { color: #22C55E; }
+.chart-warning { color: #F59E0B; }
+.chart-danger { color: #EF4444; }
+.chart-info { color: #06B6D4; }
+.chart-purple { color: #8B5CF6; }
+
+.chart-series-1 { color: #0080FF; }
+.chart-series-2 { color: #22C55E; }
+.chart-series-3 { color: #F59E0B; }
+.chart-series-4 { color: #8B5CF6; }
+.chart-series-5 { color: #EC4899; }
+.chart-series-6 { color: #06B6D4; }
