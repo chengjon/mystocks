@@ -1,12 +1,12 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-01T07:48:42+08:00",
+  "generated_at": "2026-06-01T08:12:57+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "bdfdeb353f725f9e875ab50ee4e8ed22902a5818",
-  "split_branch": "g2-286-governance-dashboard-postgres-provider-authorization",
-  "scope": "governance_dashboard_postgres_provider_authorization",
-  "source_edit_authority": false,
+  "base_head": "e7c78892e1928d86fabecbe4135e7ce68fd0f01e",
+  "split_branch": "g2-287-governance-dashboard-postgres-provider-implementation",
+  "scope": "governance_dashboard_postgres_provider_implementation",
+  "source_edit_authority": true,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
   "split_files": [
@@ -8777,7 +8777,8 @@
           "direct": 5,
           "processes_affected": 0,
           "index_status": "stale warning"
-        }
+        },
+        "staged": "MCP detect_changes returned Transport closed; CLI verify-staged fallback ok=true, status=stale, risk=low, changed files 12, changed symbols 7, affected processes 0"
       },
       "decision": {
         "classification": "bounded-active-control-plane-route-helper",
@@ -8799,7 +8800,7 @@
     {
       "id": "g2-286-governance-dashboard-postgres-provider-authorization",
       "type": "authorization_package",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.285 governance_dashboard get_postgres_connection ownership / control-plane route-provider decision",
       "source_edit_authority": false,
@@ -8809,8 +8810,10 @@
       "github_pr": {
         "number": 439,
         "url": "https://github.com/chengjon/mystocks/pull/439",
-        "state": "PLANNED_FOR_REVIEW",
-        "head_ref": "g2-286-governance-dashboard-postgres-provider-authorization"
+        "state": "MERGED",
+        "merged_at": "2026-06-01T00:02:12Z",
+        "head_ref": "g2-286-governance-dashboard-postgres-provider-authorization",
+        "merge_commit": "e7c78892e1928d86fabecbe4135e7ce68fd0f01e"
       },
       "evidence": [
         ".planning/codebase/generated/governance-dashboard-postgres-provider-authorization-2026-06-01.json",
@@ -8893,13 +8896,120 @@
         "recommended_next_work_item": "G2.287 path-limited governance_dashboard get_postgres_connection route-provider implementation after human acceptance"
       },
       "freshness": {
-        "current_head_checked": "bdfdeb353f725f9e875ab50ee4e8ed22902a5818",
+        "current_head_checked": "e7c78892e1928d86fabecbe4135e7ce68fd0f01e",
         "stale_if_head_or_pr_state_changes": true,
         "stale_if_route_or_openapi_counts_change": true,
         "stale_if_governance_dashboard_call_sites_change": true,
         "stale_if_gitnexus_risk_changes": true
       },
-      "next_gate": "Stop for human review. If accepted, start G2.287 path-limited governance_dashboard get_postgres_connection route-provider implementation."
+      "next_gate": "Superseded by G2.287 path-limited governance_dashboard get_postgres_connection route-provider implementation."
+    },
+    {
+      "id": "g2-287-governance-dashboard-postgres-provider-implementation",
+      "type": "implementation_package",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.286 governance_dashboard get_postgres_connection provider authorization",
+      "source_edit_authority": true,
+      "autopilot_status": "stop_at_pr_review_gate",
+      "autopilot_stop_reason": "G2.287 changes backend source and GitNexus sampled impact for get_postgres_connection is MEDIUM",
+      "github_pr": {
+        "number": 440,
+        "url": "https://github.com/chengjon/mystocks/pull/440",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-287-governance-dashboard-postgres-provider-implementation"
+      },
+      "evidence": [
+        ".planning/codebase/generated/governance-dashboard-postgres-provider-implementation-2026-06-01.json",
+        "docs/reports/quality/backend-governance-dashboard-postgres-provider-implementation-2026-06-01.md",
+        "governance/mainline/task-cards/pr-440.yaml"
+      ],
+      "closed_parent": {
+        "pr": 439,
+        "state": "MERGED",
+        "merge_commit": "e7c78892e1928d86fabecbe4135e7ce68fd0f01e",
+        "merged_at": "2026-06-01T00:02:12Z"
+      },
+      "allowed_scope": [
+        "web/backend/app/api/governance_dashboard.py",
+        "tests/api/file_tests/test_governance_dashboard_api.py",
+        "web/backend/tests/test_governance_dashboard_postgres_provider.py",
+        ".planning/codebase/generated/governance-dashboard-postgres-provider-implementation-2026-06-01.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-governance-dashboard-postgres-provider-implementation-2026-06-01.md",
+        "governance/mainline/task-cards/pr-440.yaml"
+      ],
+      "forbidden_scope": [
+        "web/frontend/**",
+        "src/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "surface": {
+        "module": "web/backend/app/api/governance_dashboard.py",
+        "helper": "get_postgres_connection",
+        "provider": "get_governance_dashboard_postgres_connection",
+        "route_handlers": [
+          "get_quality_overview",
+          "get_lineage_stats",
+          "get_assets_catalog",
+          "get_compliance_metrics",
+          "get_dashboard_summary"
+        ],
+        "direct_route_body_calls_after": 0,
+        "provider_backing_calls_after": 1,
+        "manual_conn_close_calls_after": 0,
+        "depends_provider_bindings_after": 5,
+        "runtime_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_ids": 0
+      },
+      "gitnexus_evidence": {
+        "mcp_context": "tool call failed: Transport closed",
+        "mcp_impact": "tool call failed: Transport closed",
+        "cli_context": "found Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection; stale index names fetch_all_data but current code truth is get_dashboard_summary",
+        "cli_impact": {
+          "risk": "MEDIUM",
+          "impacted_count": 6,
+          "direct": 5,
+          "processes_affected": 0,
+          "index_status": "stale warning"
+        }
+      },
+      "verification": {
+        "tdd_red": "2 failed before implementation",
+        "tdd_green": "2 passed in 0.92s",
+        "focused_governance_dashboard_tests": "14 passed in 0.69s",
+        "health_route_conflicts": "121 passed in 223.41s",
+        "ruff": "All checks passed",
+        "route_openapi": "548 routes, 500 paths, duplicate operation IDs 0, five governance paths present, provider parameter leaks 0"
+      },
+      "decision": {
+        "classification": "provider-implementation-for-review",
+        "source_lane_recommendation": "stop-at-pr-440-human-review",
+        "autopilot_continue_allowed": false,
+        "selected_next_governance_target": "governance-dashboard-postgres-provider-closeout-refresh",
+        "recommended_next_work_item": "G2.288 no-source governance_dashboard get_postgres_connection provider closeout / residual refresh after PR #440 human acceptance"
+      },
+      "freshness": {
+        "current_head_checked": "e7c78892e1928d86fabecbe4135e7ce68fd0f01e",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_governance_dashboard_call_sites_change": true,
+        "stale_if_gitnexus_risk_changes": true,
+        "stale_if_test_inventory_changes": true
+      },
+      "next_gate": "Stop for human review in PR #440. If accepted, start G2.288 no-source governance_dashboard get_postgres_connection provider closeout / residual refresh."
     }
   ]
 }

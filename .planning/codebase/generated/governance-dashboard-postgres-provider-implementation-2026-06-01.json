@@ -1,0 +1,153 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-01T08:12:57+08:00",
+  "gate": "G2.287",
+  "title": "governance_dashboard get_postgres_connection route-provider implementation",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "e7c78892e1928d86fabecbe4135e7ce68fd0f01e",
+  "worktree": ".worktrees/g2-287-governance-dashboard-postgres-provider-implementation",
+  "source_edit_authority": true,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "G2.287 edits backend source and the selected target has GitNexus MEDIUM impact.",
+  "parent": {
+    "gate": "G2.286",
+    "pr": 439,
+    "state": "MERGED",
+    "merged_at": "2026-06-01T00:02:12Z",
+    "merge_commit": "e7c78892e1928d86fabecbe4135e7ce68fd0f01e",
+    "summary": "No-source provider authorization accepted for path-limited governance_dashboard get_postgres_connection route-provider implementation."
+  },
+  "implemented_scope": {
+    "source_paths": [
+      "web/backend/app/api/governance_dashboard.py"
+    ],
+    "test_paths": [
+      "tests/api/file_tests/test_governance_dashboard_api.py",
+      "web/backend/tests/test_governance_dashboard_postgres_provider.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/generated/governance-dashboard-postgres-provider-implementation-2026-06-01.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-governance-dashboard-postgres-provider-implementation-2026-06-01.md",
+      "governance/mainline/task-cards/pr-440.yaml"
+    ],
+    "forbidden_scope_respected": [
+      "no route registration changes",
+      "no route path, method, response_model, response metadata, or generated OpenAPI artifact changes",
+      "no docs/api artifact changes",
+      "no frontend/config/script/OpenSpec/PM2/runtime changes",
+      "no shared PostgreSQL provider or infrastructure rewrite",
+      "no source retirement or archive"
+    ]
+  },
+  "implementation": {
+    "provider": "get_governance_dashboard_postgres_connection",
+    "provider_type": "route-local async generator dependency",
+    "provider_backing_calls_after": 1,
+    "direct_route_body_calls_after": 0,
+    "manual_conn_close_calls_after": 0,
+    "depends_provider_bindings_after": 5,
+    "route_handlers": [
+      "get_quality_overview",
+      "get_lineage_stats",
+      "get_assets_catalog",
+      "get_compliance_metrics",
+      "get_dashboard_summary"
+    ],
+    "handler_scan": [
+      {
+        "name": "get_quality_overview",
+        "line": 179,
+        "direct_calls": 0,
+        "manual_closes": 0,
+        "depends_provider_bindings": 1
+      },
+      {
+        "name": "get_lineage_stats",
+        "line": 289,
+        "direct_calls": 0,
+        "manual_closes": 0,
+        "depends_provider_bindings": 1
+      },
+      {
+        "name": "get_assets_catalog",
+        "line": 406,
+        "direct_calls": 0,
+        "manual_closes": 0,
+        "depends_provider_bindings": 1
+      },
+      {
+        "name": "get_compliance_metrics",
+        "line": 512,
+        "direct_calls": 0,
+        "manual_closes": 0,
+        "depends_provider_bindings": 1
+      },
+      {
+        "name": "get_dashboard_summary",
+        "line": 625,
+        "direct_calls": 0,
+        "manual_closes": 0,
+        "depends_provider_bindings": 1
+      }
+    ]
+  },
+  "gitnexus_evidence": {
+    "mcp_context": "tool call failed: Transport closed",
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_context": "found Function:web/backend/app/api/governance_dashboard.py:get_postgres_connection; stale index names fetch_all_data but current code truth is get_dashboard_summary",
+    "cli_impact": {
+      "risk": "MEDIUM",
+      "impacted_count": 6,
+      "direct": 5,
+      "processes_affected": 0,
+      "modules_affected": 1,
+      "index_status": "stale warning"
+    },
+    "staged": "MCP detect_changes returned Transport closed; CLI verify-staged fallback ok=true, index status stale, risk=low, changed files 12, changed symbols 7, affected processes 0"
+  },
+  "verification": {
+    "tdd_red": "pytest -q web/backend/tests/test_governance_dashboard_postgres_provider.py -n 0 --tb=short --no-cov failed 2/2 before implementation because get_governance_dashboard_postgres_connection did not exist",
+    "tdd_green": "pytest -q web/backend/tests/test_governance_dashboard_postgres_provider.py -n 0 --tb=short --no-cov passed 2/2 in 0.92s",
+    "focused_governance_dashboard_tests": "pytest -q tests/api/file_tests/test_governance_dashboard_api.py web/backend/tests/test_governance_dashboard_postgres_provider.py -n 0 --tb=short --no-cov passed 14/14 in 0.69s",
+    "health_route_conflicts": "pytest -q web/backend/tests/test_health_route_conflicts.py -n 0 --tb=short --no-cov passed 121/121 in 223.41s",
+    "ruff": "ruff check web/backend/app/api/governance_dashboard.py web/backend/tests/test_governance_dashboard_postgres_provider.py tests/api/file_tests/test_governance_dashboard_api.py passed after removing unused imports in the touched route module",
+    "route_openapi_smoke": {
+      "routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_ids": 0,
+      "governance_paths": [
+        "/api/v1/governance/assets/catalog",
+        "/api/v1/governance/compliance/metrics",
+        "/api/v1/governance/dashboard/summary",
+        "/api/v1/governance/lineage/stats",
+        "/api/v1/governance/quality/overview"
+      ],
+      "handler_dependency_ok": true,
+      "handler_source_ok": true,
+      "openapi_provider_param_leaks": []
+    }
+  },
+  "decision": {
+    "classification": "route-provider-implementation-for-review",
+    "source_lane_recommendation": "stop-at-pr-440-human-review",
+    "autopilot_continue_allowed": false,
+    "selected_next_governance_target": "governance-dashboard-postgres-provider-closeout-refresh",
+    "recommended_next_work_item": "G2.288 no-source governance_dashboard get_postgres_connection provider closeout / residual refresh after PR #440 human acceptance"
+  },
+  "freshness": {
+    "current_head_checked": "e7c78892e1928d86fabecbe4135e7ce68fd0f01e",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_governance_dashboard_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_test_inventory_changes": true
+  },
+  "next_gate": "Stop for human review in PR #440. If accepted and merged, start G2.288 no-source governance_dashboard provider closeout / residual refresh."
+}
