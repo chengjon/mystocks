@@ -1,0 +1,136 @@
+version: "v0.2"
+
+task:
+  id: "pr-457"
+  title: "Close admin optimization PostgreSQL session provider lane"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-admin-optimization-postgresql-session-provider-closeout"
+  objective: "close the admin optimization provider implementation and refresh remaining get_postgresql_session residuals"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.304 is no-source closeout evidence. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/admin-optimization-postgresql-session-provider-closeout-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-admin-optimization-postgresql-session-provider-closeout-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-457.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "editing app.core.database.get_postgresql_session"
+  - "editing auth, market stock list, admin audit, or admin optimization routes"
+
+acceptance:
+  checks:
+    - id: "pr456-merged"
+      command: "gh pr view 456 confirms MERGED at 1cc89b285cd265bce96991b8dc4c7e8bd71d85d0"
+      required: true
+    - id: "admin-optimization-closeout"
+      command: "current scan records helper direct get_postgresql_session calls 0, provider backing calls 1, and Depends bindings 4"
+      required: true
+    - id: "residual-refresh"
+      command: "current scan records auth.py direct calls 4, market stock list direct calls 0, admin audit direct calls 0, admin optimization helper direct calls 0"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0, and five /api/v1/optimization routes"
+      required: true
+    - id: "focused-test"
+      command: "env PYTHONPATH=web/backend ... pytest -q web/backend/tests/test_v1_optimization_regressions.py --tb=short --no-cov -n 0 records 7 passed"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/v1/admin/optimization.py web/backend/tests/test_v1_optimization_regressions.py records All checks passed"
+      required: true
+    - id: "next-gate"
+      command: "report selects only G2.305 no-source auth.py get_postgresql_session ownership / provider-shape decision"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-admin-optimization-postgresql-session-provider-closeout-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-457.yaml --base-sha 1cc89b285cd265bce96991b8dc4c7e8bd71d85d0 --head-sha HEAD --report /tmp/pr457-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The selected next residual target remains under the CRITICAL shared helper family and must stay no-source until a future decision package is accepted."
+  rollback_plan: "Revert PR #457; this removes only G2.304 closeout evidence and restores the prior G2.303 review gate text."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close the admin optimization PostgreSQL session provider lane and refresh residuals."
+    modified_scope: "Governance evidence, steward tree indexes, report, and task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime behavior, route contract, OpenAPI, or source changes."
+    rollback_ready: "Revert PR #457."
+    risk_and_rollback_point: "No-source closeout; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T20:34:00+08:00"
+    approval_note: "Human maintainer approved continuing after PR #456 review and merge into G2.304 no-source closeout / residual refresh."
+    secondary_approved: false

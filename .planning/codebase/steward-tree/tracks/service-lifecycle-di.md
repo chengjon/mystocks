@@ -3315,7 +3315,7 @@ Status: accepted/merged by PR `#455` at `4af141da7411d30b31b972ace51d104ae28606e
 
 ## G2.303 Admin Optimization PostgreSQL Session Provider Implementation
 
-Status: for review in future PR `#456`.
+Status: accepted/merged by PR `#456` at `1cc89b285cd265bce96991b8dc4c7e8bd71d85d0`.
 
 - Parent PR `#455` merged at `4af141da7411d30b31b972ace51d104ae28606ed`.
 - G2.303 is a path-limited backend source/test implementation package for `web/backend/app/api/v1/admin/optimization.py` and `web/backend/tests/test_v1_optimization_regressions.py`.
@@ -3329,3 +3329,18 @@ Status: for review in future PR `#456`.
 - GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports LOW risk for target helpers/handlers and CRITICAL risk for shared `Function:web/backend/app/core/database.py:get_postgresql_session`.
 - Stop rule: PR `#456` must stop for human review because it changes backend source/tests under a CRITICAL shared helper family.
 - Recommended next gate after human acceptance and merge: G2.304 no-source admin optimization provider closeout / residual refresh.
+
+## G2.304 Admin Optimization PostgreSQL Session Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#457`.
+
+- Parent PR `#456` merged at `1cc89b285cd265bce96991b8dc4c7e8bd71d85d0`.
+- G2.304 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Admin optimization provider lane is closed: helper-body direct `get_postgresql_session()` calls are `0`, provider backing calls are `1`, and `Depends(get_admin_optimization_postgresql_session_factory)` bindings are `4`.
+- Focused optimization regression records `7 passed`; ruff passes on the target route module and focused test.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with five `/api/v1/optimization/*` routes present and schema-visible.
+- Remaining active direct `get_postgresql_session()` residuals are now concentrated in `web/backend/app/api/auth.py`: `4` calls across `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`.
+- Market stock list direct calls remain `0`; admin audit direct calls remain `0`; admin optimization helper-body direct calls remain `0`.
+- GitNexus CLI sampling keeps shared `Function:web/backend/app/core/database.py:get_postgresql_session` at CRITICAL risk with `15` direct dependants and `54` affected processes; auth source work remains forbidden from G2.304.
+- Decision: close admin optimization and select only G2.305 no-source `auth.py get_postgresql_session` ownership / provider-shape decision after PR `#457` acceptance.
+- Stop rule: G2.304 must not be used as auth source implementation authority.
