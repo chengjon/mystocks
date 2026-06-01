@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-06-01T13:54:13+08:00`
-- Base HEAD checked: `a31fd3ede177d5851c2394b8cea2fe42188a4021`
+- Prepared at: `2026-06-02T01:35:43+08:00`
+- Base HEAD checked: `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -29,6 +29,8 @@ It proved a repeatable conveyor:
 
 | Node | State | Notes |
 |---|---|---|
+| G2.313 indicator_registry `get_factory` ownership / route-provider decision | Future PR `#466` review target | Classifies active route-local singleton factory helper with 3 route-body calls, route/OpenAPI `548/500/0`, GitNexus CLI `LOW`, and selects only G2.314 no-source provider authorization |
+| G2.312 residual refresh after dormant indicator-config exclusion | Merged by PR `#465` | Excludes dormant `create_indicator_config.py` / `get_mysql_session`, records `371` Python files scanned, `663` getter names, `53` active interesting candidates, and selects G2.313 |
 | Steward split | Merged by PR `#332` | Root task tree is now a short entrypoint; active state belongs in this split track and `steward-index.json` |
 | G2.177 Strategy canonical adapter provider authorization | Accepted and merged by PR `#330` | Authorized only a constructor-level Strategy service provider seam in canonical `strategy_adapter.py` and focused tests |
 | G2.178 Strategy adapter provider implementation | Merged by PR `#331` | Added the approved optional constructor-level provider seam and reconciled the G2.178 steward update into the split tree |
@@ -3442,7 +3444,7 @@ Status: accepted/merged by PR `#464`.
 
 ## G2.312 Service Lifecycle Residual Candidate Refresh After Dormant Indicator-Config Exclusion
 
-Status: for review in future PR `#465`.
+Status: accepted / merged by PR `#465`.
 
 - Parent PR `#464` merged at `0f5382cea875d2983ada5d9c63548b0530861002`.
 - G2.312 is a no-source residual candidate refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3450,3 +3452,15 @@ Status: for review in future PR `#465`.
 - Top deferred surfaces include data-source-config, data/cache, dashboard/cache, control-plane DB engine, risk core, realtime MTM, circuit breaker, algorithms module loader, Kronos client, and system routing helpers.
 - G2.312 selects only G2.313 no-source `indicator_registry.get_factory` ownership / route-provider decision for `web/backend/app/api/indicator_registry.py`, where three bare route-body calls remain at lines `159`, `186`, and `201`.
 - Stop rule: G2.312 must not be used as source implementation authority or as authorization to edit `indicator_registry.py`, `get_factory`, route contracts, OpenAPI artifacts, tests, or runtime state.
+
+## G2.313 Indicator Registry `get_factory` Ownership / Route-Provider Decision
+
+Status: for review in future PR `#466`.
+
+- Parent PR `#465` merged at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`.
+- G2.313 is a no-source ownership decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- G2.313 classifies `web/backend/app/api/indicator_registry.py:get_factory` as an active route-local singleton factory helper, not a dormant route surface.
+- Runtime route/OpenAPI smoke records `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation ID warnings, and three registered indicator-registry routes: `/api/indicator-registry/indicators`, `/api/indicator-registry/indicators/{indicator_id}`, and `/api/indicator-registry/calculate`.
+- GitNexus MCP impact failed with `Transport closed`; CLI fallback records `LOW` risk, `3` direct callers, `0` affected processes, and stale index with `commits_behind=0`.
+- G2.313 selects only G2.314 no-source `indicator_registry.get_factory` provider authorization package. If G2.314 is accepted, any future source implementation lane must stop at human review before merge.
+- Stop rule: G2.313 must not be used as source implementation authority or as authorization to edit `indicator_registry.py`, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.

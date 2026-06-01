@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-02T01:10:22+08:00`
-- Base HEAD checked: `0f5382cea875d2983ada5d9c63548b0530861002`
+- Prepared at: `2026-06-02T01:35:43+08:00`
+- Base HEAD checked: `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,7 +19,7 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.311 accepted/merged by PR `#464` at `0f5382ce` | Continue with G2.312 residual candidate refresh after dormant indicator-config exclusion; no source work is authorized |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.312 accepted/merged by PR `#465` at `ac6b9faa`; continue with G2.313 no-source indicator_registry get_factory ownership decision; no source work is authorized |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
 | Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.301 have progressed through PR `#337`-`#454`; current review target is G2.302 admin optimization provider authorization in future PR `#455` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
@@ -28,6 +28,7 @@ exact verification output.
 
 | Item | Accepted evidence | Follow-up |
 |---|---|---|
+| G2.312 service lifecycle residual refresh after dormant indicator-config exclusion | PR `#465` merged at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`; generated refresh evidence records `371` Python files scanned, `663` getter-like names, `53` active interesting candidates, and selects `indicator_registry.get_factory` as the next no-source decision | G2.313 decides active route-local singleton factory ownership and can select only a no-source authorization package |
 | G2.311 indicator config router ownership / registration-retirement decision | PR `#464` merged at `0f5382cea875d2983ada5d9c63548b0530861002`; generated decision evidence records `create_indicator_config.py` as retained dormant route code with route/OpenAPI `548/500/0`, `13` indicator-related active routes, and `0` registered handlers from that module | G2.312 refreshes residual candidates after excluding dormant indicator-config provider calls |
 | G2.310 `get_mysql_session` ownership / route-provider decision | PR `#463` merged at `67083d40808fea9963137e3e128c0c6cb0683e57`; generated decision evidence records five `get_mysql_session()` calls in unregistered `create_indicator_config.py`, route/OpenAPI `548/500/0`, GitNexus CLI `MEDIUM`, and provider implementation not authorized | G2.311 decides route ownership / registration-retirement handling for the dormant module |
 | G2.309 service lifecycle residual candidate refresh after auth closeout | PR `#462` merged at `5d24bed2e77bcb142a81e1b1bcc68a1cdca27d18`; generated refresh evidence records `371` Python files scanned, `663` getter-like names, `54` active interesting candidates, and selects only G2.310 `get_mysql_session` no-source decision | G2.310 classifies whether `get_mysql_session` can become a provider implementation candidate |
