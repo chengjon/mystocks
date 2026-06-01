@@ -15,7 +15,7 @@
 
 import logging
 from datetime import date, datetime
-from typing import List, Optional
+from typing import Any, Callable, List, Optional
 
 from fastapi import APIRouter, Depends, Query
 from pydantic import ValidationError
@@ -43,6 +43,8 @@ router.include_router(market_heatmap_router)
 router.include_router(market_health_router)
 logger = logging.getLogger(__name__)
 
+MarketStockListSessionFactory = Callable[[], Any]
+
 
 def _is_market_stock_list_mock_enabled() -> bool:
     return settings.use_mock_apis
@@ -55,6 +57,12 @@ def _get_mock_stock_list(*, limit: int, search: Optional[str], exchange: Optiona
     return mock_manager.get_data(
         "stock_list", limit=limit, search=search, exchange=exchange, security_type=security_type
     )
+
+
+def get_market_stock_list_postgresql_session_factory() -> MarketStockListSessionFactory:
+    from app.core.database import get_postgresql_session
+
+    return get_postgresql_session
 
 
 from app.api.market._market_data_request_responses import (
@@ -445,6 +453,7 @@ async def get_stock_list(
     search: Optional[str] = Query(None, description="股票代码或名称搜索关键词"),
     exchange: Optional[str] = Query(None, description="交易所筛选: SSE/SZSE"),
     security_type: Optional[str] = Query(None, description="证券类型筛选"),
+    session_factory: MarketStockListSessionFactory = Depends(get_market_stock_list_postgresql_session_factory),
 ):
     """
     获取股票基本信息列表
@@ -480,43 +489,39 @@ async def get_stock_list(
 
         from sqlalchemy import text
 
-        from app.core.database import get_postgresql_session
+        session = session_factory()
+        try:
+            # 使用固定SQL模板 + 参数占位，避免动态拼接 WHERE 子句
+            sql = text("""
+                SELECT
+                    symbol,
+                    name,
+                    exchange,
+                    security_type,
+                    list_date,
+                    status,
+                    listing_board,
+                    market_cap,
+                    circulating_market_cap
+                FROM stock_info
+                WHERE (:search IS NULL OR symbol LIKE :search OR name LIKE :search)
+                  AND (:exchange IS NULL OR exchange = :exchange)
+                  AND (:security_type IS NULL OR security_type = :security_type)
+                ORDER BY symbol
+                LIMIT :limit
+            """)
 
-        session = get_postgresql_session()
+            params = {
+                "search": f"%{search}%" if search else None,
+                "exchange": exchange,
+                "security_type": security_type,
+                "limit": limit,
+            }
 
-        # 使用固定SQL模板 + 参数占位，避免动态拼接 WHERE 子句
-        sql = text(
-            """
-            SELECT
-                symbol,
-                name,
-                exchange,
-                security_type,
-                list_date,
-                status,
-                listing_board,
-                market_cap,
-                circulating_market_cap
-            FROM stock_info
-            WHERE (:search IS NULL OR symbol LIKE :search OR name LIKE :search)
-              AND (:exchange IS NULL OR exchange = :exchange)
-              AND (:security_type IS NULL OR security_type = :security_type)
-            ORDER BY symbol
-            LIMIT :limit
-        """
-        )
-
-        params = {
-            "search": f"%{search}%" if search else None,
-            "exchange": exchange,
-            "security_type": security_type,
-            "limit": limit,
-        }
-
-        result = session.execute(sql, params)
-        stocks = [dict(row._mapping) for row in result]
-
-        session.close()
+            result = session.execute(sql, params)
+            stocks = [dict(row._mapping) for row in result]
+        finally:
+            session.close()
 
         return create_success_response(
             data={

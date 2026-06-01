@@ -3242,7 +3242,7 @@ Status: for review in future PR `#450`.
 
 ## G2.298 Market Stock List PostgreSQL Session Provider Authorization
 
-Status: for review in future PR `#451`.
+Status: accepted/merged by PR `#451` at `79a4fe5ae9f763e3e836b76c051bddbed270a930`.
 
 - Parent PR `#450` merged at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`.
 - G2.298 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
@@ -3250,5 +3250,18 @@ Status: for review in future PR `#451`.
 - Existing focused test `web/backend/tests/test_market_stock_list_mock_configuration.py` passes `2/2`.
 - Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with one target market stock route.
 - GitNexus MCP remains unreliable (`Transport closed` in this session); CLI fallback reports current shared helper sample as HIGH risk and `get_stock_list` as LOW risk, both with stale-index warning. G2.297 previously recorded CRITICAL for the shared helper, so the family remains treated as HIGH/CRITICAL.
-- Decision: authorize only future G2.299 path-limited market stock list provider implementation after PR `#451` human acceptance.
-- Stop rule: PR `#451` must stop for human review because it authorizes future backend source/test edits.
+- Decision: authorized only G2.299 path-limited market stock list provider implementation after PR `#451` human acceptance.
+- Stop rule satisfied by PR `#451` human review and merge; G2.298 must not be used to expand source scope beyond G2.299.
+
+## G2.299 Market Stock List PostgreSQL Session Provider Implementation
+
+Status: for review in future PR `#452`.
+
+- Parent PR `#451` merged at `79a4fe5ae9f763e3e836b76c051bddbed270a930`.
+- G2.299 is a path-limited source implementation. It edits only `web/backend/app/api/market/market_data_request.py`, `web/backend/tests/test_market_stock_list_mock_configuration.py`, and governance evidence.
+- Implementation adds route-local provider `get_market_stock_list_postgresql_session_factory`, moves `GET /api/v1/market/stocks` real-branch session creation behind `Depends(...)`, preserves `session.close()` cleanup in a `finally` block, and keeps the shared core helper definitions unchanged.
+- Verification: TDD red `3 failed, 2 passed`; focused regression `5 passed`; ruff passed; runtime/OpenAPI remained `548/500/0` with one target market route.
+- Residual state after implementation: market stock list direct `get_postgresql_session()` calls `0`; auth direct calls `4`; admin optimization direct calls `2`; admin audit remains closed with direct calls `0`.
+- GitNexus MCP remains unreliable (`Transport closed`); CLI fallback reports `get_stock_list` LOW risk and shared `app.core.database.get_postgresql_session` CRITICAL risk, both with stale-index warnings. The index refresh attempt exceeded five minutes and later aborted in a native worker path, so it is recorded as a tooling limitation.
+- Stop rule: PR `#452` must stop for human review because G2.299 changes backend source/tests.
+- Recommended next gate after human acceptance and merge: G2.300 no-source market stock list provider closeout / residual refresh.

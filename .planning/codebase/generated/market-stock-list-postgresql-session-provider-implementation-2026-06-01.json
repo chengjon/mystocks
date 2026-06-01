@@ -1,0 +1,138 @@
+{
+  "id": "g2-299-market-stock-list-postgresql-session-provider-implementation",
+  "type": "implementation_package",
+  "state": "for_review",
+  "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+  "parent": "G2.298 market stock list get_postgresql_session provider authorization",
+  "source_edit_authority": true,
+  "autopilot_status": "stop_at_pr_review_gate",
+  "autopilot_stop_reason": "G2.299 changes backend source and focused tests; source implementation PRs require human review and must not auto-merge.",
+  "github_pr": {
+    "number": 452,
+    "url": "https://github.com/chengjon/mystocks/pull/452",
+    "state": "PLANNED_FOR_REVIEW",
+    "head_ref": "g2-299-market-stock-list-postgresql-session-provider-implementation"
+  },
+  "closed_parent": {
+    "pr": 451,
+    "state": "MERGED",
+    "merge_commit": "79a4fe5ae9f763e3e836b76c051bddbed270a930",
+    "merged_at": "2026-06-01T08:38:01Z"
+  },
+  "allowed_scope": [
+    "web/backend/app/api/market/market_data_request.py",
+    "web/backend/tests/test_market_stock_list_mock_configuration.py",
+    ".planning/codebase/generated/market-stock-list-postgresql-session-provider-implementation-2026-06-01.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-market-stock-list-postgresql-session-provider-implementation-2026-06-01.md",
+    "governance/mainline/task-cards/pr-452.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/app/core/database.py",
+    "web/backend/app/core/database_factory.py",
+    "web/backend/app/api/auth.py",
+    "web/backend/app/api/v1/admin/optimization.py",
+    "web/backend/app/api/v1/admin/audit.py",
+    "route registration changes",
+    "route path, method, response model, or generated OpenAPI artifact changes",
+    "docs/api artifacts",
+    "web/frontend/**",
+    "src/**",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**",
+    "PM2/runtime state",
+    "source retirement"
+  ],
+  "implementation": {
+    "target_file": "web/backend/app/api/market/market_data_request.py",
+    "target_test": "web/backend/tests/test_market_stock_list_mock_configuration.py",
+    "route": "GET /api/v1/market/stocks",
+    "handler": "get_stock_list",
+    "provider": "get_market_stock_list_postgresql_session_factory",
+    "direct_route_body_get_postgresql_session_calls_after": 0,
+    "depends_provider_bindings_after": 1,
+    "session_factory_calls_after": 1,
+    "session_close_finally_blocks_after": 1,
+    "route_contract_changed": false,
+    "openapi_artifact_changed": false,
+    "core_helper_changed": false
+  },
+  "verification": {
+    "tdd_red": "3 failed, 2 passed; failures were KeyError: session_factory and TypeError: unexpected keyword argument session_factory",
+    "focused_regression": "env PYTHONPATH=web/backend pytest -q web/backend/tests/test_market_stock_list_mock_configuration.py --tb=short --no-cov -n 0 => 5 passed in 2.93s",
+    "ruff": "ruff check web/backend/app/api/market/market_data_request.py web/backend/tests/test_market_stock_list_mock_configuration.py => All checks passed",
+    "route_openapi_smoke": {
+      "app_import": "ok",
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "target_routes": [
+        {
+          "path": "/api/v1/market/stocks",
+          "methods": [
+            "GET"
+          ]
+        }
+      ]
+    },
+    "residual_scan": {
+      "auth_py_direct_calls": 4,
+      "admin_optimization_direct_calls": 2,
+      "market_stock_list_direct_calls": 0,
+      "admin_audit_direct_calls": 0,
+      "market_provider_bindings": 1
+    }
+  },
+  "gitnexus_evidence": {
+    "mcp_impact_get_stock_list": "tool call failed: Transport closed",
+    "cli_impact_get_stock_list": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "index_status": "stale warning"
+    },
+    "cli_impact_core_database_get_postgresql_session": {
+      "risk": "CRITICAL",
+      "impacted_count": 95,
+      "direct": 15,
+      "processes_affected": 54,
+      "modules_affected": 13,
+      "index_status": "stale warning"
+    },
+    "index_refresh_attempt": "gitnexus analyze --index-only --max-file-size 64 --worker-timeout 10 exceeded five minutes and later aborted in a native worker path; fallback impact and staged verification both retained stale-index warnings",
+    "cli_staged_verification": {
+      "risk": "low",
+      "files": 11,
+      "symbols": 4,
+      "affected_processes": 0,
+      "index_status": "stale warning"
+    }
+  },
+  "decision": {
+    "classification": "path-limited-market-stock-list-provider-implementation",
+    "source_lane_status": "for_review",
+    "autopilot_continue_allowed": false,
+    "recommended_next_work_item": "G2.300 no-source market stock list provider closeout / residual refresh after PR #452 human acceptance"
+  },
+  "freshness": {
+    "current_head_checked": "79a4fe5ae9f763e3e836b76c051bddbed270a930",
+    "generated_at": "2026-06-01T16:58:34+08:00",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_market_request_call_sites_change": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_admin_optimization_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_focused_tests_change": true
+  },
+  "next_gate": "Stop for human review in PR #452. If accepted and merged, start G2.300 no-source market stock list provider closeout / residual refresh."
+}
