@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-06-01T11:08:00+08:00`
-- Base HEAD checked: `e517163385e96a6c7115e14b77fb89819b4cead4`
+- Prepared at: `2026-06-01T13:02:37+08:00`
+- Base HEAD checked: `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -3169,9 +3169,10 @@ Status: accepted/merged by PR `#445` at `05cdf04f646d844c11e90e7c453ed4f985c8d38
 
 ## G2.293 get_postgresql_session Ownership / Route-Provider Decision
 
-Status: for review in future PR `#446`.
+Status: accepted/merged by PR `#446`.
 
 - Parent PR `#445` merged at `05cdf04f646d844c11e90e7c453ed4f985c8d382`.
+- G2.293 PR `#446` merged at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`.
 - G2.293 is a no-source ownership / route-provider decision package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - It classifies `get_postgresql_session` as a cross-domain helper family, not a single implementation target.
 - Current scan records `9` direct helper occurrences across `auth.py`, `v1/admin/audit.py`, `v1/admin/optimization.py`, and `market/market_data_request.py`; effective OpenAPI endpoint surface is `12`.
@@ -3180,4 +3181,18 @@ Status: for review in future PR `#446`.
 - Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`.
 - Decision: do not modify shared helper definitions; split future route-provider work by route domain/helper origin.
 - Recommended next gate after human acceptance and merge: G2.294 no-source admin audit database_factory `get_postgresql_session` provider authorization.
-- Stop rule: PR `#446` must stop for human review because the target family includes CRITICAL GitNexus impact.
+- Stop rule satisfied by PR `#446` human review and merge; G2.293 must not be used as source implementation authorization.
+
+## G2.294 Admin Audit PostgreSQL Session Provider Authorization
+
+Status: for review in future PR `#447`.
+
+- Parent PR `#446` merged at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`.
+- G2.294 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Target scope is only `web/backend/app/api/v1/admin/audit.py`, helper origin `app.core.database_factory.get_postgresql_session`.
+- Current scan records `2` direct helper occurrences: `_load_audit_logs` and `get_audit_statistics`.
+- Current cleanup semantics use `session.close()` in `finally` for both helper paths; any future implementation must preserve equivalent cleanup lifecycle.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with `3` admin audit routes in schema.
+- GitNexus MCP returned `Transport closed`; CLI fallback reports LOW risk, `4` impacted symbols, `2` direct callers, `1` affected process, and `1` affected module for `Function:web/backend/app/core/database_factory.py:get_postgresql_session`.
+- Decision: authorize only a future G2.295 path-limited admin audit provider implementation after PR `#447` human acceptance.
+- Stop rule: PR `#447` must stop for human review because it authorizes future backend source work and the selected helper participates in one affected execution process.

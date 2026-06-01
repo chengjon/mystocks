@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-01T12:19:25+08:00`
-- Base HEAD checked: `05cdf04f646d844c11e90e7c453ed4f985c8d382`
+- Prepared at: `2026-06-01T13:02:37+08:00`
+- Base HEAD checked: `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -123,7 +123,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#443` | `g2-290-data-source-registry-manager-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `e517163385e96a6c7115e14b77fb89819b4cead4` | No-source provider authorization for future G2.291 data_source_registry implementation |
 | `#444` | `g2-291-data-source-registry-manager-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `3d161e90547720f4ce95111ea511d3f8dc3174dc` | Path-limited data_source_registry manager provider implementation; now closed by G2.292 closeout |
 | `#445` | `g2-292-data-source-registry-provider-closeout-refresh` | `wip/root-dirty-20260403` | `MERGED` at `05cdf04f646d844c11e90e7c453ed4f985c8d382` | No-source data_source_registry provider closeout selecting G2.293 `get_postgresql_session` ownership decision |
-| `#446` | `g2-293-postgresql-session-ownership-decision` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source `get_postgresql_session` ownership decision; auto-merge paused because the family includes CRITICAL GitNexus impact |
+| `#446` | `g2-293-postgresql-session-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319` | No-source `get_postgresql_session` ownership decision selecting G2.294 admin audit provider authorization |
+| `#447` | `g2-294-admin-audit-postgresql-session-provider-authorization` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source admin audit `database_factory.get_postgresql_session` provider authorization; auto-merge paused because it authorizes future backend source work |
 
 ## Steward Governance Branch
 
@@ -161,6 +162,9 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-289-data-source-registry-manager-ownership` | `origin/wip/root-dirty-20260403` at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37` | Decide data_source_registry `get_manager` ownership / route-provider disposition; stop auto-merge due GitNexus MEDIUM risk and one affected process | No |
 | `g2-290-data-source-registry-manager-provider-authorization` | `origin/wip/root-dirty-20260403` at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf` | Authorize a future path-limited data_source_registry `get_manager` route-provider implementation | No |
 | `g2-291-data-source-registry-manager-provider-implementation` | `origin/wip/root-dirty-20260403` at `e517163385e96a6c7115e14b77fb89819b4cead4` | Implement path-limited data_source_registry manager provider injection and focused tests | Yes |
+| `g2-292-data-source-registry-provider-closeout-refresh` | `origin/wip/root-dirty-20260403` at `3d161e90547720f4ce95111ea511d3f8dc3174dc` | Close out data_source_registry provider implementation and select G2.293 `get_postgresql_session` ownership decision | No |
+| `g2-293-postgresql-session-ownership-decision` | `origin/wip/root-dirty-20260403` at `05cdf04f646d844c11e90e7c453ed4f985c8d382` | Decide split `get_postgresql_session` ownership and select bounded admin audit provider authorization | No |
+| `g2-294-admin-audit-postgresql-session-provider-authorization` | `origin/wip/root-dirty-20260403` at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319` | Authorize a future path-limited admin audit database_factory `get_postgresql_session` provider implementation; stop auto-merge because it authorizes future source work | No |
 
 ## OpenSpec Relationship
 
@@ -238,4 +242,6 @@ G2.291 is the path-limited `data_source_registry.get_manager` provider implement
 
 G2.292 is the no-source `data_source_registry.get_manager` provider closeout / residual refresh after PR `#444` merged G2.291 at `3d161e90547720f4ce95111ea511d3f8dc3174dc`. It records the data-source registry provider lane as closed, confirms direct route-body `get_manager()` calls are `0`, provider backing calls are `1`, dependency bindings are `7`, and route/OpenAPI remains `548/500/0`. It selects `G2.293 no-source get_postgresql_session ownership / route-provider decision` as the next gate. PR `#445` must stop for human review because the selected next target includes a CRITICAL-impact core database helper.
 
-G2.293 is the no-source `get_postgresql_session` ownership / route-provider decision after PR `#445` merged G2.292 at `05cdf04f646d844c11e90e7c453ed4f985c8d382`. It classifies `get_postgresql_session` as a cross-domain helper family with `9` direct helper occurrences across auth, admin audit, admin optimization, and market routes. It splits ownership by helper origin and route domain, marks `app.core.database.get_postgresql_session` as CRITICAL impact, and selects only `G2.294 no-source admin audit database_factory get_postgresql_session provider authorization` as the next candidate. PR `#446` must stop for human review and must not auto-merge.
+G2.293 is the no-source `get_postgresql_session` ownership / route-provider decision after PR `#445` merged G2.292 at `05cdf04f646d844c11e90e7c453ed4f985c8d382`. It merged by PR `#446` at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`. It classifies `get_postgresql_session` as a cross-domain helper family with `9` direct helper occurrences across auth, admin audit, admin optimization, and market routes. It splits ownership by helper origin and route domain, marks `app.core.database.get_postgresql_session` as CRITICAL impact, and selects only `G2.294 no-source admin audit database_factory get_postgresql_session provider authorization` as the next candidate. It must not be used as source implementation authority.
+
+G2.294 is the no-source admin audit `database_factory.get_postgresql_session` provider authorization after PR `#446` merged G2.293 at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`. It authorizes only a future G2.295 path-limited implementation lane for `web/backend/app/api/v1/admin/audit.py` after PR `#447` human acceptance. It records two active helper call sites, three audit routes, cleanup semantics, runtime/OpenAPI `548/500/0`, and GitNexus LOW risk with one affected execution process. PR `#447` must stop for human review and must not auto-merge.
