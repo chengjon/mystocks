@@ -3,6 +3,7 @@
 """
 
 import logging
+from collections.abc import Callable
 from datetime import timedelta
 from typing import Any, Dict
 
@@ -34,9 +35,18 @@ AUTH_ROUTE_RESPONSES = {
 
 router = APIRouter(responses=AUTH_ROUTE_RESPONSES)
 
+SessionFactory = Callable[[], Any]
+
+
+def get_auth_postgresql_session_factory() -> SessionFactory:
+    def _session_factory() -> Any:
+        from app.core.database import get_postgresql_session
+
+        return get_postgresql_session()
+
+    return _session_factory
+
 from app.api._auth_responses import (
-    _success_response_spec,
-    _error_response_spec,
     AUTH_LOGOUT_RESPONSES,
     AUTH_LOGIN_RESPONSES,
     AUTH_ME_RESPONSES,
@@ -48,10 +58,9 @@ from app.api._auth_responses import (
     AUTH_CSRF_RESPONSES,
 )
 from app.api._auth_helpers import (
-    security,
     check_permission,
     get_current_user,
-    get_current_active_user,
+    get_current_active_user,  # noqa: F401 - legacy import path used by indicator modules
 )
 
 @router.post(
@@ -183,7 +192,10 @@ async def refresh_token(
     description="返回系统中的活跃用户列表及总数，仅管理员可访问，用于后台账号管理和权限审查。",
     responses=AUTH_USERS_RESPONSES,
 )
-async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str, Any]:
+async def get_users(
+    current_user: User = Depends(get_current_user),
+    session_factory: SessionFactory = Depends(get_auth_postgresql_session_factory),
+) -> Dict[str, Any]:
     """
     获取用户列表（仅管理员）
     从PostgreSQL数据库获取所有活跃用户
@@ -192,11 +204,10 @@ async def get_users(current_user: User = Depends(get_current_user)) -> Dict[str,
         raise ForbiddenException(detail="权限不足")
 
     try:
-        from app.core.database import get_postgresql_session
         from app.db import UserRepository
         from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError
 
-        session = get_postgresql_session()
+        session = session_factory()
         try:
             repository = UserRepository(session)
             users_list = repository.get_all_users()
@@ -323,7 +334,8 @@ async def register_user(
             "password": "SecurePass123",
             "role": "user",
         },
-    )
+    ),
+    session_factory: SessionFactory = Depends(get_auth_postgresql_session_factory),
 ):
     """
     用户注册
@@ -374,7 +386,6 @@ async def register_user(
     - 409: 用户名或邮箱已存在
     - 500: 服务器错误
     """
-    from app.core.database import get_postgresql_session
     from app.db import UserRepository
     from src.core.exceptions import (
         DatabaseConnectionError,
@@ -384,7 +395,7 @@ async def register_user(
 
     session = None
     try:
-        session = get_postgresql_session()
+        session = session_factory()
         repository = UserRepository(session)
 
         # Hash the password
@@ -466,7 +477,8 @@ async def register_user(
     responses=AUTH_RESET_REQUEST_RESPONSES,
 )
 async def request_password_reset(
-    request: PasswordResetRequest = Body(..., example={"email": "user@example.com"})
+    request: PasswordResetRequest = Body(..., example={"email": "user@example.com"}),
+    session_factory: SessionFactory = Depends(get_auth_postgresql_session_factory),
 ):
     """
     请求密码重置
@@ -500,13 +512,12 @@ async def request_password_reset(
     - 200: 请求已处理
     - 500: 服务器错误
     """
-    from app.core.database import get_postgresql_session
     from app.db import UserRepository
     from src.core.exceptions import DatabaseConnectionError, DatabaseOperationError
 
     session = None
     try:
-        session = get_postgresql_session()
+        session = session_factory()
         repository = UserRepository(session)
 
         # Check if user exists (but don't reveal whether they exist)
@@ -567,7 +578,8 @@ async def confirm_password_reset(
     reset_data: PasswordResetConfirm = Body(
         ...,
         example={"token": "eyJhbGciOiJIUzI1NiIs...", "new_password": "NewSecurePass123"},
-    )
+    ),
+    session_factory: SessionFactory = Depends(get_auth_postgresql_session_factory),
 ):
     """
     确认密码重置
@@ -603,9 +615,6 @@ async def confirm_password_reset(
     - 500: 服务器错误
     """
     from sqlalchemy import text
-
-    from app.core.database import get_postgresql_session
-    from app.core.security import verify_token
 
     session = None
     try:
@@ -646,7 +655,7 @@ async def confirm_password_reset(
             raise BusinessException(detail="Invalid token payload", status_code=400, error_code="INVALID_TOKEN_PAYLOAD")
 
         # Update password in database
-        session = get_postgresql_session()
+        session = session_factory()
         hashed_password = get_password_hash(reset_data.new_password)
 
         update_query = text(

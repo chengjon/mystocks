@@ -1,3 +1,4 @@
+import inspect
 from types import SimpleNamespace
 
 import pytest
@@ -53,3 +54,18 @@ async def test_compat_login_response_includes_numeric_user_id(monkeypatch):
 
 def test_oauth2_password_flow_uses_canonical_v1_login_path():
     assert oauth2_scheme.model.flows.password.tokenUrl == "/api/v1/auth/login"
+
+
+def test_auth_db_handlers_use_route_local_session_factory_dependency():
+    expected_provider = auth_module.get_auth_postgresql_session_factory
+
+    for handler_name in (
+        "get_users",
+        "register_user",
+        "request_password_reset",
+        "confirm_password_reset",
+    ):
+        signature = inspect.signature(getattr(auth_module, handler_name))
+        session_factory = signature.parameters["session_factory"]
+
+        assert session_factory.default.dependency is expected_provider

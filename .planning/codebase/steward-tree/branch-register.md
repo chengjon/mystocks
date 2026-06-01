@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-01T21:10:00+08:00`
-- Base HEAD checked: `8a6cfa615f472f23643a13ab18ab02dd0853ad96`
+- Prepared at: `2026-06-01T21:38:00+08:00`
+- Base HEAD checked: `702816e7aa23378b2acd5dbc27de449fc74a3af5`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -276,3 +276,5 @@ G2.304 is the no-source admin optimization PostgreSQL session provider closeout 
 G2.305 is the no-source auth.py `get_postgresql_session` ownership / provider-shape decision after PR `#457` merged G2.304 at `d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9`. It records four active auth residual calls across `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`, focused auth tests `10 passed / 18 skipped`, route/OpenAPI `548/500/0`, and existing ruff no-fix findings `6`. It selects only G2.306 no-source auth provider authorization and must not authorize auth source edits.
 
 G2.306 is the no-source auth.py `get_postgresql_session` provider authorization after PR `#458` merged G2.305 at `8a6cfa615f472f23643a13ab18ab02dd0853ad96`. It authorizes only a future G2.307 path-limited source lane for `web/backend/app/api/auth.py` plus focused auth tests, requiring a route-local auth PostgreSQL session factory provider, injection into the four affected handlers, preservation of close/finally cleanup, and preservation of `confirm_password_reset` commit/rollback semantics. It records focused auth tests `10 passed / 18 skipped`, route/OpenAPI `548/500/0`, ruff no-fix findings `6`, and shared helper GitNexus CLI impact `CRITICAL` with `15` direct dependants and `54` affected processes. It must not edit source in PR `#459`, and G2.307 must stop at human review before merge.
+
+G2.307 is the path-limited auth.py `get_postgresql_session` provider implementation after PR `#459` merged G2.306 at `702816e7aa23378b2acd5dbc27de449fc74a3af5`. It adds `get_auth_postgresql_session_factory`, injects it into `get_users`, `register_user`, `request_password_reset`, and `confirm_password_reset`, preserves close/finally cleanup and password reset commit/rollback semantics, and keeps route/OpenAPI at `548/500/0`. It records TDD RED `1 failed`, GREEN target `1 passed`, focused auth regression `11 passed / 18 skipped`, ruff clean, provider backing calls `1`, and route-body direct calls `0`. It changes backend source/tests and must stop at future PR `#460` review; if accepted, the next gate is G2.308 no-source auth provider closeout / residual refresh.

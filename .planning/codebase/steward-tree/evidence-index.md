@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T21:10:00+08:00`
-- Base HEAD checked: `8a6cfa615f472f23643a13ab18ab02dd0853ad96`
+- Prepared at: `2026-06-01T21:38:00+08:00`
+- Base HEAD checked: `702816e7aa23378b2acd5dbc27de449fc74a3af5`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,6 +16,9 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
+| `.planning/codebase/generated/auth-postgresql-session-provider-implementation-2026-06-01.json` | G2.307 auth.py PostgreSQL session provider implementation evidence | Review input for future PR `#460`; source implementation package; must stop at human review before merge |
+| `docs/reports/quality/backend-auth-postgresql-session-provider-implementation-2026-06-01.md` | G2.307 human-readable implementation report | Review input for future PR `#460`; records TDD RED/GREEN, provider scan, focused tests, route/OpenAPI smoke, ruff, and GitNexus fallback |
+| `governance/mainline/task-cards/pr-460.yaml` | Governance task card for G2.307 source implementation | Review input; allows only path-limited auth source/test plus steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/auth-postgresql-session-provider-authorization-2026-06-01.json` | G2.306 auth.py PostgreSQL session provider authorization evidence | Review input for future PR `#459`; no-source authorization package; authorizes only future G2.307 path-limited source implementation and requires human review before source PR merge |
 | `docs/reports/quality/backend-auth-postgresql-session-provider-authorization-2026-06-01.md` | G2.306 human-readable authorization report | Review input for future PR `#459`; records PR `#458` accepted/merged, auth call surface, focused tests, route/OpenAPI smoke, ruff no-fix findings, GitNexus fallback impact, and next gate |
 | `governance/mainline/task-cards/pr-459.yaml` | Governance task card for G2.306 no-source authorization | Review input; allows only steward tree, generated evidence, report, and task card updates |
