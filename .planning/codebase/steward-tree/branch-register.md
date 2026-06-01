@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-01T16:58:34+08:00`
-- Base HEAD checked: `79a4fe5ae9f763e3e836b76c051bddbed270a930`
+- Prepared at: `2026-06-01T18:20:26+08:00`
+- Base HEAD checked: `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -129,7 +129,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#449` | `g2-296-admin-audit-provider-closeout` | `wip/root-dirty-20260403` | `MERGED` at `030545a24b4a8c9a4df36d2f126eb4597685e0c0` | No-source admin audit provider closeout selecting G2.297 route-domain decision |
 | `#450` | `g2-297-core-database-postgresql-session-route-domain-decision` | `wip/root-dirty-20260403` | `MERGED` at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab` | No-source core database `get_postgresql_session` route-domain decision selecting G2.298 market authorization |
 | `#451` | `g2-298-market-stock-list-postgresql-session-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `79a4fe5ae9f763e3e836b76c051bddbed270a930` | No-source market stock list provider authorization selecting G2.299 source implementation |
-| `#452` | `g2-299-market-stock-list-postgresql-session-provider-implementation` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | Path-limited market stock list provider implementation; auto-merge paused because it changes backend source/tests |
+| `#452` | `g2-299-market-stock-list-postgresql-session-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc` | Path-limited market stock list provider implementation; now closed by G2.300 closeout |
+| `#453` | `g2-300-market-stock-list-provider-closeout-refresh` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source market stock list provider closeout selecting G2.301 admin optimization ownership / provider-shape decision |
 
 ## Steward Governance Branch
 
@@ -261,3 +262,5 @@ G2.297 is the no-source core database `get_postgresql_session` residual route-do
 G2.298 is the no-source market stock list `get_postgresql_session` provider authorization after PR `#450` merged G2.297 at `555ff35e0c82e172b4312c59bc67d3674bd6f0ab`. It authorizes only future G2.299 path-limited implementation for `web/backend/app/api/market/market_data_request.py` and `web/backend/tests/test_market_stock_list_mock_configuration.py`, preserving route/OpenAPI `548/500/0` and existing focused test `2/2`. PR `#451` must stop for human review because it authorizes future backend source/test edits under a HIGH/CRITICAL shared helper family.
 
 G2.299 is the path-limited market stock list `get_postgresql_session` provider implementation after PR `#451` merged G2.298 at `79a4fe5ae9f763e3e836b76c051bddbed270a930`. It adds `get_market_stock_list_postgresql_session_factory`, moves the `GET /api/v1/market/stocks` real branch to `Depends(...)`, keeps session cleanup in `finally`, preserves runtime/OpenAPI `548/500/0`, and records focused tests `5/5`. It edits backend source/tests and must stop at future PR `#452` review; if accepted, the next gate is G2.300 no-source provider closeout / residual refresh.
+
+G2.300 is the no-source market stock list provider closeout / residual refresh after PR `#452` merged G2.299 at `3d89c7e64a93c7f2ca074dc502762ad203f15bdc`. It records market stock list direct `get_postgresql_session()` calls `0`, provider bindings `1`, focused tests `5/5`, runtime/OpenAPI `548/500/0`, and remaining residuals auth `4` / admin optimization `2`. It selects only `G2.301 no-source admin optimization get_postgresql_session ownership / provider-shape decision`; PR `#453` must stop for human review because the selected next target belongs to a CRITICAL shared helper family.
