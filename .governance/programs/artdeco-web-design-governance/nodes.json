@@ -2337,5 +2337,99 @@
       "current_head": "0e95f9cffbee784e6e2296a4d3be6c0bf6b0997e",
       "prepared_at": "2026-06-01T03:53:22.632Z"
     }
+  },
+  {
+    "id": "artdeco-settings-scss-style-split",
+    "title": "Split ArtDecoSettings SCSS by visual concern",
+    "node_type": "implementation",
+    "owner_lane": "frontend-artdeco",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.scss",
+    "current_head": "859e95243b68a6f71913649665a205aeb3b51f9f",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "Current ArtDecoSettings.scss is 757 lines and 0 disallowed px; target is mechanical file-size split only. GitNexus impact target ArtDecoSettings was not found, so scope is file-governed.",
+        "note": "",
+        "current_head": "859e95243b68a6f71913649665a205aeb3b51f9f",
+        "recorded_at": "2026-06-01T04:12:08.200Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.scss",
+      "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.shell.scss",
+      "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.settings-data.scss",
+      "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.notifications.scss",
+      "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.system.scss",
+      "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.responsive.scss",
+      "docs/reports/tasks/2026-06-01-artdeco-settings-scss-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-settings-scss-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue, TypeScript, runtime logic, router, backend API contract, OpenAPI, or frontend API client changes.",
+      "No shared component extraction, route shell migration, visual redesign, or global token/baseline edits.",
+      "No token cleanup batch; source file already has zero disallowed px by focused check."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-01T04:12:08.149Z",
+    "updated_at": "2026-06-01T04:42:07.835Z",
+    "acceptance": {
+      "commit_gate": [
+        "Split must be exact-reconstruction equivalent: concatenating facade import targets reproduces the original style body.",
+        "Each created ArtDecoSettings SCSS partial remains under 500 lines.",
+        "Focused ArtDeco token check for ArtDecoSettings SCSS files passes.",
+        "npm run build:no-types passes.",
+        "git diff --cached --check passes and staged files remain within the authorized allow-list; generated tree.md is not staged."
+      ],
+      "closeout_gate": [
+        "Function Tree closeout records split report, validation evidence, compatibility boundaries, and active gates return to none."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "859e95243b68a6f71913649665a205aeb3b51f9f",
+        "transitioned_at": "2026-06-01T04:12:08.297Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "859e95243b68a6f71913649665a205aeb3b51f9f",
+        "transitioned_at": "2026-06-01T04:12:08.358Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "859e95243b68a6f71913649665a205aeb3b51f9f",
+        "transitioned_at": "2026-06-01T04:42:07.755Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "859e95243b68a6f71913649665a205aeb3b51f9f",
+        "transitioned_at": "2026-06-01T04:42:07.835Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-01-artdeco-settings-scss-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "859e95243b68a6f71913649665a205aeb3b51f9f",
+      "prepared_at": "2026-06-01T04:42:07.796Z"
+    }
   }
 ]

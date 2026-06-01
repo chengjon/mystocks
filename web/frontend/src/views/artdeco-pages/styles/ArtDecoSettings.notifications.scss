@@ -1,0 +1,118 @@
+
+// 通知设置
+.notifications-card {
+    margin-bottom: var(--artdeco-spacing-6);
+}
+
+.notification-settings {
+    display: flex;
+    flex-direction: column;
+    gap: var(--artdeco-spacing-6);
+}
+
+.notification-category {
+    h4 {
+        font-family: var(--artdeco-font-display);
+        font-size: var(--artdeco-text-xl);
+        font-weight: 600;
+        color: var(--artdeco-gold-primary);
+        text-transform: uppercase;
+        letter-spacing: var(--artdeco-tracking-wide);
+        margin: 0 0 var(--artdeco-spacing-4) 0;
+    }
+
+    .setting-group {
+        display: flex;
+        flex-direction: column;
+        gap: var(--artdeco-spacing-4);
+    }
+
+    .notification-options {
+        display: flex;
+        align-items: center;
+        gap: var(--artdeco-spacing-3);
+
+        .option-label {
+            display: flex;
+            align-items: center;
+            gap: var(--artdeco-spacing-2);
+            font-family: var(--artdeco-font-body);
+            font-size: var(--artdeco-text-sm);
+            color: var(--artdeco-fg-muted);
+            cursor: pointer;
+
+            input[type='checkbox'] {
+                width: var(--artdeco-spacing-4);
+                height: var(--artdeco-spacing-4);
+                accent-color: var(--artdeco-gold-primary);
+            }
+        }
+
+        .channel-select {
+            width: calc(var(--artdeco-spacing-20) * 1.5);
+        }
+    }
+}
+
+// 通知渠道配置
+.channels-card {
+    .channel-config {
+        display: flex;
+        flex-direction: column;
+        gap: var(--artdeco-spacing-4);
+    }
+
+    .channel-item {
+        background: var(--artdeco-bg-card);
+        border: 1px solid var(--artdeco-gold-opacity-10);
+        border-radius: var(--artdeco-radius-none);
+        overflow: hidden;
+        transition: all var(--artdeco-transition-base);
+
+        &:hover {
+            border-color: var(--artdeco-gold-primary);
+            box-shadow: var(--artdeco-glow-subtle);
+        }
+
+        .channel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--artdeco-spacing-4);
+            border-bottom: 1px solid var(--artdeco-gold-opacity-10);
+
+            .channel-name {
+                font-family: var(--artdeco-font-body);
+                font-weight: 600;
+                color: var(--artdeco-fg-primary);
+            }
+        }
+
+        .channel-settings {
+            padding: var(--artdeco-spacing-4);
+            display: flex;
+            flex-direction: column;
+            gap: var(--artdeco-spacing-3);
+
+            .setting-row {
+                display: flex;
+                align-items: center;
+                gap: var(--artdeco-spacing-3);
+
+                label {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-text-sm);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    min-width: calc(var(--artdeco-spacing-px) * 80);
+                }
+
+                .channel-input {
+                    flex: 1;
+                }
+            }
+        }
+    }
+}

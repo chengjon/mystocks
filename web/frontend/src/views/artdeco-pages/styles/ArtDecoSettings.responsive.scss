@@ -1,0 +1,85 @@
+
+// 响应式设计
+@media (width <= calc(var(--artdeco-spacing-px) * 1400)) {
+    .stats-strip,
+    .settings-grid,
+    .system-info-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (width <= var(--artdeco-breakpoint-md)) {
+    .settings-tabs {
+        flex-wrap: wrap;
+    }
+
+    .settings-tab {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .notification-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--artdeco-spacing-2);
+    }
+
+    .channel-settings {
+        .setting-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: var(--artdeco-spacing-2);
+
+            label {
+                min-width: auto;
+            }
+        }
+    }
+}
+
+@media (width <= calc(var(--artdeco-spacing-px) * 768)) {
+    .setting-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--artdeco-spacing-3);
+
+        .setting-control {
+            width: 100%;
+        }
+    }
+
+    .config-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--artdeco-spacing-2);
+
+        label {
+            min-width: auto;
+        }
+
+        .config-input {
+            width: 100%;
+        }
+    }
+
+    .data-statistics {
+        grid-template-columns: 1fr;
+    }
+}
+
+// 动画
+@keyframes fade-in {
+    from {
+        opacity: 0%;
+        transform: translateY(var(--artdeco-spacing-5));
+    }
+    to {
+        opacity: 100%;
+        transform: translateY(0);
+    }
+}
+
+// ============================================
+//   DESIGN NOTE - 设计说明
+//   本项目仅支持桌面端，不包含移动端响应式代码
+// ============================================

@@ -1,0 +1,38 @@
+task:
+  id: "artdeco-settings-scss-style-split"
+  title: "Split ArtDecoSettings SCSS by visual concern"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.scss"
+    - "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.shell.scss"
+    - "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.settings-data.scss"
+    - "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.notifications.scss"
+    - "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.system.scss"
+    - "web/frontend/src/views/artdeco-pages/styles/ArtDecoSettings.responsive.scss"
+    - "docs/reports/tasks/2026-06-01-artdeco-settings-scss-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-settings-scss-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue, TypeScript, runtime logic, router, backend API contract, OpenAPI, or frontend API client changes."
+  - "No shared component extraction, route shell migration, visual redesign, or global token/baseline edits."
+  - "No token cleanup batch; source file already has zero disallowed px by focused check."
+
+acceptance:
+  commit_gate:
+    - "Split must be exact-reconstruction equivalent: concatenating facade import targets reproduces the original style body."
+    - "Each created ArtDecoSettings SCSS partial remains under 500 lines."
+    - "Focused ArtDeco token check for ArtDecoSettings SCSS files passes."
+    - "npm run build:no-types passes."
+    - "git diff --cached --check passes and staged files remain within the authorized allow-list; generated tree.md is not staged."
+  closeout_gate:
+    - "Function Tree closeout records split report, validation evidence, compatibility boundaries, and active gates return to none."
+
+evidence:
+  current_head: "859e95243b68a6f71913649665a205aeb3b51f9f"
+  notes: []
