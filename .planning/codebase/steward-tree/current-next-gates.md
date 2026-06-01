@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T03:25:19+08:00`
-- Base HEAD checked: `d34774837a0582f0e33d47425bb017b44e5aacd9`
+- Prepared at: `2026-06-01T07:48:42+08:00`
+- Base HEAD checked: `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.285 `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#437` merged at `d34774837a0582f0e33d47425bb017b44e5aacd9`; G2.285 classifies the five direct `governance_dashboard.py` control-plane route-body connection calls, records runtime/OpenAPI `548/500/0`, and samples GitNexus MEDIUM risk with `5` direct callers and `0` affected processes | Review future PR `#438`; do not auto-merge because target impact is MEDIUM; if human-accepted, start G2.286 no-source provider authorization package |
+| P0 | Review G2.286 `governance_dashboard.get_postgres_connection` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#438` merged at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`; G2.286 authorizes only a future path-limited G2.287 implementation for `web/backend/app/api/governance_dashboard.py` plus focused governance dashboard tests, with no source edits in G2.286 | Review future PR `#439`; do not auto-merge because it authorizes source work and target impact is MEDIUM; if human-accepted, start G2.287 path-limited implementation |
+| P0 | Preserve G2.285 `governance_dashboard.get_postgres_connection` ownership / control-plane route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#438` merged at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`; G2.285 classified the five direct `governance_dashboard.py` control-plane route-body connection calls, recorded runtime/OpenAPI `548/500/0`, and sampled GitNexus MEDIUM risk with `5` direct callers and `0` affected processes | Do not start source implementation from G2.285; use G2.286 only as no-source authorization package |
 | P0 | Preserve G2.284 data_lineage `get_lineage_tracker` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#437` merged at `d34774837a0582f0e33d47425bb017b44e5aacd9`; G2.284 closed the lineage provider lane, confirmed direct route-body `get_lineage_tracker()` calls are `0`, `Depends(get_lineage_tracker_dependency)` bindings are `5`, and runtime/OpenAPI remains `548/500/0` | Do not start source implementation from G2.284; use G2.285 only for no-source ownership / control-plane route-provider decision |
 | P0 | Preserve G2.283 data_lineage `get_lineage_tracker` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#436` merged at `511e9d091bc2b29777c522c595a9f1454f50b973`; G2.283 moved five `data_lineage.py` route handlers to `Depends(get_lineage_tracker_dependency)`, closed direct route-body calls to `0`, kept OpenAPI at `548/500/0`, and preserved cleanup through the dependency finalizer | Do not use G2.283 as authority for non-data-lineage source edits, route registration, route/OpenAPI contract changes, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
 | P0 | Preserve G2.282 data_lineage `get_lineage_tracker` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#435` merged at `891593d2dc4896f909333033a0b454529b9be38c`; G2.282 authorized only the path-limited `data_lineage.py` route-provider implementation lane and recorded the cleanup lifecycle requirement | Do not use G2.282 as authority for non-data-lineage source edits, route/OpenAPI changes, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state |
@@ -110,7 +111,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.285 correctly record PR `#437` as accepted/merged at `d34774837a0582f0e33d47425bb017b44e5aacd9`?
-- Does G2.285 classify `get_postgres_connection` as a bounded control-plane route helper owned by `governance_dashboard.py`?
-- Does G2.285 preserve the boundary that no source implementation is authorized now?
-- Does PR `#438` stop for human review because the selected target has GitNexus MEDIUM impact?
+- Does G2.286 correctly record PR `#438` as accepted/merged at `bdfdeb353f725f9e875ab50ee4e8ed22902a5818`?
+- Does G2.286 limit future implementation authority to `web/backend/app/api/governance_dashboard.py` plus focused governance dashboard tests?
+- Does G2.286 preserve route/OpenAPI, docs/api, frontend, config, scripts, OpenSpec, PM2, and runtime boundaries?
+- Does PR `#439` stop for human review because it authorizes future source work and the selected target has GitNexus MEDIUM impact?
