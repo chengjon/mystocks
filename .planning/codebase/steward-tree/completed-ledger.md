@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-01T19:28:21+08:00`
-- Base HEAD checked: `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`
+- Prepared at: `2026-06-01T21:10:00+08:00`
+- Base HEAD checked: `8a6cfa615f472f23643a13ab18ab02dd0853ad96`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,7 +19,7 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.301 accepted/merged by PR `#454` at `13a81aec` | Continue with G2.302 admin optimization provider authorization; do not auto-merge because it authorizes future source/test edits under the CRITICAL shared-helper-family target |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.305 accepted/merged by PR `#458` at `8a6cfa61` | Continue with G2.306 auth provider authorization; future G2.307 source implementation must stop at human review |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
 | Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.301 have progressed through PR `#337`-`#454`; current review target is G2.302 admin optimization provider authorization in future PR `#455` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
@@ -28,6 +28,7 @@ exact verification output.
 
 | Item | Accepted evidence | Follow-up |
 |---|---|---|
+| G2.305 auth.py PostgreSQL session ownership / provider-shape decision | PR `#458` merged at `8a6cfa615f472f23643a13ab18ab02dd0853ad96`; generated decision evidence records auth direct calls `4`, focused auth tests `10 passed / 18 skipped`, route/OpenAPI `548/500/0`, and existing ruff no-fix findings `6` | G2.306 no-source authorization may authorize only a bounded future G2.307 auth provider implementation |
 | G2.304 admin optimization provider closeout / residual refresh | PR `#457` merged at `d8e52a3b0000426a9ce278c5dbc1c4bbd8c6b4f9`; generated closeout evidence records admin optimization helper direct calls `0`, provider backing `1`, dependency bindings `4`, focused test `7/7`, route/OpenAPI `548/500/0`, and remaining auth direct calls `4` | G2.305 no-source auth ownership / provider-shape decision records auth surface and selects only no-source authorization |
 | G2.303 admin optimization PostgreSQL session provider implementation | PR `#456` merged at `1cc89b285cd265bce96991b8dc4c7e8bd71d85d0`; generated implementation evidence records provider `get_admin_optimization_postgresql_session_factory`, four dependency bindings, helper direct calls `0`, provider backing `1`, focused test `7/7`, and route/OpenAPI `548/500/0` | G2.304 no-source closeout / residual refresh records admin optimization closure and selects the next no-source auth ownership decision |
 | G2.302 admin optimization PostgreSQL session provider authorization | Generated authorization evidence records PR `#454` merged at `13a81aec15fc8e98e7e4e927abe6d27e3e16f93d`, future G2.303 scope limited to `optimization.py` and focused optimization tests, route/OpenAPI `548/500/0`, focused test `5/5`, and CRITICAL shared helper-family risk | G2.303 may only start as path-limited source implementation after PR `#455` human acceptance |
