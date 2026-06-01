@@ -1,0 +1,132 @@
+{
+  "schema_version": "2026-05-27.steward-evidence.v1",
+  "generated_at": "2026-06-01T13:54:13+08:00",
+  "git_head": "a31fd3ede177d5851c2394b8cea2fe42188a4021",
+  "base_branch": "wip/root-dirty-20260403",
+  "node": {
+    "id": "g2-295-admin-audit-postgresql-session-provider-implementation",
+    "label": "G2.295 admin audit database_factory get_postgresql_session provider implementation",
+    "type": "implementation_package",
+    "state": "for_review",
+    "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+    "parent": "G2.294 admin audit database_factory get_postgresql_session provider authorization",
+    "source_edit_authority": true,
+    "autopilot_status": "stop_at_pr_review_gate",
+    "autopilot_stop_reason": "G2.295 changes backend source/tests and must stop for human review."
+  },
+  "closed_parent": {
+    "pr": 447,
+    "state": "MERGED",
+    "url": "https://github.com/chengjon/mystocks/pull/447",
+    "merge_commit": "a31fd3ede177d5851c2394b8cea2fe42188a4021",
+    "merged_at": "2026-06-01T05:47:32Z"
+  },
+  "source_changes": {
+    "source_files": [
+      "web/backend/app/api/v1/admin/audit.py"
+    ],
+    "test_files": [
+      "web/backend/tests/test_v1_audit_regressions.py"
+    ],
+    "forbidden_scope_touched": false,
+    "implementation_summary": [
+      "Added route-local get_admin_audit_postgresql_session_factory dependency provider.",
+      "Moved list_audit_logs, get_audit_log, and get_audit_statistics to explicit Depends(...) provider wiring.",
+      "Changed _load_audit_logs and get_audit_statistics to call the injected session_factory.",
+      "Preserved manual session.close() cleanup semantics in finally blocks.",
+      "Kept route paths, response models, OpenAPI exposure, and response contracts stable."
+    ]
+  },
+  "residual_scan": {
+    "target_file": "web/backend/app/api/v1/admin/audit.py",
+    "direct_route_body_get_postgresql_session_calls_after": 0,
+    "depends_provider_bindings_after": 3,
+    "provider_backing_references_after": 2,
+    "compatibility_default_reference_after": 1,
+    "session_close_finally_blocks_after": 2,
+    "notes": "The import and provider/default references remain as backing compatibility seams. Route handlers no longer call get_postgresql_session directly."
+  },
+  "tdd_evidence": {
+    "red": {
+      "command": "env PYTHONPATH=web/backend pytest -q web/backend/tests/test_v1_audit_regressions.py::test_v1_audit_routes_expose_session_factory_dependency web/backend/tests/test_v1_audit_regressions.py::test_v1_audit_load_logs_uses_injected_session_factory_and_closes_session --tb=short --no-cov -n 0",
+      "result": "2 failed before implementation",
+      "failures": [
+        "KeyError: 'session_factory'",
+        "TypeError: _load_audit_logs() got an unexpected keyword argument 'session_factory'"
+      ]
+    },
+    "green": {
+      "command": "env PYTHONPATH=web/backend pytest -q web/backend/tests/test_v1_audit_regressions.py::test_v1_audit_routes_expose_session_factory_dependency web/backend/tests/test_v1_audit_regressions.py::test_v1_audit_load_logs_uses_injected_session_factory_and_closes_session --tb=short --no-cov -n 0",
+      "result": "2 passed in 1.74s"
+    },
+    "focused": {
+      "command": "env PYTHONPATH=web/backend pytest -q web/backend/tests/test_v1_audit_regressions.py web/backend/tests/test_v1_admin_exports.py --tb=short --no-cov -n 0",
+      "result": "6 passed in 1.86s"
+    }
+  },
+  "quality_evidence": {
+    "ruff": {
+      "command": "ruff check web/backend/app/api/v1/admin/audit.py web/backend/tests/test_v1_audit_regressions.py web/backend/tests/test_v1_admin_exports.py",
+      "result": "All checks passed!"
+    },
+    "route_openapi_smoke": {
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0,
+      "audit_routes": 3,
+      "warnings": 119,
+      "captured_at": "2026-06-01T13:53:52+08:00"
+    }
+  },
+  "gitnexus_evidence": {
+    "mcp_impact": "tool call failed: Transport closed",
+    "cli_impact_load_audit_logs": {
+      "risk": "LOW",
+      "impacted_count": 3,
+      "direct": 3,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "index_status": "stale warning, commits_behind=0"
+    },
+    "cli_impact_get_audit_statistics": {
+      "risk": "LOW",
+      "impacted_count": 0,
+      "direct": 0,
+      "processes_affected": 0,
+      "modules_affected": 0,
+      "index_status": "stale warning, commits_behind=0"
+    },
+    "cli_impact_database_factory_get_postgresql_session": {
+      "risk": "LOW",
+      "impacted_count": 4,
+      "direct": 2,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "affected_process": "get_audit_statistics",
+      "index_status": "stale warning, commits_behind=0"
+    },
+    "cli_verify_staged": {
+      "risk": "medium",
+      "changed_files": 11,
+      "changed_symbols": 14,
+      "affected_processes": 1,
+      "affected_flow": "Get_audit_statistics \u2192 _is_dev_like_environment",
+      "changed_primary_symbols": [
+        "_load_audit_logs",
+        "list_audit_logs",
+        "get_audit_log",
+        "get_audit_statistics"
+      ],
+      "index_status": "stale warning"
+    }
+  },
+  "freshness": {
+    "current_head_checked": "a31fd3ede177d5851c2394b8cea2fe42188a4021",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_admin_audit_call_sites_change": true,
+    "stale_if_gitnexus_risk_changes": true,
+    "stale_if_focused_tests_change": true
+  },
+  "next_gate": "Stop for human review in PR #448. If accepted, start G2.296 no-source admin audit provider closeout / residual refresh."
+}

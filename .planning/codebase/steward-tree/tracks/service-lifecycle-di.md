@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-06-01T13:02:37+08:00`
-- Base HEAD checked: `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`
+- Prepared at: `2026-06-01T13:54:13+08:00`
+- Base HEAD checked: `a31fd3ede177d5851c2394b8cea2fe42188a4021`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -3185,9 +3185,10 @@ Status: accepted/merged by PR `#446`.
 
 ## G2.294 Admin Audit PostgreSQL Session Provider Authorization
 
-Status: for review in future PR `#447`.
+Status: accepted/merged by PR `#447`.
 
 - Parent PR `#446` merged at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`.
+- G2.294 PR `#447` merged at `a31fd3ede177d5851c2394b8cea2fe42188a4021`.
 - G2.294 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - Target scope is only `web/backend/app/api/v1/admin/audit.py`, helper origin `app.core.database_factory.get_postgresql_session`.
 - Current scan records `2` direct helper occurrences: `_load_audit_logs` and `get_audit_statistics`.
@@ -3195,4 +3196,20 @@ Status: for review in future PR `#447`.
 - Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with `3` admin audit routes in schema.
 - GitNexus MCP returned `Transport closed`; CLI fallback reports LOW risk, `4` impacted symbols, `2` direct callers, `1` affected process, and `1` affected module for `Function:web/backend/app/core/database_factory.py:get_postgresql_session`.
 - Decision: authorize only a future G2.295 path-limited admin audit provider implementation after PR `#447` human acceptance.
-- Stop rule: PR `#447` must stop for human review because it authorizes future backend source work and the selected helper participates in one affected execution process.
+- Stop rule satisfied by PR `#447` human review and merge; G2.294 must not be used to expand source scope beyond G2.295.
+
+## G2.295 Admin Audit PostgreSQL Session Provider Implementation
+
+Status: for review in future PR `#448`.
+
+- Parent PR `#447` merged at `a31fd3ede177d5851c2394b8cea2fe42188a4021`.
+- G2.295 is a path-limited source implementation. It edits only `web/backend/app/api/v1/admin/audit.py`, `web/backend/tests/test_v1_audit_regressions.py`, and governance evidence.
+- It adds `get_admin_audit_postgresql_session_factory`, wires `list_audit_logs`, `get_audit_log`, and `get_audit_statistics` through `Depends(...)`, and moves direct route-body session creation behind an injected `session_factory`.
+- Direct route-body `get_postgresql_session()` calls after implementation are `0`; provider dependency bindings are `3`.
+- Existing `session.close()` cleanup semantics remain in `finally` blocks.
+- TDD evidence: targeted RED failed with missing `session_factory`; GREEN records `2 passed`; focused regression records `6 passed`.
+- Ruff passes for the touched source/tests.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with `3` admin audit routes.
+- GitNexus MCP returned `Transport closed`; CLI single-symbol fallback reports LOW risk, while staged verification reports MEDIUM risk with `1` affected process.
+- Stop rule: PR `#448` must stop for human review because it changes backend source/tests and staged verification reports MEDIUM risk.
+- Recommended next gate after human acceptance and merge: G2.296 no-source admin audit provider closeout / residual refresh.
