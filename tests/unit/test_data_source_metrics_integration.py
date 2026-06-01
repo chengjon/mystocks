@@ -63,7 +63,7 @@ def test_record_success_updates_runtime_stats_and_prometheus_metrics(monkeypatch
 
 
 def test_backend_metrics_endpoint_includes_canonical_datasource_metrics(monkeypatch):
-    from web.backend.app.core.middleware.performance import metrics_endpoint
+    from app.core.middleware.performance import metrics_endpoint
     from src.core.data_source import metrics as metrics_module
 
     metrics = DataSourceMetrics(registry=CollectorRegistry())
@@ -78,7 +78,7 @@ def test_backend_metrics_endpoint_includes_canonical_datasource_metrics(monkeypa
 
 
 def test_backend_metrics_endpoint_merges_canonical_metrics_even_with_runtime_datasource_prefix(monkeypatch):
-    from web.backend.app.core.middleware import performance
+    from app.core.middleware import performance
     from src.core.data_source import metrics as metrics_module
 
     metrics = DataSourceMetrics(registry=CollectorRegistry())
@@ -144,10 +144,10 @@ async def test_manual_datasource_test_route_records_canonical_metrics(monkeypatc
         authorization="Bearer local-test",
     )
 
-    assert response["success"] is True
-    assert response["row_count"] >= 1
-    assert response["error"] is None
-    assert response["quality_checks"]["has_data"] is True
+    assert response.data.success is True
+    assert response.data.row_count >= 1
+    assert response.data.error is None
+    assert response.data.quality_checks["has_data"] is True
     assert (
         metrics.api_calls_total.labels(
             endpoint="demo.daily_kline",
@@ -235,7 +235,7 @@ def test_backend_metrics_endpoint_includes_cache_hit_and_miss_samples(monkeypatc
     from src.core.data_source import metrics as metrics_module
     from src.core.data_source.handler import _call_endpoint
     from src.core.data_source.smart_cache import SmartCache
-    from web.backend.app.core.middleware.performance import metrics_endpoint
+    from app.core.middleware.performance import metrics_endpoint
 
     class CountingHandler:
         def __init__(self):

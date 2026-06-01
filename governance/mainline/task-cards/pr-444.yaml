@@ -1,0 +1,137 @@
+version: "v0.2"
+
+task:
+  id: "pr-444"
+  title: "Implement data_source_registry manager provider injection"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-data-source-registry-manager-provider-implementation"
+  objective: "move data_source_registry get_manager route-body consumers to an explicit FastAPI provider while preserving route contracts"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "api"
+    - "tests"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.291 preserves route paths, methods, response models, OpenAPI exposure, operation IDs, and runtime route count; no FUNCTION_TREE catalog change is required."
+
+scope:
+  allowed_paths:
+    - "web/backend/app/api/data_source_registry.py"
+    - "web/backend/tests/test_data_source_registry_manager_provider.py"
+    - "tests/unit/test_data_source_metrics_integration.py"
+    - ".planning/codebase/generated/data-source-registry-manager-provider-implementation-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-source-registry-manager-provider-implementation-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-444.yaml"
+  forbidden_paths:
+    - "web/backend/app/api/data_source_config.py"
+    - "src/core/data_source/**"
+    - "src/core/data_source_manager_v2.py"
+    - "docs/api/**"
+    - "web/frontend/**"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "route path, method, response model, response metadata, operation ID, or OpenAPI exposure changes"
+  - "generated OpenAPI artifact edits"
+  - "process-level singleton introduction"
+  - "data source manager implementation changes"
+  - "data_source_config.py changes"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "compatibility seam removal"
+  - "auto-merge"
+
+acceptance:
+  checks:
+    - id: "pr443-merged"
+      command: "gh pr view 443 confirms MERGED at e517163385e96a6c7115e14b77fb89819b4cead4"
+      required: true
+    - id: "gitnexus-impact-before-edit"
+      command: "GitNexus MCP context/impact returned Transport closed; CLI fallback records MEDIUM risk, 7 direct callers, 7 impacted symbols, 1 affected process"
+      required: true
+    - id: "tdd-red"
+      command: "PYTHONPATH=web/backend pytest -q -n 0 --tb=short --no-cov web/backend/tests/test_data_source_registry_manager_provider.py fails with 3 expected failures before implementation"
+      required: true
+    - id: "tdd-green"
+      command: "PYTHONPATH=web/backend pytest -q -n 0 --tb=short --no-cov web/backend/tests/test_data_source_registry_manager_provider.py passes with 3 passed after implementation"
+      required: true
+    - id: "focused-tests"
+      command: "PYTHONPATH=web/backend pytest -q -n 0 --tb=short --no-cov web/backend/tests/test_data_source_registry_manager_provider.py tests/api/file_tests/test_data_source_registry_api.py web/backend/tests/test_data_source_registry_error_contract.py web/backend/tests/test_data_source_auth_hardening.py tests/unit/test_data_source_metrics_integration.py"
+      required: true
+    - id: "ruff"
+      command: "ruff check web/backend/app/api/data_source_registry.py web/backend/tests/test_data_source_registry_manager_provider.py tests/unit/test_data_source_metrics_integration.py"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, duplicate operation IDs 0, and 16 data-source runtime routes"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-444.yaml --base-sha e517163385e96a6c7115e14b77fb89819b4cead4 --head-sha HEAD --report /tmp/pr444-mainline-governance-report.json"
+      required: true
+    - id: "gitnexus-detect-changes"
+      command: "GitNexus staged verification attempted before commit; stale-index warning recorded if present"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "The target has MEDIUM GitNexus impact and one affected process, so PR #444 must stop for human review."
+    - "Existing tests monkeypatch data_source_registry.get_manager directly; implementation must preserve that seam."
+    - "FastAPI dependency parameters must not leak into OpenAPI query parameters."
+  rollback_plan: "Revert PR #444; this restores previous route-body get_manager calls and removes the focused provider regression test and steward updates."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Move data_source_registry get_manager route-body consumers to a route-local FastAPI provider."
+    modified_scope: "One backend route file, two focused test files, governance evidence, steward tree, and task card."
+    dependency_changes: "No package or infrastructure dependency changes."
+    legacy_logic_impact: "get_manager remains as public/backing compatibility seam; no route/OpenAPI contract change."
+    rollback_ready: "Revert PR #444."
+    risk_and_rollback_point: "MEDIUM GitNexus impact with one affected process; stop for review before merge."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T11:08:00+08:00"
+    approval_note: "Human maintainer approved continuing after PR #443 merge into G2.291 path-limited source implementation. PR #444 must stop for review because it changes backend source/tests and the target has GitNexus MEDIUM impact with one affected process."
+    secondary_approved: true

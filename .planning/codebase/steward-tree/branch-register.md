@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-01T01:56:44+08:00`
-- Base HEAD checked: `1707284bceeef8992641290d86790c1699975f5a`
+- Prepared at: `2026-06-01T11:08:00+08:00`
+- Base HEAD checked: `e517163385e96a6c7115e14b77fb89819b4cead4`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -120,7 +120,8 @@ PRs, change issue labels, or authorize source implementation.
 | `#433` | `g2-280-service-lifecycle-residual-candidate-refresh-after-monitoring-db` | `wip/root-dirty-20260403` | `MERGED` at `1707284bceeef8992641290d86790c1699975f5a` | No-source residual candidate refresh selecting G2.281 data_lineage `get_lineage_tracker` decision |
 | `#441` | `g2-288-governance-dashboard-postgres-provider-closeout` | `wip/root-dirty-20260403` | `MERGED` at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37` | No-source governance dashboard provider closeout selecting G2.289 data_source_registry ownership decision |
 | `#442` | `g2-289-data-source-registry-manager-ownership` | `wip/root-dirty-20260403` | `MERGED` at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf` | No-source data_source_registry `get_manager` ownership decision selecting G2.290 provider authorization |
-| `#443` | `g2-290-data-source-registry-manager-provider-authorization` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source provider authorization for future G2.291 data_source_registry implementation; auto-merge paused because it authorizes future source work and target risk is MEDIUM |
+| `#443` | `g2-290-data-source-registry-manager-provider-authorization` | `wip/root-dirty-20260403` | `MERGED` at `e517163385e96a6c7115e14b77fb89819b4cead4` | No-source provider authorization for future G2.291 data_source_registry implementation |
+| `#444` | `g2-291-data-source-registry-manager-provider-implementation` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | Path-limited data_source_registry manager provider implementation; auto-merge paused because it changes backend source/tests and target risk is MEDIUM |
 
 ## Steward Governance Branch
 
@@ -157,6 +158,7 @@ PRs, change issue labels, or authorize source implementation.
 | `g2-288-governance-dashboard-postgres-provider-closeout` | `origin/wip/root-dirty-20260403` at `67ef9b9d8f9dd420de80995f624fa54e41493415` | Close out governance_dashboard provider implementation and select G2.289 data_source_registry ownership decision | No |
 | `g2-289-data-source-registry-manager-ownership` | `origin/wip/root-dirty-20260403` at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37` | Decide data_source_registry `get_manager` ownership / route-provider disposition; stop auto-merge due GitNexus MEDIUM risk and one affected process | No |
 | `g2-290-data-source-registry-manager-provider-authorization` | `origin/wip/root-dirty-20260403` at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf` | Authorize a future path-limited data_source_registry `get_manager` route-provider implementation | No |
+| `g2-291-data-source-registry-manager-provider-implementation` | `origin/wip/root-dirty-20260403` at `e517163385e96a6c7115e14b77fb89819b4cead4` | Implement path-limited data_source_registry manager provider injection and focused tests | Yes |
 
 ## OpenSpec Relationship
 
@@ -228,4 +230,6 @@ G2.288 is the no-source `governance_dashboard.get_postgres_connection` provider 
 
 G2.289 is the no-source `data_source_registry.get_manager` ownership / route-provider decision after PR `#441` merged G2.288 at `75ce550ceaf9f77b7659193b9cbd3c9ab2181c37`. It merged by PR `#442` at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf`. It classifies `get_manager` as a bounded active data-source registry route helper with `7` direct route-body callers, runtime/OpenAPI `548/500/0`, and GitNexus MEDIUM impact with one affected process. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 
-G2.290 is the no-source `data_source_registry.get_manager` provider authorization after PR `#442` merged G2.289 at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf`. It authorizes only a future G2.291 path-limited source lane for `web/backend/app/api/data_source_registry.py` plus focused data-source registry tests after PR `#443` human acceptance. It must not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state in the authorization PR.
+G2.290 is the no-source `data_source_registry.get_manager` provider authorization after PR `#442` merged G2.289 at `1f0a909355f5db9002cfc2d0fcbba21e366dc0bf`. It merged by PR `#443` at `e517163385e96a6c7115e14b77fb89819b4cead4`. It authorized only the G2.291 path-limited source lane for `web/backend/app/api/data_source_registry.py` plus focused data-source registry tests. It must not be used to expand scope beyond that implementation envelope.
+
+G2.291 is the path-limited `data_source_registry.get_manager` provider implementation after PR `#443` merged G2.290 at `e517163385e96a6c7115e14b77fb89819b4cead4`. It adds `get_data_source_registry_manager`, keeps `get_manager()` as backing compatibility / monkeypatch seam, moves seven target handlers to `Depends(get_data_source_registry_manager)`, preserves runtime/OpenAPI `548/500/0`, and records focused tests `34/34`. It edits backend source/tests and must stop at future PR `#444` review; if accepted, the next gate is G2.292 no-source provider closeout / residual refresh.

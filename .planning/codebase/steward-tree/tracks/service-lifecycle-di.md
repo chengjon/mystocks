@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-05-31T23:34:18+08:00`
-- Base HEAD checked: `daa4f22a557b054ab76042d4990b6e91d9faa7a7`
+- Prepared at: `2026-06-01T11:08:00+08:00`
+- Base HEAD checked: `e517163385e96a6c7115e14b77fb89819b4cead4`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -3138,4 +3138,18 @@ Status: for review in future PR `#443`.
 - Current route/OpenAPI smoke with repo `.env` loaded into the subprocess records `548` FastAPI routes, `500` OpenAPI paths, `0` duplicate operation IDs, and `7` data-source registry runtime routes.
 - GitNexus MCP returned `Transport closed`; CLI fallback reports MEDIUM risk, `7` impacted symbols, `7` direct callers, `1` affected process, `1` affected module, and stale-index warning.
 - PR `#443` must stop for human review and must not auto-merge because it authorizes future source work and the target has GitNexus MEDIUM impact with one affected process.
-- G2.290 is superseded only after a reviewed G2.291 implementation lane is accepted.
+- G2.290 is superseded by G2.291 path-limited implementation.
+
+## G2.291 data_source_registry get_manager Provider Implementation
+
+- PR state: planned future PR `#444` for review.
+- Parent state: PR `#443` merged G2.290 at `e517163385e96a6c7115e14b77fb89819b4cead4`.
+- G2.291 is a path-limited source implementation package. It edits only `web/backend/app/api/data_source_registry.py`, focused data-source registry tests, steward evidence, this track, and the PR task card.
+- Implementation shape: add route-local provider `get_data_source_registry_manager` delegating to existing `get_manager()`, keep `get_manager()` as backing compatibility / monkeypatch seam, and move the seven active data-source registry handlers to `Depends(get_data_source_registry_manager)`.
+- Result: direct route-body `get_manager()` calls are `0`, provider backing calls are `1`, and `Depends(get_data_source_registry_manager)` bindings are `7`.
+- Compatibility: direct unit-call compatibility is retained through `_resolve_data_source_registry_manager` so tests that monkeypatch `data_source_registry.get_manager` remain valid.
+- Route/OpenAPI: runtime routes `548`, OpenAPI paths `500`, duplicate operation IDs `0`, data-source runtime route count `16`.
+- Verification: TDD red `3 failed`, TDD green `3 passed`, focused data-source registry suite `34 passed`, ruff changed files `All checks passed`, OpenSpec strict valid with PostHog telemetry noise only.
+- GitNexus: MCP `context` and `impact` returned `Transport closed`; CLI fallback reports MEDIUM risk, `7` direct callers, `7` impacted symbols, `1` affected process, and stale-index warning for `Function:web/backend/app/api/data_source_registry.py:get_manager`.
+- Stop rule: PR `#444` must stop for human review because it changes backend source/tests and the target has GitNexus MEDIUM impact with one affected process.
+- Recommended next gate after human acceptance and merge: G2.292 no-source `data_source_registry.get_manager` provider closeout / residual refresh.

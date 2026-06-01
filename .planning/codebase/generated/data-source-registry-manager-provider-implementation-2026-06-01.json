@@ -1,0 +1,112 @@
+{
+  "schema_version": "2026-06-01.g2-provider-implementation.v1",
+  "generated_at": "2026-06-01T11:08:00+08:00",
+  "workline": "G2 service lifecycle / provider governance",
+  "node": {
+    "id": "G2.291",
+    "title": "data_source_registry get_manager provider implementation",
+    "state": "for_review",
+    "source_edit_authority": true,
+    "autopilot_allowed_to_merge": false,
+    "stop_reason": "backend source/tests changed and target GitNexus impact is MEDIUM with one affected process"
+  },
+  "parent": {
+    "id": "G2.290",
+    "pr": 443,
+    "state": "MERGED",
+    "merge_commit": "e517163385e96a6c7115e14b77fb89819b4cead4",
+    "merged_at": "2026-06-01T02:53:05Z"
+  },
+  "planned_pr": {
+    "number": 444,
+    "branch": "g2-291-data-source-registry-manager-provider-implementation",
+    "base": "wip/root-dirty-20260403"
+  },
+  "scope": {
+    "source_paths": [
+      "web/backend/app/api/data_source_registry.py"
+    ],
+    "test_paths": [
+      "web/backend/tests/test_data_source_registry_manager_provider.py",
+      "tests/unit/test_data_source_metrics_integration.py"
+    ],
+    "governance_paths": [
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/generated/data-source-registry-manager-provider-implementation-2026-06-01.json",
+      "docs/reports/quality/backend-data-source-registry-manager-provider-implementation-2026-06-01.md",
+      "governance/mainline/task-cards/pr-444.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/api/data_source_config.py",
+      "src/core/data_source/**",
+      "src/core/data_source_manager_v2.py",
+      "docs/api/**",
+      "web/frontend/**",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**",
+      "PM2/runtime state"
+    ]
+  },
+  "implementation": {
+    "module": "web/backend/app/api/data_source_registry.py",
+    "helper": "get_manager",
+    "provider": "get_data_source_registry_manager",
+    "provider_behavior": "delegates to get_manager()",
+    "compatibility_seam": "get_manager remains public/backing monkeypatch seam",
+    "fresh_manager_semantics": "preserved through get_manager() returning DataSourceManagerV2()",
+    "route_handlers": [
+      "search_data_sources",
+      "get_category_stats",
+      "get_data_source",
+      "update_data_source",
+      "test_data_source",
+      "health_check_data_source",
+      "health_check_all_data_sources"
+    ],
+    "direct_route_body_get_manager_calls_after": 0,
+    "provider_backing_get_manager_calls_after": 1,
+    "depends_provider_bindings_after": 7
+  },
+  "contract_snapshot": {
+    "runtime_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_ids": 0,
+    "data_source_runtime_routes": 16,
+    "route_registration_changed": false,
+    "generated_openapi_artifact_changed": false
+  },
+  "gitnexus": {
+    "mcp_context": "Transport closed",
+    "mcp_impact": "Transport closed",
+    "cli_context": "found Function:web/backend/app/api/data_source_registry.py:get_manager with seven incoming calls",
+    "cli_impact": {
+      "risk": "MEDIUM",
+      "impacted_count": 7,
+      "direct": 7,
+      "processes_affected": 1,
+      "modules_affected": 1,
+      "index_status": "stale warning"
+    }
+  },
+  "verification": {
+    "tdd_red": "web/backend/tests/test_data_source_registry_manager_provider.py: 3 failed before implementation",
+    "tdd_green": "web/backend/tests/test_data_source_registry_manager_provider.py: 3 passed after implementation",
+    "focused_tests": "34 passed in 11.95s",
+    "focused_test_command": "PYTHONPATH=web/backend pytest -q -n 0 --tb=short --no-cov web/backend/tests/test_data_source_registry_manager_provider.py tests/api/file_tests/test_data_source_registry_api.py web/backend/tests/test_data_source_registry_error_contract.py web/backend/tests/test_data_source_auth_hardening.py tests/unit/test_data_source_metrics_integration.py",
+    "ruff": "All checks passed",
+    "route_openapi": "548 routes, 500 paths, duplicate operation IDs 0, data-source runtime routes 16",
+    "openspec": "migrate-backend-singletons-to-lifecycle-di valid; PostHog telemetry noise only",
+    "git_diff_check": "passed"
+  },
+  "next_gate": {
+    "if_pr_444_accepted": "G2.292 no-source data_source_registry.get_manager provider closeout / residual refresh",
+    "if_pr_444_rejected": "revert PR #444 branch changes or revise implementation inside the same path-limited envelope"
+  }
+}
