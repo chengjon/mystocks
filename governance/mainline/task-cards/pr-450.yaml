@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-450"
+  title: "Decide core database PostgreSQL session residual route domains"
+  owner: "codex"
+  created_at: "2026-06-01"
+
+mainline:
+  id: "L1-core-database-postgresql-session-route-domain-decision"
+  objective: "split remaining core database get_postgresql_session residuals by route domain and select the next bounded authorization candidate"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.297 is no-source governance decision only. It changes no runtime route, handler, contract, or source entrypoint."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/core-database-postgresql-session-route-domain-decision-2026-06-01.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-core-database-postgresql-session-route-domain-decision-2026-06-01.md"
+    - "governance/mainline/task-cards/pr-450.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits"
+  - "test edits"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "authorization of a G2.298 source implementation lane"
+
+acceptance:
+  checks:
+    - id: "pr449-merged"
+      command: "gh pr view 449 confirms MERGED at 030545a24b4a8c9a4df36d2f126eb4597685e0c0"
+      required: true
+    - id: "route-domain-scan"
+      command: "current scan records 7 remaining active direct app.core.database get_postgresql_session calls across auth.py, admin/optimization.py, and market/market_data_request.py"
+      required: true
+    - id: "route-openapi-smoke"
+      command: "app.main route/OpenAPI smoke records 548 routes, 500 paths, and duplicate operation IDs 0"
+      required: true
+    - id: "gitnexus-core-helper-risk"
+      command: "npx gitnexus impact -r mystocks --summary-only Function:web/backend/app/core/database.py:get_postgresql_session records CRITICAL risk"
+      required: true
+    - id: "selected-next-gate"
+      command: "report selects only G2.298 no-source market stock list provider authorization; no source implementation authorized"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-core-database-postgresql-session-route-domain-decision-2026-06-01.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-450.yaml --base-sha 030545a24b4a8c9a4df36d2f126eb4597685e0c0 --head-sha HEAD --report /tmp/pr450-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The shared core database helper is CRITICAL-impact; future implementation must stay route-domain scoped and must not edit the helper definition."
+  rollback_plan: "Revert PR #450; this removes only G2.297 governance evidence and restores the prior G2.296 closeout gate text."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Split remaining core database PostgreSQL session residuals by route domain."
+    modified_scope: "Steward tree, generated decision evidence, quality report, and mainline task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime logic impact; backend source and tests are untouched."
+    rollback_ready: "Revert PR #450."
+    risk_and_rollback_point: "No-source decision; shared helper risk is CRITICAL, so next implementation remains blocked behind a separate authorization package."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer"
+    approved_at: "2026-06-01T15:00:25+08:00"
+    approval_note: "Human maintainer approved continuing after PR #449 merge into G2.297 no-source route-domain decision. PR #450 must stop for review because it selects a future authorization candidate from a CRITICAL shared helper family."
+    secondary_approved: false

@@ -3226,3 +3226,16 @@ Status: for review in future PR `#449`.
 - GitNexus MCP remains unreliable (`Transport closed` in this session); CLI fallback for `Function:web/backend/app/core/database.py:get_postgresql_session` reports CRITICAL risk, `15` direct dependants, `54` affected processes, and `13` affected modules with a stale-index warning.
 - Stop rule: PR `#449` must stop for human review because the selected next residual family routes through the CRITICAL-impact core database helper.
 - Recommended next gate after human acceptance and merge: G2.297 no-source core database `get_postgresql_session` residual route-domain decision.
+
+## G2.297 Core Database PostgreSQL Session Route-Domain Decision
+
+Status: for review in future PR `#450`.
+
+- Parent PR `#449` merged at `030545a24b4a8c9a4df36d2f126eb4597685e0c0`.
+- G2.297 is a no-source ownership / route-domain decision package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- The closed admin audit lane remains closed: direct route-body `get_postgresql_session()` calls are `0`, provider bindings are `3`.
+- Remaining active direct calls under the `app.core.database.get_postgresql_session` family are split by route domain: auth account/password `4`, admin optimization control-plane `2`, market stock list `1`.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`.
+- GitNexus MCP remains unreliable (`Transport closed` in this session); CLI fallback for `Function:web/backend/app/core/database.py:get_postgresql_session` reports CRITICAL risk, `15` direct dependants, `54` affected processes, and `13` affected modules with a stale-index warning.
+- Decision: do not start source implementation from G2.297. Select only G2.298 no-source market stock list `get_postgresql_session` provider authorization because it is the smallest remaining route-domain surface.
+- Stop rule: PR `#450` must stop for human review because the selected next candidate belongs to a CRITICAL shared helper family.

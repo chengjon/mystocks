@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-01T14:31:45+08:00`
-- Base HEAD checked: `48cf7e12637341451d8d77370306774df9c48729`
+- Prepared at: `2026-06-01T15:00:25+08:00`
+- Base HEAD checked: `030545a24b4a8c9a4df36d2f126eb4597685e0c0`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,16 +19,17 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.295 accepted/merged by PR `#448` at `48cf7e` | Continue with G2.296 admin audit provider closeout / residual refresh; do not auto-merge because the selected next residual family has CRITICAL GitNexus impact |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.296 accepted/merged by PR `#449` at `030545` | Continue with G2.297 core database route-domain decision; do not auto-merge because the selected next candidate belongs to a CRITICAL shared helper family |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
-| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.295 have progressed through PR `#337`-`#448`; current review target is G2.296 admin audit provider closeout in future PR `#449` |
+| Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.296 have progressed through PR `#337`-`#449`; current review target is G2.297 core database route-domain decision in future PR `#450` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
 
 ## Recent Closeouts
 
 | Item | Accepted evidence | Follow-up |
 |---|---|---|
-| G2.296 admin audit provider closeout / residual refresh | Generated closeout evidence records PR `#448` merged at `48cf7e12637341451d8d77370306774df9c48729`, admin audit direct route-body calls `0`, provider bindings `3`, and runtime/OpenAPI `548/500/0` | G2.297 should be a no-source core database `get_postgresql_session` residual route-domain decision and must stop for human review because GitNexus risk is CRITICAL |
+| G2.297 core database `get_postgresql_session` route-domain decision | Generated decision evidence records PR `#449` merged at `030545a24b4a8c9a4df36d2f126eb4597685e0c0`, remaining direct calls split as auth `4`, admin optimization `2`, market stock list `1`, and runtime/OpenAPI `548/500/0` | G2.298 should be no-source market stock list provider authorization only; auth and admin optimization remain separate future route-domain tracks |
+| G2.296 admin audit provider closeout / residual refresh | PR `#449` merged at `030545a24b4a8c9a4df36d2f126eb4597685e0c0`; admin audit direct route-body calls `0`, provider bindings `3`, and runtime/OpenAPI `548/500/0` | G2.297 splits remaining core-database helper residuals by route domain |
 | G2.295 admin audit `database_factory.get_postgresql_session` provider implementation | PR `#448` merged at `48cf7e12637341451d8d77370306774df9c48729`; moved 3 admin audit handlers to provider wiring, retained cleanup semantics, and kept route/OpenAPI stable | G2.296 records closeout and refreshes remaining core-database helper residuals |
 | G2.294 admin audit `database_factory.get_postgresql_session` provider authorization | PR `#447` merged at `a31fd3ede177d5851c2394b8cea2fe42188a4021`; authorized only a future path-limited admin audit provider implementation after review | G2.295 implements the authorized provider wiring and must stop at PR `#448` review |
 | G2.293 `get_postgresql_session` ownership / route-provider decision | PR `#446` merged at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`; helper family split across auth, admin audit, admin optimization, and market route modules; shared `app.core.database.get_postgresql_session` marked CRITICAL impact | G2.294 authorizes only the bounded admin audit `database_factory` subgroup and must stop at PR `#447` review |

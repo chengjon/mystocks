@@ -1,0 +1,168 @@
+{
+  "schema_version": "steward-tree-evidence.v1",
+  "node": "G2.297",
+  "title": "core database get_postgresql_session residual route-domain decision",
+  "generated_at": "2026-06-01T15:00:25+08:00",
+  "git_head": "030545a24b4a8c9a4df36d2f126eb4597685e0c0",
+  "base_branch": "wip/root-dirty-20260403",
+  "worktree": ".worktrees/g2-297-core-database-postgresql-session-route-domain-decision",
+  "scope": {
+    "type": "no-source-ownership-decision",
+    "source_edit_authority": false,
+    "allowed_paths": [
+      ".planning/codebase/generated/core-database-postgresql-session-route-domain-decision-2026-06-01.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-core-database-postgresql-session-route-domain-decision-2026-06-01.md",
+      "governance/mainline/task-cards/pr-450.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "parent": {
+    "node": "G2.296",
+    "pr": 449,
+    "state": "MERGED",
+    "merged_at": "2026-06-01T06:55:14Z",
+    "merge_commit": "030545a24b4a8c9a4df36d2f126eb4597685e0c0",
+    "head_ref": "g2-296-admin-audit-provider-closeout"
+  },
+  "current_snapshot": {
+    "route_openapi": {
+      "env_source": "process environment only; no secrets persisted",
+      "routes": 548,
+      "paths": 500,
+      "duplicate_operation_ids": 0
+    },
+    "remaining_active_direct_calls": 7,
+    "closed_admin_audit_lane": {
+      "file": "web/backend/app/api/v1/admin/audit.py",
+      "direct_calls": 0,
+      "provider_bindings": 3,
+      "classification": "closed provider lane; retained backing refs only"
+    }
+  },
+  "route_domain_split": [
+    {
+      "domain": "auth-account-password",
+      "file": "web/backend/app/api/auth.py",
+      "helper_origin": "app.core.database.get_postgresql_session",
+      "references": 8,
+      "direct_calls": 4,
+      "runtime_routes": [
+        "GET /api/v1/auth/users",
+        "POST /api/v1/auth/register",
+        "POST /api/v1/auth/reset-password/request",
+        "POST /api/v1/auth/reset-password/confirm"
+      ],
+      "functions": [
+        "get_users",
+        "register_user",
+        "request_password_reset",
+        "confirm_password_reset"
+      ],
+      "gitnexus_sampled_route_functions": {
+        "risk": "LOW",
+        "processes_affected": 0,
+        "index_status": "stale warning"
+      },
+      "decision": "defer to a dedicated auth/session-provider design because the semantic surface includes user listing, registration, and password reset flows"
+    },
+    {
+      "domain": "admin-optimization-control-plane",
+      "file": "web/backend/app/api/v1/admin/optimization.py",
+      "helper_origin": "app.core.database.get_postgresql_session",
+      "references": 3,
+      "direct_calls": 2,
+      "runtime_routes": [
+        "POST /api/v1/optimization/vacuum",
+        "POST /api/v1/optimization/analyze",
+        "POST /api/v1/optimization/reindex",
+        "GET /api/v1/optimization/status"
+      ],
+      "functions": [
+        "_run_maintenance",
+        "_database_status_payload"
+      ],
+      "gitnexus_sampled_route_functions": {
+        "_run_maintenance": {
+          "risk": "LOW",
+          "direct": 3,
+          "processes_affected": 0,
+          "index_status": "stale warning"
+        },
+        "_database_status_payload": {
+          "risk": "LOW",
+          "direct": 1,
+          "processes_affected": 0,
+          "index_status": "stale warning"
+        }
+      },
+      "decision": "defer behind the lower-scope market stock list pilot because it is an operational control-plane route family with maintenance SQL"
+    },
+    {
+      "domain": "market-stock-list",
+      "file": "web/backend/app/api/market/market_data_request.py",
+      "helper_origin": "app.core.database.get_postgresql_session",
+      "references": 2,
+      "direct_calls": 1,
+      "runtime_routes": [
+        "GET /api/v1/market/stocks"
+      ],
+      "functions": [
+        "get_stock_list"
+      ],
+      "gitnexus_sampled_route_functions": {
+        "risk": "LOW",
+        "direct": 0,
+        "processes_affected": 0,
+        "index_status": "stale warning"
+      },
+      "decision": "select as the next no-source authorization candidate because it is the smallest remaining core-database route-domain surface"
+    }
+  ],
+  "gitnexus_evidence": {
+    "mcp_status": "GitNexus MCP remains unreliable in this session; CLI fallback used.",
+    "cli_core_database_impact": {
+      "command": "npx gitnexus impact -r mystocks --summary-only Function:web/backend/app/core/database.py:get_postgresql_session",
+      "risk": "CRITICAL",
+      "direct": 15,
+      "processes_affected": 54,
+      "modules_affected": 13,
+      "index_status": "stale warning"
+    },
+    "route_function_sampling": "Sampled route/helper functions for auth, admin optimization, and market stock list were LOW risk individually, but the shared helper definition remains CRITICAL."
+  },
+  "decision": {
+    "classification": "core-database-postgresql-session-route-domain-split",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-297",
+    "autopilot_continue_allowed": false,
+    "selected_next_governance_target": "market-stock-list-postgresql-session-provider-authorization",
+    "recommended_next_work_item": "G2.298 no-source market stock list get_postgresql_session provider authorization after PR #450 human acceptance",
+    "reason": "The remaining core helper family is CRITICAL as a shared definition. The next bounded authorization candidate should be the one-route market stock list surface, while auth and admin optimization remain separate route-domain tracks."
+  },
+  "freshness": {
+    "current_head_checked_at_review": "030545a24b4a8c9a4df36d2f126eb4597685e0c0",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_auth_session_call_sites_change": true,
+    "stale_if_admin_optimization_call_sites_change": true,
+    "stale_if_market_request_call_sites_change": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_gitnexus_risk_changes": true
+  }
+}

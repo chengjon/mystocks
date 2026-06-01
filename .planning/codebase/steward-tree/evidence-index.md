@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-01T14:31:45+08:00`
-- Base HEAD checked: `48cf7e12637341451d8d77370306774df9c48729`
+- Prepared at: `2026-06-01T15:00:25+08:00`
+- Base HEAD checked: `030545a24b4a8c9a4df36d2f126eb4597685e0c0`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/admin-audit-postgresql-session-provider-closeout-2026-06-01.json` | G2.296 admin audit provider closeout / residual refresh evidence | Review input for future PR `#449`; no-source closeout package; selected next residual family has CRITICAL GitNexus impact |
-| `docs/reports/quality/backend-admin-audit-postgresql-session-provider-closeout-2026-06-01.md` | G2.296 human-readable closeout / residual refresh report | Review input for future PR `#449`; records PR `#448` accepted/merged, admin audit residual closure, route/OpenAPI smoke, remaining core helper residuals, and stop rule |
-| `governance/mainline/task-cards/pr-449.yaml` | Governance task card for G2.296 no-source closeout | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/core-database-postgresql-session-route-domain-decision-2026-06-01.json` | G2.297 core database `get_postgresql_session` route-domain decision evidence | Review input for future PR `#450`; no-source decision package; selected next candidate is no-source market stock list authorization only |
+| `docs/reports/quality/backend-core-database-postgresql-session-route-domain-decision-2026-06-01.md` | G2.297 human-readable route-domain decision report | Review input for future PR `#450`; records PR `#449` accepted/merged, auth/admin/market split, route/OpenAPI smoke, GitNexus fallback, and stop rule |
+| `governance/mainline/task-cards/pr-450.yaml` | Governance task card for G2.297 no-source route-domain decision | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/admin-audit-postgresql-session-provider-closeout-2026-06-01.json` | G2.296 admin audit provider closeout / residual refresh evidence | Accepted by PR `#449`, merged at `030545a24b4a8c9a4df36d2f126eb4597685e0c0`; no-source closeout package; superseded for route-domain decision by G2.297 |
+| `docs/reports/quality/backend-admin-audit-postgresql-session-provider-closeout-2026-06-01.md` | G2.296 human-readable closeout / residual refresh report | Accepted by PR `#449`; records PR `#448` accepted/merged, admin audit residual closure, route/OpenAPI smoke, remaining core helper residuals, and stop rule |
+| `governance/mainline/task-cards/pr-449.yaml` | Governance task card for G2.296 no-source closeout | Accepted by PR `#449`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/admin-audit-postgresql-session-provider-implementation-2026-06-01.json` | G2.295 admin audit `database_factory.get_postgresql_session` provider implementation evidence | Accepted by PR `#448`, merged at `48cf7e12637341451d8d77370306774df9c48729`; path-limited source implementation; superseded for closeout evidence by G2.296 |
 | `docs/reports/quality/backend-admin-audit-postgresql-session-provider-implementation-2026-06-01.md` | G2.295 human-readable provider implementation report | Accepted by PR `#448`; records PR `#447` accepted/merged, TDD red/green, focused tests, ruff, route/OpenAPI smoke, GitNexus fallback, and stop rule |
 | `governance/mainline/task-cards/pr-448.yaml` | Governance task card for G2.295 source implementation | Accepted by PR `#448`; allowed only path-limited admin audit source/test and governance evidence updates |
