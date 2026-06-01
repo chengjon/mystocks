@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-02T01:46:33+08:00`
-- Base HEAD checked: `75f6c63023bec35453892f63aaeaf193023e4881`
+- Prepared at: `2026-06-02T01:58:00+08:00`
+- Base HEAD checked: `8d52fa0548fd200f0c9b606e5880e71286c07d10`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -292,3 +292,5 @@ G2.312 is the no-source service lifecycle residual candidate refresh after PR `#
 G2.313 is the no-source `indicator_registry.get_factory` ownership / route-provider decision after PR `#465` merged G2.312 at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`. It records `web/backend/app/api/indicator_registry.py` as an active registered route module with three `get_factory()` route-body calls at lines `159`, `186`, and `201`, route/OpenAPI `548/500/0`, and GitNexus CLI `LOW` risk with `3` direct callers and `0` affected processes. It does not authorize source implementation and selects only G2.314 no-source `indicator_registry.get_factory` provider authorization after future PR `#466` acceptance.
 
 G2.314 is the no-source `indicator_registry.get_factory` provider authorization after PR `#466` merged G2.313 at `75f6c63023bec35453892f63aaeaf193023e4881`. It authorizes only a future G2.315 path-limited implementation lane for `web/backend/app/api/indicator_registry.py` plus `tests/api/file_tests/test_indicator_registry_api.py`, requires route/OpenAPI `548/500/0` preservation, and requires G2.315 to stop for human review before merge. It does not edit source in PR `#467`.
+
+G2.315 is the path-limited `indicator_registry.get_factory` provider implementation after PR `#467` merged G2.314 at `8d52fa0548fd200f0c9b606e5880e71286c07d10`. It changes `web/backend/app/api/indicator_registry.py` and `tests/api/file_tests/test_indicator_registry_api.py`, moves the three active indicator-registry routes to `Depends(get_indicator_factory)`, preserves route/OpenAPI `548/500/0`, records focused test `11 passed`, and must stop at PR `#468` human review before merge.

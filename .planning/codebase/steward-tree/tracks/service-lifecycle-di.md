@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-06-02T01:46:33+08:00`
-- Base HEAD checked: `75f6c63023bec35453892f63aaeaf193023e4881`
+- Prepared at: `2026-06-02T01:58:00+08:00`
+- Base HEAD checked: `8d52fa0548fd200f0c9b606e5880e71286c07d10`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -29,6 +29,7 @@ It proved a repeatable conveyor:
 
 | Node | State | Notes |
 |---|---|---|
+| G2.315 indicator_registry `get_factory` provider implementation | Future PR `#468` source review target | Moves 3 route handlers to `Depends(get_indicator_factory)`, keeps route/OpenAPI `548/500/0`, focused test `11 passed`, and must stop for human review before merge |
 | G2.314 indicator_registry `get_factory` provider authorization | Future PR `#467` review target | Authorizes only future G2.315 path-limited source/test lane and requires human review before source merge; no source edits in G2.314 |
 | G2.313 indicator_registry `get_factory` ownership / route-provider decision | Future PR `#466` review target | Classifies active route-local singleton factory helper with 3 route-body calls, route/OpenAPI `548/500/0`, GitNexus CLI `LOW`, and selects only G2.314 no-source provider authorization |
 | G2.312 residual refresh after dormant indicator-config exclusion | Merged by PR `#465` | Excludes dormant `create_indicator_config.py` / `get_mysql_session`, records `371` Python files scanned, `663` getter names, `53` active interesting candidates, and selects G2.313 |
@@ -3468,10 +3469,21 @@ Status: accepted / merged by PR `#466`.
 
 ## G2.314 Indicator Registry `get_factory` Provider Authorization
 
-Status: for review in future PR `#467`.
+Status: accepted / merged by PR `#467`.
 
 - Parent PR `#466` merged at `75f6c63023bec35453892f63aaeaf193023e4881`.
 - G2.314 is a no-source authorization package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - G2.314 authorizes only a future G2.315 source implementation lane limited to `web/backend/app/api/indicator_registry.py` and `tests/api/file_tests/test_indicator_registry_api.py`.
 - Required future shape: route-local provider dependency for `IndicatorFactory`, no route/OpenAPI contract drift, three handlers moved away from route-body `get_factory()`, and `get_factory()` retained as backing compatibility seam unless separately retired.
 - Stop rule: G2.315 must stop at human review before merge and must not be auto-merged under the no-source autopilot rule.
+
+## G2.315 Indicator Registry `get_factory` Provider Implementation
+
+Status: source implementation PR review required in future PR `#468`.
+
+- Parent PR `#467` merged at `8d52fa0548fd200f0c9b606e5880e71286c07d10`.
+- G2.315 edits only `web/backend/app/api/indicator_registry.py`, `tests/api/file_tests/test_indicator_registry_api.py`, and governance artifacts.
+- Implementation moves all three indicator-registry routes to `Depends(get_indicator_factory)`, retains `get_factory()` as the backing compatibility seam, and preserves route/OpenAPI `548/500/0`.
+- TDD evidence: RED `2 failed, 9 passed`; GREEN `11 passed, 1 warning`.
+- Verification: health collect-only 121 tests collected, ruff focused pass, provider scan route-body direct calls `0`, backing calls `1`, dependency bindings `3`.
+- Stop rule: PR `#468` must be manually reviewed and must not be auto-merged.

@@ -1,0 +1,118 @@
+{
+  "schema_version": "1.0",
+  "generated_at": "2026-06-02T01:58:00+08:00",
+  "node": "G2.315",
+  "title": "indicator_registry get_factory provider implementation",
+  "repo": "mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "8d52fa0548fd200f0c9b606e5880e71286c07d10",
+  "parent_gate": {
+    "node": "G2.314",
+    "github_pr": {
+      "number": 467,
+      "url": "https://github.com/chengjon/mystocks/pull/467",
+      "state": "MERGED",
+      "merge_commit": "8d52fa0548fd200f0c9b606e5880e71286c07d10",
+      "merged_at": "2026-06-01T17:49:41Z",
+      "head_ref": "g2-314-indicator-registry-factory-provider-authorization"
+    },
+    "decision": "provider authorization accepted for a path-limited source/test implementation lane"
+  },
+  "source_edit_authority": true,
+  "automerge_authority": false,
+  "human_review_required_before_merge": true,
+  "target": {
+    "file": "web/backend/app/api/indicator_registry.py",
+    "provider": "get_indicator_factory",
+    "backing": "get_factory",
+    "factory_class": "IndicatorFactory"
+  },
+  "implementation": {
+    "source_files": [
+      "web/backend/app/api/indicator_registry.py"
+    ],
+    "test_files": [
+      "tests/api/file_tests/test_indicator_registry_api.py"
+    ],
+    "changes": [
+      "Added Depends import and route-local get_indicator_factory provider.",
+      "Moved list_indicators, get_indicator_details, and calculate_indicator to Depends(get_indicator_factory).",
+      "Retained get_factory as backing singleton compatibility seam.",
+      "Updated file-level response_model assertions to current UnifiedResponse contract.",
+      "Added provider wiring test for all three indicator-registry routes."
+    ]
+  },
+  "tdd": {
+    "red": "pytest -o addopts= tests/api/file_tests/test_indicator_registry_api.py --no-cov -q produced expected provider AttributeError plus stale response_model assertion: 2 failed, 9 passed.",
+    "green": "pytest -o addopts= tests/api/file_tests/test_indicator_registry_api.py --no-cov -q passed: 11 passed, 1 warning."
+  },
+  "verification": {
+    "health_collect_only": "pytest -o addopts= web/backend/tests/test_health_route_conflicts.py --collect-only -q --no-cov collected 121 tests without collection failure.",
+    "ruff": "ruff check web/backend/app/api/indicator_registry.py tests/api/file_tests/test_indicator_registry_api.py passed: All checks passed.",
+    "route_openapi": {
+      "total_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_id_warnings": 0,
+      "indicator_registry_dependency_calls": [
+        "get_indicator_factory",
+        "get_indicator_factory",
+        "get_indicator_factory"
+      ]
+    },
+    "provider_scan": {
+      "route_body_direct_get_factory_calls": 0,
+      "provider_backing_get_factory_calls": 1,
+      "depends_bindings": 3
+    }
+  },
+  "gitnexus": {
+    "pre_edit_mcp_impact": {
+      "status": "failed",
+      "error": "Transport closed"
+    },
+    "pre_edit_cli_impact": {
+      "risk": "LOW",
+      "direct_callers": 3,
+      "affected_processes": 0,
+      "affected_modules": [
+        "Api"
+      ],
+      "stale_index": true,
+      "commits_behind": 0
+    }
+  },
+  "allowed_scope": [
+    "web/backend/app/api/indicator_registry.py",
+    "tests/api/file_tests/test_indicator_registry_api.py",
+    ".planning/codebase/generated/indicator-registry-factory-provider-implementation-2026-06-02.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-indicator-registry-factory-provider-implementation-2026-06-02.md",
+    "governance/mainline/task-cards/pr-468.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/app/core/database.py",
+    "web/backend/app/router_registry.py",
+    "web/backend/app/api/data_lineage.py",
+    "web/frontend/**",
+    "src/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "freshness": {
+    "current_head_checked": "8d52fa0548fd200f0c9b606e5880e71286c07d10",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_get_factory_call_surface_changes": true
+  },
+  "next_gate": "Human review PR #468. If accepted and merged, start G2.316 no-source indicator_registry factory provider closeout / residual refresh."
+}
