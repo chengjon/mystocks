@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-01T13:54:13+08:00`
-- Base HEAD checked: `a31fd3ede177d5851c2394b8cea2fe42188a4021`
+- Prepared at: `2026-06-01T14:31:45+08:00`
+- Base HEAD checked: `48cf7e12637341451d8d77370306774df9c48729`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.295 admin audit `database_factory.get_postgresql_session` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#447` merged at `a31fd3ede177d5851c2394b8cea2fe42188a4021`; G2.295 moved 3 admin audit handlers to explicit provider dependency wiring, preserved cleanup semantics, and kept runtime/OpenAPI `548/500/0` | Review future PR `#448`; do not auto-merge because this package changes backend source/tests |
+| P0 | Review G2.296 admin audit provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#448` merged at `48cf7e12637341451d8d77370306774df9c48729`; G2.296 records admin audit direct route-body `get_postgresql_session()` calls `0`, provider bindings `3`, runtime/OpenAPI `548/500/0`, and remaining core-database helper direct calls `7` | Review future PR `#449`; do not auto-merge because the selected next residual family has CRITICAL GitNexus impact |
+| P0 | Preserve G2.295 admin audit `database_factory.get_postgresql_session` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#448` merged at `48cf7e12637341451d8d77370306774df9c48729`; G2.295 moved 3 admin audit handlers to explicit provider dependency wiring, preserved cleanup semantics, and kept runtime/OpenAPI `548/500/0` | Do not use G2.295 as authority for auth, admin optimization, market request, helper-definition, route/OpenAPI, docs/api, frontend, config, script, OpenSpec, PM2, or runtime changes |
 | P0 | Preserve G2.294 admin audit `database_factory.get_postgresql_session` provider authorization | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#447` merged at `a31fd3ede177d5851c2394b8cea2fe42188a4021`; G2.294 authorized only the path-limited G2.295 admin audit implementation lane | Do not use G2.294 to expand scope beyond `web/backend/app/api/v1/admin/audit.py` plus focused audit tests |
 | P0 | Preserve G2.293 `get_postgresql_session` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#446` merged at `a62d5e3fa4e9efbbe388e4bd317ae0cfae371319`; G2.293 classified `get_postgresql_session` as a cross-domain helper family with `9` direct helper occurrences across auth, admin audit, admin optimization, and market routes; `app.core.database.get_postgresql_session` has CRITICAL GitNexus impact | Do not use G2.293 as source implementation authorization; use only the bounded G2.294 admin audit authorization package after review |
 | P0 | Preserve G2.292 `data_source_registry.get_manager` provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#445` merged at `05cdf04f646d844c11e90e7c453ed4f985c8d382`; G2.292 closed the data-source registry provider lane with direct route-body `get_manager()` calls `0`, provider backing calls `1`, provider bindings `7`, focused regression `3 passed`, and runtime/OpenAPI `548/500/0` | Do not use G2.292 as source implementation authorization; use G2.293 only for no-source `get_postgresql_session` ownership / route-provider decision |

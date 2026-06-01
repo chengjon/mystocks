@@ -3213,3 +3213,16 @@ Status: for review in future PR `#448`.
 - GitNexus MCP returned `Transport closed`; CLI single-symbol fallback reports LOW risk, while staged verification reports MEDIUM risk with `1` affected process.
 - Stop rule: PR `#448` must stop for human review because it changes backend source/tests and staged verification reports MEDIUM risk.
 - Recommended next gate after human acceptance and merge: G2.296 no-source admin audit provider closeout / residual refresh.
+
+## G2.296 Admin Audit PostgreSQL Session Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#449`.
+
+- Parent PR `#448` merged at `48cf7e12637341451d8d77370306774df9c48729`.
+- G2.296 is a no-source closeout / residual refresh package. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- It records the admin audit provider lane as closed: direct route-body `get_postgresql_session()` calls are `0`, `Depends(get_admin_audit_postgresql_session_factory)` bindings are `3`, and retained `audit.py` references are compatibility/backing seams only.
+- Route/OpenAPI smoke remains `548` routes, `500` paths, duplicate operation IDs `0`, with five runtime routes containing `audit`.
+- Remaining `get_postgresql_session` residuals outside the closed admin audit lane are split across `auth.py`, `v1/admin/optimization.py`, and `market/market_data_request.py`, with `7` active direct route/helper calls.
+- GitNexus MCP remains unreliable (`Transport closed` in this session); CLI fallback for `Function:web/backend/app/core/database.py:get_postgresql_session` reports CRITICAL risk, `15` direct dependants, `54` affected processes, and `13` affected modules with a stale-index warning.
+- Stop rule: PR `#449` must stop for human review because the selected next residual family routes through the CRITICAL-impact core database helper.
+- Recommended next gate after human acceptance and merge: G2.297 no-source core database `get_postgresql_session` residual route-domain decision.
