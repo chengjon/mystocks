@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active track summary
-- Prepared at: `2026-06-02T01:58:00+08:00`
-- Base HEAD checked: `8d52fa0548fd200f0c9b606e5880e71286c07d10`
+- Prepared at: `2026-06-02T08:24:18+08:00`
+- Base HEAD checked: `8b09c714784ce90a1a8b1fe938e5904a81110094`
 
 Boundary note: this track summary does not authorize source changes. Each
 implementation still needs a path-limited authorization package, GitNexus impact
@@ -29,9 +29,10 @@ It proved a repeatable conveyor:
 
 | Node | State | Notes |
 |---|---|---|
-| G2.315 indicator_registry `get_factory` provider implementation | Future PR `#468` source review target | Moves 3 route handlers to `Depends(get_indicator_factory)`, keeps route/OpenAPI `548/500/0`, focused test `11 passed`, and must stop for human review before merge |
-| G2.314 indicator_registry `get_factory` provider authorization | Future PR `#467` review target | Authorizes only future G2.315 path-limited source/test lane and requires human review before source merge; no source edits in G2.314 |
-| G2.313 indicator_registry `get_factory` ownership / route-provider decision | Future PR `#466` review target | Classifies active route-local singleton factory helper with 3 route-body calls, route/OpenAPI `548/500/0`, GitNexus CLI `LOW`, and selects only G2.314 no-source provider authorization |
+| G2.316 indicator registry factory provider closeout / residual refresh | Future PR `#469` review target | Closes G2.315 with route-body direct calls `0`, provider backing `1`, dependency bindings `3`, route/OpenAPI `548/500/0`, and selects only G2.317 no-source `data_source_config.get_config_manager` decision |
+| G2.315 indicator_registry `get_factory` provider implementation | Merged by PR `#468` | Moves 3 route handlers to `Depends(get_indicator_factory)`, keeps route/OpenAPI `548/500/0`, focused test `11 passed`, and is closed by G2.316 |
+| G2.314 indicator_registry `get_factory` provider authorization | Merged by PR `#467` | Authorized only G2.315 path-limited source/test lane and required human review before source merge |
+| G2.313 indicator_registry `get_factory` ownership / route-provider decision | Merged by PR `#466` | Classifies active route-local singleton factory helper with 3 route-body calls, route/OpenAPI `548/500/0`, GitNexus CLI `LOW`, and selects only G2.314 no-source provider authorization |
 | G2.312 residual refresh after dormant indicator-config exclusion | Merged by PR `#465` | Excludes dormant `create_indicator_config.py` / `get_mysql_session`, records `371` Python files scanned, `663` getter names, `53` active interesting candidates, and selects G2.313 |
 | Steward split | Merged by PR `#332` | Root task tree is now a short entrypoint; active state belongs in this split track and `steward-index.json` |
 | G2.177 Strategy canonical adapter provider authorization | Accepted and merged by PR `#330` | Authorized only a constructor-level Strategy service provider seam in canonical `strategy_adapter.py` and focused tests |
@@ -3479,7 +3480,7 @@ Status: accepted / merged by PR `#467`.
 
 ## G2.315 Indicator Registry `get_factory` Provider Implementation
 
-Status: source implementation PR review required in future PR `#468`.
+Status: accepted / merged by PR `#468`.
 
 - Parent PR `#467` merged at `8d52fa0548fd200f0c9b606e5880e71286c07d10`.
 - G2.315 edits only `web/backend/app/api/indicator_registry.py`, `tests/api/file_tests/test_indicator_registry_api.py`, and governance artifacts.
@@ -3487,3 +3488,14 @@ Status: source implementation PR review required in future PR `#468`.
 - TDD evidence: RED `2 failed, 9 passed`; GREEN `11 passed, 1 warning`.
 - Verification: health collect-only 121 tests collected, ruff focused pass, provider scan route-body direct calls `0`, backing calls `1`, dependency bindings `3`.
 - Stop rule: PR `#468` must be manually reviewed and must not be auto-merged.
+
+## G2.316 Indicator Registry Factory Provider Closeout / Residual Refresh
+
+Status: for review in future PR `#469`.
+
+- Parent PR `#468` merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`.
+- G2.316 is a no-source closeout / residual refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Closeout result: `indicator_registry.get_factory` route-body direct calls are `0`, provider backing calls are `1`, `Depends(get_indicator_factory)` bindings are `3`, focused test remains `11 passed`, and route/OpenAPI remains `548/500/0`.
+- Residual refresh selected G2.317 no-source `data_source_config.get_config_manager` ownership / provider seam decision.
+- The selected next candidate is high-risk: GitNexus MCP impact failed with `Transport closed`, and CLI fallback resolved `web/backend/app/api/_data_source_config_responses.py:get_config_manager` as `HIGH`, with `9` direct callers and `3` affected processes.
+- Stop rule: G2.316 must not be used as source implementation authority or as authorization to edit `data_source_config.py`, `_data_source_config_responses.py`, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.
