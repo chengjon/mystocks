@@ -1,7 +1,7 @@
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
-from fastapi import APIRouter, Body, Path
+from fastapi import APIRouter, Body, Depends, Path
 
 from app.core.exceptions import BusinessException
 from app.core.responses import UnifiedResponse, create_unified_success_response
@@ -96,11 +96,15 @@ INDICATOR_CALCULATE_RESPONSES = {
 }
 
 
-def get_factory():
+def get_factory() -> IndicatorFactory:
     global _factory
     if _factory is None:
         _factory = IndicatorFactory()
     return _factory
+
+
+def get_indicator_factory() -> IndicatorFactory:
+    return get_factory()
 
 
 # Models
@@ -154,9 +158,8 @@ class CalculationResponse(BaseModel):
     description="返回指标注册表中的全部指标摘要，供前端配置面板、功能发现和下拉选择器读取。",
     responses=INDICATOR_LIST_RESPONSES,
 )
-async def list_indicators():
+async def list_indicators(factory: IndicatorFactory = Depends(get_indicator_factory)):
     """List all registered indicators."""
-    factory = get_factory()
     results = []
     for i_id, config in factory.registry.items():
         results.append(
@@ -180,10 +183,10 @@ async def list_indicators():
     responses=INDICATOR_DETAIL_RESPONSES,
 )
 async def get_indicator_details(
-    indicator_id: str = Path(..., description="指标唯一标识，用于查询单个指标的详细注册配置。")
+    indicator_id: str = Path(..., description="指标唯一标识，用于查询单个指标的详细注册配置。"),
+    factory: IndicatorFactory = Depends(get_indicator_factory),
 ):
     """Get detailed configuration for a specific indicator."""
-    factory = get_factory()
     if indicator_id not in factory.registry:
         raise BusinessException(status_code=404, detail="Indicator not found")
     return create_unified_success_response(data=factory.registry[indicator_id])
@@ -196,9 +199,11 @@ async def get_indicator_details(
     description="接收一组 OHLCV 数据和可选参数，执行指定技术指标的批量计算并返回对齐后的结果序列。",
     responses=INDICATOR_CALCULATE_RESPONSES,
 )
-async def calculate_indicator(req: CalculationRequest = Body(..., openapi_examples=CALCULATION_REQUEST_EXAMPLES)):
+async def calculate_indicator(
+    req: CalculationRequest = Body(..., openapi_examples=CALCULATION_REQUEST_EXAMPLES),
+    factory: IndicatorFactory = Depends(get_indicator_factory),
+):
     """Run a batch calculation."""
-    factory = get_factory()
 
     # Convert input JSON to DataFrame
     try:

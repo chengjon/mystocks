@@ -54,11 +54,13 @@ class TestIndicatorRegistryAPIFile:
     def test_response_models_remain_stable(self, indicator_registry_module):
         response_models = {(route.path, tuple(sorted(route.methods or []))): route.response_model for route in indicator_registry_module.router.routes}
 
-        assert response_models[("/api/indicator-registry/indicators", ("GET",))] == indicator_registry_module.List[
-            indicator_registry_module.IndicatorInfo
+        assert response_models[("/api/indicator-registry/indicators", ("GET",))] == indicator_registry_module.UnifiedResponse[
+            indicator_registry_module.List[indicator_registry_module.IndicatorInfo]
         ]
-        assert response_models[("/api/indicator-registry/indicators/{indicator_id}", ("GET",))] is None
-        assert response_models[("/api/indicator-registry/calculate", ("POST",))] is indicator_registry_module.CalculationResponse
+        assert response_models[("/api/indicator-registry/indicators/{indicator_id}", ("GET",))] is indicator_registry_module.UnifiedResponse
+        assert response_models[("/api/indicator-registry/calculate", ("POST",))] == indicator_registry_module.UnifiedResponse[
+            indicator_registry_module.CalculationResponse
+        ]
 
     @pytest.mark.file_test
     def test_route_names_remain_stable(self, indicator_registry_module):
@@ -67,6 +69,22 @@ class TestIndicatorRegistryAPIFile:
         assert route_names[("/api/indicator-registry/indicators", ("GET",))] == "list_indicators"
         assert route_names[("/api/indicator-registry/indicators/{indicator_id}", ("GET",))] == "get_indicator_details"
         assert route_names[("/api/indicator-registry/calculate", ("POST",))] == "calculate_indicator"
+
+    @pytest.mark.file_test
+    def test_routes_use_indicator_factory_dependency(self, indicator_registry_module):
+        expected_routes = {
+            "list_indicators",
+            "get_indicator_details",
+            "calculate_indicator",
+        }
+        provider = indicator_registry_module.get_indicator_factory
+
+        for route in indicator_registry_module.router.routes:
+            if route.name not in expected_routes:
+                continue
+
+            dependency_calls = {dependency.call for dependency in route.dependant.dependencies}
+            assert provider in dependency_calls
 
     @pytest.mark.file_test
     def test_get_factory_behaves_as_singleton(self, indicator_registry_module, monkeypatch):
