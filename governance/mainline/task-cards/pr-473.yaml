@@ -1,0 +1,127 @@
+version: "v0.2"
+
+task:
+  id: "pr-473"
+  title: "Preflight watchlist DataSourceFactory provider authorization"
+  owner: "codex"
+  created_at: "2026-06-02"
+
+mainline:
+  id: "L1-watchlist-datasourcefactory-provider-preflight"
+  objective: "bound the future watchlist DataSourceFactory provider implementation lane without editing source"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.320 is a no-source provider authorization preflight. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/watchlist-datasourcefactory-provider-preflight-2026-06-02.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-watchlist-datasourcefactory-provider-preflight-2026-06-02.md"
+    - "governance/mainline/task-cards/pr-473.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "editing watchlist.py or DataSourceFactory in this PR"
+  - "automatic merge of the future G2.321 source implementation PR"
+
+acceptance:
+  checks:
+    - id: "pr472-merged"
+      command: "gh pr view 472 confirms MERGED at 033813cde66cffa55124f7434b3b0aeb45454e5d"
+      required: true
+    - id: "source-boundary"
+      command: "PR #473 edits only governance evidence, steward tree files, report, and task card"
+      required: true
+    - id: "future-source-scope"
+      command: "report limits future G2.321 to web/backend/app/api/watchlist.py and tests/api/file_tests/test_watchlist_api.py"
+      required: true
+    - id: "shared-factory-exclusion"
+      command: "report forbids edits to web/backend/app/services/data_source_factory/** and same-name get_data_source candidates"
+      required: true
+    - id: "human-review-stop"
+      command: "future G2.321 source PR must stop for human review before merge"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-watchlist-datasourcefactory-provider-preflight-2026-06-02.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-473.yaml --base-sha 033813cde66cffa55124f7434b3b0aeb45454e5d --head-sha HEAD --report /tmp/pr473-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "Future source work remains bounded by GitNexus ambiguity and must not edit shared factory symbols."
+    - "The authorization becomes stale if watchlist route shape, DataSourceFactory imports, or route/OpenAPI counts change."
+  rollback_plan: "Revert PR #473; this removes only G2.320 preflight evidence and returns the lane to G2.319 accepted decision state."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Preflight and bound the future watchlist DataSourceFactory provider implementation lane."
+    modified_scope: "Governance evidence, steward tree indexes, report, and task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime behavior, route contract, OpenAPI, source, or test changes."
+    rollback_ready: "Revert PR #473."
+    risk_and_rollback_point: "No-source authorization preflight; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer-autopilot"
+    approved_at: "2026-06-02T09:19:03+08:00"
+    approval_note: "Human maintainer previously authorized automatic no-source governance continuation; G2.320 remains no-source, but the next G2.321 source implementation must stop for human review."
+    secondary_approved: false
