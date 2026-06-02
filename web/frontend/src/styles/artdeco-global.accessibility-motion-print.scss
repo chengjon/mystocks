@@ -1,0 +1,146 @@
+
+// ============================================
+//   ACCESSIBILITY - 可访问性
+//   符合WCAG 2.1 AA标准
+// ============================================
+
+// 屏幕阅读器专用内容
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// 跳过导航链接
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--artdeco-gold-primary);
+  color: var(--artdeco-bg-global);
+  padding: var(--artdeco-spacing-2) var(--artdeco-spacing-4);
+  text-decoration: none;
+  z-index: var(--artdeco-z-50);
+
+  &:focus {
+    top: 0;
+  }
+}
+
+// ============================================
+//   ANIMATIONS - 全局动画
+//   ArtDeco戏剧化过渡效果
+// ============================================
+
+@keyframes artdeco-fade-in {
+  from {
+    opacity: 0%;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 100%;
+    transform: translateY(0);
+  }
+}
+
+@keyframes artdeco-slide-up {
+  from {
+    opacity: 0%;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 100%;
+    transform: translateY(0);
+  }
+}
+
+@keyframes artdeco-glow-pulse {
+  0%, 100% {
+    box-shadow: var(--artdeco-glow-subtle);
+  }
+  50% {
+    box-shadow: var(--artdeco-glow-intense);
+  }
+}
+
+@keyframes artdeco-shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+// 动画工具类
+.artdeco-animate-fade-in {
+  animation: artdeco-fade-in var(--artdeco-transition-slow) var(--artdeco-ease-out);
+}
+
+.artdeco-animate-slide-up {
+  animation: artdeco-slide-up var(--artdeco-transition-slow) var(--artdeco-ease-out);
+}
+
+.artdeco-animate-glow {
+  animation: artdeco-glow-pulse 2s ease-in-out infinite;
+}
+
+// ============================================
+//   PREFERS REDUCED MOTION - 减弱动画
+//   无障碍支持: 尊重用户的动画偏好设置
+// ============================================
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+// ============================================
+//   PRINT STYLES - 打印样式
+//   优化打印输出,隐藏装饰性元素
+// ============================================
+
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .artdeco-bg-crosshatch,
+  .artdeco-bg-sunburst,
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+}
+
+// ============================================
+//   DARK MODE SUPPORT - 暗色模式支持
+//   ArtDeco本身就是暗色主题,保持一致性
+// ============================================
+
+@media (prefers-color-scheme: light) {
+  // 如果用户系统偏好浅色,仍然保持ArtDeco暗色主题
+  // 因为ArtDeco设计依赖于深色背景+金色对比
+  // 强制使用暗色主题
+
+  :root {
+    color-scheme: dark;
+  }
+}

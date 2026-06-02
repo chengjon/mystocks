@@ -1,0 +1,110 @@
+
+// ============================================
+//   TYPOGRAPHY BASE - 排版基础
+//   ArtDeco风格: 全大写 + 宽字间距
+// ============================================
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--artdeco-font-heading);
+  font-weight: var(--artdeco-font-bold);
+  text-transform: uppercase; // ⚠️ MANDATORY: ArtDeco标准
+  letter-spacing: var(--artdeco-tracking-widest); // ⚠️ MANDATORY: 0.1em
+  color: var(--artdeco-gold-primary);
+  line-height: var(--artdeco-leading-tight);
+  margin-bottom: var(--artdeco-spacing-4);
+}
+
+h1 {
+  font-size: var(--artdeco-text-6xl); // 60px
+  margin-bottom: var(--artdeco-spacing-8);
+}
+
+h2 {
+  font-size: var(--artdeco-text-5xl); // 48px
+  margin-bottom: var(--artdeco-spacing-6);
+}
+
+h3 {
+  font-size: var(--artdeco-text-4xl); // 36px
+  margin-bottom: var(--artdeco-spacing-5);
+}
+
+h4 {
+  font-size: var(--artdeco-text-3xl); // 30px
+  margin-bottom: var(--artdeco-spacing-4);
+}
+
+h5 {
+  font-size: var(--artdeco-text-2xl); // 24px
+  margin-bottom: var(--artdeco-spacing-3);
+}
+
+h6 {
+  font-size: var(--artdeco-text-xl); // 20px
+  margin-bottom: var(--artdeco-spacing-2);
+}
+
+p {
+  margin-bottom: var(--artdeco-spacing-4);
+  line-height: var(--artdeco-leading-relaxed);
+}
+
+// ArtDeco特殊文本效果
+.artdeco-text-display {
+  font-family: var(--artdeco-font-heading);
+  text-transform: uppercase;
+  letter-spacing: var(--artdeco-tracking-widest);
+  font-weight: var(--artdeco-font-bold);
+  background: linear-gradient(
+    135deg,
+    var(--artdeco-gold-primary),
+    var(--artdeco-gold-hover)
+  );
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.artdeco-text-gradient {
+  background: linear-gradient(
+    135deg,
+    var(--artdeco-gold-primary) 0%,
+    var(--artdeco-gold-hover) 50%,
+    var(--artdeco-gold-primary) 100%
+  );
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// ============================================
+//   LINKS - 链接样式
+//   ArtDeco风格: 悬停下划线展开
+// ============================================
+
+a {
+  color: var(--artdeco-gold-primary);
+  text-decoration: none;
+  transition: color var(--artdeco-transition-base) var(--artdeco-ease-out);
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    transform: scaleX(0);
+    height: 1px;
+    bottom: 0;
+    left: 0;
+    background: var(--artdeco-gold-primary);
+    transform-origin: bottom right;
+    transition: transform var(--artdeco-transition-base) var(--artdeco-ease-out);
+  }
+
+  &:hover {
+    color: var(--artdeco-gold-hover);
+
+    &::after {
+      transform: scaleX(1);
+      transform-origin: bottom left;
+    }
+  }
+}

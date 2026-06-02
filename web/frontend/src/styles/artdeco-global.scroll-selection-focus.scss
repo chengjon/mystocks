@@ -1,0 +1,64 @@
+
+// ============================================
+//   SCROLLBARS - 滚动条样式
+//   ArtDeco风格: 金色滚动条,锐利边角
+// ============================================
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--artdeco-bg-card);
+  border-left: 1px solid var(--artdeco-border-default);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--artdeco-gold-dim);
+  border-radius: var(--artdeco-radius-none);
+  border: 1px solid var(--artdeco-gold-primary);
+
+  &:hover {
+    background: var(--artdeco-gold-primary);
+  }
+
+  &:active {
+    background: var(--artdeco-gold-hover);
+  }
+}
+
+// Firefox scrollbar
+::-webkit-scrollbar-corner {
+  background: var(--artdeco-bg-card);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--artdeco-gold-dim) var(--artdeco-bg-card);
+}
+
+// ============================================
+//   SELECTION - 文本选择
+//   ArtDeco风格: 金色高亮
+// ============================================
+
+::selection {
+  background: var(--artdeco-gold-muted);
+  color: var(--artdeco-bg-global);
+}
+
+::selection {
+  background: var(--artdeco-gold-muted);
+  color: var(--artdeco-bg-global);
+}
+
+// ============================================
+//   FOCUS STATES - 焦点样式
+//   ArtDeco风格: 金色外框,非模糊
+// ============================================
+
+:focus-visible {
+  outline: 2px solid var(--artdeco-gold-primary);
+  outline-offset: 2px;
+}

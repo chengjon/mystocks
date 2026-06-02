@@ -1,0 +1,49 @@
+
+// ============================================
+//   GLOBAL RESET & BASE - 全局重置
+//   现代CSS重置,保留有用的浏览器默认值
+// ============================================
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--artdeco-font-body);
+  background: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-primary);
+  line-height: var(--artdeco-leading-normal);
+  overflow-x: hidden;
+  min-height: 100vh;
+
+  // ArtDeco signature: diagonal crosshatch background (UI Pro Max优化：从2%提升到6%可见度)
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgb(212 175 55 / 6%) 10px,  // 从2%提升到6%，更明显可见
+      rgb(212 175 55 / 6%) 11px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 10px,
+      rgb(212 175 55 / 6%) 10px,  // 从2%提升到6%
+      rgb(212 175 55 / 6%) 11px
+    );
+}

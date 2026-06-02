@@ -3285,5 +3285,100 @@
       "current_head": "1b4a826525b486911a8b9f9866692e6407867b0e",
       "prepared_at": "2026-06-01T17:00:39.838Z"
     }
+  },
+  {
+    "id": "artdeco-global-scss-style-split",
+    "title": "Split ArtDeco global SCSS by visual concern",
+    "node_type": "implementation",
+    "owner_lane": "artdeco-web-design-governance",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/styles/artdeco-global.scss",
+    "current_head": "81bb109dfcbfc39abe33a99ba244a58d1b0d81e9",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "reports/analysis/file-size-guard-report-2026-06-01.md",
+        "note": "",
+        "current_head": "81bb109dfcbfc39abe33a99ba244a58d1b0d81e9",
+        "recorded_at": "2026-06-02T00:23:59.174Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/styles/artdeco-global.scss",
+      "web/frontend/src/styles/artdeco-global.corner-cleanup.scss",
+      "web/frontend/src/styles/artdeco-global.base-reset.scss",
+      "web/frontend/src/styles/artdeco-global.typography-links.scss",
+      "web/frontend/src/styles/artdeco-global.scroll-selection-focus.scss",
+      "web/frontend/src/styles/artdeco-global.utilities.scss",
+      "web/frontend/src/styles/artdeco-global.accessibility-motion-print.scss",
+      "docs/reports/tasks/2026-06-02-artdeco-global-scss-style-split-report.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-global-scss-style-split.yaml",
+      ".governance/active-gates.json",
+      ".governance/active-gates.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No Vue or TypeScript runtime logic changes",
+      "No router, backend API, OpenAPI, schema, or frontend API client changes",
+      "No shared component extraction or route shell changes",
+      "No visual redesign, token value changes, or global token baseline changes"
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-02T00:23:41.511Z",
+    "updated_at": "2026-06-02T15:25:31.662Z",
+    "acceptance": {
+      "commit_gate": [
+        "Split preserves original post-import SCSS body exactly",
+        "Every resulting partial stays below 500 lines",
+        "Function Tree scope-check passes before closeout",
+        "Frontend build:no-types passes"
+      ],
+      "closeout_gate": [
+        "Report records split ranges, preservation evidence, validation, compatibility boundaries, and next candidates"
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "",
+        "current_head": "81bb109dfcbfc39abe33a99ba244a58d1b0d81e9",
+        "transitioned_at": "2026-06-02T00:24:27.453Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "",
+        "current_head": "81bb109dfcbfc39abe33a99ba244a58d1b0d81e9",
+        "transitioned_at": "2026-06-02T00:24:40.595Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "",
+        "current_head": "81bb109dfcbfc39abe33a99ba244a58d1b0d81e9",
+        "transitioned_at": "2026-06-02T15:23:25.264Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "",
+        "current_head": "81bb109dfcbfc39abe33a99ba244a58d1b0d81e9",
+        "transitioned_at": "2026-06-02T15:25:31.662Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-02-artdeco-global-scss-style-split-report.md",
+      "compatibility": "",
+      "gates": [],
+      "current_head": "81bb109dfcbfc39abe33a99ba244a58d1b0d81e9",
+      "prepared_at": "2026-06-02T15:23:50.605Z"
+    }
   }
 ]

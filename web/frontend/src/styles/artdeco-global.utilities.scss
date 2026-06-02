@@ -1,0 +1,109 @@
+
+// ============================================
+//   UTILITY CLASSES - 工具类
+//   常用的ArtDeco样式模式
+// ============================================
+
+// 悬停提升效果 (Architectural feel)
+.artdeco-hover-lift {
+  transition: transform var(--artdeco-transition-base) var(--artdeco-ease-out),
+              box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--artdeco-shadow-xl), var(--artdeco-glow-intense);
+  }
+}
+
+// 角括号装饰 (Corner brackets)
+.artdeco-corner-brackets {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid var(--artdeco-gold-primary);
+    border-left: 2px solid var(--artdeco-gold-primary);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-bottom: 2px solid var(--artdeco-gold-primary);
+    border-right: 2px solid var(--artdeco-gold-primary);
+  }
+}
+
+// ArtDeco背景类
+.artdeco-bg-crosshatch {
+  background-image:
+    repeating-linear-gradient(
+      45deg,
+      rgb(212 175 55 / 3%) 0px,
+      rgb(212 175 55 / 3%) 1px,
+      transparent 1px,
+      transparent 4px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgb(212 175 55 / 3%) 0px,
+      rgb(212 175 55 / 3%) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+}
+
+.artdeco-bg-sunburst {
+  background: radial-gradient(
+    ellipse at center,
+    rgb(212 175 55 / 10%) 0%,
+    rgb(212 175 55 / 5%) 25%,
+    rgb(212 175 55 / 2%) 50%,
+    transparent 75%
+  );
+}
+
+// ArtDeco边框类
+.artdeco-border-gold {
+  border: 1px solid var(--artdeco-gold-primary);
+}
+
+.artdeco-border-double {
+  border: 3px double var(--artdeco-gold-primary);
+}
+
+// Section divider (装饰性分隔线)
+.artdeco-section-divider {
+  display: flex;
+  align-items: center;
+  margin: var(--artdeco-spacing-12) 0;
+
+  &::before,
+  &::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgb(212 175 55 / 30%),
+      transparent
+    );
+  }
+
+  &::before {
+    margin-right: var(--artdeco-spacing-4);
+  }
+
+  &::after {
+    margin-left: var(--artdeco-spacing-4);
+  }
+}

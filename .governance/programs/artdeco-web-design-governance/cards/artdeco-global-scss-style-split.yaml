@@ -1,0 +1,39 @@
+task:
+  id: "artdeco-global-scss-style-split"
+  title: "Split ArtDeco global SCSS by visual concern"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/styles/artdeco-global.scss"
+    - "web/frontend/src/styles/artdeco-global.corner-cleanup.scss"
+    - "web/frontend/src/styles/artdeco-global.base-reset.scss"
+    - "web/frontend/src/styles/artdeco-global.typography-links.scss"
+    - "web/frontend/src/styles/artdeco-global.scroll-selection-focus.scss"
+    - "web/frontend/src/styles/artdeco-global.utilities.scss"
+    - "web/frontend/src/styles/artdeco-global.accessibility-motion-print.scss"
+    - "docs/reports/tasks/2026-06-02-artdeco-global-scss-style-split-report.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-global-scss-style-split.yaml"
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No Vue or TypeScript runtime logic changes"
+  - "No router, backend API, OpenAPI, schema, or frontend API client changes"
+  - "No shared component extraction or route shell changes"
+  - "No visual redesign, token value changes, or global token baseline changes"
+
+acceptance:
+  commit_gate:
+    - "Split preserves original post-import SCSS body exactly"
+    - "Every resulting partial stays below 500 lines"
+    - "Function Tree scope-check passes before closeout"
+    - "Frontend build:no-types passes"
+  closeout_gate:
+    - "Report records split ranges, preservation evidence, validation, compatibility boundaries, and next candidates"
+
+evidence:
+  current_head: "81bb109dfcbfc39abe33a99ba244a58d1b0d81e9"
+  notes: []
