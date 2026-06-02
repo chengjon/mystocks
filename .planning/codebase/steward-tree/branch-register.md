@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-02T09:19:03+08:00`
-- Base HEAD checked: `033813cde66cffa55124f7434b3b0aeb45454e5d`
+- Prepared at: `2026-06-02T23:50:34+08:00`
+- Base HEAD checked: `40f36c573e41aa9ba1a4d07abe603b0080cf1181`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -15,7 +15,8 @@ PRs, change issue labels, or authorize source implementation.
 
 | PR | Branch | Base | State | Relationship |
 |---|---|---|---|---|
-| `#473` | `g2-320-watchlist-datasourcefactory-provider-preflight` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | No-source preflight bounding future G2.321 watchlist DataSourceFactory provider implementation and human-review stop rule |
+| `#474` | `g2-321-watchlist-datasourcefactory-provider-implementation` | `wip/root-dirty-20260403` | `PLANNED_FOR_REVIEW` | Source implementation moving eight watchlist DataSourceFactory consumers behind a route-local provider; must stop for human review before merge |
+| `#473` | `g2-320-watchlist-datasourcefactory-provider-preflight` | `wip/root-dirty-20260403` | `MERGED` at `40f36c573e41aa9ba1a4d07abe603b0080cf1181` | No-source preflight bounding future G2.321 watchlist DataSourceFactory provider implementation and human-review stop rule |
 | `#472` | `g2-319-watchlist-datasourcefactory-ownership-decision` | `wip/root-dirty-20260403` | `MERGED` at `033813cde66cffa55124f7434b3b0aeb45454e5d` | No-source decision classifying watchlist DataSourceFactory ownership and selecting G2.320 preflight |
 | `#331` | `g2-178-strategy-adapter-provider-implementation` | `wip/root-dirty-20260403` | `MERGED` at `8bfb4dc74b06d6bb930e48ebf3d27bb28d908704` | Source implementation lane for G2.178 |
 | `#332` | `g2-179-steward-tree-governance-split` | `wip/root-dirty-20260403` | `MERGED` at `750fb7c797ff95f27152439ed988a7115252129e` | Steward tree split and machine-readable index |

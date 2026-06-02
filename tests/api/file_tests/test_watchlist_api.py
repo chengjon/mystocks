@@ -22,6 +22,7 @@ import pytest
 
 
 WATCHLIST_API_PATH = Path(__file__).resolve().parents[3] / "web/backend/app/api/monitoring_watchlists.py"
+WATCHLIST_ROUTE_API_PATH = Path(__file__).resolve().parents[3] / "web/backend/app/api/watchlist.py"
 AUTHORIZED_POSTGRES_PROVIDER_HANDLERS = {
     "create_watchlist",
     "list_watchlists",
@@ -31,6 +32,24 @@ AUTHORIZED_POSTGRES_PROVIDER_HANDLERS = {
     "list_watchlist_stocks",
     "remove_stock_from_watchlist",
 }
+AUTHORIZED_DATASOURCE_FACTORY_HANDLERS = {
+    "get_my_watchlist",
+    "get_my_watchlist_symbols",
+    "add_to_watchlist",
+    "remove_from_watchlist",
+    "check_in_watchlist",
+    "update_watchlist_notes",
+    "get_watchlist_count",
+    "clear_watchlist",
+}
+
+
+def _call_name(node: ast.Call) -> str:
+    if isinstance(node.func, ast.Name):
+        return node.func.id
+    if isinstance(node.func, ast.Attribute):
+        return node.func.attr
+    return ""
 
 
 def test_watchlist_handlers_use_postgres_dependency_provider():
@@ -61,6 +80,37 @@ def test_watchlist_handlers_use_postgres_dependency_provider():
 
         assert "postgres_async" in parameter_names
         assert direct_calls == []
+
+
+def test_watchlist_routes_use_datasource_factory_dependency_provider():
+    tree = ast.parse(WATCHLIST_ROUTE_API_PATH.read_text(encoding="utf-8"))
+    async_functions = {
+        node.name: node
+        for node in ast.walk(tree)
+        if isinstance(node, ast.AsyncFunctionDef)
+    }
+
+    provider = async_functions["get_watchlist_data_source"]
+    provider_call_names = [
+        _call_name(node)
+        for node in ast.walk(provider)
+        if isinstance(node, ast.Call)
+    ]
+    assert provider_call_names.count("DataSourceFactory") == 1
+    assert provider_call_names.count("get_data_source") == 1
+
+    for handler_name in AUTHORIZED_DATASOURCE_FACTORY_HANDLERS:
+        handler = async_functions[handler_name]
+        parameter_names = [arg.arg for arg in [*handler.args.args, *handler.args.kwonlyargs]]
+        handler_call_names = [
+            _call_name(node)
+            for node in ast.walk(handler)
+            if isinstance(node, ast.Call)
+        ]
+
+        assert "watchlist_adapter" in parameter_names
+        assert "DataSourceFactory" not in handler_call_names
+        assert "get_data_source" not in handler_call_names
 
 
 class TestWatchlistAPIFile:

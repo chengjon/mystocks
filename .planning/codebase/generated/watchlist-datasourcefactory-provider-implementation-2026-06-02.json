@@ -1,0 +1,136 @@
+{
+  "schema_version": "2026-06-02.steward-evidence.v1",
+  "generated_at": "2026-06-02T23:50:34+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "40f36c573e41aa9ba1a4d07abe603b0080cf1181",
+  "split_branch": "g2-321-watchlist-datasourcefactory-provider-implementation",
+  "node": {
+    "id": "g2-321-watchlist-datasourcefactory-provider-implementation",
+    "type": "source_implementation",
+    "state": "for_review",
+    "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+    "source_edit_authority": true,
+    "planned_pr": 474
+  },
+  "closed_parent": {
+    "id": "g2-320-watchlist-datasourcefactory-provider-preflight",
+    "pr": 473,
+    "state": "MERGED",
+    "merge_commit": "40f36c573e41aa9ba1a4d07abe603b0080cf1181",
+    "merged_at": "2026-06-02T01:31:10Z",
+    "summary": "G2.320 authorized only this path-limited source lane and required human review before merge."
+  },
+  "allowed_scope": [
+    "web/backend/app/api/watchlist.py",
+    "tests/api/file_tests/test_watchlist_api.py",
+    ".planning/codebase/generated/watchlist-datasourcefactory-provider-implementation-2026-06-02.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-watchlist-datasourcefactory-provider-implementation-2026-06-02.md",
+    "governance/mainline/task-cards/pr-474.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/app/services/data_source_factory/**",
+    "web/backend/app/api/data_source_config.py",
+    "web/backend/app/api/data_source_registry.py",
+    "web/backend/app/api/dashboard_data_source.py",
+    "web/backend/app/api/strategy_mgmt.py",
+    "src/factories/**",
+    "web/frontend/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "pre_edit_gitnexus": {
+    "mcp_context": {
+      "status": "failed",
+      "error": "Transport closed"
+    },
+    "mcp_impact": {
+      "status": "failed",
+      "error": "Transport closed"
+    },
+    "cli_fallback": [
+      {
+        "target": "File:web/backend/app/api/watchlist.py",
+        "risk": "LOW",
+        "direct_callers": 0,
+        "affected_processes": 0,
+        "index_status": "stale but fresh_for_staged_diff"
+      },
+      {
+        "target": "Method:web/backend/app/services/data_source_factory/data_source_factory.py:DataSourceFactory.get_data_source#1",
+        "risk": "LOW",
+        "direct_callers": 3,
+        "affected_processes": 0,
+        "index_status": "stale but fresh_for_staged_diff"
+      },
+      {
+        "target": "Function:web/backend/app/api/watchlist.py:get_my_watchlist",
+        "risk": "LOW",
+        "direct_callers": 0,
+        "affected_processes": 0,
+        "index_status": "stale but fresh_for_staged_diff"
+      }
+    ]
+  },
+  "implementation": {
+    "source_files": [
+      "web/backend/app/api/watchlist.py"
+    ],
+    "test_files": [
+      "tests/api/file_tests/test_watchlist_api.py"
+    ],
+    "changes": [
+      "Added route-local async get_watchlist_data_source provider.",
+      "Injected watchlist_adapter dependency into the eight authorized watchlist route handlers.",
+      "Removed route-body DataSourceFactory() construction from the eight authorized handlers.",
+      "Removed route-body get_data_source(\"watchlist\") calls from the eight authorized handlers.",
+      "Retained DataSourceFactory and DataSourceFactory.get_data_source unchanged as shared backing infrastructure.",
+      "Added AST focused regression covering provider backing and route-body call removal."
+    ]
+  },
+  "tdd": {
+    "red": "pytest -o addopts= tests/api/file_tests/test_watchlist_api.py::test_watchlist_routes_use_datasource_factory_dependency_provider -q --no-cov failed with KeyError: 'get_watchlist_data_source'",
+    "green": "pytest -o addopts= tests/api/file_tests/test_watchlist_api.py::test_watchlist_routes_use_datasource_factory_dependency_provider -q --no-cov passed: 1 passed"
+  },
+  "verification": {
+    "focused_test": "pytest -o addopts= tests/api/file_tests/test_watchlist_api.py -q --no-cov passed: 22 passed",
+    "ruff": "ruff check web/backend/app/api/watchlist.py tests/api/file_tests/test_watchlist_api.py passed: All checks passed!",
+    "route_openapi_smoke": {
+      "fastapi_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_id_warnings": 0,
+      "watchlist_routes": 15,
+      "provider_datasourcefactory_calls": 1,
+      "provider_get_data_source_calls": 1,
+      "handler_direct_datasourcefactory_calls": 0,
+      "handler_direct_get_data_source_calls": 0,
+      "watchlist_adapter_dependency_params": 8,
+      "environment_policy": "temporary placeholder environment variables used for startup validation only; no secrets written to disk"
+    }
+  },
+  "decision": {
+    "classification": "accepted-source-implementation-for-review",
+    "source_lane_recommendation": "stop-at-pr-review-before-merge",
+    "autopilot_continue_allowed": false,
+    "autopilot_stop_reason": "G2.321 changes backend source/tests and must not be auto-merged."
+  },
+  "freshness": {
+    "current_head_checked": "40f36c573e41aa9ba1a4d07abe603b0080cf1181",
+    "current_head_checked_at_review": "2026-06-02T23:50:34+08:00",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_watchlist_route_surface_changes": true,
+    "stale_if_gitnexus_index_refresh_changes_risk": true
+  }
+}
