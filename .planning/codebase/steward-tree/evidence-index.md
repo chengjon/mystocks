@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-02T08:55:44+08:00`
-- Base HEAD checked: `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`
+- Prepared at: `2026-06-02T09:07:10+08:00`
+- Base HEAD checked: `366739062b43f1e49aef892c0a20b7f9d068e0cb`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/service-lifecycle-residual-refresh-after-data-source-config-2026-06-02.json` | G2.318 service lifecycle residual refresh after data-source config evidence | Review input for future PR `#471`; no-source refresh package; records retained data-source config seam and selects G2.319 no-source watchlist DataSourceFactory decision |
-| `docs/reports/quality/backend-service-lifecycle-residual-refresh-after-data-source-config-2026-06-02.md` | G2.318 human-readable residual refresh report | Review input for future PR `#471`; records PR `#470` accepted/merged, route/OpenAPI baseline, residual scan, GitNexus ambiguity, and next gate |
-| `governance/mainline/task-cards/pr-471.yaml` | Governance task card for G2.318 no-source refresh | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/watchlist-datasourcefactory-ownership-decision-2026-06-02.json` | G2.319 `watchlist.py` DataSourceFactory ownership / route-provider decision evidence | Review input for future PR `#472`; no-source decision package; records active watchlist route surface, GitNexus ambiguity, and next G2.320 preflight |
+| `docs/reports/quality/backend-watchlist-datasourcefactory-ownership-decision-2026-06-02.md` | G2.319 human-readable ownership / route-provider decision report | Review input for future PR `#472`; records PR `#471` accepted/merged, route/OpenAPI baseline, route-body factory surface, and source stop boundary |
+| `governance/mainline/task-cards/pr-472.yaml` | Governance task card for G2.319 no-source decision | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/service-lifecycle-residual-refresh-after-data-source-config-2026-06-02.json` | G2.318 service lifecycle residual refresh after data-source config evidence | Accepted by PR `#471`, merged at `366739062b43f1e49aef892c0a20b7f9d068e0cb`; no-source refresh package; superseded for decision by G2.319 |
+| `docs/reports/quality/backend-service-lifecycle-residual-refresh-after-data-source-config-2026-06-02.md` | G2.318 human-readable residual refresh report | Accepted by PR `#471`; records PR `#470` accepted/merged, route/OpenAPI baseline, residual scan, GitNexus ambiguity, and next gate |
+| `governance/mainline/task-cards/pr-471.yaml` | Governance task card for G2.318 no-source refresh | Accepted by PR `#471`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/data-source-config-manager-ownership-decision-2026-06-02.json` | G2.317 `data_source_config.get_config_manager` ownership / provider seam decision evidence | Accepted by PR `#470`, merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`; no-source decision package; superseded for residual refresh by G2.318 |
 | `docs/reports/quality/backend-data-source-config-manager-ownership-decision-2026-06-02.md` | G2.317 human-readable ownership / provider seam decision report | Accepted by PR `#470`; records PR `#469` accepted/merged, route/OpenAPI baseline, GitNexus fallback impact, and source stop boundary |
 | `governance/mainline/task-cards/pr-470.yaml` | Governance task card for G2.317 no-source decision | Accepted by PR `#470`; allowed only steward tree, generated evidence, report, and task card updates |

@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-02T08:55:44+08:00",
+  "generated_at": "2026-06-02T09:07:10+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd",
-  "split_branch": "g2-318-service-lifecycle-residual-refresh-after-data-source-config",
-  "scope": "service_lifecycle_residual_refresh_after_data_source_config",
+  "base_head": "366739062b43f1e49aef892c0a20b7f9d068e0cb",
+  "split_branch": "g2-319-watchlist-datasourcefactory-ownership-decision",
+  "scope": "watchlist_datasourcefactory_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -12566,16 +12566,18 @@
     {
       "id": "g2-318-service-lifecycle-residual-refresh-after-data-source-config",
       "type": "candidate_refresh",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.317 data_source_config get_config_manager ownership / provider seam decision",
       "source_edit_authority": false,
-      "autopilot_status": "review_gate",
-      "autopilot_stop_reason": "G2.318 is no-source residual refresh and selects only a future no-source ownership decision gate.",
+      "autopilot_status": "merged",
+      "autopilot_stop_reason": "G2.318 was a no-source residual refresh and PR #471 merged after checks passed; it selected only a future no-source ownership decision gate.",
       "github_pr": {
         "number": 471,
         "url": "https://github.com/chengjon/mystocks/pull/471",
-        "state": "PLANNED_FOR_REVIEW",
+        "state": "MERGED",
+        "merge_commit": "366739062b43f1e49aef892c0a20b7f9d068e0cb",
+        "merged_at": "2026-06-02T01:04:06Z",
         "head_ref": "g2-318-service-lifecycle-residual-refresh-after-data-source-config"
       },
       "closed_parent": {
@@ -12706,7 +12708,141 @@
         "stale_if_residual_scan_changes": true,
         "stale_if_gitnexus_index_refresh_changes_risk": true
       },
-      "next_gate": "Review future PR #471. If accepted and merged, start G2.319 no-source watchlist DataSourceFactory ownership / route-provider decision."
+      "next_gate": "Superseded by G2.319 no-source watchlist DataSourceFactory ownership / route-provider decision."
+    },
+    {
+      "id": "g2-319-watchlist-datasourcefactory-ownership-decision",
+      "type": "ownership_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.318 service lifecycle residual refresh after data_source_config",
+      "source_edit_authority": false,
+      "autopilot_status": "review_gate",
+      "autopilot_stop_reason": "G2.319 is no-source and selects only a future no-source impact-disambiguation / authorization-preflight gate.",
+      "github_pr": {
+        "number": 472,
+        "url": "https://github.com/chengjon/mystocks/pull/472",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-319-watchlist-datasourcefactory-ownership-decision"
+      },
+      "closed_parent": {
+        "pr": 471,
+        "state": "MERGED",
+        "merge_commit": "366739062b43f1e49aef892c0a20b7f9d068e0cb",
+        "merged_at": "2026-06-02T01:04:06Z"
+      },
+      "evidence": [
+        ".planning/codebase/generated/watchlist-datasourcefactory-ownership-decision-2026-06-02.json",
+        "docs/reports/quality/backend-watchlist-datasourcefactory-ownership-decision-2026-06-02.md",
+        "governance/mainline/task-cards/pr-472.yaml"
+      ],
+      "allowed_scope": [
+        ".planning/codebase/generated/watchlist-datasourcefactory-ownership-decision-2026-06-02.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-watchlist-datasourcefactory-ownership-decision-2026-06-02.md",
+        "governance/mainline/task-cards/pr-472.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "target": {
+        "route_module": "web/backend/app/api/watchlist.py",
+        "imported_factory": "app.services.data_source_factory.DataSourceFactory",
+        "factory_class_file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+        "factory_method": "DataSourceFactory.get_data_source",
+        "factory_method_line": 152,
+        "registered_route_count": 15,
+        "affected_route_body_handlers": 8,
+        "route_body_factory_construction_lines": [
+          206,
+          244,
+          285,
+          334,
+          365,
+          400,
+          428,
+          462
+        ],
+        "route_body_get_data_source_lines": [
+          207,
+          245,
+          286,
+          335,
+          366,
+          401,
+          429,
+          463
+        ],
+        "route_body_adapter_get_data_lines": [
+          211,
+          249,
+          300,
+          339,
+          370,
+          405,
+          433,
+          467
+        ]
+      },
+      "route_truth": {
+        "total_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_id_warnings": 0,
+        "watchlist_registered_routes": 15
+      },
+      "gitnexus": {
+        "mcp_context": {
+          "status": "failed",
+          "tool": "mcp__gitnexus.context",
+          "target": "DataSourceFactory",
+          "error": "Transport closed"
+        },
+        "mcp_impact": {
+          "status": "failed",
+          "tool": "mcp__gitnexus.impact",
+          "target": "get_data_source",
+          "error": "Transport closed"
+        },
+        "cli_fallback": {
+          "command": "npx gitnexus impact get_data_source -r mystocks --direction upstream --summary-only",
+          "status": "ambiguous",
+          "candidate_count": 8,
+          "risk": "UNKNOWN",
+          "selected_by_import_evidence": "Method:web/backend/app/services/data_source_factory/data_source_factory.py:DataSourceFactory.get_data_source#1"
+        }
+      },
+      "decision": {
+        "classification": "active-route-local-datasourcefactory-adapter-seam",
+        "active_route_module": true,
+        "provider_implementation_authorized": false,
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-319",
+        "recommended_next_work_item": "G2.320 no-source watchlist DataSourceFactory impact-disambiguation / provider authorization preflight",
+        "autopilot_continue_allowed": true
+      },
+      "freshness": {
+        "current_head_checked": "366739062b43f1e49aef892c0a20b7f9d068e0cb",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_watchlist_route_surface_changes": true,
+        "stale_if_datasourcefactory_import_or_method_changes": true,
+        "stale_if_gitnexus_index_refresh_changes_risk": true
+      },
+      "next_gate": "Review future PR #472. If accepted and merged, start G2.320 no-source watchlist DataSourceFactory impact-disambiguation / provider authorization preflight."
     }
   ]
 }

@@ -1,0 +1,133 @@
+{
+  "schema_version": "steward-evidence.v1",
+  "generated_at": "2026-06-02T09:07:10+08:00",
+  "node": {
+    "id": "g2-319-watchlist-datasourcefactory-ownership-decision",
+    "type": "ownership_decision",
+    "state": "for_review",
+    "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+    "source_edit_authority": false,
+    "planned_pr": 472,
+    "branch": "g2-319-watchlist-datasourcefactory-ownership-decision"
+  },
+  "base": {
+    "branch": "origin/wip/root-dirty-20260403",
+    "head": "366739062b43f1e49aef892c0a20b7f9d068e0cb",
+    "parent_pr": 471,
+    "parent_merge_commit": "366739062b43f1e49aef892c0a20b7f9d068e0cb",
+    "parent_merged_at": "2026-06-02T01:04:06Z"
+  },
+  "target": {
+    "route_module": "web/backend/app/api/watchlist.py",
+    "imported_factory": "app.services.data_source_factory.DataSourceFactory",
+    "factory_class_file": "web/backend/app/services/data_source_factory/data_source_factory.py",
+    "factory_method": "DataSourceFactory.get_data_source",
+    "factory_method_line": 152,
+    "registered_route_count": 15,
+    "affected_route_body_handlers": 8,
+    "route_body_factory_construction_lines": [
+      206,
+      244,
+      285,
+      334,
+      365,
+      400,
+      428,
+      462
+    ],
+    "route_body_get_data_source_lines": [
+      207,
+      245,
+      286,
+      335,
+      366,
+      401,
+      429,
+      463
+    ],
+    "route_body_adapter_get_data_lines": [
+      211,
+      249,
+      300,
+      339,
+      370,
+      405,
+      433,
+      467
+    ]
+  },
+  "route_truth": {
+    "total_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_id_warnings": 0,
+    "watchlist_registered_routes": [
+      "GET /api/watchlist/",
+      "GET /api/watchlist/symbols",
+      "POST /api/watchlist/add",
+      "DELETE /api/watchlist/remove/{symbol}",
+      "GET /api/watchlist/check/{symbol}",
+      "PUT /api/watchlist/notes/{symbol}",
+      "GET /api/watchlist/count",
+      "DELETE /api/watchlist/clear",
+      "GET /api/watchlist/groups",
+      "POST /api/watchlist/groups",
+      "PUT /api/watchlist/groups/{group_id}",
+      "DELETE /api/watchlist/groups/{group_id}",
+      "GET /api/watchlist/group/{group_id}",
+      "PUT /api/watchlist/move",
+      "GET /api/watchlist/with-groups"
+    ]
+  },
+  "gitnexus": {
+    "mcp_context": {
+      "tool": "mcp__gitnexus.context",
+      "target": "DataSourceFactory",
+      "file_path": "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "status": "failed",
+      "error": "Transport closed"
+    },
+    "mcp_impact": {
+      "tool": "mcp__gitnexus.impact",
+      "target": "get_data_source",
+      "file_path": "web/backend/app/services/data_source_factory/data_source_factory.py",
+      "kind": "Method",
+      "status": "failed",
+      "error": "Transport closed"
+    },
+    "cli_fallback": {
+      "command": "npx gitnexus impact get_data_source -r mystocks --direction upstream --summary-only",
+      "status": "ambiguous",
+      "candidate_count": 8,
+      "risk": "UNKNOWN",
+      "selected_by_import_evidence": "Method:web/backend/app/services/data_source_factory/data_source_factory.py:DataSourceFactory.get_data_source#1",
+      "note": "CLI cannot disambiguate by UID or file path; future authorization must resolve exact impact before source work."
+    }
+  },
+  "decision": {
+    "classification": "active-route-local-datasourcefactory-adapter-seam",
+    "active_route_module": true,
+    "implementation_authorized": false,
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-319",
+    "reason": "watchlist.py is an active route module with repeated route-body DataSourceFactory construction, but GitNexus exact impact is unresolved because MCP transport closes and CLI get_data_source is ambiguous.",
+    "recommended_next_work_item": "G2.320 no-source watchlist DataSourceFactory impact-disambiguation / provider authorization preflight",
+    "autopilot_continue_allowed": true
+  },
+  "freshness": {
+    "current_head_checked": "366739062b43f1e49aef892c0a20b7f9d068e0cb",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_watchlist_route_surface_changes": true,
+    "stale_if_datasourcefactory_import_or_method_changes": true,
+    "stale_if_gitnexus_index_refresh_changes_risk": true
+  },
+  "forbidden_scope": [
+    "backend source edits",
+    "test edits",
+    "route registration changes",
+    "route path/method/response model changes",
+    "generated OpenAPI artifact changes",
+    "DataSourceFactory edits",
+    "docs/api edits",
+    "frontend/config/script/OpenSpec/PM2/runtime changes"
+  ]
+}
