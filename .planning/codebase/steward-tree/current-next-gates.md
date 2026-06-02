@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-02T01:58:00+08:00`
-- Base HEAD checked: `8d52fa0548fd200f0c9b606e5880e71286c07d10`
+- Prepared at: `2026-06-02T08:24:18+08:00`
+- Base HEAD checked: `8b09c714784ce90a1a8b1fe938e5904a81110094`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.315 `indicator_registry.get_factory` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | Source PR `#468` review target; moves 3 indicator-registry handlers to `Depends(get_indicator_factory)`, preserves route/OpenAPI `548/500/0`, focused test `11 passed`, and provider scan `0/1/3` | Human review required; do not auto-merge PR `#468`; if accepted, start G2.316 no-source closeout / residual refresh |
+| P0 | Review G2.316 indicator registry factory provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#468` merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`; G2.316 records `get_factory` route-body direct calls `0`, provider backing `1`, dependency bindings `3`, route/OpenAPI `548/500/0`, and next candidate `data_source_config.get_config_manager` with GitNexus CLI `HIGH` | Review future PR `#469`; if accepted, start G2.317 no-source `data_source_config.get_config_manager` ownership / provider seam decision |
+| P0 | Preserve G2.315 `indicator_registry.get_factory` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#468` merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`; G2.315 moved 3 indicator-registry handlers to `Depends(get_indicator_factory)`, preserved route/OpenAPI `548/500/0`, focused test `11 passed`, and provider scan `0/1/3` | Do not use G2.315 as authority for broader source edits; use G2.316 only as no-source closeout / residual refresh |
 | P0 | Preserve G2.314 `indicator_registry.get_factory` provider authorization package | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#467` merged at `8d52fa0548fd200f0c9b606e5880e71286c07d10`; G2.314 authorized only future G2.315 path-limited implementation for `indicator_registry.py` plus `tests/api/file_tests/test_indicator_registry_api.py` | G2.315 source implementation must stop for human review before merge |
 | P0 | Preserve G2.313 `indicator_registry.get_factory` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#466` merged at `75f6c63023bec35453892f63aaeaf193023e4881`; G2.313 classifies active route-local singleton factory calls at lines `159`, `186`, and `201`, route/OpenAPI `548/500/0`, and GitNexus CLI `LOW` / direct `3` / affected processes `0` | Do not use G2.313 as source implementation authority; use G2.314 only as no-source provider authorization package |
 | P0 | Preserve G2.312 service lifecycle residual candidate refresh after dormant indicator-config exclusion | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#465` merged at `ac6b9faaf9cf7d2e04b29da08a2c28bce7d4fb18`; G2.312 excludes dormant `create_indicator_config.py` / `get_mysql_session`, records `371` Python files scanned, `663` getter names, and `53` active interesting candidates | Do not use G2.312 as source implementation authority; use G2.313 only as no-source `indicator_registry.get_factory` ownership / route-provider decision |

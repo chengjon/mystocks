@@ -1,0 +1,130 @@
+version: "v0.2"
+
+task:
+  id: "pr-469"
+  title: "Close out indicator registry factory provider and refresh residual candidates"
+  owner: "codex"
+  created_at: "2026-06-02"
+
+mainline:
+  id: "L1-indicator-registry-factory-provider-closeout"
+  objective: "record G2.315 provider closure and select the next service lifecycle ownership decision target"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.316 is a no-source closeout and residual refresh. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/indicator-registry-factory-provider-closeout-2026-06-02.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-indicator-registry-factory-provider-closeout-2026-06-02.md"
+    - "governance/mainline/task-cards/pr-469.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "source retirement"
+  - "editing data_source_config.py or _data_source_config_responses.py"
+  - "authorizing source implementation directly from G2.316"
+
+acceptance:
+  checks:
+    - id: "pr468-merged"
+      command: "gh pr view 468 confirms MERGED at 8b09c714784ce90a1a8b1fe938e5904a81110094"
+      required: true
+    - id: "indicator-registry-closeout"
+      command: "generated evidence records route-body direct get_factory calls 0, provider backing calls 1, Depends bindings 3"
+      required: true
+    - id: "route-openapi-baseline"
+      command: "route/OpenAPI smoke remains 548 routes, 500 paths, 0 duplicate operation ID warnings"
+      required: true
+    - id: "next-gate-selection"
+      command: "report selects only G2.317 no-source data_source_config get_config_manager ownership / provider seam decision"
+      required: true
+    - id: "no-source-boundary"
+      command: "PR #469 edits no backend source, tests, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-indicator-registry-factory-provider-closeout-2026-06-02.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-469.yaml --base-sha 8b09c714784ce90a1a8b1fe938e5904a81110094 --head-sha HEAD --report /tmp/pr469-mainline-governance-report.json"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "git-diff-check"
+      command: "git diff --cached --check"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "Residual scan selection can become stale if route/provider surfaces change."
+  rollback_plan: "Revert PR #469; this removes only G2.316 closeout / residual refresh evidence and restores the prior G2.315 review gate."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Close out indicator_registry provider implementation and select the next ownership decision target."
+    modified_scope: "Governance evidence, steward tree indexes, report, and task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime behavior, route contract, OpenAPI, or source changes."
+    rollback_ready: "Revert PR #469."
+    risk_and_rollback_point: "No-source closeout / residual refresh; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer-autopilot"
+    approved_at: "2026-06-02T08:24:18+08:00"
+    approval_note: "Human maintainer previously authorized automatic no-source governance continuation; G2.316 remains no-source and selects only a future no-source decision gate."
+    secondary_approved: false

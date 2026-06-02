@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active branch / PR register
-- Prepared at: `2026-06-02T01:58:00+08:00`
-- Base HEAD checked: `8d52fa0548fd200f0c9b606e5880e71286c07d10`
+- Prepared at: `2026-06-02T08:24:18+08:00`
+- Base HEAD checked: `8b09c714784ce90a1a8b1fe938e5904a81110094`
 
 Boundary note: this register records relationship state only. It does not merge
 PRs, change issue labels, or authorize source implementation.
@@ -294,3 +294,5 @@ G2.313 is the no-source `indicator_registry.get_factory` ownership / route-provi
 G2.314 is the no-source `indicator_registry.get_factory` provider authorization after PR `#466` merged G2.313 at `75f6c63023bec35453892f63aaeaf193023e4881`. It authorizes only a future G2.315 path-limited implementation lane for `web/backend/app/api/indicator_registry.py` plus `tests/api/file_tests/test_indicator_registry_api.py`, requires route/OpenAPI `548/500/0` preservation, and requires G2.315 to stop for human review before merge. It does not edit source in PR `#467`.
 
 G2.315 is the path-limited `indicator_registry.get_factory` provider implementation after PR `#467` merged G2.314 at `8d52fa0548fd200f0c9b606e5880e71286c07d10`. It changes `web/backend/app/api/indicator_registry.py` and `tests/api/file_tests/test_indicator_registry_api.py`, moves the three active indicator-registry routes to `Depends(get_indicator_factory)`, preserves route/OpenAPI `548/500/0`, records focused test `11 passed`, and must stop at PR `#468` human review before merge.
+
+G2.316 is the no-source indicator registry factory provider closeout / residual refresh after PR `#468` merged G2.315 at `8b09c714784ce90a1a8b1fe938e5904a81110094`. It records route-body direct `get_factory()` calls `0`, provider backing calls `1`, `Depends(get_indicator_factory)` bindings `3`, focused test `11 passed`, route/OpenAPI `548/500/0`, and selects only G2.317 no-source `data_source_config.get_config_manager` ownership / provider seam decision. The selected next candidate is GitNexus CLI `HIGH`, with `9` direct callers and `3` affected processes, so G2.317 must not start source implementation.
