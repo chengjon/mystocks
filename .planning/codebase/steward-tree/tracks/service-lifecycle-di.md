@@ -3533,9 +3533,10 @@ Status: accepted / merged by PR `#471`.
 
 ## G2.319 Watchlist DataSourceFactory Ownership / Route-Provider Decision
 
-Status: for review in future PR `#472`.
+Status: accepted / merged by PR `#472`.
 
 - Parent PR `#471` merged at `366739062b43f1e49aef892c0a20b7f9d068e0cb`.
+- PR `#472` merged at `033813cde66cffa55124f7434b3b0aeb45454e5d`.
 - G2.319 is a no-source ownership / route-provider decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - `web/backend/app/api/watchlist.py` is an active route module with `15` registered routes.
 - Eight watchlist route handlers construct `DataSourceFactory()` in the route body, call `get_data_source("watchlist")`, then call adapter `get_data(...)`.
@@ -3544,3 +3545,16 @@ Status: for review in future PR `#472`.
 - Decision: classify this as an active route-local DataSourceFactory adapter seam, but do not authorize implementation until exact impact is resolved or explicitly bounded.
 - Next gate: G2.320 no-source watchlist DataSourceFactory impact-disambiguation / provider authorization preflight.
 - Stop rule: G2.319 must not be used as source implementation authority or as authorization to edit `watchlist.py`, DataSourceFactory, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.320 Watchlist DataSourceFactory Provider Authorization Preflight
+
+Status: for review in future PR `#473`.
+
+- Parent PR `#472` merged at `033813cde66cffa55124f7434b3b0aeb45454e5d`.
+- G2.320 is a no-source provider authorization preflight. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- It preserves the G2.319 route/OpenAPI snapshot: `548` FastAPI routes, `500` OpenAPI paths, and duplicate operation ID warnings `0`.
+- It bounds the GitNexus same-name ambiguity by forbidding future edits to `web/backend/app/services/data_source_factory/**`, `src/factories/**`, and other `get_data_source` candidate modules.
+- If accepted, it authorizes only future G2.321 path-limited source work in `web/backend/app/api/watchlist.py` plus `tests/api/file_tests/test_watchlist_api.py`.
+- The future implementation shape is route-local provider wiring for the eight affected watchlist handlers only; DataSourceFactory and `DataSourceFactory.get_data_source` remain shared backing infrastructure.
+- G2.321 must run fresh pre-edit GitNexus impact/context, focused watchlist tests, ruff, route/OpenAPI smoke, staged GitNexus verification, and the mainline scope gate.
+- Stop rule: G2.321 is a backend source/test lane and must stop for human review before merge; limited autopilot must not merge it automatically.

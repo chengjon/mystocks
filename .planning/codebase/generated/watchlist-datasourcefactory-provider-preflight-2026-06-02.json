@@ -1,0 +1,194 @@
+{
+  "schema_version": "2026-06-02.steward-evidence.v1",
+  "generated_at": "2026-06-02T09:19:03+08:00",
+  "repo": "chengjon/mystocks",
+  "base_branch": "wip/root-dirty-20260403",
+  "base_head": "033813cde66cffa55124f7434b3b0aeb45454e5d",
+  "split_branch": "g2-320-watchlist-datasourcefactory-provider-preflight",
+  "node": {
+    "id": "g2-320-watchlist-datasourcefactory-provider-preflight",
+    "type": "provider_authorization_preflight",
+    "state": "for_review",
+    "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+    "source_edit_authority": false,
+    "planned_pr": 473
+  },
+  "closed_parent": {
+    "id": "g2-319-watchlist-datasourcefactory-ownership-decision",
+    "pr": 472,
+    "state": "MERGED",
+    "merge_commit": "033813cde66cffa55124f7434b3b0aeb45454e5d",
+    "merged_at": "2026-06-02T01:16:18Z",
+    "summary": "G2.319 classified watchlist.py as an active route-local DataSourceFactory adapter seam and selected only this no-source preflight gate."
+  },
+  "no_source_boundary": {
+    "this_pr_edits_source": false,
+    "allowed_paths": [
+      ".planning/codebase/generated/watchlist-datasourcefactory-provider-preflight-2026-06-02.json",
+      ".planning/codebase/steward-tree/current-next-gates.md",
+      ".planning/codebase/steward-tree/steward-index.json",
+      ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+      ".planning/codebase/steward-tree/branch-register.md",
+      ".planning/codebase/steward-tree/evidence-index.md",
+      ".planning/codebase/steward-tree/completed-ledger.md",
+      "docs/reports/quality/backend-watchlist-datasourcefactory-provider-preflight-2026-06-02.md",
+      "governance/mainline/task-cards/pr-473.yaml"
+    ],
+    "forbidden_paths": [
+      "web/backend/**",
+      "web/frontend/**",
+      "src/**",
+      "tests/**",
+      "docs/api/**",
+      "docs/FUNCTION_TREE.md",
+      "governance/function-tree/catalog.yaml",
+      "config/**",
+      "scripts/**",
+      "openspec/changes/**",
+      "openspec/specs/**"
+    ]
+  },
+  "current_surface": {
+    "route_module": "web/backend/app/api/watchlist.py",
+    "route_module_import": "from app.services.data_source_factory import DataSourceFactory",
+    "registered_routes": 15,
+    "affected_route_body_handlers": [
+      {
+        "handler": "get_my_watchlist",
+        "handler_line": 198,
+        "factory_line": 206,
+        "get_data_source_line": 207,
+        "adapter_get_data_line": 211
+      },
+      {
+        "handler": "get_my_watchlist_symbols",
+        "handler_line": 236,
+        "factory_line": 244,
+        "get_data_source_line": 245,
+        "adapter_get_data_line": 249
+      },
+      {
+        "handler": "add_to_watchlist",
+        "handler_line": 274,
+        "factory_line": 285,
+        "get_data_source_line": 286,
+        "adapter_get_data_line": 300
+      },
+      {
+        "handler": "remove_from_watchlist",
+        "handler_line": 325,
+        "factory_line": 334,
+        "get_data_source_line": 335,
+        "adapter_get_data_line": 339
+      },
+      {
+        "handler": "check_in_watchlist",
+        "handler_line": 356,
+        "factory_line": 365,
+        "get_data_source_line": 366,
+        "adapter_get_data_line": 370
+      },
+      {
+        "handler": "update_watchlist_notes",
+        "handler_line": 390,
+        "factory_line": 400,
+        "get_data_source_line": 401,
+        "adapter_get_data_line": 405
+      },
+      {
+        "handler": "get_watchlist_count",
+        "handler_line": 422,
+        "factory_line": 428,
+        "get_data_source_line": 429,
+        "adapter_get_data_line": 433
+      },
+      {
+        "handler": "clear_watchlist",
+        "handler_line": 456,
+        "factory_line": 462,
+        "get_data_source_line": 463,
+        "adapter_get_data_line": 467
+      }
+    ],
+    "unaffected_watchlist_handlers": 7,
+    "route_openapi_snapshot": {
+      "fastapi_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_id_warnings": 0,
+      "snapshot_policy": "stale if current HEAD, route registration, or include_in_schema policy changes"
+    }
+  },
+  "gitnexus_disambiguation": {
+    "mcp_context": {
+      "status": "failed",
+      "tool": "mcp__gitnexus.context",
+      "target": "DataSourceFactory",
+      "error": "Transport closed"
+    },
+    "mcp_impact": {
+      "status": "failed",
+      "tool": "mcp__gitnexus.impact",
+      "target": "get_data_source",
+      "error": "Transport closed"
+    },
+    "cli_fallback": {
+      "command": "npx gitnexus impact get_data_source -r mystocks --direction upstream --summary-only",
+      "status": "ambiguous",
+      "candidate_count": 8,
+      "risk": "UNKNOWN",
+      "bounded_by_import_evidence": "web/backend/app/api/watchlist.py imports app.services.data_source_factory.DataSourceFactory",
+      "likely_method": "web/backend/app/services/data_source_factory/data_source_factory.py:DataSourceFactory.get_data_source",
+      "preflight_decision": "Do not edit DataSourceFactory or any shared factory method from the future source lane; constrain the future lane to watchlist route-local provider wiring only."
+    }
+  },
+  "future_source_scope": {
+    "authorized_if_this_pr_is_accepted": true,
+    "future_node": "G2.321 watchlist DataSourceFactory route-provider implementation",
+    "requires_human_review_before_merge": true,
+    "autopilot_must_not_merge_future_source_pr": true,
+    "allowed_paths": [
+      "web/backend/app/api/watchlist.py",
+      "tests/api/file_tests/test_watchlist_api.py"
+    ],
+    "forbidden_paths": [
+      "web/backend/app/services/data_source_factory/**",
+      "web/backend/app/api/data_source_config.py",
+      "web/backend/app/api/data_source_registry.py",
+      "web/backend/app/api/dashboard_data_source.py",
+      "web/backend/app/api/strategy_mgmt.py",
+      "src/factories/**",
+      "generated OpenAPI artifacts",
+      "docs/api artifacts",
+      "frontend",
+      "config",
+      "scripts",
+      "OpenSpec proposals/specs",
+      "PM2/runtime state"
+    ],
+    "required_implementation_shape": [
+      "Run pre-edit GitNexus impact/context for watchlist.py and the affected route symbols; if risk becomes HIGH or CRITICAL, stop for review.",
+      "Add a route-local provider dependency for the watchlist DataSourceFactory or watchlist adapter factory without changing public route paths, methods, response models, or OpenAPI path count.",
+      "Move only the eight affected watchlist route handlers away from route-body DataSourceFactory() construction and route-body get_data_source(\"watchlist\") acquisition.",
+      "Preserve the seven unaffected watchlist handlers and all existing route contracts.",
+      "Retain DataSourceFactory and DataSourceFactory.get_data_source unchanged as shared backing infrastructure.",
+      "Add or update focused file-level tests proving provider wiring and preserving current response/parser expectations.",
+      "Run focused watchlist tests, ruff on touched files, route/OpenAPI smoke, GitNexus staged verification, and mainline scope gate before PR review."
+    ]
+  },
+  "decision": {
+    "classification": "bounded-watchlist-route-provider-authorization-preflight",
+    "provider_implementation_authorized_by_this_no_source_package": true,
+    "source_lane_recommendation": "authorize-future-g2-321-path-limited-source-pr-only-after-human-review",
+    "autopilot_continue_allowed": false,
+    "autopilot_stop_reason": "The next node is a backend source/test implementation lane and must stop for human review before merge."
+  },
+  "freshness": {
+    "current_head_checked": "033813cde66cffa55124f7434b3b0aeb45454e5d",
+    "current_head_checked_at_review": "2026-06-02T09:19:03+08:00",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_watchlist_route_surface_changes": true,
+    "stale_if_datasourcefactory_import_or_method_changes": true,
+    "stale_if_gitnexus_index_refresh_changes_risk": true
+  }
+}
