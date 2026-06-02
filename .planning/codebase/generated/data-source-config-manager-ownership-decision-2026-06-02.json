@@ -1,0 +1,98 @@
+{
+  "schema_version": "steward-evidence.v1",
+  "generated_at": "2026-06-02T08:38:47+08:00",
+  "node": {
+    "id": "g2-317-data-source-config-manager-ownership-decision",
+    "type": "ownership_decision",
+    "state": "for_review",
+    "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+    "source_edit_authority": false,
+    "planned_pr": 470,
+    "branch": "g2-317-data-source-config-manager-ownership-decision"
+  },
+  "base": {
+    "branch": "origin/wip/root-dirty-20260403",
+    "head": "be512826ca7ba60d9609ddf9035522c1f863907c",
+    "parent_pr": 469,
+    "parent_merge_commit": "be512826ca7ba60d9609ddf9035522c1f863907c",
+    "parent_merged_at": "2026-06-02T00:31:32Z"
+  },
+  "target": {
+    "route_module": "web/backend/app/api/data_source_config.py",
+    "helper_module": "web/backend/app/api/_data_source_config_responses.py",
+    "route_provider": "get_config_manager_dependency",
+    "backing_helper": "get_config_manager",
+    "backing_helper_lines": [
+      338,
+      352
+    ],
+    "provider_backing_call_lines": [
+      103
+    ]
+  },
+  "route_truth": {
+    "total_routes": 548,
+    "openapi_paths": 500,
+    "duplicate_operation_id_warnings": 0,
+    "data_source_config_route_count": 9,
+    "route_body_direct_get_config_manager_calls": 0,
+    "provider_backing_get_config_manager_calls": 1,
+    "depends_get_config_manager_dependency_bindings": 9,
+    "registered_routes": [
+      "POST /api/v1/data-sources/config/",
+      "PUT /api/v1/data-sources/config/{endpoint_name}",
+      "DELETE /api/v1/data-sources/config/{endpoint_name}",
+      "GET /api/v1/data-sources/config/{endpoint_name}",
+      "GET /api/v1/data-sources/config/",
+      "POST /api/v1/data-sources/config/batch",
+      "GET /api/v1/data-sources/config/{endpoint_name}/versions",
+      "POST /api/v1/data-sources/config/{endpoint_name}/rollback/{version}",
+      "POST /api/v1/data-sources/config/reload"
+    ]
+  },
+  "gitnexus": {
+    "mcp_impact": {
+      "tool": "mcp__gitnexus.impact",
+      "status": "failed",
+      "error": "Transport closed"
+    },
+    "cli_fallback": {
+      "command": "npx gitnexus impact get_config_manager -r mystocks --direction upstream --summary-only",
+      "resolved_target": "Function:web/backend/app/api/_data_source_config_responses.py:get_config_manager",
+      "risk": "HIGH",
+      "direct_callers": 9,
+      "affected_processes": 3,
+      "affected_modules": 1,
+      "stale_index": true,
+      "commits_behind": 0
+    }
+  },
+  "decision": {
+    "classification": "active-route-provider-with-high-risk-response-helper-backing-seam",
+    "current_route_provider_status": "already-providerized",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-317",
+    "implementation_authorized": false,
+    "reason": "All nine active route handlers already use Depends(get_config_manager_dependency); the remaining seam is ownership/backing-helper placement in _data_source_config_responses.py, and GitNexus CLI impact is HIGH with three affected processes.",
+    "recommended_next_work_item": "G2.318 no-source service lifecycle residual candidate refresh after retaining data_source_config.get_config_manager as a high-risk backing seam",
+    "autopilot_continue_allowed": true
+  },
+  "freshness": {
+    "current_head_checked": "be512826ca7ba60d9609ddf9035522c1f863907c",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_data_source_config_route_surface_changes": true,
+    "stale_if_get_config_manager_dependency_surface_changes": true,
+    "stale_if_gitnexus_index_refresh_changes_risk": true
+  },
+  "forbidden_scope": [
+    "backend source edits",
+    "test edits",
+    "route registration changes",
+    "route path/method/response model changes",
+    "generated OpenAPI artifact changes",
+    "docs/api edits",
+    "frontend/config/script/OpenSpec/PM2/runtime changes",
+    "moving get_config_manager out of _data_source_config_responses.py",
+    "retiring response/helper module exports"
+  ]
+}

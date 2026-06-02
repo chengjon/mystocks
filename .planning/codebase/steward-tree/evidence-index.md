@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active evidence index
-- Prepared at: `2026-06-02T08:24:18+08:00`
-- Base HEAD checked: `8b09c714784ce90a1a8b1fe938e5904a81110094`
+- Prepared at: `2026-06-02T08:38:47+08:00`
+- Base HEAD checked: `be512826ca7ba60d9609ddf9035522c1f863907c`
 
 Boundary note: this index points to evidence artifacts. It does not promote
 review input into accepted truth without a matching review, PR, or OpenSpec
@@ -16,9 +16,12 @@ state transition.
 
 | Evidence | Role | Freshness policy |
 |---|---|---|
-| `.planning/codebase/generated/indicator-registry-factory-provider-closeout-2026-06-02.json` | G2.316 indicator registry factory provider closeout / residual refresh evidence | Review input for future PR `#469`; no-source closeout package; selects only G2.317 no-source `data_source_config.get_config_manager` decision |
-| `docs/reports/quality/backend-indicator-registry-factory-provider-closeout-2026-06-02.md` | G2.316 human-readable closeout / residual refresh report | Review input for future PR `#469`; records PR `#468` accepted/merged, closeout counts, route/OpenAPI baseline, residual scan, and next gate |
-| `governance/mainline/task-cards/pr-469.yaml` | Governance task card for G2.316 no-source closeout | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/data-source-config-manager-ownership-decision-2026-06-02.json` | G2.317 `data_source_config.get_config_manager` ownership / provider seam decision evidence | Review input for future PR `#470`; no-source decision package; records providerized route surface, HIGH-risk backing seam, and next G2.318 no-source refresh |
+| `docs/reports/quality/backend-data-source-config-manager-ownership-decision-2026-06-02.md` | G2.317 human-readable ownership / provider seam decision report | Review input for future PR `#470`; records PR `#469` accepted/merged, route/OpenAPI baseline, GitNexus fallback impact, and source stop boundary |
+| `governance/mainline/task-cards/pr-470.yaml` | Governance task card for G2.317 no-source decision | Review input; allows only steward tree, generated evidence, report, and task card updates |
+| `.planning/codebase/generated/indicator-registry-factory-provider-closeout-2026-06-02.json` | G2.316 indicator registry factory provider closeout / residual refresh evidence | Accepted by PR `#469`, merged at `be512826ca7ba60d9609ddf9035522c1f863907c`; no-source closeout package; superseded for decision by G2.317 |
+| `docs/reports/quality/backend-indicator-registry-factory-provider-closeout-2026-06-02.md` | G2.316 human-readable closeout / residual refresh report | Accepted by PR `#469`; records PR `#468` accepted/merged, closeout counts, route/OpenAPI baseline, residual scan, and next gate |
+| `governance/mainline/task-cards/pr-469.yaml` | Governance task card for G2.316 no-source closeout | Accepted by PR `#469`; allowed only steward tree, generated evidence, report, and task card updates |
 | `.planning/codebase/generated/indicator-registry-factory-provider-implementation-2026-06-02.json` | G2.315 `indicator_registry.get_factory` provider implementation evidence | Accepted by PR `#468`, merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`; source implementation package; superseded for closeout by G2.316 |
 | `docs/reports/quality/backend-indicator-registry-factory-provider-implementation-2026-06-02.md` | G2.315 human-readable implementation report | Accepted by PR `#468`; records TDD, provider scan, route/OpenAPI, focused tests, ruff, and GitNexus fallback |
 | `governance/mainline/task-cards/pr-468.yaml` | Governance task card for G2.315 source implementation | Accepted by PR `#468`; allowed only path-limited source/test plus steward tree, generated evidence, report, and task card updates |

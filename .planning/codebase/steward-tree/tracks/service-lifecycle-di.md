@@ -3491,11 +3491,27 @@ Status: accepted / merged by PR `#468`.
 
 ## G2.316 Indicator Registry Factory Provider Closeout / Residual Refresh
 
-Status: for review in future PR `#469`.
+Status: accepted / merged by PR `#469`.
 
 - Parent PR `#468` merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`.
+- PR `#469` merged at `be512826ca7ba60d9609ddf9035522c1f863907c`.
 - G2.316 is a no-source closeout / residual refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - Closeout result: `indicator_registry.get_factory` route-body direct calls are `0`, provider backing calls are `1`, `Depends(get_indicator_factory)` bindings are `3`, focused test remains `11 passed`, and route/OpenAPI remains `548/500/0`.
 - Residual refresh selected G2.317 no-source `data_source_config.get_config_manager` ownership / provider seam decision.
 - The selected next candidate is high-risk: GitNexus MCP impact failed with `Transport closed`, and CLI fallback resolved `web/backend/app/api/_data_source_config_responses.py:get_config_manager` as `HIGH`, with `9` direct callers and `3` affected processes.
 - Stop rule: G2.316 must not be used as source implementation authority or as authorization to edit `data_source_config.py`, `_data_source_config_responses.py`, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.317 Data Source Config `get_config_manager` Ownership / Provider Seam Decision
+
+Status: for review in future PR `#470`.
+
+- Parent PR `#469` merged at `be512826ca7ba60d9609ddf9035522c1f863907c`.
+- G2.317 is a no-source ownership / provider seam decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- Current route shape is already providerized: all `9` active `app.api.data_source_config` routes use `Depends(get_config_manager_dependency)`.
+- Residual route-body direct `get_config_manager()` calls are `0`; the route-local provider has `1` backing call to `get_config_manager()` at `data_source_config.py:103`.
+- The backing helper remains in `web/backend/app/api/_data_source_config_responses.py:338-352`, which also owns response/router helper responsibilities.
+- Route/OpenAPI smoke records `548` FastAPI routes, `500` OpenAPI paths, and `0` duplicate operation ID warnings.
+- GitNexus MCP impact failed with `Transport closed`; CLI fallback resolved `web/backend/app/api/_data_source_config_responses.py:get_config_manager` as `HIGH`, with `9` direct callers and `3` affected processes.
+- Decision: retain the current backing seam for now. G2.317 does not authorize moving `get_config_manager`, splitting `_data_source_config_responses.py`, changing route contracts, or editing tests.
+- Next gate: G2.318 no-source service lifecycle residual candidate refresh after retaining `data_source_config.get_config_manager` as a high-risk backing seam.
+- Stop rule: G2.317 must not be used as source implementation authority or as authorization to edit `data_source_config.py`, `_data_source_config_responses.py`, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.

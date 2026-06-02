@@ -1,0 +1,132 @@
+version: "v0.2"
+
+task:
+  id: "pr-470"
+  title: "Decide data_source_config get_config_manager ownership"
+  owner: "codex"
+  created_at: "2026-06-02"
+
+mainline:
+  id: "L1-data-source-config-manager-ownership-decision"
+  objective: "classify data_source_config get_config_manager ownership and prevent direct source implementation from a high-risk backing seam"
+  milestone_id: "L2-architecture-governance-continuation"
+  slice_id: "L3-g2-service-lifecycle-routing"
+
+classification:
+  task_type: "cleanup"
+  secondary_type: "none"
+  secondary_change_budget_percent: 0
+  secondary_allowed_paths: []
+
+openspec:
+  change_id: "migrate-backend-singletons-to-lifecycle-di"
+  approval_status: "approved"
+
+function_tree:
+  domain_id: "meta-governance"
+  node_id: "meta-governance-mainline"
+  affected_entrypoints:
+    - "governance"
+    - "api"
+    - "operations"
+  update_status: "not-needed"
+  secondary_domains:
+    - "meta-governance"
+  exemption_reason: "G2.317 is a no-source ownership / provider seam decision. It changes no runtime route, handler, contract, source file, or test file."
+
+scope:
+  allowed_paths:
+    - ".planning/codebase/generated/data-source-config-manager-ownership-decision-2026-06-02.json"
+    - ".planning/codebase/steward-tree/current-next-gates.md"
+    - ".planning/codebase/steward-tree/steward-index.json"
+    - ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+    - ".planning/codebase/steward-tree/branch-register.md"
+    - ".planning/codebase/steward-tree/evidence-index.md"
+    - ".planning/codebase/steward-tree/completed-ledger.md"
+    - "docs/reports/quality/backend-data-source-config-manager-ownership-decision-2026-06-02.md"
+    - "governance/mainline/task-cards/pr-470.yaml"
+  forbidden_paths:
+    - "web/backend/**"
+    - "web/frontend/**"
+    - "src/**"
+    - "tests/**"
+    - "docs/api/**"
+    - "docs/FUNCTION_TREE.md"
+    - "governance/function-tree/catalog.yaml"
+    - "config/**"
+    - "scripts/**"
+    - "openspec/changes/**"
+    - "openspec/specs/**"
+
+non_goals:
+  - "backend source edits in this PR"
+  - "test edits in this PR"
+  - "route registration changes"
+  - "route path, method, response model, or generated OpenAPI artifact changes"
+  - "docs/api artifact edits"
+  - "frontend/config/script changes"
+  - "OpenSpec proposal or spec edits"
+  - "PM2 commands or stateful runtime gates"
+  - "moving get_config_manager out of _data_source_config_responses.py"
+  - "splitting data_source_config response/helper ownership"
+  - "retiring any compatibility/helper export"
+  - "authorizing source implementation directly from G2.317"
+
+acceptance:
+  checks:
+    - id: "pr469-merged"
+      command: "gh pr view 469 confirms MERGED at be512826ca7ba60d9609ddf9035522c1f863907c"
+      required: true
+    - id: "provider-surface"
+      command: "generated evidence records route-body direct get_config_manager calls 0, provider backing calls 1, Depends bindings 9"
+      required: true
+    - id: "route-openapi-baseline"
+      command: "route/OpenAPI smoke remains 548 routes, 500 paths, 0 duplicate operation ID warnings"
+      required: true
+    - id: "gitnexus-target-risk"
+      command: "GitNexus MCP impact failed with Transport closed; CLI fallback records HIGH risk, 9 direct callers, 3 affected processes for Function:web/backend/app/api/_data_source_config_responses.py:get_config_manager"
+      required: true
+    - id: "next-gate-selection"
+      command: "report selects only G2.318 no-source service lifecycle residual candidate refresh after retaining data_source_config.get_config_manager as a high-risk backing seam"
+      required: true
+    - id: "no-source-boundary"
+      command: "PR #470 edits no backend source, tests, route contracts, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state"
+      required: true
+    - id: "markdown-governance"
+      command: "python scripts/compliance/markdown_governance_gate.py --root-dir . --format json docs/reports/quality/backend-data-source-config-manager-ownership-decision-2026-06-02.md .planning/codebase/steward-tree/current-next-gates.md .planning/codebase/steward-tree/branch-register.md .planning/codebase/steward-tree/evidence-index.md .planning/codebase/steward-tree/completed-ledger.md .planning/codebase/steward-tree/tracks/service-lifecycle-di.md"
+      required: true
+    - id: "openspec-validate"
+      command: "openspec validate migrate-backend-singletons-to-lifecycle-di --strict"
+      required: true
+    - id: "mainline-scope-gate"
+      command: "python governance/mainline/scripts/mainline_scope_gate.py --task-card governance/mainline/task-cards/pr-470.yaml --base-sha be512826ca7ba60d9609ddf9035522c1f863907c --head-sha HEAD --report /tmp/pr470-mainline-governance-report.json"
+      required: true
+
+risk_and_rollback:
+  risks:
+    - "No runtime risk from this PR because it is no-source governance only."
+    - "The retained data-source config backing seam can become stale if route/provider ownership changes before G2.318."
+    - "Future implementation work would be high risk unless separately authorized because GitNexus CLI reports 9 direct callers and 3 affected processes for the backing helper."
+  rollback_plan: "Revert PR #470; this removes only G2.317 ownership / provider seam decision evidence and restores the prior G2.316 next gate."
+
+delivery:
+  six_line_summary_required: true
+  six_line_summary:
+    change_purpose: "Decide data_source_config get_config_manager ownership and retain the high-risk backing seam."
+    modified_scope: "Governance evidence, steward tree indexes, report, and task card only."
+    dependency_changes: "No package dependency changes."
+    legacy_logic_impact: "No runtime behavior, route contract, OpenAPI, source, or test changes."
+    rollback_ready: "Revert PR #470."
+    risk_and_rollback_point: "No-source decision; rollback is single-PR revert."
+
+governance:
+  phase: "phase_b_dual_hard_gate"
+  mainline_drift_threshold_percent: 0
+  stop_rule_owner: "maintainer"
+  stop_rule_sla_hours: 24
+  approval:
+    required: true
+    approved_by: "human-maintainer-autopilot"
+    approved_at: "2026-06-02T08:38:47+08:00"
+    approval_note: "Human maintainer previously authorized automatic no-source governance continuation; G2.317 remains no-source and selects only a future no-source residual refresh while retaining the HIGH-risk backing seam."
+    secondary_approved: false
