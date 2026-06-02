@@ -1,0 +1,163 @@
+{
+  "schema_version": "steward-evidence.v1",
+  "generated_at": "2026-06-02T08:55:44+08:00",
+  "node": "G2.318",
+  "title": "Service lifecycle residual refresh after data_source_config manager ownership decision",
+  "repo": "mystocks",
+  "base_branch": "origin/wip/root-dirty-20260403",
+  "base_head": "b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd",
+  "parent_gate": {
+    "node": "G2.317",
+    "pr": 470,
+    "state": "MERGED",
+    "merge_commit": "b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd",
+    "merged_at": "2026-06-02T00:48:46Z"
+  },
+  "source_edit_authority": false,
+  "closed_or_retained_parent": {
+    "target": "data_source_config.get_config_manager",
+    "classification": "retained-high-risk-backing-seam",
+    "route_body_direct_get_config_manager_calls": 0,
+    "provider_backing_get_config_manager_calls": 1,
+    "depends_get_config_manager_dependency_bindings": 9,
+    "route_openapi": "548/500/0",
+    "gitnexus_cli_risk": "HIGH",
+    "direct_callers": 9,
+    "affected_processes": 3
+  },
+  "residual_refresh": {
+    "scan_roots": [
+      "web/backend/app/api",
+      "web/backend/app/services"
+    ],
+    "python_files_scanned": 371,
+    "active_api_modules": 96,
+    "getter_defs_seen": 736,
+    "active_route_body_getter_groups": 194,
+    "static_filtered_route_body_getter_groups": 215,
+    "route_openapi": {
+      "total_routes": 548,
+      "openapi_paths": 500,
+      "duplicate_operation_id_warnings": 0
+    },
+    "top_candidate_families": [
+      {
+        "file": "web/backend/app/api/watchlist.py",
+        "surface": "DataSourceFactory route-body adapter seam",
+        "active_route_count": 15,
+        "factory_construction_count": 8,
+        "get_data_source_count": 8,
+        "adapter_get_data_count": 8
+      },
+      {
+        "file": "web/backend/app/api/technical_analysis.py",
+        "surface": "DataSourceFactory route-body adapter seam",
+        "active_route_count": 8,
+        "factory_construction_count": 8,
+        "get_data_source_count": 8,
+        "adapter_get_data_count": 8
+      },
+      {
+        "file": "web/backend/app/api/announcement/routes.py",
+        "surface": "announcement service route-body data access calls",
+        "get_announcements_count": 6
+      },
+      {
+        "file": "web/backend/app/api/data_quality.py",
+        "surface": "data-quality source metric route-body service calls",
+        "get_source_metrics_count": 5
+      }
+    ],
+    "selected_next_candidate": {
+      "node": "G2.319",
+      "file": "web/backend/app/api/watchlist.py",
+      "surface": "watchlist DataSourceFactory route-body adapter seam",
+      "registered_route_count": 15,
+      "affected_route_body_handlers": 8,
+      "data_source_factory_construction_lines": [
+        206,
+        244,
+        285,
+        334,
+        365,
+        400,
+        428,
+        462
+      ],
+      "get_data_source_lines": [
+        207,
+        245,
+        286,
+        335,
+        366,
+        401,
+        429,
+        463
+      ],
+      "adapter_get_data_lines": [
+        211,
+        249,
+        300,
+        339,
+        370,
+        405,
+        433,
+        467
+      ]
+    },
+    "gitnexus_for_selected_candidate": {
+      "mcp_impact": {
+        "status": "failed",
+        "tool": "mcp__gitnexus.impact",
+        "error": "Transport closed"
+      },
+      "cli_fallback": {
+        "command": "npx gitnexus impact get_data_source -r mystocks --direction upstream --summary-only",
+        "status": "ambiguous",
+        "candidate_count": 8,
+        "risk": "UNKNOWN",
+        "note": "G2.319 must disambiguate DataSourceFactory.get_data_source before any authorization or source lane."
+      }
+    }
+  },
+  "decision": {
+    "classification": "service-lifecycle-residual-refresh-no-source-lane",
+    "source_lane_recommendation": "do-not-start-source-implementation-from-g2-318",
+    "recommended_next_work_item": "G2.319 no-source watchlist DataSourceFactory ownership / route-provider decision",
+    "autopilot_continue_allowed": true,
+    "next_source_authority": false
+  },
+  "allowed_scope": [
+    ".planning/codebase/generated/service-lifecycle-residual-refresh-after-data-source-config-2026-06-02.json",
+    ".planning/codebase/steward-tree/current-next-gates.md",
+    ".planning/codebase/steward-tree/steward-index.json",
+    ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+    ".planning/codebase/steward-tree/branch-register.md",
+    ".planning/codebase/steward-tree/evidence-index.md",
+    ".planning/codebase/steward-tree/completed-ledger.md",
+    "docs/reports/quality/backend-service-lifecycle-residual-refresh-after-data-source-config-2026-06-02.md",
+    "governance/mainline/task-cards/pr-471.yaml"
+  ],
+  "forbidden_scope": [
+    "web/backend/**",
+    "web/frontend/**",
+    "src/**",
+    "tests/**",
+    "docs/api/**",
+    "docs/FUNCTION_TREE.md",
+    "governance/function-tree/catalog.yaml",
+    "config/**",
+    "scripts/**",
+    "openspec/changes/**",
+    "openspec/specs/**"
+  ],
+  "freshness": {
+    "current_head_checked": "b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd",
+    "stale_if_head_or_pr_state_changes": true,
+    "stale_if_route_or_openapi_counts_change": true,
+    "stale_if_watchlist_route_surface_changes": true,
+    "stale_if_residual_scan_changes": true,
+    "stale_if_gitnexus_index_refresh_changes_risk": true
+  },
+  "next_gate": "Review future PR #471. If accepted and merged, start G2.319 no-source watchlist DataSourceFactory ownership / route-provider decision."
+}

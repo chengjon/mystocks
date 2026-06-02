@@ -3503,9 +3503,10 @@ Status: accepted / merged by PR `#469`.
 
 ## G2.317 Data Source Config `get_config_manager` Ownership / Provider Seam Decision
 
-Status: for review in future PR `#470`.
+Status: accepted / merged by PR `#470`.
 
 - Parent PR `#469` merged at `be512826ca7ba60d9609ddf9035522c1f863907c`.
+- PR `#470` merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`.
 - G2.317 is a no-source ownership / provider seam decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - Current route shape is already providerized: all `9` active `app.api.data_source_config` routes use `Depends(get_config_manager_dependency)`.
 - Residual route-body direct `get_config_manager()` calls are `0`; the route-local provider has `1` backing call to `get_config_manager()` at `data_source_config.py:103`.
@@ -3515,3 +3516,16 @@ Status: for review in future PR `#470`.
 - Decision: retain the current backing seam for now. G2.317 does not authorize moving `get_config_manager`, splitting `_data_source_config_responses.py`, changing route contracts, or editing tests.
 - Next gate: G2.318 no-source service lifecycle residual candidate refresh after retaining `data_source_config.get_config_manager` as a high-risk backing seam.
 - Stop rule: G2.317 must not be used as source implementation authority or as authorization to edit `data_source_config.py`, `_data_source_config_responses.py`, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.318 Service Lifecycle Residual Refresh After Data Source Config
+
+Status: for review in future PR `#471`.
+
+- Parent PR `#470` merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`.
+- G2.318 is a no-source residual candidate refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- G2.318 retains `data_source_config.get_config_manager` as a high-risk backing seam and does not reopen its source path.
+- Residual scan records `371` Python files, `96` active API modules, `736` getter definitions, `194` active route-body getter groups, and route/OpenAPI `548/500/0`.
+- The top refreshed candidate family is `web/backend/app/api/watchlist.py`: `15` registered routes, `8` route-body `DataSourceFactory()` constructions, `8` `get_data_source("watchlist")` calls, and `8` adapter `get_data(...)` calls.
+- GitNexus MCP impact for the next target family failed with `Transport closed`; CLI fallback for `get_data_source` is ambiguous with `8` candidates and `UNKNOWN` risk.
+- G2.318 selects only G2.319 no-source `watchlist` DataSourceFactory ownership / route-provider decision. G2.319 must disambiguate DataSourceFactory impact before any authorization package or source lane.
+- Stop rule: G2.318 must not be used as source implementation authority or as authorization to edit `watchlist.py`, DataSourceFactory, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.

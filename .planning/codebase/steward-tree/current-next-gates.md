@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-02T08:38:47+08:00`
-- Base HEAD checked: `be512826ca7ba60d9609ddf9035522c1f863907c`
+- Prepared at: `2026-06-02T08:55:44+08:00`
+- Base HEAD checked: `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.317 `data_source_config.get_config_manager` ownership / provider seam decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#469` merged at `be512826ca7ba60d9609ddf9035522c1f863907c`; G2.317 records 9 active data-source config routes already bound to `Depends(get_config_manager_dependency)`, route-body direct `get_config_manager()` calls `0`, provider backing calls `1`, route/OpenAPI `548/500/0`, and GitNexus CLI `HIGH` / direct `9` / affected processes `3` for the backing helper | Review future PR `#470`; if accepted, retain the high-risk backing seam and start only G2.318 no-source residual candidate refresh |
+| P0 | Review G2.318 service lifecycle residual refresh after `data_source_config` | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#470` merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`; G2.318 retains the `data_source_config.get_config_manager` HIGH-risk backing seam, records refreshed route/OpenAPI `548/500/0`, scans `371` Python files, records `194` active route-body getter groups, and selects `watchlist.py` DataSourceFactory seam for G2.319 | Review future PR `#471`; if accepted, start only G2.319 no-source `watchlist` DataSourceFactory ownership / route-provider decision |
+| P0 | Preserve G2.317 `data_source_config.get_config_manager` ownership / provider seam decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#470` merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`; G2.317 records 9 active data-source config routes already bound to `Depends(get_config_manager_dependency)`, route-body direct `get_config_manager()` calls `0`, provider backing calls `1`, route/OpenAPI `548/500/0`, and GitNexus CLI `HIGH` / direct `9` / affected processes `3` for the backing helper | Do not use G2.317 as source implementation authority; use G2.318 only as no-source residual refresh |
 | P0 | Preserve G2.316 indicator registry factory provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#469` merged at `be512826ca7ba60d9609ddf9035522c1f863907c`; G2.316 records `get_factory` route-body direct calls `0`, provider backing `1`, dependency bindings `3`, route/OpenAPI `548/500/0`, and next candidate `data_source_config.get_config_manager` with GitNexus CLI `HIGH` | Do not use G2.316 as source implementation authority; use G2.317 only as no-source ownership / provider seam decision |
 | P0 | Preserve G2.315 `indicator_registry.get_factory` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#468` merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`; G2.315 moved 3 indicator-registry handlers to `Depends(get_indicator_factory)`, preserved route/OpenAPI `548/500/0`, focused test `11 passed`, and provider scan `0/1/3` | Do not use G2.315 as authority for broader source edits; use G2.316 only as no-source closeout / residual refresh |
 | P0 | Preserve G2.314 `indicator_registry.get_factory` provider authorization package | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#467` merged at `8d52fa0548fd200f0c9b606e5880e71286c07d10`; G2.314 authorized only future G2.315 path-limited implementation for `indicator_registry.py` plus `tests/api/file_tests/test_indicator_registry_api.py` | G2.315 source implementation must stop for human review before merge |
@@ -142,7 +143,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.317 correctly record PR `#469` as accepted/merged at `be512826ca7ba60d9609ddf9035522c1f863907c`?
-- Does G2.317 classify `data_source_config.get_config_manager` as an already-providerized route surface with `0` route-body direct calls, `1` provider backing call, and `9` `Depends(get_config_manager_dependency)` bindings?
-- Does G2.317 preserve route/OpenAPI `548/500/0` and record GitNexus CLI `HIGH` / direct `9` / affected processes `3` for the backing helper?
-- Does future PR `#470` avoid source authorization and select only G2.318 no-source residual candidate refresh?
+- Does G2.318 correctly record PR `#470` as accepted/merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`?
+- Does G2.318 retain the `data_source_config.get_config_manager` high-risk backing seam without reopening source work?
+- Does G2.318 record route/OpenAPI `548/500/0`, scan `371` Python files, and report `194` active route-body getter groups?
+- Does future PR `#471` avoid source authorization and select only G2.319 no-source `watchlist` DataSourceFactory ownership / route-provider decision?
