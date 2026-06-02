@@ -1,11 +1,11 @@
 {
   "schema_version": "2026-05-27.steward-index.v1",
-  "generated_at": "2026-06-02T08:24:18+08:00",
+  "generated_at": "2026-06-02T08:38:47+08:00",
   "repo": "chengjon/mystocks",
   "base_branch": "wip/root-dirty-20260403",
-  "base_head": "8b09c714784ce90a1a8b1fe938e5904a81110094",
-  "split_branch": "g2-312-service-lifecycle-residual-refresh-after-indicator-config",
-  "scope": "service_lifecycle_residual_refresh_after_indicator_config",
+  "base_head": "be512826ca7ba60d9609ddf9035522c1f863907c",
+  "split_branch": "g2-317-data-source-config-manager-ownership-decision",
+  "scope": "data_source_config_manager_ownership_decision",
   "source_edit_authority": false,
   "root_entrypoint": ".planning/codebase/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.md",
   "archived_full_snapshot": ".planning/codebase/steward-tree/archive/CODEBASE-MAP-OPENSPEC-TASK-TREE-2026-05-20.full-2026-05-27.md",
@@ -12291,16 +12291,18 @@
     {
       "id": "g2-316-indicator-registry-factory-provider-closeout",
       "type": "closeout_refresh",
-      "state": "for_review",
+      "state": "accepted_merged",
       "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
       "parent": "G2.315 indicator_registry get_factory provider implementation",
       "source_edit_authority": false,
-      "autopilot_status": "review_gate",
-      "autopilot_stop_reason": "G2.316 is no-source closeout / residual refresh and selects only a future no-source ownership decision gate.",
+      "autopilot_status": "merged",
+      "autopilot_stop_reason": "G2.316 was a no-source closeout / residual refresh and PR #469 merged after checks passed; it selected only a future no-source ownership decision gate.",
       "github_pr": {
         "number": 469,
         "url": "https://github.com/chengjon/mystocks/pull/469",
-        "state": "PLANNED_FOR_REVIEW",
+        "state": "MERGED",
+        "merge_commit": "be512826ca7ba60d9609ddf9035522c1f863907c",
+        "merged_at": "2026-06-02T00:31:32Z",
         "head_ref": "g2-316-indicator-registry-factory-provider-closeout"
       },
       "closed_parent": {
@@ -12368,7 +12370,196 @@
         "stale_if_residual_scan_changes": true,
         "stale_if_gitnexus_index_refresh_changes_risk": true
       },
-      "next_gate": "Review future PR #469. If accepted and merged, start G2.317 no-source data_source_config get_config_manager ownership / provider seam decision."
+      "next_gate": "Superseded by G2.317 no-source data_source_config get_config_manager ownership / provider seam decision."
+    },
+    {
+      "id": "g2-317-data-source-config-manager-ownership-decision",
+      "type": "ownership_decision",
+      "state": "for_review",
+      "owner_lane": "G/#79 service lifecycle DI + Route/OpenAPI governance",
+      "parent": "G2.316 indicator_registry get_factory provider closeout / residual refresh",
+      "source_edit_authority": false,
+      "autopilot_status": "review_gate",
+      "autopilot_stop_reason": "G2.317 is no-source and selects only a future no-source residual refresh; the target backing helper is HIGH risk and must not be edited from this node.",
+      "github_pr": {
+        "number": 470,
+        "url": "https://github.com/chengjon/mystocks/pull/470",
+        "state": "PLANNED_FOR_REVIEW",
+        "head_ref": "g2-317-data-source-config-manager-ownership-decision"
+      },
+      "closed_parent": {
+        "pr": 469,
+        "state": "MERGED",
+        "merge_commit": "be512826ca7ba60d9609ddf9035522c1f863907c",
+        "merged_at": "2026-06-02T00:31:32Z"
+      },
+      "evidence": [
+        ".planning/codebase/generated/data-source-config-manager-ownership-decision-2026-06-02.json",
+        "docs/reports/quality/backend-data-source-config-manager-ownership-decision-2026-06-02.md",
+        "governance/mainline/task-cards/pr-470.yaml"
+      ],
+      "allowed_scope": [
+        ".planning/codebase/generated/data-source-config-manager-ownership-decision-2026-06-02.json",
+        ".planning/codebase/steward-tree/current-next-gates.md",
+        ".planning/codebase/steward-tree/steward-index.json",
+        ".planning/codebase/steward-tree/tracks/service-lifecycle-di.md",
+        ".planning/codebase/steward-tree/branch-register.md",
+        ".planning/codebase/steward-tree/evidence-index.md",
+        ".planning/codebase/steward-tree/completed-ledger.md",
+        "docs/reports/quality/backend-data-source-config-manager-ownership-decision-2026-06-02.md",
+        "governance/mainline/task-cards/pr-470.yaml"
+      ],
+      "forbidden_scope": [
+        "web/backend/**",
+        "web/frontend/**",
+        "src/**",
+        "tests/**",
+        "docs/api/**",
+        "docs/FUNCTION_TREE.md",
+        "governance/function-tree/catalog.yaml",
+        "config/**",
+        "scripts/**",
+        "openspec/changes/**",
+        "openspec/specs/**"
+      ],
+      "target": {
+        "route_module": "web/backend/app/api/data_source_config.py",
+        "helper_module": "web/backend/app/api/_data_source_config_responses.py",
+        "route_provider": "get_config_manager_dependency",
+        "backing_helper": "get_config_manager",
+        "route_provider_line": 101,
+        "provider_backing_call_line": 103,
+        "backing_helper_lines": [
+          338,
+          352
+        ]
+      },
+      "route_truth": {
+        "total_routes": 548,
+        "openapi_paths": 500,
+        "duplicate_operation_id_warnings": 0,
+        "route_module": "app.api.data_source_config",
+        "registered_route_count": 9,
+        "route_body_direct_get_config_manager_calls": 0,
+        "provider_backing_get_config_manager_calls": 1,
+        "depends_get_config_manager_dependency_bindings": 9,
+        "registered_routes": [
+          {
+            "method": "POST",
+            "path": "/api/v1/data-sources/config/",
+            "endpoint": "create_data_source",
+            "dependencies": [
+              "get_config_manager_dependency",
+              "get_current_user"
+            ]
+          },
+          {
+            "method": "PUT",
+            "path": "/api/v1/data-sources/config/{endpoint_name}",
+            "endpoint": "update_data_source",
+            "dependencies": [
+              "get_config_manager_dependency",
+              "get_current_user"
+            ]
+          },
+          {
+            "method": "DELETE",
+            "path": "/api/v1/data-sources/config/{endpoint_name}",
+            "endpoint": "delete_data_source",
+            "dependencies": [
+              "get_config_manager_dependency",
+              "get_current_user"
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/data-sources/config/{endpoint_name}",
+            "endpoint": "get_data_source",
+            "dependencies": [
+              "get_config_manager_dependency"
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/data-sources/config/",
+            "endpoint": "list_data_sources",
+            "dependencies": [
+              "get_config_manager_dependency"
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/data-sources/config/batch",
+            "endpoint": "batch_operations",
+            "dependencies": [
+              "get_config_manager_dependency",
+              "get_current_user"
+            ]
+          },
+          {
+            "method": "GET",
+            "path": "/api/v1/data-sources/config/{endpoint_name}/versions",
+            "endpoint": "get_version_history",
+            "dependencies": [
+              "get_config_manager_dependency"
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/data-sources/config/{endpoint_name}/rollback/{version}",
+            "endpoint": "rollback_to_version",
+            "dependencies": [
+              "get_config_manager_dependency",
+              "get_current_user"
+            ]
+          },
+          {
+            "method": "POST",
+            "path": "/api/v1/data-sources/config/reload",
+            "endpoint": "reload_config",
+            "dependencies": [
+              "get_config_manager_dependency",
+              "get_current_user"
+            ]
+          }
+        ]
+      },
+      "gitnexus": {
+        "mcp_impact": {
+          "status": "failed",
+          "tool": "mcp__gitnexus.impact",
+          "error": "Transport closed"
+        },
+        "cli_fallback": {
+          "command": "npx gitnexus impact get_config_manager -r mystocks --direction upstream --summary-only",
+          "target": "Function:web/backend/app/api/_data_source_config_responses.py:get_config_manager",
+          "risk": "HIGH",
+          "direct_callers": 9,
+          "affected_processes": 3,
+          "affected_modules": 1,
+          "stale_index": true,
+          "commits_behind": 0
+        }
+      },
+      "decision": {
+        "classification": "active-route-provider-with-high-risk-response-helper-backing-seam",
+        "current_route_provider_status": "already-providerized",
+        "provider_implementation_authorized": false,
+        "source_lane_recommendation": "do-not-start-source-implementation-from-g2-317",
+        "retained_seam": "web/backend/app/api/_data_source_config_responses.py:get_config_manager",
+        "reason": "All active data-source config route handlers already use Depends(get_config_manager_dependency); the remaining ownership seam is high-risk backing helper placement, not a route-body singleton call.",
+        "recommended_next_work_item": "G2.318 no-source service lifecycle residual candidate refresh after retaining data_source_config.get_config_manager as a high-risk backing seam",
+        "autopilot_continue_allowed": true
+      },
+      "freshness": {
+        "current_head_checked": "be512826ca7ba60d9609ddf9035522c1f863907c",
+        "stale_if_head_or_pr_state_changes": true,
+        "stale_if_route_or_openapi_counts_change": true,
+        "stale_if_data_source_config_route_surface_changes": true,
+        "stale_if_get_config_manager_dependency_surface_changes": true,
+        "stale_if_gitnexus_index_refresh_changes_risk": true
+      },
+      "next_gate": "Review future PR #470. If accepted and merged, start only G2.318 no-source service lifecycle residual candidate refresh."
     }
   ]
 }

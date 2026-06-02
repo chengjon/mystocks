@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-02T08:24:18+08:00`
-- Base HEAD checked: `8b09c714784ce90a1a8b1fe938e5904a81110094`
+- Prepared at: `2026-06-02T08:38:47+08:00`
+- Base HEAD checked: `be512826ca7ba60d9609ddf9035522c1f863907c`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.316 indicator registry factory provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#468` merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`; G2.316 records `get_factory` route-body direct calls `0`, provider backing `1`, dependency bindings `3`, route/OpenAPI `548/500/0`, and next candidate `data_source_config.get_config_manager` with GitNexus CLI `HIGH` | Review future PR `#469`; if accepted, start G2.317 no-source `data_source_config.get_config_manager` ownership / provider seam decision |
+| P0 | Review G2.317 `data_source_config.get_config_manager` ownership / provider seam decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#469` merged at `be512826ca7ba60d9609ddf9035522c1f863907c`; G2.317 records 9 active data-source config routes already bound to `Depends(get_config_manager_dependency)`, route-body direct `get_config_manager()` calls `0`, provider backing calls `1`, route/OpenAPI `548/500/0`, and GitNexus CLI `HIGH` / direct `9` / affected processes `3` for the backing helper | Review future PR `#470`; if accepted, retain the high-risk backing seam and start only G2.318 no-source residual candidate refresh |
+| P0 | Preserve G2.316 indicator registry factory provider closeout / residual refresh | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#469` merged at `be512826ca7ba60d9609ddf9035522c1f863907c`; G2.316 records `get_factory` route-body direct calls `0`, provider backing `1`, dependency bindings `3`, route/OpenAPI `548/500/0`, and next candidate `data_source_config.get_config_manager` with GitNexus CLI `HIGH` | Do not use G2.316 as source implementation authority; use G2.317 only as no-source ownership / provider seam decision |
 | P0 | Preserve G2.315 `indicator_registry.get_factory` provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#468` merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`; G2.315 moved 3 indicator-registry handlers to `Depends(get_indicator_factory)`, preserved route/OpenAPI `548/500/0`, focused test `11 passed`, and provider scan `0/1/3` | Do not use G2.315 as authority for broader source edits; use G2.316 only as no-source closeout / residual refresh |
 | P0 | Preserve G2.314 `indicator_registry.get_factory` provider authorization package | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#467` merged at `8d52fa0548fd200f0c9b606e5880e71286c07d10`; G2.314 authorized only future G2.315 path-limited implementation for `indicator_registry.py` plus `tests/api/file_tests/test_indicator_registry_api.py` | G2.315 source implementation must stop for human review before merge |
 | P0 | Preserve G2.313 `indicator_registry.get_factory` ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#466` merged at `75f6c63023bec35453892f63aaeaf193023e4881`; G2.313 classifies active route-local singleton factory calls at lines `159`, `186`, and `201`, route/OpenAPI `548/500/0`, and GitNexus CLI `LOW` / direct `3` / affected processes `0` | Do not use G2.313 as source implementation authority; use G2.314 only as no-source provider authorization package |
@@ -141,7 +142,7 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 ## Immediate Review Questions
 
-- Does G2.303 correctly record PR `#455` as accepted/merged at `4af141da7411d30b31b972ace51d104ae28606ed`?
-- Does G2.303 limit source edits to `web/backend/app/api/v1/admin/optimization.py` and `web/backend/tests/test_v1_optimization_regressions.py`?
-- Does G2.303 preserve route/OpenAPI `548/500/0`, keep all five `/api/v1/optimization/*` routes as current surface, and stop future PR `#456` for human review?
-- Does PR `#455` stop for human review because it authorizes source/test edits under the CRITICAL `app.core.database.get_postgresql_session` helper family?
+- Does G2.317 correctly record PR `#469` as accepted/merged at `be512826ca7ba60d9609ddf9035522c1f863907c`?
+- Does G2.317 classify `data_source_config.get_config_manager` as an already-providerized route surface with `0` route-body direct calls, `1` provider backing call, and `9` `Depends(get_config_manager_dependency)` bindings?
+- Does G2.317 preserve route/OpenAPI `548/500/0` and record GitNexus CLI `HIGH` / direct `9` / affected processes `3` for the backing helper?
+- Does future PR `#470` avoid source authorization and select only G2.318 no-source residual candidate refresh?
