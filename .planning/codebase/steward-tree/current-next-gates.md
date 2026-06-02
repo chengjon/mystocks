@@ -5,8 +5,8 @@
 ## Status
 
 - Status: active gate register
-- Prepared at: `2026-06-02T09:19:03+08:00`
-- Base HEAD checked: `033813cde66cffa55124f7434b3b0aeb45454e5d`
+- Prepared at: `2026-06-02T23:50:34+08:00`
+- Base HEAD checked: `40f36c573e41aa9ba1a4d07abe603b0080cf1181`
 
 Boundary note: this file records gates. It does not authorize code changes,
 issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
@@ -15,7 +15,8 @@ issue label changes, OpenSpec proposal creation, PM2 commands, or PR merges.
 
 | Priority | Gate | Owner lane | Status | Next action |
 |---|---|---|---|---|
-| P0 | Review G2.320 watchlist DataSourceFactory provider authorization preflight | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#472` merged at `033813cde66cffa55124f7434b3b0aeb45454e5d`; G2.320 bounds future G2.321 to `web/backend/app/api/watchlist.py` plus `tests/api/file_tests/test_watchlist_api.py`, forbids shared DataSourceFactory edits, preserves route/OpenAPI `548/500/0`, and requires human review before any source merge | Review future PR `#473`; if accepted, stop before G2.321 source implementation unless the maintainer explicitly approves that source lane |
+| P0 | Review G2.321 watchlist DataSourceFactory provider implementation | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#473` merged at `40f36c573e41aa9ba1a4d07abe603b0080cf1181`; G2.321 moves the eight authorized `watchlist.py` handlers to `Depends(get_watchlist_data_source)`, keeps route/OpenAPI `548/500/0`, and records focused test `22 passed` | Review future PR `#474`; because it changes backend source/tests, do not auto-merge |
+| P0 | Preserve G2.320 watchlist DataSourceFactory provider authorization preflight | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#473` merged at `40f36c573e41aa9ba1a4d07abe603b0080cf1181`; G2.320 bounds future G2.321 to `web/backend/app/api/watchlist.py` plus `tests/api/file_tests/test_watchlist_api.py`, forbids shared DataSourceFactory edits, preserves route/OpenAPI `548/500/0`, and requires human review before any source merge | Do not use G2.320 to edit DataSourceFactory or to auto-merge G2.321 |
 | P0 | Preserve G2.319 `watchlist.py` DataSourceFactory ownership / route-provider decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#472` merged at `033813cde66cffa55124f7434b3b0aeb45454e5d`; G2.319 records `15` active watchlist routes, `8` route-body `DataSourceFactory()` constructions, `8` `get_data_source("watchlist")` calls, `8` adapter `get_data(...)` calls, route/OpenAPI `548/500/0`, and GitNexus `get_data_source` ambiguity | Do not use G2.319 as source implementation authority; use G2.320 only as no-source provider authorization preflight |
 | P0 | Preserve G2.318 service lifecycle residual refresh after `data_source_config` | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#471` merged at `366739062b43f1e49aef892c0a20b7f9d068e0cb`; G2.318 retains the `data_source_config.get_config_manager` HIGH-risk backing seam, records refreshed route/OpenAPI `548/500/0`, scans `371` Python files, records `194` active route-body getter groups, and selects `watchlist.py` DataSourceFactory seam for G2.319 | Do not use G2.318 as source implementation authority; use G2.319 only as no-source ownership / route-provider decision |
 | P0 | Preserve G2.317 `data_source_config.get_config_manager` ownership / provider seam decision | G/#79 service lifecycle DI + Route/OpenAPI governance | PR `#470` merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`; G2.317 records 9 active data-source config routes already bound to `Depends(get_config_manager_dependency)`, route-body direct `get_config_manager()` calls `0`, provider backing calls `1`, route/OpenAPI `548/500/0`, and GitNexus CLI `HIGH` / direct `9` / affected processes `3` for the backing helper | Do not use G2.317 as source implementation authority; use G2.318 only as no-source residual refresh |

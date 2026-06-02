@@ -3548,9 +3548,10 @@ Status: accepted / merged by PR `#472`.
 
 ## G2.320 Watchlist DataSourceFactory Provider Authorization Preflight
 
-Status: for review in future PR `#473`.
+Status: accepted / merged by PR `#473`.
 
 - Parent PR `#472` merged at `033813cde66cffa55124f7434b3b0aeb45454e5d`.
+- PR `#473` merged at `40f36c573e41aa9ba1a4d07abe603b0080cf1181`.
 - G2.320 is a no-source provider authorization preflight. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - It preserves the G2.319 route/OpenAPI snapshot: `548` FastAPI routes, `500` OpenAPI paths, and duplicate operation ID warnings `0`.
 - It bounds the GitNexus same-name ambiguity by forbidding future edits to `web/backend/app/services/data_source_factory/**`, `src/factories/**`, and other `get_data_source` candidate modules.
@@ -3558,3 +3559,17 @@ Status: for review in future PR `#473`.
 - The future implementation shape is route-local provider wiring for the eight affected watchlist handlers only; DataSourceFactory and `DataSourceFactory.get_data_source` remain shared backing infrastructure.
 - G2.321 must run fresh pre-edit GitNexus impact/context, focused watchlist tests, ruff, route/OpenAPI smoke, staged GitNexus verification, and the mainline scope gate.
 - Stop rule: G2.321 is a backend source/test lane and must stop for human review before merge; limited autopilot must not merge it automatically.
+
+## G2.321 Watchlist DataSourceFactory Provider Implementation
+
+Status: for review in future PR `#474`.
+
+- Parent PR `#473` merged at `40f36c573e41aa9ba1a4d07abe603b0080cf1181`.
+- G2.321 is a path-limited source implementation. It changes only `web/backend/app/api/watchlist.py`, `tests/api/file_tests/test_watchlist_api.py`, and governance evidence.
+- `watchlist.py` now defines `get_watchlist_data_source()` as the route-local provider backing seam.
+- Eight authorized watchlist handlers now receive `watchlist_adapter` via `Depends(get_watchlist_data_source)`.
+- Handler-body direct `DataSourceFactory()` calls are `0`; handler-body direct `get_data_source(...)` calls are `0`; provider backing calls are `1` / `1`.
+- Focused test evidence: RED failed with missing `get_watchlist_data_source`; GREEN focused test passed; full focused file test passed with `22 passed`.
+- Ruff passed on touched source/test files.
+- Route/OpenAPI/provider smoke records `548` FastAPI routes, `500` OpenAPI paths, duplicate operation ID warnings `0`, `15` watchlist routes, and `8` `watchlist_adapter` dependency parameters.
+- Stop rule: PR `#474` changes backend source/tests and must stop for human review before merge; limited autopilot must not merge it automatically.

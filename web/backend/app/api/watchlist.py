@@ -4,7 +4,7 @@
 """
 
 import re
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from fastapi import APIRouter, Body, Depends, Path
 from pydantic import BaseModel, Field, field_validator
@@ -28,6 +28,11 @@ WATCHLIST_ROUTE_RESPONSES = {
 }
 
 router = APIRouter(tags=["watchlist"], responses=WATCHLIST_ROUTE_RESPONSES)
+
+
+async def get_watchlist_data_source() -> Any:
+    data_source_factory = DataSourceFactory()
+    return await data_source_factory.get_data_source("watchlist")
 
 
 from web.backend.app.api._watchlist_responses import (
@@ -197,15 +202,12 @@ class MoveStockRequest(BaseModel):
 )
 async def get_my_watchlist(
     current_user: User = Depends(get_current_user),
+    watchlist_adapter: Any = Depends(get_watchlist_data_source),
 ) -> List[Dict]:
     """
     获取当前用户的自选股列表
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        watchlist_adapter = await data_source_factory.get_data_source("watchlist")
-
         params = {"user_id": current_user.id, "action": "list"}
 
         result = await watchlist_adapter.get_data("list", params)
@@ -235,15 +237,12 @@ async def get_my_watchlist(
 )
 async def get_my_watchlist_symbols(
     current_user: User = Depends(get_current_user),
+    watchlist_adapter: Any = Depends(get_watchlist_data_source),
 ) -> List[str]:
     """
     获取当前用户的自选股代码列表
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        watchlist_adapter = await data_source_factory.get_data_source("watchlist")
-
         params = {"user_id": current_user.id, "action": "symbols"}
 
         result = await watchlist_adapter.get_data("symbols", params)
@@ -274,6 +273,7 @@ async def get_my_watchlist_symbols(
 async def add_to_watchlist(
     request: AddWatchlistRequest = Body(..., openapi_examples=WATCHLIST_ADD_REQUEST_EXAMPLES),
     current_user: User = Depends(get_current_user),
+    watchlist_adapter: Any = Depends(get_watchlist_data_source),
 ) -> Dict:
     """
     添加股票到自选股列表
@@ -281,10 +281,6 @@ async def add_to_watchlist(
     如果提供 group_name 且分组不存在，会自动创建
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        watchlist_adapter = await data_source_factory.get_data_source("watchlist")
-
         params = {
             "user_id": current_user.id,
             "symbol": request.symbol,
@@ -325,15 +321,12 @@ async def add_to_watchlist(
 async def remove_from_watchlist(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
+    watchlist_adapter: Any = Depends(get_watchlist_data_source),
 ) -> Dict:
     """
     从自选股列表中删除股票
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        watchlist_adapter = await data_source_factory.get_data_source("watchlist")
-
         params = {"user_id": current_user.id, "symbol": symbol, "action": "remove"}
 
         result = await watchlist_adapter.get_data("remove", params)
@@ -356,15 +349,12 @@ async def remove_from_watchlist(
 async def check_in_watchlist(
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
+    watchlist_adapter: Any = Depends(get_watchlist_data_source),
 ) -> Dict:
     """
     检查股票是否在自选股列表中
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        watchlist_adapter = await data_source_factory.get_data_source("watchlist")
-
         params = {"user_id": current_user.id, "symbol": symbol, "action": "check"}
 
         result = await watchlist_adapter.get_data("check", params)
@@ -391,15 +381,12 @@ async def update_watchlist_notes(
     request: UpdateWatchlistNotesRequest = Body(..., openapi_examples=WATCHLIST_NOTES_REQUEST_EXAMPLES),
     symbol: str = Path(..., description="股票代码", min_length=1, max_length=20, pattern=r"^[A-Z0-9.]+$"),
     current_user: User = Depends(get_current_user),
+    watchlist_adapter: Any = Depends(get_watchlist_data_source),
 ) -> Dict:
     """
     更新自选股备注
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        watchlist_adapter = await data_source_factory.get_data_source("watchlist")
-
         params = {"user_id": current_user.id, "symbol": symbol, "notes": request.notes, "action": "update_notes"}
 
         result = await watchlist_adapter.get_data("update_notes", params)
@@ -419,15 +406,14 @@ async def update_watchlist_notes(
     description="获取当前用户自选股总数，可用于首页统计卡、容量提示和自选池规模监控。",
     responses=WATCHLIST_COUNT_RESPONSES,
 )
-async def get_watchlist_count(current_user: User = Depends(get_current_user)) -> Dict:
+async def get_watchlist_count(
+    current_user: User = Depends(get_current_user),
+    watchlist_adapter: Any = Depends(get_watchlist_data_source),
+) -> Dict:
     """
     获取自选股数量
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        watchlist_adapter = await data_source_factory.get_data_source("watchlist")
-
         params = {"user_id": current_user.id, "action": "count"}
 
         result = await watchlist_adapter.get_data("count", params)
@@ -453,15 +439,14 @@ async def get_watchlist_count(current_user: User = Depends(get_current_user)) ->
     description="清空当前登录用户的全部自选股记录，常用于重建观察池或批量重置个人配置。",
     responses=WATCHLIST_CLEAR_RESPONSES,
 )
-async def clear_watchlist(current_user: User = Depends(get_current_user)) -> Dict:
+async def clear_watchlist(
+    current_user: User = Depends(get_current_user),
+    watchlist_adapter: Any = Depends(get_watchlist_data_source),
+) -> Dict:
     """
     清空当前用户的自选股列表
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        watchlist_adapter = await data_source_factory.get_data_source("watchlist")
-
         params = {"user_id": current_user.id, "action": "clear"}
 
         result = await watchlist_adapter.get_data("clear", params)
