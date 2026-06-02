@@ -3519,9 +3519,10 @@ Status: accepted / merged by PR `#470`.
 
 ## G2.318 Service Lifecycle Residual Refresh After Data Source Config
 
-Status: for review in future PR `#471`.
+Status: accepted / merged by PR `#471`.
 
 - Parent PR `#470` merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`.
+- PR `#471` merged at `366739062b43f1e49aef892c0a20b7f9d068e0cb`.
 - G2.318 is a no-source residual candidate refresh. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
 - G2.318 retains `data_source_config.get_config_manager` as a high-risk backing seam and does not reopen its source path.
 - Residual scan records `371` Python files, `96` active API modules, `736` getter definitions, `194` active route-body getter groups, and route/OpenAPI `548/500/0`.
@@ -3529,3 +3530,17 @@ Status: for review in future PR `#471`.
 - GitNexus MCP impact for the next target family failed with `Transport closed`; CLI fallback for `get_data_source` is ambiguous with `8` candidates and `UNKNOWN` risk.
 - G2.318 selects only G2.319 no-source `watchlist` DataSourceFactory ownership / route-provider decision. G2.319 must disambiguate DataSourceFactory impact before any authorization package or source lane.
 - Stop rule: G2.318 must not be used as source implementation authority or as authorization to edit `watchlist.py`, DataSourceFactory, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+
+## G2.319 Watchlist DataSourceFactory Ownership / Route-Provider Decision
+
+Status: for review in future PR `#472`.
+
+- Parent PR `#471` merged at `366739062b43f1e49aef892c0a20b7f9d068e0cb`.
+- G2.319 is a no-source ownership / route-provider decision. It does not edit backend source, tests, route contracts, docs/api artifacts, frontend, config, scripts, OpenSpec, PM2, or runtime state.
+- `web/backend/app/api/watchlist.py` is an active route module with `15` registered routes.
+- Eight watchlist route handlers construct `DataSourceFactory()` in the route body, call `get_data_source("watchlist")`, then call adapter `get_data(...)`.
+- The likely target is `web/backend/app/services/data_source_factory/data_source_factory.py:DataSourceFactory.get_data_source`, inferred from `from app.services.data_source_factory import DataSourceFactory`.
+- GitNexus MCP context and impact both failed with `Transport closed`; CLI fallback for `get_data_source` is ambiguous across `8` candidates and reports `UNKNOWN` risk.
+- Decision: classify this as an active route-local DataSourceFactory adapter seam, but do not authorize implementation until exact impact is resolved or explicitly bounded.
+- Next gate: G2.320 no-source watchlist DataSourceFactory impact-disambiguation / provider authorization preflight.
+- Stop rule: G2.319 must not be used as source implementation authority or as authorization to edit `watchlist.py`, DataSourceFactory, route contracts, OpenAPI artifacts, tests, docs/api, frontend, config, scripts, OpenSpec, PM2, or runtime state.

@@ -5,8 +5,8 @@
 ## Status
 
 - Status: summarized completed ledger
-- Prepared at: `2026-06-02T08:55:44+08:00`
-- Base HEAD checked: `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`
+- Prepared at: `2026-06-02T09:07:10+08:00`
+- Base HEAD checked: `366739062b43f1e49aef892c0a20b7f9d068e0cb`
 
 Boundary note: this ledger summarizes accepted or reviewed work. Use the
 archived full tree for exhaustive older G2 rows and the relevant PR/report for
@@ -19,7 +19,7 @@ exact verification output.
 | Route/OpenAPI and control-plane governance | Established route table, OpenAPI exposure, health/probe taxonomy, and consumer-contract evidence as first-class governance facts | Continue through route/OpenAPI track, not ad hoc route edits |
 | Core split / wrapper governance | Completed early low-risk wrapper migration and held Batch 2 behind explicit reconciliation gates | Keep Batch 2 blocked until the shared evidence and Task 3.2 gates are explicit |
 | Error contract migration | Canonical API error path became the active route error contract after P3-C5 completion evidence | Treat as closed unless current HEAD contradicts completion evidence |
-| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.317 accepted/merged by PR `#470` at `b51afb8c`; continue with G2.318 no-source residual refresh |
+| Service lifecycle DI conveyor | Proven candidate classification, authorization, implementation, closeout, and residual refresh pattern across multiple services; G2.318 accepted/merged by PR `#471` at `3667390`; continue with G2.319 no-source ownership / route-provider decision |
 | Strategy route/provider residuals | Route provider, backtest resolver, adapter wrapper, and canonical adapter provider decisions narrowed residual `get_strategy_service` surfaces | G2.178 merged by PR `#331`; G2.180 merged by PR `#333`; G2.181 merged by PR `#334`; G2.182 merged by PR `#335`; G2.183 merged by PR `#336` and closes the current Strategy getter residual track with retained residuals |
 | Non-Strategy provider governance queue | Next-candidate selection moved remaining provider-shaped residuals out of direct implementation candidacy | G2.184-G2.301 have progressed through PR `#337`-`#454`; current review target is G2.302 admin optimization provider authorization in future PR `#455` |
 | Steward-tree practice learning | Retrospective and practice guide captured the need for machine-readable state and split documents | This branch implements the split and JSON index |
@@ -28,6 +28,7 @@ exact verification output.
 
 | Item | Accepted evidence | Follow-up |
 |---|---|---|
+| G2.318 service lifecycle residual refresh after data_source_config | PR `#471` merged at `366739062b43f1e49aef892c0a20b7f9d068e0cb`; generated refresh evidence records data-source config retained seam, route/OpenAPI `548/500/0`, `371` Python files scanned, `194` active route-body getter groups, and selected `watchlist.py` DataSourceFactory seam for G2.319 | G2.319 decides watchlist DataSourceFactory ownership without authorizing source edits |
 | G2.317 data_source_config `get_config_manager` ownership / provider seam decision | PR `#470` merged at `b51afb8c3bfd371eaa6838877d8fb0df8fe11bbd`; generated decision evidence records 9 active data-source config routes already providerized, route-body direct calls `0`, provider backing call `1`, route/OpenAPI `548/500/0`, and GitNexus CLI `HIGH` / direct `9` / affected processes `3` for the retained backing helper | G2.318 refreshes residual candidates and selects the next no-source decision target |
 | G2.316 indicator_registry `get_factory` provider closeout / residual refresh | PR `#469` merged at `be512826ca7ba60d9609ddf9035522c1f863907c`; generated closeout evidence records route-body direct `get_factory()` calls `0`, provider backing calls `1`, dependency bindings `3`, focused test `11 passed`, route/OpenAPI `548/500/0`, and selected next candidate `data_source_config.get_config_manager` with GitNexus CLI `HIGH` | G2.317 decides the data-source config backing/provider seam without authorizing source edits |
 | G2.315 indicator_registry `get_factory` provider implementation | PR `#468` merged at `8b09c714784ce90a1a8b1fe938e5904a81110094`; generated implementation evidence records route-body direct `get_factory()` calls `0`, provider backing calls `1`, dependency bindings `3`, focused test `11 passed`, route/OpenAPI `548/500/0`, and GitNexus staged low risk / `0` affected processes | G2.316 no-source closeout / residual refresh records closure and selects the next no-source decision target |
