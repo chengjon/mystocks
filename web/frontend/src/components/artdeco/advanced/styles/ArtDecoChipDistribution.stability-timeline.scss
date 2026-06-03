@@ -1,0 +1,87 @@
+    .chip-stability-analysis {
+        .stability-analysis {
+            .stability-timeline {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .timeline-chart {
+                    height: var(--chip-chart-height-sm);
+                    background: var(--artdeco-bg-card);
+                    border: 1px solid var(--artdeco-border-default);
+                    border-radius: var(--artdeco-radius-md);
+                    padding: var(--artdeco-spacing-4);
+                    position: relative;
+                    overflow: hidden;
+
+                    // 几何装饰
+                    @include artdeco-geometric-corners(
+                        $color: var(--artdeco-gold-primary),
+                        $size: var(--chip-marker-md),
+                        $border-width: 1px
+                    );
+
+                    .timeline-visualization {
+                        position: relative;
+                        width: 100%;
+                        height: 100%;
+
+                        .timeline-axis {
+                            .time-points {
+                                display: flex;
+                                justify-content: space-between;
+                                margin-bottom: var(--artdeco-spacing-2);
+
+                                .time-point {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    text-transform: uppercase;
+                                    letter-spacing: var(--artdeco-tracking-wide);
+                                }
+                            }
+                        }
+
+                        .timeline-line {
+                            position: relative;
+                            height: var(--chip-gauge-size);
+                            border-left: 1px solid var(--artdeco-border-default);
+                            border-bottom: 1px solid var(--artdeco-border-default);
+
+                            .stability-points {
+                                position: relative;
+                                width: 100%;
+                                height: 100%;
+
+                                .stability-point {
+                                    position: absolute;
+                                    width: var(--chip-marker-sm);
+                                    height: var(--chip-marker-sm);
+                                    background: var(--artdeco-gold-primary);
+                                    border: var(--chip-line-thin) solid var(--artdeco-fg-primary);
+                                    border-radius: 50%;
+                                    transform: translate(-50%, -50%);
+                                    box-shadow: 0 0 var(--chip-radius-sm) color-mix(in srgb, var(--artdeco-warning) 50%, transparent);
+                                    transition: all var(--artdeco-transition-base);
+
+                                    &:hover {
+                                        width: var(--chip-marker-md);
+                                        height: var(--chip-marker-md);
+                                        z-index: 10;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }

@@ -1,0 +1,77 @@
+    .chip-stability-analysis {
+        .stability-analysis {
+            .stability-insights {
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .insights-list {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(var(--chip-wide-min-width), 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .insight-item {
+                        display: flex;
+                        gap: var(--artdeco-spacing-3);
+                        padding: var(--artdeco-spacing-4);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: var(--chip-radius-sm);
+                        transition: all var(--artdeco-transition-base);
+
+                        &.stable {
+                            border-left: var(--chip-accent-width) solid var(--artdeco-up);
+                        }
+
+                        &.unstable {
+                            border-left: var(--chip-accent-width) solid var(--artdeco-down);
+                        }
+
+                        &.neutral {
+                            border-left: var(--chip-accent-width) solid var(--artdeco-fg-muted);
+                        }
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 var(--chip-glow-md) var(--artdeco-gold-opacity-10);
+                        }
+
+                        .insight-icon {
+                            flex-shrink: 0;
+                            width: var(--chip-icon-glyph-size);
+                            height: var(--chip-icon-glyph-size);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--artdeco-fg-primary);
+                        }
+
+                        .insight-content {
+                            flex: 1;
+
+                            .insight-title {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-md);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                                margin-bottom: var(--artdeco-spacing-1);
+                            }
+
+                            .insight-description {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-sm);
+                                color: var(--artdeco-fg-secondary);
+                                line-height: 1.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
