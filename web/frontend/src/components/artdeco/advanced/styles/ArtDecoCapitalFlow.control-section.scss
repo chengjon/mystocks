@@ -1,0 +1,51 @@
+    // ============================================
+    //   MAIN FORCE CONTROL - 主力控盘能力
+    // ============================================
+
+    .mainforce-control {
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--artdeco-spacing-4);
+
+            .header-icon {
+                width: var(--capital-flow-section-icon-size);
+                height: var(--capital-flow-section-icon-size);
+                background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-secondary));
+                border-radius: var(--capital-flow-panel-radius);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--artdeco-bg-dark);
+
+                svg {
+                    width: var(--capital-flow-section-icon-glyph-size);
+                    height: var(--capital-flow-section-icon-glyph-size);
+                }
+            }
+
+            .header-content {
+                flex: 1;
+                margin-left: var(--artdeco-spacing-4);
+
+                h4 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-lg);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-1) 0;
+                }
+
+                p {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-font-size-xs);
+                    color: var(--artdeco-fg-muted);
+                    margin: 0;
+                    letter-spacing: var(--artdeco-tracking-normal);
+                }
+            }
+        }
+    }

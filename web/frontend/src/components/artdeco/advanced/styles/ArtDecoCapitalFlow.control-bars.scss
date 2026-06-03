@@ -1,0 +1,59 @@
+    .mainforce-control {
+        .control-analysis {
+            .control-metrics {
+                .metric-grid {
+                    .metric-item {
+                        .metric-chart {
+                            .concentration-bars {
+                                display: flex;
+                                flex-direction: column;
+                                gap: var(--artdeco-spacing-3);
+
+                                .concentration-bar {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: var(--artdeco-spacing-3);
+
+                                    .bar-label {
+                                        font-family: var(--artdeco-font-body);
+                                        font-size: var(--artdeco-font-size-sm);
+                                        color: var(--artdeco-fg-primary);
+                                        font-weight: 600;
+                                        min-width: var(--capital-flow-progress-min-width);
+                                    }
+
+                                    .bar-container {
+                                        flex: 1;
+                                        height: var(--capital-flow-legend-height);
+                                        background: var(--artdeco-bg-muted);
+                                        border-radius: var(--capital-flow-corner-sm);
+                                        overflow: hidden;
+
+                                        .bar-fill {
+                                            height: 100%;
+                                            background: linear-gradient(
+                                                90deg,
+                                                var(--artdeco-gold-primary),
+                                                var(--artdeco-gold-secondary)
+                                            );
+                                            border-radius: var(--capital-flow-corner-sm);
+                                            transition: width var(--artdeco-transition-base);
+                                        }
+                                    }
+
+                                    .bar-value {
+                                        font-family: var(--artdeco-font-mono);
+                                        font-size: var(--artdeco-font-size-sm);
+                                        color: var(--artdeco-fg-muted);
+                                        font-weight: 600;
+                                        min-width: var(--capital-flow-control-score-min-width);
+                                        text-align: right;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
