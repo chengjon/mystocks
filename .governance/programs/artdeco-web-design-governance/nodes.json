@@ -3731,5 +3731,104 @@
       "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
       "prepared_at": "2026-06-03T08:31:01.080Z"
     }
+  },
+  {
+    "id": "artdeco-filterbar-vue-style-extract",
+    "title": "Extract ArtDecoFilterBar scoped style to component-local SCSS",
+    "node_type": "implementation",
+    "owner_lane": "frontend",
+    "parent": "artdeco-large-file-cleanup",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/components/artdeco/business/ArtDecoFilterBar.vue",
+    "current_head": "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "HEAD=33deaa9fc; ArtDecoFilterBar.vue is clean, 502 lines, with trailing inline scoped SCSS body 185 lines; style extraction estimated Vue line count 314, reducing one Vue large-file violation.",
+        "note": "Mechanical SFC scoped style externalization only",
+        "current_head": "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7",
+        "recorded_at": "2026-06-03T08:47:12.608Z"
+      },
+      {
+        "kind": "structural",
+        "path": "GitNexus local analyze completed with 230,762 nodes / 316,268 edges / 300 flows. File node exists for ArtDecoFilterBar.vue; SFC component target impact not_found, so risk is controlled as file-level style-only migration. No route/API/runtime edits planned.",
+        "note": "GitNexus evidence recorded",
+        "current_head": "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7",
+        "recorded_at": "2026-06-03T08:47:12.651Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-filterbar-vue-style-extract.yaml",
+      "web/frontend/src/components/artdeco/business/ArtDecoFilterBar.vue",
+      "web/frontend/src/components/artdeco/business/styles/ArtDecoFilterBar.scss",
+      "docs/reports/tasks/2026-06-03-artdeco-filterbar-vue-style-extract-report.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify router route definitions, aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code.",
+      "Do not change Vue/TypeScript runtime logic, data fetching, computed state, template structure, component props, emits, or public component API.",
+      "Do not extract shared components, redesign visuals, change ArtDeco token values, or touch unrelated dirty files such as .planning, Tdx.scss, BacktestGPU, Screener, or existing user-modified pages."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-03T08:46:57.553Z",
+    "updated_at": "2026-06-03T08:58:27.803Z",
+    "acceptance": {
+      "commit_gate": [
+        "Exact style preservation check passes by comparing new SCSS against HEAD inline scoped style body.",
+        "ArtDecoFilterBar.vue is under 500 lines and frontend Vue-file >500 count decreases by one.",
+        "Function Tree scope-check, git diff --check, changed-file ArtDeco token checks, frontend build:no-types, local gitnexus analyze, staged detect_changes, PM2 status, and allow-list staging pass."
+      ],
+      "closeout_gate": [
+        "Report documents line-count delta, scoped-style preservation, non-goals, validation evidence, GitNexus evidence, and PM2 status."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing this ArtDeco large-file cleanup line; scope limited to style-only externalization.",
+        "current_head": "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7",
+        "transitioned_at": "2026-06-03T08:47:47.828Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation bound to HEAD 33deaa9fc and allowed paths only.",
+        "current_head": "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7",
+        "transitioned_at": "2026-06-03T08:48:13.444Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation completed inside authorized scope; validation evidence recorded in task report.",
+        "current_head": "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7",
+        "transitioned_at": "2026-06-03T08:57:49.448Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closed after report-backed validation and scoped style extraction.",
+        "current_head": "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7",
+        "transitioned_at": "2026-06-03T08:58:27.802Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-03-artdeco-filterbar-vue-style-extract-report.md",
+      "compatibility": "Style-only SFC extraction preserved scoped semantics via style src; no router/API/OpenAPI/frontend API client/runtime/template/component API/shared component/visual design changes.",
+      "gates": [
+        "Exact style preservation passed",
+        "ArtDecoFilterBar.vue 502 -> 316 lines and Vue/TS/TSX >500 count 34 -> 33",
+        "scope-check, git diff --check, changed-file ArtDeco token checks, build:no-types, local gitnexus analyze, and PM2 status passed"
+      ],
+      "current_head": "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7",
+      "prepared_at": "2026-06-03T08:58:08.457Z"
+    }
   }
 ]

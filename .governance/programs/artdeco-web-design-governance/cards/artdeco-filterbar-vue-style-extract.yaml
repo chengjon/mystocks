@@ -1,0 +1,32 @@
+task:
+  id: "artdeco-filterbar-vue-style-extract"
+  title: "Extract ArtDecoFilterBar scoped style to component-local SCSS"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-filterbar-vue-style-extract.yaml"
+    - "web/frontend/src/components/artdeco/business/ArtDecoFilterBar.vue"
+    - "web/frontend/src/components/artdeco/business/styles/ArtDecoFilterBar.scss"
+    - "docs/reports/tasks/2026-06-03-artdeco-filterbar-vue-style-extract-report.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify router route definitions, aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code."
+  - "Do not change Vue/TypeScript runtime logic, data fetching, computed state, template structure, component props, emits, or public component API."
+  - "Do not extract shared components, redesign visuals, change ArtDeco token values, or touch unrelated dirty files such as .planning, Tdx.scss, BacktestGPU, Screener, or existing user-modified pages."
+
+acceptance:
+  commit_gate:
+    - "Exact style preservation check passes by comparing new SCSS against HEAD inline scoped style body."
+    - "ArtDecoFilterBar.vue is under 500 lines and frontend Vue-file >500 count decreases by one."
+    - "Function Tree scope-check, git diff --check, changed-file ArtDeco token checks, frontend build:no-types, local gitnexus analyze, staged detect_changes, PM2 status, and allow-list staging pass."
+  closeout_gate:
+    - "Report documents line-count delta, scoped-style preservation, non-goals, validation evidence, GitNexus evidence, and PM2 status."
+
+evidence:
+  current_head: "33deaa9fca17b7c7bb14808e6ab24047fe6db3d7"
+  notes: []
