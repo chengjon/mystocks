@@ -1,0 +1,37 @@
+task:
+  id: "artdeco-batch-analysis-view-scss-semantic-split"
+  title: "Split ArtDecoBatchAnalysisView SCSS partials by semantic role"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-batch-analysis-view-scss-semantic-split.yaml"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.layout.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.progress.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.results.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.report.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.responsive.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.controls.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.panels.scss"
+    - "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.charts.scss"
+    - "docs/reports/tasks/2026-06-03-artdeco-batch-analysis-view-scss-semantic-split-report.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify Vue templates, scripts, props, emits, slots, route definitions, route aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code."
+  - "Do not change visual token values, ArtDeco token definitions, layout behavior, runtime state, data fetching, computed logic, or component public API."
+  - "Do not extract global/shared components, migrate market/LHB.vue route header shell, alter the /market/technical header-shell constraints, reactivate archive surfaces, or touch unrelated dirty files."
+
+acceptance:
+  commit_gate:
+    - "Only authorized paths may be staged; SCSS import graph must remain complete; ArtDeco token checks, build:no-types, local GitNexus staged verification, PM2 status, and Function Tree scope-check must pass or be explicitly reported."
+  closeout_gate:
+    - "Report semantic split map, line-count deltas, import order, user constraints, GitNexus evidence, validation commands, PM2 status, and E2E/vue-tsc not-run rationale."
+
+evidence:
+  current_head: "81743a773cf3ef3286277354e7bbeb40a627ef1d"
+  notes: []

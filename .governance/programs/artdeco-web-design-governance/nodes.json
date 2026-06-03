@@ -4246,5 +4246,121 @@
       "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
       "prepared_at": "2026-06-03T14:50:20.438Z"
     }
+  },
+  {
+    "id": "artdeco-batch-analysis-view-scss-semantic-split",
+    "title": "Split ArtDecoBatchAnalysisView SCSS partials by semantic role",
+    "node_type": "implementation",
+    "owner_lane": "frontend",
+    "parent": "artdeco-large-file-cleanup",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.scss",
+    "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "HEAD=81743a773; ArtDecoBatchAnalysisView.scss is a 6-line facade importing layout/progress/results/report/responsive partials. Current partial line counts: layout 32, progress 311, results 243, report 198, responsive 113. Target is semantic SCSS split by layout / controls / panels / charts, not Vue runtime changes.",
+        "note": "BatchAnalysisView facade and partial size baseline",
+        "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+        "recorded_at": "2026-06-03T15:14:56.123Z"
+      },
+      {
+        "kind": "structural",
+        "path": "User constraints for this line: next priority is ArtDecoBatchAnalysisView.scss semantic split by layout / controls / panels / charts; route header migration remains unchanged and only /market/technical is allowed under existing constraints; market/LHB.vue stays pending and must not be migrated first; archive splits remain style-slimming only, with no archive activation and no global shared component extraction.",
+        "note": "User follow-up constraints for continued ArtDeco cleanup",
+        "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+        "recorded_at": "2026-06-03T15:15:07.812Z"
+      },
+      {
+        "kind": "structural",
+        "path": "GitNexus MCP impact could not resolve ArtDecoBatchAnalysisView for the SCSS facade/partials and reported not_found/stale; this task remains style-only. Final gate must use local gitnexus analyze plus staged detect/verify after changes.",
+        "note": "GitNexus symbol-resolution limitation for SCSS partial split",
+        "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+        "recorded_at": "2026-06-03T15:15:32.422Z"
+      },
+      {
+        "kind": "runtime",
+        "path": "Semantic split implemented: facade imports layout, controls, panels, charts, responsive; old progress/results/report partials removed from import graph and files; current line counts are facade 6, layout 44, controls 179, panels 325, charts 263, responsive 113. No Vue/template/script/runtime/router/API/client changes.",
+        "note": "BatchAnalysisView semantic SCSS split implementation result",
+        "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+        "recorded_at": "2026-06-03T15:26:33.303Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-batch-analysis-view-scss-semantic-split.yaml",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.layout.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.progress.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.results.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.report.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.responsive.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.controls.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.panels.scss",
+      "web/frontend/src/components/artdeco/advanced/styles/ArtDecoBatchAnalysisView.charts.scss",
+      "docs/reports/tasks/2026-06-03-artdeco-batch-analysis-view-scss-semantic-split-report.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify Vue templates, scripts, props, emits, slots, route definitions, route aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code.",
+      "Do not change visual token values, ArtDeco token definitions, layout behavior, runtime state, data fetching, computed logic, or component public API.",
+      "Do not extract global/shared components, migrate market/LHB.vue route header shell, alter the /market/technical header-shell constraints, reactivate archive surfaces, or touch unrelated dirty files."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-03T15:14:42.039Z",
+    "updated_at": "2026-06-03T15:30:59.624Z",
+    "acceptance": {
+      "commit_gate": [
+        "Only authorized paths may be staged; SCSS import graph must remain complete; ArtDeco token checks, build:no-types, local GitNexus staged verification, PM2 status, and Function Tree scope-check must pass or be explicitly reported."
+      ],
+      "closeout_gate": [
+        "Report semantic split map, line-count deltas, import order, user constraints, GitNexus evidence, validation commands, PM2 status, and E2E/vue-tsc not-run rationale."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User explicitly approved continuing with ArtDecoBatchAnalysisView.scss semantic split by layout/control/panel/chart roles.",
+        "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+        "transitioned_at": "2026-06-03T15:16:02.823Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation bound to HEAD 81743a773 evidence and authorized SCSS/report/governance paths.",
+        "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+        "transitioned_at": "2026-06-03T15:16:13.051Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "ArtDecoBatchAnalysisView SCSS semantic split landed within authorized paths.",
+        "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+        "transitioned_at": "2026-06-03T15:30:32.562Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout complete for ArtDecoBatchAnalysisView SCSS semantic split.",
+        "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+        "transitioned_at": "2026-06-03T15:30:59.624Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-03-artdeco-batch-analysis-view-scss-semantic-split-report.md",
+      "compatibility": "SCSS-only semantic partial split; facade now imports layout/controls/panels/charts/responsive. No Vue template/script/runtime/router/API/OpenAPI/frontend API client/public component API/token value/header-shell/archive activation changes.",
+      "gates": [
+        "scope-check, scoped diff check, ArtDeco target-file token checks, build:no-types, and PM2 status passed; final local GitNexus staged gate required before commit."
+      ],
+      "current_head": "81743a773cf3ef3286277354e7bbeb40a627ef1d",
+      "prepared_at": "2026-06-03T15:30:48.215Z"
+    }
   }
 ]

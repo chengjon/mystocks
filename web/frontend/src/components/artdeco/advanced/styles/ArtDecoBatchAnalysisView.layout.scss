@@ -29,3 +29,15 @@
         grid-template-columns: repeat(auto-fit, minmax(var(--batch-overview-min), 1fr));
         gap: var(--artdeco-spacing-4);
     }
+
+    // ============================================
+    //   BATCH FEATURE LAYOUT SHELLS - 批量功能布局壳
+    // ============================================
+
+    .batch-progress {
+        .progress-dashboard {
+            display: grid;
+            grid-template-columns: var(--batch-dashboard-side) 1fr;
+            gap: var(--artdeco-spacing-5);
+        }
+    }
