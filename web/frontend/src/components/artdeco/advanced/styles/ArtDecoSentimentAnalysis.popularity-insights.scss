@@ -1,0 +1,65 @@
+    .popularity-indicators {
+        .popularity-analysis {
+            .popularity-insights {
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .insights-grid {
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(calc(var(--artdeco-spacing-32) + var(--artdeco-spacing-32) + var(--artdeco-spacing-10) + var(--artdeco-spacing-1)), 1fr));
+                    gap: var(--artdeco-spacing-4);
+
+                    .insight-card {
+                        display: flex;
+                        gap: var(--artdeco-spacing-3);
+                        padding: var(--artdeco-spacing-4);
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: calc(var(--artdeco-radius-md) - var(--artdeco-radius-sm));
+                        transition: all var(--artdeco-transition-base);
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px)) var(--artdeco-gold-opacity-10);
+                        }
+
+                        .insight-icon {
+                            flex-shrink: 0;
+                            width: var(--artdeco-spacing-8);
+                            height: var(--artdeco-spacing-8);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--artdeco-fg-primary);
+                        }
+
+                        .insight-content {
+                            flex: 1;
+
+                            .insight-title {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-md);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                                margin-bottom: var(--artdeco-spacing-1);
+                            }
+
+                            .insight-description {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-sm);
+                                color: var(--artdeco-fg-secondary);
+                                line-height: 1.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }

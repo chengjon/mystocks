@@ -1,0 +1,59 @@
+    .popularity-indicators {
+        .popularity-analysis {
+            .popularity-metrics {
+                .metrics-grid {
+                    .metric-item {
+                        .metric-chart {
+                            .discussion-bars {
+                                display: flex;
+                                flex-direction: column;
+                                gap: var(--artdeco-spacing-3);
+
+                                .discussion-bar {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: var(--artdeco-spacing-3);
+
+                                    .bar-label {
+                                        font-family: var(--artdeco-font-body);
+                                        font-size: var(--artdeco-font-size-sm);
+                                        color: var(--artdeco-fg-primary);
+                                        font-weight: 600;
+                                        min-width: var(--artdeco-spacing-20);
+                                    }
+
+                                    .bar-container {
+                                        flex: 1;
+                                        height: var(--artdeco-spacing-3);
+                                        background: var(--artdeco-bg-muted);
+                                        border-radius: calc(var(--artdeco-radius-md) - var(--artdeco-radius-sm));
+                                        overflow: hidden;
+
+                                        .bar-fill {
+                                            height: 100%;
+                                            background: linear-gradient(
+                                                90deg,
+                                                var(--artdeco-gold-primary),
+                                                var(--artdeco-gold-secondary)
+                                            );
+                                            border-radius: calc(var(--artdeco-radius-md) - var(--artdeco-radius-sm));
+                                            transition: width var(--artdeco-transition-base);
+                                        }
+                                    }
+
+                                    .bar-value {
+                                        font-family: var(--artdeco-font-mono);
+                                        font-size: var(--artdeco-font-size-sm);
+                                        color: var(--artdeco-fg-muted);
+                                        font-weight: 600;
+                                        min-width: calc(var(--artdeco-spacing-12) + var(--artdeco-radius-sm));
+                                        text-align: right;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
