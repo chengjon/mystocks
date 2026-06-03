@@ -3464,5 +3464,89 @@
       "current_head": "8888b5c31119209e831a9c41e300abb6bc58717f",
       "prepared_at": "2026-06-03T02:49:24.845Z"
     }
+  },
+  {
+    "id": "risk-alerts-vue-style-extract",
+    "title": "Extract risk Alerts scoped style to view-local SCSS",
+    "node_type": "implementation",
+    "owner_lane": "frontend",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "FUNCTION_TREE.md > Web > ArtDeco design governance > Vue file-size cleanup",
+    "current_head": "dbf9b345aec04461f145ef4a0c3585645dcfc881",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "measurement",
+        "path": "Current measurement: web/frontend/src/views/risk/Alerts.vue is 771 lines; template 17 lines, script setup 324 lines, scoped SCSS style 287 lines. Extracting only the scoped style to a view-local SCSS file should reduce the Vue file below 500 lines without changing runtime logic.",
+        "note": "GitNexus impact LOW: direct=2, impacted=14, affected_processes=0. Local gitnexus analyze succeeded; MCP still reports stale metadata while fresh_for_staged_diff=true.",
+        "current_head": "dbf9b345aec04461f145ef4a0c3585645dcfc881",
+        "recorded_at": "2026-06-03T03:55:41.481Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/risk/Alerts.vue",
+      "web/frontend/src/views/risk/styles/Alerts.scss",
+      "docs/reports/tasks/2026-06-03-risk-alerts-vue-style-extract-report.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No router route changes, backend API changes, OpenAPI/schema changes, frontend API client changes, Vue/TS runtime behavior changes, shared component extraction, or visual redesign.",
+      "Do not touch other dirty risk pages or tests in web/frontend/src/views/risk; only Alerts.vue and its new view-local style file are in scope."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-03T03:55:29.430Z",
+    "updated_at": "2026-06-03T06:32:10.990Z",
+    "acceptance": {
+      "commit_gate": [
+        "Extract the existing scoped style body exactly into web/frontend/src/views/risk/styles/Alerts.scss and import it from Alerts.vue; prove extracted style body matches the original style body.",
+        "Run Function Tree scope-check, git diff --check, ArtDeco token check for changed files, web/frontend npm run build:no-types, local gitnexus analyze, and GitNexus staged detect_changes before commit."
+      ],
+      "closeout_gate": [
+        "Write report with line counts, style preservation evidence, non-goals, validation results, GitNexus status, and PM2 status."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User asked to continue the large-file cleanup line; this node is scoped to view-local style extraction only.",
+        "current_head": "dbf9b345aec04461f145ef4a0c3585645dcfc881",
+        "transitioned_at": "2026-06-03T03:56:04.198Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation will preserve scoped style content and leave script/template behavior unchanged.",
+        "current_head": "dbf9b345aec04461f145ef4a0c3585645dcfc881",
+        "transitioned_at": "2026-06-03T03:56:15.957Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Style extraction landed in working tree using SFC scoped style src; style body matches original inline scoped style.",
+        "current_head": "dbf9b345aec04461f145ef4a0c3585645dcfc881",
+        "transitioned_at": "2026-06-03T06:31:43.566Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout recorded and report ready for staged validation.",
+        "current_head": "dbf9b345aec04461f145ef4a0c3585645dcfc881",
+        "transitioned_at": "2026-06-03T06:32:10.990Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-03-risk-alerts-vue-style-extract-report.md",
+      "compatibility": "No router, backend API, OpenAPI/schema, frontend API client, Vue/TS runtime behavior, shared component extraction, visual redesign, or ArtDeco token value changes. Scoped style semantics preserved through SFC style src.",
+      "gates": [
+        "scope-check passed; style body matches original; git diff --check passed; ArtDeco token checks passed; build:no-types passed; Alerts.vue reduced below 500 lines."
+      ],
+      "current_head": "dbf9b345aec04461f145ef4a0c3585645dcfc881",
+      "prepared_at": "2026-06-03T06:31:55.430Z"
+    }
   }
 ]

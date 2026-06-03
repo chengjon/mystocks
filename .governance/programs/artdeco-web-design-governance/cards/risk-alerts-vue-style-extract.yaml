@@ -1,0 +1,26 @@
+task:
+  id: "risk-alerts-vue-style-extract"
+  title: "Extract risk Alerts scoped style to view-local SCSS"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/risk/Alerts.vue"
+    - "web/frontend/src/views/risk/styles/Alerts.scss"
+    - "docs/reports/tasks/2026-06-03-risk-alerts-vue-style-extract-report.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No router route changes, backend API changes, OpenAPI/schema changes, frontend API client changes, Vue/TS runtime behavior changes, shared component extraction, or visual redesign."
+  - "Do not touch other dirty risk pages or tests in web/frontend/src/views/risk; only Alerts.vue and its new view-local style file are in scope."
+
+acceptance:
+  commit_gate:
+    - "Extract the existing scoped style body exactly into web/frontend/src/views/risk/styles/Alerts.scss and import it from Alerts.vue; prove extracted style body matches the original style body."
+    - "Run Function Tree scope-check, git diff --check, ArtDeco token check for changed files, web/frontend npm run build:no-types, local gitnexus analyze, and GitNexus staged detect_changes before commit."
+  closeout_gate:
+    - "Write report with line counts, style preservation evidence, non-goals, validation results, GitNexus status, and PM2 status."
+
+evidence:
+  current_head: "dbf9b345aec04461f145ef4a0c3585645dcfc881"
+  notes: []
