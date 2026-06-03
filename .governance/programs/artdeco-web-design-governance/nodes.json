@@ -4137,5 +4137,114 @@
       "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
       "prepared_at": "2026-06-03T14:23:21.234Z"
     }
+  },
+  {
+    "id": "artdeco-base-layout-archive-vue-style-extract",
+    "title": "Extract archive ArtDecoBaseLayout scoped style to layout-local SCSS",
+    "node_type": "implementation",
+    "owner_lane": "frontend",
+    "parent": "artdeco-large-file-cleanup",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/layouts/archive/ArtDecoBaseLayout.vue",
+    "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "HEAD=749bfe640; web/frontend/src/layouts/archive/ArtDecoBaseLayout.vue is clean, 789 lines, with trailing inline scoped SCSS body 552 lines; style extraction estimated Vue line count 238, reducing one Vue large-file violation. Path is archive layout; scope is strictly style-only and does not reactivate or change archive runtime semantics.",
+        "note": "D1.4 archive layout style extraction facts",
+        "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+        "recorded_at": "2026-06-03T14:40:19.593Z"
+      },
+      {
+        "kind": "structural",
+        "path": "GitNexus MCP and local CLI impact could not resolve ArtDecoBaseLayout as an indexed symbol; local query did not match the archive file and index was stale after commit 749bfe640. Treat as archive SFC style-only cleanup: no router, route alias, layout registration, runtime/template/script/API/client/shared component changes.",
+        "note": "GitNexus not-found and archive blast-radius caveat",
+        "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+        "recorded_at": "2026-06-03T14:40:31.515Z"
+      },
+      {
+        "kind": "runtime",
+        "path": "ArtDecoBaseLayout.scss token gate exposed pre-existing archive layout px/color literals after extraction; literals were converted to equivalent ArtDeco token, calc(), rem, or color-mix expressions inside the authorized SCSS file only. No Vue script/template/props/emits/slots/router/API/client/shared component/archive activation changes.",
+        "note": "Token gate normalization after archive scoped-style extraction",
+        "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+        "recorded_at": "2026-06-03T14:49:01.341Z"
+      },
+      {
+        "kind": "runtime",
+        "path": "New layout-local SCSS is ignored by root .gitignore archive/ pattern because the target lives under web/frontend/src/layouts/archive. Commit must force-add the authorized SCSS path so ArtDecoBaseLayout.vue style src does not point at an untracked file. No .gitignore policy change.",
+        "note": "Archive style file requires force-add due existing ignore policy",
+        "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+        "recorded_at": "2026-06-03T14:52:05.943Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-base-layout-archive-vue-style-extract.yaml",
+      "web/frontend/src/layouts/archive/ArtDecoBaseLayout.vue",
+      "web/frontend/src/layouts/archive/styles/ArtDecoBaseLayout.scss",
+      "docs/reports/tasks/2026-06-03-artdeco-base-layout-archive-vue-style-extract-report.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify router route definitions, aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code.",
+      "Do not change Vue/TypeScript runtime logic, layout registration, archive semantics, template structure, component props, emits, slots, or public component API.",
+      "Do not extract shared components, redesign visuals, change ArtDeco token values, reactivate archive layouts, or touch unrelated dirty files such as tree.md, .planning, active views, BacktestGPU, Screener, Signals, or existing user-modified pages."
+    ],
+    "next_gate": "prepare decision or authorization",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-03T14:40:05.715Z",
+    "updated_at": "2026-06-03T14:52:05.943Z",
+    "acceptance": {
+      "commit_gate": [
+        "Only authorized paths may be staged; scoped style extraction must preserve style semantics; git diff --check, changed-file ArtDeco token checks, build:no-types, local GitNexus staged verification, PM2 status, and Function Tree scope-check must pass or be explicitly reported."
+      ],
+      "closeout_gate": [
+        "Report line-count delta, archive positioning, scoped-style preservation/token handling, GitNexus evidence, non-goals, validation commands, PM2 status, and E2E/vue-tsc not-run rationale."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing the ArtDeco SCSS large-file cleanup line; scope is archive layout style-only and exact-path bounded.",
+        "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+        "transitioned_at": "2026-06-03T14:41:02.075Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation bound to HEAD 749bfe640 evidence and authorized exact paths.",
+        "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+        "transitioned_at": "2026-06-03T14:41:13.227Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Archive layout scoped style extraction and token-gate normalization landed within authorized paths.",
+        "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+        "transitioned_at": "2026-06-03T14:50:05.693Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout complete for archive ArtDecoBaseLayout scoped style extraction.",
+        "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+        "transitioned_at": "2026-06-03T14:50:31.519Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-03-artdeco-base-layout-archive-vue-style-extract-report.md",
+      "compatibility": "Style-only archive SFC extraction preserved scoped semantics through style src; extracted archive SCSS literals were normalized to equivalent token/rem/color-mix expressions. No router/API/OpenAPI/frontend API client/runtime/template/component API/shared component/archive activation/token value changes.",
+      "gates": [
+        "scope-check, scoped diff check, ArtDeco target-file token checks, build:no-types, and PM2 status passed; GitNexus impact/query could not resolve archive SFC and was documented."
+      ],
+      "current_head": "749bfe640c77ead2ab4a14496cbeb1607ce2388f",
+      "prepared_at": "2026-06-03T14:50:20.438Z"
+    }
   }
 ]

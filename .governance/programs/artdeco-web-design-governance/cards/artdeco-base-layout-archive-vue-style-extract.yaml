@@ -1,0 +1,30 @@
+task:
+  id: "artdeco-base-layout-archive-vue-style-extract"
+  title: "Extract archive ArtDecoBaseLayout scoped style to layout-local SCSS"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-base-layout-archive-vue-style-extract.yaml"
+    - "web/frontend/src/layouts/archive/ArtDecoBaseLayout.vue"
+    - "web/frontend/src/layouts/archive/styles/ArtDecoBaseLayout.scss"
+    - "docs/reports/tasks/2026-06-03-artdeco-base-layout-archive-vue-style-extract-report.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify router route definitions, aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code."
+  - "Do not change Vue/TypeScript runtime logic, layout registration, archive semantics, template structure, component props, emits, slots, or public component API."
+  - "Do not extract shared components, redesign visuals, change ArtDeco token values, reactivate archive layouts, or touch unrelated dirty files such as tree.md, .planning, active views, BacktestGPU, Screener, Signals, or existing user-modified pages."
+
+acceptance:
+  commit_gate:
+    - "Only authorized paths may be staged; scoped style extraction must preserve style semantics; git diff --check, changed-file ArtDeco token checks, build:no-types, local GitNexus staged verification, PM2 status, and Function Tree scope-check must pass or be explicitly reported."
+  closeout_gate:
+    - "Report line-count delta, archive positioning, scoped-style preservation/token handling, GitNexus evidence, non-goals, validation commands, PM2 status, and E2E/vue-tsc not-run rationale."
+
+evidence:
+  current_head: "749bfe640c77ead2ab4a14496cbeb1607ce2388f"
+  notes: []
