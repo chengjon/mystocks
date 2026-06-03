@@ -3548,5 +3548,89 @@
       "current_head": "dbf9b345aec04461f145ef4a0c3585645dcfc881",
       "prepared_at": "2026-06-03T06:31:55.430Z"
     }
+  },
+  {
+    "id": "trade-center-vue-style-extract",
+    "title": "Extract trade Center scoped style to view-local SCSS",
+    "node_type": "implementation",
+    "owner_lane": "frontend",
+    "parent": "",
+    "status": "closed",
+    "function_tree_ref": "FUNCTION_TREE.md > Web > ArtDeco design governance > Vue file-size cleanup",
+    "current_head": "7befe996eaff170fc1bb77613ae7cc93f4a54a58",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "measurement",
+        "path": "Current measurement: web/frontend/src/views/trade/Center.vue is 847 lines; script setup 268 lines, template 23 lines, scoped SCSS style block 357 lines. Extracting only the scoped style to view-local trade/styles/Center.scss should reduce the Vue file below 500 lines without changing runtime logic.",
+        "note": "GitNexus impact LOW: direct=4, impacted=7, affected_processes=0. Local gitnexus analyze succeeded; MCP still reports stale metadata.",
+        "current_head": "7befe996eaff170fc1bb77613ae7cc93f4a54a58",
+        "recorded_at": "2026-06-03T06:55:54.680Z"
+      }
+    ],
+    "allowed_paths": [
+      "web/frontend/src/views/trade/Center.vue",
+      "web/frontend/src/views/trade/styles/Center.scss",
+      "docs/reports/tasks/2026-06-03-trade-center-vue-style-extract-report.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "No router route changes, backend API changes, OpenAPI/schema changes, frontend API client changes, Vue/TS runtime behavior changes, shared component extraction, visual redesign, or ArtDeco token value changes.",
+      "Do not touch other dirty files or trade pages; only Center.vue and its new view-local style file are in source scope."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-03T06:55:34.768Z",
+    "updated_at": "2026-06-03T07:01:10.894Z",
+    "acceptance": {
+      "commit_gate": [
+        "Extract the existing scoped style body exactly into web/frontend/src/views/trade/styles/Center.scss and reference it through SFC scoped style src; prove extracted style body matches the original style body.",
+        "Run Function Tree scope-check, git diff --check, ArtDeco token check for changed files, web/frontend npm run build:no-types, local gitnexus analyze, and GitNexus staged detect_changes before commit."
+      ],
+      "closeout_gate": [
+        "Write report with line counts, style preservation evidence, non-goals, validation results, GitNexus status, and PM2 status."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User asked to continue the large-file cleanup line; this node is scoped to view-local style extraction only.",
+        "current_head": "7befe996eaff170fc1bb77613ae7cc93f4a54a58",
+        "transitioned_at": "2026-06-03T06:56:24.809Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation will preserve scoped style content through SFC style src and leave script/template behavior unchanged.",
+        "current_head": "7befe996eaff170fc1bb77613ae7cc93f4a54a58",
+        "transitioned_at": "2026-06-03T06:56:35.918Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Style extraction landed in working tree using SFC scoped style src; style body matches original inline scoped style.",
+        "current_head": "7befe996eaff170fc1bb77613ae7cc93f4a54a58",
+        "transitioned_at": "2026-06-03T07:00:49.294Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout recorded and report ready for staged validation.",
+        "current_head": "7befe996eaff170fc1bb77613ae7cc93f4a54a58",
+        "transitioned_at": "2026-06-03T07:01:10.893Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-03-trade-center-vue-style-extract-report.md",
+      "compatibility": "No router, backend API, OpenAPI/schema, frontend API client, Vue/TS runtime behavior, shared component extraction, visual redesign, or ArtDeco token value changes. Scoped style semantics preserved through SFC style src.",
+      "gates": [
+        "scope-check passed; style body matches original; git diff --check passed; ArtDeco token checks passed; build:no-types passed; Center.vue reduced below 500 lines."
+      ],
+      "current_head": "7befe996eaff170fc1bb77613ae7cc93f4a54a58",
+      "prepared_at": "2026-06-03T07:00:59.771Z"
+    }
   }
 ]

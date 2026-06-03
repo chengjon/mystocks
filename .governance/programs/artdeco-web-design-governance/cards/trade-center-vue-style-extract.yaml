@@ -1,0 +1,26 @@
+task:
+  id: "trade-center-vue-style-extract"
+  title: "Extract trade Center scoped style to view-local SCSS"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/views/trade/Center.vue"
+    - "web/frontend/src/views/trade/styles/Center.scss"
+    - "docs/reports/tasks/2026-06-03-trade-center-vue-style-extract-report.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No router route changes, backend API changes, OpenAPI/schema changes, frontend API client changes, Vue/TS runtime behavior changes, shared component extraction, visual redesign, or ArtDeco token value changes."
+  - "Do not touch other dirty files or trade pages; only Center.vue and its new view-local style file are in source scope."
+
+acceptance:
+  commit_gate:
+    - "Extract the existing scoped style body exactly into web/frontend/src/views/trade/styles/Center.scss and reference it through SFC scoped style src; prove extracted style body matches the original style body."
+    - "Run Function Tree scope-check, git diff --check, ArtDeco token check for changed files, web/frontend npm run build:no-types, local gitnexus analyze, and GitNexus staged detect_changes before commit."
+  closeout_gate:
+    - "Write report with line counts, style preservation evidence, non-goals, validation results, GitNexus status, and PM2 status."
+
+evidence:
+  current_head: "7befe996eaff170fc1bb77613ae7cc93f4a54a58"
+  notes: []
