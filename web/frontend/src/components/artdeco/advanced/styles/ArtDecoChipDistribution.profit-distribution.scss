@@ -1,0 +1,102 @@
+    .chip-profit-analysis {
+        .profit-analysis {
+            .profit-distribution {
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .distribution-zones {
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--artdeco-spacing-3);
+
+                    .distribution-zone {
+                        background: var(--artdeco-bg-card);
+                        border: 1px solid var(--artdeco-border-default);
+                        border-radius: var(--chip-radius-sm);
+                        padding: var(--artdeco-spacing-3);
+                        transition: all var(--artdeco-transition-base);
+
+                        &:hover {
+                            border-color: var(--artdeco-gold-primary);
+                            box-shadow: 0 0 var(--chip-glow-md) var(--artdeco-gold-opacity-10);
+                        }
+
+                        .zone-header {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: var(--artdeco-spacing-2);
+
+                            .zone-range {
+                                font-family: var(--artdeco-font-body);
+                                font-size: var(--artdeco-font-size-sm);
+                                font-weight: 600;
+                                color: var(--artdeco-fg-primary);
+                            }
+
+                            .zone-count {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-sm);
+                                color: var(--artdeco-fg-muted);
+                            }
+
+                            .zone-percentage {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-sm);
+                                font-weight: 600;
+                                color: var(--artdeco-gold-primary);
+                            }
+                        }
+
+                        .zone-bar {
+                            height: var(--chip-bar-height);
+                            background: var(--artdeco-bg-muted);
+                            border-radius: var(--artdeco-spacing-1);
+                            overflow: hidden;
+
+                            .zone-fill {
+                                height: 100%;
+                                border-radius: var(--artdeco-spacing-1);
+                                transition: width var(--artdeco-transition-base);
+
+                                &.loss-zone-fill {
+                                    background: linear-gradient(90deg, var(--artdeco-down), color-mix(in srgb, var(--artdeco-down) 60%, transparent));
+                                }
+
+                                &.small-profit-fill {
+                                    background: linear-gradient(90deg, var(--artdeco-warning), color-mix(in srgb, var(--artdeco-warning) 60%, transparent));
+                                }
+
+                                &.medium-profit-fill {
+                                    background: linear-gradient(
+                                        90deg,
+                                        var(--artdeco-gold-primary),
+                                        color-mix(in srgb, var(--artdeco-warning) 60%, transparent)
+                                    );
+                                }
+
+                                &.large-profit-fill {
+                                    background: linear-gradient(90deg, var(--artdeco-up), color-mix(in srgb, var(--artdeco-up) 60%, transparent));
+                                }
+
+                                &.neutral-zone-fill {
+                                    background: linear-gradient(
+                                        90deg,
+                                        var(--artdeco-fg-muted),
+                                        color-mix(in srgb, var(--artdeco-fg-muted) 60%, transparent)
+                                    );
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }

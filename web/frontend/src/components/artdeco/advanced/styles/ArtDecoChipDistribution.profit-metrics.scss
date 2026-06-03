@@ -1,0 +1,106 @@
+    .chip-profit-analysis {
+        .profit-analysis {
+            .profit-metrics {
+                margin-bottom: var(--artdeco-spacing-5);
+
+                .metric-grid {
+                    display: grid;
+                    grid-template-columns: 1fr 1fr;
+                    gap: var(--artdeco-spacing-5);
+
+                    .metric-item {
+                        .metric-label {
+                            font-family: var(--artdeco-font-display);
+                            font-size: var(--artdeco-font-size-md);
+                            font-weight: 600;
+                            color: var(--artdeco-gold-primary);
+                            text-transform: uppercase;
+                            letter-spacing: var(--artdeco-tracking-wide);
+                            margin: 0 0 var(--artdeco-spacing-4) 0;
+                        }
+
+                        .metric-chart {
+                            height: var(--chip-chart-height-sm);
+                            background: var(--artdeco-bg-card);
+                            border: 1px solid var(--artdeco-border-default);
+                            border-radius: var(--artdeco-radius-md);
+                            padding: var(--artdeco-spacing-4);
+                            position: relative;
+                            overflow: hidden;
+
+                            // 几何装饰
+                            @include artdeco-geometric-corners(
+                                $color: var(--artdeco-gold-primary),
+                                $size: var(--chip-marker-md),
+                                $border-width: 1px
+                            );
+
+                            .profit-gauge {
+                                position: relative;
+                                width: var(--chip-gauge-size);
+                                height: var(--chip-gauge-size);
+                                margin: 0 auto;
+
+                                .gauge-background {
+                                    position: relative;
+                                    width: 100%;
+                                    height: 100%;
+                                    border-radius: 50%;
+                                    background: conic-gradient(
+                                        from 0deg,
+                                        color-mix(in srgb, var(--artdeco-down) 20%, transparent) 0deg,
+                                        color-mix(in srgb, var(--artdeco-warning) 40%, transparent) 90deg,
+                                        color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg,
+                                        color-mix(in srgb, var(--artdeco-up) 60%, transparent) 180deg
+                                    );
+
+                                    .gauge-fill {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                        border-radius: 50%;
+                                        background: conic-gradient(
+                                            from 0deg,
+                                            transparent 0deg,
+                                            transparent 180deg,
+                                            color-mix(in srgb, var(--artdeco-up) 80%, transparent) 180deg,
+                                            color-mix(in srgb, var(--artdeco-up) 80%, transparent) 360deg
+                                        );
+                                        clip-path: polygon(50% 50%, 50% 0%, 100% 0%, 100% 100%);
+                                        transition: transform var(--artdeco-transition-base);
+                                    }
+                                }
+
+                                .gauge-center {
+                                    position: absolute;
+                                    top: 50%;
+                                    left: 50%;
+                                    transform: translate(-50%, -50%);
+                                    text-align: center;
+
+                                    .gauge-value {
+                                        font-family: var(--artdeco-font-mono);
+                                        font-size: var(--artdeco-font-size-xl);
+                                        font-weight: 600;
+                                        color: var(--artdeco-up);
+                                        display: block;
+                                        margin-bottom: var(--artdeco-spacing-1);
+                                    }
+
+                                    .gauge-label {
+                                        font-family: var(--artdeco-font-body);
+                                        font-size: var(--artdeco-font-size-xs);
+                                        color: var(--artdeco-fg-muted);
+                                        text-transform: uppercase;
+                                        letter-spacing: var(--artdeco-tracking-wide);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
