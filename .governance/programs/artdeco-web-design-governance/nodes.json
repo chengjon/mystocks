@@ -3632,5 +3632,104 @@
       "current_head": "7befe996eaff170fc1bb77613ae7cc93f4a54a58",
       "prepared_at": "2026-06-03T07:00:59.771Z"
     }
+  },
+  {
+    "id": "market-realtime-vue-style-extract",
+    "title": "Extract market Realtime scoped style to view-local SCSS",
+    "node_type": "implementation",
+    "owner_lane": "frontend",
+    "parent": "artdeco-large-file-cleanup",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/views/market/Realtime.vue",
+    "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "HEAD=33e8af754; Realtime.vue 654 lines with inline scoped SCSS body 263 lines; expected Vue line count below 500 after style src extraction; existing views/market/styles/Realtime.scss is unreferenced legacy/different content, so use RealtimePage.scss to avoid overwrite",
+        "note": "Mechanical SFC scoped style externalization only",
+        "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
+        "recorded_at": "2026-06-03T08:19:28.802Z"
+      },
+      {
+        "kind": "structural",
+        "path": "GitNexus refreshed with local gitnexus analyze; index stale=false/fresh_for_staged_diff=true; impact by file path and Realtime symbol not found, so blast radius is controlled as file-level style-only migration with UNKNOWN graph impact and no route/API/runtime edits",
+        "note": "GitNexus evidence recorded",
+        "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
+        "recorded_at": "2026-06-03T08:19:28.823Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/market-realtime-vue-style-extract.yaml",
+      "web/frontend/src/views/market/Realtime.vue",
+      "web/frontend/src/views/market/styles/RealtimePage.scss",
+      "docs/reports/tasks/2026-06-03-market-realtime-vue-style-extract-report.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify router route definitions, aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code.",
+      "Do not change Vue/TypeScript runtime logic, data fetching, computed state, template structure, component props, or emitted events.",
+      "Do not extract shared components, alter visual design, change ArtDeco token values, overwrite legacy styles/Realtime.scss, or touch unrelated deleted Tdx.scss / BacktestGPU worktree changes."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-03T08:19:11.510Z",
+    "updated_at": "2026-06-03T08:31:11.601Z",
+    "acceptance": {
+      "commit_gate": [
+        "Exact style preservation check passes by comparing new SCSS against HEAD inline scoped style body.",
+        "Realtime.vue is under 500 lines and frontend Vue/TS/TSX >500 count decreases by one.",
+        "Function Tree scope-check, git diff --check, changed-file ArtDeco token checks, frontend build:no-types, local gitnexus analyze, staged detect_changes, PM2 status, and allow-list staging pass."
+      ],
+      "closeout_gate": [
+        "Report documents line-count delta, RealtimePage.scss rationale, non-goals, validation evidence, GitNexus evidence, and PM2 status."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User has repeatedly approved continuing this ArtDeco large-file cleanup line; scope is limited to style-only externalization.",
+        "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
+        "transitioned_at": "2026-06-03T08:19:57.589Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation bound to HEAD 33e8af754 and allowed paths only.",
+        "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
+        "transitioned_at": "2026-06-03T08:20:05.202Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Implementation completed inside authorized scope; validation evidence recorded in task report.",
+        "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
+        "transitioned_at": "2026-06-03T08:30:47.750Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closed after report-backed validation and scoped style extraction.",
+        "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
+        "transitioned_at": "2026-06-03T08:31:11.601Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-03-market-realtime-vue-style-extract-report.md",
+      "compatibility": "Style-only SFC extraction preserved scoped semantics via style src; no router/API/OpenAPI/frontend API client/runtime/template/shared component/visual design changes.",
+      "gates": [
+        "Exact style preservation passed",
+        "Realtime.vue 654 -> 390 lines and Vue/TS/TSX >500 count 35 -> 34",
+        "scope-check, git diff --check, changed-file ArtDeco token checks, build:no-types, local gitnexus analyze, and PM2 status passed"
+      ],
+      "current_head": "33e8af754c815a1c1c3e1e49a7d5453881534cca",
+      "prepared_at": "2026-06-03T08:31:01.080Z"
+    }
   }
 ]

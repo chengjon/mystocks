@@ -1,0 +1,32 @@
+task:
+  id: "market-realtime-vue-style-extract"
+  title: "Extract market Realtime scoped style to view-local SCSS"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/market-realtime-vue-style-extract.yaml"
+    - "web/frontend/src/views/market/Realtime.vue"
+    - "web/frontend/src/views/market/styles/RealtimePage.scss"
+    - "docs/reports/tasks/2026-06-03-market-realtime-vue-style-extract-report.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify router route definitions, aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code."
+  - "Do not change Vue/TypeScript runtime logic, data fetching, computed state, template structure, component props, or emitted events."
+  - "Do not extract shared components, alter visual design, change ArtDeco token values, overwrite legacy styles/Realtime.scss, or touch unrelated deleted Tdx.scss / BacktestGPU worktree changes."
+
+acceptance:
+  commit_gate:
+    - "Exact style preservation check passes by comparing new SCSS against HEAD inline scoped style body."
+    - "Realtime.vue is under 500 lines and frontend Vue/TS/TSX >500 count decreases by one."
+    - "Function Tree scope-check, git diff --check, changed-file ArtDeco token checks, frontend build:no-types, local gitnexus analyze, staged detect_changes, PM2 status, and allow-list staging pass."
+  closeout_gate:
+    - "Report documents line-count delta, RealtimePage.scss rationale, non-goals, validation evidence, GitNexus evidence, and PM2 status."
+
+evidence:
+  current_head: "33e8af754c815a1c1c3e1e49a7d5453881534cca"
+  notes: []
