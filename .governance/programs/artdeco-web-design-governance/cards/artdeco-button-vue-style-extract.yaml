@@ -1,0 +1,30 @@
+task:
+  id: "artdeco-button-vue-style-extract"
+  title: "Extract ArtDecoButton scoped style to component-local SCSS"
+
+scope:
+  allowed_paths:
+    - ".governance/active-gates.json"
+    - ".governance/active-gates.md"
+    - ".governance/programs/artdeco-web-design-governance/nodes.json"
+    - ".governance/programs/artdeco-web-design-governance/cards/artdeco-button-vue-style-extract.yaml"
+    - "web/frontend/src/components/artdeco/base/ArtDecoButton.vue"
+    - "web/frontend/src/components/artdeco/base/styles/ArtDecoButton.scss"
+    - "docs/reports/tasks/2026-06-03-artdeco-button-vue-style-extract-report.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "Do not modify router route definitions, aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code."
+  - "Do not change Vue/TypeScript runtime logic, data fetching, computed state, template structure, component props, emits, slots, or public component API."
+  - "Do not extract shared components, redesign visuals, change ArtDeco token values, or touch unrelated dirty files such as .planning, Tdx.scss, BacktestGPU, Screener, Signals, or existing user-modified pages."
+
+acceptance:
+  commit_gate:
+    - "Only authorized paths may be staged; style body must match original exactly; git diff --check, changed-file ArtDeco token checks, build:no-types, local GitNexus staged verification, PM2 status, and Function Tree scope-check must pass."
+  closeout_gate:
+    - "Report line-count delta, scoped-style preservation, GitNexus MCP/CLI evidence, non-goals, validation commands, PM2 status, and E2E/vue-tsc not-run rationale."
+
+evidence:
+  current_head: "06b0fc09548774ba997784c878349c25087d7c88"
+  notes: []

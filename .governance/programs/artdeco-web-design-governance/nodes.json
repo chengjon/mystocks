@@ -4028,5 +4028,114 @@
       "current_head": "87c61da054cf91eb459da3c94c5156fd2900764b",
       "prepared_at": "2026-06-03T09:50:41.674Z"
     }
+  },
+  {
+    "id": "artdeco-button-vue-style-extract",
+    "title": "Extract ArtDecoButton scoped style to component-local SCSS",
+    "node_type": "implementation",
+    "owner_lane": "frontend",
+    "parent": "artdeco-large-file-cleanup",
+    "status": "closed",
+    "function_tree_ref": "web/frontend/src/components/artdeco/base/ArtDecoButton.vue",
+    "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+    "freshness": "current-head",
+    "source_edits_authorized": false,
+    "evidence": [
+      {
+        "kind": "baseline",
+        "path": "HEAD=06b0fc095; ArtDecoButton.vue is clean, 565 lines, with trailing inline scoped SCSS body 418 lines; style extraction estimated Vue line count 144, reducing one Vue large-file violation. Component has many consumers, so scope is strictly style-only with no props/emits/template/script/API changes.",
+        "note": "Mechanical SFC scoped style externalization only",
+        "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+        "recorded_at": "2026-06-03T12:17:39.740Z"
+      },
+      {
+        "kind": "baseline",
+        "path": "web/frontend/src/components/artdeco/base/ArtDecoButton.vue: 565 lines with 418-line trailing scoped SCSS body; expected Vue line count after extraction 144; file clean at HEAD 06b0fc095.",
+        "note": "D1.4 large-file candidate and mechanical scoped style extraction facts",
+        "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+        "recorded_at": "2026-06-03T12:24:43.764Z"
+      },
+      {
+        "kind": "structural",
+        "path": "GitNexus MCP impact returned Transport closed; local gitnexus impact ArtDecoButton ambiguous to docs-only candidates. Treat component as higher blast-radius base component and constrain implementation to exact style-body preservation with no runtime/template/API changes.",
+        "note": "GitNexus fallback and component blast-radius caveat",
+        "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+        "recorded_at": "2026-06-03T12:24:43.810Z"
+      },
+      {
+        "kind": "runtime",
+        "path": "ArtDecoButton.scss token gate exposed pre-existing inline style px literals after extraction; literals were converted to equivalent ArtDeco token/calc expressions inside the authorized SCSS file only. No Vue script/template/props/emits/slots/router/API/client changes.",
+        "note": "Token gate normalization after exact scoped-style extraction",
+        "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+        "recorded_at": "2026-06-03T14:11:35.858Z"
+      }
+    ],
+    "allowed_paths": [
+      ".governance/active-gates.json",
+      ".governance/active-gates.md",
+      ".governance/programs/artdeco-web-design-governance/nodes.json",
+      ".governance/programs/artdeco-web-design-governance/cards/artdeco-button-vue-style-extract.yaml",
+      "web/frontend/src/components/artdeco/base/ArtDecoButton.vue",
+      "web/frontend/src/components/artdeco/base/styles/ArtDecoButton.scss",
+      "docs/reports/tasks/2026-06-03-artdeco-button-vue-style-extract-report.md"
+    ],
+    "forbidden_paths": [],
+    "non_goals": [
+      "Do not modify router route definitions, aliases, navigation truth, backend API contracts, OpenAPI/schema, or frontend API client code.",
+      "Do not change Vue/TypeScript runtime logic, data fetching, computed state, template structure, component props, emits, slots, or public component API.",
+      "Do not extract shared components, redesign visuals, change ArtDeco token values, or touch unrelated dirty files such as .planning, Tdx.scss, BacktestGPU, Screener, Signals, or existing user-modified pages."
+    ],
+    "next_gate": "none",
+    "blocker_reason": null,
+    "unblock_target_state": null,
+    "created_at": "2026-06-03T12:17:20.006Z",
+    "updated_at": "2026-06-03T14:23:31.872Z",
+    "acceptance": {
+      "commit_gate": [
+        "Only authorized paths may be staged; style body must match original exactly; git diff --check, changed-file ArtDeco token checks, build:no-types, local GitNexus staged verification, PM2 status, and Function Tree scope-check must pass."
+      ],
+      "closeout_gate": [
+        "Report line-count delta, scoped-style preservation, GitNexus MCP/CLI evidence, non-goals, validation commands, PM2 status, and E2E/vue-tsc not-run rationale."
+      ]
+    },
+    "transitions": [
+      {
+        "from": "authorization-prepared",
+        "to": "approved-for-implementation",
+        "note": "User approved continuing the ArtDeco SCSS large-file cleanup line; exact-path scope is style-only with no router/API/client/runtime/component API changes.",
+        "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+        "transitioned_at": "2026-06-03T12:25:53.006Z"
+      },
+      {
+        "from": "approved-for-implementation",
+        "to": "implementation-ready",
+        "note": "Implementation is bound to HEAD 06b0fc095 evidence and authorized exact paths.",
+        "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+        "transitioned_at": "2026-06-03T12:25:53.052Z"
+      },
+      {
+        "from": "implementation-ready",
+        "to": "implementation-landed",
+        "note": "Scoped style extraction and token-gate normalization landed within authorized paths.",
+        "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+        "transitioned_at": "2026-06-03T14:23:10.372Z"
+      },
+      {
+        "from": "closeout-prepared",
+        "to": "closed",
+        "note": "Closeout complete for ArtDecoButton scoped style extraction.",
+        "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+        "transitioned_at": "2026-06-03T14:23:31.871Z"
+      }
+    ],
+    "closeout": {
+      "summary": "docs/reports/tasks/2026-06-03-artdeco-button-vue-style-extract-report.md",
+      "compatibility": "Style-only SFC extraction preserved scoped semantics through style src; token literals in extracted SCSS were normalized to equivalent token expressions. No router/API/OpenAPI/frontend API client/runtime/template/component API/shared component/visual redesign/token value changes.",
+      "gates": [
+        "scope-check, scoped diff check, ArtDeco target-file token checks, build:no-types, local gitnexus analyze, and PM2 status passed."
+      ],
+      "current_head": "06b0fc09548774ba997784c878349c25087d7c88",
+      "prepared_at": "2026-06-03T14:23:21.234Z"
+    }
   }
 ]
