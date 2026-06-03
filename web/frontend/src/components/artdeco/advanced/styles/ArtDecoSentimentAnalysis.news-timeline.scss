@@ -1,0 +1,90 @@
+
+    .news-sentiment {
+        .news-analysis {
+            .news-timeline {
+                h5 {
+                    font-family: var(--artdeco-font-display);
+                    font-size: var(--artdeco-font-size-md);
+                    font-weight: 600;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin: 0 0 var(--artdeco-spacing-4) 0;
+                }
+
+                .timeline-container {
+                    .timeline {
+                        position: relative;
+                        padding-left: var(--artdeco-spacing-4);
+
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            left: var(--artdeco-spacing-2);
+                            top: 0;
+                            bottom: 0;
+                            width: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
+                            background: var(--artdeco-gold-primary);
+                        }
+
+                        .timeline-item {
+                            position: relative;
+                            margin-bottom: var(--artdeco-spacing-4);
+                            padding-left: var(--artdeco-spacing-4);
+
+                            .timeline-dot {
+                                position: absolute;
+                                left: calc(var(--artdeco-spacing-0) - var(--artdeco-spacing-5));
+                                top: var(--artdeco-spacing-2);
+                                width: var(--artdeco-spacing-3);
+                                height: var(--artdeco-spacing-3);
+                                border-radius: 50%;
+                                border: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px)) solid var(--artdeco-fg-primary);
+                                box-shadow: 0 0 calc(var(--artdeco-radius-md) - var(--artdeco-radius-sm)) color-mix(in srgb, var(--artdeco-bg-dark) 30%, transparent);
+                            }
+
+                            .timeline-content {
+                                background: var(--artdeco-bg-card);
+                                border: 1px solid var(--artdeco-border-default);
+                                border-radius: calc(var(--artdeco-radius-md) - var(--artdeco-radius-sm));
+                                padding: var(--artdeco-spacing-3);
+
+                                &:hover {
+                                    border-color: var(--artdeco-gold-primary);
+                                    box-shadow: 0 0 calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px)) var(--artdeco-gold-opacity-10);
+                                }
+
+                                .news-title {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    font-weight: 600;
+                                    color: var(--artdeco-fg-primary);
+                                    margin-bottom: var(--artdeco-spacing-2);
+                                    line-height: 1.4;
+                                }
+
+                                .news-meta {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+
+                                    .news-source {
+                                        font-family: var(--artdeco-font-body);
+                                        font-size: var(--artdeco-font-size-xs);
+                                        color: var(--artdeco-fg-muted);
+                                        font-weight: 600;
+                                    }
+
+                                    .news-time {
+                                        font-family: var(--artdeco-font-mono);
+                                        font-size: var(--artdeco-font-size-xs);
+                                        color: var(--artdeco-fg-muted);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }

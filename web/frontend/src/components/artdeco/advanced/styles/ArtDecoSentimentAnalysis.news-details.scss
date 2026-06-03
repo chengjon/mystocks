@@ -1,0 +1,68 @@
+
+    .news-sentiment {
+        .news-analysis {
+            .sentiment-distribution {
+                .sentiment-details {
+                    .sentiment-list {
+                        display: flex;
+                        flex-direction: column;
+                        gap: var(--artdeco-spacing-3);
+
+                        .sentiment-item {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            padding: var(--artdeco-spacing-3);
+                            background: var(--artdeco-bg-card);
+                            border: 1px solid var(--artdeco-border-default);
+                            border-radius: calc(var(--artdeco-radius-md) - var(--artdeco-radius-sm));
+                            transition: all var(--artdeco-transition-base);
+
+                            &:hover {
+                                border-color: var(--artdeco-gold-primary);
+                                box-shadow: 0 0 calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px)) var(--artdeco-gold-opacity-10);
+                            }
+
+                            .sentiment-info {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--artdeco-spacing-3);
+
+                                .sentiment-color {
+                                    width: var(--artdeco-spacing-4);
+                                    height: var(--artdeco-spacing-4);
+                                    border-radius: calc(var(--artdeco-spacing-1) - var(--artdeco-spacing-px));
+                                }
+
+                                .sentiment-name {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    font-weight: 600;
+                                    color: var(--artdeco-fg-primary);
+                                }
+                            }
+
+                            .sentiment-stats {
+                                text-align: right;
+
+                                .stat-count {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    font-weight: 600;
+                                    color: var(--artdeco-fg-primary);
+                                    display: block;
+                                }
+
+                                .stat-percentage {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    display: block;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
