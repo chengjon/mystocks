@@ -1,0 +1,105 @@
+
+// ============================================
+//   MIXINS & UTILITIES - 混入和工具
+// ============================================
+
+// Hover lift effect (Art Deco architectural feel)
+@mixin artdeco-hover-lift {
+  transition: transform var(--artdeco-transition-base) var(--artdeco-ease-out),
+              box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--artdeco-shadow-xl), var(--artdeco-glow-intense);
+  }
+}
+
+// Gradient text (for headlines)
+@mixin artdeco-gradient-text {
+  background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-gold-hover));
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+// Corner brackets (Art Deco embellishments)
+@mixin artdeco-corner-brackets {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 20px;
+    height: 20px;
+    border-top: 2px solid var(--artdeco-gold-primary);
+    border-left: 2px solid var(--artdeco-gold-primary);
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 20px;
+    height: 20px;
+    border-bottom: 2px solid var(--artdeco-gold-primary);
+    border-right: 2px solid var(--artdeco-gold-primary);
+  }
+}
+
+// Stepped corners (ziggurat effect) - Art Deco signature
+@mixin artdeco-stepped-corners($size: 8px) {
+  clip-path: polygon(
+    0 0,
+    calc(100% - #{$size}) 0,
+    100% $size,
+    100% calc(100% - #{$size}),
+    calc(100% - #{$size}) 100%,
+    $size 100%,
+    0 calc(100% - #{$size})
+  );
+}
+
+// Geometric corners (L-shaped brackets) - Art Deco embellishments
+@mixin artdeco-geometric-corners($color: var(--artdeco-gold-primary), $size: 16px, $border-width: 2px) {
+}
+
+// Hover lift with glow (theatrical effect)
+@mixin artdeco-hover-lift-glow {
+  transition: transform var(--artdeco-transition-base) var(--artdeco-ease-out),
+              box-shadow var(--artdeco-transition-base) var(--artdeco-ease-out),
+              border-color var(--artdeco-transition-base) var(--artdeco-ease-out);
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--artdeco-shadow-xl), var(--artdeco-glow-intense);
+    border-color: var(--artdeco-gold-primary);
+  }
+}
+
+// Layout utilities
+@mixin artdeco-layout {
+  min-height: 100vh;
+  background: var(--artdeco-bg-global);
+  color: var(--artdeco-fg-primary);
+}
+
+@mixin artdeco-crosshatch-bg {
+  background: var(--artdeco-bg-global);
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 10px, rgb(212 175 55 / 2%) 10px, rgb(212 175 55 / 2%) 11px);
+}
+
+// Content spacing
+@mixin artdeco-content-spacing {
+  padding: var(--artdeco-spacing-xl);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+// Financial data display (monospace numbers)
+@mixin artdeco-financial-data {
+  font-family: var(--artdeco-font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}

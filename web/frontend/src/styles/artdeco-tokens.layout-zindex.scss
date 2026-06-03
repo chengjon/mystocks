@@ -1,0 +1,32 @@
+
+// ============================================
+//   BREAKPOINTS - 响应式断点
+//   基于HTML源文件的媒体查询
+// ============================================
+
+:root {
+  --artdeco-breakpoint-xs: 480px;   // 超小屏
+  --artdeco-breakpoint-sm: 640px;   // 小屏
+  --artdeco-breakpoint-md: 1024px;  // 中屏 (常见平板)
+  --artdeco-breakpoint-lg: 1280px;  // 大屏 (常见笔记本)
+  --artdeco-breakpoint-xl: 1536px;  // 超大屏 (桌面显示器)
+}
+
+// ============================================
+//   Z-INDEX - 层级系统
+// ============================================
+
+:root {
+  --artdeco-z-auto: auto;
+  --artdeco-z-0: 0;
+  --artdeco-z-10: 10;
+  --artdeco-z-20: 20;
+  --artdeco-z-30: 30;
+  --artdeco-z-40: 40;
+  --artdeco-z-50: 50;
+  --artdeco-z-fixed: 100; // ✨ 固定定位层级
+
+  // Sidebar Dimensions
+  --artdeco-sidebar-width: 260px;
+  --artdeco-sidebar-collapsed-width: 68px;
+}

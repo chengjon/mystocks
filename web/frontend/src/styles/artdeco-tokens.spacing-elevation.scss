@@ -1,0 +1,99 @@
+
+// ============================================
+//   SPACING - 间距系统
+//   13-step numbered scale from 4px to 128px, plus semantic aliases and compact tokens
+// ============================================
+
+:root {
+  --artdeco-spacing-px: 1px;
+  --artdeco-spacing-0: 0;
+  --artdeco-spacing-1: 0.25rem;    // 4px
+  --artdeco-spacing-2: 0.5rem;     // 8px
+  --artdeco-spacing-3: 0.75rem;    // 12px
+  --artdeco-spacing-4: 1rem;       // 16px
+  --artdeco-spacing-5: 1.25rem;    // 20px
+  --artdeco-spacing-6: 1.5rem;     // 24px
+  --artdeco-spacing-8: 2rem;       // 32px
+  --artdeco-spacing-10: 2.5rem;    // 40px
+  --artdeco-spacing-12: 3rem;      // 48px
+  --artdeco-spacing-16: 4rem;      // 64px
+--artdeco-spacing-20: 5rem;      // 80px
+--artdeco-spacing-24: 6rem;      // 96px
+--artdeco-spacing-32: 8rem;      // 128px
+
+// Additional convenience sizes
+--artdeco-spacing-sm: var(--artdeco-spacing-2);    // 8px
+--artdeco-spacing-md: var(--artdeco-spacing-4);    // 16px
+--artdeco-spacing-lg: var(--artdeco-spacing-6);    // 24px
+--artdeco-spacing-xl: var(--artdeco-spacing-8);    // 32px
+
+// ============================================
+//   COMPACT SPACING SYSTEM - 紧凑间距系统
+//   用于数据密集型页面（如 Dashboard）
+//   目标：提升信息密度 30%
+// ============================================
+
+// 紧凑间距变量
+--artdeco-spacing-compact-xs: 0.25rem;   // 4px - 最小间距
+--artdeco-spacing-compact-sm: 0.5rem;    // 8px - 小间距
+--artdeco-spacing-compact-md: 0.75rem;   // 12px - 中间距（卡片padding）
+--artdeco-spacing-compact-lg: 1rem;      // 16px - 大间距
+
+// 紧凑字体大小
+--artdeco-text-compact-xs: 0.6875rem;    // 11px - 极小标签
+--artdeco-text-compact-sm: 0.75rem;      // 12px - 小标签
+--artdeco-text-compact-base: 0.875rem;   // 14px - 正文
+--artdeco-text-compact-md: 1rem;         // 16px - 标题
+--artdeco-text-compact-lg: 1.125rem;     // 18px - 大标题
+}
+
+// ============================================
+//   RADIUS - 圆角系统
+//   Art Deco: Sharp lines, minimal curves
+// ============================================
+
+:root {
+  --artdeco-radius-none: 0px;      // 尖锐 - Art Deco标准
+  --artdeco-radius-sm: 2px;        // 最小软化
+  --artdeco-radius-md: 8px;        // 中等 - 卡片和容器
+  --artdeco-radius-lg: 12px;       // 大 - 特殊元素
+  --artdeco-radius-xl: 16px;       // 最大 - 英雄元素
+  --artdeco-radius-full: 9999px;   // 胶囊 - 按钮
+}
+
+// ============================================
+//   SHADOWS - 阴影系统
+//   Colored luminescence, not black drop shadows
+// ============================================
+
+:root {
+  --artdeco-shadow-none: 0 0 #0000;
+  --artdeco-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 5%);
+  --artdeco-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 10%), 0 2px 4px -1px rgb(0 0 0 / 6%);
+  --artdeco-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 10%), 0 4px 6px -2px rgb(0 0 0 / 5%);
+  --artdeco-shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 10%), 0 10px 10px -5px rgb(0 0 0 / 4%);
+
+  // Art Deco specific glows (gold-tinted)
+  --artdeco-glow-subtle: 0 0 15px rgb(212 175 55 / 20%);
+  --artdeco-glow-medium: 0 0 18px rgb(212 175 55 / 30%);
+  --artdeco-glow-intense: 0 0 20px rgb(212 175 55 / 40%);
+  --artdeco-glow-max: 0 0 30px rgb(212 175 55 / 60%);
+  --artdeco-glow-profit: 0 0 12px rgb(255 82 82 / 30%);
+  --artdeco-glow-loss: 0 0 12px rgb(0 230 118 / 30%);
+}
+
+// ============================================
+//   TRANSITIONS - 过渡系统
+//   Theatrical, not snappy
+// ============================================
+
+:root {
+  --artdeco-transition-quick: 200ms;        // 微交互（从150ms调整）
+  --artdeco-transition-base: 400ms;       // 标准（从300ms增加，更戏剧性）
+  --artdeco-transition-slow: 600ms;        // 慢速（从500ms增加）
+  --artdeco-transition-dramatic: 800ms;    // 戏剧性（新增，用于Hero元素）
+  --artdeco-ease-linear: linear;
+  --artdeco-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --artdeco-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --artdeco-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}

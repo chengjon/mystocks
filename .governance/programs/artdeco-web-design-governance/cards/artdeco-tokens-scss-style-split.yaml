@@ -1,0 +1,26 @@
+task:
+  id: "artdeco-tokens-scss-style-split"
+  title: "Split ArtDeco token SCSS facade"
+
+scope:
+  allowed_paths:
+    - "web/frontend/src/styles/artdeco-tokens.scss"
+    - "web/frontend/src/styles/artdeco-tokens.*.scss"
+    - "docs/reports/tasks/2026-06-03-artdeco-tokens-scss-style-split-report.md"
+  forbidden_paths:
+    []
+
+non_goals:
+  - "No router route changes, backend API changes, OpenAPI/schema changes, frontend API client changes, Vue/TS runtime logic changes, shared component extraction, or token value/semantic baseline changes."
+  - "Do not process nonexistent zhihu-inspired.scss or accessibility-enhancements.scss; accessibility-focus-enhancement.scss is below the 500-line SCSS limit and out of scope."
+
+acceptance:
+  commit_gate:
+    - "Reconstruct the original artdeco-tokens.scss body from the facade imports and prove exact body equality; every token partial and facade must be under 500 lines."
+    - "Run Function Tree scope-check, git diff --check, ArtDeco token check, web/frontend npm run build:no-types, local gitnexus analyze, and GitNexus staged detect_changes before commit."
+  closeout_gate:
+    - "Write the split report with line counts, preservation evidence, non-goals, GitNexus status, validation results, and PM2 service status."
+
+evidence:
+  current_head: "8888b5c31119209e831a9c41e300abb6bc58717f"
+  notes: []

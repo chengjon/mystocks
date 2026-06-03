@@ -1,0 +1,193 @@
+// ============================================
+//   ART DECO DESIGN TOKENS V3.0
+//   艺术装饰风格设计令牌 - 大胆金色金融配色
+//   ⭐ ArtDeco V3.0: 专家评估版，提升品牌识别度+200%
+// ============================================
+// Canonical runtime token truth for the active MyStocks ArtDeco system.
+// If legacy files disagree, this file wins unless the conflict is explicitly documented.
+
+// ⚡ 字体加载策略说明（2026-04-10）
+// 当前文件暂采用 @import 加载字体，并统一使用 display=swap。
+// 若迁移到 index.html <link rel="preconnect/preload"> 方案，需在本文件与治理文档同步更新，避免口径不一致。
+
+// Governance note (2026-04-01): typography truth is Cinzel + Barlow + JetBrains Mono.
+// Spacing truth is the 13-step numbered scale: 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20, 24, 32,
+// plus semantic aliases sm/md/lg/xl and compact spacing tokens.
+
+// ============================================
+//   COLORS - 颜色系统 V3.0
+//   Deep luxury palette: Obsidian black + Bold Gold Accents
+//   核心改进: 大胆使用ArtDeco金色作为核心品牌元素
+// ============================================
+
+// ============================================
+//   TYPOGRAPHY SYSTEM V3.0 - 字体系统 (Cinzel + Barlow + JetBrains Mono)
+//   ⭐ 专家评估版：完整字体体系，提升专业度+50%
+// ============================================
+
+// 字体加载 (从 Google Fonts，非阻塞)
+@import 'https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&display=swap';
+@import 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap';
+
+// ============================================
+//   COLORS - 颜色系统 V3.0
+//   Deep luxury palette: Obsidian black + Bold Gold Accents
+//   核心改进: 大胆使用ArtDeco金色作为核心品牌元素
+// ============================================
+
+:root {
+  // Backgrounds - 深黑背景系列
+  --artdeco-bg-global: #0A0A0A;        // 黑曜石黑 - 绝对最深
+  --artdeco-bg-base: #141414;         // 丰富的炭黑 - 表面
+  --artdeco-bg-card: #141414;         // 卡片背景
+  --artdeco-bg-elevated: #1a1a1a;     // 提升表面
+  --artdeco-bg-header: #111118;       // ✨ 侧边栏/顶部栏背景
+  --artdeco-bg-primary: var(--artdeco-bg-base); // 向后兼容别名
+
+  // Foregrounds - 浅色前景系列
+  --artdeco-fg-primary: #F2F0E4;      // 香槟奶油 - 主要文本
+  --artdeco-fg-muted: #A0A0A0;        // 锚色 - 次要文本（提升对比度，WCAG AA）
+  --artdeco-fg-subtle: rgb(255 255 255 / 60%); // 微妙 - 占位符
+  --artdeco-fg-secondary: var(--artdeco-fg-primary); // 向后兼容别名
+
+  // Accent - 金色强调系列 V3.0 (大阻使用，提升品牌识别度）
+  --artdeco-gold-primary: #D4AF37;    // ✨ 古典金 - 主品牌色（大幅增加使用）
+  --artdeco-gold-light: #F0E68C;     // ✨ 浅金 - Hover/高亮（金色系渐变过渡）
+  --artdeco-gold-hover: var(--artdeco-gold-light); // Hover alias
+  --artdeco-bronze: #CD7F32;        // ✨ 青铜色 - 次要强调
+  --artdeco-champagne: #F7E7CE;     // ✨ 香槟金 - 柔和背景
+  --artdeco-gold-dim: #8B7355;       // 暗金 - 优雅阴影
+
+  // Borders - 边界系列（UI Pro Max优化：提升透明度以改善可见性和无障碍性）
+  --artdeco-border-default: rgb(212 175 55 / 30%); // 默认边框（从20%提升到30%）
+  --artdeco-border-hover: rgb(212 175 55 / 100%);       // 悬停边框（提升到100%，完全可见）
+  --artdeco-border-accent: rgb(212 175 55 / 80%); // 强调边框
+  --artdeco-border-gold: #D4AF37;      // ✨ V3.0新增：金色边框（用于装饰性元素）
+
+  // Gold Opacity Variants - 金色透明度变体（用于侧边栏和悬停效果）
+  --artdeco-gold-opacity-05: rgb(212 175 55 / 5%);   // 背景点缀
+  --artdeco-gold-opacity-08: rgb(212 175 55 / 8%);   // 浅色背景
+  --artdeco-gold-opacity-10: rgb(212 175 55 / 10%);  // 边框透明
+  --artdeco-gold-opacity-15: rgb(212 175 55 / 15%);  // 悬停背景
+  --artdeco-gold-opacity-20: rgb(212 175 55 / 20%);  // 边框默认
+  --artdeco-gold-opacity-30: rgb(212 175 55 / 30%);  // 强调边框
+  --artdeco-gold-opacity-shadow: rgb(212 175 55 / 30%); // 阴影效果
+
+  // ============================================
+  //   FINANCIAL COLORS - 金融专用颜色 V3.0 (A股标准：红涨绿跌）
+  //   ⚠️ 重要：A股市场颜色约定与西方市场相反
+  //   - 红色 (#FF5252) = 上涨/正面 (涨) ✅
+  //   - 绿色 (#00E676) = 下跌/负面 (跌) ✅
+  //   - 灰色 (#B0B3B8) = 平盘/中性
+  // ============================================
+
+  // 涨跌颜色（A股标准 V3.0）
+  --artdeco-rise: #FF5252;           // ✨ 涨 - 红色（A股约定，更饱和提升可读性）
+  --artdeco-down: #00E676;           // ✨ 跌 - 绿色（A股约定，更饱和提升可读性）
+  --artdeco-flat: #B0B3B8;           // 平 - 灰色
+  --artdeco-up: var(--artdeco-rise); // 历史兼容别名
+
+  // 盈亏颜色（语义化别名）
+  --artdeco-profit: var(--artdeco-rise);   // 盈利 - 红色（与上涨一致）
+  --artdeco-loss: var(--artdeco-down);     // 亏损 - 绿色（与下跌一致）
+
+  // 状态颜色
+  --artdeco-warning: #D4AF37;        // ✨ 警告 - 古典金（复用品牌色）
+  --artdeco-info: #4FC3F7;           // 信息 - 天蓝
+  --artdeco-success: var(--artdeco-rise);  // 成功 - 红色（与上涨一致）
+  --artdeco-error: var(--artdeco-down);    // 错误 - 绿色（与下跌一致）
+
+  // ============================================
+  //   TYPOGRAPHY SYSTEM V3.0 - 字体系统 (Cinzel + Barlow + JetBrains Mono)
+  //   ⭐ 专家评估版：完整字体体系，提升专业度+50%
+  // ============================================
+
+  :root {
+    // Font Families with comprehensive fallbacks
+    --font-display: 'Cinzel', 'Playfair Display', serif;  // 标题字体 - ArtDeco几何衬线
+    --font-body: 'Barlow', 'Inter', sans-serif;     // 正文字体 - 现代无衬线
+    --font-mono: 'JetBrains Mono', 'Consolas', monospace; // 数字字体 - 等宽，代码对齐
+
+    // Font Sizes (ArtDeco dramatic contrast)
+    --artdeco-text-xs: 0.75rem;      // 12px - 标签
+    --artdeco-text-sm: 0.875rem;     // 14px - 辅助文本
+    --artdeco-text-base: 1rem;       // 16px - 正文
+    --artdeco-text-lg: 1.25rem;     // 20px - 小标题
+    --artdeco-text-xl: 1.5rem;      // 24px - 卡片标题
+    --artdeco-text-2xl: 1.875rem;    // 30px - 章分标题
+    --artdeco-text-3xl: 2.25rem;     // 36px - 大标题
+    --artdeco-text-4xl: 2.75rem;     // 44px - 英雄标题
+    --artdeco-text-5xl: 3.5rem;      // 48px - 史诗标题
+    --artdeco-text-6xl: 4rem;        // 64px - 戏剧性标题
+
+    // Font Weights
+    --artdeco-font-light: 400;
+    --artdeco-font-normal: 400;
+    --artdeco-font-medium: 500;
+    --artdeco-font-semibold: 600;
+    --artdeco-font-bold: 700;
+
+    // Line Heights
+    --artdeco-leading-none: 1;
+    --artdeco-leading-tight: 1.25;
+    --artdeco-leading-normal: 1.5;
+    --artdeco-leading-relaxed: 1.625;
+    --artdeco-leading-loose: 2;
+
+    // Letter Spacing (Art Deco wide tracking)
+    --artdeco-tracking-tighter: -0.05em;
+    --artdeco-tracking-tight: -0.025em;
+    --artdeco-tracking-normal: 0em;
+    --artdeco-tracking-wide: 0.025em;
+    --artdeco-tracking-wider: 0.05em;
+    --artdeco-tracking-widest: 0.1em;
+  }
+
+  // 应用字体到元素的示例
+  // 标题字体 - ArtDeco几何感，大写
+  h1, h2, h3, .logo, .section-title {
+    font-family: var(--font-display);
+    font-weight: var(--artdeco-font-semibold);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  // 正文字体 - 清晰易读
+  body, p, span, .body-text {
+    font-family: var(--font-body);
+    font-weight: var(--artdeco-font-normal);
+  }
+
+  // 数字字体 - 等宽对齐
+  .price, .percentage, .volume, .code {
+    font-family: var(--font-mono);
+    font-weight: var(--artdeco-font-medium);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ============================================
+  //   V3.0 BACKWARD COMPATIBILITY (向后兼容别名）
+  //   为保持向后兼容性，保留旧别名映射到新颜色
+  // ============================================
+
+  // 字体大小别名（保持组件兼容性）
+  --artdeco-font-size-xs: var(--artdeco-text-xs);
+  --artdeco-font-size-sm: var(--artdeco-text-sm);
+  --artdeco-font-size-base: var(--artdeco-text-base);
+  --artdeco-font-size-md: var(--artdeco-text-lg);
+  --artdeco-font-size-lg: var(--artdeco-text-xl);
+
+  // 字体家族别名（保持组件兼容性）
+  --artdeco-font-heading: var(--font-display);
+  --artdeco-font-body: var(--font-body);
+  --artdeco-font-accent: var(--font-mono);
+  --artdeco-font-display: var(--artdeco-font-heading);
+  --artdeco-font-mono: var(--artdeco-font-accent);
+
+  // 颜色别名（保持组件兼容性）
+  --artdeco-accent-gold: var(--artdeco-gold-primary);  // 旧代码兼容
+  --artdeco-silver-dim: var(--artdeco-fg-muted);      // 旧代码兼容
+  --artdeco-silver-light: var(--artdeco-fg-primary);    // 旧代码兼容
+  --artdeco-gold-border: var(--artdeco-border-gold);    // 旧代码兼容
+}
