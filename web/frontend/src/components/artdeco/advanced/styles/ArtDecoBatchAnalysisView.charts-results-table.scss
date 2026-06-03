@@ -1,0 +1,141 @@
+
+    .batch-results {
+        .results-content {
+            .results-list {
+                .results-table {
+                    .table-header {
+                        display: grid;
+                        grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+                        gap: var(--artdeco-spacing-4);
+                        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+                        background: linear-gradient(135deg, var(--artdeco-bg-muted), var(--artdeco-gold-opacity-05));
+                        border-bottom: 1px solid var(--artdeco-border-default);
+                        font-family: var(--artdeco-font-body);
+                        font-size: var(--artdeco-font-size-sm);
+                        font-weight: 600;
+                        color: var(--artdeco-fg-muted);
+                        text-transform: uppercase;
+                        letter-spacing: var(--artdeco-tracking-wide);
+                    }
+
+                    .table-body {
+                        .table-row {
+                            display: grid;
+                            grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+                            gap: var(--artdeco-spacing-4);
+                            padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+                            border-bottom: 1px solid var(--artdeco-gold-opacity-10);
+                            transition: all var(--artdeco-transition-base);
+
+                            &:hover {
+                                background: var(--artdeco-gold-opacity-02);
+                            }
+
+                            &.buy-signal {
+                                border-left: var(--batch-border-strong) solid var(--artdeco-up);
+                            }
+
+                            &.sell-signal {
+                                border-left: var(--batch-border-strong) solid var(--artdeco-down);
+                            }
+
+                            &.hold-signal {
+                                border-left: var(--batch-border-strong) solid var(--artdeco-gold-primary);
+                            }
+
+                            .col-symbol {
+                                .symbol-code {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-md);
+                                    font-weight: 600;
+                                    color: var(--artdeco-fg-primary);
+                                    display: block;
+                                    margin-bottom: var(--artdeco-spacing-1);
+                                }
+
+                                .symbol-name {
+                                    font-family: var(--artdeco-font-body);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    color: var(--artdeco-fg-muted);
+                                }
+                            }
+
+                            .col-analysis {
+                                .analysis-type {
+                                    padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
+                                    background: var(--artdeco-gold-primary);
+                                    color: var(--artdeco-bg-dark);
+                                    border-radius: var(--batch-radius-sm);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    font-weight: 600;
+                                    text-transform: uppercase;
+                                    letter-spacing: var(--artdeco-tracking-wide);
+                                }
+                            }
+
+                            .col-signal {
+                                span {
+                                    padding: var(--artdeco-spacing-1) var(--artdeco-spacing-2);
+                                    border-radius: var(--batch-radius-sm);
+                                    font-size: var(--artdeco-font-size-sm);
+                                    font-weight: 600;
+                                    text-transform: uppercase;
+                                    letter-spacing: var(--artdeco-tracking-wide);
+
+                                    &.buy {
+                                        background: var(--artdeco-up);
+                                        color: var(--artdeco-fg-primary);
+                                    }
+
+                                    &.sell {
+                                        background: var(--artdeco-down);
+                                        color: var(--artdeco-fg-primary);
+                                    }
+
+                                    &.hold {
+                                        background: var(--artdeco-gold-primary);
+                                        color: var(--artdeco-bg-dark);
+                                    }
+                                }
+                            }
+
+                            .col-confidence {
+                                .confidence-bar {
+                                    width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+                                    height: calc(var(--artdeco-spacing-3) / 2);
+                                    background: var(--artdeco-bg-muted);
+                                    border-radius: calc(var(--artdeco-spacing-px) * 3);
+                                    overflow: hidden;
+                                    margin-bottom: var(--artdeco-spacing-1);
+
+                                    .confidence-fill {
+                                        height: 100%;
+                                        background: linear-gradient(
+                                            90deg,
+                                            var(--artdeco-gold-primary),
+                                            var(--artdeco-gold-secondary)
+                                        );
+                                        border-radius: calc(var(--artdeco-spacing-px) * 3);
+                                        transition: width var(--artdeco-transition-base);
+                                    }
+                                }
+
+                                .confidence-text {
+                                    font-family: var(--artdeco-font-mono);
+                                    font-size: var(--artdeco-font-size-xs);
+                                    color: var(--artdeco-fg-muted);
+                                    font-weight: 600;
+                                }
+                            }
+
+                            .col-time {
+                                font-family: var(--artdeco-font-mono);
+                                font-size: var(--artdeco-font-size-xs);
+                                color: var(--artdeco-fg-muted);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
