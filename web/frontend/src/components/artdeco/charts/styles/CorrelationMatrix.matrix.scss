@@ -1,0 +1,142 @@
+    // ============================================
+    //   MATRIX WRAPPER
+    // ============================================
+
+    .matrix-wrapper {
+        display: flex;
+        gap: var(--artdeco-spacing-4);
+        max-height: calc(var(--artdeco-spacing-20) * 7 + var(--artdeco-spacing-10));
+        overflow: auto;
+        padding: var(--artdeco-spacing-4);
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent);
+        border: 1px solid var(--artdeco-gold-dim);
+        border-radius: var(--artdeco-radius-md);
+    }
+
+    // Row Headers
+    .matrix-row-headers {
+        display: flex;
+        flex-direction: column;
+        gap: calc(var(--artdeco-spacing-1) / 2);
+
+        .row-header {
+            height: var(--artdeco-spacing-10);
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: var(--artdeco-spacing-3);
+            font-family: var(--artdeco-font-mono);
+            font-size: var(--artdeco-text-xs);
+            font-weight: 600;
+            color: var(--artdeco-fg-muted);
+            cursor: pointer;
+            transition: all var(--artdeco-transition-default);
+            border-right: calc(var(--artdeco-spacing-1) / 2) solid transparent;
+
+            &:hover {
+                color: var(--artdeco-gold-primary);
+                background: var(--artdeco-gold-opacity-10);
+            }
+
+            &.active {
+                color: var(--artdeco-gold-primary);
+                border-right-color: var(--artdeco-gold-primary);
+                background: var(--artdeco-gold-opacity-15);
+            }
+        }
+    }
+
+    // Matrix Grid
+    .matrix-grid {
+        display: flex;
+        flex-direction: column;
+    }
+
+    // Column Headers
+    .matrix-column-headers {
+        display: flex;
+        gap: calc(var(--artdeco-spacing-1) / 2);
+        margin-bottom: var(--artdeco-spacing-2);
+        margin-left: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+
+        .column-header {
+            width: var(--artdeco-spacing-10);
+            height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-5));
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: var(--artdeco-spacing-2);
+            font-family: var(--artdeco-font-mono);
+            font-size: var(--artdeco-text-xs);
+            font-weight: 600;
+            color: var(--artdeco-fg-muted);
+            cursor: pointer;
+            transition: all var(--artdeco-transition-default);
+            border-bottom: calc(var(--artdeco-spacing-1) / 2) solid transparent;
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+
+            &:hover {
+                color: var(--artdeco-gold-primary);
+                background: var(--artdeco-gold-opacity-10);
+            }
+
+            &.active {
+                color: var(--artdeco-gold-primary);
+                border-bottom-color: var(--artdeco-gold-primary);
+                background: var(--artdeco-gold-opacity-15);
+            }
+        }
+    }
+
+    // Matrix Cells
+    .matrix-cells {
+        display: flex;
+        flex-direction: column;
+        gap: calc(var(--artdeco-spacing-1) / 2);
+    }
+
+    .matrix-row {
+        display: flex;
+        gap: calc(var(--artdeco-spacing-1) / 2);
+    }
+
+    .matrix-cell {
+        width: var(--artdeco-spacing-10);
+        height: var(--artdeco-spacing-10);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--artdeco-font-mono);
+        font-size: var(--artdeco-text-xs);
+        font-weight: 700;
+        cursor: pointer;
+        transition: all var(--artdeco-transition-default);
+        border: 1px solid var(--artdeco-gold-opacity-20);
+        color: var(--artdeco-fg-primary);
+
+        &:hover {
+            transform: scale(1.1);
+            border-color: var(--artdeco-gold-primary);
+            box-shadow: 0 0 calc(var(--artdeco-spacing-5) / 2) var(--artdeco-gold-opacity-30);
+            z-index: 10;
+        }
+
+        // Cell intensity classes
+        &.strong {
+            color: var(--artdeco-fg-primary);
+            text-shadow: 0 var(--artdeco-spacing-px) calc(var(--artdeco-spacing-1) / 2) color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
+        }
+
+        &.moderate {
+            color: var(--artdeco-fg-primary);
+        }
+
+        &.weak {
+            color: var(--artdeco-fg-muted);
+        }
+
+        &.very-weak {
+            color: var(--artdeco-fg-dim);
+        }
+    }
