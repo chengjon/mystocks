@@ -1,0 +1,120 @@
+
+// ============================================
+//   DATA-DENSE COMPONENTS - 数据密集组件
+//   量化终端专用组件样式
+// ============================================
+
+// 紧凑统计卡片
+.quant-stat-card-compact {
+  height: var(--artdeco-dense-stat-card-height);
+  padding: var(--artdeco-dense-padding-sm);
+  gap: var(--artdeco-dense-gap-sm);
+
+  // 标题紧凑化
+  .quant-stat-label {
+    font-size: var(--artdeco-text-data-sm);
+    color: var(--artdeco-fg-muted);
+    margin-bottom: 0;
+  }
+
+  // 数值突出显示
+  .quant-stat-value {
+    font-size: var(--artdeco-text-data-lg);
+    font-family: var(--artdeco-font-data);
+    font-variant-numeric: var(--artdeco-font-variant-numeric);
+    font-weight: var(--artdeco-font-semibold);
+    line-height: var(--artdeco-leading-tight);
+  }
+
+  // 涨跌紧凑显示
+  .quant-stat-change {
+    font-size: var(--artdeco-text-data-sm);
+    font-family: var(--artdeco-font-data);
+    font-variant-numeric: var(--artdeco-font-variant-numeric);
+  }
+}
+
+// 深度行情 (DOM) 组件
+.quant-dom-panel {
+  font-family: var(--artdeco-font-data);
+  font-variant-numeric: var(--artdeco-font-variant-numeric);
+  font-size: var(--artdeco-text-data-sm);
+
+  .quant-dom-row {
+    display: flex;
+    gap: var(--artdeco-dense-gap-xs);
+    padding: var(--artdeco-dense-padding-xs) 0;
+    border-bottom: 1px solid var(--artdeco-border-default);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  .quant-dom-bid {
+    color: var(--quant-dom-bid);
+  }
+
+  .quant-dom-ask {
+    color: var(--quant-dom-ask);
+  }
+
+  .quant-dom-spread {
+    color: var(--quant-dom-spread);
+    font-weight: var(--artdeco-font-semibold);
+  }
+}
+
+// 技术指标面板
+.quant-indicator-panel {
+  background: var(--artdeco-bg-card);
+  border: 1px solid var(--artdeco-border-default);
+  border-radius: var(--artdeco-radius-none);
+  padding: var(--artdeco-dense-padding-md);
+
+  .quant-indicator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--artdeco-dense-gap-sm);
+    padding-bottom: var(--artdeco-dense-padding-xs);
+    border-bottom: 1px solid var(--artdeco-border-default);
+
+    .quant-indicator-title {
+      font-size: var(--artdeco-text-data-base);
+      font-family: var(--artdeco-font-technical);
+      font-weight: var(--artdeco-font-semibold);
+      color: var(--artdeco-gold-primary);
+      text-transform: uppercase;
+      letter-spacing: var(--artdeco-tracking-wide);
+    }
+
+    .quant-indicator-value {
+      font-size: var(--artdeco-text-data-lg);
+      font-family: var(--artdeco-font-data);
+      font-variant-numeric: var(--artdeco-font-variant-numeric);
+      color: var(--artdeco-fg-primary);
+    }
+  }
+
+  .quant-indicator-body {
+    display: grid;
+    gap: var(--artdeco-dense-gap-xs);
+
+    .quant-indicator-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: var(--artdeco-text-data-sm);
+      font-family: var(--artdeco-font-data);
+      font-variant-numeric: var(--artdeco-font-variant-numeric);
+
+      .quant-indicator-label {
+        color: var(--artdeco-fg-muted);
+      }
+
+      .quant-indicator-number {
+        color: var(--artdeco-fg-primary);
+      }
+    }
+  }
+}

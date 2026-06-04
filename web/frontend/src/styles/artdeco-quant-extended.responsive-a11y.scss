@@ -1,0 +1,63 @@
+
+// ============================================
+//   RESPONSIVE - 响应式
+//   仅支持桌面端 (最小1280x720)
+// ============================================
+
+@media (width >= 1280px) {
+  :root {
+    --quant-grid-gap: var(--artdeco-dense-gap-sm); // 保持紧凑间距
+  }
+}
+
+@media (width >= 1920px) {
+  :root {
+    --quant-grid-gap: var(--artdeco-dense-gap-md); // 大屏稍增加间距
+    --quant-kline-height: 500px; // 更大K线图
+  }
+}
+
+// ============================================
+//   ACCESSIBILITY - 可访问性
+//   符合WCAG 2.1 AA标准
+// ============================================
+
+// 屏幕阅读器专用
+.sr-quant-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+// 高对比度模式支持
+@media (prefers-contrast: high) {
+  :root {
+    --quant-signal-strong-buy: #0F0;
+    --quant-signal-strong-sell: #F00;
+    --quant-indicator-rsi: #D0F;
+  }
+}
+
+// ============================================
+//   PRINT STYLES - 打印样式
+//   优化量化报告打印
+// ============================================
+
+@media print {
+  .quant-flash-up,
+  .quant-flash-down,
+  .quant-pulse {
+    animation: none !important;
+  }
+
+  .quant-stat-card-compact,
+  .quant-indicator-panel {
+    break-inside: avoid;
+  }
+}

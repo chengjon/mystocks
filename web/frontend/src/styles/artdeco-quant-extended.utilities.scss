@@ -1,0 +1,120 @@
+
+// ============================================
+//   ANIMATION EXTENSIONS - 动画扩展
+//   实时数据更新动画
+// ============================================
+
+@keyframes quant-flash-up {
+  0% { background-color: rgb(0 230 118 / 30%); }
+  100% { background-color: transparent; }
+}
+
+@keyframes quant-flash-down {
+  0% { background-color: rgb(255 82 82 / 30%); }
+  100% { background-color: transparent; }
+}
+
+@keyframes quant-pulse-signal {
+  0%, 100% { opacity: 100%; }
+  50% { opacity: 60%; }
+}
+
+// 数据更新闪烁工具类
+.quant-flash-up {
+  animation: quant-flash-up 0.5s ease-out;
+}
+
+.quant-flash-down {
+  animation: quant-flash-down 0.5s ease-out;
+}
+
+.quant-pulse {
+  animation: quant-pulse-signal 1.5s ease-in-out infinite;
+}
+
+// ============================================
+//   UTILITY CLASSES - 工具类
+//   量化交易常用样式模式
+// ============================================
+
+// 等宽数字显示 (交易终端必备)
+.quant-data-display {
+  font-family: var(--artdeco-font-data);
+  font-variant-numeric: var(--artdeco-font-variant-numeric);
+  letter-spacing: var(--artdeco-letter-spacing-data);
+}
+
+// 涨跌颜色 (复用ArtDeco金融颜色)
+.quant-up {
+  color: var(--artdeco-up);    // 红色
+}
+
+.quant-down {
+  color: var(--artdeco-down);  // 绿色
+}
+
+.quant-flat {
+  color: var(--artdeco-flat);  // 灰色
+}
+
+// 盈亏颜色 (语义化)
+.quant-profit {
+  color: var(--artdeco-profit); // 绿色
+}
+
+.quant-loss {
+  color: var(--artdeco-loss);   // 红色
+}
+
+// 背景色版本 (用于徽章、标签)
+.quant-bg-up {
+  background-color: rgb(255 82 82 / 15%);
+  color: var(--artdeco-up);
+}
+
+.quant-bg-down {
+  background-color: rgb(0 230 118 / 15%);
+  color: var(--artdeco-down);
+}
+
+// 信号强度标签
+.quant-signal-strong-buy {
+  color: var(--quant-signal-strong-buy);
+  font-weight: var(--artdeco-font-semibold);
+}
+
+.quant-signal-buy {
+  color: var(--quant-signal-buy);
+  font-weight: var(--artdeco-font-medium);
+}
+
+.quant-signal-strong-sell {
+  color: var(--quant-signal-strong-sell);
+  font-weight: var(--artdeco-font-semibold);
+}
+
+.quant-signal-sell {
+  color: var(--quant-signal-sell);
+  font-weight: var(--artdeco-font-medium);
+}
+
+// 技术指标线颜色
+.quant-indicator-macd-fast {
+  color: var(--quant-indicator-macd-fast);
+}
+
+.quant-indicator-macd-slow {
+  color: var(--quant-indicator-macd-slow);
+}
+
+.quant-indicator-kdj-k {
+  color: var(--quant-indicator-kdj-k);
+}
+
+.quant-indicator-kdj-d {
+  color: var(--quant-indicator-kdj-d);
+}
+
+.quant-indicator-rsi {
+  color: var(--quant-indicator-rsi);
+}
