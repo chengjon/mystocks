@@ -1,0 +1,71 @@
+// Import Art Deco tokens
+@import '@/styles/artdeco-tokens';
+@import '@/styles/artdeco-patterns';
+
+// ============================================
+//   BASE BUTTON STYLES - 按钮基础样式
+//   Sharp corners, uppercase, wide tracking, PERFECT CENTERING
+// ============================================
+
+.artdeco-button {
+    --artdeco-button-transition: var(--artdeco-transition-quick);
+
+    // MANDATORY: Sharp corners (Art Deco rejects curves)
+    border-radius: var(--artdeco-radius-none);
+
+    // MANDATORY: Perfect centering using Flexbox
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    // MANDATORY: All-caps with wide tracking
+    text-transform: uppercase;
+    letter-spacing: 0.15em; // Slightly reduced from 0.2em for better readability
+    font-family: var(--artdeco-font-body);
+    font-weight: 600; // Increased from semibold for better contrast
+    line-height: 1; // Perfect vertical centering
+
+    // UI Pro Max优化: 强制最小触摸目标（WCAG AA合规）
+    min-height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-1));
+    min-width: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-1));
+
+    // Theatrical transition - 使用更慢的过渡增加戏剧感
+    transition:
+        background-color var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+        border-color var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+        color var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+        box-shadow var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+        transform var(--artdeco-button-transition) var(--artdeco-ease-in-out),
+        opacity var(--artdeco-button-transition) var(--artdeco-ease-in-out);
+
+    // Remove default button styles
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    // Focus state for keyboard navigation (WCAG AA)
+    &:focus-visible {
+        outline: none;
+        border-color: var(--ad-btn-border-focus);
+        box-shadow: var(--ad-btn-shadow-focus);
+    }
+
+    &:disabled,
+    &--disabled {
+        cursor: not-allowed;
+        opacity: 40%;
+        box-shadow: none;
+    }
+
+    &--loading {
+        position: relative;
+        pointer-events: none;
+    }
+
+    // Block button (full width)
+    &--block {
+        width: 100%;
+        display: flex;
+    }
+}
+

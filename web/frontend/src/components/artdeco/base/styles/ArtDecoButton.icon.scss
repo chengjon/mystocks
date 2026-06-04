@@ -1,0 +1,43 @@
+// ============================================
+//   ICON + TEXT ALIGNMENT - 图标+文字对齐
+//   ✅ 优化: 确保图标与文字完美垂直居中
+// ============================================
+
+.artdeco-button__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--artdeco-spacing-4);
+    height: var(--artdeco-spacing-4);
+    margin-right: var(--artdeco-spacing-1);
+
+    // 确保图标不变形
+    flex-shrink: 0;
+
+    // SVG图标样式
+    svg {
+        width: 100%;
+        height: 100%;
+        fill: currentColor;
+    }
+}
+
+.artdeco-button__spinner {
+    width: var(--artdeco-font-size-sm);
+    height: var(--artdeco-font-size-sm);
+    margin-right: var(--artdeco-spacing-1);
+    border: calc(var(--artdeco-spacing-px) * 1.5) solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: artdeco-button-spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
+
+.artdeco-button__text {
+    // 文字基线对齐
+    line-height: 1;
+    vertical-align: middle;
+}
+
+// ❌ 已移除：移动端响应式代码（本项目仅支持桌面端）
+

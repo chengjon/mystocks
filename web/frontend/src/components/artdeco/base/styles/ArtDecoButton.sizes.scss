@@ -1,0 +1,45 @@
+// ============================================
+//   SIZE: SMALL - 小尺寸
+//   40px height, 12px font (Compact v3.1)
+// ============================================
+
+.artdeco-button--sm {
+    height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-1));
+    padding: 0 var(--artdeco-spacing-4); // Vertical padding handled by height + flex
+    font-size: var(--artdeco-font-size-sm);
+    min-width: var(--artdeco-spacing-20);
+    letter-spacing: 0.15em; // UI Pro Max优化：智能字间距，小按钮用较窄字间距
+}
+
+// ============================================
+//   SIZE: MEDIUM (default) - 中等尺寸
+//   48px height, 14px font (Compact v3.1)
+// ============================================
+
+.artdeco-button--md {
+    height: var(--artdeco-spacing-12);
+    padding: 0 var(--artdeco-spacing-6); // Vertical padding handled by height + flex
+    font-size: var(--artdeco-font-size-base);
+    min-width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
+    letter-spacing: 0.18em; // UI Pro Max优化：智能字间距，中等按钮
+}
+
+// ============================================
+//   SIZE: LARGE - 大尺寸
+//   56px height, 14px font (Compact v3.1)
+// ============================================
+
+.artdeco-button--lg {
+    height: calc(var(--artdeco-spacing-12) + var(--artdeco-spacing-2));
+    padding: 0 var(--artdeco-spacing-8); // Vertical padding handled by height + flex
+    font-size: var(--artdeco-font-size-base);
+    min-width: calc(var(--artdeco-spacing-20) * 2);
+    letter-spacing: 0.2em; // UI Pro Max优化：智能字间距，大按钮用最宽字间距（ArtDeco标准）
+}
+
+@keyframes artdeco-button-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
