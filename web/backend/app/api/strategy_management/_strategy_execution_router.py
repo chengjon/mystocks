@@ -29,6 +29,12 @@ STRATEGY_ROUTE_RESPONSES = {
 
 router = APIRouter(responses=STRATEGY_ROUTE_RESPONSES)
 
+
+async def get_strategy_data_source() -> Any:
+    data_source_factory = DataSourceFactory()
+    return await data_source_factory.get_data_source("strategy")
+
+
 # ==================== 请求/响应模型 ====================
 
 
@@ -202,9 +208,7 @@ async def get_strategy_definitions():
         所有可用策略的定义列表
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        strategy_adapter = await data_source_factory.get_data_source("strategy")
+        strategy_adapter = await get_strategy_data_source()
 
         result = await strategy_adapter.get_data("definitions")
 
@@ -256,9 +260,7 @@ async def run_strategy_single(
         策略执行结果
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        strategy_adapter = await data_source_factory.get_data_source("strategy")
+        strategy_adapter = await get_strategy_data_source()
 
         params = {"strategy_code": strategy_code, "symbol": symbol, "stock_name": stock_name, "check_date": check_date}
 
@@ -320,9 +322,7 @@ async def run_strategy_batch(
         批量执行结果统计
     """
     try:
-        # 使用数据源工厂
-        data_source_factory = DataSourceFactory()
-        strategy_adapter = await data_source_factory.get_data_source("strategy")
+        strategy_adapter = await get_strategy_data_source()
 
         params = {
             "strategy_code": strategy_code,

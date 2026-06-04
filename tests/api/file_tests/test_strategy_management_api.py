@@ -31,13 +31,18 @@ def strategy_module(monkeypatch: pytest.MonkeyPatch):
     return importlib.import_module("app.api.strategy_management")
 
 
+@pytest.fixture
+def strategy_execution_module(strategy_module):
+    return importlib.import_module("app.api.strategy_management._strategy_execution_router")
+
+
 class TestStrategyManagementAPIFile:
     @pytest.mark.file_test
     @pytest.mark.contract_test
     def test_router_registers_expected_strategy_routes(self, strategy_module):
         route_methods = {(route.path, tuple(sorted(route.methods or []))) for route in strategy_module.router.routes}
 
-        assert strategy_module.router.prefix == "/api/v1/strategy"
+        assert strategy_module.router.prefix == ""
         assert ("/api/v1/strategy/strategies", ("GET",)) in route_methods
         assert ("/api/v1/strategy/strategies", ("POST",)) in route_methods
         assert ("/api/v1/strategy/strategies/{strategy_id}", ("GET",)) in route_methods
@@ -54,12 +59,19 @@ class TestStrategyManagementAPIFile:
         assert ("/api/v1/strategy/backtest/results", ("GET",)) in route_methods
         assert ("/api/v1/strategy/backtest/results/{backtest_id}", ("GET",)) in route_methods
         assert ("/api/v1/strategy/backtest/status/{backtest_id}", ("GET",)) in route_methods
+        assert ("/api/v1/strategy/definitions", ("GET",)) in route_methods
+        assert ("/api/v1/strategy/run/single", ("POST",)) in route_methods
+        assert ("/api/v1/strategy/run/batch", ("POST",)) in route_methods
+        assert ("/api/v1/strategy/results", ("GET",)) in route_methods
+        assert ("/api/v1/strategy/matched-stocks", ("GET",)) in route_methods
+        assert ("/api/v1/strategy/stats/summary", ("GET",)) in route_methods
+        assert ("/api/v1/strategy/backtest/results/{backtest_id}/chart-data", ("GET",)) in route_methods
 
     @pytest.mark.file_test
     def test_router_contains_expected_number_of_route_method_pairs(self, strategy_module):
         route_pairs = [(route.path, tuple(sorted(route.methods or []))) for route in strategy_module.router.routes]
 
-        assert len(route_pairs) == 16
+        assert len(route_pairs) == 23
         assert len(route_pairs) == len(set(route_pairs))
 
     @pytest.mark.file_test
@@ -82,11 +94,11 @@ class TestStrategyManagementAPIFile:
         assert route_names[("/api/v1/strategy/backtest/results/{backtest_id}", ("GET",))] == "get_backtest_result"
 
     @pytest.mark.file_test
-    def test_chart_data_function_is_exported_but_not_wired_into_package_router(self, strategy_module):
+    def test_chart_data_function_is_exported_and_wired_into_package_router(self, strategy_module):
         route_paths = {route.path for route in strategy_module.router.routes}
 
         assert callable(strategy_module.get_backtest_chart_data)
-        assert "/api/v1/strategy/backtest/results/{backtest_id}/chart-data" not in route_paths
+        assert "/api/v1/strategy/backtest/results/{backtest_id}/chart-data" in route_paths
 
     @pytest.mark.file_test
     @pytest.mark.contract_test
@@ -123,3 +135,76 @@ class TestStrategyManagementAPIFile:
         assert "/api/v1/strategy/models/train" in model_paths
         assert "/api/v1/strategy/models/training/{task_id}/status" in model_paths
         assert "/api/v1/strategy/models" in model_paths
+
+    @pytest.mark.file_test
+    @pytest.mark.asyncio
+    async def test_strategy_execution_handlers_use_overridable_strategy_data_source(
+        self, strategy_execution_module, monkeypatch
+    ):
+        calls = []
+
+        class ExplodingDataSourceFactory:
+            def __init__(self):
+                raise AssertionError("route handlers must use the strategy data source provider seam")
+
+        class FakeStrategyAdapter:
+            async def get_data(self, endpoint, params=None):
+                calls.append((endpoint, params))
+                if endpoint == "definitions":
+                    return {"success": True, "data": [{"strategy_code": "volume_surge"}]}
+                if endpoint == "run_single":
+                    return {"success": True, "data": {"score": 0.91}, "message": "single complete"}
+                if endpoint == "run_batch":
+                    return {"success": True, "data": {"processed": 2}, "message": "batch complete"}
+                raise AssertionError(f"unexpected endpoint: {endpoint}")
+
+        async def fake_strategy_data_source():
+            return FakeStrategyAdapter()
+
+        monkeypatch.setattr(strategy_execution_module, "DataSourceFactory", ExplodingDataSourceFactory)
+        monkeypatch.setattr(strategy_execution_module, "get_strategy_data_source", fake_strategy_data_source, raising=False)
+
+        definitions = await strategy_execution_module.get_strategy_definitions()
+        single = await strategy_execution_module.run_strategy_single(
+            strategy_code="volume_surge", symbol="600519", stock_name=None, check_date=None
+        )
+        batch = await strategy_execution_module.run_strategy_batch(
+            strategy_code="volume_surge", symbols="600519,000001", market="A", limit=2, check_date="2026-06-03"
+        )
+
+        assert definitions.data == {"definitions": [{"strategy_code": "volume_surge"}], "total": 1}
+        assert single.data == {
+            "strategy_result": {"score": 0.91},
+            "strategy_code": "volume_surge",
+            "symbol": "600519",
+            "execution_success": True,
+        }
+        assert batch.data == {
+            "batch_result": {"processed": 2},
+            "strategy_code": "volume_surge",
+            "market": "A",
+            "execution_success": True,
+            "processed_symbols": "600519,000001",
+        }
+        assert calls == [
+            ("definitions", None),
+            (
+                "run_single",
+                {
+                    "strategy_code": "volume_surge",
+                    "symbol": "600519",
+                    "stock_name": None,
+                    "check_date": None,
+                },
+            ),
+            (
+                "run_batch",
+                {
+                    "strategy_code": "volume_surge",
+                    "symbols": "600519,000001",
+                    "market": "A",
+                    "limit": 2,
+                    "check_date": "2026-06-03",
+                },
+            ),
+        ]
