@@ -1,0 +1,133 @@
+    // ============================================
+    // THUMB CONTAINER - 拨杆容器
+    //   居中对齐
+    // ============================================
+
+    .artdeco-mechanical-switch__thumb-container {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-1));
+        height: 100%;
+        padding: 0 var(--artdeco-spacing-4);
+    }
+
+    // ============================================
+    // THUMB - 拨杆手柄
+    //   带有螺丝、槽孔的方形设计
+    // ============================================
+
+    .artde-mechanical-switch__thumb {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        transform: translateX(-50%);
+        width: var(--artdeco-spacing-5);
+        height: var(--artdeco-spacing-5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(
+            135deg,
+            var(--artdeco-bg-primary) 0%,
+            var(--artde-silver-light) 50%,
+            var(--artde-silver-light) 100%
+        );
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-border-gold-subtle);
+        border-radius: calc(var(--artdeco-spacing-1) / 2);
+        box-shadow: var(--artde-glow-subtle);
+        transition: all var(--artde-transition-base);
+        cursor: pointer;
+        z-index: 2;
+
+        // Active state - 滑到右侧、金色
+        .is-active & {
+            left: calc(100% - calc(var(--artdeco-spacing-1) / 2));
+            transform: translateX(0);
+            background: linear-gradient(
+                135deg,
+                var(--artdeco-gold-primary) 0%,
+                var(--artde-silver-light) 50%,
+                var(--artde-gold-light) 100%
+            );
+            border-color: var(--artdeco-accent-gold);
+            box-shadow: var(--artdeco-glow-intense);
+        }
+
+        // Active thumb glow
+        .is-active::after {
+            content: '';
+            position: absolute;
+            inset: calc(var(--artdeco-spacing-1) * -1);
+            width: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+            height: calc(var(--artdeco-spacing-6) + var(--artdeco-spacing-1));
+            background: radial-gradient(
+                circle at center,
+                var(--artdeco-gold-light) 0%,
+                color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent) 20%,
+                transparent
+            );
+            z-index: 3;
+            filter: blur(calc(var(--artdeco-spacing-1) / 2));
+            animation: thumb-glow 2s ease-in-out infinite;
+        }
+    }
+
+    // Disabled state
+    .artdeco-mechanical-switch__thumb.is-disabled {
+        background: linear-gradient(
+            135deg,
+            var(--artdeco-bg-primary) 0%,
+            var(--artdeco-silver-dim) 50%,
+            var(--artde-silver-dim) 100%
+        );
+        border-color: var(--artdeco-silver-dim);
+        box-shadow: none;
+        cursor: not-allowed;
+        opacity: 50%;
+    }
+
+    // ============================================
+    // SCREW - 螺丝
+    //   金属质感的装饰
+    // ============================================
+
+    .artdeco-mechanical-switch__thumb-screw {
+        position: absolute;
+        top: var(--artdeco-spacing-1);
+        left: 50%;
+        width: var(--artdeco-spacing-1);
+        height: var(--artdeco-spacing-4);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-accent-gold);
+        background: linear-gradient(90deg, var(--artdeco-gold-light) 30%, var(--artdeco-silver-light) 70%);
+        border-radius: 50%;
+        transform: translateX(-50%) rotate(0deg);
+
+        .is-active & {
+            transform: translateX(0%) rotate(0deg);
+            background: linear-gradient(90deg, var(--artdeco-gold-primary) 30%, var(--artde-silver-light) 70%);
+            border-color: var(--artde-co-accent-gold);
+        }
+    }
+
+    // ============================================
+    // SLOT - 槽孔
+    //  金属质感的凹槽
+    // ============================================
+
+    .artdeco-mechanical-switch__thumb-slot {
+        position: absolute;
+        top: calc(var(--artdeco-spacing-3) / 2);
+        left: 50%;
+        width: var(--artdeco-spacing-2);
+        height: var(--artdeco-spacing-2);
+        background: var(--artdeco-bg-primary);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
+        border-radius: 1px;
+
+        .is-active & {
+            background: var(--artdeco-accent-gold);
+            border-color: var(--artdeco-gold-dim);
+        }
+    }

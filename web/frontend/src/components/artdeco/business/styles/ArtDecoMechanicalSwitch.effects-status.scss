@@ -1,0 +1,70 @@
+    // ============================================
+    // GLOW EFFECT - 光辉动画
+    // ============================================
+
+    @keyframes mechanical-glow {
+        0%,
+        100% {
+            opacity: 0%;
+        }
+
+    }
+
+    @keyframes mechanical-activate {
+        0% {
+            transform: scale(0);
+            opacity: 30%;
+        }
+
+        50% {
+            transform: scale(1);
+            opacity: 100%;
+        }
+    }
+
+    @keyframes thumb-glow {
+        0%,
+        100% {
+            box-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-opacity-20);
+        }
+
+    }
+
+    // ============================================
+    // STATUS DISPLAY - 状态显示
+    // ============================================
+
+    .artdeco-mechanical-switch__status {
+        font-family: var(--artdeco-font-mono);
+        font-size: var(--artdeco-font-size-sm);
+        color: var(--artdeco-fg-muted);
+        margin-left: var(--artdeco-spacing-4);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: calc(var(--artdeco-spacing-1) / 2) calc(var(--artdeco-spacing-3) / 2);
+        background: var(--artdeco-bg-card);
+        border: 1px solid var(--artdeco-border-gold-subtle);
+    }
+
+    .status-text {
+        font-weight: 600;
+        letter-spacing: 0.05em;
+    }
+
+    .status-text--active {
+        color: var(--artdeco-accent-gold);
+    }
+
+    .status-text--inactive {
+        color: var(--artdeco-silver-dim);
+    }
+
+    // ============================================
+    // DESIGN NOTE
+    // ============================================
+    // 本组件专为量化交易系统设计，体现机械质感和专业性
+    // - 方形拨杆设计（非圆角）
+    // - 金属质感的螺丝和槽孔
+    // - 滑动时的流畅过渡动画
+    // - 开启时的金色光辉效果
+    // ============================================

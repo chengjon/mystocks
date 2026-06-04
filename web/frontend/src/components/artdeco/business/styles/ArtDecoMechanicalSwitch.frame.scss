@@ -1,0 +1,88 @@
+    // ============================================
+    // FRAME - 装饰框
+    //   四角装饰、金色边框
+    // ============================================
+
+    .artdeco-mechanical-switch__frame {
+        position: relative;
+        width: 100%;
+        height: var(--artdeco-spacing-16);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-opacity-20);
+        background: var(--artdeco-bg-card);
+        box-sizing: border-box;
+        transition: all var(--artdeco-transition-base);
+
+        // Active state glow effect
+        &.is-active .artdeco-mechanical-switch__control &::after {
+            content: '';
+            position: absolute;
+            inset: var(--artdeco-spacing-1);
+            width: calc(100% - var(--artdeco-spacing-2));
+            height: calc(100% - var(--artdeco-spacing-2));
+            background: radial-gradient(
+                circle at center,
+                var(--artdeco-gold-opacity-15) 0%,
+                color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent) 20%,
+                color-mix(in srgb, var(--artdeco-gold-primary) 0%, transparent)
+            );
+            border-radius: var(--artdeco-spacing-1);
+            z-index: -1;
+            filter: blur(var(--artdeco-spacing-2));
+            animation: mechanical-glow 2s ease-in-out infinite;
+        }
+
+        &.is-disabled::after {
+            background: var(--artdeco-silver-dim);
+        }
+    }
+
+    // ============================================
+    // DECORATORS - 角落装饰
+    //   Art Deco风格的几何装饰
+    // ============================================
+
+    .artdeco-mechanical-switch__decorator {
+        position: absolute;
+        width: var(--artdeco-spacing-3);
+        height: var(--artdeco-spacing-3);
+        background: var(--artdeco-bg-primary);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
+        border-radius: var(--artdeco-radius-none);
+    }
+
+    .artdeco-mechanical-switch__decorator--top-left {
+        top: 0;
+        left: 0;
+        border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
+        border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-bottom-right-radius: calc(var(--artdeco-spacing-1) / 2);
+    }
+
+    .artdeco-mechanical-switch__decorator--top-right {
+        top: 0;
+        right: 0;
+        border-left: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-bottom: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-bottom-left-radius: calc(var(--artdeco-spacing-1) / 2);
+    }
+
+    .artdeco-mechanical-switch__decorator--bottom-left {
+        bottom: 0;
+        left: 0;
+        border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-top: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-top-right-radius: calc(var(--artdeco-spacing-1) / 2);
+    }
+
+    .artdeco-mechanical-switch__decorator--bottom-right {
+        bottom: 0;
+        right: 0;
+        border-left: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-top: calc(var(--artdeco-spacing-1) / 2) solid var(--artde-gold-dim);
+        border-top-left-radius: calc(var(--artdeco-spacing-1) / 2);
+    }
+
+    .artdeco-mechanical-switch__frame:hover .artdeco-mechanical-switch__decorator {
+        background: var(--artdeco-accent-gold);
+        border-color: var(--artdeco-accent-gold);
+    }

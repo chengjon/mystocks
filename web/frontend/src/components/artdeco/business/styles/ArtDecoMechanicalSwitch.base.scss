@@ -1,0 +1,47 @@
+    // ============================================
+    // MECHANICAL SWITCH - 机械质感开关组件
+    //   方形设计、金属拨杆、金色光辉效果
+    // ============================================
+
+    .artdeco-mechanical-switch {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--artdeco-spacing-3);
+        position: relative;
+        cursor: pointer;
+        user-select: none;
+        transition: all var(--artdeco-transition-base);
+
+        // Disabled state
+        &.is-disabled {
+            cursor: not-allowed;
+            opacity: 40%;
+        }
+    }
+
+    // ============================================
+    // LABEL - 标签样式
+    //   大写、宽字间距
+    // ============================================
+
+    .artdeco-mechanical-switch__label {
+        font-family: var(--artdeco-font-display);
+        font-size: var(--artdeco-font-size-sm);
+        font-weight: 600;
+        color: var(--artdeco-fg-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-right: var(--artdeco-spacing-3);
+    }
+
+    // ============================================
+    // CONTROL CONTAINER - 控制器容器
+    //   包含装饰框和机械开关
+    // ============================================
+
+    .artdeco-mechanical-switch__control {
+        display: flex;
+        align-items: center;
+        position: relative;
+        padding: var(--artdeco-spacing-2);
+    }
