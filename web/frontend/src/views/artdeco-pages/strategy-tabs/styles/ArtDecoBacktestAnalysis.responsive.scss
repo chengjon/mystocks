@@ -1,0 +1,35 @@
+@media (width <= 75rem) {
+  .backtest-analysis-page {
+    padding: var(--artdeco-spacing-4);
+  }
+
+  .embedded-summary-meta,
+  .embedded-summary-actions {
+    width: 100%;
+  }
+
+  .context-strip,
+  .task-item,
+  .action-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ops-strip,
+  .panel-grid,
+  .strat-library,
+  .hub-grid,
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .action-row :deep(.artdeco-button) {
+    width: 100%;
+  }
+}
+
+@media (width <= 24.375rem) {
+  .backtest-analysis-page {
+    padding: var(--artdeco-spacing-3);
+  }
+}
