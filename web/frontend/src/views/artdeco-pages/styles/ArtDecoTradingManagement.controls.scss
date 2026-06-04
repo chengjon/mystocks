@@ -1,0 +1,103 @@
+    // 卡片头部样式
+    .card-header {
+        display: flex;
+        align-items: center;
+        gap: var(--artdeco-spacing-4);
+        margin-bottom: var(--artdeco-spacing-6);
+
+        &.dramatic {
+            background: linear-gradient(90deg, var(--artdeco-gold-opacity-10), var(--artdeco-gold-opacity-05));
+            padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
+            border-radius: var(--artdeco-radius-md);
+            border: calc(var(--artdeco-spacing-px) * 1) solid var(--artdeco-gold-opacity-20);
+        }
+
+        &.elegant {
+            border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-border-default);
+            padding-bottom: var(--artdeco-spacing-4);
+        }
+
+        h3 {
+            margin: 0;
+            font-size: var(--artdeco-text-xl);
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            color: var(--artdeco-bg-global);
+        }
+
+        p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: var(--artdeco-gold-dim);
+            font-style: italic;
+        }
+    }
+
+    .header-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: var(--artdeco-spacing-12);
+        height: var(--artdeco-spacing-12);
+        background: linear-gradient(135deg, var(--artdeco-gold-primary), var(--artdeco-bronze));
+        border-radius: var(--artdeco-radius-md);
+        box-shadow: 0 calc(var(--artdeco-spacing-px) * 4) calc(var(--artdeco-spacing-px) * 12) var(--artdeco-gold-opacity-shadow);
+    }
+
+    .header-content {
+        flex: 1;
+    }
+
+    .header-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .main-tabs {
+        display: flex;
+        gap: var(--artdeco-spacing-2);
+        margin-top: var(--artdeco-spacing-4);
+        border-bottom: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-opacity-10);
+        padding-bottom: var(--artdeco-spacing-2);
+        flex-wrap: wrap;
+    }
+
+    .main-tab {
+        display: flex;
+        align-items: center;
+        gap: var(--artdeco-spacing-2);
+        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4);
+        background: var(--artdeco-bg-card);
+        border: 1px solid var(--artdeco-border-default);
+        color: var(--artdeco-fg-primary);
+        cursor: pointer;
+        transition:
+            border-color var(--artdeco-transition-base),
+            background-color var(--artdeco-transition-base),
+            color var(--artdeco-transition-base),
+            box-shadow var(--artdeco-transition-base),
+            transform var(--artdeco-transition-base);
+
+        .tab-icon {
+            flex-shrink: 0;
+        }
+
+        &:hover {
+            color: var(--artdeco-gold-light);
+            border-color: var(--artdeco-gold-primary);
+            background: var(--artdeco-gold-opacity-05);
+            transform: translateY(calc(var(--artdeco-spacing-1) / -2));
+        }
+
+        &.active {
+            color: var(--artdeco-gold-primary);
+            border-color: var(--artdeco-border-accent);
+            background: var(--artdeco-gold-opacity-08);
+            box-shadow: var(--artdeco-glow-subtle);
+        }
+    }
+
+    .tab-content {
+        margin-top: var(--artdeco-spacing-4);
+    }
