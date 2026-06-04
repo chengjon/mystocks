@@ -1,0 +1,106 @@
+// ============================================
+// Menu Styles
+// ============================================
+.sidebar-menu {
+  border-right: none;
+  padding: var(--spacing-sm) 0;
+  flex: 1;
+  overflow: hidden auto;
+
+  // Remove default Element Plus menu styles
+  :deep(.el-menu-item),
+  :deep(.el-sub-menu__title) {
+    margin: 0 var(--spacing-sm);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    transition: all var(--transition-fast);
+    height: var(--artdeco-spacing-12);
+    line-height: var(--artdeco-spacing-12);
+
+    &:hover {
+      background-color: var(--bg-hover);
+      color: var(--text-primary);
+    }
+
+    &:focus {
+      background-color: var(--bg-hover);
+      outline: none;
+    }
+  }
+
+  // Active menu item
+  :deep(.el-menu-item.is-active) {
+    background-color: var(--color-up-bg);
+    color: var(--color-up);
+    font-weight: var(--font-weight-medium);
+    position: relative;
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        width: calc(var(--artdeco-spacing-px) * 3);
+        height: 60%;
+        background-color: var(--color-up);
+        border-radius: 0 calc(var(--artdeco-spacing-1) / 2) calc(var(--artdeco-spacing-1) / 2) 0;
+      }
+  }
+
+  // Submenu
+  :deep(.el-sub-menu) {
+    .el-sub-menu__title {
+      margin: 0 var(--spacing-sm);
+      border-radius: var(--radius-md);
+      height: var(--artdeco-spacing-12);
+      line-height: var(--artdeco-spacing-12);
+    }
+
+    .el-menu {
+      background-color: var(--bg-card);
+
+      .el-menu-item {
+        padding-left: var(--artdeco-spacing-12) !important;
+        margin: 0 var(--spacing-sm);
+        height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-3));
+        line-height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-3));
+
+        &:hover {
+          background-color: var(--bg-hover);
+        }
+
+        &.is-active {
+          background-color: var(--color-up-bg);
+          color: var(--color-up);
+        }
+      }
+    }
+  }
+
+  // Icon styling
+  :deep(.el-icon) {
+    font-size: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+    width: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+    height: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+    margin-right: var(--artdeco-spacing-2);
+  }
+
+  // Collapsed mode icon adjustment
+  :deep(.el-menu--collapse) {
+    .el-menu-item,
+    .el-sub-menu__title {
+      padding: 0;
+      justify-content: center;
+
+      .el-icon {
+        margin-right: 0;
+      }
+
+      span {
+        display: none;
+      }
+    }
+  }
+}
+

@@ -1,0 +1,102 @@
+// ============================================
+// Touch Optimizations (Mobile)
+// ============================================
+@media (hover: none) and (pointer: coarse) {
+  .responsive-sidebar.is-mobile {
+    .sidebar-menu {
+      // Larger touch targets for mobile
+      :deep(.el-menu-item),
+      :deep(.el-sub-menu__title) {
+        height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-3));
+        line-height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-3));
+        min-height: calc(var(--artdeco-spacing-10) + var(--artdeco-spacing-3));
+      }
+    }
+  }
+}
+
+// ============================================
+// Responsive Breakpoints
+// ============================================
+@media (width <= calc(var(--artdeco-spacing-32) * 6)) {
+  .responsive-sidebar {
+    // Full height on mobile
+    height: 100vh;
+    height: 100dvh; // Dynamic viewport height for mobile browsers
+
+    // Hide collapse toggle on mobile
+    .collapse-toggle-container {
+      display: none;
+    }
+  }
+
+  .sidebar-logo {
+    height: calc(var(--artdeco-spacing-8) + var(--artdeco-spacing-6));
+
+    .logo-text {
+      font-size: var(--artdeco-spacing-5);
+    }
+
+    .logo-text-short {
+      font-size: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+    }
+  }
+}
+
+@media (width <= calc(var(--artdeco-spacing-32) * 4 + var(--artdeco-spacing-20))) {
+  .sidebar-overlay {
+    // More transparent overlay on small screens
+    background-color: color-mix(in srgb, var(--artdeco-bg-global) 70%, transparent);
+  }
+
+  .responsive-sidebar.is-mobile {
+    // Full width menu on very small screens
+    &.is-open {
+      width: calc(var(--artdeco-spacing-20) * 3) !important;
+    }
+  }
+}
+
+// ============================================
+// Accessibility Improvements
+// ============================================
+// High contrast mode support
+@media (prefers-contrast: more) {
+  .responsive-sidebar {
+    border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--border-base);
+  }
+
+  .sidebar-menu {
+    :deep(.el-menu-item.is-active) {
+      &::before {
+        width: var(--artdeco-spacing-1);
+      }
+    }
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .responsive-sidebar,
+  .sidebar-overlay,
+  .logo-fade-enter-active,
+  .logo-fade-leave-active {
+    transition: none;
+  }
+}
+
+// Focus visible for keyboard navigation
+*:focus-visible {
+  outline: calc(var(--artdeco-spacing-1) / 2) solid var(--color-primary);
+  outline-offset: calc(var(--artdeco-spacing-1) / 2);
+}
+
+// ============================================
+// Print Styles
+// ============================================
+@media print {
+  .responsive-sidebar,
+  .sidebar-overlay {
+    display: none;
+  }
+}

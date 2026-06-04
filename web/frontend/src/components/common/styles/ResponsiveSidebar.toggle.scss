@@ -1,0 +1,34 @@
+// ============================================
+// Collapse Toggle (Desktop)
+// ============================================
+.collapse-toggle-container {
+  padding: var(--spacing-md);
+  border-top: 1px solid var(--border-dark);
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+
+  .collapse-toggle {
+    font-size: calc(var(--artdeco-spacing-4) + calc(var(--artdeco-spacing-1) / 2));
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+
+    &:hover {
+      color: var(--color-primary);
+      background-color: var(--bg-hover);
+    }
+
+    &:focus {
+      outline: calc(var(--artdeco-spacing-1) / 2) solid var(--color-primary);
+      outline-offset: calc(var(--artdeco-spacing-1) / 2);
+    }
+
+    &:active {
+      transform: rotate(180deg) scale(0.95);
+    }
+  }
+}
+

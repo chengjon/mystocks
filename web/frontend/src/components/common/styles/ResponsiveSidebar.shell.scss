@@ -1,0 +1,72 @@
+// ============================================
+// Sidebar Container
+// ============================================
+.responsive-sidebar {
+  position: relative;
+  background-color: var(--bg-secondary);
+  border-right: 1px solid var(--border-base);
+  transition: all var(--transition-base);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  // Desktop behavior
+  @media (width >= calc(var(--artdeco-spacing-32) * 6)) {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-index-sticky);
+  }
+
+  // Mobile behavior
+  &.is-mobile {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: var(--z-index-modal);
+    box-shadow: var(--shadow-3);
+
+    &.is-open {
+      border-right: 1px solid var(--border-base);
+    }
+  }
+
+  // Collapsed state (desktop)
+  &.is-collapsed:not(.is-mobile) {
+    .sidebar-logo {
+      .logo-text {
+        display: none;
+      }
+
+      .logo-text-short {
+        display: block;
+      }
+    }
+
+    .collapse-toggle-container {
+      .collapse-toggle {
+        transform: rotate(180deg);
+      }
+    }
+  }
+
+  // Custom scrollbar
+  &::-webkit-scrollbar {
+    width: calc(var(--artdeco-spacing-3) / 2);
+  }
+
+  &::-webkit-scrollbar-track {
+    background: var(--bg-primary);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--border-base);
+    border-radius: calc(var(--artdeco-spacing-px) * 3);
+
+    &:hover {
+      background: var(--border-light);
+    }
+  }
+}
+
