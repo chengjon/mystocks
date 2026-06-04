@@ -1,0 +1,22 @@
+    /* ====================
+   ANIMATIONS
+   ==================== */
+    @keyframes fade-in-up {
+        from {
+            opacity: 0%;
+            transform: translateY(var(--artdeco-spacing-5));
+        }
+        to {
+            opacity: 100%;
+            transform: translateY(0);
+        }
+    }
+
+    .artdeco-fade-in {
+        animation: fade-in-up 0.6s ease-out backwards;
+    }
+
+    // ============================================
+    //   DESIGN NOTE - 设计说明
+    //   本项目仅支持桌面端，不包含移动端响应式代码
+    // ============================================

@@ -1,0 +1,27 @@
+    /* ====================
+   FOOTER SECTION
+   ==================== */
+    .artdeco-sidebar-footer {
+        padding: var(--artdeco-spacing-4);
+        text-align: center;
+        border-top: 1px solid var(--artdeco-gold-opacity-20);
+        background: var(--artdeco-bg-header);
+        position: relative;
+        z-index: 1;
+    }
+
+    .artdeco-footer-ornament {
+        font-size: var(--artdeco-font-size-lg);
+        color: var(--artdeco-gold-opacity-20);
+        margin-bottom: var(--artdeco-spacing-1);
+        text-shadow: 0 0 var(--artdeco-spacing-2) var(--artdeco-gold-opacity-20);
+    }
+
+    .artdeco-footer-text {
+        font-family: var(--artdeco-font-display);
+        font-size: var(--artdeco-font-size-xs);
+        font-weight: 600;
+        color: var(--artdeco-fg-muted);
+        letter-spacing: calc(var(--artdeco-spacing-1) / 2);
+        text-transform: uppercase;
+    }
