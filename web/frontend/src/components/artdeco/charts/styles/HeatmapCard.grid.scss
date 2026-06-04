@@ -1,0 +1,76 @@
+    // 网格视图
+    .hybrid-heatmap-card__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(var(--artdeco-spacing-20), 1fr));
+        gap: var(--data-dense-gap-xs);
+        padding: var(--data-dense-padding-sm);
+    }
+
+    .hybrid-heatmap-card__cell {
+        @include data-dense-transitions;
+        @include gpu-accelerated;
+
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 0px;
+        cursor: pointer;
+        overflow: hidden;
+
+        &:hover {
+            transform: scale(1.05);
+            box-shadow: var(--data-dense-shadow-md);
+            z-index: 10;
+        }
+
+        &--up {
+            border: 1px solid color-mix(in srgb, var(--artdeco-rise) 30%, transparent);
+        }
+
+        &--down {
+            border: 1px solid color-mix(in srgb, var(--artdeco-down) 30%, transparent);
+        }
+
+        &--flat {
+            border: 1px solid color-mix(in srgb, var(--artdeco-flat) 30%, transparent);
+        }
+    }
+
+    .hybrid-heatmap-card__cell-content {
+        position: absolute;
+        inset: 0 0 0 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: var(--data-dense-padding-xs);
+    }
+
+    .hybrid-heatmap-card__symbol {
+        @include data-dense-typography;
+
+        font-size: var(--data-dense-font-xs);
+        font-weight: 600;
+        color: var(--artdeco-fg-primary);
+        text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
+        text-align: center;
+        word-break: break-all;
+    }
+
+    .hybrid-heatmap-card__change {
+        @include data-dense-typography;
+
+        font-size: calc(var(--artdeco-spacing-5) / 2);
+        font-weight: 600;
+        color: var(--artdeco-fg-primary);
+        text-shadow: 0 1px 2px color-mix(in srgb, var(--artdeco-bg-global) 50%, transparent);
+        margin-top: calc(var(--artdeco-spacing-1) / 2);
+    }
+
+    .hybrid-heatmap-card__volume-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: calc(var(--artdeco-spacing-px) * 3);
+        background-color: color-mix(in srgb, var(--artdeco-fg-primary) 30%, transparent);
+        transition: width var(--data-dense-transition-fast);
+    }

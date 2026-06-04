@@ -1,0 +1,83 @@
+    // 图例
+    .hybrid-heatmap-card__legend {
+        display: flex;
+        justify-content: center;
+        gap: var(--data-dense-gap-md);
+        padding: var(--data-dense-padding-sm);
+        border-top: var(--data-dense-border-width) solid var(--data-dense-border-color);
+        flex-wrap: wrap;
+    }
+
+    .hybrid-heatmap-card__legend-item {
+        display: flex;
+        align-items: center;
+        gap: var(--data-dense-gap-xs);
+    }
+
+    .hybrid-heatmap-card__legend-color {
+        width: var(--artdeco-spacing-4);
+        height: var(--artdeco-spacing-4);
+        border-radius: 0px;
+        border: 1px solid color-mix(in srgb, var(--artdeco-fg-primary) 20%, transparent);
+    }
+
+    .hybrid-heatmap-card__legend-text {
+        @include data-dense-typography;
+
+        font-size: var(--data-dense-font-xs);
+        color: var(--artdeco-fg-muted);
+    }
+
+    // 工具提示
+    .hybrid-heatmap-card__tooltip {
+        position: fixed;
+        pointer-events: none;
+        z-index: 1000;
+        transform: translate(-50%, -100%);
+        margin-top: calc(var(--artdeco-spacing-5) / -2);
+    }
+
+    .hybrid-heatmap-card__tooltip-content {
+        @include hybrid-card;
+
+        padding: var(--data-dense-padding-sm);
+        min-width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-5));
+        box-shadow: var(--data-dense-shadow-md);
+    }
+
+    .hybrid-heatmap-card__tooltip-title {
+        @include artdeco-gold-accent;
+
+        font-weight: 600;
+        margin-bottom: var(--data-dense-margin-sm);
+    }
+
+    .hybrid-heatmap-card__tooltip-row {
+        display: flex;
+        justify-content: space-between;
+        gap: var(--data-dense-gap-sm);
+        margin-bottom: var(--data-dense-margin-xs);
+
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+
+    .hybrid-heatmap-card__tooltip-label {
+        @include data-dense-typography;
+
+        color: var(--artdeco-fg-muted);
+    }
+
+    .hybrid-heatmap-card__tooltip-value {
+        @include data-dense-typography;
+
+        font-weight: 600;
+
+        &.text-up {
+            color: var(--artdeco-up);
+        }
+        &.text-down {
+            color: var(--artdeco-down);
+        }
+    }

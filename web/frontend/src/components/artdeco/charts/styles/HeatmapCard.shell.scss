@@ -1,0 +1,56 @@
+    // ============================================
+    //   HYBRID HEATMAP CARD - 混合热力图卡片
+    //   Art Deco 视觉 + 数据密集型热力图
+    // ============================================
+
+    .hybrid-heatmap-card {
+        @include hybrid-card;
+
+        position: relative;
+
+        &--loading {
+            opacity: 60%;
+            pointer-events: none;
+        }
+    }
+
+    .hybrid-heatmap-card__header {
+        @include data-dense-spacing;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
+    }
+
+    .hybrid-heatmap-card__title {
+        @include artdeco-gold-accent;
+
+        font-family: var(--hybrid-font-display);
+        font-size: var(--data-dense-font-lg);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0;
+    }
+
+    .hybrid-heatmap-card__controls {
+        display: flex;
+        gap: var(--data-dense-gap-sm);
+        align-items: center;
+    }
+
+    .hybrid-heatmap-card__sort-select {
+        @include data-dense-typography;
+
+        padding: var(--data-dense-padding-xs) var(--data-dense-padding-sm);
+        border: var(--data-dense-border-width) solid var(--data-dense-border-color);
+        border-radius: 0px;
+        background-color: var(--artdeco-bg-card);
+        color: var(--artdeco-fg-primary);
+        cursor: pointer;
+
+        &:focus {
+            border-color: var(--artdeco-gold-primary);
+        }
+    }

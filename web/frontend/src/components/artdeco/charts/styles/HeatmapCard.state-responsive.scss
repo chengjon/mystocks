@@ -1,0 +1,87 @@
+    // 加载和空状态
+    .hybrid-heatmap-card__loading,
+    .hybrid-heatmap-card__empty {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--data-dense-gap-sm);
+    }
+
+    .hybrid-heatmap-card__spinner {
+        width: var(--artdeco-spacing-6);
+        height: var(--artdeco-spacing-6);
+        border: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-opacity-20);
+        border-top-color: var(--artdeco-gold-primary);
+        border-radius: 0px;
+        animation: hybrid-spin 1s linear infinite;
+    }
+
+    @keyframes hybrid-spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    .hybrid-heatmap-card__loading p,
+    .hybrid-heatmap-card__empty p {
+        @include data-dense-typography;
+
+        color: var(--artdeco-fg-muted);
+        margin: 0;
+    }
+
+    // ============================================
+    //   RESPONSIVE DESIGN - 响应式设计
+    // ============================================
+
+    @media (width <= calc(var(--artdeco-spacing-32) * 6)) {
+        .hybrid-heatmap-card {
+            .hybrid-heatmap-card__title {
+                font-size: var(--data-dense-font-base);
+            }
+
+            .hybrid-heatmap-card__grid {
+                grid-template-columns: repeat(auto-fill, minmax(calc(var(--artdeco-spacing-20) - var(--artdeco-spacing-5)), 1fr));
+            }
+
+            .hybrid-heatmap-card__legend {
+                gap: var(--data-dense-gap-sm);
+            }
+
+            .hybrid-heatmap-card__list-header,
+            .hybrid-heatmap-card__list-row {
+                grid-template-columns: 1fr 1fr;
+                font-size: var(--data-dense-font-xs);
+            }
+
+            // 移动端默认列表视图
+            .hybrid-heatmap-card__grid {
+                display: none;
+            }
+
+            .hybrid-heatmap-card__list {
+                display: block;
+            }
+        }
+    }
+
+    // ============================================
+    //   PERFORMANCE NOTES - 性能说明
+    // ============================================
+
+    /*
+  热力图性能优化：
+  1. GPU加速：transform和颜色变化使用硬件加速
+  2. 虚拟化准备：网格布局支持后续添加虚拟滚动
+  3. 内存优化：颜色计算缓存，避免重复计算
+  4. 响应式优化：移动端自动切换到列表视图
+
+  预期性能：
+  - 支持数百只股票实时更新
+  - 颜色变化延迟 < 16ms
+  - 内存占用 < 50MB (1000只股票)
+*/

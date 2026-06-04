@@ -1,0 +1,48 @@
+    // 列表视图
+    .hybrid-heatmap-card__list {
+        @include data-dense-spacing;
+    }
+
+    .hybrid-heatmap-card__list-header,
+    .hybrid-heatmap-card__list-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        gap: var(--data-dense-gap-sm);
+        padding: var(--data-dense-padding-xs) var(--data-dense-padding-sm);
+        border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
+    }
+
+    .hybrid-heatmap-card__list-header {
+        @include artdeco-gold-accent;
+
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: var(--data-dense-font-sm);
+        letter-spacing: 0.05em;
+    }
+
+    .hybrid-heatmap-card__list-row {
+        @include data-dense-transitions;
+
+        cursor: pointer;
+
+        &:hover {
+            background-color: var(--artdeco-gold-opacity-05);
+        }
+
+        &:last-child {
+            border-bottom: none;
+        }
+    }
+
+    .hybrid-heatmap-card__list-cell {
+        @include data-dense-typography;
+
+        text-align: left;
+    }
+
+    .hybrid-heatmap-card__symbol-cell {
+        font-weight: 600;
+
+        @include artdeco-gold-accent;
+    }
