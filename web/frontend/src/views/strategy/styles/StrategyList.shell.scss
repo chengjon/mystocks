@@ -1,0 +1,94 @@
+.strategy-list {
+  padding: var(--artdeco-spacing-5);
+  min-height: 100vh;
+  background: var(--artdeco-bg-global);
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent var(--artdeco-spacing-5),
+    var(--artdeco-gold-opacity-05) var(--artdeco-spacing-5),
+    var(--artdeco-gold-opacity-05) calc(var(--artdeco-spacing-5) + var(--artdeco-spacing-px))
+  );
+}
+
+.card {
+  position: relative;
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 3%, var(--artdeco-bg-card));
+  border: 1px solid var(--artdeco-border-default);
+  padding: var(--artdeco-spacing-8);
+  border-radius: var(--artdeco-radius-none);
+}
+
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  width: var(--artdeco-spacing-4);
+  height: var(--artdeco-spacing-4);
+  border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
+}
+
+.card::before {
+  top: var(--artdeco-spacing-3);
+  left: var(--artdeco-spacing-3);
+  border-right: none;
+  border-bottom: none;
+}
+
+.card::after {
+  right: var(--artdeco-spacing-3);
+  bottom: var(--artdeco-spacing-3);
+  border-top: none;
+  border-left: none;
+}
+
+.page-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--artdeco-spacing-4);
+  margin-bottom: var(--artdeco-spacing-8);
+  padding-bottom: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+}
+
+.header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-title {
+  margin: 0 0 var(--artdeco-spacing-2) 0;
+  color: var(--artdeco-gold-primary);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-2xl);
+  letter-spacing: calc(var(--artdeco-spacing-px) * 2);
+  text-transform: uppercase;
+}
+
+.page-subtitle {
+  color: var(--artdeco-gold-dim);
+  font-family: var(--artdeco-font-heading, var(--font-display));
+  font-size: var(--artdeco-text-xs);
+  letter-spacing: calc(var(--artdeco-spacing-px) * 3);
+  text-transform: uppercase;
+}
+
+.decorative-line {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: calc(var(--artdeco-spacing-20) * 2);
+  height: calc(var(--artdeco-spacing-px) * 2);
+  background: linear-gradient(90deg, var(--artdeco-gold-primary), transparent);
+}
+
+.decorative-line::before {
+  content: '';
+  position: absolute;
+  bottom: calc(var(--artdeco-spacing-3) * -1);
+  left: 0;
+  width: calc(var(--artdeco-spacing-20) - var(--artdeco-spacing-5));
+  height: var(--artdeco-spacing-px);
+  background: linear-gradient(90deg, var(--artdeco-gold-dim), transparent);
+}

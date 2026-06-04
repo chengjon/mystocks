@@ -1,0 +1,42 @@
+@media (width <= 48rem) {
+  .strategy-list {
+    padding: calc(var(--artdeco-spacing-5) / 2);
+  }
+
+  .card {
+    padding: calc(var(--artdeco-spacing-4) - var(--artdeco-spacing-px));
+  }
+
+  .page-header,
+  .filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box,
+  .select {
+    max-width: none;
+  }
+
+  .filter-stats {
+    margin-left: 0;
+  }
+
+  .strategies-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .strategy-header,
+  .strategy-actions,
+  .param-item {
+    flex-direction: column;
+  }
+
+  .strategy-actions .button {
+    width: 100%;
+  }
+
+  .param-value {
+    text-align: left;
+  }
+}
