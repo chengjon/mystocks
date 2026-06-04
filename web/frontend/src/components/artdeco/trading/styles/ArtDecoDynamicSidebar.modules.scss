@@ -1,0 +1,50 @@
+    // ============================================
+    //   MODULE TABS
+    // ============================================
+    .artdeco-module-tabs {
+        padding: 0 var(--artdeco-spacing-4) var(--artdeco-spacing-2);
+        position: relative;
+        z-index: 1;
+        border-bottom: var(--artdeco-spacing-px) solid var(--artdeco-gold-opacity-10);
+    }
+
+    .module-tab {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--artdeco-spacing-2);
+        width: 100%;
+        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-2);
+        margin-bottom: var(--artdeco-spacing-1);
+        background: var(--artdeco-bg-card);
+        border: var(--artdeco-spacing-px) solid var(--artdeco-gold-opacity-20);
+        border-radius: var(--artdeco-radius-none);
+        color: var(--artdeco-fg-primary);
+        font-family: var(--artdeco-font-body);
+        font-size: var(--artdeco-text-sm);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: var(--artdeco-tracking-wide);
+        cursor: pointer;
+        transition: all var(--artdeco-transition-base);
+
+        &:hover {
+            border-color: var(--artdeco-gold-primary);
+            box-shadow: var(--artdeco-glow-subtle);
+        }
+
+        &.active {
+            background: linear-gradient(135deg, var(--artdeco-gold-opacity-10), var(--artdeco-gold-opacity-05));
+            border-color: var(--artdeco-gold-primary);
+            color: var(--artdeco-gold-primary);
+            box-shadow: var(--artdeco-glow-medium);
+        }
+
+        .module-icon {
+            font-size: var(--artdeco-text-base);
+        }
+
+        .module-label {
+            font-size: var(--artdeco-text-sm);
+        }
+    }

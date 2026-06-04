@@ -1,0 +1,28 @@
+    // ============================================
+    //   DYNAMIC SIDEBAR CONTAINER
+    // ============================================
+    .artdeco-dynamic-sidebar {
+        width: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-16));
+        background: var(--artdeco-bg-header);
+        border-right: calc(var(--artdeco-spacing-1) / 2) solid var(--artdeco-gold-dim);
+        position: fixed;
+        height: 100vh;
+        overflow: hidden auto;
+        z-index: var(--artdeco-z-fixed);
+        transition: transform var(--artdeco-transition-slow);
+    }
+
+    // Decorative background pattern
+    .artdeco-sidebar-pattern {
+        position: absolute;
+        inset: 0 0 0 0;
+        background-image: repeating-linear-gradient(
+            45deg,
+            transparent,
+            transparent calc(var(--artdeco-spacing-5) / 2),
+            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) calc(var(--artdeco-spacing-5) / 2),
+            color-mix(in srgb, var(--artdeco-gold-primary) 2%, transparent) var(--artdeco-spacing-5)
+        );
+        pointer-events: none;
+        z-index: 0;
+    }

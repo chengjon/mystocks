@@ -1,0 +1,54 @@
+    // ============================================
+    //   ANIMATIONS
+    // ============================================
+    @keyframes fade-in-up {
+        from {
+            opacity: 0%;
+            transform: translateY(var(--artdeco-spacing-5));
+        }
+        to {
+            opacity: 100%;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-in {
+        animation: fade-in-up 0.6s ease forwards;
+    }
+
+    // ============================================
+    //   RESPONSIVE DESIGN
+    // ============================================
+    @media (width <= calc(var(--artdeco-spacing-32) * 10 + var(--artdeco-spacing-24) + var(--artdeco-spacing-6))) {
+        .artdeco-dynamic-sidebar {
+            width: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-6));
+        }
+
+        .artdeco-nav-label {
+            font-size: var(--artdeco-text-sm);
+        }
+
+        .artdeco-nav-subtitle {
+            font-size: var(--artdeco-text-xs);
+        }
+    }
+
+    @media (width <= calc(var(--artdeco-spacing-32) * 8)) {
+        .artdeco-dynamic-sidebar {
+            width: calc(var(--artdeco-spacing-32) * 2 + var(--artdeco-spacing-1));
+        }
+
+        .module-label {
+            display: none;
+        }
+
+        .module-tab {
+            justify-content: center;
+            padding: var(--artdeco-spacing-2);
+        }
+    }
+
+    // ============================================
+    //   DESIGN NOTE - 设计说明
+    //   本项目仅支持桌面端，不包含移动端响应式代码
+    // ============================================
