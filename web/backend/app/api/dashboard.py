@@ -12,7 +12,8 @@ import logging
 from datetime import date, datetime
 from typing import Any, Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
+from app.core.exceptions import BusinessException
 
 from app.api.dashboard_builders import (
     build_market_overview,
@@ -325,10 +326,10 @@ async def get_dashboard_summary(
 
     except ValueError as e:
         logger.error("参数验证失败: %s", e)
-        raise HTTPException(status_code=400, detail=f"参数验证失败: {str(e)}")
+        raise BusinessException(status_code=400, detail=f"参数验证失败: {str(e)}")
     except Exception as e:
         logger.error("获取仪表盘数据失败: %s", e, exc_info=True)
-        raise HTTPException(status_code=500, detail=f"获取仪表盘数据失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"获取仪表盘数据失败: {str(e)}")
 
 
 @router.get(
@@ -350,15 +351,15 @@ async def get_market_overview(
         elif hasattr(data_source, "get_market_overview"):
             raw_market_data = data_source.get_market_overview()
         else:
-            raise HTTPException(status_code=503, detail="市场概览数据源未实现专用接口")
+            raise BusinessException(status_code=503, detail="市场概览数据源未实现专用接口")
 
         if not raw_market_data:
-            raise HTTPException(status_code=404, detail="市场概览数据不可用")
+            raise BusinessException(status_code=404, detail="市场概览数据不可用")
 
         market_data = build_market_overview(raw_market_data)
 
         if not market_data:
-            raise HTTPException(status_code=500, detail="市场概览数据解析失败")
+            raise BusinessException(status_code=500, detail="市场概览数据解析失败")
 
         market_data.top_gainers = market_data.top_gainers[:limit]
         market_data.top_losers = market_data.top_losers[:limit]
@@ -370,11 +371,11 @@ async def get_market_overview(
             request_id=getattr(request.state, "request_id", None),
         )
 
-    except HTTPException:
+    except BusinessException:
         raise
     except Exception as e:
         logger.error("获取市场概览失败: %s", e)
-        raise HTTPException(status_code=500, detail=f"获取市场概览失败: {str(e)}")
+        raise BusinessException(status_code=500, detail=f"获取市场概览失败: {str(e)}")
 
 
 @router.get(

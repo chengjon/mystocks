@@ -13,9 +13,19 @@ Priority: P2 (Utility)
 Coverage: 70% functional + smoke testing
 """
 
+import asyncio
+import importlib
+import sys
+from pathlib import Path
+
 import pytest
 
-from tests.api.file_tests.conftest import api_test_fixtures
+
+ROOT = Path(__file__).resolve().parents[3]
+BACKEND_ROOT = ROOT / "web" / "backend"
+for path in (ROOT, BACKEND_ROOT):
+    if str(path) not in sys.path:
+        sys.path.insert(0, str(path))
 
 
 class TestDashboardAPIFile:
@@ -309,3 +319,90 @@ class TestDashboardAPIFile:
 
         # Test concurrent cache operations
         assert api_test_fixtures["contract_validation"] is True
+
+    @pytest.mark.file_test
+    def test_dashboard_local_cache_wrapper_delegates_to_canonical_async_getter(self):
+        """Test dashboard-local cache wrapper delegates to canonical async cache lifecycle."""
+        dashboard = importlib.import_module("app.api.dashboard")
+        multi_level_cache = importlib.import_module("src.core.cache.multi_level")
+
+        sentinel_manager = object()
+        sentinel_redis = object()
+        calls: list[object | None] = []
+
+        async def get_cache_manager_async(redis_cache=None):
+            calls.append(redis_cache)
+            return sentinel_manager
+
+        monkeypatch = pytest.MonkeyPatch()
+        try:
+            monkeypatch.setattr(dashboard, "_cache_manager", None)
+            monkeypatch.setattr(dashboard, "_cache_manager_initialized", None)
+            monkeypatch.setattr(dashboard, "get_cache_manager_async", get_cache_manager_async)
+            monkeypatch.setattr(multi_level_cache, "get_cache", lambda: sentinel_redis)
+
+            first = asyncio.run(dashboard.get_cache_manager())
+            second = asyncio.run(dashboard.get_cache_manager())
+        finally:
+            monkeypatch.undo()
+
+        assert first is sentinel_manager
+        assert second is sentinel_manager
+        assert calls == [sentinel_redis]
+
+    @pytest.mark.file_test
+    def test_dashboard_summary_bypass_cache_skips_cache_read_and_writes_fresh_data(self):
+        """Test bypass_cache skips dashboard cache reads while preserving fresh-data write behavior."""
+        dashboard = importlib.import_module("app.api.dashboard")
+
+        calls: list[str] = []
+
+        class CacheManagerStub:
+            def get_cache_stats(self):
+                return {"hits": 0, "misses": 0}
+
+        sentinel_manager = CacheManagerStub()
+        raw_dashboard = {
+            "data_source": "test_source",
+            "market_overview": {"indices": []},
+            "watchlist": [],
+            "portfolio": {},
+            "risk_alerts": [],
+        }
+
+        async def get_cache_manager():
+            calls.append("get_cache_manager")
+            return sentinel_manager
+
+        async def try_get_cached_dashboard(*args, **kwargs):
+            calls.append("try_get_cached_dashboard")
+            return {"dashboard_data": {}}, True
+
+        async def cache_dashboard_data(cache_manager, user_id, trade_date, dashboard_data, ttl_hours):
+            calls.append("cache_dashboard_data")
+            assert cache_manager is sentinel_manager
+            assert user_id == 1
+            assert dashboard_data is raw_dashboard
+            assert ttl_hours == 24
+
+        class DataSourceStub:
+            def get_dashboard_summary(self, user_id, trade_date):
+                calls.append("get_dashboard_summary")
+                assert user_id == 1
+                return raw_dashboard
+
+        monkeypatch = pytest.MonkeyPatch()
+        try:
+            monkeypatch.setattr(dashboard, "get_cache_manager", get_cache_manager)
+            monkeypatch.setattr(dashboard, "try_get_cached_dashboard", try_get_cached_dashboard)
+            monkeypatch.setattr(dashboard, "cache_dashboard_data", cache_dashboard_data)
+            monkeypatch.setattr(dashboard, "get_data_source", lambda: DataSourceStub())
+
+            response = asyncio.run(dashboard.get_dashboard_summary(user_id=1, trade_date=None, bypass_cache=True))
+        finally:
+            monkeypatch.undo()
+
+        assert "try_get_cached_dashboard" not in calls
+        assert calls == ["get_cache_manager", "get_dashboard_summary", "cache_dashboard_data"]
+        assert response.cache_hit is False
+        assert response.data_source == "test_source"

@@ -1,22 +1,17 @@
-"""缓存管理器子模块"""
+"""Compatibility wrappers for the canonical cache manager lifecycle."""
 
-import logging
-from typing import Optional
+from __future__ import annotations
+
+from typing import Any
+
+from app.core import cache_manager as canonical_cache_manager
+
+CacheManager = canonical_cache_manager.CacheManager
 
 
-logger = logging.getLogger(__name__)
-
-from .manager import CacheManager
-
-_cache_manager: Optional[CacheManager] = None
-
-def get_cache_manager(
-    tdengine_manager: Optional[TDengineManager] = None,
-) -> CacheManager:
+def get_cache_manager(tdengine_manager: Any | None = None) -> CacheManager:
     """
     获取缓存管理器单例 (向后兼容)
-
-    注意: 此方法不支持Redis注入。如需Redis支持，请使用 get_cache_manager_async()
 
     Args:
         tdengine_manager: TDengineManager 实例
@@ -24,18 +19,10 @@ def get_cache_manager(
     Returns:
         CacheManager 单例实例
     """
-    global _cache_manager
-
-    if _cache_manager is None:
-        _cache_manager = CacheManager(tdengine_manager)
-        logger.warning("⚠️ 使用同步缓存管理器，Redis功能不可用。如需Redis支持，请使用 get_cache_manager_async()")
-
-    return _cache_manager
+    provider = canonical_cache_manager._get_cache_lifecycle_provider()
+    return provider.get_sync(tdengine_manager=tdengine_manager)
 
 
 def reset_cache_manager() -> None:
     """重置缓存管理器（用于测试）"""
-    global _cache_manager
-    if _cache_manager:
-        _cache_manager.close()
-    _cache_manager = None
+    canonical_cache_manager.reset_cache_manager()

@@ -6,10 +6,11 @@ from datetime import datetime, timedelta, timezone
 from threading import RLock
 from typing import Any
 
+from app.core.cache_lifecycle import CacheLifecycleProvider
+
 logger = logging.getLogger(__name__)
 
-_manager: CacheManager | None = None
-_async_manager: AsyncCacheManager | None = None
+_cache_lifecycle_provider: CacheLifecycleProvider[CacheManager, AsyncCacheManager] | None = None
 
 
 def _safe_get_tdengine_manager() -> Any | None:
@@ -433,29 +434,28 @@ class AsyncCacheManager:
 
 
 def get_cache_manager() -> CacheManager:
-    global _manager
-    if _manager is None:
-        _manager = CacheManager()
-    return _manager
+    return _get_cache_lifecycle_provider().get_sync()
 
 
 def reset_cache_manager() -> None:
-    global _manager, _async_manager
-    if _async_manager is not None:
-        _async_manager.close()
-    elif _manager is not None:
-        _manager.close()
-    _async_manager = None
-    _manager = None
+    _get_cache_lifecycle_provider().reset()
 
 
 async def get_cache_manager_async(
     tdengine_manager: Any | None = None,
     redis_cache: Any | None = None,
 ) -> AsyncCacheManager:
-    global _manager, _async_manager
-    if _manager is None:
-        _manager = CacheManager(tdengine_manager=tdengine_manager)
-    if _async_manager is None:
-        _async_manager = AsyncCacheManager(_manager, redis_cache=redis_cache)
-    return _async_manager
+    return await _get_cache_lifecycle_provider().get_async(
+        tdengine_manager=tdengine_manager,
+        redis_cache=redis_cache,
+    )
+
+
+def _get_cache_lifecycle_provider() -> CacheLifecycleProvider[CacheManager, AsyncCacheManager]:
+    global _cache_lifecycle_provider
+    if _cache_lifecycle_provider is None:
+        _cache_lifecycle_provider = CacheLifecycleProvider(
+            sync_manager_factory=CacheManager,
+            async_manager_factory=AsyncCacheManager,
+        )
+    return _cache_lifecycle_provider

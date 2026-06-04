@@ -520,14 +520,11 @@ class CacheStatsHealthMixin:
 
 # ==================== 全局单例管理 ====================
 
-_cache_manager: Optional['CacheManager'] = None
-REDIS_CACHE_AVAILABLE = False
-
 
 async def get_cache_manager_async(
     tdengine_manager: Optional[Any] = None,
     redis_cache: Optional[Any] = None,
-) -> 'CacheManager':
+) -> Any:
     """
     获取异步缓存管理器单例 (支持Redis注入)
 
@@ -538,31 +535,10 @@ async def get_cache_manager_async(
     Returns:
         CacheManager 单例实例
     """
-    global _cache_manager
+    from app.core import cache_manager as canonical_cache_manager
 
-    if _cache_manager is None:
-        _cache_manager = CacheManager(tdengine_manager, redis_cache)
-
-        # 如果提供了Redis缓存，初始化连接
-        if redis_cache and REDIS_CACHE_AVAILABLE:
-            try:
-                # Redis缓存已在外部初始化，这里只需要验证
-                if not hasattr(redis_cache, "_redis_connected") or not redis_cache._redis_connected:
-                    await redis_cache.initialize()
-                _cache_manager._redis_available = True
-                logger.info("✅ Redis缓存服务已注入到缓存管理器")
-            except Exception as e:
-                logger.warning("⚠️ Redis缓存初始化失败，将降级为L1+L3模式", error=str(e))
-                _cache_manager._redis_available = False
-
-        # 执行健康检查
-        try:
-            health = _cache_manager.health_check()
-            if not health.get("overall_healthy"):
-                logger.warning("⚠️ 缓存管理器健康检查失败", issues=health.get("issues", []))
-        except Exception as e:
-            logger.warning("⚠️ 缓存管理器健康检查异常", error=str(e))
-
-    return _cache_manager
-
+    return await canonical_cache_manager.get_cache_manager_async(
+        tdengine_manager=tdengine_manager,
+        redis_cache=redis_cache,
+    )
 
