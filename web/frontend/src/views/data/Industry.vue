@@ -35,17 +35,17 @@
     </ArtDecoRouteHeader>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="活跃板块" :value="stats.activeBoards" variant="gold" />
-      <ArtDecoStatCard label="上涨板块" :value="stats.risingBoards" variant="rise" />
-      <ArtDecoStatCard label="领涨强度" :value="`${stats.leadStrength}%`" variant="gold" />
-      <ArtDecoStatCard label="回撤板块" :value="stats.fallingBoards" variant="fall" />
+      <ArtDecoStatCard label="活跃板块" :value="String(stats.activeBoards)" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="上涨板块" :value="String(stats.risingBoards)" :show-change="false" variant="rise" />
+      <ArtDecoStatCard label="领涨强度" :value="`${stats.leadStrength}%`" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="回撤板块" :value="String(stats.fallingBoards)" :show-change="false" variant="fall" />
     </section>
 
     <section :class="isEmbedded ? 'embedded-shell' : 'content-shell artdeco-card-shell'">
       <div v-if="!isEmbedded" class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">board rotation route</span>
-          <h3 class="content-shell-title">板块热度与轮动面板</h3>
+          <h2 class="content-shell-title">板块热度与轮动面板</h2>
           <p class="content-shell-subtitle">聚合板块强弱排行和资金轮动快照，快速识别最强板块与回撤板块。</p>
         </div>
         <div class="content-shell-meta">
@@ -54,33 +54,47 @@
         </div>
       </div>
 
-      <div v-if="showErrorState" class="error-state artdeco-card" role="alert">
+      <div v-if="showLoadingState" class="loading-state artdeco-card" role="status" aria-live="polite">
+        <p>板块数据同步中</p>
+        <span>正在刷新板块热度与资金轮动快照。</span>
+      </div>
+
+      <div v-else-if="showErrorState" class="error-state artdeco-card" role="alert">
         <p>板块数据加载失败</p>
         <span>{{ error }}</span>
+        <ArtDecoButton variant="outline" size="sm" @click="refreshBoards">重试刷新</ArtDecoButton>
       </div>
 
-      <div v-else-if="showEmptyState" class="empty-state artdeco-card" role="status" aria-live="polite">
-        <p>暂无板块数据</p>
-        <span>当前环境未返回板块热度排行，可稍后刷新重试。</span>
-      </div>
+      <template v-else>
+        <div v-if="showRefreshWarning" class="warning-panel artdeco-card" role="status" aria-live="polite">
+          <p>部分刷新失败</p>
+          <span>{{ refreshWarning }}</span>
+        </div>
 
-      <div v-else class="content-grid">
-        <ArtDecoCard title="板块热度排行" hoverable>
-          <ArtDecoTable :columns="boardColumns" :data="boardRows" />
-        </ArtDecoCard>
+        <div v-if="showEmptyState" class="empty-state artdeco-card" role="status" aria-live="polite">
+          <p>暂无板块数据</p>
+          <span>当前环境未返回板块热度排行，可稍后刷新重试。</span>
+          <ArtDecoButton variant="outline" size="sm" @click="refreshBoards">重新获取</ArtDecoButton>
+        </div>
 
-        <ArtDecoCard title="资金轮动快照" hoverable>
-          <div class="rotation-list">
-            <div class="rotation-item" v-for="item in rotationRows" :key="item.name">
-              <div class="name">{{ item.name }}</div>
-              <div class="meta">{{ item.window }}</div>
-              <div class="value" :class="item.flow > 0 ? 'rise' : 'fall'">
-                {{ item.flow > 0 ? '+' : '' }}{{ item.flow }} 亿
+        <div v-else class="content-grid">
+          <ArtDecoCard title="板块热度排行" hoverable>
+            <ArtDecoTable :columns="boardColumns" :data="boardRows" />
+          </ArtDecoCard>
+
+          <ArtDecoCard title="资金轮动快照" hoverable>
+            <div class="rotation-list">
+              <div class="rotation-item" v-for="item in rotationRows" :key="item.name">
+                <div class="name">{{ item.name }}</div>
+                <div class="meta">{{ item.window }}</div>
+                <div class="value" :class="item.flow > 0 ? 'rise' : 'fall'">
+                  {{ item.flow > 0 ? '+' : '' }}{{ item.flow }} 亿
+                </div>
               </div>
             </div>
-          </div>
-        </ArtDecoCard>
-      </div>
+          </ArtDecoCard>
+        </div>
+      </template>
     </section>
   </div>
 </template>
@@ -115,20 +129,59 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { loading, error, lastRequestId, lastProcessTime, exec } = useArtDecoApi()
 
+function formatOrdinal(value: unknown): string {
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    return String(Math.trunc(value))
+  }
+
+  if (typeof value === 'string' && value.trim().length > 0) {
+    const parsed = Number.parseFloat(value)
+    if (Number.isFinite(parsed)) {
+      return String(Math.trunc(parsed))
+    }
+    return value
+  }
+
+  return '--'
+}
+
 const boardColumns = [
-  { key: 'rank', label: '排名', width: '80px' },
+  { key: 'rank', label: '排名', width: '80px', format: formatOrdinal },
   { key: 'name', label: '板块' },
-  { key: 'change', label: '涨跌幅', variant: 'color' },
+  { key: 'change', label: '涨跌幅' },
   { key: 'turnover', label: '主力净额(亿)' },
-  { key: 'netInflow', label: '流入强度', variant: 'color' }
+  { key: 'netInflow', label: '流入强度' }
 ]
 
 const boardRows = ref<BoardRow[]>([])
 const rotationRows = ref<RotationRow[]>([])
-const dataSource = ref<'REAL'>('REAL')
+const hasLoaded = ref(false)
+const hasVerifiedSnapshot = ref(false)
+const lastVerifiedRequestId = ref('')
+const refreshWarning = ref('')
 const isEmbedded = computed(() => Boolean(props.functionKey))
+const dataSource = computed<'PENDING' | 'REAL' | 'UNAVAILABLE'>(() => {
+  if (loading.value && !hasLoaded.value) {
+    return 'PENDING'
+  }
 
-const displayRequestId = computed(() => lastRequestId.value || 'N/A')
+  if (error.value && boardRows.value.length === 0) {
+    return 'UNAVAILABLE'
+  }
+
+  return 'REAL'
+})
+
+const showRequestIdPlaceholder = computed(
+  () => !hasVerifiedSnapshot.value && (loading.value || Boolean(error.value)) && boardRows.value.length === 0
+)
+const displayRequestId = computed(() => {
+  if (showRequestIdPlaceholder.value) {
+    return 'N/A'
+  }
+
+  return lastVerifiedRequestId.value || lastRequestId.value || 'N/A'
+})
 const displayProcessTime = computed(() => {
   if (!lastProcessTime.value) {
     return 'N/A'
@@ -156,20 +209,31 @@ const stats = computed(() => {
     leadStrength
   }
 })
+const showRefreshWarning = computed(() => !loading.value && refreshWarning.value.length > 0 && boardRows.value.length > 0)
 const pageStatusText = computed(() => {
   if (loading.value) return '同步中'
+  if (showRefreshWarning.value) return '刷新异常'
+  if (error.value) return '同步异常'
+  if (hasLoaded.value && boardRows.value.length === 0) return '暂无板块数据'
   return stats.value.risingBoards >= stats.value.fallingBoards ? '板块偏强' : '板块回撤'
 })
-const pageStatusType = computed(() => (stats.value.risingBoards >= stats.value.fallingBoards ? 'success' : 'warning'))
+const pageStatusType = computed(() => {
+  if (showRefreshWarning.value) return 'warning'
+  if (error.value) return 'danger'
+  if (loading.value || (hasLoaded.value && boardRows.value.length === 0)) return 'info'
+  return stats.value.risingBoards >= stats.value.fallingBoards ? 'success' : 'warning'
+})
 
-const showErrorState = computed(() => Boolean(error.value) && boardRows.value.length === 0)
-const showEmptyState = computed(() => !loading.value && !error.value && boardRows.value.length === 0)
+const showLoadingState = computed(() => loading.value && !hasLoaded.value)
+const showErrorState = computed(() => !loading.value && Boolean(error.value) && boardRows.value.length === 0)
+const showEmptyState = computed(() => !loading.value && hasLoaded.value && !error.value && boardRows.value.length === 0)
 
 function parsePercent(change: string): number {
   return Number.parseFloat(change.replace('%', '')) || 0
 }
 
 async function loadIndustryFlow() {
+  const hadPreviousData = boardRows.value.length > 0
   const data = await exec(() => apiClient.get<UnifiedResponse<IndustryFlowRow[]>>('/v2/market/sector/fund-flow', {
     params: {
       sector_type: '行业',
@@ -182,23 +246,33 @@ async function loadIndustryFlow() {
   })
 
   if (data === null) {
-    boardRows.value = []
-    rotationRows.value = []
+    if (hadPreviousData) {
+      refreshWarning.value = '当前仍展示上次成功同步的行业板块数据，请稍后重试刷新。'
+    } else {
+      refreshWarning.value = ''
+      boardRows.value = []
+      rotationRows.value = []
+    }
+    hasLoaded.value = true
     return
   }
 
   const normalizedRows = toBoardRows(extractIndustryFlowRows(data))
+  hasVerifiedSnapshot.value = true
+  lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
 
   if (normalizedRows.length === 0) {
-    dataSource.value = 'REAL'
+    refreshWarning.value = ''
     boardRows.value = []
     rotationRows.value = []
+    hasLoaded.value = true
     return
   }
 
-  dataSource.value = 'REAL'
+  refreshWarning.value = ''
   boardRows.value = normalizedRows
   rotationRows.value = toRotationRows(normalizedRows)
+  hasLoaded.value = true
 }
 
 function refreshBoards() {
@@ -297,8 +371,10 @@ void loadIndustryFlow()
   gap: var(--artdeco-spacing-4);
 }
 
+.loading-state,
 .error-state,
-.empty-state {
+.empty-state,
+.warning-panel {
   display: grid;
   gap: var(--artdeco-spacing-2);
   padding: var(--artdeco-spacing-5);
@@ -308,7 +384,7 @@ void loadIndustryFlow()
   p {
     margin: 0;
     color: var(--artdeco-fg-primary);
-    font-family: var(--font-display);
+    font-family: var(--artdeco-font-display);
     letter-spacing: var(--artdeco-tracking-wide);
   }
 
@@ -316,6 +392,14 @@ void loadIndustryFlow()
     color: var(--artdeco-fg-muted);
     font-size: var(--artdeco-text-sm);
   }
+
+  :deep(.artdeco-button) {
+    justify-self: start;
+  }
+}
+
+.warning-panel {
+  border-color: var(--artdeco-border-strong);
 }
 
 .rotation-list {
@@ -361,17 +445,6 @@ void loadIndustryFlow()
 
   .content-grid {
     grid-template-columns: 1fr;
-  }
-}
-
-@media (width <= 48rem) {
-  .stats-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-meta,
-  .content-shell-meta {
-    width: 100%;
   }
 }
 </style>

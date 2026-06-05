@@ -6,25 +6,68 @@ import { ArtDecoButton, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdec
 import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import { buildConceptRequest, extractConceptRows, type ConceptRow } from './marketConceptData'
 
-const { loading, lastRequestId, exec } = useArtDecoApi()
+const { loading, error, lastRequestId, exec } = useArtDecoApi()
 const concepts = ref<ConceptRow[]>([])
+const hasLoaded = ref(false)
+const refreshWarning = ref('')
+const lastVerifiedRequestId = ref('')
 
 const positiveConcepts = computed(() => concepts.value.filter((concept) => concept.change_pct >= 0).length)
 const negativeConcepts = computed(() => concepts.value.filter((concept) => concept.change_pct < 0).length)
 const topLeader = computed(() => concepts.value[0]?.leader || 'N/A')
+const showSummaryPlaceholders = computed(() => !hasLoaded.value || (Boolean(error.value) && concepts.value.length === 0))
+const displaySectorCount = computed(() => (showSummaryPlaceholders.value ? '--' : String(concepts.value.length)))
+const displayPositiveConcepts = computed(() => (showSummaryPlaceholders.value ? '--' : String(positiveConcepts.value)))
+const displayNegativeConcepts = computed(() => (showSummaryPlaceholders.value ? '--' : String(negativeConcepts.value)))
+const displayTopLeader = computed(() => (showSummaryPlaceholders.value ? '--' : topLeader.value))
+const displayRequestId = computed(() => {
+  if (showSummaryPlaceholders.value) {
+    return 'N/A'
+  }
+
+  return lastVerifiedRequestId.value || lastRequestId.value || 'N/A'
+})
+const showRefreshWarning = computed(() => !loading.value && refreshWarning.value.length > 0 && concepts.value.length > 0)
 const pageStatusText = computed(() => {
   if (loading.value) return '同步中'
+  if (showRefreshWarning.value) return '刷新异常'
+  if (error.value) return '同步异常'
+  if (hasLoaded.value && concepts.value.length === 0) return '暂无概念数据'
   return positiveConcepts.value >= negativeConcepts.value ? '概念偏强' : '概念承压'
 })
-const pageStatusType = computed(() => (positiveConcepts.value >= negativeConcepts.value ? 'success' : 'warning'))
+const pageStatusType = computed(() => {
+  if (showRefreshWarning.value) return 'warning'
+  if (error.value) return 'danger'
+  if (loading.value || (hasLoaded.value && concepts.value.length === 0)) return 'info'
+  return positiveConcepts.value >= negativeConcepts.value ? 'success' : 'warning'
+})
+const showLoadingState = computed(() => loading.value && !hasLoaded.value)
+const showErrorState = computed(() => !loading.value && Boolean(error.value) && concepts.value.length === 0)
+const showEmptyState = computed(() => !loading.value && hasLoaded.value && !error.value && concepts.value.length === 0)
 
 const fetchConcepts = async () => {
+  const hadPreviousData = concepts.value.length > 0
   const request = buildConceptRequest()
   const data = await exec(() => apiClient.get(request.path, { params: request.params }), {
-    silent: true
+    silent: true,
+    errorMsg: '概念板块数据加载失败'
   })
 
+  if (data === null) {
+    if (hadPreviousData) {
+      refreshWarning.value = '当前仍展示上次成功同步的概念板块数据，请稍后重试刷新。'
+    } else {
+      refreshWarning.value = ''
+      concepts.value = []
+    }
+    hasLoaded.value = true
+    return
+  }
+
+  refreshWarning.value = ''
   concepts.value = extractConceptRows(data)
+  lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
+  hasLoaded.value = true
 }
 
 onMounted(() => {
@@ -45,9 +88,9 @@ onMounted(() => {
       shell-class="hero-shell artdeco-card-shell"
     >
       <template #meta>
-        <span v-if="lastRequestId">REQ: {{ lastRequestId }}</span>
-        <span>SECTORS: {{ concepts.length }}</span>
-        <span>LEADER: {{ topLeader }}</span>
+        <span>REQ: {{ displayRequestId }}</span>
+        <span>SECTORS: {{ displaySectorCount }}</span>
+        <span>LEADER: {{ displayTopLeader }}</span>
       </template>
 
       <template #actions>
@@ -68,52 +111,75 @@ onMounted(() => {
     </ArtDecoRouteHeader>
 
     <section class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="概念总数" :value="concepts.length" variant="gold" />
-      <ArtDecoStatCard label="上涨概念" :value="positiveConcepts" variant="rise" />
-      <ArtDecoStatCard label="下跌概念" :value="negativeConcepts" variant="fall" />
-      <ArtDecoStatCard label="龙头股" :value="topLeader" variant="gold" />
+      <ArtDecoStatCard label="概念总数" :value="displaySectorCount" :show-change="false" variant="gold" />
+      <ArtDecoStatCard label="上涨概念" :value="displayPositiveConcepts" :show-change="false" variant="rise" />
+      <ArtDecoStatCard label="下跌概念" :value="displayNegativeConcepts" :show-change="false" variant="fall" />
+      <ArtDecoStatCard label="龙头股" :value="displayTopLeader" :show-change="false" variant="gold" />
     </section>
 
     <section class="content-shell artdeco-card-shell">
       <div class="content-shell-header">
         <div class="content-shell-copy">
           <span class="content-shell-kicker">sector breadth route</span>
-          <h3 class="content-shell-title">概念强弱与龙头面板</h3>
+          <h2 class="content-shell-title">概念强弱与龙头面板</h2>
           <p class="content-shell-subtitle">按概念板块审查涨跌幅、主力净流入和龙头股，快速识别最强板块与承压板块。</p>
         </div>
         <div class="content-shell-meta">
-          <span>POSITIVE: {{ positiveConcepts }}</span>
-          <span>NEGATIVE: {{ negativeConcepts }}</span>
+          <span>POSITIVE: {{ displayPositiveConcepts }}</span>
+          <span>NEGATIVE: {{ displayNegativeConcepts }}</span>
         </div>
       </div>
 
-      <div class="concept-table-container artdeco-card" v-loading="loading">
-        <table class="artdeco-table">
-          <thead>
-            <tr>
-              <th>SECTOR NAME</th>
-              <th>CHANGE %</th>
-              <th>NET INFLOW</th>
-              <th>LEADING STOCK</th>
-              <th>TREND</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-for="c in concepts" :key="c.name">
-              <td class="concept-name">{{ c.name }}</td>
-              <td :class="['change', c.change_pct >= 0 ? 'rise' : 'down']">
-                {{ c.change_pct >= 0 ? '+' : '' }}{{ c.change_pct }}%
-              </td>
-              <td class="inflow">{{ c.main_inflow }}</td>
-              <td class="leader">{{ c.leader }}</td>
-              <td>
-                <div class="mini-chart">
-                  <div class="trend-bar" :style="{ height: `${Math.abs(c.change_pct) * 5}px`, background: c.change_pct >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)' }"></div>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div v-if="showLoadingState" class="state-panel artdeco-card" role="status" aria-live="polite">
+        <p>概念板块同步中</p>
+        <span>正在刷新概念强弱与龙头股数据。</span>
+      </div>
+
+      <div v-if="showRefreshWarning" class="state-panel warning-panel artdeco-card" role="status" aria-live="polite">
+        <p>部分刷新失败</p>
+        <span>{{ refreshWarning }}</span>
+      </div>
+
+      <div v-if="showErrorState" class="state-panel artdeco-card" role="alert">
+        <p>概念板块数据加载失败</p>
+        <span>{{ error }}</span>
+        <ArtDecoButton variant="outline" size="sm" @click="fetchConcepts">重试刷新</ArtDecoButton>
+      </div>
+
+      <div v-else-if="showEmptyState" class="state-panel artdeco-card" role="status" aria-live="polite">
+        <p>暂无概念数据</p>
+        <span>当前环境未返回概念板块排行，可稍后刷新重试。</span>
+      </div>
+
+      <div v-else class="concept-table-container artdeco-card" v-loading="loading">
+        <div class="concept-table-scroll">
+          <table class="artdeco-table">
+            <thead>
+              <tr>
+                <th>SECTOR NAME</th>
+                <th>CHANGE %</th>
+                <th>NET INFLOW</th>
+                <th>LEADING STOCK</th>
+                <th>TREND</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="c in concepts" :key="c.name">
+                <td class="concept-name">{{ c.name }}</td>
+                <td :class="['change', c.change_pct >= 0 ? 'rise' : 'down']">
+                  {{ c.change_pct >= 0 ? '+' : '' }}{{ c.change_pct }}%
+                </td>
+                <td class="inflow">{{ c.main_inflow }}</td>
+                <td class="leader">{{ c.leader }}</td>
+                <td>
+                  <div class="mini-chart">
+                    <div class="trend-bar" :style="{ height: `${Math.abs(c.change_pct) * 5}px`, background: c.change_pct >= 0 ? 'var(--artdeco-rise)' : 'var(--artdeco-down)' }"></div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </section>
   </div>
@@ -204,6 +270,34 @@ onMounted(() => {
   @include artdeco-stepped-corners(calc(var(--artdeco-spacing-2) + var(--artdeco-spacing-px) * 2));
 }
 
+.concept-table-scroll {
+  overflow-x: auto;
+}
+
+.state-panel {
+  display: grid;
+  gap: var(--artdeco-spacing-2);
+  padding: var(--artdeco-spacing-5);
+  border: 1px solid var(--artdeco-border-default);
+  background: linear-gradient(145deg, var(--artdeco-gold-opacity-05), transparent 65%);
+}
+
+.warning-panel {
+  border-color: var(--artdeco-warning);
+  background: linear-gradient(145deg, color-mix(in srgb, var(--artdeco-warning) 12%, transparent), transparent 70%);
+}
+
+.state-panel p {
+  margin: 0;
+  color: var(--artdeco-fg-primary);
+  font-family: var(--artdeco-font-display);
+}
+
+.state-panel span {
+  color: var(--artdeco-fg-muted);
+  font-size: var(--artdeco-text-sm);
+}
+
 .artdeco-table {
   width: 100%;
   border-collapse: collapse;
@@ -259,17 +353,6 @@ onMounted(() => {
 @media (width <= 75rem) {
   .stats-strip {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (width <= 48rem) {
-  .stats-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-meta,
-  .content-shell-meta {
-    width: 100%;
   }
 }
 </style>
