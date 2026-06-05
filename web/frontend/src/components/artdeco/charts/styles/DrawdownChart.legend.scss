@@ -1,0 +1,49 @@
+    // ============================================
+    //   LEGEND
+    // ============================================
+
+    .chart-legend {
+        display: flex;
+        justify-content: center;
+        gap: var(--artdeco-spacing-6);
+        padding: var(--artdeco-spacing-3) var(--artdeco-spacing-4) var(--artdeco-spacing-4);
+        border-top: 1px solid var(--artdeco-gold-dim);
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: var(--artdeco-spacing-2);
+
+            .legend-color {
+                width: var(--artdeco-spacing-4);
+                height: var(--artdeco-spacing-4);
+                border-radius: calc(var(--artdeco-spacing-px) + var(--artdeco-spacing-px));
+                border: 1px solid var(--artdeco-gold-dim);
+
+                &.severe {
+                    background: color-mix(in srgb, var(--artdeco-fall) 80%, transparent);
+                }
+
+                &.high {
+                    background: color-mix(in srgb, var(--artdeco-warning) 60%, var(--artdeco-fall));
+                }
+
+                &.moderate {
+                    background: color-mix(in srgb, var(--artdeco-warning) 40%, transparent);
+                }
+
+                &.mild {
+                    background: color-mix(in srgb, var(--artdeco-fall) 20%, transparent);
+                }
+            }
+
+            .legend-text {
+                font-family: var(--artdeco-font-body);
+                font-size: var(--artdeco-text-xs);
+                font-weight: 600;
+                color: var(--artdeco-fg-muted);
+                text-transform: uppercase;
+                letter-spacing: var(--artdeco-tracking-wide);
+            }
+        }
+    }

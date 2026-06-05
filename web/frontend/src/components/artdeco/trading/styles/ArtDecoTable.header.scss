@@ -1,0 +1,48 @@
+    // 表头单元格
+    .hybrid-table__cell--head {
+        @include artdeco-gold-accent;
+
+        font-family: var(--hybrid-font-display);
+        font-size: var(--data-dense-font-sm);
+        font-weight: 600;
+        text-align: left;
+        padding: var(--data-dense-table-cell-padding);
+        border-bottom: var(--data-dense-border-width) solid var(--artdeco-gold-primary);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        white-space: nowrap;
+        user-select: none;
+        background-color: color-mix(in srgb, var(--artdeco-gold-primary) 5%, transparent);
+        height: var(--data-dense-table-header-height);
+    }
+
+    .hybrid-table__cell--sortable {
+        cursor: pointer;
+
+        @include data-dense-transitions;
+
+        &:hover {
+            background-color: color-mix(in srgb, var(--artdeco-gold-primary) 10%, transparent);
+        }
+    }
+
+    .hybrid-table__head-content {
+        display: flex;
+        align-items: center;
+        gap: var(--data-dense-gap-xs);
+    }
+
+    .hybrid-table__head-label {
+        flex: 1;
+    }
+
+    .hybrid-table__sort-icon {
+        color: color-mix(in srgb, var(--artdeco-gold-primary) 40%, transparent);
+        font-size: var(--data-dense-font-xs);
+
+        @include data-dense-transitions;
+    }
+
+    .hybrid-table__cell--sortable:hover .hybrid-table__sort-icon {
+        color: var(--artdeco-gold-primary);
+    }

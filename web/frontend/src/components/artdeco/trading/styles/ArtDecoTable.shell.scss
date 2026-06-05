@@ -1,0 +1,77 @@
+        // ============================================
+    //   HYBRID TABLE - 数据密集型表格
+    //   Art Deco 视觉 + 数据密集性能优化
+    // ============================================
+
+    .hybrid-table {
+        @include hybrid-card;
+        @include gpu-accelerated;
+
+        // 虚拟滚动模式
+        &--virtual {
+            .hybrid-table__container {
+                @include virtual-scroll-container;
+
+                overflow: hidden auto;
+                max-height: v-bind('containerHeight + "px"');
+            }
+
+            .hybrid-table__tbody {
+                position: relative;
+            }
+
+            .hybrid-table__spacer {
+                height: v-bind('totalHeight + "px"');
+            }
+        }
+
+        // 传统模式
+        &:not(&--virtual) {
+            .hybrid-table__container {
+                overflow-x: auto;
+            }
+        }
+    }
+
+    .hybrid-table__header {
+        @include data-dense-spacing;
+
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: var(--data-dense-border-width) solid var(--data-dense-border-color);
+    }
+
+    .hybrid-table__title {
+        @include artdeco-gold-accent;
+
+        font-family: var(--hybrid-font-display);
+        font-size: var(--data-dense-font-lg);
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin: 0;
+    }
+
+    .hybrid-table__actions {
+        display: flex;
+        gap: var(--data-dense-gap-sm);
+    }
+
+    .hybrid-table__container {
+        position: relative;
+    }
+
+    .hybrid-table__content {
+        width: 100%;
+        border-collapse: collapse;
+        font-family: var(--hybrid-font-body);
+        font-variant-numeric: tabular-nums;
+    }
+
+    .hybrid-table__thead {
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        background-color: var(--artdeco-bg-card);
+    }

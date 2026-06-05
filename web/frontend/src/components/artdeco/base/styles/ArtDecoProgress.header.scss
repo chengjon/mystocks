@@ -1,0 +1,20 @@
+    // ============================================
+    // HEADER - 标题区域
+    // ============================================
+
+    .artdeco-progress__header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--artdeco-spacing-4);
+    }
+
+    .artdeco-progress__title {
+        font-family: var(--artdeco-font-display);
+        font-size: var(--artdeco-font-size-lg);
+        font-weight: 600;
+        color: var(--artdeco-accent-gold);
+        text-transform: uppercase;
+        letter-spacing: var(--artdeco-tracking-wide);
+        margin: 0;
+    }

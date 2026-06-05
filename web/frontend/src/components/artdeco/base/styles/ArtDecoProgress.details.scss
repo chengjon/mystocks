@@ -1,0 +1,61 @@
+    // ============================================
+    // DETAILS - 详细信息
+    // ============================================
+
+    .artdeco-progress__details {
+        display: flex;
+        flex-direction: column;
+        gap: var(--artdeco-spacing-3);
+        width: 100%;
+        justify-content: center;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+        gap: var(--artdeco-spacing-1);
+        align-items: center;
+        text-align: center;
+        background: color-mix(in srgb, var(--artdeco-gold-primary) 8%, transparent);
+        border-radius: var(--artdeco-radius-none);
+        padding: var(--artdeco-spacing-2);
+    }
+
+    .detail-label {
+        font-family: var(--artdeco-font-body);
+        font-size: var(--artdeco-font-size-sm);
+        font-weight: 600;
+        color: var(--artdeco-fg-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .detail-value {
+        font-family: var(--artdeco-font-mono);
+        font-size: var(--artdeco-font-size-base);
+        font-weight: 600;
+        color: var(--artdeco-fg-secondary);
+    }
+
+    .detail-value--good {
+        color: var(--artdeco-up);
+        border: 1px solid var(--artdeco-up);
+        background: color-mix(in srgb, var(--artdeco-up) 10%, transparent);
+    }
+
+    .detail-value--bad {
+        color: var(--artdeco-down);
+        border: 1px solid var(--artdeco-down);
+        background: color-mix(in srgb, var(--artdeco-down) 10%, transparent);
+    }
+
+    // Value color modifiers
+    .artdeco-progress__value--up {
+        fill: var(--artdeco-up);
+        text-shadow: 0 0 var(--artdeco-spacing-2) color-mix(in srgb, var(--artdeco-up) 40%, transparent);
+    }
+
+    .artdeco-progress__value--down {
+        fill: var(--artdeco-down);
+        text-shadow: 0 0 var(--artdeco-spacing-2) color-mix(in srgb, var(--artdeco-down) 40%, transparent);
+    }

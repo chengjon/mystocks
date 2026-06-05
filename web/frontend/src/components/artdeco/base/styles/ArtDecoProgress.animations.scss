@@ -1,0 +1,60 @@
+    // ============================================
+    // ANIMATIONS - 动画定义
+    // ============================================
+
+    @keyframes gauge-load {
+        0% {
+            opacity: 30%;
+            fill-opacity: 30%;
+        }
+        100% {
+            opacity: 100%;
+            fill-opacity: 100%;
+        }
+    }
+
+    @keyframes gauge-progress {
+        0% {
+            stroke-dashoffset: var(--artde-circumference); // Full circle
+            opacity: 100%;
+        }
+        100% {
+            stroke-dashoffset: 0;
+            opacity: 100%;
+        }
+    }
+
+    @keyframes scale-pulse {
+        0%,
+        50%,
+        100% {
+            opacity: 40%;
+        }
+
+
+
+    }
+
+    // Apply pulse animation to scale lines
+    .artdeco-progress__scale-line {
+        &--line1 {
+            animation: scale-pulse 2s ease-in-out infinite;
+            animation-delay: 0s;
+        }
+        &--line2 {
+            animation: scale-pulse 2s ease-in-out infinite;
+            animation-delay: 0.5s;
+        }
+        &--line3 {
+            animation: scale-pulse 2s ease-in-out infinite;
+            animation-delay: 1s;
+        }
+        &--line4 {
+            animation: scale-pulse 2s ease-in-out infinite;
+            animation-delay: 1.5s;
+        }
+        &--line5 {
+            animation: scale-pulse 2s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+    }

@@ -1,0 +1,44 @@
+    // ============================================
+    //   CHART HEADER
+    // ============================================
+
+    .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--artdeco-spacing-6);
+        padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: var(--artdeco-spacing-4);
+
+            .title-icon {
+                font-size: var(--artdeco-text-2xl);
+                opacity: 80%;
+            }
+
+            .title-text {
+                .title-main {
+                    font-family: var(--artdeco-font-heading);
+                    font-size: var(--artdeco-text-lg);
+                    font-weight: 700;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    line-height: var(--artdeco-leading-tight);
+                }
+
+                .title-sub {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-text-xs);
+                    font-weight: 600;
+                    color: var(--artdeco-fg-muted);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin-top: var(--artdeco-spacing-1);
+                }
+            }
+        }
+    }

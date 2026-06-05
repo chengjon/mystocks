@@ -1,0 +1,26 @@
+    // ============================================
+    //   CHART CONTAINER
+    // ============================================
+
+    .chart-container {
+        position: relative;
+        min-height: calc(var(--artdeco-spacing-20) * 5);
+        padding: var(--artdeco-spacing-4);
+
+        &.loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    .chart-wrapper {
+        position: relative;
+        width: 100%;
+    }
+
+    .chart-canvas {
+        width: 100%;
+        display: block;
+        cursor: crosshair;
+    }

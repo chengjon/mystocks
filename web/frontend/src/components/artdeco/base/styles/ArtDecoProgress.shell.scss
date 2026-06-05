@@ -1,0 +1,15 @@
+    // ============================================
+    // ART DECO PROGRESS - 进度仪表组件
+    //   Art Deco风格：精密仪表、老式风格
+    //   用于回测进度、模型训练Epoch等耗时操作
+    // ============================================
+
+    .artdeco-progress {
+        padding: var(--artdeco-spacing-4);
+        background: var(--artdeco-bg-card);
+        border: 1px solid var(--artdeco-gold-opacity-20);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--artdeco-spacing-6);
+    }

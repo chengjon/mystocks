@@ -1,0 +1,10 @@
+    // ============================================
+    // VALUE COLOR CLASSES - 数值颜色
+    // ============================================
+
+    .artde-co-progress__value--fall {
+        fill: var(--artdeco-fall);
+    }
+    .artde-co-progress__value--rise {
+        fill: var(--artdeco-up);
+    }

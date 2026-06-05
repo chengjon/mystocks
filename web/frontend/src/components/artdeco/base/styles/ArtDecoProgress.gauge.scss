@@ -1,0 +1,101 @@
+    // ============================================
+    // GAUGE CONTAINER - 仪表盘区域
+    // ============================================
+
+    .artdeco-progress__gauge-container {
+        position: relative;
+        width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-10));
+        height: calc(var(--artdeco-spacing-24) + var(--artdeco-spacing-6));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    // Background Scale - 刻度尺效果
+    .artdeco-progress__scale {
+        position: absolute;
+        top: calc(var(--artdeco-spacing-5) / 2);
+        left: calc(var(--artdeco-spacing-5) / 2);
+        width: calc(var(--artdeco-spacing-20) * 2 + var(--artdeco-spacing-5));
+        height: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-5));
+    }
+
+    .artdeco-progress__scale-line {
+        position: absolute;
+        background: var(--artdeco-gold-dim);
+        opacity: 20%;
+        transition: opacity 0.3s ease-in-out;
+
+        &--line1 {
+            top: 0;
+            left: 20%;
+        }
+        &--line2 {
+            top: 25%;
+            left: 40%;
+        }
+        &--line3 {
+            top: 50%;
+            left: 60%;
+        }
+        &--line4 {
+            top: 75%;
+            left: 80%;
+        }
+        &--line5 {
+            top: 0;
+            left: 100%;
+        }
+    }
+
+    // Gauge SVG - Art Deco精密仪表
+    .artdeco-progress__svg {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        filter: url("#glow");
+        animation: gauge-load 1.5s ease-out;
+    }
+
+    .artdeco-progress__bg-arc {
+        transition: stroke-dasharray var(--artdeco-duration-base) 1s ease-out;
+        fill-opacity: 30%;
+    }
+
+    .artdeco-progress__progress-arc {
+        fill: none;
+        stroke-width: 16;
+        stroke-linecap: round;
+        transition: all var(--artdeco-transition-base) 1s ease-out;
+        animation: gauge-progress 1.2s ease-out forwards;
+    }
+
+    // Value Text - 大号显示百分比
+    .artdeco-progress__value {
+        font-family: var(--artdeco-font-display);
+        font-size: var(--artdeco-font-size-xl);
+        font-weight: 700;
+        fill: var(--artdeco-accent-gold);
+        text-anchor: middle;
+        pointer-events: none;
+        transition: all var(--artdeco-transition-base);
+    }
+
+    .artdeco-progress__value--up {
+        fill: var(--artdeco-up);
+    }
+
+    .artdeco-progress__value--down {
+        fill: var(--artdeco-down);
+    }
+
+    // Epoch Counter - 次数显示Epoch
+    .artdeco-progress__epoch {
+        font-family: var(--artdeco-font-mono);
+        font-size: var(--artdeco-font-size-sm);
+        font-weight: 600;
+        fill: var(--artdeco-accent-gold);
+        text-anchor: middle;
+        pointer-events: none;
+        letter-spacing: 0.1em;
+    }

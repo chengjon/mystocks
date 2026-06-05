@@ -1,0 +1,13 @@
+    // ============================================
+    //   ART DECO TIME SERIES CHART
+    // ============================================
+
+    .artdeco-timeseries-chart {
+        width: 100%;
+    }
+
+    .chart-card {
+        :deep(.card-header) {
+            padding: 0;
+        }
+    }
