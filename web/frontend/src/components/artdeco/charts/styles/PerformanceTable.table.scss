@@ -1,0 +1,137 @@
+    // ============================================
+    //   PERFORMANCE TABLE
+    // ============================================
+
+    .performance-table-wrapper {
+        width: 100%;
+    }
+
+    .artdeco-performance-table {
+        width: 100%;
+
+        :deep(.el-table__header-wrapper) {
+            background: var(--artdeco-gold-opacity-05);
+
+            th {
+                background: transparent;
+                font-family: var(--artdeco-font-heading);
+                font-size: var(--artdeco-text-xs);
+                font-weight: 700;
+                color: var(--artdeco-gold-primary);
+                text-transform: uppercase;
+                letter-spacing: var(--artdeco-tracking-wide);
+                border-color: var(--artdeco-gold-dim);
+            }
+        }
+
+        :deep(.el-table__body-wrapper) {
+            td {
+                font-family: var(--artdeco-font-mono);
+                font-size: var(--artdeco-text-sm);
+                color: var(--artdeco-fg-primary);
+                border-color: var(--artdeco-gold-dim);
+            }
+
+            tr:hover > td {
+                background: var(--artdeco-gold-opacity-10) !important;
+            }
+
+            tr.current-row > td {
+                background: var(--artdeco-gold-opacity-15) !important;
+            }
+        }
+
+        // Strategy name cell
+        .strategy-name-cell {
+            display: flex;
+            align-items: center;
+            gap: var(--artdeco-spacing-3);
+
+            .strategy-icon {
+                font-size: var(--artdeco-text-xl);
+            }
+
+            .strategy-info {
+                display: flex;
+                flex-direction: column;
+                gap: var(--artdeco-spacing-1);
+
+                .strategy-name {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-text-sm);
+                    font-weight: 600;
+                    color: var(--artdeco-fg-primary);
+                }
+
+                .strategy-code {
+                    font-family: var(--artdeco-font-mono);
+                    font-size: var(--artdeco-text-xs);
+                    color: var(--artdeco-fg-muted);
+                }
+            }
+        }
+
+        // Metric values
+        .metric-value {
+            font-family: var(--artdeco-font-mono);
+            font-size: var(--artdeco-text-sm);
+            font-weight: 600;
+        }
+
+        // Value colors
+        .rise {
+            color: var(--artdeco-rise);
+        }
+
+        .fall {
+            color: var(--artdeco-fall);
+        }
+
+        .neutral {
+            color: var(--artdeco-fg-muted);
+        }
+
+        // Sharpe ratio classes
+        .excellent {
+            color: var(--artdeco-rise);
+            font-weight: 700;
+        }
+
+        .good {
+            color: color-mix(in srgb, var(--artdeco-down) 40%, var(--artdeco-warning));
+            font-weight: 600;
+        }
+
+        .fair {
+            color: var(--artdeco-fg-muted);
+        }
+
+        .poor {
+            color: var(--artdeco-fall);
+        }
+
+        // Drawdown classes
+        .severe {
+            color: var(--artdeco-fall);
+            font-weight: 700;
+        }
+
+        .high {
+            color: color-mix(in srgb, var(--artdeco-warning) 75%, var(--artdeco-fall));
+            font-weight: 600;
+        }
+
+        .moderate {
+            color: var(--artdeco-warning);
+        }
+
+        .mild {
+            color: var(--artdeco-fg-muted);
+        }
+
+        // Action buttons
+        .action-buttons {
+            display: flex;
+            gap: var(--artdeco-spacing-2);
+        }
+    }

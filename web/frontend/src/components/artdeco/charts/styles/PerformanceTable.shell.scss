@@ -1,0 +1,122 @@
+    // ============================================
+    //   ART DECO PERFORMANCE TABLE
+    // ============================================
+
+    .artdeco-performance-table {
+        width: 100%;
+    }
+
+    .table-card {
+        :deep(.card-header) {
+            padding: 0;
+        }
+    }
+
+    // ============================================
+    //   TABLE HEADER
+    // ============================================
+
+    .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: var(--artdeco-spacing-6);
+        padding: var(--artdeco-spacing-4) var(--artdeco-spacing-6);
+
+        .header-title {
+            display: flex;
+            align-items: center;
+            gap: var(--artdeco-spacing-4);
+
+            .title-icon {
+                font-size: var(--artdeco-text-2xl);
+                opacity: 80%;
+            }
+
+            .title-text {
+                .title-main {
+                    font-family: var(--artdeco-font-heading);
+                    font-size: var(--artdeco-text-lg);
+                    font-weight: 700;
+                    color: var(--artdeco-gold-primary);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    line-height: var(--artdeco-leading-tight);
+                }
+
+                .title-sub {
+                    font-family: var(--artdeco-font-body);
+                    font-size: var(--artdeco-text-xs);
+                    font-weight: 600;
+                    color: var(--artdeco-fg-muted);
+                    text-transform: uppercase;
+                    letter-spacing: var(--artdeco-tracking-wide);
+                    margin-top: var(--artdeco-spacing-1);
+                }
+            }
+        }
+
+        .header-controls {
+            display: flex;
+            gap: var(--artdeco-spacing-3);
+
+            .period-select {
+                width: calc(var(--artdeco-spacing-20) + var(--artdeco-spacing-10));
+            }
+        }
+    }
+
+    // ============================================
+    //   TABLE CONTAINER
+    // ============================================
+
+    .table-container {
+        position: relative;
+        min-height: calc(var(--artdeco-spacing-20) * 5);
+        padding: var(--artdeco-spacing-4);
+
+        &.loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    .table-content {
+        width: 100%;
+    }
+
+    // ============================================
+    //   EMPTY STATE
+    // ============================================
+
+    .empty-state {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+
+        .empty-icon {
+            font-size: var(--artdeco-text-5xl);
+            margin-bottom: var(--artdeco-spacing-4);
+            opacity: 30%;
+        }
+
+        .empty-text {
+            font-family: var(--artdeco-font-heading);
+            font-size: var(--artdeco-text-lg);
+            font-weight: 600;
+            color: var(--artdeco-fg-muted);
+            margin-bottom: var(--artdeco-spacing-2);
+        }
+
+        .empty-hint {
+            font-family: var(--artdeco-font-body);
+            font-size: var(--artdeco-text-xs);
+            font-weight: 600;
+            color: var(--artdeco-fg-dim);
+            text-transform: uppercase;
+            letter-spacing: var(--artdeco-tracking-wide);
+        }
+    }

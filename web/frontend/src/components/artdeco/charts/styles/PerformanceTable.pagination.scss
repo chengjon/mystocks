@@ -1,0 +1,35 @@
+    // ============================================
+    //   PAGINATION
+    // ============================================
+
+    .pagination-wrapper {
+        display: flex;
+        justify-content: center;
+        padding: var(--artdeco-spacing-6) 0;
+
+        :deep(.el-pagination) {
+            .el-pager li,
+            .btn-prev,
+            .btn-next {
+                background: var(--artdeco-bg-card);
+                border: 1px solid var(--artdeco-gold-dim);
+                color: var(--artdeco-fg-primary);
+
+                &:hover {
+                    border-color: var(--artdeco-gold-primary);
+                    color: var(--artdeco-gold-primary);
+                }
+
+                &.active {
+                    background: var(--artdeco-gold-primary);
+                    border-color: var(--artdeco-gold-primary);
+                    color: var(--artdeco-bg-card);
+                }
+            }
+
+            .el-pagination__sizes .el-select .el-input__wrapper {
+                background: var(--artdeco-bg-card);
+                border-color: var(--artdeco-gold-dim);
+            }
+        }
+    }
