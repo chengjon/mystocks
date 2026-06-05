@@ -252,6 +252,7 @@ test.describe("Market Data Module - E2E Tests", () => {
       await expect(page.locator(".market-kline-tab")).toBeVisible()
       await expect(page.getByTestId("market-technical-page")).toBeVisible({ timeout: 10000 })
       await expect(page.getByTestId("market-technical-header")).toBeVisible()
+      await expect(page.getByTestId("market-technical-header")).toHaveClass(/artdeco-route-header/)
       await expect(page.getByTestId("market-technical-refresh")).toBeVisible()
       await expect(page.getByRole("heading", { level: 2, name: "K-Line Analysis" })).toBeVisible({ timeout: 10000 })
     })

@@ -2,14 +2,17 @@
 import { computed, onMounted, ref } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { dataApi } from '@/api/index'
-import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import ProKLineChart from '@/components/market/ProKLineChart.vue'
-import { buildMarketKlineParams, extractKlineRows, type KLineRow } from './marketKlineData'
+import { buildMarketKlineParams, extractKlineRows, toMarketKlineDataPoints, type KLineRow } from './marketKlineData'
 
 const { loading, error, lastRequestId, exec } = useArtDecoApi()
 const klineData = ref<KLineRow[]>([])
 const currentSymbol = ref('000001')
 const hasLoaded = ref(false)
+const lastVerifiedRequestId = ref('')
+let requestSequence = 0
 
 const latestRow = computed(() => klineData.value[klineData.value.length - 1] ?? null)
 const latestClose = computed(() => (latestRow.value ? Number(latestRow.value.close).toFixed(2) : '--'))
@@ -19,7 +22,20 @@ const latestDirection = computed(() => {
   return Number(latestRow.value.close) >= Number(latestRow.value.open) ? 'rise' : 'fall'
 })
 const dataPointCount = computed(() => klineData.value.length)
+const hasVisibleSnapshot = computed(() => dataPointCount.value > 0)
+const isAwaitingFirstSnapshot = computed(() => loading.value && !hasLoaded.value && !error.value && dataPointCount.value === 0)
+const showRouteMetaPlaceholders = computed(() => !hasLoaded.value || (Boolean(error.value) && !hasVisibleSnapshot.value))
+const displayPointCount = computed(() => (showRouteMetaPlaceholders.value ? '--' : String(dataPointCount.value)))
+const displayRequestId = computed(() => {
+  if (showRouteMetaPlaceholders.value) {
+    return 'N/A'
+  }
+
+  return lastVerifiedRequestId.value || lastRequestId.value || 'N/A'
+})
 const latestVolume = computed(() => (latestRow.value ? `${(Number(latestRow.value.volume) / 10000).toFixed(1)}万` : '--'))
+const chartData = computed(() => toMarketKlineDataPoints(klineData.value))
+const chartPlaceholderText = computed(() => (isAwaitingFirstSnapshot.value ? 'Synchronizing K-Line Sample' : 'Waiting For K-Line Sample'))
 const pageStatusText = computed(() => {
   if (loading.value) return '同步中'
   if (error.value) return 'K线异常'
@@ -34,9 +50,14 @@ const pageToneClass = computed(() => {
 const showEmptyState = computed(() => hasLoaded.value && !loading.value && !error.value && dataPointCount.value === 0)
 
 const fetchKLine = async () => {
-  const data = await exec(() => dataApi.getKline(buildMarketKlineParams(currentSymbol.value)), { silent: true })
+  const currentRequest = ++requestSequence
+  const data = await exec(
+    () => dataApi.getKline(buildMarketKlineParams(currentSymbol.value, '1d', currentRequest)),
+    { silent: true }
+  )
   if (data) {
     klineData.value = extractKlineRows(data)
+    lastVerifiedRequestId.value = lastRequestId.value || lastVerifiedRequestId.value
   }
   hasLoaded.value = true
 }
@@ -48,34 +69,37 @@ onMounted(() => {
 
 <template>
   <section class="market-kline-tab page-enter" :class="pageToneClass" data-testid="market-technical-page">
-    <section class="hero-shell artdeco-card-shell" data-testid="market-technical-header">
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">k-line analysis desk</span>
-          <div class="hero-meta">
-            <span v-if="lastRequestId">REQ: {{ lastRequestId }}</span>
-            <span>SYMBOL: {{ currentSymbol }}</span>
-            <span>POINTS: {{ dataPointCount }}</span>
-          </div>
-        </div>
-      </div>
+    <ArtDecoRouteHeader
+      title="K线分析工作台"
+      subtitle="统一承载价格快照、近期样本和 K 线摘要，形成市场技术分析入口。"
+      eyebrow="k-line analysis desk"
+      :show-status="true"
+      :status-text="pageStatusText"
+      test-id="market-technical-header"
+      shell-class="hero-shell artdeco-card-shell"
+    >
+      <template #meta>
+        <span>REQ: {{ displayRequestId }}</span>
+        <span>SYMBOL: {{ currentSymbol }}</span>
+        <span>POINTS: {{ displayPointCount }}</span>
+      </template>
 
-      <ArtDecoHeader
-        title="K线分析工作台"
-        subtitle="统一承载价格快照、近期样本和 K 线摘要，形成市场技术分析入口。"
-        :show-status="true"
-        :status-text="pageStatusText"
-      >
-        <template #actions>
-          <ArtDecoButton variant="outline" size="sm" :loading="loading" :disabled="loading" data-testid="market-technical-refresh" @click="fetchKLine">
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新K线
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
-    </section>
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          :disabled="loading"
+          data-testid="market-technical-refresh"
+          @click="fetchKLine"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新K线
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section class="stats-strip artdeco-card-shell">
       <ArtDecoStatCard label="当前标的" :value="currentSymbol" :show-change="false" variant="gold" />
@@ -93,7 +117,7 @@ onMounted(() => {
         </div>
         <div class="content-shell-meta">
           <span>LAST CLOSE: {{ latestClose }}</span>
-          <span>POINTS: {{ dataPointCount }}</span>
+          <span>POINTS: {{ displayPointCount }}</span>
         </div>
       </div>
 
@@ -114,17 +138,20 @@ onMounted(() => {
           </div>
           <ProKLineChart
             :symbol="currentSymbol"
+            :external-data="chartData"
+            :loading="loading"
             :height="360"
             :show-price-limits="true"
             :forward-adjusted="false"
             board-type="main"
+            @request-refresh="fetchKLine"
           />
         </div>
         <div v-else class="chart-placeholder">
           <div class="placeholder-icon">
             <ArtDecoIcon name="TechnicalAnalysis" size="xl" />
           </div>
-          <p>Waiting For K-Line Sample</p>
+          <p>{{ chartPlaceholderText }}</p>
         </div>
       </div>
 
@@ -409,31 +436,4 @@ onMounted(() => {
   }
 }
 
-@media (width <= 48rem) {
-  .market-kline-tab :deep(.header-status),
-  .market-kline-tab :deep(.header-actions) {
-    width: 100%;
-  }
-
-  .market-kline-tab :deep(.header-actions .artdeco-button) {
-    width: 100%;
-  }
-
-  .stats-strip {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-meta,
-  .content-shell-meta {
-    width: 100%;
-  }
-
-  .artdeco-card-shell {
-    padding: var(--artdeco-spacing-4);
-  }
-
-  .kline-container {
-    padding: var(--artdeco-spacing-3);
-  }
-}
 </style>
