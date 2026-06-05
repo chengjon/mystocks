@@ -2,7 +2,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
-import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import { buildConceptRequest, extractConceptRows, type ConceptRow } from './marketConceptData'
 
 const { loading, lastRequestId, exec } = useArtDecoApi()
@@ -33,35 +34,38 @@ onMounted(() => {
 
 <template>
   <div class="market-concept-tab page-enter">
-    <section class="hero-shell artdeco-card-shell">
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">concept sector desk</span>
-          <div class="hero-meta">
-            <span v-if="lastRequestId">REQ: {{ lastRequestId }}</span>
-            <span>SECTORS: {{ concepts.length }}</span>
-            <span>LEADER: {{ topLeader }}</span>
-          </div>
-        </div>
-      </div>
+    <ArtDecoRouteHeader
+      title="概念板块工作台"
+      subtitle="统一观察概念板块涨跌、主力净流入和龙头股，形成板块动向入口"
+      eyebrow="concept sector desk"
+      :show-status="true"
+      :status-text="pageStatusText"
+      :status-type="pageStatusType"
+      test-id="data-concept-header"
+      shell-class="hero-shell artdeco-card-shell"
+    >
+      <template #meta>
+        <span v-if="lastRequestId">REQ: {{ lastRequestId }}</span>
+        <span>SECTORS: {{ concepts.length }}</span>
+        <span>LEADER: {{ topLeader }}</span>
+      </template>
 
-      <ArtDecoHeader
-        title="概念板块工作台"
-        subtitle="统一观察概念板块涨跌、主力净流入和龙头股，形成板块动向入口"
-        :show-status="true"
-        :status-text="pageStatusText"
-        :status-type="pageStatusType"
-      >
-        <template #actions>
-          <ArtDecoButton variant="outline" size="sm" @click="fetchConcepts">
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新板块
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
-    </section>
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          :disabled="loading"
+          data-testid="data-concept-refresh"
+          @click="fetchConcepts"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新板块
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section class="stats-strip artdeco-card-shell">
       <ArtDecoStatCard label="概念总数" :value="concepts.length" variant="gold" />

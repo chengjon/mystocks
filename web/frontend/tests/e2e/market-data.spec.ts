@@ -23,6 +23,7 @@ const MARKET_ROUTES = {
 
 const DATA_ROUTES = {
   industry: "/data/industry",
+  concept: "/data/concept",
 }
 
 const desktopViewports = [
@@ -275,6 +276,14 @@ test.describe("Market Data Module - E2E Tests", () => {
       await expect(page.getByTestId("data-industry-header")).toBeVisible()
       await expect(page.getByTestId("data-industry-header")).toHaveClass(/artdeco-route-header/)
       await expect(page.getByTestId("data-industry-refresh")).toBeVisible()
+    })
+
+    test("should open data concept page", async ({ page }) => {
+      await page.goto(`${FRONTEND_BASE_URL}${DATA_ROUTES.concept}`)
+      await expect(page.locator(".market-concept-tab")).toBeVisible()
+      await expect(page.getByTestId("data-concept-header")).toBeVisible()
+      await expect(page.getByTestId("data-concept-header")).toHaveClass(/artdeco-route-header/)
+      await expect(page.getByTestId("data-concept-refresh")).toBeVisible()
     })
   })
 
