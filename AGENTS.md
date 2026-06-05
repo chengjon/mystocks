@@ -47,7 +47,39 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - 执行任何代码修改前，必须先阅读 `architecture/STANDARDS.md`。
 - 仓库级共享规则与当前执行口径统一以 `architecture/STANDARDS.md` 为准。
 - 本文件只保留 Agent 执行层面的流程、命令和协作规范，避免重复维护共享规则正文。
+- 新需求即时小包治理、同域 `no-source` 批量盘点、`source-authorized` 与删除/退役分界，统一以 `architecture/STANDARDS.md` 的“治理节奏与批量盘点规则”为准。
 - Claude Auto / Agent 自动 worklog 若需落盘，统一写入 `docs/reports/worklogs/claude-auto/`；不得重新创建 `docs/worklogs/` 平行目录。
+
+---
+
+## OPENDOG Project Observation
+
+OPENDOG is the advisory observation layer for this repository. Use it to decide what to inspect, what evidence exists, and whether cleanup/refactor work is safe; do not treat OPENDOG output as a replacement for `git`, imports/runtime checks, tests, lint, build, or human confirmation.
+
+```bash
+export OPENDOG_HOME=/root/.opendog
+OPENDOG=/opt/claude/opendog/target/release/opendog
+```
+
+- Before broad exploration, cleanup, refactor, or risky AI-assisted edits, query:
+  - `$OPENDOG agent-guidance --project mystocks --top 5 --json`
+  - `$OPENDOG verification --id mystocks --json`
+  - `$OPENDOG stats --id mystocks --path-classification source`
+  - `$OPENDOG unused --id mystocks --path-classification source`
+- Start monitoring only during an active development or review session:
+  - `$OPENDOG start --id mystocks`
+- Stop monitoring when the task ends:
+  - `$OPENDOG stop --id mystocks`
+- Record fresh evidence after running project-native checks:
+  - `$OPENDOG run-verification --id mystocks --kind test --command "<project test command>" --json`
+  - `$OPENDOG run-verification --id mystocks --kind lint --command "<project lint command>" --json`
+  - `$OPENDOG run-verification --id mystocks --kind build --command "<project build command>" --json`
+- Treat `unused` and `data-risk` rows as review candidates only. Never delete files or mock/hardcoded-data candidates without checking `git status`, `git diff`, imports/runtime paths, project-native checks, and explicit user approval.
+- Weekly or after long AI sessions, review OPENDOG storage pressure with dry-run first:
+  - `$OPENDOG cleanup-data --id mystocks --scope activity --older-than-days 14 --dry-run --json`
+  - `$OPENDOG cleanup-data --id mystocks --scope activity --older-than-days 7 --dry-run --json`
+
+Default posture: keep the mystocks monitor stopped unless a specific observation window is needed. This prevents long-lived AI sessions from inflating `/root/.opendog/data/projects/mystocks.db`.
 
 ---
 
@@ -562,11 +594,9 @@ python scripts/database/check_postgresql_tables.py
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **mystocks_spec** (91043 symbols, 224595 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **mystocks** (235607 symbols, 322996 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `gitnexus analyze` in terminal first.
-
-> If GitNexus behaves differently across machines or CI, run `gitnexus doctor --json` to inspect `native-runtime`, `language-support`, and host configuration checks.
 
 ## Always Do
 
@@ -576,25 +606,6 @@ This project is indexed by GitNexus as **mystocks_spec** (91043 symbols, 224595 
 - When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
 - When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
 
-## Dirty Worktree Rule
-
-- In a dirty worktree, `gitnexus_detect_changes({scope: "unstaged"})` reflects the whole worktree and MUST NOT be used as the risk verdict for the current micro-batch.
-- Stage the intended batch first with `git add <paths>`, then run `gitnexus_detect_changes({scope: "staged"})` for the precise pre-commit scope check.
-- If no files are staged yet, report that staged scope is empty instead of falling back to `unstaged`.
-
-## When Debugging
-
-1. `gitnexus_query({query: "<error or symptom>"})` — find execution flows related to the issue
-2. `gitnexus_context({name: "<suspect function>"})` — see all callers, callees, and process participation
-3. `READ gitnexus://repo/mystocks_spec/process/{processName}` — trace the full execution flow step by step
-4. For regressions: `gitnexus_detect_changes({scope: "compare", base_ref: "main"})` — see what your branch changed
-
-## When Refactoring
-
-- **Renaming**: MUST use `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` first. Review the preview — graph edits are safe, text_search edits need manual review. Then run with `dry_run: false`.
-- **Extracting/Splitting**: MUST run `gitnexus_context({name: "target"})` to see all incoming/outgoing refs, then `gitnexus_impact({target: "target", direction: "upstream"})` to find all external callers before moving code.
-- After any refactor: run `gitnexus_detect_changes({scope: "all"})` to verify only expected files changed.
-
 ## Never Do
 
 - NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
@@ -602,142 +613,14 @@ This project is indexed by GitNexus as **mystocks_spec** (91043 symbols, 224595 
 - NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
 - NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
 
-## Tools Quick Reference
-
-| Tool | When to use | Command |
-|------|-------------|---------|
-| `query` | Find code by concept | `gitnexus_query({query: "auth validation"})` |
-| `context` | 360-degree view of one symbol | `gitnexus_context({name: "validateUser"})` |
-| `impact` | Blast radius before editing | `gitnexus_impact({target: "X", direction: "upstream"})` |
-| `detect_changes` | Pre-commit scope check | `gitnexus_detect_changes({scope: "staged"})` |
-| `rename` | Safe multi-file rename | `gitnexus_rename({symbol_name: "old", new_name: "new", dry_run: true})` |
-| `cypher` | Custom graph queries | `gitnexus_cypher({query: "MATCH ..."})` |
-
-## Impact Risk Levels
-
-| Depth | Meaning | Action |
-|-------|---------|--------|
-| d=1 | WILL BREAK — direct callers/importers | MUST update these |
-| d=2 | LIKELY AFFECTED — indirect deps | Should test |
-| d=3 | MAY NEED TESTING — transitive | Test if critical path |
-
 ## Resources
 
 | Resource | Use for |
 |----------|---------|
-| `gitnexus://repo/mystocks_spec/context` | Codebase overview, check index freshness |
-| `gitnexus://repo/mystocks_spec/clusters` | All functional areas |
-| `gitnexus://repo/mystocks_spec/processes` | All execution flows |
-| `gitnexus://repo/mystocks_spec/process/{name}` | Step-by-step execution trace |
-
-## Self-Check Before Finishing
-
-Before completing any code modification task, verify:
-1. `gitnexus_impact` was run for all modified symbols
-2. No HIGH/CRITICAL risk warnings were ignored
-3. `gitnexus_detect_changes()` confirms changes match expected scope
-4. All d=1 (WILL BREAK) dependents were updated
-
-## Keeping the Index Fresh
-
-After committing code changes, the GitNexus index becomes stale. Re-run analyze to update it:
-
-```bash
-gitnexus analyze
-```
-
-If you have modified the local GitNexus source code under `/opt/claude/GitNexus/gitnexus/src`, rebuild first so the CLI picks up the updated `dist` files:
-
-```bash
-cd /opt/claude/GitNexus/gitnexus
-npm run build
-gitnexus analyze
-```
-
-Use plain `gitnexus analyze` when you want the fastest refresh and exact symbol, file, or keyword search is enough.
-
-Graph tools, BM25/FTS search, impact analysis, and context lookups still work without embeddings.
-
-Use `gitnexus analyze --embeddings` when natural-language, concept, or fuzzy code search matters.
-
-This enables hybrid retrieval (`BM25 + semantic + RRF`) but takes longer and requires an embedding provider such as Ollama or Hugging Face.
-
-During `gitnexus analyze`, GitNexus automatically detects and stops local `gitnexus mcp` processes that are holding the target repo's `.gitnexus/kuzu` file open. This avoids the common KuzuDB lock conflict when you have multiple CLI or editor sessions open.
-
-Use `gitnexus doctor --json` when you need to verify whether optional grammars such as Kotlin / Swift are actually available in the current environment.
-
-If the index previously included embeddings, preserve them by adding `--embeddings`:
-
-```bash
-gitnexus analyze --embeddings
-```
-
-To check whether embeddings exist, inspect `.gitnexus/meta.json` — the `stats.embeddings` field shows the count (0 means no embeddings). **Running analyze without `--embeddings` will delete any previously generated embeddings.**
-
-If embedding generation is enabled, these environment variables control the provider and runtime behavior:
-
-```bash
-# Raise the CLI safety limit for large repos.
-# Start with 64 on a local Ollama GPU setup; use 32 as a conservative fallback.
-GITNEXUS_EMBEDDING_NODE_LIMIT=90000
-GITNEXUS_EMBEDDING_BATCH_SIZE=64
-
-# Use a Hugging Face mirror / custom endpoint
-HF_ENDPOINT=https://hf-mirror.com
-# or
-GITNEXUS_HF_REMOTE_HOST=https://hf-mirror.com
-
-# Persist downloaded model files
-GITNEXUS_HF_CACHE_DIR=/path/to/hf-cache
-
-# Use a predownloaded local Hugging Face model only
-GITNEXUS_HF_LOCAL_MODEL_PATH=/path/to/local-models
-GITNEXUS_HF_LOCAL_ONLY=1
-
-# Use Ollama instead of Hugging Face for both indexing and query embeddings
-GITNEXUS_EMBEDDING_PROVIDER=ollama
-GITNEXUS_OLLAMA_BASE_URL=http://localhost:11434
-GITNEXUS_OLLAMA_MODEL=qwen3-embedding:0.6b
-```
-
-Recommended Ollama example:
-
-```bash
-GITNEXUS_EMBEDDING_PROVIDER=ollama \
-GITNEXUS_OLLAMA_BASE_URL=http://localhost:11434 \
-GITNEXUS_OLLAMA_MODEL=qwen3-embedding:0.6b \
-GITNEXUS_EMBEDDING_NODE_LIMIT=90000 \
-GITNEXUS_EMBEDDING_BATCH_SIZE=64 \
-gitnexus analyze --embeddings
-```
-
-Use `--force` only for intentional full rebuilds or corrupted indexes.
-
-The same settings can also be stored in `~/.gitnexus/config.json`:
-
-```json
-{
-  "embeddings": {
-    "provider": "ollama",
-    "ollamaBaseUrl": "http://localhost:11434",
-    "ollamaModel": "qwen3-embedding:0.6b",
-    "nodeLimit": 90000,
-    "batchSize": 64
-  }
-}
-```
-
-Priority is: environment variables > `~/.gitnexus/config.json` > built-in defaults.
-
-You can inspect or update this without editing JSON manually:
-
-```bash
-gitnexus config embeddings show
-gitnexus config embeddings set --provider ollama --ollama-base-url http://localhost:11434 --ollama-model qwen3-embedding:0.6b --node-limit 90000 --batch-size 64
-gitnexus config embeddings clear
-```
-
-> Claude Code users: A PostToolUse hook handles this automatically after `git commit` and `git merge`.
+| `gitnexus://repo/mystocks/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/mystocks/clusters` | All functional areas |
+| `gitnexus://repo/mystocks/processes` | All execution flows |
+| `gitnexus://repo/mystocks/process/{name}` | Step-by-step execution trace |
 
 ## CLI
 

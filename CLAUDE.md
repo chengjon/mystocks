@@ -23,6 +23,39 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 > **核心约束**: 执行任何代码修改或架构设计前，**必须**首先阅读并遵守 [architecture/STANDARDS.md](architecture/STANDARDS.md) 定义的工程红线。
 
+> **治理节奏引用**: 新需求即时小包治理、同域 `no-source` 批量盘点、`source-authorized` 与删除/退役分界，统一以 [architecture/STANDARDS.md](architecture/STANDARDS.md) 的“治理节奏与批量盘点规则”为准。
+
+---
+
+## 0. OPENDOG 项目观察规则
+
+OPENDOG 是本仓库的项目观察和安全门控辅助层，用于判断哪些文件值得优先查看、当前验证证据是否足够、cleanup/refactor 是否有风险。OPENDOG 输出只作为 advisory evidence，不能替代 `git`、导入/运行路径检查、项目原生 test/lint/build 或人工确认。
+
+```bash
+export OPENDOG_HOME=/root/.opendog
+OPENDOG=/opt/claude/opendog/target/release/opendog
+```
+
+- 广泛探索、cleanup、refactor 或高风险 AI 修改前，先查询：
+  - `$OPENDOG agent-guidance --project mystocks --top 5 --json`
+  - `$OPENDOG verification --id mystocks --json`
+  - `$OPENDOG stats --id mystocks --path-classification source`
+  - `$OPENDOG unused --id mystocks --path-classification source`
+- 只有在明确需要观察一次开发/review 会话时才启动 monitor：
+  - `$OPENDOG start --id mystocks`
+- 任务结束后立即停止 monitor：
+  - `$OPENDOG stop --id mystocks`
+- 执行项目原生检查后，把证据写回 OPENDOG：
+  - `$OPENDOG run-verification --id mystocks --kind test --command "<project test command>" --json`
+  - `$OPENDOG run-verification --id mystocks --kind lint --command "<project lint command>" --json`
+  - `$OPENDOG run-verification --id mystocks --kind build --command "<project build command>" --json`
+- `unused` 和 `data-risk` 结果只是候选，不是删除许可。删除任何文件或 mock/hardcoded-data 候选前，必须检查 `git status`、`git diff`、imports/runtime paths、项目原生检查，并获得用户明确同意。
+- 每周或长时间 AI 会话后，先 dry-run 检查 OPENDOG 自身数据膨胀：
+  - `$OPENDOG cleanup-data --id mystocks --scope activity --older-than-days 14 --dry-run --json`
+  - `$OPENDOG cleanup-data --id mystocks --scope activity --older-than-days 7 --dry-run --json`
+
+默认姿态：除非正在进行明确的观察窗口，否则保持 mystocks monitor 停止，避免长期 AI 会话再次撑大 `/root/.opendog/data/projects/mystocks.db`。
+
 ---
 
 ## 1. 项目定位与边界
@@ -186,6 +219,22 @@ git branch --show-current   # 检测当前分支
 
 ---
 
+## Agent skills
+
+### Issue tracker
+
+Issues are tracked in GitHub Issues for `chengjon/mystocks`. See `docs/agents/issue-tracker.md`.
+
+### Triage labels
+
+Use the standard Matt Pocock triage state labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, and `wontfix`. See `docs/agents/triage-labels.md`.
+
+### Domain docs
+
+This repo uses a backend-focused domain context: `web/backend/CONTEXT.md`, with architecture decisions under `docs/architecture/`. See `docs/agents/domain.md`.
+
+---
+
 ## 8. GitNexus 代码智能（要点）
 
 > 详细 CLI 和配置参考见 `.claude/skills/gitnexus/` 目录。
@@ -234,3 +283,47 @@ git branch --show-current   # 检测当前分支
 ---
 
 **Last updated**: 2026-04-19
+
+<!-- gitnexus:start -->
+# GitNexus — Code Intelligence
+
+This project is indexed by GitNexus as **mystocks** (235607 symbols, 322996 relationships, 300 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+
+> If any GitNexus tool warns the index is stale, run `gitnexus analyze` in terminal first.
+
+## Always Do
+
+- **MUST run impact analysis before editing any symbol.** Before modifying a function, class, or method, run `gitnexus_impact({target: "symbolName", direction: "upstream"})` and report the blast radius (direct callers, affected processes, risk level) to the user.
+- **MUST run `gitnexus_detect_changes()` before committing** to verify your changes only affect expected symbols and execution flows.
+- **MUST warn the user** if impact analysis returns HIGH or CRITICAL risk before proceeding with edits.
+- When exploring unfamiliar code, use `gitnexus_query({query: "concept"})` to find execution flows instead of grepping. It returns process-grouped results ranked by relevance.
+- When you need full context on a specific symbol — callers, callees, which execution flows it participates in — use `gitnexus_context({name: "symbolName"})`.
+
+## Never Do
+
+- NEVER edit a function, class, or method without first running `gitnexus_impact` on it.
+- NEVER ignore HIGH or CRITICAL risk warnings from impact analysis.
+- NEVER rename symbols with find-and-replace — use `gitnexus_rename` which understands the call graph.
+- NEVER commit changes without running `gitnexus_detect_changes()` to check affected scope.
+
+## Resources
+
+| Resource | Use for |
+|----------|---------|
+| `gitnexus://repo/mystocks/context` | Codebase overview, check index freshness |
+| `gitnexus://repo/mystocks/clusters` | All functional areas |
+| `gitnexus://repo/mystocks/processes` | All execution flows |
+| `gitnexus://repo/mystocks/process/{name}` | Step-by-step execution trace |
+
+## CLI
+
+| Task | Read this skill file |
+|------|---------------------|
+| Understand architecture / "How does X work?" | `.claude/skills/gitnexus/gitnexus-exploring/SKILL.md` |
+| Blast radius / "What breaks if I change X?" | `.claude/skills/gitnexus/gitnexus-impact-analysis/SKILL.md` |
+| Trace bugs / "Why is X failing?" | `.claude/skills/gitnexus/gitnexus-debugging/SKILL.md` |
+| Rename / extract / split / refactor | `.claude/skills/gitnexus/gitnexus-refactoring/SKILL.md` |
+| Tools, resources, schema reference | `.claude/skills/gitnexus/gitnexus-guide/SKILL.md` |
+| Index, status, clean, wiki CLI commands | `.claude/skills/gitnexus/gitnexus-cli/SKILL.md` |
+
+<!-- gitnexus:end -->
