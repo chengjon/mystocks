@@ -1,0 +1,65 @@
+// ============================================
+//   VARIANT: DOUBLE BORDER - ArtDeco双线框
+//   双重金色边框，ArtDeco标志性的装饰风格
+//   Signature ArtDeco visual element
+// ============================================
+
+.artdeco-button--double-border {
+    background-color: transparent;
+    color: var(--artdeco-gold-primary);
+    border: none;
+    position: relative;
+    padding: var(--artdeco-spacing-3) var(--artdeco-spacing-6);
+
+    // 内层边框
+    &::before {
+        content: '';
+        position: absolute;
+        inset: var(--artdeco-spacing-1);
+        border: 1px solid var(--artdeco-gold-primary);
+        pointer-events: none;
+        transition: all 400ms var(--artdeco-ease-in-out);
+        z-index: 1;
+    }
+
+    // 外层边框
+    &::after {
+        content: '';
+        position: absolute;
+        inset: 0 0 0 0;
+        border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-gold-primary);
+        pointer-events: none;
+        transition: all 400ms var(--artdeco-ease-in-out);
+        z-index: 1;
+    }
+
+    // 文字内容需在边框之上
+    .artdeco-button__text,
+    .artdeco-button__icon {
+        position: relative;
+        z-index: 2;
+    }
+
+    &:hover:not(:disabled):not(.artdeco-button--disabled) {
+        color: var(--artdeco-gold-hover);
+
+        &::before {
+            border-color: var(--artdeco-gold-hover);
+            inset: calc(var(--artdeco-spacing-px) * 2);
+        }
+
+        &::after {
+            border-color: var(--artdeco-gold-hover);
+            box-shadow: var(--artdeco-glow-intense);
+        }
+    }
+
+    &:active:not(:disabled):not(.artdeco-button--disabled) {
+        transform: translateY(0);
+
+        &::before,
+        &::after {
+            inset: 0 0 0 0;
+        }
+    }
+}

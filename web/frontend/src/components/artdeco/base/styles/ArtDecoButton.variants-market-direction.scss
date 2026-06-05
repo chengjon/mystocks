@@ -1,0 +1,39 @@
+// ============================================
+//   VARIANT: RISE - 上涨样式 (红)
+//   A股标准色：#FF5252
+// ============================================
+
+.artdeco-button--rise {
+    background-color: transparent;
+    color: var(--artdeco-up);
+    border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-up);
+
+    &:hover:not(:disabled):not(.artdeco-button--disabled) {
+        background-color: color-mix(in srgb, var(--artdeco-up) 15%, transparent);
+        box-shadow: var(--artdeco-glow-profit);
+    }
+
+    &:active:not(:disabled):not(.artdeco-button--disabled) {
+        transform: translateY(-1px);
+    }
+}
+
+// ============================================
+//   VARIANT: FALL - 下跌样式 (绿)
+//   A股标准色：#00E676
+// ============================================
+
+.artdeco-button--fall {
+    background-color: transparent;
+    color: var(--artdeco-down);
+    border: calc(var(--artdeco-spacing-px) * 2) solid var(--artdeco-down);
+
+    &:hover:not(:disabled):not(.artdeco-button--disabled) {
+        background-color: color-mix(in srgb, var(--artdeco-down) 15%, transparent);
+        box-shadow: var(--artdeco-glow-loss);
+    }
+
+    &:active:not(:disabled):not(.artdeco-button--disabled) {
+        transform: translateY(-1px);
+    }
+}

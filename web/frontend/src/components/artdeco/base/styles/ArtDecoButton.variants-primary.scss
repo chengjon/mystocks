@@ -1,0 +1,50 @@
+// ============================================
+//   VARIANT: DEFAULT - 默认样式
+//   Transparent bg, gold border, gold text
+//   Hover: gold bg with glow
+//   IMPROVED: Better contrast and readability
+// ============================================
+
+.artdeco-button--default {
+    background-color: transparent;
+    color: var(--artdeco-gold-primary); // Use theme variable
+    border: calc(var(--artdeco-spacing-px) * 2) solid var(--ad-btn-border-default);
+
+    &:hover:not(:disabled):not(.artdeco-button--disabled) {
+        background-color: color-mix(in srgb, var(--ad-btn-bg-hover) 18%, transparent);
+        border-color: var(--ad-btn-border-hover);
+        color: var(--artdeco-gold-hover);
+        box-shadow: var(--ad-btn-shadow-hover);
+    }
+
+    &:active:not(:disabled):not(.artdeco-button--disabled) {
+        transform: translateY(-1px);
+    }
+}
+
+// ============================================
+//   VARIANT: SOLID - 实心样式
+//   Gold bg, black text
+//   Hover: lighter gold with intensified glow
+//   IMPROVED: Better contrast ratio
+// ============================================
+
+.artdeco-button--solid {
+    background-color: var(--ad-btn-bg-default);
+    color: var(--ad-btn-text-default); // Black on gold = 12.6:1 contrast (AAA)
+    border: calc(var(--artdeco-spacing-px) * 2) solid var(--ad-btn-border-default);
+
+    &:hover:not(:disabled):not(.artdeco-button--disabled) {
+        background-color: var(--ad-btn-bg-hover);
+        border-color: var(--ad-btn-border-hover);
+        color: var(--ad-btn-text-hover);
+        box-shadow: var(--ad-btn-shadow-hover);
+    }
+
+    &:active:not(:disabled):not(.artdeco-button--disabled) {
+        transform: translateY(-1px);
+        background-color: var(--ad-btn-bg-focus);
+        border-color: var(--ad-btn-border-focus);
+        box-shadow: var(--ad-btn-shadow-focus);
+    }
+}
