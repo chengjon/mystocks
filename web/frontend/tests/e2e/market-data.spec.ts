@@ -21,6 +21,10 @@ const MARKET_ROUTES = {
   lhb: "/market/lhb",
 }
 
+const DATA_ROUTES = {
+  industry: "/data/industry",
+}
+
 const desktopViewports = [
   { width: 1920, height: 1080, name: "Full HD" },
   { width: 1680, height: 1050, name: "Widescreen" },
@@ -261,6 +265,16 @@ test.describe("Market Data Module - E2E Tests", () => {
       await page.goto(`${FRONTEND_BASE_URL}${MARKET_ROUTES.lhb}`)
       await expect(page.locator("main.artdeco-main")).toBeVisible()
       await expect(page).toHaveURL(/\/market\/lhb/)
+    })
+  })
+
+  test.describe("Navigation to Data Pages", () => {
+    test("should open data industry page", async ({ page }) => {
+      await page.goto(`${FRONTEND_BASE_URL}${DATA_ROUTES.industry}`)
+      await expect(page.locator(".industry-analysis-page")).toBeVisible()
+      await expect(page.getByTestId("data-industry-header")).toBeVisible()
+      await expect(page.getByTestId("data-industry-header")).toHaveClass(/artdeco-route-header/)
+      await expect(page.getByTestId("data-industry-refresh")).toBeVisible()
     })
   })
 

@@ -1,34 +1,38 @@
 <template>
   <div class="industry-analysis-page" :class="{ 'is-embedded': isEmbedded }">
-    <section v-if="!isEmbedded" class="hero-shell artdeco-card-shell">
-      <div class="hero-rail">
-        <div class="hero-copy">
-          <span class="hero-eyebrow">industry rotation desk</span>
-          <div class="hero-meta">
-            <span>DATA: {{ dataSource }}</span>
-            <span>REQ_ID: {{ displayRequestId }}</span>
-            <span>TIME: {{ displayProcessTime }}</span>
-          </div>
-        </div>
-      </div>
+    <ArtDecoRouteHeader
+      v-if="!isEmbedded"
+      title="板块动向工作台"
+      subtitle="统一审查板块热度、资金轮动和强弱结构，形成市场数据域的板块入口"
+      eyebrow="industry rotation desk"
+      :show-status="true"
+      :status-text="pageStatusText"
+      :status-type="pageStatusType"
+      test-id="data-industry-header"
+      shell-class="hero-shell artdeco-card-shell"
+    >
+      <template #meta>
+        <span>DATA: {{ dataSource }}</span>
+        <span>REQ_ID: {{ displayRequestId }}</span>
+        <span>TIME: {{ displayProcessTime }}</span>
+      </template>
 
-      <ArtDecoHeader
-        title="板块动向工作台"
-        subtitle="统一审查板块热度、资金轮动和强弱结构，形成市场数据域的板块入口"
-        :show-status="true"
-        :status-text="pageStatusText"
-        :status-type="pageStatusType"
-      >
-        <template #actions>
-          <ArtDecoButton variant="outline" size="sm" @click="refreshBoards">
-            <template #icon>
-              <ArtDecoIcon name="refresh" />
-            </template>
-            刷新板块
-          </ArtDecoButton>
-        </template>
-      </ArtDecoHeader>
-    </section>
+      <template #actions>
+        <ArtDecoButton
+          variant="outline"
+          size="sm"
+          :loading="loading"
+          :disabled="loading"
+          data-testid="data-industry-refresh"
+          @click="refreshBoards"
+        >
+          <template #icon>
+            <ArtDecoIcon name="refresh" />
+          </template>
+          刷新板块
+        </ArtDecoButton>
+      </template>
+    </ArtDecoRouteHeader>
 
     <section v-if="!isEmbedded" class="stats-strip artdeco-card-shell">
       <ArtDecoStatCard label="活跃板块" :value="stats.activeBoards" variant="gold" />
@@ -83,7 +87,8 @@
 
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { ArtDecoButton, ArtDecoCard, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+import { ArtDecoButton, ArtDecoCard, ArtDecoIcon, ArtDecoStatCard, ArtDecoTable } from '@/components/artdeco'
+import ArtDecoRouteHeader from '@/components/artdeco/route-shell/ArtDecoRouteHeader.vue'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
 import type { UnifiedResponse } from '@/api/types/common'
