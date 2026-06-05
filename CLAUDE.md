@@ -25,6 +25,8 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 
 > **治理节奏引用**: 新需求即时小包治理、同域 `no-source` 批量盘点、`source-authorized` 与删除/退役分界，统一以 [architecture/STANDARDS.md](architecture/STANDARDS.md) 的“治理节奏与批量盘点规则”为准。
 
+> **Dirty Cleanup 执行指南**: 启动 dirty worktree cleanup、dirty atlas、worklog disposition 或 deletion-retirement 候选拆分前，必须先阅读 [docs/guides/governance/DIRTY_WORKTREE_CLEANUP_GUIDE.md](docs/guides/governance/DIRTY_WORKTREE_CLEANUP_GUIDE.md)；该指南只绑定流程，不自动授权 source/test/deletion 修改。
+
 ---
 
 ## 0. OPENDOG 项目观察规则

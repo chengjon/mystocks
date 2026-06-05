@@ -48,6 +48,7 @@ Keep this managed block so 'openspec update' can refresh the instructions.
 - 仓库级共享规则与当前执行口径统一以 `architecture/STANDARDS.md` 为准。
 - 本文件只保留 Agent 执行层面的流程、命令和协作规范，避免重复维护共享规则正文。
 - 新需求即时小包治理、同域 `no-source` 批量盘点、`source-authorized` 与删除/退役分界，统一以 `architecture/STANDARDS.md` 的“治理节奏与批量盘点规则”为准。
+- 启动 dirty worktree cleanup、dirty atlas、worklog disposition 或 deletion-retirement 候选拆分前，必须先阅读 `docs/guides/governance/DIRTY_WORKTREE_CLEANUP_GUIDE.md`；该指南只绑定流程，不自动授权 source/test/deletion 修改。
 - Claude Auto / Agent 自动 worklog 若需落盘，统一写入 `docs/reports/worklogs/claude-auto/`；不得重新创建 `docs/worklogs/` 平行目录。
 
 ---

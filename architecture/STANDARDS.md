@@ -23,6 +23,7 @@
 *   **新需求即时治理**：新开发、新修复、新清理完成后，应按“范围清楚、风险同类、门禁通过”的小包及时提交，禁止长期积攒跨风险 dirty state。不得把注释、导入优化、兼容层退役、删除、行为改造等不同风险动作混入同一批 diff。
 *   **同域 no-source 批量盘点**：同一业务域、同一风险类型、同一权限状态下的 `no-source` 盘点、对账、证据整理，可以合并为一个治理节点、一份报告、一张决策表收口，避免机械拆成多个细碎确权节点。
 *   **批量盘点边界**：`no-source` 只产出证据、建议和决策表，不授权代码或测试修改；`source-authorized` 实施仍必须按风险拆分；删除、退役、full-file deletion 不得混入普通盘点，必须单独授权、单独门禁、单独提交。
+*   **Dirty worktree 执行细则**：大规模 dirty worktree cleanup、dirty atlas、worklog disposition、deletion-retirement 候选拆分等执行流程，必须遵循 `docs/guides/governance/DIRTY_WORKTREE_CLEANUP_GUIDE.md`；该指南是执行细则，不替代本文件的共享规则事实源，也不构成 source/test/deletion 授权。
 
 ---
 
