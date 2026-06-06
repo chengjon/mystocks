@@ -1,24 +1,50 @@
 <template>
-    <div class="risk-positions-view">
-        <h1>Position Risk Analysis</h1>
-        <p>Analyze risk metrics for individual positions</p>
-        <div class="placeholder-content">
-            <el-alert
-                title="Coming Soon"
-                description="Position risk analysis will be implemented in Phase 7"
-                type="info"
-                show-icon
-            />
-        </div>
-    </div>
+  <section class="risk-orphan-shell legacy-static-shell">
+    <p class="shell-eyebrow">legacy risk child page</p>
+    <h2>持仓风险子页已收口</h2>
+    <p>
+      该 risk 子页未接入 canonical verified truth，
+      不再展示 Phase roadmap 占位、独立持仓风险分析入口或未验证风险执行态。
+    </p>
+    <a href="/risk/position">前往 /risk/position 查看已验证持仓风险</a>
+  </section>
 </template>
 
-<script setup lang="ts">
-    // Position risk analysis view
-</script>
+<style scoped lang="scss">
+@use '@/styles/artdeco-tokens.scss' as *;
 
-<style scoped>
-    .risk-positions-view {
-        padding: var(--artdeco-spacing-5);
-    }
+.risk-orphan-shell {
+  display: grid;
+  gap: var(--artdeco-spacing-3);
+  padding: var(--artdeco-spacing-5);
+  border: 1px solid var(--artdeco-border-default);
+  color: var(--artdeco-fg-primary);
+  background: color-mix(in srgb, var(--artdeco-gold-primary) 4%, var(--artdeco-bg-card));
+}
+
+.shell-eyebrow {
+  margin: 0;
+  color: var(--artdeco-gold-primary);
+  font-size: var(--artdeco-text-xs);
+  font-weight: var(--artdeco-font-semibold);
+  letter-spacing: var(--artdeco-tracking-widest);
+  text-transform: uppercase;
+}
+
+h2,
+p {
+  margin: 0;
+}
+
+p {
+  max-width: 44rem;
+  color: var(--artdeco-fg-muted);
+  line-height: 1.7;
+}
+
+a {
+  color: var(--artdeco-gold-primary);
+  font-weight: var(--artdeco-font-semibold);
+  text-decoration: none;
+}
 </style>

@@ -1,272 +1,135 @@
 <template>
-  <div class="database-monitor">
-
-    <div class="page-header">
-      <h1 class="page-title">数据库监控</h1>
-      <p class="page-subtitle">DATABASE MONITORING | HEALTH CHECK | ROUTING INFO</p>
-      <div class="decorative-line"></div>
+  <section class="database-monitor-legacy-shell legacy-static-shell">
+    <div class="shell-hero">
+      <p class="shell-eyebrow">legacy database monitor shell</p>
+      <h1 class="shell-title">数据库监控工作台</h1>
+      <p class="shell-copy">
+        当前 legacy 数据库监控页未接入可复用的 canonical truth。
+        这里不再展示本地伪健康数量、数据分类统计、路由分布或迁移历史摘要。
+      </p>
     </div>
 
-    <div class="monitor-content">
-      <div class="stats-grid">
-        <div class="artde-card stat-card">
-          <div class="stat-icon tdengine">
-            <span>🔲</span>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ healthData.summary?.healthy || 0 }}/{{ healthData.summary?.total_databases || 2 }}</div>
-            <div class="stat-label">健康数据库</div>
-          </div>
-        </div>
+    <div class="shell-grid">
+      <article class="shell-card">
+        <h2>推荐入口</h2>
+        <p>若需要真实已验证的系统数据与运行真相，请回到这些 canonical 路由：</p>
+        <ul>
+          <li>
+            <a href="/system/health">/system/health</a>
+            <span>查看已验证的服务健康、版本、中间件与健康探针状态。</span>
+          </li>
+          <li>
+            <a href="/system/resources">/system/resources</a>
+            <span>查看已验证的资源、进程、依赖与资源快照。</span>
+          </li>
+          <li>
+            <a href="/system/data">/system/data</a>
+            <span>查看已验证的数据源配置、可见统计与数据管理状态。</span>
+          </li>
+        </ul>
+      </article>
 
-        <div class="artde-card stat-card">
-          <div class="stat-icon postgresql">
-            <span>🐘</span>
-          </div>
-          <div class="stat-info">
-            <div class="stat-value">{{ statsData.total_classifications || 34 }}</div>
-            <div class="stat-label">数据分类总数</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="artde-card health-card">
-        <div class="card-header">
-          <span class="section-title">数据库健康状态</span>
-          <ArtDecoBadge :variant="healthData.summary?.healthy === 2 ? 'active' : 'loss'">
-            {{ healthData.summary?.healthy === 2 ? '全部正常' : '存在异常' }}
-          </ArtDecoBadge>
-        </div>
-
-        <div class="databases-section">
-          <div class="database-status" v-if="healthData.tdengine">
-            <div class="db-header">
-              <h3 class="db-title">TDengine</h3>
-              <ArtDecoBadge :variant="healthData.tdengine?.status === 'healthy' ? 'active' : 'loss'" size="sm">
-                {{ healthData.tdengine?.status === 'healthy' ? '正常' : '异常' }}
-              </ArtDecoBadge>
-            </div>
-            <div class="db-details" v-if="healthData.tdengine">
-              <div class="detail-item">
-                <span class="label">主机:</span>
-                <span class="value">{{ healthData.tdengine.host }}:{{ healthData.tdengine.port }}</span>
-              </div>
-              <div class="detail-item" v-if="healthData.tdengine.database">
-                <span class="label">数据库:</span>
-                <span class="value">{{ healthData.tdengine.database }}</span>
-              </div>
-              <div class="detail-item" v-if="healthData.tdengine.version">
-                <span class="label">版本:</span>
-                <span class="value">{{ healthData.tdengine.version }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="label">状态:</span>
-                <span class="value">{{ healthData.tdengine.message }}</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="database-status" v-if="healthData.postgresql">
-            <div class="db-header">
-              <h3 class="db-title">PostgreSQL</h3>
-              <ArtDecoBadge :variant="healthData.postgresql?.status === 'healthy' ? 'active' : 'loss'" size="sm">
-                {{ healthData.postgresql?.status === 'healthy' ? '正常' : '异常' }}
-              </ArtDecoBadge>
-            </div>
-            <div class="db-details" v-if="healthData.postgresql">
-              <div class="detail-item">
-                <span class="label">主机:</span>
-                <span class="value">{{ healthData.postgresql.host }}:{{ healthData.postgresql.port }}</span>
-              </div>
-              <div class="detail-item" v-if="healthData.postgresql.database">
-                <span class="label">数据库:</span>
-                <span class="value">{{ healthData.postgresql.database }}</span>
-              </div>
-              <div class="detail-item" v-if="healthData.postgresql.version">
-                <span class="label">版本:</span>
-                <span class="value">{{ healthData.postgresql.version }}</span>
-              </div>
-              <div class="detail-item">
-                <span class="label">状态:</span>
-                <span class="value">{{ healthData.postgresql.message }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="artde-card routing-card">
-        <div class="card-header">
-          <span class="section-title">数据路由分布</span>
-        </div>
-
-        <div class="routing-grid">
-          <div class="routing-box tdengine">
-            <h4 class="routing-title">
-              <span>🗃️</span>
-              TDengine ({{ statsData.routing?.tdengine?.count || 5 }}项)
-            </h4>
-            <p class="routing-purpose">{{ statsData.routing?.tdengine?.purpose }}</p>
-            <div class="routing-tags">
-              <span
-                v-for="(item, _idx) in statsData.routing?.tdengine?.classifications"
-                :key="item"
-                class="tag danger"
-              >
-                {{ item }}
-              </span>
-            </div>
-          </div>
-
-          <div class="routing-box postgresql">
-            <h4 class="routing-title">
-              <span>🐘</span>
-              PostgreSQL ({{ statsData.routing?.postgresql?.count || 29 }}项)
-            </h4>
-            <p class="routing-purpose">{{ statsData.routing?.postgresql?.purpose }}</p>
-            <div class="routing-tags">
-              <span
-                v-for="(category, _idx) in statsData.routing?.postgresql?.categories"
-                :key="category"
-                class="tag primary"
-              >
-                {{ category }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="artde-card info-card">
-        <div class="card-header">
-          <span class="section-title">架构简化历史</span>
-        </div>
-
-        <div class="info-grid">
-          <div class="info-item">
-            <label>架构类型</label>
-            <span>{{ statsData.architecture }}</span>
-          </div>
-          <div class="info-item">
-            <label>简化日期</label>
-            <span>{{ statsData.simplification_date }}</span>
-          </div>
-          <div class="info-item">
-            <label>简化前</label>
-            <span>{{ statsData.simplified_from }}</span>
-          </div>
-          <div class="info-item">
-            <label>简化后</label>
-            <span>{{ statsData.simplified_to }}</span>
-          </div>
-          <div class="info-item">
-            <label>MySQL状态</label>
-            <span>
-              <span class="tag">{{ statsData.removed_databases?.mysql?.status }}</span>
-              已迁移至{{ statsData.removed_databases?.mysql?.migrated_to }} ({{ statsData.removed_databases?.mysql?.rows_migrated }}行)
-            </span>
-          </div>
-          <div class="info-item">
-            <label>Redis状态</label>
-            <span>
-              <span class="tag">{{ statsData.removed_databases?.redis?.status }}</span>
-              {{ statsData.removed_databases?.redis?.reason }}
-            </span>
-          </div>
-        </div>
-      </div>
+      <article class="shell-card">
+        <h2>边界说明</h2>
+        <ul class="boundary-list">
+          <li>不显示 shell 级数据库健康数、分类总数、数据库路由分布或简化迁移进度。</li>
+          <li>不再保留本地 fetch、伪状态徽标、伪数据库拓扑或缓存退役文案。</li>
+          <li>若后续需要恢复动态数据库监控，必须先建立对应 canonical owner 的 verified truth contract。</li>
+        </ul>
+      </article>
     </div>
-  </div>
+  </section>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
-import { ArtDecoBadge } from '@/components/artdeco'
-
-interface DatabaseHealth {
-  status: 'healthy' | 'unhealthy' | 'unknown'
-  host: string
-  port: number
-  database?: string
-  version?: string
-  message: string
-}
-
-interface DatabaseSummary {
-  healthy: number
-  total_databases: number
-}
-
-interface HealthData {
-  summary?: DatabaseSummary
-  tdengine?: DatabaseHealth
-  postgresql?: DatabaseHealth
-}
-
-interface StatsData {
-  total_classifications?: number
-  routing?: {
-    tdengine?: {
-      count: number
-      purpose?: string
-      classifications?: string[]
-      features?: string[]
-    }
-    postgresql?: {
-      count: number
-      purpose?: string
-      categories?: string[]
-      features?: string[]
-    }
-  }
-  architecture?: string
-  simplification_date?: string
-  simplified_from?: string
-  simplified_to?: string
-  removed_databases?: {
-    mysql?: {
-      status: string
-      migrated_to: string
-      rows_migrated: number
-    }
-    redis?: {
-      status: string
-      reason: string
-    }
-  }
-}
-
-const _loading = ref<boolean>(false)
-const healthData = ref<HealthData>({})
-const statsData = ref<StatsData>({})
-
-const fetchHealthData = async (): Promise<void> => {
-  try {
-    const response = await fetch('/api/system/database/health')
-    healthData.value = await response.json()
-  } catch (error) {
-    console.error('获取数据库健康状态失败:', error)
-    ElMessage.error('获取数据库健康状态失败')
-  }
-}
-
-const fetchStatsData = async (): Promise<void> => {
-  try {
-    const response = await fetch('/api/system/database/stats')
-    statsData.value = await response.json()
-  } catch (error) {
-    console.error('获取数据库统计信息失败:', error)
-    ElMessage.error('获取数据库统计信息失败')
-  }
-}
-
-onMounted(() => {
-  fetchHealthData()
-  fetchStatsData()
-})
 </script>
 
 <style scoped lang="scss">
-@use "./styles/DatabaseMonitor.scss" as *;
+.database-monitor-legacy-shell {
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+  color: #f4efe2;
+}
+
+.shell-hero,
+.shell-card {
+  border: 1px solid rgba(212, 175, 55, 0.24);
+  border-radius: 20px;
+  background:
+    linear-gradient(160deg, rgba(18, 24, 38, 0.94), rgba(8, 12, 20, 0.96)),
+    radial-gradient(circle at top right, rgba(212, 175, 55, 0.12), transparent 48%);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+}
+
+.shell-hero {
+  padding: 28px;
+}
+
+.shell-eyebrow {
+  margin: 0 0 10px;
+  color: #d4af37;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.shell-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.shell-copy {
+  max-width: 760px;
+  margin: 14px 0 0;
+  color: rgba(244, 239, 226, 0.82);
+  line-height: 1.7;
+}
+
+.shell-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.shell-card {
+  padding: 24px;
+}
+
+.shell-card h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.shell-card p,
+.shell-card li,
+.shell-card span {
+  color: rgba(244, 239, 226, 0.8);
+  line-height: 1.7;
+}
+
+.shell-card ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.shell-card li + li {
+  margin-top: 10px;
+}
+
+.shell-card a {
+  color: #f6d774;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.shell-card a:hover {
+  text-decoration: underline;
+}
+
+.boundary-list {
+  list-style: disc;
+}
 </style>
