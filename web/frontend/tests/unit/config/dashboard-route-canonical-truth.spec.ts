@@ -27,6 +27,24 @@ describe('dashboard route canonical truth', () => {
     expect(routerSource).toContain('redirect: HOME_ROUTE_PATH')
   })
 
+  it('preserves qm compatibility redirects in router truth', () => {
+    expect(routerSource).toContain("path: '/qm'")
+    expect(routerSource).toContain("path: '/qm/:pathMatch(.*)*'")
+    expect(routerSource).toContain('redirect: HOME_ROUTE_PATH')
+    expect(routerSource).toContain('pathMatch = to.params.pathMatch')
+    expect(routerSource).toContain('query: to.query')
+    expect(routerSource).toContain('hash: to.hash')
+  })
+
+  it('preserves qm compatibility redirects in router truth', () => {
+    expect(routerSource).toContain("path: '/qm'")
+    expect(routerSource).toContain("path: '/qm/:pathMatch(.*)*'")
+    expect(routerSource).toContain('redirect: HOME_ROUTE_PATH')
+    expect(routerSource).toContain('pathMatch = to.params.pathMatch')
+    expect(routerSource).toContain('query: to.query')
+    expect(routerSource).toContain('hash: to.hash')
+  })
+
   it('keeps trade-terminal semantics separate from dashboard truth', () => {
     expect(routerSource).toContain("name: 'trade-terminal'")
     expect(routerSource).toContain("component: () => import('@/views/TradingDashboard.vue')")
