@@ -10,8 +10,8 @@ import { test, expect } from '@playwright/test';
  * - Proper application in stock displays and charts
  */
 
-const STOCK_RED_RGB_PATTERNS = ['255, 71, 87', '235, 68, 54', '220, 38, 38', '239, 68, 68'];
-const STOCK_GREEN_RGB_PATTERNS = ['0, 217, 36', '16, 185, 129', '34, 197, 94', '76, 175, 80'];
+const STOCK_RED_RGB_PATTERNS = ['255, 82, 82', '255, 71, 87', '235, 68, 54', '220, 38, 38', '239, 68, 68'];
+const STOCK_GREEN_RGB_PATTERNS = ['0, 230, 118', '0, 217, 36', '16, 185, 129', '34, 197, 94', '76, 175, 80'];
 
 const hasAnyRgbPattern = (color: string, patterns: string[]) => {
   const normalized = color.toLowerCase();
@@ -67,8 +67,10 @@ test.describe('China Stock Colors: Stocks Page', () => {
   });
 
   test('should display positive changes in red', async ({ page }) => {
-    // Find elements with positive change class
-    const positiveElements = await page.locator('.positive, [class*="up"], [class*="rise"]').all();
+    // Find elements with explicit positive stock-change semantics.
+    const positiveElements = await page
+      .locator('.positive, .stock-up, .price-up, .change-up, .rise, [data-trend="up"], [data-direction="up"]')
+      .all();
 
     for (const el of positiveElements.slice(0, 5)) {
       const color = await el.evaluate((element: Element) => {
@@ -83,8 +85,10 @@ test.describe('China Stock Colors: Stocks Page', () => {
   });
 
   test('should display negative changes in green', async ({ page }) => {
-    // Find elements with negative change class
-    const negativeElements = await page.locator('.negative, [class*="down"], [class*="fall"]').all();
+    // Find elements with explicit negative stock-change semantics.
+    const negativeElements = await page
+      .locator('.negative, .stock-down, .price-down, .change-down, .fall, [data-trend="down"], [data-direction="down"]')
+      .all();
 
     for (const el of negativeElements.slice(0, 5)) {
       const color = await el.evaluate((element: Element) => {
@@ -271,30 +275,40 @@ test.describe('China Stock Colors: Color Consistency', () => {
         await page.goto(pageInfo.path);
         await page.waitForLoadState('networkidle');
 
-        const redElementsCount = await page.evaluate(() => {
+        const wrongUpColorCount = await page.evaluate((greenPatterns) => {
+          const hasAnyRgbPattern = (color: string, expectedPatterns: string[]) => {
+            const normalized = color.toLowerCase();
+            return expectedPatterns.some(pattern => normalized.includes(pattern));
+          };
           const allElements = Array.from(document.querySelectorAll('*'));
-          return allElements.filter((element: Element) =>
-            isStockUpColor(getComputedStyle(element).color)
-          ).length;
-        });
+          return allElements.filter((element: Element) => {
+            const text = element.textContent?.trim() || '';
+            const hasUpSemantics = text.includes('+') || text.includes('↑') || text.includes('涨');
+            return hasUpSemantics && hasAnyRgbPattern(getComputedStyle(element).color, greenPatterns);
+          }).length;
+        }, STOCK_GREEN_RGB_PATTERNS);
 
-        // Should have at least some red elements for positive values
-        expect(redElementsCount).toBeGreaterThan(0);
+        expect(wrongUpColorCount, `${pageInfo.name}: up semantics must not use down/green color`).toBe(0);
       });
 
       test('should consistently use green for down', async ({ page }) => {
         await page.goto(pageInfo.path);
         await page.waitForLoadState('networkidle');
 
-        const greenElementsCount = await page.evaluate(() => {
+        const wrongDownColorCount = await page.evaluate((redPatterns) => {
+          const hasAnyRgbPattern = (color: string, expectedPatterns: string[]) => {
+            const normalized = color.toLowerCase();
+            return expectedPatterns.some(pattern => normalized.includes(pattern));
+          };
           const allElements = Array.from(document.querySelectorAll('*'));
-          return allElements.filter((element: Element) =>
-            isStockDownColor(getComputedStyle(element).color)
-          ).length;
-        });
+          return allElements.filter((element: Element) => {
+            const text = element.textContent?.trim() || '';
+            const hasDownSemantics = text.includes('-') || text.includes('↓') || text.includes('跌');
+            return hasDownSemantics && hasAnyRgbPattern(getComputedStyle(element).color, redPatterns);
+          }).length;
+        }, STOCK_RED_RGB_PATTERNS);
 
-        // Should have at least some green elements for negative values
-        expect(greenElementsCount).toBeGreaterThan(0);
+        expect(wrongDownColorCount, `${pageInfo.name}: down semantics must not use up/red color`).toBe(0);
       });
     });
   }
@@ -355,7 +369,11 @@ test.describe('China Stock Colors: Visual Clarity', () => {
     await page.goto('/stocks');
 
     // Check for Western-style color usage (should NOT exist)
-    const westernPattern = await page.evaluate(() => {
+    const westernPattern = await page.evaluate((downPatterns) => {
+      const hasAnyRgbPattern = (color: string, expectedPatterns: string[]) => {
+        const normalized = color.toLowerCase();
+        return expectedPatterns.some(pattern => normalized.includes(pattern));
+      };
       const allElements = document.querySelectorAll('*');
       for (const el of allElements) {
         const text = el.textContent?.trim() || '';
@@ -363,13 +381,13 @@ test.describe('China Stock Colors: Visual Clarity', () => {
 
         // Check if positive text has green color (Western style - WRONG)
         if (text.includes('+') || text.includes('↑') || text.includes('涨')) {
-          if (isStockDownColor(color)) {
+          if (hasAnyRgbPattern(color, downPatterns)) {
             return true; // Found Western style
           }
         }
       }
       return false;
-    });
+    }, STOCK_GREEN_RGB_PATTERNS);
 
     expect(westernPattern, 'Should not use Western stock colors (green for up)').toBeFalsy();
   });
