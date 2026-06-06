@@ -141,6 +141,24 @@ async function seedRiskOverviewSession(page: Parameters<typeof test>[0]["page"])
       }),
     })
   })
+
+  await page.route("**/api/v1/monitoring/alerts**", async (route) => {
+    await route.fulfill({
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "x-request-id": "req-axe-risk-alerts",
+      },
+      body: JSON.stringify({
+        success: true,
+        code: 200,
+        message: "ok",
+        data: [],
+        request_id: "req-axe-risk-alerts",
+        timestamp: "2026-04-19T00:00:00Z",
+      }),
+    })
+  })
 }
 
 async function seedTradeTerminalSession(page: Parameters<typeof test>[0]["page"]) {

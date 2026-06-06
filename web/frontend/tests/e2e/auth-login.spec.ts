@@ -140,6 +140,23 @@ test.describe("Authentication Login Smoke", () => {
     await expect(page.getByTestId("username-input")).toBeVisible({ timeout: 15000 });
   });
 
+  test("redirects qm root requests through the canonical dashboard login redirect", async ({ page }) => {
+    await page.goto("/qm", { waitUntil: "domcontentloaded" });
+
+    await page.waitForURL(/\/login\?redirect=\/dashboard/, { timeout: 15000 });
+    await expect(page.getByTestId("username-input")).toBeVisible({ timeout: 15000 });
+  });
+
+  test("redirects qm compatibility routes to login while preserving canonical return URL", async ({ page }) => {
+    await page.goto("/qm/strategy/repo?from=legacy#trace-anchor", { waitUntil: "domcontentloaded" });
+
+    await page.waitForURL(/\/login\?redirect=/, { timeout: 15000 });
+    await expect
+      .poll(() => new URL(page.url()).searchParams.get("redirect"), { timeout: 10000 })
+      .toBe("/strategy/repo?from=legacy#trace-anchor");
+    await expect(page.getByTestId("username-input")).toBeVisible({ timeout: 15000 });
+  });
+
   test("logs in through the UI and lands on the requested protected route", async ({ page }) => {
     await stubDashboardApi(page);
 
@@ -164,5 +181,22 @@ test.describe("Authentication Login Smoke", () => {
       token: expect.any(String),
       user: expect.stringContaining('"username":"admin"'),
     });
+  });
+
+  test("logs in through a qm compatibility route and lands on the canonical protected destination", async ({ page }) => {
+    await stubDashboardApi(page);
+
+    await page.goto("/qm/strategy/repo?from=legacy#trace-anchor", { waitUntil: "domcontentloaded" });
+    await page.waitForURL(/\/login\?redirect=/, { timeout: 15000 });
+    await expect
+      .poll(() => new URL(page.url()).searchParams.get("redirect"), { timeout: 10000 })
+      .toBe("/strategy/repo?from=legacy#trace-anchor");
+
+    await page.getByTestId("username-input").fill("admin");
+    await page.getByTestId("password-input").fill("admin123");
+    await page.getByRole("button", { name: /SIGN IN|SIGNING IN/ }).click();
+
+    await page.waitForURL(/\/strategy\/repo\?from=legacy#trace-anchor/, { timeout: 20000 });
+    await expect.poll(() => new URL(page.url()).pathname, { timeout: 10000 }).toBe("/strategy/repo");
   });
 });
