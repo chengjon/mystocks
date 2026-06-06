@@ -9,7 +9,7 @@
                     </el-icon>
                     GPU 加速回测
                 </h1>
-                <p class="dashboard-subtitle">实时监控 GPU 加速状态，实现 50x+ 性能提升</p>
+                <p class="dashboard-subtitle">读取 GPU 状态与性能快照，确认回测加速环境是否在线</p>
             </div>
             <div class="header-actions">
                 <el-switch
@@ -24,6 +24,19 @@
                 </el-button>
             </div>
         </div>
+
+        <section class="runtime-banner" :class="{ 'is-error': Boolean(refreshError) }" aria-live="polite">
+            <div class="runtime-copy">
+                <span class="runtime-label">runtime status</span>
+                <p class="runtime-message">
+                    {{ runtimeStatusMessage }}
+                </p>
+            </div>
+            <div class="runtime-meta">
+                <span>AUTO: {{ autoRefresh ? 'ON' : 'OFF' }}</span>
+                <span>FREQ: {{ Number.parseInt(monitorFrequency, 10) / 1000 }}s</span>
+            </div>
+        </section>
 
         <!-- GPU Status Cards -->
         <div class="status-cards-grid">
@@ -49,8 +62,8 @@
                     <div class="availability-details">
                         <div class="detail-item">
                             <span class="label">状态:</span>
-                            <el-tag :type="gpuStatus.available ? 'success' : 'danger'">
-                                {{ gpuStatus.available ? '可用' : '不可用' }}
+                            <el-tag :type="hasStatusSnapshot ? (gpuStatus.available ? 'success' : 'danger') : 'info'">
+                                {{ hasStatusSnapshot ? (gpuStatus.available ? '可用' : '不可用') : '待同步' }}
                             </el-tag>
                         </div>
                         <div class="detail-item">
@@ -87,15 +100,15 @@
                     <div class="utilization-details">
                         <div class="detail-item">
                             <span class="label">当前利用率:</span>
-                            <span class="value">{{ gpuStatus.utilization }}%</span>
+                            <span class="value">{{ hasStatusSnapshot ? `${gpuStatus.utilization}%` : '--' }}</span>
                         </div>
                         <div class="detail-item">
                             <span class="label">峰值利用率:</span>
-                            <span class="value">{{ gpuStatus.peakUtilization }}%</span>
+                            <span class="value">{{ hasStatusSnapshot ? `${gpuStatus.peakUtilization}%` : '--' }}</span>
                         </div>
                         <div class="detail-item">
                             <span class="label">平均利用率:</span>
-                            <span class="value">{{ gpuStatus.averageUtilization }}%</span>
+                            <span class="value">{{ hasStatusSnapshot ? `${gpuStatus.averageUtilization}%` : '--' }}</span>
                         </div>
                     </div>
                 </div>
@@ -123,15 +136,15 @@
                     <div class="memory-details">
                         <div class="detail-item">
                             <span class="label">已用显存:</span>
-                            <span class="value">{{ formatBytes(gpuStatus.memoryUsed) }}</span>
+                            <span class="value">{{ hasStatusSnapshot ? formatBytes(gpuStatus.memoryUsed) : '--' }}</span>
                         </div>
                         <div class="detail-item">
                             <span class="label">总显存:</span>
-                            <span class="value">{{ formatBytes(gpuStatus.memoryTotal) }}</span>
+                            <span class="value">{{ hasStatusSnapshot ? formatBytes(gpuStatus.memoryTotal) : '--' }}</span>
                         </div>
                         <div class="detail-item">
                             <span class="label">空闲显存:</span>
-                            <span class="value">{{ formatBytes(gpuStatus.memoryFree) }}</span>
+                            <span class="value">{{ hasStatusSnapshot ? formatBytes(gpuStatus.memoryFree) : '--' }}</span>
                         </div>
                     </div>
                 </div>
@@ -149,25 +162,25 @@
                 </template>
                 <div class="card-content">
                     <div class="temperature-display">
-                        <div class="temp-value">{{ gpuStatus.temperature }}°C</div>
+                        <div class="temp-value">{{ temperatureDisplayValue }}</div>
                         <div class="temp-status">
-                            <el-tag :type="getTemperatureStatus()">
-                                {{ getTemperatureStatusText() }}
+                            <el-tag :type="hasVerifiedTemperature ? getTemperatureStatus() : 'info'">
+                                {{ hasStatusSnapshot ? getTemperatureStatusText() : '待同步' }}
                             </el-tag>
                         </div>
                     </div>
                     <div class="temperature-details">
                         <div class="detail-item">
                             <span class="label">最高温度:</span>
-                            <span class="value">{{ gpuStatus.maxTemperature }}°C</span>
+                            <span class="value">{{ formatTemperatureDetail(gpuStatus.maxTemperature) }}</span>
                         </div>
                         <div class="detail-item">
                             <span class="label">最低温度:</span>
-                            <span class="value">{{ gpuStatus.minTemperature }}°C</span>
+                            <span class="value">{{ formatTemperatureDetail(gpuStatus.minTemperature) }}</span>
                         </div>
                         <div class="detail-item">
                             <span class="label">平均温度:</span>
-                            <span class="value">{{ gpuStatus.averageTemperature }}°C</span>
+                            <span class="value">{{ formatTemperatureDetail(gpuStatus.averageTemperature) }}</span>
                         </div>
                     </div>
                 </div>
@@ -181,29 +194,32 @@
                     <el-icon class="card-icon">
                         <Lightning />
                     </el-icon>
-                    <span>加速性能对比</span>
+                    <span>性能快照</span>
                 </div>
             </template>
             <div class="performance-content">
                 <div class="performance-metrics">
                     <div class="metric-item">
                         <div class="metric-label">当前加速倍数</div>
-                        <div class="metric-value">{{ accelerationRatio }}x</div>
-                        <div class="metric-change" :class="{ positive: accelerationRatio > 50 }">
-                            {{ accelerationRatio > 50 ? '✓ 达标' : '⚠ 未达标' }}
+                        <div class="metric-value">{{ accelerationRatioDisplayValue }}</div>
+                        <div
+                            class="metric-change"
+                            :class="{ positive: hasBenchmarkMetrics && accelerationRatio !== null && accelerationRatio > 50 }"
+                        >
+                            {{ performanceSnapshotNote }}
                         </div>
                     </div>
                     <div class="metric-item">
                         <div class="metric-label">计算性能提升</div>
-                        <div class="metric-value">{{ performanceGain }}%</div>
+                        <div class="metric-value">{{ performanceGainDisplayValue }}</div>
                         <div class="metric-trend">
                             <el-icon><Top /></el-icon>
-                            相比 CPU
+                            {{ performanceTrendLabel }}
                         </div>
                     </div>
                     <div class="metric-item">
                         <div class="metric-label">能效比</div>
-                        <div class="metric-value">{{ energyEfficiency }}</div>
+                        <div class="metric-value">{{ energyEfficiencyDisplayValue }}</div>
                         <div class="metric-unit">计算/瓦</div>
                     </div>
                 </div>
@@ -211,8 +227,8 @@
                 <div class="performance-chart">
                     <div class="chart-placeholder">
                         <el-icon class="chart-icon"><TrendCharts /></el-icon>
-                        <p>性能对比图表</p>
-                        <small>实时更新中...</small>
+                        <p>{{ performanceChartTitle }}</p>
+                        <small>{{ performanceChartSubtitle }}</small>
                     </div>
                 </div>
             </div>
@@ -225,22 +241,18 @@
                     <el-icon class="card-icon">
                         <Setting />
                     </el-icon>
-                    <span>控制面板</span>
+                    <span>监控设置</span>
                 </div>
             </template>
             <div class="control-content">
                 <div class="control-row">
                     <div class="control-item">
-                        <label class="control-label">计算模式</label>
-                        <el-radio-group v-model="computeMode" @change="handleComputeModeChange">
-                            <el-radio label="auto">自动</el-radio>
-                            <el-radio label="gpu">强制 GPU</el-radio>
-                            <el-radio label="cpu">强制 CPU</el-radio>
-                        </el-radio-group>
-                    </div>
-                    <div class="control-item">
-                        <label class="control-label">监控频率</label>
-                        <el-select v-model="monitorFrequency" @change="handleMonitorFrequencyChange">
+                        <span id="gpu-monitor-frequency-label" class="control-label">监控频率</span>
+                        <el-select
+                            v-model="monitorFrequency"
+                            aria-labelledby="gpu-monitor-frequency-label"
+                            @change="handleMonitorFrequencyChange"
+                        >
                             <el-option label="实时 (1秒)" value="1000" />
                             <el-option label="快速 (5秒)" value="5000" />
                             <el-option label="标准 (10秒)" value="10000" />
@@ -248,21 +260,7 @@
                         </el-select>
                     </div>
                 </div>
-
-                <div class="control-row">
-                    <div class="control-item">
-                        <el-button type="primary" @click="runBenchmark">
-                            <el-icon><VideoPlay /></el-icon>
-                            运行基准测试
-                        </el-button>
-                    </div>
-                    <div class="control-item">
-                        <el-button type="warning" @click="resetGPU">
-                            <el-icon><Refresh /></el-icon>
-                            重置 GPU 状态
-                        </el-button>
-                    </div>
-                </div>
+                <p class="control-note">{{ runtimeControlNotice }}</p>
             </div>
         </el-card>
 
@@ -291,19 +289,19 @@
                         <div class="metrics-grid">
                             <div class="metric-card">
                                 <h4>GPU 核心频率</h4>
-                                <div class="metric-value">{{ gpuStatus.coreClock }} MHz</div>
+                                <div class="metric-value">{{ formatOptionalStatusMetric(gpuStatus.coreClock, 'MHz') }}</div>
                             </div>
                             <div class="metric-card">
                                 <h4>显存频率</h4>
-                                <div class="metric-value">{{ gpuStatus.memoryClock }} MHz</div>
+                                <div class="metric-value">{{ formatOptionalStatusMetric(gpuStatus.memoryClock, 'MHz') }}</div>
                             </div>
                             <div class="metric-card">
                                 <h4>风扇转速</h4>
-                                <div class="metric-value">{{ gpuStatus.fanSpeed }}%</div>
+                                <div class="metric-value">{{ formatOptionalStatusMetric(gpuStatus.fanSpeed, '%') }}</div>
                             </div>
                             <div class="metric-card">
                                 <h4>电源使用</h4>
-                                <div class="metric-value">{{ gpuStatus.powerUsage }} W</div>
+                                <div class="metric-value">{{ powerUsageDisplayValue }}</div>
                             </div>
                         </div>
                     </el-tab-pane>
@@ -316,7 +314,42 @@
 <script setup lang="ts">
 import { useBacktestGPU } from './composables/useBacktestGPU'
 
-const { gpuStatus, autoRefresh, refreshing, accelerationRatio, performanceGain, energyEfficiency, computeMode, monitorFrequency, activeLogTab, realtimeLogs, getAvailabilityColor, getUtilizationColor, getMemoryColor, getTemperatureStatus, getTemperatureStatusText, formatBytes, formatTime, toggleAutoRefresh, manualRefresh, handleComputeModeChange, handleMonitorFrequencyChange, runBenchmark, resetGPU } = useBacktestGPU()
+const {
+    gpuStatus,
+    autoRefresh,
+    refreshing,
+    refreshError,
+    runtimeStatusMessage,
+    hasStatusSnapshot,
+    accelerationRatio,
+    monitorFrequency,
+    activeLogTab,
+    realtimeLogs,
+    runtimeControlNotice,
+    getAvailabilityColor,
+    getUtilizationColor,
+    getMemoryColor,
+    getTemperatureStatus,
+    getTemperatureStatusText,
+    hasVerifiedTemperature,
+    hasBenchmarkMetrics,
+    temperatureDisplayValue,
+    formatTemperatureDetail,
+    powerUsageDisplayValue,
+    formatOptionalStatusMetric,
+    accelerationRatioDisplayValue,
+    performanceGainDisplayValue,
+    energyEfficiencyDisplayValue,
+    performanceSnapshotNote,
+    performanceTrendLabel,
+    performanceChartTitle,
+    performanceChartSubtitle,
+    formatBytes,
+    formatTime,
+    toggleAutoRefresh,
+    manualRefresh,
+    handleMonitorFrequencyChange
+} = useBacktestGPU()
 </script>
 
 <style scoped lang="scss">
