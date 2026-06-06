@@ -25,6 +25,12 @@ export interface DragonTigerRow {
   turnoverRate: string
 }
 
+export interface DragonTigerQueryParams {
+  start_date?: string
+  end_date?: string
+  limit: number
+}
+
 function parseNumber(value: unknown): number {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value
@@ -62,6 +68,23 @@ function selectTradeDate(rows: DragonTigerApiItem[], key: DragonTigerDateKey): s
   const uniqueDates = [...new Set(rows.map((row) => String(row.trade_date ?? "")).filter(Boolean))].sort().reverse()
   const index = key === "today" ? 0 : key === "yesterday" ? 1 : 2
   return uniqueDates[index] ?? uniqueDates[0] ?? null
+}
+
+export function extractDragonTigerTradeDates(payload: unknown): string[] {
+  const rows = Array.isArray(payload) ? (payload as DragonTigerApiItem[]) : []
+  return [...new Set(rows.map((row) => String(row.trade_date ?? "")).filter(Boolean))].sort().reverse()
+}
+
+export function buildDragonTigerQueryParams(tradeDate?: string, limit: number = 100): DragonTigerQueryParams {
+  if (!tradeDate) {
+    return { limit }
+  }
+
+  return {
+    start_date: tradeDate,
+    end_date: tradeDate,
+    limit,
+  }
 }
 
 function matchesFilter(row: DragonTigerApiItem, filter: DragonTigerFilter): boolean {

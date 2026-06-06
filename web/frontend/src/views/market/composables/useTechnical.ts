@@ -214,7 +214,7 @@ export function useTechnical() {
     const fetchChartData = async () => {
         loading.value = true
         try {
-            // TODO: Replace with actual API call
+            // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: replace with actual API call
             // const response = await axios.get(`/api/market/technical/${selectedSymbol.value}`, {
             //   params: {
             //     start_date: dateRange.value[0],
@@ -329,7 +329,7 @@ export function useTechnical() {
     }
 
     const calculateIndicators = () => {
-        // TODO: Implement indicator calculations
+        // TODO owner=frontend-platform issue=techdebt-expired-markers ttl=2026-06-30: implement indicator calculations
         // This would integrate with the backend API for technical calculations
     }
 

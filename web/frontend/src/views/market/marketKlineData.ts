@@ -1,3 +1,5 @@
+import type { KLineDataPoint } from '@/utils/indicators'
+
 export interface KLineRow {
   datetime: string
   open: number
@@ -7,12 +9,22 @@ export interface KLineRow {
   volume: number
 }
 
-export function buildMarketKlineParams(stockCode: string): Record<string, unknown> {
-  return {
+export function buildMarketKlineParams(
+  stockCode: string,
+  period: string = "1d",
+  refreshSequence?: number
+): Record<string, unknown> {
+  const params: Record<string, unknown> = {
     stock_code: stockCode,
-    period: "daily",
+    period,
     limit: 100,
   }
+
+  if (typeof refreshSequence === 'number' && Number.isFinite(refreshSequence)) {
+    params.refresh_seq = refreshSequence
+  }
+
+  return params
 }
 
 export function extractKlineRows(payload: unknown): KLineRow[] {
@@ -31,5 +43,30 @@ export function extractKlineRows(payload: unknown): KLineRow[] {
     low: Number(row.low ?? 0),
     close: Number(row.close ?? 0),
     volume: Number(row.volume ?? 0),
+  }))
+}
+
+function parseKlineTimestamp(value: string, index: number): number {
+  const parsed = Date.parse(value)
+  if (!Number.isNaN(parsed)) {
+    return parsed
+  }
+
+  const numeric = Number(value)
+  if (Number.isFinite(numeric) && numeric > 0) {
+    return numeric
+  }
+
+  return Date.now() + index
+}
+
+export function toMarketKlineDataPoints(rows: KLineRow[]): KLineDataPoint[] {
+  return rows.map((row, index) => ({
+    timestamp: parseKlineTimestamp(row.datetime, index),
+    open: row.open,
+    high: row.high,
+    low: row.low,
+    close: row.close,
+    volume: row.volume,
   }))
 }
