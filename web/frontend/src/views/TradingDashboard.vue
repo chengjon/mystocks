@@ -59,6 +59,16 @@
             </el-row>
         </div>
 
+        <el-alert
+            v-if="runtimeAlertDescription"
+            class="runtime-alert"
+            type="warning"
+            :closable="false"
+            show-icon
+            :title="runtimeStatus"
+            :description="runtimeAlertDescription"
+        />
+
         <!-- 状态概览 -->
         <el-row :gutter="20" class="status-overview">
             <el-col :xs="24" :sm="12" :lg="6" v-for="metric in statusMetrics" :key="metric.key">
@@ -100,29 +110,29 @@
                     <div class="trading-details">
                         <el-descriptions :column="2" border>
                             <el-descriptions-item label="会话ID">
-                                {{ tradingData.session_id || '未启动' }}
+                                {{ displayTradingSessionId }}
                             </el-descriptions-item>
                             <el-descriptions-item label="运行状态">
-                                <el-tag :type="isRunning ? 'success' : 'info'">
-                                    {{ isRunning ? '运行中' : '已停止' }}
+                                <el-tag :type="displayRunState.type">
+                                    {{ displayRunState.text }}
                                 </el-tag>
                             </el-descriptions-item>
                             <el-descriptions-item label="活跃头寸">
-                                {{ tradingData.active_positions || 0 }} 个
+                                {{ displayTradingDetail(`${tradingData.active_positions || 0} 个`) }}
                             </el-descriptions-item>
                             <el-descriptions-item label="总盈亏">
-                                <span :class="tradingData.total_pnl >= 0 ? 'profit' : 'loss'">
-                                    ¥{{ formatNumber(tradingData.total_pnl || 0, 2) }}
+                                <span :class="isLightweightRuntimeDemo ? 'warning' : tradingData.total_pnl >= 0 ? 'profit' : 'loss'">
+                                    {{ displayTradingDetail(`¥${formatNumber(tradingData.total_pnl || 0, 2)}`) }}
                                 </span>
                             </el-descriptions-item>
                             <el-descriptions-item label="当日盈亏">
-                                <span :class="tradingData.daily_pnl >= 0 ? 'profit' : 'loss'">
-                                    ¥{{ formatNumber(tradingData.daily_pnl || 0, 2) }}
+                                <span :class="isLightweightRuntimeDemo ? 'warning' : tradingData.daily_pnl >= 0 ? 'profit' : 'loss'">
+                                    {{ displayTradingDetail(`¥${formatNumber(tradingData.daily_pnl || 0, 2)}`) }}
                                 </span>
                             </el-descriptions-item>
                             <el-descriptions-item label="当前回撤">
-                                <span :class="tradingData.current_drawdown > 0.05 ? 'warning' : 'normal'">
-                                    {{ formatPercent(tradingData.current_drawdown || 0) }}
+                                <span :class="isLightweightRuntimeDemo ? 'warning' : tradingData.current_drawdown > 0.05 ? 'warning' : 'normal'">
+                                    {{ displayTradingDetail(formatPercent(tradingData.current_drawdown || 0)) }}
                                 </span>
                             </el-descriptions-item>
                         </el-descriptions>
@@ -172,7 +182,7 @@
                             <el-icon class="card-icon"><TrendCharts /></el-icon>
                             <span>市场数据快照</span>
                             <el-tag type="info" size="small">
-                                {{ marketData.timestamp ? formatTime(marketData.timestamp) : '无数据' }}
+                                {{ marketStatusLabel }}
                             </el-tag>
                         </div>
                     </template>
@@ -193,6 +203,7 @@
                         <div v-else class="no-data">
                             <el-empty description="暂无市场数据"></el-empty>
                         </div>
+                        <p v-if="marketNotice" class="market-note">{{ marketNotice }}</p>
                     </div>
                 </el-card>
 
@@ -202,8 +213,8 @@
                         <div class="card-header">
                             <el-icon class="card-icon"><Warning /></el-icon>
                             <span>风险监控</span>
-                            <el-tag :type="riskData.risk_status === 'normal' ? 'success' : 'warning'" size="small">
-                                {{ riskData.risk_status === 'normal' ? '正常' : '警告' }}
+                            <el-tag :type="displayRiskStatus.type" size="small">
+                                {{ displayRiskStatus.text }}
                             </el-tag>
                         </div>
                     </template>
@@ -213,25 +224,25 @@
                             <div class="risk-label">当前回撤</div>
                             <div
                                 class="risk-value"
-                                :class="riskData.current_drawdown > 0.05 ? 'high-risk' : 'normal-risk'"
+                                :class="isLightweightRuntimeDemo ? 'high-risk' : riskData.current_drawdown > 0.05 ? 'high-risk' : 'normal-risk'"
                             >
-                                {{ formatPercent(riskData.current_drawdown || 0) }}
+                                {{ displayTradingDetail(formatPercent(riskData.current_drawdown || 0)) }}
                             </div>
                         </div>
                         <div class="risk-item">
                             <div class="risk-label">当日盈亏</div>
-                            <div class="risk-value" :class="riskData.daily_pnl >= 0 ? 'profit' : 'loss'">
-                                ¥{{ formatNumber(riskData.daily_pnl || 0, 2) }}
+                            <div class="risk-value" :class="isLightweightRuntimeDemo ? 'warning' : riskData.daily_pnl >= 0 ? 'profit' : 'loss'">
+                                {{ displayTradingDetail(`¥${formatNumber(riskData.daily_pnl || 0, 2)}`) }}
                             </div>
                         </div>
                         <div class="risk-item">
                             <div class="risk-label">活跃头寸</div>
-                            <div class="risk-value">{{ riskData.active_positions || 0 }} 个</div>
+                            <div class="risk-value">{{ displayTradingDetail(`${riskData.active_positions || 0} 个`) }}</div>
                         </div>
                         <div class="risk-item">
                             <div class="risk-label">最后更新</div>
                             <div class="risk-value small">
-                                {{ riskData.last_updated ? formatTime(riskData.last_updated) : '未知' }}
+                                {{ displayTradingDetail(riskData.last_updated ? formatTime(riskData.last_updated) : '未知') }}
                             </div>
                         </div>
                     </div>
@@ -286,25 +297,22 @@
             <div class="risk-report">
                 <el-alert
                     title="风险状态"
-                    :type="riskData.risk_status === 'normal' ? 'success' : 'warning'"
-                    :description="`当前系统风险状态：${riskData.risk_status === 'normal' ? '正常' : '警告'}`"
+                    :type="displayRiskStatus.type"
+                    :description="displayRiskStatus.description"
                     show-icon
                 ></el-alert>
 
                 <div class="risk-details">
                     <h4>风险指标详情</h4>
                     <ul>
-                        <li>当前回撤: {{ formatPercent(riskData.current_drawdown || 0) }}</li>
-                        <li>当日盈亏: ¥{{ formatNumber(riskData.daily_pnl || 0, 2) }}</li>
-                        <li>活跃头寸: {{ riskData.active_positions || 0 }} 个</li>
+                        <li>当前回撤: {{ displayTradingDetail(formatPercent(riskData.current_drawdown || 0)) }}</li>
+                        <li>当日盈亏: {{ displayTradingDetail(`¥${formatNumber(riskData.daily_pnl || 0, 2)}`) }}</li>
+                        <li>活跃头寸: {{ displayTradingDetail(`${riskData.active_positions || 0} 个`) }}</li>
                     </ul>
 
                     <h4>建议措施</h4>
                     <ul>
-                        <li v-if="riskData.current_drawdown > 0.05">建议减少头寸规模或暂停部分策略</li>
-                        <li v-if="riskData.daily_pnl < -1000">建议检查策略表现并调整参数</li>
-                        <li v-if="riskData.active_positions > 10">建议监控头寸集中度风险</li>
-                        <li v-else>系统运行正常，继续监控</li>
+                        <li v-for="item in riskRecommendations" :key="item">{{ item }}</li>
                     </ul>
                 </div>
             </div>
@@ -330,6 +338,17 @@ const {
   newStrategy,
   statusMetrics,
   tradingStatus,
+  runtimeStatus,
+  runtimeAlertDescription,
+  isLightweightRuntimeDemo,
+  loadIssues,
+  riskRecommendations,
+  displayTradingSessionId,
+  displayRunState,
+  displayTradingDetail,
+  marketStatusLabel,
+  marketNotice,
+  displayRiskStatus,
   toggleTradingSession,
   refreshData,
   openStrategyManager,

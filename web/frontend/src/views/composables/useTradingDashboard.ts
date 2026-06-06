@@ -76,6 +76,12 @@ const FALLBACK_RISK_DATA: RiskData = {
     last_updated: 0
 }
 
+const DEMO_PENDING_VALUE = '待接入'
+const DEMO_SESSION_LABEL = '轻量占位'
+const DEMO_RUNTIME_TITLE = '当前展示轻量运行时占位数据'
+const DEMO_RUNTIME_DESCRIPTION = '轻量运行时 API 当前仅提供可用性样例，实盘交易会话、行情快照与风险引擎待接入。'
+const DEMO_RISK_GUIDANCE = '当前仅展示轻量运行时占位数据，实盘风控建议待接入。'
+
 const asRecord = (value: unknown): Record<string, unknown> =>
     typeof value === 'object' && value !== null ? (value as Record<string, unknown>) : {}
 
@@ -92,12 +98,15 @@ const asString = (value: unknown, fallback = ''): string =>
 const asStringOrNumber = (value: unknown, fallback: string | number): string | number =>
     typeof value === 'string' || typeof value === 'number' ? value : fallback
 
+const isDemoStrategy = (strategy: StrategyPerformance): boolean =>
+    strategy.id.toLowerCase().startsWith('demo') || strategy.strategy_name.toLowerCase().startsWith('demo')
+
 const normalizeTradingData = (payload: unknown): TradingData => {
     const record = asRecord(payload)
     return {
         ...FALLBACK_TRADING_DATA,
         ...record,
-        session_id: asString(record.session_id, FALLBACK_TRADING_DATA.session_id),
+        session_id: asString(record.session_id, ''),
         active_positions: asNumber(record.active_positions),
         total_pnl: asNumber(record.total_pnl),
         daily_pnl: asNumber(record.daily_pnl),
@@ -170,6 +179,11 @@ export function useTradingDashboard() {
     const activeStrategyTab = ref('add')
     let tradingDataFallbackWarningShown = false
     let tradingStatusEndpointUnavailable = false
+    const hasVerifiedTradingSnapshot = ref(false)
+    const hasVerifiedStrategySnapshot = ref(false)
+    const hasVerifiedMarketSnapshot = ref(false)
+    const hasVerifiedRiskSnapshot = ref(false)
+    const loadIssues = ref<string[]>([])
 
     const newStrategy = ref({
         type: ''
@@ -207,7 +221,29 @@ export function useTradingDashboard() {
     ])
 
     // 计算属性
+    const isLightweightRuntimeDemo = computed(() => {
+        const hasSession = asString(tradingData.value.session_id, '').trim() !== ''
+        const idleTradingSummary =
+            !isRunning.value &&
+            asNumber(tradingData.value.active_positions) === 0 &&
+            asNumber(tradingData.value.total_pnl) === 0 &&
+            asNumber(tradingData.value.daily_pnl) === 0 &&
+            asNumber(tradingData.value.current_drawdown) === 0
+        const idleRiskSummary =
+            asString(riskData.value.risk_status, '').toLowerCase() === 'normal' &&
+            asNumber(riskData.value.active_positions) === 0 &&
+            asNumber(riskData.value.daily_pnl) === 0 &&
+            asNumber(riskData.value.current_drawdown) === 0
+        const hasOnlyDemoStrategies =
+            strategyPerformance.value.length > 0 && strategyPerformance.value.every(isDemoStrategy)
+
+        return !hasSession && idleTradingSummary && idleRiskSummary && hasOnlyDemoStrategies
+    })
+
     const tradingStatus = computed(() => {
+        if (isLightweightRuntimeDemo.value) {
+            return { text: DEMO_PENDING_VALUE, type: 'warning' }
+        }
         if (!isRunning.value) {
             return { text: '已停止', type: 'info' }
         }
@@ -219,8 +255,83 @@ export function useTradingDashboard() {
         return { text: '运行中', type: 'success' }
     })
 
+    const runtimeStatus = computed(() => {
+        if (refreshLoading.value || controlLoading.value) {
+            return '交易域数据同步中'
+        }
+        if (isLightweightRuntimeDemo.value && loadIssues.value.length > 0) {
+            return `${DEMO_RUNTIME_TITLE} / 部分模块降级`
+        }
+        if (isLightweightRuntimeDemo.value) {
+            return DEMO_RUNTIME_TITLE
+        }
+        if (loadIssues.value.length > 0) {
+            return `部分数据降级：${loadIssues.value.join(' / ')}`
+        }
+        return isRunning.value ? '交易会话在线' : '交易会话待机'
+    })
+
+    const runtimeAlertDescription = computed(() => {
+        if (isLightweightRuntimeDemo.value && loadIssues.value.length > 0) {
+            return `${DEMO_RUNTIME_DESCRIPTION} 当前降级模块：${loadIssues.value.join('、')}`
+        }
+        if (isLightweightRuntimeDemo.value) {
+            return DEMO_RUNTIME_DESCRIPTION
+        }
+        if (loadIssues.value.length > 0) {
+            return `当前降级模块：${loadIssues.value.join('、')}`
+        }
+        return ''
+    })
+
+    const riskRecommendations = computed(() => {
+        if (isLightweightRuntimeDemo.value) {
+            return [DEMO_RISK_GUIDANCE]
+        }
+
+        const items: string[] = []
+
+        if ((riskData.value.current_drawdown ?? 0) > 0.05) {
+            items.push('建议减少头寸规模或暂停部分策略')
+        }
+        if ((riskData.value.daily_pnl ?? 0) < -1000) {
+            items.push('建议检查策略表现并调整参数')
+        }
+        if ((riskData.value.active_positions ?? 0) > 10) {
+            items.push('建议监控头寸集中度风险')
+        }
+
+        if (items.length === 0) {
+            items.push('系统运行正常，继续监控')
+        }
+
+        return items
+    })
+
+    const setLoadIssue = (key: string, active: boolean) => {
+        const next = new Set(loadIssues.value)
+        if (active) {
+            next.add(key)
+        } else {
+            next.delete(key)
+        }
+        loadIssues.value = Array.from(next)
+    }
+
     // 方法
     const updateStatusMetricsFromTradingData = (data: TradingData) => {
+        if (isLightweightRuntimeDemo.value) {
+            statusMetrics.value[0].value = DEMO_PENDING_VALUE
+            statusMetrics.value[0].status = 'warning'
+            statusMetrics.value[1].value = DEMO_PENDING_VALUE
+            statusMetrics.value[1].status = 'warning'
+            statusMetrics.value[2].value = DEMO_PENDING_VALUE
+            statusMetrics.value[2].status = 'warning'
+            statusMetrics.value[3].value = DEMO_PENDING_VALUE
+            statusMetrics.value[3].status = 'warning'
+            return
+        }
+
         statusMetrics.value[0].value = `¥${formatNumber(data.total_pnl || 0, 2)}`
         statusMetrics.value[0].status = (data.total_pnl || 0) >= 0 ? 'profit' : 'loss'
         statusMetrics.value[1].value = `${data.active_positions || 0}`
@@ -237,14 +348,14 @@ export function useTradingDashboard() {
                 const _response = await tradingDashboardActions.stopTradingSession()
                 ElMessage.success('交易会话已停止')
                 isRunning.value = false
-                await loadTradingData()
             } else {
                 // 启动交易会话
                 await tradingDashboardActions.startTradingSession()
                 ElMessage.success('交易会话已启动')
                 isRunning.value = true
-                await loadTradingData()
             }
+
+            await Promise.all([loadTradingData(), loadStrategyPerformance(), loadMarketData(), loadRiskData()])
         } catch (error: unknown) {
             const apiError = error as ApiErrorResponse
             ElMessage.error(`操作失败: ${apiError.response?.data?.detail || apiError.message || '未知错误'}`)
@@ -257,7 +368,12 @@ export function useTradingDashboard() {
         refreshLoading.value = true
         try {
             await Promise.all([loadTradingData(), loadStrategyPerformance(), loadMarketData(), loadRiskData()])
-            ElMessage.success('数据已刷新')
+            updateStatusMetricsFromTradingData(tradingData.value)
+            if (loadIssues.value.length > 0) {
+                ElMessage.warning(`数据刷新完成，但部分模块降级：${loadIssues.value.join('、')}`)
+            } else {
+                ElMessage.success('数据已刷新')
+            }
         } catch (error: unknown) {
             const apiError = error as ApiErrorResponse
             ElMessage.error(`刷新失败: ${apiError.message || '未知错误'}`)
@@ -267,7 +383,7 @@ export function useTradingDashboard() {
     }
 
     const loadTradingData = async () => {
-        if (tradingStatusEndpointUnavailable) {
+        if (tradingStatusEndpointUnavailable && !hasVerifiedTradingSnapshot.value) {
             tradingData.value = { ...FALLBACK_TRADING_DATA }
             isRunning.value = false
             updateStatusMetricsFromTradingData(tradingData.value)
@@ -278,19 +394,24 @@ export function useTradingDashboard() {
             const response = await axios.get('/api/trading/status')
             tradingData.value = normalizeTradingData(response.data?.data ?? response.data)
             isRunning.value = Boolean(tradingData.value.is_running)
+            hasVerifiedTradingSnapshot.value = true
             updateStatusMetricsFromTradingData(tradingData.value)
             tradingDataFallbackWarningShown = false
             tradingStatusEndpointUnavailable = false
+            setLoadIssue('交易状态', false)
         } catch (error: unknown) {
             const apiError = error as ApiErrorResponse
-            tradingData.value = { ...FALLBACK_TRADING_DATA }
-            isRunning.value = false
-            updateStatusMetricsFromTradingData(tradingData.value)
-            tradingStatusEndpointUnavailable = apiError.response?.status === 404
-            if (!tradingDataFallbackWarningShown) {
-                ElMessage.warning('交易状态接口不可用，已切换为离线占位数据')
-                tradingDataFallbackWarningShown = true
+            if (!hasVerifiedTradingSnapshot.value) {
+                tradingData.value = { ...FALLBACK_TRADING_DATA }
+                isRunning.value = false
+                updateStatusMetricsFromTradingData(tradingData.value)
+                tradingStatusEndpointUnavailable = apiError.response?.status === 404
+                if (!tradingDataFallbackWarningShown) {
+                    ElMessage.warning('交易状态接口不可用，已切换为离线占位数据')
+                    tradingDataFallbackWarningShown = true
+                }
             }
+            setLoadIssue('交易状态', true)
             console.warn('[TradingDashboard] Failed to load trading data, using empty state:', error)
         }
     }
@@ -299,8 +420,13 @@ export function useTradingDashboard() {
         try {
             const response = await axios.get('/api/trading/strategies/performance')
             strategyPerformance.value = normalizeStrategyPerformance(response.data?.data ?? response.data, isRunning.value)
+            hasVerifiedStrategySnapshot.value = true
+            setLoadIssue('策略绩效', false)
         } catch (error: unknown) {
-            strategyPerformance.value = []
+            if (!hasVerifiedStrategySnapshot.value) {
+                strategyPerformance.value = []
+            }
+            setLoadIssue('策略绩效', true)
             console.warn('[TradingDashboard] Failed to load strategy performance, using empty state:', error)
         }
     }
@@ -309,8 +435,13 @@ export function useTradingDashboard() {
         try {
             const response = await axios.get('/api/trading/market/snapshot')
             marketData.value = normalizeMarketData(response.data?.data ?? response.data)
+            hasVerifiedMarketSnapshot.value = true
+            setLoadIssue('市场快照', false)
         } catch (error: unknown) {
-            marketData.value = { ...FALLBACK_MARKET_DATA }
+            if (!hasVerifiedMarketSnapshot.value) {
+                marketData.value = { ...FALLBACK_MARKET_DATA }
+            }
+            setLoadIssue('市场快照', true)
             console.warn('[TradingDashboard] Failed to load market data, using empty state:', error)
         }
     }
@@ -319,8 +450,13 @@ export function useTradingDashboard() {
         try {
             const response = await axios.get('/api/trading/risk/metrics')
             riskData.value = normalizeRiskData(response.data?.data ?? response.data)
+            hasVerifiedRiskSnapshot.value = true
+            setLoadIssue('风险指标', false)
         } catch (error: unknown) {
-            riskData.value = { ...FALLBACK_RISK_DATA }
+            if (!hasVerifiedRiskSnapshot.value) {
+                riskData.value = { ...FALLBACK_RISK_DATA }
+            }
+            setLoadIssue('风险指标', true)
             console.warn('[TradingDashboard] Failed to load risk data, using empty state:', error)
         }
     }
@@ -373,7 +509,7 @@ export function useTradingDashboard() {
     }
 
     const viewStrategyDetails = (strategy: StrategyPerformance): void => {
-        ElMessage.info(`查看策略详情: ${strategy.name}`)
+        ElMessage.info(`查看策略详情: ${strategy.strategy_name}`)
         // 这里可以打开策略详情对话框
     }
 
@@ -417,6 +553,49 @@ export function useTradingDashboard() {
 
         return formatted
     }
+
+    const displayTradingSessionId = computed(() =>
+        isLightweightRuntimeDemo.value ? DEMO_SESSION_LABEL : tradingData.value.session_id || '未启动'
+    )
+
+    const displayRunState = computed(() => {
+        if (isLightweightRuntimeDemo.value) {
+            return { text: DEMO_PENDING_VALUE, type: 'warning' }
+        }
+
+        return isRunning.value ? { text: '运行中', type: 'success' } : { text: '已停止', type: 'info' }
+    })
+
+    const displayTradingDetail = (value: string): string => (isLightweightRuntimeDemo.value ? DEMO_PENDING_VALUE : value)
+
+    const marketStatusLabel = computed(() => {
+        if (isLightweightRuntimeDemo.value) {
+            return '轻量样例'
+        }
+
+        return marketData.value.timestamp ? formatTime(marketData.value.timestamp) : '无数据'
+    })
+
+    const marketNotice = computed(() =>
+        isLightweightRuntimeDemo.value ? '当前市场快照来自轻量运行时样例，实盘行情联动待接入。' : ''
+    )
+
+    const displayRiskStatus = computed(() => {
+        if (isLightweightRuntimeDemo.value) {
+            return {
+                text: DEMO_PENDING_VALUE,
+                type: 'warning',
+                description: '当前仅展示轻量运行时占位数据，风险引擎待接入。',
+            }
+        }
+
+        const normal = riskData.value.risk_status === 'normal'
+        return {
+            text: normal ? '正常' : '警告',
+            type: normal ? 'success' : 'warning',
+            description: `当前系统风险状态：${normal ? '正常' : '警告'}`,
+        }
+    })
 
     // 自动刷新定时器
     let refreshTimer: ReturnType<typeof setInterval> | null = null
@@ -464,6 +643,17 @@ export function useTradingDashboard() {
     newStrategy,
     statusMetrics,
     tradingStatus,
+    runtimeStatus,
+    runtimeAlertDescription,
+    isLightweightRuntimeDemo,
+    loadIssues,
+    riskRecommendations,
+    displayTradingSessionId,
+    displayRunState,
+    displayTradingDetail,
+    marketStatusLabel,
+    marketNotice,
+    displayRiskStatus,
     toggleTradingSession,
     refreshData,
     loadTradingData,
