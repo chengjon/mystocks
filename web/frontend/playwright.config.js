@@ -1,3 +1,4 @@
+const path = require("node:path");
 const { defineConfig, devices } = require("@playwright/test");
 const { loadPortEnv, resolveFrontendConfig } = require("./tests/e2e/helpers/port-env.js");
 
@@ -14,6 +15,9 @@ const frontendPort = Number.isInteger(e2eFrontendPort) ? e2eFrontendPort : resol
 const baseURL = process.env.FRONTEND_BASE_URL || resolvedFrontend.baseUrl;
 const isLinux = process.platform === "linux";
 const useManagedServer = process.env.PLAYWRIGHT_EXTERNAL_FRONTEND === "1";
+const artifactOutputDir = process.env.PLAYWRIGHT_OUTPUT_DIR || "test-results";
+const htmlReportDir = process.env.PLAYWRIGHT_HTML_REPORT_DIR || "playwright-report";
+const jsonReportFile = process.env.PLAYWRIGHT_JSON_REPORT_FILE || path.join(artifactOutputDir, "results.json");
 
 // Ensure helper utilities that read FRONTEND_PORT/FRONTEND_BASE_URL use the same dedicated E2E server.
 process.env.FRONTEND_PORT = String(frontendPort);
@@ -35,10 +39,11 @@ module.exports = defineConfig({
   workers: process.env.CI ? 1 : Number.parseInt(process.env.PW_WORKERS || "1", 10),
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
-    ["html", { outputFolder: "playwright-report" }],
-    ["json", { outputFile: "test-results/results.json" }],
+    ["html", { outputFolder: htmlReportDir }],
+    ["json", { outputFile: jsonReportFile }],
     ["github"],
   ],
+  outputDir: artifactOutputDir,
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */

@@ -50,60 +50,6 @@
       "purpose": "any"
     }
   ],
-  "screenshots": [
-    {
-      "src": "/screenshots/dashboard.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "MyStocks Dashboard - Market Overview"
-    },
-    {
-      "src": "/screenshots/analysis.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Technical Analysis - Mobile View"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Dashboard",
-      "short_name": "Dashboard",
-      "description": "View market overview and key metrics",
-      "url": "/dashboard",
-      "icons": [
-        {
-          "src": "/icons/shortcut-dashboard.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Market Data",
-      "short_name": "Markets",
-      "description": "Real-time market data and quotes",
-      "url": "/market/realtime",
-      "icons": [
-        {
-          "src": "/icons/shortcut-market.png",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Trading",
-      "short_name": "Trade",
-      "description": "Portfolio and trading management",
-      "url": "/trading/portfolio",
-      "icons": [
-        {
-          "src": "/icons/shortcut-trading.png",
-          "sizes": "96x96"
-        }
-      ]
-    }
-  ],
   "related_applications": [],
   "prefer_related_applications": false,
   "iarc_rating_id": "",

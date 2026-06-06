@@ -18,6 +18,7 @@ const STATIC_CACHE_URLS = [
 // API endpoints that should be cached
 const API_CACHE_PATTERNS = [
   /\/api\/v1\/market\/summary/,
+  /\/api\/v1\/market\/quotes/,
   /\/api\/v1\/market\/realtime/,
   /\/api\/v1\/stocks\/list/,
   /\/api\/v1\/analysis\/indicators/
@@ -149,7 +150,7 @@ async function handleApiRequest(request) {
   const cachedResponse = await caches.match(request)
   if (cachedResponse) {
     console.log('📦 Serving API response from cache:', request.url)
-    return cachedResponse
+    return withServiceWorkerCacheMarker(cachedResponse)
   }
 
   // Return offline message (only when truly offline and no cache)
@@ -164,6 +165,55 @@ async function handleApiRequest(request) {
       headers: { 'Content-Type': 'application/json' }
     }
   )
+}
+
+async function withServiceWorkerCacheMarker(response) {
+  const headers = new Headers(response.headers)
+  headers.set('X-MyStocks-Cache-Source', 'service-worker-cache')
+
+  const contentType = headers.get('Content-Type') || ''
+  if (!contentType.includes('application/json')) {
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers
+    })
+  }
+
+  headers.delete('Content-Length')
+  headers.delete('Content-Encoding')
+
+  try {
+    const payload = await response.clone().json()
+    if (payload && typeof payload === 'object' && !Array.isArray(payload)) {
+      const markedPayload = {
+        ...payload,
+        cache_source: 'service-worker-cache'
+      }
+      if (payload.data && typeof payload.data === 'object' && !Array.isArray(payload.data)) {
+        markedPayload.data = {
+          ...payload.data,
+          cache_source: 'service-worker-cache'
+        }
+      }
+
+      return new Response(JSON.stringify({
+        ...markedPayload
+      }), {
+        status: response.status,
+        statusText: response.statusText,
+        headers
+      })
+    }
+  } catch (error) {
+    console.warn('📦 Failed to mark cached API response body:', error)
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers
+  })
 }
 
 // Handle font requests (Cache First)
