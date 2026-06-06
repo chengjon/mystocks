@@ -48,6 +48,10 @@ describe("Port configuration consistency", () => {
     expect(resolveFrontendConfig().port).toBe(3020);
     expect(resolveFrontendConfig().baseUrl).toBe("http://localhost:3020");
     expect(playwrightConfigText).toContain("const baseURL = process.env.FRONTEND_BASE_URL || resolvedFrontend.baseUrl;");
+    expect(playwrightConfigText).toContain('const artifactOutputDir = process.env.PLAYWRIGHT_OUTPUT_DIR || "test-results";');
+    expect(playwrightConfigText).toContain('const htmlReportDir = process.env.PLAYWRIGHT_HTML_REPORT_DIR || "playwright-report";');
+    expect(playwrightConfigText).toContain('const jsonReportFile = process.env.PLAYWRIGHT_JSON_REPORT_FILE || path.join(artifactOutputDir, "results.json");');
+    expect(playwrightConfigText).toContain("outputDir: artifactOutputDir,");
     expect(fs.existsSync(path.join(frontendRoot, "cypress.config.ts"))).toBe(false);
   });
 });
