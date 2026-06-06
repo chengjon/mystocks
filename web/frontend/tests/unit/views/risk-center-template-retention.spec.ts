@@ -23,6 +23,7 @@ describe('risk center template retention', () => {
 
     expect(riskManagementSource).toContain("import ArtDecoPageTemplate from '@/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue'")
     expect(riskManagementSource).toContain('<ArtDecoPageTemplate')
+    expect(riskManagementSource).toContain('type="button"')
   })
 
   it('retains the shared ArtDeco page template file in the active risk chain', () => {

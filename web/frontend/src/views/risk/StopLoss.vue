@@ -3,28 +3,50 @@ import { computed, onMounted, ref } from 'vue'
 import { ArtDecoButton, ArtDecoHeader, ArtDecoIcon, ArtDecoStatCard } from '@/components/artdeco'
 import { useArtDecoApi } from '@/composables/artdeco/useArtDecoApi'
 import { apiClient } from '@/api/apiClient'
-import { useWatchlistsStore, useWatchlistStocksStore } from '@/stores/apiStores'
 import { buildStopLossRows, pickPrimaryStopLossWatchlist, type StopLossRow } from '@/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts'
 
-const { loading: quoteLoading, error: quoteError, exec } = useArtDecoApi()
-const watchlistsStore = useWatchlistsStore()
-const watchlistStocksStore = useWatchlistStocksStore()
+const { loading: apiLoading, error, exec, lastRequestId } = useArtDecoApi()
 const stopLossItems = ref<StopLossRow[]>([])
-const loading = computed(() => quoteLoading.value || watchlistsStore.loading || watchlistStocksStore.loading)
-const error = computed(() => quoteError.value || watchlistsStore.error || watchlistStocksStore.error || '')
-const lastRequestId = computed(() => watchlistStocksStore.lastRequestId || watchlistsStore.lastRequestId || '')
+const hasVerifiedStopLossSnapshot = ref(false)
+const lastVerifiedRequestId = ref('')
+const activeStopLossSelectorKey = ref('unresolved')
+const lastVerifiedStopLossSelectorKey = ref<string | null>(null)
+const isFetching = ref(false)
+const loading = computed(() => isFetching.value || apiLoading.value)
+const hasVerifiedCurrentStopLossSnapshot = computed(() => (
+  hasVerifiedStopLossSnapshot.value && activeStopLossSelectorKey.value === lastVerifiedStopLossSelectorKey.value
+))
+const isPendingFirstStopLossLoad = computed(() => loading.value && !hasVerifiedCurrentStopLossSnapshot.value)
+const isUnavailableFirstStopLossLoad = computed(() => Boolean(error.value) && !hasVerifiedCurrentStopLossSnapshot.value)
+const shouldUseStopLossPlaceholders = computed(() => isPendingFirstStopLossLoad.value || isUnavailableFirstStopLossLoad.value)
 
-const triggeredCount = computed(() => stopLossItems.value.filter((item) => Number(item.distance) < 0).length)
-const criticalCount = computed(() => stopLossItems.value.filter((item) => Number(item.distance) >= 0 && Number(item.distance) < 2).length)
+const displayRequestId = computed(() => {
+  if (shouldUseStopLossPlaceholders.value) {
+    return 'N/A'
+  }
+
+  return lastVerifiedRequestId.value || lastRequestId.value || 'N/A'
+})
+const monitorableItems = computed(() => stopLossItems.value.filter((item) => item.hasStopLossPolicy && item.distanceValue !== null))
+const triggeredCount = computed(() => monitorableItems.value.filter((item) => (item.distanceValue ?? Number.POSITIVE_INFINITY) < 0).length)
+const criticalCount = computed(() => monitorableItems.value.filter((item) => {
+  const distance = item.distanceValue
+  return distance !== null && distance >= 0 && distance < 2
+}).length)
 const nearestDistance = computed(() => {
-  if (stopLossItems.value.length === 0) return '--'
-  const min = Math.min(...stopLossItems.value.map((item) => Number(item.distance)))
+  if (monitorableItems.value.length === 0) return '--'
+  const min = Math.min(...monitorableItems.value.map((item) => item.distanceValue ?? Number.POSITIVE_INFINITY))
   return Number.isFinite(min) ? `${min.toFixed(2)}%` : '--'
 })
+const displayItemCount = computed(() => (shouldUseStopLossPlaceholders.value ? '--' : String(stopLossItems.value.length)))
+const displayTriggeredCount = computed(() => (shouldUseStopLossPlaceholders.value ? '--' : String(triggeredCount.value)))
+const displayCriticalCount = computed(() => (shouldUseStopLossPlaceholders.value ? '--' : String(criticalCount.value)))
+const displayNearestDistance = computed(() => (shouldUseStopLossPlaceholders.value ? '--' : nearestDistance.value))
 const pageStatusText = computed(() => {
-  if (error.value) return '拉取失败'
+  if (error.value) return hasVerifiedCurrentStopLossSnapshot.value ? '刷新异常' : '拉取失败'
   if (loading.value) return '同步中'
   if (stopLossItems.value.length === 0) return '暂无监控标的'
+  if (monitorableItems.value.length === 0) return '策略待接入'
   if (triggeredCount.value > 0) return '存在已触发止损'
   if (criticalCount.value > 0) return '接近止损阈值'
   return '止损观察中'
@@ -32,44 +54,108 @@ const pageStatusText = computed(() => {
 const pageStatusType = computed(() => {
   if (error.value) return 'warning'
   if (stopLossItems.value.length === 0) return 'info'
+  if (monitorableItems.value.length === 0) return 'warning'
   if (triggeredCount.value > 0) return 'error'
   if (criticalCount.value > 0) return 'warning'
   return 'success'
 })
 const runtimeMessage = computed(() => {
-  if (error.value) return `${error.value}，当前显示空监控状态。`
+  if (error.value) {
+    return hasVerifiedCurrentStopLossSnapshot.value
+      ? `${error.value}，当前仍显示上次成功同步的止损快照。`
+      : `${error.value}，当前暂无已验证止损快照。`
+  }
   if (loading.value) return '止损标的同步中...'
   if (stopLossItems.value.length === 0) return '当前没有可用于止损监控的活跃标的。'
+  if (monitorableItems.value.length === 0) return '当前仅同步观察标的与行情，止损参数待接入。'
   return ''
 })
 
+function markVerifiedStopLossSnapshot(requestId: string, selectorKey: string) {
+  hasVerifiedStopLossSnapshot.value = true
+  lastVerifiedStopLossSelectorKey.value = selectorKey
+  lastVerifiedRequestId.value = requestId || lastVerifiedRequestId.value
+}
+
+function isTriggered(item: StopLossRow) {
+  return item.distanceValue !== null && item.distanceValue < 0
+}
+
+function isCritical(item: StopLossRow) {
+  return item.distanceValue !== null && item.distanceValue < 2
+}
+
+function formatDistanceLabel(item: StopLossRow) {
+  return item.distanceValue === null ? item.distance : `${item.distance}%`
+}
+
 const fetchStopLossData = async () => {
-  await watchlistsStore.refresh()
-  const primaryWatchlist = pickPrimaryStopLossWatchlist(watchlistsStore.data)
+  isFetching.value = true
+
+  const watchlistsPayload = await exec(() => apiClient.get('/v1/monitoring/watchlists'), { silent: true })
+  if (!watchlistsPayload) {
+    if (!hasVerifiedStopLossSnapshot.value) {
+      stopLossItems.value = []
+    }
+    isFetching.value = false
+    return
+  }
+
+  const primaryWatchlist = pickPrimaryStopLossWatchlist(watchlistsPayload)
+  const selectorKey = primaryWatchlist ? `watchlist:${primaryWatchlist.id}` : 'none'
+  activeStopLossSelectorKey.value = selectorKey
+  if (selectorKey !== lastVerifiedStopLossSelectorKey.value) {
+    stopLossItems.value = []
+  }
   if (!primaryWatchlist) {
     stopLossItems.value = []
+    markVerifiedStopLossSnapshot(lastRequestId.value || lastVerifiedRequestId.value, selectorKey)
+    isFetching.value = false
     return
   }
 
-  await watchlistStocksStore.refresh({ watchlistId: String(primaryWatchlist.id) })
-  const stocks = (watchlistStocksStore.data as Array<Record<string, unknown>> | null) ?? []
+  const watchlistStocksPayload = await exec(
+    () => apiClient.get(`/v1/monitoring/watchlists/${primaryWatchlist.id}/stocks`),
+    { silent: true },
+  )
+  if (!watchlistStocksPayload) {
+    if (!hasVerifiedCurrentStopLossSnapshot.value) {
+      stopLossItems.value = []
+    }
+    isFetching.value = false
+    return
+  }
 
-  if (!Array.isArray(stocks) || stocks.length === 0) {
+  const watchlistRequestId = lastRequestId.value || lastVerifiedRequestId.value
+  const provisionalRows = buildStopLossRows(watchlistStocksPayload, null)
+  if (provisionalRows.length === 0) {
     stopLossItems.value = []
+    markVerifiedStopLossSnapshot(watchlistRequestId, selectorKey)
+    isFetching.value = false
     return
   }
 
-  const symbols = stocks
-    .map((item) => String((item as Record<string, unknown>).stock_code ?? '').trim())
+  const symbols = provisionalRows
+    .map((item) => item.symbol.trim())
     .filter((item) => item.length > 0)
 
-  const quotes = symbols.length > 0
+  const quotesPayload = symbols.length > 0
     ? await exec(() => apiClient.get('/v1/market/quotes', { params: { symbols: symbols.join(',') } }), {
       silent: true
     })
     : null
 
-  stopLossItems.value = buildStopLossRows(stocks, quotes)
+  if (symbols.length > 0 && !quotesPayload) {
+    if (!hasVerifiedCurrentStopLossSnapshot.value) {
+      stopLossItems.value = []
+    }
+    isFetching.value = false
+    return
+  }
+
+  stopLossItems.value = buildStopLossRows(watchlistStocksPayload, quotesPayload)
+  markVerifiedStopLossSnapshot(watchlistRequestId, selectorKey)
+  isFetching.value = false
 }
 
 onMounted(() => {
@@ -84,9 +170,9 @@ onMounted(() => {
         <div class="hero-copy">
           <span class="hero-eyebrow">stop loss radar desk</span>
           <div class="hero-meta">
-            <span v-if="lastRequestId">REQ_ID: {{ lastRequestId }}</span>
-            <span>CRITICAL: {{ criticalCount }}</span>
-            <span>TRIGGERED: {{ triggeredCount }}</span>
+            <span>REQ_ID: {{ displayRequestId }}</span>
+            <span>CRITICAL: {{ displayCriticalCount }}</span>
+            <span>TRIGGERED: {{ displayTriggeredCount }}</span>
           </div>
         </div>
       </div>
@@ -110,10 +196,10 @@ onMounted(() => {
     </section>
 
     <section class="stats-strip artdeco-card-shell">
-      <ArtDecoStatCard label="监控标的" :value="stopLossItems.length" variant="gold" />
-      <ArtDecoStatCard label="已触发" :value="triggeredCount" variant="fall" />
-      <ArtDecoStatCard label="临界标的" :value="criticalCount" variant="gold" />
-      <ArtDecoStatCard label="最近距离" :value="nearestDistance" variant="rise" />
+      <ArtDecoStatCard label="观察标的" :value="displayItemCount" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="已触发" :value="displayTriggeredCount" variant="fall" :show-change="false" />
+      <ArtDecoStatCard label="临界标的" :value="displayCriticalCount" variant="gold" :show-change="false" />
+      <ArtDecoStatCard label="最近距离" :value="displayNearestDistance" variant="rise" :show-change="false" />
     </section>
 
     <section class="content-shell artdeco-card-shell">
@@ -124,8 +210,8 @@ onMounted(() => {
           <p class="content-shell-subtitle">观察当前价与止损价之间的距离，识别已触发和即将触发的关键持仓。</p>
         </div>
         <div class="content-shell-meta">
-          <span>ITEMS: {{ stopLossItems.length }}</span>
-          <span>NEAREST: {{ nearestDistance }}</span>
+          <span>ITEMS: {{ displayItemCount }}</span>
+          <span>NEAREST: {{ displayNearestDistance }}</span>
         </div>
       </div>
 
@@ -135,7 +221,7 @@ onMounted(() => {
         <div v-for="item in stopLossItems" :key="item.symbol" class="artdeco-card risk-card">
           <div
             class="risk-level-bar"
-            :style="{ background: Number(item.distance) < 2 ? 'var(--artdeco-down)' : 'var(--artdeco-gold-dim)' }"
+            :style="{ background: isCritical(item) ? 'var(--artdeco-down)' : 'var(--artdeco-gold-dim)' }"
           ></div>
 
           <div class="card-body">
@@ -158,18 +244,18 @@ onMounted(() => {
 
             <div class="risk-status">
               <div class="distance-label">Distance to Stop</div>
-              <div :class="['distance-val', Number(item.distance) < 2 ? 'critical' : '']">
-                {{ item.distance }}%
+              <div :class="['distance-val', isCritical(item) ? 'critical' : '']">
+                {{ formatDistanceLabel(item) }}
               </div>
             </div>
           </div>
 
-          <div class="warning-overlay" v-if="Number(item.distance) < 0">
+          <div class="warning-overlay" v-if="isTriggered(item)">
             <span>TRIGGERED</span>
           </div>
         </div>
       </div>
-      <div v-if="!loading && stopLossItems.length === 0" class="empty-state">暂无止损监控卡片。</div>
+      <div v-if="!loading && !error && stopLossItems.length === 0" class="empty-state">暂无止损监控卡片。</div>
     </section>
   </div>
 </template>

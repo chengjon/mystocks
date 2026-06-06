@@ -124,7 +124,6 @@ const {
   contentShellDescription,
   displayRequestId,
   formatPublishDate: sharedFormatPublishDate,
-  hasStartedSync,
   hasVerifiedSnapshot,
   loading,
   pageStatusText: sharedPageStatusText,
@@ -135,9 +134,7 @@ const {
 } = useAiSentimentWorkbench('risk')
 
 const isEmbedded = computed(() => Boolean(props.functionKey))
-const showSummaryPlaceholders = computed(
-  () => !hasVerifiedSnapshot.value && (!hasStartedSync.value || loading.value)
-)
+const showSummaryPlaceholders = computed(() => !hasVerifiedSnapshot.value)
 const announcementStats = computed(() => {
   const today = new Date().toISOString().slice(0, 10)
   const total = announcements.value.length
@@ -145,7 +142,7 @@ const announcementStats = computed(() => {
   const important = announcements.value.filter((item) => Number(item.importance_level || 0) >= 4).length
   const linked = announcements.value.filter((item) => Boolean(item.url)).length
 
-  if (!hasVerifiedSnapshot.value && (!hasStartedSync.value || loading.value)) {
+  if (showSummaryPlaceholders.value) {
     return {
       total: '--',
       today: '--',

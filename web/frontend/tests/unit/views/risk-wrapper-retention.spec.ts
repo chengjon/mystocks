@@ -17,6 +17,7 @@ const wrapperCases = [
       "import { monitoringApi } from '@/api/index'",
       'title="风险概览工作台"',
       'monitoringApi.getAlertRules()',
+      "monitoringApi.getAlerts({ page: 1, page_size: 50 })",
     ],
   },
   {
@@ -29,7 +30,9 @@ const wrapperCases = [
       "import { apiClient } from '@/api/apiClient'",
       "import { buildStopLossRows, pickPrimaryStopLossWatchlist, type StopLossRow } from '@/views/artdeco-pages/risk-tabs/stopLossMonitorData.ts'",
       'title="止损雷达工作台"',
-      'buildStopLossRows(stocks, quotes)',
+      "apiClient.get('/v1/monitoring/watchlists')",
+      "apiClient.get(`/v1/monitoring/watchlists/${primaryWatchlist.id}/stocks`)",
+      'buildStopLossRows(watchlistStocksPayload, quotesPayload)',
     ],
   },
 ]
@@ -57,9 +60,9 @@ const remainingCompatibilityWrapperCases = [
     legacyImportLine: "import RiskNewsCanonicalPage from '@/views/risk/News.vue'",
     legacyRenderLine: '<RiskNewsCanonicalPage v-bind="attrs" v-bind="props" />',
     canonicalEvidence: [
-      "import { monitoringApi } from '@/api/index'",
-      'title="公告与舆情工作台"',
-      "monitoringApi.getAnnouncements({ page: 1, page_size: 50 })",
+      "import { useAiSentimentWorkbench } from '@/views/ai/composables/useAiSentimentWorkbench'",
+      'title="舆情预警"',
+      "useAiSentimentWorkbench('risk')",
     ],
   },
 ] as const

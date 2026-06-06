@@ -643,6 +643,61 @@ async function stubPhase4Apis(page: Page, state: Phase4State): Promise<void> {
       return
     }
 
+    if (normalizedPath === "/v1/sentiment/market" && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-news-market",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              sentiment: "positive",
+              average_sentiment: 0.67,
+              coverage: 18,
+              positive_ratio: 0.61,
+              negative_ratio: 0.19,
+              neutral_ratio: 0.2,
+              hot_symbols: ["600519", "000001"],
+              updated_at: "2026-05-07T00:00:00Z",
+            },
+            { request_id: "req-phase4-risk-news-market" },
+          ),
+        ),
+      })
+      return
+    }
+
+    if (normalizedPath.startsWith("/v1/sentiment/stock/") && method === "GET") {
+      await route.fulfill({
+        status: 200,
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req-phase4-risk-news-stock",
+        },
+        body: JSON.stringify(
+          buildUnifiedResponse(
+            {
+              symbol: "600519",
+              days: 7,
+              mentions: 12,
+              average_sentiment: 0.61,
+              trend: "positive",
+              latest_sentiment: "positive",
+              latest_confidence: 0.88,
+              timeline: [
+                { date: "2026-05-06", sentiment: "positive", score: 0.58, confidence: 0.82 },
+                { date: "2026-05-07", sentiment: "positive", score: 0.64, confidence: 0.88 },
+              ],
+            },
+            { request_id: "req-phase4-risk-news-stock" },
+          ),
+        ),
+      })
+      return
+    }
+
     if (normalizedPath === "/announcement/monitor-rules" && method === "GET") {
       await route.fulfill({
         status: 200,
@@ -1625,7 +1680,7 @@ test.describe("Phase 4 Mainline Matrix", () => {
 
     await gotoRoute(page, "/risk/news")
 
-    await expect(page.getByText("公告与舆情工作台").first()).toBeVisible()
+    await expect(page.getByText("舆情预警").first()).toBeVisible()
     await expect(page.locator(".announcement-monitor")).toContainText("公告列表")
     await expect(page.locator(".announcement-monitor")).toContainText("2026 年第一季度经营数据公告")
     await expect(page.locator(".stats-strip .artdeco-stat-change")).toHaveCount(0)
@@ -1661,14 +1716,14 @@ test.describe("Phase 4 Mainline Matrix", () => {
 
     await gotoRoute(page, "/risk/news")
 
-    await expect(page.getByText("公告与舆情工作台").first()).toBeVisible()
+    await expect(page.getByText("舆情预警").first()).toBeVisible()
     await expect(page.locator(".hero-meta")).toContainText("REQ_ID: N/A")
     await expect(page.locator(".hero-meta")).toContainText("TODAY: --")
     await expect(page.locator(".content-shell-meta")).toContainText("ANNOUNCEMENTS: --")
     await expect(page.locator(".content-shell-meta")).toContainText("LINKED: --")
     await expect(page.locator(".stats-strip")).toContainText("--")
-    await expect(page.locator(".announcement-monitor")).toContainText("获取公告失败")
-    await expect(page.locator(".announcement-monitor")).toContainText("当前暂无已验证公告快照。")
+    await expect(page.locator(".announcement-monitor")).toContainText("公告与舆情流同步失败")
+    await expect(page.locator(".announcement-monitor")).toContainText("当前暂无已验证工作台快照。")
     await expect(page.locator(".announcement-monitor")).not.toContainText("req-phase4-risk-news-first-fail")
     await expect(page.locator(".announcement-monitor")).not.toContainText("暂无公告数据，公告列表为空。")
     await expect(page.locator(".announcement-monitor")).not.toContainText("当前没有可展示的公告记录。")
@@ -1717,20 +1772,20 @@ test.describe("Phase 4 Mainline Matrix", () => {
 
     await gotoRoute(page, "/risk/news")
 
-    await expect(page.getByText("公告与舆情工作台").first()).toBeVisible()
-    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-news-success")
+    await expect(page.getByText("舆情预警").first()).toBeVisible()
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-news-stock")
     await expect(page.locator(".content-shell-meta")).toContainText("ANNOUNCEMENTS: 2")
     await expect(page.locator(".content-shell-meta")).toContainText("LINKED: 1")
     await expect(page.locator(".announcement-monitor")).toContainText("2026 年第一季度经营数据公告")
 
     await page.getByRole("button", { name: "刷新公告" }).click()
 
-    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-news-success")
+    await expect(page.locator(".hero-meta")).toContainText("REQ_ID: req-phase4-risk-news-stock")
     await expect(page.locator(".hero-meta")).not.toContainText("req-phase4-risk-news-refresh-fail")
     await expect(page.locator(".content-shell-meta")).toContainText("ANNOUNCEMENTS: 2")
     await expect(page.locator(".content-shell-meta")).toContainText("LINKED: 1")
-    await expect(page.locator(".announcement-monitor")).toContainText("获取公告失败")
-    await expect(page.locator(".announcement-monitor")).toContainText("当前仍显示上次成功同步的公告快照。")
+    await expect(page.locator(".announcement-monitor")).toContainText("公告与舆情流同步失败")
+    await expect(page.locator(".announcement-monitor")).toContainText("当前仍显示上次成功同步的工作台快照。")
     await expect(page.locator(".announcement-monitor")).toContainText("2026 年第一季度经营数据公告")
     expect(state.unhandledRequests).toEqual([])
   })

@@ -44,6 +44,8 @@
             v-for="tab in tabs"
             :id="`risk-tab-${tab.key}`"
             :key="tab.key"
+            :ref="(el) => setTabButtonRef(el, tabs.findIndex((item) => item.key === tab.key))"
+            type="button"
             class="tab-btn"
             :class="{ active: activeTab === tab.key }"
             role="tab"
@@ -51,6 +53,7 @@
             :aria-controls="`risk-panel-${tab.key}`"
             :tabindex="activeTab === tab.key ? 0 : -1"
             @click="changeTab(tab.key)"
+            @keydown="handleTabKeydown($event, tabs.findIndex((item) => item.key === tab.key))"
           >
             <ArtDecoIcon v-if="tab.icon" :name="tab.icon" size="sm" />
             {{ tab.label }}
@@ -67,7 +70,7 @@
             <h3 class="risk-content-shell-title">{{ activeTabMeta.label }}</h3>
           </div>
           <div class="risk-content-shell-meta">
-            <span>ALERTS: {{ riskAlerts.length }}</span>
+            <span>{{ observationMode ? 'OBS' : 'ALERTS' }}: {{ riskAlerts.length }}</span>
             <span>UPDATED: {{ lastUpdateTime }}</span>
           </div>
         </div>
@@ -75,6 +78,8 @@
         <ArtDecoRiskOverviewPanel
           v-if="activeTab === 'overview'"
           :risk-alerts="riskAlerts"
+          :sector-distribution="sectorDistribution"
+          :concentration-metrics="concentrationMetrics"
           @action="handleAction"
         />
         <ArtDecoRiskStockPanel
@@ -92,7 +97,7 @@
         </div>
         <div class="risk-footer-item">
           <ArtDecoIcon name="Activity" size="xs" />
-          <span>风险数据每5分钟自动更新 · 最后一次更新：{{ lastUpdateTime }}</span>
+          <span>风险数据按当前页同步结果更新 · 最后一次更新：{{ lastUpdateTime }}</span>
         </div>
       </div>
     </template>
@@ -100,7 +105,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, type ComponentPublicInstance } from 'vue'
+import { ElMessage } from 'element-plus'
 import ArtDecoPageTemplate from '@/views/artdeco-pages/_templates/ArtDecoPageTemplate.vue'
 import ArtDecoButton from '@/components/artdeco/base/ArtDecoButton.vue'
 import ArtDecoIcon from '@/components/artdeco/core/ArtDecoIcon.vue'
@@ -108,24 +114,32 @@ import ArtDecoRiskOverviewPanel from '@/views/artdeco-pages/risk-tabs/ArtDecoRis
 import ArtDecoRiskStatsGrid from '@/views/artdeco-pages/risk-tabs/ArtDecoRiskStatsGrid.vue'
 import ArtDecoRiskStockPanel from '@/views/artdeco-pages/risk-tabs/ArtDecoRiskStockPanel.vue'
 import {
-  createInitialRiskAlerts,
-  createInitialRiskMetrics,
   getRiskTabMeta,
   riskPageConfig,
   riskTabs,
+  type ConcentrationMetric,
   type RiskAlertItem,
   type RiskMetrics,
   type RiskTabKey,
+  type SectorDistributionItem,
 } from '@/views/artdeco-pages/risk-tabs/riskManagementHelpers'
 import {
   toRiskManagementAlerts,
+  toRiskManagementConcentrationMetrics,
   toRiskManagementMetrics,
+  toRiskManagementSectorDistribution,
 } from '@/views/artdeco-pages/risk-tabs/riskManagementData'
 
-const riskData = ref<RiskMetrics>(createInitialRiskMetrics())
-const riskAlerts = ref<RiskAlertItem[]>(createInitialRiskAlerts())
-const lastUpdateTime = ref(new Date().toLocaleString())
+const riskData = ref<RiskMetrics>(toRiskManagementMetrics(null))
+const riskAlerts = ref<RiskAlertItem[]>([])
+const sectorDistribution = ref<SectorDistributionItem[]>([])
+const concentrationMetrics = ref<ConcentrationMetric[]>([])
+const lastUpdateTime = ref('--')
 const activeTabKey = ref<RiskTabKey>('overview')
+const tabButtonRefs = ref<Array<HTMLButtonElement | null>>([])
+const observationMode = computed(() =>
+  riskAlerts.value.length > 0 && riskAlerts.value.some((stock) => !stock.policyReady),
+)
 const riskPageConfigWithApi = {
   ...riskPageConfig,
   apiUrl: '/v1/trade/positions',
@@ -136,22 +150,79 @@ const handleDataLoaded = (data: unknown) => {
   lastUpdateTime.value = new Date().toLocaleString()
   riskData.value = toRiskManagementMetrics(data)
   riskAlerts.value = toRiskManagementAlerts(data)
+  sectorDistribution.value = toRiskManagementSectorDistribution(data)
+  concentrationMetrics.value = toRiskManagementConcentrationMetrics(data)
 }
 
 const handleTabChange = (tabKey: string) => {
   activeTabKey.value = getRiskTabMeta(tabKey).key
 }
 
+const setTabButtonRef = (el: Element | ComponentPublicInstance | null, index: number) => {
+  if (el instanceof HTMLButtonElement) {
+    tabButtonRefs.value[index] = el
+    return
+  }
+
+  if (el && '$el' in el && el.$el instanceof HTMLButtonElement) {
+    tabButtonRefs.value[index] = el.$el
+    return
+  }
+
+  tabButtonRefs.value[index] = null
+}
+
+const handleTabKeydown = async (event: KeyboardEvent, index: number) => {
+  if (riskTabs.length === 0 || index < 0) return
+
+  let nextIndex = index
+  switch (event.key) {
+    case 'ArrowRight':
+    case 'ArrowDown':
+      nextIndex = (index + 1) % riskTabs.length
+      break
+    case 'ArrowLeft':
+    case 'ArrowUp':
+      nextIndex = (index - 1 + riskTabs.length) % riskTabs.length
+      break
+    case 'Home':
+      nextIndex = 0
+      break
+    case 'End':
+      nextIndex = riskTabs.length - 1
+      break
+    default:
+      return
+  }
+
+  event.preventDefault()
+  const nextTab = riskTabs[nextIndex]
+  if (!nextTab) return
+
+  handleTabChange(nextTab.key)
+  await nextTick()
+  tabButtonRefs.value[nextIndex]?.focus()
+}
+
 const handleExport = () => {
+  ElMessage.info('风险管理导出能力待接入，当前页先保留审查反馈入口。')
 }
 
 const handleSettings = () => {
+  ElMessage.info('风险设置工作流待接入，当前不扩展后端契约。')
 }
 
-const handleAction = (_stock: RiskAlertItem) => {
+const handleAction = (stock: RiskAlertItem) => {
+  if (!stock.policyReady) {
+    ElMessage.info(`${stock.name}：当前仅生成持仓风险观察，止损/减仓策略参数待接入。`)
+    return
+  }
+
+  ElMessage.info(`${stock.name}：建议执行“${stock.action}”，当前页暂不直接下发操作。`)
 }
 
 const openStockModal = () => {
+  ElMessage.info('个股风险分析入口待接入，当前仅保留接入说明与反馈。')
 }
 </script>
 

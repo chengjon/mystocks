@@ -131,6 +131,9 @@ describe('RiskNews wrapper page', () => {
     pushMock.mockReset()
     refreshWorkbenchMock.mockClear()
     openAnnouncementMock.mockReset()
+    announcementsMock.value = announcementsMock.value.map((item, index) =>
+      index === 0 ? { ...item, publish_date: new Date().toISOString().slice(0, 10) } : item
+    )
     loadingMock.value = false
     hasStartedSyncMock.value = true
     hasVerifiedSnapshotMock.value = true
